@@ -2,51 +2,64 @@ using System.Collections.Generic;
 using UnityEngine;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
+using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Game
 {
     /// <summary>
-    /// Geçici oynanabilir test sahnesi: ızgara dünya, kamera, tek bir karakter
-    /// (dokunulan karoya A* ile yürür) ve oyun saati HUD'u. Sahneyi koddan kurar;
-    /// GameBootstrap oyun başlayınca bunu otomatik oluşturur.
+    /// Geçici oynanabilir test sahnesi: ızgara dünya, kamera, eşyalar, oyuncu karakteri
+    /// (dokununca yürür ya da eşyayı kullanır), otonom bir NPC ve oyun saati HUD'u.
+    /// Sahneyi koddan kurar; GameBootstrap oyun başlayınca bunu otomatik oluşturur.
     /// </summary>
     public sealed class GameRoot : MonoBehaviour
     {
         private const int MapWidth = 48;
         private const int MapHeight = 32;
-        private const float WalkTilesPerSecond = 3f;
         private const float MaxFrameSeconds = 0.1f;
 
-        private GridMap _map;
+        private sealed class Actor
+        {
+            public Character Character;
+            public JobRunner Runner;
+            public Transform View;
+        }
+
+        private WorldState _world;
         private WorldView _view;
         private WorldInput _input;
         private GameClock _clock;
         private ContentDatabase _content;
-        private Character _player;
-        private Transform _walker;
-        private readonly List<GridPos> _path = new List<GridPos>();
-        private int _pathIndex;
+        private readonly List<Actor> _actors = new List<Actor>();
+        private readonly Dictionary<int, Transform> _itemViews = new Dictionary<int, Transform>();
+        private Actor _player;
+        private string _lastFailure;
         private float _messageUntil;
         private string _message = "";
+        private GUIStyle _labelStyle;
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
-        private Rect HudRect => new Rect(8f, 8f, 250f, 175f);
+        private Rect HudRect => new Rect(8f, 8f, 270f, 230f);
 
         private void Awake()
         {
-            _map = BuildDemoMap();
+            var map = BuildDemoMap();
+            _world = new WorldState(map);
             _clock = new GameClock();
 
             _content = ContentLoader.Load(out var contentErrors);
             foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");
             Debug.Log($"İçerik yüklendi: {_content.Items.Count} eşya tanımı.");
 
+            PlaceDemoItems();
+
             var viewGo = new GameObject("WorldView");
             viewGo.transform.SetParent(transform, false);
             _view = viewGo.AddComponent<WorldView>();
-            _view.Build(_map);
+            _view.Build(map);
+
+            CreateItemViews();
 
             var cam = Camera.main;
             if (cam == null)
@@ -62,22 +75,11 @@ namespace Thatchwick.Game
             _input.IsOverUi = IsOverHud;
             _input.Tapped += OnTapped;
 
-            var start = new GridPos(MapWidth / 2, MapHeight / 2 - 6);
-            _player = new Character(1, "Aldric", start, isPlayerControlled: true);
-
-            var walkerGo = new GameObject("Walker");
-            walkerGo.transform.SetParent(transform, false);
-            var sr = walkerGo.AddComponent<SpriteRenderer>();
-            sr.sprite = SpriteMaterials.WhiteSquare;
-            sr.sharedMaterial = SpriteMaterials.Unlit;
-            sr.color = new Color(0.95f, 0.62f, 0.2f);
-            sr.sortingOrder = 2;
-            walkerGo.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
-            _walker = walkerGo.transform;
-            _walker.position = _view.TileToWorld(start);
+            _player = CreateActor(1, "Aldric", new GridPos(24, 10), true, new Color(0.95f, 0.62f, 0.2f));
+            CreateActor(2, "Maud", new GridPos(28, 9), false, new Color(0.9f, 0.5f, 0.75f));
         }
 
-        // Test haritası: gölet (dikdörtgen) ve dağınık engeller.
+        // Test haritası: gölet (dikdörtgen), bir çit hattı ve dağınık engeller.
         private static GridMap BuildDemoMap()
         {
             var map = new GridMap(MapWidth, MapHeight);
@@ -90,12 +92,78 @@ namespace Thatchwick.Game
 
             var rng = new System.Random(7);
             for (int i = 0; i < 60; i++)
-            {
-                var p = new GridPos(rng.Next(MapWidth), rng.Next(MapHeight));
-                if (p.X == MapWidth / 2 && p.Y == MapHeight / 2 - 6) continue;
-                map.SetBlocked(p, true);
-            }
+                map.SetBlocked(new GridPos(rng.Next(MapWidth), rng.Next(MapHeight)), true);
+
             return map;
+        }
+
+        // Başlangıç alanını (oyuncu, NPC, eşyalar) açık bırakır ve eşyaları yerleştirir.
+        private void PlaceDemoItems()
+        {
+            for (int x = 22; x <= 31; x++)
+                for (int y = 8; y <= 16; y++)
+                    _world.Map.SetBlocked(new GridPos(x, y), false);
+
+            TryPlace("item.bed_straw", new GridPos(26, 13));
+            TryPlace("item.hearth_stone", new GridPos(28, 13));
+            TryPlace("item.cooking_pot", new GridPos(30, 13));
+            TryPlace("item.stool_wood", new GridPos(26, 15));
+        }
+
+        private void TryPlace(string id, GridPos pos)
+        {
+            if (!_content.Items.TryGet(id, out var def))
+            {
+                Debug.LogError($"Eşya tanımı yok: {id}");
+                return;
+            }
+            _world.PlaceItem(def, pos);
+        }
+
+        private static Color ItemColor(string id)
+        {
+            switch (id)
+            {
+                case "item.bed_straw": return new Color(0.75f, 0.6f, 0.35f);
+                case "item.hearth_stone": return new Color(0.85f, 0.35f, 0.2f);
+                case "item.cooking_pot": return new Color(0.55f, 0.55f, 0.6f);
+                default: return new Color(0.6f, 0.45f, 0.3f);
+            }
+        }
+
+        private void CreateItemViews()
+        {
+            foreach (var item in _world.Items)
+            {
+                var go = new GameObject(item.Def.Id);
+                go.transform.SetParent(transform, false);
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = SpriteMaterials.WhiteSquare;
+                sr.sharedMaterial = SpriteMaterials.Unlit;
+                sr.color = ItemColor(item.Def.Id);
+                sr.sortingOrder = 1;
+                go.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
+                go.transform.position = _view.TileToWorld(item.Position);
+                _itemViews[item.Id] = go.transform;
+            }
+        }
+
+        private Actor CreateActor(int id, string name, GridPos start, bool player, Color color)
+        {
+            var character = new Character(id, name, start, player);
+            var go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = SpriteMaterials.WhiteSquare;
+            sr.sharedMaterial = SpriteMaterials.Unlit;
+            sr.color = color;
+            sr.sortingOrder = 2;
+            go.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
+            go.transform.position = _view.TileToWorld(start);
+
+            var actor = new Actor { Character = character, Runner = new JobRunner(character, _world), View = go.transform };
+            _actors.Add(actor);
+            return actor;
         }
 
         private bool IsOverHud(Vector2 screenPos)
@@ -108,21 +176,27 @@ namespace Thatchwick.Game
         private void OnTapped(Vector2 screenPos)
         {
             var cam = Camera.main;
-            if (cam == null) return;
+            if (cam == null || _player == null) return;
 
             var world = cam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
-            var target = _view.WorldToTile(world);
+            var tile = _view.WorldToTile(world);
 
-            var path = Pathfinder.FindPath(_map, _player.Position, target);
-            if (path == null)
+            ItemInstance tapped = null;
+            foreach (var item in _world.Items)
             {
-                ShowMessage("Oraya ulaşılamıyor");
-                return;
+                if (item.Position == tile) { tapped = item; break; }
             }
 
-            _path.Clear();
-            _path.AddRange(path);
-            _pathIndex = 1;
+            if (tapped != null && tapped.Def.Interactions.Count > 0)
+            {
+                var interaction = tapped.Def.Interactions[0];
+                _player.Runner.Command(Job.UseItem(tapped.Id, interaction.Id));
+                ShowMessage($"{interaction.DisplayName}: {tapped.Def.DisplayName}");
+            }
+            else
+            {
+                _player.Runner.Command(Job.MoveTo(tile));
+            }
         }
 
         // Play modundayken kod yeniden derlenirse (ör. git pull) private alanlar sıfırlanır
@@ -142,37 +216,31 @@ namespace Thatchwick.Game
 
             float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
 
-            // Biyoloji oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
+            // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
             double gameDays = _clock.Advance(dt);
-            _player.Tick(gameDays);
+            foreach (var actor in _actors)
+            {
+                actor.Character.Tick(gameDays);
+                actor.Runner.Tick(gameDays);
+                UpdateView(actor);
+            }
 
-            Walk(dt * _clock.EffectiveSpeed);
+            var failure = _player.Runner.LastFailure;
+            if (failure != _lastFailure)
+            {
+                _lastFailure = failure;
+                if (failure != null) ShowMessage(failure);
+            }
         }
 
-        private void Walk(float scaledSeconds)
+        // Karakteri bulunduğu karodan sonraki karoya doğru ara değerler (düzgün yürüme).
+        private void UpdateView(Actor actor)
         {
-            if (_pathIndex >= _path.Count) return;
-
-            float budget = WalkTilesPerSecond * scaledSeconds;
-            while (budget > 0f && _pathIndex < _path.Count)
-            {
-                Vector3 target = _view.TileToWorld(_path[_pathIndex]);
-                Vector3 pos = _walker.position;
-                float dist = Vector3.Distance(pos, target);
-
-                if (dist <= budget)
-                {
-                    _walker.position = target;
-                    _player.Position = _path[_pathIndex];
-                    budget -= dist;
-                    _pathIndex++;
-                }
-                else
-                {
-                    _walker.position = Vector3.MoveTowards(pos, target, budget);
-                    budget = 0f;
-                }
-            }
+            Vector3 pos = _view.TileToWorld(actor.Character.Position);
+            var next = actor.Runner.NextTile;
+            if (next.HasValue)
+                pos = Vector3.Lerp(pos, _view.TileToWorld(next.Value), actor.Runner.StepProgress);
+            actor.View.position = pos;
         }
 
         private void ShowMessage(string text)
@@ -192,12 +260,20 @@ namespace Thatchwick.Game
             }
         }
 
+        private static string ActivityText(JobRunner runner)
+        {
+            if (runner.IsIdle) return "Boşta";
+            return runner.IsUsingItem ? "Kullanıyor" : "Yürüyor";
+        }
+
         private void OnGUI()
         {
             if (_clock == null) return;
 
             float s = HudScale;
             GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
+
+            DrawItemLabels(s);
 
             GUILayout.BeginArea(HudRect, GUI.skin.box);
             GUILayout.Label(
@@ -211,11 +287,42 @@ namespace Thatchwick.Game
             }
             GUILayout.EndHorizontal();
 
-            GUILayout.Label($"Açlık  {_player.Needs.Get(NeedType.Hunger):0}");
-            GUILayout.Label($"Enerji {_player.Needs.Get(NeedType.Energy):0}");
+            foreach (var actor in _actors)
+            {
+                var c = actor.Character;
+                GUILayout.Label(
+                    $"{c.Name}: Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0}");
+                GUILayout.Label($"   {ActivityText(actor.Runner)}");
+            }
+
             GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
             GUILayout.EndArea();
+        }
+
+        // Eşya adları, dünyada eşyanın üstünde küçük etiket olarak (test için).
+        private void DrawItemLabels(float guiScale)
+        {
+            var cam = Camera.main;
+            if (cam == null) return;
+
+            if (_labelStyle == null)
+            {
+                _labelStyle = new GUIStyle(GUI.skin.label)
+                {
+                    alignment = TextAnchor.MiddleCenter,
+                    fontSize = 11
+                };
+            }
+
+            foreach (var item in _world.Items)
+            {
+                Vector3 sp = cam.WorldToScreenPoint(_view.TileToWorld(item.Position) + new Vector3(0f, 0.9f, 0f));
+                if (sp.z < 0f) continue;
+                float x = sp.x / guiScale;
+                float y = (Screen.height - sp.y) / guiScale;
+                GUI.Label(new Rect(x - 60f, y - 10f, 120f, 20f), item.Def.DisplayName, _labelStyle);
+            }
         }
     }
 
