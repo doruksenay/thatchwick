@@ -41,7 +41,8 @@ crashlytics-build.properties
 .env
 .env.*
 
-# .NET çekirdek kütüphane ve testleri (Unity'siz)
+# .NET çekirdek kütüphane ve testleri (Unity'siz): csproj dosyaları repoda kalır
+!core/**/*.csproj
 core/**/bin/
 core/**/obj/
 TestResults/
