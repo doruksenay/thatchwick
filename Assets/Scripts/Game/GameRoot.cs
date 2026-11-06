@@ -39,9 +39,10 @@ namespace Thatchwick.Game
         private float _messageUntil;
         private string _message = "";
         private GUIStyle _labelStyle;
+        private readonly System.Random _rng = new System.Random(11);
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
-        private Rect HudRect => new Rect(8f, 8f, 270f, 230f);
+        private Rect HudRect => new Rect(8f, 8f, 330f, 230f);
 
         private void Awake()
         {
@@ -151,6 +152,10 @@ namespace Thatchwick.Game
         private Actor CreateActor(int id, string name, GridPos start, bool player, Color color)
         {
             var character = new Character(id, name, start, player);
+            character.SetAge(36); // Test: yetişkin başlar
+            character.LifespanDays = character.AgeConfig.RollLifespan(_rng);
+            character.StageChanged += (c, from, to) => ShowMessage($"{c.Name}: {StageName(to)} oldu");
+            character.Died += c => ShowMessage($"{c.Name} hayatını kaybetti");
             var go = new GameObject(name);
             go.transform.SetParent(transform, false);
             var sr = go.AddComponent<SpriteRenderer>();
@@ -224,6 +229,11 @@ namespace Thatchwick.Game
             foreach (var actor in _actors)
             {
                 actor.Character.Tick(gameDays);
+                if (actor.Character.IsDead)
+                {
+                    actor.Renderer.color = new Color(1f, 1f, 1f, 0.35f);
+                    continue;
+                }
                 actor.Runner.Tick(gameDays);
                 UpdateView(actor);
             }
@@ -265,6 +275,18 @@ namespace Thatchwick.Game
             }
         }
 
+        private static string StageName(AgeStage s)
+        {
+            switch (s)
+            {
+                case AgeStage.Baby: return "Bebek";
+                case AgeStage.Child: return "Çocuk";
+                case AgeStage.Youth: return "Genç";
+                case AgeStage.Adult: return "Yetişkin";
+                default: return "Yaşlı";
+            }
+        }
+
         private static string ActivityText(JobRunner runner)
         {
             if (runner.IsIdle) return "Boşta";
@@ -296,8 +318,8 @@ namespace Thatchwick.Game
             {
                 var c = actor.Character;
                 GUILayout.Label(
-                    $"{c.Name}: Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0}");
-                GUILayout.Label($"   {ActivityText(actor.Runner)}");
+                    $"{c.Name} ({(c.IsDead ? "Öldü" : StageName(c.Stage))}, {c.AgeDays:0}g): Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0}");
+                if (!c.IsDead) GUILayout.Label($"   {ActivityText(actor.Runner)}");
             }
 
             GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");
