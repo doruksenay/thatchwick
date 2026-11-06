@@ -21,7 +21,7 @@ namespace Thatchwick.Core.Tests
             var needs = new NeedSet();
             needs.SetDecayPerDay(NeedType.Hunger, 50f);
             needs.Tick(0.5);
-            Assert.Equal(75f, needs.Get(NeedType.Hunger), 3);
+            Assert.Equal(75.0, (double)needs.Get(NeedType.Hunger), 3);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace Thatchwick.Core.Tests
 
             a.Tick(slow.Advance(720));          // 2 gün, 1x
             b.Tick(fast.Advance(240));          // 240 sn * 3 / 360 = 2 gün
-            Assert.Equal(a.Get(NeedType.Hunger), b.Get(NeedType.Hunger), 3);
+            Assert.Equal((double)a.Get(NeedType.Hunger), (double)b.Get(NeedType.Hunger), 3);
         }
     }
 
