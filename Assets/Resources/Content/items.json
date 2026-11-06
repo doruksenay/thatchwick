@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": "item.bed_straw",
+      "displayName": "Saman yatak",
+      "interactions": [
+        { "id": "sleep", "displayName": "Uyu", "need": "Energy", "restore": 60, "durationDays": 0.3 }
+      ]
+    },
+    {
+      "id": "item.hearth_stone",
+      "displayName": "Taş ocak",
+      "interactions": [
+        { "id": "warm", "displayName": "Isın", "need": "Warmth", "restore": 40, "durationDays": 0.1 }
+      ]
+    },
+    {
+      "id": "item.cooking_pot",
+      "displayName": "Pişirme kazanı",
+      "interactions": [
+        { "id": "eat", "displayName": "Ye", "need": "Hunger", "restore": 50, "durationDays": 0.15 }
+      ]
+    },
+    {
+      "id": "item.stool_wood",
+      "displayName": "Tahta tabure",
+      "interactions": [
+        { "id": "sit", "displayName": "Otur", "need": "Energy", "restore": 5, "durationDays": 0.05 }
+      ]
+    }
+  ]
+}

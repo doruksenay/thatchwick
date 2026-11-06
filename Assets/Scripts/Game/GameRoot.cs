@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Content;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
 
@@ -22,6 +23,7 @@ namespace Thatchwick.Game
         private WorldView _view;
         private WorldInput _input;
         private GameClock _clock;
+        private ContentDatabase _content;
         private Character _player;
         private Transform _walker;
         private readonly List<GridPos> _path = new List<GridPos>();
@@ -30,12 +32,16 @@ namespace Thatchwick.Game
         private string _message = "";
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
-        private Rect HudRect => new Rect(8f, 8f, 250f, 150f);
+        private Rect HudRect => new Rect(8f, 8f, 250f, 175f);
 
         private void Awake()
         {
             _map = BuildDemoMap();
             _clock = new GameClock();
+
+            _content = ContentLoader.Load(out var contentErrors);
+            foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");
+            Debug.Log($"İçerik yüklendi: {_content.Items.Count} eşya tanımı.");
 
             var viewGo = new GameObject("WorldView");
             viewGo.transform.SetParent(transform, false);
@@ -207,6 +213,7 @@ namespace Thatchwick.Game
 
             GUILayout.Label($"Açlık  {_player.Needs.Get(NeedType.Hunger):0}");
             GUILayout.Label($"Enerji {_player.Needs.Get(NeedType.Energy):0}");
+            GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
             GUILayout.EndArea();
         }
