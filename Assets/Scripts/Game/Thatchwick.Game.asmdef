@@ -1,0 +1,17 @@
+{
+    "name": "Thatchwick.Game",
+    "rootNamespace": "Thatchwick.Game",
+    "references": [
+        "Thatchwick.Core",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
