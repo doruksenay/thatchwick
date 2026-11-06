@@ -24,6 +24,7 @@ namespace Thatchwick.Game
             public Character Character;
             public JobRunner Runner;
             public Transform View;
+            public SpriteRenderer Renderer;
         }
 
         private WorldState _world;
@@ -71,7 +72,7 @@ namespace Thatchwick.Game
             cam.backgroundColor = new Color(0.08f, 0.09f, 0.11f);
 
             _input = gameObject.AddComponent<WorldInput>();
-            _input.Init(cam, new Vector2(MapWidth, MapHeight));
+            _input.Init(cam, Iso.MapBounds(MapWidth, MapHeight));
             _input.IsOverUi = IsOverHud;
             _input.Tapped += OnTapped;
 
@@ -138,12 +139,11 @@ namespace Thatchwick.Game
                 var go = new GameObject(item.Def.Id);
                 go.transform.SetParent(transform, false);
                 var sr = go.AddComponent<SpriteRenderer>();
-                sr.sprite = SpriteMaterials.WhiteSquare;
+                sr.sprite = SpriteMaterials.Cube(ItemColor(item.Def.Id));
                 sr.sharedMaterial = SpriteMaterials.Unlit;
-                sr.color = ItemColor(item.Def.Id);
-                sr.sortingOrder = 1;
-                go.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
-                go.transform.position = _view.TileToWorld(item.Position);
+                var pos = _view.TileToWorld(item.Position);
+                go.transform.position = pos;
+                sr.sortingOrder = Iso.SortOrder(pos.y);
                 _itemViews[item.Id] = go.transform;
             }
         }
@@ -154,14 +154,17 @@ namespace Thatchwick.Game
             var go = new GameObject(name);
             go.transform.SetParent(transform, false);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = SpriteMaterials.WhiteSquare;
+            sr.sprite = SpriteMaterials.Pillar(color);
             sr.sharedMaterial = SpriteMaterials.Unlit;
-            sr.color = color;
-            sr.sortingOrder = 2;
-            go.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
             go.transform.position = _view.TileToWorld(start);
 
-            var actor = new Actor { Character = character, Runner = new JobRunner(character, _world), View = go.transform };
+            var actor = new Actor
+            {
+                Character = character,
+                Runner = new JobRunner(character, _world),
+                View = go.transform,
+                Renderer = sr
+            };
             _actors.Add(actor);
             return actor;
         }
@@ -241,6 +244,8 @@ namespace Thatchwick.Game
             if (next.HasValue)
                 pos = Vector3.Lerp(pos, _view.TileToWorld(next.Value), actor.Runner.StepProgress);
             actor.View.position = pos;
+            // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
+            actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1);
         }
 
         private void ShowMessage(string text)
@@ -317,7 +322,7 @@ namespace Thatchwick.Game
 
             foreach (var item in _world.Items)
             {
-                Vector3 sp = cam.WorldToScreenPoint(_view.TileToWorld(item.Position) + new Vector3(0f, 0.9f, 0f));
+                Vector3 sp = cam.WorldToScreenPoint(_view.TileToWorld(item.Position) + new Vector3(0f, 1.5f, 0f));
                 if (sp.z < 0f) continue;
                 float x = sp.x / guiScale;
                 float y = (Screen.height - sp.y) / guiScale;

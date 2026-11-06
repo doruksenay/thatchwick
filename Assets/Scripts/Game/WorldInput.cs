@@ -15,7 +15,7 @@ namespace Thatchwick.Game
         private const float TapMaxMovePixels = 14f;
 
         private Camera _camera;
-        private Vector2 _mapSize;
+        private Rect _bounds;
         private bool _pressing;
         private bool _wasPinching;
         private bool _movedTooFar;
@@ -27,13 +27,14 @@ namespace Thatchwick.Game
 
         public event Action<Vector2> Tapped;
 
-        public void Init(Camera camera, Vector2 mapSize)
+        /// <summary>bounds: haritanın dünya (izometrik) sınırları; kamera dışına çıkamaz.</summary>
+        public void Init(Camera camera, Rect bounds)
         {
             _camera = camera;
-            _mapSize = mapSize;
+            _bounds = bounds;
             _camera.orthographic = true;
-            _camera.orthographicSize = Mathf.Clamp(Mathf.Min(mapSize.x, mapSize.y) * 0.3f, MinZoom, MaxZoom);
-            _camera.transform.position = new Vector3(mapSize.x * 0.5f, mapSize.y * 0.5f, -10f);
+            _camera.orthographicSize = Mathf.Clamp(Mathf.Min(bounds.width, bounds.height) * 0.3f, MinZoom, MaxZoom);
+            _camera.transform.position = new Vector3(bounds.center.x, bounds.center.y, -10f);
             ClampCamera();
         }
 
@@ -148,12 +149,12 @@ namespace Thatchwick.Game
             float halfW = halfH * _camera.aspect;
             var p = _camera.transform.position;
 
-            p.x = _mapSize.x <= halfW * 2f
-                ? _mapSize.x * 0.5f
-                : Mathf.Clamp(p.x, halfW, _mapSize.x - halfW);
-            p.y = _mapSize.y <= halfH * 2f
-                ? _mapSize.y * 0.5f
-                : Mathf.Clamp(p.y, halfH, _mapSize.y - halfH);
+            p.x = _bounds.width <= halfW * 2f
+                ? _bounds.center.x
+                : Mathf.Clamp(p.x, _bounds.xMin + halfW, _bounds.xMax - halfW);
+            p.y = _bounds.height <= halfH * 2f
+                ? _bounds.center.y
+                : Mathf.Clamp(p.y, _bounds.yMin + halfH, _bounds.yMax - halfH);
 
             _camera.transform.position = p;
         }
