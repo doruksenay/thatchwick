@@ -56,3 +56,6 @@ Thumbs.db
 
 # Unity/IDE çözüm dosyası (yeni biçim)
 *.slnx
+
+# PixelLab MCP geçici blob dosyaları
+Assets/mcp-pixellab-blob-*
