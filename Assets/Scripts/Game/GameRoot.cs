@@ -119,8 +119,21 @@ namespace Thatchwick.Game
             _pathIndex = 1;
         }
 
+        // Play modundayken kod yeniden derlenirse (ör. git pull) private alanlar sıfırlanır
+        // ama sahne çalışmaya devam eder. Bu durumda kendimizi temiz bir kopyayla değiştiririz.
+        private bool RecoverIfLost()
+        {
+            if (_clock != null) return false;
+            enabled = false;
+            new GameObject("GameRoot").AddComponent<GameRoot>();
+            Destroy(gameObject);
+            return true;
+        }
+
         private void Update()
         {
+            if (RecoverIfLost()) return;
+
             float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
 
             // Biyoloji oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
@@ -175,6 +188,8 @@ namespace Thatchwick.Game
 
         private void OnGUI()
         {
+            if (_clock == null) return;
+
             float s = HudScale;
             GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
 
