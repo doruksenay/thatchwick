@@ -176,5 +176,44 @@ namespace Thatchwick.Core.Tests
             Assert.True(runner.IsIdle);
             Assert.Equal(new GridPos(0, 5), c.Position);
         }
+
+        [Fact]
+        public void Npc_BaslattigiIsiYarimBirakmaz_DigerIhtiyacSonraKarsilanir()
+        {
+            // Açlık önce eşiğin altına düştü, NPC yemeğe gitti. Yolda enerji de düşünce
+            // yemek bitmeden yatağa dönmemeli; ancak yemek bitince yatağa gitmeli.
+            var (world, c, runner) = Setup(player: false);
+            var pot = world.PlaceItem(Item("pot", NeedType.Hunger, 50, 0.15), new GridPos(15, 5));
+            var bed = world.PlaceItem(Item("bed", NeedType.Energy, 60, 0.3), new GridPos(3, 9));
+            c.Needs.Set(NeedType.Hunger, 25f);
+            c.Needs.Set(NeedType.Energy, 60f);
+
+            runner.Tick(2.0 / JobRunner.TilesPerGameDay);     // yürüyor, işi başladı
+            Assert.Equal(pot.Id, runner.Queue.Current.ItemId);
+
+            c.Needs.Set(NeedType.Energy, 5f);                  // yolda enerji de kritik oldu
+            runner.Tick(3.0 / JobRunner.TilesPerGameDay);
+            Assert.Equal(pot.Id, runner.Queue.Current.ItemId); // hâlâ yemeğe gidiyor
+
+            runner.Tick(1.0);                                  // yemek biter, sonra yatağa gider
+            Assert.True(runner.IsIdle);
+            Assert.Equal(75.0, (double)c.Needs.Get(NeedType.Hunger), 3);
+            Assert.Equal(65.0, (double)c.Needs.Get(NeedType.Energy), 3);
+        }
+
+        [Fact]
+        public void OyuncuKomutu_OtonomIsiIptalEder()
+        {
+            // Oyuncu, NPC'ye ya da kendi karakterine komut verirse otonom iş bırakılır.
+            var (world, c, runner) = Setup(player: false);
+            var bed = world.PlaceItem(Item("bed", NeedType.Energy, 60, 0.3), new GridPos(15, 5));
+            c.Needs.Set(NeedType.Energy, 10f);
+
+            runner.Tick(2.0 / JobRunner.TilesPerGameDay);
+            Assert.Equal(bed.Id, runner.Queue.Current.ItemId);
+
+            runner.Command(Job.MoveTo(new GridPos(0, 0)));
+            Assert.Equal(JobKind.MoveTo, runner.Queue.Current.Kind);
+        }
     }
 }
