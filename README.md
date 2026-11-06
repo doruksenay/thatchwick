@@ -7,8 +7,8 @@ Durum: Faz 1, Adım 01 (proje iskeleti). Yol haritası ve tasarım dokümanları
 ## Klasör yapısı
 
 ```
-core/                      Saf C# mantık (UnityEngine bağımlılığı YOK)
-  Thatchwick.Core/         Isı, zaman, yaş, beceri, miras mantığı
+core/                      dotnet test altyapısı (Unity'siz)
+  Thatchwick.Core/        csproj; kaynaklar Assets/Scripts/Core altında
   Thatchwick.Core.Tests/   xUnit testleri (dotnet test ile saniyeler içinde)
 Assets/                    Unity projesi (Unity Hub ile açılır; bkz. aşağısı)
 .github/workflows/         CI

@@ -53,3 +53,6 @@ TestResults/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Unity/IDE çözüm dosyası (yeni biçim)
+*.slnx

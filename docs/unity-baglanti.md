@@ -1,20 +1,18 @@
 # Unity bağlantısı
 
-## 1. Proje iskeleti (bir kez, senin bilgisayarında)
+Durum: Unity 6 (6000.3.23f1) 2D (URP) projesi repo kökünde (`Assets`, `Packages`, `ProjectSettings`).
 
-1. Unity Hub > Installations: güncel Unity 6 LTS. Modüller: Android Build Support (OpenJDK, SDK, NDK dahil) ve WebGL Build Support.
-2. Bu repoyu klonla: `git clone https://github.com/doruksenay/thatchwick` (Git LFS kurulu olmalı: `git lfs install`).
-3. Unity Hub > New project > **2D (URP)** şablonu. Konum: klonladığın klasörün kendisi olmalı. Hub boş olmayan klasöre proje açmıyorsa projeyi başka yerde oluşturup `Assets`, `Packages`, `ProjectSettings` klasörlerini repo köküne taşı.
-4. `git add -A && git commit && git push`. `.gitignore` Library, Temp, Logs gibi klasörleri zaten dışarıda bırakır.
+## Çekirdek kod: tek kaynak, iki derleyici
 
-## 2. Çekirdek kodu Unity'ye bağlama
+Saf C# mantık `Assets/Scripts/Core/` altındadır ve `Thatchwick.Core.asmdef` ile (UnityEngine referansı yok) Unity'de derlenir.
+`core/Thatchwick.Core/Thatchwick.Core.csproj` aynı dosyaları `Compile Include="..\..\Assets\Scripts\Core\**\*.cs"` ile okur, böylece `dotnet test core/Thatchwick.Core.Tests` Unity'siz çalışır.
 
-Şu an çekirdek `core/Thatchwick.Core` içinde, dotnet ile test ediliyor. Unity projesi geldiğinde:
+Kural: UnityEngine kullanan kod `Assets/Scripts/Core` dışında (ör. `Assets/Scripts/Game`) yazılır ve Core'a referans verir; tersi olmaz.
 
-1. Kaynaklar `Assets/Scripts/Core/` altına taşınır ve içine `Thatchwick.Core.asmdef` konur (UnityEngine referansı yok, "No Engine References" açık).
-2. `core/Thatchwick.Core/Thatchwick.Core.csproj` aynı dosyaları `Compile Include="../../Assets/Scripts/Core/**/*.cs"` ile okur. Böylece tek kaynak iki yerde derlenir: Unity ve `dotnet test`.
-3. Bu taşıma ve `.meta` dosyaları Unity'de açıldıktan sonra yapılır; ben Unity'yi çalıştıramadığım için `.meta` dosyalarını elle üretmiyorum.
+## .meta dosyaları
 
-## 3. CI için Unity lisansı
+Unity, yeni klasör ve dosyalar için `.meta` dosyalarını editör açılınca üretir. Ben Unity'yi çalıştıramadığım için `.meta` yazmıyorum: ben dosya ekleyince Unity'de açıp `.meta` dosyalarını commit etmen gerekir (`git add -A`).
 
-`.github/workflows/unity-tests.yml` elle tetiklenir ve Unity projesi yoksa atlanır. Lisans bilgisi (UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD) repo Secrets'a eklenir. Güncel yöntem için GameCI'nin "activation" belgesine bakılır (yöntem zamanla değişiyor); adımları o zaman birlikte yaparız.
+## CI için Unity lisansı
+
+`.github/workflows/unity-tests.yml` elle tetiklenir. Lisans bilgisi (UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD) repo Secrets'a eklenir. Güncel yöntem için GameCI'nin "activation" belgesine bakılır (yöntem zamanla değişiyor); adımları o zaman birlikte yaparız.

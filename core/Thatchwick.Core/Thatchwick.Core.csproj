@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- Unity 6 ile uyumlu: netstandard2.1 + C# 9 -->
@@ -6,6 +6,12 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>disable</Nullable>
     <RootNamespace>Thatchwick.Core</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Tek kaynak: Unity (asmdef) ve dotnet test aynı dosyaları derler. -->
+    <Compile Include="..\..\Assets\Scripts\Core\**\*.cs" />
+  </ItemGroup>
 
 </Project>
