@@ -74,6 +74,280 @@
           "skill": "Cooking",
           "skillXp": 25,
           "consume": "item.turnip"
+        },
+        {
+          "id": "eat_cabbage",
+          "displayName": "Lahana ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.15,
+          "consume": "item.cabbage"
+        },
+        {
+          "id": "eat_leek",
+          "displayName": "Pırasa ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.15,
+          "consume": "item.leek"
+        },
+        {
+          "id": "eat_pea",
+          "displayName": "Bezelye ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.15,
+          "consume": "item.pea"
+        },
+        {
+          "id": "eat_pumpkin",
+          "displayName": "Kabak ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.15,
+          "consume": "item.pumpkin"
+        },
+        {
+          "id": "eat_pickled_cabbage",
+          "displayName": "Lahana turşusu ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.15,
+          "consume": "item.pickled_cabbage"
+        },
+        {
+          "id": "eat_pickled_turnip",
+          "displayName": "Şalgam turşusu ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.15,
+          "consume": "item.pickled_turnip"
+        },
+        {
+          "id": "eat_dried_pea",
+          "displayName": "Kuru bezelye ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.15,
+          "consume": "item.dried_pea"
+        },
+        {
+          "id": "eat_dried_leek",
+          "displayName": "Kurutulmuş pırasa ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.15,
+          "consume": "item.dried_leek"
+        },
+        {
+          "id": "eat_berries",
+          "displayName": "Böğürtlen ye",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.15,
+          "consume": "item.berries",
+          "moodId": "mood.meal",
+          "moodText": "Taze meyve",
+          "moodValue": 2,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_mushroom",
+          "displayName": "Mantar ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.15,
+          "consume": "item.mushroom"
+        },
+        {
+          "id": "eat_nut",
+          "displayName": "Fındık ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.15,
+          "consume": "item.nut"
+        },
+        {
+          "id": "eat_honey",
+          "displayName": "Bal ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.15,
+          "consume": "item.honey",
+          "moodId": "mood.meal",
+          "moodText": "Tatlı bir lokma",
+          "moodValue": 4,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_egg",
+          "displayName": "Yumurta ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.15,
+          "consume": "item.egg"
+        },
+        {
+          "id": "eat_stew_plain",
+          "displayName": "Güveç ye",
+          "need": "Hunger",
+          "restore": 65,
+          "durationDays": 0.15,
+          "consume": "item.stew_plain",
+          "moodId": "mood.meal",
+          "moodText": "Sıcak yemek",
+          "moodValue": 3,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_stew_good",
+          "displayName": "İyi güveç ye",
+          "need": "Hunger",
+          "restore": 80,
+          "durationDays": 0.15,
+          "consume": "item.stew_good",
+          "moodId": "mood.meal",
+          "moodText": "Lezzetli yemek",
+          "moodValue": 6,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_stew_fine",
+          "displayName": "Usta güveci ye",
+          "need": "Hunger",
+          "restore": 95,
+          "durationDays": 0.15,
+          "consume": "item.stew_fine",
+          "moodId": "mood.meal",
+          "moodText": "Muhteşem yemek",
+          "moodValue": 9,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_soup_pea",
+          "displayName": "Bezelye çorbası iç",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.15,
+          "consume": "item.soup_pea",
+          "moodId": "mood.meal",
+          "moodText": "Sıcak çorba",
+          "moodValue": 3,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_soup_pea_good",
+          "displayName": "Lezzetli çorba iç",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.15,
+          "consume": "item.soup_pea_good",
+          "moodId": "mood.meal",
+          "moodText": "Lezzetli yemek",
+          "moodValue": 6,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_omelet",
+          "displayName": "Yumurtalı pırasa ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.15,
+          "consume": "item.omelet",
+          "moodId": "mood.meal",
+          "moodText": "Sıcak yemek",
+          "moodValue": 3,
+          "moodDays": 1.0
+        },
+        {
+          "id": "cook_stew",
+          "displayName": "Sebze güveci pişir",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 30,
+          "minSkillLevel": 2,
+          "consumeMore": [
+            {
+              "item": "item.turnip",
+              "count": 1
+            },
+            {
+              "item": "item.cabbage",
+              "count": 1
+            },
+            {
+              "item": "item.leek",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stew_plain",
+              "count": 2,
+              "maxLevel": 3
+            },
+            {
+              "item": "item.stew_good",
+              "count": 2,
+              "minLevel": 4,
+              "maxLevel": 7
+            },
+            {
+              "item": "item.stew_fine",
+              "count": 2,
+              "minLevel": 8
+            }
+          ]
+        },
+        {
+          "id": "cook_pea_soup",
+          "displayName": "Bezelye çorbası pişir",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 20,
+          "minSkillLevel": 1,
+          "consumeMore": [
+            {
+              "item": "item.pea",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_pea",
+              "count": 2,
+              "maxLevel": 4
+            },
+            {
+              "item": "item.soup_pea_good",
+              "count": 2,
+              "minLevel": 5
+            }
+          ]
+        },
+        {
+          "id": "cook_omelet",
+          "displayName": "Yumurtalı pırasa pişir",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 25,
+          "minSkillLevel": 3,
+          "consumeMore": [
+            {
+              "item": "item.egg",
+              "count": 2
+            },
+            {
+              "item": "item.leek",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.omelet",
+              "count": 2
+            }
+          ]
         }
       ],
       "price": 25,
@@ -271,7 +545,8 @@
               "count": 1,
               "chance": 0.5
             }
-          ]
+          ],
+          "tool": "axe"
         }
       ]
     },
@@ -293,7 +568,8 @@
               "item": "item.firewood",
               "count": 3
             }
-          ]
+          ],
+          "tool": "axe"
         }
       ]
     },
@@ -306,7 +582,8 @@
       "category": "resource",
       "tags": [
         "food"
-      ]
+      ],
+      "spoilDays": 20
     },
     {
       "id": "item.seed_turnip",
@@ -347,7 +624,8 @@
               "count": 1,
               "chance": 0.5
             }
-          ]
+          ],
+          "tool": "hoe"
         }
       ]
     },
@@ -452,6 +730,860 @@
           "need": "Fun",
           "restore": 35,
           "durationDays": 0.1
+        }
+      ]
+    },
+    {
+      "id": "item.seed_cabbage",
+      "displayName": "Lahana tohumu",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "plantsAs": "item.crop_cabbage"
+    },
+    {
+      "id": "item.cabbage",
+      "displayName": "Lahana",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 14
+    },
+    {
+      "id": "item.crop_cabbage",
+      "displayName": "Lahana ekini",
+      "category": "plant",
+      "growDays": 8,
+      "tilled": true,
+      "diesInWinter": true,
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.cabbage",
+              "count": 2
+            },
+            {
+              "item": "item.seed_cabbage",
+              "count": 1
+            },
+            {
+              "item": "item.seed_cabbage",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        }
+      ]
+    },
+    {
+      "id": "item.seed_leek",
+      "displayName": "Pırasa tohumu",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "plantsAs": "item.crop_leek"
+    },
+    {
+      "id": "item.leek",
+      "displayName": "Pırasa",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 10
+    },
+    {
+      "id": "item.crop_leek",
+      "displayName": "Pırasa ekini",
+      "category": "plant",
+      "growDays": 5,
+      "tilled": true,
+      "diesInWinter": true,
+      "growSeasons": [
+        "Summer",
+        "Autumn"
+      ],
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.leek",
+              "count": 3
+            },
+            {
+              "item": "item.seed_leek",
+              "count": 1
+            },
+            {
+              "item": "item.seed_leek",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        }
+      ]
+    },
+    {
+      "id": "item.seed_pea",
+      "displayName": "Bezelye tohumu",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "plantsAs": "item.crop_pea"
+    },
+    {
+      "id": "item.pea",
+      "displayName": "Bezelye",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.crop_pea",
+      "displayName": "Bezelye ekini",
+      "category": "plant",
+      "growDays": 4,
+      "tilled": true,
+      "diesInWinter": true,
+      "growSeasons": [
+        "Spring"
+      ],
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.pea",
+              "count": 4
+            },
+            {
+              "item": "item.seed_pea",
+              "count": 1
+            },
+            {
+              "item": "item.seed_pea",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        }
+      ]
+    },
+    {
+      "id": "item.seed_pumpkin",
+      "displayName": "Kabak tohumu",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "plantsAs": "item.crop_pumpkin"
+    },
+    {
+      "id": "item.pumpkin",
+      "displayName": "Kabak",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 30
+    },
+    {
+      "id": "item.crop_pumpkin",
+      "displayName": "Kabak ekini",
+      "category": "plant",
+      "growDays": 9,
+      "tilled": true,
+      "diesInWinter": true,
+      "growSeasons": [
+        "Summer",
+        "Autumn"
+      ],
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.pumpkin",
+              "count": 1
+            },
+            {
+              "item": "item.seed_pumpkin",
+              "count": 1
+            },
+            {
+              "item": "item.seed_pumpkin",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        }
+      ]
+    },
+    {
+      "id": "item.pickled_cabbage",
+      "displayName": "Lahana turşusu",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.pickled_turnip",
+      "displayName": "Şalgam turşusu",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.dried_pea",
+      "displayName": "Kuru bezelye",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.dried_leek",
+      "displayName": "Kurutulmuş pırasa",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.stew_plain",
+      "displayName": "Sebze güveci",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource",
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 5
+    },
+    {
+      "id": "item.stew_good",
+      "displayName": "İyi pişmiş güveç",
+      "placement": "Resource",
+      "price": 9,
+      "category": "resource",
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 5
+    },
+    {
+      "id": "item.stew_fine",
+      "displayName": "Usta güveci",
+      "placement": "Resource",
+      "price": 14,
+      "category": "resource",
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 5
+    },
+    {
+      "id": "item.soup_pea",
+      "displayName": "Bezelye çorbası",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.soup_pea_good",
+      "displayName": "Lezzetli bezelye çorbası",
+      "placement": "Resource",
+      "price": 8,
+      "category": "resource",
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.omelet",
+      "displayName": "Yumurtalı pırasa",
+      "placement": "Resource",
+      "price": 7,
+      "category": "resource",
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.berries",
+      "displayName": "Böğürtlen",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.mushroom",
+      "displayName": "Mantar",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 5
+    },
+    {
+      "id": "item.nut",
+      "displayName": "Fındık",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 40
+    },
+    {
+      "id": "item.honey",
+      "displayName": "Bal",
+      "placement": "Resource",
+      "price": 12,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.herb",
+      "displayName": "Ot",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource"
+    },
+    {
+      "id": "item.egg",
+      "displayName": "Yumurta",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 12
+    },
+    {
+      "id": "item.plank",
+      "displayName": "Tahta",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource"
+    },
+    {
+      "id": "item.forage_berry_bush",
+      "displayName": "Böğürtlen çalısı",
+      "category": "forage",
+      "forageSeasons": [
+        "Summer",
+        "Autumn"
+      ],
+      "forageMax": 4,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.berries",
+              "count": 2
+            },
+            {
+              "item": "item.berries",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.forage_mushroom",
+      "displayName": "Mantar öbeği",
+      "category": "forage",
+      "forageSeasons": [
+        "Autumn"
+      ],
+      "forageMax": 3,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.mushroom",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.forage_hazel",
+      "displayName": "Fındık ağacı",
+      "category": "forage",
+      "forageSeasons": [
+        "Autumn"
+      ],
+      "forageMax": 4,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.nut",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.forage_herbs",
+      "displayName": "Yabani otlar",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "forageMax": 3,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.herb",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.forage_hive",
+      "displayName": "Yabani kovan",
+      "category": "forage",
+      "forageSeasons": [
+        "Summer"
+      ],
+      "forageMax": 1,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 10,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.forage_dry_branch",
+      "displayName": "Kuru dal yığını",
+      "category": "forage",
+      "forageSeasons": [
+        "Winter"
+      ],
+      "forageMax": 5,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 4,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.firewood",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.salting_barrel",
+      "displayName": "Tuzlama fıçısı",
+      "price": 28,
+      "category": "utility",
+      "level": 2,
+      "comfort": 1,
+      "interactions": [
+        {
+          "id": "pickle_cabbage",
+          "displayName": "Lahana turşusu kur",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 15,
+          "consumeMore": [
+            {
+              "item": "item.cabbage",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pickled_cabbage",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "pickle_turnip",
+          "displayName": "Şalgam turşusu kur",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 15,
+          "consumeMore": [
+            {
+              "item": "item.turnip",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pickled_turnip",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.drying_rack",
+      "displayName": "Kurutma askısı",
+      "width": 2,
+      "height": 1,
+      "price": 24,
+      "category": "utility",
+      "level": 2,
+      "interactions": [
+        {
+          "id": "dry_pea",
+          "displayName": "Bezelye kurut",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "consumeMore": [
+            {
+              "item": "item.pea",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.dried_pea",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "dry_leek",
+          "displayName": "Pırasa kurut",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "consumeMore": [
+            {
+              "item": "item.leek",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.dried_leek",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.root_cellar",
+      "displayName": "Kök mahzeni",
+      "width": 2,
+      "height": 2,
+      "price": 60,
+      "category": "utility",
+      "level": 3,
+      "preserves": 0.4
+    },
+    {
+      "id": "item.workbench",
+      "displayName": "Marangoz tezgâhı",
+      "width": 2,
+      "height": 1,
+      "price": 30,
+      "category": "utility",
+      "level": 2,
+      "interactions": [
+        {
+          "id": "saw_plank",
+          "displayName": "Tahta biç",
+          "durationDays": 0.1,
+          "skill": "Carpentry",
+          "skillXp": 8,
+          "tool": "saw",
+          "consume": "item.log",
+          "produce": [
+            {
+              "item": "item.plank",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "craft_stool",
+          "displayName": "Tabure yap",
+          "durationDays": 0.2,
+          "skill": "Carpentry",
+          "skillXp": 12,
+          "minSkillLevel": 1,
+          "consumeMore": [
+            {
+              "item": "item.plank",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stool_wood",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "craft_chair",
+          "displayName": "Sandalye yap",
+          "durationDays": 0.3,
+          "skill": "Carpentry",
+          "skillXp": 18,
+          "minSkillLevel": 2,
+          "consumeMore": [
+            {
+              "item": "item.plank",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.chair_wood",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "craft_table",
+          "displayName": "Masa yap",
+          "durationDays": 0.4,
+          "skill": "Carpentry",
+          "skillXp": 25,
+          "minSkillLevel": 3,
+          "consumeMore": [
+            {
+              "item": "item.plank",
+              "count": 4
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.table_wood",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "craft_shelf",
+          "displayName": "Raf yap",
+          "durationDays": 0.3,
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "minSkillLevel": 3,
+          "consumeMore": [
+            {
+              "item": "item.plank",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.shelf_wood",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "craft_chest",
+          "displayName": "Sandık yap",
+          "durationDays": 0.4,
+          "skill": "Carpentry",
+          "skillXp": 28,
+          "minSkillLevel": 4,
+          "consumeMore": [
+            {
+              "item": "item.plank",
+              "count": 4
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.chest_wood",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "craft_chair_carved",
+          "displayName": "Oymalı sandalye yap",
+          "durationDays": 0.5,
+          "skill": "Carpentry",
+          "skillXp": 45,
+          "minSkillLevel": 6,
+          "consumeMore": [
+            {
+              "item": "item.plank",
+              "count": 4
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.chair_carved",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.coop",
+      "displayName": "Tavuk kümesi",
+      "width": 2,
+      "height": 1,
+      "price": 45,
+      "category": "utility",
+      "level": 3,
+      "readyDays": 1.0,
+      "comfort": 0,
+      "interactions": [
+        {
+          "id": "collect_eggs",
+          "displayName": "Yumurta topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "requiresReady": true,
+          "resetsReady": true,
+          "produce": [
+            {
+              "item": "item.egg",
+              "count": 2
+            }
+          ]
         }
       ]
     }

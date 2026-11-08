@@ -66,6 +66,8 @@ namespace Thatchwick.Core.Content
         public int MoodValue { get; set; }
         public double MoodDays { get; set; }
         public bool RequiresLit { get; set; }
+        /// <summary>Tarif kilidi: etkileşimin becerisinde en az bu seviye gerekir (0 = sınır yok).</summary>
+        public int MinSkillLevel { get; set; }
         public bool RequiresReady { get; set; }
         public bool ResetsReady { get; set; }
 

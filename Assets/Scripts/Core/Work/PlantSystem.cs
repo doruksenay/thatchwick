@@ -19,6 +19,13 @@ namespace Thatchwick.Core.Work
 
         public static bool CanGrowIn(Season season) => season != Season.Winter;
 
+        /// <summary>Hava ve köy projelerinden gelen büyüme çarpanı (yağmur +, kuyu +); yoksa 1.</summary>
+        public Func<float> GrowthMultiplier { get; set; }
+
+        /// <summary>Bitki bu mevsimde büyür mü: kış hiç; ekin türünün growSeasons listesi varsa yalnızca onlar.</summary>
+        public static bool CanGrow(Content.ItemDef def, Season season) =>
+            CanGrowIn(season) && (def.GrowSeasons.Count == 0 || def.GrowSeasons.Contains(season));
+
         /// <summary>Kışın donan ekin kalktığında (eşya tanımı, konum) ile tetiklenir.</summary>
         public event Action<Content.ItemDef, GridPos> PlantDied;
 
@@ -31,12 +38,14 @@ namespace Thatchwick.Core.Work
                 return;
             }
             var rooms = _world.Map.Rooms;
+            float mult = GrowthMultiplier != null ? Math.Max(0f, GrowthMultiplier()) : 1f;
             foreach (var item in _world.Items)
             {
                 if (!item.IsPlant || item.IsGrown) continue;
+                if (!CanGrow(item.Def, season)) continue;      // bu ekin bu mevsimde büyümez
                 var room = rooms.RoomAt(item.Position);
                 if (room != null && room.IsIndoor) continue;   // içeride büyümez
-                item.GrowthDays = Math.Min(item.Def.GrowDays, item.GrowthDays + gameDays);
+                item.GrowthDays = Math.Min(item.Def.GrowDays, item.GrowthDays + gameDays * mult);
             }
         }
 

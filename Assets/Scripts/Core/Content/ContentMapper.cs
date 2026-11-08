@@ -124,6 +124,7 @@ namespace Thatchwick.Core.Content
                             MoodValue = i.moodValue,
                             MoodDays = i.moodDays,
                             RequiresLit = i.requiresLit,
+                            MinSkillLevel = i.minSkillLevel,
                             RequiresReady = i.requiresReady,
                             ResetsReady = i.resetsReady
                         };

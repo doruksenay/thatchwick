@@ -141,5 +141,134 @@
         "fertility": 1.3
       }
     }
+  ],
+  "festivals": [
+    {
+      "id": "festival.seed",
+      "displayName": "Tohum Şenliği",
+      "description": "İlkbaharda ilk ekimin kutlaması; köy meydanda toplanır.",
+      "season": "Spring",
+      "day": 4,
+      "funRestore": 40,
+      "socialRestore": 35,
+      "moodValue": 8,
+      "extraOffers": 1
+    },
+    {
+      "id": "festival.fair",
+      "displayName": "Yaz Panayırı",
+      "description": "Tüccarlar uzaktan gelir, pazar şenlenir.",
+      "season": "Summer",
+      "day": 5,
+      "funRestore": 50,
+      "socialRestore": 40,
+      "moodValue": 8,
+      "extraOffers": 3
+    },
+    {
+      "id": "festival.harvest",
+      "displayName": "Hasat Şenliği",
+      "description": "Ambarlar dolu; hep birlikte yenir, içilir.",
+      "season": "Autumn",
+      "day": 6,
+      "funRestore": 40,
+      "socialRestore": 40,
+      "moodValue": 10,
+      "extraOffers": 2
+    },
+    {
+      "id": "festival.winter_night",
+      "displayName": "Kış Gecesi",
+      "description": "En uzun gece ateş başında geçer.",
+      "season": "Winter",
+      "day": 4,
+      "funRestore": 30,
+      "socialRestore": 45,
+      "moodValue": 10,
+      "extraOffers": 0
+    }
+  ],
+  "tools": [
+    {
+      "id": "axe",
+      "displayName": "Balta",
+      "tiers": [
+        {
+          "name": "Demir balta",
+          "akce": 60,
+          "firewood": 4,
+          "speed": 1.2,
+          "level": 3
+        },
+        {
+          "name": "Çelik balta",
+          "akce": 150,
+          "firewood": 8,
+          "speed": 1.4,
+          "level": 6
+        },
+        {
+          "name": "Usta baltası",
+          "akce": 320,
+          "firewood": 12,
+          "speed": 1.6,
+          "level": 9
+        }
+      ]
+    },
+    {
+      "id": "hoe",
+      "displayName": "Çapa",
+      "tiers": [
+        {
+          "name": "Demir çapa",
+          "akce": 50,
+          "firewood": 3,
+          "speed": 1.2,
+          "level": 3
+        },
+        {
+          "name": "Çelik çapa",
+          "akce": 130,
+          "firewood": 6,
+          "speed": 1.4,
+          "level": 6
+        },
+        {
+          "name": "Usta çapası",
+          "akce": 280,
+          "firewood": 10,
+          "speed": 1.6,
+          "level": 9
+        }
+      ]
+    },
+    {
+      "id": "saw",
+      "displayName": "Testere",
+      "tiers": [
+        {
+          "name": "Demir testere",
+          "akce": 55,
+          "firewood": 3,
+          "speed": 1.2,
+          "level": 3
+        },
+        {
+          "name": "Çelik testere",
+          "akce": 140,
+          "firewood": 7,
+          "speed": 1.4,
+          "level": 6
+        },
+        {
+          "name": "Usta testeresi",
+          "akce": 300,
+          "firewood": 11,
+          "speed": 1.6,
+          "level": 9
+        }
+      ]
+    }
   ]
 }

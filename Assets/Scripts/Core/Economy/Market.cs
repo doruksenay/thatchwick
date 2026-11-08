@@ -59,6 +59,11 @@ namespace Thatchwick.Core.Economy
 
         public MarketConfig Config => _cfg;
 
+        /// <summary>Satış fiyatına eklenen oran (köy projesi, Tüccar dalı); yoksa 0.</summary>
+        public Func<double> SellBonus { get; set; }
+        /// <summary>Günlük ek teklif sayısı (pazar günü, şenlik); yoksa 0.</summary>
+        public Func<int> ExtraOffers { get; set; }
+
         /// <summary>Teklif kabul edildiğinde (hesap XP'si, rozet sayaçları için).</summary>
         public event Action<TradeOffer> OfferAccepted;
         public IReadOnlyList<TradeOffer> Offers => _offers;
@@ -128,7 +133,8 @@ namespace Thatchwick.Core.Economy
         public int SellPrice(string itemId)
         {
             var def = _content.Items.Get(itemId);
-            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def), MidpointRounding.AwayFromZero));
+            double bonus = 1.0 + (SellBonus != null ? Math.Max(0.0, Math.Min(0.75, SellBonus())) : 0.0);
+            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * bonus, MidpointRounding.AwayFromZero));
         }
 
         /// <summary>Gün ilerledikçe talep toparlanır; yeni günde teklifler yenilenir.</summary>
@@ -203,7 +209,8 @@ namespace Thatchwick.Core.Economy
             var goods = Goods();
             if (goods.Count == 0) return;
             var rng = new Random(unchecked(_seed * 7919 + (int)day * 104729));
-            for (int i = 0; i < _cfg.OffersPerDay; i++)
+            int offerCount = _cfg.OffersPerDay + Math.Max(0, ExtraOffers != null ? ExtraOffers() : 0);
+            for (int i = 0; i < offerCount; i++)
             {
                 var give = goods[rng.Next(goods.Count)];
                 int giveCount = rng.Next(3, 9);

@@ -68,6 +68,9 @@ namespace Thatchwick.Core.Heat
 
         public HeatConfig Config => _cfg;
 
+        /// <summary>Hava durumundan gelen dış sıcaklık farkı (kar eksi, yağmur biraz eksi); yoksa 0.</summary>
+        public Func<float> OutdoorOffset { get; set; }
+
         /// <summary>Kayıt için karo sıcaklıkları (kopya).</summary>
         public float[] ExportTemperatures() => (float[])_temp.Clone();
 
@@ -120,7 +123,7 @@ namespace Thatchwick.Core.Heat
         public void Tick(double gameDays, double totalDays)
         {
             if (gameDays <= 0) return;
-            _outdoor = Climate.OutdoorTemperature(_time, totalDays);
+            _outdoor = Climate.OutdoorTemperature(_time, totalDays) + (OutdoorOffset != null ? OutdoorOffset() : 0f);
 
             double left = gameDays;
             while (left > 1e-12)

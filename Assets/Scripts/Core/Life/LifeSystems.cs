@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
+using Thatchwick.Core.Economy;
+using Thatchwick.Core.Heat;
+using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Save;
 using Thatchwick.Core.Time;
+using Thatchwick.Core.Work;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Life
@@ -33,6 +37,13 @@ namespace Thatchwick.Core.Life
         public WinterForecast Forecast { get; }
         public SuitorPool Suitors { get; }
 
+        // Dünya sistemleri (Adım 33-36, 42)
+        public WeatherSystem Weather { get; }
+        public FestivalService Festivals { get; }
+        public SpoilageService Spoilage { get; }
+        public ForageSystem Forage { get; }
+        public LivestockSystem Livestock { get; }
+
         /// <summary>Yaşam olayları (düz metin): mezar, yas vb. Ayrıntılı akış için Log.</summary>
         public event Action<string> Notice;
 
@@ -54,6 +65,20 @@ namespace Thatchwick.Core.Life
             Ledger = new DayLedger(house);
             Forecast = new WinterForecast(content, house, world, population, clock.Config);
             Suitors = new SuitorPool(content, population);
+            Weather = new WeatherSystem(clock.Config, seed: 1);
+            Festivals = new FestivalService(content, clock) { Village = Village };
+            Spoilage = new SpoilageService(content, house, world) { ExtraReduction = SpoilReduction };
+            Forage = new ForageSystem(world, content);
+            Livestock = new LivestockSystem(world);
+            Spoilage.Spoiled += (id, n) =>
+                Say($"{n} {(content.Items.TryGet(id, out var d) ? d.DisplayName : id)} bozuldu.", NoticeLevel.Warning);
+            Festivals.Announced += f => Say($"Bugün {f.DisplayName}!", NoticeLevel.Info);
+            Festivals.Celebrated += (f, n) =>
+            {
+                Say($"{f.DisplayName}: {n} kişi şenliğe katıldı.", NoticeLevel.Info);
+                Ledger.Note(f.DisplayName);
+            };
+            Livestock.BecameReady += item => Say($"{item.Def.DisplayName}: ürün hazır.", NoticeLevel.Info);
             Watcher.Raised += (level, text, id) => Say(text, level, id);
             population.BabyBorn += (baby, mother, father) =>
             {
@@ -83,6 +108,47 @@ namespace Thatchwick.Core.Life
                 : $"{dead.Name} toprağa verildi.", NoticeLevel.Danger, dead.Id);
         }
 
+        // ---- hane geneli etkiler (özellik/dal en iyisi + köy projeleri) ----
+
+        private IEnumerable<Character> Household()
+        {
+            foreach (var c in Population.Members) if (!c.IsDead && !c.IsVillager) yield return c;
+        }
+
+        /// <summary>Hane üyelerinden birinin (en iyisi) çarpanı: pazarlıkçı, yeşil parmaklı gibi biri yeter.</summary>
+        public float BestOf(Func<LifeModifiers, float> pick)
+        {
+            float best = float.MinValue;
+            foreach (var c in Household()) best = Math.Max(best, pick(c.Modifiers));
+            return best == float.MinValue ? pick(new LifeModifiers()) : best;
+        }
+
+        public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction);
+        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell);
+        public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount));
+
+        /// <summary>Ekin büyüme çarpanı: hava x (1 + köy) x en iyi yeşil parmak.</summary>
+        public float GrowthMultiplier() =>
+            WeatherSystem.GrowthMultiplier(Weather.Today(Clock.TotalDays)) * (1f + Village.CropGrowth) * BestOf(m => m.GrowthSpeed);
+
+        /// <summary>İş hızı çarpanı (JobRunner.SpeedProvider): dışarıda hava durumu.</summary>
+        public double WorkSpeedFor(Character c, InteractionDef interaction)
+        {
+            double f = 1.0;
+            var room = World.Map.Rooms.RoomAt(c.Position);
+            bool outdoors = room == null || !room.IsIndoor;
+            if (outdoors) f *= WeatherSystem.OutdoorWorkSpeed(Weather.Today(Clock.TotalDays));
+            return f;
+        }
+
+        // ---- diğer sistemlere bağlama (oyun katmanı kurarken bir kez çağırır) ----
+
+        public void Attach(JobRunner runner) { runner.SpeedProvider = WorkSpeedFor; }
+        public void Attach(PlantSystem plants) { plants.GrowthMultiplier = GrowthMultiplier; }
+        public void Attach(HeatSystem heat) { heat.OutdoorOffset = () => WeatherSystem.TemperatureOffset(Weather.Today(Clock.TotalDays)); }
+        public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; }
+        public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
+
         /// <summary>Ruh hali kaynaklarını yeniler (oyun hızından bağımsız, küçük adımlarla).</summary>
         public void Tick(double gameDays)
         {
@@ -94,6 +160,10 @@ namespace Thatchwick.Core.Life
                 Watcher.Update(Population.Members);
             }
 
+            Spoilage.Tick(gameDays);
+            Livestock.Tick(gameDays, CurrentSeason);
+            Festivals.Tick(Population.Members);
+
             long day = Clock.DayIndex;
             if (day != _lastDay)
             {
@@ -102,8 +172,14 @@ namespace Thatchwick.Core.Life
             }
         }
 
+        public Season CurrentSeason => Clock.Season;
+
         private void OnNewDay(long day)
         {
+            Forage.OnNewDay(Clock.Season);
+            var tomorrow = Weather.Tomorrow(Clock.TotalDays);
+            if (tomorrow != WeatherType.Clear) Say(Weather.ForecastText(Clock.TotalDays), tomorrow == WeatherType.Storm ? NoticeLevel.Warning : NoticeLevel.Info);
+
             Ledger.Tick(day);
             int season = (int)((day / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
             if (_lastSeasonIndex >= 0 && season != _lastSeasonIndex)
@@ -124,7 +200,12 @@ namespace Thatchwick.Core.Life
 
         public LifeSaveData Export()
         {
-            var data = new LifeSaveData();
+            var data = new LifeSaveData
+            {
+                weatherSeed = Weather.Seed,
+                festivalCelebratedDay = Festivals.CelebratedDay,
+                spoilage = Spoilage.Export().ToArray()
+            };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
                 graves.Add(new GraveSave
@@ -139,6 +220,9 @@ namespace Thatchwick.Core.Life
         public void Restore(LifeSaveData data)
         {
             if (data == null) { Population.RecomputeAll(); return; }
+            Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
+            Festivals.CelebratedDay = data.festivalCelebratedDay;
+            Spoilage.Restore(data.spoilage);
             var graves = new List<GraveRecord>();
             if (data.graves != null)
                 foreach (var g in data.graves)

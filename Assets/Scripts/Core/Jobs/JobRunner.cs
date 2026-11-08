@@ -349,6 +349,9 @@ namespace Thatchwick.Core.Jobs
         {
             if (IsUnlitHeatSource(item, interaction)) return "Ocak sönük, önce odun at.";
             if (interaction.RequiresGrown && !item.IsGrown) return $"{item.Def.DisplayName} henüz büyümedi.";
+            if (interaction.MinSkillLevel > 0 && interaction.Skill.HasValue
+                && _character.Skills.GetLevel(interaction.Skill.Value) < interaction.MinSkillLevel)
+                return $"{interaction.DisplayName} için {interaction.Skill.Value} seviye {interaction.MinSkillLevel} gerekli.";
             if (interaction.RequiresReady && !item.IsReady) return $"{item.Def.DisplayName} henüz hazır değil.";
             if (interaction.RequiresLit && !item.IsLit) return "Ateş sönük, önce odun at.";
             if (interaction.HasEffects)

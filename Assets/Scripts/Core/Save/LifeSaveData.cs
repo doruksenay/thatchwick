@@ -14,8 +14,19 @@ namespace Thatchwick.Core.Save
     }
 
     [Serializable]
+    public sealed class SpoilBatchSave
+    {
+        public string item;
+        public int count;
+        public double age;
+    }
+
+    [Serializable]
     public sealed class LifeSaveData
     {
         public GraveSave[] graves;
+        public int weatherSeed;
+        public long festivalCelebratedDay = -1;
+        public SpoilBatchSave[] spoilage;
     }
 }

@@ -92,6 +92,8 @@ namespace Thatchwick.Core.Content
                     }
                     foreach (var er in it.ExtraRestore)
                         if (er.Amount <= 0f || er.Amount > 100f) errors.Add($"{where}: ek doygunluk 0-100 arasında olmalı.");
+                    if (it.MinSkillLevel < 0 || it.MinSkillLevel > 10) errors.Add($"{where}: tarif seviyesi 0-10 olmalı.");
+                    if (it.MinSkillLevel > 0 && !it.Skill.HasValue) errors.Add($"{where}: tarif seviyesi için beceri gerekli.");
                     if (it.RequiresReady && !item.Produces) errors.Add($"{where}: requiresReady yalnızca üreten eşyada kullanılır.");
                     if (it.ResetsReady && !item.Produces) errors.Add($"{where}: resetsReady yalnızca üreten eşyada kullanılır.");
                     if (it.RequiresLit && item.HeatOutput <= 0f) errors.Add($"{where}: requiresLit yalnızca ısı kaynağında kullanılır.");

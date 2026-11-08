@@ -106,6 +106,7 @@ namespace Thatchwick.Core.Content
         public int moodValue;
         public float moodDays;
         public bool requiresLit;            // yalnızca yanan ısı kaynağında
+        public int minSkillLevel;           // tarif kilidi: becerinin en az bu seviyesi
         public bool requiresReady;          // yalnızca ürün hazırsa (kümes)
         public bool resetsReady;            // iş bitince üretim sıfırlanır
     }
