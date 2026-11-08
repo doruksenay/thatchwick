@@ -27,6 +27,7 @@ namespace Thatchwick.Core.Content
                 if (item.HeatOutput < 0f) errors.Add($"{item.Id}: ısı gücü negatif olamaz.");
                 if (item.HeatOutput > 0f && item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: ısı kaynağı yere konan eşya olmalı.");
                 if (item.GrowDays < 0f) errors.Add($"{item.Id}: büyüme süresi negatif olamaz.");
+                if ((item.NeedsTilledSoil || item.DiesInWinter) && !item.IsPlant) errors.Add($"{item.Id}: tilled/diesInWinter yalnızca bitkide kullanılır.");
                 if (item.IsPlant && item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: bitki yere konan eşya olmalı.");
                 if (item.PlantsAs != null)
                 {

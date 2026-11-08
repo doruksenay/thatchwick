@@ -4,6 +4,7 @@ namespace Thatchwick.Core.Characters
     {
         None = 0,
         OldAge = 1,
-        Cold = 2
+        Cold = 2,
+        Starvation = 3
     }
 }

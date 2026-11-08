@@ -290,7 +290,10 @@ namespace Thatchwick.Core.Jobs
                 foreach (var interaction in item.Def.Interactions)
                 {
                     if (!interaction.RestoresNeed || interaction.Need != worst.Value) continue;
-                    if (interaction.HasEffects || interaction.RequiresGrown) continue;    // otonomi iş yapmaz, yalnızca ihtiyaç giderir
+                    // Otonomi iş yapmaz (ağaç kesmez, hasat etmez); yalnızca ihtiyaç giderir. Malzeme harcayan
+                    // ihtiyaç etkileşimi (şalgam yemek) malzeme varsa seçilir.
+                    if (interaction.RemovesItem || interaction.RequiresGrown || interaction.Produce.Count > 0) continue;
+                    if (interaction.ConsumeItem != null && (Effects == null || Effects.CanStart(_character, item, interaction) != null)) continue;
                     if (IsUnlitHeatSource(item, interaction)) continue;   // sönük ocağa ısınmaya gidilmez
                     if (_unreachableUntil.TryGetValue(item.Id, out var until) && until > _elapsedDays) continue;
 

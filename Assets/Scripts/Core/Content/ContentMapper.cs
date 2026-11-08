@@ -32,6 +32,8 @@ namespace Thatchwick.Core.Content
                     Price = dto.price,
                     HeatOutput = dto.heat,
                     GrowDays = dto.growDays,
+                    NeedsTilledSoil = dto.tilled,
+                    DiesInWinter = dto.diesInWinter,
                     PlantsAs = string.IsNullOrWhiteSpace(dto.plantsAs) ? null : dto.plantsAs,
                     Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category
                 };

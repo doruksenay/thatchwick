@@ -110,9 +110,12 @@ namespace Thatchwick.Game
             _household = new Household(100);
             _household.AddItem("item.firewood", 10);
             _household.AddItem("item.sapling_oak", 2);
+            _household.AddItem("item.turnip", 12);
+            _household.AddItem("item.seed_turnip", 6);
             _effects = new InteractionEffects(_world, _household, _content, seed: 9);
             _effects.Applied += (c, i, summary) => ShowMessage($"{c.Name}: {summary}");
             _plants = new PlantSystem(_world);
+            _plants.PlantDied += (def, pos) => ShowMessage($"{def.DisplayName} kışın dondu");
             _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
             _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content), _content, _view, _input, transform, _walls);
 
@@ -199,6 +202,7 @@ namespace Thatchwick.Game
                 case "item.bed_straw": return new Color(0.75f, 0.6f, 0.35f);
                 case "item.hearth_stone": return new Color(0.85f, 0.35f, 0.2f);
                 case "item.cooking_pot": return new Color(0.55f, 0.55f, 0.6f);
+                case "item.crop_turnip": return new Color(0.45f, 0.7f, 0.35f);
                 case "item.chopping_block": return new Color(0.48f, 0.38f, 0.28f);
                 case "item.table_wood": return new Color(0.62f, 0.42f, 0.24f);
                 case "item.chair_wood": return new Color(0.7f, 0.5f, 0.3f);
@@ -266,8 +270,10 @@ namespace Thatchwick.Game
 
         private Actor CreateActorFor(Character character)
         {
+            character.CanStarve = true;
             character.StageChanged += (c, from, to) => ShowMessage($"{c.Name}: {StageName(to)} oldu");
-            character.Died += c => ShowMessage(c.CauseOfDeath == DeathCause.Cold ? $"{c.Name} donarak öldü" : $"{c.Name} hayatını kaybetti");
+            character.Died += c => ShowMessage(c.CauseOfDeath == DeathCause.Cold ? $"{c.Name} donarak öldü"
+                : c.CauseOfDeath == DeathCause.Starvation ? $"{c.Name} açlıktan öldü" : $"{c.Name} hayatını kaybetti");
             character.Skills.LevelChanged += (skill, from, to) => ShowMessage($"{character.Name}: {SkillName(skill)} seviye {to}");
 
             var go = new GameObject(character.Name);
@@ -531,6 +537,7 @@ namespace Thatchwick.Game
             string here = _player != null ? $"{_heat.TemperatureAt(_player.Character.Position):0}°C" : "-";
             GUILayout.Label($"Dış {_heat.OutdoorTemperature:0}°C · {_player?.Character.Name}: {here}");
             GUILayout.Label($"Odun {_household.Count(_heat.Config.FirewoodId)} · Kütük {_household.Count("item.log")} · Meşe fidanı {_household.Count("item.sapling_oak")}");
+            GUILayout.Label($"Şalgam {_household.Count("item.turnip")} · Şalgam tohumu {_household.Count("item.seed_turnip")}");
             foreach (var item in _world.Items)
             {
                 if (item.IsDecor || item.Def.HeatOutput <= 0f) continue;

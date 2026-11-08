@@ -47,6 +47,10 @@ namespace Thatchwick.Core.Content
         public string PlantsAs { get; set; }
 
         public bool IsPlant => GrowDays > 0f;
+        /// <summary>Ekin: yalnızca toprak (sürülmüş) zemine dikilir.</summary>
+        public bool NeedsTilledSoil { get; set; }
+        /// <summary>Kış gelince donar ve kaybolur (hasat edilmemiş ekin).</summary>
+        public bool DiesInWinter { get; set; }
 
         public SurfaceSlotDef FindSlot(string slotId)
         {

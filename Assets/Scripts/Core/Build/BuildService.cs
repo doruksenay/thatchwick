@@ -208,8 +208,9 @@ namespace Thatchwick.Core.Build
             var room = map.Rooms.RoomAt(tile);
             if (room != null && room.IsIndoor) return PlacementCheck.Fail("Ev içine dikilmez, dışarıda bir yer seç.");
             var floor = map.GetFloor(tile);
-            if (floor != FloorType.Grass && floor != FloorType.Dirt) return PlacementCheck.Fail("Yalnızca çim ya da toprağa dikilir.");
             var plantDef = _content.Items.Get(seed.PlantsAs);
+            if (plantDef.NeedsTilledSoil && floor != FloorType.Dirt) return PlacementCheck.Fail("Ekin yalnızca toprağa ekilir (yapı modu > Toprak).");
+            if (floor != FloorType.Grass && floor != FloorType.Dirt) return PlacementCheck.Fail("Yalnızca çim ya da toprağa dikilir.");
             var check = _world.CanPlaceFloor(plantDef, tile, 0);
             if (!check.Ok) return check;
 
