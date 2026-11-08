@@ -211,7 +211,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(x.Build.PlaceDecorFromInventory("cup", shelf.Id, "a", out _).Ok);
             Assert.True(shelf.TryGetSlotPosition("a", out var gx, out var gy));
             Assert.True(gx > 4.8f && gx <= 5f);   // duvara yakın
-            Assert.Equal(4.3f, gy, 3);
+            Assert.Equal(4.3, (double)gy, 3);
 
             Assert.True(x.Build.SetEdge(new Edge(5, 4, EdgeAxis.Vertical), EdgeKind.Door).Ok);
             Assert.Empty(x.World.Items);
