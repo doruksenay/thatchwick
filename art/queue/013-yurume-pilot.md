@@ -1,7 +1,7 @@
 ---
 id: "013"
 title: Yürüme animasyonu pilotu (farmer_a2_56, SE, 4 yöntem)
-status: pending
+status: review
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet)
 cost_est: 6
 cost_max: 6
