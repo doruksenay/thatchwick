@@ -119,12 +119,13 @@
     },
     {
       "id": "item.chest_wood",
-      "displayName": "Sandık",
+      "displayName": "Sandık (depo +40)",
       "interactions": [],
       "width": 1,
       "height": 1,
       "price": 18,
-      "category": "furniture"
+      "category": "furniture",
+      "storage": 40
     },
     {
       "id": "item.shelf_wood",

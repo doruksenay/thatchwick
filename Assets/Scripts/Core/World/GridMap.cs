@@ -9,6 +9,9 @@ namespace Thatchwick.Core.World
     /// <summary>Zemin kaplaması (iç mekan göstergesi: Grass dışındakiler).</summary>
     public enum FloorType { Grass = 0, Dirt = 1, Wood = 2, Stone = 3 }
 
+    /// <summary>Karo bölgesi (oyuncunun çizdiği alan). Şimdilik yalnızca depo.</summary>
+    public enum ZoneType { None = 0, Storage = 1 }
+
     public enum EdgeAxis
     {
         /// <summary>X yönünde uzanan kenar: (x,y) karosunun kuzey (y) kenarı, (x,y-1) ile (x,y) arasında.</summary>
@@ -45,6 +48,7 @@ namespace Thatchwick.Core.World
         private readonly bool[] _blocked;
         private readonly FloorType[] _floor;
         private readonly bool[] _owned;
+        private readonly ZoneType[] _zone;
         private RoomMap _rooms;
         private readonly Dictionary<Edge, EdgeKind> _edges = new Dictionary<Edge, EdgeKind>();
 
@@ -63,6 +67,7 @@ namespace Thatchwick.Core.World
             _blocked = new bool[width * height];
             _floor = new FloorType[width * height];
             _owned = new bool[width * height];
+            _zone = new ZoneType[width * height];
             for (int i = 0; i < _owned.Length; i++) _owned[i] = true; // varsayılan: her yer hanenin
         }
 
@@ -88,6 +93,25 @@ namespace Thatchwick.Core.World
             if (_floor[Index(p)] == floor) return;
             _floor[Index(p)] = floor;
             Changed?.Invoke();
+        }
+
+        // ---- bölgeler ----
+
+        public ZoneType GetZone(GridPos p) => InBounds(p) ? _zone[Index(p)] : ZoneType.None;
+
+        public void SetZone(GridPos p, ZoneType zone)
+        {
+            if (!InBounds(p)) throw new ArgumentOutOfRangeException(nameof(p), $"{p} ızgara dışında.");
+            if (_zone[Index(p)] == zone) return;
+            _zone[Index(p)] = zone;
+            Changed?.Invoke();
+        }
+
+        public int CountZone(ZoneType zone)
+        {
+            int n = 0;
+            foreach (var z in _zone) if (z == zone) n++;
+            return n;
         }
 
         // ---- arsa (sahiplik) ----

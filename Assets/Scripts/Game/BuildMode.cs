@@ -23,7 +23,7 @@ namespace Thatchwick.Game
         private readonly WorldInput _input;
         private readonly Transform _overlay;
 
-        private enum Tool { Items, Wall, Door, Window, EraseEdge, Room, FloorWood, FloorStone, FloorDirt, FloorErase, Plot }
+        private enum Tool { Items, Wall, Door, Window, EraseEdge, Room, FloorWood, FloorStone, FloorDirt, FloorErase, Plot, ZoneStorage, ZoneErase }
         private Tool _tool = Tool.Items;
         private GridPos? _roomCorner;
         private Tool? _pendingTool;
@@ -175,6 +175,8 @@ namespace Thatchwick.Game
                 case Tool.FloorDirt: r = _svc.PaintFloor(tile, FloorType.Dirt); break;
                 case Tool.FloorErase: r = _svc.PaintFloor(tile, FloorType.Grass); break;
                 case Tool.Plot: r = _svc.BuyChunk(tile); break;
+                case Tool.ZoneStorage: r = _svc.SetZone(tile, ZoneType.Storage); break;
+                case Tool.ZoneErase: r = _svc.SetZone(tile, ZoneType.None); break;
                 case Tool.Room: BuildRoomTap(tile); return;
                 default: return;
             }
@@ -397,11 +399,15 @@ namespace Thatchwick.Game
             if (GUILayout.Toggle(_showRooms, "Odalar", GUI.skin.button) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
+            ToolButton("Depo", Tool.ZoneStorage); ToolButton("Depo sil", Tool.ZoneErase);
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
             ToolButton("Tahta", Tool.FloorWood); ToolButton("Taş", Tool.FloorStone); ToolButton("Toprak", Tool.FloorDirt); ToolButton("Çim", Tool.FloorErase);
             GUILayout.EndHorizontal();
             if (_tool != Tool.Items)
                 GUILayout.Label(_tool == Tool.Room ? "İki köşe karosuna dokun."
                     : _tool == Tool.Plot ? $"Bitişik 4x4 parçaya dokun: {BuildService.ChunkPrice} akçe."
+                    : _tool == Tool.ZoneStorage || _tool == Tool.ZoneErase ? $"Depo bölgesi: karo başına +{StorageService.UnitsPerZoneTile} kaynak kapasitesi (ücretsiz). Sandık +40."
                     : "Haritaya dokun. Fiyatlar: duvar 3, kapı 8, pencere 6, zemin 1-3. Kaldırınca yarısı iade.");
         }
 

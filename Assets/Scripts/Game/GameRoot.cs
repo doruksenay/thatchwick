@@ -54,6 +54,7 @@ namespace Thatchwick.Game
         private HeatSystem _heat;
         private PlantSystem _plants;
         private InteractionEffects _effects;
+        private StorageService _storage;
         private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
         private Vector2 _hudScroll;
         private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
@@ -112,12 +113,13 @@ namespace Thatchwick.Game
             _household.AddItem("item.sapling_oak", 2);
             _household.AddItem("item.turnip", 12);
             _household.AddItem("item.seed_turnip", 6);
-            _effects = new InteractionEffects(_world, _household, _content, seed: 9);
+            _storage = new StorageService(_world, _household, _content);
+            _effects = new InteractionEffects(_world, _household, _content, seed: 9) { Storage = _storage };
             _effects.Applied += (c, i, summary) => ShowMessage($"{c.Name}: {summary}");
             _plants = new PlantSystem(_world);
             _plants.PlantDied += (def, pos) => ShowMessage($"{def.DisplayName} kışın dondu");
             _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
-            _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content), _content, _view, _input, transform, _walls);
+            _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content) { Storage = _storage }, _content, _view, _input, transform, _walls);
 
             _population = new Population(firstFreeId: 1, seed: 21);
             _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % 4];
@@ -172,6 +174,7 @@ namespace Thatchwick.Game
             TryPlace("item.cooking_pot", new GridPos(30, 13));
             TryPlace("item.stool_wood", new GridPos(26, 15));
             TryPlace("item.chopping_block", new GridPos(22, 15));
+            TryPlace("item.chest_wood", new GridPos(24, 15));
 
             // Arsanın dışındaki yabani meşeler (olgun): herkes kesebilir, fidanlarıyla arsaya ağaç dikilir.
             var rng = new System.Random(13);
@@ -538,6 +541,7 @@ namespace Thatchwick.Game
             GUILayout.Label($"Dış {_heat.OutdoorTemperature:0}°C · {_player?.Character.Name}: {here}");
             GUILayout.Label($"Odun {_household.Count(_heat.Config.FirewoodId)} · Kütük {_household.Count("item.log")} · Meşe fidanı {_household.Count("item.sapling_oak")}");
             GUILayout.Label($"Şalgam {_household.Count("item.turnip")} · Şalgam tohumu {_household.Count("item.seed_turnip")}");
+            GUILayout.Label($"Depo {_storage.Used}/{_storage.Capacity}{(_storage.Free <= 0 ? " (dolu)" : "")}");
             foreach (var item in _world.Items)
             {
                 if (item.IsDecor || item.Def.HeatOutput <= 0f) continue;

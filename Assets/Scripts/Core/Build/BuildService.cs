@@ -19,6 +19,9 @@ namespace Thatchwick.Core.Build
 
         public double SellRatio { get; }
 
+        /// <summary>Depo kapasitesi; null ise sınırsız (testler, eski kurulumlar).</summary>
+        public StorageService Storage { get; set; }
+
         public BuildService(WorldState world, Household house, ContentDatabase content, double sellRatio = DefaultSellRatio)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -35,6 +38,7 @@ namespace Thatchwick.Core.Build
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.Price <= 0) return PlacementCheck.Fail("Bu eşya satılmıyor.");
+            if (Storage != null && !Storage.HasRoomFor(itemId)) return PlacementCheck.Fail("Depo dolu: depo bölgesi çiz ya da sandık koy.");
             if (!_house.TrySpend(def.Price)) return PlacementCheck.Fail("Akçe yetmiyor.");
             _house.AddItem(itemId);
             return PlacementCheck.Success;
@@ -216,6 +220,19 @@ namespace Thatchwick.Core.Build
 
             _house.TryTakeItem(seedId);
             planted = _world.PlaceItem(plantDef, tile);
+            return PlacementCheck.Success;
+        }
+
+        // ---- bölgeler ----
+
+        /// <summary>Kendi arsandaki karoya bölge çizer ya da siler (ücretsiz).</summary>
+        public PlacementCheck SetZone(GridPos tile, ZoneType zone)
+        {
+            var map = _world.Map;
+            if (!map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
+            if (!map.IsOwned(tile)) return PlacementCheck.Fail(NotOwned);
+            if (map.GetZone(tile) == zone) return PlacementCheck.Fail("Orası zaten öyle.");
+            map.SetZone(tile, zone);
             return PlacementCheck.Success;
         }
 

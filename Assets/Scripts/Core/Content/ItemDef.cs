@@ -47,6 +47,8 @@ namespace Thatchwick.Core.Content
         public string PlantsAs { get; set; }
 
         public bool IsPlant => GrowDays > 0f;
+        /// <summary>Depolama eşyası ise kaynak kapasitesine eklediği birim (sandık 40). 0 = depo değil.</summary>
+        public int Storage { get; set; }
         /// <summary>Ekin: yalnızca toprak (sürülmüş) zemine dikilir.</summary>
         public bool NeedsTilledSoil { get; set; }
         /// <summary>Kış gelince donar ve kaybolur (hasat edilmemiş ekin).</summary>

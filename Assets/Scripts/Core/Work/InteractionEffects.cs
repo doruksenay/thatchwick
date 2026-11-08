@@ -23,6 +23,9 @@ namespace Thatchwick.Core.Work
         /// <summary>İş bitince (karakter, etkileşim, özet metin: "+3 Kütük, +1 Meşe fidanı").</summary>
         public event Action<Character, InteractionDef, string> Applied;
 
+        /// <summary>Depo kapasitesi; null ise sınırsız. Dolunca fazla ürün kaybolur ve özette yazılır.</summary>
+        public StorageService Storage { get; set; }
+
         public InteractionEffects(WorldState world, Household house, ContentDatabase content, int seed = 1)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -32,6 +35,12 @@ namespace Thatchwick.Core.Work
         }
 
         private string Name(string id) => _content.Items.TryGet(id, out var d) ? d.DisplayName : id;
+
+        private int AddAll(string id, int count)
+        {
+            _house.AddItem(id, count);
+            return count;
+        }
 
         public string CanStart(Character character, ItemInstance item, InteractionDef interaction)
         {
@@ -46,17 +55,21 @@ namespace Thatchwick.Core.Work
                 return; // bu arada harcanmış: ürün yok
 
             // Aynı ürün birden çok satırda olabilir (kesin 1 fidan + %50 ihtimalle 1 fidan): özette toplanır.
+            int lost = 0;
             var order = new List<string>();
             var totals = new Dictionary<string, int>();
             foreach (var p in interaction.Produce)
             {
                 if (p.Chance < 1f && _rng.NextDouble() >= p.Chance) continue;
-                _house.AddItem(p.ItemId, p.Count);
+                int added = Storage != null ? Storage.AddUpTo(p.ItemId, p.Count) : AddAll(p.ItemId, p.Count);
+                lost += p.Count - added;
+                if (added <= 0) continue;
                 if (!totals.ContainsKey(p.ItemId)) { totals[p.ItemId] = 0; order.Add(p.ItemId); }
-                totals[p.ItemId] += p.Count;
+                totals[p.ItemId] += added;
             }
             var parts = new List<string>();
             foreach (var id in order) parts.Add($"+{totals[id]} {Name(id)}");
+            if (lost > 0) parts.Add($"depo dolu, {lost} adet kayboldu");
 
             if (interaction.RemovesItem && _world.GetItem(item.Id) != null)
                 _world.RemoveItem(item.Id);

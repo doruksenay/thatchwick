@@ -75,6 +75,11 @@ namespace Thatchwick.Game
                         case FloorType.Dirt: sr.color = ((x + y) & 1) == 0 ? new Color32(139, 110, 80, 255) : new Color32(131, 103, 74, 255); break;
                         default: sr.color = _terrainBlocked[y * Map.Width + x] ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB); break;
                     }
+                    if (Map.GetZone(p) == ZoneType.Storage)
+                    {
+                        var c = sr.color;
+                        sr.color = new Color(c.r * 0.7f + 0.25f, c.g * 0.7f + 0.2f, c.b * 0.7f + 0.05f, 1f); // depo: sarımsı
+                    }
                     if (ShowPlot && !Map.IsOwned(p))
                     {
                         var c = sr.color;
