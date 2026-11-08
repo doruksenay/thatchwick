@@ -21,6 +21,10 @@ namespace Thatchwick.Core.World
 
         public bool IsDecor => ParentId.HasValue;
 
+        /// <summary>Isı kaynağının kalan yanma süresi (oyun günü). 0 = sönük.</summary>
+        public double FuelDays { get; internal set; }
+        public bool IsLit => FuelDays > 0;
+
         /// <summary>Dönüş uygulanmış genişlik/yükseklik.</summary>
         public int Width => IsDecor ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).w;
         public int Height => IsDecor ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).h;

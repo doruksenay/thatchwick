@@ -23,6 +23,7 @@ namespace Thatchwick.Core.Content
         public SurfaceSlotDto[] surfaceSlots;
         public int price;
         public string category;      // boş = furniture
+        public float heat;           // ısı gücü; 0 = ısı kaynağı değil
     }
 
     [Serializable]

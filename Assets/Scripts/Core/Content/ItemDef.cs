@@ -6,7 +6,9 @@ namespace Thatchwick.Core.Content
     public enum ItemPlacement
     {
         Floor = 0,
-        Surface = 1
+        Surface = 1,
+        /// <summary>Yerleştirilmez; yalnızca envanterde sayılan kaynak (odun gibi).</summary>
+        Resource = 2
     }
 
     /// <summary>Bir eşyanın yüzeyindeki dekor yuvası. U,V: kapladığı alanın içinde 0-1 arası yerel konum.</summary>
@@ -36,6 +38,8 @@ namespace Thatchwick.Core.Content
         public int Price { get; set; }
         /// <summary>Yapı modu menüsü kategorisi (furniture, decor, utility ...).</summary>
         public string Category { get; set; } = "furniture";
+        /// <summary>Yanarken bulunduğu odaya verdiği ısı gücü (0 = ısı kaynağı değil). Yakıt gerektirir.</summary>
+        public float HeatOutput { get; set; }
 
         public SurfaceSlotDef FindSlot(string slotId)
         {

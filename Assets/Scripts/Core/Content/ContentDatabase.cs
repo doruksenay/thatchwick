@@ -24,6 +24,10 @@ namespace Thatchwick.Core.Content
                 if (item.Width < 1 || item.Width > ItemDef.MaxSize || item.Height < 1 || item.Height > ItemDef.MaxSize)
                     errors.Add($"{item.Id}: boyut 1-{ItemDef.MaxSize} arasında olmalı.");
                 if (item.Price < 0) errors.Add($"{item.Id}: fiyat negatif olamaz.");
+                if (item.HeatOutput < 0f) errors.Add($"{item.Id}: ısı gücü negatif olamaz.");
+                if (item.HeatOutput > 0f && item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: ısı kaynağı yere konan eşya olmalı.");
+                if (item.Placement == ItemPlacement.Resource && (item.Width != 1 || item.Height != 1 || item.SurfaceSlots.Count > 0 || item.Interactions.Count > 0))
+                    errors.Add($"{item.Id}: kaynak 1x1 olmalı, yuvası ve etkileşimi olamaz.");
                 if (item.Placement == ItemPlacement.Surface)
                 {
                     if (item.Width != 1 || item.Height != 1) errors.Add($"{item.Id}: dekor 1x1 olmalı.");

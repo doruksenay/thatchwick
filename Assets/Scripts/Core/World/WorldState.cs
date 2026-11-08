@@ -41,6 +41,7 @@ namespace Thatchwick.Core.World
         public PlacementCheck CanPlaceFloor(ItemDef def, GridPos position, int rotation, int? ignoreItemId = null)
         {
             if (def == null) throw new ArgumentNullException(nameof(def));
+            if (def.Placement == ItemPlacement.Resource) return PlacementCheck.Fail("Bu eşya yerleştirilmez.");
             if (def.Placement != ItemPlacement.Floor) return PlacementCheck.Fail("Bu eşya yere konamaz, bir yüzeye konur.");
 
             var (w, h) = Footprint.Dimensions(def.Width, def.Height, rotation);

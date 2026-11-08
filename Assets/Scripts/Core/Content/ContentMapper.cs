@@ -30,6 +30,7 @@ namespace Thatchwick.Core.Content
                     Width = dto.width <= 0 ? 1 : dto.width,
                     Height = dto.height <= 0 ? 1 : dto.height,
                     Price = dto.price,
+                    HeatOutput = dto.heat,
                     Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category
                 };
 

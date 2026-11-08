@@ -1,0 +1,187 @@
+using System;
+using System.Collections.Generic;
+using Thatchwick.Core.Build;
+using Thatchwick.Core.Time;
+using Thatchwick.Core.World;
+
+namespace Thatchwick.Core.Heat
+{
+    /// <summary>Dış sıcaklık eğrisi: mevsim ortalarında sabit değerler, aralarında doğrusal geçiş.</summary>
+    public static class Climate
+    {
+        // Mevsim ortası sıcaklıkları (°C): İlkbahar, Yaz, Sonbahar, Kış. Denge adımında ayarlanır.
+        public static readonly float[] SeasonMid = { 10f, 20f, 8f, -8f };
+
+        public static float OutdoorTemperature(TimeConfig config, double totalDays)
+        {
+            double year = config.DaysPerYear;
+            double p = totalDays % year;
+            if (p < 0) p += year;
+            double q = p - config.DaysPerSeason * 0.5;
+            if (q < 0) q += year;
+            int i = (int)(q / config.DaysPerSeason) % 4;
+            double f = (q - i * config.DaysPerSeason) / config.DaysPerSeason;
+            return (float)(SeasonMid[i] + (SeasonMid[(i + 1) % 4] - SeasonMid[i]) * f);
+        }
+    }
+
+    /// <summary>Isı modelinin ayarları (yer tutucu değerler; Adım 28'de dengelenir).</summary>
+    public sealed class HeatConfig
+    {
+        /// <summary>Kenar başına ısı kaybı katsayıları: duvar iyi yalıtır, kapı ve pencere kaçırır.</summary>
+        public float WallLoss = 0.4f, DoorLoss = 1.0f, WindowLoss = 1.2f;
+        /// <summary>Genel kayıp ölçeği (1/gün).</summary>
+        public float LossScale = 0.6f;
+        /// <summary>Bir odun kütüğünün yanma süresi (oyun günü).</summary>
+        public double BurnDaysPerLog = 0.5;
+        /// <summary>Bir ısı kaynağının alabileceği en çok yakıt (oyun günü).</summary>
+        public double MaxFuelDays = 1.5;
+        /// <summary>Sayısal adım üst sınırı (oyun günü); kararlılık için.</summary>
+        public double MaxStep = 0.05;
+        public string FirewoodId = "item.firewood";
+    }
+
+    /// <summary>
+    /// Isı mekaniği: oda başına tek sıcaklık. Sıcaklık karo başına saklanır (oda tespiti kenar
+    /// değişince yeniden hesaplandığı için); bir odanın sıcaklığı karolarının ortalamasıdır.
+    /// Oda; komşusuyla (dış mekân dahil) duvar/kapı/pencere kenarları üzerinden ısı alışverişi yapar,
+    /// yanan kaynaklar (ocak) ısı verir ve yakıt tüketir.
+    /// </summary>
+    public sealed class HeatSystem
+    {
+        private readonly WorldState _world;
+        private readonly HeatConfig _cfg;
+        private readonly TimeConfig _time;
+        private readonly float[] _temp;
+        private float _outdoor;
+
+        public HeatSystem(WorldState world, TimeConfig time, HeatConfig config = null, double startDays = 0)
+        {
+            _world = world ?? throw new ArgumentNullException(nameof(world));
+            _time = time ?? throw new ArgumentNullException(nameof(time));
+            _cfg = config ?? new HeatConfig();
+            _outdoor = Climate.OutdoorTemperature(_time, startDays);
+            _temp = new float[world.Map.Width * world.Map.Height];
+            for (int i = 0; i < _temp.Length; i++) _temp[i] = _outdoor;
+        }
+
+        public HeatConfig Config => _cfg;
+        public float OutdoorTemperature => _outdoor;
+
+        public float TemperatureAt(GridPos p)
+        {
+            var map = _world.Map;
+            if (!map.InBounds(p)) return _outdoor;
+            var room = map.Rooms.RoomAt(p);
+            if (room == null || !room.IsIndoor) return _outdoor;
+            return RoomTemperature(room);
+        }
+
+        private float RoomTemperature(Room room)
+        {
+            double sum = 0;
+            foreach (var t in room.Tiles) sum += _temp[t.Y * _world.Map.Width + t.X];
+            return (float)(sum / room.Tiles.Count);
+        }
+
+        private float EdgeLoss(EdgeKind k)
+        {
+            switch (k)
+            {
+                case EdgeKind.Wall: return _cfg.WallLoss;
+                case EdgeKind.Door: return _cfg.DoorLoss;
+                case EdgeKind.Window: return _cfg.WindowLoss;
+                default: return 0f;
+            }
+        }
+
+        /// <summary>Isı kaynağına odun atar (envanterden 1 kütük). Yakıt dolu ise ya da odun yoksa false.</summary>
+        public bool TryStoke(int itemId, Household house)
+        {
+            var item = _world.GetItem(itemId);
+            if (item == null || item.Def.HeatOutput <= 0f) return false;
+            if (item.FuelDays + _cfg.BurnDaysPerLog > _cfg.MaxFuelDays + 1e-9) return false;
+            if (!house.TryTakeItem(_cfg.FirewoodId)) return false;
+            item.FuelDays += _cfg.BurnDaysPerLog;
+            return true;
+        }
+
+        public void Tick(double gameDays, double totalDays)
+        {
+            if (gameDays <= 0) return;
+            _outdoor = Climate.OutdoorTemperature(_time, totalDays);
+
+            double left = gameDays;
+            while (left > 1e-12)
+            {
+                double dt = Math.Min(left, _cfg.MaxStep);
+                Step(dt);
+                left -= dt;
+            }
+        }
+
+        private void Step(double dt)
+        {
+            var map = _world.Map;
+            var rooms = map.Rooms;
+            var prev = (float[])_temp.Clone();
+
+            // Yanan kaynakların gücü (oda kimliğine göre) ve yakıt tüketimi.
+            var power = new Dictionary<int, double>();
+            foreach (var item in _world.Items)
+            {
+                if (item.IsDecor || item.Def.HeatOutput <= 0f || item.FuelDays <= 0) continue;
+                double burned = Math.Min(item.FuelDays, dt);
+                item.FuelDays -= burned;
+                var room = rooms.RoomAt(item.Position);
+                if (room == null || !room.IsIndoor) continue;      // açık havada yanan kaynak odayı ısıtmaz
+                double fraction = burned / dt;
+                power[room.Id] = (power.TryGetValue(room.Id, out var pw) ? pw : 0.0) + item.Def.HeatOutput * fraction;
+            }
+
+            foreach (var room in rooms.Rooms)
+            {
+                if (!room.IsIndoor)
+                {
+                    foreach (var t in room.Tiles) _temp[t.Y * map.Width + t.X] = _outdoor;
+                    continue;
+                }
+
+                double sum = 0;
+                foreach (var t in room.Tiles) sum += prev[t.Y * map.Width + t.X];
+                double temp = sum / room.Tiles.Count;
+
+                double flow = 0;
+                foreach (var t in room.Tiles)
+                {
+                    foreach (var d in Dirs)
+                    {
+                        var n = t + d;
+                        var kind = map.GetEdge(GridMap.EdgeBetween(t, n));
+                        if (kind == EdgeKind.None) continue;
+                        double neighborTemp = _outdoor;
+                        if (map.InBounds(n))
+                        {
+                            var nr = rooms.RoomAt(n);
+                            if (nr != null && nr.IsIndoor)
+                            {
+                                if (nr == room) continue;
+                                double s2 = 0;
+                                foreach (var nt in nr.Tiles) s2 += prev[nt.Y * map.Width + nt.X];
+                                neighborTemp = s2 / nr.Tiles.Count;
+                            }
+                        }
+                        flow += EdgeLoss(kind) * (neighborTemp - temp);
+                    }
+                }
+
+                double heat = power.TryGetValue(room.Id, out var p) ? p : 0.0;
+                double change = (flow * _cfg.LossScale + heat) / room.Tiles.Count * dt;
+                float newTemp = (float)(temp + change);
+                foreach (var t in room.Tiles) _temp[t.Y * map.Width + t.X] = newTemp;
+            }
+        }
+
+        private static readonly GridPos[] Dirs = { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };
+    }
+}

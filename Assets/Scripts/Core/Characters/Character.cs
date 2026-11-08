@@ -52,12 +52,34 @@ namespace Thatchwick.Core.Characters
         /// <summary>Doğal ölüm yaşı (oyun günü). Varsayılan üst sınır; yaratırken RollLifespan ile değişir.</summary>
         public double LifespanDays { get; set; } = AgeConfig.Default.MaxLifespanDay;
         public bool IsDead { get; private set; }
+
+        // --- Soğuk (T1: kışta donma riski) ---
+        /// <summary>Karakterin bulunduğu yerin sıcaklığı (°C). Varsayılan konforlu; HeatSystem her karede günceller.</summary>
+        public float AmbientTemperature { get; set; } = 20f;
+        public const float ComfortTemperature = 10f;
+        /// <summary>Konfor sıcaklığının altında her °C için günlük Isınma kaybı.</summary>
+        public const float WarmthLossPerDegreeDay = 4f;
+        public const float WarmthRecoveryPerDay = 60f;
+        /// <summary>Isınma 0'da bu kadar gün kalırsa donarak ölür.</summary>
+        public const double FreezeDeathDays = 2.0;
+        public double FreezeDays { get; private set; }
+        public DeathCause CauseOfDeath { get; private set; }
         public AgeStage Stage => AgeConfig.StageAt(AgeDays);
 
         /// <summary>Evre değişince (eski, yeni) ile tetiklenir.</summary>
         public event Action<Character, AgeStage, AgeStage> StageChanged;
         /// <summary>Doğal ölümde bir kez tetiklenir.</summary>
         public event Action<Character> Died;
+
+        /// <summary>Ölüm sebebini kaydeder, gebeliği keser ve Died olayını tetikler.</summary>
+        private void Die(DeathCause cause)
+        {
+            IsDead = true;
+            CauseOfDeath = cause;
+            IsPregnant = false; // anne ölürse doğum olmaz
+            FatherId = null;
+            Died?.Invoke(this);
+        }
 
         /// <summary>Çalışarak beceri XP'si kazanır; yaş evresine göre seviye tavanı uygulanır. Ölü karakter kazanmaz.</summary>
         public double GainSkillXp(SkillType skill, double xp)
@@ -86,7 +108,27 @@ namespace Thatchwick.Core.Characters
         {
             if (IsDead) return;
 
+            // Soğuk: konfor sıcaklığının altında Isınma düşer, üstünde toparlanır; 0'da kalırsa donar.
+            float cold = ComfortTemperature - AmbientTemperature;
+            if (cold > 0f)
+            {
+                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay);
+            }
+            else
+            {
+                Needs.SetDecayPerDay(NeedType.Warmth, 0f);
+                Needs.Restore(NeedType.Warmth, (float)(WarmthRecoveryPerDay * gameDays));
+            }
+
             Needs.Tick(gameDays);
+
+            if (Needs.Get(NeedType.Warmth) <= NeedSet.Min) FreezeDays += gameDays;
+            else FreezeDays = Math.Max(0.0, FreezeDays - 2.0 * gameDays);
+            if (FreezeDays >= FreezeDeathDays)
+            {
+                Die(DeathCause.Cold);
+                return;
+            }
 
             var before = Stage;
             AgeDays += gameDays;
@@ -95,10 +137,7 @@ namespace Thatchwick.Core.Characters
 
             if (AgeDays >= LifespanDays)
             {
-                IsDead = true;
-                IsPregnant = false; // anne ölürse doğum olmaz
-                FatherId = null;
-                Died?.Invoke(this);
+                Die(DeathCause.OldAge);
                 return;
             }
 

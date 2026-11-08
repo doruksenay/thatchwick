@@ -30,7 +30,8 @@
         }
       ],
       "price": 40,
-      "category": "furniture"
+      "category": "furniture",
+      "heat": 80
     },
     {
       "id": "item.cooking_pot",
@@ -167,6 +168,14 @@
       "placement": "Surface",
       "price": 3,
       "category": "decor"
+    },
+    {
+      "id": "item.firewood",
+      "displayName": "Odun",
+      "interactions": [],
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource"
     }
   ]
 }
