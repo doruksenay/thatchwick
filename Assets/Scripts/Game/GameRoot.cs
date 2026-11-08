@@ -4,6 +4,7 @@ using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Customization;
+using Thatchwick.Core.Economy;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Time;
@@ -55,6 +56,9 @@ namespace Thatchwick.Game
         private PlantSystem _plants;
         private InteractionEffects _effects;
         private StorageService _storage;
+        private Market _market;
+        private MarketPanel _marketPanel;
+        private int _stallId;
         private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
         private Vector2 _hudScroll;
         private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
@@ -117,6 +121,10 @@ namespace Thatchwick.Game
             _effects = new InteractionEffects(_world, _household, _content, seed: 9) { Storage = _storage };
             _effects.Applied += (c, i, summary) => ShowMessage($"{c.Name}: {summary}");
             _plants = new PlantSystem(_world);
+            _market = new Market(_content, _household, _storage, null, seed: 17);
+            _market.Tick(0, _clock.TotalDays, _clock.Season);
+            _marketPanel = new MarketPanel(_market, _household, _storage, _content, _world,
+                () => _player?.Character, () => _player?.Runner, _stallId);
             _plants.PlantDied += (def, pos) => ShowMessage($"{def.DisplayName} kışın dondu");
             _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
             _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content) { Storage = _storage }, _content, _view, _input, transform, _walls);
@@ -176,13 +184,21 @@ namespace Thatchwick.Game
             TryPlace("item.chopping_block", new GridPos(22, 15));
             TryPlace("item.chest_wood", new GridPos(24, 15));
 
+            // Köy pazarı: çit geçidinin (32,15) doğusunda.
+            _world.Map.SetBlocked(new GridPos(34, 14), false);
+            _world.Map.SetBlocked(new GridPos(35, 14), false);
+            _world.Map.SetBlocked(new GridPos(33, 15), false);
+            _world.Map.SetBlocked(new GridPos(34, 15), false);
+            if (_content.Items.TryGet("item.market_stall", out var stallDef))
+                _stallId = _world.PlaceItem(stallDef, new GridPos(34, 14)).Id;
+
             // Arsanın dışındaki yabani meşeler (olgun): herkes kesebilir, fidanlarıyla arsaya ağaç dikilir.
             var rng = new System.Random(13);
             int placed = 0;
             for (int i = 0; i < 200 && placed < 14; i++)
             {
                 var p = new GridPos(rng.Next(33, 44), rng.Next(4, 26));
-                if (_world.Map.IsBlocked(p) || !_content.Items.TryGet("item.tree_oak", out var oak)) continue;
+                if (_world.Map.IsBlocked(p) || (p.Y == 15 && p.X <= 35) || !_content.Items.TryGet("item.tree_oak", out var oak)) continue;
                 PlantSystem.SetGrown(_world.PlaceItem(oak, p));
                 placed++;
             }
@@ -206,6 +222,7 @@ namespace Thatchwick.Game
                 case "item.hearth_stone": return new Color(0.85f, 0.35f, 0.2f);
                 case "item.cooking_pot": return new Color(0.55f, 0.55f, 0.6f);
                 case "item.crop_turnip": return new Color(0.45f, 0.7f, 0.35f);
+                case "item.market_stall": return new Color(0.75f, 0.35f, 0.3f);
                 case "item.chopping_block": return new Color(0.48f, 0.38f, 0.28f);
                 case "item.table_wood": return new Color(0.62f, 0.42f, 0.24f);
                 case "item.chair_wood": return new Color(0.7f, 0.5f, 0.3f);
@@ -309,7 +326,21 @@ namespace Thatchwick.Game
             float s = HudScale;
             var guiPos = new Vector2(screenPos.x / s, (Screen.height - screenPos.y) / s);
             if (_buildMode != null && _buildMode.Active && _buildMode.PanelRect(s).Contains(guiPos)) return true;
+            if (_marketPanel != null && _marketPanel.Active && _marketPanel.PanelRect(s).Contains(guiPos)) return true;
             return HudRect.Contains(guiPos);
+        }
+
+        // Yapı modu ve pazar paneli aynı yeri kullanır: biri açılınca diğeri kapanır.
+        private void ToggleBuild()
+        {
+            if (_marketPanel.Active) _marketPanel.Close();
+            _buildMode.Toggle();
+        }
+
+        private void ToggleMarket()
+        {
+            if (_buildMode.Active) _buildMode.Toggle();
+            _marketPanel.Toggle();
         }
 
         private void FinishCreation()
@@ -368,8 +399,9 @@ namespace Thatchwick.Game
                 return; // yaratma ekranı açıkken oyun saati ilerlemez
             }
 
-            if (UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.bKey.wasPressedThisFrame)
-                _buildMode.Toggle();
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb != null && kb.bKey.wasPressedThisFrame) ToggleBuild();
+            if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
 
             float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
 
@@ -377,6 +409,7 @@ namespace Thatchwick.Game
             double gameDays = _clock.Advance(dt);
             _heat.Tick(gameDays, _clock.TotalDays);
             _plants.Tick(gameDays, _clock.Season);
+            _market.Tick(gameDays, _clock.TotalDays, _clock.Season);
             foreach (var (plant, view) in _plantViews)
                 if (view != null) { float s = PlantScale(plant); view.localScale = new Vector3(s, s, 1f); }
             foreach (var a in _actors) a.Character.AmbientTemperature = _heat.TemperatureAt(a.Character.Position);
@@ -489,6 +522,7 @@ namespace Thatchwick.Game
 
             DrawItemLabels(s);
             _buildMode.OnGUI(s);
+            _marketPanel.OnGUI(s);
 
             GUILayout.BeginArea(HudRect, GUI.skin.box);
             _hudScroll = GUILayout.BeginScrollView(_hudScroll);
@@ -519,7 +553,10 @@ namespace Thatchwick.Game
                 if (!_maud.Character.TryStartPregnancy(_player.Character.Id)) ShowMessage("Maud şu an hamile kalamaz");
                 else ShowMessage("Maud hamile");
             }
-            if (GUILayout.Button(_buildMode.Active ? "Yapı modundan çık (B)" : "Yapı modu (B)")) _buildMode.Toggle();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(_buildMode.Active ? "Yapı modundan çık (B)" : "Yapı modu (B)")) ToggleBuild();
+            if (GUILayout.Button(_marketPanel.Active ? "Pazarı kapat (P)" : "Pazar (P)")) ToggleMarket();
+            GUILayout.EndHorizontal();
             GUILayout.Label($"Akçe: {_household.Akce}");
             if (GUILayout.Button("Yeni oyun (karakter yaratıcıyı aç)"))
             {

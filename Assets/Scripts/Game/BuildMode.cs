@@ -532,7 +532,7 @@ namespace Thatchwick.Game
                     _status = def.Placement == ItemPlacement.Surface ? "Bir masa ya da rafa dokun." : "Haritaya dokun.";
                     RefreshOverlay();
                 }
-                if (GUILayout.Button($"Sat {_svc.SellValue(def)}", GUILayout.Width(62f))) { _svc.SellFromInventory(kv.Key); _status = "Satıldı."; }
+                if (def.Placement != ItemPlacement.Resource && GUILayout.Button($"Sat {_svc.SellValue(def)}", GUILayout.Width(62f))) { _svc.SellFromInventory(kv.Key); _status = "Satıldı."; }
                 GUILayout.EndHorizontal();
             }
         }
