@@ -97,6 +97,67 @@ namespace Thatchwick.Core.Build
             return PlacementCheck.Success;
         }
 
+        // ---- duvar, kapı, pencere, zemin (envantersiz, doğrudan akçe) ----
+
+        public const int WallPrice = 3, DoorPrice = 8, WindowPrice = 6;
+
+        public static int EdgePrice(EdgeKind kind)
+        {
+            switch (kind)
+            {
+                case EdgeKind.Wall: return WallPrice;
+                case EdgeKind.Door: return DoorPrice;
+                case EdgeKind.Window: return WindowPrice;
+                default: return 0;
+            }
+        }
+
+        public static int FloorPrice(FloorType floor)
+        {
+            switch (floor)
+            {
+                case FloorType.Dirt: return 1;
+                case FloorType.Wood: return 2;
+                case FloorType.Stone: return 3;
+                default: return 0;
+            }
+        }
+
+        private int Refund(int price) => (int)Math.Floor(price * SellRatio);
+
+        /// <summary>Kenara duvar/kapı/pencere koyar ya da (None) kaldırır. Kapı ve pencere yalnızca duvarın yerine konur.</summary>
+        public PlacementCheck SetEdge(Edge edge, EdgeKind kind)
+        {
+            var map = _world.Map;
+            if (!map.EdgeInBounds(edge)) return PlacementCheck.Fail("Harita dışı.");
+            var old = map.GetEdge(edge);
+            if (old == kind) return PlacementCheck.Fail("Orada zaten var.");
+            if ((kind == EdgeKind.Door || kind == EdgeKind.Window) && old != EdgeKind.Wall && old != EdgeKind.Door && old != EdgeKind.Window)
+                return PlacementCheck.Fail("Önce duvar kur.");
+
+            int cost = Math.Max(0, EdgePrice(kind) - Refund(EdgePrice(old)));
+            int refund = kind == EdgeKind.None ? Refund(EdgePrice(old)) : 0;
+            if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            if (refund > 0) _house.AddAkce(refund);
+            map.SetEdge(edge, kind);
+            return PlacementCheck.Success;
+        }
+
+        /// <summary>Karoya zemin kaplaması döşer (Grass = kaplamayı kaldır, yarısı iade).</summary>
+        public PlacementCheck PaintFloor(GridPos tile, FloorType floor)
+        {
+            var map = _world.Map;
+            if (!map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
+            var old = map.GetFloor(tile);
+            if (old == floor) return PlacementCheck.Fail("Orası zaten öyle.");
+            int cost = Math.Max(0, FloorPrice(floor) - Refund(FloorPrice(old)));
+            int refund = floor == FloorType.Grass ? Refund(FloorPrice(old)) : 0;
+            if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            if (refund > 0) _house.AddAkce(refund);
+            map.SetFloor(tile, floor);
+            return PlacementCheck.Success;
+        }
+
         /// <summary>Mağazada satılan eşyalar (fiyatı olanlar), kategoriye ve ada göre.</summary>
         public List<ItemDef> ShopList()
         {

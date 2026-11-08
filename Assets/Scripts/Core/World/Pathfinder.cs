@@ -47,13 +47,9 @@ namespace Thatchwick.Core.World
                 foreach (var dir in Directions)
                 {
                     var next = current.Pos + dir;
-                    if (!map.IsWalkable(next) || closed.Contains(next)) continue;
+                    if (closed.Contains(next) || !map.CanStep(current.Pos, next)) continue;
 
                     bool diagonal = dir.X != 0 && dir.Y != 0;
-                    if (diagonal &&
-                        (map.IsBlocked(new GridPos(current.Pos.X + dir.X, current.Pos.Y)) ||
-                         map.IsBlocked(new GridPos(current.Pos.X, current.Pos.Y + dir.Y))))
-                        continue;
 
                     int g = current.G + (diagonal ? DiagonalCost : StraightCost);
                     if (best.TryGetValue(next, out var known))
