@@ -8,6 +8,7 @@ using Thatchwick.Core.Economy;
 using Thatchwick.Core.Family;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Jobs;
+using Thatchwick.Core.Life;
 using Thatchwick.Core.Progress;
 using Thatchwick.Core.Save;
 using Thatchwick.Core.Time;
@@ -73,9 +74,27 @@ namespace Thatchwick.Game
         private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
         private readonly List<(ItemInstance item, SpriteRenderer view)> _heatViews = new List<(ItemInstance, SpriteRenderer)>();
         private Vector2 _hudScroll;
-        private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
-        private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric" };
+        private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan", "Isolde", "Mabel", "Cecily", "Alys" };
+        private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric", "Godric", "Tobias", "Alard", "Hugh" };
         private int _nameCounter;
+
+        // Yaşam katmanı (Adım 18-43): tüm kurallar Core.Life'ta; burası kurar, her karede ilerletir, çizer.
+        private LifeSystems _life;
+        private BuildService _buildService;
+        private StatusHud _statusHud;
+        private VillagePanel _villagePanel;
+        private readonly Dictionary<int, string> _villagerLocation = new Dictionary<int, string>();
+        private double _scheduleTimer;
+
+        // Adlandırılmış yerler (life.json'daki home/work/square anahtarları) harita karolarına çevrilir.
+        private static readonly Dictionary<string, GridPos> Places = new Dictionary<string, GridPos>
+        {
+            { "home:1", new GridPos(38, 12) }, { "home:2", new GridPos(40, 12) }, { "home:3", new GridPos(38, 19) },
+            { "home:4", new GridPos(41, 20) }, { "home:5", new GridPos(36, 11) }, { "home:6", new GridPos(40, 17) },
+            { "work:smithy", new GridPos(39, 14) }, { "work:mill", new GridPos(41, 10) }, { "work:herb", new GridPos(37, 21) },
+            { "work:pasture", new GridPos(42, 23) }, { "work:market", new GridPos(35, 15) }, { "work:pottery", new GridPos(40, 19) },
+            { "square", new GridPos(36, 16) }
+        };
 
         /// <summary>Yeniden kurulan GameRoot bu kaydı yükler (Yükle düğmesi / Devam et).</summary>
         public static SaveData PendingLoad;
@@ -180,7 +199,8 @@ namespace Thatchwick.Game
             _plants.PlantDied += (def, pos) => ShowMessage($"{def.DisplayName} kışın dondu");
             _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
             if (loaded != null) _heat.RestoreTemperatures(loaded.Temperatures);
-            _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level }, _content, _view, _input, transform, _walls);
+            _buildService = new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level };
+            _buildMode = new BuildMode(_world, _household, _buildService, _content, _view, _input, transform, _walls);
             _buildMode.Activity += a => _account.Record(a, _clock.DayIndex);
 
             _population = new Population(firstFreeId: 1, seed: 21);
@@ -189,12 +209,26 @@ namespace Thatchwick.Game
             _family = new FamilyService(_population, _household, _content, seed: 31);
             _family.Happened += OnFamilyEvent;
             _family.JoinedHousehold += OnJoinedHousehold;
+
+            _life = new LifeSystems(_content, _world, _household, _population, _clock) { AccountLevel = () => _account.Level };
+            _life.Attach(_family);
+            _life.Attach(_plants);
+            _life.Attach(_heat);
+            _life.Attach(_market);
+            _life.Attach(_buildService);
+            _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
+            _life.Suitors.SpawnPosition = () => NearestWalkable(Places["square"], 8);
+            _life.Suitors.Arrived += c => CreateActorFor(c);
+            _statusHud = new StatusHud(_life, _content, () => Commander?.Character, c => _actors.Find(a => a.Character == c)?.Runner);
+            _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
+
             _familyPanel = new FamilyPanel(_population, _family, _dynasty, () => Commander?.Character,
                 c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner);
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
+            _life.Suitors.AppearanceCatalog = _appearanceCatalog;
 
             if (loaded != null)
             {
@@ -206,6 +240,8 @@ namespace Thatchwick.Game
                     if (c.Name == "Maud" && _maud == null) _maud = actor;
                 }
                 foreach (var (a, b, v) in loaded.Affection) _family.SetAffection(a, b, v);
+                _life.Restore(loaded.Life);
+                SpawnNamedVillagers();
                 if (loaded.Dynasty != null) _dynasty.Restore(loaded.Dynasty.HeadId, loaded.Dynasty.History, loaded.Dynasty.Ended);
                 else if (_player != null) _dynasty.Found(_player.Character, _clock.TotalDays);
                 _dynastyEnded = _dynasty.Ended || _player == null;
@@ -223,14 +259,18 @@ namespace Thatchwick.Game
             };
             maud.SetAge(36);
             maud.LifespanDays = maud.AgeConfig.RollLifespan(_rng);
+            maud.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));
+            maud.LifespanDays += LifeRules.LifespanBonus(_content, maud.TraitIds);
+            LifeRules.Recompute(maud, _content, _life.Village);
             _population.Add(maud);
             _maud = CreateActorFor(maud);
 
-            // Pazar çevresinde iki bekâr köylü: sohbetle yakınlaşıp evlenince haneye katılırlar.
-            AddVillager(3, "Wat", Sex.Male, 30, new GridPos(36, 16));
-            AddVillager(4, "Agnes", Sex.Female, 27, new GridPos(37, 13));
+            // Adlı köylüler (demirci, değirmenci, otacı...) pazar çevresinde yaşar; sohbet ve hediyeyle yakınlaşılır.
+            // Evlenmek isteyenler için talip havuzu (LifeSystems.Suitors) gerekirse yenisini getirir.
+            SpawnNamedVillagers();
+            _life.Weather.Seed = _rng.Next(1, int.MaxValue);
 
-            _creator = new CharacterCreator(_appearanceCatalog, seed: 5);
+            _creator = new CharacterCreator(_appearanceCatalog, seed: 5) { Content = _content };
             _input.enabled = false;
         }
 
@@ -387,27 +427,53 @@ namespace Thatchwick.Game
             return sr;
         }
 
-        private void AddVillager(int id, string name, Sex sex, double age, GridPos near)
+        /// <summary>İstenen yerin çevresinde boş (eşyasız, geçilebilir) ilk karo.</summary>
+        private GridPos NearestWalkable(GridPos near, int maxRadius = 4)
         {
-            // İstenen yerin çevresinde boş (eşyasız, geçilebilir) ilk karo.
-            GridPos pos = near;
-            for (int r = 0, found = 0; r <= 4 && found == 0; r++)
-                for (int dy = -r; dy <= r && found == 0; dy++)
-                    for (int dx = -r; dx <= r && found == 0; dx++)
+            for (int r = 0; r <= maxRadius; r++)
+                for (int dy = -r; dy <= r; dy++)
+                    for (int dx = -r; dx <= r; dx++)
                     {
                         var p = new GridPos(near.X + dx, near.Y + dy);
-                        if (_world.Map.IsWalkable(p)) { pos = p; found = 1; }
+                        if (_world.Map.IsWalkable(p)) return p;
                     }
-            var v = new Character(id, name, pos, false)
+            return near;
+        }
+
+        private GridPos ResolvePlace(string key, int jitterSeed = 0)
+        {
+            if (string.IsNullOrEmpty(key) || !Places.TryGetValue(key, out var basePos)) basePos = Places["square"];
+            if (jitterSeed != 0) basePos = new GridPos(basePos.X + (jitterSeed % 5) - 2, basePos.Y + (jitterSeed / 5 % 3) - 1);
+            return NearestWalkable(basePos);
+        }
+
+        // life.json'daki adlı köylüleri (eksik olanları) karakter olarak ekler; görünüm ve ömür burada verilir.
+        private void SpawnNamedVillagers()
+        {
+            foreach (var c in _life.Villagers.SpawnMissing(key => ResolvePlace(key)))
             {
-                Sex = sex,
-                IsVillager = true,
-                Appearance = _appearanceCatalog.Randomize(_rng, sex)
-            };
-            v.SetAge(age);
-            v.LifespanDays = v.AgeConfig.RollLifespan(_rng);
-            _population.Add(v);
-            CreateActorFor(v);
+                c.Appearance = _appearanceCatalog.Randomize(_rng, c.Sex);
+                c.LifespanDays = c.AgeConfig.RollLifespan(_rng) + LifeRules.LifespanBonus(_content, c.TraitIds);
+                CreateActorFor(c);
+            }
+        }
+
+        // Köylüler gün saatine, havaya ve şenliğe göre evinden işine, meydana yürür.
+        private void UpdateVillagerSchedules()
+        {
+            var weather = _life.Weather.Today(_clock.TotalDays);
+            bool festival = _life.Festivals.TodaysFestival() != null;
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (c.IsDead || !c.IsVillager) continue;
+                var def = _life.Villagers.DefOf(c);
+                if (def == null) continue;
+                string where = _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival);
+                if (_villagerLocation.TryGetValue(c.Id, out var last) && last == where) continue;
+                _villagerLocation[c.Id] = where;
+                a.Runner.Command(Job.MoveTo(ResolvePlace(where, where == "square" ? c.Id : 0)));
+            }
         }
 
         // Köylünün ihtiyaçları köyde karşılanır (sabit); haneye katılınca hane gibi yaşar.
@@ -441,7 +507,7 @@ namespace Thatchwick.Game
         {
             ShowMessage(c.CauseOfDeath == DeathCause.Cold ? $"{c.Name} donarak öldü"
                 : c.CauseOfDeath == DeathCause.Starvation ? $"{c.Name} açlıktan öldü" : $"{c.Name} hayatını kaybetti");
-            var result = _dynasty.OnDeath(c, _population.Members, _clock.TotalDays);
+            var result = _dynasty.OnDeath(c, _population.Members, _clock.TotalDays, _life.TradeOf(c));
             if (result == null) { if (_selected != null && _selected.Character == c) _selected = _player; return; }
             if (result.DynastyEnded) { _dynastyEnded = true; ShowMessage(result.Message, 6f); return; }
             var heir = _actors.Find(a => a.Character == result.Heir);
@@ -479,6 +545,7 @@ namespace Thatchwick.Game
                 View = go.transform,
                 Renderer = sr
             };
+            _life.Attach(actor.Runner);
             ApplyVillagerRules(character, actor.Runner);
             _actors.Add(actor);
             return actor;
@@ -498,6 +565,8 @@ namespace Thatchwick.Game
             if (_buildMode != null && _buildMode.Active && _buildMode.PanelRect(s).Contains(guiPos)) return true;
             if (_marketPanel != null && _marketPanel.Active && _marketPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
             if (_dynastyEnded) return true;
             return HudRect.Contains(guiPos);
         }
@@ -524,7 +593,7 @@ namespace Thatchwick.Game
             if (_player == null || _creator != null || _dynastyEnded) return;   // oyun başlamadan ya da bittikten sonra kaydetme
             try
             {
-                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty);
+                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _life);
                 System.IO.File.WriteAllText(SavePath, JsonUtility.ToJson(data));
                 if (!quiet) ShowMessage("Kaydedildi");
             }
@@ -560,6 +629,7 @@ namespace Thatchwick.Game
         {
             if (_marketPanel.Active) _marketPanel.Close();
             if (_familyPanel.Active) _familyPanel.Close();
+            if (_villagePanel.Active) _villagePanel.Close();
             _buildMode.Toggle();
         }
 
@@ -567,7 +637,16 @@ namespace Thatchwick.Game
         {
             if (_buildMode.Active) _buildMode.Toggle();
             if (_familyPanel.Active) _familyPanel.Close();
+            if (_villagePanel.Active) _villagePanel.Close();
             _marketPanel.Toggle();
+        }
+
+        private void ToggleVillage()
+        {
+            if (_buildMode.Active) _buildMode.Toggle();
+            if (_marketPanel.Active) _marketPanel.Close();
+            if (_familyPanel.Active) _familyPanel.Close();
+            _villagePanel.Toggle();
         }
 
         /// <summary>Gerçek görseller ile yer tutucu çizimler arasında geçiş (karşılaştırma için).</summary>
@@ -585,6 +664,7 @@ namespace Thatchwick.Game
         {
             if (_buildMode.Active) _buildMode.Toggle();
             if (_marketPanel.Active) _marketPanel.Close();
+            if (_villagePanel.Active) _villagePanel.Close();
             _familyPanel.Toggle();
         }
 
@@ -593,6 +673,9 @@ namespace Thatchwick.Game
             var character = _creator.Draft.CreateCharacter(1, new GridPos(24, 10), true, _appearanceCatalog, _rng);
             _creator.Release();
             _creator = null;
+            if (character.TraitIds.Count == 0) character.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));
+            character.LifespanDays += LifeRules.LifespanBonus(_content, character.TraitIds);
+            LifeRules.Recompute(character, _content, _life.Village);
             _population.Add(character);
             _player = CreateActorFor(character);
             _selected = _player;
@@ -652,6 +735,8 @@ namespace Thatchwick.Game
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
+            if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
+            if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
 
             float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
 
@@ -685,11 +770,19 @@ namespace Thatchwick.Game
             foreach (var a in _actors)
                 a.Character.AmbientTemperature = a.Character.IsVillager ? 15f : _heat.TemperatureAt(a.Character.Position);
             _population.Tick(gameDays);
+            _life.Tick(gameDays);
+            _scheduleTimer += gameDays;
+            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); }
             foreach (var actor in _actors.ToArray())
             {
                 if (actor.Character.IsDead)
                 {
-                    actor.Renderer.color = new Color(1f, 1f, 1f, 0.35f);
+                    // Ölen yaşamaz: sahneden kalkar, yerinde mezarı (GraveService) durur.
+                    if (actor.View != null) Destroy(actor.View.gameObject);
+                    _actors.Remove(actor);
+                    _villagerLocation.Remove(actor.Character.Id);
+                    if (_selected == actor) _selected = _player == actor ? null : _player;
+                    if (_maud == actor) _maud = null;
                     continue;
                 }
                 if (actor.Character.Stage != AgeStage.Baby) actor.Runner.Tick(gameDays);   // bebek iş yapmaz; büyükler besler
@@ -816,6 +909,9 @@ namespace Thatchwick.Game
             _buildMode.OnGUI(s);
             _marketPanel.OnGUI(s);
             _familyPanel.OnGUI(s);
+            _villagePanel.OnGUI(s);
+            DrawBalloons(s);
+            _statusHud.OnGUI(s);
             if (_dynastyEnded) DrawDynastyEnded(s);
 
             GUILayout.BeginArea(HudRect, GUI.skin.box);
@@ -851,6 +947,7 @@ namespace Thatchwick.Game
             if (GUILayout.Button(_buildMode.Active ? "Yapı modundan çık (B)" : "Yapı modu (B)")) ToggleBuild();
             if (GUILayout.Button(_marketPanel.Active ? "Pazarı kapat (P)" : "Pazar (P)")) ToggleMarket();
             if (GUILayout.Button(_familyPanel.Active ? "Aileyi kapat (F)" : "Aile (F)")) ToggleFamily();
+            if (GUILayout.Button(_villagePanel.Active ? "Köyü kapat (V)" : "Köy (V)")) ToggleVillage();
             if (GUILayout.Button(IsoArt.Enabled ? "Görsel: gerçek (G)" : "Görsel: yer tutucu (G)")) ToggleArt();
             GUILayout.EndHorizontal();
             GUILayout.Label($"{_dynasty.Name} · {_dynasty.CurrentGeneration}. nesil · Baş: {_player?.Character.Name} · Komut alan: {Commander?.Character.Name}");
@@ -876,6 +973,19 @@ namespace Thatchwick.Game
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
             GUILayout.EndScrollView();
             GUILayout.EndArea();
+        }
+
+        // Karakterlerin üstünde ne yaptıkları ve nedeni ("Yemek yiyor — çünkü acıktı").
+        private void DrawBalloons(float guiScale)
+        {
+            var cam = Camera.main;
+            if (cam == null) return;
+            foreach (var actor in _actors)
+            {
+                if (actor.Character.IsDead || actor.Character.IsVillager || actor.View == null) continue;
+                var sp = cam.WorldToScreenPoint(actor.View.position + new Vector3(0f, 1.7f, 0f));
+                _statusHud.DrawBalloon(guiScale, sp, actor.Character, actor.Runner);
+            }
         }
 
         private void DrawHeatHud()

@@ -25,6 +25,10 @@ namespace Thatchwick.Game
         private GUIStyle _titleStyle;
         private GUIStyle _smallStyle;
 
+        /// <summary>Özellik listesi için içerik (GameRoot verir); null ise özellik bölümü gösterilmez.</summary>
+        public Thatchwick.Core.Content.ContentDatabase Content { get; set; }
+        private string _traitStatus = "";
+
         public bool Finished { get; private set; }
         public CharacterDraft Draft => _draft;
 
@@ -142,6 +146,23 @@ namespace Thatchwick.Game
             _draft.SkillFocus = newFocus == 0 ? (SkillType?)null : (SkillType)(newFocus - 1);
             GUILayout.Label("   Eğilim seçilen beceriyle seviye 2 başlatır.", _smallStyle);
 
+            // Özellikler (en çok 2): ihtiyaçları, işi ve ruh halini kalıcı değiştirir; çocuklara geçer.
+            if (Content != null && Content.Traits.Count > 0)
+            {
+                Section($"Özellikler ({_draft.TraitIds.Count}/{Thatchwick.Core.Characters.Character.MaxTraits})");
+                foreach (var t in Content.Traits.All)
+                {
+                    bool on = _draft.TraitIds.Contains(t.Id);
+                    GUILayout.BeginHorizontal();
+                    bool now = GUILayout.Toggle(on, t.DisplayName, GUILayout.Width(150f));
+                    GUILayout.Label(t.Description ?? "", _smallStyle);
+                    GUILayout.EndHorizontal();
+                    if (now != on)
+                        _traitStatus = _draft.ToggleTrait(Content, t.Id, out var why) ? "" : why;
+                }
+                GUILayout.Label(_traitStatus.Length > 0 ? _traitStatus : "   Hiç seçmezsen rastgele verilir.", _smallStyle);
+            }
+
             // Beden
             Section("Beden");
             int newBuild = Row("Vücut", () => GUILayout.Toolbar((int)a.Build, BuildLabels));
@@ -194,6 +215,7 @@ namespace Thatchwick.Game
             if (GUILayout.Button("Başla", GUILayout.Height(30f)))
             {
                 _errors = _draft.Validate(_catalog);
+                if (Content != null) _errors.AddRange(_draft.ValidateTraits(Content));
                 if (_errors.Count == 0) Finished = true;
             }
             GUILayout.EndHorizontal();

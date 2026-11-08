@@ -114,6 +114,37 @@ namespace Thatchwick.Core.Tests
             Assert.Equal("Oduncu soyu", r.Life.FamilyTrade());
         }
 
+        [Fact]
+        public void KarakterTaslagi_OzellikSecimiSinirVeCakismaKurali()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var draft = new Thatchwick.Core.Customization.CharacterDraft();
+            Assert.True(draft.ToggleTrait(db, "trait.cheerful", out _));
+            Assert.False(draft.ToggleTrait(db, "trait.gloomy", out var why));       // çakışır
+            Assert.Contains("çakış", why);
+            Assert.True(draft.ToggleTrait(db, "trait.hardy", out _));
+            Assert.False(draft.ToggleTrait(db, "trait.handy", out why));            // 2'den fazla olmaz
+            Assert.Contains("En çok", why);
+            Assert.Empty(draft.ValidateTraits(db));
+            Assert.True(draft.ToggleTrait(db, "trait.hardy", out _));               // seçimden çıkar
+            Assert.Single(draft.TraitIds);
+
+            draft.TraitIds.Add("trait.yok");
+            Assert.NotEmpty(draft.ValidateTraits(db));
+        }
+
+        [Fact]
+        public void KarakterTaslagi_OzellikleriKarakteregecirir()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var rng = new Random(3);
+            var catalog = Thatchwick.Core.Customization.AppearanceCatalog.Default();
+            var draft = Thatchwick.Core.Customization.CharacterDraft.CreateRandom(catalog, rng, "Aldric");
+            draft.ToggleTrait(db, "trait.hardy", out _);
+            var c = draft.CreateCharacter(1, new GridPos(2, 2), true, catalog, rng);
+            Assert.Equal(new[] { "trait.hardy" }, c.TraitIds.ToArray());
+        }
+
         // ---------- Köylüler (38) ----------
 
         [Fact]
