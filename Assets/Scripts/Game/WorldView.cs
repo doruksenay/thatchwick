@@ -68,12 +68,18 @@ namespace Thatchwick.Game
                     var sr = _tiles[y * Map.Width + x];
                     if (sr == null) continue;
                     var p = new GridPos(x, y);
-                    switch (Map.GetFloor(p))
+                    var floor = Map.GetFloor(p);
+                    bool terrainBlocked = _terrainBlocked[y * Map.Width + x];
+                    // Gerçek karo varsa (çim, toprak) onu kullan; yoksa yer tutucu elmas + renk.
+                    var real = terrainBlocked ? null : IsoArt.Ground(floor, x, y);
+                    sr.sprite = real != null ? real : SpriteMaterials.Diamond;
+                    if (real != null) sr.color = Color.white;
+                    else switch (floor)
                     {
                         case FloorType.Wood: sr.color = ((x + y) & 1) == 0 ? new Color32(168, 124, 76, 255) : new Color32(158, 115, 68, 255); break;
                         case FloorType.Stone: sr.color = ((x + y) & 1) == 0 ? new Color32(140, 140, 148, 255) : new Color32(130, 130, 138, 255); break;
                         case FloorType.Dirt: sr.color = ((x + y) & 1) == 0 ? new Color32(139, 110, 80, 255) : new Color32(131, 103, 74, 255); break;
-                        default: sr.color = _terrainBlocked[y * Map.Width + x] ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB); break;
+                        default: sr.color = terrainBlocked ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB); break;
                     }
                     if (Map.GetZone(p) == ZoneType.Storage)
                     {

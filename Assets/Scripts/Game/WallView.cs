@@ -50,9 +50,20 @@ namespace Thatchwick.Game
                 var start = Iso.GridToWorld(e.X, e.Y);
                 go.transform.position = start;
                 var sr = go.AddComponent<SpriteRenderer>();
-                sr.sprite = SpriteMaterials.Wall(e.Axis, kv.Value, low);
+                // Gerçek duvar görseli varsa o; alçak (kesit) duvar için görsel gelene kadar yarı saydam tam duvar.
+                var real = IsoArt.Wall(e.Axis, kv.Value);
+                if (real != null)
+                {
+                    sr.sprite = real;
+                    float alpha = low ? 0.3f : 1f;
+                    sr.color = kv.Value == EdgeKind.Window ? new Color(0.75f, 0.85f, 1f, alpha) : new Color(1f, 1f, 1f, alpha);
+                }
+                else
+                {
+                    sr.sprite = SpriteMaterials.Wall(e.Axis, kv.Value, low);
+                    sr.color = kv.Value == EdgeKind.Window ? new Color(0.85f, 0.92f, 1f) : new Color(0.78f, 0.68f, 0.52f);
+                }
                 sr.sharedMaterial = SpriteMaterials.Unlit;
-                sr.color = kv.Value == EdgeKind.Window ? new Color(0.85f, 0.92f, 1f) : new Color(0.78f, 0.68f, 0.52f);
                 // Kenar orta noktasının derinliği; karakterin (karo merkezi) arkasında kalması için küçük sapma.
                 var mid = Iso.GridToWorld(e.X + (e.Axis == EdgeAxis.Horizontal ? 0.5f : 0f), e.Y + (e.Axis == EdgeAxis.Vertical ? 0.5f : 0f));
                 sr.sortingOrder = Iso.SortOrder(mid.y, 0);

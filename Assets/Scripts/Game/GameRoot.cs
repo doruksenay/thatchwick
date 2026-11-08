@@ -33,6 +33,8 @@ namespace Thatchwick.Game
             public JobRunner Runner;
             public Transform View;
             public SpriteRenderer Renderer;
+            public int Direction = IsoArt.DefaultDirection;
+            public Sprite LastSprite;
         }
 
         private WorldState _world;
@@ -69,6 +71,7 @@ namespace Thatchwick.Game
         private bool _dynastyEnded;
         private int _stallId;
         private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
+        private readonly List<(ItemInstance item, SpriteRenderer view)> _heatViews = new List<(ItemInstance, SpriteRenderer)>();
         private Vector2 _hudScroll;
         private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
         private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric" };
@@ -85,6 +88,7 @@ namespace Thatchwick.Game
 
         private void Awake()
         {
+            IsoArt.Reset();
             _content = ContentLoader.Load(out var contentErrors);
             foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");
             Debug.Log($"İçerik yüklendi: {_content.Items.Count} eşya tanımı.");
@@ -323,6 +327,7 @@ namespace Thatchwick.Game
             _itemObjects.Clear();
             _itemViews.Clear();
             _plantViews.Clear();
+            _heatViews.Clear();
 
             foreach (var item in _world.Items)
             {
@@ -331,8 +336,23 @@ namespace Thatchwick.Game
                 {
                     var parent = _world.GetItem(item.ParentId.Value);
                     if (parent == null || !parent.TryGetSlotPosition(item.SlotId, out float gx, out float gy)) continue;
-                    var pos = Iso.GridToWorld(gx, gy) + new Vector3(0f, 24f / 32f, 0f);
-                    AddItemSprite(item, pos, color, 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy).y) + 2);
+                    // Gerçek masanın üst yüzü yer tutucu küpten biraz yüksek.
+                    float topPx = IsoArt.Item(parent, out _) != null ? 27f : 24f;
+                    var pos = Iso.GridToWorld(gx, gy) + new Vector3(0f, topPx / 32f, 0f);
+                    var decorArt = IsoArt.Item(item, out _);
+                    AddItemSprite(item, pos, color, decorArt != null ? 1f : 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy).y) + 2, decorArt);
+                    continue;
+                }
+                bool flip = false;
+                var art = item.IsPlant ? null : IsoArt.Item(item, out flip);
+                if (art != null)
+                {
+                    // Tek görsel, ayak izinin merkezinde (pivot = taban elmasının merkezi).
+                    var center = Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f);
+                    var sr = AddItemSprite(item, center, Color.white, 1f, Iso.SortOrder(center.y), art);
+                    sr.color = Color.white;
+                    sr.flipX = flip;
+                    if (item.Def.HeatOutput > 0f) _heatViews.Add((item, sr));
                     continue;
                 }
                 if (item.IsPlant)
@@ -352,7 +372,7 @@ namespace Thatchwick.Game
 
         private static float PlantScale(ItemInstance item) => 0.3f + 0.7f * item.GrowthFraction;
 
-        private void AddItemSprite(ItemInstance item, Vector3 pos, Color color, float scale, int order, Sprite sprite = null)
+        private SpriteRenderer AddItemSprite(ItemInstance item, Vector3 pos, Color color, float scale, int order, Sprite sprite = null)
         {
             var go = new GameObject(item.Def.Id);
             go.transform.SetParent(transform, false);
@@ -364,6 +384,7 @@ namespace Thatchwick.Game
             sr.sortingOrder = order;
             _itemObjects.Add(go);
             if (!_itemViews.ContainsKey(item.Id)) _itemViews[item.Id] = go.transform;
+            return sr;
         }
 
         private void AddVillager(int id, string name, Sex sex, double age, GridPos near)
@@ -447,7 +468,7 @@ namespace Thatchwick.Game
             var go = new GameObject(character.Name);
             go.transform.SetParent(transform, false);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = PersonSprites.Get(character.Appearance);
+            sr.sprite = IsoArt.Character(character, IsoArt.DefaultDirection) ?? PersonSprites.Get(character.Appearance);
             sr.sharedMaterial = SpriteMaterials.Unlit;
             go.transform.position = _view.TileToWorld(character.Position);
 
@@ -549,6 +570,17 @@ namespace Thatchwick.Game
             _marketPanel.Toggle();
         }
 
+        /// <summary>Gerçek görseller ile yer tutucu çizimler arasında geçiş (karşılaştırma için).</summary>
+        private void ToggleArt()
+        {
+            IsoArt.Enabled = !IsoArt.Enabled;
+            _view.RefreshFloors();
+            _walls.Rebuild();
+            RebuildItemViews();
+            foreach (var a in _actors) a.LastSprite = null;
+            ShowMessage(IsoArt.Enabled ? $"Gerçek görseller ({IsoArt.TextureCount} dosya)" : "Yer tutucu çizimler");
+        }
+
         private void ToggleFamily()
         {
             if (_buildMode.Active) _buildMode.Toggle();
@@ -619,6 +651,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.bKey.wasPressedThisFrame) ToggleBuild();
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
+            if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
 
             float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
 
@@ -647,6 +680,8 @@ namespace Thatchwick.Game
             _market.Tick(gameDays, _clock.TotalDays, _clock.Season);
             foreach (var (plant, view) in _plantViews)
                 if (view != null) { float s = PlantScale(plant); view.localScale = new Vector3(s, s, 1f); }
+            foreach (var (heatItem, heatView) in _heatViews)
+                if (heatView != null) { var lit = IsoArt.Item(heatItem, out _); if (lit != null && heatView.sprite != lit) heatView.sprite = lit; }
             foreach (var a in _actors)
                 a.Character.AmbientTemperature = a.Character.IsVillager ? 15f : _heat.TemperatureAt(a.Character.Position);
             _population.Tick(gameDays);
@@ -676,12 +711,26 @@ namespace Thatchwick.Game
             Vector3 pos = _view.TileToWorld(actor.Character.Position);
             var next = actor.Runner.NextTile;
             if (next.HasValue)
-                pos = Vector3.Lerp(pos, _view.TileToWorld(next.Value), actor.Runner.StepProgress);
+            {
+                var to = _view.TileToWorld(next.Value);
+                actor.Direction = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
+                pos = Vector3.Lerp(pos, to, actor.Runner.StepProgress);
+            }
             actor.View.position = pos;
+            // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
+            var real = IsoArt.Character(actor.Character, actor.Direction);
+            var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance);
+            if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
             actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1);
-            float scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : 1f);
-            if (actor.Character.Stage != AgeStage.Baby && actor.Character.Stage != AgeStage.Child) scale *= actor.Character.Appearance.HeightPercent / 100f;
+            float scale;
+            if (real != null)   // gerçek setler zaten çocuk/yetişkin boyunda çizildi; bebek çocuk setinin küçüğü
+                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : 1f;
+            else
+            {
+                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : 1f);
+                if (actor.Character.Stage != AgeStage.Baby && actor.Character.Stage != AgeStage.Child) scale *= actor.Character.Appearance.HeightPercent / 100f;
+            }
             actor.View.localScale = new Vector3(scale, scale, 1f);
         }
 
@@ -802,6 +851,7 @@ namespace Thatchwick.Game
             if (GUILayout.Button(_buildMode.Active ? "Yapı modundan çık (B)" : "Yapı modu (B)")) ToggleBuild();
             if (GUILayout.Button(_marketPanel.Active ? "Pazarı kapat (P)" : "Pazar (P)")) ToggleMarket();
             if (GUILayout.Button(_familyPanel.Active ? "Aileyi kapat (F)" : "Aile (F)")) ToggleFamily();
+            if (GUILayout.Button(IsoArt.Enabled ? "Görsel: gerçek (G)" : "Görsel: yer tutucu (G)")) ToggleArt();
             GUILayout.EndHorizontal();
             GUILayout.Label($"{_dynasty.Name} · {_dynasty.CurrentGeneration}. nesil · Baş: {_player?.Character.Name} · Komut alan: {Commander?.Character.Name}");
             GUILayout.Label($"Akçe: {_household.Akce}");
