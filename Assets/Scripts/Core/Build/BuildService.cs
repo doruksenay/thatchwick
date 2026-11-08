@@ -283,7 +283,8 @@ namespace Thatchwick.Core.Build
         public List<ItemDef> ShopList()
         {
             var list = new List<ItemDef>();
-            foreach (var d in _content.Items.All) if (d.Price > 0) list.Add(d);
+            // Kaynaklar (odun, şalgam...) mağazada değil pazarda alınıp satılır.
+            foreach (var d in _content.Items.All) if (d.Price > 0 && d.Placement != ItemPlacement.Resource) list.Add(d);
             list.Sort((a, b) =>
             {
                 int c = string.CompareOrdinal(a.Category, b.Category);

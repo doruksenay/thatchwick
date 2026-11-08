@@ -34,6 +34,7 @@ namespace Thatchwick.Core.Content
                     GrowDays = dto.growDays,
                     NeedsTilledSoil = dto.tilled,
                     Storage = dto.storage,
+                    Tags = dto.tags != null ? new List<string>(dto.tags) : new List<string>(),
                     DiesInWinter = dto.diesInWinter,
                     PlantsAs = string.IsNullOrWhiteSpace(dto.plantsAs) ? null : dto.plantsAs,
                     Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category

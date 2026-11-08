@@ -178,7 +178,10 @@
       "interactions": [],
       "placement": "Resource",
       "price": 2,
-      "category": "resource"
+      "category": "resource",
+      "tags": [
+        "fuel"
+      ]
     },
     {
       "id": "item.log",
@@ -186,7 +189,10 @@
       "interactions": [],
       "placement": "Resource",
       "price": 3,
-      "category": "resource"
+      "category": "resource",
+      "tags": [
+        "fuel"
+      ]
     },
     {
       "id": "item.sapling_oak",
@@ -257,7 +263,10 @@
       "interactions": [],
       "placement": "Resource",
       "price": 2,
-      "category": "resource"
+      "category": "resource",
+      "tags": [
+        "food"
+      ]
     },
     {
       "id": "item.seed_turnip",
@@ -301,6 +310,15 @@
           ]
         }
       ]
+    },
+    {
+      "id": "item.market_stall",
+      "displayName": "Pazar tezgâhı",
+      "interactions": [],
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "village"
     }
   ]
 }
