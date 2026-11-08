@@ -21,6 +21,22 @@ namespace Thatchwick.Core.Content
                 if (string.IsNullOrWhiteSpace(item.DisplayName))
                     errors.Add($"{item.Id}: görünen ad boş.");
 
+                if (item.Width < 1 || item.Width > ItemDef.MaxSize || item.Height < 1 || item.Height > ItemDef.MaxSize)
+                    errors.Add($"{item.Id}: boyut 1-{ItemDef.MaxSize} arasında olmalı.");
+                if (item.Price < 0) errors.Add($"{item.Id}: fiyat negatif olamaz.");
+                if (item.Placement == ItemPlacement.Surface)
+                {
+                    if (item.Width != 1 || item.Height != 1) errors.Add($"{item.Id}: dekor 1x1 olmalı.");
+                    if (item.SurfaceSlots.Count > 0) errors.Add($"{item.Id}: dekorun kendi yüzey yuvası olamaz.");
+                }
+                var slotIds = new HashSet<string>(StringComparer.Ordinal);
+                foreach (var slot in item.SurfaceSlots)
+                {
+                    if (string.IsNullOrWhiteSpace(slot.Id)) { errors.Add($"{item.Id}: kimliksiz yuva."); continue; }
+                    if (!slotIds.Add(slot.Id)) errors.Add($"{item.Id}/{slot.Id}: yuva kimliği tekrar ediyor.");
+                    if (slot.U < 0f || slot.U > 1f || slot.V < 0f || slot.V > 1f) errors.Add($"{item.Id}/{slot.Id}: U ve V 0-1 arasında olmalı.");
+                }
+
                 var seen = new HashSet<string>(StringComparer.Ordinal);
                 foreach (var it in item.Interactions)
                 {

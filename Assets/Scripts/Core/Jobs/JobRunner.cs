@@ -128,7 +128,7 @@ namespace Thatchwick.Core.Jobs
 
             if (_path == null && !_using)
             {
-                _path = PathToAdjacent(item.Position);
+                _path = PathToAdjacent(item);
                 if (_path == null) { Fail("Eşyaya ulaşılamıyor."); return 0; }
                 _pathIndex = 1;
                 _stepFraction = 0;
@@ -182,16 +182,23 @@ namespace Thatchwick.Core.Jobs
         }
 
         // Eşyaya komşu (4 yön) karolardan en kısa yolu olanına giden yol. Zaten yanındaysa tek elemanlı yol.
-        private List<GridPos> PathToAdjacent(GridPos itemPos)
+        private List<GridPos> PathToAdjacent(ItemInstance item)
         {
-            List<GridPos> best = null;
-            foreach (var offset in AdjacentOffsets)
-            {
-                var tile = itemPos + offset;
-                if (!_world.Map.IsWalkable(tile)) continue;
+            // Dekor, üzerinde durduğu eşyanın yanından kullanılır; çok karolu eşyada her kaplanan karonun komşusu aday.
+            var owner = item.IsDecor ? _world.GetItem(item.ParentId.Value) : item;
+            if (owner == null) return null;
 
-                var path = Pathfinder.FindPath(_world.Map, _character.Position, tile);
-                if (path != null && (best == null || path.Count < best.Count)) best = path;
+            List<GridPos> best = null;
+            foreach (var occupied in owner.OccupiedTiles())
+            {
+                foreach (var offset in AdjacentOffsets)
+                {
+                    var tile = occupied + offset;
+                    if (!_world.Map.IsWalkable(tile)) continue;
+
+                    var path = Pathfinder.FindPath(_world.Map, _character.Position, tile);
+                    if (path != null && (best == null || path.Count < best.Count)) best = path;
+                }
             }
             return best;
         }

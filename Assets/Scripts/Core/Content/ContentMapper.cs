@@ -23,7 +23,33 @@ namespace Thatchwick.Core.Content
             {
                 if (dto == null) continue;
 
-                var item = new ItemDef { Id = dto.id, DisplayName = dto.displayName };
+                var item = new ItemDef
+                {
+                    Id = dto.id,
+                    DisplayName = dto.displayName,
+                    Width = dto.width <= 0 ? 1 : dto.width,
+                    Height = dto.height <= 0 ? 1 : dto.height,
+                    Price = dto.price,
+                    Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category
+                };
+
+                if (!string.IsNullOrWhiteSpace(dto.placement))
+                {
+                    if (!Enum.TryParse(dto.placement, true, out ItemPlacement placement) || !Enum.IsDefined(typeof(ItemPlacement), placement))
+                        errors.Add($"{dto.id}: bilinmeyen yerleşim '{dto.placement}'.");
+                    else
+                        item.Placement = placement;
+                }
+
+                if (dto.surfaceSlots != null)
+                {
+                    foreach (var s in dto.surfaceSlots)
+                    {
+                        if (s == null) continue;
+                        item.SurfaceSlots.Add(new SurfaceSlotDef { Id = s.id, U = s.u, V = s.v });
+                    }
+                }
+
                 if (dto.interactions != null)
                 {
                     foreach (var i in dto.interactions)
