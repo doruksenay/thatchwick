@@ -418,7 +418,10 @@
       "category": "furniture",
       "level": 2,
       "comfort": 2,
-      "styleSet": "koylu"
+      "styleSet": "koylu",
+      "variants": [
+        "item.chair_carved"
+      ]
     },
     {
       "id": "item.chest_wood",
@@ -654,7 +657,10 @@
       "category": "furniture",
       "level": 10,
       "comfort": 5,
-      "styleSet": "zanaatkar"
+      "styleSet": "zanaatkar",
+      "variants": [
+        "item.chair_wood"
+      ]
     },
     {
       "id": "item.grave",

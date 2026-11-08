@@ -154,12 +154,20 @@ namespace Thatchwick.Core.Content
                     if (e.RewardItem != null && !Items.Contains(e.RewardItem)) errors.Add($"{v.Id}/{e.Id}: ödül eşyası '{e.RewardItem}' bulunamadı.");
                 }
             }
+            foreach (var i in Items.All)
+                foreach (var vid in i.Variants)
+                {
+                    if (!Items.TryGet(vid, out var v)) { errors.Add($"{i.Id}: varyant '{vid}' bulunamadı."); continue; }
+                    if (v.Width != i.Width || v.Height != i.Height || v.Placement != i.Placement) errors.Add($"{i.Id}: varyant '{vid}' aynı boyut ve yerleşimde olmalı.");
+                    if (!v.Variants.Contains(i.Id)) errors.Add($"{i.Id}: varyant '{vid}' karşılıklı değil.");
+                }
             foreach (var f in Festivals.All)
                 if (f.Day < 0 || f.Day > 11) errors.Add($"{f.Id}: şenlik günü 0-11 arasında olmalı.");
             foreach (var g in Goals.All)
             {
                 if (g.Target <= 0) errors.Add($"{g.Id}: hedef değeri sıfırdan büyük olmalı.");
                 if (string.IsNullOrWhiteSpace(g.Metric)) errors.Add($"{g.Id}: ölçüt boş.");
+                else if (Array.IndexOf(GoalDef.Metrics, g.Metric) < 0) errors.Add($"{g.Id}: bilinmeyen ölçüt '{g.Metric}'.");
             }
             foreach (var t in Tools.All)
             {
@@ -169,6 +177,11 @@ namespace Thatchwick.Core.Content
             foreach (var t in Templates.All)
             {
                 if (t.Width < 2 || t.Height < 2 || t.Width > 12 || t.Height > 12) errors.Add($"{t.Id}: şablon boyutu 2-12 arasında olmalı.");
+                int sideLen = (t.DoorSide == TemplateSide.North || t.DoorSide == TemplateSide.South) ? t.Width : t.Height;
+                if (t.DoorOffset < 0 || t.DoorOffset >= sideLen) errors.Add($"{t.Id}: kapı konumu duvar dışında.");
+                foreach (var w in t.Windows) if (w < 0 || w >= sideLen) errors.Add($"{t.Id}: pencere konumu duvar dışında.");
+                if (!string.IsNullOrWhiteSpace(t.Floor) && !(Enum.TryParse<World.FloorType>(t.Floor, true, out var fl) && Enum.IsDefined(typeof(World.FloorType), fl)))
+                    errors.Add($"{t.Id}: bilinmeyen zemin '{t.Floor}'.");
                 foreach (var i in t.Items)
                 {
                     if (!Items.Contains(i.ItemId)) errors.Add($"{t.Id}: şablon eşyası '{i.ItemId}' bulunamadı.");

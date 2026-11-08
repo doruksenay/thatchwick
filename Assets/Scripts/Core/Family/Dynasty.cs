@@ -13,6 +13,8 @@ namespace Thatchwick.Core.Family
         public double StartDay;
         public double EndDay = -1;
         public DeathCause EndCause;
+        /// <summary>Başın mesleği (seçtiği dallardan; yoksa boş): soy ağacında "Oduncu" gibi gösterilir.</summary>
+        public string Trade;
     }
 
     /// <summary>Baş karakter ölünce kimin geçeceği ve mirasın sonucu.</summary>
@@ -83,7 +85,7 @@ namespace Thatchwick.Core.Family
         }
 
         /// <summary>Ölen baş karaktersa varisi belirler, kontrolü devreder, mirası uygular.</summary>
-        public SuccessionResult OnDeath(Character dead, IEnumerable<Character> members, double day)
+        public SuccessionResult OnDeath(Character dead, IEnumerable<Character> members, double day, string trade = null)
         {
             if (dead == null || dead.Id != HeadId || Ended) return null;
             dead.IsPlayerControlled = false;
@@ -92,6 +94,7 @@ namespace Thatchwick.Core.Family
                 var last = History[History.Count - 1];
                 last.EndDay = day;
                 last.EndCause = dead.CauseOfDeath;
+                last.Trade = trade;
             }
 
             var heir = ChooseHeir(dead, members);

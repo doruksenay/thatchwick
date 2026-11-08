@@ -42,6 +42,11 @@ namespace Thatchwick.Core.Life
         public int FestivalMood;
         public int Status;
 
+        public void Clear()
+        {
+            CropGrowth = 0; MarketSell = 0; SpoilReduction = 0; ColdResist = 0; FestivalMood = 0; Status = 0;
+        }
+
         public void Add(VillageEffects o)
         {
             CropGrowth += o.CropGrowth;
@@ -112,6 +117,10 @@ namespace Thatchwick.Core.Life
 
     public sealed class GoalDef : IContentDef
     {
+        /// <summary>Hedef ölçütleri (GoalService hesaplar): nesil, yaşayan, akçe, proje, dal, beceri, gün, evlilik, şenlik.</summary>
+        public static readonly string[] Metrics =
+            { "generations", "living", "akce", "projects", "branches", "skill", "days", "marriages", "festivals" };
+
         public string Id { get; set; }
         public string DisplayName { get; set; }
         public string Description { get; set; }

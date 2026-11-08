@@ -119,6 +119,26 @@ namespace Thatchwick.Core.Life
             return true;
         }
 
+        public static string TradeName(SkillType skill)
+        {
+            switch (skill)
+            {
+                case SkillType.Farming: return "Çiftçi";
+                case SkillType.Woodcutting: return "Oduncu";
+                case SkillType.Cooking: return "Aşçı";
+                default: return "Marangoz";
+            }
+        }
+
+        /// <summary>Tek karakterin mesleği: en yüksek kademeli dalın becerisi; dal yoksa null.</summary>
+        public static string TradeOf(ContentDatabase db, Character c)
+        {
+            BranchDef best = null;
+            foreach (var id in c.BranchIds)
+                if (db.Branches.TryGet(id, out var b) && (best == null || b.Level > best.Level)) best = b;
+            return best == null ? null : TradeName(best.Skill);
+        }
+
         /// <summary>Soy mesleği: hanedan başlarının en çok dal aldığı beceri (eşitlikte seviye toplamı); dal yoksa null.</summary>
         public static SkillType? DominantBranchSkill(ContentDatabase db, IEnumerable<Character> members)
         {

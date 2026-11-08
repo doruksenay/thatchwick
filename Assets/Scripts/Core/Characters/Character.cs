@@ -197,6 +197,12 @@ namespace Thatchwick.Core.Characters
             Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay);
             Needs.SetDecayMultiplier(NeedType.Social, Modifiers.SocialDecay);
             Needs.SetDecayMultiplier(NeedType.Fun, Modifiers.FunDecay);
+            // Köylüler kendi hayatını yaşar: sosyal ve eğlence ihtiyacı aşağı çekilmez (hane üyesi olunca başlar).
+            if (IsVillager)
+            {
+                Needs.SetDecayMultiplier(NeedType.Social, 0f);
+                Needs.SetDecayMultiplier(NeedType.Fun, 0f);
+            }
             Mood.Tick(gameDays);
 
             // Soğuk: konfor sıcaklığının altında Isınma düşer, üstünde toparlanır; 0'da kalırsa donar.

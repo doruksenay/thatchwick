@@ -30,6 +30,8 @@ namespace Thatchwick.Core.Characters
         public event Action<Character, Character, int?> BabyBorn;
         /// <summary>Üyelerden biri öldüğünde (Character.Died'ın topluluk düzeyi karşılığı).</summary>
         public event Action<Character> MemberDied;
+        /// <summary>Topluluğa yeni biri katıldığında (bebek, köylü, kayıttan yükleme).</summary>
+        public event Action<Character> MemberAdded;
 
         public Population(int firstFreeId = 1, int seed = 12345)
         {
@@ -47,6 +49,7 @@ namespace Thatchwick.Core.Characters
             c.GaveBirth += OnGaveBirth;
             c.Died += OnMemberDied;
             if (c.Id >= _nextId) _nextId = c.Id + 1;
+            MemberAdded?.Invoke(c);
         }
 
         public Character Find(int id)

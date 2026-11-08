@@ -270,5 +270,1003 @@
         }
       ]
     }
+  ],
+  "branches": [
+    {
+      "id": "branch.farm_gardener",
+      "displayName": "Bahçıvan",
+      "description": "Ekinler daha hızlı büyür.",
+      "skill": "Farming",
+      "level": 5,
+      "effects": {
+        "growthSpeed": 1.15
+      }
+    },
+    {
+      "id": "branch.farm_harvester",
+      "displayName": "Hasatçı",
+      "description": "Hasatta ara sıra fazladan ürün çıkar.",
+      "skill": "Farming",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.2
+      }
+    },
+    {
+      "id": "branch.farm_master",
+      "displayName": "Ziraat Ustası",
+      "description": "Ekinler çok daha hızlı büyür.",
+      "skill": "Farming",
+      "level": 10,
+      "effects": {
+        "growthSpeed": 1.2
+      },
+      "requires": "branch.farm_gardener"
+    },
+    {
+      "id": "branch.farm_seasoned",
+      "displayName": "Mevsim Bilgesi",
+      "description": "Ürünler geç bozulur.",
+      "skill": "Farming",
+      "level": 10,
+      "effects": {
+        "spoilReduction": 0.25
+      },
+      "requires": "branch.farm_gardener"
+    },
+    {
+      "id": "branch.farm_bounty",
+      "displayName": "Bereket Çiftçisi",
+      "description": "Hasat bereketlenir.",
+      "skill": "Farming",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.2,
+        "sellBonus": 0.05
+      },
+      "requires": "branch.farm_harvester"
+    },
+    {
+      "id": "branch.farm_trader",
+      "displayName": "Pazarcı Çiftçi",
+      "description": "Ürünler pazarda daha iyi satılır.",
+      "skill": "Farming",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.farm_harvester"
+    },
+    {
+      "id": "branch.wood_sturdy",
+      "displayName": "Sağlam Oduncu",
+      "description": "Daha hızlı çalışır.",
+      "skill": "Woodcutting",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.wood_forester",
+      "displayName": "Ormancı",
+      "description": "Kesimde ara sıra fazladan kütük çıkar.",
+      "skill": "Woodcutting",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.2
+      }
+    },
+    {
+      "id": "branch.wood_veteran",
+      "displayName": "Kıdemli Oduncu",
+      "description": "Hızlı ve soğuğa dayanıklı.",
+      "skill": "Woodcutting",
+      "level": 10,
+      "effects": {
+        "workSpeed": 1.15,
+        "coldResist": 0.1
+      },
+      "requires": "branch.wood_sturdy"
+    },
+    {
+      "id": "branch.wood_lumber",
+      "displayName": "Kereste Ustası",
+      "description": "Marangozluk daha çabuk öğrenilir.",
+      "skill": "Woodcutting",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Carpentry",
+            "rate": 1.25
+          }
+        ]
+      },
+      "requires": "branch.wood_sturdy"
+    },
+    {
+      "id": "branch.wood_warden",
+      "displayName": "Orman Bekçisi",
+      "description": "Bol kütük, soğuğa direnç.",
+      "skill": "Woodcutting",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15,
+        "coldResist": 0.15
+      },
+      "requires": "branch.wood_forester"
+    },
+    {
+      "id": "branch.wood_dealer",
+      "displayName": "Odun Tüccarı",
+      "description": "Odun ve kereste iyi paraya gider.",
+      "skill": "Woodcutting",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.wood_forester"
+    },
+    {
+      "id": "branch.cook_artisan",
+      "displayName": "Mutfak Ustası",
+      "description": "Yemekler bir kalite basamağı yukarıdan çıkar.",
+      "skill": "Cooking",
+      "level": 5,
+      "effects": {
+        "qualityLevels": 1
+      }
+    },
+    {
+      "id": "branch.cook_pantry",
+      "displayName": "Kiler Bilgesi",
+      "description": "Yiyecekler geç bozulur.",
+      "skill": "Cooking",
+      "level": 5,
+      "effects": {
+        "spoilReduction": 0.2
+      }
+    },
+    {
+      "id": "branch.cook_chef",
+      "displayName": "Şef",
+      "description": "Yemek kalitesi bir basamak daha yükselir.",
+      "skill": "Cooking",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1,
+        "moodBase": 2
+      },
+      "requires": "branch.cook_artisan"
+    },
+    {
+      "id": "branch.cook_host",
+      "displayName": "Ziyafetçi",
+      "description": "Sofrada sohbet tatlanır.",
+      "skill": "Cooking",
+      "level": 10,
+      "effects": {
+        "socialGain": 1.15,
+        "funDecay": 0.9
+      },
+      "requires": "branch.cook_artisan"
+    },
+    {
+      "id": "branch.cook_pickler",
+      "displayName": "Turşucu",
+      "description": "Koruma işleri çok daha uzun dayanır.",
+      "skill": "Cooking",
+      "level": 10,
+      "effects": {
+        "spoilReduction": 0.25
+      },
+      "requires": "branch.cook_pantry"
+    },
+    {
+      "id": "branch.cook_nourisher",
+      "displayName": "Besleyici Aşçı",
+      "description": "Yemeğin tokluğu uzun sürer.",
+      "skill": "Cooking",
+      "level": 10,
+      "effects": {
+        "hungerDecay": 0.9
+      },
+      "requires": "branch.cook_pantry"
+    },
+    {
+      "id": "branch.carp_architect",
+      "displayName": "Mimar",
+      "description": "Yapı ve eşya alımında indirim.",
+      "skill": "Carpentry",
+      "level": 5,
+      "effects": {
+        "buildDiscount": 0.1
+      }
+    },
+    {
+      "id": "branch.carp_craftsman",
+      "displayName": "Zanaatkâr",
+      "description": "Atölyede daha hızlı çalışır.",
+      "skill": "Carpentry",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.carp_chief",
+      "displayName": "Baş Mimar",
+      "description": "Daha büyük indirim.",
+      "skill": "Carpentry",
+      "level": 10,
+      "effects": {
+        "buildDiscount": 0.15
+      },
+      "requires": "branch.carp_architect"
+    },
+    {
+      "id": "branch.carp_builder",
+      "displayName": "Yapı Ustası",
+      "description": "Hızlı ve ucuz yapar.",
+      "skill": "Carpentry",
+      "level": 10,
+      "effects": {
+        "workSpeed": 1.1,
+        "buildDiscount": 0.05
+      },
+      "requires": "branch.carp_architect"
+    },
+    {
+      "id": "branch.carp_master",
+      "displayName": "Usta Zanaatkâr",
+      "description": "Ürünleri daha kaliteli ve değerli.",
+      "skill": "Carpentry",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1,
+        "sellBonus": 0.1
+      },
+      "requires": "branch.carp_craftsman"
+    },
+    {
+      "id": "branch.carp_heavy",
+      "displayName": "Ağır Marangoz",
+      "description": "Yorulmadan çalışır.",
+      "skill": "Carpentry",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.9
+      },
+      "requires": "branch.carp_craftsman"
+    }
+  ],
+  "projects": [
+    {
+      "id": "project.well",
+      "displayName": "Köy Kuyusu",
+      "description": "Ekinlerin sulanmasını kolaylaştırır.",
+      "akce": 80,
+      "costs": [
+        {
+          "item": "item.plank",
+          "count": 6
+        },
+        {
+          "item": "item.log",
+          "count": 6
+        }
+      ],
+      "effects": {
+        "cropGrowth": 0.05,
+        "status": 5
+      }
+    },
+    {
+      "id": "project.mill",
+      "displayName": "Değirmen",
+      "description": "Tahıl ve ürün alım satımı canlanır.",
+      "akce": 150,
+      "costs": [
+        {
+          "item": "item.plank",
+          "count": 10
+        },
+        {
+          "item": "item.log",
+          "count": 8
+        }
+      ],
+      "effects": {
+        "marketSell": 0.05,
+        "status": 10
+      }
+    },
+    {
+      "id": "project.bell_tower",
+      "displayName": "Çan Kulesi",
+      "description": "Şenlikler daha neşeli geçer.",
+      "akce": 120,
+      "costs": [
+        {
+          "item": "item.plank",
+          "count": 12
+        },
+        {
+          "item": "item.log",
+          "count": 10
+        }
+      ],
+      "effects": {
+        "festivalMood": 4,
+        "status": 8
+      }
+    },
+    {
+      "id": "project.village_cellar",
+      "displayName": "Köy Mahzeni",
+      "description": "Ortak mahzen; yiyecekler geç bozulur.",
+      "akce": 100,
+      "costs": [
+        {
+          "item": "item.plank",
+          "count": 8
+        },
+        {
+          "item": "item.log",
+          "count": 12
+        }
+      ],
+      "effects": {
+        "spoilReduction": 0.1,
+        "status": 6
+      }
+    },
+    {
+      "id": "project.common_hearth",
+      "displayName": "Ortak Ocak",
+      "description": "Meydandaki ocak kışı hafifletir.",
+      "akce": 90,
+      "costs": [
+        {
+          "item": "item.firewood",
+          "count": 20
+        },
+        {
+          "item": "item.log",
+          "count": 8
+        }
+      ],
+      "effects": {
+        "coldResist": 0.1,
+        "status": 6
+      }
+    }
+  ],
+  "villagers": [
+    {
+      "id": "villager.orhan",
+      "name": "Orhan",
+      "sex": "Male",
+      "age": 52,
+      "role": "blacksmith",
+      "roleName": "Demirci",
+      "traits": [
+        "trait.sturdy",
+        "trait.diligent"
+      ],
+      "loves": [
+        "item.honey",
+        "item.stew_fine"
+      ],
+      "likes": [
+        "tag:fuel",
+        "item.mushroom"
+      ],
+      "dislikes": [
+        "item.herb"
+      ],
+      "home": "home:1",
+      "work": "work:smithy",
+      "events": [
+        {
+          "id": "orhan_1",
+          "minAffection": 30,
+          "text": "Orhan sana ocağın başında demircilik sırlarından söz etti.",
+          "rewardAkce": 10
+        },
+        {
+          "id": "orhan_2",
+          "minAffection": 60,
+          "text": "Orhan eski çekicini göstererek köyün ilk demirhanesini anlattı.",
+          "rewardItem": "item.firewood",
+          "rewardCount": 6
+        },
+        {
+          "id": "orhan_3",
+          "minAffection": 100,
+          "text": "Orhan seni \"köyün evladı\" ilan etti ve bir çuval kömür armağan etti.",
+          "rewardAkce": 40
+        }
+      ]
+    },
+    {
+      "id": "villager.hatice",
+      "name": "Hatice",
+      "sex": "Female",
+      "age": 44,
+      "role": "miller",
+      "roleName": "Değirmenci",
+      "traits": [
+        "trait.generous",
+        "trait.placid"
+      ],
+      "loves": [
+        "item.omelet",
+        "item.pumpkin"
+      ],
+      "likes": [
+        "tag:food"
+      ],
+      "dislikes": [
+        "item.log"
+      ],
+      "home": "home:2",
+      "work": "work:mill",
+      "events": [
+        {
+          "id": "hatice_1",
+          "minAffection": 30,
+          "text": "Hatice sana taze ekmek hamurunun inceliklerini öğretti.",
+          "rewardAkce": 8
+        },
+        {
+          "id": "hatice_2",
+          "minAffection": 60,
+          "text": "Hatice değirmen taşının hikâyesini anlattı.",
+          "rewardItem": "item.egg",
+          "rewardCount": 4
+        },
+        {
+          "id": "hatice_3",
+          "minAffection": 100,
+          "text": "Hatice sana kendi tarifini emanet etti.",
+          "rewardAkce": 35
+        }
+      ]
+    },
+    {
+      "id": "villager.zeynep",
+      "name": "Zeynep",
+      "sex": "Female",
+      "age": 38,
+      "role": "herbalist",
+      "roleName": "Otacı",
+      "traits": [
+        "trait.cheerful",
+        "trait.greenthumb"
+      ],
+      "loves": [
+        "item.herb",
+        "item.honey"
+      ],
+      "likes": [
+        "item.berries",
+        "item.mushroom"
+      ],
+      "dislikes": [
+        "item.log"
+      ],
+      "home": "home:3",
+      "work": "work:herb",
+      "events": [
+        {
+          "id": "zeynep_1",
+          "minAffection": 30,
+          "text": "Zeynep sana kış öncesi toplanacak otları anlattı.",
+          "rewardItem": "item.herb",
+          "rewardCount": 3
+        },
+        {
+          "id": "zeynep_2",
+          "minAffection": 60,
+          "text": "Zeynep ormanda gizli bir mantar yeri gösterdi.",
+          "rewardItem": "item.mushroom",
+          "rewardCount": 5
+        },
+        {
+          "id": "zeynep_3",
+          "minAffection": 100,
+          "text": "Zeynep sana bir kavanoz bal armağan etti.",
+          "rewardItem": "item.honey",
+          "rewardCount": 3
+        }
+      ]
+    },
+    {
+      "id": "villager.murat",
+      "name": "Murat",
+      "sex": "Male",
+      "age": 31,
+      "role": "shepherd",
+      "roleName": "Çoban",
+      "traits": [
+        "trait.hardy",
+        "trait.sociable"
+      ],
+      "loves": [
+        "item.stew_good",
+        "item.pea"
+      ],
+      "likes": [
+        "item.egg",
+        "item.nut"
+      ],
+      "dislikes": [
+        "item.pickled_cabbage"
+      ],
+      "home": "home:4",
+      "work": "work:pasture",
+      "events": [
+        {
+          "id": "murat_1",
+          "minAffection": 30,
+          "text": "Murat sana sürüyle gezdiği yaylaları anlattı.",
+          "rewardAkce": 6
+        },
+        {
+          "id": "murat_2",
+          "minAffection": 60,
+          "text": "Murat bir kuzu doğumuna seni de çağırdı.",
+          "rewardItem": "item.egg",
+          "rewardCount": 6
+        },
+        {
+          "id": "murat_3",
+          "minAffection": 100,
+          "text": "Murat sana ilk kuzunun yününden bir hatıra verdi.",
+          "rewardAkce": 30
+        }
+      ]
+    },
+    {
+      "id": "villager.kerem",
+      "name": "Kerem",
+      "sex": "Male",
+      "age": 36,
+      "role": "trader",
+      "roleName": "Tüccar",
+      "traits": [
+        "trait.sociable",
+        "trait.fertile"
+      ],
+      "loves": [
+        "item.honey",
+        "item.pumpkin"
+      ],
+      "likes": [
+        "tag:preserved"
+      ],
+      "dislikes": [
+        "item.firewood"
+      ],
+      "home": "home:5",
+      "work": "work:market",
+      "events": [
+        {
+          "id": "kerem_1",
+          "minAffection": 30,
+          "text": "Kerem sana uzak panayırların hikâyelerini anlattı.",
+          "rewardAkce": 12
+        },
+        {
+          "id": "kerem_2",
+          "minAffection": 60,
+          "text": "Kerem pazarda sana özel bir fiyat teklif etti.",
+          "rewardAkce": 25
+        },
+        {
+          "id": "kerem_3",
+          "minAffection": 100,
+          "text": "Kerem sana yol arkadaşlığı ve bir kese akçe sundu.",
+          "rewardAkce": 60
+        }
+      ]
+    },
+    {
+      "id": "villager.ayse",
+      "name": "Ayşe",
+      "sex": "Female",
+      "age": 29,
+      "role": "potter",
+      "roleName": "Çömlekçi",
+      "traits": [
+        "trait.handy",
+        "trait.cheerful"
+      ],
+      "loves": [
+        "item.pea",
+        "item.omelet"
+      ],
+      "likes": [
+        "item.berries",
+        "item.leek"
+      ],
+      "dislikes": [
+        "item.mushroom"
+      ],
+      "home": "home:6",
+      "work": "work:pottery",
+      "events": [
+        {
+          "id": "ayse_1",
+          "minAffection": 30,
+          "text": "Ayşe sana çamurun nasıl yoğrulacağını gösterdi.",
+          "rewardAkce": 8
+        },
+        {
+          "id": "ayse_2",
+          "minAffection": 60,
+          "text": "Ayşe sana ilk güzel fincanını armağan etti.",
+          "rewardAkce": 18
+        },
+        {
+          "id": "ayse_3",
+          "minAffection": 100,
+          "text": "Ayşe seninle bir çömlek fırınına ortak oldu.",
+          "rewardAkce": 45
+        }
+      ]
+    }
+  ],
+  "goals": [
+    {
+      "id": "goal.gen2",
+      "displayName": "İkinci Nesil",
+      "description": "Hanedanın ikinci nesli doğsun.",
+      "metric": "generations",
+      "target": 2,
+      "rewardAkce": 30
+    },
+    {
+      "id": "goal.gen3",
+      "displayName": "Üçüncü Nesil",
+      "description": "Hanedan üçüncü nesle ulaşsın.",
+      "metric": "generations",
+      "target": 3,
+      "rewardAkce": 60,
+      "rewardXp": 100
+    },
+    {
+      "id": "goal.gen5",
+      "displayName": "Beş Nesil",
+      "description": "Beş nesil boyunca köyde yaşayın.",
+      "metric": "generations",
+      "target": 5,
+      "rewardAkce": 200,
+      "rewardXp": 300
+    },
+    {
+      "id": "goal.living4",
+      "displayName": "Kalabalık Hane",
+      "description": "Hanede 4 kişi yaşasın.",
+      "metric": "living",
+      "target": 4,
+      "rewardAkce": 40
+    },
+    {
+      "id": "goal.living8",
+      "displayName": "Büyük Aile",
+      "description": "Hanede 8 kişi yaşasın.",
+      "metric": "living",
+      "target": 8,
+      "rewardAkce": 120,
+      "rewardXp": 150
+    },
+    {
+      "id": "goal.akce200",
+      "displayName": "İlk Servet",
+      "description": "200 akçe biriktirin.",
+      "metric": "akce",
+      "target": 200,
+      "rewardXp": 60
+    },
+    {
+      "id": "goal.akce1000",
+      "displayName": "Zengin Hane",
+      "description": "1000 akçe biriktirin.",
+      "metric": "akce",
+      "target": 1000,
+      "rewardXp": 250
+    },
+    {
+      "id": "goal.project1",
+      "displayName": "İlk Köy Projesi",
+      "description": "Bir köy projesini tamamlayın.",
+      "metric": "projects",
+      "target": 1,
+      "rewardAkce": 40
+    },
+    {
+      "id": "goal.project3",
+      "displayName": "Köyün Kurucusu",
+      "description": "Üç köy projesini tamamlayın.",
+      "metric": "projects",
+      "target": 3,
+      "rewardAkce": 100,
+      "rewardXp": 150
+    },
+    {
+      "id": "goal.project5",
+      "displayName": "Köyün Efendisi",
+      "description": "Beş köy projesini tamamlayın.",
+      "metric": "projects",
+      "target": 5,
+      "rewardAkce": 250,
+      "rewardXp": 300
+    },
+    {
+      "id": "goal.branch1",
+      "displayName": "Yolunu Seç",
+      "description": "Bir meslek dalı seçin.",
+      "metric": "branches",
+      "target": 1,
+      "rewardAkce": 30
+    },
+    {
+      "id": "goal.branch3",
+      "displayName": "Çok Yönlü Hane",
+      "description": "Hanede 3 meslek dalı seçilmiş olsun.",
+      "metric": "branches",
+      "target": 3,
+      "rewardAkce": 100
+    },
+    {
+      "id": "goal.skill5",
+      "displayName": "Usta Çırak",
+      "description": "Hanede bir kişi bir beceride 5. seviyeye ulaşsın.",
+      "metric": "skill",
+      "target": 5,
+      "rewardAkce": 30
+    },
+    {
+      "id": "goal.skill10",
+      "displayName": "Ustalık",
+      "description": "Hanede bir kişi bir beceride 10. seviyeye ulaşsın.",
+      "metric": "skill",
+      "target": 10,
+      "rewardAkce": 150
+    },
+    {
+      "id": "goal.year1",
+      "displayName": "Bir Yıl",
+      "description": "Köyde bir yıl yaşayın.",
+      "metric": "days",
+      "target": 40,
+      "rewardAkce": 40
+    },
+    {
+      "id": "goal.year3",
+      "displayName": "Üç Yıl",
+      "description": "Köyde üç yıl yaşayın.",
+      "metric": "days",
+      "target": 120,
+      "rewardAkce": 120
+    },
+    {
+      "id": "goal.year10",
+      "displayName": "On Yıl",
+      "description": "Köyde on yıl yaşayın.",
+      "metric": "days",
+      "target": 400,
+      "rewardAkce": 400,
+      "rewardXp": 500
+    },
+    {
+      "id": "goal.marry1",
+      "displayName": "İlk Düğün",
+      "description": "Hanede bir evlilik olsun.",
+      "metric": "marriages",
+      "target": 1,
+      "rewardAkce": 40
+    },
+    {
+      "id": "goal.marry3",
+      "displayName": "Düğün Mevsimi",
+      "description": "Üç evlilik gerçekleşsin.",
+      "metric": "marriages",
+      "target": 3,
+      "rewardAkce": 120
+    },
+    {
+      "id": "goal.festival4",
+      "displayName": "Şenlikçi",
+      "description": "Dört şenliği kutlayın.",
+      "metric": "festivals",
+      "target": 4,
+      "rewardAkce": 50
+    },
+    {
+      "id": "goal.festival12",
+      "displayName": "Şenlik Sever",
+      "description": "On iki şenliği kutlayın.",
+      "metric": "festivals",
+      "target": 12,
+      "rewardAkce": 150,
+      "rewardXp": 150
+    }
+  ],
+  "templates": [
+    {
+      "id": "template.cottage",
+      "displayName": "Tek Odalı Kulübe",
+      "width": 5,
+      "height": 4,
+      "doorSide": "South",
+      "doorOffset": 2,
+      "windows": [
+        1,
+        3
+      ],
+      "floor": "Wood",
+      "items": [
+        {
+          "item": "item.bed_straw",
+          "x": 0,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.hearth_stone",
+          "x": 4,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.table_wood",
+          "x": 1,
+          "y": 2,
+          "rotation": 0
+        },
+        {
+          "item": "item.chair_wood",
+          "x": 1,
+          "y": 3,
+          "rotation": 0
+        },
+        {
+          "item": "item.chest_wood",
+          "x": 4,
+          "y": 3,
+          "rotation": 0
+        }
+      ]
+    },
+    {
+      "id": "template.kitchen",
+      "displayName": "Mutfak",
+      "width": 4,
+      "height": 4,
+      "doorSide": "South",
+      "doorOffset": 1,
+      "windows": [
+        1
+      ],
+      "floor": "Stone",
+      "items": [
+        {
+          "item": "item.hearth_stone",
+          "x": 0,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.cooking_pot",
+          "x": 1,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.shelf_wood",
+          "x": 2,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.table_wood",
+          "x": 1,
+          "y": 2,
+          "rotation": 0
+        },
+        {
+          "item": "item.stool_wood",
+          "x": 3,
+          "y": 3,
+          "rotation": 0
+        }
+      ]
+    },
+    {
+      "id": "template.workshop",
+      "displayName": "Atölye",
+      "width": 5,
+      "height": 4,
+      "doorSide": "West",
+      "doorOffset": 1,
+      "windows": [
+        1
+      ],
+      "floor": "Wood",
+      "items": [
+        {
+          "item": "item.workbench",
+          "x": 1,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.chopping_block",
+          "x": 4,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.chest_wood",
+          "x": 4,
+          "y": 2,
+          "rotation": 0
+        },
+        {
+          "item": "item.shelf_wood",
+          "x": 2,
+          "y": 3,
+          "rotation": 0
+        }
+      ]
+    },
+    {
+      "id": "template.storehouse",
+      "displayName": "Kiler",
+      "width": 4,
+      "height": 3,
+      "doorSide": "South",
+      "doorOffset": 0,
+      "windows": [
+        2
+      ],
+      "floor": "Stone",
+      "items": [
+        {
+          "item": "item.chest_wood",
+          "x": 0,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.chest_wood",
+          "x": 1,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.shelf_wood",
+          "x": 2,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.salting_barrel",
+          "x": 3,
+          "y": 1,
+          "rotation": 0
+        },
+        {
+          "item": "item.drying_rack",
+          "x": 1,
+          "y": 2,
+          "rotation": 0
+        }
+      ]
+    }
   ]
 }

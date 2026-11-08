@@ -126,6 +126,7 @@ namespace Thatchwick.Core.Save
         public double startDay;
         public double endDay = -1;
         public int endCause;
+        public string trade;
     }
 
     [Serializable]
