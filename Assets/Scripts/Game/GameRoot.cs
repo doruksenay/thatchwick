@@ -156,6 +156,7 @@ namespace Thatchwick.Game
             character.LifespanDays = character.AgeConfig.RollLifespan(_rng);
             character.StageChanged += (c, from, to) => ShowMessage($"{c.Name}: {StageName(to)} oldu");
             character.Died += c => ShowMessage($"{c.Name} hayatını kaybetti");
+            character.Skills.LevelChanged += (skill, from, to) => ShowMessage($"{character.Name}: {SkillName(skill)} seviye {to}");
             var go = new GameObject(name);
             go.transform.SetParent(transform, false);
             var sr = go.AddComponent<SpriteRenderer>();
@@ -275,6 +276,30 @@ namespace Thatchwick.Game
             }
         }
 
+        private static string SkillName(SkillType s)
+        {
+            switch (s)
+            {
+                case SkillType.Farming: return "Çiftçilik";
+                case SkillType.Woodcutting: return "Odunculuk";
+                case SkillType.Cooking: return "Yemek";
+                default: return "Marangozluk";
+            }
+        }
+
+        private static string SkillsText(Character c)
+        {
+            var parts = new System.Text.StringBuilder();
+            foreach (SkillType t in System.Enum.GetValues(typeof(SkillType)))
+            {
+                int level = c.Skills.GetLevel(t);
+                if (level <= 1 && c.Skills.GetXp(t) <= 0) continue;
+                if (parts.Length > 0) parts.Append(" · ");
+                parts.Append($"{SkillName(t)} {level}");
+            }
+            return parts.Length == 0 ? "" : parts.ToString();
+        }
+
         private static string StageName(AgeStage s)
         {
             switch (s)
@@ -320,6 +345,8 @@ namespace Thatchwick.Game
                 GUILayout.Label(
                     $"{c.Name} ({(c.IsDead ? "Öldü" : StageName(c.Stage))}, {c.AgeDays:0}g): Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0}");
                 if (!c.IsDead) GUILayout.Label($"   {ActivityText(actor.Runner)}");
+                var skills = SkillsText(c);
+                if (skills.Length > 0) GUILayout.Label($"   Beceri: {skills}");
             }
 
             GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");

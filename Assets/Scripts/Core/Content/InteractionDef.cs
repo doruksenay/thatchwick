@@ -13,5 +13,9 @@ namespace Thatchwick.Core.Content
         public NeedType Need { get; set; }
         public float Restore { get; set; }
         public double DurationDays { get; set; }
+
+        /// <summary>Kullanım sonunda beceri kazanımı (isteğe bağlı). SkillXp 0 ise kazanım yok.</summary>
+        public SkillType? Skill { get; set; }
+        public float SkillXp { get; set; }
     }
 }

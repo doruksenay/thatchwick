@@ -33,6 +33,8 @@ namespace Thatchwick.Core.Content
                     if (!seen.Add(it.Id)) errors.Add($"{where}: etkileşim kimliği tekrar ediyor.");
                     if (it.Restore <= 0f || it.Restore > 100f) errors.Add($"{where}: Restore 0-100 arasında olmalı.");
                     if (it.DurationDays <= 0.0) errors.Add($"{where}: süre sıfırdan büyük olmalı.");
+                    if (it.Skill.HasValue && it.SkillXp <= 0f) errors.Add($"{where}: beceri verilmiş ama skillXp sıfırdan büyük değil.");
+                    if (!it.Skill.HasValue && it.SkillXp != 0f) errors.Add($"{where}: skillXp var ama beceri yok.");
                 }
             }
 

@@ -27,5 +27,7 @@ namespace Thatchwick.Core.Content
         public string need;
         public float restore;
         public double durationDays;
+        public string skill;   // isteğe bağlı: Farming/Woodcutting/Cooking/Carpentry
+        public float skillXp;
     }
 }

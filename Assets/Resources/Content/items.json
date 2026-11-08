@@ -18,7 +18,8 @@
       "id": "item.cooking_pot",
       "displayName": "Pişirme kazanı",
       "interactions": [
-        { "id": "eat", "displayName": "Ye", "need": "Hunger", "restore": 50, "durationDays": 0.15 }
+        { "id": "eat", "displayName": "Ye", "need": "Hunger", "restore": 50, "durationDays": 0.15 },
+        { "id": "cook", "displayName": "Pişir ve ye", "need": "Hunger", "restore": 60, "durationDays": 0.2, "skill": "Cooking", "skillXp": 25 }
       ]
     },
     {

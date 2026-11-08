@@ -35,13 +35,26 @@ namespace Thatchwick.Core.Content
                             continue;
                         }
 
+                        SkillType? skill = null;
+                        if (!string.IsNullOrWhiteSpace(i.skill))
+                        {
+                            if (!Enum.TryParse(i.skill, true, out SkillType parsed) || !Enum.IsDefined(typeof(SkillType), parsed))
+                            {
+                                errors.Add($"{dto.id}/{i.id}: bilinmeyen beceri '{i.skill}'.");
+                                continue;
+                            }
+                            skill = parsed;
+                        }
+
                         item.Interactions.Add(new InteractionDef
                         {
                             Id = i.id,
                             DisplayName = i.displayName,
                             Need = need,
                             Restore = i.restore,
-                            DurationDays = i.durationDays
+                            DurationDays = i.durationDays,
+                            Skill = skill,
+                            SkillXp = i.skillXp
                         });
                     }
                 }

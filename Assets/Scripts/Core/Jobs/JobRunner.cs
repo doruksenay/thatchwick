@@ -147,6 +147,8 @@ namespace Thatchwick.Core.Jobs
             if (available >= remaining)
             {
                 _character.Needs.Restore(interaction.Need, interaction.Restore);
+                if (interaction.Skill.HasValue && interaction.SkillXp > 0f)
+                    _character.GainSkillXp(interaction.Skill.Value, interaction.SkillXp);
                 Finish();
                 return used + remaining;
             }

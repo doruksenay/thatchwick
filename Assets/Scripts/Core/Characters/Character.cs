@@ -14,6 +14,7 @@ namespace Thatchwick.Core.Characters
         public bool IsPlayerControlled { get; set; }
         public GridPos Position { get; set; }
         public NeedSet Needs { get; } = new NeedSet();
+        public SkillSet Skills { get; } = new SkillSet();
 
         /// <summary>Yaş (oyun günü). Doğumda 0.</summary>
         public double AgeDays { get; private set; }
@@ -27,6 +28,13 @@ namespace Thatchwick.Core.Characters
         public event Action<Character, AgeStage, AgeStage> StageChanged;
         /// <summary>Doğal ölümde bir kez tetiklenir.</summary>
         public event Action<Character> Died;
+
+        /// <summary>Çalışarak beceri XP'si kazanır; yaş evresine göre seviye tavanı uygulanır. Ölü karakter kazanmaz.</summary>
+        public double GainSkillXp(SkillType skill, double xp)
+        {
+            if (IsDead) return 0;
+            return Skills.AddXp(skill, xp, SkillRules.LevelCap(Stage));
+        }
 
         /// <summary>Karakteri belirli bir yaşta başlatır (başlangıç karakteri, test).</summary>
         public void SetAge(double ageDays)
