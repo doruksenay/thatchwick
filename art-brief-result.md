@@ -179,3 +179,78 @@ Unity normalize pivot: yatak (0,5, 0,381); ocak (0,5, 0,429); tabure (0,5, 0,375
 - **Palet:** Yatak koyu kırmızı-kahve ve krem, eski köylü paletine yakın. Ocak ve tabure daha çok renkli ve "düz, az tonlu" hedefinden biraz uzak.
 - Hepsi tek yön. Yön başına yeni üretim aynı yöntemle yaklaşık 1 generation tutar; ayna (x çevirme) Unity'de ücretsizdir.
 - `.meta` yazılmadı, commit yapılmadı, var olan dosyaların üzerine yazılmadı.
+
+---
+
+# Tur 4: İzometrik varlık seti, Tier 1 (A1)
+
+## Faz A: Durum doğrulama (2026-11-08, harcama 0)
+
+### Hesap (`get_balance`)
+
+| Alan | Değer |
+|---|---|
+| Plan | **Tier 1: Pixel Apprentice**, aktif abonelik |
+| Aylık limit | 2000 generation; yenilenme 2026-12-08 |
+| Kalan | 1999 (1 kullanıldı: tur 3'teki tabure) |
+| Bu işin üst sınırı | 250. Limit ve bakiye bunu karşılıyor, durmaya gerek yok |
+
+### Pro araçların kullanılabilirliği (çağrı yapılmadan)
+
+PixelLab yardımına göre (`search_help`): Tier 1, `create_tiles_pro` (`tile_feature="tileset"` dahil), `create_building_kit` ve `create_path_tiles` için yeterli. `create_object_pro_flash`, `create_8_direction_object` ve `create_map_object` stil eşleme modu deneme hesabında bile açık. Listedeki araçların hiçbiri Tier 2 gerektirmiyor.
+
+Araç açıklamalarındaki maliyetler:
+
+| Araç | Ayar | Maliyet |
+|---|---|---|
+| `create_tiles_pro`, bağımsız karolar | izometrik, 64 px, açı 30, derinlik 0 | 10 (en fazla 16 karo) |
+| `create_tiles_pro`, `tileset` | 64 px, 16 karoluk köşe geçiş seti | 10 |
+| `create_tiles_pro`, stil modu | 64x32 stil görüntüsü | 10 |
+| `create_path_tiles` | izometrik 64 px | 10 (açı 90 olursa 15); 18 karo |
+| `create_building_kit` | `layout=materials` | 10 |
+| `create_building_kit` | izometrik 64 px `grid` | 25 (`wall_tiles=1` ise 15) |
+| `create_object_pro_flash` | 1 yön, 112x84 | 6 (`get_pro_flash_capabilities` teklifi) |
+| `create_8_direction_object` | 64 px'e kadar | 10 |
+| `create_map_object` | stil eşleme + maske | 1 (tur 3'te bakiyeyle doğrulandı) |
+
+### `Assets/Art/Iso` içeriği (dokunulmadı)
+
+- `iso_char_villager_{s,sw,w,nw,n,ne,e,se}.png` + `.meta`: 8 yön, 68x68, ortak pivot (34, 12).
+- **`iso_item_bed_straw_2x1.png`**: 112x84. Tur 3, Faz 3'te 2026-11-08'de teslim edildi. Araç `create_map_object` stil eşleme + kılavuz 2x1 maske (`8e9cc13d-e975-4a27-b4aa-570f470d0a8d`), 1 generation. Doğrulamayı geçti:
+  - Arka plan saydam, yarı saydam 0, maske dışı piksel 0.
+  - Ayak izi 2x1, uzun eksen +x (SE-NW yönü).
+  - Kenarlar düzenli 2:1.
+  - Işık üst 122 > sol 77 > sağ 35.
+  - Yastık ve battaniye net. Pivot (56, 32 alttan).
+- **`iso_item_hearth_stone.png`**: 80x56. Aynı gün, aynı araç ve yöntemle (`eda28f7e-9da1-494d-8436-da05f2366306`), 1 generation.
+  - Geçenler: ayak izi 1x1, 2:1 kenarlar, saydamlık, maske dışı 0. Pivot (40, 24 alttan).
+  - **Sorunlar:** "ateş yok" denmesine rağmen yanan ateş sprite'a çizili ve 62 renk var. Yan yüzler 2–3 px olduğu için ışık sırası ölçülemiyor (sol 86, sağ 85).
+- `iso_item_stool.png`: 80x64, aynı yöntem (`7c4c1b38-65d3-4a45-8788-42de06875dc2`). Geçti; ışık farkı zayıf. Pivot (40, 24 alttan).
+- Üç eşya dosyası indirilen PNG'lerle bayt bayt aynı, değişmemiş. `.meta` dosyaları Unity'de oluşmuş; şu an PPU 100 ve pivot merkezde (0,5, 0,5). Import ayarı henüz yapılmamış görünüyor (bilgi için).
+
+### Brief / yönerge ile çelişkiler ve sınırlar
+
+1. **Zincirleme referans mümkün değil:** `create_tiles_pro` `tile_feature="tileset"`, `style_images` ile birlikte kullanılamıyor (araç açıklaması). Geçiş setine çimen/toprak karosu referans olarak verilemez. Yerine onaylı çimen ve toprak karolarının renkleri `palette` olarak verilecek; her pikseli bu renklerden olur.
+2. **"Kenar kıvrımlılığı orta" için parametre yok:** Ancak açıklama metniyle istenebilir. "Arazi yüksekliği sıfır" `tile_depth_ratio=0` ile sağlanır.
+3. **Eşya adlandırması:** Yeni kural `iso_item_<ad>_<yön>.png`. Var olan üç dosyada yön eki yok ve dokunulmayacak. Öneri: kullanıcı Unity'de yeniden adlandırır (GUID korunur):
+   - `iso_item_bed_straw_2x1.png` → `iso_item_bed_straw_2x1_se.png` (uzun eksen SE-NW)
+   - ocak → `iso_item_hearth_stone_se.png`
+   - tabure → `iso_item_stool_se.png`
+
+   Böylece yalnızca eksik yönler üretilir. Aksi halde aynı eşyanın ikinci kopyası üretilir.
+4. **Karo ucu:** `tile_flat_top_px` 2 ("klasik") seçilecek. Yönerge yalnızca 2:1 basamak istiyor; doğrulama maskesi çıktının gerçek ucuna göre ayarlanır.
+
+### Plan (onay bekliyor)
+
+| # | Varlık | Araç ve ayar | Tahmini generation |
+|---|---|---|---|
+| 1 | Çimen a (aday seti) | `create_tiles_pro` bağımsız; isometric, `tile_size=64`, `tile_view_angle=30`, `tile_depth_ratio=0`, `tile_flat_top_px=2`, `outline_mode=segmentation`, `max_colors` 5; "flat short grass" adaylarından en iyisi seçilir | 10 |
+| 2 | Çimen b, c + toprak a, b | `create_tiles_pro` stil modu, `style_images` = onaylı çimen a (64x32); numaralı 1) çimen b 2) çimen c 3) toprak a 4) toprak b | 10 |
+| 3 | Çimen ↔ toprak geçiş seti | `create_tiles_pro` `tile_feature="tileset"` (16 karoluk köşe seti); 1. adımdaki ayarlar, `palette` = onaylı karoların renkleri | 10 |
+| 4 | (Ayrı onayla) toprak yol | `create_path_tiles` isometric 64, açı 30, derinlik 0 (18 karo) | 10 |
+| 5 | Yatak 2x1, SW-NE ekseni | `create_map_object` stil eşleme + 2x1 kılavuz maske (tur 3'te çalışan yöntem); SE-NW ekseni zaten var (3. madde) | 1 (en fazla 2) |
+| 6 | Tabure, ocak 1x1 | Aynı yöntem; tek yönle başla. Ocak için "söndürülmüş" yeni sürüm, kullanıcı isterse | 1–2 her biri |
+| 7 | Duvarlar | `create_building_kit` isometric 64, `layout=materials` (ahşap çatkı + sıva), `wall_tiles=2`; parçalar onaydan sonra seçilir | 10 (grid gerekirse +25) |
+| | **Toplam** | | **yaklaşık 55; en kötü durum yaklaşık 85 (üst sınır 250)** |
+
+Neden `create_map_object` ve `create_object_pro_flash` değil: Pro Flash ilk kareyi her zaman güneye bakar çizer ve ayak izi kontrolü vermez; ayrıca 5–6 generation tutar. Maskeli yöntem 1 generation ile ayak izini kesin tutturdu.
