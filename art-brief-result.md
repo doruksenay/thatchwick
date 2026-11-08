@@ -502,3 +502,113 @@ Pivot y ALTTAN piksel.
   1. Setin kendi n=15 / n=0 karolarını tam zemin olarak kullanmak; tek karolar yalnızca geçiş olmayan büyük alanlarda.
   2. Seti yeniden üretmek (10 generation), açıklamada baskın renkleri vererek (#75b560 çimen, #8a6844 toprak, "mostly plain with few blades").
   3. Seti kabul edip ton farkını oyunda tolere etmek.
+
+## Faz B, adım 3: Setle uyumlu çimen/toprak adayları ve yatak 2. denemesi (2026-11-08)
+
+Kullanıcı kararı: geçiş seti yeniden üretilmeyecek. Tam zemin olarak setin `n=15` (çimen) ve `n=0` (toprak) karoları kullanılacak. Varyasyonlar bu karolar stil referansı verilerek yeniden üretildi. Eski `iso_ground_grass_a/b/c` ve `iso_ground_dirt_a/b` dosyalarına dokunulmadı.
+
+Durum: **Çimen adayları kullanılabilir (3 güçlü aday). Toprak çağrısı başarısız. Yatak 2. deneme başarısız, teslim edilmedi** (1. deneme dosyası duruyor). DURULDU, seçim bekleniyor.
+
+### Harcama
+
+| Çağrı | Araç ve ayar | Generation |
+|---|---|---|
+| T4-10 | `create_tiles_pro` stil modu (`f14a33a3-6bc1-45e2-a297-a7314a41dbb5`), `style_images` = set `n=15` (64x32), `style_options` renk/çizgi/detay/gölge kopyala, `segmentation`, 16 numaralı çimen | 10 |
+| T4-11 | `create_tiles_pro` stil modu (`a8eb150d-ceab-49a3-a1c7-c3147466f02c`), `style_images` = set `n=0`, aynı ayarlar, 16 numaralı toprak | 10 |
+| T4-12 | Yatak SW-NE, `inpaint_image_pro_flash` deneme 2 (iş `5678e06e-bae7-4f31-95e6-ad71b1a43713`): aynı kaynak/maske/bağlam, "fill the entire footprint" vurgusu, seed 1 | 5 |
+| **Bu adım** | | **25** |
+| **Tur 4 toplamı** (bu oturum) | | **69** (250 sınırından kalan 181) |
+
+**Bakiye:** 1913 / 2000. Sayaç, bu oturumun çağrılarından **17 fazla**:
+- 10: önceki adımda belirtilen `31eaa84b…` işi.
+- 7: bu adımda hesapta görülen başka bir oturumun `pixen_v3` karakter/animasyon işleri (`0e32330b…`, `ac8327fe…`/`8ab148a3…`).
+
+### Çimen adayları (`_aday/iso_ground_grass_set_cand1–16.png`)
+
+Çıktılar 64x32. Elmas, referansla aynı maske B şekli. Maske dışı silinen 0–14 piksel; yarı saydam 0.
+
+- **Palet:** Referansın 3 rengi (#76af64, #639d54, #528647) kopyalanmadı. Adaylarda 6–14 yakın ton var; piksellerin yalnızca %0–14'ü tam olarak set renklerinden. Göz kararıyla aynı yeşil ailesi.
+- **Delik:** cand1 (56,12), cand15 (56,12), cand16 (62,16): birer piksel. Diğerleri deliksiz.
+- **Karışık döşeme** (set `n=15` ile dama tahtası, 8x8): dikiş sıçraması 12,2–17,0, karo içi 7,4–14,1. Set karosunun kendi karo içi değeri 13,6.
+- **Görsel:**
+  - Doku yoğunluğu set ile aynı olanlar (**cand1, cand8, cand16**; karo içi 13,9–14,5) set karosuyla karışınca **tekrar deseni ve çizgi görünmüyor**; yalnızca karo başına hafif ton farkı var (`gs_mix_dense.png`).
+  - Daha seyrek adaylar (cand3, 4, 6, 14 vb.) yoğun set karosunun yanında **belirgin şeritler** oluşturuyor (`gs_mix.png`); önerilmez.
+
+| Aday | Ort. parlaklık (set n=15: 138,4) | Karo içi | Karışık dikiş | Delik | Not |
+|---|---|---|---|---|---|
+| cand1 | 133,6 | 14,18 | 16,95 | 1 | yoğun, uyumlu |
+| **cand8** | 133,8 | 13,92 | 16,81 | 0 | **önerilen** |
+| cand16 | 134,0 | 14,52 | 13,11 | 1 | yoğun, uyumlu |
+| cand2, 4, 5, 9, 11, 12, 13, 15 | 137,7–141,9 | 5,3–11,7 | 12,2–12,9 | 0–1 | orta yoğunluk, hafif şerit |
+| cand3, 6, 10, 14 | 139,3–147,6 | 1,2–9,3 | 12,2–12,9 | 0 | seyrek, belirgin şerit |
+| cand7 | 140,7 | 7,5 | 12,5 | 0 | seyrek |
+
+(Numaralandırma: `cand<n>` = çıktının `tile_<n-1>` karosu.)
+
+Öneri: çimen b = cand8 (deliksiz); c = cand1 ya da cand16 (1 deliği komşu rengiyle doldurmak gerekir; onay gerekir).
+
+### Toprak adayları (`_aday/iso_ground_dirt_set_cand1–16.png`): BAŞARISIZ
+
+- **Renk:** Set paletinden hiç piksel yok (%0). Renk turuncuya kaymış; ortalama parlaklık 124–156 (set `n=0`: 123,1).
+- **Çakıllar:** Büyük, koyu kenarlı ve belirgin. "Tekrar etmeyen ince doku" hedefi tutmadı.
+- **Şekil:** 16 adayın 14'ünde 2–18 piksellik kenar deliği var; 6'sında bütün bir kenar satırı eksik (elmas yarım piksel kaymış). 29–127 piksel maske dışına taşmış.
+- **Kenar çizgisi:** cand11, 12, 15, 16'da koyu bir dış hat var; dikiş sıçraması 65–105.
+- **Parlaklıkça en yakın** cand9, 10, 13 (124,1–124,4; karışık dikiş 9,0–9,3) ama 6–17 delikli ve turuncu.
+
+Karar: hiçbiri önerilmez. Tek çağrı hakkı kullanıldığı için tekrar denenmedi.
+
+Olası yol (onay gerekir): setin `n=0` karosunu tek toprak karosu olarak kullanmak. Ya da `palette` parametresine setin 4 toprak rengini zorunlu vermek; "çakıl yok, ince benekler" diye tarif edip yeniden denemek (10 generation). Palet parametresi her pikseli o renklere zorlar; çimen a/b/c'de böyle tutmuştu.
+
+### Yatak SW-NE 2. deneme: teslim edilmedi
+
+| Kontrol | Deneme 1 (teslim edilen) | Deneme 2 |
+|---|---|---|
+| Genişlik | 77 px | 83 px (SE-NW yatak 98) |
+| Alt köşe (taban alt ucu y=75) | y=70 | **y=66: tabanın yaklaşık 9 px üstünde, havada** |
+| Sol / sağ uç (taban 0 / 95) | 11 / 87 | 6 / 88 |
+| Maske dışı / yarı saydam | 0 / 0 | 0 / 0 |
+| Renk ailesi | uyumlu | uyumlu, 15 renk |
+
+Deneme 2 daha büyük ama ayakları taban köşelerine basmıyor; pivot (56, 32) ile yerleştirilince yatak yukarıda görünür. Bu yüzden teslim edilmedi. 2 deneme hakkı doldu. `iso_item_bed_straw_2x1_sw_ne.png` (deneme 1) olduğu gibi duruyor. Dosya: scratchpad `dl_t4/bed_inp2.png`.
+
+## Faz B, adım 4: Çimen set a/b/c teslimi ve paletli toprak denemesi (2026-11-08)
+
+Durum: **Çimen set a/b/c teslim edildi. Paletli toprak denemesi şekil yüzünden başarısız**, tekrar denenmedi. Yatak SW-NE için harcama yapılmadı; 1. deneme dosyası olduğu gibi duruyor. DURULDU.
+
+### Harcama
+
+| Çağrı | Araç ve ayar | Generation |
+|---|---|---|
+| T4-13 | `create_tiles_pro` stil modu (`1187f530-6d00-4413-8463-22a25b5a162c`). `style_images` = set `n=0`; `palette` = #9a7650, #8a6844, #77583a, #634a30 (zorunlu); `segmentation`. Tarif: çakılsız, ince benekler, küçük koyu leke yok, kenarda koyu dış hat yok, tüm kenar satırları dolu | 10 |
+| **Bu adım** | | **10** |
+| **Tur 4 toplamı** (bu oturum) | | **79** (250 sınırından kalan 171) |
+
+Bakiye: 1903 / 2000. Sayaçtaki 97 kullanılmış hakkın 80'i bu oturumdan (tur 3 tabure 1 + tur 4 79); 17'si önceki adımlarda belirtilen başka işlerden. Bu adımda yalnızca bu çağrının 10 hakkı düştü.
+
+### Teslim edilen
+
+Pivot y ALTTAN piksel.
+
+| Yol | Boyut | Pivot | Kaynak | Değişiklik |
+|---|---|---|---|---|
+| `Assets/Art/Iso/iso_ground_grass_set_a.png` | 64x32 | (32, 16) | Geçiş seti `n=15` (`_aday/iso_ground_grass_dirt_15.png`) | yok |
+| `Assets/Art/Iso/iso_ground_grass_set_b.png` | 64x32 | (32, 16) | `_aday/iso_ground_grass_set_cand8.png` | yok |
+| `Assets/Art/Iso/iso_ground_grass_set_c.png` | 64x32 | (32, 16) | `_aday/iso_ground_grass_set_cand1.png` | **1 piksel dolgu:** (x=56, y=12) ← #72a865 |
+
+- **Çimen c seçimi:** cand1 ve cand16'nın ikisinde de 1'er piksel delik vardı. cand1 seçildi, çünkü deliğin iki opak komşusunun (sol ve alt) rengi aynı (#72a865) ve dolgu tartışmasız. cand16'nın deliği (62,16) iki farklı renkli komşu arasındaydı (#566251 / #79a66c).
+- **Dolgu sonrası doğrulama (üç dosya):** 64x32; maske B dışında piksel 0; maske içinde delik 0; her satırın sol/sağ ucu tam 2:1 basamakta; yarı saydam 0; arka plan saydam. Dolguda yalnızca (56,12) değişti.
+- **Karışık döşeme** (set_a ile b ve c, 8x8): dikiş 16,8 / 17,1; karo içi 13,8 / 13,9. Ortalama parlaklık b 133,8, c 133,6 (set_a 138,4). Önizleme: scratchpad `set_abc_field.png`.
+- Masaüstü kopyası: `OneDrive/Desktop/art/zemin/iso_ground_grass_set_a/b/c.png`. Eski `iso_ground_grass_a/b/c` ve `iso_ground_dirt_a/b` dosyalarına dokunulmadı.
+
+### Paletli toprak denemesi: başarısız (dosya yazılmadı)
+
+| Kontrol | Sonuç |
+|---|---|
+| Renk | **Tuttu:** piksellerin %100'ü set paletinden, karo başına 4 renk |
+| Doku | **Tuttu:** çakıl yok, ince benekler, koyu dış hat yok. Ortalama parlaklık 116,9–123,7 (set `n=0`: 123,1). Karışık dikiş/karo içi oranı çoğunda ≤ 1,2 |
+| **Şekil** | **Tutmadı.** Elmas 62 değil 60 px geniş (x=2–61), bir satır yukarı kaymış, basamaklar düzensiz. Maske B'ye göre karo başına **64–67 piksel kenar deliği** (16'nın 14'ünde), kalan 2'sinde 24. Döşenince her karonun çevresinde 1–2 px boşluk ızgarası çıkar |
+| Kenar satırları dolu mu | Hayır |
+
+Karar: tek çağrı hakkı kullanıldı, tekrar denenmedi. Ham çıktılar scratchpad `dl_dp/`, önizleme `dp_cands.png`.
+
+Not: Renk ve doku hedefi bu çağrıda tuttu. Sorun, stil modunun şekli referanstan değil kendi elmasından alması. Kullanıcının yedek planı (set `n=0` + yatay aynası) uygulanmadı; onay bekleniyor. Maske B yatayda simetrik olduğu için aynada şekil bozulmaz. Düz bir zemin karosunda ışık yönü de sorun olmaz.

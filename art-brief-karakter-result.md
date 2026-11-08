@@ -36,3 +36,56 @@ Gövde/tuval oranı yaklaşık 0,66. Hedef boylar için tuval: 48 px boy → 72,
 - **Çelişki 1:** Brief "commit/push yapma" diyor. `CLAUDE.md` ise kuyruk düzeninin bu kısıtın yerine geçtiğini söylüyor; işçi kendi yollarını push eder.
 - **Çelişki 2:** Brief masaüstü kopyası istiyor (`C:\Users\User\OneDrive\Desktop\art`). İşçi yalnızca `art/`, `Assets/Art/Iso/` ve `tools/art/` altına yazabiliyor. 010'un tarifine, senin brief'ine dayanarak, açık istisna olarak yazdım.
 - **Çelişki 3:** İşçi kuyruğu numara sırasıyla işliyor. 001-008 (zemin, eşya, duvar) hâlâ `pending`. Öte yandan diğer oturum zemini eski brief düzeniyle yürütüyor (`_aday` altında çimen ve toprak adayları var). İşçiyi başlatırsam önce 001 ve 005'i alır ve diğer oturumun işini çift harcamayla tekrarlar.
+
+## Faz K1: Boy ve detay testi (2026-11-08, kuyruk işi 010, status: review)
+
+Ayrıntılı rapor: `art/results/010-karakter-boy-testi.md` (commit de5b254). Araç: `create_character` v3, `view=high top-down`, `outline=single color black outline`, `detail=high detail`.
+
+### Generation dökümü
+| Çağrı | Generation |
+|---|---|
+| v3 size 72 | 2 |
+| v3 size 84 | 2 |
+| v3 size 96 | 3 |
+| **Bu brief toplam** | **7 / 120** |
+
+Kalan bakiye (`get_balance`, iş sonrası): 1928. Hesap ortak: aynı aralıkta 007 (10 gen) ve paralel oturumlar da harcadı.
+
+### SE ölçümleri (kod oturumunda yeniden ölçüldü, işçi raporuyla aynı)
+| Hedef boy | Tuval | Gerçek gövde boyu | Genişlik | Renk | Yarı saydam | Pivot x | Pivot y (alttan) |
+|---|---|---|---|---|---|---|---|
+| 48 | 72x72 | **70** | 38 | 63 | 0 | 36,5 | 1 |
+| 56 | 84x84 | **81** | 42 | 47 | 0 | 45,0 | 1 |
+| 64 | 96x96 | **86** | 43 | 64 | 0 | 50,5 | 4 |
+
+8 yönde renk sayıları: 48 için 48-64, 56 için 32-48, 64 için 53-64. Yarı saydam piksel hiçbir dosyada yok. `validate_iso.py --kind object` üç SE dosyasında da geçti.
+
+### Detay farkı
+| Detay | 48 | 56 | 64 |
+|---|---|---|---|
+| Yüz | Kaş ve göz okunuyor; burun yalnızca gölgeyle belli; ağız sakalda kayboluyor | Kaş, burun ve ağız çizgisi seçiliyor | Göz bebeği, kaş, burun ve ağız ayrı ayrı okunuyor; en iyisi |
+| Eller | Yumruk lekesi | Parmak ipucu var | 2-3 parmak seçiliyor |
+| Kemer, toka, kese | Var | Var, ayrıca omuz kayışı | Var, ayrıca omuz kayışı ve bileklik |
+| Bacak sargısı | Zayıf okunuyor | Belirgin | Belirgin, şerit dokusu görünüyor |
+| Ayakkabı bağı | Yok | Yok | Yok |
+| Oran | İri baş, chibi'ye yakın | Gerçekçi | Gerçekçi |
+
+Her boy kendi içinde 8 yönde tutarlı. Ancak seed olmadığı için üç boy birebir aynı tasarım değil; örneğin 64'te tunik daha turuncu, saç daha uzun ve kızıl.
+
+### Sorunlar
+1. **Boy hedefi tutmadı (K0 planındaki hata).** K0'da gövde/tuval oranını mevcut köylüden 0,66 varsaydım. v3 ise tuvali neredeyse tamamen dolduruyor (oran 0,90-0,97). Bu yüzden üç aday da hedefin çok üstünde: 70, 81 ve 86 px.
+   - Mevcut köylü (45 px) ve 64x32 elmas ölçeğinde bu adaylar çok büyük kalır.
+   - 48/56/64 gövde boyu için tuval yaklaşık 52, 60 ve 68 olmalı (tahmin).
+   - O boylarda yeniden test: 2 + 2 + 2 = 6 gen, yeni karakter işi 011.
+2. **Renk sayısı 32'nin üstünde** (yalnızca 56'nın S yönü 32'de kalıyor). 32 renk şartı K2'de de geçerli kalacaksa iki yol var:
+   - `create_character_pro_flash` ile `max_colors=32`: 6 gen/karakter.
+   - Ayrı bir renk azaltma adımı.
+3. **Pivot y yöne göre 1-3 px değişiyor.** Arka yönler (n, nw, ne) daha yukarıda bitiyor. Unity'de yön başına pivot gerekir.
+4. **Ayakkabı bağı** hiçbir boyda çizilmedi.
+
+### Dosyalar
+- Proje: `Assets/Art/Iso/_aday/iso_char_farmer_a_{48,56,64}_cand_{se,sw,nw,ne,s,w,n,e}.png` (24 PNG). Paralel oturumun 5703540 commit'i bunları `.meta`'larıyla birlikte erkenden commit etti; içerik işçinin ürettiğiyle bayt bayt aynı.
+- Masaüstü:
+  - `C:\Users\User\OneDrive\Desktop\art\karakter\2026-11-08_farmer_a_{48,56,64}\` (her birinde 8 PNG ve `_onizleme_x4.png`)
+  - `C:\Users\User\OneDrive\Desktop\art\karakter\2026-11-08_K1_toplu_x4.png`
+  - `_indeks.md`'ye 3 satır eklendi. Bu satırlardaki "38 gen." gibi notlar genişlik demek, generation değil.
