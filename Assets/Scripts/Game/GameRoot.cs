@@ -35,14 +35,19 @@ namespace Thatchwick.Game
         private readonly List<Actor> _actors = new List<Actor>();
         private readonly Dictionary<int, Transform> _itemViews = new Dictionary<int, Transform>();
         private Actor _player;
+        private Actor _maud;
         private string _lastFailure;
         private float _messageUntil;
         private string _message = "";
         private GUIStyle _labelStyle;
         private readonly System.Random _rng = new System.Random(11);
+        private Population _population;
+        private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
+        private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric" };
+        private int _nameCounter;
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
-        private Rect HudRect => new Rect(8f, 8f, 330f, 230f);
+        private Rect HudRect => new Rect(8f, 8f, 340f, 360f);
 
         private void Awake()
         {
@@ -77,8 +82,12 @@ namespace Thatchwick.Game
             _input.IsOverUi = IsOverHud;
             _input.Tapped += OnTapped;
 
-            _player = CreateActor(1, "Aldric", new GridPos(24, 10), true, new Color(0.95f, 0.62f, 0.2f));
-            CreateActor(2, "Maud", new GridPos(28, 9), false, new Color(0.9f, 0.5f, 0.75f));
+            _population = new Population(firstFreeId: 1, seed: 21);
+            _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % 4];
+            _population.BabyBorn += OnBabyBorn;
+
+            _player = CreateActor(1, "Aldric", new GridPos(24, 10), true, new Color(0.95f, 0.62f, 0.2f), Sex.Male);
+            _maud = CreateActor(2, "Maud", new GridPos(28, 9), false, new Color(0.9f, 0.5f, 0.75f), Sex.Female);
         }
 
         // Test haritası: gölet (dikdörtgen), bir çit hattı ve dağınık engeller.
@@ -149,20 +158,27 @@ namespace Thatchwick.Game
             }
         }
 
-        private Actor CreateActor(int id, string name, GridPos start, bool player, Color color)
+        private Actor CreateActor(int id, string name, GridPos start, bool player, Color color, Sex sex)
         {
-            var character = new Character(id, name, start, player);
+            var character = new Character(id, name, start, player) { Sex = sex };
             character.SetAge(36); // Test: yetişkin başlar
             character.LifespanDays = character.AgeConfig.RollLifespan(_rng);
+            _population.Add(character);
+            return CreateActorFor(character, color);
+        }
+
+        private Actor CreateActorFor(Character character, Color color)
+        {
             character.StageChanged += (c, from, to) => ShowMessage($"{c.Name}: {StageName(to)} oldu");
             character.Died += c => ShowMessage($"{c.Name} hayatını kaybetti");
             character.Skills.LevelChanged += (skill, from, to) => ShowMessage($"{character.Name}: {SkillName(skill)} seviye {to}");
-            var go = new GameObject(name);
+
+            var go = new GameObject(character.Name);
             go.transform.SetParent(transform, false);
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sprite = SpriteMaterials.Pillar(color);
             sr.sharedMaterial = SpriteMaterials.Unlit;
-            go.transform.position = _view.TileToWorld(start);
+            go.transform.position = _view.TileToWorld(character.Position);
 
             var actor = new Actor
             {
@@ -173,6 +189,14 @@ namespace Thatchwick.Game
             };
             _actors.Add(actor);
             return actor;
+        }
+
+        // Yeni doğan bebek: sahneye küçük bir karakter olarak eklenir (bebek evresinde yetişkin boyunun yarısı).
+        private void OnBabyBorn(Character baby, Character mother, int? fatherId)
+        {
+            var actor = CreateActorFor(baby, baby.Sex == Sex.Female ? new Color(0.95f, 0.75f, 0.85f) : new Color(0.6f, 0.75f, 0.95f));
+            actor.View.localScale = new Vector3(0.6f, 0.6f, 1f);
+            ShowMessage($"{mother.Name} doğurdu: {baby.Name}");
         }
 
         private bool IsOverHud(Vector2 screenPos)
@@ -227,9 +251,9 @@ namespace Thatchwick.Game
 
             // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
             double gameDays = _clock.Advance(dt);
-            foreach (var actor in _actors)
+            _population.Tick(gameDays);
+            foreach (var actor in _actors.ToArray())
             {
-                actor.Character.Tick(gameDays);
                 if (actor.Character.IsDead)
                 {
                     actor.Renderer.color = new Color(1f, 1f, 1f, 0.35f);
@@ -257,6 +281,8 @@ namespace Thatchwick.Game
             actor.View.position = pos;
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
             actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1);
+            float scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : 1f);
+            actor.View.localScale = new Vector3(scale, scale, 1f);
         }
 
         private void ShowMessage(string text)
@@ -343,12 +369,18 @@ namespace Thatchwick.Game
             {
                 var c = actor.Character;
                 GUILayout.Label(
-                    $"{c.Name} ({(c.IsDead ? "Öldü" : StageName(c.Stage))}, {c.AgeDays:0}g): Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0}");
+                    $"{c.Name} ({(c.IsDead ? "Öldü" : StageName(c.Stage))}{(c.IsPregnant ? ", hamile" : "")}, {c.AgeDays:0}g): Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0}");
                 if (!c.IsDead) GUILayout.Label($"   {ActivityText(actor.Runner)}");
                 var skills = SkillsText(c);
                 if (skills.Length > 0) GUILayout.Label($"   Beceri: {skills}");
             }
 
+            if (_maud != null && !_maud.Character.IsDead && GUILayout.Button("Test: Maud hamile (2 günde doğurur)"))
+            {
+                _maud.Character.PregnancyDays = 2;
+                if (!_maud.Character.TryStartPregnancy(_player.Character.Id)) ShowMessage("Maud şu an hamile kalamaz");
+                else ShowMessage("Maud hamile");
+            }
             GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
             GUILayout.EndArea();

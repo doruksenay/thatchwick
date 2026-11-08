@@ -1,0 +1,69 @@
+using System;
+using System.Collections.Generic;
+
+namespace Thatchwick.Core.Characters
+{
+    /// <summary>
+    /// Bir hanenin/köyün karakter topluluğu: hepsini ilerletir, doğumda bebek karakter üretir.
+    /// Bebeğin kimliği, cinsiyeti ve ömrü burada belirlenir (rastgelelik tohumlanabilir = test edilebilir).
+    /// </summary>
+    public sealed class Population
+    {
+        private readonly List<Character> _members = new List<Character>();
+        private readonly Random _rng;
+        private int _nextId;
+
+        public IReadOnlyList<Character> Members => _members;
+        public Func<Sex, string> NameGenerator { get; set; }
+
+        /// <summary>(bebek, anne, babanın kimliği)</summary>
+        public event Action<Character, Character, int?> BabyBorn;
+
+        public Population(int firstFreeId = 1, int seed = 12345)
+        {
+            _nextId = firstFreeId;
+            _rng = new Random(seed);
+        }
+
+        public int NextId() => _nextId++;
+
+        public void Add(Character c)
+        {
+            if (c == null) throw new ArgumentNullException(nameof(c));
+            if (_members.Contains(c)) return;
+            _members.Add(c);
+            c.GaveBirth += OnGaveBirth;
+            if (c.Id >= _nextId) _nextId = c.Id + 1;
+        }
+
+        public Character Find(int id)
+        {
+            foreach (var c in _members) if (c.Id == id) return c;
+            return null;
+        }
+
+        /// <summary>Tüm karakterlerin biyolojisini ilerletir (ihtiyaç, yaş, hamilelik, ölüm).</summary>
+        public void Tick(double gameDays)
+        {
+            // Doğumlar listeyi değiştirebilir; üzerinde dolaşırken kopya kullan.
+            var snapshot = _members.ToArray();
+            foreach (var c in snapshot) c.Tick(gameDays);
+        }
+
+        private void OnGaveBirth(Character mother, int? fatherId)
+        {
+            var sex = _rng.Next(2) == 0 ? Sex.Female : Sex.Male;
+            string name = NameGenerator != null ? NameGenerator(sex) : (sex == Sex.Female ? "Kız" : "Oğlan");
+            if (string.IsNullOrWhiteSpace(name)) name = "Bebek";
+
+            var baby = new Character(NextId(), name, mother.Position, false)
+            {
+                Sex = sex,
+                AgeConfig = mother.AgeConfig
+            };
+            baby.LifespanDays = mother.AgeConfig.RollLifespan(_rng);
+            Add(baby);
+            BabyBorn?.Invoke(baby, mother, fatherId);
+        }
+    }
+}

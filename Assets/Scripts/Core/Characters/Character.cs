@@ -15,6 +15,34 @@ namespace Thatchwick.Core.Characters
         public GridPos Position { get; set; }
         public NeedSet Needs { get; } = new NeedSet();
         public SkillSet Skills { get; } = new SkillSet();
+        public Sex Sex { get; set; } = Sex.Female;
+
+        // --- Hamilelik (T4 kenar durumları) ---
+        /// <summary>Hamilelik süresi (oyun günü). Varsayılan 30 (yılın ~%75'i); denge turunda ayarlanır.</summary>
+        public double PregnancyDays { get; set; } = 30.0;
+        /// <summary>Doğumdan sonra yeniden hamile kalamama süresi (oyun günü).</summary>
+        public double PostpartumDays { get; set; } = 10.0;
+        public bool IsPregnant { get; private set; }
+        public int? FatherId { get; private set; }
+        private double _pregnancyLeft;
+        private double _postpartumLeft;
+
+        /// <summary>Doğumda (anne, babanın kimliği) ile bir kez tetiklenir. Ölürse doğum olmaz.</summary>
+        public event Action<Character, int?> GaveBirth;
+
+        /// <summary>Genç ya da Yetişkin, ölmemiş, hamile olmayan, doğum sonrası süresini doldurmuş kadın hamile kalabilir.</summary>
+        public bool CanConceive =>
+            !IsDead && Sex == Sex.Female && !IsPregnant && _postpartumLeft <= 0
+            && (Stage == AgeStage.Youth || Stage == AgeStage.Adult);
+
+        public bool TryStartPregnancy(int fatherId)
+        {
+            if (!CanConceive) return false;
+            IsPregnant = true;
+            FatherId = fatherId;
+            _pregnancyLeft = PregnancyDays;
+            return true;
+        }
 
         /// <summary>Yaş (oyun günü). Doğumda 0.</summary>
         public double AgeDays { get; private set; }
@@ -66,7 +94,25 @@ namespace Thatchwick.Core.Characters
             if (AgeDays >= LifespanDays)
             {
                 IsDead = true;
+                IsPregnant = false; // anne ölürse doğum olmaz
+                FatherId = null;
                 Died?.Invoke(this);
+                return;
+            }
+
+            if (_postpartumLeft > 0) _postpartumLeft = Math.Max(0, _postpartumLeft - gameDays);
+
+            if (IsPregnant)
+            {
+                _pregnancyLeft -= gameDays;
+                if (_pregnancyLeft <= 0)
+                {
+                    int? father = FatherId;
+                    IsPregnant = false;
+                    FatherId = null;
+                    _postpartumLeft = PostpartumDays;
+                    GaveBirth?.Invoke(this, father);
+                }
             }
         }
     }

@@ -200,3 +200,130 @@ namespace Thatchwick.Core.Tests
         }
     }
 }
+
+namespace Thatchwick.Core.Tests
+{
+    public class PregnancyTests
+    {
+        private static Character Woman(double age = 40)
+        {
+            var c = new Character(1, "Maud", new GridPos(0, 0)) { Sex = Sex.Female };
+            c.SetAge(age);
+            return c;
+        }
+
+        [Fact]
+        public void Yetiskin_Kadin_HamileKalabilir()
+        {
+            var c = Woman();
+            Assert.True(c.TryStartPregnancy(2));
+            Assert.True(c.IsPregnant);
+            Assert.Equal(2, c.FatherId);
+        }
+
+        [Fact]
+        public void Erkek_Cocuk_Yasli_Olu_HamileKalamaz()
+        {
+            var man = new Character(2, "Aldric", new GridPos(0, 0)) { Sex = Sex.Male };
+            man.SetAge(40);
+            Assert.False(man.TryStartPregnancy(1));
+
+            Assert.False(Woman(13).TryStartPregnancy(1));  // çocuk
+            Assert.False(Woman(80).TryStartPregnancy(1));  // yaşlı
+
+            var dead = Woman();
+            dead.LifespanDays = 41;
+            dead.Tick(5);
+            Assert.False(dead.TryStartPregnancy(1));
+        }
+
+        [Fact]
+        public void IkinciKezHamileKalamaz_AynıAndaCiftHamilelikYok()
+        {
+            var c = Woman();
+            Assert.True(c.TryStartPregnancy(2));
+            Assert.False(c.TryStartPregnancy(3));
+            Assert.Equal(2, c.FatherId);
+        }
+
+        [Fact]
+        public void SureDolunca_DogumBirKezOlur_SonraDogumSonrasiBeklenir()
+        {
+            var c = Woman();
+            c.PregnancyDays = 5;
+            c.PostpartumDays = 3;
+            int births = 0;
+            c.GaveBirth += (_, __) => births++;
+
+            c.TryStartPregnancy(2);
+            c.Tick(4.9);
+            Assert.Equal(0, births);
+            c.Tick(0.2);
+            Assert.Equal(1, births);
+            Assert.False(c.IsPregnant);
+
+            Assert.False(c.TryStartPregnancy(2)); // doğum sonrası bekleme
+            c.Tick(3.1);
+            Assert.True(c.TryStartPregnancy(2));
+        }
+
+        [Fact]
+        public void AnneOlurse_DogumOlmaz()
+        {
+            var c = Woman(40);
+            c.LifespanDays = 42;
+            c.PregnancyDays = 10;
+            int births = 0;
+            c.GaveBirth += (_, __) => births++;
+            c.TryStartPregnancy(2);
+            c.Tick(5);   // yaş 45 > 42: öldü
+            c.Tick(10);
+            Assert.True(c.IsDead);
+            Assert.Equal(0, births);
+            Assert.False(c.IsPregnant);
+        }
+
+        [Fact]
+        public void Nufus_DogumdaBebekUretir_BebekBebekEvresindeVeFarkliKimlikte()
+        {
+            var pop = new Population(firstFreeId: 1, seed: 3);
+            var mother = Woman();
+            mother.PregnancyDays = 2;
+            var father = new Character(2, "Aldric", new GridPos(1, 1)) { Sex = Sex.Male };
+            father.SetAge(40);
+            pop.Add(mother);
+            pop.Add(father);
+
+            Character born = null;
+            int? fatherSeen = null;
+            pop.BabyBorn += (b, m, f) => { born = b; fatherSeen = f; };
+
+            mother.TryStartPregnancy(father.Id);
+            pop.Tick(2.5);
+
+            Assert.NotNull(born);
+            Assert.Equal(father.Id, fatherSeen);
+            Assert.Equal(AgeStage.Baby, born.Stage);
+            Assert.Equal(3, born.Id);
+            Assert.Contains(born, pop.Members);
+            Assert.InRange(born.LifespanDays, 96.0, 144.0);
+            Assert.Equal(mother.Position, born.Position);
+        }
+
+        [Fact]
+        public void Nufus_BebekZamanlaBuyur()
+        {
+            var pop = new Population();
+            var mother = Woman();
+            mother.PregnancyDays = 1;
+            pop.Add(mother);
+            Character baby = null;
+            pop.BabyBorn += (b, _, __) => baby = b;
+            mother.TryStartPregnancy(9);
+            pop.Tick(1.1);
+            Assert.NotNull(baby);
+            pop.Tick(12.0);
+            Assert.Equal(AgeStage.Child, baby.Stage);
+        }
+    }
+}
