@@ -231,6 +231,7 @@ namespace Thatchwick.Game
             if (GUILayout.Button("Kapat", GUILayout.Width(60f))) { Exit(); GUILayout.EndHorizontal(); GUILayout.EndArea(); return; }
             GUILayout.EndHorizontal();
             if (_status.Length > 0) GUILayout.Label(_status);
+            GUILayout.Label($"Girdi: basma {_input.PressCount}, arayüzde {_input.BlockedCount}, dokunma {_input.TapCount}");
 
             DrawContext();
 
@@ -255,6 +256,18 @@ namespace Thatchwick.Game
                 GUILayout.Label($"Koyulacak: {def.DisplayName}");
                 if (def.Placement == ItemPlacement.Surface)
                 {
+                    // Dokunma yerine listeden de seçilebilir (mobil ve küçük hedefler için).
+                    foreach (var it in _world.Items)
+                    {
+                        if (it.IsDecor || it.Def.SurfaceSlots.Count == 0) continue;
+                        if (GUILayout.Button($"{it.Def.DisplayName} ({it.Position.X},{it.Position.Y})"))
+                        {
+                            _surfaceId = it.Id;
+                            Focus(it);
+                            _status = $"{it.Def.DisplayName}: bir yuvaya dokun.";
+                            RefreshOverlay();
+                        }
+                    }
                     if (_surfaceId != 0)
                     {
                         var surface = _world.GetItem(_surfaceId);

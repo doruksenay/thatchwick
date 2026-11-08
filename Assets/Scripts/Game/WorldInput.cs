@@ -27,6 +27,10 @@ namespace Thatchwick.Game
 
         public event Action<Vector2> Tapped;
 
+        // Tanılama (HUD'da gösterilir): girdinin nerede takıldığını görmek için.
+        public int PressCount, BlockedCount, TapCount;
+        public Vector2 LastPressPos;
+
         // Kamera odağı (yapı modunda eşyaya yaklaşma). Kullanıcı kaydırır/yakınlaştırırsa iptal olur.
         private bool _focusing;
         private Vector3 _focusPos;
@@ -148,7 +152,9 @@ namespace Thatchwick.Game
 
             if (pointer.press.wasPressedThisFrame)
             {
-                if (IsOverUi != null && IsOverUi(pos)) return;
+                PressCount++;
+                LastPressPos = pos;
+                if (IsOverUi != null && IsOverUi(pos)) { BlockedCount++; return; }
                 _pressing = true;
                 _movedTooFar = false;
                 _pressStart = pos;
@@ -169,7 +175,7 @@ namespace Thatchwick.Game
             if (pointer.press.wasReleasedThisFrame || !pointer.press.isPressed)
             {
                 _pressing = false;
-                if (!_movedTooFar && !_wasPinching) Tapped?.Invoke(pos);
+                if (!_movedTooFar && !_wasPinching) { TapCount++; Tapped?.Invoke(pos); }
             }
         }
 
