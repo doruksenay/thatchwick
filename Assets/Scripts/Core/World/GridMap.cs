@@ -44,6 +44,8 @@ namespace Thatchwick.Core.World
     {
         private readonly bool[] _blocked;
         private readonly FloorType[] _floor;
+        private readonly bool[] _owned;
+        private RoomMap _rooms;
         private readonly Dictionary<Edge, EdgeKind> _edges = new Dictionary<Edge, EdgeKind>();
 
         /// <summary>Zemin ya da kenar değişti (görünüm yenilemesi için).</summary>
@@ -60,6 +62,8 @@ namespace Thatchwick.Core.World
             Height = height;
             _blocked = new bool[width * height];
             _floor = new FloorType[width * height];
+            _owned = new bool[width * height];
+            for (int i = 0; i < _owned.Length; i++) _owned[i] = true; // varsayılan: her yer hanenin
         }
 
         public bool InBounds(GridPos p) => p.X >= 0 && p.Y >= 0 && p.X < Width && p.Y < Height;
@@ -86,6 +90,31 @@ namespace Thatchwick.Core.World
             Changed?.Invoke();
         }
 
+        // ---- arsa (sahiplik) ----
+
+        public bool IsOwned(GridPos p) => InBounds(p) && _owned[Index(p)];
+
+        public void SetOwned(GridPos p, bool owned)
+        {
+            if (!InBounds(p)) throw new ArgumentOutOfRangeException(nameof(p), $"{p} ızgara dışında.");
+            if (_owned[Index(p)] == owned) return;
+            _owned[Index(p)] = owned;
+            Changed?.Invoke();
+        }
+
+        /// <summary>Tüm haritayı sahipsiz yapıp verilen dikdörtgeni (x0..x1, y0..y1 dahil) hanenin yapar.</summary>
+        public void RestrictOwnership(int x0, int y0, int x1, int y1)
+        {
+            for (int i = 0; i < _owned.Length; i++) _owned[i] = false;
+            for (int y = y0; y <= y1; y++)
+                for (int x = x0; x <= x1; x++)
+                    if (InBounds(new GridPos(x, y))) _owned[Index(new GridPos(x, y))] = true;
+            Changed?.Invoke();
+        }
+
+        /// <summary>Oda haritası (duvar kenarlarına göre); kenar değişince yeniden hesaplanır.</summary>
+        public RoomMap Rooms => _rooms ?? (_rooms = RoomMap.Compute(this));
+
         // ---- kenarlar ----
 
         public bool EdgeInBounds(Edge e) => e.Axis == EdgeAxis.Horizontal
@@ -101,6 +130,7 @@ namespace Thatchwick.Core.World
             if (!EdgeInBounds(e)) throw new ArgumentOutOfRangeException(nameof(e), $"{e} ızgara dışında.");
             if (GetEdge(e) == kind) return;
             if (kind == EdgeKind.None) _edges.Remove(e); else _edges[e] = kind;
+            _rooms = null;
             Changed?.Invoke();
         }
 

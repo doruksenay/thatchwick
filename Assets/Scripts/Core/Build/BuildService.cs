@@ -59,10 +59,25 @@ namespace Thatchwick.Core.Build
             return PlacementCheck.Success;
         }
 
+        private PlacementCheck CheckOwned(ItemDef def, GridPos position, int rotation)
+        {
+            var (w, h) = Footprint.Dimensions(def.Width, def.Height, rotation);
+            for (int dy = 0; dy < h; dy++)
+                for (int dx = 0; dx < w; dx++)
+                    if (!_world.Map.IsOwned(new GridPos(position.X + dx, position.Y + dy)))
+                        return PlacementCheck.Fail(NotOwned);
+            return PlacementCheck.Success;
+        }
+
+        public const string NotOwned = "Burası senin arsan değil.";
+
         public PlacementCheck CanPlaceFromInventory(string itemId, GridPos position, int rotation)
         {
             if (_house.Count(itemId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
-            return _world.CanPlaceFloor(_content.Items.Get(itemId), position, rotation);
+            var def = _content.Items.Get(itemId);
+            var owned = CheckOwned(def, position, rotation);
+            if (!owned.Ok) return owned;
+            return _world.CanPlaceFloor(def, position, rotation);
         }
 
         public PlacementCheck PlaceFromInventory(string itemId, GridPos position, int rotation, out ItemInstance placed)
@@ -87,7 +102,16 @@ namespace Thatchwick.Core.Build
             return PlacementCheck.Success;
         }
 
-        public PlacementCheck Move(int itemId, GridPos position, int rotation) => _world.MoveItem(itemId, position, rotation);
+        public PlacementCheck Move(int itemId, GridPos position, int rotation)
+        {
+            var item = _world.GetItem(itemId);
+            if (item != null)
+            {
+                var owned = CheckOwned(item.Def, position, rotation);
+                if (!owned.Ok) return owned;
+            }
+            return _world.MoveItem(itemId, position, rotation);
+        }
 
         /// <summary>Eşyayı (ve dekorlarını) envantere geri alır.</summary>
         public PlacementCheck StoreToInventory(int itemId)
@@ -130,6 +154,7 @@ namespace Thatchwick.Core.Build
         {
             var map = _world.Map;
             if (!map.EdgeInBounds(edge)) return PlacementCheck.Fail("Harita dışı.");
+            if (!map.IsOwned(edge.SideA) && !map.IsOwned(edge.SideB)) return PlacementCheck.Fail(NotOwned);
             var old = map.GetEdge(edge);
             if (old == kind) return PlacementCheck.Fail("Orada zaten var.");
             if ((kind == EdgeKind.Door || kind == EdgeKind.Window) && old != EdgeKind.Wall && old != EdgeKind.Door && old != EdgeKind.Window)
@@ -148,6 +173,7 @@ namespace Thatchwick.Core.Build
         {
             var map = _world.Map;
             if (!map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
+            if (!map.IsOwned(tile)) return PlacementCheck.Fail(NotOwned);
             var old = map.GetFloor(tile);
             if (old == floor) return PlacementCheck.Fail("Orası zaten öyle.");
             int cost = Math.Max(0, FloorPrice(floor) - Refund(FloorPrice(old)));
@@ -155,6 +181,49 @@ namespace Thatchwick.Core.Build
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
             if (refund > 0) _house.AddAkce(refund);
             map.SetFloor(tile, floor);
+            return PlacementCheck.Success;
+        }
+
+        // ---- arsa ----
+
+        public const int ChunkSize = 4;
+        public const int ChunkPrice = 20;
+
+        /// <summary>Verilen karonun ait olduğu 4x4 arsa parçasının sol-üst karosu.</summary>
+        public static GridPos ChunkOrigin(GridPos tile) =>
+            new GridPos(Math.Max(0, tile.X) / ChunkSize * ChunkSize, Math.Max(0, tile.Y) / ChunkSize * ChunkSize);
+
+        /// <summary>Arsa genişletme: komşu (dik) 4x4 parçayı satın alır. Yalnızca sahip olunan alana bitişik parça alınabilir.</summary>
+        public PlacementCheck BuyChunk(GridPos tile)
+        {
+            var map = _world.Map;
+            if (!map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
+            var o = ChunkOrigin(tile);
+            if (map.IsOwned(o)) return PlacementCheck.Fail("Burası zaten senin.");
+
+            bool adjacent = false;
+            var dirs = new[] { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };
+            for (int dy = 0; dy < ChunkSize && !adjacent; dy++)
+                for (int dx = 0; dx < ChunkSize && !adjacent; dx++)
+                {
+                    var t = new GridPos(o.X + dx, o.Y + dy);
+                    if (!map.InBounds(t)) continue;
+                    foreach (var d in dirs)
+                    {
+                        var n = t + d;
+                        bool inside = n.X >= o.X && n.X < o.X + ChunkSize && n.Y >= o.Y && n.Y < o.Y + ChunkSize;
+                        if (!inside && map.IsOwned(n)) { adjacent = true; break; }
+                    }
+                }
+            if (!adjacent) return PlacementCheck.Fail("Önce komşu parçayı al.");
+            if (!_house.TrySpend(ChunkPrice)) return PlacementCheck.Fail("Akçe yetmiyor.");
+
+            for (int dy = 0; dy < ChunkSize; dy++)
+                for (int dx = 0; dx < ChunkSize; dx++)
+                {
+                    var t = new GridPos(o.X + dx, o.Y + dy);
+                    if (map.InBounds(t)) map.SetOwned(t, true);
+                }
             return PlacementCheck.Success;
         }
 

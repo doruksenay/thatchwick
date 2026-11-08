@@ -116,6 +116,7 @@ namespace Thatchwick.Core.Jobs
             }
 
             double used = Walk(budget);
+            if (_path == null) return used;      // yol kapandı: bir sonraki turda yeniden hesaplanır
             if (_pathIndex >= _path.Count) Finish();
             return used;
         }
@@ -138,6 +139,7 @@ namespace Thatchwick.Core.Jobs
             if (!_using)
             {
                 used = Walk(budget);
+                if (_path == null) return used;  // yol kapandı: yeniden hesaplanır
                 if (_pathIndex < _path.Count) return used;
                 _using = true;
             }
@@ -163,6 +165,13 @@ namespace Thatchwick.Core.Jobs
             double used = 0;
             while (_pathIndex < _path.Count && budget - used > 0)
             {
+                // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.
+                if (_stepFraction <= 0 && !_world.Map.CanStep(_character.Position, _path[_pathIndex]))
+                {
+                    _path = null;
+                    _stepFraction = 0;
+                    return used;
+                }
                 double needed = (1.0 - _stepFraction) / TilesPerGameDay;
                 double available = budget - used;
                 if (available >= needed)
@@ -195,6 +204,7 @@ namespace Thatchwick.Core.Jobs
                 {
                     var tile = occupied + offset;
                     if (!_world.Map.IsWalkable(tile)) continue;
+                    if (_world.Map.EdgeBlocks(GridMap.EdgeBetween(tile, occupied))) continue; // duvarın öbür yanından kullanılmaz
 
                     var path = Pathfinder.FindPath(_world.Map, _character.Position, tile);
                     if (path != null && (best == null || path.Count < best.Count)) best = path;
