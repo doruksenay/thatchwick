@@ -29,3 +29,4 @@ Kuralları gevşetmek ya da sıkılaştırmak kullanıcının kararıdır; işç
 | 2026-11-08 | 010 karakter boy testi | create_character v3 (72/84/96) | 7 | 1928 |
 | 2026-11-08 | 011 karakter boy testi 2 | create_character v3 (52/60/68) + reduce_colors (32 renk, 3 çağrı) | 6,3 | 1896,7 |
 | 2026-11-08 | 100 hayvan pilotu | create_character standard + create_image_pixflux x2 + create_image_pixen + create_character v3 ref x2 + reduce_colors (32 renk, 1 çağrı) | 6,1 | 1890,6 |
+| 2026-11-08 | 012 karakter seti K2 | create_character v3 x8 (60/56/40) + reduce_colors (32 renk, 8 çağrı) | 16,8 | 1873,8 |
