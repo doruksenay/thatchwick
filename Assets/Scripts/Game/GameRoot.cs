@@ -67,6 +67,7 @@ namespace Thatchwick.Game
             Debug.Log($"İçerik yüklendi: {_content.Items.Count} eşya tanımı.");
 
             PlaceDemoItems();
+            _world.Map.RestrictOwnership(20, 8, 31, 15); // başlangıç arsası: 12x8, genişletilebilir
 
             var viewGo = new GameObject("WorldView");
             viewGo.transform.SetParent(transform, false);

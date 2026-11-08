@@ -23,10 +23,11 @@ namespace Thatchwick.Game
         private readonly WorldInput _input;
         private readonly Transform _overlay;
 
-        private enum Tool { Items, Wall, Door, Window, EraseEdge, Room, FloorWood, FloorStone, FloorDirt, FloorErase }
+        private enum Tool { Items, Wall, Door, Window, EraseEdge, Room, FloorWood, FloorStone, FloorDirt, FloorErase, Plot }
         private Tool _tool = Tool.Items;
         private GridPos? _roomCorner;
         private Tool? _pendingTool;
+        private bool _showRooms;
         private WallView _walls;
         private int _tab;                    // 0 envanter, 1 mağaza
         private string _placeId;             // envanterden yerleştirilecek eşya
@@ -48,6 +49,7 @@ namespace Thatchwick.Game
             _world = world; _house = house; _svc = svc; _content = content; _view = view; _input = input;
             _overlay = new GameObject("BuildOverlay").transform;
             _overlay.SetParent(parent, false);
+            _world.Map.Changed += () => { if (Active) RefreshOverlay(); };
         }
 
         /// <summary>GUI koordinatlarında (ölçeklenmiş) panel dikdörtgeni.</summary>
@@ -59,6 +61,8 @@ namespace Thatchwick.Game
         private void Enter()
         {
             Active = true;
+            _view.ShowPlot = true;
+            _view.RefreshFloors();
             ClearSelection();
             _status = "Yapı modu: eşya seç ya da envanterden koy.";
         }
@@ -66,6 +70,8 @@ namespace Thatchwick.Game
         private void Exit()
         {
             Active = false;
+            _view.ShowPlot = false;
+            _view.RefreshFloors();
             ClearSelection();
             _tab = 0;
         }
@@ -128,7 +134,7 @@ namespace Thatchwick.Game
             _selectedId = item != null ? item.Id : 0;
             if (_focused) { _input.RestoreView(); _focused = false; }
             if (item != null && item.Def.SurfaceSlots.Count > 0) Focus(item);
-            _status = item != null ? item.Def.DisplayName : "";
+            _status = item != null ? item.Def.DisplayName : RoomInfo(tile);
             RefreshOverlay();
         }
 
@@ -159,6 +165,7 @@ namespace Thatchwick.Game
                 case Tool.FloorStone: r = _svc.PaintFloor(tile, FloorType.Stone); break;
                 case Tool.FloorDirt: r = _svc.PaintFloor(tile, FloorType.Dirt); break;
                 case Tool.FloorErase: r = _svc.PaintFloor(tile, FloorType.Grass); break;
+                case Tool.Plot: r = _svc.BuyChunk(tile); break;
                 case Tool.Room: BuildRoomTap(tile); return;
                 default: return;
             }
@@ -206,6 +213,14 @@ namespace Thatchwick.Game
             return r.Ok ? null : r.Reason;
         }
 
+        private string RoomInfo(GridPos tile)
+        {
+            var room = _world.Map.Rooms.RoomAt(tile);
+            if (room == null) return "";
+            if (!room.IsIndoor) return _world.Map.IsOwned(tile) ? "Dış mekân (senin arsan)." : "Dış mekân (sahipsiz arsa).";
+            return $"Oda: {room.Area} karo, {room.DoorCount} kapı.";
+        }
+
         private bool TryTapSlot(Vector3 world)
         {
             var surface = _world.GetItem(_surfaceId);
@@ -250,6 +265,15 @@ namespace Thatchwick.Game
             _overlayObjects.Clear();
             if (!Active) return;
 
+            if (_showRooms)
+            {
+                foreach (var room in _world.Map.Rooms.IndoorRooms)
+                {
+                    var c = Color.HSVToRGB((room.Id * 0.17f) % 1f, 0.6f, 1f);
+                    c.a = 0.3f;
+                    foreach (var t in room.Tiles) Diamond(t, c, -8000, 1f);
+                }
+            }
             if (_roomCorner.HasValue) Diamond(_roomCorner.Value, new Color(0.3f, 0.7f, 1f, 0.7f), 6000, 1f);
 
             // Seçili eşya vurgusu
@@ -359,10 +383,16 @@ namespace Thatchwick.Game
             ToolButton("Kapı", Tool.Door); ToolButton("Pencere", Tool.Window); ToolButton("Kaldır", Tool.EraseEdge);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
+            ToolButton("Arsa", Tool.Plot);
+            if (GUILayout.Toggle(_showRooms, "Odalar", GUI.skin.button) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
             ToolButton("Tahta", Tool.FloorWood); ToolButton("Taş", Tool.FloorStone); ToolButton("Toprak", Tool.FloorDirt); ToolButton("Çim", Tool.FloorErase);
             GUILayout.EndHorizontal();
             if (_tool != Tool.Items)
-                GUILayout.Label(_tool == Tool.Room ? "İki köşe karosuna dokun." : "Haritaya dokun. Fiyatlar: duvar 3, kapı 8, pencere 6, zemin 1-3. Kaldırınca yarısı iade.");
+                GUILayout.Label(_tool == Tool.Room ? "İki köşe karosuna dokun."
+                    : _tool == Tool.Plot ? $"Bitişik 4x4 parçaya dokun: {BuildService.ChunkPrice} akçe."
+                    : "Haritaya dokun. Fiyatlar: duvar 3, kapı 8, pencere 6, zemin 1-3. Kaldırınca yarısı iade.");
         }
 
         private void ToolButton(string label, Tool tool)

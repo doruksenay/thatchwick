@@ -16,6 +16,9 @@ namespace Thatchwick.Game
         private static readonly Color BlockedColor = new Color32(58, 74, 92, 255);
 
         private SpriteRenderer[] _tiles;
+
+        /// <summary>Yapı modunda sahipsiz karolar koyulaştırılır.</summary>
+        public bool ShowPlot;
         private bool[] _terrainBlocked;
 
         public GridMap Map { get; private set; }
@@ -71,6 +74,11 @@ namespace Thatchwick.Game
                         case FloorType.Stone: sr.color = ((x + y) & 1) == 0 ? new Color32(140, 140, 148, 255) : new Color32(130, 130, 138, 255); break;
                         case FloorType.Dirt: sr.color = ((x + y) & 1) == 0 ? new Color32(139, 110, 80, 255) : new Color32(131, 103, 74, 255); break;
                         default: sr.color = _terrainBlocked[y * Map.Width + x] ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB); break;
+                    }
+                    if (ShowPlot && !Map.IsOwned(p))
+                    {
+                        var c = sr.color;
+                        sr.color = new Color(c.r * 0.55f, c.g * 0.55f, c.b * 0.6f, 1f);
                     }
                 }
             }
