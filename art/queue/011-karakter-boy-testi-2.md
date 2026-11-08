@@ -1,7 +1,7 @@
 ---
 id: "011"
 title: Karakter boy testi 2 (K1 tekrar, hedef boylar)
-status: running
+status: review
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet, seçenek b)
 cost_est: 6.3
 cost_max: 8

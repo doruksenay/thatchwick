@@ -27,3 +27,4 @@ Kuralları gevşetmek ya da sıkılaştırmak kullanıcının kararıdır; işç
 | 2026-11-08 | 007 duvar malzeme | create_building_kit (materials, 64) | 10 | 1950 |
 | 2026-11-08 | 009 katman fizibilite | — (rapor, PixelLab yok) | 0 | 1950 |
 | 2026-11-08 | 010 karakter boy testi | create_character v3 (72/84/96) | 7 | 1928 |
+| 2026-11-08 | 011 karakter boy testi 2 | create_character v3 (52/60/68) + reduce_colors (32 renk, 3 çağrı) | 6,3 | 1896,7 |
