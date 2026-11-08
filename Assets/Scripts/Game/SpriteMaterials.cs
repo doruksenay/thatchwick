@@ -63,7 +63,8 @@ namespace Thatchwick.Game
         public static Sprite Cube(Color color)
         {
             Color32 key = color;
-            if (Cubes.TryGetValue(key, out var cached)) return cached;
+            // Play modundan çıkınca çalışma zamanı sprite'ları yok edilir; sözlükte "sahte null" kalabilir.
+            if (Cubes.TryGetValue(key, out var cached) && cached != null) return cached;
 
             int w = TileW;
             int h = TileH + CubeHeight;
@@ -99,7 +100,7 @@ namespace Thatchwick.Game
         public static Sprite Pillar(Color color)
         {
             Color32 key = color;
-            if (Pillars.TryGetValue(key, out var cached)) return cached;
+            if (Pillars.TryGetValue(key, out var cached) && cached != null) return cached;
 
             const int w = 20;
             const int h = 44;
