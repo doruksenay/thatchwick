@@ -7,6 +7,7 @@ using Thatchwick.Core.Customization;
 using Thatchwick.Core.Economy;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Jobs;
+using Thatchwick.Core.Progress;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.Work;
 using Thatchwick.Core.World;
@@ -57,6 +58,7 @@ namespace Thatchwick.Game
         private InteractionEffects _effects;
         private StorageService _storage;
         private Market _market;
+        private AccountProgress _account;
         private MarketPanel _marketPanel;
         private int _stallId;
         private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
@@ -93,6 +95,11 @@ namespace Thatchwick.Game
                 foreach (var tile in item.OccupiedTiles()) _view.ClearTerrainBlock(tile);
             _view.RefreshFloors();
             map.Changed += _view.RefreshFloors;
+            map.Changed += () =>
+            {
+                if (_account == null || _account.HasFirst("first:room")) return;
+                foreach (var _ in map.Rooms.IndoorRooms) { _account.Record("room", _clock.DayIndex, isWork: false); break; }
+            };
             var wallsGo = new GameObject("WallView");
             wallsGo.transform.SetParent(transform, false);
             _walls = wallsGo.AddComponent<WallView>();
@@ -113,21 +120,26 @@ namespace Thatchwick.Game
             _input.Tapped += OnTapped;
 
             _household = new Household(100);
+            _account = new AccountProgress();
+            _account.LevelChanged += (from, to) => ShowMessage($"Hesap seviyesi {to}! Dükkânda yeni eşyalar açılmış olabilir.");
+            _account.BadgeEarned += b => ShowMessage($"Rozet kazanıldı: {b.DisplayName} (+{b.RewardXp} XP)");
             _household.AddItem("item.firewood", 10);
             _household.AddItem("item.sapling_oak", 2);
             _household.AddItem("item.turnip", 12);
             _household.AddItem("item.seed_turnip", 6);
             _storage = new StorageService(_world, _household, _content);
             _effects = new InteractionEffects(_world, _household, _content, seed: 9) { Storage = _storage };
-            _effects.Applied += (c, i, summary) => ShowMessage($"{c.Name}: {summary}");
+            _effects.Applied += (c, i, summary) => { ShowMessage($"{c.Name}: {summary}"); _account.Record(i.Id, _clock.DayIndex); };
             _plants = new PlantSystem(_world);
             _market = new Market(_content, _household, _storage, null, seed: 17);
             _market.Tick(0, _clock.TotalDays, _clock.Season);
+            _market.OfferAccepted += o => _account.Record(o.IsContract ? "contract" : "barter", _clock.DayIndex);
             _marketPanel = new MarketPanel(_market, _household, _storage, _content, _world,
                 () => _player?.Character, () => _player?.Runner, _stallId);
             _plants.PlantDied += (def, pos) => ShowMessage($"{def.DisplayName} kışın dondu");
             _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
-            _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content) { Storage = _storage }, _content, _view, _input, transform, _walls);
+            _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level }, _content, _view, _input, transform, _walls);
+            _buildMode.Activity += a => _account.Record(a, _clock.DayIndex);
 
             _population = new Population(firstFreeId: 1, seed: 21);
             _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % 4];
@@ -294,7 +306,7 @@ namespace Thatchwick.Game
             character.StageChanged += (c, from, to) => ShowMessage($"{c.Name}: {StageName(to)} oldu");
             character.Died += c => ShowMessage(c.CauseOfDeath == DeathCause.Cold ? $"{c.Name} donarak öldü"
                 : c.CauseOfDeath == DeathCause.Starvation ? $"{c.Name} açlıktan öldü" : $"{c.Name} hayatını kaybetti");
-            character.Skills.LevelChanged += (skill, from, to) => ShowMessage($"{character.Name}: {SkillName(skill)} seviye {to}");
+            character.Skills.LevelChanged += (skill, from, to) => { ShowMessage($"{character.Name}: {SkillName(skill)} seviye {to}"); if (to > from) _account.OnSkillLevelUp(); };
 
             var go = new GameObject(character.Name);
             go.transform.SetParent(transform, false);
@@ -565,6 +577,8 @@ namespace Thatchwick.Game
                 Destroy(gameObject);
                 return;
             }
+            int next = AccountProgress.XpForLevel(_account.Level + 1);
+            GUILayout.Label($"Hesap Sv {_account.Level} · XP {_account.Xp}/{next} · bugünkü iş XP {_account.WorkXpToday(_clock.DayIndex)}/{AccountProgress.DailyWorkCap}");
             DrawHeatHud();
             GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
@@ -585,7 +599,11 @@ namespace Thatchwick.Game
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"{item.Def.DisplayName}: {(item.IsLit ? $"yanıyor {item.FuelDays:0.0}g" : "sönük")}");
                 if (GUILayout.Button("Odun at", GUILayout.Width(70f)))
-                    ShowMessage(_heat.TryStoke(item.Id, _household) ? "Odun atıldı" : (_household.Count(_heat.Config.FirewoodId) <= 0 ? "Odun yok (yapı modu > Mağaza)" : "Ocak dolu"));
+                {
+                    bool ok = _heat.TryStoke(item.Id, _household);
+                    if (ok) _account.Record("fire", _clock.DayIndex, isWork: false);
+                    ShowMessage(ok ? "Odun atıldı" : (_household.Count(_heat.Config.FirewoodId) <= 0 ? "Odun yok (kes, yar ya da pazardan al)" : "Ocak dolu"));
+                }
                 GUILayout.EndHorizontal();
             }
         }

@@ -29,6 +29,7 @@ namespace Thatchwick.Core.Content
         public bool tilled;          // ekin: yalnızca toprak zemine
         public int storage;          // depo kapasitesi (sandık); 0 = depo değil
         public string[] tags;        // pazar etiketleri: fuel, food
+        public int level;            // dükkânda açılma seviyesi; 0 = 1
         public bool diesInWinter;    // ekin: kışın donar
     }
 

@@ -43,6 +43,9 @@ namespace Thatchwick.Game
 
         public bool Active { get; private set; }
 
+        /// <summary>Hesap XP'si için yapı modu etkinlikleri (plant ...).</summary>
+        public event System.Action<string> Activity;
+
         public BuildMode(WorldState world, Household house, BuildService svc, ContentDatabase content,
             WorldView view, WorldInput input, Transform parent, WallView walls = null)
         {
@@ -111,6 +114,7 @@ namespace Thatchwick.Game
             {
                 var r = _svc.Plant(_plantId, tile, out _);
                 _status = r.Ok ? $"Dikildi. Kalan: {_house.Count(_plantId)}" : r.Reason;
+                if (r.Ok) Activity?.Invoke("plant");
                 if (r.Ok && _house.Count(_plantId) <= 0) ClearSelectionKeepStatus();
                 return;
             }
@@ -545,11 +549,14 @@ namespace Thatchwick.Game
                 if (def.Category != cat) { cat = def.Category; GUILayout.Label(cat == "decor" ? "— Dekor —" : "— Mobilya —"); }
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"{def.DisplayName} ({def.Width}x{def.Height})");
-                if (GUILayout.Button($"Al {def.Price}", GUILayout.Width(62f)))
+                bool unlocked = _svc.IsUnlocked(def);
+                GUI.enabled = unlocked;
+                if (GUILayout.Button(unlocked ? $"Al {def.Price}" : $"Sv {def.UnlockLevel}", GUILayout.Width(62f)))
                 {
                     var r = _svc.Buy(def.Id);
                     _status = r.Ok ? $"{def.DisplayName} alındı." : r.Reason;
                 }
+                GUI.enabled = true;
                 GUILayout.EndHorizontal();
             }
         }

@@ -22,6 +22,11 @@ namespace Thatchwick.Core.Build
         /// <summary>Depo kapasitesi; null ise sınırsız (testler, eski kurulumlar).</summary>
         public StorageService Storage { get; set; }
 
+        /// <summary>Hesap seviyesi sağlayıcı (T10); null ise her eşya açık.</summary>
+        public Func<int> AccountLevel { get; set; }
+
+        public bool IsUnlocked(ItemDef def) => AccountLevel == null || AccountLevel() >= def.UnlockLevel;
+
         public BuildService(WorldState world, Household house, ContentDatabase content, double sellRatio = DefaultSellRatio)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -38,6 +43,7 @@ namespace Thatchwick.Core.Build
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.Price <= 0) return PlacementCheck.Fail("Bu eşya satılmıyor.");
+            if (!IsUnlocked(def)) return PlacementCheck.Fail($"Hesap seviyesi {def.UnlockLevel} gerekli.");
             if (Storage != null && !Storage.HasRoomFor(itemId)) return PlacementCheck.Fail("Depo dolu: depo bölgesi çiz ya da sandık koy.");
             if (!_house.TrySpend(def.Price)) return PlacementCheck.Fail("Akçe yetmiyor.");
             _house.AddItem(itemId);
@@ -288,6 +294,8 @@ namespace Thatchwick.Core.Build
             list.Sort((a, b) =>
             {
                 int c = string.CompareOrdinal(a.Category, b.Category);
+                if (c != 0) return c;
+                c = a.UnlockLevel.CompareTo(b.UnlockLevel);
                 return c != 0 ? c : string.CompareOrdinal(a.DisplayName, b.DisplayName);
             });
             return list;

@@ -26,6 +26,7 @@ namespace Thatchwick.Core.Content
                 if (item.Price < 0) errors.Add($"{item.Id}: fiyat negatif olamaz.");
                 if (item.HeatOutput < 0f) errors.Add($"{item.Id}: ısı gücü negatif olamaz.");
                 if (item.HeatOutput > 0f && item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: ısı kaynağı yere konan eşya olmalı.");
+                if (item.UnlockLevel < 1 || item.UnlockLevel > 20) errors.Add($"{item.Id}: açılma seviyesi 1-20 arasında olmalı.");
                 if (item.Storage < 0) errors.Add($"{item.Id}: depo kapasitesi negatif olamaz.");
                 if (item.Storage > 0 && item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: depo eşyası yere konan eşya olmalı.");
                 if (item.GrowDays < 0f) errors.Add($"{item.Id}: büyüme süresi negatif olamaz.");

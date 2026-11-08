@@ -58,6 +58,9 @@ namespace Thatchwick.Core.Economy
         private Season _season;
 
         public MarketConfig Config => _cfg;
+
+        /// <summary>Teklif kabul edildiğinde (hesap XP'si, rozet sayaçları için).</summary>
+        public event Action<TradeOffer> OfferAccepted;
         public IReadOnlyList<TradeOffer> Offers => _offers;
         public Season Season => _season;
 
@@ -154,6 +157,7 @@ namespace Thatchwick.Core.Economy
             if (offer.IsContract) _house.AddAkce(offer.RewardAkce);
             else _house.AddItem(offer.GetItem, offer.GetCount);
             offer.Taken = true;
+            OfferAccepted?.Invoke(offer);
             return PlacementCheck.Success;
         }
 

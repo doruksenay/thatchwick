@@ -98,7 +98,8 @@
           "u": 0.75,
           "v": 0.5
         }
-      ]
+      ],
+      "level": 2
     },
     {
       "id": "item.chair_wood",
@@ -115,7 +116,8 @@
       "width": 1,
       "height": 1,
       "price": 10,
-      "category": "furniture"
+      "category": "furniture",
+      "level": 2
     },
     {
       "id": "item.chest_wood",
@@ -146,7 +148,8 @@
           "u": 0.7,
           "v": 0.5
         }
-      ]
+      ],
+      "level": 3
     },
     {
       "id": "item.candle",
@@ -154,7 +157,8 @@
       "interactions": [],
       "placement": "Surface",
       "price": 4,
-      "category": "decor"
+      "category": "decor",
+      "level": 3
     },
     {
       "id": "item.flower_pot",
@@ -162,7 +166,8 @@
       "interactions": [],
       "placement": "Surface",
       "price": 6,
-      "category": "decor"
+      "category": "decor",
+      "level": 5
     },
     {
       "id": "item.clay_cup",
@@ -170,7 +175,8 @@
       "interactions": [],
       "placement": "Surface",
       "price": 3,
-      "category": "decor"
+      "category": "decor",
+      "level": 5
     },
     {
       "id": "item.firewood",
@@ -319,6 +325,22 @@
       "height": 1,
       "price": 0,
       "category": "village"
+    },
+    {
+      "id": "item.chair_carved",
+      "displayName": "Oymalı sandalye",
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 12,
+          "durationDays": 0.05
+        }
+      ],
+      "price": 30,
+      "category": "furniture",
+      "level": 10
     }
   ]
 }
