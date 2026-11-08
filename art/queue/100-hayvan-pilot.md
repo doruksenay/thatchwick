@@ -1,7 +1,7 @@
 ---
 id: "100"
 title: Hayvan pilotu (koyun + tavuk, 4 aday, araç karşılaştırması)
-status: running
+status: review
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet)
 cost_est: 8
 cost_max: 12
