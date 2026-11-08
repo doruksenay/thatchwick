@@ -8,6 +8,7 @@ using Thatchwick.Core.Economy;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Progress;
+using Thatchwick.Core.Save;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.Work;
 using Thatchwick.Core.World;
@@ -67,21 +68,47 @@ namespace Thatchwick.Game
         private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric" };
         private int _nameCounter;
 
+        /// <summary>Yeniden kurulan GameRoot bu kaydı yükler (Yükle düğmesi / Devam et).</summary>
+        public static SaveData PendingLoad;
+        private long _lastSavedDay = -1;
+        private static string SavePath => System.IO.Path.Combine(Application.persistentDataPath, "thatchwick_save.json");
+        public static bool HasSave => System.IO.File.Exists(SavePath);
+
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
         private Rect HudRect => new Rect(8f, 8f, 340f, Mathf.Min(560f, Screen.height / HudScale - 16f));
 
         private void Awake()
         {
-            var map = BuildDemoMap();
-            _world = new WorldState(map);
-            _clock = new GameClock();
-
             _content = ContentLoader.Load(out var contentErrors);
             foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");
             Debug.Log($"İçerik yüklendi: {_content.Items.Count} eşya tanımı.");
 
-            PlaceDemoItems();
-            _world.Map.RestrictOwnership(20, 8, 31, 15); // başlangıç arsası: 12x8, genişletilebilir
+            LoadedGame loaded = null;
+            if (PendingLoad != null)
+            {
+                try { loaded = SaveGame.Load(PendingLoad, _content); }
+                catch (System.Exception ex) { Debug.LogError($"Kayıt yüklenemedi: {ex.Message}"); }
+                PendingLoad = null;
+            }
+
+            GridMap map;
+            if (loaded != null)
+            {
+                foreach (var w in loaded.Warnings) Debug.LogWarning($"Kayıt: {w}");
+                _world = loaded.World;
+                map = _world.Map;
+                _clock = loaded.Clock;
+                _lastSavedDay = _clock.DayIndex;
+                foreach (var item in _world.Items) if (item.Def.Id == "item.market_stall") _stallId = item.Id;
+            }
+            else
+            {
+                map = BuildDemoMap();
+                _world = new WorldState(map);
+                _clock = new GameClock();
+                PlaceDemoItems();
+                _world.Map.RestrictOwnership(20, 8, 31, 15); // başlangıç arsası: 12x8, genişletilebilir
+            }
 
             var viewGo = new GameObject("WorldView");
             viewGo.transform.SetParent(transform, false);
@@ -115,29 +142,34 @@ namespace Thatchwick.Game
             cam.backgroundColor = new Color(0.08f, 0.09f, 0.11f);
 
             _input = gameObject.AddComponent<WorldInput>();
-            _input.Init(cam, Iso.MapBounds(MapWidth, MapHeight));
+            _input.Init(cam, Iso.MapBounds(map.Width, map.Height));
             _input.IsOverUi = IsOverHud;
             _input.Tapped += OnTapped;
 
-            _household = new Household(100);
-            _account = new AccountProgress();
+            _household = loaded != null ? loaded.Household : new Household(100);
+            _account = loaded != null ? loaded.Account : new AccountProgress();
             _account.LevelChanged += (from, to) => ShowMessage($"Hesap seviyesi {to}! Dükkânda yeni eşyalar açılmış olabilir.");
             _account.BadgeEarned += b => ShowMessage($"Rozet kazanıldı: {b.DisplayName} (+{b.RewardXp} XP)");
-            _household.AddItem("item.firewood", 10);
-            _household.AddItem("item.sapling_oak", 2);
-            _household.AddItem("item.turnip", 12);
-            _household.AddItem("item.seed_turnip", 6);
+            if (loaded == null)
+            {
+                _household.AddItem("item.firewood", 10);
+                _household.AddItem("item.sapling_oak", 2);
+                _household.AddItem("item.turnip", 12);
+                _household.AddItem("item.seed_turnip", 6);
+            }
             _storage = new StorageService(_world, _household, _content);
             _effects = new InteractionEffects(_world, _household, _content, seed: 9) { Storage = _storage };
             _effects.Applied += (c, i, summary) => { ShowMessage($"{c.Name}: {summary}"); _account.Record(i.Id, _clock.DayIndex); };
             _plants = new PlantSystem(_world);
             _market = new Market(_content, _household, _storage, null, seed: 17);
-            _market.Tick(0, _clock.TotalDays, _clock.Season);
+            if (loaded != null) _market.RestoreState(loaded.MarketDemand, _clock.TotalDays, _clock.Season, loaded.MarketTakenOffers);
+            else _market.Tick(0, _clock.TotalDays, _clock.Season);
             _market.OfferAccepted += o => _account.Record(o.IsContract ? "contract" : "barter", _clock.DayIndex);
             _marketPanel = new MarketPanel(_market, _household, _storage, _content, _world,
                 () => _player?.Character, () => _player?.Runner, _stallId);
             _plants.PlantDied += (def, pos) => ShowMessage($"{def.DisplayName} kışın dondu");
             _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
+            if (loaded != null) _heat.RestoreTemperatures(loaded.Temperatures);
             _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level }, _content, _view, _input, transform, _walls);
             _buildMode.Activity += a => _account.Record(a, _clock.DayIndex);
 
@@ -148,6 +180,20 @@ namespace Thatchwick.Game
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
+
+            if (loaded != null)
+            {
+                foreach (var c in loaded.Characters)
+                {
+                    _population.Add(c);
+                    var actor = CreateActorFor(c);
+                    if (c.IsPlayerControlled && _player == null) _player = actor;
+                    if (c.Name == "Maud" && _maud == null) _maud = actor;
+                }
+                _input.enabled = true;
+                ShowMessage(loaded.Warnings.Count > 0 ? $"Kayıt yüklendi ({loaded.Warnings.Count} uyarı, konsola bak)" : "Kayıt yüklendi");
+                return;
+            }
 
             // Maud (NPC) rastgele görünümle hemen oluşur; oyuncunun karakteri yaratma ekranından gelir.
             var maud = new Character(2, "Maud", new GridPos(28, 9), false)
@@ -342,6 +388,44 @@ namespace Thatchwick.Game
             return HudRect.Contains(guiPos);
         }
 
+        // ---- kayıt ----
+
+        private void SaveNow(bool quiet)
+        {
+            if (_player == null || _creator != null) return;   // oyun başlamadan kaydetme
+            try
+            {
+                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market);
+                System.IO.File.WriteAllText(SavePath, JsonUtility.ToJson(data));
+                if (!quiet) ShowMessage("Kaydedildi");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Kaydetme hatası: {ex.Message}");
+                if (!quiet) ShowMessage("Kaydedilemedi (konsola bak)");
+            }
+        }
+
+        private void LoadSave()
+        {
+            try
+            {
+                PendingLoad = JsonUtility.FromJson<SaveData>(System.IO.File.ReadAllText(SavePath));
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Kayıt okunamadı: {ex.Message}");
+                ShowMessage("Kayıt okunamadı");
+                return;
+            }
+            enabled = false;
+            new GameObject("GameRoot").AddComponent<GameRoot>();
+            Destroy(gameObject);
+        }
+
+        private void OnApplicationQuit() => SaveNow(quiet: true);
+        private void OnApplicationPause(bool paused) { if (paused) SaveNow(quiet: true); }
+
         // Yapı modu ve pazar paneli aynı yeri kullanır: biri açılınca diğeri kapanır.
         private void ToggleBuild()
         {
@@ -419,6 +503,7 @@ namespace Thatchwick.Game
 
             // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
             double gameDays = _clock.Advance(dt);
+            if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true); }
             _heat.Tick(gameDays, _clock.TotalDays);
             _plants.Tick(gameDays, _clock.Season);
             _market.Tick(gameDays, _clock.TotalDays, _clock.Season);
@@ -526,6 +611,12 @@ namespace Thatchwick.Game
             if (_creator != null)
             {
                 _creator.OnGUI();
+                if (HasSave)
+                {
+                    float cs = HudScale;
+                    GUI.matrix = Matrix4x4.Scale(new Vector3(cs, cs, 1f));
+                    if (GUI.Button(new Rect(Screen.width / cs - 238f, Screen.height / cs - 52f, 230f, 44f), "Kayıtlı oyuna devam et")) LoadSave();
+                }
                 return;
             }
 
@@ -570,7 +661,13 @@ namespace Thatchwick.Game
             if (GUILayout.Button(_marketPanel.Active ? "Pazarı kapat (P)" : "Pazar (P)")) ToggleMarket();
             GUILayout.EndHorizontal();
             GUILayout.Label($"Akçe: {_household.Akce}");
-            if (GUILayout.Button("Yeni oyun (karakter yaratıcıyı aç)"))
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Kaydet")) SaveNow(quiet: false);
+            GUI.enabled = HasSave;
+            if (GUILayout.Button("Yükle")) { LoadSave(); return; }
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
+            if (GUILayout.Button("Yeni oyun (kayıt ilk gün dolunca üzerine yazılır)"))
             {
                 enabled = false;
                 new GameObject("GameRoot").AddComponent<GameRoot>();
