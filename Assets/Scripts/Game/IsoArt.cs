@@ -113,8 +113,8 @@ namespace Thatchwick.Game
             ["item.stool_wood"] = new ItemArt { AlongX = "iso_item_stool_se", PivotX = 40, PivotY = 24 },
             ["item.table_wood"] = new ItemArt { AlongY = "iso_item_table_wood_2x1_se_nw", PivotX = 56, PivotY = 32 },
             ["item.shelf_wood"] = new ItemArt { AlongY = "iso_item_shelf_wood_2x1_se_nw", PivotX = 56, PivotY = 32 },
-            ["item.chair_wood"] = new ItemArt { AlongX = "iso_item_chair_wood_se", PivotX = 40, PivotY = 24 },
-            ["item.chair_carved"] = new ItemArt { AlongX = "iso_item_chair_wood_se", PivotX = 40, PivotY = 24 },
+            ["item.chair_wood"] = new ItemArt { AlongX = "iso_item_chair_wood_sw", PivotX = 40, PivotY = 24 },
+            ["item.chair_carved"] = new ItemArt { AlongX = "iso_item_chair_wood_sw", PivotX = 40, PivotY = 24 },
             ["item.cooking_pot"] = new ItemArt { AlongX = "iso_item_cooking_pot_se", PivotX = 40, PivotY = 24 },
             ["item.candle"] = new ItemArt { AlongX = "iso_item_candle_se", PivotX = 16, PivotY = 7 },
             ["item.flower_pot"] = new ItemArt { AlongX = "iso_item_flower_pot_se", PivotX = 16, PivotY = 7 },
@@ -128,11 +128,17 @@ namespace Thatchwick.Game
         {
             flipX = false;
             if (!Items.TryGetValue(item.Def.Id, out var art)) return null;
-            bool alongX = item.Rotation % 2 == 0 || item.Def.Width == item.Def.Height;
+            bool square = item.Def.Width == item.Def.Height;
+            bool alongX = item.Rotation % 2 == 0;
             string name;
-            if (art.Lit != null && item.IsLit) name = art.Lit;
+            if (square)
+            {
+                // Kare eşyada tek yön çizildi: tek dönüşlerde ayna görüntüsü (yapı modunda döndürme görünür olsun).
+                name = art.Lit != null && item.IsLit ? art.Lit : (art.AlongX ?? art.AlongY);
+                flipX = item.Rotation % 2 == 1;
+            }
             else if (alongX) { name = art.AlongX; if (name == null) { name = art.AlongY; flipX = true; } }
-            else { name = art.AlongY; if (name == null) { name = art.AlongX; flipX = item.Def.Width != item.Def.Height; } }
+            else { name = art.AlongY; if (name == null) { name = art.AlongX; flipX = true; } }
             var s = Get(name, art.PivotX, art.PivotY);
             if (s == null) flipX = false;
             return s;
