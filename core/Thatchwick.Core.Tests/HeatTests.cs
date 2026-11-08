@@ -57,16 +57,17 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
-        public void IsitilmayanOda_DisSicakligaYaklasir()
+        public void IsitilmayanOda_DisSicakligiTakipEder()
         {
             var (w, h) = Setup();
             var inside = new GridPos(3, 3);
             Run(h, 0.3, Winter);
-            float t1 = h.TemperatureAt(inside);
-            Run(h, 15, Winter);
-            Assert.InRange(h.TemperatureAt(inside), -8.5f, -7.5f);
-            Assert.Equal(-8.0, (double)h.TemperatureAt(new GridPos(10, 10)), 1);
-            Assert.True(t1 <= h.OutdoorTemperature + 8f);
+            Assert.Equal(-8.0, (double)h.TemperatureAt(inside), 0);          // kış ortasında dışla aynı, çok az değişti
+            Run(h, 6, Winter + 0.3);                                         // dış hava ısınırken oda geriden gelir
+            float room = h.TemperatureAt(inside);
+            Assert.True(room > -8f);
+            Assert.True(room < h.OutdoorTemperature);
+            Assert.Equal((double)h.OutdoorTemperature, (double)h.TemperatureAt(new GridPos(10, 10)), 3);
         }
 
         [Fact]
@@ -81,7 +82,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(h.TryStoke(hearth.Id, house));
             Run(h, 1.5, Winter);
             Assert.True(h.TemperatureAt(new GridPos(3, 3)) > 0f, $"oda {h.TemperatureAt(new GridPos(3, 3))}");
-            Assert.True(h.TemperatureAt(new GridPos(10, 10)) < -7.5f);
+            Assert.Equal((double)h.OutdoorTemperature, (double)h.TemperatureAt(new GridPos(10, 10)), 3);
         }
 
         [Fact]
@@ -94,9 +95,10 @@ namespace Thatchwick.Core.Tests
             h.TryStoke(hearth.Id, house);
             Run(h, 0.6, Winter);
             Assert.False(hearth.IsLit);
-            float warm = h.TemperatureAt(new GridPos(3, 3));
+            float warmAbove = h.TemperatureAt(new GridPos(3, 3)) - h.OutdoorTemperature;
             Run(h, 8, Winter + 0.6);
-            Assert.True(h.TemperatureAt(new GridPos(3, 3)) < warm - 3f);
+            float later = h.TemperatureAt(new GridPos(3, 3)) - h.OutdoorTemperature;
+            Assert.True(later < warmAbove - 3f, $"önce {warmAbove}, sonra {later}");
         }
 
         [Fact]
