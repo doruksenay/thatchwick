@@ -277,7 +277,7 @@ namespace Thatchwick.Game
 
             if (_buildMode.Active) { _buildMode.OnTap(world); return; }
 
-            ItemInstance tapped = _world.GetItemAt(tile);
+            ItemInstance tapped = _world.GetItemAt(_view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f))) ?? _world.GetItemAt(tile);
 
             if (tapped != null && tapped.Def.Interactions.Count > 0)
             {

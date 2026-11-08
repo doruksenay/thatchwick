@@ -80,6 +80,14 @@ namespace Thatchwick.Game
 
         // ---------- girdi ----------
 
+        // Eşya küpleri tabandan yukarı doğru çizilir; oyuncu görünen üst yüze dokunur. Önce yükseltilmiş
+        // (üst yüz) noktayı, sonra tabanı dener.
+        private ItemInstance PickItem(Vector3 world)
+        {
+            var raised = _view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f));
+            return _world.GetItemAt(raised) ?? _world.GetItemAt(_view.WorldToTile(world));
+        }
+
         public void OnTap(Vector3 world)
         {
             var tile = _view.WorldToTile(world);
@@ -88,14 +96,14 @@ namespace Thatchwick.Game
             if (_placeId != null && IsSurfaceDef(_placeId))
             {
                 if (_surfaceId != 0 && TryTapSlot(world)) return;
-                var surface = _world.GetItemAt(tile);
+                var surface = PickItem(world);
                 if (surface != null && surface.Def.SurfaceSlots.Count > 0)
                 {
                     _surfaceId = surface.Id;
                     Focus(surface);
                     _status = $"{surface.Def.DisplayName}: bir yuvaya dokun.";
                 }
-                else _status = "Dekor için masa ya da raf seç.";
+                else _status = surface != null ? $"{surface.Def.DisplayName} dekor taşımaz; masa ya da raf seç." : "Dekor için masa ya da raf seç.";
                 RefreshOverlay();
                 return;
             }
@@ -108,7 +116,7 @@ namespace Thatchwick.Game
             }
 
             // Seçim
-            var item = _world.GetItemAt(tile);
+            var item = PickItem(world);
             _selectedId = item != null ? item.Id : 0;
             if (_focused) { _input.RestoreView(); _focused = false; }
             if (item != null && item.Def.SurfaceSlots.Count > 0) Focus(item);
