@@ -1,61 +1,66 @@
-# Art Brief: İzometrik (2:1 dimetrik) varlık seti (A1, tur 3)
+# Art Brief: İzometrik varlık seti, Tier 1 ile (A1, tur 4)
 
-Bu dosya Claude Code için iş emridir. Eski 3/4 brief'i (art-brief-eski-34.md) GEÇERSİZDİR, uygulama. Eski 3/4 testleri Assets/Art/Test_34/ altına taşındı (Unity ile, GUID'ler korundu), onlara dokunma.
+Bu dosya Claude Code için iş emridir. Önceki brief art-brief-tur3.md olarak saklandı (artık geçersiz). Eski 3/4 brief'i art-brief-eski-34.md GEÇERSİZDİR.
 
-## 0. Önce yap (üretimden önce)
-1. `git pull --rebase` çalıştır. docs/gorsel-yonerge.md GitHub'da var, yerel klasörde henüz yoktu.
-2. docs/gorsel-yonerge.md dosyasını baştan sona oku. O dosya bağlayıcı şartnamedir; bu brief onu hak bütçesi ve sıra açısından tamamlar. Çelişki olursa yönerge geçerlidir, çelişkiyi bana bildir.
-3. PixelLab araçlarının güncel açıklamalarından, her varlık türü için hangi aracın izometrik çıktı verdiğini ve maliyetini çıkar (ör. create_isometric_tile, create_path_tiles, create_building_kit, create_character view seçenekleri, nesne araçları). Harcama yapmadan 6 satırlık bir plan yaz: varlık, seçtiğin araç, tahmini generation.
+## Durum ve kararlar
+- Kullanıcı PixelLab **Tier 1** plan aldı. Pro araçlar artık açık olmalı (create_tiles_pro, animasyon araçları vb.). Tier 2 gerektiren araçlar (create_room, extend map v2) bu işte gerekmiyor.
+- Zemin artık KODLA DEĞİL, PixelLab ile üretilecek (kullanıcı kararı). Önceki turdaki 'kodla yap' notu geçersiz.
+- Köylü: 8 yön tamam, Assets/Art/Iso altında. Pivot ortak (34, 12). Dokunma. Aynı karakter stil referansıdır.
+- Bağlayıcı şartname: docs/gorsel-yonerge.md (zemin karosu 64x32 elmas, tam 2:1 kenar, anti-alias yok, saydam arka plan, ışık sol-üstten, gölge pişirilmez, ad kuralı iso_<tür>_<ad>_<yön>.png). Çelişki olursa yönerge geçerlidir.
+- Daha önce görülenler: deneme hesabındaki temel iso karo aracı yan yüzlü kalın blok verdi (64x64), maske ile düzeltilemedi, dikiş çıktı. Pro araçlarla bunun giderilmesi hedefleniyor, garanti değil.
 
-## Hak bütçesi (ÖNEMLİ)
-- Hesap: ücretsiz deneme. Kalan yaklaşık 35 generation.
-- Her PixelLab çağrısından ÖNCE araçtaki maliyeti ve bu işte harcanmış toplamı yaz.
-- Kalan hak, o fazı bitirmeye yetmeyecekse çağrıyı yapma. Bana sor (hesaba paket alınabilir).
-- Tier/plan kısıtı ya da hata çıkarsa tekrar deneme, hatayı aynen bana bildir.
-- Fazları sırayla yap. Her fazın sonunda DUR, sonucu ve harcamayı raporla, onayımı bekle.
+## Hak bütçesi
+- Önce get_balance ile hesabı doğrula: plan (Tier 1 mi), aylık limit, kalan bakiye. Bunu raporun başına yaz.
+- Bu işin toplam üst sınırı: 250 generation. Plan limiti daha düşük çıkarsa (ör. Tier 1 tahminen 2000) ya da bakiye 250'den azsa dur ve bana söyle.
+- Her PixelLab çağrısından ÖNCE aracın açıklamasındaki maliyeti, bu işte harcanmış toplamı ve kalan bakiyeyi yaz.
+- Hata ya da plan/Tier kısıtı çıkarsa tekrar deneme, hatayı aynen bildir.
+- Fazları sırayla yap. Her fazın sonunda DUR, raporla, onayımı bekle.
 
-## Faz 1: Köylü ve zemin (ilk bakış, en kritik)
-Amaç: görsel dilin izometrik 2:1 ile tutarlı çıktığını ucuza doğrulamak.
-1. Köylü: referans görünüm (kahverengi tunik, kısa koyu saç, düz az tonlu piksel stili; eski karakter 48 px, character_id b88f12d1-67da-4ff8-b36b-3c772038f57a stil referansıdır). Önce SE yönünü tek başına üret (ya da aracın sunduğu en ucuz yolla). Kamera açısı 2:1 elmasa uymalı. Araçtaki seçenekler (low top-down ~20, high top-down ~35, oblique) 2:1 (yaklaşık 26,6 derece zemin eğimi) ile birebir eşleşmeyebilir; en yakınını seç ve nedenini yaz. Boy 44-52 px.
-2. Zemin karosu: 64x32 elmas, dikişsiz. İlk olarak yalnızca tek bir saf çimen karosu (iso_ground_grass_a.png).
-3. DUR. Aşağıdaki doğrulamayı yap ve raporla.
+## Faz A: Durum doğrulama (harcama yok)
+1. get_balance, plan/Tier, kalan hak.
+2. Pro araçların gerçekten kullanılabilir olduğunu araç açıklamalarından doğrula (create_tiles_pro, create_building_kit, create_object_pro_flash, create_8_direction_object vb.). Çağrı yapma.
+3. Assets/Art/Iso klasöründe şu an olan dosyaları listele. Özellikle iso_item_bed_straw_2x1.png ve iso_item_hearth_stone.png: bunlar teslim edildi mi, ne zaman ve hangi araçla üretildi, doğrulamayı geçtiler mi (boyut, saydamlık, ayak izi, 2:1, ışık)? Bu dosyalara DOKUNMA, silme, üzerine yazma. Yalnızca durumlarını raporla.
+4. Her varlık türü için (zemin varyasyonu, geçiş seti, 2x1 yatak, 1x1 eşya, duvar) hangi aracı seçeceğini ve tahmini maliyeti 6-8 satırlık bir planla yaz.
+DUR ve planı onaya sun.
 
-### Doğrulama (her zemin ve duvar dosyası için)
-- Gerçek piksel boyutu 64x32 mi? Arka plan tamamen saydam mı? Yarı saydam ya da anti-alias piksel var mı? (Küçük bir betikle say.)
-- Elmasın kenarları tam 2:1 mi (2 piksel yatay, 1 piksel dikey)? Köşe ve tepe pikselleri bu elmas maskesinin içinde mi?
-- Çıktı tam 2:1 değilse: tamamen başarısız sayma. Karoyu tam 2:1 elmas maskesiyle kırp (yalnızca maske dışını sil, içeriği yeniden boyama) ve bunu raporda açıkça belirt. Maskeleme yetmeyecek kadar bozuksa durup bana göster.
-- Işık: üst yüz en açık, sol yüz orta, sağ yüz en koyu. Gölge sprite'a pişirilmemeli.
+## Faz B: Zemin
+Hepsi izometrik, 64x32 elmas, yalnızca üst yüz (yan yüz ya da kalınlık YOK; araçta kalınlık/yükseklik seçeneği varsa sıfır ya da en ince). Düz, az tonlu (3-5 ton), gürültüsüz.
+1. create_tiles_pro (varyasyon): çimen karosu a, tek bir deneme. Doğrula (aşağıdaki Doğrulama). Geçerse b ve c varyasyonlarını üret (aynı stil referansı). Toprak karosu için de 2 varyasyon (iso_ground_dirt_a, iso_ground_dirt_b).
+2. create_tiles_pro (tileset): çimen <-> toprak geçiş seti. Taban karo olarak 1. adımdaki çimen ve toprak karolarını referans ver (zincirleme). Kenar kıvrımlılığı orta, arazi yüksekliği sıfır. Karo sayısını ve hangi geçişleri verdiğini yaz. Dikişsiz olmalı.
+3. (Yalnızca 1 ve 2 geçerse, ayrı onayımla) create_path_tiles ile toprak yol seti.
+Dosya adları: iso_ground_grass_a/b/c.png, iso_ground_dirt_a/b.png, geçiş seti için iso_ground_grass_dirt_<n>.png (n = karo no).
+DUR, raporla.
 
-## Faz 2: Zemin seti ve karakter yönleri
-- Çimen <-> toprak geçişli iso tileset (64x32 elmas, dikişsiz) ve 2 çimen varyasyonu (iso_ground_grass_b.png, iso_ground_grass_c.png). Önce kenar geçiş mantığını kısaca açıkla (kaç karo, hangi geçişler), sonra üret.
-- Köylünün kalan yönleri: SW, NW, NE (en az 4 yön: SE, SW, NW, NE). 8 yön yalnızca toplamda ek hak gerektirmiyorsa ya da ucuzsa; aksi halde 4 yönle bırak ve söyle. Yeni yürüme animasyonu bu iş emrinde YOK.
+## Faz C: Eşyalar
+Ayak izi kuralı: 1x1 nesne 64x32 elmasa oturur; 2x1 nesne iki karo (iki eksenden birinde), tabanı yaklaşık 96x48 px paralelkenar. İki eksen için ayrı dosya gerekir (SE-NW ve SW-NE); yansıtma YAPMA (ışık yönü bozulur).
+1. Aracı seç (Faz A planına göre). Her nesnede ÖNCE tek yön ve tek eksenle başla, ayak izini ölç, doğrula, ancak sonra diğerlerine geç.
+2. Sıra: yatak (2x1, battaniye ve yastık net okunmalı, kısa ayaklı puf gibi görünmemeli), tabure (1x1), ocak taşı (1x1, zaten var ise Faz A raporuna göre yeniden değerlendir).
+3. Ad: iso_item_bed_straw_2x1_<yön>.png, iso_item_stool_<yön>.png, iso_item_hearth_stone_<yön>.png.
+Ayak izi tutmazsa tekrar tekrar deneme: DUR ve göster.
 
-## Faz 3: Eşyalar
-- Yatak (2x1 karo, iso_item_bed_straw_2x1.png), ocak taşı (iso_item_hearth_stone.png), tabure (iso_item_stool.png, 1x1).
-- Taban ayak izine uyar, yükseklik serbest. Önce bir tanesini üret ve doğrula, sonra diğerlerine geç. Her eşya için yön sayısını ve maliyeti söyle (tek yönle başlamak yeterliyse öyle yap).
+## Faz D: Duvarlar
+- Orta çağ kulübe malzemesi (ahşap ya da sıva), yalnızca duvar (çatı yok).
+- create_building_kit (iso) ile önce malzeme örneği (materials, maliyetini yaz), onayımla sonra parçalar: her iki eksen için düz duvar ve köşe (SE-NW, SW-NE).
+- Ad: iso_wall_straight_se_nw.png, iso_wall_straight_sw_ne.png, iso_wall_corner_<yön>.png.
+DUR, raporla.
 
-## Faz 4: Duvarlar
-- Her iki eksen için (SE-NW ve SW-NE) düz duvar ve köşe parçası (iso_wall_straight_se_nw.png, iso_wall_straight_sw_ne.png, iso_wall_corner_*.png).
-- Orta çağ kulübe malzemesi (ahşap/sıva, saz çatı değil, yalnızca duvar). Plan yetmeyecekse bu fazı bana bırak, maliyet tahminini yaz.
+## Doğrulama (her zemin ve duvar dosyası)
+- Gerçek piksel boyutu 64x32 mi (zemin)? Arka plan tamamen saydam mı? Yarı saydam ya da anti-alias piksel var mı? (Küçük bir betikle say.)
+- Kenarlar tam 2:1 mi (2 piksel yatay, 1 piksel dikey)? Köşe ve tepe pikselleri maskenin içinde mi?
+- Döşeme testi: aynı karoyu (ve varyasyonlarını) 8x8 elmas ızgarada (32,16 adımıyla) döşe, bir PNG olarak kaydet (scratchpad). Komşu karolar arasında görünür çapraz çizgi, parlaklık sıçraması ya da boşluk var mı? Ortalama parlaklık sıçramasını sayıyla yaz.
+- Işık: üst yüz en açık, sol yüz orta, sağ yüz en koyu. Gölge pişirilmemiş olmalı.
+- Çıktı tam 2:1 değilse: tamamen başarısız sayma, tam 2:1 elmas maskesiyle kırp (yalnızca maske dışını sil, içeriği yeniden boyama) ve raporda belirt. Maske yetmeyecek kadar bozuksa DUR.
 
-## Dosya konumu ve adlandırma
-- Hepsi Assets/Art/Iso/ altına. Alt klasör kullanma, doğrudan ad kuralı:
-  iso_<tür>_<ad>_<yön>.png (örn. iso_char_villager_se.png, iso_ground_grass_a.png). Yönler: se, sw, nw, ne. Çok karolu nesne: _2x1 eki.
-- PNG dosyalarını kopyala. .meta dosyası YAZMA. Import ayarlarını (PPU 32, Point filtre, sıkıştırma yok, pivot) ben Unity'de yapacağım.
-
-## Pivot kuralı
-- Yönergeye göre pivot ayak izi taban elmasının merkezi (karakterde ayakların altı). Ben import ederken kullanacağım için her dosya için piksel olarak ölç ve raporla: (sprite genişliği x yüksekliği, pivot x, pivot y; pivot y üstten değil ALTTAN piksel olarak yaz ve hangisini kullandığını belirt).
+## Dosya konumu ve pivot
+- Hepsi Assets/Art/Iso/ altında, alt klasör yok, ad kuralı yukarıdaki gibi. PNG kopyala. .meta YAZMA. Import ayarlarını (PPU 32, Point, sıkıştırma yok, pivot) ben Unity'de yapacağım.
+- Pivot: ayak izi taban elmasının merkezi. Her dosya için piksel olarak ölç ve raporla (sprite boyutu, pivot x, pivot y ALTTAN; zeminde pivot elmas merkezi).
 
 ## Yapma
 - Git commit ya da push yapma (git pull --rebase hariç).
-- Assets/Scripts, Packages, ProjectSettings ve Assets/Art/Test_34 içindeki dosyalara dokunma. Mevcut dosyaların üzerine yazma.
-- PixelLab dışında başka üretim aracı kullanma.
+- Assets/Scripts, Packages, ProjectSettings, Assets/Art/Test_34 ve mevcut Assets/Art/Iso dosyalarına dokunma. Var olan dosyanın üzerine yazma.
+- PixelLab dışında üretim aracı kullanma. Zemini kodla üretme.
 - Onay beklemeden bir sonraki faza geçme.
+- Bu işte köylü animasyonu, çocuk ve yaşlı varyantı YOK (sonraki tur).
 
 ## Teslim
-Her faz sonunda ve işin sonunda proje kökünde art-brief-result.md dosyasını GÜNCELLE (üzerine ekle). İçeriği:
-- Faz başına ve çağrı başına harcanan generation, toplam, kalan tahmini.
-- Dosya listesi: yol, piksel boyutu, pivot (px).
-- Doğrulama sonucu (2:1, saydamlık, anti-alias, ışık yönü), maskeleme yaptıysan hangi dosyalarda.
-- Seçtiğin kamera/view ayarı ve gerekçesi, aracın sınırları, yapamadıkların.
-Sonra kısa bir özet ver ve onay bekle.
+Her faz sonunda art-brief-result.md dosyasına yeni bir bölüm EKLE (eskiyi silme): faz başına ve çağrı başına generation, toplam, kalan; dosya listesi (yol, piksel boyutu, pivot); doğrulama sonuçları; seçtiğin araç ve ayarlar ile gerekçe; sorunlar. Sonra kısa bir özet ver ve onay bekle.
