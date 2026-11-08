@@ -226,6 +226,48 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(DeathCause.OldAge, c.CauseOfDeath);
         }
 
+        // ---- ocak ve iş kuyruğu ----
+
+        private static ItemDef WarmHearth() => new ItemDef
+        {
+            Id = "hearth", DisplayName = "Ocak", HeatOutput = 80f,
+            Interactions = new List<InteractionDef> { new InteractionDef { Id = "warm", DisplayName = "Isın", Need = NeedType.Warmth, Restore = 40, DurationDays = 0.1 } }
+        };
+
+        [Fact]
+        public void SonukOcak_OyuncuKomutunuReddeder_YanincaCalisir()
+        {
+            var map = new GridMap(10, 10);
+            var w = new WorldState(map);
+            var hearth = w.PlaceItem(WarmHearth(), new GridPos(5, 5));
+            var c = new Character(1, "A", new GridPos(2, 5), true);
+            var runner = new Jobs.JobRunner(c, w);
+            runner.Command(Jobs.Job.UseItem(hearth.Id, "warm"));
+            runner.Tick(0.01);
+            Assert.NotNull(runner.LastFailure);
+
+            var house = new Household(); house.AddItem("item.firewood", 1);
+            Assert.True(new HeatSystem(w, Time).TryStoke(hearth.Id, house));
+            c.Needs.Set(NeedType.Warmth, 20f);
+            runner.Command(Jobs.Job.UseItem(hearth.Id, "warm"));
+            for (int i = 0; i < 50 && !runner.IsIdle; i++) runner.Tick(0.01);
+            Assert.True(runner.IsIdle);
+            Assert.True(c.Needs.Get(NeedType.Warmth) >= 59f);
+        }
+
+        [Fact]
+        public void Otonomi_SonukOcagaGitmez()
+        {
+            var map = new GridMap(10, 10);
+            var w = new WorldState(map);
+            w.PlaceItem(WarmHearth(), new GridPos(5, 5));
+            var c = new Character(1, "A", new GridPos(2, 5), false);
+            c.Needs.Set(NeedType.Warmth, 10f);
+            var runner = new Jobs.JobRunner(c, w) { Autonomous = true };
+            runner.Tick(0.01);
+            Assert.True(runner.IsIdle);
+        }
+
         // ---- içerik ----
 
         [Fact]

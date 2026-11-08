@@ -127,6 +127,8 @@ namespace Thatchwick.Core.Jobs
             InteractionDef interaction = item == null ? null : FindInteraction(item.Def, job.InteractionId);
             if (interaction == null) { Fail("Eşya ya da etkileşim bulunamadı."); return 0; }
 
+            if (!_using && IsUnlitHeatSource(item, interaction)) { Fail("Ocak sönük, önce odun at."); return 0; }
+
             if (_path == null && !_using)
             {
                 _path = PathToAdjacent(item);
@@ -213,6 +215,9 @@ namespace Thatchwick.Core.Jobs
             return best;
         }
 
+        private static bool IsUnlitHeatSource(ItemInstance item, InteractionDef interaction) =>
+            interaction.Need == NeedType.Warmth && item.Def.HeatOutput > 0f && !item.IsLit;
+
         private static InteractionDef FindInteraction(ItemDef def, string interactionId)
         {
             foreach (var i in def.Interactions)
@@ -240,6 +245,7 @@ namespace Thatchwick.Core.Jobs
                 foreach (var interaction in item.Def.Interactions)
                 {
                     if (interaction.Need != worst.Value) continue;
+                    if (IsUnlitHeatSource(item, interaction)) continue;   // sönük ocağa ısınmaya gidilmez
 
                     int distance = Math.Max(
                         Math.Abs(item.Position.X - _character.Position.X),

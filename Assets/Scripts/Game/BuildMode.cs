@@ -489,7 +489,7 @@ namespace Thatchwick.Game
                 if (!_content.Items.TryGet(kv.Key, out var def)) continue;
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"{def.DisplayName} x{kv.Value}");
-                if (GUILayout.Button("Koy", GUILayout.Width(44f)))
+                if (def.Placement != ItemPlacement.Resource && GUILayout.Button("Koy", GUILayout.Width(44f)))
                 {
                     var keep = _status;
                     ClearSelection();

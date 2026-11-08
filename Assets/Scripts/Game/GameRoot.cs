@@ -4,6 +4,7 @@ using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Customization;
+using Thatchwick.Core.Heat;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
@@ -49,12 +50,14 @@ namespace Thatchwick.Game
         private Household _household;
         private BuildMode _buildMode;
         private WallView _walls;
+        private HeatSystem _heat;
+        private Vector2 _hudScroll;
         private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
         private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric" };
         private int _nameCounter;
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
-        private Rect HudRect => new Rect(8f, 8f, 340f, 430f);
+        private Rect HudRect => new Rect(8f, 8f, 340f, Mathf.Min(560f, Screen.height / HudScale - 16f));
 
         private void Awake()
         {
@@ -101,6 +104,8 @@ namespace Thatchwick.Game
             _input.Tapped += OnTapped;
 
             _household = new Household(100);
+            _household.AddItem("item.firewood", 10);
+            _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
             _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content), _content, _view, _input, transform, _walls);
 
             _population = new Population(firstFreeId: 1, seed: 21);
@@ -231,7 +236,7 @@ namespace Thatchwick.Game
         private Actor CreateActorFor(Character character)
         {
             character.StageChanged += (c, from, to) => ShowMessage($"{c.Name}: {StageName(to)} oldu");
-            character.Died += c => ShowMessage($"{c.Name} hayatını kaybetti");
+            character.Died += c => ShowMessage(c.CauseOfDeath == DeathCause.Cold ? $"{c.Name} donarak öldü" : $"{c.Name} hayatını kaybetti");
             character.Skills.LevelChanged += (skill, from, to) => ShowMessage($"{character.Name}: {SkillName(skill)} seviye {to}");
 
             var go = new GameObject(character.Name);
@@ -330,6 +335,8 @@ namespace Thatchwick.Game
 
             // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
             double gameDays = _clock.Advance(dt);
+            _heat.Tick(gameDays, _clock.TotalDays);
+            foreach (var a in _actors) a.Character.AmbientTemperature = _heat.TemperatureAt(a.Character.Position);
             _population.Tick(gameDays);
             foreach (var actor in _actors.ToArray())
             {
@@ -441,6 +448,7 @@ namespace Thatchwick.Game
             _buildMode.OnGUI(s);
 
             GUILayout.BeginArea(HudRect, GUI.skin.box);
+            _hudScroll = GUILayout.BeginScrollView(_hudScroll);
             GUILayout.Label(
                 $"Yıl {_clock.YearIndex + 1} · {SeasonName(_clock.Season)} · Gün {_clock.DayOfSeason + 1}/{_clock.Config.DaysPerSeason}");
 
@@ -456,7 +464,7 @@ namespace Thatchwick.Game
             {
                 var c = actor.Character;
                 GUILayout.Label(
-                    $"{c.Name} ({(c.IsDead ? "Öldü" : StageName(c.Stage))}{(c.IsPregnant ? ", hamile" : "")}, {c.AgeDays:0}g): Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0}");
+                    $"{c.Name} ({(c.IsDead ? "Öldü" : StageName(c.Stage))}{(c.IsPregnant ? ", hamile" : "")}, {c.AgeDays:0}g): Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0} · Isınma {c.Needs.Get(NeedType.Warmth):0}");
                 if (!c.IsDead) GUILayout.Label($"   {ActivityText(actor.Runner)}");
                 var skills = SkillsText(c);
                 if (skills.Length > 0) GUILayout.Label($"   Beceri: {skills}");
@@ -477,9 +485,26 @@ namespace Thatchwick.Game
                 Destroy(gameObject);
                 return;
             }
+            DrawHeatHud();
             GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
+        }
+
+        private void DrawHeatHud()
+        {
+            string here = _player != null ? $"{_heat.TemperatureAt(_player.Character.Position):0}°C" : "-";
+            GUILayout.Label($"Dış {_heat.OutdoorTemperature:0}°C · {_player?.Character.Name}'in bulunduğu yer {here} · Odun {_household.Count(_heat.Config.FirewoodId)}");
+            foreach (var item in _world.Items)
+            {
+                if (item.IsDecor || item.Def.HeatOutput <= 0f) continue;
+                GUILayout.BeginHorizontal();
+                GUILayout.Label($"{item.Def.DisplayName}: {(item.IsLit ? $"yanıyor {item.FuelDays:0.0}g" : "sönük")}");
+                if (GUILayout.Button("Odun at", GUILayout.Width(70f)))
+                    ShowMessage(_heat.TryStoke(item.Id, _household) ? "Odun atıldı" : (_household.Count(_heat.Config.FirewoodId) <= 0 ? "Odun yok (yapı modu > Mağaza)" : "Ocak dolu"));
+                GUILayout.EndHorizontal();
+            }
         }
 
         // Eşya adları, dünyada eşyanın üstünde küçük etiket olarak (test için).
@@ -504,7 +529,8 @@ namespace Thatchwick.Game
                 if (sp.z < 0f) continue;
                 float x = sp.x / guiScale;
                 float y = (Screen.height - sp.y) / guiScale;
-                GUI.Label(new Rect(x - 60f, y - 10f, 120f, 20f), item.Def.DisplayName, _labelStyle);
+                string label = item.Def.HeatOutput > 0f ? $"{item.Def.DisplayName} ({(item.IsLit ? "yanıyor" : "sönük")})" : item.Def.DisplayName;
+                GUI.Label(new Rect(x - 70f, y - 10f, 140f, 20f), label, _labelStyle);
             }
         }
     }
