@@ -11,6 +11,13 @@ namespace Thatchwick.Core.Content
         public float Chance { get; set; } = 1f;
     }
 
+    /// <summary>Etkileşimin harcadığı malzeme (marangozlukta 2 tahta + 1 çivi gibi).</summary>
+    public sealed class ConsumeDef
+    {
+        public string ItemId { get; set; }
+        public int Count { get; set; } = 1;
+    }
+
     /// <summary>
     /// Bir eşyanın tanımladığı etkileşim ("akıllı nesne"): eşya kendi etkileşimini söyler,
     /// karakter sistemi yalnızca uygular. İki tür vardır:
@@ -39,7 +46,40 @@ namespace Thatchwick.Core.Content
         /// <summary>İş bitince eşya dünyadan kalkar (kesilen ağaç).</summary>
         public bool RemovesItem { get; set; }
 
-        public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Produce.Count > 0 || RemovesItem;
+        /// <summary>Çok malzemeli harcama (ConsumeItem'a ek olarak).</summary>
+        public List<ConsumeDef> Consume { get; set; } = new List<ConsumeDef>();
+
+        // ---- ruh hali, üretim, hayvanlar ----
+        /// <summary>İş bitince karaktere verilen moodlet kimliği (MoodCatalog).</summary>
+        public string Moodlet { get; set; }
+        /// <summary>Başlamak için gereken beceri seviyesi (Skill ile birlikte). 0 = yok.</summary>
+        public int MinSkillLevel { get; set; }
+        /// <summary>Marangoz tezgâhı tarifinden üretilmiş etkileşim (menüde "Yap" grubunda).</summary>
+        public bool IsCraft { get; set; }
+        /// <summary>Barınağın yem stoğuna eklenen birim (harcanan malzemeyle).</summary>
+        public int AddFeed { get; set; }
+        /// <summary>Barınaktaki ürünleri (yumurta, süt, yün) haneye toplar.</summary>
+        public bool Collect { get; set; }
+        /// <summary>Barınakta yaşayan bir hayvan gerektirir (köpekle oyna).</summary>
+        public bool RequiresAnimal { get; set; }
+
+        /// <summary>Harcanan tüm malzemeler (ConsumeItem 1 adet + Consume listesi), aynı kimlikler toplanır.</summary>
+        public List<ConsumeDef> AllConsumed()
+        {
+            var list = new List<ConsumeDef>();
+            if (!string.IsNullOrEmpty(ConsumeItem)) Add(list, ConsumeItem, 1);
+            foreach (var c in Consume) Add(list, c.ItemId, c.Count);
+            return list;
+        }
+
+        private static void Add(List<ConsumeDef> list, string id, int count)
+        {
+            foreach (var c in list) if (c.ItemId == id) { c.Count += count; return; }
+            list.Add(new ConsumeDef { ItemId = id, Count = count });
+        }
+
+        public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
+            || AddFeed > 0 || Collect || RequiresAnimal;
         public bool RestoresNeed => Restore > 0f;
     }
 }

@@ -184,6 +184,20 @@ namespace Thatchwick.Game
             return (c.Id % 2 == 0) ? "iso_char_woman_a_56_cand" : "iso_char_farmer_f_56_cand";
         }
 
+        // ---------------- hayvanlar ----------------
+
+        // Hayvan setleri (aday): tür → (ad öneki, pivot x, pivot y alttan). Görseli olmayan tür yer tutucuda kalır.
+        private static readonly Dictionary<string, (string set, float px, float py)> Animals = new Dictionary<string, (string, float, float)>
+        {
+            ["animal.sheep"] = ("iso_animal_sheep_1_cand", 26f, 14f),   // 56x56, ayaklar alttan 14 px
+        };
+
+        public static Sprite Animal(string speciesId, int direction)
+        {
+            if (!Animals.TryGetValue(speciesId, out var a)) return null;
+            return Get(a.set + "_" + Directions[direction], a.px, a.py) ?? Get(a.set + "_se", a.px, a.py);
+        }
+
         public static Sprite Character(Character c, int direction)
         {
             string set = CharacterSet(c, out float px, out float py);

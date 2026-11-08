@@ -21,6 +21,32 @@ namespace Thatchwick.Core.World
 
         public bool IsDecor => ParentId.HasValue;
 
+        /// <summary>Duvara asılı eşya: Position = önündeki karo, Rotation = asıldığı kenar (WallSide).</summary>
+        public bool IsWallMounted => Def.Placement == ItemPlacement.Wall && !IsDecor;
+        /// <summary>Duvar eşyasının asıldığı kenar.</summary>
+        public Edge WallEdge => WallSides.EdgeOf(Position, Rotation);
+
+        // ---- barınak (Adım: hayvanlar) ----
+        /// <summary>Barınaktaki yem stoğu (birim).</summary>
+        public double FeedStock { get; internal set; }
+        private Dictionary<string, int> _stock;
+        /// <summary>Barınakta toplanmayı bekleyen ürünler (yumurta, süt, yün).</summary>
+        public IReadOnlyDictionary<string, int> Stock => _stock ?? (_stock = new Dictionary<string, int>());
+        public int StockTotal { get { int n = 0; if (_stock != null) foreach (var v in _stock.Values) n += v; return n; } }
+
+        internal void AddStock(string itemId, int count)
+        {
+            if (_stock == null) _stock = new Dictionary<string, int>();
+            _stock.TryGetValue(itemId, out int n);
+            _stock[itemId] = n + count;
+        }
+
+        internal void SetStock(string itemId, int count)
+        {
+            if (_stock == null) _stock = new Dictionary<string, int>();
+            if (count > 0) _stock[itemId] = count; else _stock.Remove(itemId);
+        }
+
         /// <summary>Isı kaynağının kalan yanma süresi (oyun günü). 0 = sönük.</summary>
         public double FuelDays { get; internal set; }
         public bool IsLit => FuelDays > 0;
@@ -34,8 +60,8 @@ namespace Thatchwick.Core.World
         public float GrowthFraction => IsPlant ? (float)System.Math.Min(1.0, GrowthDays / Def.GrowDays) : 1f;
 
         /// <summary>Dönüş uygulanmış genişlik/yükseklik.</summary>
-        public int Width => IsDecor ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).w;
-        public int Height => IsDecor ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).h;
+        public int Width => IsDecor || IsWallMounted ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).w;
+        public int Height => IsDecor || IsWallMounted ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).h;
 
         public ItemInstance(int id, ItemDef def, GridPos position, int rotation = 0)
         {
@@ -45,10 +71,10 @@ namespace Thatchwick.Core.World
             Rotation = rotation;
         }
 
-        /// <summary>Kapladığı karolar (dekor için boş).</summary>
+        /// <summary>Kapladığı karolar (dekor ve duvar eşyası için boş).</summary>
         public IEnumerable<GridPos> OccupiedTiles()
         {
-            if (IsDecor) yield break;
+            if (IsDecor || IsWallMounted) yield break;
             int w = Width, h = Height;
             for (int dy = 0; dy < h; dy++)
                 for (int dx = 0; dx < w; dx++)
@@ -61,10 +87,49 @@ namespace Thatchwick.Core.World
             gx = gy = 0f;
             var slot = Def.FindSlot(slotId);
             if (slot == null) return false;
+            if (IsWallMounted)
+            {
+                // Duvar rafı: yuvalar duvar boyunca dizilir (U), duvarın hemen önünde.
+                var (ax, ay) = WallSides.AlongWall(Rotation, slot.U);
+                gx = Position.X + ax;
+                gy = Position.Y + ay;
+                return true;
+            }
             var p = Footprint.RotatePoint(slot.U, slot.V, Def.Width, Def.Height, Rotation);
             gx = Position.X + p.x;
             gy = Position.Y + p.y;
             return true;
+        }
+    }
+
+    /// <summary>
+    /// Bir karonun dört kenarı: 0 = -y (Horizontal(x,y)), 1 = +x (Vertical(x+1,y)),
+    /// 2 = +y (Horizontal(x,y+1)), 3 = -x (Vertical(x,y)). Duvar eşyası bu kenara asılır.
+    /// </summary>
+    public static class WallSides
+    {
+        public static Edge EdgeOf(GridPos tile, int side)
+        {
+            switch (Footprint.Normalize(side))
+            {
+                case 0: return new Edge(tile.X, tile.Y, EdgeAxis.Horizontal);
+                case 1: return new Edge(tile.X + 1, tile.Y, EdgeAxis.Vertical);
+                case 2: return new Edge(tile.X, tile.Y + 1, EdgeAxis.Horizontal);
+                default: return new Edge(tile.X, tile.Y, EdgeAxis.Vertical);
+            }
+        }
+
+        /// <summary>Kenar üzerindeki yerel nokta (u: kenar boyunca 0-1), karo köşesine göre, duvardan biraz içeride.</summary>
+        public static (float x, float y) AlongWall(int side, float u)
+        {
+            const float inset = 0.12f;
+            switch (Footprint.Normalize(side))
+            {
+                case 0: return (u, inset);
+                case 1: return (1f - inset, u);
+                case 2: return (u, 1f - inset);
+                default: return (inset, u);
+            }
         }
     }
 

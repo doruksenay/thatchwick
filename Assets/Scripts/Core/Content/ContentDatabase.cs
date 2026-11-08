@@ -7,6 +7,9 @@ namespace Thatchwick.Core.Content
     public sealed class ContentDatabase
     {
         public ContentRegistry<ItemDef> Items { get; } = new ContentRegistry<ItemDef>();
+        public ContentRegistry<AnimalSpeciesDef> Animals { get; } = new ContentRegistry<AnimalSpeciesDef>();
+        /// <summary>Etkileşimlerin başvurduğu moodlet kataloğu (doğrulama için).</summary>
+        public Mood.MoodCatalog Moods { get; set; } = Mood.MoodCatalog.Default;
 
         /// <summary>
         /// İçerik hatalarını okunur metin olarak döner (boşsa içerik geçerli).
@@ -40,6 +43,17 @@ namespace Thatchwick.Core.Content
                 }
                 if (item.Placement == ItemPlacement.Resource && (item.Width != 1 || item.Height != 1 || item.SurfaceSlots.Count > 0 || item.Interactions.Count > 0))
                     errors.Add($"{item.Id}: kaynak 1x1 olmalı, yuvası ve etkileşimi olamaz.");
+                if (item.Placement == ItemPlacement.Wall)
+                {
+                    if (item.Width != 1 || item.Height != 1) errors.Add($"{item.Id}: duvar eşyası 1x1 olmalı.");
+                    if (item.IsHousing) errors.Add($"{item.Id}: duvar eşyası barınak olamaz.");
+                }
+                if (item.IsHousing)
+                {
+                    if (item.HousingCapacity < 1) errors.Add($"{item.Id}: barınak kapasitesi en az 1 olmalı.");
+                    if (item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: barınak yere konan eşya olmalı.");
+                }
+                else if (item.HousingCapacity != 0) errors.Add($"{item.Id}: capacity yalnızca barınakta kullanılır.");
                 if (item.Placement == ItemPlacement.Surface)
                 {
                     if (item.Width != 1 || item.Height != 1) errors.Add($"{item.Id}: dekor 1x1 olmalı.");
@@ -63,10 +77,23 @@ namespace Thatchwick.Core.Content
                         continue;
                     }
                     if (!seen.Add(it.Id)) errors.Add($"{where}: etkileşim kimliği tekrar ediyor.");
-                    if (it.HasEffects ? (it.Restore < 0f || it.Restore > 100f) : (it.Restore <= 0f || it.Restore > 100f))
+                    bool pureWork = it.HasEffects || it.Skill.HasValue || it.Moodlet != null;
+                    if (pureWork ? (it.Restore < 0f || it.Restore > 100f) : (it.Restore <= 0f || it.Restore > 100f))
                         errors.Add($"{where}: Restore 0-100 arasında olmalı (iş etkileşimi değilse sıfırdan büyük).");
                     if (it.RequiresGrown && !item.IsPlant) errors.Add($"{where}: requiresGrown yalnızca bitkide kullanılır.");
                     if (it.ConsumeItem != null && !Items.Contains(it.ConsumeItem)) errors.Add($"{where}: harcanan '{it.ConsumeItem}' bulunamadı.");
+                    foreach (var c in it.Consume)
+                    {
+                        if (!Items.TryGet(c.ItemId, out var mat)) errors.Add($"{where}: malzeme '{c.ItemId}' bulunamadı.");
+                        else if (mat.Placement != ItemPlacement.Resource) errors.Add($"{where}: malzeme '{c.ItemId}' bir kaynak olmalı.");
+                        if (c.Count < 1) errors.Add($"{where}: malzeme adedi en az 1 olmalı.");
+                    }
+                    if (it.Moodlet != null && (Moods == null || !Moods.Contains(it.Moodlet))) errors.Add($"{where}: moodlet '{it.Moodlet}' bulunamadı.");
+                    if (it.MinSkillLevel < 0 || it.MinSkillLevel > Characters.SkillRules.MaxLevel) errors.Add($"{where}: minLevel 0-{Characters.SkillRules.MaxLevel} arasında olmalı.");
+                    if (it.MinSkillLevel > 0 && !it.Skill.HasValue) errors.Add($"{where}: minLevel için beceri gerekli.");
+                    if ((it.AddFeed > 0 || it.Collect || it.RequiresAnimal) && !item.IsHousing) errors.Add($"{where}: yem/toplama/hayvan yalnızca barınakta kullanılır.");
+                    if (it.AddFeed > 0 && it.AllConsumed().Count == 0) errors.Add($"{where}: yem koymak için malzeme (consume) gerekli.");
+                    if (it.AddFeed < 0) errors.Add($"{where}: addFeed negatif olamaz.");
                     foreach (var p in it.Produce)
                     {
                         if (!Items.Contains(p.ItemId)) errors.Add($"{where}: üretilen '{p.ItemId}' bulunamadı.");
@@ -77,6 +104,18 @@ namespace Thatchwick.Core.Content
                     if (it.Skill.HasValue && it.SkillXp <= 0f) errors.Add($"{where}: beceri verilmiş ama skillXp sıfırdan büyük değil.");
                     if (!it.Skill.HasValue && it.SkillXp != 0f) errors.Add($"{where}: skillXp var ama beceri yok.");
                 }
+            }
+
+            foreach (var a in Animals.All)
+            {
+                if (string.IsNullOrWhiteSpace(a.DisplayName)) errors.Add($"{a.Id}: görünen ad boş.");
+                if (a.Price < 0) errors.Add($"{a.Id}: fiyat negatif olamaz.");
+                if (a.FeedPerDay < 0f) errors.Add($"{a.Id}: yem negatif olamaz.");
+                if (a.Produces != null && !Items.Contains(a.Produces)) errors.Add($"{a.Id}: ürün '{a.Produces}' bulunamadı.");
+                if (a.MatureDays < 0f || a.MatureDays >= a.LifespanDays) errors.Add($"{a.Id}: erişkinlik yaşı 0 ile ömür arasında olmalı.");
+                bool housed = false;
+                foreach (var item in Items.All) if (item.HousingKind == a.Housing) { housed = true; break; }
+                if (!housed) errors.Add($"{a.Id}: '{a.Housing}' türünde barınak eşyası yok.");
             }
 
             return errors;

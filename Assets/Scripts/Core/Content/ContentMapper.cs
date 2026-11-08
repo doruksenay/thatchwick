@@ -38,7 +38,11 @@ namespace Thatchwick.Core.Content
                     Tags = dto.tags != null ? new List<string>(dto.tags) : new List<string>(),
                     DiesInWinter = dto.diesInWinter,
                     PlantsAs = string.IsNullOrWhiteSpace(dto.plantsAs) ? null : dto.plantsAs,
-                    Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category
+                    Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category,
+                    StyleSet = string.IsNullOrWhiteSpace(dto.styleSet) ? null : dto.styleSet,
+                    Rooms = dto.rooms != null ? new List<string>(dto.rooms) : new List<string>(),
+                    HousingKind = string.IsNullOrWhiteSpace(dto.housing) ? null : dto.housing,
+                    HousingCapacity = dto.capacity
                 };
 
                 if (!string.IsNullOrWhiteSpace(dto.placement))
@@ -63,9 +67,11 @@ namespace Thatchwick.Core.Content
                     foreach (var i in dto.interactions)
                     {
                         if (i == null) continue;
-                        bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem;
+                        bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
+                            || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal;
                         NeedType need = default;
-                        bool needless = hasEffects && string.IsNullOrWhiteSpace(i.need);   // saf iş etkileşimi
+                        // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
+                        bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
                         if (!needless && !TryParseNeed(i.need, out need))
                         {
                             errors.Add($"{dto.id}/{i.id}: bilinmeyen ihtiyaç '{i.need}'.");
@@ -94,8 +100,14 @@ namespace Thatchwick.Core.Content
                             SkillXp = i.skillXp,
                             RequiresGrown = i.requiresGrown,
                             ConsumeItem = string.IsNullOrWhiteSpace(i.consume) ? null : i.consume,
-                            RemovesItem = i.removeItem
+                            RemovesItem = i.removeItem,
+                            Moodlet = string.IsNullOrWhiteSpace(i.moodlet) ? null : i.moodlet,
+                            MinSkillLevel = i.minLevel,
+                            AddFeed = i.addFeed,
+                            Collect = i.collect,
+                            RequiresAnimal = i.requiresAnimal
                         };
+                        AddMaterials(interaction, i.materials);
                         if (i.produce != null)
                         {
                             foreach (var p in i.produce)
@@ -123,8 +135,79 @@ namespace Thatchwick.Core.Content
                 }
             }
 
+            ApplyRecipes(file.recipes, db, errors);
+            ApplyAnimals(file.animals, db, errors);
+
             errors.AddRange(db.Validate());
             return errors;
+        }
+
+        private static void AddMaterials(InteractionDef interaction, ConsumeDto[] materials)
+        {
+            if (materials == null) return;
+            foreach (var m in materials)
+                if (m != null) interaction.Consume.Add(new ConsumeDef { ItemId = m.item, Count = m.count <= 0 ? 1 : m.count });
+        }
+
+        /// <summary>Her tarif, istasyon eşyasına "craft:&lt;id&gt;" kimlikli bir iş etkileşimi olarak eklenir.</summary>
+        private static void ApplyRecipes(RecipeDto[] recipes, ContentDatabase db, List<string> errors)
+        {
+            if (recipes == null) return;
+            foreach (var r in recipes)
+            {
+                if (r == null) continue;
+                if (!db.Items.TryGet(r.station, out var station)) { errors.Add($"tarif {r.id}: istasyon '{r.station}' bulunamadı."); continue; }
+                if (string.IsNullOrWhiteSpace(r.produces)) { errors.Add($"tarif {r.id}: ürün yok."); continue; }
+                SkillType skill = SkillType.Carpentry;
+                if (!string.IsNullOrWhiteSpace(r.skill) && (!Enum.TryParse(r.skill, true, out skill) || !Enum.IsDefined(typeof(SkillType), skill)))
+                {
+                    errors.Add($"tarif {r.id}: bilinmeyen beceri '{r.skill}'.");
+                    continue;
+                }
+                string name = r.displayName;
+                if (string.IsNullOrWhiteSpace(name))
+                    name = "Yap: " + (db.Items.TryGet(r.produces, out var product) ? product.DisplayName : r.produces);
+                var interaction = new InteractionDef
+                {
+                    Id = "craft:" + r.id,
+                    DisplayName = name,
+                    DurationDays = r.durationDays,
+                    Skill = skill,
+                    SkillXp = r.skillXp,
+                    MinSkillLevel = r.minLevel,
+                    IsCraft = true,
+                    Moodlet = string.IsNullOrWhiteSpace(r.moodlet) ? Mood.MoodCatalog.Proud : r.moodlet
+                };
+                interaction.Produce.Add(new ProduceDef { ItemId = r.produces, Count = r.count <= 0 ? 1 : r.count, Chance = 1f });
+                AddMaterials(interaction, r.materials);
+                if (interaction.Consume.Count == 0) errors.Add($"tarif {r.id}: malzeme yok.");
+                station.Interactions.Add(interaction);
+            }
+        }
+
+        private static void ApplyAnimals(AnimalDto[] animals, ContentDatabase db, List<string> errors)
+        {
+            if (animals == null) return;
+            foreach (var a in animals)
+            {
+                if (a == null) continue;
+                var def = new AnimalSpeciesDef
+                {
+                    Id = a.id,
+                    DisplayName = a.displayName,
+                    Price = a.price,
+                    Housing = a.housing,
+                    FeedPerDay = a.feedPerDay,
+                    Produces = string.IsNullOrWhiteSpace(a.produces) ? null : a.produces,
+                    ProduceEveryDays = a.produceEveryDays <= 0 ? 1f : a.produceEveryDays,
+                    LifespanDays = a.lifespanDays <= 0 ? 120f : a.lifespanDays,
+                    MatureDays = a.matureDays,
+                    IsPet = a.pet,
+                    UnlockLevel = a.level <= 0 ? 1 : a.level
+                };
+                try { db.Animals.Register(def); }
+                catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }
+            }
         }
 
         private static bool TryParseNeed(string text, out NeedType need)

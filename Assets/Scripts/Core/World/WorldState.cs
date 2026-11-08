@@ -42,6 +42,7 @@ namespace Thatchwick.Core.World
         {
             if (def == null) throw new ArgumentNullException(nameof(def));
             if (def.Placement == ItemPlacement.Resource) return PlacementCheck.Fail("Bu eşya yerleştirilmez.");
+            if (def.Placement == ItemPlacement.Wall) return PlacementCheck.Fail("Bu eşya duvara asılır.");
             if (def.Placement != ItemPlacement.Floor) return PlacementCheck.Fail("Bu eşya yere konamaz, bir yüzeye konur.");
 
             var (w, h) = Footprint.Dimensions(def.Width, def.Height, rotation);
@@ -75,6 +76,56 @@ namespace Thatchwick.Core.World
                     return PlacementCheck.Fail("Bu yuva dolu.");
             }
             return PlacementCheck.Success;
+        }
+
+        /// <summary>Duvar eşyasının karonun verilen kenarına (WallSides) asılıp asılamayacağı.</summary>
+        public PlacementCheck CanPlaceOnWall(ItemDef def, GridPos tile, int side, int? ignoreItemId = null)
+        {
+            if (def == null) throw new ArgumentNullException(nameof(def));
+            if (def.Placement != ItemPlacement.Wall) return PlacementCheck.Fail("Bu eşya duvara asılmaz.");
+            if (!Map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
+            side = Footprint.Normalize(side);
+            var edge = WallSides.EdgeOf(tile, side);
+            if (!Map.EdgeInBounds(edge) || Map.GetEdge(edge) != EdgeKind.Wall) return PlacementCheck.Fail("Yalnızca düz duvara asılır (kapı ve pencereye değil).");
+            foreach (var other in _items)
+                if (other.Id != ignoreItemId && other.IsWallMounted && other.Position == tile && other.Rotation == side)
+                    return PlacementCheck.Fail("Bu duvarda zaten bir eşya var.");
+            return PlacementCheck.Success;
+        }
+
+        /// <summary>Duvar eşyasını karonun kenarına asar.</summary>
+        public ItemInstance PlaceOnWall(ItemDef def, GridPos tile, int side)
+        {
+            var check = CanPlaceOnWall(def, tile, side);
+            if (!check.Ok) throw new InvalidOperationException(check.Reason);
+            var item = new ItemInstance(_nextId++, def, tile, Footprint.Normalize(side));
+            _items.Add(item);
+            Changed?.Invoke();
+            return item;
+        }
+
+        /// <summary>Duvar eşyasını başka bir duvara taşır (üstündeki dekorlar da gelir).</summary>
+        public PlacementCheck MoveWallItem(int itemId, GridPos tile, int side)
+        {
+            var item = GetItem(itemId);
+            if (item == null || !item.IsWallMounted) return PlacementCheck.Fail("Duvar eşyası bulunamadı.");
+            var check = CanPlaceOnWall(item.Def, tile, side, itemId);
+            if (!check.Ok) return check;
+            item.Position = tile;
+            item.Rotation = Footprint.Normalize(side);
+            foreach (var child in _items)
+                if (child.ParentId == itemId) child.Position = tile;
+            Changed?.Invoke();
+            return PlacementCheck.Success;
+        }
+
+        /// <summary>Bir kenara (iki yüzüne de) asılı duvar eşyaları.</summary>
+        public List<ItemInstance> WallItemsOn(Edge edge)
+        {
+            var list = new List<ItemInstance>();
+            foreach (var item in _items)
+                if (item.IsWallMounted && item.WallEdge.Equals(edge)) list.Add(item);
+            return list;
         }
 
         private static bool Occupies(ItemInstance item, GridPos tile)
@@ -123,6 +174,7 @@ namespace Thatchwick.Core.World
             var item = GetItem(itemId);
             if (item == null) return PlacementCheck.Fail("Eşya bulunamadı.");
             if (item.IsDecor) return PlacementCheck.Fail("Dekor taşınamaz, yuvasından alınıp yeniden konur.");
+            if (item.IsWallMounted) return MoveWallItem(itemId, position, rotation);
 
             var check = CanPlaceFloor(item.Def, position, rotation, itemId);
             if (!check.Ok) return check;

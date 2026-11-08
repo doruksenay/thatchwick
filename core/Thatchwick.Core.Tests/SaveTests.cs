@@ -216,7 +216,7 @@ namespace Thatchwick.Core.Tests
             Assert.Throws<System.InvalidOperationException>(() => SaveGame.Load(data, s.Db));
             data.version = 0;
             SaveGame.Load(data, s.Db);
-            Assert.Equal(1, data.version);
+            Assert.Equal(SaveGame.CurrentVersion, data.version);   // sürümsüz = 1, sonra güncel sürüme yükseltilir
         }
 
         [Fact]
@@ -227,7 +227,14 @@ namespace Thatchwick.Core.Tests
             var data = JsonSerializer.Deserialize<SaveData>(File.ReadAllText(path), Json);
             var loaded = SaveGame.Load(data, Content());
             Assert.Empty(loaded.Warnings);
-            Assert.Equal(1, data.version);
+            Assert.Equal(SaveGame.CurrentVersion, data.version);   // v1 → güncel sürüme yükseltildi
+            // v2: eski kayıtta keyif ve hijyen yoktu; tam doluyla başlar.
+            foreach (var c in loaded.Characters)
+            {
+                Assert.Equal(100.0, (double)c.Needs.Get(NeedType.Fun), 3);
+                Assert.Equal(100.0, (double)c.Needs.Get(NeedType.Hygiene), 3);
+            }
+            Assert.Empty(loaded.Animals);
             Assert.Equal(new[] { "Aldric", "Maud", "Osric" }, loaded.Characters.Select(c => c.Name).ToArray());
             Assert.Equal(5, loaded.World.Items.Count);
             Assert.True(loaded.World.Map.Rooms.RoomAt(new GridPos(3, 3)).IsIndoor);

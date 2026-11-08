@@ -8,7 +8,9 @@ namespace Thatchwick.Core.Content
         Floor = 0,
         Surface = 1,
         /// <summary>Yerleştirilmez; yalnızca envanterde sayılan kaynak (odun gibi).</summary>
-        Resource = 2
+        Resource = 2,
+        /// <summary>Duvarın iç yüzüne asılır (meşale, duvar rafı, goblen); karo kaplamaz.</summary>
+        Wall = 3
     }
 
     /// <summary>Bir eşyanın yüzeyindeki dekor yuvası. U,V: kapladığı alanın içinde 0-1 arası yerel konum.</summary>
@@ -58,6 +60,16 @@ namespace Thatchwick.Core.Content
         public bool NeedsTilledSoil { get; set; }
         /// <summary>Kış gelince donar ve kaybolur (hasat edilmemiş ekin).</summary>
         public bool DiesInWinter { get; set; }
+
+        /// <summary>Stil seti (Köylü, Zanaatkâr, Tüccar, Asil): aynı odada 4+ eşya "Uyumlu ev" verir. Boş = setsiz.</summary>
+        public string StyleSet { get; set; }
+        /// <summary>Satın alma menüsünde oda filtresi (bedroom, kitchen, living, outdoor, kids).</summary>
+        public List<string> Rooms { get; set; } = new List<string>();
+        /// <summary>Hayvan barınağı türü (coop, barn, kennel ...); boş = barınak değil.</summary>
+        public string HousingKind { get; set; }
+        /// <summary>Barınağın alabileceği hayvan sayısı.</summary>
+        public int HousingCapacity { get; set; }
+        public bool IsHousing => !string.IsNullOrEmpty(HousingKind);
 
         public SurfaceSlotDef FindSlot(string slotId)
         {

@@ -63,6 +63,15 @@ namespace Thatchwick.Game
             var actor = _selected();
             GUILayout.Label(actor != null ? $"Komut alan: {actor.Name} (haritaya dokununca o gider)" : "Komut alacak kişiyi seç.");
             if (_status.Length > 0) GUILayout.Label(_status);
+            if (actor != null && actor.MoodEnabled)
+            {
+                GUILayout.Label($"Ruh hali: {Thatchwick.Core.Mood.MoodRules.Name(actor.Mood.Status)} ({actor.Mood.Total})");
+                foreach (var m in actor.Mood.Active)
+                {
+                    string left = m.Def.IsCondition ? "" : $", {m.RemainingDays:0.0} gün";
+                    GUILayout.Label($"  {(m.Def.Value > 0 ? "+" : "")}{m.Def.Value} {m.Def.DisplayName}{left}: {m.Def.Description}");
+                }
+            }
 
             _scroll = GUILayout.BeginScrollView(_scroll);
             GUILayout.Label("— Hane —");
@@ -77,7 +86,8 @@ namespace Thatchwick.Game
         {
             string spouse = c.SpouseId.HasValue ? $", eşi {_population.Find(c.SpouseId.Value)?.Name}" : "";
             string head = c.Id == _dynasty.HeadId ? " ★" : "";
-            string state = c.IsDead ? "öldü" : $"{StageName(c.Stage)} {c.AgeDays:0}g, Açlık {c.Needs.Get(NeedType.Hunger):0}{(c.IsPregnant ? ", hamile" : "")}";
+            string mood = c.MoodEnabled ? $", {Thatchwick.Core.Mood.MoodRules.Name(c.Mood.Status)}" : "";
+            string state = c.IsDead ? "öldü" : $"{StageName(c.Stage)} {c.AgeDays:0}g, Açlık {c.Needs.Get(NeedType.Hunger):0}{mood}{(c.IsPregnant ? ", hamile" : "")}";
             GUILayout.BeginHorizontal();
             GUILayout.Label($"{c.Name}{head} ({state}{spouse})");
             if (CanTakeCommands(c) && c != actor && GUILayout.Button("Seç", GUILayout.Width(40f))) { _select(c); _status = $"{c.Name} seçildi."; }

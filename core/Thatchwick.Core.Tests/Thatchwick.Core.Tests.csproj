@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <None Include="SaveFixtures\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\Assets\Resources\Content\items.json" Link="GameContent\items.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

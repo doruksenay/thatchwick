@@ -15,7 +15,7 @@ namespace Thatchwick.Core.Characters
         private static readonly int NeedCount = Enum.GetValues(typeof(NeedType)).Length;
 
         // Oyun günü başına varsayılan azalma. Denge adımında (28) ayarlanır.
-        private static readonly float[] DefaultDecayPerDay = { 120f, 90f, 0f };
+        private static readonly float[] DefaultDecayPerDay = { 120f, 90f, 0f, 50f, 35f };
 
         private readonly float[] _values = new float[NeedCount];
         private readonly float[] _decayPerDay = new float[NeedCount];
@@ -50,10 +50,14 @@ namespace Thatchwick.Core.Characters
 
         public bool IsCritical(NeedType need) => _values[(int)need] <= CriticalThreshold;
 
+        /// <summary>Hayatta kalma ihtiyacı mı (Açlık, Enerji, Isınma). Konfor ihtiyaçları kritik sayılmaz.</summary>
+        public static bool IsSurvival(NeedType need) => need == NeedType.Hunger || need == NeedType.Energy || need == NeedType.Warmth;
+
+        /// <summary>Hayatta kalma ihtiyaçlarından biri kritik mi (keyif ve hijyen sayılmaz).</summary>
         public bool AnyCritical()
         {
             for (int i = 0; i < NeedCount; i++)
-                if (_values[i] <= CriticalThreshold) return true;
+                if (IsSurvival((NeedType)i) && _values[i] <= CriticalThreshold) return true;
             return false;
         }
 

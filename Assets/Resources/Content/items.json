@@ -15,7 +15,11 @@
       "width": 2,
       "height": 1,
       "price": 30,
-      "category": "furniture"
+      "category": "sleep",
+      "styleSet": "Köylü",
+      "rooms": [
+        "bedroom"
+      ]
     },
     {
       "id": "item.hearth_stone",
@@ -30,8 +34,16 @@
         }
       ],
       "price": 40,
-      "category": "furniture",
-      "heat": 80
+      "category": "heat_light",
+      "heat": 80,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "tags": [
+        "light"
+      ]
     },
     {
       "id": "item.cooking_pot",
@@ -53,11 +65,43 @@
           "durationDays": 0.2,
           "skill": "Cooking",
           "skillXp": 25,
-          "consume": "item.turnip"
+          "consume": "item.turnip",
+          "moodlet": "good_meal"
+        },
+        {
+          "id": "eat_egg",
+          "displayName": "Yumurta pişir ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.1,
+          "consume": "item.egg",
+          "skill": "Cooking",
+          "skillXp": 15
+        },
+        {
+          "id": "drink_milk",
+          "displayName": "Süt iç",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.03,
+          "consume": "item.milk"
+        },
+        {
+          "id": "eat_honey",
+          "displayName": "Ballı ekmek ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.05,
+          "consume": "item.honey",
+          "moodlet": "good_meal"
         }
       ],
       "price": 25,
-      "category": "furniture"
+      "category": "kitchen",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ]
     },
     {
       "id": "item.stool_wood",
@@ -72,7 +116,12 @@
         }
       ],
       "price": 8,
-      "category": "furniture"
+      "category": "seating",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "living"
+      ]
     },
     {
       "id": "item.table_wood",
@@ -81,7 +130,7 @@
       "width": 2,
       "height": 1,
       "price": 20,
-      "category": "furniture",
+      "category": "surfaces",
       "surfaceSlots": [
         {
           "id": "a",
@@ -99,7 +148,12 @@
           "v": 0.5
         }
       ],
-      "level": 2
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "living"
+      ]
     },
     {
       "id": "item.chair_wood",
@@ -116,18 +170,28 @@
       "width": 1,
       "height": 1,
       "price": 10,
-      "category": "furniture",
-      "level": 2
+      "category": "seating",
+      "level": 2,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen",
+        "living"
+      ]
     },
     {
       "id": "item.chest_wood",
-      "displayName": "Sandık (depo +40)",
+      "displayName": "Sandık",
       "interactions": [],
       "width": 1,
       "height": 1,
       "price": 18,
-      "category": "furniture",
-      "storage": 40
+      "category": "storage",
+      "storage": 40,
+      "styleSet": "Köylü",
+      "rooms": [
+        "bedroom",
+        "living"
+      ]
     },
     {
       "id": "item.shelf_wood",
@@ -136,7 +200,7 @@
       "width": 2,
       "height": 1,
       "price": 15,
-      "category": "furniture",
+      "category": "storage",
       "surfaceSlots": [
         {
           "id": "a",
@@ -149,7 +213,13 @@
           "v": 0.5
         }
       ],
-      "level": 3
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "storage": 20
     },
     {
       "id": "item.candle",
@@ -158,7 +228,11 @@
       "placement": "Surface",
       "price": 4,
       "category": "decor",
-      "level": 3
+      "level": 3,
+      "styleSet": "Köylü",
+      "tags": [
+        "light"
+      ]
     },
     {
       "id": "item.flower_pot",
@@ -176,7 +250,8 @@
       "placement": "Surface",
       "price": 3,
       "category": "decor",
-      "level": 5
+      "level": 5,
+      "styleSet": "Köylü"
     },
     {
       "id": "item.firewood",
@@ -245,7 +320,7 @@
       "id": "item.chopping_block",
       "displayName": "Yarma kütüğü",
       "price": 10,
-      "category": "utility",
+      "category": "work",
       "interactions": [
         {
           "id": "split",
@@ -260,7 +335,25 @@
               "count": 3
             }
           ]
+        },
+        {
+          "id": "saw",
+          "displayName": "Tahta biç",
+          "durationDays": 0.08,
+          "consume": "item.log",
+          "produce": [
+            {
+              "item": "item.plank",
+              "count": 3
+            }
+          ],
+          "skill": "Carpentry",
+          "skillXp": 6
         }
+      ],
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
       ]
     },
     {
@@ -313,7 +406,8 @@
               "count": 1,
               "chance": 0.5
             }
-          ]
+          ],
+          "moodlet": "good_harvest"
         }
       ]
     },
@@ -339,8 +433,1651 @@
         }
       ],
       "price": 30,
-      "category": "furniture",
-      "level": 10
+      "category": "seating",
+      "level": 10,
+      "styleSet": "Asil"
+    },
+    {
+      "id": "item.plank",
+      "displayName": "Tahta",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "interactions": []
+    },
+    {
+      "id": "item.nails",
+      "displayName": "Çivi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "interactions": []
+    },
+    {
+      "id": "item.feed",
+      "displayName": "Yem",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "interactions": [],
+      "tags": [
+        "feed"
+      ]
+    },
+    {
+      "id": "item.egg",
+      "displayName": "Yumurta",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "interactions": [],
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.milk",
+      "displayName": "Süt",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "interactions": [],
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.wool",
+      "displayName": "Yün",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "interactions": []
+    },
+    {
+      "id": "item.honey",
+      "displayName": "Bal",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "interactions": [],
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.bench_long",
+      "displayName": "Uzun bank",
+      "category": "seating",
+      "price": 14,
+      "width": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 6,
+          "durationDays": 0.05
+        }
+      ]
+    },
+    {
+      "id": "item.armchair_cushion",
+      "displayName": "Minderli koltuk",
+      "category": "seating",
+      "price": 35,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living"
+      ],
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 12,
+          "durationDays": 0.06
+        },
+        {
+          "id": "rest",
+          "displayName": "Keyif yap",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.08
+        }
+      ]
+    },
+    {
+      "id": "item.chair_painted",
+      "displayName": "Boyalı sandalye",
+      "category": "seating",
+      "price": 60,
+      "level": 9,
+      "styleSet": "Tüccar",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 10,
+          "durationDays": 0.05
+        }
+      ]
+    },
+    {
+      "id": "item.mattress_straw",
+      "displayName": "Saman şilte",
+      "category": "sleep",
+      "price": 12,
+      "styleSet": "Köylü",
+      "rooms": [
+        "bedroom",
+        "kids"
+      ],
+      "interactions": [
+        {
+          "id": "sleep",
+          "displayName": "Uyu",
+          "need": "Energy",
+          "restore": 45,
+          "durationDays": 0.3
+        }
+      ]
+    },
+    {
+      "id": "item.bed_frame",
+      "displayName": "Tahta karyola",
+      "category": "sleep",
+      "price": 70,
+      "width": 2,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "bedroom"
+      ],
+      "interactions": [
+        {
+          "id": "sleep",
+          "displayName": "Uyu",
+          "need": "Energy",
+          "restore": 70,
+          "durationDays": 0.3,
+          "moodlet": "rested"
+        }
+      ]
+    },
+    {
+      "id": "item.cradle",
+      "displayName": "Beşik",
+      "category": "sleep",
+      "price": 20,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "bedroom",
+        "kids"
+      ],
+      "interactions": [
+        {
+          "id": "rock",
+          "displayName": "Beşiği salla",
+          "need": "Fun",
+          "restore": 10,
+          "durationDays": 0.05
+        }
+      ]
+    },
+    {
+      "id": "item.child_bed",
+      "displayName": "Çocuk yatağı",
+      "category": "sleep",
+      "price": 40,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kids",
+        "bedroom"
+      ],
+      "interactions": [
+        {
+          "id": "sleep",
+          "displayName": "Uyu",
+          "need": "Energy",
+          "restore": 65,
+          "durationDays": 0.3,
+          "moodlet": "rested"
+        }
+      ]
+    },
+    {
+      "id": "item.stump_table",
+      "displayName": "Kütük sehpa",
+      "category": "surfaces",
+      "price": 8,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "outdoor"
+      ],
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.5,
+          "v": 0.5
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.prep_counter",
+      "displayName": "Hazırlık tezgâhı",
+      "category": "surfaces",
+      "price": 35,
+      "width": 2,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen"
+      ],
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.333,
+          "v": 0.5
+        },
+        {
+          "id": "b",
+          "u": 0.667,
+          "v": 0.5
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.dining_table_long",
+      "displayName": "Uzun yemek masası",
+      "category": "surfaces",
+      "price": 50,
+      "width": 3,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.167,
+          "v": 0.5
+        },
+        {
+          "id": "b",
+          "u": 0.333,
+          "v": 0.5
+        },
+        {
+          "id": "c",
+          "u": 0.5,
+          "v": 0.5
+        },
+        {
+          "id": "d",
+          "u": 0.667,
+          "v": 0.5
+        },
+        {
+          "id": "e",
+          "u": 0.833,
+          "v": 0.5
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.table_painted",
+      "displayName": "Boyalı masa",
+      "category": "surfaces",
+      "price": 80,
+      "width": 2,
+      "level": 10,
+      "styleSet": "Tüccar",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.25,
+          "v": 0.5
+        },
+        {
+          "id": "b",
+          "u": 0.5,
+          "v": 0.5
+        },
+        {
+          "id": "c",
+          "u": 0.75,
+          "v": 0.5
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.brazier",
+      "displayName": "Mangal",
+      "category": "heat_light",
+      "price": 18,
+      "heat": 40,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "tags": [
+        "light"
+      ],
+      "interactions": [
+        {
+          "id": "warm",
+          "displayName": "Isın",
+          "need": "Warmth",
+          "restore": 25,
+          "durationDays": 0.08
+        }
+      ]
+    },
+    {
+      "id": "item.fireplace_large",
+      "displayName": "Büyük taş şömine",
+      "category": "heat_light",
+      "price": 90,
+      "width": 2,
+      "heat": 140,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living"
+      ],
+      "tags": [
+        "light"
+      ],
+      "interactions": [
+        {
+          "id": "warm",
+          "displayName": "Isın",
+          "need": "Warmth",
+          "restore": 50,
+          "durationDays": 0.1
+        }
+      ]
+    },
+    {
+      "id": "item.candlestick",
+      "displayName": "Şamdan",
+      "category": "heat_light",
+      "price": 45,
+      "level": 9,
+      "styleSet": "Tüccar",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "tags": [
+        "light"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.torch_wall",
+      "displayName": "Duvar meşalesi",
+      "category": "heat_light",
+      "price": 10,
+      "placement": "Wall",
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "kitchen",
+        "outdoor"
+      ],
+      "tags": [
+        "light"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.oil_lamp_wall",
+      "displayName": "Gaz lambası",
+      "category": "heat_light",
+      "price": 25,
+      "placement": "Wall",
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "tags": [
+        "light"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.sconce_brass",
+      "displayName": "Pirinç aplik",
+      "category": "heat_light",
+      "price": 55,
+      "placement": "Wall",
+      "level": 11,
+      "styleSet": "Tüccar",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "tags": [
+        "light"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.stone_oven",
+      "displayName": "Taş fırın",
+      "category": "kitchen",
+      "price": 80,
+      "width": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen"
+      ],
+      "interactions": [
+        {
+          "id": "bake",
+          "displayName": "Fırında güveç pişir ve ye",
+          "need": "Hunger",
+          "restore": 80,
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 35,
+          "materials": [
+            {
+              "item": "item.turnip",
+              "count": 1
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "moodlet": "good_meal"
+        }
+      ]
+    },
+    {
+      "id": "item.water_barrel",
+      "displayName": "Su fıçısı",
+      "category": "kitchen",
+      "price": 12,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "wash",
+          "displayName": "Elini yüzünü yıka",
+          "need": "Hygiene",
+          "restore": 25,
+          "durationDays": 0.04
+        }
+      ]
+    },
+    {
+      "id": "item.drying_rack",
+      "displayName": "Kurutma askısı",
+      "category": "kitchen",
+      "price": 15,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "storage": 15,
+      "interactions": []
+    },
+    {
+      "id": "item.pantry_shelf",
+      "displayName": "Kiler rafı",
+      "category": "kitchen",
+      "price": 45,
+      "width": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen"
+      ],
+      "storage": 30,
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.333,
+          "v": 0.5
+        },
+        {
+          "id": "b",
+          "u": 0.667,
+          "v": 0.5
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.copper_pots",
+      "displayName": "Bakır kazan seti",
+      "category": "kitchen",
+      "price": 70,
+      "level": 9,
+      "styleSet": "Tüccar",
+      "rooms": [
+        "kitchen"
+      ],
+      "interactions": [
+        {
+          "id": "cook",
+          "displayName": "Bakırda şalgam pişir ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 35,
+          "consume": "item.turnip",
+          "moodlet": "good_meal"
+        }
+      ]
+    },
+    {
+      "id": "item.woodshed",
+      "displayName": "Odunluk",
+      "category": "storage",
+      "price": 25,
+      "width": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "storage": 60,
+      "interactions": []
+    },
+    {
+      "id": "item.barrel",
+      "displayName": "Fıçı",
+      "category": "storage",
+      "price": 12,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "outdoor"
+      ],
+      "storage": 25,
+      "interactions": []
+    },
+    {
+      "id": "item.chest_iron",
+      "displayName": "Demir kulplu sandık",
+      "category": "storage",
+      "price": 60,
+      "width": 2,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "bedroom",
+        "living"
+      ],
+      "storage": 90,
+      "interactions": []
+    },
+    {
+      "id": "item.wall_shelf",
+      "displayName": "Duvar rafı",
+      "category": "storage",
+      "price": 10,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "living",
+        "bedroom"
+      ],
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.333,
+          "v": 0.5
+        },
+        {
+          "id": "b",
+          "u": 0.667,
+          "v": 0.5
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.wall_shelf_oak",
+      "displayName": "Meşe duvar rafı",
+      "category": "storage",
+      "price": 25,
+      "placement": "Wall",
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen",
+        "living",
+        "bedroom"
+      ],
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.25,
+          "v": 0.5
+        },
+        {
+          "id": "b",
+          "u": 0.5,
+          "v": 0.5
+        },
+        {
+          "id": "c",
+          "u": 0.75,
+          "v": 0.5
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.workbench",
+      "displayName": "Marangoz tezgâhı",
+      "category": "work",
+      "price": 45,
+      "width": 2,
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor",
+        "living"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.seed_crate",
+      "displayName": "Tohum kasası",
+      "category": "work",
+      "price": 15,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "storage": 20,
+      "interactions": []
+    },
+    {
+      "id": "item.tool_rack_wall",
+      "displayName": "Alet askısı",
+      "category": "work",
+      "price": 20,
+      "placement": "Wall",
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.whetstone",
+      "displayName": "Bileği taşı",
+      "category": "work",
+      "price": 25,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "sharpen",
+          "displayName": "Baltayı bile",
+          "durationDays": 0.05,
+          "skill": "Woodcutting",
+          "skillXp": 5,
+          "moodlet": "sharp_tools"
+        }
+      ]
+    },
+    {
+      "id": "item.basin_ewer",
+      "displayName": "Leğen ve ibrik",
+      "category": "hygiene",
+      "price": 10,
+      "styleSet": "Köylü",
+      "rooms": [
+        "bedroom",
+        "kitchen"
+      ],
+      "interactions": [
+        {
+          "id": "wash",
+          "displayName": "Yıkan",
+          "need": "Hygiene",
+          "restore": 50,
+          "durationDays": 0.08
+        }
+      ]
+    },
+    {
+      "id": "item.outhouse",
+      "displayName": "Dış hela",
+      "category": "hygiene",
+      "price": 15,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "use",
+          "displayName": "Kullan",
+          "need": "Hygiene",
+          "restore": 20,
+          "durationDays": 0.04
+        }
+      ]
+    },
+    {
+      "id": "item.barrel_tub",
+      "displayName": "Fıçı küvet",
+      "category": "hygiene",
+      "price": 40,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "bedroom"
+      ],
+      "interactions": [
+        {
+          "id": "bath",
+          "displayName": "Banyo yap",
+          "need": "Hygiene",
+          "restore": 100,
+          "durationDays": 0.15,
+          "moodlet": "clean"
+        }
+      ]
+    },
+    {
+      "id": "item.wooden_tub",
+      "displayName": "Ahşap küvet",
+      "category": "hygiene",
+      "price": 90,
+      "width": 2,
+      "level": 10,
+      "styleSet": "Tüccar",
+      "rooms": [
+        "bedroom"
+      ],
+      "interactions": [
+        {
+          "id": "bath",
+          "displayName": "Banyo yap",
+          "need": "Hygiene",
+          "restore": 100,
+          "durationDays": 0.15,
+          "moodlet": "clean"
+        },
+        {
+          "id": "soak",
+          "displayName": "Uzun banyo",
+          "need": "Fun",
+          "restore": 40,
+          "durationDays": 0.15,
+          "moodlet": "clean"
+        }
+      ]
+    },
+    {
+      "id": "item.bread_bowl",
+      "displayName": "Ekmek kâsesi",
+      "category": "decor",
+      "price": 3,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "interactions": []
+    },
+    {
+      "id": "item.jug",
+      "displayName": "Testi",
+      "category": "decor",
+      "price": 4,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "interactions": []
+    },
+    {
+      "id": "item.morris_board",
+      "displayName": "Değirmen oyunu",
+      "category": "decor",
+      "price": 12,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Oyna",
+          "need": "Fun",
+          "restore": 40,
+          "durationDays": 0.1,
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.book",
+      "displayName": "Kitap",
+      "category": "decor",
+      "price": 30,
+      "placement": "Surface",
+      "level": 8,
+      "styleSet": "Tüccar",
+      "interactions": [
+        {
+          "id": "read",
+          "displayName": "Oku",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.1,
+          "moodlet": "inspired"
+        }
+      ]
+    },
+    {
+      "id": "item.firewood_basket",
+      "displayName": "Odun sepeti",
+      "category": "decor_wall",
+      "price": 6,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "storage": 10,
+      "interactions": []
+    },
+    {
+      "id": "item.plant_large",
+      "displayName": "Büyük saksı bitkisi",
+      "category": "decor_wall",
+      "price": 20,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.herb_bundle_wall",
+      "displayName": "Kuru ot demeti",
+      "category": "decor_wall",
+      "price": 4,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.tapestry",
+      "displayName": "Duvar halısı",
+      "category": "decor_wall",
+      "price": 60,
+      "placement": "Wall",
+      "level": 9,
+      "styleSet": "Tüccar",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.shield_crest",
+      "displayName": "Armalı kalkan",
+      "category": "decor_wall",
+      "price": 120,
+      "placement": "Wall",
+      "level": 14,
+      "styleSet": "Asil",
+      "rooms": [
+        "living"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.well",
+      "displayName": "Kuyu",
+      "category": "garden",
+      "price": 40,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "wash",
+          "displayName": "Su çek ve yıkan",
+          "need": "Hygiene",
+          "restore": 35,
+          "durationDays": 0.06
+        }
+      ]
+    },
+    {
+      "id": "item.scarecrow",
+      "displayName": "Korkuluk",
+      "category": "garden",
+      "price": 10,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.garden_bench",
+      "displayName": "Bahçe bankı",
+      "category": "garden",
+      "price": 30,
+      "width": 2,
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "rest",
+          "displayName": "Dinlen",
+          "need": "Fun",
+          "restore": 20,
+          "durationDays": 0.08
+        },
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 6,
+          "durationDays": 0.05
+        }
+      ]
+    },
+    {
+      "id": "item.coop",
+      "displayName": "Kümes",
+      "category": "garden",
+      "price": 40,
+      "width": 2,
+      "height": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "housing": "coop",
+      "capacity": 6,
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (3)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 3
+            }
+          ],
+          "addFeed": 3
+        },
+        {
+          "id": "collect",
+          "displayName": "Yumurta topla",
+          "durationDays": 0.05,
+          "collect": true,
+          "skill": "Farming",
+          "skillXp": 4,
+          "moodlet": "good_harvest"
+        }
+      ]
+    },
+    {
+      "id": "item.barn",
+      "displayName": "Ahır",
+      "category": "garden",
+      "price": 120,
+      "width": 3,
+      "height": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "housing": "barn",
+      "capacity": 4,
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (6)",
+          "durationDays": 0.06,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 6
+            }
+          ],
+          "addFeed": 6
+        },
+        {
+          "id": "collect",
+          "displayName": "Sağ ve kırk",
+          "durationDays": 0.1,
+          "collect": true,
+          "skill": "Farming",
+          "skillXp": 8,
+          "moodlet": "good_harvest"
+        }
+      ]
+    },
+    {
+      "id": "item.kennel",
+      "displayName": "Köpek kulübesi",
+      "category": "garden",
+      "price": 15,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "housing": "kennel",
+      "capacity": 1,
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Köpekle oyna",
+          "need": "Fun",
+          "restore": 40,
+          "durationDays": 0.08,
+          "requiresAnimal": true,
+          "moodlet": "pet_love"
+        },
+        {
+          "id": "feed",
+          "displayName": "Mama koy (2)",
+          "durationDays": 0.03,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 2
+            }
+          ],
+          "addFeed": 2
+        }
+      ]
+    },
+    {
+      "id": "item.cat_basket",
+      "displayName": "Kedi sepeti",
+      "category": "garden",
+      "price": 10,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "housing": "cat",
+      "capacity": 1,
+      "interactions": [
+        {
+          "id": "pet",
+          "displayName": "Kediyi sev",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.05,
+          "requiresAnimal": true,
+          "moodlet": "pet_love"
+        },
+        {
+          "id": "feed",
+          "displayName": "Mama koy (2)",
+          "durationDays": 0.03,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 2
+            }
+          ],
+          "addFeed": 2
+        }
+      ]
+    },
+    {
+      "id": "item.beehive",
+      "displayName": "Arı kovanı",
+      "category": "garden",
+      "price": 35,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "housing": "hive",
+      "capacity": 1,
+      "interactions": [
+        {
+          "id": "collect",
+          "displayName": "Bal topla",
+          "durationDays": 0.08,
+          "collect": true,
+          "skill": "Farming",
+          "skillXp": 10,
+          "moodlet": "good_harvest"
+        }
+      ]
+    },
+    {
+      "id": "item.toy_horse",
+      "displayName": "Tahta at oyuncağı",
+      "category": "kids",
+      "price": 12,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kids"
+      ],
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Oyna",
+          "need": "Fun",
+          "restore": 45,
+          "durationDays": 0.1,
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.child_chair",
+      "displayName": "Çocuk sandalyesi",
+      "category": "kids",
+      "price": 6,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kids"
+      ],
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 6,
+          "durationDays": 0.05
+        }
+      ]
+    },
+    {
+      "id": "item.toy_sword_wall",
+      "displayName": "Tahta kılıç ve kalkan",
+      "category": "kids",
+      "price": 14,
+      "placement": "Wall",
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kids"
+      ],
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Kılıç oyna",
+          "need": "Fun",
+          "restore": 35,
+          "durationDays": 0.1,
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.story_book",
+      "displayName": "Masal kitabı",
+      "category": "kids",
+      "price": 10,
+      "placement": "Surface",
+      "level": 2,
+      "styleSet": "Köylü",
+      "interactions": [
+        {
+          "id": "read",
+          "displayName": "Masal oku",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.08,
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.water_bucket",
+      "displayName": "Su kovası",
+      "category": "hygiene",
+      "price": 6,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "wash",
+          "displayName": "Kovayla yıkan",
+          "need": "Hygiene",
+          "restore": 30,
+          "durationDays": 0.06
+        }
+      ]
+    },
+    {
+      "id": "item.copper_tub",
+      "displayName": "Bakır küvet",
+      "category": "hygiene",
+      "price": 160,
+      "width": 2,
+      "level": 15,
+      "styleSet": "Asil",
+      "rooms": [
+        "bedroom"
+      ],
+      "interactions": [
+        {
+          "id": "bath",
+          "displayName": "Banyo yap",
+          "need": "Hygiene",
+          "restore": 100,
+          "durationDays": 0.15,
+          "moodlet": "clean"
+        },
+        {
+          "id": "soak",
+          "displayName": "Mis kokulu banyo",
+          "need": "Fun",
+          "restore": 60,
+          "durationDays": 0.15,
+          "moodlet": "clean"
+        }
+      ]
+    },
+    {
+      "id": "item.spinning_top",
+      "displayName": "Topaç",
+      "category": "kids",
+      "price": 5,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Topaç çevir",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.06,
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.toy_chest",
+      "displayName": "Oyuncak sandığı",
+      "category": "kids",
+      "price": 22,
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kids"
+      ],
+      "storage": 15,
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Oyuncaklarla oyna",
+          "need": "Fun",
+          "restore": 35,
+          "durationDays": 0.1,
+          "moodlet": "had_fun"
+        }
+      ]
+    }
+  ],
+  "recipes": [
+    {
+      "id": "stool",
+      "station": "item.workbench",
+      "produces": "item.stool_wood",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.08,
+      "skillXp": 15
+    },
+    {
+      "id": "wall_shelf",
+      "station": "item.workbench",
+      "produces": "item.wall_shelf",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 2
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skillXp": 15
+    },
+    {
+      "id": "chair",
+      "station": "item.workbench",
+      "produces": "item.chair_wood",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 3
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "minLevel": 2,
+      "durationDays": 0.12,
+      "skillXp": 25
+    },
+    {
+      "id": "table",
+      "station": "item.workbench",
+      "produces": "item.table_wood",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "minLevel": 2,
+      "durationDays": 0.15,
+      "skillXp": 30
+    },
+    {
+      "id": "chest",
+      "station": "item.workbench",
+      "produces": "item.chest_wood",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "minLevel": 2,
+      "durationDays": 0.15,
+      "skillXp": 30
+    },
+    {
+      "id": "bench",
+      "station": "item.workbench",
+      "produces": "item.bench_long",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        }
+      ],
+      "minLevel": 2,
+      "durationDays": 0.12,
+      "skillXp": 25
+    },
+    {
+      "id": "kennel",
+      "station": "item.workbench",
+      "produces": "item.kennel",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "minLevel": 2,
+      "durationDays": 0.15,
+      "skillXp": 30
+    },
+    {
+      "id": "barrel",
+      "station": "item.workbench",
+      "produces": "item.barrel",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 3
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "minLevel": 3,
+      "durationDays": 0.15,
+      "skillXp": 30
+    },
+    {
+      "id": "toy_horse",
+      "station": "item.workbench",
+      "produces": "item.toy_horse",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "minLevel": 3,
+      "durationDays": 0.12,
+      "skillXp": 30
+    },
+    {
+      "id": "cradle",
+      "station": "item.workbench",
+      "produces": "item.cradle",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "minLevel": 3,
+      "durationDays": 0.18,
+      "skillXp": 40
+    },
+    {
+      "id": "bed_frame",
+      "station": "item.workbench",
+      "produces": "item.bed_frame",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 6
+        },
+        {
+          "item": "item.nails",
+          "count": 4
+        }
+      ],
+      "minLevel": 4,
+      "durationDays": 0.25,
+      "skillXp": 60
+    },
+    {
+      "id": "chair_carved",
+      "station": "item.workbench",
+      "produces": "item.chair_carved",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 3
+        }
+      ],
+      "minLevel": 7,
+      "durationDays": 0.3,
+      "skillXp": 90
+    }
+  ],
+  "animals": [
+    {
+      "id": "animal.chicken",
+      "displayName": "Tavuk",
+      "price": 6,
+      "housing": "coop",
+      "feedPerDay": 0.5,
+      "produces": "item.egg",
+      "produceEveryDays": 1,
+      "lifespanDays": 60,
+      "matureDays": 3,
+      "level": 2
+    },
+    {
+      "id": "animal.duck",
+      "displayName": "Ördek",
+      "price": 8,
+      "housing": "coop",
+      "feedPerDay": 0.6,
+      "produces": "item.egg",
+      "produceEveryDays": 1.5,
+      "lifespanDays": 70,
+      "matureDays": 4,
+      "level": 3
+    },
+    {
+      "id": "animal.goat",
+      "displayName": "Keçi",
+      "price": 25,
+      "housing": "barn",
+      "feedPerDay": 1.5,
+      "produces": "item.milk",
+      "produceEveryDays": 1,
+      "lifespanDays": 90,
+      "matureDays": 6,
+      "level": 5
+    },
+    {
+      "id": "animal.sheep",
+      "displayName": "Koyun",
+      "price": 30,
+      "housing": "barn",
+      "feedPerDay": 1.5,
+      "produces": "item.wool",
+      "produceEveryDays": 3,
+      "lifespanDays": 100,
+      "matureDays": 6,
+      "level": 5
+    },
+    {
+      "id": "animal.cow",
+      "displayName": "İnek",
+      "price": 45,
+      "housing": "barn",
+      "feedPerDay": 2.5,
+      "produces": "item.milk",
+      "produceEveryDays": 0.5,
+      "lifespanDays": 120,
+      "matureDays": 8,
+      "level": 6
+    },
+    {
+      "id": "animal.dog",
+      "displayName": "Köpek",
+      "price": 20,
+      "housing": "kennel",
+      "feedPerDay": 0.5,
+      "pet": true,
+      "lifespanDays": 100,
+      "matureDays": 2,
+      "level": 2
+    },
+    {
+      "id": "animal.cat",
+      "displayName": "Kedi",
+      "price": 12,
+      "housing": "cat",
+      "feedPerDay": 0.3,
+      "pet": true,
+      "lifespanDays": 110,
+      "matureDays": 2
+    },
+    {
+      "id": "animal.bees",
+      "displayName": "Arı kolonisi",
+      "price": 20,
+      "housing": "hive",
+      "feedPerDay": 0,
+      "produces": "item.honey",
+      "produceEveryDays": 3,
+      "lifespanDays": 200,
+      "matureDays": 2,
+      "level": 6
     }
   ]
 }
