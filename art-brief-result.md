@@ -612,3 +612,52 @@ Pivot y ALTTAN piksel.
 Karar: tek çağrı hakkı kullanıldı, tekrar denenmedi. Ham çıktılar scratchpad `dl_dp/`, önizleme `dp_cands.png`.
 
 Not: Renk ve doku hedefi bu çağrıda tuttu. Sorun, stil modunun şekli referanstan değil kendi elmasından alması. Kullanıcının yedek planı (set `n=0` + yatay aynası) uygulanmadı; onay bekleniyor. Maske B yatayda simetrik olduğu için aynada şekil bozulmaz. Düz bir zemin karosunda ışık yönü de sorun olmaz.
+
+## Faz B, adım 5: Toprak yedek planı (2026-11-08, harcama 0)
+
+Kullanıcı kararı: toprak yeniden üretilmeyecek. Tam toprak karosu setin `n=0` karosu ve onun yatay aynası olacak. Çimen set a/b/c kabul edildi. Yol seti (004) ve duvar parçaları (008) kuyrukta; başka bir işçi yapacak. Bu oturumda başka PixelLab çağrısı yapılmadı.
+
+| Yol | Boyut | Pivot (x, y alttan) | Kaynak |
+|---|---|---|---|
+| `Assets/Art/Iso/iso_ground_dirt_set_a.png` | 64x32 | (32, 16) | `_aday/iso_ground_grass_dirt_0.png` (geçiş seti `n=0`), değişiklik yok |
+| `Assets/Art/Iso/iso_ground_dirt_set_b.png` | 64x32 | (32, 16) | `dirt_set_a`'nın yatay aynası (x → 63−x); başka değişiklik yok |
+
+**Doğrulama** (iki dosya):
+- Maske B dışında piksel 0, delik 0, her satırın iki ucu tam 2:1 basamakta.
+- Yarı saydam 0, arka plan saydam, 4 renk (set toprak paleti).
+- b'nin a'nın tam aynası olduğu piksel piksel doğrulandı; iki karo 100 pikselde farklı. Ayna sonrası şekil aynı, çünkü maske B yatayda simetrik.
+
+**Döşeme** (a+b karışık, 8x8): dikiş sıçraması 1,78, karo içi 2,12. Çizgi ve boşluk yok. Ancak setin toprak karosundaki küçük çakıl kümeleri büyük alanda **düzenli tekrar eden bir desen** olarak hâlâ seçiliyor. Ayna bunu yalnızca kısmen kırıyor. Önizleme: scratchpad `dirt_set_ab_field.png`.
+
+Masaüstü: `OneDrive/Desktop/art/zemin/iso_ground_dirt_set_a.png` ve `_b.png` kopyalandı. `art/_indeks.md` güncellendi.
+
+### Tur 4 kapanış özeti (bu oturum)
+
+- **Harcama:** Tur 4'te 79 generation; 250 sınırından 171 kalan.
+- **Hesap:** 1903 / 2000. Sayaçtaki 17 fazlalık başka oturum ve işlerden geliyor.
+- **Önerilen tam zemin seti:**
+  - Çimen: `iso_ground_grass_set_a/b/c`
+  - Toprak: `iso_ground_dirt_set_a/b`
+  - Geçiş: `_aday/iso_ground_grass_dirt_0–15` (köşe maskesi NW=üst, NE=sağ, SW=sol, SE=alt). Henüz `iso_ground_grass_dirt_<n>.png` adıyla `Assets/Art/Iso` kökünde değil; taşınması kullanıcı onayına bağlı.
+- **Eski ve dokunulmayan:** `iso_ground_grass_a/b/c`, `iso_ground_dirt_a/b`.
+- **Eşyalar:**
+  - `iso_item_bed_straw_2x1_se_nw`
+  - `iso_item_bed_straw_2x1_sw_ne` (tabanın yaklaşık %80'i; kullanıcı Unity'de SE-NW aynasıyla karşılaştıracak)
+  - `iso_item_hearth_stone_lit_se`
+  - `iso_item_hearth_stone_unlit_se`
+  - `iso_item_stool_se`
+
+## Faz B, adım 6: Geçiş seti teslimi (2026-11-08, harcama 0)
+
+Toprak set a/b ve geçiş seti kabul edildi. `_aday/iso_ground_grass_dirt_0–15.png` dosyaları **kopyalandı** (taşınmadı, `_aday` kopyaları duruyor): `Assets/Art/Iso/iso_ground_grass_dirt_<n>.png`, n = 0–15. Hepsi 64x32, pivot (32, 16 alttan). Kaynakla bayt bayt aynı. Masaüstü kopyası `OneDrive/Desktop/art/zemin/` altında. `.meta` yazılmadı.
+
+**Yeniden doğrulama (16 dosya):** 16/16 geçti.
+- Maske B dışında piksel 0, delik 0, her satırın iki ucu tam 2:1 basamakta.
+- Yarı saydam 0, arka plan saydam. Renk: n=0 4, n=15 3, diğerleri 7.
+- Otomatik döşeme testi (12x12, 14/16 maske): dikiş 9,99, karo içi 9,14 (oran 1,09). Çimen/toprak sınırı uyuşmazlığı %1,3.
+
+**Yerleşim kuralı:** n = NW<<3 | NE<<2 | SW<<1 | SE; bit = 1 o köşede çimen.
+- NW = elmasın üst köşesi, NE = sağ, SW = sol, SE = alt.
+- Izgarada (i,j) hücresi için: üst = köşe(i,j), sağ = köşe(i+1,j), sol = köşe(i,j+1), alt = köşe(i+1,j+1).
+
+Bu oturumda başka işlem yapılmadı. 007 ve 008 kullanıcı yönetiminde.

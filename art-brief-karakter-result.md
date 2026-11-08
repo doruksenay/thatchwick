@@ -89,3 +89,64 @@ Her boy kendi içinde 8 yönde tutarlı. Ancak seed olmadığı için üç boy b
   - `C:\Users\User\OneDrive\Desktop\art\karakter\2026-11-08_farmer_a_{48,56,64}\` (her birinde 8 PNG ve `_onizleme_x4.png`)
   - `C:\Users\User\OneDrive\Desktop\art\karakter\2026-11-08_K1_toplu_x4.png`
   - `_indeks.md`'ye 3 satır eklendi. Bu satırlardaki "38 gen." gibi notlar genişlik demek, generation değil.
+
+## Faz K1b: Boy testi 2 (2026-11-08, kuyruk işi 011, status: review)
+
+- Ayrıntılı rapor: `art/results/011-karakter-boy-testi-2.md` (commit 321c0b5).
+- Araç: `create_character` v3 (`view=high top-down`, siyah dış hat, yüksek detay), ardından `reduce_colors` (`num_colors=32`, dithering yok). Renk azaltma her boyun 8 yönüne tek çağrıda uygulandı, yönler ortak paleti paylaşıyor.
+- Açıklama metni 010 ile aynı. Referansla üretim yapılmadı: v3 referansı yeniden çizmiyor, yalnızca döndürüyor.
+
+### Generation dökümü
+| Çağrı | Generation |
+|---|---|
+| v3 size 52 | 2 |
+| v3 size 60 | 2 |
+| v3 size 68 | 2 |
+| reduce_colors × 3 | 0,3 |
+| **011 toplam** | **6,3** (cost_max 8) |
+| **Bu brief toplam (010 + 011)** | **13,3 / 120** |
+
+Kalan bakiye (`get_balance`, iş sonrası): 1896,7. Aynı aralıkta paralel oturumlar 10 gen harcadı.
+
+### SE ölçümleri (kod oturumunda yeniden ölçüldü, işçi raporuyla aynı)
+| Hedef | Tuval | Gerçek boy | Genişlik | Renk (ham → azaltılmış) | Yarı saydam | Pivot x | Pivot y (alttan) | ±3 px |
+|---|---|---|---|---|---|---|---|---|
+| 48 | 52x52 | 49 | 26 | 46 → 32 | 0 | 28,0 | 1 | tuttu |
+| 56 | 60x60 | 58 | 32 | 57 → 32 | 0 | 31,5 | 1 | tuttu |
+| 64 | 68x68 | 66 | 35 | 60 → 32 | 0 | 34,5 | 0 | tuttu |
+| Köylü | 68x68 | 45 | 17 | 32 | 0 | 34,5 | 12 | — |
+
+- **8 yön (renk azaltılmış):** renk sayısı 29-32, yarı saydam piksel 0.
+- **Pivot y:** 0-3 px arası değişiyor; arka yönler 1-2 px yukarıda bitiyor. Unity'de yön başına pivot gerekir.
+- **Alfa kanalı:** 24 karenin hepsinde hamla aynı.
+- **Doğrulayıcı:** `validate_iso.py --kind object --max-colors 32` üç SE dosyasında da geçti.
+
+### Detay farkı
+| Detay | 48 | 56 | 64 |
+|---|---|---|---|
+| Yüz | Kaş ve sakal okunuyor, ağız kayboluyor | Kaş, burun ve sakal ayrı okunuyor | Bıyık ve ağız da ayrı okunuyor |
+| Eller | Yumruk lekesi | 1 px parmak çizgisi | Parmak boğumları |
+| Kemer, toka, kayış, kese | Var; kese küçük | Var | Var |
+| Bacak sargısı | Var | Daha net | En net |
+| Ayakkabı bağı | Yok | Yok | Yok |
+| Oran | Tıknaz | En dengeli | İri |
+
+- **Renk azaltma:** 8 kat büyütmede yüzü ve aksesuarları bozmadı; yalnızca birbirine çok yakın tonlar birleşti.
+- **Tasarım tutarlılığı:** 010'dan iyi. Saç, sakal, kemer, omuz kayışı ve sargı üç boyda da ortak. Tunik tonu değişiyor: 48 sarı-kahve ve krem kollu, 56 turuncu-okra, 64 zeytin-okra. Bunun nedeni v3'ün seed almaması.
+
+### Sorunlar
+1. 64'ün SE ve SW yönleri tuvalin son satırına değiyor (pivot y 0). Görsel kontrolde ayaklar kesik görünmüyor.
+2. Ayakkabı bağı hiçbir boyda çizilmedi.
+3. K2'de karakterler arası stil tutarlılığı için iki yol var:
+   - v3 + aynı tarif dili + ortak paletle `reduce_colors`. Ucuz: karakter başına yaklaşık 2,1 gen.
+   - `mode=pro` + `style_character_id`. Pahalı: karakter başına 10-15 gen.
+
+### Dosyalar
+- **Proje:**
+  - Renk azaltılmış: `Assets/Art/Iso/_aday/iso_char_farmer_a2_{48,56,64}_cand_<yön>.png`
+  - Ham: `Assets/Art/Iso/_aday/_ham/iso_char_farmer_a2_{48,56,64}_cand_<yön>.png`
+  - Önizleme betiği: `tools/art/char_preview.py`
+- **Masaüstü:**
+  - `C:\Users\User\OneDrive\Desktop\art\karakter\2026-11-08_farmer_a2_{48,56,64}\`: 8 yön, `_ham\` altında 8 ham yön ve `_onizleme_x4.png` (köylü ve aday 64x32 elmas üzerinde).
+  - `C:\Users\User\OneDrive\Desktop\art\karakter\2026-11-08_K1b_toplu_x4.png`
+  - `_indeks.md` sonuna 3 satır eklendi (generation sütunu: 2,1).
