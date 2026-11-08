@@ -1,7 +1,7 @@
 ---
 id: "300"
 title: Ev eşyaları grup 1 (masa, sandalye, sandık, raf, kazan, mum, saksı, bardak; yalnızca SE)
-status: pending
+status: review
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet): cost_est 8, cost_max 15
 cost_est: 8
 cost_max: 15
