@@ -19,6 +19,15 @@ namespace Thatchwick.Core.Characters
         public Sex Sex { get; set; } = Sex.Female;
         public Appearance Appearance { get; set; } = new Appearance();
 
+        // --- Aile (Adım 16-17) ---
+        public int? BirthMotherId { get; set; }
+        public int? BirthFatherId { get; set; }
+        public int? SpouseId { get; set; }
+        /// <summary>Hanedandaki nesil (kurucu 1, çocukları 2 ...).</summary>
+        public int Generation { get; set; } = 1;
+        /// <summary>Hane üyesi değil, köylü (pazar çevresinde yaşar; evlenince haneye katılır).</summary>
+        public bool IsVillager { get; set; }
+
         // --- Hamilelik (T4 kenar durumları) ---
         /// <summary>Hamilelik süresi (oyun günü). Varsayılan 30 (yılın ~%75'i); denge turunda ayarlanır.</summary>
         public double PregnancyDays { get; set; } = 30.0;
@@ -159,8 +168,8 @@ namespace Thatchwick.Core.Characters
                 return;
             }
 
-            // Bebeği hane besler (bakım işi Adım 16); açlıktan ölüm bebek dışındakiler için.
-            if (CanStarve && Stage != AgeStage.Baby && Needs.Get(NeedType.Hunger) <= NeedSet.Min) StarveDays += gameDays;
+            // Bebeği hanenin büyükleri besler (bakım işi); beslenmeyen bebek de açlıktan ölebilir.
+            if (CanStarve && Needs.Get(NeedType.Hunger) <= NeedSet.Min) StarveDays += gameDays;
             else StarveDays = Math.Max(0.0, StarveDays - 2.0 * gameDays);
             if (StarveDays >= StarveDeathDays)
             {

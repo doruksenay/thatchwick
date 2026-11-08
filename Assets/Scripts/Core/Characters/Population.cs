@@ -59,10 +59,16 @@ namespace Thatchwick.Core.Characters
             string name = NameGenerator != null ? NameGenerator(sex) : (sex == Sex.Female ? "Kız" : "Oğlan");
             if (string.IsNullOrWhiteSpace(name)) name = "Bebek";
 
+            var father0 = fatherId.HasValue ? Find(fatherId.Value) : null;
             var baby = new Character(NextId(), name, mother.Position, false)
             {
                 Sex = sex,
-                AgeConfig = mother.AgeConfig
+                AgeConfig = mother.AgeConfig,
+                BirthMotherId = mother.Id,
+                BirthFatherId = fatherId,
+                Generation = Math.Max(mother.Generation, father0 != null ? father0.Generation : 0) + 1,
+                IsVillager = mother.IsVillager,
+                CanStarve = mother.CanStarve
             };
             baby.LifespanDays = mother.AgeConfig.RollLifespan(_rng);
             if (AppearanceCatalog != null)

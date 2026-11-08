@@ -21,6 +21,8 @@ namespace Thatchwick.Core.Save
         public float[] temperatures;
         public KeyFloat[] marketDemand;
         public int[] marketTakenOffers;
+        public AffectionSave[] affection;
+        public DynastySave dynasty;
     }
 
     [Serializable]
@@ -78,6 +80,35 @@ namespace Thatchwick.Core.Save
         public float hunger, energy, warmth;
         public KeyFloat[] skills;
         public AppearanceSave appearance;
+        // Aile (Adım 16-17). Eksik alan eski kayıtta 0/false gelir: kimlikler 1'den başladığı için 0 = yok.
+        public int spouseId;
+        public int motherId;
+        public int birthFatherId;
+        public int generation;
+        public bool isVillager;
+    }
+
+    [Serializable]
+    public sealed class AffectionSave { public int a, b, value; }
+
+    [Serializable]
+    public sealed class DynastySave
+    {
+        public string name;
+        public int headId;
+        public bool ended;
+        public HeadSave[] history;
+    }
+
+    [Serializable]
+    public sealed class HeadSave
+    {
+        public int characterId;
+        public string name;
+        public int generation;
+        public double startDay;
+        public double endDay = -1;
+        public int endCause;
     }
 
     [Serializable]

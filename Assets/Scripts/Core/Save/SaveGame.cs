@@ -5,6 +5,7 @@ using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Customization;
 using Thatchwick.Core.Economy;
+using Thatchwick.Core.Family;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Progress;
 using Thatchwick.Core.Time;
@@ -23,6 +24,9 @@ namespace Thatchwick.Core.Save
         public float[] Temperatures;
         public List<KeyValuePair<string, double>> MarketDemand = new List<KeyValuePair<string, double>>();
         public List<int> MarketTakenOffers = new List<int>();
+        public List<(int a, int b, int value)> Affection = new List<(int, int, int)>();
+        /// <summary>Kayıtta hanedan yoksa null (eski kayıt): oyuncu karakteriyle yeniden kurulur.</summary>
+        public Dynasty Dynasty;
         /// <summary>Yüklenemeyen parçalar (ör. içerikten kaldırılmış eşya). Oyun yine açılır.</summary>
         public List<string> Warnings = new List<string>();
     }
@@ -33,7 +37,7 @@ namespace Thatchwick.Core.Save
         public const int CurrentVersion = 1;
 
         public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
-            AccountProgress account, HeatSystem heat, Market market)
+            AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null)
         {
             var map = world.Map;
             var data = new SaveData
@@ -114,6 +118,19 @@ namespace Thatchwick.Core.Save
                 data.marketDemand = demand.ToArray();
                 data.marketTakenOffers = market.ExportTakenOffers().ToArray();
             }
+            if (family != null)
+            {
+                var aff = new List<AffectionSave>();
+                foreach (var (a, b, v) in family.ExportAffection()) aff.Add(new AffectionSave { a = a, b = b, value = v });
+                data.affection = aff.ToArray();
+            }
+            if (dynasty != null)
+            {
+                var hist = new List<HeadSave>();
+                foreach (var h in dynasty.History)
+                    hist.Add(new HeadSave { characterId = h.CharacterId, name = h.Name, generation = h.Generation, startDay = h.StartDay, endDay = h.EndDay, endCause = (int)h.EndCause });
+                data.dynasty = new DynastySave { name = dynasty.Name, headId = dynasty.HeadId, ended = dynasty.Ended, history = hist.ToArray() };
+            }
             return data;
         }
 
@@ -137,6 +154,11 @@ namespace Thatchwick.Core.Save
                 freezeDays = c.FreezeDays, starveDays = c.StarveDays,
                 hunger = c.Needs.Get(NeedType.Hunger), energy = c.Needs.Get(NeedType.Energy), warmth = c.Needs.Get(NeedType.Warmth),
                 skills = skills.ToArray(),
+                spouseId = c.SpouseId ?? 0,
+                motherId = c.BirthMotherId ?? 0,
+                birthFatherId = c.BirthFatherId ?? 0,
+                generation = c.Generation,
+                isVillager = c.IsVillager,
                 appearance = new AppearanceSave
                 {
                     build = (int)a.Build, heightPercent = a.HeightPercent,
@@ -220,6 +242,18 @@ namespace Thatchwick.Core.Save
             result.Temperatures = data.temperatures;
             if (data.marketDemand != null) foreach (var kv in data.marketDemand) if (kv != null) result.MarketDemand.Add(new KeyValuePair<string, double>(kv.key, kv.value));
             if (data.marketTakenOffers != null) result.MarketTakenOffers.AddRange(data.marketTakenOffers);
+            if (data.affection != null) foreach (var a in data.affection) if (a != null) result.Affection.Add((a.a, a.b, a.value));
+            if (data.dynasty != null)
+            {
+                var d = new Dynasty { Name = string.IsNullOrEmpty(data.dynasty.name) ? "Hanedan" : data.dynasty.name };
+                var hist = new List<HeadRecord>();
+                if (data.dynasty.history != null)
+                    foreach (var h in data.dynasty.history)
+                        if (h != null) hist.Add(new HeadRecord { CharacterId = h.characterId, Name = h.name, Generation = Math.Max(1, h.generation), StartDay = h.startDay, EndDay = h.endDay,
+                            EndCause = Enum.IsDefined(typeof(DeathCause), h.endCause) ? (DeathCause)h.endCause : DeathCause.None });
+                d.Restore(data.dynasty.headId, hist, data.dynasty.ended);
+                result.Dynasty = d;
+            }
             return result;
         }
 
@@ -239,6 +273,11 @@ namespace Thatchwick.Core.Save
                 foreach (var kv in s.skills)
                     if (kv != null && Enum.TryParse(kv.key, out SkillType skill)) c.Skills.RestoreXp(skill, kv.value);
             if (s.appearance != null) c.Appearance = LoadAppearance(s.appearance);
+            if (s.spouseId > 0) c.SpouseId = s.spouseId;
+            if (s.motherId > 0) c.BirthMotherId = s.motherId;
+            if (s.birthFatherId > 0) c.BirthFatherId = s.birthFatherId;
+            c.Generation = Math.Max(1, s.generation);
+            c.IsVillager = s.isVillager;
             return c;
         }
 

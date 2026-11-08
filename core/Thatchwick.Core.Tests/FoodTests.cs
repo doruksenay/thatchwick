@@ -147,11 +147,13 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
-        public void Bebek_AcliktanOlmez()
+        public void Bebek_BakimsizKalirsaAcliktanOlur()
         {
+            // Adım 16'dan beri bebeği büyükler besler (FamilyService); beslenmeyen bebek ölebilir.
             var c = new Character(1, "Bebek", new GridPos(0, 0)) { CanStarve = true };
-            for (int i = 0; i < 60; i++) c.Tick(0.1);
-            Assert.False(c.IsDead);
+            for (int i = 0; i < 60 && !c.IsDead; i++) c.Tick(0.1);
+            Assert.True(c.IsDead);
+            Assert.Equal(DeathCause.Starvation, c.CauseOfDeath);
         }
     }
 }

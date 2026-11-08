@@ -51,6 +51,9 @@ namespace Thatchwick.Core.Jobs
         /// </summary>
         public IInteractionEffects Effects { get; set; }
 
+        /// <summary>Karakterler arası işler (bakım, sohbet, evlilik). Yoksa bu işler başlamaz.</summary>
+        public ISocialEffects Social { get; set; }
+
         /// <summary>Son başarısız işin nedeni (arayüzde gösterilir); yoksa null.</summary>
         public string LastFailure { get; private set; }
 
@@ -111,6 +114,7 @@ namespace Thatchwick.Core.Jobs
             {
                 case JobKind.MoveTo: return AdvanceMove(job, budget);
                 case JobKind.UseItem: return AdvanceUse(job, budget);
+                case JobKind.Social: return AdvanceSocial(job, budget);
                 default:
                     Fail($"Bilinmeyen iş türü: {job.Kind}");
                     return 0;
@@ -132,6 +136,54 @@ namespace Thatchwick.Core.Jobs
             if (_pathIndex >= _path.Count) Finish();
             return used;
         }
+
+        private double AdvanceSocial(Job job, double budget)
+        {
+            if (Social == null) { Fail("Bu iş şu an yapılamaz."); return 0; }
+            var target = Social.Find(job.TargetCharacterId);
+            if (target == null || target.IsDead) { Fail("Kişi bulunamadı."); return 0; }
+
+            if (!_using)
+            {
+                string blocked = Social.CanDo(_character, target, job.Action);
+                if (blocked != null) { Fail(blocked); return 0; }
+
+                // Hedefin yanına (ya da durduğu karoya) git; hedef yer değiştirdiyse yolu yenile.
+                if (_path != null && _path.Count > 0 && !IsNear(_path[_path.Count - 1], target.Position)) _path = null;
+                if (_path == null)
+                {
+                    var goals = new HashSet<GridPos> { target.Position };
+                    foreach (var o in AdjacentOffsets) goals.Add(target.Position + o);
+                    _path = Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
+                    if (_path == null) { Fail($"{target.Name} yanına gidilemiyor."); return 0; }
+                    _pathIndex = 1;
+                    _stepFraction = 0;
+                }
+            }
+
+            double used = 0;
+            if (!_using)
+            {
+                used = Walk(budget);
+                if (_path == null) return used;
+                if (_pathIndex < _path.Count) return used;
+                if (!IsNear(_character.Position, target.Position)) { _path = null; return used; }
+                _using = true;
+            }
+
+            double remaining = Social.Duration(job.Action) - _useProgress;
+            double available = budget - used;
+            if (available >= remaining)
+            {
+                Finish();
+                Social.Apply(_character, target, job.Action);
+                return used + remaining;
+            }
+            _useProgress += available;
+            return used + available;
+        }
+
+        private static bool IsNear(GridPos a, GridPos b) => Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y) <= 1;
 
         private double AdvanceUse(Job job, double budget)
         {
@@ -273,6 +325,17 @@ namespace Thatchwick.Core.Jobs
         // En düşük ihtiyacı (eşik altında) en iyi doyuracak eşyayı seçer: önce en çok doyuran, sonra en yakın.
         private bool TryStartAutonomy()
         {
+            // Bakım: kendisi kritik değilse önce aç bebeği besler.
+            if (Social != null && !_character.Needs.AnyCritical())
+            {
+                var dependent = Social.DependentNeedingCare(_character);
+                if (dependent != null && Social.CanDo(_character, dependent, SocialAction.Feed) == null)
+                {
+                    ResetJobState();
+                    return Queue.TryEnqueue(Job.Social(dependent.Id, SocialAction.Feed));
+                }
+            }
+
             NeedType? worst = null;
             float lowest = AutonomyThreshold;
             foreach (NeedType need in Enum.GetValues(typeof(NeedType)))
