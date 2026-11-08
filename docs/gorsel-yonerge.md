@@ -5,7 +5,7 @@ Oyun artık **izometrik**. Eski "yüksek top-down / 3/4" testleri (Assets/Art/Te
 
 ## Projeksiyon
 - 2:1 dimetrik. Zemin karosu bir **elmas: 64 px geniş x 32 px yüksek**. Unity PPU = 32 (1 dünya birimi = 32 px).
-- Eksenler: ızgara +x ekranda sağ-aşağı, +y sol-aşağı. Yukarı yön kuzey-batı/kuzey-doğu köşeleri.
+- Eksenler: ızgara +x ekranda sağ-yukarı (Iso.GridToWorld ile aynı), +y sol-yukarı. Yukarı yön kuzey-batı/kuzey-doğu köşeleri.
 - Kenar çizgileri tam 2:1 (2 piksel yatay, 1 piksel dikey) basamaklı olmalı; yumuşatma (anti-alias) yok.
 - Işık sol-üstten: üst yüz en açık, sol yüz orta, sağ yüz en koyu. **Gölge sprite'a pişirilmez** (oyun ekler).
 - Arka plan tamamen saydam. Düz, az tonlu pikselart; önceki test karakterleriyle aynı stil/palet ailesi.
