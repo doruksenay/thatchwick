@@ -7,6 +7,7 @@ using Thatchwick.Core.Customization;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Time;
+using Thatchwick.Core.Work;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Game
@@ -51,6 +52,9 @@ namespace Thatchwick.Game
         private BuildMode _buildMode;
         private WallView _walls;
         private HeatSystem _heat;
+        private PlantSystem _plants;
+        private InteractionEffects _effects;
+        private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
         private Vector2 _hudScroll;
         private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
         private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric" };
@@ -105,6 +109,10 @@ namespace Thatchwick.Game
 
             _household = new Household(100);
             _household.AddItem("item.firewood", 10);
+            _household.AddItem("item.sapling_oak", 2);
+            _effects = new InteractionEffects(_world, _household, _content, seed: 9);
+            _effects.Applied += (c, i, summary) => ShowMessage($"{c.Name}: {summary}");
+            _plants = new PlantSystem(_world);
             _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
             _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content), _content, _view, _input, transform, _walls);
 
@@ -160,6 +168,18 @@ namespace Thatchwick.Game
             TryPlace("item.hearth_stone", new GridPos(28, 13));
             TryPlace("item.cooking_pot", new GridPos(30, 13));
             TryPlace("item.stool_wood", new GridPos(26, 15));
+            TryPlace("item.chopping_block", new GridPos(22, 15));
+
+            // Arsanın dışındaki yabani meşeler (olgun): herkes kesebilir, fidanlarıyla arsaya ağaç dikilir.
+            var rng = new System.Random(13);
+            int placed = 0;
+            for (int i = 0; i < 200 && placed < 14; i++)
+            {
+                var p = new GridPos(rng.Next(33, 44), rng.Next(4, 26));
+                if (_world.Map.IsBlocked(p) || !_content.Items.TryGet("item.tree_oak", out var oak)) continue;
+                PlantSystem.SetGrown(_world.PlaceItem(oak, p));
+                placed++;
+            }
         }
 
         private void TryPlace(string id, GridPos pos)
@@ -179,6 +199,7 @@ namespace Thatchwick.Game
                 case "item.bed_straw": return new Color(0.75f, 0.6f, 0.35f);
                 case "item.hearth_stone": return new Color(0.85f, 0.35f, 0.2f);
                 case "item.cooking_pot": return new Color(0.55f, 0.55f, 0.6f);
+                case "item.chopping_block": return new Color(0.48f, 0.38f, 0.28f);
                 case "item.table_wood": return new Color(0.62f, 0.42f, 0.24f);
                 case "item.chair_wood": return new Color(0.7f, 0.5f, 0.3f);
                 case "item.chest_wood": return new Color(0.5f, 0.33f, 0.2f);
@@ -199,6 +220,7 @@ namespace Thatchwick.Game
             foreach (var go in _itemObjects) if (go != null) Destroy(go);
             _itemObjects.Clear();
             _itemViews.Clear();
+            _plantViews.Clear();
 
             foreach (var item in _world.Items)
             {
@@ -211,6 +233,13 @@ namespace Thatchwick.Game
                     AddItemSprite(item, pos, color, 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy).y) + 2);
                     continue;
                 }
+                if (item.IsPlant)
+                {
+                    var pos = _view.TileToWorld(item.Position);
+                    AddItemSprite(item, pos, color, PlantScale(item), Iso.SortOrder(pos.y, 1), SpriteMaterials.Tree);
+                    _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform));
+                    continue;
+                }
                 foreach (var tile in item.OccupiedTiles())
                 {
                     var pos = _view.TileToWorld(tile);
@@ -219,14 +248,16 @@ namespace Thatchwick.Game
             }
         }
 
-        private void AddItemSprite(ItemInstance item, Vector3 pos, Color color, float scale, int order)
+        private static float PlantScale(ItemInstance item) => 0.3f + 0.7f * item.GrowthFraction;
+
+        private void AddItemSprite(ItemInstance item, Vector3 pos, Color color, float scale, int order, Sprite sprite = null)
         {
             var go = new GameObject(item.Def.Id);
             go.transform.SetParent(transform, false);
             go.transform.position = pos;
             go.transform.localScale = new Vector3(scale, scale, 1f);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = SpriteMaterials.Cube(color);
+            sr.sprite = sprite != null ? sprite : SpriteMaterials.Cube(color);
             sr.sharedMaterial = SpriteMaterials.Unlit;
             sr.sortingOrder = order;
             _itemObjects.Add(go);
@@ -249,7 +280,7 @@ namespace Thatchwick.Game
             var actor = new Actor
             {
                 Character = character,
-                Runner = new JobRunner(character, _world),
+                Runner = new JobRunner(character, _world) { Effects = _effects },
                 View = go.transform,
                 Renderer = sr
             };
@@ -336,6 +367,9 @@ namespace Thatchwick.Game
             // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
             double gameDays = _clock.Advance(dt);
             _heat.Tick(gameDays, _clock.TotalDays);
+            _plants.Tick(gameDays, _clock.Season);
+            foreach (var (plant, view) in _plantViews)
+                if (view != null) { float s = PlantScale(plant); view.localScale = new Vector3(s, s, 1f); }
             foreach (var a in _actors) a.Character.AmbientTemperature = _heat.TemperatureAt(a.Character.Position);
             _population.Tick(gameDays);
             foreach (var actor in _actors.ToArray())
@@ -495,7 +529,8 @@ namespace Thatchwick.Game
         private void DrawHeatHud()
         {
             string here = _player != null ? $"{_heat.TemperatureAt(_player.Character.Position):0}°C" : "-";
-            GUILayout.Label($"Dış {_heat.OutdoorTemperature:0}°C · {_player?.Character.Name}'in bulunduğu yer {here} · Odun {_household.Count(_heat.Config.FirewoodId)}");
+            GUILayout.Label($"Dış {_heat.OutdoorTemperature:0}°C · {_player?.Character.Name}: {here}");
+            GUILayout.Label($"Odun {_household.Count(_heat.Config.FirewoodId)} · Kütük {_household.Count("item.log")} · Meşe fidanı {_household.Count("item.sapling_oak")}");
             foreach (var item in _world.Items)
             {
                 if (item.IsDecor || item.Def.HeatOutput <= 0f) continue;
@@ -529,7 +564,9 @@ namespace Thatchwick.Game
                 if (sp.z < 0f) continue;
                 float x = sp.x / guiScale;
                 float y = (Screen.height - sp.y) / guiScale;
-                string label = item.Def.HeatOutput > 0f ? $"{item.Def.DisplayName} ({(item.IsLit ? "yanıyor" : "sönük")})" : item.Def.DisplayName;
+                string label = item.Def.HeatOutput > 0f ? $"{item.Def.DisplayName} ({(item.IsLit ? "yanıyor" : "sönük")})"
+                    : item.IsPlant ? (item.IsGrown ? $"{item.Def.DisplayName} (olgun)" : $"{item.Def.DisplayName} (%{item.GrowthFraction * 100f:0}{(PlantSystem.CanGrowIn(_clock.Season) ? "" : ", kışın büyümez")})")
+                    : item.Def.DisplayName;
                 GUI.Label(new Rect(x - 70f, y - 10f, 140f, 20f), label, _labelStyle);
             }
         }
