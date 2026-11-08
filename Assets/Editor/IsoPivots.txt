@@ -12,3 +12,9 @@ iso_wall_door_sw_ne;32;19
 iso_wall_wall_se_nw;70;19
 iso_wall_door_se_nw;70;19
 iso_wall_post;51;19
+iso_item_table_wood_2x1_se_nw;56;32
+iso_item_chair_wood_se;40;24
+iso_item_shelf_wood_2x1_se_nw;56;32
+iso_item_cooking_pot_se;40;24
+iso_item_candle_se;16;7
+iso_item_flower_pot_se;16;7
