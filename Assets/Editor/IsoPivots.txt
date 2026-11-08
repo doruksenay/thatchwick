@@ -7,3 +7,8 @@ iso_item_hearth_stone_lit_se;40;24
 iso_item_stool_se;40;24
 iso_item_bed_straw_2x1_sw_ne;56;32
 iso_item_hearth_stone_unlit_se;40;24
+iso_wall_wall_sw_ne;32;19
+iso_wall_door_sw_ne;32;19
+iso_wall_wall_se_nw;70;19
+iso_wall_door_se_nw;70;19
+iso_wall_post;51;19
