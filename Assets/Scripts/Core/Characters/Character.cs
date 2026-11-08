@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Thatchwick.Core.Customization;
 using Thatchwick.Core.World;
 
@@ -18,6 +19,51 @@ namespace Thatchwick.Core.Characters
         public SkillSet Skills { get; } = new SkillSet();
         public Sex Sex { get; set; } = Sex.Female;
         public Appearance Appearance { get; set; } = new Appearance();
+
+        // --- Özellikler, meslek dalları ve ruh hali (Adım 18a, 32, 40) ---
+        private readonly List<string> _traitIds = new List<string>();
+        private readonly List<string> _branchIds = new List<string>();
+        /// <summary>Özellik kimlikleri (en çok 2). Etkileri LifeRules.Recompute ile Modifiers'a işlenir.</summary>
+        public IReadOnlyList<string> TraitIds => _traitIds;
+        /// <summary>Seçilmiş meslek dalı kimlikleri.</summary>
+        public IReadOnlyList<string> BranchIds => _branchIds;
+        /// <summary>Özellik, dal ve köy projelerinden gelen çarpanlar; varsayılan "etki yok".</summary>
+        public LifeModifiers Modifiers { get; set; } = new LifeModifiers();
+        public Mood Mood { get; } = new Mood();
+        public const int MaxTraits = 2;
+
+        public void SetTraits(IEnumerable<string> ids)
+        {
+            _traitIds.Clear();
+            if (ids == null) return;
+            foreach (var id in ids)
+            {
+                if (string.IsNullOrWhiteSpace(id) || _traitIds.Contains(id)) continue;
+                if (_traitIds.Count >= MaxTraits) break;
+                _traitIds.Add(id);
+            }
+        }
+
+        public void SetBranches(IEnumerable<string> ids)
+        {
+            _branchIds.Clear();
+            if (ids == null) return;
+            foreach (var id in ids) if (!string.IsNullOrWhiteSpace(id) && !_branchIds.Contains(id)) _branchIds.Add(id);
+        }
+
+        public bool HasBranch(string id) => id != null && _branchIds.Contains(id);
+        public bool HasTrait(string id) => id != null && _traitIds.Contains(id);
+
+        public bool AddBranch(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id) || _branchIds.Contains(id)) return false;
+            _branchIds.Add(id);
+            return true;
+        }
+
+        /// <summary>Ruh hali puanı 0-100 (50 = nötr).</summary>
+        public int MoodScore => Mood.Score(Needs, Modifiers.MoodBase);
+        public MoodLevel MoodLevel => Mood.LevelFor(MoodScore);
 
         // --- Aile (Adım 16-17) ---
         public int? BirthMotherId { get; set; }
@@ -123,7 +169,7 @@ namespace Thatchwick.Core.Characters
         public double GainSkillXp(SkillType skill, double xp)
         {
             if (IsDead) return 0;
-            return Skills.AddXp(skill, xp, SkillRules.LevelCap(Stage));
+            return Skills.AddXp(skill, xp * Modifiers.SkillRate(skill), SkillRules.LevelCap(Stage));
         }
 
         /// <summary>Karakteri belirli bir yaşta başlatır (başlangıç karakteri, test).</summary>
@@ -146,11 +192,18 @@ namespace Thatchwick.Core.Characters
         {
             if (IsDead) return;
 
+            // Özellik ve dallardan gelen ihtiyaç azalma çarpanları.
+            Needs.SetDecayMultiplier(NeedType.Hunger, Modifiers.HungerDecay);
+            Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay);
+            Needs.SetDecayMultiplier(NeedType.Social, Modifiers.SocialDecay);
+            Needs.SetDecayMultiplier(NeedType.Fun, Modifiers.FunDecay);
+            Mood.Tick(gameDays);
+
             // Soğuk: konfor sıcaklığının altında Isınma düşer, üstünde toparlanır; 0'da kalırsa donar.
             float cold = ComfortTemperature - AmbientTemperature;
             if (cold > 0f)
             {
-                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay);
+                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - Modifiers.ColdResist));
             }
             else
             {

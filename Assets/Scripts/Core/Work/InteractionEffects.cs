@@ -46,23 +46,38 @@ namespace Thatchwick.Core.Work
         {
             if (interaction.ConsumeItem != null && _house.Count(interaction.ConsumeItem) <= 0)
                 return $"{Name(interaction.ConsumeItem)} yok.";
+            foreach (var c in interaction.ConsumeMore)
+                if (_house.Count(c.ItemId) < c.Count) return $"{Name(c.ItemId)} yetersiz ({_house.Count(c.ItemId)}/{c.Count}).";
             return null;
         }
 
         public void Apply(Character character, ItemInstance item, InteractionDef interaction)
         {
-            if (interaction.ConsumeItem != null && !_house.TryTakeItem(interaction.ConsumeItem))
-                return; // bu arada harcanmış: ürün yok
+            if (CanStart(character, item, interaction) != null) return; // bu arada harcanmış: ürün yok
+            if (interaction.ConsumeItem != null) _house.TryTakeItem(interaction.ConsumeItem);
+            foreach (var c in interaction.ConsumeMore)
+                for (int i = 0; i < c.Count; i++) _house.TryTakeItem(c.ItemId);
+
+            // Beceri seviyesi (+ özellik/dal kalite bonusu) ürün satırlarını seçer: aynı yemeğin sıradan ve iyi hali.
+            int level = interaction.Skill.HasValue ? character.Skills.GetLevel(interaction.Skill.Value) + character.Modifiers.QualityLevels : 0;
 
             // Aynı ürün birden çok satırda olabilir (kesin 1 fidan + %50 ihtimalle 1 fidan): özette toplanır.
             int lost = 0;
             var order = new List<string>();
             var totals = new Dictionary<string, int>();
+            bool firstRow = true;
             foreach (var p in interaction.Produce)
             {
+                if (p.MinLevel > 0 && level < p.MinLevel) continue;
+                if (p.MaxLevel > 0 && level > p.MaxLevel) continue;
                 if (p.Chance < 1f && _rng.NextDouble() >= p.Chance) continue;
-                int added = Storage != null ? Storage.AddUpTo(p.ItemId, p.Count) : AddAll(p.ItemId, p.Count);
-                lost += p.Count - added;
+                int count = p.Count;
+                // Yeşil parmak / usta eller gibi: hasat ve kesimde ilk üründen bir tane daha çıkabilir.
+                if (firstRow && character.Modifiers.YieldChance > 0f && (interaction.RequiresGrown || interaction.RemovesItem)
+                    && _rng.NextDouble() < character.Modifiers.YieldChance) count += 1;
+                firstRow = false;
+                int added = Storage != null ? Storage.AddUpTo(p.ItemId, count) : AddAll(p.ItemId, count);
+                lost += count - added;
                 if (added <= 0) continue;
                 if (!totals.ContainsKey(p.ItemId)) { totals[p.ItemId] = 0; order.Add(p.ItemId); }
                 totals[p.ItemId] += added;
@@ -70,6 +85,8 @@ namespace Thatchwick.Core.Work
             var parts = new List<string>();
             foreach (var id in order) parts.Add($"+{totals[id]} {Name(id)}");
             if (lost > 0) parts.Add($"depo dolu, {lost} adet kayboldu");
+
+            if (interaction.ResetsReady) item.ReadyProgress = 0;
 
             if (interaction.RemovesItem && _world.GetItem(item.Id) != null)
                 _world.RemoveItem(item.Id);

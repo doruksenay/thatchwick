@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Thatchwick.Core.Content;
 using Thatchwick.Core.Customization;
+using Thatchwick.Core.Life;
 
 namespace Thatchwick.Core.Characters
 {
@@ -19,8 +21,15 @@ namespace Thatchwick.Core.Characters
         /// <summary>Verilirse bebeğin görünümü ebeveynlerinden türetilir; yoksa varsayılan görünüm kalır.</summary>
         public AppearanceCatalog AppearanceCatalog { get; set; }
 
+        /// <summary>Verilirse bebek ebeveynlerinden birer özellik alır ve özellik etkileri hesaplanır.</summary>
+        public ContentDatabase Content { get; set; }
+        /// <summary>Köy projelerinden gelen etkiler (soğuk direnci gibi); karaktere işlenirken kullanılır.</summary>
+        public VillageEffects Village { get; set; }
+
         /// <summary>(bebek, anne, babanın kimliği)</summary>
         public event Action<Character, Character, int?> BabyBorn;
+        /// <summary>Üyelerden biri öldüğünde (Character.Died'ın topluluk düzeyi karşılığı).</summary>
+        public event Action<Character> MemberDied;
 
         public Population(int firstFreeId = 1, int seed = 12345)
         {
@@ -36,6 +45,7 @@ namespace Thatchwick.Core.Characters
             if (_members.Contains(c)) return;
             _members.Add(c);
             c.GaveBirth += OnGaveBirth;
+            c.Died += OnMemberDied;
             if (c.Id >= _nextId) _nextId = c.Id + 1;
         }
 
@@ -51,6 +61,15 @@ namespace Thatchwick.Core.Characters
             // Doğumlar listeyi değiştirebilir; üzerinde dolaşırken kopya kullan.
             var snapshot = _members.ToArray();
             foreach (var c in snapshot) c.Tick(gameDays);
+        }
+
+        private void OnMemberDied(Character c) => MemberDied?.Invoke(c);
+
+        /// <summary>Tüm üyelerin özellik/dal etkilerini yeniden hesaplar (köy projesi bitince, yüklemeden sonra).</summary>
+        public void RecomputeAll()
+        {
+            if (Content == null) return;
+            foreach (var c in _members) LifeRules.Recompute(c, Content, Village);
         }
 
         private void OnGaveBirth(Character mother, int? fatherId)
@@ -71,6 +90,12 @@ namespace Thatchwick.Core.Characters
                 CanStarve = mother.CanStarve
             };
             baby.LifespanDays = mother.AgeConfig.RollLifespan(_rng);
+            if (Content != null && Content.Traits.Count > 0)
+            {
+                baby.SetTraits(LifeRules.InheritTraits(Content, _rng, mother, father0));
+                baby.LifespanDays += LifeRules.LifespanBonus(Content, baby.TraitIds);
+                LifeRules.Recompute(baby, Content, Village);
+            }
             if (AppearanceCatalog != null)
             {
                 var father = fatherId.HasValue ? Find(fatherId.Value) : null;

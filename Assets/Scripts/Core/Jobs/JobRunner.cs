@@ -39,6 +39,7 @@ namespace Thatchwick.Core.Jobs
         private double _useProgress;
         private double _elapsedDays;
         private readonly Dictionary<int, double> _unreachableUntil = new Dictionary<int, double>();
+        private readonly List<NeedType> _needOrder = new List<NeedType>();
 
         public JobQueue Queue { get; } = new JobQueue();
 
@@ -53,6 +54,15 @@ namespace Thatchwick.Core.Jobs
 
         /// <summary>Karakterler arası işler (bakım, sohbet, evlilik). Yoksa bu işler başlamaz.</summary>
         public ISocialEffects Social { get; set; }
+
+        /// <summary>
+        /// Ek hız çarpanı (alet kademesi, hava durumu...). Yalnızca iş etkileşimlerine uygulanır; yoksa 1.
+        /// Özellik, dal ve ruh hali çarpanları karakterden okunur.
+        /// </summary>
+        public Func<Character, InteractionDef, double> SpeedProvider { get; set; }
+
+        /// <summary>Şu an yürütülen işin nedeni (otonom ihtiyaç); oyuncu komutunda ya da boştayken null.</summary>
+        public NeedType? CurrentReason => Queue.Current?.Reason;
 
         /// <summary>Son başarısız işin nedeni (arayüzde gösterilir); yoksa null.</summary>
         public string LastFailure { get; private set; }
@@ -225,6 +235,9 @@ namespace Thatchwick.Core.Jobs
             if (available >= remaining)
             {
                 if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, interaction.Restore);
+                foreach (var extra in interaction.ExtraRestore) _character.Needs.Restore(extra.Need, extra.Amount);
+                if (interaction.GivesMood)
+                    _character.Mood.Add(interaction.MoodId, interaction.MoodText ?? interaction.DisplayName, interaction.MoodValue, interaction.MoodDays);
                 if (interaction.Skill.HasValue && interaction.SkillXp > 0f)
                     _character.GainSkillXp(interaction.Skill.Value, interaction.SkillXp);
                 Finish();
@@ -290,13 +303,28 @@ namespace Thatchwick.Core.Jobs
             return Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
         }
 
-        /// <summary>Beceri seviyesi işi hızlandırır: seviye başına %5, en çok yarı süre.</summary>
+        /// <summary>İş etkileşimi mi (beceri, ürün ya da eşya kaldırma)? İhtiyaç etkileşimleri hız çarpanından etkilenmez.</summary>
+        public static bool IsWork(InteractionDef i) => i.Skill.HasValue || i.Produce.Count > 0 || i.RemovesItem;
+
+        /// <summary>İş hızı: özellik/dal × ruh hali × (alet, hava...). İhtiyaç etkileşiminde 1.</summary>
+        public double SpeedFactor(InteractionDef interaction)
+        {
+            if (!IsWork(interaction)) return 1.0;
+            double f = _character.Modifiers.WorkSpeed * Mood.WorkSpeedFor(_character.MoodLevel);
+            if (SpeedProvider != null) f *= SpeedProvider(_character, interaction);
+            return f < 0.1 ? 0.1 : f;
+        }
+
+        /// <summary>Beceri seviyesi işi hızlandırır: seviye başına %5, en çok yarı süre. Hız çarpanı bölünür.</summary>
         public double EffectiveDuration(InteractionDef interaction)
         {
-            if (!interaction.Skill.HasValue) return interaction.DurationDays;
-            int level = _character.Skills.GetLevel(interaction.Skill.Value);
-            double factor = Math.Max(0.5, 1.0 - 0.05 * (level - 1));
-            return interaction.DurationDays * factor;
+            double duration = interaction.DurationDays;
+            if (interaction.Skill.HasValue)
+            {
+                int level = _character.Skills.GetLevel(interaction.Skill.Value);
+                duration *= Math.Max(0.5, 1.0 - 0.05 * (level - 1));
+            }
+            return duration / SpeedFactor(interaction);
         }
 
         // Etkileşime başlanamıyorsa nedeni (arayüzde gösterilir); başlanabiliyorsa null.
@@ -304,6 +332,8 @@ namespace Thatchwick.Core.Jobs
         {
             if (IsUnlitHeatSource(item, interaction)) return "Ocak sönük, önce odun at.";
             if (interaction.RequiresGrown && !item.IsGrown) return $"{item.Def.DisplayName} henüz büyümedi.";
+            if (interaction.RequiresReady && !item.IsReady) return $"{item.Def.DisplayName} henüz hazır değil.";
+            if (interaction.RequiresLit && !item.IsLit) return "Ateş sönük, önce odun at.";
             if (interaction.HasEffects)
             {
                 if (Effects == null) return "Bu iş şu an yapılamaz.";
@@ -322,7 +352,8 @@ namespace Thatchwick.Core.Jobs
             return null;
         }
 
-        // En düşük ihtiyacı (eşik altında) en iyi doyuracak eşyayı seçer: önce en çok doyuran, sonra en yakın.
+        // Otonomi: eşik altındaki ihtiyaçlar sırayla denenir. Önce hayatî olanlar (Açlık, Enerji, Isınma; en düşükten),
+        // sonra Sosyal/Eğlence. Bir ihtiyaç için uygun iş yoksa bir sonrakine geçilir (eskiden takılıp kalırdı).
         private bool TryStartAutonomy()
         {
             // Bakım: kendisi kritik değilse önce aç bebeği besler.
@@ -332,31 +363,56 @@ namespace Thatchwick.Core.Jobs
                 if (dependent != null && Social.CanDo(_character, dependent, SocialAction.Feed) == null)
                 {
                     ResetJobState();
-                    return Queue.TryEnqueue(Job.Social(dependent.Id, SocialAction.Feed));
+                    return Queue.TryEnqueue(Job.Social(dependent.Id, SocialAction.Feed).WithReason(NeedType.Hunger));
                 }
             }
 
-            NeedType? worst = null;
-            float lowest = AutonomyThreshold;
+            _needOrder.Clear();
             foreach (NeedType need in Enum.GetValues(typeof(NeedType)))
+                if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
+            if (_needOrder.Count == 0) return false;
+            _needOrder.Sort((a, b) =>
             {
-                float value = _character.Needs.Get(need);
-                if (value < lowest) { lowest = value; worst = need; }
-            }
-            if (worst == null) return false;
+                int ka = NeedKinds.IsSurvival(a) ? 0 : 1, kb = NeedKinds.IsSurvival(b) ? 0 : 1;
+                if (ka != kb) return ka.CompareTo(kb);
+                return _character.Needs.Get(a).CompareTo(_character.Needs.Get(b));
+            });
 
+            foreach (var need in _needOrder)
+            {
+                if (need == NeedType.Social && TryStartChat()) return true;
+                if (TryStartNeedItem(need)) return true;
+            }
+            return false;
+        }
+
+        private bool TryStartChat()
+        {
+            if (Social == null) return false;
+            var friend = Social.FriendFor(_character);
+            if (friend == null || Social.CanDo(_character, friend, SocialAction.Chat) != null) return false;
+            ResetJobState();
+            return Queue.TryEnqueue(Job.Social(friend.Id, SocialAction.Chat).WithReason(NeedType.Social));
+        }
+
+        // İhtiyacı en iyi doyuracak eşyayı seçer: önce en çok doyuran, sonra en yakın.
+        private bool TryStartNeedItem(NeedType need)
+        {
             ItemInstance bestItem = null;
             InteractionDef bestInteraction = null;
+            float bestRestore = 0f;
             int bestDistance = int.MaxValue;
             foreach (var item in _world.Items)
             {
                 foreach (var interaction in item.Def.Interactions)
                 {
-                    if (!interaction.RestoresNeed || interaction.Need != worst.Value) continue;
-                    // Otonomi iş yapmaz (ağaç kesmez, hasat etmez); yalnızca ihtiyaç giderir. Malzeme harcayan
-                    // ihtiyaç etkileşimi (şalgam yemek) malzeme varsa seçilir.
-                    if (interaction.RemovesItem || interaction.RequiresGrown || interaction.Produce.Count > 0) continue;
-                    if (interaction.ConsumeItem != null && (Effects == null || Effects.CanStart(_character, item, interaction) != null)) continue;
+                    float restore = interaction.RestoreFor(need);
+                    if (restore <= 0f) continue;
+                    // Otonomi iş yapmaz (ağaç kesmez, hasat etmez, yumurta toplamaz); yalnızca ihtiyaç giderir.
+                    // Malzeme harcayan ihtiyaç etkileşimi (şalgam yemek) malzeme varsa seçilir.
+                    if (interaction.RemovesItem || interaction.RequiresGrown || interaction.RequiresReady || interaction.Produce.Count > 0) continue;
+                    if (interaction.HasEffects && (Effects == null || Effects.CanStart(_character, item, interaction) != null)) continue;
+                    if (interaction.RequiresLit && !item.IsLit) continue;
                     if (IsUnlitHeatSource(item, interaction)) continue;   // sönük ocağa ısınmaya gidilmez
                     if (_unreachableUntil.TryGetValue(item.Id, out var until) && until > _elapsedDays) continue;
 
@@ -365,12 +421,13 @@ namespace Thatchwick.Core.Jobs
                         Math.Abs(item.Position.Y - _character.Position.Y));
 
                     bool better = bestInteraction == null
-                        || interaction.Restore > bestInteraction.Restore
-                        || (interaction.Restore == bestInteraction.Restore && distance < bestDistance);
+                        || restore > bestRestore
+                        || (restore == bestRestore && distance < bestDistance);
                     if (better)
                     {
                         bestItem = item;
                         bestInteraction = interaction;
+                        bestRestore = restore;
                         bestDistance = distance;
                     }
                 }
@@ -378,7 +435,7 @@ namespace Thatchwick.Core.Jobs
             if (bestItem == null) return false;
 
             ResetJobState();
-            return Queue.TryEnqueue(Job.UseItem(bestItem.Id, bestInteraction.Id));
+            return Queue.TryEnqueue(Job.UseItem(bestItem.Id, bestInteraction.Id).WithReason(need));
         }
 
         private void Finish()

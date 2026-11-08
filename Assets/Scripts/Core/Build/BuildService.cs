@@ -25,6 +25,22 @@ namespace Thatchwick.Core.Build
         /// <summary>Hesap seviyesi sağlayıcı (T10); null ise her eşya açık.</summary>
         public Func<int> AccountLevel { get; set; }
 
+        /// <summary>İndirim oranı (0-0.5); hane reisinin Tüccar/Usta dalı gibi özelliklerinden gelir. Yoksa indirim yok.</summary>
+        public Func<float> Discount { get; set; }
+
+        /// <summary>İndirimli alış fiyatı (en az 1 akçe).</summary>
+        public int PriceFor(ItemDef def)
+        {
+            float d = Discount == null ? 0f : Math.Max(0f, Math.Min(0.5f, Discount()));
+            return d <= 0f ? def.Price : Math.Max(1, (int)Math.Round(def.Price * (1f - d)));
+        }
+
+        /// <summary>Anıt (mezar) ve yabani toplanabilir eşyalar oyuncu tarafından taşınmaz, satılmaz.</summary>
+        public static bool IsLocked(ItemInstance item) =>
+            item != null && (item.Def.Category == "memorial" || item.Def.IsForage);
+
+        private const string Locked = "Bu taşınmaz ya da satılmaz.";
+
         public bool IsUnlocked(ItemDef def) => AccountLevel == null || AccountLevel() >= def.UnlockLevel;
 
         public BuildService(WorldState world, Household house, ContentDatabase content, double sellRatio = DefaultSellRatio)
@@ -45,7 +61,7 @@ namespace Thatchwick.Core.Build
             if (def.Price <= 0) return PlacementCheck.Fail("Bu eşya satılmıyor.");
             if (!IsUnlocked(def)) return PlacementCheck.Fail($"Hesap seviyesi {def.UnlockLevel} gerekli.");
             if (Storage != null && !Storage.HasRoomFor(itemId)) return PlacementCheck.Fail("Depo dolu: depo bölgesi çiz ya da sandık koy.");
-            if (!_house.TrySpend(def.Price)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            if (!_house.TrySpend(PriceFor(def))) return PlacementCheck.Fail("Akçe yetmiyor.");
             _house.AddItem(itemId);
             return PlacementCheck.Success;
         }
@@ -67,6 +83,7 @@ namespace Thatchwick.Core.Build
             var target = _world.GetItem(itemId);
             if (target == null) return PlacementCheck.Fail("Eşya bulunamadı.");
             if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
+            if (IsLocked(target)) return PlacementCheck.Fail(Locked);
             int total = 0;
             foreach (var def in _world.RemoveItem(itemId)) total += SellValue(def);
             if (total > 0) _house.AddAkce(total);
@@ -120,6 +137,7 @@ namespace Thatchwick.Core.Build
         {
             var item = _world.GetItem(itemId);
             if (item != null && item.IsPlant) return PlacementCheck.Fail(PlantLocked);
+            if (IsLocked(item)) return PlacementCheck.Fail(Locked);
             if (item != null)
             {
                 var owned = CheckOwned(item.Def, position, rotation);
@@ -134,6 +152,7 @@ namespace Thatchwick.Core.Build
             var target = _world.GetItem(itemId);
             if (target == null) return PlacementCheck.Fail("Eşya bulunamadı.");
             if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
+            if (IsLocked(target)) return PlacementCheck.Fail(Locked);
             foreach (var def in _world.RemoveItem(itemId)) _house.AddItem(def.Id);
             return PlacementCheck.Success;
         }

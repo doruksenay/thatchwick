@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Thatchwick.Core.Life;
 
 namespace Thatchwick.Core.Content
 {
@@ -7,6 +8,14 @@ namespace Thatchwick.Core.Content
     public sealed class ContentDatabase
     {
         public ContentRegistry<ItemDef> Items { get; } = new ContentRegistry<ItemDef>();
+        public ContentRegistry<TraitDef> Traits { get; } = new ContentRegistry<TraitDef>();
+        public ContentRegistry<BranchDef> Branches { get; } = new ContentRegistry<BranchDef>();
+        public ContentRegistry<ProjectDef> Projects { get; } = new ContentRegistry<ProjectDef>();
+        public ContentRegistry<VillagerDef> Villagers { get; } = new ContentRegistry<VillagerDef>();
+        public ContentRegistry<FestivalDef> Festivals { get; } = new ContentRegistry<FestivalDef>();
+        public ContentRegistry<GoalDef> Goals { get; } = new ContentRegistry<GoalDef>();
+        public ContentRegistry<ToolDef> Tools { get; } = new ContentRegistry<ToolDef>();
+        public ContentRegistry<RoomTemplateDef> Templates { get; } = new ContentRegistry<RoomTemplateDef>();
 
         /// <summary>
         /// İçerik hatalarını okunur metin olarak döner (boşsa içerik geçerli).
@@ -45,6 +54,15 @@ namespace Thatchwick.Core.Content
                     if (item.Width != 1 || item.Height != 1) errors.Add($"{item.Id}: dekor 1x1 olmalı.");
                     if (item.SurfaceSlots.Count > 0) errors.Add($"{item.Id}: dekorun kendi yüzey yuvası olamaz.");
                 }
+                if (item.Comfort < 0 || item.Comfort > 50) errors.Add($"{item.Id}: konfor 0-50 arasında olmalı.");
+                if (item.SpoilDays < 0f) errors.Add($"{item.Id}: bozulma süresi negatif olamaz.");
+                if (item.SpoilDays > 0f && !item.HasTag("food")) errors.Add($"{item.Id}: bozulma yalnızca yiyecek etiketli eşyada olur.");
+                if (item.Preserves < 0f || item.Preserves > 1f) errors.Add($"{item.Id}: kiler çarpanı 0-1 arasında olmalı.");
+                if (item.ReadyDays < 0f) errors.Add($"{item.Id}: hazır olma süresi negatif olamaz.");
+                if (item.Produces && (item.Placement != ItemPlacement.Floor || item.IsPlant)) errors.Add($"{item.Id}: üreten eşya yere konan, bitki olmayan eşya olmalı.");
+                if (item.ForageMax < 0) errors.Add($"{item.Id}: toplama sınırı negatif olamaz.");
+                if (item.IsForage && (item.Placement != ItemPlacement.Floor || !item.IsPlant && item.Interactions.Count == 0)) errors.Add($"{item.Id}: toplanabilir eşya yere konan ve etkileşimli olmalı.");
+                if (item.GrowSeasons.Count > 0 && !item.IsPlant) errors.Add($"{item.Id}: growSeasons yalnızca bitkide kullanılır.");
                 var slotIds = new HashSet<string>(StringComparer.Ordinal);
                 foreach (var slot in item.SurfaceSlots)
                 {
@@ -67,11 +85,25 @@ namespace Thatchwick.Core.Content
                         errors.Add($"{where}: Restore 0-100 arasında olmalı (iş etkileşimi değilse sıfırdan büyük).");
                     if (it.RequiresGrown && !item.IsPlant) errors.Add($"{where}: requiresGrown yalnızca bitkide kullanılır.");
                     if (it.ConsumeItem != null && !Items.Contains(it.ConsumeItem)) errors.Add($"{where}: harcanan '{it.ConsumeItem}' bulunamadı.");
+                    foreach (var cm in it.ConsumeMore)
+                    {
+                        if (!Items.Contains(cm.ItemId)) errors.Add($"{where}: ek harcanan '{cm.ItemId}' bulunamadı.");
+                        if (cm.Count < 1) errors.Add($"{where}: ek harcama adedi en az 1 olmalı.");
+                    }
+                    foreach (var er in it.ExtraRestore)
+                        if (er.Amount <= 0f || er.Amount > 100f) errors.Add($"{where}: ek doygunluk 0-100 arasında olmalı.");
+                    if (it.RequiresReady && !item.Produces) errors.Add($"{where}: requiresReady yalnızca üreten eşyada kullanılır.");
+                    if (it.ResetsReady && !item.Produces) errors.Add($"{where}: resetsReady yalnızca üreten eşyada kullanılır.");
+                    if (it.RequiresLit && item.HeatOutput <= 0f) errors.Add($"{where}: requiresLit yalnızca ısı kaynağında kullanılır.");
+                    if (!string.IsNullOrEmpty(it.MoodId) && (it.MoodValue == 0 || it.MoodDays <= 0.0)) errors.Add($"{where}: ruh hali etkisi için moodValue ve moodDays gerekli.");
+                    if (!string.IsNullOrEmpty(it.Tool) && !Tools.Contains(it.Tool)) errors.Add($"{where}: bilinmeyen alet '{it.Tool}'.");
                     foreach (var p in it.Produce)
                     {
                         if (!Items.Contains(p.ItemId)) errors.Add($"{where}: üretilen '{p.ItemId}' bulunamadı.");
                         if (p.Count < 1) errors.Add($"{where}: üretim adedi en az 1 olmalı.");
                         if (p.Chance <= 0f || p.Chance > 1f) errors.Add($"{where}: üretim olasılığı 0-1 arasında olmalı.");
+                        if (p.MinLevel < 0 || p.MaxLevel < 0 || (p.MaxLevel > 0 && p.MinLevel > p.MaxLevel)) errors.Add($"{where}: üretim seviye aralığı geçersiz.");
+                        if ((p.MinLevel > 0 || p.MaxLevel > 0) && !it.Skill.HasValue) errors.Add($"{where}: seviye sınırlı üretim için etkileşimde beceri gerekli.");
                     }
                     if (it.DurationDays <= 0.0) errors.Add($"{where}: süre sıfırdan büyük olmalı.");
                     if (it.Skill.HasValue && it.SkillXp <= 0f) errors.Add($"{where}: beceri verilmiş ama skillXp sıfırdan büyük değil.");
@@ -79,7 +111,68 @@ namespace Thatchwick.Core.Content
                 }
             }
 
+            ValidateLife(errors);
             return errors;
+        }
+
+        private void ValidateLife(List<string> errors)
+        {
+            foreach (var t in Traits.All)
+            {
+                if (string.IsNullOrWhiteSpace(t.DisplayName)) errors.Add($"{t.Id}: görünen ad boş.");
+                foreach (var c in t.Conflicts) if (!Traits.Contains(c)) errors.Add($"{t.Id}: çakışan özellik '{c}' bulunamadı.");
+            }
+            foreach (var b in Branches.All)
+            {
+                if (b.Level != 5 && b.Level != 10) errors.Add($"{b.Id}: dal seviyesi 5 ya da 10 olmalı.");
+                if (b.Requires != null)
+                {
+                    if (!Branches.TryGet(b.Requires, out var first)) errors.Add($"{b.Id}: gereken dal '{b.Requires}' bulunamadı.");
+                    else if (first.Skill != b.Skill || first.Level >= b.Level) errors.Add($"{b.Id}: gereken dal aynı beceride ve daha düşük seviyede olmalı.");
+                }
+                else if (b.Level == 10) errors.Add($"{b.Id}: 10. seviye dal bir 5. seviye dala bağlı olmalı (requires).");
+            }
+            foreach (var p in Projects.All)
+            {
+                if (p.Akce < 0) errors.Add($"{p.Id}: akçe maliyeti negatif olamaz.");
+                if (p.Akce == 0 && p.Costs.Count == 0) errors.Add($"{p.Id}: proje maliyetsiz olamaz.");
+                foreach (var c in p.Costs) if (!Items.Contains(c.ItemId)) errors.Add($"{p.Id}: maliyet kalemi '{c.ItemId}' bulunamadı.");
+            }
+            foreach (var v in Villagers.All)
+            {
+                if (string.IsNullOrWhiteSpace(v.Name)) errors.Add($"{v.Id}: köylü adı boş.");
+                if (v.Age < 24 || v.Age > 100) errors.Add($"{v.Id}: yaş 24-100 oyun günü arasında olmalı.");
+                foreach (var tr in v.Traits) if (!Traits.Contains(tr)) errors.Add($"{v.Id}: özellik '{tr}' bulunamadı.");
+                foreach (var list in new[] { v.Loves, v.Likes, v.Dislikes })
+                    foreach (var g in list)
+                        if (!g.StartsWith("tag:") && !Items.Contains(g)) errors.Add($"{v.Id}: hediye zevki '{g}' bulunamadı.");
+                foreach (var e in v.Events)
+                {
+                    if (e.MinAffection < 1 || e.MinAffection > 100) errors.Add($"{v.Id}/{e.Id}: yakınlık eşiği 1-100 olmalı.");
+                    if (e.RewardItem != null && !Items.Contains(e.RewardItem)) errors.Add($"{v.Id}/{e.Id}: ödül eşyası '{e.RewardItem}' bulunamadı.");
+                }
+            }
+            foreach (var f in Festivals.All)
+                if (f.Day < 0 || f.Day > 11) errors.Add($"{f.Id}: şenlik günü 0-11 arasında olmalı.");
+            foreach (var g in Goals.All)
+            {
+                if (g.Target <= 0) errors.Add($"{g.Id}: hedef değeri sıfırdan büyük olmalı.");
+                if (string.IsNullOrWhiteSpace(g.Metric)) errors.Add($"{g.Id}: ölçüt boş.");
+            }
+            foreach (var t in Tools.All)
+            {
+                if (t.Tiers.Count == 0) errors.Add($"{t.Id}: alet kademesi yok.");
+                foreach (var tier in t.Tiers) if (tier.Akce < 0 || tier.Firewood < 0) errors.Add($"{t.Id}: kademe maliyeti negatif olamaz.");
+            }
+            foreach (var t in Templates.All)
+            {
+                if (t.Width < 2 || t.Height < 2 || t.Width > 12 || t.Height > 12) errors.Add($"{t.Id}: şablon boyutu 2-12 arasında olmalı.");
+                foreach (var i in t.Items)
+                {
+                    if (!Items.Contains(i.ItemId)) errors.Add($"{t.Id}: şablon eşyası '{i.ItemId}' bulunamadı.");
+                    if (i.X < 0 || i.Y < 0 || i.X >= t.Width || i.Y >= t.Height) errors.Add($"{t.Id}: '{i.ItemId}' şablon dışında.");
+                }
+            }
         }
     }
 }

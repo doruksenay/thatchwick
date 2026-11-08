@@ -25,6 +25,11 @@ namespace Thatchwick.Core.World
         public double FuelDays { get; internal set; }
         public bool IsLit => FuelDays > 0;
 
+        /// <summary>Üreten eşyanın (kümes) ürün hazırlama ilerlemesi (oyun günü).</summary>
+        public double ReadyProgress { get; internal set; }
+        /// <summary>Üretmeyen eşya için her zaman true.</summary>
+        public bool IsReady => !Def.Produces || ReadyProgress >= Def.ReadyDays;
+
         /// <summary>Bitkinin büyüme ilerlemesi (oyun günü).</summary>
         public double GrowthDays { get; internal set; }
         public bool IsPlant => Def.IsPlant;

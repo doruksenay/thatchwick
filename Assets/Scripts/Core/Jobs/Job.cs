@@ -1,3 +1,4 @@
+using Thatchwick.Core.Characters;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Jobs
@@ -27,6 +28,14 @@ namespace Thatchwick.Core.Jobs
         public string InteractionId { get; private set; }
         public int TargetCharacterId { get; private set; }
         public SocialAction Action { get; private set; }
+        /// <summary>Otonom seçilen işin nedeni (hangi ihtiyaç); oyuncu komutunda null. Eylem balonunda gösterilir.</summary>
+        public NeedType? Reason { get; private set; }
+
+        public Job WithReason(NeedType need)
+        {
+            Reason = need;
+            return this;
+        }
 
         public static Job MoveTo(GridPos target) =>
             new Job { Kind = JobKind.MoveTo, Target = target };

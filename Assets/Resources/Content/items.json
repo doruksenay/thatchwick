@@ -15,7 +15,8 @@
       "width": 2,
       "height": 1,
       "price": 30,
-      "category": "furniture"
+      "category": "furniture",
+      "comfort": 2
     },
     {
       "id": "item.hearth_stone",
@@ -27,11 +28,30 @@
           "need": "Warmth",
           "restore": 40,
           "durationDays": 0.1
+        },
+        {
+          "id": "sit_fire",
+          "displayName": "Ateşin başında otur",
+          "need": "Fun",
+          "restore": 22,
+          "durationDays": 0.12,
+          "requiresLit": true,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 15
+            }
+          ],
+          "moodId": "mood.fire",
+          "moodText": "Ateşin başında",
+          "moodValue": 5,
+          "moodDays": 0.6
         }
       ],
       "price": 40,
       "category": "furniture",
-      "heat": 80
+      "heat": 80,
+      "comfort": 6
     },
     {
       "id": "item.cooking_pot",
@@ -57,7 +77,8 @@
         }
       ],
       "price": 25,
-      "category": "furniture"
+      "category": "furniture",
+      "comfort": 2
     },
     {
       "id": "item.stool_wood",
@@ -72,7 +93,9 @@
         }
       ],
       "price": 8,
-      "category": "furniture"
+      "category": "furniture",
+      "comfort": 1,
+      "styleSet": "koylu"
     },
     {
       "id": "item.table_wood",
@@ -99,7 +122,9 @@
           "v": 0.5
         }
       ],
-      "level": 2
+      "level": 2,
+      "comfort": 3,
+      "styleSet": "koylu"
     },
     {
       "id": "item.chair_wood",
@@ -117,7 +142,9 @@
       "height": 1,
       "price": 10,
       "category": "furniture",
-      "level": 2
+      "level": 2,
+      "comfort": 2,
+      "styleSet": "koylu"
     },
     {
       "id": "item.chest_wood",
@@ -127,7 +154,9 @@
       "height": 1,
       "price": 18,
       "category": "furniture",
-      "storage": 40
+      "storage": 40,
+      "comfort": 1,
+      "styleSet": "koylu"
     },
     {
       "id": "item.shelf_wood",
@@ -149,7 +178,9 @@
           "v": 0.5
         }
       ],
-      "level": 3
+      "level": 3,
+      "comfort": 2,
+      "styleSet": "koylu"
     },
     {
       "id": "item.candle",
@@ -158,7 +189,8 @@
       "placement": "Surface",
       "price": 4,
       "category": "decor",
-      "level": 3
+      "level": 3,
+      "comfort": 3
     },
     {
       "id": "item.flower_pot",
@@ -167,7 +199,8 @@
       "placement": "Surface",
       "price": 6,
       "category": "decor",
-      "level": 5
+      "level": 5,
+      "comfort": 4
     },
     {
       "id": "item.clay_cup",
@@ -176,7 +209,8 @@
       "placement": "Surface",
       "price": 3,
       "category": "decor",
-      "level": 5
+      "level": 5,
+      "comfort": 2
     },
     {
       "id": "item.firewood",
@@ -340,7 +374,86 @@
       ],
       "price": 30,
       "category": "furniture",
-      "level": 10
+      "level": 10,
+      "comfort": 5,
+      "styleSet": "zanaatkar"
+    },
+    {
+      "id": "item.grave",
+      "displayName": "Mezar",
+      "category": "memorial",
+      "price": 0,
+      "comfort": 0
+    },
+    {
+      "id": "item.bench_wood",
+      "displayName": "Ahşap bank",
+      "width": 2,
+      "height": 1,
+      "price": 14,
+      "category": "furniture",
+      "comfort": 2,
+      "styleSet": "koylu",
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur ve sohbet et",
+          "need": "Social",
+          "restore": 22,
+          "durationDays": 0.1,
+          "extraRestore": [
+            {
+              "need": "Energy",
+              "amount": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.game_table",
+      "displayName": "Oyun masası",
+      "width": 2,
+      "height": 1,
+      "price": 26,
+      "category": "furniture",
+      "comfort": 3,
+      "level": 2,
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Tavla oyna",
+          "need": "Fun",
+          "restore": 50,
+          "durationDays": 0.14,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 10
+            }
+          ],
+          "moodId": "mood.game",
+          "moodText": "Güzel bir oyun",
+          "moodValue": 4,
+          "moodDays": 0.7
+        }
+      ]
+    },
+    {
+      "id": "item.toy_wooden",
+      "displayName": "Tahta oyuncak",
+      "price": 6,
+      "category": "decor",
+      "comfort": 1,
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Oyuncakla oyna",
+          "need": "Fun",
+          "restore": 35,
+          "durationDays": 0.1
+        }
+      ]
     }
   ]
 }

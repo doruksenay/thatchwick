@@ -7,6 +7,7 @@ using Thatchwick.Core.Customization;
 using Thatchwick.Core.Economy;
 using Thatchwick.Core.Family;
 using Thatchwick.Core.Heat;
+using Thatchwick.Core.Life;
 using Thatchwick.Core.Progress;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
@@ -27,6 +28,8 @@ namespace Thatchwick.Core.Save
         public List<(int a, int b, int value)> Affection = new List<(int, int, int)>();
         /// <summary>Kayıtta hanedan yoksa null (eski kayıt): oyuncu karakteriyle yeniden kurulur.</summary>
         public Dynasty Dynasty;
+        /// <summary>Yaşam katmanı kaydı; eski kayıtta null (varsayılan durumla başlar).</summary>
+        public LifeSaveData Life;
         /// <summary>Yüklenemeyen parçalar (ör. içerikten kaldırılmış eşya). Oyun yine açılır.</summary>
         public List<string> Warnings = new List<string>();
     }
@@ -37,7 +40,8 @@ namespace Thatchwick.Core.Save
         public const int CurrentVersion = 1;
 
         public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
-            AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null)
+            AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null,
+            LifeSystems life = null)
         {
             var map = world.Map;
             var data = new SaveData
@@ -82,7 +86,7 @@ namespace Thatchwick.Core.Save
                     items.Add(new ItemSave
                     {
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, rotation = it.Rotation,
-                        parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays
+                        parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays, readyProgress = it.ReadyProgress
                     });
                 }
             data.items = items.ToArray();
@@ -131,6 +135,7 @@ namespace Thatchwick.Core.Save
                     hist.Add(new HeadSave { characterId = h.CharacterId, name = h.Name, generation = h.Generation, startDay = h.StartDay, endDay = h.EndDay, endCause = (int)h.EndCause });
                 data.dynasty = new DynastySave { name = dynasty.Name, headId = dynasty.HeadId, ended = dynasty.Ended, history = hist.ToArray() };
             }
+            data.life = life?.Export();
             return data;
         }
 
@@ -143,8 +148,13 @@ namespace Thatchwick.Core.Save
                 if (xp > 0) skills.Add(new KeyFloat { key = s.ToString(), value = xp });
             }
             var a = c.Appearance ?? new Appearance();
+            var moodlets = new List<MoodletSave>();
+            foreach (var m in c.Mood.Moodlets) moodlets.Add(new MoodletSave { id = m.Id, text = m.Text, value = m.Value, days = m.RemainingDays });
             return new CharacterSave
             {
+                social = c.Needs.Get(NeedType.Social), fun = c.Needs.Get(NeedType.Fun),
+                traits = new List<string>(c.TraitIds).ToArray(), branches = new List<string>(c.BranchIds).ToArray(),
+                moodlets = moodlets.ToArray(),
                 id = c.Id, name = c.Name, isPlayer = c.IsPlayerControlled, sex = (int)c.Sex,
                 x = c.Position.X, y = c.Position.Y,
                 ageDays = c.AgeDays, lifespanDays = c.LifespanDays,
@@ -213,7 +223,8 @@ namespace Thatchwick.Core.Save
                     if (parent.HasValue && world.GetItem(parent.Value) == null) { result.Warnings.Add($"Dekorun yüzeyi yok, atlandı: {s.def}"); continue; }
                     var pos = new GridPos(s.x, s.y);
                     if (!parent.HasValue && !world.CanPlaceFloor(def, pos, s.rotation).Ok) { result.Warnings.Add($"Eşya yerine sığmadı, atlandı: {s.def} {pos}"); continue; }
-                    world.RestoreItem(def, s.id, pos, s.rotation, parent, s.slotId, Math.Max(0, s.fuelDays), Math.Max(0, s.growthDays));
+                    var restored = world.RestoreItem(def, s.id, pos, s.rotation, parent, s.slotId, Math.Max(0, s.fuelDays), Math.Max(0, s.growthDays));
+                    restored.ReadyProgress = Math.Max(0, s.readyProgress);
                 }
 
             var hs = data.household ?? new HouseholdSave();
@@ -229,7 +240,12 @@ namespace Thatchwick.Core.Save
 
             if (data.characters != null)
                 foreach (var cs in data.characters)
-                    if (cs != null) result.Characters.Add(LoadCharacter(cs));
+                    if (cs != null)
+                    {
+                        var loaded = LoadCharacter(cs);
+                        LifeRules.Recompute(loaded, content);
+                        result.Characters.Add(loaded);
+                    }
 
             result.Account = new AccountProgress();
             if (data.account != null)
@@ -239,6 +255,7 @@ namespace Thatchwick.Core.Save
                 result.Account.Restore(data.account.xp, data.account.firsts, data.account.badges, counters, data.account.workDay, data.account.workToday);
             }
 
+            result.Life = data.life;
             result.Temperatures = data.temperatures;
             if (data.marketDemand != null) foreach (var kv in data.marketDemand) if (kv != null) result.MarketDemand.Add(new KeyValuePair<string, double>(kv.key, kv.value));
             if (data.marketTakenOffers != null) result.MarketTakenOffers.AddRange(data.marketTakenOffers);
@@ -269,6 +286,13 @@ namespace Thatchwick.Core.Save
             c.Needs.Set(NeedType.Hunger, s.hunger);
             c.Needs.Set(NeedType.Energy, s.energy);
             c.Needs.Set(NeedType.Warmth, s.warmth);
+            if (s.social >= 0f) c.Needs.Set(NeedType.Social, s.social);
+            if (s.fun >= 0f) c.Needs.Set(NeedType.Fun, s.fun);
+            c.SetTraits(s.traits);
+            c.SetBranches(s.branches);
+            if (s.moodlets != null)
+                foreach (var m in s.moodlets)
+                    if (m != null && !string.IsNullOrEmpty(m.id)) c.Mood.Add(m.id, m.text, m.value, m.days);
             if (s.skills != null)
                 foreach (var kv in s.skills)
                     if (kv != null && Enum.TryParse(kv.key, out SkillType skill)) c.Skills.RestoreXp(skill, kv.value);

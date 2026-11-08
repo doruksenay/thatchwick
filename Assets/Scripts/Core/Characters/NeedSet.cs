@@ -5,6 +5,7 @@ namespace Thatchwick.Core.Characters
     /// <summary>
     /// Bir karakterin ihtiyaç değerleri. Azalma oyun günü cinsinden verilir
     /// (biyoloji oyun saatinde işler); hız çarpanı zaten GameClock'ta uygulanır.
+    /// Özellikler ve diğer etkiler azalmayı çarpanla değiştirir (SetDecayMultiplier).
     /// </summary>
     public sealed class NeedSet
     {
@@ -14,11 +15,12 @@ namespace Thatchwick.Core.Characters
 
         private static readonly int NeedCount = Enum.GetValues(typeof(NeedType)).Length;
 
-        // Oyun günü başına varsayılan azalma. Denge adımında (28) ayarlanır.
-        private static readonly float[] DefaultDecayPerDay = { 120f, 90f, 0f };
+        // Oyun günü başına varsayılan azalma (Açlık, Enerji, Isınma, Sosyal, Eğlence). Denge adımında (28) ayarlanır.
+        private static readonly float[] DefaultDecayPerDay = { 120f, 90f, 0f, 30f, 24f };
 
         private readonly float[] _values = new float[NeedCount];
         private readonly float[] _decayPerDay = new float[NeedCount];
+        private readonly float[] _decayMultiplier = new float[NeedCount];
 
         public NeedSet()
         {
@@ -26,6 +28,7 @@ namespace Thatchwick.Core.Characters
             {
                 _values[i] = Max;
                 _decayPerDay[i] = DefaultDecayPerDay[i];
+                _decayMultiplier[i] = 1f;
             }
         }
 
@@ -41,6 +44,15 @@ namespace Thatchwick.Core.Characters
 
         public float GetDecayPerDay(NeedType need) => _decayPerDay[(int)need];
 
+        /// <summary>Azalma çarpanı (özellik, meslek dalı). 1 = değişiklik yok.</summary>
+        public void SetDecayMultiplier(NeedType need, float multiplier)
+        {
+            if (multiplier < 0) throw new ArgumentOutOfRangeException(nameof(multiplier));
+            _decayMultiplier[(int)need] = multiplier;
+        }
+
+        public float GetDecayMultiplier(NeedType need) => _decayMultiplier[(int)need];
+
         /// <summary>İhtiyacı verilen miktar kadar doyurur (yemek, uyku, ısınma).</summary>
         public void Restore(NeedType need, float amount)
         {
@@ -50,10 +62,11 @@ namespace Thatchwick.Core.Characters
 
         public bool IsCritical(NeedType need) => _values[(int)need] <= CriticalThreshold;
 
+        /// <summary>Hayatta kalma ihtiyaçlarından biri kritik mi (Sosyal/Eğlence sayılmaz: bakım işini engellemesin).</summary>
         public bool AnyCritical()
         {
             for (int i = 0; i < NeedCount; i++)
-                if (_values[i] <= CriticalThreshold) return true;
+                if (NeedKinds.IsSurvival((NeedType)i) && _values[i] <= CriticalThreshold) return true;
             return false;
         }
 
@@ -62,7 +75,7 @@ namespace Thatchwick.Core.Characters
         {
             if (gameDays < 0) throw new ArgumentOutOfRangeException(nameof(gameDays));
             for (int i = 0; i < NeedCount; i++)
-                _values[i] = Clamp(_values[i] - (float)(_decayPerDay[i] * gameDays));
+                _values[i] = Clamp(_values[i] - (float)(_decayPerDay[i] * _decayMultiplier[i] * gameDays));
         }
 
         private static float Clamp(float v) => v < Min ? Min : (v > Max ? Max : v);

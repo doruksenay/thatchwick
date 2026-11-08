@@ -12,5 +12,7 @@ namespace Thatchwick.Core.Jobs
         void Apply(Character actor, Character target, SocialAction action);
         /// <summary>Otonom karakterin bakması gereken bakmakla yükümlü olduğu kişi (aç bebek); yoksa null.</summary>
         Character DependentNeedingCare(Character carer);
+        /// <summary>Sosyal ihtiyacı giderirken sohbet edilecek en uygun kişi (yakın, yaşayan, bebek değil); yoksa null.</summary>
+        Character FriendFor(Character character);
     }
 }

@@ -23,6 +23,8 @@ namespace Thatchwick.Core.Save
         public int[] marketTakenOffers;
         public AffectionSave[] affection;
         public DynastySave dynasty;
+        /// <summary>Yaşam katmanı (mezar, hava, takvim, köylüler, projeler ...). Eski kayıtta null.</summary>
+        public LifeSaveData life;
     }
 
     [Serializable]
@@ -54,6 +56,8 @@ namespace Thatchwick.Core.Save
         public string slotId;
         public double fuelDays;
         public double growthDays;
+        /// <summary>Üreten eşyanın hazırlanma ilerlemesi (kümes).</summary>
+        public double readyProgress;
     }
 
     [Serializable]
@@ -86,6 +90,19 @@ namespace Thatchwick.Core.Save
         public int birthFatherId;
         public int generation;
         public bool isVillager;
+        // Adım 18a/32: eksik alan eski kayıtta -1 gelir (= tam doygun), diziler boş kalır.
+        public float social = -1f, fun = -1f;
+        public string[] traits;
+        public string[] branches;
+        public MoodletSave[] moodlets;
+    }
+
+    [Serializable]
+    public sealed class MoodletSave
+    {
+        public string id, text;
+        public int value;
+        public double days;
     }
 
     [Serializable]

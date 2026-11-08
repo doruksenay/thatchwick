@@ -19,6 +19,13 @@ namespace Thatchwick.Core.Family
         public const int ChatAffection = 20;
         public const int MarriageAffection = 100;
         public const double ConceiveChance = 0.6;
+        /// <summary>Sohbetin sohbet edenlerin Sosyal ihtiyacına verdiği doygunluk (Sosyal özelliğiyle çarpılır).</summary>
+        public const float ChatSocialRestore = 45f;
+        public const int ChatMoodValue = 4;
+        public const double ChatMoodDays = 0.8;
+        public const string ChatMoodId = "mood.chat";
+        /// <summary>Otonom sohbet için aranan en uzak mesafe (karo).</summary>
+        public const float FriendSearchRadius = 40f;
 
         private readonly Population _population;
         private readonly Household _house;
@@ -30,6 +37,11 @@ namespace Thatchwick.Core.Family
         public event Action<Character, Character, SocialAction, string> Happened;
         /// <summary>Köylü evlenip haneye katıldığında.</summary>
         public event Action<Character> JoinedHousehold;
+
+        /// <summary>Verilirse evlenme teklifi için bu da gerekir (köylü romantik ilişkisi); yoksa yalnızca Yakınlık.</summary>
+        public Func<Character, Character, string> ExtraProposalCheck { get; set; }
+        /// <summary>Sohbet sonrası eklenecek ek (kişiye özel) etki; (yapan, hedef).</summary>
+        public event Action<Character, Character> Chatted;
 
         public FamilyService(Population population, Household house, ContentDatabase content, int seed = 1)
         {
@@ -94,7 +106,7 @@ namespace Thatchwick.Core.Family
                     if (AreCloseRelatives(actor, target)) return "Yakın akrabalar evlenemez.";
                     if (Affection(actor.Id, target.Id) < MarriageAffection) return $"Yakınlık yetmiyor ({Affection(actor.Id, target.Id)}/{MarriageAffection}); önce sohbet edin.";
                     if (actor.IsVillager && target.IsVillager) return "Köylüler kendi aralarında evlenir.";
-                    return null;
+                    return ExtraProposalCheck?.Invoke(actor, target);
                 case SocialAction.TryForBaby:
                     if (actor.SpouseId != target.Id) return "Yalnızca eşler çocuk isteyebilir.";
                     var woman = actor.Sex == Sex.Female ? actor : target;
@@ -134,6 +146,12 @@ namespace Thatchwick.Core.Family
                 case SocialAction.Chat:
                     int now = Math.Min(100, Affection(actor.Id, target.Id) + ChatAffection);
                     SetAffection(actor.Id, target.Id, now);
+                    foreach (var c in new[] { actor, target })
+                    {
+                        c.Needs.Restore(NeedType.Social, ChatSocialRestore * c.Modifiers.SocialGain);
+                        c.Mood.Add(ChatMoodId, "İyi bir sohbet", ChatMoodValue, ChatMoodDays);
+                    }
+                    Chatted?.Invoke(actor, target);
                     msg = now >= MarriageAffection && !actor.SpouseId.HasValue && !target.SpouseId.HasValue && IsAdultAge(actor) && IsAdultAge(target)
                         ? $"{actor.Name} ve {target.Name} çok yakınlaştı; evlenme teklif edilebilir"
                         : $"{actor.Name} ve {target.Name} sohbet etti (yakınlık {now})";
@@ -154,13 +172,31 @@ namespace Thatchwick.Core.Family
                 case SocialAction.TryForBaby:
                     var woman = actor.Sex == Sex.Female ? actor : target;
                     var man = actor.Sex == Sex.Female ? target : actor;
-                    bool ok = _rng.NextDouble() < ConceiveChance && woman.TryStartPregnancy(man.Id);
+                    double chance = Math.Min(0.95, ConceiveChance * woman.Modifiers.Fertility);
+                    bool ok = _rng.NextDouble() < chance && woman.TryStartPregnancy(man.Id);
                     msg = ok ? $"{woman.Name} hamile!" : $"{actor.Name} ve {target.Name} bu sefer olmadı; yine denenebilir";
                     break;
                 default:
                     return;
             }
             Happened?.Invoke(actor, target, action, msg);
+        }
+
+        /// <summary>Sohbet edilecek kişi: yaşayan, bebek olmayan, en yakındaki (eşitlikte yakınlığı en yüksek olan).</summary>
+        public Character FriendFor(Character character)
+        {
+            Character best = null;
+            int bestDist = int.MaxValue;
+            int bestAff = -1;
+            foreach (var c in _population.Members)
+            {
+                if (c == character || c.IsDead || c.Stage == AgeStage.Baby) continue;
+                int dist = Math.Abs(c.Position.X - character.Position.X) + Math.Abs(c.Position.Y - character.Position.Y);
+                if (dist > FriendSearchRadius) continue;
+                int aff = Affection(character.Id, c.Id);
+                if (dist < bestDist || (dist == bestDist && aff > bestAff)) { best = c; bestDist = dist; bestAff = aff; }
+            }
+            return best;
         }
 
         public Character DependentNeedingCare(Character carer)

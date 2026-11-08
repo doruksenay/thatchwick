@@ -13,13 +13,15 @@ namespace Thatchwick.Core.Content
             if (db == null) throw new ArgumentNullException(nameof(db));
 
             var errors = new List<string>();
-            if (file == null || file.items == null)
+            bool hasLife = file != null && (file.traits != null || file.branches != null || file.projects != null || file.villagers != null
+                || file.festivals != null || file.goals != null || file.tools != null || file.templates != null);
+            if (file == null || (file.items == null && !hasLife))
             {
                 errors.Add("İçerik dosyası boş ya da okunamadı.");
                 return errors;
             }
 
-            foreach (var dto in file.items)
+            foreach (var dto in file.items ?? new ItemDto[0])
             {
                 if (dto == null) continue;
 
@@ -37,6 +39,13 @@ namespace Thatchwick.Core.Content
                     UnlockLevel = dto.level <= 0 ? 1 : dto.level,
                     Tags = dto.tags != null ? new List<string>(dto.tags) : new List<string>(),
                     DiesInWinter = dto.diesInWinter,
+                    Comfort = dto.comfort,
+                    StyleSet = string.IsNullOrWhiteSpace(dto.styleSet) ? null : dto.styleSet,
+                    SpoilDays = dto.spoilDays,
+                    Preserves = dto.preserves,
+                    ReadyDays = dto.readyDays,
+                    Variants = dto.variants != null ? new List<string>(dto.variants) : new List<string>(),
+                    ForageMax = dto.forageMax,
                     PlantsAs = string.IsNullOrWhiteSpace(dto.plantsAs) ? null : dto.plantsAs,
                     Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category
                 };
@@ -48,6 +57,19 @@ namespace Thatchwick.Core.Content
                     else
                         item.Placement = placement;
                 }
+
+                if (dto.growSeasons != null)
+                    foreach (var gs in dto.growSeasons)
+                    {
+                        if (LifeContentMapper.TryParseSeason(gs, out var gsSeason)) item.GrowSeasons.Add(gsSeason);
+                        else errors.Add($"{dto.id}: bilinmeyen büyüme mevsimi '{gs}'.");
+                    }
+                if (dto.forageSeasons != null)
+                    foreach (var fs in dto.forageSeasons)
+                    {
+                        if (LifeContentMapper.TryParseSeason(fs, out var fsSeason)) item.ForageSeasons.Add(fsSeason);
+                        else errors.Add($"{dto.id}: bilinmeyen toplama mevsimi '{fs}'.");
+                    }
 
                 if (dto.surfaceSlots != null)
                 {
@@ -63,7 +85,8 @@ namespace Thatchwick.Core.Content
                     foreach (var i in dto.interactions)
                     {
                         if (i == null) continue;
-                        bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem;
+                        bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.consumeMore != null && i.consumeMore.Length > 0)
+                            || (i.produce != null && i.produce.Length > 0) || i.removeItem || i.resetsReady;
                         NeedType need = default;
                         bool needless = hasEffects && string.IsNullOrWhiteSpace(i.need);   // saf iş etkileşimi
                         if (!needless && !TryParseNeed(i.need, out need))
@@ -94,8 +117,28 @@ namespace Thatchwick.Core.Content
                             SkillXp = i.skillXp,
                             RequiresGrown = i.requiresGrown,
                             ConsumeItem = string.IsNullOrWhiteSpace(i.consume) ? null : i.consume,
-                            RemovesItem = i.removeItem
+                            RemovesItem = i.removeItem,
+                            Tool = string.IsNullOrWhiteSpace(i.tool) ? null : i.tool,
+                            MoodId = string.IsNullOrWhiteSpace(i.moodId) ? null : i.moodId,
+                            MoodText = i.moodText,
+                            MoodValue = i.moodValue,
+                            MoodDays = i.moodDays,
+                            RequiresLit = i.requiresLit,
+                            RequiresReady = i.requiresReady,
+                            ResetsReady = i.resetsReady
                         };
+                        if (i.consumeMore != null)
+                            foreach (var cm in i.consumeMore)
+                                if (cm != null) interaction.ConsumeMore.Add(new ConsumeDef { ItemId = cm.item, Count = cm.count <= 0 ? 1 : cm.count });
+                        bool badExtra = false;
+                        if (i.extraRestore != null)
+                            foreach (var er in i.extraRestore)
+                            {
+                                if (er == null) continue;
+                                if (!TryParseNeed(er.need, out var extraNeed)) { errors.Add($"{dto.id}/{i.id}: bilinmeyen ek ihtiyaç '{er.need}'."); badExtra = true; break; }
+                                interaction.ExtraRestore.Add(new NeedRestoreDef { Need = extraNeed, Amount = er.amount });
+                            }
+                        if (badExtra) continue;
                         if (i.produce != null)
                         {
                             foreach (var p in i.produce)
@@ -105,7 +148,9 @@ namespace Thatchwick.Core.Content
                                 {
                                     ItemId = p.item,
                                     Count = p.count <= 0 ? 1 : p.count,
-                                    Chance = p.chance <= 0f ? 1f : p.chance
+                                    Chance = p.chance <= 0f ? 1f : p.chance,
+                                    MinLevel = p.minLevel,
+                                    MaxLevel = p.maxLevel
                                 });
                             }
                         }
@@ -123,6 +168,7 @@ namespace Thatchwick.Core.Content
                 }
             }
 
+            LifeContentMapper.Apply(file, db, errors);
             errors.AddRange(db.Validate());
             return errors;
         }

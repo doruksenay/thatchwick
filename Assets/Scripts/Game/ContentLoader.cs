@@ -7,12 +7,13 @@ using Thatchwick.Core.Customization;
 namespace Thatchwick.Game
 {
     /// <summary>
-    /// İçerik JSON'unu Resources/Content/items.json'dan okur (tüm platformlarda çalışır).
+    /// İçerik JSON'unu Resources/Content/items.json ve life.json'dan okur (tüm platformlarda çalışır).
     /// Çözümleme ve doğrulama Core'daki ContentMapper'da; burada yalnızca dosya okuma var.
     /// </summary>
     public static class ContentLoader
     {
         private const string ItemsPath = "Content/items";
+        private const string LifePath = "Content/life";
         private const string AppearancePath = "Content/appearance";
 
         public static ContentDatabase Load(out List<string> errors)
@@ -37,7 +38,17 @@ namespace Thatchwick.Game
                 return db;
             }
 
+            // life.json (özellik, köylü, festival, ...) isteğe bağlıdır; varsa items.json ile birleştirilir.
+            var lifeAsset = Resources.Load<TextAsset>(LifePath);
+            var loadErrors = new List<string>();
+            if (lifeAsset != null)
+            {
+                try { file.Merge(JsonUtility.FromJson<ContentFileDto>(lifeAsset.text)); }
+                catch (ArgumentException ex) { loadErrors.Add($"life.json çözümlenemedi: {ex.Message}"); }
+            }
+
             errors = ContentMapper.Apply(file, db);
+            errors.AddRange(loadErrors);
             return db;
         }
 

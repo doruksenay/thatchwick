@@ -9,6 +9,22 @@ namespace Thatchwick.Core.Content
         public string ItemId { get; set; }
         public int Count { get; set; } = 1;
         public float Chance { get; set; } = 1f;
+        /// <summary>Etkileşimin becerisinde en az bu seviye (0 = sınır yok). Yemek kalitesi bununla ayrılır.</summary>
+        public int MinLevel { get; set; }
+        /// <summary>En çok bu seviye (0 = sınır yok).</summary>
+        public int MaxLevel { get; set; }
+    }
+
+    public sealed class ConsumeDef
+    {
+        public string ItemId { get; set; }
+        public int Count { get; set; } = 1;
+    }
+
+    public sealed class NeedRestoreDef
+    {
+        public NeedType Need { get; set; }
+        public float Amount { get; set; }
     }
 
     /// <summary>
@@ -39,7 +55,30 @@ namespace Thatchwick.Core.Content
         /// <summary>İş bitince eşya dünyadan kalkar (kesilen ağaç).</summary>
         public bool RemovesItem { get; set; }
 
-        public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Produce.Count > 0 || RemovesItem;
+        /// <summary>Ek harcanan kaynaklar (adetli): marangoz tezgâhında 3 kütük gibi.</summary>
+        public List<ConsumeDef> ConsumeMore { get; set; } = new List<ConsumeDef>();
+        /// <summary>Ana ihtiyaca ek olarak doyurulanlar (ateş başında oturmak Eğlence + Sosyal).</summary>
+        public List<NeedRestoreDef> ExtraRestore { get; set; } = new List<NeedRestoreDef>();
+        /// <summary>axe/hoe/saw: bu işin hızı alet kademesine bağlı.</summary>
+        public string Tool { get; set; }
+        public string MoodId { get; set; }
+        public string MoodText { get; set; }
+        public int MoodValue { get; set; }
+        public double MoodDays { get; set; }
+        public bool RequiresLit { get; set; }
+        public bool RequiresReady { get; set; }
+        public bool ResetsReady { get; set; }
+
+        public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || ConsumeMore.Count > 0 || Produce.Count > 0 || RemovesItem || ResetsReady;
         public bool RestoresNeed => Restore > 0f;
+        public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;
+
+        /// <summary>Bu etkileşimin verilen ihtiyaca sağladığı doygunluk (ana + ek); yoksa 0.</summary>
+        public float RestoreFor(NeedType need)
+        {
+            float amount = RestoresNeed && Need == need ? Restore : 0f;
+            foreach (var e in ExtraRestore) if (e.Need == need) amount += e.Amount;
+            return amount;
+        }
     }
 }

@@ -58,6 +58,24 @@ namespace Thatchwick.Core.Content
         public bool NeedsTilledSoil { get; set; }
         /// <summary>Kış gelince donar ve kaybolur (hasat edilmemiş ekin).</summary>
         public bool DiesInWinter { get; set; }
+        /// <summary>Ekinin büyüyebildiği mevsimler; boşsa kış dışı hepsi.</summary>
+        public List<Time.Season> GrowSeasons { get; set; } = new List<Time.Season>();
+        /// <summary>Oda konforuna katkısı (dekor ve mobilya). Adım 32.</summary>
+        public int Comfort { get; set; }
+        /// <summary>Stil seti (koyulu, zanaatkar, tuccar, asil); aynı odada 4+ eşya "uyumlu oda" verir.</summary>
+        public string StyleSet { get; set; }
+        /// <summary>Taze yiyecek bozulma süresi (oyun günü); 0 = çürümez.</summary>
+        public float SpoilDays { get; set; }
+        /// <summary>Kiler eşyası: yiyecek bozulmasını bu çarpanla yavaşlatır (0 = kiler değil).</summary>
+        public float Preserves { get; set; }
+        /// <summary>Üreten eşya (kümes): ürün hazır olma süresi (oyun günü); 0 = üretmez.</summary>
+        public float ReadyDays { get; set; }
+        public List<string> Variants { get; set; } = new List<string>();
+        /// <summary>Yabani toplanabilir: görüneceği mevsimler ve haritada en çok kaç tane.</summary>
+        public List<Time.Season> ForageSeasons { get; set; } = new List<Time.Season>();
+        public int ForageMax { get; set; }
+        public bool IsForage => ForageSeasons.Count > 0 && ForageMax > 0;
+        public bool Produces => ReadyDays > 0f;
 
         public SurfaceSlotDef FindSlot(string slotId)
         {
