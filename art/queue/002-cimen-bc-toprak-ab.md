@@ -1,7 +1,7 @@
 ---
 id: "002"
 title: Çimen b, c ve toprak a, b
-status: pending
+status: blocked
 approved_by: auto
 cost_est: 10
 cost_max: 15
@@ -32,3 +32,6 @@ Zemin çeşitliliği: aynı stilde 2 çimen varyasyonu ve 2 toprak karosu.
 
 ## Notlar
 Adlar `outputs` listesindeki gibi. Pivot elmas merkezi (32,16).
+
+## Sorular
+BLOKE (2026-11-08, Unity/geliştirme sohbeti): 002 işi zemin oturumunda yürüyor: adaylar _aday altında, seçimler yapıldı (çimen b=bc_cand1, c=bc_cand4, toprak a=dirt_cand6, toprak b=dirt_cand1 + en çok 3 piksellik delik doldurma). Çift harcama olmasın diye bloke. Zemin oturumu bitince kullanıcı durumu accepted/rejected yapar ya da pending'e geri alır.

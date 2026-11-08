@@ -1,7 +1,7 @@
 ---
 id: "005"
 title: Yatak 2x1, SW-NE ekseni
-status: pending
+status: blocked
 approved_by: auto
 cost_est: 1
 cost_max: 3
@@ -29,3 +29,6 @@ Yapı modunda eşya döndürülünce yatağın ikinci ekseni. SE-NW ekseni zaten
 
 ## Notlar
 Tek deneme; ayak izi tutmazsa tekrar deneme, `failed` yaz ve göster.
+
+## Sorular
+BLOKE (2026-11-08, Unity/geliştirme sohbeti): 005 işi zemin oturumunda 2 kez denendi (stil eşleme modu düzenleme yapmıyor, başarısız); inpaint_image_pro_flash ile 1 deneme daha onaylı. Çift harcama olmasın diye bloke. Zemin oturumu bitince kullanıcı durumu accepted/rejected yapar ya da pending'e geri alır.

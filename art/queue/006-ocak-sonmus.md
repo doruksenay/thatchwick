@@ -1,7 +1,7 @@
 ---
 id: "006"
 title: Söndürülmüş ocak taşı
-status: pending
+status: blocked
 approved_by: pending
 cost_est: 1
 cost_max: 2
@@ -29,3 +29,6 @@ Tur 3'teki ocak (şimdiki adı `iso_item_hearth_stone_lit_se.png`) "ateş yok" d
 
 ## Notlar
 Ateş efekti (animasyon) sonraki tur.
+
+## Sorular
+BLOKE (2026-11-08, Unity/geliştirme sohbeti): 006 işi zemin oturumunda 1 kez denendi (alev çizdi); inpaint_image_pro_flash ile deneme onaylı. Çift harcama olmasın diye bloke. Zemin oturumu bitince kullanıcı durumu accepted/rejected yapar ya da pending'e geri alır.

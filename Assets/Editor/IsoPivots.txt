@@ -1,0 +1,9 @@
+# Iso pivot tablosu. Satir: on_ek;x;y  (x ve y PIKSEL, sol ve ALT kenardan; ayak izi taban elmasinin merkezi)
+# En uzun on ek eslesmesi kazanir. Degisiklikten sonra menu: Thatchwick > Art > Reimport Iso
+# iso_ground_* (merkez) ve iso_char_* (ayak alti, SE dosyasindan olculur) tabloda olmasa da otomatik; asagidakiler ozel degerler.
+iso_char_villager;34;12
+iso_item_bed_straw_2x1_se_nw;56;32
+iso_item_hearth_stone_lit_se;40;24
+iso_item_stool_se;40;24
+iso_item_bed_straw_2x1_sw_ne;56;32
+iso_item_hearth_stone_unlit_se;40;24

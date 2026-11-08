@@ -1,7 +1,7 @@
 ---
 id: "001"
 title: Çimen karosu a
-status: pending
+status: blocked
 approved_by: auto
 cost_est: 10
 cost_max: 15
@@ -31,3 +31,6 @@ Zemin setinin stil referansı. Onaylanırsa 002 (çimen b/c, toprak) ve 003 (ge�
 
 ## Notlar
 Dosya adı: `iso_ground_grass_a.png`. Pivot: elmas merkezi (32,16). Seçilmeyen adayları Assets'e koyma.
+
+## Sorular
+BLOKE (2026-11-08, Unity/geliştirme sohbeti): 001 işi zemin oturumu tarafından (eski brief düzeniyle) yapıldı: iso_ground_grass_a.png = aday 9 olarak teslim edildi (Assets/Art/Iso). Kullanıcı kabulü bekleniyor; çift harcama olmasın diye bloke. Zemin oturumu bitince kullanıcı durumu accepted/rejected yapar ya da pending'e geri alır.

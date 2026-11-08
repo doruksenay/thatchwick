@@ -64,3 +64,12 @@ DUR, raporla.
 
 ## Teslim
 Her faz sonunda art-brief-result.md dosyasına yeni bir bölüm EKLE (eskiyi silme): faz başına ve çağrı başına generation, toplam, kalan; dosya listesi (yol, piksel boyutu, pivot); doğrulama sonuçları; seçtiğin araç ve ayarlar ile gerekçe; sorunlar. Sonra kısa bir özet ver ve onay bekle.
+
+## ÖNEMLİ (eklendi): Masaüstü art klasörü kopyası
+Kullanıcı üretilen her şeyi düzenli kontrol etmek için masaüstüne bir klasör açtı: C:\Users\User\OneDrive\Desktop\art
+Bundan sonra ürettiğin HER dosya (adaylar, onaylananlar, reddedilenler dahil) hem projede hem burada olacak:
+- Yapı: art\zemin\<yyyy-mm-dd>_<ad>\, art\esya\<yyyy-mm-dd>_<ad>\, art\duvar\<yyyy-mm-dd>_<ad>\ (aynı dosya adlarıyla, özgün boyut).
+- Her aday kümesi ve her faz sonu için büyütülmüş (x4, en yakın komşu) bir önizleme: art\<kategori>\<yyyy-mm-dd>_<ad>\_onizleme_x4.png. Zemin için 8x8 döşeme önizlemesini de buraya koy.
+- art\_indeks.md dosyasına her üretim için bir satır EKLE (eskiyi silme): tarih | kategori | dosya/klasör | araç | generation | durum (aday, onaylı, reddedildi) | not.
+- Şu ana kadar üretilen ve projede duran dosyalar için (çimen adayları, yatak, tabure, ocak, köylü yönleri, reddedilen karolar) geriye dönük kopyala ve indekse yaz. Karakter klasörünü (art\karakter) ayrı oturum yönetiyor, karıştırma; köylü yönlerini art\karakter\2026-11-06_villager\ altına kopyala, bunu yalnızca bir kez yap ve diğer oturum aynı klasörü kullanıyorsa üzerine yazma.
+- İkinci bir oturum paralel olarak karakter tasarlıyor (art-brief-karakter.md). PixelLab hesabı ortak: çağrı 'aynı anda tek iş' diye reddedilirse 30 saniye bekle ve bir kez daha dene. Karakter oturumunun dosyalarına (iso_char_*, art-brief-karakter-result.md) dokunma.

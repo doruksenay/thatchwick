@@ -254,3 +254,251 @@ Araç açıklamalarındaki maliyetler:
 | | **Toplam** | | **yaklaşık 55; en kötü durum yaklaşık 85 (üst sınır 250)** |
 
 Neden `create_map_object` ve `create_object_pro_flash` değil: Pro Flash ilk kareyi her zaman güneye bakar çizer ve ayak izi kontrolü vermez; ayrıca 5–6 generation tutar. Maskeli yöntem 1 generation ile ayak izini kesin tutturdu.
+
+## Faz B, adım 1: Çimen a adayları + onaylı eşya ek işleri (2026-11-08)
+
+Durum: **16 çimen adayı `Assets/Art/Iso/_aday/` altında, seçim bekleniyor.** SW-NE yatak ve söndürülmüş ocak denemeleri başarısız, teslim edilmedi. Her biri bir kez denendi; tekrar denenmedi.
+
+### Harcama
+
+| Çağrı | Araç ve ayar | Generation |
+|---|---|---|
+| T4-1 | `create_tiles_pro` bağımsız 16 karo (`faccafdf-e76d-4a4c-a232-ef00af1befd8`): isometric, `tile_size=64`, `tile_view_angle=30`, `tile_depth_ratio=0`, `tile_flat_top_px=2`, `outline_mode=segmentation`, `max_colors=5` | 10 |
+| T4-2 | Yatak SW-NE, `create_map_object` stil eşleme + 2x1 maske +y ekseni (`c7948fd1-4006-48ac-a75a-44c3e70ac672`) | 1 |
+| T4-3 | Söndürülmüş ocak, `create_map_object` stil eşleme + 1x1 maske (`46e11ae7-0df7-4cc5-afb1-e25bc25de916`) | 1 |
+| **Tur 4 toplamı** | | **12** |
+
+Bakiye: 1987 / 2000 (`get_balance`). 13 kullanılmış hakkın 1'i tur 3'teki tabureden. Tur 4'te 250'lik sınırdan kalan 238.
+
+### Çimen adayları
+
+Araç her karoyu 64x64 tuvalde, ortada 64x32 elmas olarak verdi. Yan yüz ve kalınlık yok, yarı saydam piksel 0.
+
+**Kırpma ve maskeleme (16 dosyanın hepsine uygulandı, içerik boyanmadı):**
+1. Opak satırlar (16–47) 64x32'ye kırpıldı.
+2. **Tam 2:1 maske B** ile maske dışı silindi. Maske B: 2 px uç, her satırda 2 px yatay / 1 px dikey basamak, en geniş satır 62 px (x=1–62).
+   - (32,16) adımlı ızgarada **0 boşluk, 0 örtüşme** (betikle kanıtlandı). Faz 1'deki 4 px uçlu maske 2 px örtüşüyordu; B daha doğru.
+   - Aracın kendi elması tam 2:1 değil: bazı satırlarda 3 px ya da 1 px basamak var ve kenarda 1 px taşıyor. Silinen piksel sayısı aşağıdaki tabloda.
+
+Döşeme testi: 8x8 elmas ızgara, (32,16) adımı. Dosyalar scratchpad `eval4/tile_<i>_field.png`.
+
+| Aday dosyası | Silinen (maske dışı) | Delik (maske içi boş) | Renk | Ort. parlaklık sıçraması, karo içi | Dikiş boyunca |
+|---|---|---|---|---|---|
+| cand1 | 28 | 0 | 2 | 0,01 | 0,18 |
+| cand2 | 33 | 0 | 3 | 0,56 | 0,00 |
+| cand3 | 29 | **1** | 4 | 1,68 | 0,18 |
+| cand4 | 26 | 0 | 5 | 3,60 | 0,41 |
+| cand5 | 26 | 0 | 3 | 4,80 | 1,86 |
+| cand6 | 28 | **1** | 5 | 3,24 | 0,81 |
+| cand7 | 29 | 0 | 2 | 0,48 | 1,21 |
+| cand8 | 30 | 0 | 3 | 1,02 | 1,15 |
+| cand9 | 30 | 0 | 4 | 3,53 | 0,68 |
+| cand10 | 31 | 0 | 2 | 0,06 | 0,62 |
+| cand11 | 31 | 0 | 3 | 3,10 | 1,06 |
+| cand12 | 30 | 0 | 5 | 4,25 | 0,56 |
+| cand13 | 28 | 0 | 3 | 6,21 | 4,80 |
+| cand14 | 31 | 0 | 1 | 0,00 | 0,00 |
+| cand15 | 29 | 0 | 3 | 3,15 | 0,77 |
+| cand16 | 30 | 0 | 3 | 4,46 | 2,23 |
+
+- Hepsi 64x32. Arka plan saydam, yarı saydam 0, anti-alias 0 (en fazla 5 renk).
+- Dikişteki sıçrama her adayda karo içindekine eşit ya da ondan düşük. 8x8 önizlemelerde çapraz çizgi görülmedi.
+- **cand3 ve cand6'da** kenarda 1'er piksellik delik var; döşenince 1 px boşluk kalır. Bu ikisi önerilmez.
+- cand1 ve cand14 tamamen düz (1–2 renk). cand12'de tutamlar döşenince düzenli bir desen olarak tekrar ediyor.
+- Işık: yalnızca üst yüz var, yan yüz yok. Pişmiş gölge yok.
+- Pivot (her aday): 64x32 tuval, elmas merkezi **x=32, y=16 (alttan)**, yani Unity'de (0,5, 0,5).
+- **Öneri: cand9.** 4 renk, hafif doku, dikiş 0,68 < karo içi 3,53, delik 0. Alternatifler: cand4, cand15.
+- Ham 64x64 çıktılar scratchpad `dl_grass4/` içinde. `_aday` klasörü kullanıcının isteğiyle alt klasör olarak açıldı. `.meta` yazılmadı.
+
+### Yatak SW-NE (`iso_item_bed_straw_2x1_sw_ne.png` TESLİM EDİLMEDİ)
+
+| Kontrol | Sonuç |
+|---|---|
+| Boyut / saydamlık | 112x84, saydam, yarı saydam 0, 11 renk |
+| Ayak izi | 2x1, uzun eksen +y (sağ-üstten sol-alta), doğru. Yastık sağ-üst uçta, battaniye net |
+| Maske dışı | **34 piksel:** yatağın altında, (66–80, 68–75) civarında kesik noktalı bir çizgi artefaktı |
+| Renk | **SE-NW yatağıyla uyumsuz:** mor-bordo çerçeve ve battaniye, eflatun gölgeli yastık; mevcut kahve/krem yatak paletinden farklı |
+| Işık | Uzun sol yan yüz koyu (yaklaşık 42), sağ uç daha açık (yaklaşık 80). Kural "sol orta, sağ en koyu"; **ters** |
+
+Karar: ayak izi tuttu ama iki eksen birbirine uymuyor ve ışık ters olduğu için teslim edilmedi; tekrar denenmedi. Dosya: scratchpad `dl_t4/bed_swne.png`.
+
+Öneri (onayınla): aynı araç, `background_image` olarak mevcut SE-NW yatağı stil kaynağı olacak şekilde aynı tuvale koymak (SE-NW yatağı maske dışında, SW-NE maskesi boş alanda); 1 generation. Ya da açıklamaya mevcut paletin hex renklerini yazmak.
+
+### Söndürülmüş ocak (`iso_item_hearth_stone_unlit_se.png` TESLİM EDİLMEDİ)
+
+| Kontrol | Sonuç |
+|---|---|
+| Boyut / saydamlık | 80x56, saydam, yarı saydam 0, 32 renk; maske dışı 0 |
+| Ayak izi | 1x1, tabana oturuyor; kenar basamakları 2:1 |
+| İçerik | **Açıklamada büyük harfle "NO fire, NO flames, NO glow" yazmasına rağmen yine alev var** (#fde527 sarısı ve turuncular) |
+| Stil | Mevcut ocaktan farklı: koyu gri, ızgara dokulu tek parça kaide; tek tek taşlar okunmuyor |
+| Işık | Üst yüz sol 106 / sağ 71; yan yüzler sol 50 / sağ 80. Sıralama net değil, kısmen ters |
+
+Karar: başarısız, tekrar denenmedi. Dosya: scratchpad `dl_t4/hearth_unlit.png`.
+
+Değerlendirme: "hearth" sözcüğü bu modelde ateşi güçlü biçimde çağırıyor. Öneri (onayınla, yaklaşık 1–2 generation), şu yollardan biri:
+- Nesneyi "ring of grey stones around a pile of grey ash" gibi "hearth / fire" sözcükleri olmadan tarif etmek.
+- Mevcut ateşli ocağın alev bölgesini maskeleyip yalnızca orayı "grey ash and charred logs" ile yeniden üretmek (inpaint; ocağın kendisi değişmez, yeni dosya olarak).
+
+## Faz B, adım 1b: Çimen a seçimi, çimen b/c ve toprak adayları, eşya denemeleri (2026-11-08)
+
+Durum: **Çimen a teslim edildi. Çimen b/c ve toprak adayları `_aday` altında, seçim bekleniyor.** SW-NE yatak ve söndürülmüş ocak yine başarısız; DURULDU, tekrar denenmedi.
+
+### Harcama
+
+| Çağrı | Araç ve ayar | Generation |
+|---|---|---|
+| T4-4 | `create_tiles_pro` stil modu (`d685f89e-9104-423a-82d0-3ff777d77d73`). `style_images` = `iso_ground_grass_a.png` (64x32); `style_options` renk kopyalama kapalı; `palette` = çimen a'nın 4 rengi + 4 kahve (#9a7650, #8a6844, #77583a, #634a30); `segmentation`; 1–8 çimen, 9–16 toprak | 10 |
+| T4-5 | Yatak SW-NE, `create_map_object` stil eşleme. 112x160 tuval: üstte mevcut SE-NW yatak (maske dışı), altta boş 2x1 taban (maske) (`3ca14071-121b-4e9c-b8b6-5d6264a1fe9a`) | 1 |
+| T4-6 | Ocak, `create_map_object` stil eşleme. Arka plan mevcut ateşli ocak; maske yalnızca alev pikselleri + 2 px (332 px); olumlu tarif "grey ash, charred logs, cold extinguished" (`c9e43bb3-8464-46ba-a746-a085403b8d43`) | 1 |
+| **Bu adım** | | **12** |
+| **Tur 4 toplamı** | | **24** (250 sınırından kalan 226) |
+
+Bakiye: 1975 / 2000.
+
+### Teslim edilen
+
+| Yol | Boyut | Pivot x | Pivot y (ALTTAN) | Not |
+|---|---|---|---|---|
+| `Assets/Art/Iso/iso_ground_grass_a.png` | 64x32 | 32 | 16 | `_aday/iso_ground_grass_a_cand9.png` ile bayt bayt aynı (maske B uygulanmış hali) |
+
+### Çimen b/c ve toprak adayları (`Assets/Art/Iso/_aday/`)
+
+Stil modu çıktısı **doğrudan 64x32** geldi. Elmas şekli referanstan kopyalandı ve maske B ile birebir aynı (1024 opak piksel, 2 px uç, düzenli 2:1 basamak). Araç türü "square_topdown" olarak raporladı, ama şekil izometrik elmas.
+
+- Maske B uygulandı. Değişen piksel: yalnızca dirt cand4'te 1, dirt cand7'de 60 (bkz. aşağıda). Diğerleri maskeden önce de tam 2:1'di.
+- Yarı saydam 0, anti-alias 0. Pivot her biri için (32, 16 alttan).
+- "Karışık döşeme": 8x8 ızgarada referans karo ile aday dama tahtası düzeninde döşendi; dikişlerdeki ortalama parlaklık sıçraması ölçüldü.
+
+| Dosya | Renk | Ort. parlaklık (çimen a = 150,3 / dirt cand1 = 109,4) | Tek başına: içi / dikiş | Karışık: içi / dikiş | Sorun |
+|---|---|---|---|---|---|
+| grass_bc_cand1 | 4 | 148,5 | 3,87 / 0,00 | 3,70 / 2,28 | |
+| grass_bc_cand2 | 4 | 145,6 | 6,43 / 0,41 | 4,98 / 2,49 | daha koyu |
+| grass_bc_cand3 | 4 | 144,9 | 5,04 / 0,00 | 4,28 / 2,28 | sağ üstte büyük koyu leke |
+| grass_bc_cand4 | 4 | 148,7 | 1,09 / 0,00 | 2,31 / 2,28 | |
+| grass_bc_cand5 | 4 | 146,9 | 5,72 / 0,00 | 4,63 / 2,28 | |
+| grass_bc_cand6 | 1 | 149,4 | 0 / 0 | 1,76 / 2,28 | tamamen düz |
+| grass_bc_cand7 | 3 | 143,4 | 3,33 / 0,00 | 3,43 / 2,28 | büyük koyu lekeler, en koyu |
+| grass_bc_cand8 | 2 | 148,9 | 0,57 / 0,00 | 2,05 / 2,28 | |
+| dirt_cand1 | 4 | 109,4 | 2,87 / 0,00 | (referans) | 1 delik |
+| dirt_cand2 | 3 | 109,6 | 1,21 / 0,00 | 2,04 / 0,00 | 2 delik |
+| dirt_cand3 | 3 | 105,1 | 3,07 / 0,00 | 2,97 / 0,00 | 2 delik, büyük koyu lekeler |
+| dirt_cand4 | 3 | 106,5 | 5,01 / 0,52 | 3,94 / 0,26 | 1 delik, çatlaklar |
+| dirt_cand5 | 3 | 105,8 | 5,01 / 0,00 | 3,94 / 0,00 | 2 delik |
+| dirt_cand6 | 4 | 109,8 | 1,65 / 0,00 | 2,26 / 0,00 | |
+| dirt_cand7 | 1 | 110,1 | – | – | **BOZUK:** elmas 1 px yukarı kaymış, 60 piksel maske dışı / 62 delik |
+| dirt_cand8 | 1 | 110,1 | 0 / 0 | – | 3 delik, düz |
+
+- **Çimen:** Yeni çimenlerin zemin rengi #76af64, çimen a'nınki #75b560; parlaklık farkı yaklaşık 2,8. Karışık döşemede dikiş sıçraması 2,28 ve 8x8 önizlemede **çok hafif elmas lekeleri** seçilebiliyor; çapraz çizgi yok. Sıçrama yine de dokulu adayların karo içi değerinin altında.
+- **Toprak:** Toprak adaylarında dikiş sıçraması 0; toprak döşemesinde iz görünmüyor. **Delikli adaylar** (1–3 px) döşenince boşluk bırakır; deliksiz olanlar dirt cand6 ve cand8. cand8 düz renk.
+- Öneri: çimen b = grass_bc_cand1, c = grass_bc_cand4 (en yakın parlaklık, deliksiz). Toprak a = dirt_cand6. Toprak b için deliksiz ikinci aday yalnızca düz cand8; delikli bir aday seçilirse 1–2 piksellik boşluk kalır.
+- Önizlemeler: scratchpad `gd_cands_0-7.png`, `gd_cands_8-15.png`, `mix_fields.png`.
+
+### Yatak SW-NE: başarısız (dosya yazılmadı)
+
+- Çıktı, sabit tutulması gereken üst paneldeki mevcut yatağı ve taban rengini **sildi**. Araç bağlamı korumuyor, yalnızca üretilen nesneyi saydam arka planla döndürüyor.
+- Maskeli alana **yalnızca yastıklı baş ucundan bir parça** çizdi (x 39–104, y 5–43; yaklaşık 1x1). 2x1 tabanı doldurmuyor ve yatak gibi görünmüyor.
+- Renk ailesi tuttu (krem yastık, kahve çerçeve); maske dışı piksel 0.
+- Dosya: scratchpad `dl_t4/bedc_raw.png`.
+
+### Söndürülmüş ocak: başarısız (dosya yazılmadı)
+
+- Çıktı **taş halkayı tamamen sildi**: maske dışında 1056 piksel değişti. Maske alanına yine **alev** çizdi: 98 alev renkli piksel, öncesinde 125.
+- Neden: `create_map_object` stil eşleme modu düzenleme aracı değil. Arka planı yalnızca stil ipucu olarak kullanıyor ve sonuçta yalnızca yeni nesneyi döndürüyor.
+- Dosya: scratchpad `dl_t4/hearth_unlit2.png`.
+
+### Sonraki seçenekler (onay gerekir)
+
+1. **Ocak:** Gerçek düzenleme aracı `inpaint_image_pro_flash`. Arka planı korur ve maske beyazını üretir. Maliyet teklifi: 80x56 için **5 generation** (`get_pro_flash_capabilities`, ücretsiz sorgu). "Modify current layer" çıktısıyla taşlar değişmeden kalır.
+2. **Yatak:** Aynı inpaint aracında, mevcut SE-NW yatağı referans görüntü olarak verip (`max_reference_images` = 1) yeni yatağı SW-NE tabanına inpaint ettirmek: yaklaşık 5 generation. Diğer yol `create_object_pro_flash` + mevcut yatak stil görüntüsü (6 generation): ilk kare her zaman güneye baktığı için eksen kontrolü zayıf.
+
+## Faz B, adım 2: Zemin teslimi, geçiş seti, ocak ve yatak inpaint (2026-11-08)
+
+Durum: **Zemin a/b/c ve toprak a/b teslim edildi.** Söndürülmüş ocak ve SW-NE yatak teslim edildi (her biri ilk denemede). **Geçiş seti `_aday` altında, onay bekliyor.** Yol seti ve duvarlar ayrı onayda.
+
+### Harcama
+
+| Çağrı | Araç ve ayar | Generation |
+|---|---|---|
+| T4-7 | `create_tiles_pro` `tile_feature="tileset"` (`7ef2d59d-4cab-420a-a430-6f0d7e753fad`): iso 64, açı 30, derinlik 0, 2 px uç, `segmentation`, palet = onaylı 5 karonun 8 rengi | 10 |
+| T4-8 | Ocak, `inpaint_image_pro_flash` (iş `73abb02b-8f7d-4617-8698-cbcb27900b81`): kaynak ateşli ocak 80x56, maske alev pikselleri + 2 px (330 px), "Modify current layer" | 5 |
+| T4-9 | Yatak SW-NE, `inpaint_image_pro_flash` (iş `19b276bd-fd42-4e1e-808f-88ec249b4b58`): kaynak 96x84 boş SW-NE tabanı, maske taban + 22 px yükseklik; `context_image` 208x84 (solda SE-NW yatak), `bounding_box` x=112 | 5 |
+| **Bu adım** | | **20** |
+| **Tur 4 toplamı** (bu oturumun çağrıları) | | **44** (250 sınırından kalan 206) |
+
+**Bakiye notu:** Hesap sayacı 55 kullanılmış, 1945 kalan gösteriyor; bu oturumun beklentisi 45 (tur 3 tabure 1 + tur 4 44). Aradaki **10 generation**, bu oturumun başlatmadığı bir işten geliyor: `31eaa84b-b723-40f2-8c61-98b0df67713e` (generation, 08.11 civarı, `list_jobs`'da görünüyor). Büyük olasılıkla başka bir oturum ya da web sitesi. İçeriği bu oturumdan görülemiyor.
+
+### Teslim edilen dosyalar
+
+Pivot y ALTTAN piksel.
+
+| Yol | Boyut | Pivot x | Pivot y | Kaynak / not |
+|---|---|---|---|---|
+| `Assets/Art/Iso/iso_ground_grass_b.png` | 64x32 | 32 | 16 | `_aday/iso_ground_grass_bc_cand1.png`, değişiklik yok |
+| `Assets/Art/Iso/iso_ground_grass_c.png` | 64x32 | 32 | 16 | `_aday/iso_ground_grass_bc_cand4.png`, değişiklik yok |
+| `Assets/Art/Iso/iso_ground_dirt_a.png` | 64x32 | 32 | 16 | `_aday/iso_ground_dirt_cand6.png`, değişiklik yok |
+| `Assets/Art/Iso/iso_ground_dirt_b.png` | 64x32 | 32 | 16 | `_aday/iso_ground_dirt_cand1.png` + **1 piksel dolgu** (aşağıda) |
+| `Assets/Art/Iso/iso_item_hearth_stone_unlit_se.png` | 80x56 | 40 | 24 | Ateşli ocaktan inpaint |
+| `Assets/Art/Iso/iso_item_bed_straw_2x1_sw_ne.png` | 112x84 | 56 | 32 | 96x84 inpaint çıktısı + her yana 8 px saydam kenar (SE-NW dosyasıyla aynı tuval ve pivot düzeni) |
+
+- Masaüstü kopyaları:
+  - `OneDrive/Desktop/art/zemin/`: `iso_ground_grass_a/b/c`, `iso_ground_dirt_a/b`
+  - `OneDrive/Desktop/art/esya/`: ocak (söndürülmüş) ve SW-NE yatak
+  - Köylü ile eski eşyalar masaüstüne kopyalanmadı (istenmedi).
+- `.meta` yazılmadı.
+
+**Toprak b dolgusu:** Tek delik vardı, **(x=32, y=0)**, elmasın üst ucu. Dört komşudan opak üçünün rengi #8a6844; bu piksel #8a6844 (opak) ile dolduruldu. Başka değişiklik yok. Doldurulmuş karo: 0 delik, 0 maske dışı, 4 renk.
+
+**Zemin karoları ortak doğrulama:**
+- 64x32, tam 2:1 maske B; (32,16) ızgarada boşluk 0, örtüşme 0.
+- Saydam arka plan; yarı saydam ve anti-alias 0.
+- Kendi aralarında döşemede dikiş sıçraması: çimen ≤ 2,28 (b/c ile a arası), toprak 0.
+
+### Söndürülmüş ocak doğrulaması
+
+| Kontrol | Sonuç |
+|---|---|
+| Maske dışı değişen piksel | **0**: taş halka ateşli sürümle bayt bayt aynı |
+| Maske içi | 330 / 332 piksel değişti; alev renkli piksel 125 → **0** |
+| İçerik | Gri kül yığını üzerinde iki koyu kömürleşmiş kütük. Eski kütüğün maske dışında kalan 1–2 kahverengi pikseli görünüyor |
+| Saydamlık | Yarı saydam 0, maske içinde saydamlaşan piksel 0 |
+| Renk | 57 (ateşli sürüm 62) |
+| Işık / gölge | Taşlar değişmediği için ateşli sürümle aynı; pişmiş gölge yok |
+
+### SW-NE yatak doğrulaması
+
+| Kontrol | Sonuç |
+|---|---|
+| Ayak izi | 2x1, uzun eksen +y (sağ-üstten sol-alta): doğru. Yastık sağ-üst uçta |
+| Boyut | **Tabanın yaklaşık %80'i:** yatak 77 px geniş (SE-NW yatak 98 px), sol uçta yaklaşık 11, sağda yaklaşık 8, altta yaklaşık 5 piksel boşluk. Oran 2:1 korunuyor |
+| Maske dışı | 0 |
+| Renk ailesi | SE-NW yatakla aynı: koyu kahve çerçeve, krem yastık/çarşaf, kırmızı-kahve battaniye; 18 renk |
+| Işık (ort. parlaklık) | Üst 147 > sol yüz (ayak ucu paneli) 50,6 > sağ yüz (uzun kenar) 47,9: sıra doğru, sol/sağ farkı zayıf |
+| Saydamlık / gölge | Yarı saydam 0, pişmiş gölge yok |
+
+İsteğe bağlı: yatağın tabanı tam doldurması istenirse, kalan ikinci deneme (5 generation) "fill the whole footprint" vurgusuyla yapılabilir.
+
+### Geçiş seti (`_aday/iso_ground_grass_dirt_<n>.png`, n = 0–15): onay bekliyor
+
+- **Çıktı:** 16 karo, her biri 64x32. Aracın elması yine kenarda 1 px taşıyordu; maske B ile karo başına 32 piksel silindi, delik 0. Yarı saydam 0; karo başına 3–7 renk.
+- **Yerleşim kuralı (araçtan):** `n` = köşe maskesi = NW<<3 | NE<<2 | SW<<1 | SE. Bit = 1 ise o köşe **çimen**.
+  - Ölçümle eşleştirildi: **NW = elmasın üst köşesi, NE = sağ köşe, SW = sol köşe, SE = alt köşe.**
+  - Izgara ekseniyle (+x sağ-aşağı, +y sol-aşağı) karonun (i,j) hücresi için köşeler: üst = köşe(i, j), sağ = köşe(i+1, j), sol = köşe(i, j+1), alt = köşe(i+1, j+1).
+  - `n=15` tam çimen, `n=0` tam toprak.
+- **Otomatik döşeme testi:** 12x12 harita, kümeli rastgele köşe dağılımı, 16 maskenin 14'ü kullanıldı.
+  - Yalnızca set karolarıyla: dikiş sıçraması 9,99, karo içi 9,14 (oran 1,09). Dikiş boyunca çimen/toprak uyuşmazlığı %1,3 (12 386 piksel çiftinden 160).
+  - Görsel: geçişler kesintisiz bağlanıyor. Kenar "orta kıvrımlı" değil, daha çok basamaklı ve düz. Toprak karosundaki çakıl deseni düzenli tekrar ediyor.
+- **Sorun: onaylı tek karolarla ton farkı.** Setin çimeni ve toprağı, teslim edilen tek karolardan farklı tonda:
+
+  | Karo | Ort. parlaklık | Baskın renk |
+  |---|---|---|
+  | Set çimen (n=15) | 138,4 | #76af64 + çok koyu yaprak |
+  | Çimen a | 150,3 | #75b560 |
+  | Set toprak (n=0) | 123,1 | #9a7650 |
+  | Toprak a | 109,8 | #8a6844 |
+
+  Tam çimen/toprak yerine çimen a ve toprak a konunca (`autotile_with_ad.png`), geçiş karolarının çevresinde **belirgin ton bantları** görünüyor: dikiş 5,43, karo içi 4,56. Palet aynı olsa da renklerin oranı farklı.
+- **Seçenekler:**
+  1. Setin kendi n=15 / n=0 karolarını tam zemin olarak kullanmak; tek karolar yalnızca geçiş olmayan büyük alanlarda.
+  2. Seti yeniden üretmek (10 generation), açıklamada baskın renkleri vererek (#75b560 çimen, #8a6844 toprak, "mostly plain with few blades").
+  3. Seti kabul edip ton farkını oyunda tolere etmek.

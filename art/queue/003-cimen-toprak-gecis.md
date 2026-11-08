@@ -1,7 +1,7 @@
 ---
 id: "003"
 title: Çimen-toprak geçiş seti
-status: pending
+status: blocked
 approved_by: auto
 cost_est: 10
 cost_max: 15
@@ -30,3 +30,6 @@ Haritada çimen ile toprak arasında dikişsiz geçiş (yol ve işlenen arsa ken
 
 ## Notlar
 Adlar `iso_ground_grass_dirt_<nn>.png` (nn = 00-15, köşe kodu sırası). Dikişsiz değilse `failed` yaz, tekrar deneme.
+
+## Sorular
+BLOKE (2026-11-08, Unity/geliştirme sohbeti): 003 işi zemin oturumuna verildi (create_tiles_pro tileset, palette modu). Çift harcama olmasın diye bloke. Zemin oturumu bitince kullanıcı durumu accepted/rejected yapar ya da pending'e geri alır.
