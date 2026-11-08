@@ -4,30 +4,169 @@
       "id": "item.bed_straw",
       "displayName": "Saman yatak",
       "interactions": [
-        { "id": "sleep", "displayName": "Uyu", "need": "Energy", "restore": 60, "durationDays": 0.3 }
-      ]
+        {
+          "id": "sleep",
+          "displayName": "Uyu",
+          "need": "Energy",
+          "restore": 60,
+          "durationDays": 0.3
+        }
+      ],
+      "width": 2,
+      "height": 1,
+      "price": 30,
+      "category": "furniture"
     },
     {
       "id": "item.hearth_stone",
       "displayName": "Taş ocak",
       "interactions": [
-        { "id": "warm", "displayName": "Isın", "need": "Warmth", "restore": 40, "durationDays": 0.1 }
-      ]
+        {
+          "id": "warm",
+          "displayName": "Isın",
+          "need": "Warmth",
+          "restore": 40,
+          "durationDays": 0.1
+        }
+      ],
+      "price": 40,
+      "category": "furniture"
     },
     {
       "id": "item.cooking_pot",
       "displayName": "Pişirme kazanı",
       "interactions": [
-        { "id": "eat", "displayName": "Ye", "need": "Hunger", "restore": 50, "durationDays": 0.15 },
-        { "id": "cook", "displayName": "Pişir ve ye", "need": "Hunger", "restore": 60, "durationDays": 0.2, "skill": "Cooking", "skillXp": 25 }
-      ]
+        {
+          "id": "eat",
+          "displayName": "Ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.15
+        },
+        {
+          "id": "cook",
+          "displayName": "Pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 25
+        }
+      ],
+      "price": 25,
+      "category": "furniture"
     },
     {
       "id": "item.stool_wood",
       "displayName": "Tahta tabure",
       "interactions": [
-        { "id": "sit", "displayName": "Otur", "need": "Energy", "restore": 5, "durationDays": 0.05 }
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 5,
+          "durationDays": 0.05
+        }
+      ],
+      "price": 8,
+      "category": "furniture"
+    },
+    {
+      "id": "item.table_wood",
+      "displayName": "Tahta masa",
+      "interactions": [],
+      "width": 2,
+      "height": 1,
+      "price": 20,
+      "category": "furniture",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.25,
+          "v": 0.5
+        },
+        {
+          "id": "b",
+          "u": 0.5,
+          "v": 0.5
+        },
+        {
+          "id": "c",
+          "u": 0.75,
+          "v": 0.5
+        }
       ]
+    },
+    {
+      "id": "item.chair_wood",
+      "displayName": "Tahta sandalye",
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 8,
+          "durationDays": 0.05
+        }
+      ],
+      "width": 1,
+      "height": 1,
+      "price": 10,
+      "category": "furniture"
+    },
+    {
+      "id": "item.chest_wood",
+      "displayName": "Sandık",
+      "interactions": [],
+      "width": 1,
+      "height": 1,
+      "price": 18,
+      "category": "furniture"
+    },
+    {
+      "id": "item.shelf_wood",
+      "displayName": "Raf",
+      "interactions": [],
+      "width": 2,
+      "height": 1,
+      "price": 15,
+      "category": "furniture",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.3,
+          "v": 0.5
+        },
+        {
+          "id": "b",
+          "u": 0.7,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "item.candle",
+      "displayName": "Mum",
+      "interactions": [],
+      "placement": "Surface",
+      "price": 4,
+      "category": "decor"
+    },
+    {
+      "id": "item.flower_pot",
+      "displayName": "Çiçek saksısı",
+      "interactions": [],
+      "placement": "Surface",
+      "price": 6,
+      "category": "decor"
+    },
+    {
+      "id": "item.clay_cup",
+      "displayName": "Kil bardak",
+      "interactions": [],
+      "placement": "Surface",
+      "price": 3,
+      "category": "decor"
     }
   ]
 }

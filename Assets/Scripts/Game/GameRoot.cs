@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Customization;
@@ -45,12 +46,14 @@ namespace Thatchwick.Game
         private Population _population;
         private AppearanceCatalog _appearanceCatalog;
         private CharacterCreator _creator;
+        private Household _household;
+        private BuildMode _buildMode;
         private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
         private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric" };
         private int _nameCounter;
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
-        private Rect HudRect => new Rect(8f, 8f, 340f, 360f);
+        private Rect HudRect => new Rect(8f, 8f, 340f, 430f);
 
         private void Awake()
         {
@@ -69,7 +72,8 @@ namespace Thatchwick.Game
             _view = viewGo.AddComponent<WorldView>();
             _view.Build(map);
 
-            CreateItemViews();
+            RebuildItemViews();
+            _world.Changed += RebuildItemViews;
 
             var cam = Camera.main;
             if (cam == null)
@@ -84,6 +88,9 @@ namespace Thatchwick.Game
             _input.Init(cam, Iso.MapBounds(MapWidth, MapHeight));
             _input.IsOverUi = IsOverHud;
             _input.Tapped += OnTapped;
+
+            _household = new Household(100);
+            _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content), _content, _view, _input, transform);
 
             _population = new Population(firstFreeId: 1, seed: 21);
             _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % 4];
@@ -156,24 +163,58 @@ namespace Thatchwick.Game
                 case "item.bed_straw": return new Color(0.75f, 0.6f, 0.35f);
                 case "item.hearth_stone": return new Color(0.85f, 0.35f, 0.2f);
                 case "item.cooking_pot": return new Color(0.55f, 0.55f, 0.6f);
+                case "item.table_wood": return new Color(0.62f, 0.42f, 0.24f);
+                case "item.chair_wood": return new Color(0.7f, 0.5f, 0.3f);
+                case "item.chest_wood": return new Color(0.5f, 0.33f, 0.2f);
+                case "item.shelf_wood": return new Color(0.66f, 0.5f, 0.34f);
+                case "item.candle": return new Color(1f, 0.95f, 0.7f);
+                case "item.flower_pot": return new Color(0.85f, 0.4f, 0.5f);
+                case "item.clay_cup": return new Color(0.8f, 0.5f, 0.35f);
                 default: return new Color(0.6f, 0.45f, 0.3f);
             }
         }
 
-        private void CreateItemViews()
+        private readonly List<GameObject> _itemObjects = new List<GameObject>();
+
+        // Eşya görünümlerini dünyadan yeniden kurar (yerleştirme/taşıma/satış sonrası). Yer tutucu küpler:
+        // çok karolu eşya karo başına bir küp, dekor küçük küp olarak yuvasında durur.
+        private void RebuildItemViews()
         {
+            foreach (var go in _itemObjects) if (go != null) Destroy(go);
+            _itemObjects.Clear();
+            _itemViews.Clear();
+
             foreach (var item in _world.Items)
             {
-                var go = new GameObject(item.Def.Id);
-                go.transform.SetParent(transform, false);
-                var sr = go.AddComponent<SpriteRenderer>();
-                sr.sprite = SpriteMaterials.Cube(ItemColor(item.Def.Id));
-                sr.sharedMaterial = SpriteMaterials.Unlit;
-                var pos = _view.TileToWorld(item.Position);
-                go.transform.position = pos;
-                sr.sortingOrder = Iso.SortOrder(pos.y);
-                _itemViews[item.Id] = go.transform;
+                var color = ItemColor(item.Def.Id);
+                if (item.IsDecor)
+                {
+                    var parent = _world.GetItem(item.ParentId.Value);
+                    if (parent == null || !parent.TryGetSlotPosition(item.SlotId, out float gx, out float gy)) continue;
+                    var pos = Iso.GridToWorld(gx, gy) + new Vector3(0f, 24f / 32f, 0f);
+                    AddItemSprite(item, pos, color, 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy).y) + 2);
+                    continue;
+                }
+                foreach (var tile in item.OccupiedTiles())
+                {
+                    var pos = _view.TileToWorld(tile);
+                    AddItemSprite(item, pos, color, 1f, Iso.SortOrder(pos.y));
+                }
             }
+        }
+
+        private void AddItemSprite(ItemInstance item, Vector3 pos, Color color, float scale, int order)
+        {
+            var go = new GameObject(item.Def.Id);
+            go.transform.SetParent(transform, false);
+            go.transform.position = pos;
+            go.transform.localScale = new Vector3(scale, scale, 1f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = SpriteMaterials.Cube(color);
+            sr.sharedMaterial = SpriteMaterials.Unlit;
+            sr.sortingOrder = order;
+            _itemObjects.Add(go);
+            if (!_itemViews.ContainsKey(item.Id)) _itemViews[item.Id] = go.transform;
         }
 
         private Actor CreateActorFor(Character character)
@@ -211,6 +252,7 @@ namespace Thatchwick.Game
         {
             float s = HudScale;
             var guiPos = new Vector2(screenPos.x / s, (Screen.height - screenPos.y) / s);
+            if (_buildMode != null && _buildMode.Active && _buildMode.PanelRect(s).Contains(guiPos)) return true;
             return HudRect.Contains(guiPos);
         }
 
@@ -233,11 +275,9 @@ namespace Thatchwick.Game
             var world = cam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
             var tile = _view.WorldToTile(world);
 
-            ItemInstance tapped = null;
-            foreach (var item in _world.Items)
-            {
-                if (item.Position == tile) { tapped = item; break; }
-            }
+            if (_buildMode.Active) { _buildMode.OnTap(world); return; }
+
+            ItemInstance tapped = _world.GetItemAt(tile);
 
             if (tapped != null && tapped.Def.Interactions.Count > 0)
             {
@@ -271,6 +311,9 @@ namespace Thatchwick.Game
                 if (_creator.Finished) FinishCreation();
                 return; // yaratma ekranı açıkken oyun saati ilerlemez
             }
+
+            if (UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.bKey.wasPressedThisFrame)
+                _buildMode.Toggle();
 
             float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
 
@@ -384,6 +427,7 @@ namespace Thatchwick.Game
             GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
 
             DrawItemLabels(s);
+            _buildMode.OnGUI(s);
 
             GUILayout.BeginArea(HudRect, GUI.skin.box);
             GUILayout.Label(
@@ -413,6 +457,8 @@ namespace Thatchwick.Game
                 if (!_maud.Character.TryStartPregnancy(_player.Character.Id)) ShowMessage("Maud şu an hamile kalamaz");
                 else ShowMessage("Maud hamile");
             }
+            if (GUILayout.Button(_buildMode.Active ? "Yapı modundan çık (B)" : "Yapı modu (B)")) _buildMode.Toggle();
+            GUILayout.Label($"Akçe: {_household.Akce}");
             if (GUILayout.Button("Yeni oyun (karakter yaratıcıyı aç)"))
             {
                 enabled = false;
@@ -442,6 +488,7 @@ namespace Thatchwick.Game
 
             foreach (var item in _world.Items)
             {
+                if (item.IsDecor) continue;
                 Vector3 sp = cam.WorldToScreenPoint(_view.TileToWorld(item.Position) + new Vector3(0f, 1.5f, 0f));
                 if (sp.z < 0f) continue;
                 float x = sp.x / guiScale;

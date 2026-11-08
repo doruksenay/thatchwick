@@ -27,6 +27,50 @@ namespace Thatchwick.Game
 
         public event Action<Vector2> Tapped;
 
+        // Kamera odağı (yapı modunda eşyaya yaklaşma). Kullanıcı kaydırır/yakınlaştırırsa iptal olur.
+        private bool _focusing;
+        private Vector3 _focusPos;
+        private float _focusSize;
+        private bool _hasSavedView;
+        private Vector3 _savedPos;
+        private float _savedSize;
+
+        /// <summary>Kamerayı yumuşakça verilen dünya noktasına ve yakınlaştırmaya götürür.</summary>
+        public void FocusOn(Vector2 world, float orthographicSize)
+        {
+            if (_camera == null) return;
+            if (!_hasSavedView)
+            {
+                _hasSavedView = true;
+                _savedPos = _camera.transform.position;
+                _savedSize = _camera.orthographicSize;
+            }
+            _focusing = true;
+            _focusPos = new Vector3(world.x, world.y, -10f);
+            _focusSize = Mathf.Clamp(orthographicSize, MinZoom, MaxZoom);
+        }
+
+        /// <summary>FocusOn öncesi görünüme yumuşakça döner.</summary>
+        public void RestoreView()
+        {
+            if (_camera == null || !_hasSavedView) return;
+            _hasSavedView = false;
+            _focusing = true;
+            _focusPos = _savedPos;
+            _focusSize = _savedSize;
+        }
+
+        private void StepFocus()
+        {
+            if (!_focusing) return;
+            float t = 1f - Mathf.Exp(-9f * Time.unscaledDeltaTime);
+            _camera.transform.position = Vector3.Lerp(_camera.transform.position, _focusPos, t);
+            _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, _focusSize, t);
+            if (((Vector2)(_camera.transform.position - _focusPos)).sqrMagnitude < 0.0004f &&
+                Mathf.Abs(_camera.orthographicSize - _focusSize) < 0.01f)
+                _focusing = false;
+        }
+
         /// <summary>bounds: haritanın dünya (izometrik) sınırları; kamera dışına çıkamaz.</summary>
         public void Init(Camera camera, Rect bounds)
         {
@@ -45,6 +89,7 @@ namespace Thatchwick.Game
             HandleScrollZoom();
             if (HandlePinch()) return;
             HandlePointer();
+            StepFocus();
             ClampCamera();
         }
 
@@ -130,6 +175,7 @@ namespace Thatchwick.Game
 
         private void Pan(Vector2 screenDelta)
         {
+            _focusing = false;
             float worldPerPixel = 2f * _camera.orthographicSize / Screen.height;
             var p = _camera.transform.position;
             p.x -= screenDelta.x * worldPerPixel;
@@ -139,6 +185,7 @@ namespace Thatchwick.Game
 
         private void ApplyZoom(float factor)
         {
+            _focusing = false;
             _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize * factor, MinZoom, MaxZoom);
         }
 
