@@ -1,7 +1,7 @@
 ---
 id: "008"
 title: Duvar parçaları (düz ve köşe, iki eksen)
-status: pending
+status: rejected
 approved_by: auto
 cost_est: 15
 cost_max: 25
@@ -32,3 +32,4 @@ Yapı modu (Adım 10): her iki eksen için düz duvar ve dört köşe. Kabul edi
 
 ## Notlar
 Adlandırma `docs/gorsel-yonerge.md`'deki kural. `cost_max` 25'i aşacaksa `blocked` yap ve sor.
+007 reddedildi, yerini 008a+008b aldı.
