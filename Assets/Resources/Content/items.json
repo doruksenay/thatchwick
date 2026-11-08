@@ -39,19 +39,21 @@
       "interactions": [
         {
           "id": "eat",
-          "displayName": "Ye",
+          "displayName": "Şalgam ye",
           "need": "Hunger",
           "restore": 50,
-          "durationDays": 0.15
+          "durationDays": 0.15,
+          "consume": "item.turnip"
         },
         {
           "id": "cook",
-          "displayName": "Pişir ve ye",
+          "displayName": "Şalgam pişir ve ye",
           "need": "Hunger",
           "restore": 60,
           "durationDays": 0.2,
           "skill": "Cooking",
-          "skillXp": 25
+          "skillXp": 25,
+          "consume": "item.turnip"
         }
       ],
       "price": 25,
@@ -243,6 +245,57 @@
             {
               "item": "item.firewood",
               "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.turnip",
+      "displayName": "Şalgam",
+      "interactions": [],
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource"
+    },
+    {
+      "id": "item.seed_turnip",
+      "displayName": "Şalgam tohumu",
+      "interactions": [],
+      "placement": "Resource",
+      "price": 1,
+      "category": "resource",
+      "plantsAs": "item.crop_turnip"
+    },
+    {
+      "id": "item.crop_turnip",
+      "displayName": "Şalgam ekini",
+      "category": "plant",
+      "growDays": 6,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.turnip",
+              "count": 3
+            },
+            {
+              "item": "item.seed_turnip",
+              "count": 1
+            },
+            {
+              "item": "item.seed_turnip",
+              "count": 1,
+              "chance": 0.5
             }
           ]
         }

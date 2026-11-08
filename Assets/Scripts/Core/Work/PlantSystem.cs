@@ -19,9 +19,17 @@ namespace Thatchwick.Core.Work
 
         public static bool CanGrowIn(Season season) => season != Season.Winter;
 
+        /// <summary>Kışın donan ekin kalktığında (eşya tanımı, konum) ile tetiklenir.</summary>
+        public event Action<Content.ItemDef, GridPos> PlantDied;
+
         public void Tick(double gameDays, Season season)
         {
-            if (gameDays <= 0 || !CanGrowIn(season)) return;
+            if (gameDays <= 0) return;
+            if (!CanGrowIn(season))
+            {
+                KillWinterCrops();
+                return;
+            }
             var rooms = _world.Map.Rooms;
             foreach (var item in _world.Items)
             {
@@ -29,6 +37,23 @@ namespace Thatchwick.Core.Work
                 var room = rooms.RoomAt(item.Position);
                 if (room != null && room.IsIndoor) continue;   // içeride büyümez
                 item.GrowthDays = Math.Min(item.Def.GrowDays, item.GrowthDays + gameDays);
+            }
+        }
+
+        private void KillWinterCrops()
+        {
+            var dead = new System.Collections.Generic.List<ItemInstance>();
+            foreach (var item in _world.Items)
+            {
+                if (!item.IsPlant || !item.Def.DiesInWinter) continue;
+                var room = _world.Map.Rooms.RoomAt(item.Position);
+                if (room != null && room.IsIndoor) continue;
+                dead.Add(item);
+            }
+            foreach (var item in dead)
+            {
+                _world.RemoveItem(item.Id);
+                PlantDied?.Invoke(item.Def, item.Position);
             }
         }
 

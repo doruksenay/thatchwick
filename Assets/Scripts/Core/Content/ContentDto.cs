@@ -26,6 +26,8 @@ namespace Thatchwick.Core.Content
         public float heat;           // ısı gücü; 0 = ısı kaynağı değil
         public float growDays;       // bitki: olgunlaşma süresi (gün); 0 = bitki değil
         public string plantsAs;      // fidan: dikilince oluşan bitki kimliği
+        public bool tilled;          // ekin: yalnızca toprak zemine
+        public bool diesInWinter;    // ekin: kışın donar
     }
 
     [Serializable]

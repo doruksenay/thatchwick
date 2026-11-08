@@ -63,6 +63,15 @@ namespace Thatchwick.Core.Characters
         /// <summary>Isınma 0'da bu kadar gün kalırsa donarak ölür.</summary>
         public const double FreezeDeathDays = 2.0;
         public double FreezeDays { get; private set; }
+
+        /// <summary>Açlık 0'da bu kadar gün kalırsa açlıktan ölür.</summary>
+        public const double StarveDeathDays = 3.0;
+        public double StarveDays { get; private set; }
+        /// <summary>
+        /// Açlıktan ölüm açık mı. Oyunda açıktır (GameRoot); yalnızca biyolojiyi (yaş, hamilelik) sınayan
+        /// testler yemek döngüsü kurmadan uzun süre ilerletebilsin diye varsayılan kapalı.
+        /// </summary>
+        public bool CanStarve { get; set; }
         public DeathCause CauseOfDeath { get; private set; }
         public AgeStage Stage => AgeConfig.StageAt(AgeDays);
 
@@ -127,6 +136,15 @@ namespace Thatchwick.Core.Characters
             if (FreezeDays >= FreezeDeathDays)
             {
                 Die(DeathCause.Cold);
+                return;
+            }
+
+            // Bebeği hane besler (bakım işi Adım 16); açlıktan ölüm bebek dışındakiler için.
+            if (CanStarve && Stage != AgeStage.Baby && Needs.Get(NeedType.Hunger) <= NeedSet.Min) StarveDays += gameDays;
+            else StarveDays = Math.Max(0.0, StarveDays - 2.0 * gameDays);
+            if (StarveDays >= StarveDeathDays)
+            {
+                Die(DeathCause.Starvation);
                 return;
             }
 

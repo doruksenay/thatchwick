@@ -164,6 +164,38 @@ namespace Thatchwick.Game
             return sprite;
         }
 
+        private static Sprite _tree;
+
+        /// <summary>Yer tutucu ağaç: kahverengi gövde + yeşil taç. Pivot gövde tabanı (karo merkezi). Büyüme ölçekle gösterilir.</summary>
+        public static Sprite Tree
+        {
+            get
+            {
+                if (_tree != null) return _tree;
+                const int w = 32, h = 56;
+                var pixels = new Color32[w * h];
+                var trunk = new Color32(110, 78, 48, 255);
+                var leaf = new Color32(62, 128, 58, 255);
+                var leafDark = new Color32(46, 100, 44, 255);
+                var leafLight = new Color32(88, 156, 74, 255);
+                for (int y = 0; y < h; y++)
+                {
+                    for (int x = 0; x < w; x++)
+                    {
+                        Color32 c = new Color32(0, 0, 0, 0);
+                        if (x >= 14 && x < 18 && y < 24) c = trunk;
+                        float dx = x + 0.5f - 16f, dy = y + 0.5f - 36f;
+                        float d2 = dx * dx + dy * dy * 1.2f;
+                        if (d2 <= 14f * 14f)
+                            c = dy < -4f ? leafDark : (dx < -3f && dy > 2f ? leafLight : leaf);
+                        pixels[y * w + x] = c;
+                    }
+                }
+                _tree = MakeSprite(pixels, w, h, new Vector2(0.5f, 0f));
+                return _tree;
+            }
+        }
+
         private static Color32 Shade(Color c, float factor) =>
             new Color32((byte)(c.r * factor * 255f), (byte)(c.g * factor * 255f), (byte)(c.b * factor * 255f), 255);
 

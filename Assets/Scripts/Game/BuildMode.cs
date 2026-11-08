@@ -31,6 +31,7 @@ namespace Thatchwick.Game
         private WallView _walls;
         private int _tab;                    // 0 envanter, 1 mağaza
         private string _placeId;             // envanterden yerleştirilecek eşya
+        private string _plantId;             // dikilecek fidan/tohum
         private int _selectedId;             // seçili yerleştirilmiş eşya (0 yok)
         private int _surfaceId;              // dekor koymak için odaklanılan yüzey eşyası (0 yok)
         private bool _moving;
@@ -79,7 +80,7 @@ namespace Thatchwick.Game
         private void ClearSelection()
         {
             _roomCorner = null;
-            _placeId = null; _selectedId = 0; _surfaceId = 0; _moving = false; _rot = 0;
+            _placeId = null; _plantId = null; _selectedId = 0; _surfaceId = 0; _moving = false; _rot = 0;
             if (_focused) { _input.RestoreView(); _focused = false; }
             RefreshOverlay();
         }
@@ -105,6 +106,14 @@ namespace Thatchwick.Game
         {
             var tile = _view.WorldToTile(world);
             if (_tool != Tool.Items) { OnToolTap(world, tile); return; }
+
+            if (_plantId != null)
+            {
+                var r = _svc.Plant(_plantId, tile, out _);
+                _status = r.Ok ? $"Dikildi. Kalan: {_house.Count(_plantId)}" : r.Reason;
+                if (r.Ok && _house.Count(_plantId) <= 0) ClearSelectionKeepStatus();
+                return;
+            }
 
             // Dekor yerleştirme: önce yuva işaretleri, sonra yüzey seçimi.
             if (_placeId != null && IsSurfaceDef(_placeId))
@@ -406,6 +415,14 @@ namespace Thatchwick.Game
         {
             var sel = _selectedId != 0 ? _world.GetItem(_selectedId) : null;
 
+            if (_plantId != null)
+            {
+                GUILayout.Label($"Dikilecek: {_content.Items.Get(_plantId).DisplayName} (x{_house.Count(_plantId)})");
+                GUILayout.Label("Arsanda dışarıda, çim ya da toprak bir karoya dokun.");
+                if (GUILayout.Button("Bitir")) ClearSelection();
+                return;
+            }
+
             if (_placeId != null)
             {
                 var def = _content.Items.Get(_placeId);
@@ -449,6 +466,11 @@ namespace Thatchwick.Game
             if (sel == null) return;
 
             GUILayout.Label($"Seçili: {sel.Def.DisplayName}");
+            if (sel.IsPlant)
+            {
+                GUILayout.Label(sel.IsGrown ? "Olgun: canlı modda dokunup kesebilirsin." : $"Büyüyor: %{sel.GrowthFraction * 100f:0}. Bitkiler taşınmaz ya da satılmaz.");
+                return;
+            }
             if (_moving)
             {
                 GUILayout.Label("Yeni konuma dokun, sonra Koy.");
@@ -490,6 +512,12 @@ namespace Thatchwick.Game
                 if (!_content.Items.TryGet(kv.Key, out var def)) continue;
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"{def.DisplayName} x{kv.Value}");
+                if (def.PlantsAs != null && GUILayout.Button("Dik", GUILayout.Width(44f)))
+                {
+                    ClearSelection();
+                    _plantId = kv.Key;
+                    _status = "Dışarıda bir karoya dokun.";
+                }
                 if (def.Placement != ItemPlacement.Resource && GUILayout.Button("Koy", GUILayout.Width(44f)))
                 {
                     ClearSelection();

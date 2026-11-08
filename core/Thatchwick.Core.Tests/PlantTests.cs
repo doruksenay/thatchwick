@@ -187,6 +187,7 @@ namespace Thatchwick.Core.Tests
             var tree = c.World.PlaceItem(c.Db.Items.Get("oak"), new GridPos(5, 5));
             PlantSystem.SetGrown(tree);
             var ch = new Character(1, "A", new GridPos(1, 5), true);
+            ch.SetAge(30);   // bebek beceri kazanamaz (tavan 0)
             string summary = null;
             c.Effects.Applied += (_, __, s) => summary = s;
             var r = Runner(c, ch);
