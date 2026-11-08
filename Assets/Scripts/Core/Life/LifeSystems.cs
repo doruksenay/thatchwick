@@ -26,10 +26,19 @@ namespace Thatchwick.Core.Life
         public GraveService Graves { get; }
         public VillageEffects Village { get; } = new VillageEffects();
 
-        /// <summary>Yaşam olayları (arayüzdeki bildirim akışı bunu dinler): mezar, yas vb.</summary>
+        // Okunabilirlik ve planlama (Adım 18b-18d)
+        public NotificationLog Log { get; } = new NotificationLog();
+        public NeedWatcher Watcher { get; } = new NeedWatcher();
+        public DayLedger Ledger { get; }
+        public WinterForecast Forecast { get; }
+        public SuitorPool Suitors { get; }
+
+        /// <summary>Yaşam olayları (düz metin): mezar, yas vb. Ayrıntılı akış için Log.</summary>
         public event Action<string> Notice;
 
         private double _moodAccumulator;
+        private long _lastDay = -1;
+        private int _lastSeasonIndex = -1;
         public const double MoodUpdateStepDays = 0.02;
 
         public LifeSystems(ContentDatabase content, WorldState world, Household house, Population population, GameClock clock)
@@ -42,30 +51,73 @@ namespace Thatchwick.Core.Life
 
             Mood = new MoodService(world);
             Graves = new GraveService(world, content);
+            Ledger = new DayLedger(house);
+            Forecast = new WinterForecast(content, house, world, population, clock.Config);
+            Suitors = new SuitorPool(content, population);
+            Watcher.Raised += (level, text, id) => Say(text, level, id);
+            population.BabyBorn += (baby, mother, father) =>
+            {
+                Ledger.OnBorn(baby);
+                Say($"{baby.Name} doğdu!", NoticeLevel.Info, baby.Id);
+            };
 
             population.Content = content;
             population.Village = Village;
             population.MemberDied += OnMemberDied;
         }
 
-        private void Say(string message) => Notice?.Invoke(message);
+        /// <summary>Bildirim akışına ve düz metin olayına yazar. Dış sistemler (aile, pazar) bunu çağırabilir.</summary>
+        public void Say(string message, NoticeLevel level = NoticeLevel.Info, int characterId = 0)
+        {
+            Log.Add(Clock.TotalDays, level, message, characterId);
+            Notice?.Invoke(message);
+        }
 
         private void OnMemberDied(Character dead)
         {
+            Ledger.OnDied(dead);
             Graves.Bury(dead, Clock.TotalDays);
             int mourners = Mood.Mourn(dead, Population.Members);
             Say(mourners > 0
                 ? $"{dead.Name} toprağa verildi; {mourners} kişi yasta."
-                : $"{dead.Name} toprağa verildi.");
+                : $"{dead.Name} toprağa verildi.", NoticeLevel.Danger, dead.Id);
         }
 
         /// <summary>Ruh hali kaynaklarını yeniler (oyun hızından bağımsız, küçük adımlarla).</summary>
         public void Tick(double gameDays)
         {
             _moodAccumulator += gameDays;
-            if (_moodAccumulator < MoodUpdateStepDays) return;
-            _moodAccumulator = 0;
-            Mood.Update(Population.Members);
+            if (_moodAccumulator >= MoodUpdateStepDays)
+            {
+                _moodAccumulator = 0;
+                Mood.Update(Population.Members);
+                Watcher.Update(Population.Members);
+            }
+
+            long day = Clock.DayIndex;
+            if (day != _lastDay)
+            {
+                OnNewDay(day);
+                _lastDay = day;
+            }
+        }
+
+        private void OnNewDay(long day)
+        {
+            Ledger.Tick(day);
+            int season = (int)((day / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
+            if (_lastSeasonIndex >= 0 && season != _lastSeasonIndex)
+            {
+                var guest = Suitors.OnNewSeason();
+                if (guest != null) Say($"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
+            }
+            _lastSeasonIndex = season;
+            int arrivals = Suitors.Ensure();
+            if (arrivals > 0) Say($"Köye {arrivals} yeni kişi yerleşti.", NoticeLevel.Info);
+
+            var report = Forecast.Report(Clock.TotalDays);
+            if (report.Warnings.Count > 0)
+                Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
         }
 
         // ---- kayıt ----

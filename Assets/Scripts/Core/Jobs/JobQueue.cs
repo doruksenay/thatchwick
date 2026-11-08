@@ -26,6 +26,22 @@ namespace Thatchwick.Core.Jobs
 
         public void Clear() => _jobs.Clear();
 
+        internal bool RemoveAt(int index)
+        {
+            if (index < 0 || index >= _jobs.Count) return false;
+            _jobs.RemoveAt(index);
+            return true;
+        }
+
+        internal bool MoveToFront(int index)
+        {
+            if (index <= 0 || index >= _jobs.Count) return false;
+            var job = _jobs[index];
+            _jobs.RemoveAt(index);
+            _jobs.Insert(0, job);
+            return true;
+        }
+
         internal void RemoveCurrent()
         {
             if (_jobs.Count > 0) _jobs.RemoveAt(0);

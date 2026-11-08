@@ -92,6 +92,23 @@ namespace Thatchwick.Core.Jobs
             return Queue.TryEnqueue(job);
         }
 
+        /// <summary>Kuyruktaki işi iptal eder (kuyruk şeridi). Şu anki işse yürütme durumu sıfırlanır.</summary>
+        public bool CancelAt(int index)
+        {
+            bool wasCurrent = index == 0;
+            if (!Queue.RemoveAt(index)) return false;
+            if (wasCurrent) ResetJobState();
+            return true;
+        }
+
+        /// <summary>Kuyruktaki işi öne alır; şu anki iş bir sonrakine kayar (ilerlemesi sıfırlanır).</summary>
+        public bool Prioritize(int index)
+        {
+            if (!Queue.MoveToFront(index)) return false;
+            ResetJobState();
+            return true;
+        }
+
         public void Cancel()
         {
             Queue.Clear();
