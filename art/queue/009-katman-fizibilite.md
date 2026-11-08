@@ -1,7 +1,7 @@
 ---
 id: "009"
 title: Karakter katman sistemi fizibilite raporu
-status: pending
+status: review
 approved_by: auto
 cost_est: 0
 cost_max: 0
