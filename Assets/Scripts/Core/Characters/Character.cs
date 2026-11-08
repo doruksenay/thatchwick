@@ -1,4 +1,5 @@
 using System;
+using Thatchwick.Core.Customization;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Characters
@@ -16,6 +17,7 @@ namespace Thatchwick.Core.Characters
         public NeedSet Needs { get; } = new NeedSet();
         public SkillSet Skills { get; } = new SkillSet();
         public Sex Sex { get; set; } = Sex.Female;
+        public Appearance Appearance { get; set; } = new Appearance();
 
         // --- Hamilelik (T4 kenar durumları) ---
         /// <summary>Hamilelik süresi (oyun günü). Varsayılan 30 (yılın ~%75'i); denge turunda ayarlanır.</summary>

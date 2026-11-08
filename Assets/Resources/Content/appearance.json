@@ -1,0 +1,211 @@
+{
+  "hairStyles": [
+    {
+      "id": "bald",
+      "displayName": "Kel",
+      "sex": ""
+    },
+    {
+      "id": "crop",
+      "displayName": "Kırpık",
+      "sex": ""
+    },
+    {
+      "id": "short",
+      "displayName": "Kısa",
+      "sex": ""
+    },
+    {
+      "id": "shaggy",
+      "displayName": "Dağınık",
+      "sex": ""
+    },
+    {
+      "id": "long",
+      "displayName": "Uzun",
+      "sex": ""
+    },
+    {
+      "id": "ponytail",
+      "displayName": "At kuyruğu",
+      "sex": ""
+    },
+    {
+      "id": "braid",
+      "displayName": "Örgü",
+      "sex": ""
+    },
+    {
+      "id": "bun",
+      "displayName": "Topuz",
+      "sex": ""
+    }
+  ],
+  "facialHair": [
+    {
+      "id": "none",
+      "displayName": "Yok",
+      "sex": ""
+    },
+    {
+      "id": "stubble",
+      "displayName": "Kirli sakal",
+      "sex": "Male"
+    },
+    {
+      "id": "mustache",
+      "displayName": "Bıyık",
+      "sex": "Male"
+    },
+    {
+      "id": "goatee",
+      "displayName": "Keçi sakalı",
+      "sex": "Male"
+    },
+    {
+      "id": "beard",
+      "displayName": "Sakal",
+      "sex": "Male"
+    },
+    {
+      "id": "full_beard",
+      "displayName": "Gür sakal",
+      "sex": "Male"
+    }
+  ],
+  "faceMarks": [
+    {
+      "id": "none",
+      "displayName": "Yok",
+      "sex": ""
+    },
+    {
+      "id": "freckles",
+      "displayName": "Çil",
+      "sex": ""
+    },
+    {
+      "id": "scar",
+      "displayName": "Yara izi",
+      "sex": ""
+    },
+    {
+      "id": "mole",
+      "displayName": "Ben",
+      "sex": ""
+    },
+    {
+      "id": "rosy",
+      "displayName": "Al yanaklar",
+      "sex": ""
+    }
+  ],
+  "outfits": [
+    {
+      "id": "tunic",
+      "displayName": "Tunik",
+      "sex": ""
+    },
+    {
+      "id": "long_tunic",
+      "displayName": "Uzun tunik",
+      "sex": ""
+    },
+    {
+      "id": "jerkin",
+      "displayName": "Yelek",
+      "sex": ""
+    },
+    {
+      "id": "apron",
+      "displayName": "Önlük",
+      "sex": ""
+    },
+    {
+      "id": "robe",
+      "displayName": "Cüppe",
+      "sex": ""
+    },
+    {
+      "id": "dress",
+      "displayName": "Elbise",
+      "sex": "Female"
+    }
+  ],
+  "hats": [
+    {
+      "id": "none",
+      "displayName": "Yok",
+      "sex": ""
+    },
+    {
+      "id": "cap",
+      "displayName": "Takke",
+      "sex": ""
+    },
+    {
+      "id": "hood",
+      "displayName": "Kapüşon",
+      "sex": ""
+    },
+    {
+      "id": "straw",
+      "displayName": "Hasır şapka",
+      "sex": ""
+    },
+    {
+      "id": "kerchief",
+      "displayName": "Başörtüsü",
+      "sex": ""
+    }
+  ],
+  "skinTones": [
+    "#F3D9C0",
+    "#E8C39E",
+    "#D9A877",
+    "#C68E5F",
+    "#A9703F",
+    "#8A5A35",
+    "#6B4226",
+    "#4B2E1C"
+  ],
+  "hairColors": [
+    "#1C1A19",
+    "#3B2A1D",
+    "#5A3A22",
+    "#7A4B25",
+    "#A0662F",
+    "#C28A3C",
+    "#D9B45A",
+    "#E8D28A",
+    "#A5471F",
+    "#8C8C8C",
+    "#D4D4D4",
+    "#5E3A55"
+  ],
+  "eyeColors": [
+    "#4B3621",
+    "#6B4A2B",
+    "#2F5D8C",
+    "#3E7C59",
+    "#7A8F3A",
+    "#6C6C6C",
+    "#9A4F8E"
+  ],
+  "clothColors": [
+    "#A06E46",
+    "#8C6A4A",
+    "#C9B28A",
+    "#E6DCC3",
+    "#6E7F3F",
+    "#4F6B3A",
+    "#3F5F8A",
+    "#2E4A6B",
+    "#8A3A32",
+    "#B4533C",
+    "#6A3E6E",
+    "#C2A23B",
+    "#464646",
+    "#B9B9B9"
+  ]
+}

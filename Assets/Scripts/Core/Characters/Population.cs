@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Thatchwick.Core.Customization;
 
 namespace Thatchwick.Core.Characters
 {
@@ -15,6 +16,8 @@ namespace Thatchwick.Core.Characters
 
         public IReadOnlyList<Character> Members => _members;
         public Func<Sex, string> NameGenerator { get; set; }
+        /// <summary>Verilirse bebeğin görünümü ebeveynlerinden türetilir; yoksa varsayılan görünüm kalır.</summary>
+        public AppearanceCatalog AppearanceCatalog { get; set; }
 
         /// <summary>(bebek, anne, babanın kimliği)</summary>
         public event Action<Character, Character, int?> BabyBorn;
@@ -62,6 +65,13 @@ namespace Thatchwick.Core.Characters
                 AgeConfig = mother.AgeConfig
             };
             baby.LifespanDays = mother.AgeConfig.RollLifespan(_rng);
+            if (AppearanceCatalog != null)
+            {
+                var father = fatherId.HasValue ? Find(fatherId.Value) : null;
+                baby.Appearance = father != null
+                    ? AppearanceCatalog.Inherit(mother.Appearance, father.Appearance, _rng, sex)
+                    : AppearanceCatalog.Randomize(_rng, sex);
+            }
             Add(baby);
             BabyBorn?.Invoke(baby, mother, fatherId);
         }
