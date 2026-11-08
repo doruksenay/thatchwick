@@ -53,6 +53,7 @@ namespace Thatchwick.Core.Heat
         private readonly HeatConfig _cfg;
         private readonly TimeConfig _time;
         private readonly float[] _temp;
+        private readonly Dictionary<Room, double> _roomTemp = new Dictionary<Room, double>();
         private float _outdoor;
 
         public HeatSystem(WorldState world, TimeConfig time, HeatConfig config = null, double startDays = 0)
@@ -124,10 +125,19 @@ namespace Thatchwick.Core.Heat
         {
             var map = _world.Map;
             var rooms = map.Rooms;
-            var prev = (float[])_temp.Clone();
 
-            // Yanan kaynakların gücü (oda kimliğine göre) ve yakıt tüketimi.
-            var power = new Dictionary<int, double>();
+            // Adım başındaki oda sıcaklıkları (açık uçlu Euler: herkes aynı anlık değerden hesaplanır).
+            _roomTemp.Clear();
+            foreach (var room in rooms.Rooms)
+            {
+                if (!room.IsIndoor) { _roomTemp[room] = _outdoor; continue; }
+                double sum = 0;
+                foreach (var t in room.Tiles) sum += _temp[t.Y * map.Width + t.X];
+                _roomTemp[room] = sum / room.Tiles.Count;
+            }
+
+            // Yanan kaynakların gücü ve yakıt tüketimi.
+            var power = new Dictionary<Room, double>();
             foreach (var item in _world.Items)
             {
                 if (item.IsDecor || item.Def.HeatOutput <= 0f || item.FuelDays <= 0) continue;
@@ -135,8 +145,7 @@ namespace Thatchwick.Core.Heat
                 item.FuelDays -= burned;
                 var room = rooms.RoomAt(item.Position);
                 if (room == null || !room.IsIndoor) continue;      // açık havada yanan kaynak odayı ısıtmaz
-                double fraction = burned / dt;
-                power[room.Id] = (power.TryGetValue(room.Id, out var pw) ? pw : 0.0) + item.Def.HeatOutput * fraction;
+                power[room] = (power.TryGetValue(room, out var pw) ? pw : 0.0) + item.Def.HeatOutput * (burned / dt);
             }
 
             foreach (var room in rooms.Rooms)
@@ -147,10 +156,7 @@ namespace Thatchwick.Core.Heat
                     continue;
                 }
 
-                double sum = 0;
-                foreach (var t in room.Tiles) sum += prev[t.Y * map.Width + t.X];
-                double temp = sum / room.Tiles.Count;
-
+                double temp = _roomTemp[room];
                 double flow = 0;
                 foreach (var t in room.Tiles)
                 {
@@ -159,25 +165,15 @@ namespace Thatchwick.Core.Heat
                         var n = t + d;
                         var kind = map.GetEdge(GridMap.EdgeBetween(t, n));
                         if (kind == EdgeKind.None) continue;
-                        double neighborTemp = _outdoor;
-                        if (map.InBounds(n))
-                        {
-                            var nr = rooms.RoomAt(n);
-                            if (nr != null && nr.IsIndoor)
-                            {
-                                if (nr == room) continue;
-                                double s2 = 0;
-                                foreach (var nt in nr.Tiles) s2 += prev[nt.Y * map.Width + nt.X];
-                                neighborTemp = s2 / nr.Tiles.Count;
-                            }
-                        }
+                        var nr = rooms.RoomAt(n);
+                        if (nr == room) continue;
+                        double neighborTemp = nr != null ? _roomTemp[nr] : _outdoor;   // harita dışı = dış hava
                         flow += EdgeLoss(kind) * (neighborTemp - temp);
                     }
                 }
 
-                double heat = power.TryGetValue(room.Id, out var p) ? p : 0.0;
-                double change = (flow * _cfg.LossScale + heat) / room.Tiles.Count * dt;
-                float newTemp = (float)(temp + change);
+                double heat = power.TryGetValue(room, out var p) ? p : 0.0;
+                float newTemp = (float)(temp + (flow * _cfg.LossScale + heat) / room.Tiles.Count * dt);
                 foreach (var t in room.Tiles) _temp[t.Y * map.Width + t.X] = newTemp;
             }
         }

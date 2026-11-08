@@ -21,6 +21,9 @@ namespace Thatchwick.Core.Jobs
 
         private const int MaxIterations = 64;
 
+        /// <summary>Otonom karakter ulaşamadığı eşyayı bu kadar oyun günü boyunca yeniden denemez.</summary>
+        public const double UnreachableCooldownDays = 0.25;
+
         private static readonly GridPos[] AdjacentOffsets =
         {
             new GridPos(0, 1), new GridPos(1, 0), new GridPos(0, -1), new GridPos(-1, 0)
@@ -34,6 +37,8 @@ namespace Thatchwick.Core.Jobs
         private double _stepFraction;
         private bool _using;
         private double _useProgress;
+        private double _elapsedDays;
+        private readonly Dictionary<int, double> _unreachableUntil = new Dictionary<int, double>();
 
         public JobQueue Queue { get; } = new JobQueue();
 
@@ -78,6 +83,7 @@ namespace Thatchwick.Core.Jobs
         {
             if (gameDays < 0) throw new ArgumentOutOfRangeException(nameof(gameDays));
 
+            _elapsedDays += gameDays;
             double budget = gameDays;
             for (int guard = 0; guard < MaxIterations && budget > 1e-12; guard++)
             {
@@ -132,7 +138,13 @@ namespace Thatchwick.Core.Jobs
             if (_path == null && !_using)
             {
                 _path = PathToAdjacent(item);
-                if (_path == null) { Fail("Eşyaya ulaşılamıyor."); return 0; }
+                if (_path == null)
+                {
+                    // Otonomi aynı ulaşılamayan eşyayı sürekli seçip takılmasın.
+                    _unreachableUntil[item.Id] = _elapsedDays + UnreachableCooldownDays;
+                    Fail("Eşyaya ulaşılamıyor.");
+                    return 0;
+                }
                 _pathIndex = 1;
                 _stepFraction = 0;
             }
@@ -192,14 +204,15 @@ namespace Thatchwick.Core.Jobs
             return used;
         }
 
-        // Eşyaya komşu (4 yön) karolardan en kısa yolu olanına giden yol. Zaten yanındaysa tek elemanlı yol.
+        // Eşyanın kapladığı karolara dik komşu, açık ve arada duvar olmayan karolardan en ucuz
+        // ulaşılanına tek A* ile gider. Zaten böyle bir karodaysa tek elemanlı yol.
         private List<GridPos> PathToAdjacent(ItemInstance item)
         {
-            // Dekor, üzerinde durduğu eşyanın yanından kullanılır; çok karolu eşyada her kaplanan karonun komşusu aday.
+            // Dekor, üzerinde durduğu eşyanın yanından kullanılır.
             var owner = item.IsDecor ? _world.GetItem(item.ParentId.Value) : item;
             if (owner == null) return null;
 
-            List<GridPos> best = null;
+            var goals = new HashSet<GridPos>();
             foreach (var occupied in owner.OccupiedTiles())
             {
                 foreach (var offset in AdjacentOffsets)
@@ -207,12 +220,10 @@ namespace Thatchwick.Core.Jobs
                     var tile = occupied + offset;
                     if (!_world.Map.IsWalkable(tile)) continue;
                     if (_world.Map.EdgeBlocks(GridMap.EdgeBetween(tile, occupied))) continue; // duvarın öbür yanından kullanılmaz
-
-                    var path = Pathfinder.FindPath(_world.Map, _character.Position, tile);
-                    if (path != null && (best == null || path.Count < best.Count)) best = path;
+                    goals.Add(tile);
                 }
             }
-            return best;
+            return Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
         }
 
         private static bool IsUnlitHeatSource(ItemInstance item, InteractionDef interaction) =>
@@ -246,6 +257,7 @@ namespace Thatchwick.Core.Jobs
                 {
                     if (interaction.Need != worst.Value) continue;
                     if (IsUnlitHeatSource(item, interaction)) continue;   // sönük ocağa ısınmaya gidilmez
+                    if (_unreachableUntil.TryGetValue(item.Id, out var until) && until > _elapsedDays) continue;
 
                     int distance = Math.Max(
                         Math.Abs(item.Position.X - _character.Position.X),

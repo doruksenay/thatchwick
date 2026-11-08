@@ -346,7 +346,8 @@ namespace Thatchwick.Game
             if (GUILayout.Button("Kapat", GUILayout.Width(60f))) { Exit(); GUILayout.EndHorizontal(); GUILayout.EndArea(); return; }
             GUILayout.EndHorizontal();
             if (_status.Length > 0) GUILayout.Label(_status);
-            GUILayout.Label($"Girdi: basma {_input.PressCount}, arayüzde {_input.BlockedCount}, dokunma {_input.TapCount}");
+            if (Application.isEditor) // yalnızca geliştirirken: girdinin nerede takıldığını gösterir
+                GUILayout.Label($"Girdi: basma {_input.PressCount}, arayüzde {_input.BlockedCount}, dokunma {_input.TapCount}");
 
             DrawTools();
             if (_tool != Tool.Items) { GUILayout.EndArea(); return; }
@@ -491,7 +492,6 @@ namespace Thatchwick.Game
                 GUILayout.Label($"{def.DisplayName} x{kv.Value}");
                 if (def.Placement != ItemPlacement.Resource && GUILayout.Button("Koy", GUILayout.Width(44f)))
                 {
-                    var keep = _status;
                     ClearSelection();
                     _placeId = kv.Key;
                     _ghostPos = new GridPos(24, 12);

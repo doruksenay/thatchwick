@@ -120,5 +120,36 @@ namespace Thatchwick.Core.Tests
             var b = Pathfinder.FindPath(map, new GridPos(0, 0), new GridPos(11, 11));
             Assert.Equal(a, b);
         }
+    
+        [Fact]
+        public void CokHedef_EnUcuzaGider()
+        {
+            var map = new GridMap(12, 12);
+            var goals = new List<GridPos> { new GridPos(10, 0), new GridPos(3, 0), new GridPos(11, 11) };
+            var path = Pathfinder.FindPathToAny(map, new GridPos(0, 0), goals);
+            Assert.Equal(new GridPos(3, 0), path[path.Count - 1]);
+            Assert.Equal(4, path.Count);
+        }
+
+        [Fact]
+        public void CokHedef_BaslangicHedefse_TekElemanli_HicbiriYoksaNull()
+        {
+            var map = new GridMap(6, 6);
+            var one = Pathfinder.FindPathToAny(map, new GridPos(2, 2), new List<GridPos> { new GridPos(2, 2), new GridPos(5, 5) });
+            Assert.Single(one);
+            Assert.Null(Pathfinder.FindPathToAny(map, new GridPos(0, 0), new List<GridPos>()));
+            map.SetBlocked(new GridPos(4, 4), true);
+            Assert.Null(Pathfinder.FindPathToAny(map, new GridPos(0, 0), new List<GridPos> { new GridPos(4, 4) }));
+        }
+
+        [Fact]
+        public void CokHedef_TekHedefliAramaylaAyniMaliyet()
+        {
+            var map = new GridMap(14, 14);
+            for (int y = 0; y < 12; y++) map.SetBlocked(new GridPos(6, y), true);
+            var a = Pathfinder.FindPath(map, new GridPos(0, 0), new GridPos(12, 3));
+            var b = Pathfinder.FindPathToAny(map, new GridPos(0, 0), new List<GridPos> { new GridPos(12, 3) });
+            Assert.Equal(a, b);
+        }
     }
 }

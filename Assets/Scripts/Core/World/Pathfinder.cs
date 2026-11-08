@@ -27,12 +27,41 @@ namespace Thatchwick.Core.World
             if (map == null) throw new ArgumentNullException(nameof(map));
             if (!map.IsWalkable(start) || !map.IsWalkable(goal)) return null;
             if (start == goal) return new List<GridPos> { start };
+            return Search(map, start, p => p == goal, p => Heuristic(p, goal));
+        }
 
+        /// <summary>
+        /// Başlangıçtan verilen hedeflerden en ucuz ulaşılanına yol (tek A* araması). Eşyanın
+        /// çevresindeki karolardan birine gitmek gibi durumlar için. Hedef yoksa ya da hiçbirine
+        /// ulaşılamıyorsa null; başlangıç zaten bir hedefse tek elemanlı yol.
+        /// </summary>
+        public static List<GridPos> FindPathToAny(GridMap map, GridPos start, ICollection<GridPos> goals)
+        {
+            if (map == null) throw new ArgumentNullException(nameof(map));
+            if (goals == null) throw new ArgumentNullException(nameof(goals));
+            if (!map.IsWalkable(start)) return null;
+
+            var targets = new List<GridPos>();
+            foreach (var g in goals) if (map.IsWalkable(g)) targets.Add(g);
+            if (targets.Count == 0) return null;
+            if (targets.Contains(start)) return new List<GridPos> { start };
+
+            var set = new HashSet<GridPos>(targets);
+            return Search(map, start, set.Contains, p =>
+            {
+                int best = int.MaxValue;
+                foreach (var t in targets) best = Math.Min(best, Heuristic(p, t));
+                return best;
+            });
+        }
+
+        private static List<GridPos> Search(GridMap map, GridPos start, Func<GridPos, bool> isGoal, Func<GridPos, int> heuristic)
+        {
             var open = new SortedSet<Node>(NodeComparer.Instance);
             var best = new Dictionary<GridPos, Node>();
             var closed = new HashSet<GridPos>();
 
-            var first = new Node(start, 0, Heuristic(start, goal), null);
+            var first = new Node(start, 0, heuristic(start), null);
             open.Add(first);
             best[start] = first;
 
@@ -41,7 +70,7 @@ namespace Thatchwick.Core.World
                 var current = open.Min;
                 open.Remove(current);
 
-                if (current.Pos == goal) return Rebuild(current);
+                if (isGoal(current.Pos)) return Rebuild(current);
                 if (!closed.Add(current.Pos)) continue;
 
                 foreach (var dir in Directions)
@@ -50,7 +79,6 @@ namespace Thatchwick.Core.World
                     if (closed.Contains(next) || !map.CanStep(current.Pos, next)) continue;
 
                     bool diagonal = dir.X != 0 && dir.Y != 0;
-
                     int g = current.G + (diagonal ? DiagonalCost : StraightCost);
                     if (best.TryGetValue(next, out var known))
                     {
@@ -58,7 +86,7 @@ namespace Thatchwick.Core.World
                         open.Remove(known);
                     }
 
-                    var node = new Node(next, g, Heuristic(next, goal), current);
+                    var node = new Node(next, g, heuristic(next), current);
                     best[next] = node;
                     open.Add(node);
                 }

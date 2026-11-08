@@ -215,5 +215,39 @@ namespace Thatchwick.Core.Tests
             runner.Command(Job.MoveTo(new GridPos(0, 0)));
             Assert.Equal(JobKind.MoveTo, runner.Queue.Current.Kind);
         }
+    
+        [Fact]
+        public void Npc_UlasilamayanEsyadaTakilmaz_UlasilabilenIkinciyeGider()
+        {
+            var (world, c, runner) = Setup(player: false);
+            // En çok doyuran yatak duvarla çevrili, ulaşılamaz; tabure ulaşılabilir.
+            var bed = world.PlaceItem(Item("bed", NeedType.Energy, 60, 0.3), new GridPos(10, 5));
+            world.Map.SetEdge(new Edge(10, 5, EdgeAxis.Horizontal), EdgeKind.Wall);
+            world.Map.SetEdge(new Edge(10, 6, EdgeAxis.Horizontal), EdgeKind.Wall);
+            world.Map.SetEdge(new Edge(10, 5, EdgeAxis.Vertical), EdgeKind.Wall);
+            world.Map.SetEdge(new Edge(11, 5, EdgeAxis.Vertical), EdgeKind.Wall);
+            world.PlaceItem(Item("stool", NeedType.Energy, 15, 0.05), new GridPos(3, 5));
+            c.Needs.Set(NeedType.Energy, 10f);
+
+            runner.Tick(0.2);
+
+            Assert.True(c.Needs.Get(NeedType.Energy) >= 24f, $"enerji {c.Needs.Get(NeedType.Energy)}");
+        }
+
+        [Fact]
+        public void CokKaroluEsya_EnYakinYanKaroyaGider()
+        {
+            var (world, c, runner) = Setup(player: true);
+            var wide = new ItemDef
+            {
+                Id = "bed2", DisplayName = "bed2", Width = 3, Height = 1,
+                Interactions = new List<InteractionDef> { new InteractionDef { Id = "use", DisplayName = "Kullan", Need = NeedType.Energy, Restore = 10, DurationDays = 0.01 } }
+            };
+            var bed = world.PlaceItem(wide, new GridPos(5, 5));   // (5..7, 5)
+            runner.Command(Job.UseItem(bed.Id, "use"));
+            runner.Tick(1.0);
+            Assert.True(runner.IsIdle);
+            Assert.Equal(new GridPos(4, 5), c.Position);           // soldan, en yakın yan karo
+        }
     }
 }

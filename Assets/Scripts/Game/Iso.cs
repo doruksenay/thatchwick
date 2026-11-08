@@ -5,7 +5,8 @@ namespace Thatchwick.Game
     /// <summary>
     /// İzometrik (2:1 dimetrik) izdüşüm. 1 dünya birimi = 32 piksel (PPU 32);
     /// bir karo elmasının boyu 64x32 piksel, yani 2x1 dünya birimi.
-    /// Izgara +x ekranda sağ-aşağı, +y sol-aşağı gider.
+    /// Izgara +x ekranda sağ-yukarı, +y sol-yukarı gider (dünya Y'si yukarı). Ekranda aşağıda
+    /// (küçük x+y) olan öndedir ve üste çizilir.
     /// </summary>
     public static class Iso
     {

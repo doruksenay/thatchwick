@@ -35,7 +35,13 @@ namespace Thatchwick.Core.World
             Rooms = rooms;
         }
 
-        public Room RoomAt(GridPos p) => p.X < 0 || p.Y < 0 || p.X >= _width || p.Y * _width + p.X >= _byTile.Length || p.X >= _width ? null : _byTile[p.Y * _width + p.X];
+        /// <summary>Karonun odası; harita dışıysa null.</summary>
+        public Room RoomAt(GridPos p)
+        {
+            if (p.X < 0 || p.Y < 0 || p.X >= _width) return null;
+            int i = p.Y * _width + p.X;
+            return i < _byTile.Length ? _byTile[i] : null;
+        }
 
         public IEnumerable<Room> IndoorRooms
         {
