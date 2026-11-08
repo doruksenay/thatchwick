@@ -24,3 +24,4 @@ Kuralları gevşetmek ya da sıkılaştırmak kullanıcının kararıdır; işç
 | Tarih | İş | Araç | Harcanan | Kalan (get_balance) |
 |---|---|---|---|---|
 | 2026-11-08 | (devir) tur 3-4 Faz A | — | 1 | 1999 |
+| 2026-11-08 | 007 duvar malzeme | create_building_kit (materials, 64) | 10 | 1950 |

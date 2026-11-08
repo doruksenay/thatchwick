@@ -1,7 +1,7 @@
 ---
 id: "007"
 title: Duvar malzeme örneği
-status: pending
+status: review
 approved_by: auto
 cost_est: 10
 cost_max: 15
