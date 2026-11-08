@@ -24,6 +24,8 @@ namespace Thatchwick.Core.Content
         public int price;
         public string category;      // boş = furniture
         public float heat;           // ısı gücü; 0 = ısı kaynağı değil
+        public float growDays;       // bitki: olgunlaşma süresi (gün); 0 = bitki değil
+        public string plantsAs;      // fidan: dikilince oluşan bitki kimliği
     }
 
     [Serializable]
@@ -44,5 +46,17 @@ namespace Thatchwick.Core.Content
         public double durationDays;
         public string skill;   // isteğe bağlı: Farming/Woodcutting/Cooking/Carpentry
         public float skillXp;
+        public bool requiresGrown;
+        public string consume;           // harcanan kaynak kimliği (1 adet)
+        public ProduceDto[] produce;
+        public bool removeItem;
+    }
+
+    [Serializable]
+    public sealed class ProduceDto
+    {
+        public string item;
+        public int count;      // 0 ya da eksik = 1
+        public float chance;   // 0 ya da eksik = 1 (kesin)
     }
 }

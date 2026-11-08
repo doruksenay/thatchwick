@@ -176,6 +176,77 @@
       "placement": "Resource",
       "price": 2,
       "category": "resource"
+    },
+    {
+      "id": "item.log",
+      "displayName": "Kütük",
+      "interactions": [],
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource"
+    },
+    {
+      "id": "item.sapling_oak",
+      "displayName": "Meşe fidanı",
+      "interactions": [],
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "plantsAs": "item.tree_oak"
+    },
+    {
+      "id": "item.tree_oak",
+      "displayName": "Meşe",
+      "category": "plant",
+      "growDays": 12,
+      "interactions": [
+        {
+          "id": "chop",
+          "displayName": "Kes",
+          "durationDays": 0.15,
+          "skill": "Woodcutting",
+          "skillXp": 20,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.log",
+              "count": 3
+            },
+            {
+              "item": "item.sapling_oak",
+              "count": 1
+            },
+            {
+              "item": "item.sapling_oak",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.chopping_block",
+      "displayName": "Yarma kütüğü",
+      "price": 10,
+      "category": "utility",
+      "interactions": [
+        {
+          "id": "split",
+          "displayName": "Odun yar",
+          "durationDays": 0.05,
+          "skill": "Woodcutting",
+          "skillXp": 8,
+          "consume": "item.log",
+          "produce": [
+            {
+              "item": "item.firewood",
+              "count": 3
+            }
+          ]
+        }
+      ]
     }
   ]
 }

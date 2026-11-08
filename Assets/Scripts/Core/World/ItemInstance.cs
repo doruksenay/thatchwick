@@ -25,6 +25,14 @@ namespace Thatchwick.Core.World
         public double FuelDays { get; internal set; }
         public bool IsLit => FuelDays > 0;
 
+        /// <summary>Bitkinin büyüme ilerlemesi (oyun günü).</summary>
+        public double GrowthDays { get; internal set; }
+        public bool IsPlant => Def.IsPlant;
+        /// <summary>Bitki değilse ya da olgunlaştıysa true.</summary>
+        public bool IsGrown => !IsPlant || GrowthDays >= Def.GrowDays;
+        /// <summary>0-1 büyüme oranı (bitki değilse 1).</summary>
+        public float GrowthFraction => IsPlant ? (float)System.Math.Min(1.0, GrowthDays / Def.GrowDays) : 1f;
+
         /// <summary>Dönüş uygulanmış genişlik/yükseklik.</summary>
         public int Width => IsDecor ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).w;
         public int Height => IsDecor ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).h;

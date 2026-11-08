@@ -50,9 +50,13 @@ namespace Thatchwick.Core.Build
         }
 
         /// <summary>Yerleştirilmiş eşyayı (ve üstündeki dekorları) satar.</summary>
+        private const string PlantLocked = "Bitkiler taşınmaz ya da satılmaz; olgunlaşınca kesilir.";
+
         public PlacementCheck SellPlaced(int itemId)
         {
-            if (_world.GetItem(itemId) == null) return PlacementCheck.Fail("Eşya bulunamadı.");
+            var target = _world.GetItem(itemId);
+            if (target == null) return PlacementCheck.Fail("Eşya bulunamadı.");
+            if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
             int total = 0;
             foreach (var def in _world.RemoveItem(itemId)) total += SellValue(def);
             if (total > 0) _house.AddAkce(total);
@@ -105,6 +109,7 @@ namespace Thatchwick.Core.Build
         public PlacementCheck Move(int itemId, GridPos position, int rotation)
         {
             var item = _world.GetItem(itemId);
+            if (item != null && item.IsPlant) return PlacementCheck.Fail(PlantLocked);
             if (item != null)
             {
                 var owned = CheckOwned(item.Def, position, rotation);
@@ -116,7 +121,9 @@ namespace Thatchwick.Core.Build
         /// <summary>Eşyayı (ve dekorlarını) envantere geri alır.</summary>
         public PlacementCheck StoreToInventory(int itemId)
         {
-            if (_world.GetItem(itemId) == null) return PlacementCheck.Fail("Eşya bulunamadı.");
+            var target = _world.GetItem(itemId);
+            if (target == null) return PlacementCheck.Fail("Eşya bulunamadı.");
+            if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
             foreach (var def in _world.RemoveItem(itemId)) _house.AddItem(def.Id);
             return PlacementCheck.Success;
         }
@@ -181,6 +188,33 @@ namespace Thatchwick.Core.Build
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
             if (refund > 0) _house.AddAkce(refund);
             map.SetFloor(tile, floor);
+            return PlacementCheck.Success;
+        }
+
+        // ---- dikim ----
+
+        /// <summary>
+        /// Envanterdeki fidanı/tohumu dikiyor: kendi arsanda, dış mekânda (oda içinde değil), çim ya da
+        /// toprak zeminli, boş karoya. Bitki büyümeye 0'dan başlar.
+        /// </summary>
+        public PlacementCheck Plant(string seedId, GridPos tile, out ItemInstance planted)
+        {
+            planted = null;
+            if (!_content.Items.TryGet(seedId, out var seed) || seed.PlantsAs == null) return PlacementCheck.Fail("Bu dikilemez.");
+            if (_house.Count(seedId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
+            var map = _world.Map;
+            if (!map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
+            if (!map.IsOwned(tile)) return PlacementCheck.Fail(NotOwned);
+            var room = map.Rooms.RoomAt(tile);
+            if (room != null && room.IsIndoor) return PlacementCheck.Fail("Ev içine dikilmez, dışarıda bir yer seç.");
+            var floor = map.GetFloor(tile);
+            if (floor != FloorType.Grass && floor != FloorType.Dirt) return PlacementCheck.Fail("Yalnızca çim ya da toprağa dikilir.");
+            var plantDef = _content.Items.Get(seed.PlantsAs);
+            var check = _world.CanPlaceFloor(plantDef, tile, 0);
+            if (!check.Ok) return check;
+
+            _house.TryTakeItem(seedId);
+            planted = _world.PlaceItem(plantDef, tile);
             return PlacementCheck.Success;
         }
 

@@ -41,6 +41,13 @@ namespace Thatchwick.Core.Content
         /// <summary>Yanarken bulunduğu odaya verdiği ısı gücü (0 = ısı kaynağı değil). Yakıt gerektirir.</summary>
         public float HeatOutput { get; set; }
 
+        /// <summary>Bitki ise olgunlaşma süresi (oyun günü, yalnızca dış mekânda ve kış dışında büyür). 0 = bitki değil.</summary>
+        public float GrowDays { get; set; }
+        /// <summary>Fidan/tohum kaynağı ise dikilince oluşan bitkinin kimliği.</summary>
+        public string PlantsAs { get; set; }
+
+        public bool IsPlant => GrowDays > 0f;
+
         public SurfaceSlotDef FindSlot(string slotId)
         {
             foreach (var s in SurfaceSlots)

@@ -45,6 +45,12 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Açıksa, kuyruk boşken ve ihtiyaç kritikken karakter kendi iş seçer (NPC).</summary>
         public bool Autonomous { get; set; }
 
+        /// <summary>
+        /// İş etkileşimlerinin (kaynak harcama, ürün, eşyayı kaldırma) uygulayıcısı. Yoksa bu tür
+        /// etkileşimler başlamaz. Hane envanterini JobRunner bilmez; bu arayüz üzerinden çalışır.
+        /// </summary>
+        public IInteractionEffects Effects { get; set; }
+
         /// <summary>Son başarısız işin nedeni (arayüzde gösterilir); yoksa null.</summary>
         public string LastFailure { get; private set; }
 
@@ -133,7 +139,11 @@ namespace Thatchwick.Core.Jobs
             InteractionDef interaction = item == null ? null : FindInteraction(item.Def, job.InteractionId);
             if (interaction == null) { Fail("Eşya ya da etkileşim bulunamadı."); return 0; }
 
-            if (!_using && IsUnlitHeatSource(item, interaction)) { Fail("Ocak sönük, önce odun at."); return 0; }
+            if (!_using)
+            {
+                string blocked = StartBlocker(item, interaction);
+                if (blocked != null) { Fail(blocked); return 0; }
+            }
 
             if (_path == null && !_using)
             {
@@ -158,14 +168,16 @@ namespace Thatchwick.Core.Jobs
                 _using = true;
             }
 
-            double remaining = interaction.DurationDays - _useProgress;
+            double remaining = EffectiveDuration(interaction) - _useProgress;
             double available = budget - used;
             if (available >= remaining)
             {
-                _character.Needs.Restore(interaction.Need, interaction.Restore);
+                if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, interaction.Restore);
                 if (interaction.Skill.HasValue && interaction.SkillXp > 0f)
                     _character.GainSkillXp(interaction.Skill.Value, interaction.SkillXp);
                 Finish();
+                // Etkiler en sonda: eşyayı kaldırabilir (kesilen ağaç) ve dünyayı değiştirir.
+                if (interaction.HasEffects) Effects?.Apply(_character, item, interaction);
                 return used + remaining;
             }
 
@@ -226,6 +238,28 @@ namespace Thatchwick.Core.Jobs
             return Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
         }
 
+        /// <summary>Beceri seviyesi işi hızlandırır: seviye başına %5, en çok yarı süre.</summary>
+        public double EffectiveDuration(InteractionDef interaction)
+        {
+            if (!interaction.Skill.HasValue) return interaction.DurationDays;
+            int level = _character.Skills.GetLevel(interaction.Skill.Value);
+            double factor = Math.Max(0.5, 1.0 - 0.05 * (level - 1));
+            return interaction.DurationDays * factor;
+        }
+
+        // Etkileşime başlanamıyorsa nedeni (arayüzde gösterilir); başlanabiliyorsa null.
+        private string StartBlocker(ItemInstance item, InteractionDef interaction)
+        {
+            if (IsUnlitHeatSource(item, interaction)) return "Ocak sönük, önce odun at.";
+            if (interaction.RequiresGrown && !item.IsGrown) return $"{item.Def.DisplayName} henüz büyümedi.";
+            if (interaction.HasEffects)
+            {
+                if (Effects == null) return "Bu iş şu an yapılamaz.";
+                return Effects.CanStart(_character, item, interaction);
+            }
+            return null;
+        }
+
         private static bool IsUnlitHeatSource(ItemInstance item, InteractionDef interaction) =>
             interaction.Need == NeedType.Warmth && item.Def.HeatOutput > 0f && !item.IsLit;
 
@@ -255,7 +289,8 @@ namespace Thatchwick.Core.Jobs
             {
                 foreach (var interaction in item.Def.Interactions)
                 {
-                    if (interaction.Need != worst.Value) continue;
+                    if (!interaction.RestoresNeed || interaction.Need != worst.Value) continue;
+                    if (interaction.HasEffects || interaction.RequiresGrown) continue;    // otonomi iş yapmaz, yalnızca ihtiyaç giderir
                     if (IsUnlitHeatSource(item, interaction)) continue;   // sönük ocağa ısınmaya gidilmez
                     if (_unreachableUntil.TryGetValue(item.Id, out var until) && until > _elapsedDays) continue;
 

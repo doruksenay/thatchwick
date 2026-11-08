@@ -31,6 +31,8 @@ namespace Thatchwick.Core.Content
                     Height = dto.height <= 0 ? 1 : dto.height,
                     Price = dto.price,
                     HeatOutput = dto.heat,
+                    GrowDays = dto.growDays,
+                    PlantsAs = string.IsNullOrWhiteSpace(dto.plantsAs) ? null : dto.plantsAs,
                     Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category
                 };
 
@@ -56,7 +58,10 @@ namespace Thatchwick.Core.Content
                     foreach (var i in dto.interactions)
                     {
                         if (i == null) continue;
-                        if (!TryParseNeed(i.need, out var need))
+                        bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem;
+                        NeedType need = default;
+                        bool needless = hasEffects && string.IsNullOrWhiteSpace(i.need);   // saf iş etkileşimi
+                        if (!needless && !TryParseNeed(i.need, out need))
                         {
                             errors.Add($"{dto.id}/{i.id}: bilinmeyen ihtiyaç '{i.need}'.");
                             continue;
@@ -73,7 +78,7 @@ namespace Thatchwick.Core.Content
                             skill = parsed;
                         }
 
-                        item.Interactions.Add(new InteractionDef
+                        var interaction = new InteractionDef
                         {
                             Id = i.id,
                             DisplayName = i.displayName,
@@ -81,8 +86,25 @@ namespace Thatchwick.Core.Content
                             Restore = i.restore,
                             DurationDays = i.durationDays,
                             Skill = skill,
-                            SkillXp = i.skillXp
-                        });
+                            SkillXp = i.skillXp,
+                            RequiresGrown = i.requiresGrown,
+                            ConsumeItem = string.IsNullOrWhiteSpace(i.consume) ? null : i.consume,
+                            RemovesItem = i.removeItem
+                        };
+                        if (i.produce != null)
+                        {
+                            foreach (var p in i.produce)
+                            {
+                                if (p == null) continue;
+                                interaction.Produce.Add(new ProduceDef
+                                {
+                                    ItemId = p.item,
+                                    Count = p.count <= 0 ? 1 : p.count,
+                                    Chance = p.chance <= 0f ? 1f : p.chance
+                                });
+                            }
+                        }
+                        item.Interactions.Add(interaction);
                     }
                 }
 
