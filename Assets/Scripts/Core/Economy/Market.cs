@@ -82,6 +82,33 @@ namespace Thatchwick.Core.Economy
             return list;
         }
 
+        /// <summary>Kayıt için talep değerleri (yalnızca 1'den düşük olanlar).</summary>
+        public List<KeyValuePair<string, double>> ExportDemand()
+        {
+            var list = new List<KeyValuePair<string, double>>();
+            foreach (var kv in _demand) if (kv.Value < 1.0) list.Add(kv);
+            return list;
+        }
+
+        public List<int> ExportTakenOffers()
+        {
+            var list = new List<int>();
+            foreach (var o in _offers) if (o.Taken) list.Add(o.Id);
+            return list;
+        }
+
+        /// <summary>Kayıttan yükleme: talep ve o günün alınmış teklifleri (teklifler gün ve tohumdan yeniden üretilir).</summary>
+        public void RestoreState(IEnumerable<KeyValuePair<string, double>> demand, double totalDays, Season season, IEnumerable<int> takenOffers)
+        {
+            _demand.Clear();
+            if (demand != null) foreach (var kv in demand) _demand[kv.Key] = Math.Max(_cfg.MinDemand, Math.Min(1.0, kv.Value));
+            _offerDay = -1;
+            Tick(0, totalDays, season);
+            if (takenOffers == null) return;
+            var taken = new HashSet<int>(takenOffers);
+            foreach (var o in _offers) if (taken.Contains(o.Id)) o.Taken = true;
+        }
+
         public double Demand(string itemId) => _demand.TryGetValue(itemId, out var d) ? d : 1.0;
 
         public double SeasonMultiplier(ItemDef def)

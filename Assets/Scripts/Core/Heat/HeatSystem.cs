@@ -67,6 +67,16 @@ namespace Thatchwick.Core.Heat
         }
 
         public HeatConfig Config => _cfg;
+
+        /// <summary>Kayıt için karo sıcaklıkları (kopya).</summary>
+        public float[] ExportTemperatures() => (float[])_temp.Clone();
+
+        /// <summary>Kayıttan yükleme; boyut uymazsa yok sayılır (dış sıcaklıkla başlar).</summary>
+        public void RestoreTemperatures(float[] temps)
+        {
+            if (temps == null || temps.Length != _temp.Length) return;
+            Array.Copy(temps, _temp, _temp.Length);
+        }
         public float OutdoorTemperature => _outdoor;
 
         public float TemperatureAt(GridPos p)

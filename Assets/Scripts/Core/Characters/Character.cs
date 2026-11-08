@@ -46,6 +46,26 @@ namespace Thatchwick.Core.Characters
             return true;
         }
 
+        /// <summary>Kayıt için iç durum (yalnızca Save sistemi kullanır).</summary>
+        internal double PregnancyLeft => _pregnancyLeft;
+        internal double PostpartumLeft => _postpartumLeft;
+
+        /// <summary>Kayıttan yükleme: biyolojik iç durumu olduğu gibi geri koyar (olay tetiklemez).</summary>
+        internal void RestoreBiology(double ageDays, double lifespan, bool dead, DeathCause cause, bool pregnant, int? fatherId,
+            double pregnancyLeft, double postpartumLeft, double freezeDays, double starveDays)
+        {
+            AgeDays = ageDays;
+            LifespanDays = lifespan;
+            IsDead = dead;
+            CauseOfDeath = cause;
+            IsPregnant = pregnant;
+            FatherId = fatherId;
+            _pregnancyLeft = pregnancyLeft;
+            _postpartumLeft = postpartumLeft;
+            FreezeDays = freezeDays;
+            StarveDays = starveDays;
+        }
+
         /// <summary>Yaş (oyun günü). Doğumda 0.</summary>
         public double AgeDays { get; private set; }
         public AgeConfig AgeConfig { get; set; } = AgeConfig.Default;

@@ -61,6 +61,12 @@ namespace Thatchwick.Core.Characters
 
         public int GetLevel(SkillType skill) => SkillRules.LevelForXp(GetXp(skill));
 
+        /// <summary>Kayıttan yükleme: XP'yi olduğu gibi koyar (olay tetiklemez).</summary>
+        internal void RestoreXp(SkillType skill, double xp)
+        {
+            if (xp > 0) _xp[skill] = xp; else _xp.Remove(skill);
+        }
+
         /// <summary>
         /// XP ekler; seviye tavanını aşan kısım kaybolur (XP tavan seviyenin sınırında durur).
         /// Eklenen gerçek XP'yi döner (tavan yüzünden 0 olabilir).

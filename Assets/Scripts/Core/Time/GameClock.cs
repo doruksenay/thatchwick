@@ -50,6 +50,14 @@ namespace Thatchwick.Core.Time
             _criticalLocks--;
         }
 
+        /// <summary>Kayıttan yükleme: toplam gün ve oyuncunun seçtiği hız.</summary>
+        public void Restore(double totalDays, int speed)
+        {
+            if (totalDays < 0) throw new ArgumentOutOfRangeException(nameof(totalDays));
+            TotalDays = totalDays;
+            if (Array.IndexOf(AllowedSpeeds, speed) >= 0) _requestedSpeed = speed;
+        }
+
         /// <summary>Gerçek geçen süreyi (saniye) oyun saatine uygular; geçen oyun günü döner.</summary>
         public double Advance(double realSeconds)
         {

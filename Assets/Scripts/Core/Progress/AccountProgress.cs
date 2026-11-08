@@ -50,6 +50,23 @@ namespace Thatchwick.Core.Progress
             return level;
         }
 
+        // ---- kayıt ----
+        public long WorkDay => _workDay;
+        public int WorkXpTodayRaw => _workXpToday;
+        public IEnumerable<string> Firsts => _firsts;
+        public IEnumerable<KeyValuePair<string, int>> Counters => _counters;
+
+        /// <summary>Kayıttan yükleme (olay tetiklemez).</summary>
+        public void Restore(int xp, IEnumerable<string> firsts, IEnumerable<string> badges, IEnumerable<KeyValuePair<string, int>> counters, long workDay, int workToday)
+        {
+            Xp = Math.Max(0, xp);
+            _firsts.Clear(); if (firsts != null) foreach (var f in firsts) _firsts.Add(f);
+            _badges.Clear(); if (badges != null) foreach (var b in badges) _badges.Add(b);
+            _counters.Clear(); if (counters != null) foreach (var kv in counters) _counters[kv.Key] = kv.Value;
+            _workDay = workDay;
+            _workXpToday = workToday;
+        }
+
         public int WorkXpToday(long dayIndex) => dayIndex == _workDay ? _workXpToday : 0;
         public int Counter(string key) => _counters.TryGetValue(key, out var n) ? n : 0;
         public bool HasFirst(string key) => _firsts.Contains(key);

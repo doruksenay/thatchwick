@@ -166,6 +166,26 @@ namespace Thatchwick.Core.World
             return returned;
         }
 
+        /// <summary>
+        /// Kayıttan yükleme: eşyayı kimliğiyle olduğu gibi koyar. Yer eşyası karolarını kapatır; dekor,
+        /// üstündeki eşya önce yüklenmiş olmalı. Changed tetiklenmez (yükleme sonunda görünüm baştan kurulur).
+        /// </summary>
+        internal ItemInstance RestoreItem(ItemDef def, int id, GridPos position, int rotation, int? parentId, string slotId,
+            double fuelDays, double growthDays)
+        {
+            var item = new ItemInstance(id, def, position, Footprint.Normalize(rotation))
+            {
+                ParentId = parentId,
+                SlotId = slotId,
+                FuelDays = fuelDays,
+                GrowthDays = growthDays
+            };
+            if (!item.IsDecor) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
+            _items.Add(item);
+            if (id >= _nextId) _nextId = id + 1;
+            return item;
+        }
+
         /// <summary>Kimliğe göre eşya; yoksa null.</summary>
         public ItemInstance GetItem(int id)
         {
