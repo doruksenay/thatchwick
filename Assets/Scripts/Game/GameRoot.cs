@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
+using Thatchwick.Core.Customization;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
@@ -42,6 +43,8 @@ namespace Thatchwick.Game
         private GUIStyle _labelStyle;
         private readonly System.Random _rng = new System.Random(11);
         private Population _population;
+        private AppearanceCatalog _appearanceCatalog;
+        private CharacterCreator _creator;
         private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
         private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric" };
         private int _nameCounter;
@@ -86,8 +89,23 @@ namespace Thatchwick.Game
             _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % 4];
             _population.BabyBorn += OnBabyBorn;
 
-            _player = CreateActor(1, "Aldric", new GridPos(24, 10), true, new Color(0.95f, 0.62f, 0.2f), Sex.Male);
-            _maud = CreateActor(2, "Maud", new GridPos(28, 9), false, new Color(0.9f, 0.5f, 0.75f), Sex.Female);
+            _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
+            foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
+            _population.AppearanceCatalog = _appearanceCatalog;
+
+            // Maud (NPC) rastgele görünümle hemen oluşur; oyuncunun karakteri yaratma ekranından gelir.
+            var maud = new Character(2, "Maud", new GridPos(28, 9), false)
+            {
+                Sex = Sex.Female,
+                Appearance = _appearanceCatalog.Randomize(_rng, Sex.Female)
+            };
+            maud.SetAge(36);
+            maud.LifespanDays = maud.AgeConfig.RollLifespan(_rng);
+            _population.Add(maud);
+            _maud = CreateActorFor(maud);
+
+            _creator = new CharacterCreator(_appearanceCatalog, seed: 5);
+            _input.enabled = false;
         }
 
         // Test haritası: gölet (dikdörtgen), bir çit hattı ve dağınık engeller.
@@ -158,16 +176,7 @@ namespace Thatchwick.Game
             }
         }
 
-        private Actor CreateActor(int id, string name, GridPos start, bool player, Color color, Sex sex)
-        {
-            var character = new Character(id, name, start, player) { Sex = sex };
-            character.SetAge(36); // Test: yetişkin başlar
-            character.LifespanDays = character.AgeConfig.RollLifespan(_rng);
-            _population.Add(character);
-            return CreateActorFor(character, color);
-        }
-
-        private Actor CreateActorFor(Character character, Color color)
+        private Actor CreateActorFor(Character character)
         {
             character.StageChanged += (c, from, to) => ShowMessage($"{c.Name}: {StageName(to)} oldu");
             character.Died += c => ShowMessage($"{c.Name} hayatını kaybetti");
@@ -176,7 +185,7 @@ namespace Thatchwick.Game
             var go = new GameObject(character.Name);
             go.transform.SetParent(transform, false);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = SpriteMaterials.Pillar(color);
+            sr.sprite = PersonSprites.Get(character.Appearance);
             sr.sharedMaterial = SpriteMaterials.Unlit;
             go.transform.position = _view.TileToWorld(character.Position);
 
@@ -194,8 +203,7 @@ namespace Thatchwick.Game
         // Yeni doğan bebek: sahneye küçük bir karakter olarak eklenir (bebek evresinde yetişkin boyunun yarısı).
         private void OnBabyBorn(Character baby, Character mother, int? fatherId)
         {
-            var actor = CreateActorFor(baby, baby.Sex == Sex.Female ? new Color(0.95f, 0.75f, 0.85f) : new Color(0.6f, 0.75f, 0.95f));
-            actor.View.localScale = new Vector3(0.6f, 0.6f, 1f);
+            CreateActorFor(baby);
             ShowMessage($"{mother.Name} doğurdu: {baby.Name}");
         }
 
@@ -204,6 +212,17 @@ namespace Thatchwick.Game
             float s = HudScale;
             var guiPos = new Vector2(screenPos.x / s, (Screen.height - screenPos.y) / s);
             return HudRect.Contains(guiPos);
+        }
+
+        private void FinishCreation()
+        {
+            var character = _creator.Draft.CreateCharacter(1, new GridPos(24, 10), true, _appearanceCatalog, _rng);
+            _creator.Release();
+            _creator = null;
+            _population.Add(character);
+            _player = CreateActorFor(character);
+            _input.enabled = true;
+            ShowMessage($"{character.Name} köye geldi");
         }
 
         private void OnTapped(Vector2 screenPos)
@@ -247,6 +266,12 @@ namespace Thatchwick.Game
         {
             if (RecoverIfLost()) return;
 
+            if (_creator != null)
+            {
+                if (_creator.Finished) FinishCreation();
+                return; // yaratma ekranı açıkken oyun saati ilerlemez
+            }
+
             float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
 
             // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
@@ -282,6 +307,7 @@ namespace Thatchwick.Game
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
             actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1);
             float scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : 1f);
+            if (actor.Character.Stage != AgeStage.Baby && actor.Character.Stage != AgeStage.Child) scale *= actor.Character.Appearance.HeightPercent / 100f;
             actor.View.localScale = new Vector3(scale, scale, 1f);
         }
 
@@ -348,6 +374,12 @@ namespace Thatchwick.Game
         {
             if (_clock == null) return;
 
+            if (_creator != null)
+            {
+                _creator.OnGUI();
+                return;
+            }
+
             float s = HudScale;
             GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
 
@@ -380,6 +412,13 @@ namespace Thatchwick.Game
                 _maud.Character.PregnancyDays = 2;
                 if (!_maud.Character.TryStartPregnancy(_player.Character.Id)) ShowMessage("Maud şu an hamile kalamaz");
                 else ShowMessage("Maud hamile");
+            }
+            if (GUILayout.Button("Yeni oyun (karakter yaratıcıyı aç)"))
+            {
+                enabled = false;
+                new GameObject("GameRoot").AddComponent<GameRoot>();
+                Destroy(gameObject);
+                return;
             }
             GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
