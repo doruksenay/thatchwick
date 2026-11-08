@@ -25,6 +25,18 @@ namespace Thatchwick.Core.Save
         public DynastySave dynasty;
         /// <summary>Yaşam katmanı (mezar, hava, takvim, köylüler, projeler ...). Eski kayıtta null.</summary>
         public LifeSaveData life;
+        public AnimalSave[] animals;     // v2
+    }
+
+    [Serializable]
+    public sealed class AnimalSave
+    {
+        public int id;
+        public string species;
+        public int x, y;
+        public int home;
+        public float fullness;
+        public double age, produce, hungryDays;
     }
 
     [Serializable]
@@ -56,8 +68,8 @@ namespace Thatchwick.Core.Save
         public string slotId;
         public double fuelDays;
         public double growthDays;
-        /// <summary>Üreten eşyanın hazırlanma ilerlemesi (kümes).</summary>
-        public double readyProgress;
+        public double feedStock;    // v2: barınak yemi
+        public KeyInt[] stock;      // v2: barınakta biriken ürünler
     }
 
     [Serializable]
@@ -82,6 +94,8 @@ namespace Thatchwick.Core.Save
         public int fatherId = -1;
         public double pregnancyLeft, postpartumLeft, freezeDays, starveDays;
         public float hunger, energy, warmth;
+        public float fun, hygiene;          // v2
+        public KeyFloat[] moodlets;         // v2: (kimlik, kalan gün)
         public KeyFloat[] skills;
         public AppearanceSave appearance;
         // Aile (Adım 16-17). Eksik alan eski kayıtta 0/false gelir: kimlikler 1'den başladığı için 0 = yok.
@@ -91,10 +105,10 @@ namespace Thatchwick.Core.Save
         public int generation;
         public bool isVillager;
         // Adım 18a/32: eksik alan eski kayıtta -1 gelir (= tam doygun), diziler boş kalır.
-        public float social = -1f, fun = -1f;
+        public float social = -1f;
         public string[] traits;
         public string[] branches;
-        public MoodletSave[] moodlets;
+        public MoodletSave[] extraMoodlets;   // katalog dışı anlık moodlet'ler (şenlik, hediye, oda konforu ...)
     }
 
     [Serializable]

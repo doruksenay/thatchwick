@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.World;
@@ -29,7 +30,15 @@ namespace Thatchwick.Game
         private Tool? _pendingTool;
         private bool _showRooms;
         private WallView _walls;
-        private int _tab;                    // 0 envanter, 1 mağaza
+        private int _tab;                    // 0 envanter, 1 satın al
+        private int _shopCat;                // kategori sırası; Categories.Length = hayvanlar
+        private int _roomFilter;             // 0 hepsi, sonra ItemCatalog.Rooms
+        private int _setFilter;              // 0 hepsi, sonra ItemCatalog.StyleSets
+        private GUIStyle _wrap;
+        // Arayüz yapısını değiştiren tıklamalar (kategori, satın alma) bir sonraki Layout olayında uygulanır;
+        // aynı olayda denetim sayısı değişip IMGUI hatası vermesin.
+        private System.Action _deferred;
+        private readonly AnimalSystem _animals;
         private string _placeId;             // envanterden yerleştirilecek eşya
         private string _plantId;             // dikilecek fidan/tohum
         private int _selectedId;             // seçili yerleştirilmiş eşya (0 yok)
@@ -47,9 +56,10 @@ namespace Thatchwick.Game
         public event System.Action<string> Activity;
 
         public BuildMode(WorldState world, Household house, BuildService svc, ContentDatabase content,
-            WorldView view, WorldInput input, Transform parent, WallView walls = null)
+            WorldView view, WorldInput input, Transform parent, WallView walls = null, AnimalSystem animals = null)
         {
             _walls = walls;
+            _animals = animals;
             _world = world; _house = house; _svc = svc; _content = content; _view = view; _input = input;
             _overlay = new GameObject("BuildOverlay").transform;
             _overlay.SetParent(parent, false);
@@ -101,8 +111,44 @@ namespace Thatchwick.Game
         // (üst yüz) noktayı, sonra tabanı dener.
         private ItemInstance PickItem(Vector3 world)
         {
+            var wall = PickWallItem(_world, world);
+            if (wall != null) return wall;
             var raised = _view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f));
             return _world.GetItemAt(raised) ?? _world.GetItemAt(_view.WorldToTile(world));
+        }
+
+        /// <summary>Dokunulan noktaya yakın (çizildiği yerde) duvar eşyası; yoksa null.</summary>
+        public static ItemInstance PickWallItem(WorldState world, Vector3 point)
+        {
+            ItemInstance best = null;
+            float bestD = 0.45f;
+            foreach (var it in world.Items)
+            {
+                if (!it.IsWallMounted) continue;
+                float d = Vector2.Distance(Iso.WallMount(it.Position, it.Rotation), point);
+                if (d < bestD) { bestD = d; best = it; }
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// Duvar eşyası için dokunulan noktaya en yakın düz duvar: (önündeki karo, kenar). Dokunuş duvarın
+        /// yüzüne (asılma yüksekliğine) yapılır; o yükseklik düşülüp karonun duvarlı kenarlarından en yakını seçilir.
+        /// </summary>
+        private bool NearestWallSide(Vector3 world, out GridPos tile, out int side)
+        {
+            var g = Iso.WorldToGrid(new Vector2(world.x, world.y - Iso.WallMountHeight));
+            tile = new GridPos(Mathf.FloorToInt(g.x), Mathf.FloorToInt(g.y));
+            float fx = g.x - tile.X, fy = g.y - tile.Y;
+            float[] dist = { fy, 1f - fx, 1f - fy, fx };   // kenar 0 (-y), 1 (+x), 2 (+y), 3 (-x)
+            side = -1;
+            float best = float.MaxValue;
+            for (int k = 0; k < 4; k++)
+            {
+                if (_world.Map.GetEdge(WallSides.EdgeOf(tile, k)) != EdgeKind.Wall) continue;
+                if (dist[k] < best) { best = dist[k]; side = k; }
+            }
+            return side >= 0;
         }
 
         public void OnTap(Vector3 world)
@@ -116,6 +162,29 @@ namespace Thatchwick.Game
                 _status = r.Ok ? $"Dikildi. Kalan: {_house.Count(_plantId)}" : r.Reason;
                 if (r.Ok) Activity?.Invoke("plant");
                 if (r.Ok && _house.Count(_plantId) <= 0) ClearSelectionKeepStatus();
+                return;
+            }
+
+            // Duvar eşyası: dokunulan duvarın iç yüzüne asılır.
+            if (_placeId != null && IsWallDef(_placeId))
+            {
+                if (!NearestWallSide(world, out var wt, out int side)) { _status = "Bir duvarın yüzüne dokun (kapı ve pencere olmaz)."; return; }
+                var wr = _svc.PlaceWallFromInventory(_placeId, wt, side, out _);
+                _status = wr.Ok ? $"Asıldı. Kalan: {_house.Count(_placeId)}" : wr.Reason;
+                if (wr.Ok && _house.Count(_placeId) <= 0) ClearSelectionKeepStatus();
+                RefreshOverlay();
+                return;
+            }
+
+            // Duvar eşyasını taşıma: yeni duvara dokununca hemen taşınır.
+            var movingSel = _moving && _selectedId != 0 ? _world.GetItem(_selectedId) : null;
+            if (movingSel != null && movingSel.IsWallMounted)
+            {
+                if (!NearestWallSide(world, out var mt, out int mside)) { _status = "Bir duvarın yüzüne dokun."; return; }
+                var mr = _svc.Move(movingSel.Id, mt, mside);
+                _status = mr.Ok ? "Taşındı." : mr.Reason;
+                if (mr.Ok) _moving = false;
+                RefreshOverlay();
                 return;
             }
 
@@ -263,10 +332,12 @@ namespace Thatchwick.Game
         private void ClearSelectionKeepStatus() { var s = _status; ClearSelection(); _status = s; }
 
         private bool IsSurfaceDef(string id) => _content.Items.Get(id).Placement == ItemPlacement.Surface;
+        private bool IsWallDef(string id) => _content.Items.Get(id).Placement == ItemPlacement.Wall;
 
         private Vector3 SlotWorld(ItemInstance surface, string slotId)
         {
             surface.TryGetSlotPosition(slotId, out float gx, out float gy);
+            if (surface.IsWallMounted) return Iso.GridToWorld(gx, gy) + new Vector3(0f, Iso.WallMountHeight + 0.1f, 0f); // duvar rafı
             return Iso.GridToWorld(gx, gy) + new Vector3(0f, 24f / 32f, 0f); // masa üstü yüksekliği
         }
 
@@ -295,11 +366,16 @@ namespace Thatchwick.Game
             var sel = _selectedId != 0 ? _world.GetItem(_selectedId) : null;
             if (sel != null && !_moving)
                 foreach (var t in sel.OccupiedTiles()) Diamond(t, new Color(1f, 0.9f, 0.3f, 0.55f), -9000, 1f);
+            if (sel != null && sel.IsWallMounted)
+            {
+                Diamond(sel.Position, new Color(1f, 0.9f, 0.3f, 0.4f), -9000, 1f);
+                DiamondAt(Iso.WallMount(sel.Position, sel.Rotation), new Color(1f, 0.9f, 0.3f, 0.9f), 6001, 0.35f);
+            }
 
             // Hayalet
             ItemDef ghostDef = null; int? ignore = null;
-            if (_placeId != null && !IsSurfaceDef(_placeId)) ghostDef = _content.Items.Get(_placeId);
-            else if (_moving && sel != null) { ghostDef = sel.Def; ignore = sel.Id; }
+            if (_placeId != null && !IsSurfaceDef(_placeId) && !IsWallDef(_placeId)) ghostDef = _content.Items.Get(_placeId);
+            else if (_moving && sel != null && !sel.IsWallMounted) { ghostDef = sel.Def; ignore = sel.Id; }
             if (ghostDef != null)
             {
                 var check = _world.CanPlaceFloor(ghostDef, _ghostPos, _rot, ignore);
@@ -348,6 +424,13 @@ namespace Thatchwick.Game
         public void OnGUI(float guiScale)
         {
             if (!Active) return;
+            if (_wrap == null) _wrap = new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = 11 };
+            if (_deferred != null && Event.current.type == EventType.Layout)
+            {
+                var d = _deferred;
+                _deferred = null;
+                d();
+            }
             if (_pendingTool.HasValue && Event.current.type == EventType.Layout)
             {
                 _tool = _pendingTool.Value;
@@ -371,7 +454,7 @@ namespace Thatchwick.Game
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Toggle(_tab == 0, "Envanter", GUI.skin.button)) _tab = 0;
-            if (GUILayout.Toggle(_tab == 1, "Mağaza", GUI.skin.button)) _tab = 1;
+            if (GUILayout.Toggle(_tab == 1, "Satın al", GUI.skin.button)) _tab = 1;
             GUILayout.EndHorizontal();
 
             _scroll = GUILayout.BeginScrollView(_scroll);
@@ -461,6 +544,10 @@ namespace Thatchwick.Game
                         GUILayout.EndHorizontal();
                     }
                 }
+                else if (def.Placement == ItemPlacement.Wall)
+                {
+                    GUILayout.Label("Bir duvarın iç yüzüne dokun: eşya oraya asılır. (Duvarı göremiyorsan Duvar: Yukarı.)");
+                }
                 else
                 {
                     GUILayout.Label("Haritaya dokunarak konumu seç.");
@@ -481,6 +568,12 @@ namespace Thatchwick.Game
                 GUILayout.Label(sel.IsGrown ? "Olgun: canlı modda dokunup kesebilirsin." : $"Büyüyor: %{sel.GrowthFraction * 100f:0}. Bitkiler taşınmaz ya da satılmaz.");
                 return;
             }
+            if (_moving && sel.IsWallMounted)
+            {
+                GUILayout.Label("Yeni bir duvara dokun.");
+                if (GUILayout.Button("Vazgeç")) { _moving = false; RefreshOverlay(); }
+                return;
+            }
             if (_moving)
             {
                 GUILayout.Label("Yeni konuma dokun, sonra Koy.");
@@ -498,11 +591,14 @@ namespace Thatchwick.Game
                 return;
             }
 
+            GUILayout.Label(ItemCatalog.Describe(sel.Def), _wrap);
+            if (sel.Def.IsHousing && _animals != null)
+                GUILayout.Label($"Hayvan {_animals.Residents(sel.Id)}/{sel.Def.HousingCapacity} · yem {sel.FeedStock:0.#} · ürün {sel.StockTotal}");
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Taşı")) { _moving = true; _ghostPos = sel.Position; _rot = sel.Rotation; RefreshOverlay(); }
-            if (GUILayout.Button("Envantere al")) { _svc.StoreToInventory(sel.Id); _status = "Envantere alındı."; ClearSelectionKeepStatus(); }
+            if (GUILayout.Button("Envantere al")) { var r = _svc.StoreToInventory(sel.Id); _status = r.Ok ? "Envantere alındı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
             GUILayout.EndHorizontal();
-            if (GUILayout.Button($"Sat (+{_svc.SellValue(sel.Def)} akçe, dekorlar dahil)")) { _svc.SellPlaced(sel.Id); _status = "Satıldı."; ClearSelectionKeepStatus(); }
+            if (GUILayout.Button($"Sat (+{_svc.SellValue(sel.Def)} akçe, dekorlar dahil)")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Satıldı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
         }
 
         private void PlaceFloor()
@@ -528,35 +624,134 @@ namespace Thatchwick.Game
                     _plantId = kv.Key;
                     _status = "Dışarıda bir karoya dokun.";
                 }
-                if (def.Placement != ItemPlacement.Resource && GUILayout.Button("Koy", GUILayout.Width(44f)))
-                {
-                    ClearSelection();
-                    _placeId = kv.Key;
-                    _ghostPos = new GridPos(24, 12);
-                    _status = def.Placement == ItemPlacement.Surface ? "Bir masa ya da rafa dokun." : "Haritaya dokun.";
-                    RefreshOverlay();
-                }
+                if (def.Placement != ItemPlacement.Resource && GUILayout.Button("Koy", GUILayout.Width(44f))) StartPlacing(kv.Key);
                 if (def.Placement != ItemPlacement.Resource && GUILayout.Button($"Sat {_svc.SellValue(def)}", GUILayout.Width(62f))) { _svc.SellFromInventory(kv.Key); _status = "Satıldı."; }
                 GUILayout.EndHorizontal();
             }
         }
 
+        private void StartPlacing(string itemId)
+        {
+            ClearSelection();
+            _placeId = itemId;
+            _ghostPos = new GridPos(24, 12);
+            var def = _content.Items.Get(itemId);
+            _status = def.Placement == ItemPlacement.Surface ? "Bir masa ya da rafa dokun."
+                : def.Placement == ItemPlacement.Wall ? "Bir duvarın iç yüzüne dokun." : "Haritaya dokun.";
+            RefreshOverlay();
+        }
+
+        private static readonly string[] RoomFilterNames = BuildRoomFilterNames();
+        private static readonly string[] SetFilterNames = BuildSetFilterNames();
+
+        private static string[] BuildRoomFilterNames()
+        {
+            var n = new string[ItemCatalog.Rooms.Length + 1];
+            n[0] = "Her oda";
+            for (int i = 0; i < ItemCatalog.Rooms.Length; i++) n[i + 1] = ItemCatalog.Rooms[i].name;
+            return n;
+        }
+
+        private static string[] BuildSetFilterNames()
+        {
+            var n = new string[ItemCatalog.StyleSets.Length + 1];
+            n[0] = "Her takım";
+            for (int i = 0; i < ItemCatalog.StyleSets.Length; i++) n[i + 1] = ItemCatalog.StyleSets[i];
+            return n;
+        }
+
+        // Sims tarzı satın alma: kategori sekmeleri, oda ve takım filtresi, eşya kartları.
         private void DrawShop()
         {
-            string cat = null;
-            foreach (var def in _svc.ShopList())
-            {
-                if (def.Category != cat) { cat = def.Category; GUILayout.Label(cat == "decor" ? "— Dekor —" : "— Mobilya —"); }
-                GUILayout.BeginHorizontal();
-                GUILayout.Label($"{def.DisplayName} ({def.Width}x{def.Height})");
-                bool unlocked = _svc.IsUnlocked(def);
-                GUI.enabled = unlocked;
-                if (GUILayout.Button(unlocked ? $"Al {def.Price}" : $"Sv {def.UnlockLevel}", GUILayout.Width(62f)))
+            int n = ItemCatalog.Categories.Length;
+            var names = new string[n + 1];
+            for (int i = 0; i < n; i++) names[i] = ItemCatalog.Categories[i].name;
+            names[n] = "Hayvan";
+            int cat = GUILayout.SelectionGrid(_shopCat, names, 3);
+            if (cat != _shopCat) _deferred = () => { _shopCat = cat; _scroll = Vector2.zero; };
+            if (_shopCat == n) { DrawAnimals(); return; }
+
+            int roomF = GUILayout.SelectionGrid(_roomFilter, RoomFilterNames, 3);
+            if (roomF != _roomFilter) _deferred = () => _roomFilter = roomF;
+            int setF = GUILayout.SelectionGrid(_setFilter, SetFilterNames, 3);
+            if (setF != _setFilter) _deferred = () => _setFilter = setF;
+            string room = _roomFilter > 0 ? ItemCatalog.Rooms[_roomFilter - 1].id : null;
+            string set = _setFilter > 0 ? ItemCatalog.StyleSets[_setFilter - 1] : null;
+
+            var list = ItemCatalog.InCategory(_content, ItemCatalog.Categories[_shopCat].id, room, set);
+            if (list.Count == 0) GUILayout.Label("Bu filtreyle eşya yok.");
+            foreach (var def in list) DrawCard(def);
+        }
+
+        private void DrawCard(ItemDef def)
+        {
+            GUILayout.BeginVertical(GUI.skin.box);
+            string set = string.IsNullOrEmpty(def.StyleSet) ? "" : $" · {def.StyleSet}";
+            GUILayout.Label($"{def.DisplayName} ({def.Width}x{def.Height}){set}");
+            string info = ItemCatalog.Describe(def);
+            if (info.Length > 0) GUILayout.Label(info, _wrap);
+            bool unlocked = _svc.IsUnlocked(def);
+            int have = _house.Count(def.Id);
+            GUILayout.BeginHorizontal();
+            GUI.enabled = unlocked;
+            if (GUILayout.Button(unlocked ? $"Al {def.Price}" : $"Sv {def.UnlockLevel} gerekli"))
+                _deferred = () =>
                 {
                     var r = _svc.Buy(def.Id);
-                    _status = r.Ok ? $"{def.DisplayName} alındı." : r.Reason;
+                    _status = r.Ok ? $"{def.DisplayName} alındı (envanterde)." : r.Reason;
+                };
+            if (unlocked && GUILayout.Button("Al ve koy"))
+                _deferred = () =>
+                {
+                    var r = _svc.Buy(def.Id);
+                    if (r.Ok) StartPlacing(def.Id); else _status = r.Reason;
+                };
+            GUI.enabled = true;
+            if (have > 0) GUILayout.Label($"Envanterde {have}", GUILayout.Width(80f));
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
+        }
+
+        private void DrawAnimals()
+        {
+            if (_animals == null) { GUILayout.Label("Hayvanlar bu sahnede yok."); return; }
+            GUILayout.Label("Önce barınak koy (Bahçe: kümes, ahır, kulübe, sepet, kovan), sonra hayvanı al. Yemi pazardan al, barınağa dokunup \"Yem koy\".", _wrap);
+            int level = _svc.AccountLevel != null ? _svc.AccountLevel() : int.MaxValue;
+            foreach (var a in _content.Animals.All)
+            {
+                GUILayout.BeginVertical(GUI.skin.box);
+                GUILayout.Label($"{a.DisplayName} · {a.Price} akçe");
+                GUILayout.Label(ItemCatalog.Describe(a, _content), _wrap);
+                bool unlocked = level >= a.UnlockLevel;
+                GUI.enabled = unlocked;
+                if (GUILayout.Button(unlocked ? $"Al {a.Price}" : $"Sv {a.UnlockLevel} gerekli"))
+                {
+                    var species = a;
+                    _deferred = () =>
+                    {
+                        var r = _animals.Buy(species.Id, _house, out var bought, level);
+                        _status = r.Ok ? $"{bought.Name} geldi." : r.Reason;
+                        if (r.Ok) Activity?.Invoke("animal");
+                    };
                 }
                 GUI.enabled = true;
+                GUILayout.EndVertical();
+            }
+            if (_animals.Animals.Count == 0) return;
+            GUILayout.Label("— Hayvanların —");
+            foreach (var a in new List<Animal>(_animals.Animals))
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label($"{a.Name} · tokluk {a.Fullness:0}{(a.IsMature ? "" : " · yavru")}");
+                if (GUILayout.Button($"Sat {(int)(a.Species.Price * AnimalSystem.SellRatio)}", GUILayout.Width(62f)))
+                {
+                    var animal = a;
+                    _deferred = () =>
+                    {
+                        var r = _animals.Sell(animal.Id, _house);
+                        _status = r.Ok ? $"{animal.Name} satıldı." : r.Reason;
+                    };
+                }
                 GUILayout.EndHorizontal();
             }
         }

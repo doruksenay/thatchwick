@@ -1,4 +1,5 @@
 using System;
+using Thatchwick.Core.Mood;
 using System.Collections.Generic;
 using System.Linq;
 using Thatchwick.Core.Build;
@@ -33,7 +34,7 @@ namespace Thatchwick.Core.Tests
 
         private static Character NewChar(int id, GridPos pos, params string[] traits)
         {
-            var c = new Character(id, "K" + id, pos) { CanStarve = false };
+            var c = new Character(id, "K" + id, pos) { CanStarve = false, MoodEnabled = true };
             c.SetAge(60);
             c.SetTraits(traits);
             return c;
@@ -207,7 +208,7 @@ namespace Thatchwick.Core.Tests
 
             Assert.True(a.Needs.Get(NeedType.Social) > 50f);
             Assert.True(b.Needs.Get(NeedType.Social) > 90f);   // karşı taraf da doyar (zaten doluydu)
-            Assert.True(a.Mood.Has(FamilyService.ChatMoodId));
+            Assert.True(a.Mood.Has(MoodCatalog.NiceChat));
             Assert.True(family.Affection(1, 2) > 0);
         }
 
@@ -310,8 +311,8 @@ namespace Thatchwick.Core.Tests
         public void Ruhhali_VarsayilanNotrdur_VeIsHiziniDegistirmez()
         {
             var c = NewChar(1, new GridPos(0, 0));
-            Assert.Equal(50, c.MoodScore);
-            Assert.Equal(MoodLevel.Okay, c.MoodLevel);
+            Assert.Equal(0, c.Mood.Total);
+            Assert.Equal(MoodStatus.Neutral, c.MoodStatus);
             var world = new WorldState(new GridMap(5, 5));
             var runner = new JobRunner(c, world);
             var i = new InteractionDef { Id = "x", Skill = SkillType.Farming, DurationDays = 1 };
@@ -341,18 +342,16 @@ namespace Thatchwick.Core.Tests
             mood.Update(new[] { inside, outside });
 
             Assert.True(mood.ComfortOf(world.Map.Rooms.RoomAt(inside.Position)).Total >= 28);   // 28 + uyumlu oda 5
-            Assert.True(inside.MoodScore > outside.MoodScore);
-            Assert.Equal(MoodLevel.Good, inside.MoodLevel);   // 50 + 12
+            Assert.True(inside.Mood.Total > outside.Mood.Total);
+            Assert.Equal(12, inside.Mood.Total);   // rahat ve güzel ev
 
-            // Soğuk ve yas ruh halini düşürür.
-            inside.Needs.Set(NeedType.Warmth, 5);
-            mood.Update(new[] { inside });
-            int cold = inside.MoodScore;
-            Assert.True(cold < 50 + 12);
+            // Yas ruh halini düşürür.
+            int before = inside.Mood.Total;
             var dead = NewChar(9, new GridPos(0, 0));
             inside.BirthMotherId = dead.Id;
             Assert.Equal(1, mood.Mourn(dead, new[] { inside }));
-            Assert.True(inside.MoodScore < cold);
+            Assert.True(inside.Mood.Total < before);
+            Assert.True(inside.Mood.Has(MoodCatalog.Grief));
         }
 
         [Fact]
@@ -360,8 +359,8 @@ namespace Thatchwick.Core.Tests
         {
             var world = new WorldState(new GridMap(5, 5));
             var happy = NewChar(1, new GridPos(0, 0)); var sad = NewChar(2, new GridPos(0, 0));
-            happy.Mood.Add("t", "iyi", 30, -1);   // 80: Harika
-            sad.Mood.Add("t", "kötü", -40, -1);   // 10: Perişan
+            happy.AddMoodlet(MoodCatalog.Rested);   // dinlenmiş: çiftçilikte hızlı
+            sad.AddMoodlet(MoodCatalog.Grief);      // yas: işler %10 yavaş
             var i = new InteractionDef { Id = "x", Skill = SkillType.Farming, DurationDays = 1 };
             var rh = new JobRunner(happy, world); var rs = new JobRunner(sad, world);
             Assert.True(rh.EffectiveDuration(i) < 1.0);
@@ -400,8 +399,8 @@ namespace Thatchwick.Core.Tests
             life.Notice += notices.Add;
 
             var father = new Character(1, "Baba", new GridPos(5, 5)) { Sex = Sex.Male }; father.SetAge(60); father.LifespanDays = 61;
-            var son = new Character(2, "Oğul", new GridPos(6, 5)) { Sex = Sex.Male, BirthFatherId = 1 }; son.SetAge(40);
-            var stranger = new Character(3, "Yabancı", new GridPos(7, 5)); stranger.SetAge(40);
+            var son = new Character(2, "Oğul", new GridPos(6, 5)) { Sex = Sex.Male, BirthFatherId = 1, MoodEnabled = true }; son.SetAge(40);
+            var stranger = new Character(3, "Yabancı", new GridPos(7, 5)) { MoodEnabled = true }; stranger.SetAge(40);
             pop.Add(father); pop.Add(son); pop.Add(stranger);
 
             for (int i = 0; i < 20 && !father.IsDead; i++) pop.Tick(0.1);
@@ -411,8 +410,8 @@ namespace Thatchwick.Core.Tests
             Assert.NotNull(grave);
             Assert.True(grave.ItemId > 0);
             Assert.True(life.Graves.IsGrave(world.GetItem(grave.ItemId)));
-            Assert.True(son.Mood.Has(MoodService.MourningPrefix + 1));
-            Assert.False(stranger.Mood.Has(MoodService.MourningPrefix + 1));
+            Assert.True(son.Mood.Has(MoodCatalog.Grief));
+            Assert.False(stranger.Mood.Has(MoodCatalog.Grief));
             Assert.Contains(notices, n => n.Contains("Baba"));
 
             // Mezar taşınmaz ve satılmaz.
@@ -431,17 +430,17 @@ namespace Thatchwick.Core.Tests
             var pop = new Population(seed: 2);
             var clock = new GameClock();
             var life = new LifeSystems(db, world, house, pop, clock);
-            var c = new Character(1, "Ata", new GridPos(5, 5), true); c.SetAge(60); c.LifespanDays = 60.5;
+            var c = new Character(1, "Ata", new GridPos(5, 5), true) { MoodEnabled = true }; c.SetAge(60); c.LifespanDays = 60.5;
             c.SetTraits(new[] { "hardy", "cheerful" });
             c.Needs.Set(NeedType.Social, 33); c.Needs.Set(NeedType.Fun, 44);
-            c.Mood.Add("mood.test", "deneme", 7, 2.0);
+            c.AddMoodlet("mood.test", "deneme", 7, 2.0);
             var other = new Character(2, "Eş", new GridPos(2, 2)); other.SetAge(30);
             pop.Add(c); pop.Add(other);
             for (int i = 0; i < 20 && !c.IsDead; i++) pop.Tick(0.1);
             Assert.True(c.IsDead);
             float socialBefore = c.Needs.Get(NeedType.Social);
 
-            var data = SaveGame.Capture(clock, world, house, pop.Members, new Thatchwick.Core.Progress.AccountProgress(), null, null, null, null, life);
+            var data = SaveGame.Capture(clock, world, house, pop.Members, new Thatchwick.Core.Progress.AccountProgress(), null, null, null, null, null, life);
             var json = data.life.graves.Length;
             Assert.Equal(1, json);
 
@@ -471,6 +470,7 @@ namespace Thatchwick.Core.Tests
             var data = SaveGame.Capture(new GameClock(), world, new Household(), new[] { c }, new Thatchwick.Core.Progress.AccountProgress(), null, null);
             // Eski dosya: yeni alanlar yok.
             data.life = null;
+            data.version = 1;   // v1 kaydı: keyif/hijyen Dalga 1 geçişiyle 100'e çekilir
             data.characters[0].social = -1f; data.characters[0].fun = -1f;
             data.characters[0].traits = null; data.characters[0].moodlets = null;
             var loaded = SaveGame.Load(data, db);

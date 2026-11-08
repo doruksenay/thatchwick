@@ -5,6 +5,7 @@ using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Life;
+using Thatchwick.Core.Mood;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Game
@@ -56,17 +57,7 @@ namespace Thatchwick.Game
             return new Color(0.45f, 0.75f, 0.4f);
         }
 
-        private static string NeedName(NeedType n)
-        {
-            switch (n)
-            {
-                case NeedType.Hunger: return "Açlık";
-                case NeedType.Energy: return "Enerji";
-                case NeedType.Warmth: return "Isınma";
-                case NeedType.Social: return "Sosyal";
-                default: return "Eğlence";
-            }
-        }
+        private static string NeedName(NeedType n) => NeedKinds.DisplayName(n);
 
         private static void Bar(string label, float value, float width)
         {
@@ -141,7 +132,7 @@ namespace Thatchwick.Game
             GUILayout.BeginArea(rect, GUI.skin.box);
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"{c.Name} · {Mood.LevelName(c.MoodLevel)} ({c.MoodScore})", _small, GUILayout.Width(190f));
+            GUILayout.Label($"{c.Name} · {MoodRules.Name(c.Mood.Status)} ({(c.Mood.Total > 0 ? "+" : "")}{c.Mood.Total})", _small, GUILayout.Width(190f));
             string traits = TraitsText(c);
             if (traits.Length > 0) GUILayout.Label(traits, _small);
             GUILayout.EndHorizontal();
@@ -151,13 +142,13 @@ namespace Thatchwick.Game
                 Bar(NeedName(n), c.Needs.Get(n), 108f);
             GUILayout.EndHorizontal();
 
-            if (c.Mood.Moodlets.Count > 0)
+            if (c.Mood.Active.Count > 0)
             {
                 var parts = new System.Text.StringBuilder();
-                foreach (var m in c.Mood.Moodlets)
+                foreach (var m in c.Mood.Active)
                 {
                     if (parts.Length > 0) parts.Append(" · ");
-                    parts.Append($"{m.Text} {(m.Value > 0 ? "+" : "")}{m.Value}");
+                    parts.Append($"{m.Def.DisplayName} {(m.Def.Value > 0 ? "+" : "")}{m.Def.Value}");
                 }
                 GUILayout.Label(parts.ToString(), _small);
             }

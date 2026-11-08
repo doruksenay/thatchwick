@@ -115,6 +115,12 @@ namespace Thatchwick.Core.Build
 
         private const string Locked = "Bu taşınmaz ya da satılmaz.";
 
+        /// <summary>Barınakta yaşayan hayvan sayısı (hayvan sistemi verir); null ise hep 0. Doluyken barınak kaldırılmaz.</summary>
+        public Func<int, int> HousingResidents { get; set; }
+
+        private const string HousingOccupied = "İçinde hayvan var: önce hayvanları sat.";
+        private bool IsOccupiedHousing(ItemInstance item) => item.Def.IsHousing && HousingResidents != null && HousingResidents(item.Id) > 0;
+
         public bool IsUnlocked(ItemDef def) => AccountLevel == null || AccountLevel() >= def.UnlockLevel;
 
         public BuildService(WorldState world, Household house, ContentDatabase content, double sellRatio = DefaultSellRatio)
@@ -172,6 +178,7 @@ namespace Thatchwick.Core.Build
             if (target == null) return PlacementCheck.Fail("Eşya bulunamadı.");
             if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
             if (IsLocked(target)) return PlacementCheck.Fail(Locked);
+            if (IsOccupiedHousing(target)) return PlacementCheck.Fail(HousingOccupied);
             var rootDef = target.Def; var rootPos = target.Position; int rootRot = target.Rotation;
             int total = 0;
             var removed = _world.RemoveItem(itemId);
@@ -204,6 +211,7 @@ namespace Thatchwick.Core.Build
         {
             if (_house.Count(itemId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
             var def = _content.Items.Get(itemId);
+            if (def.Placement == ItemPlacement.Wall) return PlacementCheck.Fail("Bu eşya duvara asılır.");
             var owned = CheckOwned(def, position, rotation);
             if (!owned.Ok) return owned;
             return _world.CanPlaceFloor(def, position, rotation);
@@ -222,6 +230,33 @@ namespace Thatchwick.Core.Build
             {
                 if (_world.GetItem(placedId) == null) return PlacementCheck.Fail("Eşya artık orada değil.");
                 GiveBack(_world.RemoveItem(placedId));
+                return PlacementCheck.Success;
+            });
+            return PlacementCheck.Success;
+        }
+
+        /// <summary>Duvar eşyasının karonun bir kenarına asılıp asılamayacağı (envanter, arsa, duvar).</summary>
+        public PlacementCheck CanPlaceWallFromInventory(string itemId, GridPos tile, int side)
+        {
+            if (_house.Count(itemId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
+            var def = _content.Items.Get(itemId);
+            if (!_world.Map.IsOwned(tile)) return PlacementCheck.Fail(NotOwned);
+            return _world.CanPlaceOnWall(def, tile, side);
+        }
+
+        public PlacementCheck PlaceWallFromInventory(string itemId, GridPos tile, int side, out ItemInstance placed)
+        {
+            placed = null;
+            var check = CanPlaceWallFromInventory(itemId, tile, side);
+            if (!check.Ok) return check;
+            _house.TryTakeItem(itemId);
+            var wallItem = _world.PlaceOnWall(_content.Items.Get(itemId), tile, side);
+            placed = wallItem;
+            int wallId = wallItem.Id;
+            Record("Duvara asma", () =>
+            {
+                if (_world.GetItem(wallId) == null) return PlacementCheck.Fail("Eşya artık orada değil.");
+                GiveBack(_world.RemoveItem(wallId));
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;
@@ -252,7 +287,11 @@ namespace Thatchwick.Core.Build
             var item = _world.GetItem(itemId);
             if (item != null && item.IsPlant) return PlacementCheck.Fail(PlantLocked);
             if (IsLocked(item)) return PlacementCheck.Fail(Locked);
-            if (item != null)
+            if (item != null && item.IsWallMounted)
+            {
+                if (!_world.Map.IsOwned(position)) return PlacementCheck.Fail(NotOwned);
+            }
+            else if (item != null)
             {
                 var owned = CheckOwned(item.Def, position, rotation);
                 if (!owned.Ok) return owned;
@@ -272,6 +311,7 @@ namespace Thatchwick.Core.Build
             if (target == null) return PlacementCheck.Fail("Eşya bulunamadı.");
             if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
             if (IsLocked(target)) return PlacementCheck.Fail(Locked);
+            if (IsOccupiedHousing(target)) return PlacementCheck.Fail(HousingOccupied);
             var rootDef = target.Def; var rootPos = target.Position; int rootRot = target.Rotation;
             var removed = _world.RemoveItem(itemId);
             GiveBack(removed);
@@ -328,6 +368,10 @@ namespace Thatchwick.Core.Build
             int refund = kind == EdgeKind.None ? Refund(EdgePrice(old)) : 0;
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
             if (refund > 0) _house.AddAkce(refund);
+            // Düz duvar kalkınca (ya da kapı/pencere olunca) asılı eşyalar envantere döner.
+            if (old == EdgeKind.Wall)
+                foreach (var hung in _world.WallItemsOn(edge))
+                    foreach (var def in _world.RemoveItem(hung.Id)) _house.AddItem(def.Id);
             map.SetEdge(edge, kind);
             int net = refund - cost;
             Record("Duvar", () =>

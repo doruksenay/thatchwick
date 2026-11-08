@@ -43,7 +43,6 @@ namespace Thatchwick.Core.Life
         public FestivalService Festivals { get; }
         public SpoilageService Spoilage { get; }
         public ForageSystem Forage { get; }
-        public LivestockSystem Livestock { get; }
 
         // Köy ve hanedan katmanı (Adım 38-41)
         public VillagerService Villagers { get; }
@@ -81,7 +80,6 @@ namespace Thatchwick.Core.Life
             Festivals = new FestivalService(content, clock) { Village = Village };
             Spoilage = new SpoilageService(content, house, world) { ExtraReduction = SpoilReduction };
             Forage = new ForageSystem(world, content);
-            Livestock = new LivestockSystem(world);
             Villagers = new VillagerService(content, population, house, clock);
             Tools = new ToolService(content, house)
             {
@@ -111,7 +109,6 @@ namespace Thatchwick.Core.Life
             Goals.Completed += OnGoalCompleted;
             Villagers.EventTriggered += (v, e) => Say($"{v.Name}: {e.Text}", NoticeLevel.Info, v.Id);
             Villagers.GiftGiven += (v, item, taste, msg) => Say(msg, taste == GiftTaste.Dislike ? NoticeLevel.Warning : NoticeLevel.Info, v.Id);
-            Livestock.BecameReady += item => Say($"{item.Def.DisplayName}: ürün hazır.", NoticeLevel.Info);
             Watcher.Raised += (level, text, id) => Say(text, level, id);
             population.BabyBorn += (baby, mother, father) =>
             {
@@ -293,7 +290,6 @@ namespace Thatchwick.Core.Life
             }
 
             Spoilage.Tick(gameDays);
-            Livestock.Tick(gameDays, CurrentSeason);
             Festivals.Tick(Population.Members);
 
             long day = Clock.DayIndex;

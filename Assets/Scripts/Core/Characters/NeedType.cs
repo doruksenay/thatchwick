@@ -1,17 +1,18 @@
 namespace Thatchwick.Core.Characters
 {
     /// <summary>
-    /// İhtiyaçlar. Değer 0 (kritik) ile 100 (tam doygun) arasındadır.
-    /// Hayatta kalma ihtiyaçları (Açlık, Enerji, Isınma) ölüme götürür; Sosyal ve Eğlence ruh halini
-    /// etkiler (Sims'teki "keyif" tarafı), ölüm sebebi değildir.
+    /// Temel ihtiyaçlar. Değer 0 (kritik) ile 100 (tam doygun) arasındadır.
+    /// Açlık, Enerji ve Isınma hayatta kalma ihtiyaçlarıdır (0'da ölüm riski ya da kritik durum);
+    /// Keyif ve Hijyen konfor ihtiyaçlarıdır: öldürmez, ruh halini (moodlet) etkiler.
     /// </summary>
     public enum NeedType
     {
         Hunger = 0,
         Energy = 1,
         Warmth = 2,
-        Social = 3,
-        Fun = 4
+        Fun = 3,      // Keyif
+        Hygiene = 4,  // Hijyen
+        Social = 5    // Sosyal (sohbet, şenlik; azalması ruh halini düşürür, öldürmez)
     }
 
     public static class NeedKinds
@@ -27,8 +28,9 @@ namespace Thatchwick.Core.Characters
                 case NeedType.Hunger: return "Açlık";
                 case NeedType.Energy: return "Enerji";
                 case NeedType.Warmth: return "Isınma";
-                case NeedType.Social: return "Sosyal";
-                default: return "Eğlence";
+                case NeedType.Fun: return "Keyif";
+                case NeedType.Hygiene: return "Hijyen";
+                default: return "Sosyal";
             }
         }
     }

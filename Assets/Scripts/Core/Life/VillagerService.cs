@@ -192,7 +192,7 @@ namespace Thatchwick.Core.Life
             int aff = Family.Affection(giver.Id, v.Id) + AffectionFor(taste);
             Family.SetAffection(giver.Id, v.Id, aff);
             if (CanRomance(giver, v)) s.Romance = Math.Min(MaxRomance, s.Romance + RomanceFor(taste));
-            v.Mood.Add("mood.gift", "Hediye aldı", taste == GiftTaste.Dislike ? -4 : 5, 0.6);
+            v.AddMoodlet("mood.gift", "Hediye aldı", taste == GiftTaste.Dislike ? -4 : 5, 0.6);
             v.Needs.Restore(NeedType.Fun, taste == GiftTaste.Love ? 20f : taste == GiftTaste.Like ? 10f : 0f);
 
             switch (taste)

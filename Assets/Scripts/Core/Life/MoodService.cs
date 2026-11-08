@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
+using Thatchwick.Core.Mood;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Life
@@ -12,26 +13,23 @@ namespace Thatchwick.Core.Life
         public int Score;
         public string StyleSet;      // uyumlu oda veren set; yoksa null
         public int StyleBonus;
-        public int Total => Score + StyleBonus;
+        /// <summary>Konfor puanı (eşya konforu). Stil seti uyumu ayrı moodlet'tir (RoomMoodSystem: Uyumlu ev).</summary>
+        public int Total => Score;
     }
 
     /// <summary>
-    /// Ruh hali kaynakları (Adım 32): oda konforu, soğuk, yas. Her güncellemede kısa süreli moodlet'leri
-    /// yeniler; karakter odadan çıkınca etki sönmeye başlar. Yemek, sohbet, eğlence ve şenlik moodlet'lerini
-    /// ilgili sistemler doğrudan ekler (JobRunner, FamilyService, FestivalService).
+    /// Ruh hali kaynakları (Adım 32): oda konforu (eşya konfor puanı toplamı) ve yas. Soğuk, açlık, kirlilik gibi
+    /// ihtiyaç moodlet'leri Character.Tick'te, stil uyumu/ışık RoomMoodSystem'de, yemek-sohbet-eğlence ilgili
+    /// sistemlerde verilir (Core.Mood).
     /// </summary>
     public sealed class MoodService
     {
         public const string ComfortId = "mood.comfort";
-        public const string ColdId = "mood.cold";
-        public const string MourningPrefix = "mood.mourn.";
 
         public const int StyleSetMinItems = 4;
         public const int StyleSetBonus = 5;
         public const double RefreshDays = 0.15;
         public const int ComfortHigh = 25, ComfortMid = 12;
-        public const int MournSpouse = -30, MournFamily = -20;
-        public const double MournSpouseDays = 8, MournFamilyDays = 5;
 
         private readonly WorldState _world;
 
@@ -74,29 +72,12 @@ namespace Thatchwick.Core.Life
                 var room = rooms.RoomAt(c.Position);
                 var comfort = ComfortOf(room);
                 ComfortMood(comfort.Total, out int v, out string text);
-                if (v != 0) c.Mood.Add(ComfortId, text, v, RefreshDays); else c.Mood.Remove(ComfortId);
+                if (v != 0) c.AddMoodlet(ComfortId, text, v, RefreshDays); else c.Mood.Remove(ComfortId);
 
-                float warmth = c.Needs.Get(NeedType.Warmth);
-                if (warmth < 15f) c.Mood.Add(ColdId, "Donuyor", -20, RefreshDays);
-                else if (warmth < 35f) c.Mood.Add(ColdId, "Üşüyor", -10, RefreshDays);
-                else c.Mood.Remove(ColdId);
             }
         }
 
-        /// <summary>Ölenin yakınlarına (eş, ebeveyn, çocuk, kardeş) yas moodlet'i verir; kaç kişi etkilendi döner.</summary>
-        public int Mourn(Character dead, IEnumerable<Character> members)
-        {
-            int count = 0;
-            foreach (var c in members)
-            {
-                if (c == dead || c.IsDead || c.Stage == AgeStage.Baby) continue;
-                bool spouse = dead.SpouseId == c.Id || c.SpouseId == dead.Id;
-                bool family = Family.FamilyService.AreCloseRelatives(dead, c);
-                if (!spouse && !family) continue;
-                c.Mood.Add(MourningPrefix + dead.Id, $"{dead.Name} için yas", spouse ? MournSpouse : MournFamily, spouse ? MournSpouseDays : MournFamilyDays);
-                count++;
-            }
-            return count;
-        }
+        /// <summary>Ölenin yakınlarına (eş, ebeveyn, çocuk, kardeş) yas moodlet'i verir (MoodEvents.OnDeath); kaç kişi etkilendi döner.</summary>
+        public int Mourn(Character dead, IEnumerable<Character> members) => MoodEvents.OnDeath(dead, members);
     }
 }

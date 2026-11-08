@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
@@ -26,6 +27,9 @@ namespace Thatchwick.Core.Work
         /// <summary>Depo kapasitesi; null ise sınırsız. Dolunca fazla ürün kaybolur ve özette yazılır.</summary>
         public StorageService Storage { get; set; }
 
+        /// <summary>Hayvan sistemi (barınakta hayvan var mı); null ise hayvan gerektiren işler başlamaz.</summary>
+        public AnimalSystem Animals { get; set; }
+
         public InteractionEffects(WorldState world, Household house, ContentDatabase content, int seed = 1)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -44,25 +48,33 @@ namespace Thatchwick.Core.Work
 
         public string CanStart(Character character, ItemInstance item, InteractionDef interaction)
         {
-            if (interaction.ConsumeItem != null && _house.Count(interaction.ConsumeItem) <= 0)
-                return $"{Name(interaction.ConsumeItem)} yok.";
-            foreach (var c in interaction.ConsumeMore)
-                if (_house.Count(c.ItemId) < c.Count) return $"{Name(c.ItemId)} yetersiz ({_house.Count(c.ItemId)}/{c.Count}).";
+            foreach (var c in interaction.AllConsumed())
+            {
+                int have = _house.Count(c.ItemId);
+                if (have < c.Count)
+                    return c.Count == 1 ? $"{Name(c.ItemId)} yok." : $"{Name(c.ItemId)} yetmiyor ({have}/{c.Count}).";
+            }
+            if (interaction.RequiresAnimal && (Animals == null || Animals.Residents(item.Id) == 0)) return "Burada hayvan yok.";
+            if (interaction.Collect && item.StockTotal == 0) return "Toplanacak ürün yok.";
             return null;
         }
 
         public void Apply(Character character, ItemInstance item, InteractionDef interaction)
         {
-            if (CanStart(character, item, interaction) != null) return; // bu arada harcanmış: ürün yok
-            if (interaction.ConsumeItem != null) _house.TryTakeItem(interaction.ConsumeItem);
-            foreach (var c in interaction.ConsumeMore)
-                for (int i = 0; i < c.Count; i++) _house.TryTakeItem(c.ItemId);
+            var consumed = interaction.AllConsumed();
+            foreach (var c in consumed)
+                if (_house.Count(c.ItemId) < c.Count) return; // bu arada harcanmış: ürün yok
+            foreach (var c in consumed)
+                for (int k = 0; k < c.Count; k++) _house.TryTakeItem(c.ItemId);
+
+            if (interaction.AddFeed > 0) AnimalSystem.AddFeed(item, interaction.AddFeed);
 
             // Beceri seviyesi (+ özellik/dal kalite bonusu) ürün satırlarını seçer: aynı yemeğin sıradan ve iyi hali.
             int level = interaction.Skill.HasValue ? character.Skills.GetLevel(interaction.Skill.Value) + character.Modifiers.QualityLevels : 0;
 
             // Aynı ürün birden çok satırda olabilir (kesin 1 fidan + %50 ihtimalle 1 fidan): özette toplanır.
             int lost = 0;
+            string parts0 = null;
             var order = new List<string>();
             var totals = new Dictionary<string, int>();
             bool firstRow = true;
@@ -82,11 +94,24 @@ namespace Thatchwick.Core.Work
                 if (!totals.ContainsKey(p.ItemId)) { totals[p.ItemId] = 0; order.Add(p.ItemId); }
                 totals[p.ItemId] += added;
             }
+            if (interaction.Collect)
+            {
+                foreach (var kv in AnimalSystem.TakeStock(item))
+                {
+                    int added = Storage != null ? Storage.AddUpTo(kv.Key, kv.Value) : AddAll(kv.Key, kv.Value);
+                    AnimalSystem.PutStock(item, kv.Key, kv.Value - added);   // sığmayan barınakta kalır
+                    if (added <= 0) continue;
+                    if (!totals.ContainsKey(kv.Key)) { totals[kv.Key] = 0; order.Add(kv.Key); }
+                    totals[kv.Key] += added;
+                }
+                if (item.StockTotal > 0) parts0 = "depo dolu, kalanı barınakta";
+            }
+
             var parts = new List<string>();
             foreach (var id in order) parts.Add($"+{totals[id]} {Name(id)}");
+            if (interaction.AddFeed > 0) parts.Add($"yem +{interaction.AddFeed} (stok {item.FeedStock:0.#})");
+            if (parts0 != null) parts.Add(parts0);
             if (lost > 0) parts.Add($"depo dolu, {lost} adet kayboldu");
-
-            if (interaction.ResetsReady) item.ReadyProgress = 0;
 
             if (interaction.RemovesItem && _world.GetItem(item.Id) != null)
                 _world.RemoveItem(item.Id);

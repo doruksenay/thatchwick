@@ -4,6 +4,7 @@ using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Jobs;
+using Thatchwick.Core.Mood;
 
 namespace Thatchwick.Core.Family
 {
@@ -17,13 +18,12 @@ namespace Thatchwick.Core.Family
         public const float BabyCareThreshold = 45f;
         public const float FeedRestore = 60f;
         public const int ChatAffection = 20;
+        /// <summary>Sohbetin iki tarafa verdiği keyif.</summary>
+        public const float ChatFun = 25f;
         public const int MarriageAffection = 100;
         public const double ConceiveChance = 0.6;
         /// <summary>Sohbetin sohbet edenlerin Sosyal ihtiyacına verdiği doygunluk (Sosyal özelliğiyle çarpılır).</summary>
         public const float ChatSocialRestore = 45f;
-        public const int ChatMoodValue = 4;
-        public const double ChatMoodDays = 0.8;
-        public const string ChatMoodId = "mood.chat";
         /// <summary>Otonom sohbet için aranan en uzak mesafe (karo).</summary>
         public const float FriendSearchRadius = 40f;
 
@@ -144,12 +144,17 @@ namespace Thatchwick.Core.Family
                     msg = $"{actor.Name}, {target.Name} bebeği besledi";
                     break;
                 case SocialAction.Chat:
-                    int now = Math.Min(100, Affection(actor.Id, target.Id) + ChatAffection);
+                    // Kirli (hijyeni düşük) biriyle sohbet yakınlığı yarı artırır.
+                    int gain = actor.Mood.Has(MoodCatalog.Dirty) || target.Mood.Has(MoodCatalog.Dirty) ? ChatAffection / 2 : ChatAffection;
+                    int now = Math.Min(100, Affection(actor.Id, target.Id) + gain);
+                    actor.Needs.Restore(NeedType.Fun, ChatFun);
+                    target.Needs.Restore(NeedType.Fun, ChatFun);
+                    actor.AddMoodlet(MoodCatalog.NiceChat);
+                    target.AddMoodlet(MoodCatalog.NiceChat);
                     SetAffection(actor.Id, target.Id, now);
                     foreach (var c in new[] { actor, target })
                     {
                         c.Needs.Restore(NeedType.Social, ChatSocialRestore * c.Modifiers.SocialGain);
-                        c.Mood.Add(ChatMoodId, "İyi bir sohbet", ChatMoodValue, ChatMoodDays);
                     }
                     Chatted?.Invoke(actor, target);
                     msg = now >= MarriageAffection && !actor.SpouseId.HasValue && !target.SpouseId.HasValue && IsAdultAge(actor) && IsAdultAge(target)
@@ -160,6 +165,7 @@ namespace Thatchwick.Core.Family
                     actor.SpouseId = target.Id;
                     target.SpouseId = actor.Id;
                     msg = $"{actor.Name} ve {target.Name} evlendi";
+                    MoodEvents.OnMarriage(actor, target);
                     foreach (var c in new[] { actor, target })
                     {
                         if (!c.IsVillager) continue;

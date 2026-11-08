@@ -9,6 +9,8 @@ namespace Thatchwick.Core.Content
     public sealed class ContentFileDto
     {
         public ItemDto[] items;
+        public RecipeDto[] recipes;     // marangoz tezgâhı tarifleri (istasyon eşyasına "craft:<id>" etkileşimi olur)
+        public AnimalDto[] animals;     // hayvan türleri
         // life.json bölümleri (Adım 18a-43). Hepsi isteğe bağlıdır.
         public TraitDto[] traits;
         public BranchDto[] branches;
@@ -24,6 +26,8 @@ namespace Thatchwick.Core.Content
         {
             if (other == null) return;
             items = Concat(items, other.items);
+            recipes = Concat(recipes, other.recipes);
+            animals = Concat(animals, other.animals);
             traits = Concat(traits, other.traits);
             branches = Concat(branches, other.branches);
             projects = Concat(projects, other.projects);
@@ -46,6 +50,45 @@ namespace Thatchwick.Core.Content
     }
 
     [Serializable]
+    public sealed class RecipeDto
+    {
+        public string id;
+        public string displayName;      // boş = "Yap: <ürün adı>"
+        public string station;          // istasyon eşyası kimliği (marangoz tezgâhı)
+        public string produces;
+        public int count;               // 0 = 1
+        public ConsumeDto[] materials;
+        public string skill;            // varsayılan Carpentry
+        public int minLevel;
+        public double durationDays;
+        public float skillXp;
+        public string moodlet;          // boş = "proud"
+    }
+
+    [Serializable]
+    public sealed class AnimalDto
+    {
+        public string id;
+        public string displayName;
+        public int price;
+        public string housing;
+        public float feedPerDay;
+        public string produces;
+        public float produceEveryDays;
+        public float lifespanDays;
+        public float matureDays;
+        public bool pet;
+        public int level;
+    }
+
+    [Serializable]
+    public sealed class ConsumeDto
+    {
+        public string item;
+        public int count;    // 0 = 1
+    }
+
+    [Serializable]
     public sealed class ItemDto
     {
         public string id;
@@ -65,12 +108,14 @@ namespace Thatchwick.Core.Content
         public string[] tags;        // pazar etiketleri: fuel, food
         public int level;            // dükkânda açılma seviyesi; 0 = 1
         public bool diesInWinter;    // ekin: kışın donar
+        public string styleSet;      // Köylü / Zanaatkâr / Tüccar / Asil
+        public string[] rooms;       // menü oda filtresi
+        public string housing;       // hayvan barınağı türü (coop, barn, kennel)
+        public int capacity;         // barınak kapasitesi
         public string[] growSeasons; // ekin: büyüyebildiği mevsimler (boş = kış dışı hepsi)
         public int comfort;          // oda konforuna katkı
-        public string styleSet;      // koylu/zanaatkar/tuccar/asil: aynı setten 4+ eşya oda uyumu
         public float spoilDays;      // taze yiyecek: bu kadar günde çürür; 0 = çürümez
         public float preserves;      // kiler: yiyecek bozulma çarpanı (0,4 = %60 yavaş); 0 = kiler değil
-        public float readyDays;      // üreten eşya (kümes): bu sürede bir ürün hazır olur
         public string[] variants;    // renk/malzeme varyantları (Adım 43)
         public string[] forageSeasons; // yabani toplanabilir: görüneceği mevsimler
         public int forageMax;        // haritada aynı anda en çok bu kadar
@@ -98,7 +143,12 @@ namespace Thatchwick.Core.Content
         public string consume;           // harcanan kaynak kimliği (1 adet)
         public ProduceDto[] produce;
         public bool removeItem;
-        public CostDto[] consumeMore;       // ek harcanan kaynaklar (adetli)
+        public ConsumeDto[] materials;   // çok malzemeli harcama
+        public string moodlet;           // bitince verilen moodlet
+        public int minLevel;             // gereken beceri seviyesi
+        public int addFeed;              // barınağa eklenen yem
+        public bool collect;             // barınak ürünlerini topla
+        public bool requiresAnimal;      // barınakta hayvan olmalı
         public NeedRestoreDto[] extraRestore; // ana ihtiyaca ek olarak doyurulan ihtiyaçlar
         public string tool;                 // axe/hoe/saw: alet kademesi iş hızını etkiler
         public string moodId;               // etkileşim sonunda verilen ruh hali etkisi
@@ -106,9 +156,6 @@ namespace Thatchwick.Core.Content
         public int moodValue;
         public float moodDays;
         public bool requiresLit;            // yalnızca yanan ısı kaynağında
-        public int minSkillLevel;           // tarif kilidi: becerinin en az bu seviyesi
-        public bool requiresReady;          // yalnızca ürün hazırsa (kümes)
-        public bool resetsReady;            // iş bitince üretim sıfırlanır
     }
 
     [Serializable]

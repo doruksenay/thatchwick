@@ -5,7 +5,6 @@ namespace Thatchwick.Core.Characters
     /// <summary>
     /// Bir karakterin ihtiyaç değerleri. Azalma oyun günü cinsinden verilir
     /// (biyoloji oyun saatinde işler); hız çarpanı zaten GameClock'ta uygulanır.
-    /// Özellikler ve diğer etkiler azalmayı çarpanla değiştirir (SetDecayMultiplier).
     /// </summary>
     public sealed class NeedSet
     {
@@ -15,8 +14,8 @@ namespace Thatchwick.Core.Characters
 
         private static readonly int NeedCount = Enum.GetValues(typeof(NeedType)).Length;
 
-        // Oyun günü başına varsayılan azalma (Açlık, Enerji, Isınma, Sosyal, Eğlence). Denge adımında (28) ayarlanır.
-        private static readonly float[] DefaultDecayPerDay = { 120f, 90f, 0f, 30f, 24f };
+        // Oyun günü başına varsayılan azalma. Denge adımında (28) ayarlanır.
+        private static readonly float[] DefaultDecayPerDay = { 120f, 90f, 0f, 50f, 35f, 30f };
 
         private readonly float[] _values = new float[NeedCount];
         private readonly float[] _decayPerDay = new float[NeedCount];
@@ -62,11 +61,14 @@ namespace Thatchwick.Core.Characters
 
         public bool IsCritical(NeedType need) => _values[(int)need] <= CriticalThreshold;
 
-        /// <summary>Hayatta kalma ihtiyaçlarından biri kritik mi (Sosyal/Eğlence sayılmaz: bakım işini engellemesin).</summary>
+        /// <summary>Hayatta kalma ihtiyacı mı (Açlık, Enerji, Isınma). Konfor ihtiyaçları kritik sayılmaz.</summary>
+        public static bool IsSurvival(NeedType need) => NeedKinds.IsSurvival(need);
+
+        /// <summary>Hayatta kalma ihtiyaçlarından biri kritik mi (keyif ve hijyen sayılmaz).</summary>
         public bool AnyCritical()
         {
             for (int i = 0; i < NeedCount; i++)
-                if (NeedKinds.IsSurvival((NeedType)i) && _values[i] <= CriticalThreshold) return true;
+                if (IsSurvival((NeedType)i) && _values[i] <= CriticalThreshold) return true;
             return false;
         }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
@@ -9,6 +10,7 @@ using Thatchwick.Core.Family;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Life;
+using Thatchwick.Core.Mood;
 using Thatchwick.Core.Progress;
 using Thatchwick.Core.Save;
 using Thatchwick.Core.Time;
@@ -74,6 +76,19 @@ namespace Thatchwick.Game
         private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
         private readonly List<(ItemInstance item, SpriteRenderer view)> _heatViews = new List<(ItemInstance, SpriteRenderer)>();
         private Vector2 _hudScroll;
+        private AnimalSystem _animals;
+        private RoomMoodSystem _roomMood;
+        private sealed class AnimalView { public Transform T; public SpriteRenderer R; public int Dir = IsoArt.DefaultDirection; }
+        private readonly Dictionary<int, AnimalView> _animalViews = new Dictionary<int, AnimalView>();
+
+        // Etkileşim menüsü (Sims'teki pasta menüsü gibi): eşyaya dokununca seçenekler listelenir.
+        private struct MenuOption { public ItemInstance Item; public InteractionDef Interaction; public string Blocked; }
+        private readonly List<MenuOption> _menuOptions = new List<MenuOption>();
+        private bool _menuOpen;
+        private Rect _menuRect;
+        private GridPos _menuTile;
+        private Vector2 _menuScroll;
+        private string _menuTitle;
         private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan", "Isolde", "Mabel", "Cecily", "Alys" };
         private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric", "Godric", "Tobias", "Alard", "Hugh" };
         private int _nameCounter;
@@ -185,26 +200,41 @@ namespace Thatchwick.Game
                 _household.AddItem("item.sapling_oak", 2);
                 _household.AddItem("item.turnip", 12);
                 _household.AddItem("item.seed_turnip", 6);
+                _household.AddItem("item.plank", 6);
+                _household.AddItem("item.nails", 4);
             }
             _storage = new StorageService(_world, _household, _content);
             _effects = new InteractionEffects(_world, _household, _content, seed: 9) { Storage = _storage };
             _effects.Applied += (c, i, summary) => { ShowMessage($"{c.Name}: {summary}"); _account.Record(i.Id, _clock.DayIndex); };
             _plants = new PlantSystem(_world);
+            _animals = new AnimalSystem(_world, _content, seed: 23);
+            if (loaded != null)
+            {
+                SaveGame.RestoreAnimals(loaded, _animals, _content);
+                foreach (var w in loaded.Warnings) if (w.StartsWith("Hayvan")) Debug.LogWarning($"Kayıt: {w}");
+            }
+            _effects.Animals = _animals;
+            _animals.Died += OnAnimalDied;
+            _roomMood = new RoomMoodSystem(_world);
             _market = new Market(_content, _household, _storage, null, seed: 17);
             if (loaded != null) _market.RestoreState(loaded.MarketDemand, _clock.TotalDays, _clock.Season, loaded.MarketTakenOffers);
             else _market.Tick(0, _clock.TotalDays, _clock.Season);
             _market.OfferAccepted += o => _account.Record(o.IsContract ? "contract" : "barter", _clock.DayIndex);
             _marketPanel = new MarketPanel(_market, _household, _storage, _content, _world,
                 () => _player?.Character, () => _player?.Runner, _stallId);
-            _plants.PlantDied += (def, pos) => ShowMessage($"{def.DisplayName} kışın dondu");
+            _plants.PlantDied += (def, pos) =>
+            {
+                ShowMessage($"{def.DisplayName} kışın dondu");
+                foreach (var c in _population.Members) if (!c.IsVillager) c.AddMoodlet(MoodCatalog.CropFrozen);
+            };
             _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
             if (loaded != null) _heat.RestoreTemperatures(loaded.Temperatures);
-            _buildService = new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level };
-            _buildMode = new BuildMode(_world, _household, _buildService, _content, _view, _input, transform, _walls);
+            _buildService = new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level, HousingResidents = _animals.Residents };
+            _buildMode = new BuildMode(_world, _household, _buildService, _content, _view, _input, transform, _walls, _animals);
             _buildMode.Activity += a => _account.Record(a, _clock.DayIndex);
 
             _population = new Population(firstFreeId: 1, seed: 21);
-            _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % 4];
+            _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % (sex == Sex.Female ? GirlNames.Length : BoyNames.Length)];
             _population.BabyBorn += OnBabyBorn;
             _family = new FamilyService(_population, _household, _content, seed: 31);
             _family.Happened += OnFamilyEvent;
@@ -305,6 +335,11 @@ namespace Thatchwick.Game
             TryPlace("item.stool_wood", new GridPos(26, 15));
             TryPlace("item.chopping_block", new GridPos(22, 15));
             TryPlace("item.chest_wood", new GridPos(24, 15));
+            // Keyif ve hijyen için başlangıç: leğen ve kütük sehpada değirmen oyunu.
+            TryPlace("item.basin_ewer", new GridPos(30, 15));
+            TryPlace("item.stump_table", new GridPos(28, 15));
+            var stump = _world.GetItemAt(new GridPos(28, 15));
+            if (stump != null && _content.Items.TryGet("item.morris_board", out var board)) _world.PlaceOnSurface(board, stump.Id, "a");
 
             // Köy pazarı: çit geçidinin (32,15) doğusunda.
             _world.Map.SetBlocked(new GridPos(34, 14), false);
@@ -372,10 +407,24 @@ namespace Thatchwick.Game
             foreach (var item in _world.Items)
             {
                 var color = ItemColor(item.Def.Id);
+                if (item.IsWallMounted)
+                {
+                    var wallArt = IsoArt.Item(item, out _);
+                    AddItemSprite(item, Iso.WallMount(item.Position, item.Rotation), color, wallArt != null ? 1f : 0.3f,
+                        Iso.WallMountOrder(item.Position, item.Rotation), wallArt);
+                    continue;
+                }
                 if (item.IsDecor)
                 {
                     var parent = _world.GetItem(item.ParentId.Value);
                     if (parent == null || !parent.TryGetSlotPosition(item.SlotId, out float gx, out float gy)) continue;
+                    if (parent.IsWallMounted)
+                    {
+                        var onShelf = IsoArt.Item(item, out _);
+                        AddItemSprite(item, Iso.GridToWorld(gx, gy) + new Vector3(0f, Iso.WallMountHeight + 0.1f, 0f), color,
+                            onShelf != null ? 1f : 0.25f, Iso.WallMountOrder(parent.Position, parent.Rotation) + 1, onShelf);
+                        continue;
+                    }
                     // Gerçek masanın üst yüzü yer tutucu küpten biraz yüksek.
                     float topPx = IsoArt.Item(parent, out _) != null ? 27f : 24f;
                     var pos = Iso.GridToWorld(gx, gy) + new Vector3(0f, topPx / 32f, 0f);
@@ -480,6 +529,7 @@ namespace Thatchwick.Game
         private static void ApplyVillagerRules(Character c, JobRunner runner)
         {
             c.CanStarve = !c.IsVillager;
+            c.MoodEnabled = !c.IsVillager;   // keyif, hijyen ve ruh hali hane üyelerinde
             c.Needs.SetDecayPerDay(NeedType.Hunger, c.IsVillager ? 0f : 120f);
             c.Needs.SetDecayPerDay(NeedType.Energy, c.IsVillager ? 0f : 90f);
             runner.Autonomous = !c.IsVillager && !c.IsPlayerControlled;
@@ -555,6 +605,7 @@ namespace Thatchwick.Game
         private void OnBabyBorn(Character baby, Character mother, int? fatherId)
         {
             CreateActorFor(baby);
+            MoodEvents.OnBirth(mother, fatherId.HasValue ? _population.Find(fatherId.Value) : null);
             ShowMessage($"{mother.Name} doğurdu: {baby.Name}");
         }
 
@@ -568,6 +619,7 @@ namespace Thatchwick.Game
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
             if (_dynastyEnded) return true;
+            if (_menuOpen && _menuRect.Contains(guiPos)) return true;
             return HudRect.Contains(guiPos);
         }
 
@@ -593,7 +645,7 @@ namespace Thatchwick.Game
             if (_player == null || _creator != null || _dynastyEnded) return;   // oyun başlamadan ya da bittikten sonra kaydetme
             try
             {
-                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _life);
+                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _animals, _life);
                 System.IO.File.WriteAllText(SavePath, JsonUtility.ToJson(data));
                 if (!quiet) ShowMessage("Kaydedildi");
             }
@@ -693,20 +745,138 @@ namespace Thatchwick.Game
             var world = cam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
             var tile = _view.WorldToTile(world);
 
-            if (_buildMode.Active) { _buildMode.OnTap(world); return; }
+            if (_buildMode.Active) { _menuOpen = false; _buildMode.OnTap(world); return; }
+            if (_menuOpen) { _menuOpen = false; return; }   // menü dışına dokunmak menüyü kapatır
 
-            ItemInstance tapped = _world.GetItemAt(_view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f))) ?? _world.GetItemAt(tile);
+            CollectOptions(world);
+            if (_menuOptions.Count == 0) { Commander.Runner.Command(Job.MoveTo(tile)); return; }
+            if (_menuOptions.Count == 1) { RunOption(_menuOptions[0]); return; }
 
-            if (tapped != null && tapped.Def.Interactions.Count > 0)
+            // Birden çok seçenek: dokunulan yerde menü aç.
+            float s = HudScale;
+            float h = Mathf.Min(34f + 26f * (_menuOptions.Count + 1), 320f);
+            float x = Mathf.Clamp(screenPos.x / s + 12f, 4f, Screen.width / s - 244f);
+            float y = Mathf.Clamp((Screen.height - screenPos.y) / s - 20f, 4f, Screen.height / s - h - 4f);
+            _menuRect = new Rect(x, y, 240f, h);
+            _menuTile = tile;
+            _menuScroll = Vector2.zero;
+            _menuOpen = true;
+        }
+
+        // Dokunulan noktadaki eşyaların (duvar eşyası, yer eşyası ve üstündeki dekorlar) tüm etkileşimleri.
+        private void CollectOptions(Vector3 world)
+        {
+            _menuOptions.Clear();
+            var items = new List<ItemInstance>();
+            var wall = BuildMode.PickWallItem(_world, world);
+            var floor = _world.GetItemAt(_view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f))) ?? _world.GetItemAt(_view.WorldToTile(world));
+            foreach (var root in new[] { wall, floor })
             {
-                var interaction = tapped.Def.Interactions[0];
-                Commander.Runner.Command(Job.UseItem(tapped.Id, interaction.Id));
-                ShowMessage($"{Commander.Character.Name}: {interaction.DisplayName} ({tapped.Def.DisplayName})");
+                if (root == null) continue;
+                items.Add(root);
+                items.AddRange(_world.GetDecorOn(root.Id));
             }
-            else
+            var names = new List<string>();
+            foreach (var item in items)
             {
-                Commander.Runner.Command(Job.MoveTo(tile));
+                if (item.Def.Interactions.Count > 0 && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
+                foreach (var it in item.Def.Interactions)
+                    _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
             }
+            _menuTitle = string.Join(", ", names);
+        }
+
+        private void RunOption(MenuOption o)
+        {
+            Commander.Runner.Command(Job.UseItem(o.Item.Id, o.Interaction.Id));
+            ShowMessage($"{Commander.Character.Name}: {o.Interaction.DisplayName} ({o.Item.Def.DisplayName})");
+        }
+
+        private void DrawInteractionMenu()
+        {
+            if (!_menuOpen) return;
+            if (Commander == null) { _menuOpen = false; return; }
+            GUILayout.BeginArea(_menuRect, GUI.skin.box);
+            GUILayout.Label($"{Commander.Character.Name} · {_menuTitle}");
+            _menuScroll = GUILayout.BeginScrollView(_menuScroll);
+            foreach (var o in _menuOptions)
+            {
+                GUI.enabled = o.Blocked == null;
+                string label = o.Blocked == null ? o.Interaction.DisplayName : $"{o.Interaction.DisplayName} ({o.Blocked})";
+                if (GUILayout.Button(label)) { RunOption(o); _menuOpen = false; }
+                GUI.enabled = true;
+            }
+            if (GUILayout.Button("Buraya yürü")) { Commander.Runner.Command(Job.MoveTo(_menuTile)); _menuOpen = false; }
+            GUILayout.EndScrollView();
+            GUILayout.EndArea();
+        }
+
+        private void OnAnimalDied(Animal a)
+        {
+            ShowMessage(a.CauseOfDeath == AnimalDeath.Starvation ? $"{a.Name} açlıktan öldü (barınağa yem koy)" : $"{a.Name} yaşlılıktan öldü");
+            foreach (var c in _population.Members) if (!c.IsVillager) c.AddMoodlet(MoodCatalog.AnimalDied);
+        }
+
+        private static Color AnimalColor(string id)
+        {
+            switch (id)
+            {
+                case "animal.chicken": return new Color(0.95f, 0.92f, 0.85f);
+                case "animal.duck": return new Color(0.55f, 0.7f, 0.45f);
+                case "animal.goat": return new Color(0.75f, 0.68f, 0.55f);
+                case "animal.sheep": return new Color(0.92f, 0.9f, 0.86f);
+                case "animal.cow": return new Color(0.55f, 0.4f, 0.3f);
+                case "animal.dog": return new Color(0.6f, 0.45f, 0.3f);
+                case "animal.cat": return new Color(0.85f, 0.55f, 0.25f);
+                default: return new Color(0.95f, 0.8f, 0.2f);
+            }
+        }
+
+        private static float AnimalScale(string id)
+        {
+            switch (id)
+            {
+                case "animal.chicken": case "animal.duck": case "animal.bees": return 0.22f;
+                case "animal.cat": return 0.26f;
+                case "animal.dog": return 0.3f;
+                case "animal.cow": return 0.5f;
+                default: return 0.4f;
+            }
+        }
+
+        // Hayvan görünümleri: canlı hayvanlarla eşitlenir, yürüyüş ara değerlenir.
+        private void UpdateAnimalViews()
+        {
+            var alive = new HashSet<int>();
+            foreach (var a in _animals.Animals)
+            {
+                alive.Add(a.Id);
+                if (!_animalViews.TryGetValue(a.Id, out var v))
+                {
+                    var go = new GameObject(a.Name);
+                    go.transform.SetParent(transform, false);
+                    v = new AnimalView { T = go.transform, R = go.AddComponent<SpriteRenderer>() };
+                    v.R.sharedMaterial = SpriteMaterials.Unlit;
+                    _animalViews[a.Id] = v;
+                }
+                Vector3 pos = _view.TileToWorld(a.Position);
+                if (a.NextTile.HasValue)
+                {
+                    var to = _view.TileToWorld(a.NextTile.Value);
+                    v.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
+                    pos = Vector3.Lerp(pos, to, a.StepProgress);
+                }
+                v.T.position = pos;
+                var real = IsoArt.Animal(a.Species.Id, v.Dir);
+                float scale = a.IsMature ? 1f : 0.7f;
+                if (real != null) { v.R.sprite = real; v.R.color = Color.white; }
+                else { v.R.sprite = SpriteMaterials.Cube(AnimalColor(a.Species.Id)); v.R.color = Color.white; scale *= AnimalScale(a.Species.Id); }
+                v.T.localScale = new Vector3(scale, scale, 1f);
+                v.R.sortingOrder = Iso.SortOrder(pos.y, 1);
+            }
+            var gone = new List<int>();
+            foreach (var kv in _animalViews) if (!alive.Contains(kv.Key)) gone.Add(kv.Key);
+            foreach (var id in gone) { if (_animalViews[id].T != null) Destroy(_animalViews[id].T.gameObject); _animalViews.Remove(id); }
         }
 
         // Play modundayken kod yeniden derlenirse (ör. git pull) private alanlar sıfırlanır
@@ -763,6 +933,9 @@ namespace Thatchwick.Game
             _heat.Tick(gameDays, _clock.TotalDays);
             _plants.Tick(gameDays, _clock.Season);
             _market.Tick(gameDays, _clock.TotalDays, _clock.Season);
+            _animals.Tick(gameDays);
+            _roomMood.Tick(gameDays, _population.Members);
+            UpdateAnimalViews();
             foreach (var (plant, view) in _plantViews)
                 if (view != null) { float s = PlantScale(plant); view.localScale = new Vector3(s, s, 1f); }
             foreach (var (heatItem, heatView) in _heatViews)
@@ -880,6 +1053,16 @@ namespace Thatchwick.Game
             }
         }
 
+        /// <summary>"İyi (+15): Dinlenmiş, Uyumlu ev"</summary>
+        public static string MoodText(Character c, int maxNames = 3)
+        {
+            var names = new List<string>();
+            foreach (var m in c.Mood.Active) if (names.Count < maxNames) names.Add(m.Def.DisplayName);
+            string more = c.Mood.Active.Count > maxNames ? " ..." : "";
+            string total = c.Mood.Total > 0 ? $"+{c.Mood.Total}" : c.Mood.Total.ToString();
+            return names.Count == 0 ? $"{MoodRules.Name(c.Mood.Status)}" : $"{MoodRules.Name(c.Mood.Status)} ({total}): {string.Join(", ", names)}{more}";
+        }
+
         private static string ActivityText(JobRunner runner)
         {
             if (runner.IsIdle) return "Boşta";
@@ -912,6 +1095,7 @@ namespace Thatchwick.Game
             _villagePanel.OnGUI(s);
             DrawBalloons(s);
             _statusHud.OnGUI(s);
+            DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
 
             GUILayout.BeginArea(HudRect, GUI.skin.box);
@@ -932,6 +1116,8 @@ namespace Thatchwick.Game
                 var c = actor.Character;
                 GUILayout.Label(
                     $"{c.Name} ({(c.IsDead ? "Öldü" : StageName(c.Stage))}{(c.IsPregnant ? ", hamile" : "")}, {c.AgeDays:0}g): Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0} · Isınma {c.Needs.Get(NeedType.Warmth):0}");
+                if (c.ComfortNeedsActive && !c.IsDead)
+                    GUILayout.Label($"   Keyif {c.Needs.Get(NeedType.Fun):0} · Hijyen {c.Needs.Get(NeedType.Hygiene):0} · Ruh hali: {MoodText(c)}");
                 if (!c.IsDead) GUILayout.Label($"   {ActivityText(actor.Runner)}");
                 var skills = SkillsText(c);
                 if (skills.Length > 0) GUILayout.Label($"   Beceri: {skills}");
@@ -993,7 +1179,8 @@ namespace Thatchwick.Game
             string here = _player != null ? $"{_heat.TemperatureAt(_player.Character.Position):0}°C" : "-";
             GUILayout.Label($"Dış {_heat.OutdoorTemperature:0}°C · {_player?.Character.Name}: {here}");
             GUILayout.Label($"Odun {_household.Count(_heat.Config.FirewoodId)} · Kütük {_household.Count("item.log")} · Meşe fidanı {_household.Count("item.sapling_oak")}");
-            GUILayout.Label($"Şalgam {_household.Count("item.turnip")} · Şalgam tohumu {_household.Count("item.seed_turnip")}");
+            GUILayout.Label($"Şalgam {_household.Count("item.turnip")} · Şalgam tohumu {_household.Count("item.seed_turnip")} · Tahta {_household.Count("item.plank")} · Çivi {_household.Count("item.nails")}");
+            GUILayout.Label($"Yem {_household.Count("item.feed")} · Yumurta {_household.Count("item.egg")} · Süt {_household.Count("item.milk")} · Yün {_household.Count("item.wool")} · Bal {_household.Count("item.honey")} · Hayvan {_animals.Animals.Count}");
             GUILayout.Label($"Depo {_storage.Used}/{_storage.Capacity}{(_storage.Free <= 0 ? " (dolu)" : "")}");
             foreach (var item in _world.Items)
             {
@@ -1027,13 +1214,14 @@ namespace Thatchwick.Game
 
             foreach (var item in _world.Items)
             {
-                if (item.IsDecor) continue;
+                if (item.IsDecor || item.IsWallMounted) continue;
                 Vector3 sp = cam.WorldToScreenPoint(_view.TileToWorld(item.Position) + new Vector3(0f, 1.5f, 0f));
                 if (sp.z < 0f) continue;
                 float x = sp.x / guiScale;
                 float y = (Screen.height - sp.y) / guiScale;
                 string label = item.Def.HeatOutput > 0f ? $"{item.Def.DisplayName} ({(item.IsLit ? "yanıyor" : "sönük")})"
                     : item.IsPlant ? (item.IsGrown ? $"{item.Def.DisplayName} (olgun)" : $"{item.Def.DisplayName} (%{item.GrowthFraction * 100f:0}{(PlantSystem.CanGrowIn(_clock.Season) ? "" : ", kışın büyümez")})")
+                    : item.Def.IsHousing ? $"{item.Def.DisplayName} ({_animals.Residents(item.Id)}/{item.Def.HousingCapacity}, yem {item.FeedStock:0.#}{(item.StockTotal > 0 ? $", ürün {item.StockTotal}" : "")})"
                     : item.Def.DisplayName;
                 GUI.Label(new Rect(x - 70f, y - 10f, 140f, 20f), label, _labelStyle);
             }

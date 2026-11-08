@@ -109,7 +109,7 @@ namespace Thatchwick.Core.Life
                 if (c.IsDead || c.Stage == AgeStage.Baby) continue;
                 if (f.FunRestore > 0) c.Needs.Restore(NeedType.Fun, f.FunRestore);
                 if (f.SocialRestore > 0) c.Needs.Restore(NeedType.Social, f.SocialRestore * c.Modifiers.SocialGain);
-                if (mood != 0) c.Mood.Add("mood.festival", f.DisplayName, mood, FestivalMoodDays);
+                if (mood != 0) c.AddMoodlet("mood.festival", f.DisplayName, mood, FestivalMoodDays);
                 count++;
             }
             Celebrated?.Invoke(f, count);

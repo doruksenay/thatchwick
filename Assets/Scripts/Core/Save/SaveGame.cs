@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
@@ -8,6 +9,7 @@ using Thatchwick.Core.Economy;
 using Thatchwick.Core.Family;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Life;
+using Thatchwick.Core.Mood;
 using Thatchwick.Core.Progress;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
@@ -30,6 +32,8 @@ namespace Thatchwick.Core.Save
         public Dynasty Dynasty;
         /// <summary>Yaşam katmanı kaydı; eski kayıtta null (varsayılan durumla başlar).</summary>
         public LifeSaveData Life;
+        /// <summary>Hayvanlar (v2); AnimalSystem kurulunca SaveGame.RestoreAnimals ile geri konur.</summary>
+        public List<AnimalSave> Animals = new List<AnimalSave>();
         /// <summary>Yüklenemeyen parçalar (ör. içerikten kaldırılmış eşya). Oyun yine açılır.</summary>
         public List<string> Warnings = new List<string>();
     }
@@ -37,11 +41,11 @@ namespace Thatchwick.Core.Save
     /// <summary>Oyun durumunu SaveData'ya çevirir ve geri kurar (T16: sürümlü, geriye uyumlu).</summary>
     public static class SaveGame
     {
-        public const int CurrentVersion = 1;
+        public const int CurrentVersion = 2;
 
         public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
             AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null,
-            LifeSystems life = null)
+            AnimalSystem animals = null, LifeSystems life = null)
         {
             var map = world.Map;
             var data = new SaveData
@@ -83,10 +87,19 @@ namespace Thatchwick.Core.Save
                 foreach (var it in world.Items)
                 {
                     if (it.IsDecor != pass) continue;
+                    KeyInt[] stock = null;
+                    if (it.StockTotal > 0)
+                    {
+                        var sl = new List<KeyInt>();
+                        foreach (var kv in it.Stock) if (kv.Value > 0) sl.Add(new KeyInt { key = kv.Key, value = kv.Value });
+                        sl.Sort((a, b) => string.CompareOrdinal(a.key, b.key));
+                        stock = sl.ToArray();
+                    }
                     items.Add(new ItemSave
                     {
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, rotation = it.Rotation,
-                        parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays, readyProgress = it.ReadyProgress
+                        parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
+                        feedStock = it.FeedStock, stock = stock
                     });
                 }
             data.items = items.ToArray();
@@ -135,6 +148,20 @@ namespace Thatchwick.Core.Save
                     hist.Add(new HeadSave { characterId = h.CharacterId, name = h.Name, generation = h.Generation, startDay = h.StartDay, endDay = h.EndDay, endCause = (int)h.EndCause, trade = h.Trade });
                 data.dynasty = new DynastySave { name = dynasty.Name, headId = dynasty.HeadId, ended = dynasty.Ended, history = hist.ToArray() };
             }
+            if (animals != null)
+            {
+                var list = new List<AnimalSave>();
+                foreach (var a in animals.Animals)
+                {
+                    if (a.IsDead) continue;
+                    list.Add(new AnimalSave
+                    {
+                        id = a.Id, species = a.Species.Id, x = a.Position.X, y = a.Position.Y, home = a.HomeItemId,
+                        fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays
+                    });
+                }
+                data.animals = list.ToArray();
+            }
             data.life = life?.Export();
             return data;
         }
@@ -149,12 +176,14 @@ namespace Thatchwick.Core.Save
             }
             var a = c.Appearance ?? new Appearance();
             var moodlets = new List<MoodletSave>();
-            foreach (var m in c.Mood.Moodlets) moodlets.Add(new MoodletSave { id = m.Id, text = m.Text, value = m.Value, days = m.RemainingDays });
+            foreach (var m in c.Mood.Active)
+                if (!MoodCatalog.Default.Contains(m.Def.Id))
+                    moodlets.Add(new MoodletSave { id = m.Def.Id, text = m.Def.DisplayName, value = m.Def.Value, days = m.Def.IsCondition ? -1 : m.RemainingDays });
             return new CharacterSave
             {
-                social = c.Needs.Get(NeedType.Social), fun = c.Needs.Get(NeedType.Fun),
+                social = c.Needs.Get(NeedType.Social),
                 traits = new List<string>(c.TraitIds).ToArray(), branches = new List<string>(c.BranchIds).ToArray(),
-                moodlets = moodlets.ToArray(),
+                extraMoodlets = moodlets.ToArray(),
                 id = c.Id, name = c.Name, isPlayer = c.IsPlayerControlled, sex = (int)c.Sex,
                 x = c.Position.X, y = c.Position.Y,
                 ageDays = c.AgeDays, lifespanDays = c.LifespanDays,
@@ -163,6 +192,8 @@ namespace Thatchwick.Core.Save
                 pregnancyLeft = c.PregnancyLeft, postpartumLeft = c.PostpartumLeft,
                 freezeDays = c.FreezeDays, starveDays = c.StarveDays,
                 hunger = c.Needs.Get(NeedType.Hunger), energy = c.Needs.Get(NeedType.Energy), warmth = c.Needs.Get(NeedType.Warmth),
+                fun = c.Needs.Get(NeedType.Fun), hygiene = c.Needs.Get(NeedType.Hygiene),
+                moodlets = CaptureMoodlets(c),
                 skills = skills.ToArray(),
                 spouseId = c.SpouseId ?? 0,
                 motherId = c.BirthMotherId ?? 0,
@@ -179,6 +210,26 @@ namespace Thatchwick.Core.Save
                     hat = a.HatId, hatColor = a.HatColor.ToHex()
                 }
             };
+        }
+
+        private static KeyFloat[] CaptureMoodlets(Character c)
+        {
+            var list = new List<KeyFloat>();
+            foreach (var kv in c.Mood.Export()) list.Add(new KeyFloat { key = kv.Key, value = kv.Value });
+            return list.ToArray();
+        }
+
+        /// <summary>Kayıttaki hayvanları kurulan hayvan sistemine geri koyar (barınağı olmayanlar atlanır).</summary>
+        public static void RestoreAnimals(LoadedGame loaded, AnimalSystem system, ContentDatabase content)
+        {
+            foreach (var s in loaded.Animals)
+            {
+                if (s == null) continue;
+                if (!content.Animals.TryGet(s.species, out var species)) { loaded.Warnings.Add($"Hayvan türü yok, atlandı: {s.species}"); continue; }
+                var home = loaded.World.GetItem(s.home);
+                if (home == null || home.Def.HousingKind != species.Housing) { loaded.Warnings.Add($"Hayvanın barınağı yok, atlandı: {s.species}"); continue; }
+                system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays);
+            }
         }
 
         /// <summary>Kaydı geri kurar. Sürüm yeniyse ya da harita yoksa InvalidOperationException.</summary>
@@ -222,9 +273,14 @@ namespace Thatchwick.Core.Save
                     int? parent = s.parentId >= 0 ? s.parentId : (int?)null;
                     if (parent.HasValue && world.GetItem(parent.Value) == null) { result.Warnings.Add($"Dekorun yüzeyi yok, atlandı: {s.def}"); continue; }
                     var pos = new GridPos(s.x, s.y);
-                    if (!parent.HasValue && !world.CanPlaceFloor(def, pos, s.rotation).Ok) { result.Warnings.Add($"Eşya yerine sığmadı, atlandı: {s.def} {pos}"); continue; }
+                    if (!parent.HasValue)
+                    {
+                        var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation) : world.CanPlaceFloor(def, pos, s.rotation);
+                        if (!fits.Ok) { result.Warnings.Add($"Eşya yerine sığmadı, atlandı: {s.def} {pos}"); continue; }
+                    }
                     var restored = world.RestoreItem(def, s.id, pos, s.rotation, parent, s.slotId, Math.Max(0, s.fuelDays), Math.Max(0, s.growthDays));
-                    restored.ReadyProgress = Math.Max(0, s.readyProgress);
+                    restored.FeedStock = Math.Max(0, s.feedStock);
+                    if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(kv.key)) restored.SetStock(kv.key, kv.value);
                 }
 
             var hs = data.household ?? new HouseholdSave();
@@ -271,6 +327,7 @@ namespace Thatchwick.Core.Save
                 d.Restore(data.dynasty.headId, hist, data.dynasty.ended);
                 result.Dynasty = d;
             }
+            if (data.animals != null) result.Animals.AddRange(data.animals);
             return result;
         }
 
@@ -286,13 +343,21 @@ namespace Thatchwick.Core.Save
             c.Needs.Set(NeedType.Hunger, s.hunger);
             c.Needs.Set(NeedType.Energy, s.energy);
             c.Needs.Set(NeedType.Warmth, s.warmth);
+            c.Needs.Set(NeedType.Fun, s.fun);
+            c.Needs.Set(NeedType.Hygiene, s.hygiene);
+            if (s.moodlets != null)
+            {
+                var ms = new List<KeyValuePair<string, double>>();
+                foreach (var kv in s.moodlets) if (kv != null) ms.Add(new KeyValuePair<string, double>(kv.key, kv.value));
+                c.Mood.Restore(ms, MoodCatalog.Default);
+            }
             if (s.social >= 0f) c.Needs.Set(NeedType.Social, s.social);
-            if (s.fun >= 0f) c.Needs.Set(NeedType.Fun, s.fun);
             c.SetTraits(s.traits);
             c.SetBranches(s.branches);
-            if (s.moodlets != null)
-                foreach (var m in s.moodlets)
-                    if (m != null && !string.IsNullOrEmpty(m.id)) c.Mood.Add(m.id, m.text, m.value, m.days);
+            if (s.extraMoodlets != null)
+                foreach (var m in s.extraMoodlets)
+                    if (m != null && !string.IsNullOrEmpty(m.id) && !c.Mood.Has(m.id))
+                        c.Mood.Add(new MoodletDef { Id = m.id, DisplayName = m.text, Description = m.text, Value = m.value, DurationDays = m.days < 0 ? 0 : Math.Max(0.001, m.days) });
             if (s.skills != null)
                 foreach (var kv in s.skills)
                     if (kv != null && Enum.TryParse(kv.key, out SkillType skill)) c.Skills.RestoreXp(skill, kv.value);
@@ -329,7 +394,9 @@ namespace Thatchwick.Core.Save
 
     /// <summary>
     /// Kayıt sürüm yükseltmeleri (T16). Her yeni sürümde buraya "eski → yeni" adımı eklenir ve
-    /// eski bir kayıt örneği testlere konur. Şimdilik yalnızca sürüm 1 var.
+    /// eski bir kayıt örneği testlere konur.
+    /// v1 → v2: keyif ve hijyen ihtiyaçları eklendi (eski kayıtta yok: tam doluyla başlar), moodlet'ler,
+    /// hayvanlar ve barınak stokları (eksik alanlar boş gelir, ek iş gerekmez).
     /// </summary>
     public static class SaveMigrator
     {
@@ -338,7 +405,17 @@ namespace Thatchwick.Core.Save
             if (data.version <= 0) data.version = 1;   // sürümsüz (en eski) dosya: 1 sayılır
             if (data.version > SaveGame.CurrentVersion)
                 throw new InvalidOperationException($"Kayıt daha yeni bir oyun sürümünden ({data.version}); güncelleme gerekli.");
-            // ileride: if (data.version == 1) { ...; data.version = 2; }
+            if (data.version == 1)
+            {
+                if (data.characters != null)
+                    foreach (var c in data.characters)
+                    {
+                        if (c == null) continue;
+                        c.fun = 100f;
+                        c.hygiene = 100f;
+                    }
+                data.version = 2;
+            }
         }
     }
 }

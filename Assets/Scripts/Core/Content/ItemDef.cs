@@ -8,7 +8,9 @@ namespace Thatchwick.Core.Content
         Floor = 0,
         Surface = 1,
         /// <summary>Yerleştirilmez; yalnızca envanterde sayılan kaynak (odun gibi).</summary>
-        Resource = 2
+        Resource = 2,
+        /// <summary>Duvarın iç yüzüne asılır (meşale, duvar rafı, goblen); karo kaplamaz.</summary>
+        Wall = 3
     }
 
     /// <summary>Bir eşyanın yüzeyindeki dekor yuvası. U,V: kapladığı alanın içinde 0-1 arası yerel konum.</summary>
@@ -62,20 +64,25 @@ namespace Thatchwick.Core.Content
         public List<Time.Season> GrowSeasons { get; set; } = new List<Time.Season>();
         /// <summary>Oda konforuna katkısı (dekor ve mobilya). Adım 32.</summary>
         public int Comfort { get; set; }
-        /// <summary>Stil seti (koyulu, zanaatkar, tuccar, asil); aynı odada 4+ eşya "uyumlu oda" verir.</summary>
-        public string StyleSet { get; set; }
         /// <summary>Taze yiyecek bozulma süresi (oyun günü); 0 = çürümez.</summary>
         public float SpoilDays { get; set; }
         /// <summary>Kiler eşyası: yiyecek bozulmasını bu çarpanla yavaşlatır (0 = kiler değil).</summary>
         public float Preserves { get; set; }
-        /// <summary>Üreten eşya (kümes): ürün hazır olma süresi (oyun günü); 0 = üretmez.</summary>
-        public float ReadyDays { get; set; }
         public List<string> Variants { get; set; } = new List<string>();
         /// <summary>Yabani toplanabilir: görüneceği mevsimler ve haritada en çok kaç tane.</summary>
         public List<Time.Season> ForageSeasons { get; set; } = new List<Time.Season>();
         public int ForageMax { get; set; }
         public bool IsForage => ForageSeasons.Count > 0 && ForageMax > 0;
-        public bool Produces => ReadyDays > 0f;
+
+        /// <summary>Stil seti (Köylü, Zanaatkâr, Tüccar, Asil): aynı odada 4+ eşya "Uyumlu ev" verir. Boş = setsiz.</summary>
+        public string StyleSet { get; set; }
+        /// <summary>Satın alma menüsünde oda filtresi (bedroom, kitchen, living, outdoor, kids).</summary>
+        public List<string> Rooms { get; set; } = new List<string>();
+        /// <summary>Hayvan barınağı türü (coop, barn, kennel ...); boş = barınak değil.</summary>
+        public string HousingKind { get; set; }
+        /// <summary>Barınağın alabileceği hayvan sayısı.</summary>
+        public int HousingCapacity { get; set; }
+        public bool IsHousing => !string.IsNullOrEmpty(HousingKind);
 
         public SurfaceSlotDef FindSlot(string slotId)
         {

@@ -26,7 +26,7 @@ namespace Thatchwick.Core.Tests
 
         private static Character Cook(int id, GridPos pos, int cookingLevel)
         {
-            var c = new Character(id, "Aşçı" + id, pos); c.SetAge(60);
+            var c = new Character(id, "Aşçı" + id, pos) { MoodEnabled = true }; c.SetAge(60);
             c.GainSkillXp(SkillType.Cooking, SkillRules.XpForLevel(cookingLevel) + 1);
             return c;
         }
@@ -247,7 +247,7 @@ namespace Thatchwick.Core.Tests
             house.AddItem("item.turnip", 3); house.AddItem("item.cabbage", 3); house.AddItem("item.leek", 3);
             runner.Command(Job.UseItem(pot.Id, "cook_stew"));
             runner.Tick(0.05);
-            Assert.Contains("seviye 2", runner.LastFailure);
+            Assert.Contains("2. seviye", runner.LastFailure);
 
             string Produced(int level, int qualityBonus = 0)
             {
@@ -314,20 +314,22 @@ namespace Thatchwick.Core.Tests
             var db = Real();
             var world = new WorldState(new GridMap(12, 12));
             var house = new Household();
+            var block = world.PlaceItem(db.Items.Get("item.chopping_block"), new GridPos(3, 5));
             var bench = world.PlaceItem(db.Items.Get("item.workbench"), new GridPos(5, 5));
             var effects = new InteractionEffects(world, house, db, seed: 4);
             var c = new Character(1, "Marangoz", new GridPos(5, 7)); c.SetAge(60);
             var runner = new JobRunner(c, world) { Effects = effects };
             house.AddItem("item.log", 2);
 
-            void Run(string id) { runner.Command(Job.UseItem(bench.Id, id)); for (int i = 0; i < 60 && !runner.IsIdle; i++) runner.Tick(0.02); }
-            Run("saw_plank"); Run("saw_plank");
-            Assert.Equal(4, house.Count("item.plank"));
-            Run("craft_table");   // seviye 3 gerekir
-            Assert.Contains("seviye 3", runner.LastFailure);
-            Run("craft_stool");
+            void Run(ItemInstance at, string id) { runner.Command(Job.UseItem(at.Id, id)); for (int i = 0; i < 60 && !runner.IsIdle; i++) runner.Tick(0.02); }
+            Run(block, "saw"); Run(block, "saw");
+            Assert.Equal(6, house.Count("item.plank"));
+            house.AddItem("item.nails", 3);
+            Run(bench, "craft:table");   // seviye 2 gerekir
+            Assert.Contains("2. seviye", runner.LastFailure);
+            Run(bench, "craft:stool");
             Assert.Equal(1, house.Count("item.stool_wood"));
-            Assert.Equal(2, house.Count("item.plank"));
+            Assert.Equal(4, house.Count("item.plank"));
             Assert.True(c.Skills.GetXp(SkillType.Carpentry) > 0);
         }
 
@@ -369,43 +371,6 @@ namespace Thatchwick.Core.Tests
             Assert.Null(world.GetItem(branch.Id));
         }
 
-        // ---------- Kümes (42) ----------
-
-        [Fact]
-        public void Kumes_GunlukUretirKistaYavaslar_TopluncaSifirlanir()
-        {
-            var db = Real();
-            var world = new WorldState(new GridMap(12, 12));
-            var house = new Household();
-            var coop = world.PlaceItem(db.Items.Get("item.coop"), new GridPos(4, 4));
-            var live = new LivestockSystem(world);
-            int ready = 0;
-            live.BecameReady += _ => ready++;
-            var effects = new InteractionEffects(world, house, db, seed: 1);
-            var c = new Character(1, "Çiftçi", new GridPos(4, 6)); c.SetAge(40);
-            var runner = new JobRunner(c, world) { Effects = effects };
-
-            runner.Command(Job.UseItem(coop.Id, "collect_eggs"));
-            runner.Tick(0.05);
-            Assert.Contains("hazır değil", runner.LastFailure);
-
-            live.Tick(0.9, Season.Summer);
-            Assert.False(coop.IsReady);
-            live.Tick(0.2, Season.Summer);
-            Assert.True(coop.IsReady);
-            Assert.Equal(1, ready);
-
-            runner.Command(Job.UseItem(coop.Id, "collect_eggs"));
-            for (int i = 0; i < 40 && !runner.IsIdle; i++) runner.Tick(0.02);
-            Assert.Equal(2, house.Count("item.egg"));
-            Assert.False(coop.IsReady);
-
-            live.Tick(1.0, Season.Winter);        // kışın yarı hız
-            Assert.False(coop.IsReady);
-            live.Tick(1.0, Season.Winter);
-            Assert.True(coop.IsReady);
-        }
-
         // ---------- Takvim ve festival (34) ----------
 
         [Fact]
@@ -414,7 +379,7 @@ namespace Thatchwick.Core.Tests
             var db = Real();
             var clock = new GameClock();
             var fest = new FestivalService(db, clock);
-            var villager = new Character(1, "Köylü", new GridPos(0, 0)); villager.SetAge(40);
+            var villager = new Character(1, "Köylü", new GridPos(0, 0)) { MoodEnabled = true }; villager.SetAge(40);
             var baby = new Character(2, "Bebek", new GridPos(0, 0));
             villager.Needs.Set(NeedType.Fun, 10);
             var all = new[] { villager, baby };
