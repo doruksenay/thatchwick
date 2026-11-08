@@ -48,6 +48,7 @@ namespace Thatchwick.Game
         private CharacterCreator _creator;
         private Household _household;
         private BuildMode _buildMode;
+        private WallView _walls;
         private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan" };
         private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric" };
         private int _nameCounter;
@@ -75,6 +76,15 @@ namespace Thatchwick.Game
             RebuildItemViews();
             _world.Changed += RebuildItemViews;
 
+            foreach (var item in _world.Items)
+                foreach (var tile in item.OccupiedTiles()) _view.ClearTerrainBlock(tile);
+            _view.RefreshFloors();
+            map.Changed += _view.RefreshFloors;
+            var wallsGo = new GameObject("WallView");
+            wallsGo.transform.SetParent(transform, false);
+            _walls = wallsGo.AddComponent<WallView>();
+            _walls.Init(map);
+
             var cam = Camera.main;
             if (cam == null)
             {
@@ -90,7 +100,7 @@ namespace Thatchwick.Game
             _input.Tapped += OnTapped;
 
             _household = new Household(100);
-            _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content), _content, _view, _input, transform);
+            _buildMode = new BuildMode(_world, _household, new BuildService(_world, _household, _content), _content, _view, _input, transform, _walls);
 
             _population = new Population(firstFreeId: 1, seed: 21);
             _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % 4];

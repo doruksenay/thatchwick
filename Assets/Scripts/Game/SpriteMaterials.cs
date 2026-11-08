@@ -126,6 +126,44 @@ namespace Thatchwick.Game
             return sprite;
         }
 
+        private static readonly Dictionary<int, Sprite> Walls = new Dictionary<int, Sprite>();
+        public const int WallHeightPx = 40;
+        public const int LowWallHeightPx = 10;
+
+        /// <summary>
+        /// Karo kenarı duvar parçası (32 px geniş paralelkenar, beyaz; renk SpriteRenderer.color ile).
+        /// Horizontal: sol-alttan sağ-üste yükselir, pivot sol-alt. Vertical: sağ-alttan sol-üste, pivot sağ-alt.
+        /// kind: Wall/Door/Window (kapı ve pencere açıklıklı); low = kesit modunda alçak duvar.
+        /// </summary>
+        public static Sprite Wall(Thatchwick.Core.World.EdgeAxis axis, Thatchwick.Core.World.EdgeKind kind, bool low)
+        {
+            int key = ((int)axis * 4 + (int)kind) * 2 + (low ? 1 : 0);
+            if (Walls.TryGetValue(key, out var cached) && cached != null) return cached;
+
+            const int w = 32;
+            int wallH = low ? LowWallHeightPx : WallHeightPx;
+            int h = 16 + wallH;
+            bool horizontal = axis == Thatchwick.Core.World.EdgeAxis.Horizontal;
+            var pixels = new Color32[w * h];
+            byte shade = horizontal ? (byte)235 : (byte)175;
+            for (int x = 0; x < w; x++)
+            {
+                int bottom = horizontal ? x / 2 : (w - 1 - x) / 2;
+                for (int y = bottom; y < bottom + wallH; y++)
+                {
+                    bool top = y >= bottom + wallH - 3;
+                    byte v = top ? (byte)255 : shade;
+                    bool hole = false;
+                    if (!low && kind == Thatchwick.Core.World.EdgeKind.Door) hole = x >= 9 && x < 23 && y < bottom + 30;
+                    if (!low && kind == Thatchwick.Core.World.EdgeKind.Window) hole = x >= 10 && x < 22 && y >= bottom + 16 && y < bottom + 32;
+                    if (!hole) pixels[y * w + x] = new Color32(v, v, v, 255);
+                }
+            }
+            var sprite = MakeSprite(pixels, w, h, new Vector2(horizontal ? 0f : 1f, 0f));
+            Walls[key] = sprite;
+            return sprite;
+        }
+
         private static Color32 Shade(Color c, float factor) =>
             new Color32((byte)(c.r * factor * 255f), (byte)(c.g * factor * 255f), (byte)(c.b * factor * 255f), 255);
 
