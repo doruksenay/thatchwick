@@ -135,6 +135,7 @@ namespace Thatchwick.Core.Content
                 if (a.Price < 0) errors.Add($"{a.Id}: fiyat negatif olamaz.");
                 if (a.FeedPerDay < 0f) errors.Add($"{a.Id}: yem negatif olamaz.");
                 if (a.Produces != null && !Items.Contains(a.Produces)) errors.Add($"{a.Id}: ürün '{a.Produces}' bulunamadı.");
+                if (a.Meat != null && !Items.Contains(a.Meat)) errors.Add($"{a.Id}: et '{a.Meat}' bulunamadı.");
                 if (a.MatureDays < 0f || a.MatureDays >= a.LifespanDays) errors.Add($"{a.Id}: erişkinlik yaşı 0 ile ömür arasında olmalı.");
                 bool housed = false;
                 foreach (var item in Items.All) if (item.HousingKind == a.Housing) { housed = true; break; }

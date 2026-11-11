@@ -109,7 +109,7 @@ namespace Thatchwick.Core.Content
                         if (i == null) continue;
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
-                            || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals;
+                            || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -157,7 +157,8 @@ namespace Thatchwick.Core.Content
                             Fertilize = i.fertilize,
                             RequiresFruit = i.requiresFruit,
                             TakesFruit = i.takesFruit,
-                            PetsAnimals = i.petAnimals
+                            PetsAnimals = i.petAnimals,
+                            Slaughter = i.slaughter
                         };
                         AddMaterials(interaction, i.materials);
                         bool badExtra = false;
@@ -267,6 +268,8 @@ namespace Thatchwick.Core.Content
                     LifespanDays = a.lifespanDays <= 0 ? 120f : a.lifespanDays,
                     MatureDays = a.matureDays,
                     IsPet = a.pet,
+                    Meat = string.IsNullOrWhiteSpace(a.meat) ? null : a.meat,
+                    MeatCount = a.meatCount <= 0 ? 1 : a.meatCount,
                     UnlockLevel = a.level <= 0 ? 1 : a.level
                 };
                 try { db.Animals.Register(def); }

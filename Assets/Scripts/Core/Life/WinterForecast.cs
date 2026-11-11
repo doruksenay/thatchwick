@@ -79,7 +79,7 @@ namespace Thatchwick.Core.Life
         {
             double total = 0;
             foreach (var kv in _house.InventoryList())
-                if (kv.Value > 0 && _content.Items.TryGet(kv.Key, out var def) && def.HasTag("food")) total += kv.Value * FoodValue(kv.Key);
+                if (kv.Value > 0 && _content.Items.TryGet(kv.Key, out var def) && def.HasTag("food") && !def.HasTag("raw")) total += kv.Value * FoodValue(kv.Key);
             return total;
         }
 
@@ -128,7 +128,7 @@ namespace Thatchwick.Core.Life
             r.FoodStock = 0;
             double unitsValue = 0; int units = 0;
             foreach (var kv in _house.InventoryList())
-                if (kv.Value > 0 && _content.Items.TryGet(kv.Key, out var def) && def.HasTag("food")) { unitsValue += kv.Value * FoodValue(kv.Key); units += kv.Value; }
+                if (kv.Value > 0 && _content.Items.TryGet(kv.Key, out var def) && def.HasTag("food") && !def.HasTag("raw")) { unitsValue += kv.Value * FoodValue(kv.Key); units += kv.Value; }
             r.FoodStock = units;
             double stockPoints = unitsValue;
             double perUnit = units > 0 ? unitsValue / units : 0;

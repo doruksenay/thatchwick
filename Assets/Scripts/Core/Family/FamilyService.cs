@@ -79,7 +79,7 @@ namespace Thatchwick.Core.Family
         public string FirstFood()
         {
             foreach (var kv in _house.InventoryList())
-                if (kv.Value > 0 && _content.Items.TryGet(kv.Key, out var d) && d.HasTag("food")) return kv.Key;
+                if (kv.Value > 0 && _content.Items.TryGet(kv.Key, out var d) && d.HasTag("food") && !d.HasTag("raw")) return kv.Key;
             return null;
         }
 

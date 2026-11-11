@@ -19,7 +19,7 @@ namespace Thatchwick.Core.Mood
         public const string GoodMeal = "good_meal", Rested = "rested", Clean = "clean", Inspired = "inspired", HadFun = "had_fun",
             NiceChat = "nice_chat", Newlywed = "newlywed", NewBaby = "new_baby", Grief = "grief", Harmony = "harmony",
             BrightRoom = "bright_room", GoodHarvest = "good_harvest", Proud = "proud", PetLove = "pet_love",
-            AnimalDied = "animal_died", CropFrozen = "crop_frozen", SharpTools = "sharp_tools";
+            AnimalDied = "animal_died", CropFrozen = "crop_frozen", SharpTools = "sharp_tools", Slaughtered = "slaughtered";
 
         private readonly Dictionary<string, MoodletDef> _defs = new Dictionary<string, MoodletDef>(StringComparer.Ordinal);
 
@@ -70,6 +70,7 @@ namespace Thatchwick.Core.Mood
             c.Register(M(PetLove, "Hayvan dostu", 10, 0.5, "Evcil hayvanıyla oynadı."));
             c.Register(M(AnimalDied, "Hayvanımız öldü", -10, 2.0, "Bir hayvan açlıktan ya da yaşlılıktan öldü."));
             m = M(SharpTools, "Keskin aletler", 5, 0.5, "Baltasını biledi: odunculuk %20 hızlı."); m.SkillSpeed[SkillType.Woodcutting] = 0.20f; c.Register(m);
+            c.Register(M(Slaughtered, "Zor bir iş", -4, 1.0, "Bir hayvanı kesmek zorunda kaldı."));
             c.Register(M(CropFrozen, "Ekin dondu", -10, 2.0, "Hasat edilmemiş ekin kışta dondu."));
             return c;
         }

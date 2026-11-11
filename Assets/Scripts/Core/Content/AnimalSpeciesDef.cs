@@ -20,6 +20,9 @@ namespace Thatchwick.Core.Content
         /// <summary>Ürün vermeye başladığı yaş (oyun günü).</summary>
         public float MatureDays { get; set; } = 4f;
         public bool IsPet { get; set; }
+        /// <summary>Kesilince verdiği et (yoksa null: kesilmez) ve adedi.</summary>
+        public string Meat { get; set; }
+        public int MeatCount { get; set; } = 1;
         public int UnlockLevel { get; set; } = 1;
     }
 }

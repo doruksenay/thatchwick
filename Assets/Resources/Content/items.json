@@ -476,6 +476,312 @@
           "restore": 25,
           "durationDays": 0.12,
           "consume": "item.plum"
+        },
+        {
+          "id": "roast_meat",
+          "displayName": "Et kızart ve ye",
+          "need": "Hunger",
+          "restore": 75,
+          "durationDays": 0.2,
+          "consume": "item.meat",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0
+        },
+        {
+          "id": "roast_poultry",
+          "displayName": "Tavuk kızart ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.2,
+          "consume": "item.poultry",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 4,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_salted_meat",
+          "displayName": "Tuzlu eti haşla ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.15,
+          "consume": "item.salted_meat"
+        },
+        {
+          "id": "eat_salted_poultry",
+          "displayName": "Tuzlu tavuğu haşla ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.15,
+          "consume": "item.salted_poultry"
+        },
+        {
+          "id": "eat_pastirma",
+          "displayName": "Pastırma ye",
+          "need": "Hunger",
+          "restore": 85,
+          "durationDays": 0.15,
+          "consume": "item.pastirma",
+          "moodId": "mood.meal",
+          "moodText": "Pastırma",
+          "moodValue": 7,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_smoked_meat",
+          "displayName": "Füme et ye",
+          "need": "Hunger",
+          "restore": 80,
+          "durationDays": 0.15,
+          "consume": "item.smoked_meat",
+          "moodId": "mood.meal",
+          "moodText": "Füme lezzeti",
+          "moodValue": 6,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_smoked_poultry",
+          "displayName": "Füme tavuk ye",
+          "need": "Hunger",
+          "restore": 65,
+          "durationDays": 0.15,
+          "consume": "item.smoked_poultry",
+          "moodId": "mood.meal",
+          "moodText": "Füme lezzeti",
+          "moodValue": 5,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_cheese",
+          "displayName": "Peynir ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.15,
+          "consume": "item.cheese"
+        },
+        {
+          "id": "eat_brined_cheese",
+          "displayName": "Beyaz peynir ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.15,
+          "consume": "item.brined_cheese"
+        },
+        {
+          "id": "eat_smoked_cheese",
+          "displayName": "Füme peynir ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.15,
+          "consume": "item.smoked_cheese",
+          "moodId": "mood.meal",
+          "moodText": "Füme lezzeti",
+          "moodValue": 4,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_pickled_carrot",
+          "displayName": "Havuç turşusu ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.15,
+          "consume": "item.pickled_carrot"
+        },
+        {
+          "id": "eat_pickled_beet",
+          "displayName": "Pancar turşusu ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.15,
+          "consume": "item.pickled_beet"
+        },
+        {
+          "id": "eat_pickled_onion",
+          "displayName": "Soğan turşusu ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.15,
+          "consume": "item.pickled_onion"
+        },
+        {
+          "id": "eat_pickled_radish",
+          "displayName": "Turp turşusu ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.15,
+          "consume": "item.pickled_radish"
+        },
+        {
+          "id": "eat_dried_apple",
+          "displayName": "Kuru elma ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.15,
+          "consume": "item.dried_apple"
+        },
+        {
+          "id": "eat_dried_pear",
+          "displayName": "Kuru armut ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.15,
+          "consume": "item.dried_pear"
+        },
+        {
+          "id": "eat_dried_plum",
+          "displayName": "Kuru erik ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.15,
+          "consume": "item.dried_plum"
+        },
+        {
+          "id": "eat_dried_mushroom",
+          "displayName": "Kuru mantar ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.15,
+          "consume": "item.dried_mushroom"
+        },
+        {
+          "id": "eat_jam_berry",
+          "displayName": "Böğürtlen reçeli ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.15,
+          "consume": "item.jam_berry",
+          "moodId": "mood.meal",
+          "moodText": "Tatlı bir lokma",
+          "moodValue": 3,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_jam_plum",
+          "displayName": "Erik reçeli ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.15,
+          "consume": "item.jam_plum",
+          "moodId": "mood.meal",
+          "moodText": "Tatlı bir lokma",
+          "moodValue": 3,
+          "moodDays": 1.0
+        },
+        {
+          "id": "cook_jam_berry",
+          "displayName": "Böğürtlen reçeli kaynat (3 böğürtlen, 1 bal)",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.berries",
+              "count": 3
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.jam_berry",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "cook_jam_plum",
+          "displayName": "Erik reçeli kaynat (3 erik, 1 bal)",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.plum",
+              "count": 3
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.jam_plum",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "eat_wild_garlic",
+          "displayName": "Yabani sarımsak ye",
+          "need": "Hunger",
+          "restore": 20,
+          "durationDays": 0.15,
+          "consume": "item.wild_garlic"
+        },
+        {
+          "id": "eat_elderflower",
+          "displayName": "Mürver çiçeği çayı iç",
+          "need": "Hunger",
+          "restore": 15,
+          "durationDays": 0.15,
+          "consume": "item.elderflower",
+          "moodId": "mood.meal",
+          "moodText": "Sıcak çay",
+          "moodValue": 2,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_wild_strawberry",
+          "displayName": "Yabani çilek ye",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.15,
+          "consume": "item.wild_strawberry",
+          "moodId": "mood.meal",
+          "moodText": "Taze meyve",
+          "moodValue": 2,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_chestnut",
+          "displayName": "Kestane közle ve ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.15,
+          "consume": "item.chestnut",
+          "skill": "Cooking",
+          "skillXp": 8,
+          "moodId": "mood.meal",
+          "moodText": "Közlenmiş kestane",
+          "moodValue": 3,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_rosehip",
+          "displayName": "Kuşburnu ye",
+          "need": "Hunger",
+          "restore": 20,
+          "durationDays": 0.15,
+          "consume": "item.rosehip"
+        },
+        {
+          "id": "eat_cress",
+          "displayName": "Su teresi ye",
+          "need": "Hunger",
+          "restore": 20,
+          "durationDays": 0.15,
+          "consume": "item.cress"
         }
       ],
       "price": 25,
@@ -910,7 +1216,8 @@
       "interactions": [],
       "tags": [
         "food"
-      ]
+      ],
+      "spoilDays": 4
     },
     {
       "id": "item.wool",
@@ -1422,6 +1729,102 @@
               "count": 3
             }
           ]
+        },
+        {
+          "id": "dry_apple",
+          "displayName": "Elma kurut (3 adet)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.apple",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.dried_apple",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "dry_pear",
+          "displayName": "Armut kurut (3 adet)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.pear",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.dried_pear",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "dry_plum",
+          "displayName": "Erik kurut (3 adet)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.plum",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.dried_plum",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "dry_mushroom",
+          "displayName": "Mantar kurut (3 adet)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.mushroom",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.dried_mushroom",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "cure_pastirma",
+          "displayName": "Pastırma çek (2 tuzlu et)",
+          "durationDays": 0.45,
+          "skill": "Cooking",
+          "skillXp": 30,
+          "materials": [
+            {
+              "item": "item.salted_meat",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pastirma",
+              "count": 2
+            }
+          ],
+          "minLevel": 3
         }
       ],
       "width": 2
@@ -1950,6 +2353,16 @@
           "skill": "Farming",
           "skillXp": 3,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "slaughter",
+          "displayName": "Kümes hayvanı kes (dost olmayan yetişkin)",
+          "durationDays": 0.1,
+          "slaughter": true,
+          "requiresAnimal": true,
+          "skill": "Farming",
+          "skillXp": 6,
+          "moodlet": "slaughtered"
         }
       ]
     },
@@ -1998,6 +2411,16 @@
           "skill": "Farming",
           "skillXp": 3,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "slaughter",
+          "displayName": "Hayvan kes (dost olmayan yetişkin)",
+          "durationDays": 0.1,
+          "slaughter": true,
+          "requiresAnimal": true,
+          "skill": "Farming",
+          "skillXp": 6,
+          "moodlet": "slaughtered"
         }
       ]
     },
@@ -2995,7 +3418,7 @@
       "interactions": [
         {
           "id": "pickle_cabbage",
-          "displayName": "Lahana turşusu kur",
+          "displayName": "Lahana turşusu kur (3 lahana, 1 tuz)",
           "durationDays": 0.25,
           "skill": "Cooking",
           "skillXp": 15,
@@ -3003,6 +3426,10 @@
             {
               "item": "item.cabbage",
               "count": 3
+            },
+            {
+              "item": "item.salt",
+              "count": 1
             }
           ],
           "produce": [
@@ -3014,7 +3441,7 @@
         },
         {
           "id": "pickle_turnip",
-          "displayName": "Şalgam turşusu kur",
+          "displayName": "Şalgam turşusu kur (3 şalgam, 1 tuz)",
           "durationDays": 0.25,
           "skill": "Cooking",
           "skillXp": 15,
@@ -3022,6 +3449,10 @@
             {
               "item": "item.turnip",
               "count": 3
+            },
+            {
+              "item": "item.salt",
+              "count": 1
             }
           ],
           "produce": [
@@ -3030,6 +3461,174 @@
               "count": 3
             }
           ]
+        },
+        {
+          "id": "pickle_carrot",
+          "displayName": "Havuç turşusu kur (3 havuç, 1 tuz)",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 15,
+          "materials": [
+            {
+              "item": "item.carrot",
+              "count": 3
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pickled_carrot",
+              "count": 3
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "pickle_beet",
+          "displayName": "Pancar turşusu kur (3 pancar, 1 tuz)",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 15,
+          "materials": [
+            {
+              "item": "item.beet",
+              "count": 3
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pickled_beet",
+              "count": 3
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "pickle_onion",
+          "displayName": "Soğan turşusu kur (3 soğan, 1 tuz)",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 15,
+          "materials": [
+            {
+              "item": "item.onion",
+              "count": 3
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pickled_onion",
+              "count": 3
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "pickle_radish",
+          "displayName": "Turp turşusu kur (3 turp, 1 tuz)",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 15,
+          "materials": [
+            {
+              "item": "item.radish",
+              "count": 3
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pickled_radish",
+              "count": 3
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "salt_meat",
+          "displayName": "Eti tuza yatır (2 et, 1 tuz)",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.meat",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_meat",
+              "count": 2
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "salt_poultry",
+          "displayName": "Kümes etini tuza yatır (2 et, 1 tuz)",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 15,
+          "materials": [
+            {
+              "item": "item.poultry",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_poultry",
+              "count": 2
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "brine_cheese",
+          "displayName": "Peyniri salamuraya yatır (2 peynir, 1 tuz)",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "materials": [
+            {
+              "item": "item.cheese",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.brined_cheese",
+              "count": 2
+            }
+          ],
+          "minLevel": 3
         }
       ]
     },
@@ -4831,6 +5430,355 @@
           "moodlet": "good_harvest"
         }
       ]
+    },
+    {
+      "id": "item.salt",
+      "displayName": "Tuz",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource"
+    },
+    {
+      "id": "item.meat",
+      "displayName": "Et",
+      "placement": "Resource",
+      "price": 8,
+      "category": "resource",
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.poultry",
+      "displayName": "Kümes eti",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.salted_meat",
+      "displayName": "Tuzlu et",
+      "placement": "Resource",
+      "price": 10,
+      "category": "resource",
+      "tags": [
+        "food",
+        "salted"
+      ],
+      "spoilDays": 40
+    },
+    {
+      "id": "item.salted_poultry",
+      "displayName": "Tuzlu kümes eti",
+      "placement": "Resource",
+      "price": 7,
+      "category": "resource",
+      "tags": [
+        "food",
+        "salted"
+      ],
+      "spoilDays": 40
+    },
+    {
+      "id": "item.pastirma",
+      "displayName": "Pastırma",
+      "placement": "Resource",
+      "price": 18,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.smoked_meat",
+      "displayName": "Füme et",
+      "placement": "Resource",
+      "price": 16,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.smoked_poultry",
+      "displayName": "Füme tavuk",
+      "placement": "Resource",
+      "price": 11,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.cheese",
+      "displayName": "Peynir",
+      "placement": "Resource",
+      "price": 8,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 25
+    },
+    {
+      "id": "item.brined_cheese",
+      "displayName": "Beyaz peynir",
+      "placement": "Resource",
+      "price": 10,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.smoked_cheese",
+      "displayName": "Füme peynir",
+      "placement": "Resource",
+      "price": 12,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.pickled_carrot",
+      "displayName": "Havuç turşusu",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.pickled_beet",
+      "displayName": "Pancar turşusu",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.pickled_onion",
+      "displayName": "Soğan turşusu",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.pickled_radish",
+      "displayName": "Turp turşusu",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.dried_apple",
+      "displayName": "Kuru elma",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.dried_pear",
+      "displayName": "Kuru armut",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.dried_plum",
+      "displayName": "Kuru erik",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.dried_mushroom",
+      "displayName": "Kuru mantar",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.jam_berry",
+      "displayName": "Böğürtlen reçeli",
+      "placement": "Resource",
+      "price": 8,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.jam_plum",
+      "displayName": "Erik reçeli",
+      "placement": "Resource",
+      "price": 9,
+      "category": "resource",
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.smokehouse",
+      "displayName": "Tütsülük",
+      "width": 2,
+      "price": 90,
+      "category": "utility",
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "smoke_meat",
+          "displayName": "Eti tüttür (2 tuzlu et, 1 odun)",
+          "durationDays": 0.4,
+          "skill": "Cooking",
+          "skillXp": 30,
+          "minLevel": 4,
+          "materials": [
+            {
+              "item": "item.salted_meat",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.smoked_meat",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "smoke_poultry",
+          "displayName": "Tavuğu tüttür (2 tuzlu et, 1 odun)",
+          "durationDays": 0.4,
+          "skill": "Cooking",
+          "skillXp": 25,
+          "minLevel": 4,
+          "materials": [
+            {
+              "item": "item.salted_poultry",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.smoked_poultry",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "smoke_cheese",
+          "displayName": "Peyniri tüttür (2 beyaz peynir, 1 odun)",
+          "durationDays": 0.4,
+          "skill": "Cooking",
+          "skillXp": 25,
+          "minLevel": 4,
+          "materials": [
+            {
+              "item": "item.brined_cheese",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.smoked_cheese",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.cheese_press",
+      "displayName": "Peynir presi",
+      "price": 36,
+      "category": "kitchen",
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "interactions": [
+        {
+          "id": "make_cheese",
+          "displayName": "Peynir yap (3 süt)",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 15,
+          "materials": [
+            {
+              "item": "item.milk",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.cheese",
+              "count": 2
+            }
+          ]
+        }
+      ]
     }
   ],
   "recipes": [
@@ -5304,7 +6252,9 @@
       "produceEveryDays": 1,
       "lifespanDays": 60,
       "matureDays": 3,
-      "level": 2
+      "level": 2,
+      "meat": "item.poultry",
+      "meatCount": 1
     },
     {
       "id": "animal.duck",
@@ -5316,7 +6266,9 @@
       "produceEveryDays": 1.5,
       "lifespanDays": 70,
       "matureDays": 4,
-      "level": 3
+      "level": 3,
+      "meat": "item.poultry",
+      "meatCount": 2
     },
     {
       "id": "animal.goat",
@@ -5328,7 +6280,9 @@
       "produceEveryDays": 1,
       "lifespanDays": 90,
       "matureDays": 6,
-      "level": 5
+      "level": 5,
+      "meat": "item.meat",
+      "meatCount": 2
     },
     {
       "id": "animal.sheep",
@@ -5340,7 +6294,9 @@
       "produceEveryDays": 3,
       "lifespanDays": 100,
       "matureDays": 6,
-      "level": 5
+      "level": 5,
+      "meat": "item.meat",
+      "meatCount": 2
     },
     {
       "id": "animal.cow",
@@ -5352,7 +6308,9 @@
       "produceEveryDays": 0.5,
       "lifespanDays": 120,
       "matureDays": 8,
-      "level": 6
+      "level": 6,
+      "meat": "item.meat",
+      "meatCount": 4
     },
     {
       "id": "animal.dog",

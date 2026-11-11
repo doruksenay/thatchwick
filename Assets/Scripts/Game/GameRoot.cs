@@ -204,6 +204,7 @@ namespace Thatchwick.Game
                 _household.AddItem("item.plank", 6);
                 _household.AddItem("item.nails", 4);
                 _household.AddItem("item.compost", 3);
+                _household.AddItem("item.salt", 4);
             }
             _storage = new StorageService(_world, _household, _content);
             _effects = new InteractionEffects(_world, _household, _content, seed: 9) { Storage = _storage };

@@ -215,6 +215,8 @@ namespace Thatchwick.Core.Tests
             var effects = new InteractionEffects(world, house, db, seed: 1);
             var cook = Cook(1, new GridPos(0, 0), 1);
             var barrelItem = world.PlaceItem(barrel, new GridPos(4, 4));
+            Assert.Equal("Tuz yok.", effects.CanStart(cook, barrelItem, pickle));   // turşu tuz ister
+            house.AddItem("item.salt", 2);
             for (int i = 0; i < 2; i++) { Assert.Null(effects.CanStart(cook, barrelItem, pickle)); effects.Apply(cook, barrelItem, pickle); }
             Assert.Equal(0, house.Count("item.cabbage"));
             Assert.Equal(6, house.Count("item.pickled_cabbage"));

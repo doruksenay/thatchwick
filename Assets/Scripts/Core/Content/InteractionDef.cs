@@ -93,6 +93,8 @@ namespace Thatchwick.Core.Content
         public float Fertilize { get; set; }
         /// <summary>Barınaktaki hayvanları sever: dostlukları artar (hayvan başına günde bir kez).</summary>
         public bool PetsAnimals { get; set; }
+        /// <summary>Barınaktaki yetişkin, dostu olmayan bir hayvanı keser; hayvanın türüne göre et verir.</summary>
+        public bool Slaughter { get; set; }
         /// <summary>Yalnızca meyvesi olgun ağaçta yapılabilir.</summary>
         public bool RequiresFruit { get; set; }
         /// <summary>Meyveyi toplar: ağaç yerinde kalır, meyve yeniden olgunlaşmaya başlar.</summary>
@@ -115,7 +117,7 @@ namespace Thatchwick.Core.Content
 
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
             || AddFeed > 0 || Collect || RequiresAnimal
-            || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals;
+            || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter;
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;
 

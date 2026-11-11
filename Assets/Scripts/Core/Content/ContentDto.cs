@@ -79,6 +79,8 @@ namespace Thatchwick.Core.Content
         public float matureDays;
         public bool pet;
         public int level;
+        public string meat;       // kesilince verdiği et
+        public int meatCount;     // 0 = 1
     }
 
     [Serializable]
@@ -169,6 +171,7 @@ namespace Thatchwick.Core.Content
         public bool requiresFruit;          // meyvesi olgun ağaç gerekir
         public bool takesFruit;             // meyveyi toplar (ağaç kalır)
         public bool petAnimals;             // barınaktaki hayvanları sever
+        public bool slaughter;              // barınaktan bir yetişkin hayvanı keser (et verir)
     }
 
     [Serializable]

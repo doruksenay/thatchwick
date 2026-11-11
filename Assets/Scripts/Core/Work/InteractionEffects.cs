@@ -70,6 +70,12 @@ namespace Thatchwick.Core.Work
                 if (!item.IsPlant || !item.Def.IsCrop) return "Gübre ekinin toprağına atılır.";
                 if (Plants != null && Plants.FertilityAt(item.Position) >= 0.99f) return "Toprak zaten çok verimli.";
             }
+            if (interaction.Slaughter)
+            {
+                if (Animals == null) return "Burada hayvan yok.";
+                var why = Animals.SlaughterBlocker(item.Id);
+                if (why != null) return why;
+            }
             if (interaction.PetsAnimals && Animals != null && Animals.Residents(item.Id) > 0 && Animals.PettableResidents(item.Id) == 0)
                 return "Hayvanlar bugün zaten sevildi.";
             if (interaction.RequiresFruit && !item.FruitReady)
@@ -93,6 +99,9 @@ namespace Thatchwick.Core.Work
                 int petted = Animals.PetResidents(item.Id);
                 if (petted > 0) farmNotes.Add($"{petted} hayvan sevildi");
             }
+            string slaughterId = null; int slaughterCount = 0;
+            if (interaction.Slaughter && Animals != null && Animals.Slaughter(item.Id, out var killed, out slaughterId, out slaughterCount))
+                farmNotes.Add($"{killed.Species.DisplayName} kesildi");
             if (interaction.Water) { PlantSystem.Water(item); farmNotes.Add("sulandı"); }
             if (interaction.Fertilize > 0f && Plants != null)
             {
@@ -134,6 +143,16 @@ namespace Thatchwick.Core.Work
                 if (added <= 0) continue;
                 if (!totals.ContainsKey(p.ItemId)) { totals[p.ItemId] = 0; order.Add(p.ItemId); }
                 totals[p.ItemId] += added;
+            }
+            if (slaughterId != null)
+            {
+                int added = Storage != null ? Storage.AddUpTo(slaughterId, slaughterCount) : AddAll(slaughterId, slaughterCount);
+                lost += slaughterCount - added;
+                if (added > 0)
+                {
+                    if (!totals.ContainsKey(slaughterId)) { totals[slaughterId] = 0; order.Add(slaughterId); }
+                    totals[slaughterId] += added;
+                }
             }
             if (interaction.Collect)
             {

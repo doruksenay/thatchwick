@@ -106,6 +106,51 @@ namespace Thatchwick.Core.Animals
             return PlacementCheck.Success;
         }
 
+        /// <summary>Bu dostluğun üstündeki hayvana kıyılmaz.</summary>
+        public const float SpareFriendship = 70f;
+
+        /// <summary>Kesilecek hayvan: yetişkin, eti olan ve dostu olmayan; dostluğu en düşük (eşitse en yaşlı). Yoksa null.</summary>
+        public Animal SlaughterCandidate(int homeItemId)
+        {
+            Animal best = null;
+            foreach (var a in _animals)
+            {
+                if (a.IsDead || a.HomeItemId != homeItemId || a.Species.Meat == null) continue;
+                if (!a.IsMature || a.Friendship >= SpareFriendship) continue;
+                if (best == null || a.Friendship < best.Friendship || (a.Friendship == best.Friendship && a.AgeDays > best.AgeDays)) best = a;
+            }
+            return best;
+        }
+
+        /// <summary>Barınaktaki en uygun hayvanı keser; hayvan kalkar, eti ve adedi döner. Aday yoksa false.</summary>
+        public bool Slaughter(int homeItemId, out Animal animal, out string meatId, out int meatCount)
+        {
+            animal = SlaughterCandidate(homeItemId);
+            meatId = null; meatCount = 0;
+            if (animal == null) return false;
+            meatId = animal.Species.Meat;
+            meatCount = Math.Max(1, animal.Species.MeatCount);
+            _animals.Remove(animal);
+            return true;
+        }
+
+        /// <summary>Kesim işi başlamadan neden olmayacağı (null: olur).</summary>
+        public string SlaughterBlocker(int homeItemId)
+        {
+            bool any = false, mature = false, hasMeat = false;
+            foreach (var a in _animals)
+            {
+                if (a.IsDead || a.HomeItemId != homeItemId) continue;
+                any = true;
+                if (a.Species.Meat != null) hasMeat = true;
+                if (a.Species.Meat != null && a.IsMature) mature = true;
+            }
+            if (!any) return "Burada hayvan yok.";
+            if (!hasMeat) return "Bu hayvanlar kesilmez.";
+            if (!mature) return "Kesilecek kadar büyümüş hayvan yok.";
+            return SlaughterCandidate(homeItemId) == null ? "Kalan hayvanlar artık dost; kıyamazsın." : null;
+        }
+
         public Animal Get(int id)
         {
             foreach (var a in _animals) if (a.Id == id) return a;
