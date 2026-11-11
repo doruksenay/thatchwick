@@ -440,7 +440,7 @@ namespace Thatchwick.Core.Tests
             // Satın alma menüsü: her kategoride en az 5 eşya, her eşya bilinen bir kategoride, kartı boş değil.
             foreach (var (id, _) in ItemCatalog.Categories)
                 Assert.True(ItemCatalog.InCategory(db, id).Count >= 5, $"{id}: {ItemCatalog.InCategory(db, id).Count} eşya");
-            var known = new HashSet<string>(ItemCatalog.Categories.Select(c => c.id)) { "resource", "plant", "village", "memorial", "forage", "utility" };
+            var known = new HashSet<string>(ItemCatalog.Categories.Select(c => c.id)) { "resource", "plant", "village", "memorial", "forage", "utility", "structure" };
             foreach (var d in db.Items.All) Assert.True(known.Contains(d.Category), $"{d.Id}: kategori {d.Category}");
             Assert.StartsWith("Enerji +70 (Dinlenmiş)", ItemCatalog.Describe(db.Items.Get("item.bed_frame")));
             Assert.Contains("Işık", ItemCatalog.Describe(db.Items.Get("item.torch_wall")));

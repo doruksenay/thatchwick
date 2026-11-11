@@ -200,7 +200,7 @@ namespace Thatchwick.Core.Build
             var (w, h) = Footprint.Dimensions(def.Width, def.Height, rotation);
             for (int dy = 0; dy < h; dy++)
                 for (int dx = 0; dx < w; dx++)
-                    if (!_world.Map.IsOwned(new GridPos(position.X + dx, position.Y + dy)))
+                    if (!_world.Map.IsOwned(new GridPos(position.X + dx, position.Y + dy, position.Z)))
                         return PlacementCheck.Fail(NotOwned);
             return PlacementCheck.Success;
         }
@@ -214,7 +214,15 @@ namespace Thatchwick.Core.Build
             if (def.Placement == ItemPlacement.Wall) return PlacementCheck.Fail("Bu eşya duvara asılır.");
             var owned = CheckOwned(def, position, rotation);
             if (!owned.Ok) return owned;
-            return _world.CanPlaceFloor(def, position, rotation);
+            var floor = _world.CanPlaceFloor(def, position, rotation, null, landingMayBeCreated: def.IsStairs);
+            if (!floor.Ok || !def.IsStairs) return floor;
+
+            // Merdivenin öbür ucunda karo yoksa (üst kat döşemesi / bodrum kazısı) onu da kurabilmeliyiz.
+            WorldState.StairsEnds(def, position, rotation, out _, out var landing);
+            if (_world.Map.HasTile(landing)) return floor;
+            var create = CanBuildLevelTile(landing, stairEnd: true);
+            if (!create.Ok) return create;
+            return _house.Akce >= TilePrice(landing.Z) ? PlacementCheck.Success : PlacementCheck.Fail($"Merdivenin ucunu kurmak için {TilePrice(landing.Z)} akçe gerekir.");
         }
 
         public PlacementCheck PlaceFromInventory(string itemId, GridPos position, int rotation, out ItemInstance placed)
@@ -222,8 +230,21 @@ namespace Thatchwick.Core.Build
             placed = null;
             var check = CanPlaceFromInventory(itemId, position, rotation);
             if (!check.Ok) return check;
+            var def = _content.Items.Get(itemId);
+            bool grouped = false;
+            if (def.IsStairs)
+            {
+                WorldState.StairsEnds(def, position, rotation, out _, out var landing);
+                if (!_world.Map.HasTile(landing))
+                {
+                    BeginGroup("Merdiven");
+                    grouped = true;
+                    var built = BuildLevelTile(landing, stairEnd: true);
+                    if (!built.Ok) { EndGroup(); return built; }
+                }
+            }
             _house.TryTakeItem(itemId);
-            var placedItem = _world.PlaceItem(_content.Items.Get(itemId), position, rotation);
+            var placedItem = _world.PlaceItem(def, position, rotation);
             placed = placedItem;
             int placedId = placedItem.Id;
             Record("Yerleştirme", () =>
@@ -232,6 +253,7 @@ namespace Thatchwick.Core.Build
                 GiveBack(_world.RemoveItem(placedId));
                 return PlacementCheck.Success;
             });
+            if (grouped) EndGroup();
             return PlacementCheck.Success;
         }
 
@@ -359,6 +381,7 @@ namespace Thatchwick.Core.Build
             var map = _world.Map;
             if (!map.EdgeInBounds(edge)) return PlacementCheck.Fail("Harita dışı.");
             if (!map.IsOwned(edge.SideA) && !map.IsOwned(edge.SideB)) return PlacementCheck.Fail(NotOwned);
+            if (!map.HasTile(edge.SideA) && !map.HasTile(edge.SideB)) return PlacementCheck.Fail(edge.Z > 0 ? "Önce üst kat döşemesi gerekir." : "Önce burayı kazmalısın.");
             var old = map.GetEdge(edge);
             if (old == kind) return PlacementCheck.Fail("Orada zaten var.");
             if ((kind == EdgeKind.Door || kind == EdgeKind.Window) && old != EdgeKind.Wall && old != EdgeKind.Door && old != EdgeKind.Window)
@@ -390,6 +413,7 @@ namespace Thatchwick.Core.Build
             var map = _world.Map;
             if (!map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
             if (!map.IsOwned(tile)) return PlacementCheck.Fail(NotOwned);
+            if (!map.HasTile(tile)) return PlacementCheck.Fail("Burada zemin yok.");
             var old = map.GetFloor(tile);
             if (old == floor) return PlacementCheck.Fail("Orası zaten öyle.");
             int cost = Math.Max(0, FloorPrice(floor) - Refund(FloorPrice(old)));
@@ -403,6 +427,95 @@ namespace Thatchwick.Core.Build
                 if (net > 0) { if (!_house.TrySpend(net)) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz."); }
                 else if (net < 0) _house.AddAkce(-net);
                 map.SetFloor(tile, old);
+                return PlacementCheck.Success;
+            });
+            return PlacementCheck.Success;
+        }
+
+        // ---- katlar: üst kat döşemesi ve bodrum kazısı ----
+
+        public const int SlabPrice = 4, DigPrice = 5;
+
+        /// <summary>Üst kat döşemesi ya da bodrum kazısının karo başına akçesi.</summary>
+        public static int TilePrice(int level) => level > 0 ? SlabPrice : DigPrice;
+
+        private static readonly GridPos[] FourDirs = { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };
+
+        /// <summary>Üst kat döşemesi, altındaki karo kapalı bir odanın içindeyse ya da altında duvar/kapı/pencere varsa taşınır.</summary>
+        private bool IsSupported(GridPos upper)
+        {
+            var map = _world.Map;
+            var below = upper.OnLevel(upper.Z - 1);
+            if (!map.HasTile(below)) return false;
+            var room = map.Rooms.RoomAt(below);
+            if (room != null && room.IsIndoor) return true;
+            foreach (var d in FourDirs)
+                if (map.GetEdge(GridMap.EdgeBetween(below, below + d)) != EdgeKind.None) return true;
+            return false;
+        }
+
+        /// <summary>Verilen karoda üst kat döşemesi (Z &gt; 0) ya da bodrum kazısı (Z &lt; 0) yapılabilir mi.</summary>
+        public PlacementCheck CanBuildLevelTile(GridPos p, bool stairEnd = false)
+        {
+            var map = _world.Map;
+            if (p.Z == 0) return PlacementCheck.Fail("Zemin kat zaten var.");
+            if (!map.InBounds(p)) return PlacementCheck.Fail("Harita dışı.");
+            if (!map.IsOwned(p)) return PlacementCheck.Fail(NotOwned);
+            if (map.HasTile(p)) return PlacementCheck.Fail("Orası zaten yapılmış.");
+            if (p.Z > 0)
+            {
+                if (!IsSupported(p)) return PlacementCheck.Fail("Üst kat, duvarlı bir odanın üstüne kurulur.");
+                return PlacementCheck.Success;
+            }
+            // Bodrum: mevcut bodrumun bitişiğinden kazılır; ilk karo merdivenin ucundan başlar.
+            foreach (var d in FourDirs)
+                if (map.HasTile(p + d)) return PlacementCheck.Success;
+            return stairEnd ? PlacementCheck.Success : PlacementCheck.Fail("Bodrumu bir merdivenle başlat ya da mevcut bodrumun yanını kaz.");
+        }
+
+        /// <summary>Üst kat döşemesi yapar ya da bodrum karosu kazar (akçe harcar).</summary>
+        public PlacementCheck BuildLevelTile(GridPos p, bool stairEnd = false)
+        {
+            // Merdiven ucu için ilk bodrum karosu komşusuz da kazılabilir.
+            var check = CanBuildLevelTile(p, stairEnd);
+            if (!check.Ok) return check;
+            int price = TilePrice(p.Z);
+            if (!_house.TrySpend(price)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            var map = _world.Map;
+            map.SetTile(p, true);
+            if (p.Z < 0) map.SetFloor(p, FloorType.Dirt);
+            int refund = Refund(price);
+            Record(p.Z > 0 ? "Üst kat döşemesi" : "Bodrum kazısı", () =>
+            {
+                if (_world.GetItemAt(p) != null) return PlacementCheck.Fail("Üzerinde eşya var, geri alınamaz.");
+                map.SetTile(p, false);
+                _house.AddAkce(refund);
+                return PlacementCheck.Success;
+            });
+            return PlacementCheck.Success;
+        }
+
+        /// <summary>Üst kat döşemesini kaldırır ya da bodrum karosunu doldurur; yarısı iade. Üstünde eşya, çevresinde duvar ya da merdiven bağı olmamalı.</summary>
+        public PlacementCheck RemoveLevelTile(GridPos p)
+        {
+            var map = _world.Map;
+            if (p.Z == 0 || !map.HasTile(p)) return PlacementCheck.Fail("Orada kaldırılacak bir şey yok.");
+            if (!map.IsOwned(p)) return PlacementCheck.Fail(NotOwned);
+            if (_world.GetItemAt(p) != null) return PlacementCheck.Fail("Önce üstündeki eşyayı kaldır.");
+            if (map.HasLinkAt(p)) return PlacementCheck.Fail("Merdiven buraya bağlı; önce merdiveni kaldır.");
+            foreach (var d in FourDirs)
+                if (map.GetEdge(GridMap.EdgeBetween(p, p + d)) != EdgeKind.None) return PlacementCheck.Fail("Önce çevresindeki duvarları kaldır.");
+            // Ayakta durulan karo: başka bir üst kat karosu bunun üstüne dayanıyorsa kaldırılamaz (şimdilik yalnızca MaxLevel=1, bodrumun üstü zemin).
+            var oldFloor = map.GetFloor(p);
+            int price = TilePrice(p.Z);
+            int refund = Refund(price);
+            map.SetTile(p, false);
+            _house.AddAkce(refund);
+            Record(p.Z > 0 ? "Döşeme kaldırma" : "Bodrum doldurma", () =>
+            {
+                if (!_house.TrySpend(refund)) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz.");
+                map.SetTile(p, true);
+                map.SetFloor(p, oldFloor);
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;

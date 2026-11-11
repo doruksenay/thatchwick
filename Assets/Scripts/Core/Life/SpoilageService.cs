@@ -24,6 +24,15 @@ namespace Thatchwick.Core.Life
         /// <summary>Ek bozulma azaltma oranı (köy projesi, özellik); yoksa 0.</summary>
         public Func<float> ExtraReduction { get; set; }
 
+        /// <summary>Bodrum depolarının bozulma çarpanı (yer tutucu; Adım 28).</summary>
+        public double BasementFactor = 0.7;
+        /// <summary>Bodrum sıcaklığı sağlayıcı (HeatSystem); verilmezse bodrum hep serin sayılır.</summary>
+        public Func<GridPos, float> TemperatureAt { get; set; }
+        /// <summary>Bodrumun serin sayıldığı en yüksek sıcaklık (°C).</summary>
+        public float CoolLimit = 14f;
+
+        private bool BasementIsCool(GridPos p) => TemperatureAt == null || TemperatureAt(p) <= CoolLimit;
+
         /// <summary>(yiyecek kimliği, atılan adet)</summary>
         public event Action<string, int> Spoiled;
 
@@ -39,7 +48,16 @@ namespace Thatchwick.Core.Life
         {
             double pantry = 1.0;
             foreach (var it in _world.Items)
-                if (!it.IsDecor && it.Def.Preserves > 0f && it.Def.Preserves < pantry) pantry = it.Def.Preserves;
+            {
+                if (it.IsDecor) continue;
+                if (it.Def.Preserves > 0f && it.Def.Preserves < pantry) pantry = it.Def.Preserves;
+                // Bodrumdaki depo/kiler eşyası serin toprakta yiyeceği daha geç bozar (Adım: bodrum mahzeni).
+                if (it.Position.Z < 0 && (it.Def.Storage > 0 || it.Def.Preserves > 0f) && BasementIsCool(it.Position))
+                {
+                    double v = (it.Def.Preserves > 0f ? it.Def.Preserves : 1.0) * BasementFactor;
+                    if (v < pantry) pantry = v;
+                }
+            }
             double extra = ExtraReduction != null ? Math.Max(0.0, Math.Min(0.8, ExtraReduction())) : 0.0;
             return pantry * (1.0 - extra);
         }

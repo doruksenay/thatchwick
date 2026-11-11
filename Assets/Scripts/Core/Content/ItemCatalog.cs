@@ -15,7 +15,7 @@ namespace Thatchwick.Core.Content
         {
             ("seating", "Oturma"), ("sleep", "Uyku"), ("surfaces", "Masa"), ("heat_light", "Isı ve ışık"),
             ("kitchen", "Mutfak"), ("storage", "Depo"), ("work", "İş"), ("hygiene", "Hijyen"),
-            ("decor", "Süs (masa)"), ("decor_wall", "Süs (yer, duvar)"), ("garden", "Bahçe"), ("kids", "Çocuk")
+            ("decor", "Süs (masa)"), ("decor_wall", "Süs (yer, duvar)"), ("garden", "Bahçe"), ("kids", "Çocuk"), ("structure", "Merdiven ve yapı")
         };
 
         public static readonly (string id, string name)[] Rooms =

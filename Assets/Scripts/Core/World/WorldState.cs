@@ -38,12 +38,15 @@ namespace Thatchwick.Core.World
         // ---- denetimler ----
 
         /// <summary>Yer eşyasının (def) verilen konum ve dönüşle konup konamayacağı. ignoreItemId: taşınan eşyanın kendisi.</summary>
-        public PlacementCheck CanPlaceFloor(ItemDef def, GridPos position, int rotation, int? ignoreItemId = null)
+        public PlacementCheck CanPlaceFloor(ItemDef def, GridPos position, int rotation, int? ignoreItemId = null, bool landingMayBeCreated = false)
         {
             if (def == null) throw new ArgumentNullException(nameof(def));
             if (def.Placement == ItemPlacement.Resource) return PlacementCheck.Fail("Bu eşya yerleştirilmez.");
             if (def.Placement == ItemPlacement.Wall) return PlacementCheck.Fail("Bu eşya duvara asılır.");
             if (def.Placement != ItemPlacement.Floor) return PlacementCheck.Fail("Bu eşya yere konamaz, bir yüzeye konur.");
+
+            if (!GridMap.IsValidLevel(position.Z)) return PlacementCheck.Fail("Geçersiz kat.");
+            if (!def.AllowsLevel(position.Z)) return PlacementCheck.Fail(position.Z == 0 ? "Bu eşya zemin katta durmaz." : "Bu eşya yalnızca zemin katta olur.");
 
             var (w, h) = Footprint.Dimensions(def.Width, def.Height, rotation);
             ItemInstance ignored = ignoreItemId.HasValue ? GetItem(ignoreItemId.Value) : null;
@@ -52,13 +55,62 @@ namespace Thatchwick.Core.World
             {
                 for (int dx = 0; dx < w; dx++)
                 {
-                    var tile = new GridPos(position.X + dx, position.Y + dy);
+                    var tile = new GridPos(position.X + dx, position.Y + dy, position.Z);
                     if (!Map.InBounds(tile)) return PlacementCheck.Fail("Harita dışına taşıyor.");
+                    if (!Map.HasTile(tile)) return PlacementCheck.Fail(position.Z > 0 ? "Önce üst kat döşemesi gerekir." : "Önce burayı kazmalısın.");
                     if (Map.IsBlocked(tile) && !(ignored != null && Occupies(ignored, tile)))
                         return PlacementCheck.Fail("Orası dolu ya da geçilemez.");
                 }
             }
+
+            if (def.IsStairs)
+            {
+                StairsEnds(def, position, rotation, out var entrance, out var landing);
+                if (!GridMap.IsValidLevel(landing.Z)) return PlacementCheck.Fail(def.StairsDelta > 0 ? "Daha üst kat yok." : "Daha alt kat yok.");
+                if (!Map.HasTile(entrance) || Map.IsBlocked(entrance) && !(ignored != null && Occupies(ignored, entrance)))
+                    return PlacementCheck.Fail("Merdivenin önü açık olmalı.");
+                for (int dy = 0; dy < h; dy++)
+                    for (int dx = 0; dx < w; dx++)
+                    {
+                        var near = new GridPos(position.X + dx, position.Y + dy, position.Z);
+                        if (!Map.EdgeFree(entrance, near)) return PlacementCheck.Fail("Merdiven ile önü arasında duvar var.");
+                    }
+                if (Map.HasTile(landing))
+                {
+                    if (Map.IsBlocked(landing)) return PlacementCheck.Fail("Merdivenin öbür ucu dolu.");
+                }
+                else if (!landingMayBeCreated)
+                    return PlacementCheck.Fail(landing.Z > 0 ? "Merdivenin üst ucunda döşeme yok." : "Merdivenin alt ucu kazılmamış.");
+            }
             return PlacementCheck.Success;
+        }
+
+        /// <summary>
+        /// Merdivenin iki ucu: girişi (kendi katında, merdivenin önü) ve inişi (öbür katta). Dönüş 0: +y yönünde tırmanır,
+        /// 1: +x, 2: -y, 3: -x. Merdiven 1x2'dir.
+        /// </summary>
+        public static void StairsEnds(ItemDef def, GridPos position, int rotation, out GridPos entrance, out GridPos landing)
+        {
+            int z = position.Z, lz = position.Z + def.StairsDelta;
+            switch (Footprint.Normalize(rotation))
+            {
+                case 0: entrance = new GridPos(position.X, position.Y - 1, z); landing = new GridPos(position.X, position.Y + 2, lz); break;
+                case 1: entrance = new GridPos(position.X - 1, position.Y, z); landing = new GridPos(position.X + 2, position.Y, lz); break;
+                case 2: entrance = new GridPos(position.X, position.Y + 2, z); landing = new GridPos(position.X, position.Y - 1, lz); break;
+                default: entrance = new GridPos(position.X + 2, position.Y, z); landing = new GridPos(position.X - 1, position.Y, lz); break;
+            }
+        }
+
+        /// <summary>Tüm merdiven eşyalarına göre kat bağlantılarını baştan kurar.</summary>
+        public void RebuildLinks()
+        {
+            Map.ClearLinks();
+            foreach (var item in _items)
+            {
+                if (!item.Def.IsStairs || item.IsDecor) continue;
+                StairsEnds(item.Def, item.Position, item.Rotation, out var entrance, out var landing);
+                if (Map.InBounds(entrance) && Map.InBounds(landing)) Map.AddLink(entrance, landing);
+            }
         }
 
         public PlacementCheck CanPlaceOnSurface(ItemDef def, int surfaceItemId, string slotId, int? ignoreItemId = null)
@@ -139,12 +191,13 @@ namespace Thatchwick.Core.World
         /// <summary>Yer eşyası yerleştirir. Geçersizse InvalidOperationException.</summary>
         public ItemInstance PlaceItem(ItemDef def, GridPos position, int rotation = 0)
         {
-            var check = CanPlaceFloor(def, position, rotation);
+            var check = CanPlaceFloor(def, position, rotation, null, landingMayBeCreated: false);
             if (!check.Ok) throw new InvalidOperationException($"{position}: {check.Reason}");
 
             var item = new ItemInstance(_nextId++, def, position, Footprint.Normalize(rotation));
             foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
             _items.Add(item);
+            if (def.IsStairs) RebuildLinks();
             Changed?.Invoke();
             return item;
         }
@@ -188,6 +241,7 @@ namespace Thatchwick.Core.World
             foreach (var child in _items)
                 if (child.ParentId == itemId) child.Position = position;
 
+            if (item.Def.IsStairs) RebuildLinks();
             Changed?.Invoke();
             return PlacementCheck.Success;
         }
@@ -214,6 +268,7 @@ namespace Thatchwick.Core.World
             foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
             _items.Remove(item);
             returned.Insert(0, item.Def);
+            if (item.Def.IsStairs) RebuildLinks();
             Changed?.Invoke();
             return returned;
         }
@@ -235,6 +290,7 @@ namespace Thatchwick.Core.World
             if (!item.IsDecor) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
             _items.Add(item);
             if (id >= _nextId) _nextId = id + 1;
+            if (def.IsStairs) RebuildLinks();
             return item;
         }
 

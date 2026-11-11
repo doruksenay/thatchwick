@@ -78,7 +78,7 @@ namespace Thatchwick.Core.World
             int w = Width, h = Height;
             for (int dy = 0; dy < h; dy++)
                 for (int dx = 0; dx < w; dx++)
-                    yield return new GridPos(Position.X + dx, Position.Y + dy);
+                    yield return new GridPos(Position.X + dx, Position.Y + dy, Position.Z);
         }
 
         /// <summary>Bir yüzey yuvasının ızgara koordinatındaki (sürekli, karo köşesi 0) konumu.</summary>
@@ -112,10 +112,10 @@ namespace Thatchwick.Core.World
         {
             switch (Footprint.Normalize(side))
             {
-                case 0: return new Edge(tile.X, tile.Y, EdgeAxis.Horizontal);
-                case 1: return new Edge(tile.X + 1, tile.Y, EdgeAxis.Vertical);
-                case 2: return new Edge(tile.X, tile.Y + 1, EdgeAxis.Horizontal);
-                default: return new Edge(tile.X, tile.Y, EdgeAxis.Vertical);
+                case 0: return new Edge(tile.X, tile.Y, EdgeAxis.Horizontal, tile.Z);
+                case 1: return new Edge(tile.X + 1, tile.Y, EdgeAxis.Vertical, tile.Z);
+                case 2: return new Edge(tile.X, tile.Y + 1, EdgeAxis.Horizontal, tile.Z);
+                default: return new Edge(tile.X, tile.Y, EdgeAxis.Vertical, tile.Z);
             }
         }
 

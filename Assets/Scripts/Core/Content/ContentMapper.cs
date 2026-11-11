@@ -49,8 +49,14 @@ namespace Thatchwick.Core.Content
                     StyleSet = string.IsNullOrWhiteSpace(dto.styleSet) ? null : dto.styleSet,
                     Rooms = dto.rooms != null ? new List<string>(dto.rooms) : new List<string>(),
                     HousingKind = string.IsNullOrWhiteSpace(dto.housing) ? null : dto.housing,
-                    HousingCapacity = dto.capacity
+                    HousingCapacity = dto.capacity,
+                    StairsDelta = dto.stairs,
+                    AllowedLevels = dto.levels != null ? new List<int>(dto.levels) : new List<int>()
                 };
+                if (dto.stairs != 0 && (dto.width * dto.height != 2 && (dto.width > 0 || dto.height > 0)))
+                    errors.Add($"{dto.id}: merdiven 1x2 olmalı.");
+                foreach (var lv in item.AllowedLevels)
+                    if (!Thatchwick.Core.World.GridMap.IsValidLevel(lv)) errors.Add($"{dto.id}: geçersiz kat {lv}.");
 
                 if (!string.IsNullOrWhiteSpace(dto.placement))
                 {

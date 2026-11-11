@@ -84,6 +84,23 @@ namespace Thatchwick.Core.Content
         public int HousingCapacity { get; set; }
         public bool IsHousing => !string.IsNullOrEmpty(HousingKind);
 
+        /// <summary>Merdiven ise kat farkı: +1 yukarı çıkar, -1 aşağı (bodrum) iner; 0 = merdiven değil. Ayak izi 1x2'dir.</summary>
+        public int StairsDelta { get; set; }
+        public bool IsStairs => StairsDelta != 0;
+        /// <summary>Eşyanın konabileceği katlar; boşsa kurala göre (bkz. AllowsLevel).</summary>
+        public List<int> AllowedLevels { get; set; } = new List<int>();
+
+        /// <summary>
+        /// Bu katta durabilir mi: açıkça belirtilen katlar varsa onlar; yoksa bitki, barınak ve toplama düğümü
+        /// yalnızca zemin katta, geri kalan her katta (üst kat, bodrum).
+        /// </summary>
+        public bool AllowsLevel(int level)
+        {
+            if (AllowedLevels.Count > 0) return AllowedLevels.Contains(level);
+            if (IsPlant || IsHousing || IsForage || PlantsAs != null) return level == 0;
+            return true;
+        }
+
         public SurfaceSlotDef FindSlot(string slotId)
         {
             foreach (var s in SurfaceSlots)

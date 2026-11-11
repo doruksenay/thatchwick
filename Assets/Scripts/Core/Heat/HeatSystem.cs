@@ -32,6 +32,10 @@ namespace Thatchwick.Core.Heat
         public float WallLoss = 0.4f, DoorLoss = 1.0f, WindowLoss = 1.2f;
         /// <summary>Genel kayıp ölçeği (1/gün).</summary>
         public float LossScale = 0.6f;
+        /// <summary>Katlar arası döşeme/tavan alışverişi (karo başına), üst kat çatı kaybı, bodrumun toprakla alışverişi.</summary>
+        public float FloorLoss = 0.25f, RoofLoss = 0.3f, GroundLoss = 0.6f;
+        /// <summary>Toprak sıcaklığı: bu taban değer + dış sıcaklığın (tabandan farkının) bu oranı; yıl boyu serin ve dengeli.</summary>
+        public float GroundBase = 8f, GroundFollow = 0.15f;
         /// <summary>Bir odun kütüğünün yanma süresi (oyun günü).</summary>
         public double BurnDaysPerLog = 0.5;
         /// <summary>Bir ısı kaynağının alabileceği en çok yakıt (oyun günü).</summary>
@@ -55,6 +59,12 @@ namespace Thatchwick.Core.Heat
         private readonly float[] _temp;
         private readonly Dictionary<Room, double> _roomTemp = new Dictionary<Room, double>();
         private float _outdoor;
+        private readonly int _plane;
+
+        private int TempIndex(GridPos p) => ((p.Z - GridMap.MinLevel) * _world.Map.Height + p.Y) * _world.Map.Width + p.X;
+
+        /// <summary>Bodrumun doğal (ısıtılmamış) sıcaklığı: toprak yıl boyu dengeli kalır.</summary>
+        public float GroundTemperature => _cfg.GroundBase + _cfg.GroundFollow * (_outdoor - _cfg.GroundBase);
 
         public HeatSystem(WorldState world, TimeConfig time, HeatConfig config = null, double startDays = 0)
         {
@@ -62,8 +72,11 @@ namespace Thatchwick.Core.Heat
             _time = time ?? throw new ArgumentNullException(nameof(time));
             _cfg = config ?? new HeatConfig();
             _outdoor = Climate.OutdoorTemperature(_time, startDays);
-            _temp = new float[world.Map.Width * world.Map.Height];
+            _plane = world.Map.Width * world.Map.Height;
+            _temp = new float[_plane * GridMap.LevelCount];
             for (int i = 0; i < _temp.Length; i++) _temp[i] = _outdoor;
+            // Bodrum toprakla dengede başlar.
+            for (int i = 0; i < _plane; i++) _temp[i] = GroundTemperature;
         }
 
         public HeatConfig Config => _cfg;
@@ -77,8 +90,10 @@ namespace Thatchwick.Core.Heat
         /// <summary>Kayıttan yükleme; boyut uymazsa yok sayılır (dış sıcaklıkla başlar).</summary>
         public void RestoreTemperatures(float[] temps)
         {
-            if (temps == null || temps.Length != _temp.Length) return;
-            Array.Copy(temps, _temp, _temp.Length);
+            if (temps == null) return;
+            if (temps.Length == _temp.Length) { Array.Copy(temps, _temp, _temp.Length); return; }
+            // Eski kayıt: yalnızca zemin kat sıcaklıkları (kat eklenmeden önce).
+            if (temps.Length == _plane) Array.Copy(temps, 0, _temp, _plane * (0 - GridMap.MinLevel), _plane);
         }
         public float OutdoorTemperature => _outdoor;
 
@@ -94,7 +109,7 @@ namespace Thatchwick.Core.Heat
         private float RoomTemperature(Room room)
         {
             double sum = 0;
-            foreach (var t in room.Tiles) sum += _temp[t.Y * _world.Map.Width + t.X];
+            foreach (var t in room.Tiles) sum += _temp[TempIndex(t)];
             return (float)(sum / room.Tiles.Count);
         }
 
@@ -145,7 +160,7 @@ namespace Thatchwick.Core.Heat
             {
                 if (!room.IsIndoor) { _roomTemp[room] = _outdoor; continue; }
                 double sum = 0;
-                foreach (var t in room.Tiles) sum += _temp[t.Y * map.Width + t.X];
+                foreach (var t in room.Tiles) sum += _temp[TempIndex(t)];
                 _roomTemp[room] = sum / room.Tiles.Count;
             }
 
@@ -165,7 +180,7 @@ namespace Thatchwick.Core.Heat
             {
                 if (!room.IsIndoor)
                 {
-                    foreach (var t in room.Tiles) _temp[t.Y * map.Width + t.X] = _outdoor;
+                    foreach (var t in room.Tiles) _temp[TempIndex(t)] = _outdoor;
                     continue;
                 }
 
@@ -183,12 +198,38 @@ namespace Thatchwick.Core.Heat
                         double neighborTemp = nr != null ? _roomTemp[nr] : _outdoor;   // harita dışı = dış hava
                         flow += EdgeLoss(kind) * (neighborTemp - temp);
                     }
+                    flow += VerticalFlow(map, rooms, t, temp);
                 }
 
                 double heat = power.TryGetValue(room, out var p) ? p : 0.0;
                 float newTemp = (float)(temp + (flow * _cfg.LossScale + heat) / room.Tiles.Count * dt);
-                foreach (var t in room.Tiles) _temp[t.Y * map.Width + t.X] = newTemp;
+                foreach (var t in room.Tiles) _temp[TempIndex(t)] = newTemp;
             }
+        }
+
+        /// <summary>Bir karonun kat yönündeki ısı akışı: tavan/döşeme komşusu, üst katta çatı, bodrumda toprak.</summary>
+        private double VerticalFlow(GridMap map, RoomMap rooms, GridPos t, double temp)
+        {
+            double flow = 0;
+            var above = t.OnLevel(t.Z + 1);
+            if (GridMap.IsValidLevel(above.Z) && map.HasTile(above))
+                flow += _cfg.FloorLoss * (TempOfRoomAt(rooms, above) - temp);
+            else if (t.Z >= 1)
+                flow += _cfg.RoofLoss * (_outdoor - temp);          // en üst kat: çatıdan kaybeder
+
+            var below = t.OnLevel(t.Z - 1);
+            if (GridMap.IsValidLevel(below.Z) && map.HasTile(below))
+                flow += _cfg.FloorLoss * (TempOfRoomAt(rooms, below) - temp);
+            if (t.Z < 0)
+                flow += _cfg.GroundLoss * (GroundTemperature - temp); // bodrum toprakla dengelenir
+            return flow;
+        }
+
+        private double TempOfRoomAt(RoomMap rooms, GridPos p)
+        {
+            var r = rooms.RoomAt(p);
+            if (r == null) return _outdoor;
+            return _roomTemp.TryGetValue(r, out var v) ? v : _outdoor;
         }
 
         private static readonly GridPos[] Dirs = { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };

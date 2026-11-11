@@ -50,12 +50,17 @@ namespace Thatchwick.Core.Save
         public bool[] owned;
         public int[] zone;
         public EdgeSave[] edges;
+        public LevelTileSave[] levelTiles;   // üst kat döşemeleri ve bodrum kazıları (zemin kat dizilerde)
     }
+
+    [Serializable]
+    public sealed class LevelTileSave { public int x, y, z, floor; }
 
     [Serializable]
     public sealed class EdgeSave
     {
         public int x, y, axis, kind;
+        public int z;                       // kat (0 zemin)
     }
 
     [Serializable]
@@ -64,6 +69,7 @@ namespace Thatchwick.Core.Save
         public int id;
         public string def;
         public int x, y, rotation;
+        public int z;                       // kat
         public int parentId = -1;
         public string slotId;
         public double fuelDays;
@@ -87,6 +93,7 @@ namespace Thatchwick.Core.Save
         public bool isPlayer;
         public int sex;
         public int x, y;
+        public int z;                       // kat
         public double ageDays, lifespanDays;
         public bool dead;
         public int deathCause;

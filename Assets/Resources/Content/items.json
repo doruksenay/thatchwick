@@ -2797,6 +2797,98 @@
       "category": "utility",
       "level": 3,
       "preserves": 0.4
+    },
+    {
+      "id": "item.stairs_up",
+      "displayName": "Ahşap merdiven (üst kat)",
+      "width": 1,
+      "height": 2,
+      "price": 30,
+      "category": "structure",
+      "level": 2,
+      "stairs": 1,
+      "comfort": 0,
+      "rooms": [
+        "living"
+      ],
+      "styleSet": "Köylü",
+      "variants": [
+        "item.ladder",
+        "item.stairs_up_stone"
+      ]
+    },
+    {
+      "id": "item.stairs_down",
+      "displayName": "Bodrum merdiveni",
+      "width": 1,
+      "height": 2,
+      "price": 34,
+      "category": "structure",
+      "level": 2,
+      "stairs": -1,
+      "comfort": 0,
+      "rooms": [
+        "living"
+      ],
+      "styleSet": "Köylü",
+      "variants": [
+        "item.stairs_down_stone"
+      ]
+    },
+    {
+      "id": "item.ladder",
+      "displayName": "El merdiveni (üst kat)",
+      "width": 1,
+      "height": 2,
+      "price": 14,
+      "category": "structure",
+      "level": 1,
+      "stairs": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living"
+      ],
+      "variants": [
+        "item.stairs_up",
+        "item.stairs_up_stone"
+      ]
+    },
+    {
+      "id": "item.stairs_up_stone",
+      "displayName": "Taş merdiven (üst kat)",
+      "width": 1,
+      "height": 2,
+      "price": 54,
+      "category": "structure",
+      "level": 4,
+      "stairs": 1,
+      "styleSet": "Zanaatkâr",
+      "comfort": 1,
+      "rooms": [
+        "living"
+      ],
+      "variants": [
+        "item.ladder",
+        "item.stairs_up"
+      ]
+    },
+    {
+      "id": "item.stairs_down_stone",
+      "displayName": "Taş bodrum merdiveni",
+      "width": 1,
+      "height": 2,
+      "price": 58,
+      "category": "structure",
+      "level": 4,
+      "stairs": -1,
+      "styleSet": "Zanaatkâr",
+      "comfort": 1,
+      "rooms": [
+        "living"
+      ],
+      "variants": [
+        "item.stairs_down"
+      ]
     }
   ],
   "recipes": [

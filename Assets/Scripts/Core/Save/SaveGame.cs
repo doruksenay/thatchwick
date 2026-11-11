@@ -76,9 +76,16 @@ namespace Thatchwick.Core.Save
                     m.zone[i] = (int)map.GetZone(p);
                 }
             var edges = new List<EdgeSave>();
-            foreach (var kv in map.Edges) edges.Add(new EdgeSave { x = kv.Key.X, y = kv.Key.Y, axis = (int)kv.Key.Axis, kind = (int)kv.Value });
-            edges.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x != b.x ? a.x.CompareTo(b.x) : a.axis.CompareTo(b.axis));
+            foreach (var kv in map.Edges) edges.Add(new EdgeSave { x = kv.Key.X, y = kv.Key.Y, z = kv.Key.Z, axis = (int)kv.Key.Axis, kind = (int)kv.Value });
+            edges.Sort((a, b) => a.z != b.z ? a.z.CompareTo(b.z) : a.y != b.y ? a.y.CompareTo(b.y) : a.x != b.x ? a.x.CompareTo(b.x) : a.axis.CompareTo(b.axis));
             m.edges = edges.ToArray();
+            var levelTiles = new List<LevelTileSave>();
+            for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
+            {
+                if (z == 0) continue;
+                foreach (var t in map.TilesOnLevel(z)) levelTiles.Add(new LevelTileSave { x = t.X, y = t.Y, z = z, floor = (int)map.GetFloor(t) });
+            }
+            m.levelTiles = levelTiles.ToArray();
             data.map = m;
 
             // Eşyalar: önce yer eşyaları, sonra dekorlar (yüklerken üstündeki eşya hazır olsun).
@@ -97,7 +104,7 @@ namespace Thatchwick.Core.Save
                     }
                     items.Add(new ItemSave
                     {
-                        id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, rotation = it.Rotation,
+                        id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, z = it.Position.Z, rotation = it.Rotation,
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
                         feedStock = it.FeedStock, stock = stock
                     });
@@ -185,7 +192,7 @@ namespace Thatchwick.Core.Save
                 traits = new List<string>(c.TraitIds).ToArray(), branches = new List<string>(c.BranchIds).ToArray(),
                 extraMoodlets = moodlets.ToArray(),
                 id = c.Id, name = c.Name, isPlayer = c.IsPlayerControlled, sex = (int)c.Sex,
-                x = c.Position.X, y = c.Position.Y,
+                x = c.Position.X, y = c.Position.Y, z = c.Position.Z,
                 ageDays = c.AgeDays, lifespanDays = c.LifespanDays,
                 dead = c.IsDead, deathCause = (int)c.CauseOfDeath,
                 pregnant = c.IsPregnant, fatherId = c.FatherId ?? -1,
@@ -256,10 +263,19 @@ namespace Thatchwick.Core.Save
                     if (m.owned != null && i < m.owned.Length) map.SetOwned(p, m.owned[i]);
                     if (m.zone != null && i < m.zone.Length && Enum.IsDefined(typeof(ZoneType), m.zone[i])) map.SetZone(p, (ZoneType)m.zone[i]);
                 }
+            if (m.levelTiles != null)
+                foreach (var lt in m.levelTiles)
+                {
+                    if (lt == null || lt.z == 0) continue;
+                    var p = new GridPos(lt.x, lt.y, lt.z);
+                    if (!map.InBounds(p)) continue;
+                    map.SetTile(p, true);
+                    if (Enum.IsDefined(typeof(FloorType), lt.floor)) map.SetFloor(p, (FloorType)lt.floor);
+                }
             if (m.edges != null)
                 foreach (var e in m.edges)
                 {
-                    var edge = new Edge(e.x, e.y, (EdgeAxis)e.axis);
+                    var edge = new Edge(e.x, e.y, (EdgeAxis)e.axis, e.z);
                     if (map.EdgeInBounds(edge) && Enum.IsDefined(typeof(EdgeKind), e.kind)) map.SetEdge(edge, (EdgeKind)e.kind);
                 }
 
@@ -272,7 +288,7 @@ namespace Thatchwick.Core.Save
                     if (!content.Items.TryGet(s.def, out var def)) { result.Warnings.Add($"Eşya tanımı yok, atlandı: {s.def}"); continue; }
                     int? parent = s.parentId >= 0 ? s.parentId : (int?)null;
                     if (parent.HasValue && world.GetItem(parent.Value) == null) { result.Warnings.Add($"Dekorun yüzeyi yok, atlandı: {s.def}"); continue; }
-                    var pos = new GridPos(s.x, s.y);
+                    var pos = new GridPos(s.x, s.y, s.z);
                     if (!parent.HasValue)
                     {
                         var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation) : world.CanPlaceFloor(def, pos, s.rotation);
@@ -333,7 +349,7 @@ namespace Thatchwick.Core.Save
 
         private static Character LoadCharacter(CharacterSave s)
         {
-            var c = new Character(s.id, string.IsNullOrWhiteSpace(s.name) ? "İsimsiz" : s.name, new GridPos(s.x, s.y), s.isPlayer)
+            var c = new Character(s.id, string.IsNullOrWhiteSpace(s.name) ? "İsimsiz" : s.name, new GridPos(s.x, s.y, s.z), s.isPlayer)
             {
                 Sex = Enum.IsDefined(typeof(Sex), s.sex) ? (Sex)s.sex : Sex.Female
             };

@@ -210,7 +210,7 @@ namespace Thatchwick.Core.Jobs
             return used + available;
         }
 
-        private static bool IsNear(GridPos a, GridPos b) => Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y) <= 1;
+        private static bool IsNear(GridPos a, GridPos b) => a.Z == b.Z && Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y) <= 1;
 
         private double AdvanceUse(Job job, double budget)
         {
@@ -275,13 +275,15 @@ namespace Thatchwick.Core.Jobs
             while (_pathIndex < _path.Count && budget - used > 0)
             {
                 // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.
-                if (_stepFraction <= 0 && !_world.Map.CanStep(_character.Position, _path[_pathIndex]))
+                if (_stepFraction <= 0 && !_world.Map.CanTraverse(_character.Position, _path[_pathIndex]))
                 {
                     _path = null;
                     _stepFraction = 0;
                     return used;
                 }
-                double needed = (1.0 - _stepFraction) / TilesPerGameDay;
+                // Merdiven adımı daha uzundur (yatay mesafe + 1 karo).
+                int span = GridMap.StepSpan(_character.Position, _path[_pathIndex]);
+                double needed = (1.0 - _stepFraction) * span / TilesPerGameDay;
                 double available = budget - used;
                 if (available >= needed)
                 {
@@ -292,7 +294,7 @@ namespace Thatchwick.Core.Jobs
                 }
                 else
                 {
-                    _stepFraction += available * TilesPerGameDay;
+                    _stepFraction += available * TilesPerGameDay / span;
                     used += available;
                 }
             }

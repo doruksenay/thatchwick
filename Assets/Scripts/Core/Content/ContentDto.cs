@@ -112,6 +112,8 @@ namespace Thatchwick.Core.Content
         public string[] rooms;       // menü oda filtresi
         public string housing;       // hayvan barınağı türü (coop, barn, kennel)
         public int capacity;         // barınak kapasitesi
+        public int stairs;           // +1 yukarı, -1 aşağı (bodrum) merdiveni
+        public int[] levels;         // eşyanın konabileceği katlar (boşsa kurala göre)
         public string[] growSeasons; // ekin: büyüyebildiği mevsimler (boş = kış dışı hepsi)
         public int comfort;          // oda konforuna katkı
         public float spoilDays;      // taze yiyecek: bu kadar günde çürür; 0 = çürümez

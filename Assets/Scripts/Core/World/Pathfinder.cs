@@ -79,23 +79,34 @@ namespace Thatchwick.Core.World
                     if (closed.Contains(next) || !map.CanStep(current.Pos, next)) continue;
 
                     bool diagonal = dir.X != 0 && dir.Y != 0;
-                    int g = current.G + (diagonal ? DiagonalCost : StraightCost);
-                    if (best.TryGetValue(next, out var known))
-                    {
-                        if (g >= known.G) continue;
-                        open.Remove(known);
-                    }
+                    Relax(open, best, current, next, current.G + (diagonal ? DiagonalCost : StraightCost), heuristic);
+                }
 
-                    var node = new Node(next, g, heuristic(next), current);
-                    best[next] = node;
-                    open.Add(node);
+                // Merdiven bağlantıları: kat değiştirir; maliyet kat farkı + yatay mesafe kadar adım.
+                foreach (var next in map.LinksFrom(current.Pos))
+                {
+                    if (closed.Contains(next)) continue;
+                    int span = Math.Abs(next.X - current.Pos.X) + Math.Abs(next.Y - current.Pos.Y) + 1;
+                    Relax(open, best, current, next, current.G + StraightCost * span, heuristic);
                 }
             }
 
             return null;
         }
 
-        // Octile mesafe: 8 yönlü harekette kabul edilebilir (admissible) tahmin.
+        private static void Relax(SortedSet<Node> open, Dictionary<GridPos, Node> best, Node current, GridPos next, int g, Func<GridPos, int> heuristic)
+        {
+            if (best.TryGetValue(next, out var known))
+            {
+                if (g >= known.G) return;
+                open.Remove(known);
+            }
+            var node = new Node(next, g, heuristic(next), current);
+            best[next] = node;
+            open.Add(node);
+        }
+
+        // Octile mesafe (kat farkı yok sayılır, böylece hâlâ kabul edilebilir): 8 yönlü harekette kabul edilebilir (admissible) tahmin.
         private static int Heuristic(GridPos a, GridPos b)
         {
             int dx = Math.Abs(a.X - b.X);
@@ -145,6 +156,8 @@ namespace Thatchwick.Core.World
                 c = a.Pos.Y.CompareTo(b.Pos.Y);
                 if (c != 0) return c;
                 c = a.Pos.X.CompareTo(b.Pos.X);
+                if (c != 0) return c;
+                c = a.Pos.Z.CompareTo(b.Pos.Z);
                 if (c != 0) return c;
                 return a.G.CompareTo(b.G);
             }

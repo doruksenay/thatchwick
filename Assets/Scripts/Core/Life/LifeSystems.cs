@@ -274,7 +274,11 @@ namespace Thatchwick.Core.Life
 
         public void Attach(JobRunner runner) { runner.SpeedProvider = WorkSpeedFor; }
         public void Attach(PlantSystem plants) { plants.GrowthMultiplier = GrowthMultiplier; }
-        public void Attach(HeatSystem heat) { heat.OutdoorOffset = () => WeatherSystem.TemperatureOffset(Weather.Today(Clock.TotalDays)); }
+        public void Attach(HeatSystem heat)
+        {
+            heat.OutdoorOffset = () => WeatherSystem.TemperatureOffset(Weather.Today(Clock.TotalDays));
+            Spoilage.TemperatureAt = heat.TemperatureAt;   // bodrum mahzeni serinlik şartı
+        }
         public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
 
