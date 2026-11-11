@@ -123,6 +123,9 @@ namespace Thatchwick.Core.Build
 
         public bool IsUnlocked(ItemDef def) => AccountLevel == null || AccountLevel() >= def.UnlockLevel;
 
+        /// <summary>Çiftçilik sistemi; verilirse pencereli sera odalarına da dikilebilir.</summary>
+        public Work.PlantSystem Plants { get; set; }
+
         public BuildService(WorldState world, Household house, ContentDatabase content, double sellRatio = DefaultSellRatio)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -483,7 +486,7 @@ namespace Thatchwick.Core.Build
             if (!_house.TrySpend(price)) return PlacementCheck.Fail("Akçe yetmiyor.");
             var map = _world.Map;
             map.SetTile(p, true);
-            if (p.Z < 0) map.SetFloor(p, FloorType.Dirt);
+            map.SetFloor(p, p.Z < 0 ? FloorType.Dirt : FloorType.Wood);
             int refund = Refund(price);
             Record(p.Z > 0 ? "Üst kat döşemesi" : "Bodrum kazısı", () =>
             {
@@ -536,7 +539,8 @@ namespace Thatchwick.Core.Build
             if (!map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
             if (!map.IsOwned(tile)) return PlacementCheck.Fail(NotOwned);
             var room = map.Rooms.RoomAt(tile);
-            if (room != null && room.IsIndoor) return PlacementCheck.Fail("Ev içine dikilmez, dışarıda bir yer seç.");
+            if (room != null && room.IsIndoor && !(Plants != null && Plants.IsGreenhouse(room)))
+                return PlacementCheck.Fail("Ev içine dikilmez, dışarıda bir yer seç (ya da odaya pencere aç: sera).");
             var floor = map.GetFloor(tile);
             var plantDef = _content.Items.Get(seed.PlantsAs);
             if (plantDef.NeedsTilledSoil && floor != FloorType.Dirt) return PlacementCheck.Fail("Ekin yalnızca toprağa ekilir (yapı modu > Toprak).");

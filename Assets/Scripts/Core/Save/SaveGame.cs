@@ -12,6 +12,7 @@ using Thatchwick.Core.Life;
 using Thatchwick.Core.Mood;
 using Thatchwick.Core.Progress;
 using Thatchwick.Core.Time;
+using Thatchwick.Core.Work;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Save
@@ -34,6 +35,8 @@ namespace Thatchwick.Core.Save
         public LifeSaveData Life;
         /// <summary>Hayvanlar (v2); AnimalSystem kurulunca SaveGame.RestoreAnimals ile geri konur.</summary>
         public List<AnimalSave> Animals = new List<AnimalSave>();
+        /// <summary>Toprak verimi; PlantSystem kurulunca SaveGame.RestoreSoil ile geri konur.</summary>
+        public List<SoilSave> Soil = new List<SoilSave>();
         /// <summary>Yüklenemeyen parçalar (ör. içerikten kaldırılmış eşya). Oyun yine açılır.</summary>
         public List<string> Warnings = new List<string>();
     }
@@ -45,7 +48,7 @@ namespace Thatchwick.Core.Save
 
         public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
             AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null,
-            AnimalSystem animals = null, LifeSystems life = null)
+            AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null)
         {
             var map = world.Map;
             var data = new SaveData
@@ -106,10 +109,20 @@ namespace Thatchwick.Core.Save
                     {
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, z = it.Position.Z, rotation = it.Rotation,
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
-                        feedStock = it.FeedStock, stock = stock
+                        feedStock = it.FeedStock, stock = stock,
+                        watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays
                     });
                 }
             data.items = items.ToArray();
+
+            if (plants != null)
+            {
+                var soil = new List<SoilSave>();
+                foreach (var kv in plants.SoilPlots)
+                    soil.Add(new SoilSave { x = kv.Key.X, y = kv.Key.Y, fertility = kv.Value.Fertility, lastCrop = kv.Value.LastCrop });
+                soil.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+                data.soil = soil.ToArray();
+            }
 
             var inv = new List<KeyInt>();
             foreach (var kv in house.InventoryList()) inv.Add(new KeyInt { key = kv.Key, value = kv.Value });
@@ -164,7 +177,7 @@ namespace Thatchwick.Core.Save
                     list.Add(new AnimalSave
                     {
                         id = a.Id, species = a.Species.Id, x = a.Position.X, y = a.Position.Y, home = a.HomeItemId,
-                        fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays
+                        fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays, friendship = a.Friendship
                     });
                 }
                 data.animals = list.ToArray();
@@ -226,6 +239,13 @@ namespace Thatchwick.Core.Save
             return list.ToArray();
         }
 
+        /// <summary>Kayıttaki toprak verimini çiftçilik sistemine geri koyar.</summary>
+        public static void RestoreSoil(LoadedGame loaded, PlantSystem plants)
+        {
+            foreach (var s in loaded.Soil)
+                if (s != null) plants.SetSoil(new GridPos(s.x, s.y), s.fertility, s.lastCrop);
+        }
+
         /// <summary>Kayıttaki hayvanları kurulan hayvan sistemine geri koyar (barınağı olmayanlar atlanır).</summary>
         public static void RestoreAnimals(LoadedGame loaded, AnimalSystem system, ContentDatabase content)
         {
@@ -235,7 +255,7 @@ namespace Thatchwick.Core.Save
                 if (!content.Animals.TryGet(s.species, out var species)) { loaded.Warnings.Add($"Hayvan türü yok, atlandı: {s.species}"); continue; }
                 var home = loaded.World.GetItem(s.home);
                 if (home == null || home.Def.HousingKind != species.Housing) { loaded.Warnings.Add($"Hayvanın barınağı yok, atlandı: {s.species}"); continue; }
-                system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays);
+                system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship);
             }
         }
 
@@ -296,6 +316,7 @@ namespace Thatchwick.Core.Save
                     }
                     var restored = world.RestoreItem(def, s.id, pos, s.rotation, parent, s.slotId, Math.Max(0, s.fuelDays), Math.Max(0, s.growthDays));
                     restored.FeedStock = Math.Max(0, s.feedStock);
+                    restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));
                     if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(kv.key)) restored.SetStock(kv.key, kv.value);
                 }
 
@@ -344,6 +365,7 @@ namespace Thatchwick.Core.Save
                 result.Dynasty = d;
             }
             if (data.animals != null) result.Animals.AddRange(data.animals);
+            if (data.soil != null) result.Soil.AddRange(data.soil);
             return result;
         }
 

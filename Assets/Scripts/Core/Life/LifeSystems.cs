@@ -273,12 +273,21 @@ namespace Thatchwick.Core.Life
         }
 
         public void Attach(JobRunner runner) { runner.SpeedProvider = WorkSpeedFor; }
-        public void Attach(PlantSystem plants) { plants.GrowthMultiplier = GrowthMultiplier; }
+        public void Attach(PlantSystem plants)
+        {
+            _plants = plants;
+            plants.GrowthMultiplier = GrowthMultiplier;
+            if (_heat != null) plants.TemperatureAt = _heat.TemperatureAt;   // sera ısısı
+        }
         public void Attach(HeatSystem heat)
         {
+            _heat = heat;
             heat.OutdoorOffset = () => WeatherSystem.TemperatureOffset(Weather.Today(Clock.TotalDays));
             Spoilage.TemperatureAt = heat.TemperatureAt;   // bodrum mahzeni serinlik şartı
+            if (_plants != null) _plants.TemperatureAt = heat.TemperatureAt;
         }
+        private PlantSystem _plants;
+        private HeatSystem _heat;
         public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
 
@@ -308,7 +317,9 @@ namespace Thatchwick.Core.Life
 
         private void OnNewDay(long day)
         {
-            Forage.OnNewDay(Clock.Season);
+            var today = Weather.Today(Clock.TotalDays);
+            Forage.OnNewDay(Clock.Season, today == WeatherType.Rain || today == WeatherType.Storm);
+            _plants?.OnNewDay(today == WeatherType.Rain || today == WeatherType.Storm, today == WeatherType.Storm);
             var tomorrow = Weather.Tomorrow(Clock.TotalDays);
             if (tomorrow != WeatherType.Clear) Say(Weather.ForecastText(Clock.TotalDays), tomorrow == WeatherType.Storm ? NoticeLevel.Warning : NoticeLevel.Info);
 

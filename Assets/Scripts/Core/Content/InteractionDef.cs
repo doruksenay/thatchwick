@@ -86,6 +86,18 @@ namespace Thatchwick.Core.Content
         /// <summary>Barınakta yaşayan bir hayvan gerektirir (köpekle oyna).</summary>
         public bool RequiresAnimal { get; set; }
 
+        // ---- çiftçilik ----
+        /// <summary>Büyüyen ekini sular (o gün büyümesi tam hızda olur, kalite artar).</summary>
+        public bool Water { get; set; }
+        /// <summary>Ekinin toprağına bu kadar verim ekler (0-1); harcanan gübre Consume ile verilir.</summary>
+        public float Fertilize { get; set; }
+        /// <summary>Barınaktaki hayvanları sever: dostlukları artar (hayvan başına günde bir kez).</summary>
+        public bool PetsAnimals { get; set; }
+        /// <summary>Yalnızca meyvesi olgun ağaçta yapılabilir.</summary>
+        public bool RequiresFruit { get; set; }
+        /// <summary>Meyveyi toplar: ağaç yerinde kalır, meyve yeniden olgunlaşmaya başlar.</summary>
+        public bool TakesFruit { get; set; }
+
         /// <summary>Harcanan tüm malzemeler (ConsumeItem 1 adet + Consume listesi), aynı kimlikler toplanır.</summary>
         public List<ConsumeDef> AllConsumed()
         {
@@ -102,7 +114,8 @@ namespace Thatchwick.Core.Content
         }
 
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
-            || AddFeed > 0 || Collect || RequiresAnimal;
+            || AddFeed > 0 || Collect || RequiresAnimal
+            || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals;
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;
 

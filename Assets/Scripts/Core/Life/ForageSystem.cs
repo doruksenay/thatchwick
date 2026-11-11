@@ -38,7 +38,7 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Yeni günde: sezon dışı olanlar kalkar, sezonluklar eksiğini tamamlamaya çalışır. Yeni doğan sayısı döner.</summary>
-        public int OnNewDay(Season season)
+        public int OnNewDay(Season season, bool rained = false)
         {
             // mevsimi biten yabani eşyalar solar
             var stale = new List<int>();
@@ -54,6 +54,8 @@ namespace Thatchwick.Core.Life
                 int missing = def.ForageMax - have;
                 // Mevsim başında hızlı dolsun: eksik yarısı kadar (en az 1) deneme.
                 int attempts = (missing + 1) / 2;
+                // Yağmurdan sonra nemi seven türler (mantar, yabani sarımsak) bir kat fazla çıkar.
+                if (rained && def.HasTag("rain_loving")) attempts = Math.Max(attempts, 1) * 2;
                 for (int i = 0; i < attempts; i++)
                 {
                     if (_rng.NextDouble() >= SpawnChancePerDay) continue;

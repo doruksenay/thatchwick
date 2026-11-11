@@ -27,6 +27,10 @@ namespace Thatchwick.Core.Animals
         public bool IsDead { get; internal set; }
         public AnimalDeath CauseOfDeath { get; internal set; }
         public bool IsMature => AgeDays >= Species.MatureDays;
+        /// <summary>0-100 dostluk: iyi bakılan ve sevilen hayvan daha çok ve ara sıra ekstra ürün verir.</summary>
+        public float Friendship { get; internal set; }
+        /// <summary>Son sevilmeden bu kadar gün geçmeden yeniden sevilemez (günde bir kez).</summary>
+        public double PetCooldownDays { get; internal set; }
 
         internal GridPos Target;
         internal double WaitDays;

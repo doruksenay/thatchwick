@@ -26,6 +26,7 @@ namespace Thatchwick.Core.Save
         /// <summary>Yaşam katmanı (mezar, hava, takvim, köylüler, projeler ...). Eski kayıtta null.</summary>
         public LifeSaveData life;
         public AnimalSave[] animals;     // v2
+        public SoilSave[] soil;          // toprak verimi (eski kayıtta yok)
     }
 
     [Serializable]
@@ -37,6 +38,7 @@ namespace Thatchwick.Core.Save
         public int home;
         public float fullness;
         public double age, produce, hungryDays;
+        public float friendship;
     }
 
     [Serializable]
@@ -74,8 +76,20 @@ namespace Thatchwick.Core.Save
         public string slotId;
         public double fuelDays;
         public double growthDays;
+        public bool watered;        // çiftçilik (eski kayıtta yok = false)
+        public double ageDays, wetDays;
+        public bool fruitReady;
+        public double fruitDays;
         public double feedStock;    // v2: barınak yemi
         public KeyInt[] stock;      // v2: barınakta biriken ürünler
+    }
+
+    [Serializable]
+    public sealed class SoilSave
+    {
+        public int x, y;
+        public float fertility;
+        public string lastCrop;
     }
 
     [Serializable]

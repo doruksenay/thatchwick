@@ -121,6 +121,12 @@ namespace Thatchwick.Core.Content
         public string[] variants;    // renk/malzeme varyantları (Adım 43)
         public string[] forageSeasons; // yabani toplanabilir: görüneceği mevsimler
         public int forageMax;        // haritada aynı anda en çok bu kadar
+        public string[] fruitSeasons; // meyve ağacı: meyve verdiği mevsimler
+        public float fruitDays;      // meyve ağacı: olgunlaşma süresi (gün)
+        public bool nitrogen;        // baklagil: hasatta toprağı zenginleştirir
+        public int waterRadius;      // sulama hendeği/kova: her sabah sular
+        public int protectRadius;    // korkuluk: kuzgunlardan korur
+        public int pollinate;        // arı kovanı: tozlaştırma yarıçapı
     }
 
     [Serializable]
@@ -158,6 +164,11 @@ namespace Thatchwick.Core.Content
         public int moodValue;
         public float moodDays;
         public bool requiresLit;            // yalnızca yanan ısı kaynağında
+        public bool water;                  // ekini sular
+        public float fertilize;             // toprak verimine eklenen (0-1)
+        public bool requiresFruit;          // meyvesi olgun ağaç gerekir
+        public bool takesFruit;             // meyveyi toplar (ağaç kalır)
+        public bool petAnimals;             // barınaktaki hayvanları sever
     }
 
     [Serializable]

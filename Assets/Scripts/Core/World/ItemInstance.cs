@@ -51,6 +51,23 @@ namespace Thatchwick.Core.World
         public double FuelDays { get; internal set; }
         public bool IsLit => FuelDays > 0;
 
+        // ---- çiftçilik durumu (PlantSystem yönetir) ----
+        /// <summary>Ekin bugün sulandı (her yeni gün sıfırlanır; yağmur ve hendek de sular).</summary>
+        public bool Watered { get; internal set; }
+        /// <summary>Ekinin büyüme koşullarında geçirdiği toplam süre ve bunun sulu geçen kısmı (kalite için).</summary>
+        public double AgeDays { get; internal set; }
+        public double WetDays { get; internal set; }
+        /// <summary>0-1 sulu geçen süre oranı.</summary>
+        public float WetRatio => AgeDays <= 0 ? 0f : (float)System.Math.Min(1.0, WetDays / AgeDays);
+        /// <summary>Meyve ağacında meyve olgun mu ve olgunlaşma ilerlemesi (gün).</summary>
+        public bool FruitReady { get; internal set; }
+        public double FruitDays { get; internal set; }
+
+        internal void SetPlantState(bool watered, double ageDays, double wetDays, bool fruitReady, double fruitDays)
+        {
+            Watered = watered; AgeDays = ageDays; WetDays = wetDays; FruitReady = fruitReady; FruitDays = fruitDays;
+        }
+
         /// <summary>Bitkinin büyüme ilerlemesi (oyun günü).</summary>
         public double GrowthDays { get; internal set; }
         public bool IsPlant => Def.IsPlant;

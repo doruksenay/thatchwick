@@ -27,9 +27,12 @@ namespace Thatchwick.Game
         private Vector2 _logScroll;
         private GUIStyle _small, _balloon;
 
-        public StatusHud(LifeSystems life, ContentDatabase content, Func<Character> commander, Func<Character, JobRunner> runnerOf)
+        private readonly Func<Thatchwick.Core.Work.FarmSummary> _farm;
+
+        public StatusHud(LifeSystems life, ContentDatabase content, Func<Character> commander, Func<Character, JobRunner> runnerOf,
+            Func<Thatchwick.Core.Work.FarmSummary> farm = null)
         {
-            _life = life; _content = content; _commander = commander; _runnerOf = runnerOf;
+            _life = life; _content = content; _commander = commander; _runnerOf = runnerOf; _farm = farm;
             _life.Ledger.DayEnded += s => { if (s != null && !s.IsEmpty) _card = s; };
         }
 
@@ -106,7 +109,11 @@ namespace Thatchwick.Game
                 ? $"Kış: {rep.WinterDaysLeft:0} gün kaldı · yiyecek {rep.FoodDays:0} gün · odun {rep.FirewoodDays:0} gün"
                 : $"Kışa {rep.DaysToWinter:0} gün · yiyecek {rep.FoodDays:0} gün · odun {rep.FirewoodDays:0} gün yeter";
 
-            var rect = new Rect(w * 0.5f - 250f, 4f, 500f, 62f);
+            var farm = _farm != null ? _farm() : default;
+            string line4 = farm.Any
+                ? $"Tarla: {farm.Crops} ekin · {farm.Thirsty} susamış · {farm.Ripe} hasada hazır" + (farm.FruitReady > 0 ? $" · meyve hazır: {farm.FruitReady}" : "")
+                : "";
+            var rect = new Rect(w * 0.5f - 250f, 4f, 500f, line4.Length > 0 ? 78f : 62f);
             _rects.Add(rect);
             GUILayout.BeginArea(rect, GUI.skin.box);
             GUILayout.Label(line1, _small);
@@ -115,6 +122,7 @@ namespace Thatchwick.Game
             GUI.color = rep.HasDanger ? new Color(1f, 0.55f, 0.5f) : (rep.Warnings.Count > 0 ? new Color(1f, 0.85f, 0.5f) : prev);
             GUILayout.Label(line3, _small);
             GUI.color = prev;
+            if (line4.Length > 0) GUILayout.Label(line4, _small);
             GUILayout.EndArea();
         }
 

@@ -24,10 +24,11 @@ namespace Thatchwick.Game
         private readonly WorldInput _input;
         private readonly Transform _overlay;
 
-        private enum Tool { Items, Wall, Door, Window, EraseEdge, Room, FloorWood, FloorStone, FloorDirt, FloorErase, Plot, ZoneStorage, ZoneErase }
+        private enum Tool { Items, Wall, Door, Window, EraseEdge, Room, FloorWood, FloorStone, FloorDirt, FloorErase, Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove }
         private Tool _tool = Tool.Items;
         private GridPos? _roomCorner;
         private Tool? _pendingTool;
+        private int? _pendingLevel;
         private bool _showRooms;
         private WallView _walls;
         private int _tab;                    // 0 envanter, 1 satın al
@@ -100,7 +101,7 @@ namespace Thatchwick.Game
 
         private void Focus(ItemInstance item)
         {
-            var c = Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f);
+            var c = Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, item.Position.Z);
             _input.FocusOn(new Vector2(c.x, c.y + 0.3f), FocusZoom);
             _focused = true;
         }
@@ -111,20 +112,21 @@ namespace Thatchwick.Game
         // (üst yüz) noktayı, sonra tabanı dener.
         private ItemInstance PickItem(Vector3 world)
         {
-            var wall = PickWallItem(_world, world);
+            var wall = PickWallItem(_world, world, _view);
             if (wall != null) return wall;
             var raised = _view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f));
             return _world.GetItemAt(raised) ?? _world.GetItemAt(_view.WorldToTile(world));
         }
 
         /// <summary>Dokunulan noktaya yakın (çizildiği yerde) duvar eşyası; yoksa null.</summary>
-        public static ItemInstance PickWallItem(WorldState world, Vector3 point)
+        public static ItemInstance PickWallItem(WorldState world, Vector3 point, WorldView view = null)
         {
             ItemInstance best = null;
             float bestD = 0.45f;
             foreach (var it in world.Items)
             {
                 if (!it.IsWallMounted) continue;
+                if (view != null && !view.IsLevelVisible(it.Position.Z)) continue;
                 float d = Vector2.Distance(Iso.WallMount(it.Position, it.Rotation), point);
                 if (d < bestD) { bestD = d; best = it; }
             }
@@ -137,8 +139,9 @@ namespace Thatchwick.Game
         /// </summary>
         private bool NearestWallSide(Vector3 world, out GridPos tile, out int side)
         {
-            var g = Iso.WorldToGrid(new Vector2(world.x, world.y - Iso.WallMountHeight));
-            tile = new GridPos(Mathf.FloorToInt(g.x), Mathf.FloorToInt(g.y));
+            int z = _view.ViewLevel;
+            var g = Iso.WorldToGrid(new Vector2(world.x, world.y - Iso.WallMountHeight), z);
+            tile = new GridPos(Mathf.FloorToInt(g.x), Mathf.FloorToInt(g.y), z);
             float fx = g.x - tile.X, fy = g.y - tile.Y;
             float[] dist = { fy, 1f - fx, 1f - fy, fx };   // kenar 0 (-y), 1 (+x), 2 (+y), 3 (-x)
             side = -1;
@@ -223,15 +226,16 @@ namespace Thatchwick.Game
         // Dokunulan noktaya en yakın karo kenarı (karonun dört kenarından).
         private Edge NearestEdge(Vector3 world)
         {
-            var g = Iso.WorldToGrid(new Vector2(world.x, world.y));
+            int z = _view.ViewLevel;
+            var g = Iso.WorldToGrid(new Vector2(world.x, world.y), z);
             int x = Mathf.FloorToInt(g.x), y = Mathf.FloorToInt(g.y);
             float fx = g.x - x, fy = g.y - y;
             float dW = fx, dE = 1f - fx, dN = fy, dS = 1f - fy;
             float m = Mathf.Min(Mathf.Min(dW, dE), Mathf.Min(dN, dS));
-            if (m == dW) return new Edge(x, y, EdgeAxis.Vertical);
-            if (m == dE) return new Edge(x + 1, y, EdgeAxis.Vertical);
-            if (m == dN) return new Edge(x, y, EdgeAxis.Horizontal);
-            return new Edge(x, y + 1, EdgeAxis.Horizontal);
+            if (m == dW) return new Edge(x, y, EdgeAxis.Vertical, z);
+            if (m == dE) return new Edge(x + 1, y, EdgeAxis.Vertical, z);
+            if (m == dN) return new Edge(x, y, EdgeAxis.Horizontal, z);
+            return new Edge(x, y + 1, EdgeAxis.Horizontal, z);
         }
 
         private void OnToolTap(Vector3 world, GridPos tile)
@@ -248,6 +252,8 @@ namespace Thatchwick.Game
                 case Tool.FloorDirt: r = _svc.PaintFloor(tile, FloorType.Dirt); break;
                 case Tool.FloorErase: r = _svc.PaintFloor(tile, FloorType.Grass); break;
                 case Tool.Plot: r = _svc.BuyChunk(tile); break;
+                case Tool.LevelBuild: r = _svc.BuildLevelTile(tile); break;
+                case Tool.LevelRemove: r = _svc.RemoveLevelTile(tile); break;
                 case Tool.ZoneStorage: r = _svc.SetZone(tile, ZoneType.Storage); break;
                 case Tool.ZoneErase: r = _svc.SetZone(tile, ZoneType.None); break;
                 case Tool.Room: BuildRoomTap(tile); return;
@@ -268,22 +274,30 @@ namespace Thatchwick.Game
             }
             var a = _roomCorner.Value;
             _roomCorner = null;
+            int z = tile.Z;
             int x0 = Mathf.Min(a.X, tile.X), x1 = Mathf.Max(a.X, tile.X);
             int y0 = Mathf.Min(a.Y, tile.Y), y1 = Mathf.Max(a.Y, tile.Y);
             string fail = null; int built = 0;
             for (int x = x0; x <= x1 && fail == null; x++)
                 for (int y = y0; y <= y1 && fail == null; y++)
                 {
-                    var r = _svc.PaintFloor(new GridPos(x, y), FloorType.Wood);
+                    var p = new GridPos(x, y, z);
+                    // Üst katta ve bodrumda önce döşeme/kazı gerekir (zemin katta tile her zaman vardır).
+                    if (z != 0 && !_world.Map.HasTile(p))
+                    {
+                        var lr = _svc.BuildLevelTile(p);
+                        if (!lr.Ok) { fail = lr.Reason; break; }
+                    }
+                    var r = _svc.PaintFloor(p, z < 0 ? FloorType.Dirt : FloorType.Wood);
                     if (!r.Ok && r.Reason != "Orası zaten öyle.") fail = r.Reason;
                 }
             for (int x = x0; x <= x1 && fail == null; x++)
             {
-                fail = TryWall(new Edge(x, y0, EdgeAxis.Horizontal), ref built) ?? TryWall(new Edge(x, y1 + 1, EdgeAxis.Horizontal), ref built);
+                fail = TryWall(new Edge(x, y0, EdgeAxis.Horizontal, z), ref built) ?? TryWall(new Edge(x, y1 + 1, EdgeAxis.Horizontal, z), ref built);
             }
             for (int y = y0; y <= y1 && fail == null; y++)
             {
-                fail = TryWall(new Edge(x0, y, EdgeAxis.Vertical), ref built) ?? TryWall(new Edge(x1 + 1, y, EdgeAxis.Vertical), ref built);
+                fail = TryWall(new Edge(x0, y, EdgeAxis.Vertical, z), ref built) ?? TryWall(new Edge(x1 + 1, y, EdgeAxis.Vertical, z), ref built);
             }
             _status = fail != null ? $"Oda yarım kaldı: {fail}" : $"Oda kuruldu ({built} duvar). Kapı için Kapı aracını duvara kullan.";
             RefreshOverlay();
@@ -337,8 +351,8 @@ namespace Thatchwick.Game
         private Vector3 SlotWorld(ItemInstance surface, string slotId)
         {
             surface.TryGetSlotPosition(slotId, out float gx, out float gy);
-            if (surface.IsWallMounted) return Iso.GridToWorld(gx, gy) + new Vector3(0f, Iso.WallMountHeight + 0.1f, 0f); // duvar rafı
-            return Iso.GridToWorld(gx, gy) + new Vector3(0f, 24f / 32f, 0f); // masa üstü yüksekliği
+            if (surface.IsWallMounted) return Iso.GridToWorld(gx, gy, surface.Position.Z) + new Vector3(0f, Iso.WallMountHeight + 0.1f, 0f); // duvar rafı
+            return Iso.GridToWorld(gx, gy, surface.Position.Z) + new Vector3(0f, 24f / 32f, 0f); // masa üstü yüksekliği
         }
 
         // ---------- görsel ----------
@@ -355,6 +369,7 @@ namespace Thatchwick.Game
             {
                 foreach (var room in _world.Map.Rooms.IndoorRooms)
                 {
+                    if (room.Level != _view.ViewLevel) continue;
                     var c = Color.HSVToRGB((room.Id * 0.17f) % 1f, 0.6f, 1f);
                     c.a = 0.3f;
                     foreach (var t in room.Tiles) Diamond(t, c, -8000, 1f);
@@ -378,12 +393,18 @@ namespace Thatchwick.Game
             else if (_moving && sel != null && !sel.IsWallMounted) { ghostDef = sel.Def; ignore = sel.Id; }
             if (ghostDef != null)
             {
-                var check = _world.CanPlaceFloor(ghostDef, _ghostPos, _rot, ignore);
+                var check = ignore.HasValue ? _world.CanPlaceFloor(ghostDef, _ghostPos, _rot, ignore) : _svc.CanPlaceFromInventory(ghostDef.Id, _ghostPos, _rot);
                 var col = check.Ok ? new Color(0.3f, 1f, 0.4f, 0.6f) : new Color(1f, 0.3f, 0.3f, 0.6f);
                 var (w, h) = Footprint.Dimensions(ghostDef.Width, ghostDef.Height, _rot);
                 for (int dy = 0; dy < h; dy++)
                     for (int dx = 0; dx < w; dx++)
-                        Diamond(new GridPos(_ghostPos.X + dx, _ghostPos.Y + dy), col, 6000, 1f);
+                        Diamond(new GridPos(_ghostPos.X + dx, _ghostPos.Y + dy, _ghostPos.Z), col, 6000, 1f);
+                if (ghostDef.IsStairs)
+                {
+                    // Merdivenin öbür ucu (diğer katta) küçük bir işaretle gösterilir.
+                    WorldState.StairsEnds(ghostDef, _ghostPos, _rot, out _, out var landing);
+                    DiamondAt(_view.TileToWorld(landing), new Color(0.4f, 0.8f, 1f, 0.8f), 6001, 0.5f);
+                }
             }
 
             // Yuva işaretleri
@@ -415,7 +436,7 @@ namespace Thatchwick.Game
             sr.sprite = SpriteMaterials.Diamond;
             sr.sharedMaterial = SpriteMaterials.Unlit;
             sr.color = color;
-            sr.sortingOrder = order;
+            sr.sortingOrder = order + _view.ViewLevel * Iso.LevelSortStep;   // işaretler görünen katın bandında çizilir
             _overlayObjects.Add(go);
         }
 
@@ -430,6 +451,20 @@ namespace Thatchwick.Game
                 var d = _deferred;
                 _deferred = null;
                 d();
+            }
+            if (_pendingLevel.HasValue && Event.current.type == EventType.Layout)
+            {
+                int lv = _pendingLevel.Value;
+                _pendingLevel = null;
+                _view.ViewLevel = lv;
+                _ghostPos = new GridPos(_ghostPos.X, _ghostPos.Y, lv);
+                _roomCorner = null;
+                if (_focused) { _input.RestoreView(); _focused = false; }
+                _selectedId = 0; _surfaceId = 0; _moving = false;
+                RefreshOverlay();
+                _status = lv > 0 ? "Üst kat: boş düzleme Kat aracıyla döşeme yap (altı duvarlı oda olmalı)."
+                    : lv < 0 ? "Bodrum: merdivenle başla, sonra Kat aracıyla yanını kaz."
+                    : "Zemin kat.";
             }
             if (_pendingTool.HasValue && Event.current.type == EventType.Layout)
             {
@@ -466,6 +501,10 @@ namespace Thatchwick.Game
         private void DrawTools()
         {
             GUILayout.BeginHorizontal();
+            GUILayout.Label("Kat:", GUILayout.Width(44f));
+            LevelButton("Bodrum", -1); LevelButton("Zemin", 0); LevelButton("Üst kat", 1);
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
             if (_walls != null)
             {
                 GUILayout.Label("Duvar:", GUILayout.Width(44f));
@@ -489,13 +528,24 @@ namespace Thatchwick.Game
             ToolButton("Depo", Tool.ZoneStorage); ToolButton("Depo sil", Tool.ZoneErase);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
+            ToolButton(_view.ViewLevel < 0 ? "Kaz" : "Döşeme", Tool.LevelBuild); ToolButton(_view.ViewLevel < 0 ? "Doldur" : "Döşeme sök", Tool.LevelRemove);
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
             ToolButton("Tahta", Tool.FloorWood); ToolButton("Taş", Tool.FloorStone); ToolButton("Toprak", Tool.FloorDirt); ToolButton("Çim", Tool.FloorErase);
             GUILayout.EndHorizontal();
             if (_tool != Tool.Items)
                 GUILayout.Label(_tool == Tool.Room ? "İki köşe karosuna dokun."
                     : _tool == Tool.Plot ? $"Bitişik 4x4 parçaya dokun: {BuildService.ChunkPrice} akçe."
+                    : _tool == Tool.LevelBuild ? (_view.ViewLevel > 0 ? $"Üst kat döşemesi: karo başına {BuildService.SlabPrice} akçe; altında duvarlı oda ya da duvar gerekir." : _view.ViewLevel < 0 ? $"Bodrum kazısı: karo başına {BuildService.DigPrice} akçe; mevcut bodrumun yanını kaz (ilk karo merdivenle açılır)." : "Zemin kat zaten var; Kat: Üst kat ya da Bodrum seç.")
+                    : _tool == Tool.LevelRemove ? "Döşemeyi sök / bodrum karosunu doldur: üstünde eşya, çevresinde duvar ya da merdiven olmamalı. Yarısı iade."
                     : _tool == Tool.ZoneStorage || _tool == Tool.ZoneErase ? $"Depo bölgesi: karo başına +{StorageService.UnitsPerZoneTile} kaynak kapasitesi (ücretsiz). Sandık +40."
                     : "Haritaya dokun. Fiyatlar: duvar 3, kapı 8, pencere 6, zemin 1-3. Kaldırınca yarısı iade.");
+        }
+
+        private void LevelButton(string label, int level)
+        {
+            // Kat değişimi de bir sonraki Layout olayında uygulanır (çizim ve işaretler yeniden kurulur).
+            if (GUILayout.Toggle(_view.ViewLevel == level, label, GUI.skin.button) && _view.ViewLevel != level) _pendingLevel = level;
         }
 
         private void ToolButton(string label, Tool tool)
@@ -634,7 +684,7 @@ namespace Thatchwick.Game
         {
             ClearSelection();
             _placeId = itemId;
-            _ghostPos = new GridPos(24, 12);
+            _ghostPos = new GridPos(24, 12, _view.ViewLevel);
             var def = _content.Items.Get(itemId);
             _status = def.Placement == ItemPlacement.Surface ? "Bir masa ya da rafa dokun."
                 : def.Placement == ItemPlacement.Wall ? "Bir duvarın iç yüzüne dokun." : "Haritaya dokun.";

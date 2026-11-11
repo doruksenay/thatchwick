@@ -62,6 +62,21 @@ namespace Thatchwick.Core.Content
         public bool DiesInWinter { get; set; }
         /// <summary>Ekinin büyüyebildiği mevsimler; boşsa kış dışı hepsi.</summary>
         public List<Time.Season> GrowSeasons { get; set; } = new List<Time.Season>();
+        /// <summary>Ekin (tarla bitkisi): toprağa ekilen, sulanması ve verimli toprağı gereken bitki. Ağaçlar ekin değildir.</summary>
+        public bool IsCrop => IsPlant && NeedsTilledSoil;
+        /// <summary>Meyve ağacı: bu mevsimlerde meyve verir (olgun ağaç kesilmeden tekrar tekrar toplanır). Boş = meyvesiz.</summary>
+        public List<Time.Season> FruitSeasons { get; set; } = new List<Time.Season>();
+        /// <summary>Meyvenin olgunlaşması için gereken gün (her toplamadan sonra yeniden başlar).</summary>
+        public float FruitRipenDays { get; set; }
+        public bool IsFruitTree => FruitSeasons.Count > 0 && FruitRipenDays > 0f;
+        /// <summary>Baklagil: hasatta toprağı zenginleştirir (azot bağlar).</summary>
+        public bool FixesNitrogen { get; set; }
+        /// <summary>Sulama hendeği, kova ve oluk: her sabah bu yarıçaptaki (Chebyshev) ekinleri sular. 0 = sulamaz.</summary>
+        public int WaterRadius { get; set; }
+        /// <summary>Arı kovanı: yaşayan koloni varken bu yarıçaptaki ekinler ve meyve ağaçları daha çabuk olgunlaşır. 0 = tozlaştırmaz.</summary>
+        public int PollinateRadius { get; set; }
+        /// <summary>Korkuluk: bu yarıçaptaki ekinleri kuzgunlardan korur. 0 = korumaz.</summary>
+        public int ProtectRadius { get; set; }
         /// <summary>Oda konforuna katkısı (dekor ve mobilya). Adım 32.</summary>
         public int Comfort { get; set; }
         /// <summary>Taze yiyecek bozulma süresi (oyun günü); 0 = çürümez.</summary>

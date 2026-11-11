@@ -30,6 +30,9 @@ namespace Thatchwick.Core.Work
         /// <summary>Hayvan sistemi (barınakta hayvan var mı); null ise hayvan gerektiren işler başlamaz.</summary>
         public AnimalSystem Animals { get; set; }
 
+        /// <summary>Çiftçilik sistemi (toprak verimi, kalite); null ise hasat kalitesiz ve toprak yorulmaz.</summary>
+        public PlantSystem Plants { get; set; }
+
         public InteractionEffects(WorldState world, Household house, ContentDatabase content, int seed = 1)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -56,6 +59,21 @@ namespace Thatchwick.Core.Work
             }
             if (interaction.RequiresAnimal && (Animals == null || Animals.Residents(item.Id) == 0)) return "Burada hayvan yok.";
             if (interaction.Collect && item.StockTotal == 0) return "Toplanacak ürün yok.";
+            if (interaction.Water)
+            {
+                if (!item.IsPlant || !item.Def.IsCrop) return "Bu sulanacak bir ekin değil.";
+                if (item.IsGrown) return "Ekin olgun, sulamaya gerek yok.";
+                if (item.Watered) return "Zaten sulu.";
+            }
+            if (interaction.Fertilize > 0f)
+            {
+                if (!item.IsPlant || !item.Def.IsCrop) return "Gübre ekinin toprağına atılır.";
+                if (Plants != null && Plants.FertilityAt(item.Position) >= 0.99f) return "Toprak zaten çok verimli.";
+            }
+            if (interaction.PetsAnimals && Animals != null && Animals.Residents(item.Id) > 0 && Animals.PettableResidents(item.Id) == 0)
+                return "Hayvanlar bugün zaten sevildi.";
+            if (interaction.RequiresFruit && !item.FruitReady)
+                return item.IsGrown ? "Meyve henüz olgunlaşmadı." : $"{item.Def.DisplayName} henüz büyümedi.";
             return null;
         }
 
@@ -69,6 +87,19 @@ namespace Thatchwick.Core.Work
 
             if (interaction.AddFeed > 0) AnimalSystem.AddFeed(item, interaction.AddFeed);
 
+            var farmNotes = new List<string>();
+            if (interaction.PetsAnimals && Animals != null)
+            {
+                int petted = Animals.PetResidents(item.Id);
+                if (petted > 0) farmNotes.Add($"{petted} hayvan sevildi");
+            }
+            if (interaction.Water) { PlantSystem.Water(item); farmNotes.Add("sulandı"); }
+            if (interaction.Fertilize > 0f && Plants != null)
+            {
+                Plants.Fertilize(item.Position, interaction.Fertilize);
+                farmNotes.Add($"toprak verimi %{Plants.FertilityAt(item.Position) * 100f:0}");
+            }
+
             // Beceri seviyesi (+ özellik/dal kalite bonusu) ürün satırlarını seçer: aynı yemeğin sıradan ve iyi hali.
             int level = interaction.Skill.HasValue ? character.Skills.GetLevel(interaction.Skill.Value) + character.Modifiers.QualityLevels : 0;
 
@@ -78,6 +109,10 @@ namespace Thatchwick.Core.Work
             var order = new List<string>();
             var totals = new Dictionary<string, int>();
             bool firstRow = true;
+            // Ekin hasadında kalite: sulama düzeni, toprak verimi ve çiftçilik seviyesi ürün miktarını artırır (tohum hariç).
+            bool cropHarvest = interaction.RequiresGrown && item.IsPlant && item.Def.IsCrop;
+            int tier = cropHarvest && Plants != null ? Plants.QualityOf(item, level) : 0;
+            float yieldMult = PlantSystem.QualityYield(tier);
             foreach (var p in interaction.Produce)
             {
                 if (p.MinLevel > 0 && level < p.MinLevel) continue;
@@ -88,6 +123,12 @@ namespace Thatchwick.Core.Work
                 if (firstRow && character.Modifiers.YieldChance > 0f && (interaction.RequiresGrown || interaction.RemovesItem)
                     && _rng.NextDouble() < character.Modifiers.YieldChance) count += 1;
                 firstRow = false;
+                if (yieldMult > 1f && _content.Items.TryGet(p.ItemId, out var rowDef) && rowDef.PlantsAs == null)
+                {
+                    double scaled = count * yieldMult;
+                    count = (int)Math.Floor(scaled);
+                    if (_rng.NextDouble() < scaled - count) count++;
+                }
                 int added = Storage != null ? Storage.AddUpTo(p.ItemId, count) : AddAll(p.ItemId, count);
                 lost += count - added;
                 if (added <= 0) continue;
@@ -112,6 +153,11 @@ namespace Thatchwick.Core.Work
             if (interaction.AddFeed > 0) parts.Add($"yem +{interaction.AddFeed} (stok {item.FeedStock:0.#})");
             if (parts0 != null) parts.Add(parts0);
             if (lost > 0) parts.Add($"depo dolu, {lost} adet kayboldu");
+
+            if (interaction.TakesFruit) { item.FruitReady = false; item.FruitDays = 0; }
+            if (cropHarvest && interaction.RemovesItem) Plants?.OnHarvest(item);
+            if (tier > 0) parts.Add($"kalite: {PlantSystem.QualityName(tier)}");
+            parts.AddRange(farmNotes);
 
             if (interaction.RemovesItem && _world.GetItem(item.Id) != null)
                 _world.RemoveItem(item.Id);

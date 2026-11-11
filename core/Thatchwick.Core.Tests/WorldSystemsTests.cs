@@ -115,7 +115,7 @@ namespace Thatchwick.Core.Tests
 
             var db = Real();
             var w2 = new WorldState(new GridMap(10, 10));
-            var plants = new PlantSystem(w2);
+            var plants = FarmTestKit.Legacy(w2);
             var crop = w2.PlaceItem(db.Items.Get("item.crop_turnip"), new GridPos(3, 3));
             var crop2 = w2.PlaceItem(db.Items.Get("item.crop_turnip"), new GridPos(5, 5));
             plants.GrowthMultiplier = () => WeatherSystem.GrowthMultiplier(WeatherType.Rain);
@@ -131,7 +131,7 @@ namespace Thatchwick.Core.Tests
         {
             var db = Real();
             var world = new WorldState(new GridMap(10, 10));
-            var plants = new PlantSystem(world);
+            var plants = FarmTestKit.Legacy(world);
             var pea = world.PlaceItem(db.Items.Get("item.crop_pea"), new GridPos(2, 2));          // yalnız ilkbahar
             var leek = world.PlaceItem(db.Items.Get("item.crop_leek"), new GridPos(4, 2));        // yaz ve sonbahar
             plants.Tick(1.0, Season.Summer);

@@ -11,6 +11,8 @@ namespace Thatchwick.Core.World
         public bool IsIndoor { get; internal set; }
         /// <summary>Bu bölgenin sınırındaki kapı sayısı.</summary>
         public int DoorCount { get; internal set; }
+        /// <summary>Bu bölgenin sınırındaki pencere sayısı (sera için ışık).</summary>
+        public int WindowCount { get; internal set; }
         public int Area => Tiles.Count;
         /// <summary>Odanın katı (0 zemin, 1 üst kat, -1 bodrum).</summary>
         public int Level { get; internal set; }
@@ -75,6 +77,7 @@ namespace Thatchwick.Core.World
                         byTile[Slot(map, start)] = room;
                         queue.Enqueue(start);
                         var doorEdges = new HashSet<Edge>();
+                        var windowEdges = new HashSet<Edge>();
 
                         while (queue.Count > 0)
                         {
@@ -94,6 +97,7 @@ namespace Thatchwick.Core.World
                                     continue;
                                 }
                                 if (kind == EdgeKind.Door) { doorEdges.Add(edge); continue; }
+                                if (kind == EdgeKind.Window) { windowEdges.Add(edge); continue; }
                                 if (kind != EdgeKind.None) continue;
                                 int ni = Slot(map, next);
                                 if (byTile[ni] != null) continue;
@@ -102,6 +106,7 @@ namespace Thatchwick.Core.World
                             }
                         }
                         room.DoorCount = doorEdges.Count;
+                        room.WindowCount = windowEdges.Count;
                     }
                 }
             }

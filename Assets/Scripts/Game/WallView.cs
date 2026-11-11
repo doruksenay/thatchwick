@@ -14,6 +14,7 @@ namespace Thatchwick.Game
     public sealed class WallView : MonoBehaviour
     {
         private GridMap _map;
+        private WorldView _view;
         private WallMode _mode = WallMode.Cutaway;
         private readonly List<GameObject> _objects = new List<GameObject>();
 
@@ -23,16 +24,19 @@ namespace Thatchwick.Game
             set { _mode = value; Rebuild(); }
         }
 
-        public void Init(GridMap map)
+        public void Init(GridMap map, WorldView view = null)
         {
             _map = map;
+            _view = view;
             map.Changed += Rebuild;
+            if (view != null) view.LevelChanged += Rebuild;
             Rebuild();
         }
 
         private void OnDestroy()
         {
             if (_map != null) _map.Changed -= Rebuild;
+            if (_view != null) _view.LevelChanged -= Rebuild;
         }
 
         public void Rebuild()
@@ -44,10 +48,11 @@ namespace Thatchwick.Game
             foreach (var kv in _map.Edges)
             {
                 var e = kv.Key;
+                if (_view != null && !_view.IsLevelVisible(e.Z)) continue;
                 bool low = _mode == WallMode.Down || (_mode == WallMode.Cutaway && IsFrontWall(e));
                 var go = new GameObject($"Wall {e}");
                 go.transform.SetParent(transform, false);
-                var start = Iso.GridToWorld(e.X, e.Y);
+                var start = Iso.GridToWorld(e.X, e.Y, e.Z);
                 go.transform.position = start;
                 var sr = go.AddComponent<SpriteRenderer>();
                 // Gerçek duvar görseli varsa o; alçak (kesit) duvar için görsel gelene kadar yarı saydam tam duvar.
@@ -65,8 +70,8 @@ namespace Thatchwick.Game
                 }
                 sr.sharedMaterial = SpriteMaterials.Unlit;
                 // Kenar orta noktasının derinliği; karakterin (karo merkezi) arkasında kalması için küçük sapma.
-                var mid = Iso.GridToWorld(e.X + (e.Axis == EdgeAxis.Horizontal ? 0.5f : 0f), e.Y + (e.Axis == EdgeAxis.Vertical ? 0.5f : 0f));
-                sr.sortingOrder = Iso.SortOrder(mid.y, 0);
+                var mid = Iso.GridToWorld(e.X + (e.Axis == EdgeAxis.Horizontal ? 0.5f : 0f), e.Y + (e.Axis == EdgeAxis.Vertical ? 0.5f : 0f), e.Z);
+                sr.sortingOrder = Iso.SortOrder(mid.y, 0, e.Z);
                 _objects.Add(go);
             }
         }

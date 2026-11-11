@@ -269,6 +269,33 @@
           "level": 9
         }
       ]
+    },
+    {
+      "id": "can",
+      "displayName": "Sulama kabı",
+      "tiers": [
+        {
+          "name": "Bakır sulama kabı",
+          "akce": 45,
+          "firewood": 3,
+          "speed": 1.2,
+          "level": 3
+        },
+        {
+          "name": "Demir sulama kabı",
+          "akce": 120,
+          "firewood": 6,
+          "speed": 1.45,
+          "level": 6
+        },
+        {
+          "name": "Usta sulama kabı",
+          "akce": 260,
+          "firewood": 10,
+          "speed": 1.7,
+          "level": 9
+        }
+      ]
     }
   ],
   "branches": [

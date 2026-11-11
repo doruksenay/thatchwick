@@ -372,6 +372,110 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "eat_parsnip",
+          "displayName": "Yaban havucu ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.12,
+          "consume": "item.parsnip"
+        },
+        {
+          "id": "eat_carrot",
+          "displayName": "Havuç ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.12,
+          "consume": "item.carrot"
+        },
+        {
+          "id": "eat_onion",
+          "displayName": "Soğan ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.12,
+          "consume": "item.onion"
+        },
+        {
+          "id": "eat_garlic",
+          "displayName": "Sarımsak ye",
+          "need": "Hunger",
+          "restore": 20,
+          "durationDays": 0.12,
+          "consume": "item.garlic"
+        },
+        {
+          "id": "eat_beet",
+          "displayName": "Pancar ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.12,
+          "consume": "item.beet"
+        },
+        {
+          "id": "eat_radish",
+          "displayName": "Turp ye",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.12,
+          "consume": "item.radish"
+        },
+        {
+          "id": "eat_lettuce",
+          "displayName": "Marul ye",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.12,
+          "consume": "item.lettuce"
+        },
+        {
+          "id": "eat_broad_bean",
+          "displayName": "Bakla ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.12,
+          "consume": "item.broad_bean"
+        },
+        {
+          "id": "eat_spinach",
+          "displayName": "Ispanak ye",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.12,
+          "consume": "item.spinach"
+        },
+        {
+          "id": "eat_apple",
+          "displayName": "Elma ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.12,
+          "consume": "item.apple"
+        },
+        {
+          "id": "eat_pear",
+          "displayName": "Armut ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.12,
+          "consume": "item.pear"
+        },
+        {
+          "id": "eat_cherry",
+          "displayName": "Kiraz ye",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.12,
+          "consume": "item.cherry"
+        },
+        {
+          "id": "eat_plum",
+          "displayName": "Erik ye",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.12,
+          "consume": "item.plum"
         }
       ],
       "price": 25,
@@ -702,6 +806,29 @@
           ],
           "moodlet": "good_harvest",
           "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
         }
       ]
     },
@@ -1747,7 +1874,8 @@
       "rooms": [
         "outdoor"
       ],
-      "interactions": []
+      "interactions": [],
+      "protectRadius": 4
     },
     {
       "id": "item.garden_bench",
@@ -1812,6 +1940,16 @@
           "skill": "Farming",
           "skillXp": 4,
           "moodlet": "good_harvest"
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Tavukları sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "Farming",
+          "skillXp": 3,
+          "moodlet": "pet_love"
         }
       ]
     },
@@ -1850,6 +1988,16 @@
           "skill": "Farming",
           "skillXp": 8,
           "moodlet": "good_harvest"
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Hayvanları sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "Farming",
+          "skillXp": 3,
+          "moodlet": "pet_love"
         }
       ]
     },
@@ -1947,7 +2095,8 @@
           "skillXp": 10,
           "moodlet": "good_harvest"
         }
-      ]
+      ],
+      "pollinate": 6
     },
     {
       "id": "item.toy_horse",
@@ -2251,6 +2400,29 @@
             }
           ],
           "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
         }
       ]
     },
@@ -2309,6 +2481,29 @@
             }
           ],
           "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
         }
       ]
     },
@@ -2366,8 +2561,32 @@
             }
           ],
           "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
         }
-      ]
+      ],
+      "nitrogen": true
     },
     {
       "id": "item.seed_pumpkin",
@@ -2424,6 +2643,29 @@
             }
           ],
           "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
         }
       ]
     },
@@ -2637,6 +2879,9 @@
             }
           ]
         }
+      ],
+      "tags": [
+        "rain_loving"
       ]
     },
     {
@@ -2889,6 +3134,1703 @@
       "variants": [
         "item.stairs_down"
       ]
+    },
+    {
+      "id": "item.compost",
+      "displayName": "Kompost",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.compost_heap",
+      "displayName": "Kompost yığını",
+      "category": "garden",
+      "price": 12,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "make_compost",
+          "displayName": "Kompost yap (3 ot)",
+          "durationDays": 0.08,
+          "skill": "Farming",
+          "skillXp": 5,
+          "materials": [
+            {
+              "item": "item.herb",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.compost",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.parsnip",
+      "displayName": "Yaban havucu",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 25
+    },
+    {
+      "id": "item.seed_parsnip",
+      "displayName": "Yaban havucu tohumu",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "level": 2,
+      "plantsAs": "item.crop_parsnip"
+    },
+    {
+      "id": "item.crop_parsnip",
+      "displayName": "Yaban havucu ekini",
+      "category": "plant",
+      "growDays": 7,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.parsnip",
+              "count": 3
+            },
+            {
+              "item": "item.seed_parsnip",
+              "count": 1
+            },
+            {
+              "item": "item.seed_parsnip",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Autumn"
+      ]
+    },
+    {
+      "id": "item.carrot",
+      "displayName": "Havuç",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 20
+    },
+    {
+      "id": "item.seed_carrot",
+      "displayName": "Havuç tohumu",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "level": 2,
+      "plantsAs": "item.crop_carrot"
+    },
+    {
+      "id": "item.crop_carrot",
+      "displayName": "Havuç ekini",
+      "category": "plant",
+      "growDays": 6,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.carrot",
+              "count": 3
+            },
+            {
+              "item": "item.seed_carrot",
+              "count": 1
+            },
+            {
+              "item": "item.seed_carrot",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.onion",
+      "displayName": "Soğan",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 40
+    },
+    {
+      "id": "item.seed_onion",
+      "displayName": "Soğan tohumu",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "level": 3,
+      "plantsAs": "item.crop_onion"
+    },
+    {
+      "id": "item.crop_onion",
+      "displayName": "Soğan ekini",
+      "category": "plant",
+      "growDays": 8,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.onion",
+              "count": 3
+            },
+            {
+              "item": "item.seed_onion",
+              "count": 1
+            },
+            {
+              "item": "item.seed_onion",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ]
+    },
+    {
+      "id": "item.garlic",
+      "displayName": "Sarımsak",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 60
+    },
+    {
+      "id": "item.seed_garlic",
+      "displayName": "Sarımsak tohumu",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "level": 5,
+      "plantsAs": "item.crop_garlic"
+    },
+    {
+      "id": "item.crop_garlic",
+      "displayName": "Sarımsak ekini",
+      "category": "plant",
+      "growDays": 9,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.garlic",
+              "count": 2
+            },
+            {
+              "item": "item.seed_garlic",
+              "count": 1
+            },
+            {
+              "item": "item.seed_garlic",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Autumn",
+        "Spring"
+      ]
+    },
+    {
+      "id": "item.beet",
+      "displayName": "Pancar",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 30
+    },
+    {
+      "id": "item.seed_beet",
+      "displayName": "Pancar tohumu",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "level": 4,
+      "plantsAs": "item.crop_beet"
+    },
+    {
+      "id": "item.crop_beet",
+      "displayName": "Pancar ekini",
+      "category": "plant",
+      "growDays": 7,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.beet",
+              "count": 3
+            },
+            {
+              "item": "item.seed_beet",
+              "count": 1
+            },
+            {
+              "item": "item.seed_beet",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Summer",
+        "Autumn"
+      ]
+    },
+    {
+      "id": "item.radish",
+      "displayName": "Turp",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 10
+    },
+    {
+      "id": "item.seed_radish",
+      "displayName": "Turp tohumu",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "level": 1,
+      "plantsAs": "item.crop_radish"
+    },
+    {
+      "id": "item.crop_radish",
+      "displayName": "Turp ekini",
+      "category": "plant",
+      "growDays": 3,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.radish",
+              "count": 2
+            },
+            {
+              "item": "item.seed_radish",
+              "count": 1
+            },
+            {
+              "item": "item.seed_radish",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer",
+        "Autumn"
+      ]
+    },
+    {
+      "id": "item.lettuce",
+      "displayName": "Marul",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.seed_lettuce",
+      "displayName": "Marul tohumu",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "level": 3,
+      "plantsAs": "item.crop_lettuce"
+    },
+    {
+      "id": "item.crop_lettuce",
+      "displayName": "Marul ekini",
+      "category": "plant",
+      "growDays": 4,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.lettuce",
+              "count": 2
+            },
+            {
+              "item": "item.seed_lettuce",
+              "count": 1
+            },
+            {
+              "item": "item.seed_lettuce",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Autumn"
+      ]
+    },
+    {
+      "id": "item.broad_bean",
+      "displayName": "Bakla",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 8
+    },
+    {
+      "id": "item.seed_broad_bean",
+      "displayName": "Bakla tohumu",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "level": 3,
+      "plantsAs": "item.crop_broad_bean"
+    },
+    {
+      "id": "item.crop_broad_bean",
+      "displayName": "Bakla ekini",
+      "category": "plant",
+      "growDays": 8,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.broad_bean",
+              "count": 4
+            },
+            {
+              "item": "item.seed_broad_bean",
+              "count": 1
+            },
+            {
+              "item": "item.seed_broad_bean",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "nitrogen": true
+    },
+    {
+      "id": "item.barley",
+      "displayName": "Arpa",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "tags": [
+        "grain"
+      ]
+    },
+    {
+      "id": "item.seed_barley",
+      "displayName": "Arpa tohumu",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "level": 4,
+      "plantsAs": "item.crop_barley"
+    },
+    {
+      "id": "item.crop_barley",
+      "displayName": "Arpa ekini",
+      "category": "plant",
+      "growDays": 12,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.barley",
+              "count": 5
+            },
+            {
+              "item": "item.seed_barley",
+              "count": 1
+            },
+            {
+              "item": "item.seed_barley",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ]
+    },
+    {
+      "id": "item.spinach",
+      "displayName": "Ispanak",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 5
+    },
+    {
+      "id": "item.seed_spinach",
+      "displayName": "Ispanak tohumu",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "level": 5,
+      "plantsAs": "item.crop_spinach"
+    },
+    {
+      "id": "item.crop_spinach",
+      "displayName": "Ispanak ekini",
+      "category": "plant",
+      "growDays": 5,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.spinach",
+              "count": 2
+            },
+            {
+              "item": "item.seed_spinach",
+              "count": 1
+            },
+            {
+              "item": "item.seed_spinach",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Autumn"
+      ]
+    },
+    {
+      "id": "item.apple",
+      "displayName": "Elma",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 25
+    },
+    {
+      "id": "item.sapling_apple",
+      "displayName": "Elma fidanı",
+      "placement": "Resource",
+      "price": 30,
+      "category": "resource",
+      "level": 3,
+      "plantsAs": "item.tree_apple"
+    },
+    {
+      "id": "item.tree_apple",
+      "displayName": "Elma ağacı",
+      "category": "plant",
+      "growDays": 20,
+      "fruitSeasons": [
+        "Autumn"
+      ],
+      "fruitDays": 3,
+      "interactions": [
+        {
+          "id": "pick",
+          "displayName": "Meyve topla",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 10,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.apple",
+              "count": 3
+            },
+            {
+              "item": "item.apple",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "chop",
+          "displayName": "Kes",
+          "durationDays": 0.15,
+          "skill": "Woodcutting",
+          "skillXp": 20,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.log",
+              "count": 2
+            },
+            {
+              "item": "item.sapling_apple",
+              "count": 1
+            }
+          ],
+          "tool": "axe"
+        }
+      ]
+    },
+    {
+      "id": "item.pear",
+      "displayName": "Armut",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 20
+    },
+    {
+      "id": "item.sapling_pear",
+      "displayName": "Armut fidanı",
+      "placement": "Resource",
+      "price": 35,
+      "category": "resource",
+      "level": 4,
+      "plantsAs": "item.tree_pear"
+    },
+    {
+      "id": "item.tree_pear",
+      "displayName": "Armut ağacı",
+      "category": "plant",
+      "growDays": 24,
+      "fruitSeasons": [
+        "Autumn"
+      ],
+      "fruitDays": 4,
+      "interactions": [
+        {
+          "id": "pick",
+          "displayName": "Meyve topla",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 10,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.pear",
+              "count": 3
+            },
+            {
+              "item": "item.pear",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "chop",
+          "displayName": "Kes",
+          "durationDays": 0.15,
+          "skill": "Woodcutting",
+          "skillXp": 20,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.log",
+              "count": 2
+            },
+            {
+              "item": "item.sapling_pear",
+              "count": 1
+            }
+          ],
+          "tool": "axe"
+        }
+      ]
+    },
+    {
+      "id": "item.cherry",
+      "displayName": "Kiraz",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 5
+    },
+    {
+      "id": "item.sapling_cherry",
+      "displayName": "Kiraz fidanı",
+      "placement": "Resource",
+      "price": 40,
+      "category": "resource",
+      "level": 5,
+      "plantsAs": "item.tree_cherry"
+    },
+    {
+      "id": "item.tree_cherry",
+      "displayName": "Kiraz ağacı",
+      "category": "plant",
+      "growDays": 18,
+      "fruitSeasons": [
+        "Summer"
+      ],
+      "fruitDays": 3,
+      "interactions": [
+        {
+          "id": "pick",
+          "displayName": "Meyve topla",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 10,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.cherry",
+              "count": 3
+            },
+            {
+              "item": "item.cherry",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "chop",
+          "displayName": "Kes",
+          "durationDays": 0.15,
+          "skill": "Woodcutting",
+          "skillXp": 20,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.log",
+              "count": 2
+            },
+            {
+              "item": "item.sapling_cherry",
+              "count": 1
+            }
+          ],
+          "tool": "axe"
+        }
+      ]
+    },
+    {
+      "id": "item.plum",
+      "displayName": "Erik",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 8
+    },
+    {
+      "id": "item.sapling_plum",
+      "displayName": "Erik fidanı",
+      "placement": "Resource",
+      "price": 28,
+      "category": "resource",
+      "level": 4,
+      "plantsAs": "item.tree_plum"
+    },
+    {
+      "id": "item.tree_plum",
+      "displayName": "Erik ağacı",
+      "category": "plant",
+      "growDays": 22,
+      "fruitSeasons": [
+        "Summer",
+        "Autumn"
+      ],
+      "fruitDays": 5,
+      "interactions": [
+        {
+          "id": "pick",
+          "displayName": "Meyve topla",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 10,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.plum",
+              "count": 3
+            },
+            {
+              "item": "item.plum",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "chop",
+          "displayName": "Kes",
+          "durationDays": 0.15,
+          "skill": "Woodcutting",
+          "skillXp": 20,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.log",
+              "count": 2
+            },
+            {
+              "item": "item.sapling_plum",
+              "count": 1
+            }
+          ],
+          "tool": "axe"
+        }
+      ]
+    },
+    {
+      "id": "item.seed_maker",
+      "displayName": "Tohum yapıcı",
+      "category": "work",
+      "price": 60,
+      "width": 2,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor",
+        "living"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.irrigation_ditch",
+      "displayName": "Sulama hendeği",
+      "category": "garden",
+      "price": 14,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "waterRadius": 1,
+      "interactions": []
+    },
+    {
+      "id": "item.bucket_pulley",
+      "displayName": "Kova ve makara",
+      "category": "garden",
+      "price": 48,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "waterRadius": 2,
+      "interactions": []
+    },
+    {
+      "id": "item.water_channel",
+      "displayName": "Su oluğu",
+      "category": "garden",
+      "price": 110,
+      "width": 2,
+      "level": 9,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "waterRadius": 3,
+      "interactions": []
+    },
+    {
+      "id": "item.wild_garlic",
+      "displayName": "Yabani sarımsak",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.forage_wild_garlic",
+      "displayName": "Yabani sarımsak",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring"
+      ],
+      "forageMax": 4,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.wild_garlic",
+              "count": 2
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "rain_loving"
+      ]
+    },
+    {
+      "id": "item.nettle",
+      "displayName": "Isırgan",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource"
+    },
+    {
+      "id": "item.forage_nettle",
+      "displayName": "Isırgan",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring"
+      ],
+      "forageMax": 3,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.nettle",
+              "count": 2
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "rain_loving"
+      ]
+    },
+    {
+      "id": "item.elderflower",
+      "displayName": "Mürver çiçeği",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "spoilDays": 4,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.forage_elderflower",
+      "displayName": "Mürver çiçeği",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "forageMax": 2,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.elderflower",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.wild_strawberry",
+      "displayName": "Yabani çilek",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.forage_strawberry",
+      "displayName": "Yabani çilek",
+      "category": "forage",
+      "forageSeasons": [
+        "Summer"
+      ],
+      "forageMax": 4,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.wild_strawberry",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.chestnut",
+      "displayName": "Kestane",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 40
+    },
+    {
+      "id": "item.forage_chestnut",
+      "displayName": "Kestane ağacı",
+      "category": "forage",
+      "forageSeasons": [
+        "Autumn"
+      ],
+      "forageMax": 4,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.chestnut",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.rosehip",
+      "displayName": "Kuşburnu",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 20
+    },
+    {
+      "id": "item.forage_rosehip",
+      "displayName": "Kuşburnu çalısı",
+      "category": "forage",
+      "forageSeasons": [
+        "Autumn"
+      ],
+      "forageMax": 3,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.rosehip",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.pinecone",
+      "displayName": "Çam kozalağı",
+      "placement": "Resource",
+      "price": 1,
+      "category": "resource",
+      "tags": [
+        "fuel"
+      ]
+    },
+    {
+      "id": "item.forage_pinecone",
+      "displayName": "Çam kozalakları",
+      "category": "forage",
+      "forageSeasons": [
+        "Winter"
+      ],
+      "forageMax": 4,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 4,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.pinecone",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.cress",
+      "displayName": "Su teresi",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.forage_cress",
+      "displayName": "Su teresi",
+      "category": "forage",
+      "forageSeasons": [
+        "Winter"
+      ],
+      "forageMax": 2,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.cress",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.resin",
+      "displayName": "Reçine",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource"
+    },
+    {
+      "id": "item.withy",
+      "displayName": "Söğüt sapı",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource"
+    },
+    {
+      "id": "item.sapling_birch",
+      "displayName": "Huş fidanı",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource",
+      "level": 2,
+      "plantsAs": "item.tree_birch"
+    },
+    {
+      "id": "item.tree_birch",
+      "displayName": "Huş",
+      "category": "plant",
+      "growDays": 8,
+      "interactions": [
+        {
+          "id": "chop",
+          "displayName": "Kes",
+          "durationDays": 0.15,
+          "skill": "Woodcutting",
+          "skillXp": 20,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.log",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 2
+            },
+            {
+              "item": "item.sapling_birch",
+              "count": 1
+            },
+            {
+              "item": "item.sapling_birch",
+              "count": 1,
+              "chance": 0.4
+            }
+          ],
+          "tool": "axe"
+        }
+      ]
+    },
+    {
+      "id": "item.sapling_pine",
+      "displayName": "Çam fidanı",
+      "placement": "Resource",
+      "price": 9,
+      "category": "resource",
+      "level": 4,
+      "plantsAs": "item.tree_pine"
+    },
+    {
+      "id": "item.tree_pine",
+      "displayName": "Çam",
+      "category": "plant",
+      "growDays": 16,
+      "interactions": [
+        {
+          "id": "chop",
+          "displayName": "Kes",
+          "durationDays": 0.15,
+          "skill": "Woodcutting",
+          "skillXp": 20,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.log",
+              "count": 4
+            },
+            {
+              "item": "item.resin",
+              "count": 2
+            },
+            {
+              "item": "item.sapling_pine",
+              "count": 1
+            },
+            {
+              "item": "item.sapling_pine",
+              "count": 1,
+              "chance": 0.4
+            }
+          ],
+          "tool": "axe"
+        }
+      ]
+    },
+    {
+      "id": "item.sapling_willow",
+      "displayName": "Söğüt fidanı",
+      "placement": "Resource",
+      "price": 7,
+      "category": "resource",
+      "level": 3,
+      "plantsAs": "item.tree_willow"
+    },
+    {
+      "id": "item.tree_willow",
+      "displayName": "Söğüt",
+      "category": "plant",
+      "growDays": 10,
+      "interactions": [
+        {
+          "id": "chop",
+          "displayName": "Kes",
+          "durationDays": 0.15,
+          "skill": "Woodcutting",
+          "skillXp": 20,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.log",
+              "count": 2
+            },
+            {
+              "item": "item.withy",
+              "count": 3
+            },
+            {
+              "item": "item.sapling_willow",
+              "count": 1
+            },
+            {
+              "item": "item.sapling_willow",
+              "count": 1,
+              "chance": 0.4
+            }
+          ],
+          "tool": "axe"
+        }
+      ]
+    },
+    {
+      "id": "item.mushroom_bed",
+      "displayName": "Mantar yatağı",
+      "category": "garden",
+      "price": 26,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "cellar"
+      ],
+      "levels": [
+        -1
+      ],
+      "growDays": 3,
+      "fruitDays": 4,
+      "fruitSeasons": [
+        "Spring",
+        "Summer",
+        "Autumn",
+        "Winter"
+      ],
+      "interactions": [
+        {
+          "id": "pick",
+          "displayName": "Mantar topla",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 6,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.mushroom",
+              "count": 3
+            }
+          ],
+          "moodlet": "good_harvest"
+        }
+      ]
     }
   ],
   "recipes": [
@@ -3093,6 +5035,262 @@
       "minLevel": 7,
       "durationDays": 0.3,
       "skillXp": 90
+    },
+    {
+      "id": "seed_turnip",
+      "station": "item.seed_maker",
+      "produces": "item.seed_turnip",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.turnip",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Şalgam"
+    },
+    {
+      "id": "seed_cabbage",
+      "station": "item.seed_maker",
+      "produces": "item.seed_cabbage",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.cabbage",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Lahana"
+    },
+    {
+      "id": "seed_leek",
+      "station": "item.seed_maker",
+      "produces": "item.seed_leek",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.leek",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Pırasa"
+    },
+    {
+      "id": "seed_pea",
+      "station": "item.seed_maker",
+      "produces": "item.seed_pea",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.pea",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Bezelye"
+    },
+    {
+      "id": "seed_pumpkin",
+      "station": "item.seed_maker",
+      "produces": "item.seed_pumpkin",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.pumpkin",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Kabak"
+    },
+    {
+      "id": "seed_parsnip",
+      "station": "item.seed_maker",
+      "produces": "item.seed_parsnip",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.parsnip",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Yaban havucu"
+    },
+    {
+      "id": "seed_carrot",
+      "station": "item.seed_maker",
+      "produces": "item.seed_carrot",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.carrot",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Havuç"
+    },
+    {
+      "id": "seed_onion",
+      "station": "item.seed_maker",
+      "produces": "item.seed_onion",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.onion",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Soğan"
+    },
+    {
+      "id": "seed_garlic",
+      "station": "item.seed_maker",
+      "produces": "item.seed_garlic",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.garlic",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Sarımsak"
+    },
+    {
+      "id": "seed_beet",
+      "station": "item.seed_maker",
+      "produces": "item.seed_beet",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.beet",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Pancar"
+    },
+    {
+      "id": "seed_radish",
+      "station": "item.seed_maker",
+      "produces": "item.seed_radish",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.radish",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Turp"
+    },
+    {
+      "id": "seed_lettuce",
+      "station": "item.seed_maker",
+      "produces": "item.seed_lettuce",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.lettuce",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Marul"
+    },
+    {
+      "id": "seed_broad_bean",
+      "station": "item.seed_maker",
+      "produces": "item.seed_broad_bean",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.broad_bean",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Bakla"
+    },
+    {
+      "id": "seed_barley",
+      "station": "item.seed_maker",
+      "produces": "item.seed_barley",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.barley",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Arpa"
+    },
+    {
+      "id": "seed_spinach",
+      "station": "item.seed_maker",
+      "produces": "item.seed_spinach",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.spinach",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Ispanak"
+    },
+    {
+      "id": "feed_barley",
+      "station": "item.seed_maker",
+      "produces": "item.feed",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.barley",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Arpadan yem karıştır"
     }
   ],
   "animals": [

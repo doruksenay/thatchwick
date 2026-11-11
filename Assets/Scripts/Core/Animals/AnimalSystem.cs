@@ -26,6 +26,11 @@ namespace Thatchwick.Core.Animals
         /// <summary>Bir karo yürüme süresi (oyun günü) ve duraklama aralığı.</summary>
         public const double StepDays = 0.004, MinWaitDays = 0.006, MaxWaitDays = 0.03;
         public const double SellRatio = 0.5;
+        /// <summary>Dostluk: tokken günde +FriendshipPerDay, aç kalınca günde -HungerFriendLoss; sevmek +PetFriendship. Çarpan = 1 + FriendshipBoost x dostluk/100.</summary>
+        public const float FriendshipPerDay = 3f, HungerFriendLoss = 2f, PetFriendship = 8f, FriendshipBoost = 0.4f;
+        /// <summary>Bu dostlukta üründe ekstra bir adet şansı.</summary>
+        public const float BondedFriendship = 70f;
+        public const double BondedExtraChance = 0.25;
 
         private readonly WorldState _world;
         private readonly ContentDatabase _content;
@@ -130,10 +135,11 @@ namespace Thatchwick.Core.Animals
         private static readonly GridPos[] Offsets = { new GridPos(1, 0), new GridPos(0, 1), new GridPos(-1, 0), new GridPos(0, -1) };
 
         /// <summary>Kayıttan yükleme.</summary>
-        public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays)
+        public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays, float friendship = 0f)
         {
             var a = new Animal(id, species, pos, homeId)
             {
+                Friendship = Math.Max(0f, Math.Min(100f, friendship)),
                 Fullness = Math.Max(0f, Math.Min(100f, fullness)),
                 AgeDays = Math.Max(0, age),
                 ProduceProgress = Math.Max(0, produce),
@@ -169,6 +175,11 @@ namespace Thatchwick.Core.Animals
                 double fed = need > 0 ? eaten / need : 1.0;
                 a.Fullness = (float)Math.Max(0, Math.Min(100, a.Fullness + (fed * 2 - 1) * FullnessChangePerDay * gameDays));
 
+                // Dostluk: iyi bakılınca yavaş yavaş artar, aç bırakılınca düşer.
+                if (a.PetCooldownDays > 0) a.PetCooldownDays = Math.Max(0, a.PetCooldownDays - gameDays);
+                if (a.Fullness >= 60f) a.Friendship = Math.Min(100f, a.Friendship + (float)(FriendshipPerDay * gameDays));
+                else if (a.Fullness < 20f) a.Friendship = Math.Max(0f, a.Friendship - (float)(HungerFriendLoss * gameDays));
+
                 if (a.Fullness <= 0f) a.HungryDays += gameDays;
                 else a.HungryDays = Math.Max(0, a.HungryDays - gameDays);
                 if (a.HungryDays >= StarveDeathDays) { Kill(a, AnimalDeath.Starvation); continue; }
@@ -176,13 +187,15 @@ namespace Thatchwick.Core.Animals
                 // Ürün: tok ve erişkinken barınağa birikir.
                 if (a.Species.Produces != null && home != null && a.IsMature && a.Fullness >= ProduceFullness)
                 {
-                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays;
+                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays * (1.0 + FriendshipBoost * a.Friendship / 100.0);
                     while (a.ProduceProgress >= 1.0)
                     {
                         a.ProduceProgress -= 1.0;
                         int cap = StockPerResident * Math.Max(1, home.Def.HousingCapacity);
                         if (home.StockTotal >= cap) { a.ProduceProgress = 0; break; }
-                        home.AddStock(a.Species.Produces, 1);
+                        int units = 1;
+                        if (a.Friendship >= BondedFriendship && _rng.NextDouble() < BondedExtraChance) units++;
+                        home.AddStock(a.Species.Produces, units);
                         Produced?.Invoke(a, a.Species.Produces);
                     }
                 }
@@ -270,6 +283,28 @@ namespace Thatchwick.Core.Animals
                 if (_world.Map.CanStep(from, n)) return n;
             }
             return null;
+        }
+
+        /// <summary>Barınaktaki, bugün henüz sevilmemiş hayvan sayısı.</summary>
+        public int PettableResidents(int homeItemId)
+        {
+            int n = 0;
+            foreach (var a in _animals) if (a.HomeItemId == homeItemId && a.PetCooldownDays <= 0) n++;
+            return n;
+        }
+
+        /// <summary>Barınaktaki hayvanları sever: dostluk artar, günlük bekleme başlar. Sevilen sayı döner.</summary>
+        public int PetResidents(int homeItemId)
+        {
+            int n = 0;
+            foreach (var a in _animals)
+            {
+                if (a.HomeItemId != homeItemId || a.PetCooldownDays > 0) continue;
+                a.Friendship = Math.Min(100f, a.Friendship + PetFriendship);
+                a.PetCooldownDays = 1.0;
+                n++;
+            }
+            return n;
         }
 
         // ---- barınak etkileşimleri (InteractionEffects çağırır) ----

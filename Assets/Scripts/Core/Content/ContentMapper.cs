@@ -44,6 +44,11 @@ namespace Thatchwick.Core.Content
                     Preserves = dto.preserves,
                     Variants = dto.variants != null ? new List<string>(dto.variants) : new List<string>(),
                     ForageMax = dto.forageMax,
+                    FruitRipenDays = dto.fruitDays,
+                    FixesNitrogen = dto.nitrogen,
+                    WaterRadius = dto.waterRadius,
+                    ProtectRadius = dto.protectRadius,
+                    PollinateRadius = dto.pollinate,
                     PlantsAs = string.IsNullOrWhiteSpace(dto.plantsAs) ? null : dto.plantsAs,
                     Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category,
                     StyleSet = string.IsNullOrWhiteSpace(dto.styleSet) ? null : dto.styleSet,
@@ -79,6 +84,15 @@ namespace Thatchwick.Core.Content
                         else errors.Add($"{dto.id}: bilinmeyen toplama mevsimi '{fs}'.");
                     }
 
+                if (dto.fruitSeasons != null)
+                    foreach (var fr in dto.fruitSeasons)
+                    {
+                        if (LifeContentMapper.TryParseSeason(fr, out var frSeason)) item.FruitSeasons.Add(frSeason);
+                        else errors.Add($"{dto.id}: bilinmeyen meyve mevsimi '{fr}'.");
+                    }
+                if (item.FruitSeasons.Count > 0 && (item.FruitRipenDays <= 0f || item.GrowDays <= 0f))
+                    errors.Add($"{dto.id}: meyve ağacı için growDays ve fruitDays gerekir.");
+
                 if (dto.surfaceSlots != null)
                 {
                     foreach (var s in dto.surfaceSlots)
@@ -94,7 +108,8 @@ namespace Thatchwick.Core.Content
                     {
                         if (i == null) continue;
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
-                            || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal;
+                            || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
+                            || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals;
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -137,7 +152,12 @@ namespace Thatchwick.Core.Content
                             MoodText = i.moodText,
                             MoodValue = i.moodValue,
                             MoodDays = i.moodDays,
-                            RequiresLit = i.requiresLit
+                            RequiresLit = i.requiresLit,
+                            Water = i.water,
+                            Fertilize = i.fertilize,
+                            RequiresFruit = i.requiresFruit,
+                            TakesFruit = i.takesFruit,
+                            PetsAnimals = i.petAnimals
                         };
                         AddMaterials(interaction, i.materials);
                         bool badExtra = false;

@@ -46,7 +46,7 @@ namespace Thatchwick.Core.Tests
             Assert.Empty(db.Validate());
             var w = new WorldState(new GridMap(16, 10));
             var h = new Household(50);
-            return (db, w, h, new BuildService(w, h, db), new PlantSystem(w), new InteractionEffects(w, h, db, 5));
+            return (db, w, h, new BuildService(w, h, db), FarmTestKit.Legacy(w), new InteractionEffects(w, h, db, 5));
         }
 
         [Fact]
