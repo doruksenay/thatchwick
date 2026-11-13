@@ -3,6 +3,8 @@ id: "311"
 title: Toplama düğümleri (çalı, mantar, fındık, ot, yabani kovan, kuru dal)
 status: pending
 approved_by: pending
+family: bitki
+style_gate: false
 cost_est: 6
 cost_max: 12
 depends_on: ["301"]

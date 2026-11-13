@@ -3,6 +3,8 @@ id: "314"
 title: Adlı köylüler (Orhan, Hatice, Zeynep, Murat, Kerem, Ayşe; 56 px, 8 yön)
 status: pending
 approved_by: pending     # 012 'accepted' olmadan başlamaz; cost_max 25 altında
+family: karakter
+style_gate: false
 cost_est: 10.2
 cost_max: 14
 depends_on: ["012"]

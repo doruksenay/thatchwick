@@ -3,6 +3,8 @@ id: "313"
 title: Mezar taşı + festival süsleri (flama, şenlik direği, şenlik ateşi, kış feneri)
 status: pending
 approved_by: pending
+family: esya
+style_gate: false
 cost_est: 6
 cost_max: 14
 depends_on: ["301"]

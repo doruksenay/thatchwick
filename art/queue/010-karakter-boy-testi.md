@@ -3,6 +3,8 @@ id: "010"
 title: Karakter boy ve detay testi (K1)
 status: review
 approved_by: user        # K0 planı 2026-11-08 onaylandı
+family: karakter
+style_gate: false
 cost_est: 7
 cost_max: 9
 depends_on: []

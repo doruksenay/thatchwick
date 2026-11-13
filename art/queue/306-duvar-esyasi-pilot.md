@@ -3,9 +3,11 @@ id: "306"
 title: Duvar eşyası pilotu (meşale, gaz lambası, duvar rafı, ot demeti, alet askısı)
 status: pending
 approved_by: pending     # Dalga 1 planı (09 belgesi, 2026-11-08); kullanıcı "user" yapınca işçi alır
+family: esya
+style_gate: false
 cost_est: 5
 cost_max: 10
-depends_on: []           # yöntem 301 ile aynı; 301 sonucu görülmeden başlatılmaması önerilir
+depends_on: ["301"]   # yöntem 301 ile aynı; 2026-11-13: öneri bağımlılığa çevrildi (301 stil pilotu kabul edilmeden başlamaz)
 max_attempts: 2          # parça başına en çok 2 deneme
 pixellab: true
 outputs:

@@ -1,0 +1,102 @@
+name: Art worker
+
+# Asset kuyruğunu bulutta işler: art/queue'ya onaylı iş geldiğinde pixellab-artist ajanını çalıştırır.
+# Kurallar art/budget.md ile aynıdır (işçi ajan ve tools/art/queue_ready.py okur); bu dosya kural koymaz.
+# Gerekli repo secret'ları (Settings > Secrets and variables > Actions):
+#   CLAUDE_CODE_OAUTH_TOKEN  bilgisayarında `claude setup-token` ile üretilir (Claude aboneliğini kullanır)
+#   PIXELLAB_API_TOKEN       pixellab.ai hesabındaki API token'ı
+# İkisi yoksa iş sessizce atlanır. Ayrıntı: art/README.md "Otomatik işçiler".
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "art/queue/**"
+      - "art/budget.md"
+      - "art/style/**"
+  schedule:
+    - cron: "17 */3 * * *"      # günlük tavan sıfırlanınca ve kabul sonrası takılı kalan işler için
+  workflow_dispatch:
+
+concurrency:
+  group: art-worker
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  work:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Python bağımlılıkları
+        run: pip install --quiet pillow
+
+      - name: Uygun iş var mı
+        id: ready
+        env:
+          HAS_CLAUDE: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
+          HAS_PIXELLAB: ${{ secrets.PIXELLAB_API_TOKEN != '' }}
+        run: |
+          set +e
+          python tools/art/queue_ready.py --all
+          code=$?
+          set -e
+          if [ "$code" != "0" ]; then
+            echo "Uygun iş yok."; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if [ "$HAS_CLAUDE" != "true" ] || [ "$HAS_PIXELLAB" != "true" ]; then
+            echo "::notice::Uygun iş var ama CLAUDE_CODE_OAUTH_TOKEN ya da PIXELLAB_API_TOKEN secret'ı tanımlı değil; atlandı."
+            echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        if: steps.ready.outputs.run == 'true'
+        with:
+          node-version: "20"
+
+      - name: Claude Code ve PixelLab MCP
+        if: steps.ready.outputs.run == 'true'
+        env:
+          PIXELLAB_API_TOKEN: ${{ secrets.PIXELLAB_API_TOKEN }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          python - <<'PY'
+          import json, os
+          cfg = {"mcpServers": {"pixellab": {
+              "type": "http",
+              "url": "https://api.pixellab.ai/mcp",
+              "headers": {"Authorization": "Bearer " + os.environ["PIXELLAB_API_TOKEN"]}}}}
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "mcp.json"), "w") as f:
+              json.dump(cfg, f)
+          PY
+          git config user.name "thatchwick-art-worker"
+          git config user.email "art-worker@users.noreply.github.com"
+
+      - name: pixellab-artist
+        if: steps.ready.outputs.run == 'true'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude -p "art/queue icindeki uygun isleri art/budget.md kurallariyla isle ve ozet rapor ver. Bulut isçisisin (GitHub Actions); masaustu kopyasi adimlarini atla." \
+            --agent pixellab-artist \
+            --max-turns 80 \
+            --mcp-config "$RUNNER_TEMP/mcp.json" \
+            --allowedTools "mcp__pixellab" "Read" "Write" "Edit" "Glob" "Grep" "Bash(git:*)" "Bash(python:*)" "Bash(cp:*)" "Bash(ls:*)" "Bash(rm art/.worker.lock)"
+
+      - name: Özet
+        if: always() && steps.ready.outputs.run == 'true'
+        run: |
+          python tools/art/queue_ready.py --all || true
+          git log --oneline -5

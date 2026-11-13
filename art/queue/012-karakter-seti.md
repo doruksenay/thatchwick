@@ -3,6 +3,8 @@ id: "012"
 title: Karakter seti K2 (8 karakter, 56 px)
 status: review
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet: boy 56, K2 başla)
+family: karakter
+style_gate: true
 cost_est: 16.8
 cost_max: 20
 depends_on: []

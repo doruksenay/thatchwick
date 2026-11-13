@@ -3,6 +3,8 @@ id: "301"
 title: Ev eşyaları grup 2 (raf, kazan, sandık, bardak, oymalı sandalye, yarma kütüğü, pazar tezgâhı; yalnızca SE)
 status: pending
 approved_by: pending     # kullanıcı kararı 2026-11-08: yarın çalışacak; kullanıcı "user" yapınca işçi alır
+family: esya
+style_gate: true
 cost_est: 7
 cost_max: 15
 depends_on: []           # 300 sohbette değerlendirildi (masa, sandalye, mum, saksı accepted)

@@ -1,0 +1,57 @@
+{
+  "_aciklama": "Stil kilidi: her aile için PixelLab stil eşlemesinde ve yan yana karşılaştırmada kullanılan referans görseller. 'durum': kabul = kullanıcı kabul etti; aday = henüz kabul edilmedi (pilot kabul edilince güncellenir). İşçi bu listeyi değiştirmez; kod oturumu ya da kullanıcı günceller.",
+  "aileler": {
+    "zemin": {
+      "pilot": "001",
+      "referanslar": [
+        {"dosya": "Assets/Art/Iso/iso_ground_grass_a.png", "durum": "aday"},
+        {"dosya": "Assets/Art/Iso/iso_ground_grass_b.png", "durum": "aday"},
+        {"dosya": "Assets/Art/Iso/iso_ground_dirt_a.png", "durum": "aday"}
+      ]
+    },
+    "yapi": {
+      "pilot": "007",
+      "referanslar": [
+        {"dosya": "Assets/Art/Iso/iso_wall_wall_se_nw.png", "durum": "kabul", "not": "008a sohbette kabul edildi"},
+        {"dosya": "Assets/Art/Iso/iso_wall_door_se_nw.png", "durum": "kabul"},
+        {"dosya": "Assets/Art/Iso/iso_wall_post.png", "durum": "kabul"}
+      ]
+    },
+    "esya": {
+      "pilot": "301",
+      "referanslar": [
+        {"dosya": "Assets/Art/Iso/iso_item_stool_se.png", "durum": "kabul"},
+        {"dosya": "Assets/Art/Iso/iso_item_hearth_stone_unlit_se.png", "durum": "kabul"},
+        {"dosya": "Assets/Art/Iso/iso_item_bed_straw_2x1_se_nw.png", "durum": "kabul"},
+        {"dosya": "Assets/Art/Iso/_aday/iso_item_table_wood_2x1_se_nw.png", "durum": "kabul", "not": "300 sohbette kabul (masa, sandalye, mum, saksı)"},
+        {"dosya": "Assets/Art/Iso/_aday/iso_item_chair_wood_sw.png", "durum": "kabul"},
+        {"dosya": "Assets/Art/Iso/_aday/iso_item_candle_se.png", "durum": "kabul"},
+        {"dosya": "Assets/Art/Iso/_aday/iso_item_flower_pot_se.png", "durum": "kabul"}
+      ]
+    },
+    "bitki": {
+      "pilot": "310",
+      "referanslar": [
+        {"dosya": "Assets/Art/Iso/_aday/iso_item_flower_pot_se.png", "durum": "kabul", "not": "310 kabul edilene kadar bitki rengi saksıdan ve çimden alınır"},
+        {"dosya": "Assets/Art/Iso/iso_ground_grass_a.png", "durum": "aday"}
+      ]
+    },
+    "karakter": {
+      "pilot": "012",
+      "referanslar": [
+        {"dosya": "Assets/Art/Iso/iso_char_villager_se.png", "durum": "aday"},
+        {"dosya": "Assets/Art/Iso/_aday/iso_char_farmer_a2_56_cand_se.png", "durum": "aday", "not": "012 boy 56 seçimi"}
+      ]
+    },
+    "hayvan": {
+      "pilot": "100",
+      "referanslar": [
+        {"dosya": "Assets/Art/Iso/_aday/iso_animal_sheep_1_cand_se.png", "durum": "aday"}
+      ]
+    },
+    "arayuz": {
+      "pilot": "200",
+      "referanslar": []
+    }
+  }
+}

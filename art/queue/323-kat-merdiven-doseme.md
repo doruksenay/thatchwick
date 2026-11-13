@@ -3,6 +3,8 @@ id: "323"
 title: Katlar: merdivenler ve kat zemin parçaları (el merdiveni, 2 merdiven, 2 taş merdiven, üst kat döşemesi, bodrum zemini)
 status: pending
 approved_by: pending
+family: esya
+style_gate: false
 cost_est: 8
 cost_max: 16
 depends_on: ["301", "306"]

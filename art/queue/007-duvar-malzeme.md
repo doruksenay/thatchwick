@@ -3,6 +3,8 @@ id: "007"
 title: Duvar malzeme örneği
 status: review
 approved_by: auto
+family: yapi
+style_gate: true
 cost_est: 10
 cost_max: 15
 depends_on: []

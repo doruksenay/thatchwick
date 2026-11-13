@@ -3,6 +3,8 @@ id: "003"
 title: Çimen-toprak geçiş seti
 status: blocked
 approved_by: auto
+family: zemin
+style_gate: false
 cost_est: 10
 cost_max: 15
 depends_on: ["002"]

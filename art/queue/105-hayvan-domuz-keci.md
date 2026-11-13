@@ -3,6 +3,8 @@ id: "105"
 title: Hayvanlar 5: domuz + keçi
 status: pending
 approved_by: pending     # kullanıcı çalıştırma onayı bekleniyor (plan 2026-11-08'de onaylandı)
+family: hayvan
+style_gate: false
 cost_est: 17
 cost_max: 20
 depends_on: ["100"]

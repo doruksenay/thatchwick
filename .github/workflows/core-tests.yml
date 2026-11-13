@@ -18,3 +18,8 @@ jobs:
 
       - name: Test
         run: dotnet test core/Thatchwick.Core.Tests --verbosity normal
+
+      # Game katmanı (GameRoot, BuildMode, paneller) sahte Unity tipleriyle derlenir:
+      # Core'daki bir değişiklik Unity tarafını kırarsa Unity açılmadan burada yakalanır.
+      - name: Game katmanı derleme denetimi
+        run: dotnet build core/Thatchwick.GameCheck --verbosity minimal

@@ -3,6 +3,8 @@ id: "006"
 title: Söndürülmüş ocak taşı
 status: blocked
 approved_by: pending
+family: esya
+style_gate: false
 cost_est: 1
 cost_max: 2
 depends_on: []
