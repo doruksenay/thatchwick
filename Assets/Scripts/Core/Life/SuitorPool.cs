@@ -63,8 +63,7 @@ namespace Thatchwick.Core.Life
             int arrivals = 0;
             foreach (var h in _population.Members.ToArrayCopy())
             {
-                if (h.IsDead || h.IsVillager || h.Stage == AgeStage.Baby) continue;
-                if (h.SpouseId.HasValue) continue;
+                if (h.IsVillager || !IsSingleAdult(h)) continue;   // çocuk ve yaşlı için talip getirilmez
                 var otherSex = h.Sex == Sex.Female ? Sex.Male : Sex.Female;
                 int have = EligibleFor(h).Count;
                 while (have < MinCandidates && VillagerCount() < MaxVillagers)

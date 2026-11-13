@@ -39,6 +39,11 @@ namespace Thatchwick.Core.Jobs
         private double _useProgress;
         private double _elapsedDays;
         private readonly Dictionary<int, double> _unreachableUntil = new Dictionary<int, double>();
+        // Ulaşılamayan kişi (bebek, sohbet arkadaşı) için de aynı bekleme: otonomi her karede yeniden denemesin.
+        private readonly Dictionary<int, double> _unreachablePersonUntil = new Dictionary<int, double>();
+        private static readonly NeedType[] AllNeeds = (NeedType[])Enum.GetValues(typeof(NeedType));
+        /// <summary>Otonomi eşya seçerken başka kattaki eşyaya eklenen uzaklık (karo): önce kendi katındaki seçilsin.</summary>
+        public const int OtherLevelDistance = 12;
         private readonly List<NeedType> _needOrder = new List<NeedType>();
 
         public JobQueue Queue { get; } = new JobQueue();
@@ -182,7 +187,12 @@ namespace Thatchwick.Core.Jobs
                     var goals = new HashSet<GridPos> { target.Position };
                     foreach (var o in AdjacentOffsets) goals.Add(target.Position + o);
                     _path = Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
-                    if (_path == null) { Fail($"{target.Name} yanına gidilemiyor."); return 0; }
+                    if (_path == null)
+                    {
+                        _unreachablePersonUntil[target.Id] = _elapsedDays + UnreachableCooldownDays;
+                        Fail($"{target.Name} yanına gidilemiyor.");
+                        return 0;
+                    }
                     _pathIndex = 1;
                     _stepFraction = 0;
                 }
@@ -251,6 +261,13 @@ namespace Thatchwick.Core.Jobs
             double available = budget - used;
             if (available >= remaining)
             {
+                // Rezervasyon yok: malzeme bu arada başkasınca harcanmış olabilir. Koşul bozulduysa iş boşa gider;
+                // karşılıksız doyma, XP ya da moodlet verilmez.
+                if (interaction.HasEffects)
+                {
+                    string gone = Effects == null ? "Bu iş şu an yapılamaz." : Effects.CanStart(_character, item, interaction);
+                    if (gone != null) { Fail(gone); return used + remaining; }
+                }
                 if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, interaction.Restore);
                 foreach (var extra in interaction.ExtraRestore) _character.Needs.Restore(extra.Need, extra.Amount);
                 if (interaction.GivesMood)
@@ -402,7 +419,7 @@ namespace Thatchwick.Core.Jobs
             if (Social != null && !_character.Needs.AnyCritical())
             {
                 var dependent = Social.DependentNeedingCare(_character);
-                if (dependent != null && Social.CanDo(_character, dependent, SocialAction.Feed) == null)
+                if (dependent != null && !PersonOnCooldown(dependent.Id) && Social.CanDo(_character, dependent, SocialAction.Feed) == null)
                 {
                     ResetJobState();
                     return Queue.TryEnqueue(Job.Social(dependent.Id, SocialAction.Feed).WithReason(NeedType.Hunger));
@@ -410,7 +427,7 @@ namespace Thatchwick.Core.Jobs
             }
 
             _needOrder.Clear();
-            foreach (NeedType need in Enum.GetValues(typeof(NeedType)))
+            foreach (var need in AllNeeds)
                 if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
             if (_needOrder.Count == 0) return false;
             _needOrder.Sort((a, b) =>
@@ -432,10 +449,13 @@ namespace Thatchwick.Core.Jobs
         {
             if (Social == null) return false;
             var friend = Social.FriendFor(_character);
-            if (friend == null || Social.CanDo(_character, friend, SocialAction.Chat) != null) return false;
+            if (friend == null || PersonOnCooldown(friend.Id) || Social.CanDo(_character, friend, SocialAction.Chat) != null) return false;
             ResetJobState();
             return Queue.TryEnqueue(Job.Social(friend.Id, SocialAction.Chat).WithReason(NeedType.Social));
         }
+
+        private bool PersonOnCooldown(int characterId) =>
+            _unreachablePersonUntil.TryGetValue(characterId, out var until) && until > _elapsedDays;
 
         // İhtiyacı en iyi doyuracak eşyayı seçer: önce en çok doyuran, sonra en yakın.
         private bool TryStartNeedItem(NeedType need)
@@ -471,7 +491,8 @@ namespace Thatchwick.Core.Jobs
 
                     int distance = Math.Max(
                         Math.Abs(item.Position.X - _character.Position.X),
-                        Math.Abs(item.Position.Y - _character.Position.Y));
+                        Math.Abs(item.Position.Y - _character.Position.Y))
+                        + Math.Abs(item.Position.Z - _character.Position.Z) * OtherLevelDistance;
 
                     bool better = bestInteraction == null
                         || restore > bestRestore

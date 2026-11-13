@@ -27,6 +27,9 @@ namespace Thatchwick.Core.Save
         public LifeSaveData life;
         public AnimalSave[] animals;     // v2
         public SoilSave[] soil;          // toprak verimi (eski kayıtta yok)
+        /// <summary>Oyunun ana rastgelelik tohumu (eski kayıtta 0) ve yükleme sayacı (bkz. Core.Seeds).</summary>
+        public int seed;
+        public int rngEpoch;
     }
 
     [Serializable]
@@ -39,6 +42,7 @@ namespace Thatchwick.Core.Save
         public float fullness;
         public double age, produce, hungryDays;
         public float friendship;
+        public double petCooldown;       // sevme bekleme süresi (eski kayıtta 0)
     }
 
     [Serializable]
@@ -56,7 +60,7 @@ namespace Thatchwick.Core.Save
     }
 
     [Serializable]
-    public sealed class LevelTileSave { public int x, y, z, floor; }
+    public sealed class LevelTileSave { public int x, y, z, floor; public int zone; }   // zone: depo bölgesi (eski kayıtta 0 = yok)
 
     [Serializable]
     public sealed class EdgeSave

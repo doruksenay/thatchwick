@@ -42,6 +42,8 @@ namespace Thatchwick.Core.Save
     {
         public GraveSave[] graves;
         public int weatherSeed;
+        /// <summary>Günlük işlerin (OnNewDay) yapıldığı son gün; eski kayıtta -1.</summary>
+        public long lastProcessedDay = -1;
         public long festivalCelebratedDay = -1;
         public SpoilBatchSave[] spoilage;
         // Adım 38-43

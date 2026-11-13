@@ -28,19 +28,29 @@ namespace Thatchwick.Game
         {
             _map = map;
             _view = view;
-            map.Changed += Rebuild;
+            map.Changed += MarkDirty;
             if (view != null) view.LevelChanged += Rebuild;
             Rebuild();
         }
 
+        // Harita aynı karede defalarca değişebilir (oda aracı onlarca duvar kurar): duvarlar karede bir kez yeniden kurulur.
+        private bool _dirty;
+        private void MarkDirty() { _dirty = true; }
+
+        private void LateUpdate()
+        {
+            if (_dirty) Rebuild();
+        }
+
         private void OnDestroy()
         {
-            if (_map != null) _map.Changed -= Rebuild;
+            if (_map != null) _map.Changed -= MarkDirty;
             if (_view != null) _view.LevelChanged -= Rebuild;
         }
 
         public void Rebuild()
         {
+            _dirty = false;
             foreach (var go in _objects) if (go != null) Destroy(go);
             _objects.Clear();
             if (_map == null) return;

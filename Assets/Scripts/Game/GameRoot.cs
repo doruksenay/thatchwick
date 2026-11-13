@@ -53,7 +53,13 @@ namespace Thatchwick.Game
         private float _messageUntil;
         private string _message = "";
         private GUIStyle _labelStyle;
-        private readonly System.Random _rng = new System.Random(11);
+        // Rastgelelik: her oyunun ana tohumu kayıtta saklanır; alt sistemler bundan türetir (bkz. Core.Seeds).
+        private System.Random _rng;
+        private int _seed;
+        private int _rngEpoch;
+        // Dünya/harita değişince görünümler aynı karede en çok bir kez yeniden kurulur (LateUpdate).
+        private bool _itemsDirty;
+        private bool _floorsDirty;
         private Population _population;
         private AppearanceCatalog _appearanceCatalog;
         private CharacterCreator _creator;
@@ -115,7 +121,7 @@ namespace Thatchwick.Game
         public static SaveData PendingLoad;
         private long _lastSavedDay = -1;
         private static string SavePath => System.IO.Path.Combine(Application.persistentDataPath, "thatchwick_save.json");
-        public static bool HasSave => System.IO.File.Exists(SavePath);
+        public static bool HasSave => SaveFiles.Exists(SavePath);
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
         private Rect HudRect => new Rect(8f, 8f, 340f, Mathf.Min(560f, Screen.height / HudScale - 16f));
@@ -134,6 +140,12 @@ namespace Thatchwick.Game
                 catch (System.Exception ex) { Debug.LogError($"Kayıt yüklenemedi: {ex.Message}"); }
                 PendingLoad = null;
             }
+
+            // Eski kayıtta tohum yoktur (0): yeni bir ana tohum verilir, o oturumda pazar eski sabit tohumuyla kalır.
+            bool legacySeed = loaded != null && loaded.Seed == 0;
+            _seed = loaded != null && loaded.Seed != 0 ? loaded.Seed : Thatchwick.Core.Seeds.NewMaster();
+            _rngEpoch = loaded != null ? loaded.RngEpoch + 1 : 0;
+            _rng = new System.Random(Thatchwick.Core.Seeds.Derive(_seed, 1, _rngEpoch));
 
             GridMap map;
             if (loaded != null)
@@ -160,13 +172,13 @@ namespace Thatchwick.Game
             _view.Build(map);
 
             RebuildItemViews();
-            _world.Changed += RebuildItemViews;
-            _view.LevelChanged += RebuildItemViews;   // görünen kat değişince eşyalar yeniden kurulur
+            _world.Changed += () => _itemsDirty = true;
+            _view.LevelChanged += () => _itemsDirty = true;   // görünen kat değişince eşyalar yeniden kurulur
 
             foreach (var item in _world.Items)
                 foreach (var tile in item.OccupiedTiles()) _view.ClearTerrainBlock(tile);
             _view.RefreshFloors();
-            map.Changed += _view.RefreshFloors;
+            map.Changed += () => _floorsDirty = true;
             map.Changed += () =>
             {
                 if (_account == null || _account.HasFirst("first:room")) return;
@@ -207,10 +219,10 @@ namespace Thatchwick.Game
                 _household.AddItem("item.salt", 4);
             }
             _storage = new StorageService(_world, _household, _content);
-            _effects = new InteractionEffects(_world, _household, _content, seed: 9) { Storage = _storage };
+            _effects = new InteractionEffects(_world, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 2, _rngEpoch)) { Storage = _storage };
             _effects.Applied += (c, i, summary) => { ShowMessage($"{c.Name}: {summary}"); _account.Record(i.Id, _clock.DayIndex); };
-            _plants = new PlantSystem(_world);
-            _animals = new AnimalSystem(_world, _content, seed: 23);
+            _plants = new PlantSystem(_world, Thatchwick.Core.Seeds.Derive(_seed, 7, _rngEpoch));
+            _animals = new AnimalSystem(_world, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 3, _rngEpoch));
             if (loaded != null)
             {
                 SaveGame.RestoreAnimals(loaded, _animals, _content);
@@ -222,7 +234,8 @@ namespace Thatchwick.Game
             if (loaded != null) SaveGame.RestoreSoil(loaded, _plants);
             _animals.Died += OnAnimalDied;
             _roomMood = new RoomMoodSystem(_world);
-            _market = new Market(_content, _household, _storage, null, seed: 17);
+            // Pazar teklifleri gün ve tohumdan yeniden üretilir: yüklemeden sonra aynı kalsın diye epoch'suz türetilir.
+            _market = new Market(_content, _household, _storage, null, seed: legacySeed ? 17 : Thatchwick.Core.Seeds.Derive(_seed, 4));
             if (loaded != null) _market.RestoreState(loaded.MarketDemand, _clock.TotalDays, _clock.Season, loaded.MarketTakenOffers);
             else _market.Tick(0, _clock.TotalDays, _clock.Season);
             _market.OfferAccepted += o => _account.Record(o.IsContract ? "contract" : "barter", _clock.DayIndex);
@@ -244,14 +257,20 @@ namespace Thatchwick.Game
             _buildMode = new BuildMode(_world, _household, _buildService, _content, _view, _input, transform, _walls, _animals);
             _buildMode.Activity += a => _account.Record(a, _clock.DayIndex);
 
-            _population = new Population(firstFreeId: 1, seed: 21);
+            _population = new Population(firstFreeId: 1, seed: Thatchwick.Core.Seeds.Derive(_seed, 5, _rngEpoch));
+            // Yerleştirme denetimi karakterleri bilsin: kimsenin üstüne eşya, ekin ya da mezar konmaz.
+            _world.CharacterPositions = LivingPositions;
             _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % (sex == Sex.Female ? GirlNames.Length : BoyNames.Length)];
             _population.BabyBorn += OnBabyBorn;
-            _family = new FamilyService(_population, _household, _content, seed: 31);
+            _family = new FamilyService(_population, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 6, _rngEpoch));
             _family.Happened += OnFamilyEvent;
             _family.JoinedHousehold += OnJoinedHousehold;
 
-            _life = new LifeSystems(_content, _world, _household, _population, _clock) { AccountLevel = () => _account.Level };
+            _life = new LifeSystems(_content, _world, _household, _population, _clock, Thatchwick.Core.Seeds.Derive(_seed, 8, _rngEpoch))
+            {
+                AccountLevel = () => _account.Level,
+                AccountXp = () => _account.Xp
+            };
             _life.Attach(_family);
             _life.Attach(_plants);
             _life.Attach(_heat);
@@ -270,6 +289,13 @@ namespace Thatchwick.Game
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
             _life.Suitors.AppearanceCatalog = _appearanceCatalog;
+            // Ölen adlı köylünün (demirci ...) halefi mevsim başında gelir: görünüm ve sahne nesnesi burada verilir.
+            _life.Villagers.PlaceResolver = key => ResolvePlace(key);
+            _life.Villagers.SuccessorArrived += (c, def) =>
+            {
+                c.Appearance = _appearanceCatalog.Randomize(_rng, c.Sex);
+                CreateActorFor(c);
+            };
 
             if (loaded != null)
             {
@@ -534,6 +560,12 @@ namespace Thatchwick.Game
             }
         }
 
+        private IEnumerable<GridPos> LivingPositions()
+        {
+            foreach (var c in _population.Members)
+                if (!c.IsDead) yield return c.Position;
+        }
+
         // Köylüler gün saatine, havaya ve şenliğe göre evinden işine, meydana yürür.
         private void UpdateVillagerSchedules()
         {
@@ -672,8 +704,9 @@ namespace Thatchwick.Game
             if (_player == null || _creator != null || _dynastyEnded) return;   // oyun başlamadan ya da bittikten sonra kaydetme
             try
             {
-                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _animals, _life, _plants);
-                System.IO.File.WriteAllText(SavePath, JsonUtility.ToJson(data));
+                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _animals, _life, _plants, _seed, _rngEpoch);
+                // Önce geçici dosyaya yazılır, eski kayıt .bak olarak kalır: yazma yarıda kesilse de bir kayıt sağlam kalır.
+                SaveFiles.WriteAtomic(SavePath, JsonUtility.ToJson(data));
                 if (!quiet) ShowMessage("Kaydedildi");
             }
             catch (System.Exception ex)
@@ -687,7 +720,15 @@ namespace Thatchwick.Game
         {
             try
             {
-                PendingLoad = JsonUtility.FromJson<SaveData>(System.IO.File.ReadAllText(SavePath));
+                // Ana dosya yoksa ya da bozuksa yedeğe düşer.
+                if (!SaveFiles.TryRead(SavePath, IsReadableSave, out string json, out bool usedFallback))
+                {
+                    Debug.LogError("Kayıt okunamadı: geçerli bir kayıt ya da yedek yok.");
+                    ShowMessage("Kayıt okunamadı");
+                    return;
+                }
+                if (usedFallback) Debug.LogWarning("Ana kayıt okunamadı; yedekten yüklendi.");
+                PendingLoad = JsonUtility.FromJson<SaveData>(json);
             }
             catch (System.Exception ex)
             {
@@ -698,6 +739,19 @@ namespace Thatchwick.Game
             enabled = false;
             new GameObject("GameRoot").AddComponent<GameRoot>();
             Destroy(gameObject);
+        }
+
+        private static bool IsReadableSave(string json)
+        {
+            try
+            {
+                var data = JsonUtility.FromJson<SaveData>(json);
+                return data != null && data.map != null && data.map.width > 0 && data.map.height > 0;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
         }
 
         private void OnApplicationQuit() => SaveNow(quiet: true);
@@ -947,6 +1001,15 @@ namespace Thatchwick.Game
             Simulate(gameDays);
         }
 
+        // Aynı karede kaç eşya ya da duvar değişirse değişsin (kışın donan ekinler, oda kurma, sabah çıkan yabani bitkiler)
+        // zemin ve eşya görünümleri bir kez yeniden kurulur.
+        private void LateUpdate()
+        {
+            if (_view == null || _world == null) return;
+            if (_floorsDirty) { _floorsDirty = false; _view.RefreshFloors(); }
+            if (_itemsDirty) { _itemsDirty = false; RebuildItemViews(); }
+        }
+
         /// <summary>Editörde oyun testi için zamanı ileri sarar (küçük adımlarla gerçek simülasyon).</summary>
         private void FastForward(double days)
         {
@@ -1159,7 +1222,7 @@ namespace Thatchwick.Game
                 if (skills.Length > 0) GUILayout.Label($"   Beceri: {skills}");
             }
 
-            if (_maud != null && _player != null && !_maud.Character.IsDead && GUILayout.Button("Test: Maud hamile (2 günde doğurur)"))
+            if (Application.isEditor && _maud != null && _player != null && !_maud.Character.IsDead && GUILayout.Button("Test: Maud hamile (2 günde doğurur)"))
             {
                 _maud.Character.PregnancyDays = 2;
                 if (!_maud.Character.TryStartPregnancy(_player.Character.Id)) ShowMessage("Maud şu an hamile kalamaz");
@@ -1181,7 +1244,7 @@ namespace Thatchwick.Game
             if (GUILayout.Button("Yükle")) { LoadSave(); return; }
             GUI.enabled = true;
             GUILayout.EndHorizontal();
-            if (GUILayout.Button("Yeni oyun (kayıt ilk gün dolunca üzerine yazılır)"))
+            if (GUILayout.Button("Yeni oyun (yeni karakter yaratılınca eski kaydın üzerine yazılır)"))
             {
                 enabled = false;
                 new GameObject("GameRoot").AddComponent<GameRoot>();

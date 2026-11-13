@@ -71,7 +71,7 @@ namespace Thatchwick.Core.Life
             };
             if (_content.Items.TryGet(GraveItemId, out var def))
             {
-                var spot = FindSpot(dead.Position);
+                var spot = FindSpot(dead.Position, def);
                 if (spot.HasValue)
                 {
                     var item = _world.PlaceItem(def, spot.Value);
@@ -85,7 +85,7 @@ namespace Thatchwick.Core.Life
         }
 
         // En yakın boş karo (halka halka): iç mekâna gömülmez, tercihen dış mekân.
-        private GridPos? FindSpot(GridPos origin)
+        private GridPos? FindSpot(GridPos origin, ItemDef def)
         {
             var rooms = _world.Map.Rooms;
             GridPos? indoorFallback = null;
@@ -97,7 +97,8 @@ namespace Thatchwick.Core.Life
                     {
                         if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != r) continue;
                         var p = new GridPos(origin.X + dx, origin.Y + dy);
-                        if (!_world.Map.InBounds(p) || _world.Map.IsBlocked(p)) continue;
+                        // Boş olmalı; başka birinin durduğu karo ya da merdiven ucu da olmaz (CanPlaceFloor denetler).
+                        if (!_world.Map.InBounds(p) || !_world.CanPlaceFloor(def, p, 0).Ok) continue;
                         var room = rooms.RoomAt(p);
                         if (room != null && room.IsIndoor) { if (!indoorFallback.HasValue) indoorFallback = p; continue; }
                         return p;

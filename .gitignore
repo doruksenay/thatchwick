@@ -62,3 +62,7 @@ Assets/mcp-pixellab-blob-*
 
 # Asset işçisi kilidi (yerel)
 art/.worker.lock
+
+# Python önbelleği (tools/art)
+__pycache__/
+*.pyc

@@ -84,7 +84,8 @@ namespace Thatchwick.Core.Build
             PlacementCheck result;
             try { result = step.Run(); }
             finally { _undoing = false; }
-            if (result.Ok) _undo.RemoveAt(_undo.Count - 1);
+            // Başarısız adım da yığından çıkar: geri alınamayan tek bir adım, altındaki bütün adımları kilitlemesin.
+            _undo.RemoveAt(_undo.Count - 1);
             return result;
         }
 
@@ -120,6 +121,55 @@ namespace Thatchwick.Core.Build
 
         private const string HousingOccupied = "İçinde hayvan var: önce hayvanları sat.";
         private bool IsOccupiedHousing(ItemInstance item) => item.Def.IsHousing && HousingResidents != null && HousingResidents(item.Id) > 0;
+
+        private const string StairsInUse = "O katta biri var ve başka merdiven yok: önce onu çağır.";
+
+        /// <summary>Eşya dünyadan kaldırılamıyorsa nedeni (dolu barınak, birini katta bırakacak merdiven); kaldırılabiliyorsa null.</summary>
+        private string RemovalBlocker(ItemInstance item)
+        {
+            if (IsOccupiedHousing(item)) return HousingOccupied;
+            if (item.Def.IsStairs && !item.IsDecor && StrandsSomeone(item)) return StairsInUse;
+            return null;
+        }
+
+        // Merdiven zemin kat ile bir üst/alt katı bağlar; o katta biri varken son merdiven kaldırılmaz.
+        private bool StrandsSomeone(ItemInstance stairs)
+        {
+            int a = stairs.Position.Z, b = a + stairs.Def.StairsDelta;
+            int remote = a != 0 ? a : b;
+            if (remote == 0 || !_world.AnyCharacterOnLevel(remote)) return false;
+            foreach (var other in _world.Items)
+            {
+                if (other == stairs || !other.Def.IsStairs || other.IsDecor) continue;
+                int oa = other.Position.Z, ob = oa + other.Def.StairsDelta;
+                if (oa == remote || ob == remote) return false;
+            }
+            return true;
+        }
+
+        // Kaldırılan eşyanın yeri: geri alırken türüne göre (yer, duvar, yüzey yuvası) aynı yere konur.
+        private sealed class Spot
+        {
+            public ItemDef Def;
+            public GridPos Pos;
+            public int Rot;
+            public int? ParentId;
+            public string SlotId;
+            public bool Wall;
+        }
+
+        private static Spot SpotOf(ItemInstance it, ItemDef def = null) =>
+            new Spot { Def = def ?? it.Def, Pos = it.Position, Rot = it.Rotation, ParentId = it.ParentId, SlotId = it.SlotId, Wall = it.IsWallMounted };
+
+        private PlacementCheck CanPutBack(Spot s, int? ignoreItemId = null) =>
+            s.ParentId.HasValue ? _world.CanPlaceOnSurface(s.Def, s.ParentId.Value, s.SlotId, ignoreItemId)
+            : s.Wall ? _world.CanPlaceOnWall(s.Def, s.Pos, s.Rot, ignoreItemId)
+            : _world.CanPlaceFloor(s.Def, s.Pos, s.Rot, ignoreItemId);
+
+        private ItemInstance PutBack(Spot s) =>
+            s.ParentId.HasValue ? _world.PlaceOnSurface(s.Def, s.ParentId.Value, s.SlotId)
+            : s.Wall ? _world.PlaceOnWall(s.Def, s.Pos, s.Rot)
+            : _world.PlaceItem(s.Def, s.Pos, s.Rot);
 
         public bool IsUnlocked(ItemDef def) => AccountLevel == null || AccountLevel() >= def.UnlockLevel;
 
@@ -179,19 +229,27 @@ namespace Thatchwick.Core.Build
         {
             var target = _world.GetItem(itemId);
             if (target == null) return PlacementCheck.Fail("Eşya bulunamadı.");
-            if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
             if (IsLocked(target)) return PlacementCheck.Fail(Locked);
-            if (IsOccupiedHousing(target)) return PlacementCheck.Fail(HousingOccupied);
-            var rootDef = target.Def; var rootPos = target.Position; int rootRot = target.Rotation;
+            // Ekin sökülebilir (akçe vermez, geri alınmaz): yanlış yere ekilen ya da ortada kalıp ulaşılamayan ekin
+            // tarlayı kilitlemesin. Ağaçlar olgunlaşınca kesilerek kalkar.
+            if (target.IsPlant && target.Def.IsCrop)
+            {
+                _world.RemoveItem(itemId);
+                return PlacementCheck.Success;
+            }
+            if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
+            string blocker = RemovalBlocker(target);
+            if (blocker != null) return PlacementCheck.Fail(blocker);
+            var spot = SpotOf(target);
             int total = 0;
             var removed = _world.RemoveItem(itemId);
             foreach (var def in removed) total += SellValue(def);
             if (total > 0) _house.AddAkce(total);
             Record("Eşya satışı", () =>
             {
-                if (!_world.CanPlaceFloor(rootDef, rootPos, rootRot).Ok) return PlacementCheck.Fail("Eski yeri doldu, satış geri alınamaz.");
+                if (!CanPutBack(spot).Ok) return PlacementCheck.Fail("Eski yeri doldu, satış geri alınamaz.");
                 if (!_house.TrySpend(total)) return PlacementCheck.Fail("Akçe yetmiyor, satış geri alınamaz.");
-                _world.PlaceItem(rootDef, rootPos, rootRot);
+                PutBack(spot);
                 GiveBack(removed, 1);
                 return PlacementCheck.Success;
             });
@@ -252,7 +310,10 @@ namespace Thatchwick.Core.Build
             int placedId = placedItem.Id;
             Record("Yerleştirme", () =>
             {
-                if (_world.GetItem(placedId) == null) return PlacementCheck.Fail("Eşya artık orada değil.");
+                var current = _world.GetItem(placedId);
+                if (current == null) return PlacementCheck.Fail("Eşya artık orada değil.");
+                string why = RemovalBlocker(current);      // bu arada hayvan alınmış barınak, katta biri kalmış merdiven
+                if (why != null) return PlacementCheck.Fail(why);
                 GiveBack(_world.RemoveItem(placedId));
                 return PlacementCheck.Success;
             });
@@ -336,15 +397,16 @@ namespace Thatchwick.Core.Build
             if (target == null) return PlacementCheck.Fail("Eşya bulunamadı.");
             if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
             if (IsLocked(target)) return PlacementCheck.Fail(Locked);
-            if (IsOccupiedHousing(target)) return PlacementCheck.Fail(HousingOccupied);
-            var rootDef = target.Def; var rootPos = target.Position; int rootRot = target.Rotation;
+            string blocker = RemovalBlocker(target);
+            if (blocker != null) return PlacementCheck.Fail(blocker);
+            var spot = SpotOf(target);
             var removed = _world.RemoveItem(itemId);
             GiveBack(removed);
             Record("Envantere alma", () =>
             {
-                if (!_world.CanPlaceFloor(rootDef, rootPos, rootRot).Ok) return PlacementCheck.Fail("Eski yeri doldu.");
-                if (!_house.TryTakeItem(rootDef.Id)) return PlacementCheck.Fail("Eşya artık envanterde değil.");
-                _world.PlaceItem(rootDef, rootPos, rootRot);
+                if (!CanPutBack(spot).Ok) return PlacementCheck.Fail("Eski yeri doldu.");
+                if (!_house.TryTakeItem(spot.Def.Id)) return PlacementCheck.Fail("Eşya artık envanterde değil.");
+                PutBack(spot);
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;
@@ -487,12 +549,12 @@ namespace Thatchwick.Core.Build
             var map = _world.Map;
             map.SetTile(p, true);
             map.SetFloor(p, p.Z < 0 ? FloorType.Dirt : FloorType.Wood);
-            int refund = Refund(price);
             Record(p.Z > 0 ? "Üst kat döşemesi" : "Bodrum kazısı", () =>
             {
                 if (_world.GetItemAt(p) != null) return PlacementCheck.Fail("Üzerinde eşya var, geri alınamaz.");
+                if (_world.IsOccupiedByCharacter(p)) return PlacementCheck.Fail("Üzerinde biri duruyor, geri alınamaz.");
                 map.SetTile(p, false);
-                _house.AddAkce(refund);
+                _house.AddAkce(price);      // geri alma tam iade eder (kaldırma yarısını verir)
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;
@@ -505,6 +567,7 @@ namespace Thatchwick.Core.Build
             if (p.Z == 0 || !map.HasTile(p)) return PlacementCheck.Fail("Orada kaldırılacak bir şey yok.");
             if (!map.IsOwned(p)) return PlacementCheck.Fail(NotOwned);
             if (_world.GetItemAt(p) != null) return PlacementCheck.Fail("Önce üstündeki eşyayı kaldır.");
+            if (_world.IsOccupiedByCharacter(p)) return PlacementCheck.Fail("Üzerinde biri duruyor.");
             if (map.HasLinkAt(p)) return PlacementCheck.Fail("Merdiven buraya bağlı; önce merdiveni kaldır.");
             foreach (var d in FourDirs)
                 if (map.GetEdge(GridMap.EdgeBetween(p, p + d)) != EdgeKind.None) return PlacementCheck.Fail("Önce çevresindeki duvarları kaldır.");
@@ -638,14 +701,22 @@ namespace Thatchwick.Core.Build
             foreach (var other in _world.Items)
                 if (other.ParentId == itemId) return PlacementCheck.Fail("Önce üstündeki dekoru al.");
 
-            var oldDef = item.Def; var pos = item.Position; int rot = item.Rotation;
+            if (IsOccupiedHousing(item)) return PlacementCheck.Fail(HousingOccupied);
+            // Eski eşya kaldırılmadan önce yenisinin aynı yere sığacağından emin ol (yoksa eşya ve akçe boşa giderdi).
+            var oldDef = item.Def;
+            var oldSpot = SpotOf(item);
+            var newSpot = SpotOf(item, variant);
+            var fits = CanPutBack(newSpot, itemId);
+            if (!fits.Ok) return fits;
+            double fuel = item.FuelDays;
             int diff = variant.Price - oldDef.Price;
             int delta = diff > 0 ? -diff : (int)Math.Floor(-diff * SellRatio);   // eksi = ödedi, artı = iade aldı
             if (diff > 0 && !_house.TrySpend(diff)) return PlacementCheck.Fail("Akçe yetmiyor.");
             if (diff < 0 && delta > 0) _house.AddAkce(delta);
 
             _world.RemoveItem(itemId);
-            var created = _world.PlaceItem(variant, pos, rot);
+            var created = PutBack(newSpot);
+            created.FuelDays = fuel;        // yanan ocağın yakıtı varyantla birlikte kalır
             replaced = created;
             int newId = created.Id;
             Record("Varyant", () =>
@@ -654,8 +725,9 @@ namespace Thatchwick.Core.Build
                 if (cur == null) return PlacementCheck.Fail("Eşya artık yok.");
                 if (delta > 0) { if (!_house.TrySpend(delta)) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz."); }
                 else if (delta < 0) _house.AddAkce(-delta);
+                double fuelNow = cur.FuelDays;
                 _world.RemoveItem(newId);
-                _world.PlaceItem(oldDef, pos, rot);
+                PutBack(oldSpot).FuelDays = fuelNow;
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;

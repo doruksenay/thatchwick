@@ -278,26 +278,36 @@ namespace Thatchwick.Game
             int x0 = Mathf.Min(a.X, tile.X), x1 = Mathf.Max(a.X, tile.X);
             int y0 = Mathf.Min(a.Y, tile.Y), y1 = Mathf.Max(a.Y, tile.Y);
             string fail = null; int built = 0;
-            for (int x = x0; x <= x1 && fail == null; x++)
+            var wanted = z < 0 ? FloorType.Dirt : FloorType.Wood;
+            _svc.BeginGroup("Oda");     // bütün oda tek geri alma adımı
+            try
+            {
+                for (int x = x0; x <= x1 && fail == null; x++)
+                    for (int y = y0; y <= y1 && fail == null; y++)
+                    {
+                        var p = new GridPos(x, y, z);
+                        // Üst katta ve bodrumda önce döşeme/kazı gerekir (zemin katta tile her zaman vardır).
+                        if (z != 0 && !_world.Map.HasTile(p))
+                        {
+                            var lr = _svc.BuildLevelTile(p);
+                            if (!lr.Ok) { fail = lr.Reason; break; }
+                        }
+                        if (_world.Map.GetFloor(p) == wanted) continue;     // zaten döşeli
+                        var r = _svc.PaintFloor(p, wanted);
+                        if (!r.Ok) fail = r.Reason;
+                    }
+                for (int x = x0; x <= x1 && fail == null; x++)
+                {
+                    fail = TryWall(new Edge(x, y0, EdgeAxis.Horizontal, z), ref built) ?? TryWall(new Edge(x, y1 + 1, EdgeAxis.Horizontal, z), ref built);
+                }
                 for (int y = y0; y <= y1 && fail == null; y++)
                 {
-                    var p = new GridPos(x, y, z);
-                    // Üst katta ve bodrumda önce döşeme/kazı gerekir (zemin katta tile her zaman vardır).
-                    if (z != 0 && !_world.Map.HasTile(p))
-                    {
-                        var lr = _svc.BuildLevelTile(p);
-                        if (!lr.Ok) { fail = lr.Reason; break; }
-                    }
-                    var r = _svc.PaintFloor(p, z < 0 ? FloorType.Dirt : FloorType.Wood);
-                    if (!r.Ok && r.Reason != "Orası zaten öyle.") fail = r.Reason;
+                    fail = TryWall(new Edge(x0, y, EdgeAxis.Vertical, z), ref built) ?? TryWall(new Edge(x1 + 1, y, EdgeAxis.Vertical, z), ref built);
                 }
-            for (int x = x0; x <= x1 && fail == null; x++)
-            {
-                fail = TryWall(new Edge(x, y0, EdgeAxis.Horizontal, z), ref built) ?? TryWall(new Edge(x, y1 + 1, EdgeAxis.Horizontal, z), ref built);
             }
-            for (int y = y0; y <= y1 && fail == null; y++)
+            finally
             {
-                fail = TryWall(new Edge(x0, y, EdgeAxis.Vertical, z), ref built) ?? TryWall(new Edge(x1 + 1, y, EdgeAxis.Vertical, z), ref built);
+                _svc.EndGroup();
             }
             _status = fail != null ? $"Oda yarım kaldı: {fail}" : $"Oda kuruldu ({built} duvar). Kapı için Kapı aracını duvara kullan.";
             RefreshOverlay();
@@ -648,7 +658,12 @@ namespace Thatchwick.Game
             if (GUILayout.Button("Taşı")) { _moving = true; _ghostPos = sel.Position; _rot = sel.Rotation; RefreshOverlay(); }
             if (GUILayout.Button("Envantere al")) { var r = _svc.StoreToInventory(sel.Id); _status = r.Ok ? "Envantere alındı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
             GUILayout.EndHorizontal();
-            if (GUILayout.Button($"Sat (+{_svc.SellValue(sel.Def)} akçe, dekorlar dahil)")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Satıldı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
+            if (sel.IsPlant && sel.Def.IsCrop)
+            {
+                // Ekin satılmaz ama sökülebilir (yanlış yere ekilen ya da ortada kalan ekin tarlayı kilitlemesin).
+                if (GUILayout.Button("Ekini sök")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Ekin söküldü." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
+            }
+            else if (GUILayout.Button($"Sat (+{_svc.SellValue(sel.Def)} akçe, dekorlar dahil)")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Satıldı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
         }
 
         private void PlaceFloor()

@@ -35,10 +35,32 @@ namespace Thatchwick.Core.World
             Map = map ?? throw new ArgumentNullException(nameof(map));
         }
 
+        /// <summary>
+        /// Yaşayan karakterlerin durduğu karolar (oyun katmanı verir; yoksa kimse yok sayılır). Yerleştirme denetimi
+        /// bununla karakterin üstüne eşya konmasını, yapı servisi de merdiven kalkınca birinin katta kalmasını önler.
+        /// </summary>
+        public Func<IEnumerable<GridPos>> CharacterPositions { get; set; }
+
+        public bool IsOccupiedByCharacter(GridPos tile)
+        {
+            if (CharacterPositions == null) return false;
+            foreach (var p in CharacterPositions()) if (p == tile) return true;
+            return false;
+        }
+
+        public bool AnyCharacterOnLevel(int level)
+        {
+            if (CharacterPositions == null) return false;
+            foreach (var p in CharacterPositions()) if (p.Z == level) return true;
+            return false;
+        }
+
         // ---- denetimler ----
 
         /// <summary>Yer eşyasının (def) verilen konum ve dönüşle konup konamayacağı. ignoreItemId: taşınan eşyanın kendisi.</summary>
-        public PlacementCheck CanPlaceFloor(ItemDef def, GridPos position, int rotation, int? ignoreItemId = null, bool landingMayBeCreated = false)
+        /// <param name="restoring">Kayıttan yükleme: yalnızca yapısal denetimler (sınır, karo, çakışma). Oyun sırasında geçerli
+        /// oluşmuş durumlar (merdivenin önüne sonradan gelen eşya gibi) yüklemede eşyayı düşürmesin.</param>
+        public PlacementCheck CanPlaceFloor(ItemDef def, GridPos position, int rotation, int? ignoreItemId = null, bool landingMayBeCreated = false, bool restoring = false)
         {
             if (def == null) throw new ArgumentNullException(nameof(def));
             if (def.Placement == ItemPlacement.Resource) return PlacementCheck.Fail("Bu eşya yerleştirilmez.");
@@ -60,6 +82,11 @@ namespace Thatchwick.Core.World
                     if (!Map.HasTile(tile)) return PlacementCheck.Fail(position.Z > 0 ? "Önce üst kat döşemesi gerekir." : "Önce burayı kazmalısın.");
                     if (Map.IsBlocked(tile) && !(ignored != null && Occupies(ignored, tile)))
                         return PlacementCheck.Fail("Orası dolu ya da geçilemez.");
+                    if (restoring) continue;
+                    if (IsOccupiedByCharacter(tile)) return PlacementCheck.Fail("Orada biri duruyor.");
+                    // Merdivenin önü ve inişi açık kalmalı (taşınan şey merdivenin kendisi değilse).
+                    if (Map.HasLinkAt(tile) && !(ignored != null && ignored.Def.IsStairs))
+                        return PlacementCheck.Fail("Merdivenin ucu kapanmasın.");
                 }
             }
 
@@ -67,6 +94,7 @@ namespace Thatchwick.Core.World
             {
                 StairsEnds(def, position, rotation, out var entrance, out var landing);
                 if (!GridMap.IsValidLevel(landing.Z)) return PlacementCheck.Fail(def.StairsDelta > 0 ? "Daha üst kat yok." : "Daha alt kat yok.");
+                if (restoring) return PlacementCheck.Success;
                 if (!Map.HasTile(entrance) || Map.IsBlocked(entrance) && !(ignored != null && Occupies(ignored, entrance)))
                     return PlacementCheck.Fail("Merdivenin önü açık olmalı.");
                 for (int dy = 0; dy < h; dy++)
