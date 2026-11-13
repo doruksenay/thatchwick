@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Game katmanının (Assets/Scripts/Game) Unity olmadan derleme denetimi.
+       Core + Game kaynakları sahte Unity tipleriyle (UnityStubs.cs) derlenir; Unity 6 ile aynı dil sürümü (C# 9).
+       Yalnızca derleme hatası yakalar (Core ile API uyumsuzluğu, yazım hataları); oyunu çalıştırmaz.
+       Çalıştırma: dotnet build core/Thatchwick.GameCheck -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <OutputType>Library</OutputType>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <IsPackable>false</IsPackable>
+    <NoWarn>CS0649;CS0169;CS0414;CS0067;CS0162;CS0168;CS0219</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Assets\Scripts\Core\**\*.cs" />
+    <Compile Include="..\..\Assets\Scripts\Game\**\*.cs" />
+    <Compile Include="UnityStubs.cs" />
+  </ItemGroup>
+</Project>

@@ -3,6 +3,8 @@ id: "004"
 title: Toprak yol seti
 status: pending
 approved_by: pending
+family: zemin
+style_gate: false
 cost_est: 10
 cost_max: 15
 depends_on: ["003"]

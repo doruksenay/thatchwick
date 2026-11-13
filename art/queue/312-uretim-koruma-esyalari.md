@@ -3,6 +3,8 @@ id: "312"
 title: Saklama eşyaları (tuzlama fıçısı, kök mahzeni)
 status: pending
 approved_by: pending
+family: esya
+style_gate: false
 cost_est: 2
 cost_max: 5
 depends_on: ["301"]

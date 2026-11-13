@@ -3,6 +3,8 @@ id: "321"
 title: Çiftlik eşyaları (kompost yığını, tohum yapıcı, sulama hendeği, kova-makara, su oluğu)
 status: pending
 approved_by: pending
+family: esya
+style_gate: false
 cost_est: 5
 cost_max: 9
 depends_on: ["301"]

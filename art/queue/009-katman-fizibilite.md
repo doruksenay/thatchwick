@@ -3,6 +3,8 @@ id: "009"
 title: Karakter katman sistemi fizibilite raporu
 status: review
 approved_by: auto
+family: karakter
+style_gate: false
 cost_est: 0
 cost_max: 0
 depends_on: []

@@ -3,6 +3,8 @@ id: "005"
 title: Yatak 2x1, SW-NE ekseni
 status: blocked
 approved_by: auto
+family: esya
+style_gate: false
 cost_est: 1
 cost_max: 3
 depends_on: []

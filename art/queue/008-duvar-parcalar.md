@@ -3,6 +3,8 @@ id: "008"
 title: Duvar parçaları (düz ve köşe, iki eksen)
 status: rejected
 approved_by: auto
+family: yapi
+style_gate: false
 cost_est: 15
 cost_max: 25
 depends_on: ["007"]

@@ -3,6 +3,8 @@ id: "317"
 title: Kök ekinleri evreleri (yaban havucu, havuç, soğan, sarımsak, pancar; 3 evre)
 status: pending
 approved_by: pending
+family: bitki
+style_gate: false
 cost_est: 15
 cost_max: 24
 depends_on: ["301", "310"]

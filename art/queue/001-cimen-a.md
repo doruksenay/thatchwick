@@ -3,6 +3,8 @@ id: "001"
 title: Çimen karosu a
 status: blocked
 approved_by: auto
+family: zemin
+style_gate: true
 cost_est: 10
 cost_max: 15
 depends_on: []

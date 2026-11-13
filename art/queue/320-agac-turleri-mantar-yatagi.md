@@ -3,6 +3,8 @@ id: "320"
 title: Yeni ağaç türleri ve bodrum mantar yatağı (huş, çam, söğüt; mantar yatağı)
 status: pending
 approved_by: pending
+family: bitki
+style_gate: false
 cost_est: 7
 cost_max: 12
 depends_on: ["301"]

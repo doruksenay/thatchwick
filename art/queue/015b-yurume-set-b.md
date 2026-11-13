@@ -3,6 +3,8 @@ id: "015b"
 title: Yürüme animasyonu seti 2/3 (woodcutter_a, farmer_f, craftsman_a)
 status: pending
 approved_by: pending     # kullanıcı bütçe günü onaylayacak
+family: karakter
+style_gate: false
 cost_est: 24
 cost_max: 25
 depends_on: ["014"]

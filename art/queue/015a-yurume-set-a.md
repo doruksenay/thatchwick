@@ -3,6 +3,8 @@ id: "015a"
 title: Yürüme animasyonu seti 1/3 (woman_a, elder_m, elder_f)
 status: pending
 approved_by: pending     # kullanıcı bütçe günü onaylayacak
+family: karakter
+style_gate: false
 cost_est: 24
 cost_max: 25
 depends_on: ["014"]

@@ -3,6 +3,8 @@ id: "316"
 title: Envanter ve ürün ikonları (hammadde, ürün, yemek, toplanan)
 status: pending
 approved_by: pending     # 25'in üstünde olabilir; kullanıcı onayı şart
+family: arayuz
+style_gate: false
 cost_est: 24
 cost_max: 40
 depends_on: ["315"]

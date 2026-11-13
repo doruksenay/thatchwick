@@ -3,6 +3,8 @@ id: "319"
 title: Meyve ağaçları (elma, armut, kiraz, erik; genç, olgun, meyveli)
 status: pending
 approved_by: pending
+family: bitki
+style_gate: false
 cost_est: 12
 cost_max: 20
 depends_on: ["301"]
