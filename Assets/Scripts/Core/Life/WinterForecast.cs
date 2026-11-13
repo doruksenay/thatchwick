@@ -148,7 +148,8 @@ namespace Thatchwick.Core.Life
             // uyarılar
             if (horizon > 0)
             {
-                if (r.FoodDays < horizon)
+                // Yiyecek uyarısı da odun gibi yalnızca kışta ya da kış yaklaşınca: baharın ilk gününden her gün uyarmasın.
+                if (r.FoodDays < horizon && (winter || r.DaysToWinter <= WarnDaysBeforeWinter))
                 {
                     r.Warnings.Add(winter
                         ? $"Yiyecek ilkbahara yetmeyebilir: {Fmt(r.FoodDays)} günlük var, {Fmt(horizon)} gün lazım."

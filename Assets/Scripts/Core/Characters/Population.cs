@@ -66,7 +66,18 @@ namespace Thatchwick.Core.Characters
             foreach (var c in snapshot) c.Tick(gameDays);
         }
 
-        private void OnMemberDied(Character c) => MemberDied?.Invoke(c);
+        private void OnMemberDied(Character c)
+        {
+            ReleaseSpouseOf(c);
+            MemberDied?.Invoke(c);
+        }
+
+        // Dul kalan yeniden evlenebilsin: yaşayan eşin bağı çözülür. Ölenin SpouseId'si kalır (yas, miras ve soy ağacı için).
+        private void ReleaseSpouseOf(Character dead)
+        {
+            foreach (var m in _members)
+                if (m != dead && !m.IsDead && m.SpouseId == dead.Id) m.SpouseId = null;
+        }
 
         /// <summary>Tüm üyelerin özellik/dal etkilerini yeniden hesaplar (köy projesi bitince, yüklemeden sonra).</summary>
         public void RecomputeAll()

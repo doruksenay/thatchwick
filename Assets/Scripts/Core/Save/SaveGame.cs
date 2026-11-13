@@ -39,6 +39,9 @@ namespace Thatchwick.Core.Save
         public List<SoilSave> Soil = new List<SoilSave>();
         /// <summary>Yüklenemeyen parçalar (ör. içerikten kaldırılmış eşya). Oyun yine açılır.</summary>
         public List<string> Warnings = new List<string>();
+        /// <summary>Ana rastgelelik tohumu (eski kayıtta 0) ve kayıttaki yükleme sayacı.</summary>
+        public int Seed;
+        public int RngEpoch;
     }
 
     /// <summary>Oyun durumunu SaveData'ya çevirir ve geri kurar (T16: sürümlü, geriye uyumlu).</summary>
@@ -48,7 +51,7 @@ namespace Thatchwick.Core.Save
 
         public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
             AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null,
-            AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null)
+            AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null, int seed = 0, int rngEpoch = 0)
         {
             var map = world.Map;
             var data = new SaveData
@@ -56,7 +59,9 @@ namespace Thatchwick.Core.Save
                 version = CurrentVersion,
                 savedAtUtc = DateTime.UtcNow.ToString("o"),
                 totalDays = clock.TotalDays,
-                speed = clock.RequestedSpeed
+                speed = clock.RequestedSpeed,
+                seed = seed,
+                rngEpoch = rngEpoch
             };
 
             // Harita: eşyaların kapattığı karolar arazi engeli sayılmaz (yüklenince eşyalar yeniden kapatır).
@@ -86,7 +91,7 @@ namespace Thatchwick.Core.Save
             for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
             {
                 if (z == 0) continue;
-                foreach (var t in map.TilesOnLevel(z)) levelTiles.Add(new LevelTileSave { x = t.X, y = t.Y, z = z, floor = (int)map.GetFloor(t) });
+                foreach (var t in map.TilesOnLevel(z)) levelTiles.Add(new LevelTileSave { x = t.X, y = t.Y, z = z, floor = (int)map.GetFloor(t), zone = (int)map.GetZone(t) });
             }
             m.levelTiles = levelTiles.ToArray();
             data.map = m;
@@ -177,7 +182,8 @@ namespace Thatchwick.Core.Save
                     list.Add(new AnimalSave
                     {
                         id = a.Id, species = a.Species.Id, x = a.Position.X, y = a.Position.Y, home = a.HomeItemId,
-                        fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays, friendship = a.Friendship
+                        fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays, friendship = a.Friendship,
+                        petCooldown = a.PetCooldownDays
                     });
                 }
                 data.animals = list.ToArray();
@@ -255,7 +261,7 @@ namespace Thatchwick.Core.Save
                 if (!content.Animals.TryGet(s.species, out var species)) { loaded.Warnings.Add($"Hayvan türü yok, atlandı: {s.species}"); continue; }
                 var home = loaded.World.GetItem(s.home);
                 if (home == null || home.Def.HousingKind != species.Housing) { loaded.Warnings.Add($"Hayvanın barınağı yok, atlandı: {s.species}"); continue; }
-                system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship);
+                system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship, s.petCooldown);
             }
         }
 
@@ -291,6 +297,7 @@ namespace Thatchwick.Core.Save
                     if (!map.InBounds(p)) continue;
                     map.SetTile(p, true);
                     if (Enum.IsDefined(typeof(FloorType), lt.floor)) map.SetFloor(p, (FloorType)lt.floor);
+                    if (Enum.IsDefined(typeof(ZoneType), lt.zone)) map.SetZone(p, (ZoneType)lt.zone);
                 }
             if (m.edges != null)
                 foreach (var e in m.edges)
@@ -301,18 +308,33 @@ namespace Thatchwick.Core.Save
 
             var world = new WorldState(map);
             result.World = world;
+            result.Seed = data.seed;
+            result.RngEpoch = Math.Max(0, data.rngEpoch);
+            // Yerine konamayan eşya kaybolmaz: envantere döner (bitki, yabani ve anıt hariç; onlar envanterde durmaz).
+            var returned = new List<ItemDef>();
             if (data.items != null)
                 foreach (var s in data.items)
                 {
                     if (s == null) continue;
                     if (!content.Items.TryGet(s.def, out var def)) { result.Warnings.Add($"Eşya tanımı yok, atlandı: {s.def}"); continue; }
                     int? parent = s.parentId >= 0 ? s.parentId : (int?)null;
-                    if (parent.HasValue && world.GetItem(parent.Value) == null) { result.Warnings.Add($"Dekorun yüzeyi yok, atlandı: {s.def}"); continue; }
+                    if (parent.HasValue && world.GetItem(parent.Value) == null)
+                    {
+                        result.Warnings.Add($"Dekorun yüzeyi yok, {(KeepsInInventory(def) ? "envantere alındı" : "atlandı")}: {s.def}");
+                        if (KeepsInInventory(def)) returned.Add(def);
+                        continue;
+                    }
                     var pos = new GridPos(s.x, s.y, s.z);
                     if (!parent.HasValue)
                     {
-                        var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation) : world.CanPlaceFloor(def, pos, s.rotation);
-                        if (!fits.Ok) { result.Warnings.Add($"Eşya yerine sığmadı, atlandı: {s.def} {pos}"); continue; }
+                        // Yükleme modu: yalnızca yapısal denetim. Oyun sırasında geçerli oluşmuş durumlar eşyayı düşürmez.
+                        var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation) : world.CanPlaceFloor(def, pos, s.rotation, null, false, restoring: true);
+                        if (!fits.Ok)
+                        {
+                            result.Warnings.Add($"Eşya yerine sığmadı, {(KeepsInInventory(def) ? "envantere alındı" : "atlandı")}: {s.def} {pos}");
+                            if (KeepsInInventory(def)) returned.Add(def);
+                            continue;
+                        }
                     }
                     var restored = world.RestoreItem(def, s.id, pos, s.rotation, parent, s.slotId, Math.Max(0, s.fuelDays), Math.Max(0, s.growthDays));
                     restored.FeedStock = Math.Max(0, s.feedStock);
@@ -329,6 +351,7 @@ namespace Thatchwick.Core.Save
                     if (!content.Items.Contains(kv.key)) { result.Warnings.Add($"Envanterde bilinmeyen eşya, atlandı: {kv.key}"); continue; }
                     house.AddItem(kv.key, kv.value);
                 }
+            foreach (var def in returned) house.AddItem(def.Id);
             result.Household = house;
 
             if (data.characters != null)
@@ -339,6 +362,8 @@ namespace Thatchwick.Core.Save
                         LifeRules.Recompute(loaded, content);
                         result.Characters.Add(loaded);
                     }
+
+            ReleaseWidowed(result.Characters);
 
             result.Account = new AccountProgress();
             if (data.account != null)
@@ -367,6 +392,21 @@ namespace Thatchwick.Core.Save
             if (data.animals != null) result.Animals.AddRange(data.animals);
             if (data.soil != null) result.Soil.AddRange(data.soil);
             return result;
+        }
+
+        private static bool KeepsInInventory(ItemDef def) =>
+            def.Placement != ItemPlacement.Resource && !def.IsPlant && !def.IsForage && def.Category != "memorial";
+
+        // Eski kayıtları onarır: eşi ölmüş (ya da kayıtta olmayan) yaşayanın evlilik bağı çözülür, yeniden evlenebilir.
+        private static void ReleaseWidowed(List<Character> characters)
+        {
+            var byId = new Dictionary<int, Character>();
+            foreach (var c in characters) byId[c.Id] = c;
+            foreach (var c in characters)
+            {
+                if (c.IsDead || !c.SpouseId.HasValue) continue;
+                if (!byId.TryGetValue(c.SpouseId.Value, out var spouse) || spouse.IsDead) c.SpouseId = null;
+            }
         }
 
         private static Character LoadCharacter(CharacterSave s)

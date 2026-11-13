@@ -180,7 +180,7 @@ namespace Thatchwick.Core.Animals
         private static readonly GridPos[] Offsets = { new GridPos(1, 0), new GridPos(0, 1), new GridPos(-1, 0), new GridPos(0, -1) };
 
         /// <summary>Kayıttan yükleme.</summary>
-        public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays, float friendship = 0f)
+        public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays, float friendship = 0f, double petCooldown = 0)
         {
             var a = new Animal(id, species, pos, homeId)
             {
@@ -188,7 +188,8 @@ namespace Thatchwick.Core.Animals
                 Fullness = Math.Max(0f, Math.Min(100f, fullness)),
                 AgeDays = Math.Max(0, age),
                 ProduceProgress = Math.Max(0, produce),
-                HungryDays = Math.Max(0, hungryDays)
+                HungryDays = Math.Max(0, hungryDays),
+                PetCooldownDays = Math.Max(0, Math.Min(1.0, petCooldown))
             };
             _animals.Add(a);
             if (id >= _nextId) _nextId = id + 1;

@@ -25,7 +25,8 @@ namespace Thatchwick.Core.World
         public static List<GridPos> FindPath(GridMap map, GridPos start, GridPos goal)
         {
             if (map == null) throw new ArgumentNullException(nameof(map));
-            if (!map.IsWalkable(start) || !map.IsWalkable(goal)) return null;
+            // Başlangıç kapalı olabilir (üstüne eşya konmuş karakter): oradan dışarı adım atılabilir, böylece kimse hapsolmaz.
+            if (!map.HasTile(start) || !map.IsWalkable(goal)) return null;
             if (start == goal) return new List<GridPos> { start };
             return Search(map, start, p => p == goal, p => Heuristic(p, goal));
         }
@@ -39,7 +40,7 @@ namespace Thatchwick.Core.World
         {
             if (map == null) throw new ArgumentNullException(nameof(map));
             if (goals == null) throw new ArgumentNullException(nameof(goals));
-            if (!map.IsWalkable(start)) return null;
+            if (!map.HasTile(start)) return null;
 
             var targets = new List<GridPos>();
             foreach (var g in goals) if (map.IsWalkable(g)) targets.Add(g);

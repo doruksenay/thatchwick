@@ -85,7 +85,7 @@ namespace Thatchwick.Core.Tests
             Level(c, SkillType.Farming, 10);
             Assert.False(LifeRules.ChooseBranch(r.Db, c, "branch.farm_bounty", out why));           // yanlış dalın devamı
             Assert.True(LifeRules.ChooseBranch(r.Db, c, "branch.farm_master", out _));
-            Assert.Equal(1.15f * 1.2f, c.Modifiers.GrowthSpeed, 3);
+            Assert.Equal((double)(1.15f * 1.2f), (double)c.Modifiers.GrowthSpeed, 3);
             Assert.Equal("Çiftçi", r.Life.TradeOf(c));
         }
 
@@ -160,8 +160,8 @@ namespace Thatchwick.Core.Tests
             var orhan = r.Life.Villagers.CharacterOf("villager.orhan");
             orhan.Needs.Set(NeedType.Social, 20); orhan.Needs.Set(NeedType.Fun, 20);
             for (int i = 0; i < 20; i++) orhan.Tick(0.1);
-            Assert.Equal(20f, orhan.Needs.Get(NeedType.Social), 3);
-            Assert.Equal(20f, orhan.Needs.Get(NeedType.Fun), 3);
+            Assert.Equal(20.0, (double)orhan.Needs.Get(NeedType.Social), 3);
+            Assert.Equal(20.0, (double)orhan.Needs.Get(NeedType.Fun), 3);
 
             r.Head.Needs.Set(NeedType.Social, 20);
             for (int i = 0; i < 20; i++) r.Head.Tick(0.1);
@@ -321,7 +321,7 @@ namespace Thatchwick.Core.Tests
             for (int i = 0; i < 3; i++) Assert.True(r.Life.Tools.Upgrade("saw", out _));
             Assert.False(r.Life.Tools.Upgrade("saw", out var why));
             Assert.Contains("son kademe", why);
-            Assert.Equal(1.6f, r.Life.Tools.SpeedFor("saw"), 3);
+            Assert.Equal(1.6, (double)r.Life.Tools.SpeedFor("saw"), 3);
         }
 
         // ---------- Köy projeleri (38) ----------
@@ -336,7 +336,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(p.Build("project.village_cellar", out _));
             Assert.Equal(100 + 40, r.House.Akce);                                        // 40 akçe "İlk Köy Projesi" ödülü
             Assert.Equal(0, r.House.Count("item.plank"));
-            Assert.Equal(0.1f, r.Life.SpoilReduction(), 3);
+            Assert.Equal(0.1, (double)r.Life.SpoilReduction(), 3);
             Assert.Equal(6, p.VillageStatus);
             Assert.False(p.Build("project.village_cellar", out var why));
             Assert.Contains("tamamlandı", why);
@@ -351,7 +351,7 @@ namespace Thatchwick.Core.Tests
             r.House.AddItem("item.firewood", 20); r.House.AddItem("item.log", 8);
             Assert.Equal(0f, r.Head.Modifiers.ColdResist);
             Assert.True(r.Life.Projects.Build("project.common_hearth", out _));
-            Assert.Equal(0.1f, r.Head.Modifiers.ColdResist, 3);
+            Assert.Equal(0.1, (double)r.Head.Modifiers.ColdResist, 3);
         }
 
         // ---------- Hedefler (41) ----------
@@ -588,7 +588,7 @@ namespace Thatchwick.Core.Tests
             r2.Life.Restore(data);
             Assert.Equal(1, r2.Life.Tools.Tier("hoe"));
             Assert.True(r2.Life.Projects.IsDone("project.well"));
-            Assert.Equal(0.05f, r2.Life.Village.CropGrowth, 3);
+            Assert.Equal(0.05, (double)r2.Life.Village.CropGrowth, 3);
             Assert.Equal(string.Join(",", r.Life.Goals.Done.OrderBy(x => x)), string.Join(",", r2.Life.Goals.Done.OrderBy(x => x)));
             Assert.True(r2.Life.Goals.IsDone("goal.project1"));
             var z = r2.Life.Villagers.StateOf("villager.zeynep");

@@ -16,6 +16,10 @@ namespace Thatchwick.Core.Family
     public sealed class FamilyService : ISocialEffects
     {
         public const float BabyCareThreshold = 45f;
+        /// <summary>Açlığı bu değerin üstündeki bebek tok sayılır: ikinci bir bakıcı aynı bebeğe boşuna yiyecek harcamaz.</summary>
+        public const float BabyFullThreshold = 70f;
+        /// <summary>Başka kattaki kişi sohbet için bu kadar karo daha uzak sayılır.</summary>
+        public const int OtherLevelDistance = 12;
         public const float FeedRestore = 60f;
         public const int ChatAffection = 20;
         /// <summary>Sohbetin iki tarafa verdiği keyif.</summary>
@@ -94,6 +98,7 @@ namespace Thatchwick.Core.Family
                 case SocialAction.Feed:
                     if (target.Stage != AgeStage.Baby) return "Yalnızca bebek beslenir; büyükler kendisi yer.";
                     if (actor.Stage == AgeStage.Child) return "Çocuk bebeği besleyemez.";
+                    if (target.Needs.Get(NeedType.Hunger) >= BabyFullThreshold) return $"{target.Name} tok.";
                     if (FirstFood() == null) return "Yiyecek yok.";
                     return null;
                 case SocialAction.Chat:
@@ -169,6 +174,8 @@ namespace Thatchwick.Core.Family
                     foreach (var c in new[] { actor, target })
                     {
                         if (!c.IsVillager) continue;
+                        // Evlenerek gelen, eşinin neslinden sayılır (soy ağacında "1. nesil" görünmesin).
+                        c.Generation = Math.Max(c.Generation, (c == actor ? target : actor).Generation);
                         c.IsVillager = false;
                         c.CanStarve = true;
                         JoinedHousehold?.Invoke(c);
@@ -197,7 +204,8 @@ namespace Thatchwick.Core.Family
             foreach (var c in _population.Members)
             {
                 if (c == character || c.IsDead || c.Stage == AgeStage.Baby) continue;
-                int dist = Math.Abs(c.Position.X - character.Position.X) + Math.Abs(c.Position.Y - character.Position.Y);
+                int dist = Math.Abs(c.Position.X - character.Position.X) + Math.Abs(c.Position.Y - character.Position.Y)
+                    + Math.Abs(c.Position.Z - character.Position.Z) * OtherLevelDistance;
                 if (dist > FriendSearchRadius) continue;
                 int aff = Affection(character.Id, c.Id);
                 if (dist < bestDist || (dist == bestDist && aff > bestAff)) { best = c; bestDist = dist; bestAff = aff; }

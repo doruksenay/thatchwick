@@ -195,7 +195,7 @@ namespace Thatchwick.Core.Tests
             Assert.False(svc.BuildLevelTile(new GridPos(4, 4, 1)).Ok);                 // zaten var
             Assert.True(svc.Undo().Ok);
             Assert.False(w.Map.HasTile(new GridPos(4, 4, 1)));
-            Assert.Equal(500 - BuildService.SlabPrice + (int)(BuildService.SlabPrice * 0.5), h.Akce);
+            Assert.Equal(500, h.Akce);                                                 // geri alma tam iade eder (kaldırma yarısını verir)
         }
 
         [Fact]

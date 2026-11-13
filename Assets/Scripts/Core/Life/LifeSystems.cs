@@ -63,7 +63,11 @@ namespace Thatchwick.Core.Life
         private int _lastSeasonIndex = -1;
         public const double MoodUpdateStepDays = 0.02;
 
-        public LifeSystems(ContentDatabase content, WorldState world, Household house, Population population, GameClock clock)
+        /// <summary>Hesap XP'si sağlayıcı (gün özeti kartındaki XP farkı için); null ise 0.</summary>
+        public Func<int> AccountXp { get; set; }
+
+        /// <param name="seed">Rastgelelik tohumu (toplama noktaları, talipler, halefler). 0 ise sabit varsayılanlar (testler).</param>
+        public LifeSystems(ContentDatabase content, WorldState world, Household house, Population population, GameClock clock, int seed = 0)
         {
             Content = content ?? throw new ArgumentNullException(nameof(content));
             World = world ?? throw new ArgumentNullException(nameof(world));
@@ -73,14 +77,14 @@ namespace Thatchwick.Core.Life
 
             Mood = new MoodService(world);
             Graves = new GraveService(world, content);
-            Ledger = new DayLedger(house);
+            Ledger = new DayLedger(house, () => AccountXp != null ? AccountXp() : 0);
             Forecast = new WinterForecast(content, house, world, population, clock.Config);
-            Suitors = new SuitorPool(content, population);
+            Suitors = seed != 0 ? new SuitorPool(content, population, Seeds.Derive(seed, 1)) : new SuitorPool(content, population);
             Weather = new WeatherSystem(clock.Config, seed: 1);
             Festivals = new FestivalService(content, clock) { Village = Village };
             Spoilage = new SpoilageService(content, house, world) { ExtraReduction = SpoilReduction };
-            Forage = new ForageSystem(world, content);
-            Villagers = new VillagerService(content, population, house, clock);
+            Forage = seed != 0 ? new ForageSystem(world, content, Seeds.Derive(seed, 2)) : new ForageSystem(world, content);
+            Villagers = seed != 0 ? new VillagerService(content, population, house, clock, Seeds.Derive(seed, 3)) : new VillagerService(content, population, house, clock);
             Tools = new ToolService(content, house)
             {
                 AccountLevel = () => AccountLevel != null ? AccountLevel() : int.MaxValue,
@@ -108,6 +112,7 @@ namespace Thatchwick.Core.Life
             };
             Goals.Completed += OnGoalCompleted;
             Villagers.EventTriggered += (v, e) => Say($"{v.Name}: {e.Text}", NoticeLevel.Info, v.Id);
+            Villagers.SuccessorArrived += (v, def) => Say($"{v.Name} köye yerleşti ({def.RoleName}).", NoticeLevel.Info, v.Id);
             Villagers.GiftGiven += (v, item, taste, msg) => Say(msg, taste == GiftTaste.Dislike ? NoticeLevel.Warning : NoticeLevel.Info, v.Id);
             Watcher.Raised += (level, text, id) => Say(text, level, id);
             population.BabyBorn += (baby, mother, father) =>
@@ -331,6 +336,7 @@ namespace Thatchwick.Core.Life
             {
                 var guest = Suitors.OnNewSeason();
                 if (guest != null) Say($"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
+                Villagers.ReplaceDeparted();   // ölen adlı köylünün (demirci ...) yerine halefi mevsim başında gelir
             }
             _lastSeasonIndex = season;
             int arrivals = Suitors.Ensure();
@@ -348,6 +354,7 @@ namespace Thatchwick.Core.Life
             var data = new LifeSaveData
             {
                 weatherSeed = Weather.Seed,
+                lastProcessedDay = _lastDay,
                 festivalCelebratedDay = Festivals.CelebratedDay,
                 spoilage = Spoilage.Export().ToArray(),
                 tools = Tools.Export().ToArray(),
@@ -379,6 +386,18 @@ namespace Thatchwick.Core.Life
             Goals.Restore(data.goalsDone);
             Villagers.Restore(data.villagers);
             Marriages = Math.Max(0, data.marriages);
+            // Günlük işler (sulama sıfırlama, kuzgun, fırtına, toplama noktaları) kayıttaki gün için yapılmışsa yeniden yapılmaz.
+            // Eski kayıtta alan yoktur (-1): eskisi gibi yüklemeden sonraki ilk turda bir kez çalışır.
+            if (data.lastProcessedDay >= 0 && data.lastProcessedDay <= Clock.DayIndex)
+            {
+                _lastDay = data.lastProcessedDay;
+                _lastSeasonIndex = (int)((_lastDay / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
+                if (_lastDay == Clock.DayIndex)
+                {
+                    Festivals.AnnouncedDay = _lastDay;
+                    Ledger.Tick(_lastDay);       // gün özeti yüklenen günden saymaya başlar
+                }
+            }
             FestivalsCelebrated = Math.Max(0, data.festivalsCelebrated);
             var graves = new List<GraveRecord>();
             if (data.graves != null)

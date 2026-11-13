@@ -46,8 +46,18 @@ namespace Thatchwick.Core.Life
         /// <summary>(köylü, eşya, zevk, ileti)</summary>
         public event Action<Character, ItemDef, GiftTaste, string> GiftGiven;
 
-        public VillagerService(ContentDatabase content, Population population, Household house, GameClock clock)
+        private readonly Random _rng;
+
+        /// <summary>Adlandırılmış yeri (home:1, work:smithy ...) karoya çeviren oyun katmanı işlevi; halef buna göre yerleşir.</summary>
+        public Func<string, GridPos> PlaceResolver { get; set; }
+        /// <summary>Ölen adlı köylünün yerine halefi geldi (karakter, tanım): oyun katmanı görünüm ve sahne nesnesi verir.</summary>
+        public event Action<Character, VillagerDef> SuccessorArrived;
+        /// <summary>Halef bu yaş aralığında (oyun günü) köye gelir: genç bir usta.</summary>
+        public const double SuccessorAgeMin = 24.5, SuccessorAgeMax = 34;
+
+        public VillagerService(ContentDatabase content, Population population, Household house, GameClock clock, int seed = 55)
         {
+            _rng = new Random(seed);
             _content = content ?? throw new ArgumentNullException(nameof(content));
             _population = population ?? throw new ArgumentNullException(nameof(population));
             _house = house ?? throw new ArgumentNullException(nameof(house));
@@ -80,6 +90,7 @@ namespace Thatchwick.Core.Life
         /// <summary>İçerikte tanımlı ama henüz oluşturulmamış köylüleri karakter olarak ekler; yeni karakterleri döner.</summary>
         public List<Character> SpawnMissing(Func<string, GridPos> resolve = null)
         {
+            if (resolve != null && PlaceResolver == null) PlaceResolver = resolve;
             var created = new List<Character>();
             foreach (var def in _content.Villagers.All)
             {
@@ -99,6 +110,44 @@ namespace Thatchwick.Core.Life
                 created.Add(c);
             }
             return created;
+        }
+
+        /// <summary>
+        /// Ölen (ya da toplulukta artık bulunmayan) adlı köylülerin yerine aynı işi sürdüren halef getirir: demirci ölünce
+        /// alet yükseltme, değirmenci ölünce o köylünün hediye ve olayları kalıcı olarak kapanmasın. Halef yeni bir kişidir:
+        /// dostluk ve romantik yakınlık sıfırdan başlar; yaşanmış olaylar (ödüller) yeniden verilmez. Gelenleri döner.
+        /// </summary>
+        public List<Character> ReplaceDeparted()
+        {
+            var arrived = new List<Character>();
+            foreach (var def in _content.Villagers.All)
+            {
+                if (!_states.TryGetValue(def.Id, out var state)) continue;      // hiç oluşmamış: SpawnMissing'in işi
+                var old = _population.Find(state.CharacterId);
+                if (old != null && !old.IsDead) continue;                        // yaşıyor (haneye katılmış olsa da işini sürdürür)
+
+                string name = _population.NameGenerator != null ? _population.NameGenerator(def.Sex) : null;
+                if (string.IsNullOrWhiteSpace(name) || (old != null && name == old.Name)) name = def.Name;
+                var pos = PlaceResolver != null ? PlaceResolver(def.Home) : (old != null ? old.Position : new GridPos(0, 0));
+                var c = new Character(_population.NextId(), name, pos)
+                {
+                    Sex = def.Sex,
+                    IsVillager = true,
+                    CanStarve = false
+                };
+                c.SetAge(SuccessorAgeMin + _rng.NextDouble() * (SuccessorAgeMax - SuccessorAgeMin));
+                c.SetTraits(def.Traits);
+                c.LifespanDays = c.AgeConfig.RollLifespan(_rng) + LifeRules.LifespanBonus(_content, c.TraitIds);
+                _population.Add(c);
+                LifeRules.Recompute(c, _content, _population.Village);
+
+                state.CharacterId = c.Id;
+                state.Romance = 0;
+                state.LastGiftDay = -1;
+                arrived.Add(c);
+                SuccessorArrived?.Invoke(c, def);
+            }
+            return arrived;
         }
 
         public bool HasRole(string role)
