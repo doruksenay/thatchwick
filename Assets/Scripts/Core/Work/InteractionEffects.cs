@@ -76,7 +76,7 @@ namespace Thatchwick.Core.Work
             if (interaction.EmptyFill && item.Def.FillProduct != null && Storage != null && !Storage.HasRoomFor(item.Def.FillProduct))
                 return "Depoda gübreye yer yok: gübreyi sat, tarlaya ser ya da depoyu büyüt.";
             if (interaction.RequiresFrost && (TemperatureAt == null || TemperatureAt(item.Position) > 0f)) return "Buz yok: don olunca (kışın) kesilir.";
-            if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return "Buzluk dolu.";
+            if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return $"{item.Def.DisplayName} buzla dolu.";
             if (interaction.Water)
             {
                 if (!item.IsPlant || !item.Def.IsCrop) return "Bu sulanacak bir ekin değil.";

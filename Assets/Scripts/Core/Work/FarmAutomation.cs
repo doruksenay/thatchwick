@@ -491,8 +491,11 @@ namespace Thatchwick.Core.Work
                 pond.AddFish(arg);
                 pond.Fish.TryGetValue(arg, out int n);
                 string name = Content.Items.Get(arg).DisplayName;
-                Worked?.Invoke(actor, tile, n >= 2
-                    ? $"gölete {name} attı ({n} tane){(pond.Insects ? ": üreyebilirler" : ": böcekler gelince ürerler")}"
+                var def = Content.Items.Get(arg);
+                Worked?.Invoke(actor, tile, def.HasTag("nobreed")
+                    ? $"gölete {name} attı ({n} tane; gölette büyür ama üremez: üremek için denize göç eder)"
+                    : n >= 2
+                    ? $"gölete {name} attı ({n} tane){(pond.Insects ? ": üreyebilirler" : ": böcekler gelince ürerler")}{(def.HasTag("predator") ? "; yırtıcıdır, öbür balıkları yer" : "")}"
                     : $"gölete {name} attı (1 tane: üremesi için bir tane daha gerek)");
                 return;
             }

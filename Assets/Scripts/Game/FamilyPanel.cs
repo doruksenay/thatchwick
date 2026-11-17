@@ -125,6 +125,7 @@ namespace Thatchwick.Game
             else
             {
                 Action(actor, c, SocialAction.Chat, $"Sohbet ({_family.Affection(actor.Id, c.Id)})");
+                if (c.Stage == AgeStage.Child && actor.Stage != AgeStage.Child && actor.Stage != AgeStage.Baby) Action(actor, c, SocialAction.TellStory, "Masal anlat");
                 if (actor.SpouseId == c.Id) Action(actor, c, SocialAction.TryForBaby, "Çocuk iste");
                 else if (FamilyService.IsAdultAge(actor) && FamilyService.IsAdultAge(c) && !actor.SpouseId.HasValue && !c.SpouseId.HasValue)
                     Action(actor, c, SocialAction.Propose, "Evlen");

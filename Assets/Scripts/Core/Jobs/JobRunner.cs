@@ -653,8 +653,10 @@ namespace Thatchwick.Core.Jobs
             if (Social == null) return false;
             var friend = Social.FriendFor(_character);
             if (friend == null || PersonOnCooldown(friend.Id) || Social.CanDo(_character, friend, SocialAction.Chat) != null) return false;
+            // Büyük biri çocukla "sohbet" etmek yerine ona masal anlatır.
+            var act = Social.CanDo(_character, friend, SocialAction.TellStory) == null ? SocialAction.TellStory : SocialAction.Chat;
             ResetJobState();
-            return Queue.TryEnqueue(Job.Social(friend.Id, SocialAction.Chat).WithReason(NeedType.Social));
+            return Queue.TryEnqueue(Job.Social(friend.Id, act).WithReason(NeedType.Social));
         }
 
         private bool PersonOnCooldown(int characterId) =>

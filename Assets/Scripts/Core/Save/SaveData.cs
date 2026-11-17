@@ -184,6 +184,7 @@ namespace Thatchwick.Core.Save
     public sealed class DynastySave
     {
         public string name;
+        public string settlement;            // yerleşim adı (eski kayıtta yok: varsayılan)
         public int headId;
         public bool ended;
         public HeadSave[] history;

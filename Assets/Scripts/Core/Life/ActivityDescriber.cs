@@ -103,6 +103,7 @@ namespace Thatchwick.Core.Life
                     {
                         case SocialAction.Feed: info.Icon = "care"; info.Text = "Bebeği besliyor"; info.Reason = "çünkü bebek aç"; break;
                         case SocialAction.Chat: info.Text = "Sohbet ediyor"; break;
+                        case SocialAction.TellStory: info.Text = "Masal anlatıyor"; break;
                         case SocialAction.Propose: info.Icon = "love"; info.Text = "Evlenme teklif ediyor"; break;
                         default: info.Icon = "love"; info.Text = "Çocuk istiyor"; break;
                     }

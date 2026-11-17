@@ -473,7 +473,7 @@ namespace Thatchwick.Core.Tests
         {
             var db = Real();
             var crops = db.Items.All.Where(i => i.IsCrop).ToList();
-            Assert.Equal(15, crops.Count);
+            Assert.Equal(19, crops.Count);                       // + buğday, çavdar, yulaf, keten
             foreach (var crop in crops)
             {
                 Assert.True(crop.Interactions.Any(i => i.Water), crop.Id + " sulanamıyor");

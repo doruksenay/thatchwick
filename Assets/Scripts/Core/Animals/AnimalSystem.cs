@@ -46,6 +46,9 @@ namespace Thatchwick.Core.Animals
         /// <summary>Barınağa ürün bıraktı.</summary>
         public event Action<Animal, string> Produced;
 
+        /// <summary>Şu anki mevsim (ürünün mevsim çarpanı için); null ise hep 1.</summary>
+        public Func<Time.Season> SeasonNow { get; set; }
+
         public AnimalSystem(WorldState world, ContentDatabase content, int seed = 7)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -276,7 +279,8 @@ namespace Thatchwick.Core.Animals
                 if (a.Species.Produces != null && home != null && a.IsMature && a.Fullness >= ProduceFullness)
                 {
                     // Dostluk ve barınak konforu ürünü hızlandırır (konfor 0: x0,85, 50: x1, 100: x1,15).
-                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays * (1.0 + FriendshipBoost * a.Friendship / 100.0) * (0.85 + 0.3 * a.Comfort / 100.0);
+                    float seasonal = SeasonNow != null ? a.Species.OutputFactor(SeasonNow()) : 1f;
+                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays * seasonal * (1.0 + FriendshipBoost * a.Friendship / 100.0) * (0.85 + 0.3 * a.Comfort / 100.0);
                     while (a.ProduceProgress >= 1.0)
                     {
                         a.ProduceProgress -= 1.0;

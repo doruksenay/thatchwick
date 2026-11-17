@@ -31,7 +31,7 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 - Evre 1 = filiz (0-33%), 2 = büyüyor (33-99%), 3 = olgun/hasada hazır. Kış ölümü ve kuruma için ayrı sprite yok (kod `Water`/`FertilityAt` göstergesini HUD'da verir).
 - Açıklamalar:
   - parsnip: `{1: small feathery pale-green sprout, 2: fern-like green fronds, 3: cream-coloured tapered root top showing above feathery fronds}`
-  - carrot: `{1: tiny feathery sprout, 2: dense feathery green tops, 3: orange carrot shoulder showing above dense green tops}`
+  - carrot: `{1: tiny feathery sprout, 2: dense feathery green tops, 3: deep purple carrot shoulder showing above dense green tops}` (dönem: turuncu havuç 17. yy sonrası; mor ya da sarı. Karar 17.11.2026, Project 20)
   - onion: `{1: thin upright green shoot, 2: several tall green tubular leaves, 3: round golden-brown onion bulb half out of the ground with drooping green tops}`
   - garlic: `{1: thin upright green shoot, 2: flat green blades with a curling stem, 3: white garlic bulb half out of the ground with dried yellowing tops}`
   - beet: `{1: two small red-veined leaves, 2: broad dark-green red-veined leaves, 3: deep red-purple beetroot half out of the ground with red-veined leaves}`

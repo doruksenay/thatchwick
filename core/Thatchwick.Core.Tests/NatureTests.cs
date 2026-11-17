@@ -146,7 +146,7 @@ namespace Thatchwick.Core.Tests
 
             // Yemsiz barınaktaki hayvan aç kalır, dostluğu düşer.
             var coop2 = w.PlaceItem(db.Items.Get("item.coop"), new GridPos(12, 12));
-            var hungry = animals.Restore(10, db.Animals.Get("animal.chicken"), new GridPos(11, 12), coop2.Id, 100f, 10, 0, 0, friendship: 50f);
+            var hungry = animals.Restore(10, db.Animals.Get("animal.chicken"), new GridPos(11, 12), coop2.Id, 100f, 4, 0, 0, friendship: 50f);   // yaş 4: tavuk ömrü 14 gün
             animals.Tick(1.0);
             animals.Tick(1.0);
             Assert.True(hungry.Fullness < 20f);

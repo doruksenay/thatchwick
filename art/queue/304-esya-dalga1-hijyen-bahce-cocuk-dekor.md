@@ -1,11 +1,11 @@
 ---
 id: "304"
-title: Dalga 1: hijyen, bahçe, çocuk ve yüzey dekoru (15 eşya)
+title: Dalga 1: hijyen, bahçe, çocuk ve yüzey dekoru (14 eşya; masal kitabı 17.11.2026 dönem kararıyla çıktı)
 status: pending
 approved_by: pending     # Dalga 1 planı (09 belgesi, 2026-11-08); kullanıcı "user" yapınca işçi alır
 family: esya
 style_gate: false
-cost_est: 15
+cost_est: 14
 cost_max: 25
 depends_on: ["301"]   # yöntem 301 ile aynı; 2026-11-13: öneri bağımlılığa çevrildi (301 stil pilotu kabul edilmeden başlamaz)
 max_attempts: 2          # parça başına en çok 2 deneme
@@ -25,10 +25,9 @@ outputs:
   - Assets/Art/Iso/_aday/iso_item_jug_se.png
   - Assets/Art/Iso/_aday/iso_item_morris_board_se.png
   - Assets/Art/Iso/_aday/iso_item_spinning_top_se.png
-  - Assets/Art/Iso/_aday/iso_item_story_book_se.png
 created: 2026-11-08
 ---
-# 304 Dalga 1: hijyen, bahçe, çocuk ve yüzey dekoru (15 eşya)
+# 304 Dalga 1: hijyen, bahçe, çocuk ve yüzey dekoru (14 eşya; masal kitabı 17.11.2026 dönem kararıyla çıktı)
 
 ## Amaç
 09 belgesindeki Dalga 1 eşyalarından hijyen (keyif ve hijyen ihtiyaçları 1.0'a girdi), bahçe, çocuk ve masa üstü dekor. Değirmen oyunu ve leğen yeni oyunun başlangıç eşyalarıdır, önce bunlar.
@@ -58,7 +57,6 @@ Yöntem, ortak ayarlar, ortak açıklama eki, ikinci deneme kuralı, renk sını
 | 12 | `item.jug` (yüzey) | `iso_item_jug_se.png` | dekor | 32x32 | dekor (301) | 14 | `small clay water jug with a handle` |
 | 13 | `item.morris_board` (yüzey) | `iso_item_morris_board_se.png` | dekor | 32x32 | dekor (301) | 6 | `small wooden nine men's morris game board with a few black and white pieces` |
 | 14 | `item.spinning_top` (yüzey) | `iso_item_spinning_top_se.png` | dekor | 32x32 | dekor (301) | 10 | `small wooden spinning top toy` |
-| 15 | `item.story_book` (yüzey) | `iso_item_story_book_se.png` | dekor | 32x32 | dekor (301) | 8 | `small closed leather-bound book` |
 
 ## Doğrulama
 301 ile aynı (validate_iso, ayak izi kaplaması, maske dışı, kılavuz rengi, ışık sırası, ayna uygunluğu). Ek olarak:

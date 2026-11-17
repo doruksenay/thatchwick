@@ -102,7 +102,8 @@ namespace Thatchwick.Core.Tests
         {
             var head = new Character(1, "Aldric", new GridPos(6, 6), true) { Sex = Sex.Male, CanStarve = true, LifespanDays = headLifespan };
             head.SetAge(30);
-            var wife = new Character(2, "Edith", new GridPos(7, 6), false) { Sex = Sex.Female, CanStarve = true, LifespanDays = 140 };
+            // Hamilelik 5 gün oldu (17.11.2026); bu senaryonun zaman çizelgesi 30 günlük hamileliğe göre kurulu.
+            var wife = new Character(2, "Edith", new GridPos(7, 6), false) { Sex = Sex.Female, CanStarve = true, LifespanDays = 140, PregnancyDays = 30 };
             wife.SetAge(28);
             head.SpouseId = 2; wife.SpouseId = 1;
             sim.Pop.Add(head); sim.Pop.Add(wife);

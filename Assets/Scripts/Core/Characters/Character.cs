@@ -156,7 +156,7 @@ namespace Thatchwick.Core.Characters
 
         // --- Hamilelik (T4 kenar durumları) ---
         /// <summary>Hamilelik süresi (oyun günü). Varsayılan 30 (yılın ~%75'i); denge turunda ayarlanır.</summary>
-        public double PregnancyDays { get; set; } = 30.0;
+        public double PregnancyDays { get; set; } = 5.0;   // 17.11.2026: 1 oyun günü ≈ yarım yıl oranı (önce 30, ömrün dörtte biriydi)
         /// <summary>Doğumdan sonra yeniden hamile kalamama süresi (oyun günü).</summary>
         public double PostpartumDays { get; set; } = 10.0;
         public bool IsPregnant { get; private set; }

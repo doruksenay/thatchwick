@@ -17,6 +17,41 @@ namespace Thatchwick.Core.Family
         public string Trade;
     }
 
+    /// <summary>
+    /// Yerleşim adı kuralları (17.11.2026 kararı: oyun gerçek bir yere bağlı olmayan hayali bir ortaçağ yerleşiminde
+    /// geçer; adı oyuncu yeni oyunda verir).
+    /// </summary>
+    public static class Settlement
+    {
+        public const string DefaultName = "Thatchwick";
+        public const int MinLength = 2, MaxLength = 24;
+
+        /// <summary>Hayali, iki kültürden karışık öneriler ("Rastgele ad").</summary>
+        public static readonly string[] Suggestions =
+        {
+            "Thatchwick", "Ashbrook", "Mereholt", "Fernhollow", "Oakridge", "Willowmere",
+            "Kızılçam", "Değirmendere", "Saztepe", "Söğütlü", "Yeşilova", "Ilıcaköy",
+            "Hollyford", "Elmalı", "Kavakbaşı", "Rushmere"
+        };
+
+        /// <summary>Boşsa, çok kısa ya da uzunsa ya da harf dışı karakterle başlıyorsa neden; uygunsa null.</summary>
+        public static string Validate(string name)
+        {
+            var n = (name ?? "").Trim();
+            if (n.Length < MinLength) return $"Yerleşim adı en az {MinLength} harf olmalı.";
+            if (n.Length > MaxLength) return $"Yerleşim adı en çok {MaxLength} harf olabilir.";
+            if (!char.IsLetter(n[0])) return "Yerleşim adı harfle başlamalı.";
+            foreach (char ch in n)
+                if (!char.IsLetter(ch) && ch != ' ' && ch != '\'' && ch != '-') return "Yerleşim adında yalnızca harf, boşluk, kesme ve tire olabilir.";
+            return null;
+        }
+
+        /// <summary>Doğrulanmış, kırpılmış ad; geçersizse varsayılan.</summary>
+        public static string Clean(string name) => Validate(name) == null ? name.Trim() : DefaultName;
+
+        public static string Random(Random rng) => Suggestions[rng.Next(Suggestions.Length)];
+    }
+
     /// <summary>Baş karakter ölünce kimin geçeceği ve mirasın sonucu.</summary>
     public sealed class SuccessionResult
     {
@@ -37,6 +72,8 @@ namespace Thatchwick.Core.Family
         public const double SkillInheritance = 0.10;
 
         public string Name { get; set; } = "Hanedan";
+        /// <summary>Oyuncunun yeni oyunda adlandırdığı yerleşim (hayali bir ortaçağ köyü); bildirimlerde ve arayüzde görünür.</summary>
+        public string SettlementName { get; set; } = Settlement.DefaultName;
         public int HeadId { get; private set; }
         public List<HeadRecord> History { get; } = new List<HeadRecord>();
         public bool Ended { get; private set; }
