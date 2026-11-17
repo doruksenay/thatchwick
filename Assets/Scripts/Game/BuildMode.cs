@@ -14,6 +14,12 @@ namespace Thatchwick.Game
     /// </summary>
     public sealed class BuildMode
     {
+        /// <summary>Miras: seçili eşyayı yadigâr yapmak (Soy Mührü). Null ise düğme yok.</summary>
+        public Thatchwick.Core.Family.Legacy Legacy { get; set; }
+        /// <summary>Yadigârı yapan kişi (baş karakter) ve bugünün günü.</summary>
+        public System.Func<Thatchwick.Core.Characters.Character> Maker { get; set; }
+        public System.Func<double> Today { get; set; }
+
         private const float FocusZoom = 3.6f;
 
         private readonly WorldState _world;
@@ -1019,6 +1025,7 @@ namespace Thatchwick.Game
                     GUI.enabled = true;
                 }
             }
+            if (Legacy != null) DrawHeirloom(sel);
             if (sel.Def.IsHousing && _animals != null)
                 GUILayout.Label($"Hayvan {_animals.Residents(sel.Id)}/{sel.Def.HousingCapacity} · yem {sel.FeedStock:0.#} · ürün {sel.StockTotal}");
             GUILayout.BeginHorizontal();
@@ -1030,7 +1037,31 @@ namespace Thatchwick.Game
                 // Ekin satılmaz ama sökülebilir (yanlış yere ekilen ya da ortada kalan ekin tarlayı kilitlemesin).
                 if (GUILayout.Button("Ekini sök")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Ekin söküldü." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
             }
-            else if (GUILayout.Button($"Sat (+{_svc.SellValue(sel.Def)} akçe, dekorlar dahil)")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Satıldı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
+            else if (GUILayout.Button(Legacy != null && Legacy.HeirloomOf(sel.Id) != null
+                ? $"Sat (+{_svc.SellValue(sel.Def)} akçe; yadigârın geçmişi silinir)"
+                : $"Sat (+{_svc.SellValue(sel.Def)} akçe, dekorlar dahil)")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Satıldı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
+        }
+
+        // Yadigâr: Soy Mührü harcanarak eşya hanedanın yadigârı olur; her nesil hız, XP, ihtiyaç doldurma ve konfor bonusu büyür.
+        private void DrawHeirloom(ItemInstance sel)
+        {
+            var h = Legacy.HeirloomOf(sel.Id);
+            if (h != null)
+            {
+                GUILayout.Label($"✦ {h.DisplayName}");
+                GUILayout.Label($"   {h.Level}. basamak: iş ve dinlenme +%{Thatchwick.Core.Family.Legacy.BonusOf(h) * 100:0}, oda konforu +{Thatchwick.Core.Family.Legacy.ComfortOf(h)}");
+                return;
+            }
+            if (!Thatchwick.Core.Family.Legacy.IsEligible(sel.Def)) return;
+            string why = Legacy.CanMakeHeirloom(sel);
+            int cost = Thatchwick.Core.Family.Legacy.CostFor(sel.Def);
+            GUI.enabled = why == null;
+            if (GUILayout.Button(new GUIContent($"Yadigâr yap ({cost} mühür, sende {Legacy.Seals})", why ?? "Bu eşyada iş ve dinlenme +%5, konfor +2; her nesil artar")))
+            {
+                Legacy.MakeHeirloom(sel, Maker != null ? Maker() : null, Today != null ? Today() : 0, out var msg);
+                _status = msg;
+            }
+            GUI.enabled = true;
         }
 
         private void PlaceFloor()

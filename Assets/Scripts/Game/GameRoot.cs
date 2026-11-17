@@ -313,6 +313,14 @@ namespace Thatchwick.Game
             _life.Attach(_heat);
             _life.Attach(_market);
             _life.Attach(_buildService);
+            // Miras: kurucu (köydeki soy), yadigâr envantere girmez, satılınca geçmişi silinir, komşu haneye giden köylü olur.
+            _life.FounderId = () => _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
+            _buildService.StoreBlocker = _life.Legacy.StoreBlocker;
+            _buildService.PlacedItemSold += _life.Legacy.OnItemSold;
+            _life.Legacy.MarriedOutHappened += OnMarriedOut;
+            _buildMode.Legacy = _life.Legacy;
+            _buildMode.Maker = () => _player?.Character;
+            _buildMode.Today = () => _clock.TotalDays;
             SetupFarm();
             _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
             _life.Suitors.SpawnPosition = () => NearestWalkable(Places["square"], 8);
@@ -321,7 +329,8 @@ namespace Thatchwick.Game
             _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
 
             _familyPanel = new FamilyPanel(_population, _family, _dynasty, () => Commander?.Character,
-                c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner) { Duties = _duties };
+                c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner)
+            { Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays };
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
@@ -670,7 +679,17 @@ namespace Thatchwick.Game
                 var c = a.Character;
                 if (c.IsDead || !c.IsVillager) continue;
                 var def = _life.Villagers.DefOf(c);
-                if (def == null) continue;
+                if (def == null)
+                {
+                    // Komşu haneye evlenen ya da orada doğan köylü: eşinin (yoksa annesinin) programına uyar.
+                    Character anchor = c.SpouseId.HasValue ? _population.Find(c.SpouseId.Value) : null;
+                    if ((anchor == null || anchor.IsDead || _life.Villagers.DefOf(anchor) == null) && c.BirthMotherId.HasValue)
+                        anchor = _population.Find(c.BirthMotherId.Value);
+                    def = anchor != null && !anchor.IsDead ? _life.Villagers.DefOf(anchor) : null;
+                    if (def == null && anchor != null && !anchor.IsDead && anchor.SpouseId.HasValue)
+                        def = _life.Villagers.DefOf(_population.Find(anchor.SpouseId.Value));
+                    if (def == null) continue;
+                }
                 string where = _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival);
                 if (_villagerLocation.TryGetValue(c.Id, out var last) && last == where) continue;
                 _villagerLocation[c.Id] = where;
@@ -686,6 +705,20 @@ namespace Thatchwick.Game
             c.Needs.SetDecayPerDay(NeedType.Hunger, c.IsVillager ? 0f : 120f);
             c.Needs.SetDecayPerDay(NeedType.Energy, c.IsVillager ? 0f : 90f);
             runner.Autonomous = !c.IsVillager && !c.IsPlayerControlled;
+        }
+
+        // Komşu haneye evlenen üye köylü olur: komut almaz, eşinin programına uyar.
+        private void OnMarriedOut(Character member, Character spouse)
+        {
+            var actor = _actors.Find(a => a.Character == member);
+            if (actor != null)
+            {
+                actor.Runner.Cancel();
+                ApplyVillagerRules(member, actor.Runner);
+            }
+            if (_selected != null && _selected.Character == member) _selected = _player;
+            _villagerLocation.Remove(member.Id);
+            ShowMessage($"{member.Name}, {spouse.Name} ile evlenip onun hanesine gitti.", 5f);
         }
 
         private void OnJoinedHousehold(Character c)
@@ -713,6 +746,7 @@ namespace Thatchwick.Game
             var result = _dynasty.OnDeath(c, _population.Members, _clock.TotalDays, _life.TradeOf(c));
             if (result == null) { if (_selected != null && _selected.Character == c) _selected = _player; return; }
             if (result.DynastyEnded) { _dynastyEnded = true; ShowMessage(result.Message, 6f); return; }
+            _life.OnSuccession(_dynasty, result.Heir);
             var heir = _actors.Find(a => a.Character == result.Heir);
             if (heir != null)
             {

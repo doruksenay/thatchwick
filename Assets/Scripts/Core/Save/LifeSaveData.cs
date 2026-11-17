@@ -55,5 +55,7 @@ namespace Thatchwick.Core.Save
         // Karakter yaratma 2.0 (17.11.2026): eski kayıtta 0 = belirsiz (Seyrek sayılır), -1 yerine 0 gelir.
         public int accidentSetting;
         public double lastHouseholdAccidentDay = -1;
+        // Miras (17.11.2026): Soy Mührü, yadigârlar, komşu haneye evlendirilenler. Eski kayıtta null: boş başlar.
+        public Thatchwick.Core.Family.LegacySave legacy;
     }
 }

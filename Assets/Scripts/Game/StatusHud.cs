@@ -107,6 +107,7 @@ namespace Thatchwick.Game
                 var next = _life.Festivals.NextFestival(out int days);
                 line2 = (_life.Festivals.IsMarketDayToday ? "Bugün pazar günü · " : "") + (next != null ? $"Sıradaki şenlik: {next.DisplayName} ({days} gün)" : "");
             }
+            line2 = $"Soy Mührü {_life.Legacy.Seals}" + (line2.Length > 0 ? " · " + line2 : "");
             if (_forecast == null || Time.unscaledTime >= _forecastUntil)
             {
                 _forecast = _life.Forecast.Report(clock.TotalDays);

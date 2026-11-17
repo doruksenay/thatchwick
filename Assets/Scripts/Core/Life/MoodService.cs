@@ -41,6 +41,9 @@ namespace Thatchwick.Core.Life
         public ContentDatabase Content { get; set; }
 
         /// <summary>İç mekân odasının konforu: eşya konfor toplamı + stil seti bonusu (aynı setten 4+ eşya).</summary>
+        /// <summary>Eşyanın odaya ek konforu (yadigâr). Null ise yok.</summary>
+        public Func<ItemInstance, int> ExtraComfort { get; set; }
+
         public RoomComfort ComfortOf(Room room)
         {
             var result = new RoomComfort();
@@ -50,7 +53,7 @@ namespace Thatchwick.Core.Life
             foreach (var item in _world.Items)
             {
                 if (!tiles.Contains(item.Position)) continue;
-                result.Score += item.Def.Comfort;
+                result.Score += item.Def.Comfort + (ExtraComfort != null ? ExtraComfort(item) : 0);
                 if (!string.IsNullOrEmpty(item.Def.StyleSet))
                     styleCount[item.Def.StyleSet] = (styleCount.TryGetValue(item.Def.StyleSet, out var n) ? n : 0) + 1;
             }

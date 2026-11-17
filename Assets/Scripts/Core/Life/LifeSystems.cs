@@ -49,6 +49,12 @@ namespace Thatchwick.Core.Life
         public ToolService Tools { get; }
         public ProjectService Projects { get; }
         public GoalService Goals { get; }
+
+        /// <summary>Miras: Soy Mührü, yadigârlar, komşu hanelere evlendirme, köydeki soy.</summary>
+        public Legacy Legacy { get; }
+
+        /// <summary>Hanedan kurucusunun kimliği (köydeki soy sayımı); oyun katmanı bağlar. Null ise sayım yapılmaz.</summary>
+        public Func<int?> FounderId { get; set; }
         /// <summary>Kazalar ve kazanılmış izler (doküman 14, 3F).</summary>
         public InjurySystem Injuries { get; }
         /// <summary>Evlilik ve kutlanan şenlik sayıları (hedef ölçütleri için).</summary>
@@ -96,6 +102,13 @@ namespace Thatchwick.Core.Life
             };
             Projects = new ProjectService(content, house, Village);
             Goals = new GoalService(content) { Metric = MetricValue };
+            Legacy = new Legacy(population, seed != 0 ? Seeds.Derive(seed, 5) : 61) { DaysPerYear = clock.Config.DaysPerYear };
+            Mood.ExtraComfort = Legacy.ComfortBonus;
+            Legacy.SealsChanged += e =>
+            {
+                if (e.Amount > 0) Say($"Soy Mührü +{e.Amount}: {e.Note}.", NoticeLevel.Info);
+            };
+            Legacy.HeirloomLost += (h, msg) => Say(msg, NoticeLevel.Warning);
             // Doğum günü: mevsim ve gün (karakter panelinde gösterilir).
             population.BabyBorn += (baby, mother, father) => { baby.BirthSeason = (int)Clock.Season; baby.BirthDayOfSeason = Clock.DayOfSeason; };
             Injuries = new InjurySystem(population, seed != 0 ? Seeds.Derive(seed, 4) : 0)
@@ -130,6 +143,7 @@ namespace Thatchwick.Core.Life
                 Population.RecomputeAll();
                 Say($"Köy projesi tamamlandı: {p.DisplayName}.", NoticeLevel.Info);
                 Ledger.Note(p.DisplayName);
+                Legacy.OnProjectCompleted(p.DisplayName, Clock.TotalDays);
                 Goals.Update();
             };
             Goals.Completed += OnGoalCompleted;
@@ -220,6 +234,7 @@ namespace Thatchwick.Core.Life
             }
             Say($"Hedef tamamlandı: {goal.DisplayName}.", NoticeLevel.Info);
             Ledger.Note(goal.DisplayName);
+            Legacy.OnGoalCompleted(goal.DisplayName, Clock.TotalDays);
         }
 
         /// <summary>Soy mesleği: haneden dal almış karakterlerin en çok seçtiği beceri; yoksa null.</summary>
@@ -233,6 +248,14 @@ namespace Thatchwick.Core.Life
 
         public string TradeOf(Character c) => LifeRules.TradeOf(Content, c);
 
+        /// <summary>Hanedan başı değişti (Dynasty.OnDeath sonrası): yadigârlar bir nesil yaşlanır, nesil ve soy mesleği mührü.</summary>
+        public void OnSuccession(Dynasty dynasty, Character heir)
+        {
+            Legacy.OnSuccession(dynasty, heir, Clock.TotalDays);
+            foreach (var h in Legacy.Heirlooms)
+                if (h.Level > 1) { Say($"Yadigârlar bir nesil daha hanede: bonuslar güçlendi.", NoticeLevel.Info); break; }
+        }
+
         /// <summary>Bildirim akışına ve düz metin olayına yazar. Dış sistemler (aile, pazar) bunu çağırabilir.</summary>
         public void Say(string message, NoticeLevel level = NoticeLevel.Info, int characterId = 0, bool transient = false)
         {
@@ -242,6 +265,7 @@ namespace Thatchwick.Core.Life
 
         private void OnMemberDied(Character dead)
         {
+            if (!dead.IsVillager) Legacy.OnHouseholdDeath(Clock.Season);
             Ledger.OnDied(dead);
             Graves.Bury(dead, Clock.TotalDays);
             int mourners = Mood.Mourn(dead, Population.Members);
@@ -351,6 +375,7 @@ namespace Thatchwick.Core.Life
         public void Attach(JobRunner runner)
         {
             runner.SpeedProvider = WorkSpeedFor;
+            runner.ItemBonus = Legacy.BonusFor;
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
         }
         public void Attach(PlantSystem plants)
@@ -409,6 +434,7 @@ namespace Thatchwick.Core.Life
             int season = (int)((day / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
             if (_lastSeasonIndex >= 0 && season != _lastSeasonIndex)
             {
+                Legacy.OnSeasonChanged((Season)_lastSeasonIndex, (Season)season, day, Clock.TotalDays);
                 var guest = Suitors.OnNewSeason();
                 if (guest != null) Say($"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
                 Villagers.ReplaceDeparted();   // ölen adlı köylünün (demirci ...) yerine halefi mevsim başında gelir
@@ -422,6 +448,11 @@ namespace Thatchwick.Core.Life
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
             DailyHealing();
             Injuries.DailyUpdate();
+            // Miras: dünyadan kalkmış yadigârlar düşer; komşu hanelerde soy sürer; köydeki soy eşikleri.
+            Legacy.Validate(World.GetItem);
+            foreach (var w in Legacy.NeighborFamiliesDaily()) Say($"{w.Name} çocuk bekliyor.", NoticeLevel.Info, w.Id);
+            var founder = FounderId != null ? FounderId() : null;
+            if (founder.HasValue) Legacy.CheckDescendants(founder.Value, Clock.TotalDays);
             NewDay?.Invoke(day);
         }
 
@@ -451,6 +482,7 @@ namespace Thatchwick.Core.Life
                 marriages = Marriages,
                 festivalsCelebrated = FestivalsCelebrated,
                 accidentSetting = (int)Injuries.Setting,
+                legacy = Legacy.Export(),
                 lastHouseholdAccidentDay = Injuries.LastHouseholdAccidentDay
             };
             var graves = new List<GraveSave>();
@@ -474,6 +506,7 @@ namespace Thatchwick.Core.Life
             Projects.Restore(data.projectsDone);
             Goals.Restore(data.goalsDone);
             Villagers.Restore(data.villagers);
+            Legacy.Restore(data.legacy);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;
             Injuries.LastHouseholdAccidentDay = data.lastHouseholdAccidentDay;

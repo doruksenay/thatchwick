@@ -296,6 +296,7 @@ namespace Thatchwick.Core.Build
             if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
             string blocker = RemovalBlocker(target);
             if (blocker != null) return PlacementCheck.Fail(blocker);
+            PlacedItemSold?.Invoke(target);
             var spot = SpotOf(target);
             int total = FinishSellBonus(target);
             var removed = _world.RemoveItem(itemId);
@@ -443,6 +444,12 @@ namespace Thatchwick.Core.Build
         /// <summary>Envanterden bir eşya yerleştirildi (ev düzenleme XP'si için; bitkiler hariç).</summary>
         public event Action<ItemInstance> Furnished;
 
+        /// <summary>Yerleştirilmiş eşya satılmadan hemen önce (yadigâr geçmişi silinir).</summary>
+        public event Action<ItemInstance> PlacedItemSold;
+
+        /// <summary>Envantere almayı engelleyen ek kural (yadigâr envantere girmez); null ise yok.</summary>
+        public Func<ItemInstance, string> StoreBlocker { get; set; }
+
         /// <summary>Duvar eşyasının karonun bir kenarına asılıp asılamayacağı (envanter, arsa, duvar).</summary>
         public PlacementCheck CanPlaceWallFromInventory(string itemId, GridPos tile, int side)
         {
@@ -527,7 +534,7 @@ namespace Thatchwick.Core.Build
             if (target == null) return PlacementCheck.Fail("Eşya bulunamadı.");
             if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
             if (IsLocked(target)) return PlacementCheck.Fail(Locked);
-            string blocker = RemovalBlocker(target);
+            string blocker = RemovalBlocker(target) ?? StoreBlocker?.Invoke(target);
             if (blocker != null) return PlacementCheck.Fail(blocker);
             var spot = SpotOf(target);
             // Envanter eşya kimliğiyle sayar: kaplama (renk/malzeme) envantere gitmez, farkının satış oranı iade edilir.

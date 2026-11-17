@@ -70,6 +70,12 @@ namespace Thatchwick.Core.Jobs
         /// </summary>
         public Func<Character, InteractionDef, double> SpeedProvider { get; set; }
 
+        /// <summary>Eşyanın ya da aletin işe kattığı çarpan (yadigâr): hız, XP ve ihtiyaç doldurma. Null ise etkisiz.</summary>
+        public Func<ItemInstance, InteractionDef, ItemBonus> ItemBonus { get; set; }
+
+        private ItemBonus BonusOf(ItemInstance item, InteractionDef interaction) =>
+            ItemBonus != null ? ItemBonus(item, interaction) : Jobs.ItemBonus.None;
+
         /// <summary>Hayvan işleri (sev, tımar, eyer, bin). Yoksa bu işler başlamaz.</summary>
         public IAnimalEffects Animals { get; set; }
 
@@ -378,7 +384,7 @@ namespace Thatchwick.Core.Jobs
                 _using = true;
             }
 
-            double remaining = EffectiveDuration(interaction) - _useProgress;
+            double remaining = EffectiveDuration(interaction, item) - _useProgress;
             double available = budget - used;
             if (available >= remaining)
             {
@@ -392,6 +398,8 @@ namespace Thatchwick.Core.Jobs
                 // Müzik: çalgı çalmak seviye başına %5 daha çok keyif verir.
                 float restore = interaction.Skill == SkillType.Music
                     ? (float)(interaction.Restore * SkillNames.Factor(_character.Skills.GetLevel(SkillType.Music), 0.05)) : interaction.Restore;
+                var bonus = BonusOf(item, interaction);
+                if (bonus.Restore != 1.0) restore = (float)(restore * bonus.Restore);
                 if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, restore);
                 foreach (var extra in interaction.ExtraRestore) _character.Needs.Restore(extra.Need, extra.Amount);
                 // Öğün: açlık doyuran ve yiyecek harcayan iş sofra çeşidine sayılır.
@@ -399,7 +407,7 @@ namespace Thatchwick.Core.Jobs
                 if (interaction.GivesMood)
                     _character.AddMoodlet(interaction.MoodId, interaction.MoodText ?? interaction.DisplayName, interaction.MoodValue, interaction.MoodDays);
                 if (interaction.Skill.HasValue && interaction.SkillXp > 0f)
-                    _character.GainSkillXp(interaction.Skill.Value, interaction.SkillXp);
+                    _character.GainSkillXp(interaction.Skill.Value, interaction.SkillXp * bonus.Xp);
                 if (interaction.Moodlet != null) _character.AddMoodlet(interaction.Moodlet);
                 Finish();
                 // Etkiler en sonda: eşyayı kaldırabilir (kesilen ağaç) ve dünyayı değiştirir.
@@ -482,17 +490,18 @@ namespace Thatchwick.Core.Jobs
         public static bool IsWork(InteractionDef i) => (i.Skill.HasValue && i.Skill != SkillType.Music) || i.Produce.Count > 0 || i.RemovesItem;
 
         /// <summary>İş hızı: özellik/dal × ruh hali × (alet, hava...). İhtiyaç etkileşiminde 1.</summary>
-        public double SpeedFactor(InteractionDef interaction)
+        public double SpeedFactor(InteractionDef interaction, ItemInstance item = null)
         {
             if (!IsWork(interaction)) return 1.0;
             double f = _character.Modifiers.WorkSpeed * (interaction.Skill.HasValue ? _character.WorkSpeed(interaction.Skill.Value) : 1.0);
             if (SpeedProvider != null) f *= SpeedProvider(_character, interaction);
+            f *= BonusOf(item, interaction).Speed;
             if (DutySpeed != null && Queue.Current != null && Queue.Current.IsDuty) f *= DutySpeed();
             return f < 0.1 ? 0.1 : f;
         }
 
         /// <summary>Beceri seviyesi işi hızlandırır: seviye başına %5, en çok yarı süre. Hız çarpanı bölünür.</summary>
-        public double EffectiveDuration(InteractionDef interaction)
+        public double EffectiveDuration(InteractionDef interaction, ItemInstance item = null)
         {
             double duration = interaction.DurationDays;
             if (interaction.Skill.HasValue)
@@ -500,7 +509,7 @@ namespace Thatchwick.Core.Jobs
                 int level = _character.Skills.GetLevel(interaction.Skill.Value);
                 duration *= Math.Max(0.5, 1.0 - 0.05 * (level - 1));
             }
-            return duration / SpeedFactor(interaction);
+            return duration / SpeedFactor(interaction, item);
         }
 
         /// <summary>Etkileşime şu an başlanamıyorsa nedeni (etkileşim menüsünde gri seçenek); başlanabiliyorsa null.</summary>
@@ -631,7 +640,7 @@ namespace Thatchwick.Core.Jobs
 
                     // Eksik olandan fazlası boşa gider; yürüme ve iş süresine ek sabit bir hazırlık payı, sık sık küçük
                     // dolduran eşyayı (tabure) uzun dolduranın (yatak) önüne geçirmez.
-                    double score = Math.Min(restore, missing) / (EffectiveDuration(interaction) + distance / TilesPerGameDay + AutonomyOverheadDays);
+                    double score = Math.Min(restore, missing) / (EffectiveDuration(interaction, item) + distance / TilesPerGameDay + AutonomyOverheadDays);
                     bool better = bestInteraction == null
                         || score > bestScore + 1e-9
                         || (Math.Abs(score - bestScore) <= 1e-9 && distance < bestDistance);
