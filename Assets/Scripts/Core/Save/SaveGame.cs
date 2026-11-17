@@ -119,6 +119,14 @@ namespace Thatchwick.Core.Save
             foreach (var r in map.RoadTiles())
                 roads.Add(new RoadSave { x = r.pos.X, y = r.pos.Y, type = (int)r.type, cond = r.cond, natural = r.natural, trample = r.trample });
             m.roads = roads.ToArray();
+            var ponds = new List<PondSave>();
+            foreach (var p in map.Ponds)
+            {
+                var ids = new List<string>(); var counts = new List<int>();
+                foreach (var f in p.Fish) { ids.Add(f.Key); counts.Add(f.Value); }
+                ponds.Add(new PondSave { x = p.Anchor.X, y = p.Anchor.Y, level = p.Level, spring = p.Spring, insects = p.Insects, filledDays = p.FilledDays, fishIds = ids.ToArray(), fishCounts = counts.ToArray() });
+            }
+            m.ponds = ponds.ToArray();
             data.map = m;
 
             // Eşyalar: önce yer eşyaları, sonra dekorlar (yüklerken üstündeki eşya hazır olsun).
@@ -359,6 +367,16 @@ namespace Thatchwick.Core.Save
                     var p = new GridPos(r.x, r.y);
                     if (r.type > 0 && Enum.IsDefined(typeof(RoadType), (byte)r.type)) map.SetRoad(p, (RoadType)r.type, r.cond, r.natural);
                     else map.SetTrample(p, r.trample);
+                }
+            if (m.ponds != null)
+                foreach (var ps in m.ponds)
+                {
+                    if (ps == null || ps.x < 0 || ps.y < 0 || ps.x >= map.Width || ps.y >= map.Height) continue;
+                    var fish = new List<KeyValuePair<string, int>>();
+                    if (ps.fishIds != null && ps.fishCounts != null)
+                        for (int i = 0; i < ps.fishIds.Length && i < ps.fishCounts.Length; i++)
+                            if (ps.fishIds[i] != null && content.Items.Contains(ps.fishIds[i])) fish.Add(new KeyValuePair<string, int>(ps.fishIds[i], ps.fishCounts[i]));
+                    map.RestorePond(new GridPos(ps.x, ps.y), ps.level, ps.spring, ps.insects, ps.filledDays, fish);
                 }
             if (m.styles != null)
                 foreach (var st in m.styles)

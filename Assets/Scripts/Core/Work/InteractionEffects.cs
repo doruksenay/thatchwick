@@ -73,6 +73,8 @@ namespace Thatchwick.Core.Work
             if (interaction.Collect && item.StockTotal == 0) return "Toplanacak ürün yok.";
             if (interaction.Teach && Pupils(character).Count == 0) return "Ders verilecek çocuk ya da genç yok.";
             if (interaction.EmptyFill && item.Fill <= 0) return "Boşaltılacak bir şey yok.";
+            if (interaction.EmptyFill && item.Def.FillProduct != null && Storage != null && !Storage.HasRoomFor(item.Def.FillProduct))
+                return "Depoda gübreye yer yok: gübreyi sat, tarlaya ser ya da depoyu büyüt.";
             if (interaction.RequiresFrost && (TemperatureAt == null || TemperatureAt(item.Position) > 0f)) return "Buz yok: don olunca (kışın) kesilir.";
             if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return "Buzluk dolu.";
             if (interaction.Water)
@@ -301,19 +303,17 @@ namespace Thatchwick.Core.Work
             return "buz gibi su";
         }
 
-        /// <summary>Depoda en çok bu kadar boşaltma ürünü (gübre) tutulur; fazlası gübre yığınına gider (depoyu tıkamasın).</summary>
-        public const int FillProductKeep = 12;
-
-        // Dolumu gübreye çevirip depoya koyar (tavan FillProductKeep).
+        // Dolumu gübreye çevirip depoya koyar. Tavan yok: depo ne kadar alırsa; sığmayan (dolu helayı kullanan
+        // boşaltınca) yığına dökülür.
         private string EmptyInto(ItemInstance item)
         {
             if (item.Def.FillProduct == null) { item.Fill = 0; return ""; }
             int n = Math.Max(1, item.Fill / item.Def.FillPerProduct);
             item.Fill = 0;
-            n = Math.Min(n, Math.Max(0, FillProductKeep - _house.Count(item.Def.FillProduct)));
-            if (n == 0) return "(gübre yığını dolu)";
             int got = Storage != null ? Storage.AddUpTo(item.Def.FillProduct, n) : AddAll(item.Def.FillProduct, n);
-            return got > 0 ? $"+{got} {Name(item.Def.FillProduct)}" : "";
+            string s = got > 0 ? $"+{got} {Name(item.Def.FillProduct)}" : "";
+            if (got < n) s += (s.Length > 0 ? ", " : "") + $"{n - got} {Name(item.Def.FillProduct)} depoya sığmadı, yığına döküldü";
+            return s;
         }
     }
 }

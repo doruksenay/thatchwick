@@ -376,13 +376,22 @@ namespace Thatchwick.Game
             _input.enabled = false;
         }
 
-        // Test haritası: gölet (su karoları: içine girilir, yıkanılır, balık tutulur, kışın donar), bir çit hattı ve dağınık engeller.
+        // Test haritası: kaynaklı doğal gölet (hep dolu; böcekli, içinde sazan, kerevit ve alabalık), bir çit hattı ve dağınık engeller.
         private static GridMap BuildDemoMap()
         {
             var map = new GridMap(MapWidth, MapHeight);
             for (int x = 10; x < 22; x++)
                 for (int y = 12; y < 20; y++)
                     map.SetFloor(new GridPos(x, y), FloorType.Water);
+            var natural = new GridPos(10, 12);
+            map.SetSpring(natural);
+            map.RestorePond(natural, 1f, spring: true, insects: true, filledDays: 30, new[]
+            {
+                new KeyValuePair<string, int>("item.fish_carp", 8),
+                new KeyValuePair<string, int>("item.fish_crayfish", 10),
+                new KeyValuePair<string, int>("item.fish_trout", 6),
+                new KeyValuePair<string, int>("item.fish_pike", 2)
+            });
 
             for (int y = 4; y < 26; y++)
                 if (y != 15) map.SetBlocked(new GridPos(32, y), true); // (32,15) bir geçit
@@ -1044,11 +1053,31 @@ namespace Thatchwick.Game
                         Run = () => { _animals.Released = !_animals.Released; ShowMessage(_animals.Released ? "Hayvanlar gündüz otlağa çıkar" : "Hayvanlar barınakta kalır"); }
                     });
             }
-            // Su karosu (gölet, dere): yıkan, balık tut; donmuşsa buz kes.
+            // Su karosu (gölet, dere): yıkan, balık tut, balık at; donmuşsa buz kes. Kazılan gölet yağmur bekler.
             if (items.Count == 0 && animal == null && _world.Map.IsWater(tile))
             {
-                names.Add(_world.Map.WaterFrozen ? "Donmuş su" : "Su");
+                var pond = _world.Map.PondAt(tile);
+                if (!pond.IsFilled) names.Add($"Boş gölet (su %{pond.Level * 100f:0}, yağmurla dolar)");
+                else
+                {
+                    var fishText = new List<string>();
+                    foreach (var f in pond.Fish) fishText.Add($"{f.Value} {(_content.Items.TryGet(f.Key, out var fd) ? fd.DisplayName : f.Key)}");
+                    names.Add($"{(_world.Map.WaterFrozen ? "Donmuş gölet" : "Gölet")}{(pond.Spring ? " (kaynaklı)" : $" (su %{pond.Level * 100f:0})")}"
+                        + $"{(pond.Insects ? ", böcekli" : ", böcek yok")}, balık: {(fishText.Count > 0 ? string.Join(", ", fishText) : "yok")}");
+                }
                 var waterTile = tile;
+                foreach (var species in _farmWork.FishSpecies())
+                {
+                    int have = _household.Count(species);
+                    if (have <= 0) continue;
+                    var sp = species;
+                    _menuOptions.Add(new MenuOption
+                    {
+                        Label = $"Gölete at: {_content.Items.Get(sp).DisplayName} ({have})",
+                        Blocked = _farmWork.CanDo(Commander.Character, waterTile, TileAction.Stock, sp),
+                        Run = () => Commander.Runner.Command(Job.OnTile(waterTile, TileAction.Stock, sp))
+                    });
+                }
                 foreach (var (label, act) in new[] { ("Suya gir, yıkan", TileAction.Bathe), ("Kıyıdan balık tut", TileAction.Fish), ("Buz kes", TileAction.CutIce) })
                 {
                     if (act == TileAction.CutIce && !_world.Map.WaterFrozen) continue;
@@ -1161,6 +1190,15 @@ namespace Thatchwick.Game
                 var r = _animals.OnNewDay(_clock.Season, _household, _storage);
                 if (r.Collected > 0) ShowMessage($"Toplama sandığı: +{r.Collected} ürün depoya alındı");
                 if (r.FeedAdded > 0) ShowMessage($"Yem oluğu yemliklere {r.FeedAdded} yem doldurdu");
+                // Göletler: yağmur doldurur, sıcakta buharlaşır; böcek gelir, balıklar ürer ya da kurur.
+                var todays = _life.Weather.Today(_clock.TotalDays);
+                float rain = todays == WeatherType.Storm ? GridMap.StormFill : todays == WeatherType.Rain ? GridMap.RainFill : 0f;
+                foreach (var note in _world.Map.OnNewDayPonds(rain, _heat.OutdoorTemperature, _clock.Season == Season.Winter, _pondRng))
+                    ShowMessage(note);
+                // Gübre için tavan yok: depo dolduysa oyuncuyu uyar (sat, tarlaya ser, depoyu büyüt).
+                int manure = _household.Count("item.manure");
+                if (_storage.Free == 0 && manure >= 5)
+                    ShowMessage($"Depo dolu, {manure} gübre yer kaplıyor: pazarda sat, tarlaya ser ya da depoyu büyüt (yoksa yiyecek alınamaz).");
                 var made = _automation.OnNewDay(_clock.Season);
                 if (made.Count > 0)
                 {
@@ -1371,6 +1409,7 @@ namespace Thatchwick.Game
 
         /// <summary>Dış sıcaklık bunun altındayken su donar.</summary>
         private const float FrozenBelow = -1f;
+        private readonly System.Random _pondRng = new System.Random(41);
         /// <summary>Yağmurda açık havada gün başına ıslaklık (yaklaşık iki saatte sırılsıklam).</summary>
         private const double RainSoakPerDay = 10.0;
 

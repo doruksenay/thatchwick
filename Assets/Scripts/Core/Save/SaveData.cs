@@ -71,7 +71,12 @@ namespace Thatchwick.Core.Save
         public LevelTileSave[] levelTiles;   // üst kat döşemeleri ve bodrum kazıları (zemin kat dizilerde)
         public TileStyleSave[] styles;       // zemin ve çatı stili (yalnızca varsayılan olmayan karolar; eski kayıtta yok)
         public RoadSave[] roads;             // yollar, patikalar ve çimdeki izler (eski kayıtta yok)
+        public PondSave[] ponds;             // göletler: su seviyesi, kaynak, böcek, balıklar (eski kayıtta yok)
     }
+
+    /// <summary>Bir gölet (x,y: göletin bir karosu).</summary>
+    [Serializable]
+    public sealed class PondSave { public int x, y; public float level; public bool spring, insects; public double filledDays; public string[] fishIds; public int[] fishCounts; }
 
     [Serializable]
     public sealed class RoadSave { public int x, y, type; public float cond; public bool natural; public float trample; }

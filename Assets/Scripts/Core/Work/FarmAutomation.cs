@@ -49,7 +49,7 @@ namespace Thatchwick.Core.Work
             foreach (var t in it.OccupiedTiles())
                 for (int dy = -1; dy <= 1; dy++)
                     for (int dx = -1; dx <= 1; dx++)
-                        if (Math.Abs(dx) + Math.Abs(dy) <= 1 && map.IsWater(new GridPos(t.X + dx, t.Y + dy))) return true;
+                        if (Math.Abs(dx) + Math.Abs(dy) <= 1 && map.IsFilled(new GridPos(t.X + dx, t.Y + dy))) return true;
             return false;
         }
 
@@ -74,7 +74,7 @@ namespace Thatchwick.Core.Work
                     for (int x = 0; x < map.Width; x++)
                     {
                         var p = new GridPos(x, y);
-                        if (!map.IsWater(p)) continue;
+                        if (!map.IsFilled(p)) continue;                // kuru çukurdan su alınmaz
                         foreach (var o in new[] { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) })
                         {
                             var n = p + o;
@@ -346,24 +346,40 @@ namespace Thatchwick.Core.Work
             Worked?.Invoke(c, tile, note);
         }
 
-        // Kıyıdan balık: gölet eşyasının balık listesi (mevsim ve ustalık); balıkçılık XP'si.
-        private void FishAt(Character c)
+        // Kıyıdan balık: göletteki balıklardan (sayıyla ağırlıklı) tutulur, gölette eksilir. Gölet doluluğu şansı
+        // artırır; türün ustalık eşiği (gölet balık listesi) altındaysa o tür kaçar. Balıkçılık XP'si.
+        private void FishAt(Character c, GridPos tile)
         {
-            InteractionDef fish = null;
-            foreach (var i in Content.Items.Get("item.pond").Interactions) if (i.Skill == SkillType.Fishing) { fish = i; break; }
-            var got = new List<string>();
+            var pond = _world.Map.PondAt(tile);
+            var fish = PondFishing();
             int level = c.Skills.GetLevel(SkillType.Fishing) + c.Modifiers.QualityLevels;
-            if (fish != null)
-                foreach (var p in fish.Produce)
+            var catchable = new List<KeyValuePair<string, int>>();
+            int total = 0;
+            foreach (var kv in pond.Fish)
+            {
+                int min = 0;
+                if (fish != null) foreach (var p in fish.Produce) if (p.ItemId == kv.Key) min = p.MinLevel;
+                if (level < min) continue;
+                catchable.Add(kv);
+                total += kv.Value;
+            }
+            string note = "bu sefer bir şey çıkmadı";
+            double chance = Math.Min(0.75, 0.2 + 0.6 * pond.FishTotal / Math.Max(1.0, pond.FishCapacity));
+            if (total == 0) note = "buradaki balıklar için ustalığı yetmiyor";
+            else if (_rng.NextDouble() < chance)
+            {
+                int pick = _rng.Next(total);
+                foreach (var kv in catchable)
                 {
-                    if (p.Seasons != null && Season != null && !p.Seasons.Contains(Season())) continue;
-                    if (p.MinLevel > 0 && level < p.MinLevel) continue;
-                    if (_rng.NextDouble() >= p.Chance) continue;
-                    House?.AddItem(p.ItemId, p.Count);
-                    got.Add(Content.Items.Get(p.ItemId).DisplayName);
+                    if (pick >= kv.Value) { pick -= kv.Value; continue; }
+                    pond.TakeFish(kv.Key);
+                    House?.AddItem(kv.Key, 1);
+                    note = $"balık: {Content.Items.Get(kv.Key).DisplayName} (gölette {pond.FishTotal} kaldı)";
+                    break;
                 }
+            }
             c.GainSkillXp(SkillType.Fishing, fish != null ? fish.SkillXp : 10f);
-            Worked?.Invoke(c, c.Position, got.Count > 0 ? "balık: " + string.Join(", ", got) : "bu sefer bir şey çıkmadı");
+            Worked?.Invoke(c, c.Position, note);
         }
 
         /// <summary>Çapa kademesinin hız çarpanı (alet); yoksa 1.</summary>
@@ -377,20 +393,32 @@ namespace Thatchwick.Core.Work
             _world = world ?? throw new ArgumentNullException(nameof(world));
         }
 
-        public string CanDo(Character actor, GridPos tile, TileAction action)
+        public string CanDo(Character actor, GridPos tile, TileAction action, string arg = null)
         {
             var map = _world.Map;
             switch (action)
             {
                 case TileAction.Bathe:
-                    if (!map.IsWater(tile)) return "Burada su yok.";
-                    return map.WaterFrozen ? "Su donmuş: önce buz kes." : null;
                 case TileAction.Fish:
-                    if (!map.IsWater(tile)) return "Burada su yok.";
-                    return Content == null || !Content.Items.Contains("item.pond") ? "Burada balık tutulmaz." : null;   // buz deliğinden de olur
                 case TileAction.CutIce:
+                case TileAction.Stock:
                     if (!map.IsWater(tile)) return "Burada su yok.";
+                    if (!map.IsFilled(tile)) return EmptyPondText;
+                    break;
+            }
+            switch (action)
+            {
+                case TileAction.Bathe:
+                    return map.WaterFrozen ? "Su donmuş: önce buz kes." : null;
+                case TileAction.Fish:                                   // buz deliğinden de olur
+                    return map.PondAt(tile).FishTotal == 0 ? NoFishText : null;
+                case TileAction.CutIce:
                     return map.WaterFrozen ? null : "Su donmamış (kışın dondurucu soğukta donar).";
+                case TileAction.Stock:
+                    if (arg == null || Content == null || !Content.Items.Contains(arg) || !IsFishSpecies(arg)) return "Gölete yalnızca balık atılır.";
+                    if (House != null && House.Count(arg) <= 0) return $"Elinde {Content.Items.Get(arg).DisplayName} yok.";
+                    var pond = map.PondAt(tile);
+                    return pond.FishTotal >= pond.FishCapacity ? "Gölet dolu: daha fazla balık sığmaz (göleti büyüt)." : null;
             }
             if (action == TileAction.Repair)
             {
@@ -419,8 +447,29 @@ namespace Thatchwick.Core.Work
             return stone;
         }
 
+        public const string EmptyPondText = "Gölet boş: kazılan gölet yalnızca yağmurla dolar.";
+        public const string NoFishText = "Gölette balık yok: önce aynı türden en az iki balık at, böcekler gelince ürerler.";
+
+        /// <summary>Gölete atılabilen, gölette yaşayan balık türleri (gölet eşyasının balık listesi).</summary>
+        public IEnumerable<string> FishSpecies()
+        {
+            var fish = PondFishing();
+            if (fish == null) yield break;
+            foreach (var p in fish.Produce) yield return p.ItemId;
+        }
+
+        public bool IsFishSpecies(string itemId) { foreach (var s in FishSpecies()) if (s == itemId) return true; return false; }
+
+        private InteractionDef PondFishing()
+        {
+            if (Content == null || !Content.Items.TryGet("item.pond", out var pond)) return null;
+            foreach (var i in pond.Interactions) if (i.Skill == SkillType.Fishing) return i;
+            return null;
+        }
+
         public double Duration(Character actor, TileAction action)
         {
+            if (action == TileAction.Stock) return 0.02;
             if (action == TileAction.Bathe) return BatheDays;
             if (action == TileAction.CutIce) return CutIceDays;
             if (action == TileAction.Fish) return FishDays / Math.Max(0.25, RodSpeed?.Invoke(actor) ?? 1.0);
@@ -430,11 +479,23 @@ namespace Thatchwick.Core.Work
             return TillDays * skill / Math.Max(0.25, speed);
         }
 
-        public void Apply(Character actor, GridPos tile, TileAction action)
+        public void Apply(Character actor, GridPos tile, TileAction action, string arg = null)
         {
-            if (CanDo(actor, tile, action) != null) return;
+            if (CanDo(actor, tile, action, arg) != null) return;
             if (action == TileAction.Bathe) { BatheIn(actor, tile); return; }
-            if (action == TileAction.Fish) { FishAt(actor); return; }
+            if (action == TileAction.Fish) { FishAt(actor, tile); return; }
+            if (action == TileAction.Stock)
+            {
+                House?.TryTakeItem(arg);
+                var pond = _world.Map.PondAt(tile);
+                pond.AddFish(arg);
+                pond.Fish.TryGetValue(arg, out int n);
+                string name = Content.Items.Get(arg).DisplayName;
+                Worked?.Invoke(actor, tile, n >= 2
+                    ? $"gölete {name} attı ({n} tane){(pond.Insects ? ": üreyebilirler" : ": böcekler gelince ürerler")}"
+                    : $"gölete {name} attı (1 tane: üremesi için bir tane daha gerek)");
+                return;
+            }
             if (action == TileAction.CutIce)
             {
                 House?.AddItem("item.ice", 3);

@@ -241,6 +241,7 @@ namespace Thatchwick.Core.World
             if (_floor[i] == floor && _floorStyle[i] == style) return;
             if (_floor[i] == FloorType.Water) _waterCount--;
             if (floor == FloorType.Water) _waterCount++;
+            if ((_floor[i] == FloorType.Water || floor == FloorType.Water) && _floor[i] != floor) _pondsDirty = true;
             _floor[i] = floor;
             _floorStyle[i] = style;
             Changed?.Invoke();
