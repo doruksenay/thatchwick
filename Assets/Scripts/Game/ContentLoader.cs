@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Customization;
+using Thatchwick.Core.Localization;
 
 namespace Thatchwick.Game
 {
@@ -47,6 +48,9 @@ namespace Thatchwick.Game
                 catch (ArgumentException ex) { loadErrors.Add($"life.json çözümlenemedi: {ex.Message}"); }
             }
 
+            // Oyuncuya görünen adlar seçili dile çevrilir (Resources/Localization/content.<dil>.json).
+            ContentLocalizer.Apply(file, GameLocalization.Current);
+
             errors = ContentMapper.Apply(file, db);
             errors.AddRange(loadErrors);
             return db;
@@ -77,6 +81,7 @@ namespace Thatchwick.Game
                 return AppearanceCatalog.Default();
             }
 
+            ContentLocalizer.Apply(file, GameLocalization.Current);
             var catalog = AppearanceMapper.Build(file, errors);
             if (errors.Count > 0)
             {
