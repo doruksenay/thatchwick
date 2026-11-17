@@ -1,5 +1,5 @@
 ---
-id: "345"
+id: "350"
 title: Soy Mührü ve yadigâr ikonları (arayüz ve dünya işareti)
 status: pending
 approved_by: user        # otomatik akış (2026-11-17); miras sistemi PR #11
@@ -16,7 +16,7 @@ outputs:
   - Assets/Art/Iso/_aday/iso_fx_heirloom_glint.png
 created: 2026-11-17
 ---
-# 345 Soy Mührü ve yadigâr ikonları
+# 350 Soy Mührü ve yadigâr ikonları
 
 ## Amaç
 Miras sistemi (PR #11, Project belgesi 19) için arayüz ikonları ve dünyada yadigâr eşyayı belli eden küçük bir işaret. Bugün arayüzde yerlerinde metin ve "✦" duruyor.
