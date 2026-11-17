@@ -162,6 +162,13 @@ namespace Thatchwick.Core.Content
                 foreach (var it in item.Interactions)
                     if (it.AddIce > 0f && !item.IsIceBox) errors.Add($"{item.Id}.{it.Id}: buz yalnızca buzluğa konur.");
                 if (item.NeedsWaterSource && item.WaterRadius <= 0) errors.Add($"{item.Id}: needsSource yalnızca sulayan eşyada.");
+                if (item.IsFixture && WaterNetworkNode(item)) errors.Add($"{item.Id}: tesisat (waterUse) ağ parçası olamaz: suyu iletmez.");
+                if (item.WaterUse > 12) errors.Add($"{item.Id}: waterUse en çok 12 (kurşun boru kapasitesi).");
+                if (item.IsTap && !item.IsFixture) errors.Add($"{item.Id}: tap yalnızca tesisatta (waterUse > 0).");
+                if (item.CisternCapacity > 0 && item.WaterSource) errors.Add($"{item.Id}: sarnıç ayrıca waterSource olmaz.");
+                if (item.WaterFlow != 0 && !item.WaterSource) errors.Add($"{item.Id}: waterFlow yalnızca su kaynağında.");
+                foreach (var it in item.Interactions)
+                    if (it.NeedsPipedWater && !item.IsFixture) errors.Add($"{item.Id}.{it.Id}: piped yalnızca tesisatta.");
                 if (item.AutoProcess != null)
                 {
                     if (!Items.Contains(item.AutoProcess.Item)) errors.Add($"{item.Id}: otomatik işin girdisi '{item.AutoProcess.Item}' yok.");
@@ -289,5 +296,6 @@ namespace Thatchwick.Core.Content
                 }
             }
         }
+        private static bool WaterNetworkNode(ItemDef d) => d.WaterSource || d.NeedsWaterSource || d.PowerSource || d.WaterGate || d.IsCistern || d.WaterHead;
     }
 }

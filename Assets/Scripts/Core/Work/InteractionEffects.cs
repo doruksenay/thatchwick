@@ -39,6 +39,10 @@ namespace Thatchwick.Core.Work
         /// <summary>Şu anki mevsim (balık türleri); null ise her mevsimin ürünü çıkabilir.</summary>
         public Func<Time.Season> Season { get; set; }
 
+        /// <summary>Tesisata (çeşme, akarsulu hela, borulu küvet) şu an su geliyor mu (su işleri).</summary>
+        public Func<ItemInstance, bool> PipedWater { get; set; }
+        private bool Piped(ItemInstance item) => item != null && item.Def.IsFixture && PipedWater != null && PipedWater(item);
+
         /// <summary>Buzluk en çok bu kadar günlük buz alır.</summary>
         public const float MaxIceDays = 30f;
 
@@ -74,6 +78,7 @@ namespace Thatchwick.Core.Work
             if (interaction.Teach && Pupils(character).Count == 0) return "Ders verilecek çocuk ya da genç yok.";
             if (interaction.EmptyFill && item.Fill <= 0) return "Boşaltılacak bir şey yok.";
             if (interaction.RequiresFrost && (TemperatureAt == null || TemperatureAt(item.Position) > 0f)) return "Buz yok: don olunca (kışın) kesilir.";
+            if (interaction.NeedsPipedWater && !Piped(item)) return "Su gelmiyor: bir kaynağa bağlı boruya bağla.";
             if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return "Buzluk dolu.";
             if (interaction.Water)
             {
@@ -138,9 +143,15 @@ namespace Thatchwick.Core.Work
             }
             if (interaction.Heal > 0f && character.Treat(interaction.Heal)) farmNotes.Add("yaraları iyileşti");
             // Dolu hela/lazımlığı kullanan önce kendisi boşaltır (sıkışan beklemez); boşaltılan gübre olur.
-            if (interaction.AddFill > 0 && item.Def.FillCapacity > 0 && item.Fill + interaction.AddFill > item.Def.FillCapacity)
-                farmNotes.Add("doluydu, boşalttı " + EmptyInto(item));
-            if (interaction.AddFill > 0) item.Fill += interaction.AddFill;
+            // Akarsulu hela: su gelirken yıkanır, dolmaz (gübre çıkmaz, boşaltma işi kalmaz).
+            bool flushed = interaction.AddFill > 0 && Piped(item);
+            if (flushed) { if (item.Fill > 0) item.Fill = 0; }
+            else
+            {
+                if (interaction.AddFill > 0 && item.Def.FillCapacity > 0 && item.Fill + interaction.AddFill > item.Def.FillCapacity)
+                    farmNotes.Add("doluydu, boşalttı " + EmptyInto(item));
+                if (interaction.AddFill > 0) item.Fill += interaction.AddFill;
+            }
             if (interaction.EmptyFill && item.Def.FillProduct != null) farmNotes.Add(EmptyInto(item));
             if (interaction.Bath) farmNotes.Add(BathEffect(character, item));
             if (interaction.Wets > 0f) character.Soak(interaction.Wets);

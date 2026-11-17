@@ -169,6 +169,14 @@ namespace Thatchwick.Core.Content
         public int seedRadius;               // ekim makinesi: güç alınca bu yarıçaptaki boş toprağa tohum eker
         public int iceCollect;               // buz kuyusu: donlu sabahlar bu kadar buz toplar
         public int foodCapacity;             // yiyecek yerleşiminde kapasite (0 = depo kapasitesi; kilerde 60)
+        // Su şebekesi ve tesisat
+        public int waterFlow;                // kaynağın boruya günlük suyu (0 = 4, -1 = vermez: kuyu)
+        public int waterUse;                 // tesisat: bağlıyken günde istediği su (leğen, küvet, akarsulu hela, çeşme)
+        public bool waterHead;               // su terazisi: üst kat tesisatına basınç
+        public int cistern;                  // sarnıç: biriktirdiği en çok su
+        public int cisternRain;              // yağmurlu gün dolan su
+        public int cisternFlow;              // günde en çok verdiği su (0 = 4)
+        public bool tap;                     // çeşme/lüle: su gelirken kova buradan doldurulur
     }
 
     /// <summary>Yemek/içki etkisi: süreli ruh hali etkisi (moodlet) olarak kaydedilir.</summary>
@@ -246,6 +254,7 @@ namespace Thatchwick.Core.Content
         public bool dries;               // kurular (havlu, ocak başı)
         public float heal;               // soğuk/açlık yarasını bu kadar gün iyileştirir (hekimlik)
         public bool requiresFrost;       // yalnızca don varken (buz kesmek)
+        public bool piped;               // yalnızca tesisata su gelirken (çeşmede yıkanmak)
         public bool collect;             // barınak ürünlerini topla
         public bool requiresAnimal;      // barınakta hayvan olmalı
         public NeedRestoreDto[] extraRestore; // ana ihtiyaca ek olarak doyurulan ihtiyaçlar

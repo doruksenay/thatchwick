@@ -75,6 +75,13 @@ namespace Thatchwick.Core.Content
                     WaterSource = dto.waterSource,
                     NeedsWaterSource = dto.needsSource,
                     PowerSource = dto.powerSource,
+                    WaterFlow = dto.waterFlow < 0 ? -1 : dto.waterFlow,
+                    WaterUse = Math.Max(0, dto.waterUse),
+                    WaterHead = dto.waterHead,
+                    CisternCapacity = Math.Max(0, dto.cistern),
+                    CisternRain = Math.Max(0, dto.cisternRain),
+                    CisternFlow = Math.Max(0, dto.cisternFlow),
+                    IsTap = dto.tap,
                     AutoProcess = dto.autoProcess == null || string.IsNullOrWhiteSpace(dto.autoProcess.item) ? null : new AutoProcessDef
                     {
                         Item = dto.autoProcess.item, Count = Math.Max(1, dto.autoProcess.count),
@@ -133,7 +140,7 @@ namespace Thatchwick.Core.Content
                         if (i == null) continue;
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
-                            || i.addIce > 0f || i.requiresFrost || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
+                            || i.addIce > 0f || i.requiresFrost || i.piped || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -181,6 +188,7 @@ namespace Thatchwick.Core.Content
                             Dries = i.dries,
                             Heal = Math.Max(0f, i.heal),
                             RequiresFrost = i.requiresFrost,
+                            NeedsPipedWater = i.piped,
                             Collect = i.collect,
                             RequiresAnimal = i.requiresAnimal,
                             Tool = string.IsNullOrWhiteSpace(i.tool) ? null : i.tool,

@@ -286,6 +286,7 @@ namespace Thatchwick.Core.Build
                 if (room != null && room.IsIndoor) return PlacementCheck.Fail("Gölet açık havada kazılır.");
                 if (_world.GetItemAt(tile) != null || map.IsBlocked(tile)) return PlacementCheck.Fail("Üstünde bir şey var.");
                 if (map.GetRoad(tile) != RoadType.None) return PlacementCheck.Fail("Önce yolu kaldır.");
+                if (map.GetConduit(tile) != ConduitType.None) return PlacementCheck.Fail("Önce su yolunu kaldır (gölete değen ark zaten beslenir).");
             }
             string newStyle = null;
             if (floor != FloorType.Grass)

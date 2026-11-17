@@ -94,6 +94,7 @@ namespace Thatchwick.Game
         private AnimalCare _animalCare;
         private FarmWork _farmWork;
         private FarmAutomation _automation;
+        private WaterWorks _water;                    // su şebekesi ve tesisat (ark, boru, sarnıç)
         private DutyPlanner _duties;
         private double HourOfDay => _clock.DayFraction * 24.0;
         private bool _hoeMode;      // çapa kipi: boş çime dokununca çapalar
@@ -200,6 +201,8 @@ namespace Thatchwick.Game
             _view.RefreshFloors();
             map.Changed += () => _floorsDirty = true;
             map.RoadsChanged += () => _floorsDirty = true;
+            map.ConduitsChanged += () => _floorsDirty = true;
+            _world.Changed += () => { if (map.HasConduits) _floorsDirty = true; };    // kapak, kaynak: arkın ıslaklığı
             map.Changed += () =>
             {
                 if (_account == null || _account.HasFirst("first:room")) return;
@@ -750,7 +753,8 @@ namespace Thatchwick.Game
                 Runner = new JobRunner(character, _world)
                 {
                     Effects = _effects, Social = _family, Animals = _animalCare, TileWork = _farmWork,
-                    WaterNetworkAccess = () => WaterNetwork.WaterAccess(_world),
+                    WaterNetworkAccess = () => _water != null ? _water.AllWaterAccess() : WaterNetwork.WaterAccess(_world),
+                    PipedWater = it => _water != null && _water.IsSupplied(it),
                     WalkSpeed = () => _animals.RideSpeed(character.Id), DutyProvider = _duties.Next,
                     DutySpeed = () => SkillNames.Factor(_life.BestSkill(SkillType.Stewardship), 0.03)
                 },
@@ -1034,7 +1038,7 @@ namespace Thatchwick.Game
                     _menuOptions.Add(new MenuOption
                     {
                         Label = gate.Toggled ? "Kapağı aç (su geçsin)" : "Kapağı kapat (suyu kes)",
-                        Run = () => { gate.Toggled = !gate.Toggled; ShowMessage(gate.Toggled ? "Su kapağı kapandı" : "Su kapağı açıldı"); }
+                        Run = () => { gate.Toggled = !gate.Toggled; _water?.Invalidate(); _floorsDirty = true; ShowMessage(gate.Toggled ? "Su kapağı kapandı" : "Su kapağı açıldı"); }
                     });
                 }
                 if (item.Def.AnimalRole == AnimalRoles.Bell)
@@ -1142,6 +1146,10 @@ namespace Thatchwick.Game
             _farmWork.Tilled += (c, t) => _account.Count("act:till");
             _farmWork.Repaired += (c, t) => { ShowMessage($"{c.Name} yolu onardı"); _account.Count("act:repair_road"); };
             _effects.TemperatureAt = p => _heat.TemperatureAt(p);   // buz kesmek için don
+            _water = new WaterWorks(_world);
+            _effects.PipedWater = _water.IsSupplied;
+            _view.WetConduit = p => _water.Report.IsWet(p);
+            _floorsDirty = true;
             _automation = new FarmAutomation(_world, _household)
             {
                 Storage = _storage, Plants = _plants, Build = _buildService, Content = _content, TemperatureAt = p => _heat.TemperatureAt(p)
@@ -1161,6 +1169,9 @@ namespace Thatchwick.Game
                 var r = _animals.OnNewDay(_clock.Season, _household, _storage);
                 if (r.Collected > 0) ShowMessage($"Toplama sandığı: +{r.Collected} ürün depoya alındı");
                 if (r.FeedAdded > 0) ShowMessage($"Yem oluğu yemliklere {r.FeedAdded} yem doldurdu");
+                var water = _water.OnNewDay(_life.RainyToday);
+                _floorsDirty = true;
+                if (water.DryFixtures > 0) ShowMessage($"Su gelmeyen tesisat: {water.DryFixtures} (yapı modunda su yolunu denetle)");
                 var made = _automation.OnNewDay(_clock.Season);
                 if (made.Count > 0)
                 {
@@ -1688,7 +1699,7 @@ namespace Thatchwick.Game
             }
 
             HashSet<int> net = null;     // sulama ağı bu karede bir kez hesaplanır
-            HashSet<int> Net() => net ?? (net = WaterNetwork.Connected(_world));
+            HashSet<int> Net() => net ?? (net = _water.Report.ConnectedItems);
             List<ItemInstance> wheels = null;
             string Comfort(ItemInstance home) { var r = _animals.ComfortOf(home); return $"konfor {r.Total:0}: {r.Hint()}"; }
             foreach (var item in _world.Items)
@@ -1706,6 +1717,9 @@ namespace Thatchwick.Game
                     : item.Def.NeedsPower ? $"{item.Def.DisplayName} ({(_automation.IsPowered(item, wheels ?? (wheels = _automation.TurningWheels(Net()))) ? "dönüyor" : "güç yok: su çarkı ya da yel değirmeni gerekli")})"
                     : item.Def.PowerSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "dönüyor" : "kuru: kaynağa bağlı kanala değmeli")})"
                     : item.Def.NeedsWaterSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "su akıyor" : "kuru: kuyuya bağla")})"
+                    : item.Def.IsCistern ? $"{item.Def.DisplayName} ({item.Fill}/{item.Def.CisternCapacity} su)"
+                    : item.Def.WaterHead ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "basınç var" : "kuru: kurşun boruya bağla")})"
+                    : item.Def.IsFixture ? $"{item.Def.DisplayName} ({(_water.Report.IsSupplied(item) ? "su geliyor" : "su yok")})"
                     : item.Def.DisplayName;
                 GUI.Label(new Rect(x - 70f, y - 10f, 140f, 20f), label, _labelStyle);
             }

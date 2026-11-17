@@ -362,6 +362,8 @@ namespace Thatchwick.Core.Jobs
             }
 
             // Banyo ve leğen: önce en yakın sudan (kuyu, gölet, dere) bir kova su getirilir; her banyoya bir sefer.
+            // Tesisata su geliyorsa (borulu küvet, lüleli leğen) kova taşınmaz.
+            if (!_using && interaction.FetchWater && !_hasWater && PipedWater != null && PipedWater(item)) _hasWater = true;
             if (!_using && interaction.FetchWater && !_hasWater && WaterNetworkAccess != null)
             {
                 if (_path == null)
@@ -756,6 +758,8 @@ namespace Thatchwick.Core.Jobs
 
         /// <summary>Su alınabilecek karolar (WaterNetwork.WaterAccess). Null ise su taşınmaz (eşyada su hazır sayılır).</summary>
         public Func<HashSet<GridPos>> WaterNetworkAccess { get; set; }
+        /// <summary>Tesisata su geliyor mu: geliyorsa banyo için kova getirilmez (su işleri).</summary>
+        public Func<ItemInstance, bool> PipedWater { get; set; }
 
         private bool _hasWater, _fetching;
 

@@ -119,6 +119,9 @@ namespace Thatchwick.Core.Save
             foreach (var r in map.RoadTiles())
                 roads.Add(new RoadSave { x = r.pos.X, y = r.pos.Y, type = (int)r.type, cond = r.cond, natural = r.natural, trample = r.trample });
             m.roads = roads.ToArray();
+            var conduits = new List<ConduitSave>();
+            foreach (var (pos, type) in map.ConduitTiles()) conduits.Add(new ConduitSave { x = pos.X, y = pos.Y, type = (int)type });
+            m.conduits = conduits.ToArray();
             data.map = m;
 
             // Eşyalar: önce yer eşyaları, sonra dekorlar (yüklerken üstündeki eşya hazır olsun).
@@ -359,6 +362,12 @@ namespace Thatchwick.Core.Save
                     var p = new GridPos(r.x, r.y);
                     if (r.type > 0 && Enum.IsDefined(typeof(RoadType), (byte)r.type)) map.SetRoad(p, (RoadType)r.type, r.cond, r.natural);
                     else map.SetTrample(p, r.trample);
+                }
+            if (m.conduits != null)
+                foreach (var c in m.conduits)
+                {
+                    if (c == null || c.x < 0 || c.y < 0 || c.x >= map.Width || c.y >= map.Height) continue;
+                    if (c.type > 0 && Enum.IsDefined(typeof(ConduitType), (byte)c.type)) map.SetConduit(new GridPos(c.x, c.y), (ConduitType)c.type);
                 }
             if (m.styles != null)
                 foreach (var st in m.styles)

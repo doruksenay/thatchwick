@@ -107,6 +107,8 @@ namespace Thatchwick.Core.Content
         public float Heal { get; set; }
         /// <summary>Yalnızca don varken yapılır (buz kesmek).</summary>
         public bool RequiresFrost { get; set; }
+        /// <summary>Yalnızca tesisata su gelirken yapılır (çeşmede yüz yıkamak).</summary>
+        public bool NeedsPipedWater { get; set; }
         /// <summary>Barınaktaki ürünleri (yumurta, süt, yün) haneye toplar.</summary>
         public bool Collect { get; set; }
         /// <summary>Barınakta yaşayan bir hayvan gerektirir (köpekle oyna).</summary>
@@ -142,7 +144,7 @@ namespace Thatchwick.Core.Content
         }
 
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
-            || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
+            || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
             || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter;
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;

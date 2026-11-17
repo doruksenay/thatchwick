@@ -14,32 +14,21 @@ namespace Thatchwick.Core.Work
     /// </summary>
     public static class WaterNetwork
     {
-        /// <summary>Ağın parçası mı (kaynak, kanal ya da su çarkı)?</summary>
-        public static bool IsNode(ItemDef def) => def.WaterSource || def.NeedsWaterSource || def.PowerSource || def.WaterGate;
+        /// <summary>Ağın parçası mı (kaynak, kanal, kapak, su çarkı, sarnıç ya da su terazisi)? Tesisat ağ parçası değildir: suyu iletmez.</summary>
+        public static bool IsNode(ItemDef def) => def.WaterSource || def.NeedsWaterSource || def.PowerSource || def.WaterGate || def.IsCistern || def.WaterHead;
 
-        /// <summary>Kaynağa bağlı ağ parçalarının kimlikleri (kaynaklar dahil).</summary>
-        public static HashSet<int> Connected(WorldState world)
+        /// <summary>
+        /// Kaynağa bağlı ağ parçalarının kimlikleri (kaynaklar dahil). Su yolu katmanındaki ark ve borular da ağı birleştirir
+        /// (17.11.2026); donmuş açık ark ve kapalı kapak suyu keser, çark yalnızca açık sudan (ark, oluk, kanal) döner.
+        /// </summary>
+        public static HashSet<int> Connected(WorldState world) => Analyze(world).ConnectedItems;
+
+        /// <summary>Bağlantı hesabı (tesisat dağıtımı olmadan): ıslak su yolları ve bağlı eşyalar.</summary>
+        public static WaterReport Analyze(WorldState world)
         {
-            var nodes = new List<ItemInstance>();
-            foreach (var it in world.Items) if (!it.IsDecor && IsNode(it.Def)) nodes.Add(it);
-            var connected = new HashSet<int>();
-            var queue = new Queue<ItemInstance>();
-            // Kaynak: kuyu, gölet eşyası, sulama dolabı; bir de dere/gölet karosuna değen ağ parçası (kapalı kapak hariç).
-            foreach (var n in nodes)
-                if (n.Def.WaterSource || !n.Def.PowerSource && !(n.Def.WaterGate && n.Toggled) && TouchesWater(world.Map, n)) { connected.Add(n.Id); queue.Enqueue(n); }
-            while (queue.Count > 0)
-            {
-                var cur = queue.Dequeue();
-                if (cur.Def.PowerSource) continue;           // çark suyu iletmez, yalnızca kullanır
-                foreach (var n in nodes)
-                {
-                    if (connected.Contains(n.Id) || !Touches(cur, n)) continue;
-                    if (n.Def.WaterGate && n.Toggled) continue;  // kapalı kapak suyu kesir
-                    connected.Add(n.Id);
-                    queue.Enqueue(n);
-                }
-            }
-            return connected;
+            var report = new WaterReport();
+            new WaterGraph(world).Connect(report);
+            return report;
         }
 
         /// <summary>Eşya bir su karosuna (dere, gölet) değiyor mu?</summary>
