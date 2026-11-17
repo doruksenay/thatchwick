@@ -53,7 +53,11 @@ namespace Thatchwick.Core.Life
                 case SkillType.Woodcutting: return "chop";
                 case SkillType.Farming: return "farm";
                 case SkillType.Cooking: return "cook";
-                case SkillType.Carpentry: return "craft";
+                case SkillType.Carpentry:
+                case SkillType.Leatherwork:
+                case SkillType.Weaving: return "craft";
+                case SkillType.AnimalHusbandry: return "farm";
+                case SkillType.Herbalism: return "cook";
                 default: return "work";
             }
         }

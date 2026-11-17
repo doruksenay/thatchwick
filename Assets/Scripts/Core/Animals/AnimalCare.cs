@@ -35,6 +35,18 @@ namespace Thatchwick.Core.Animals
     // Hayvancılık (17.11.2026): barınak odası, otlak, konfor, otomasyon ve binek.
     public sealed partial class AnimalSystem
     {
+        /// <summary>Karakteri kimliğiyle bulur (binicilik XP'si ve hızı, yavrulama ustalığı); null ise beceri etkisi yok.</summary>
+        public Func<int, Character> FindCharacter { get; set; }
+
+        /// <summary>Hanenin en iyi hayvancılık ustalığı (seviye + dal ustalığı); yoksa 1. Yavrulama şansını belirler.</summary>
+        public Func<int> HusbandryLevel { get; set; }
+
+        /// <summary>Binicinin at sırtında bir karo gidince aldığı binicilik XP'si.</summary>
+        public const float RideXpPerTile = 0.4f;
+
+        /// <summary>Yavru doğdu (anne, yavru).</summary>
+        public event Action<Animal, Animal> Born;
+
         /// <summary>Hayvanlar dışarı çıkabilir mi (gündüz, havası iyi); null ise hep. Oyun katmanı saat ve havadan verir.</summary>
         public Func<bool> CanGoOut { get; set; }
         /// <summary>Hayvan çanı: false ise hayvanlar barınakta tutulur (otlağa çıkmaz).</summary>
@@ -327,7 +339,63 @@ namespace Thatchwick.Core.Animals
         /// <summary>Gün başı raporu (bildirim için).</summary>
         public sealed class DayReport
         {
-            public int Collected, FeedAdded;
+            public int Collected, FeedAdded, Births;
+        }
+
+        /// <summary>Yavrulama: günlük temel şans ve hayvancılık seviyesi başına ek (10. seviyede ~%17,5).</summary>
+        public const double BreedBaseChance = 0.04, BreedPerLevel = 0.015;
+        /// <summary>Yavrulamak için çiftin ortalama dostluğu en az bu olmalı.</summary>
+        public const float BreedFriendship = 30f;
+
+        public double BreedChance(int husbandryLevel) => BreedBaseChance + BreedPerLevel * Math.Max(0, husbandryLevel - 1);
+
+        // Aynı odada (ya da aynı dış barınakta) en az iki tok, erişkin, dost hayvanı olan tür, odada boş yer varsa günde
+        // bir yavru verebilir. Evcil hayvan ve arı yavrulamaz.
+        private int Breed()
+        {
+            double chance = BreedChance(Math.Max(1, HusbandryLevel?.Invoke() ?? 1));
+            var groups = new Dictionary<string, List<Animal>>();
+            var groupHome = new Dictionary<string, ItemInstance>();
+            foreach (var a in _animals)
+            {
+                if (a.IsDead || !a.IsMature || a.Fullness < 60f || a.Species.IsPet || a.Species.Housing == "hive") continue;
+                var home = _world.GetItem(a.HomeItemId);
+                if (home == null) continue;
+                var room = RoomOf(home);
+                string key = a.Species.Id + "|" + (room != null ? "r" + room.Tiles[0] : "h" + home.Id);
+                if (!groups.TryGetValue(key, out var list)) { list = new List<Animal>(); groups[key] = list; groupHome[key] = home; }
+                list.Add(a);
+            }
+            int births = 0;
+            var keys = new List<string>(groups.Keys);
+            keys.Sort(StringComparer.Ordinal);
+            foreach (var key in keys)
+            {
+                var list = groups[key];
+                if (list.Count < 2) continue;
+                float avg = 0f;
+                foreach (var a in list) avg += a.Friendship;
+                if (avg / list.Count < BreedFriendship) continue;
+                if (_rng.NextDouble() >= chance) continue;
+                var nest = FreeHomeNear(list[0].Species, groupHome[key]);
+                if (nest == null) continue;
+                var baby = Spawn(list[0].Species, nest);
+                births++;
+                Born?.Invoke(list[0], baby);
+            }
+            return births;
+        }
+
+        // Annenin barınağıyla aynı odadaki (dış barınakta kendisi) boş yeri olan barınak.
+        private ItemInstance FreeHomeNear(AnimalSpeciesDef species, ItemInstance home)
+        {
+            var room = RoomOf(home);
+            foreach (var it in _world.Items)
+            {
+                if (it.IsDecor || it.Def.HousingKind != species.Housing || Residents(it.Id) >= it.Def.HousingCapacity) continue;
+                if (room != null ? InRoom(room, it) : it.Id == home.Id) return it;
+            }
+            return null;
         }
 
         /// <summary>
@@ -351,6 +419,7 @@ namespace Thatchwick.Core.Animals
                 if (a.IsDead) continue;
                 a.Comfort = ComfortOf(_world.GetItem(a.HomeItemId)).Total;
             }
+            report.Births = Breed();
             if (house == null) return report;
 
             foreach (var helper in new List<ItemInstance>(_world.Items))
@@ -440,6 +509,9 @@ namespace Thatchwick.Core.Animals
             if (a == null) return 1.0;
             double speed = a.Species.RideSpeed;
             if (a.Saddle != null && _content.Items.TryGet(a.Saddle, out var s) && s.HasTag("fine")) speed *= 1.25;
+            // Binicilik: seviye başına %3 (10. seviyede %27).
+            var rider = FindCharacter?.Invoke(riderId);
+            if (rider != null) speed *= 1.0 + 0.03 * Math.Max(0, rider.Skills.GetLevel(SkillType.Riding) - 1);
             return speed;
         }
 
@@ -516,20 +588,20 @@ namespace Thatchwick.Core.Animals
             return true;
         }
 
-        /// <summary>Tek hayvanı sever (günde bir).</summary>
-        public bool PetOne(Animal a)
+        /// <summary>Tek hayvanı sever (günde bir). husbandryLevel: sevenin hayvancılık seviyesi.</summary>
+        public bool PetOne(Animal a, int husbandryLevel = 1)
         {
             if (a == null || a.IsDead || a.PetCooldownDays > 0) return false;
-            a.Friendship = Math.Min(100f, a.Friendship + PetFriendship);
+            a.Friendship = Math.Min(100f, a.Friendship + PetFriendship * HusbandryFactor(husbandryLevel));
             a.PetCooldownDays = 1.0;
             return true;
         }
 
         /// <summary>Tımar (binek ve büyükbaş): sevmeyle aynı günlük hak, biraz daha dostluk ve o günün konforuna +10.</summary>
-        public bool Brush(Animal a)
+        public bool Brush(Animal a, int husbandryLevel = 1)
         {
             if (a == null || a.IsDead || a.PetCooldownDays > 0) return false;
-            a.Friendship = Math.Min(100f, a.Friendship + PetFriendship + BrushFriendship);
+            a.Friendship = Math.Min(100f, a.Friendship + (PetFriendship + BrushFriendship) * HusbandryFactor(husbandryLevel));
             a.Comfort = Math.Min(100f, a.Comfort + 10f);
             a.PetCooldownDays = 1.0;
             return true;
@@ -590,16 +662,28 @@ namespace Thatchwick.Core.Animals
             var a = _animals.Get(animalId);
             if (a == null) return;
             bool ok;
+            int husb = actor.Skills.GetLevel(SkillType.AnimalHusbandry);
             switch (action)
             {
-                case AnimalAction.Pet: ok = _animals.PetOne(a); break;
-                case AnimalAction.Brush: ok = _animals.Brush(a); break;
+                case AnimalAction.Pet: ok = _animals.PetOne(a, husb); break;
+                case AnimalAction.Brush: ok = _animals.Brush(a, husb); break;
                 case AnimalAction.Saddle: ok = _animals.SaddleUp(a, _house); break;
                 case AnimalAction.Unsaddle: ok = _animals.Unsaddle(a, _house); break;
                 case AnimalAction.Mount: ok = _animals.Mount(actor.Id, a); break;
                 default: ok = false; break;
             }
-            if (ok) Done?.Invoke(actor, a, action);
+            if (ok)
+            {
+                // Beceri: sevmek hayvancılık; tımar, eyer ve binmek binicilik (tımar biraz da hayvancılık).
+                switch (action)
+                {
+                    case AnimalAction.Pet: actor.GainSkillXp(SkillType.AnimalHusbandry, 4); break;
+                    case AnimalAction.Brush: actor.GainSkillXp(SkillType.Riding, 5); actor.GainSkillXp(SkillType.AnimalHusbandry, 2); break;
+                    case AnimalAction.Saddle: actor.GainSkillXp(SkillType.Riding, 2); break;
+                    case AnimalAction.Mount: actor.GainSkillXp(SkillType.Riding, 1); break;
+                }
+                Done?.Invoke(actor, a, action);
+            }
         }
     }
 }

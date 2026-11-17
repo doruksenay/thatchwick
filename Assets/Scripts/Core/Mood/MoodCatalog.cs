@@ -19,7 +19,8 @@ namespace Thatchwick.Core.Mood
         public const string GoodMeal = "good_meal", Rested = "rested", Clean = "clean", Inspired = "inspired", HadFun = "had_fun",
             NiceChat = "nice_chat", Newlywed = "newlywed", NewBaby = "new_baby", Grief = "grief", Harmony = "harmony",
             BrightRoom = "bright_room", GoodHarvest = "good_harvest", Proud = "proud", PetLove = "pet_love",
-            AnimalDied = "animal_died", CropFrozen = "crop_frozen", SharpTools = "sharp_tools", Slaughtered = "slaughtered";
+            AnimalDied = "animal_died", CropFrozen = "crop_frozen", SharpTools = "sharp_tools", Slaughtered = "slaughtered",
+            PotionVigor = "potion_vigor", PotionFocus = "potion_focus", PotionCalm = "potion_calm", NewFoal = "new_foal";
 
         private readonly Dictionary<string, MoodletDef> _defs = new Dictionary<string, MoodletDef>(StringComparer.Ordinal);
 
@@ -72,6 +73,11 @@ namespace Thatchwick.Core.Mood
             m = M(SharpTools, "Keskin aletler", 5, 0.5, "Baltasını biledi: odunculuk %20 hızlı."); m.SkillSpeed[SkillType.Woodcutting] = 0.20f; c.Register(m);
             c.Register(M(Slaughtered, "Zor bir iş", -4, 1.0, "Bir hayvanı kesmek zorunda kaldı."));
             c.Register(M(CropFrozen, "Ekin dondu", -10, 2.0, "Hasat edilmemiş ekin kışta dondu."));
+            // İksirler (otacılık).
+            m = M(PotionVigor, "Dinç", 8, 1.0, "Dinçlik iksiri içti: bütün işler %15 hızlı."); m.AllSpeed = 0.15f; c.Register(m);
+            m = M(PotionFocus, "Odaklanmış", 6, 1.0, "Zihin iksiri içti: bütün becerilerde %30 fazla XP."); m.AllXp = 0.30f; c.Register(m);
+            c.Register(M(PotionCalm, "Huzurlu", 15, 1.0, "Huzur şerbeti içti: içi rahat."));
+            c.Register(M(NewFoal, "Yavru sevinci", 8, 1.0, "Ahırda bir yavru doğdu."));
             return c;
         }
     }

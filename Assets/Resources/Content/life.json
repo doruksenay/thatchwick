@@ -296,6 +296,33 @@
           "level": 9
         }
       ]
+    },
+    {
+      "id": "rod",
+      "displayName": "Olta",
+      "tiers": [
+        {
+          "name": "Kamış olta",
+          "akce": 30,
+          "firewood": 0,
+          "speed": 1.2,
+          "level": 2
+        },
+        {
+          "name": "Makaralı olta",
+          "akce": 90,
+          "firewood": 0,
+          "speed": 1.4,
+          "level": 5
+        },
+        {
+          "name": "Usta oltası",
+          "akce": 200,
+          "firewood": 0,
+          "speed": 1.6,
+          "level": 8
+        }
+      ]
     }
   ],
   "branches": [
@@ -566,6 +593,498 @@
         "energyDecay": 0.9
       },
       "requires": "branch.carp_craftsman"
+    },
+    {
+      "id": "branch.husb_shepherd",
+      "displayName": "Çoban",
+      "description": "Hayvancılıkta daha hızlı öğrenir.",
+      "skill": "AnimalHusbandry",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "AnimalHusbandry",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.husb_dairy",
+      "displayName": "Sütçü",
+      "description": "Sağarken ve kırkarken ara sıra fazladan ürün.",
+      "skill": "AnimalHusbandry",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.husb_breeder",
+      "displayName": "Yetiştirici",
+      "description": "Hayvanlar daha sık yavrular (bir seviye usta sayılır).",
+      "skill": "AnimalHusbandry",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.husb_shepherd"
+    },
+    {
+      "id": "branch.husb_whisperer",
+      "displayName": "Hayvan Dostu",
+      "description": "Hayvanlarla vakit geçirmek iyi gelir.",
+      "skill": "AnimalHusbandry",
+      "level": 10,
+      "effects": {
+        "moodBase": 2,
+        "funDecay": 0.9
+      },
+      "requires": "branch.husb_shepherd"
+    },
+    {
+      "id": "branch.husb_cheesemaker",
+      "displayName": "Mandıracı",
+      "description": "Daha çok ürün, süt ürünleri geç bozulur.",
+      "skill": "AnimalHusbandry",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15,
+        "spoilReduction": 0.15
+      },
+      "requires": "branch.husb_dairy"
+    },
+    {
+      "id": "branch.husb_drover",
+      "displayName": "Celep",
+      "description": "Hayvan ürünleri pazarda iyi satılır.",
+      "skill": "AnimalHusbandry",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.husb_dairy"
+    },
+    {
+      "id": "branch.ride_groom",
+      "displayName": "Seyis",
+      "description": "At bakımında ve binicilikte hızlı öğrenir.",
+      "skill": "Riding",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Riding",
+            "rate": 1.2
+          },
+          {
+            "skill": "AnimalHusbandry",
+            "rate": 1.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.ride_courier",
+      "displayName": "Ulak",
+      "description": "Uzun yolda daha az yorulur.",
+      "skill": "Riding",
+      "level": 5,
+      "effects": {
+        "energyDecay": 0.9
+      }
+    },
+    {
+      "id": "branch.ride_trainer",
+      "displayName": "At Terbiyecisi",
+      "description": "Hayvanlarla çok hızlı anlaşır.",
+      "skill": "Riding",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "AnimalHusbandry",
+            "rate": 1.25
+          },
+          {
+            "skill": "Riding",
+            "rate": 1.1
+          }
+        ]
+      },
+      "requires": "branch.ride_groom"
+    },
+    {
+      "id": "branch.ride_stablemaster",
+      "displayName": "Seyis Başı",
+      "description": "Hayvan ve eyer ticaretinde kazançlı.",
+      "skill": "Riding",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.1
+      },
+      "requires": "branch.ride_groom"
+    },
+    {
+      "id": "branch.ride_rider",
+      "displayName": "Atlı",
+      "description": "Yolda yorulmaz, soğuğa dayanır.",
+      "skill": "Riding",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.9,
+        "coldResist": 0.1
+      },
+      "requires": "branch.ride_courier"
+    },
+    {
+      "id": "branch.ride_traveler",
+      "displayName": "Yolcu",
+      "description": "Yolculuk keyif verir.",
+      "skill": "Riding",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.85
+      },
+      "requires": "branch.ride_courier"
+    },
+    {
+      "id": "branch.fish_angler",
+      "displayName": "Oltacı",
+      "description": "Ara sıra iki balık birden çıkar.",
+      "skill": "Fishing",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.2
+      }
+    },
+    {
+      "id": "branch.fish_patient",
+      "displayName": "Sabırlı",
+      "description": "Su başında canı sıkılmaz.",
+      "skill": "Fishing",
+      "level": 5,
+      "effects": {
+        "funDecay": 0.85
+      }
+    },
+    {
+      "id": "branch.fish_master",
+      "displayName": "Balıkçı Reisi",
+      "description": "Nadir balıklar daha erken çıkar (bir seviye usta sayılır).",
+      "skill": "Fishing",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.fish_angler"
+    },
+    {
+      "id": "branch.fish_netter",
+      "displayName": "Ağcı",
+      "description": "Çok daha bereketli av.",
+      "skill": "Fishing",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15
+      },
+      "requires": "branch.fish_angler"
+    },
+    {
+      "id": "branch.fish_monger",
+      "displayName": "Balık Tüccarı",
+      "description": "Balık pazarda iyi satılır.",
+      "skill": "Fishing",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.fish_patient"
+    },
+    {
+      "id": "branch.fish_sage",
+      "displayName": "Göl Bilgesi",
+      "description": "Huzurlu bir insan.",
+      "skill": "Fishing",
+      "level": 10,
+      "effects": {
+        "moodBase": 3
+      },
+      "requires": "branch.fish_patient"
+    },
+    {
+      "id": "branch.leather_tanner",
+      "displayName": "Tabak",
+      "description": "Deri işini hızlı yapar.",
+      "skill": "Leatherwork",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.leather_journeyman",
+      "displayName": "Saraç Kalfası",
+      "description": "Saraçlıkta hızlı öğrenir.",
+      "skill": "Leatherwork",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Leatherwork",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.leather_fast",
+      "displayName": "Hızlı Tabak",
+      "description": "Daha da hızlı çalışır.",
+      "skill": "Leatherwork",
+      "level": 10,
+      "effects": {
+        "workSpeed": 1.15
+      },
+      "requires": "branch.leather_tanner"
+    },
+    {
+      "id": "branch.leather_tough",
+      "displayName": "Sağlam El",
+      "description": "Ağır işte az yorulur.",
+      "skill": "Leatherwork",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.9
+      },
+      "requires": "branch.leather_tanner"
+    },
+    {
+      "id": "branch.leather_master",
+      "displayName": "Saraç Ustası",
+      "description": "İşleri daha nitelikli olur.",
+      "skill": "Leatherwork",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1,
+        "sellBonus": 0.05
+      },
+      "requires": "branch.leather_journeyman"
+    },
+    {
+      "id": "branch.leather_trader",
+      "displayName": "Deri Tüccarı",
+      "description": "Deri işleri pazarda iyi satılır.",
+      "skill": "Leatherwork",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.leather_journeyman"
+    },
+    {
+      "id": "branch.weave_spinner",
+      "displayName": "İplikçi",
+      "description": "Eğirir ve dokurken hızlıdır.",
+      "skill": "Weaving",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.weave_patterner",
+      "displayName": "Desen Ustası",
+      "description": "Dokumacılıkta hızlı öğrenir.",
+      "skill": "Weaving",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Weaving",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.weave_fast",
+      "displayName": "Hızlı Mekik",
+      "description": "Daha da hızlı dokur.",
+      "skill": "Weaving",
+      "level": 10,
+      "effects": {
+        "workSpeed": 1.15
+      },
+      "requires": "branch.weave_spinner"
+    },
+    {
+      "id": "branch.weave_warm",
+      "displayName": "Yünlü",
+      "description": "Kendi dokuduğu yünlerle soğuğa dayanır.",
+      "skill": "Weaving",
+      "level": 10,
+      "effects": {
+        "coldResist": 0.15
+      },
+      "requires": "branch.weave_spinner"
+    },
+    {
+      "id": "branch.weave_master",
+      "displayName": "Dokuma Ustası",
+      "description": "Dokumaları daha nitelikli.",
+      "skill": "Weaving",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.weave_patterner"
+    },
+    {
+      "id": "branch.weave_merchant",
+      "displayName": "Kumaşçı",
+      "description": "Kumaş ve halı pazarda iyi satılır.",
+      "skill": "Weaving",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.weave_patterner"
+    },
+    {
+      "id": "branch.trade_haggler",
+      "displayName": "Pazarlıkçı",
+      "description": "Pazarda daha iyi fiyat alır.",
+      "skill": "Trade",
+      "level": 5,
+      "effects": {
+        "sellBonus": 0.1
+      }
+    },
+    {
+      "id": "branch.trade_networker",
+      "displayName": "Tanıdık Yüz",
+      "description": "Herkesle çabuk kaynaşır.",
+      "skill": "Trade",
+      "level": 5,
+      "effects": {
+        "socialGain": 1.15
+      }
+    },
+    {
+      "id": "branch.trade_merchant",
+      "displayName": "Tüccar",
+      "description": "Satışta usta.",
+      "skill": "Trade",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.trade_haggler"
+    },
+    {
+      "id": "branch.trade_broker",
+      "displayName": "Simsar",
+      "description": "Malzemeyi ucuza bulur: yapı ve eşya indirimi.",
+      "skill": "Trade",
+      "level": 10,
+      "effects": {
+        "buildDiscount": 0.1
+      },
+      "requires": "branch.trade_haggler"
+    },
+    {
+      "id": "branch.trade_host",
+      "displayName": "Han Dostu",
+      "description": "Sohbet ve dostluk kolay gelir.",
+      "skill": "Trade",
+      "level": 10,
+      "effects": {
+        "socialGain": 1.1,
+        "moodBase": 2
+      },
+      "requires": "branch.trade_networker"
+    },
+    {
+      "id": "branch.trade_caravaneer",
+      "displayName": "Kervancı",
+      "description": "Yolda ve pazarda canı sıkılmaz.",
+      "skill": "Trade",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.9
+      },
+      "requires": "branch.trade_networker"
+    },
+    {
+      "id": "branch.herb_gatherer",
+      "displayName": "Ot Toplayıcı",
+      "description": "Toplarken fazladan ot bulur.",
+      "skill": "Herbalism",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.herb_brewer",
+      "displayName": "İksirci",
+      "description": "Otacılıkta hızlı öğrenir.",
+      "skill": "Herbalism",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Herbalism",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.herb_healer",
+      "displayName": "Şifacı",
+      "description": "Kendine iyi bakar: az acıkır, soğuğa dayanır.",
+      "skill": "Herbalism",
+      "level": 10,
+      "effects": {
+        "hungerDecay": 0.95,
+        "coldResist": 0.1
+      },
+      "requires": "branch.herb_gatherer"
+    },
+    {
+      "id": "branch.herb_druid",
+      "displayName": "Bitki Bilgesi",
+      "description": "Bitkiler daha hızlı büyür.",
+      "skill": "Herbalism",
+      "level": 10,
+      "effects": {
+        "growthSpeed": 1.1
+      },
+      "requires": "branch.herb_gatherer"
+    },
+    {
+      "id": "branch.herb_master",
+      "displayName": "Usta Otacı",
+      "description": "İksirleri daha güçlü (bir seviye usta sayılır).",
+      "skill": "Herbalism",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.herb_brewer"
+    },
+    {
+      "id": "branch.herb_merchant",
+      "displayName": "Attar",
+      "description": "İksir ve merhem pazarda iyi satılır.",
+      "skill": "Herbalism",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.herb_brewer"
     }
   ],
   "projects": [

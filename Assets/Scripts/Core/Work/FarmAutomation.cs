@@ -63,14 +63,34 @@ namespace Thatchwick.Core.Work
 
         private readonly WorldState _world;
         private readonly Household _house;
+        private readonly Random _rng;
 
         /// <summary>Depo kapasitesi; null ise sınırsız.</summary>
         public StorageService Storage { get; set; }
 
-        public FarmAutomation(WorldState world, Household house)
+        public FarmAutomation(WorldState world, Household house, int seed = 23)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
             _house = house ?? throw new ArgumentNullException(nameof(house));
+            _rng = new Random(seed);
+        }
+
+        // Balık sepeti: değdiği göletin balık tutma ürünlerinden, mevsimine uyan ve ustalık istemeyen birini seçer.
+        private string TrapCatch(ItemInstance trap, Time.Season? season)
+        {
+            foreach (var pond in _world.Items)
+            {
+                if (pond.IsDecor || pond == trap || !WaterNetwork.Touches(trap, pond)) continue;
+                var pool = new List<ProduceDef>();
+                foreach (var i in pond.Def.Interactions)
+                {
+                    if (i.Skill != SkillType.Fishing) continue;
+                    foreach (var p in i.Produce)
+                        if (p.MinLevel <= 0 && (p.Seasons == null || !season.HasValue || p.Seasons.Contains(season.Value))) pool.Add(p);
+                }
+                if (pool.Count > 0) return pool[_rng.Next(pool.Count)].ItemId;
+            }
+            return null;
         }
 
         /// <summary>Çalışan su çarkları (kaynağa bağlı kanala değenler).</summary>
@@ -99,15 +119,24 @@ namespace Thatchwick.Core.Work
         }
 
         /// <summary>Gün başı: güç alan makineler envanterden girdi alıp ürün koyar. (ürün kimliği, adet) özeti döner.</summary>
-        public List<KeyValuePair<string, int>> OnNewDay()
+        public List<KeyValuePair<string, int>> OnNewDay(Time.Season? season = null)
         {
             var made = new Dictionary<string, int>();
             var order = new List<string>();
+            foreach (var trap in new List<ItemInstance>(_world.Items))
+            {
+                if (trap.IsDecor || !trap.Def.IsFishTrap) continue;
+                var fish = TrapCatch(trap, season);
+                if (fish == null) continue;
+                int got = Storage != null ? Storage.AddUpTo(fish, 1) : AddAll(fish, 1);
+                if (got <= 0) continue;
+                if (!made.ContainsKey(fish)) { made[fish] = 0; order.Add(fish); }
+                made[fish] += got;
+            }
             var wheels = TurningWheels();
-            if (wheels.Count == 0) return new List<KeyValuePair<string, int>>();
             foreach (var machine in new List<ItemInstance>(_world.Items))
             {
-                if (machine.IsDecor || !IsPowered(machine, wheels)) continue;
+                if (machine.IsDecor || wheels.Count == 0 || !IsPowered(machine, wheels)) continue;
                 var p = machine.Def.AutoProcess;
                 for (int b = 0; b < BatchesPerDay; b++)
                 {

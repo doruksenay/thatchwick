@@ -6,10 +6,63 @@ namespace Thatchwick.Core.Characters
     /// <summary>İlk prototip becerileri. Beceriler çalışarak öğrenilir (kitapla değil).</summary>
     public enum SkillType
     {
-        Farming = 0,     // Çiftçilik
-        Woodcutting = 1, // Odunculuk
-        Cooking = 2,     // Yemek
-        Carpentry = 3    // Marangozluk
+        Farming = 0,          // Çiftçilik: ekin, tarla, toplayıcılık
+        Woodcutting = 1,      // Odunculuk
+        Cooking = 2,          // Yemek: pişirme, kurutma, turşu, tütsü
+        Carpentry = 3,        // Marangozluk: mobilya, tahta
+        AnimalHusbandry = 4,  // Hayvancılık: bakım, sağım, kırkım, yavru
+        Riding = 5,           // Binicilik
+        Fishing = 6,          // Balıkçılık
+        Leatherwork = 7,      // Saraçlık (zanaat): deri, eyer
+        Weaving = 8,          // Dokumacılık (zanaat): yün, iplik, kumaş, halı
+        Trade = 9,            // Ticaret ve pazarlık
+        Herbalism = 10        // Otacılık: iksir, merhem
+    }
+
+    /// <summary>Becerilerin görünen adları (zanaatler alt başlıklarıyla ayrı beceridir).</summary>
+    public static class SkillNames
+    {
+        public static string Name(SkillType s)
+        {
+            switch (s)
+            {
+                case SkillType.Farming: return "Çiftçilik";
+                case SkillType.Woodcutting: return "Odunculuk";
+                case SkillType.Cooking: return "Yemek";
+                case SkillType.Carpentry: return "Marangozluk";
+                case SkillType.AnimalHusbandry: return "Hayvancılık";
+                case SkillType.Riding: return "Binicilik";
+                case SkillType.Fishing: return "Balıkçılık";
+                case SkillType.Leatherwork: return "Saraçlık";
+                case SkillType.Weaving: return "Dokumacılık";
+                case SkillType.Trade: return "Ticaret";
+                case SkillType.Herbalism: return "Otacılık";
+                default: return s.ToString();
+            }
+        }
+
+        /// <summary>Zanaat alt başlığı mı (kasabadaki ustalarla ilişkili)?</summary>
+        public static bool IsCraft(SkillType s) => s == SkillType.Carpentry || s == SkillType.Leatherwork || s == SkillType.Weaving;
+
+        /// <summary>Meslek adı (hanedan geçmişi, köy).</summary>
+        public static string TradeName(SkillType s)
+        {
+            switch (s)
+            {
+                case SkillType.Farming: return "Çiftçi";
+                case SkillType.Woodcutting: return "Oduncu";
+                case SkillType.Cooking: return "Aşçı";
+                case SkillType.Carpentry: return "Marangoz";
+                case SkillType.AnimalHusbandry: return "Hayvancı";
+                case SkillType.Riding: return "Binici";
+                case SkillType.Fishing: return "Balıkçı";
+                case SkillType.Leatherwork: return "Saraç";
+                case SkillType.Weaving: return "Dokumacı";
+                case SkillType.Trade: return "Tüccar";
+                case SkillType.Herbalism: return "Otacı";
+                default: return "Köylü";
+            }
+        }
     }
 
     /// <summary>Seviye eğrisi ve yaş evresine göre seviye tavanı.</summary>

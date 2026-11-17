@@ -13,6 +13,8 @@ namespace Thatchwick.Core.Content
         public int MinLevel { get; set; }
         /// <summary>En çok bu seviye (0 = sınır yok).</summary>
         public int MaxLevel { get; set; }
+        /// <summary>Yalnızca bu mevsimlerde çıkar (null = her mevsim): balık türleri.</summary>
+        public List<Time.Season> Seasons { get; set; }
     }
 
     public sealed class NeedRestoreDef
@@ -83,6 +85,8 @@ namespace Thatchwick.Core.Content
         public int AddFeed { get; set; }
         /// <summary>Buzluğa eklenen buz (gün).</summary>
         public float AddIce { get; set; }
+        /// <summary>Barınaktaki hayvanlara dostluk (merhem); günlük sevme hakkını kullanmaz.</summary>
+        public float BefriendAnimals { get; set; }
         /// <summary>Yalnızca don varken yapılır (buz kesmek).</summary>
         public bool RequiresFrost { get; set; }
         /// <summary>Barınaktaki ürünleri (yumurta, süt, yün) haneye toplar.</summary>
@@ -120,7 +124,7 @@ namespace Thatchwick.Core.Content
         }
 
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
-            || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost
+            || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || BefriendAnimals > 0f
             || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter;
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;

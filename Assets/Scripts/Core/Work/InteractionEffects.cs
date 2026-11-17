@@ -33,6 +33,9 @@ namespace Thatchwick.Core.Work
         /// <summary>Karo sıcaklığı (buz kesmek için don); null ise don yok sayılır.</summary>
         public Func<GridPos, float> TemperatureAt { get; set; }
 
+        /// <summary>Şu anki mevsim (balık türleri); null ise her mevsimin ürünü çıkabilir.</summary>
+        public Func<Time.Season> Season { get; set; }
+
         /// <summary>Buzluk en çok bu kadar günlük buz alır.</summary>
         public const float MaxIceDays = 30f;
 
@@ -103,9 +106,15 @@ namespace Thatchwick.Core.Work
             if (interaction.AddIce > 0f) item.FuelDays = Math.Min(MaxIceDays, item.FuelDays + interaction.AddIce);
 
             var farmNotes = new List<string>();
+            int husbandry = character.Skills.GetLevel(SkillType.AnimalHusbandry);
+            if (interaction.BefriendAnimals > 0f && Animals != null)
+            {
+                int n = Animals.Befriend(item.Id, interaction.BefriendAnimals * AnimalSystem.HusbandryFactor(husbandry));
+                if (n > 0) farmNotes.Add($"{n} hayvan merhemlendi");
+            }
             if (interaction.PetsAnimals && Animals != null)
             {
-                int petted = Animals.PetResidents(item.Id);
+                int petted = Animals.PetResidents(item.Id, husbandry);
                 if (petted > 0) farmNotes.Add($"{petted} hayvan sevildi");
             }
             string slaughterId = null; int slaughterCount = 0;
@@ -140,10 +149,11 @@ namespace Thatchwick.Core.Work
             {
                 if (p.MinLevel > 0 && level < p.MinLevel) continue;
                 if (p.MaxLevel > 0 && level > p.MaxLevel) continue;
+                if (p.Seasons != null && Season != null && !p.Seasons.Contains(Season())) continue;   // mevsimi değil
                 if (p.Chance < 1f && _rng.NextDouble() >= p.Chance) continue;
                 int count = p.Count;
                 // Yeşil parmak / usta eller gibi: hasat ve kesimde ilk üründen bir tane daha çıkabilir.
-                if (firstRow && character.Modifiers.YieldChance > 0f && (interaction.RequiresGrown || interaction.RemovesItem)
+                if (firstRow && character.Modifiers.YieldChance > 0f && (interaction.RequiresGrown || interaction.RemovesItem || interaction.Skill == SkillType.Fishing)
                     && _rng.NextDouble() < character.Modifiers.YieldChance) count += 1;
                 firstRow = false;
                 if (yieldMult > 1f && _content.Items.TryGet(p.ItemId, out var rowDef) && rowDef.PlantsAs == null)
@@ -171,8 +181,13 @@ namespace Thatchwick.Core.Work
             }
             if (interaction.Collect)
             {
-                foreach (var kv in AnimalSystem.TakeStock(item))
+                // Hayvancılık: toplanan her üründen seviye başına %3 (ve dal şansıyla) bir fazlası.
+                double extraChance = 0.03 * Math.Max(0, husbandry - 1) + character.Modifiers.YieldChance;
+                foreach (var kv0 in AnimalSystem.TakeStock(item))
                 {
+                    int bonus = 0;
+                    if (extraChance > 0) for (int u = 0; u < kv0.Value; u++) if (_rng.NextDouble() < extraChance) bonus++;
+                    var kv = new KeyValuePair<string, int>(kv0.Key, kv0.Value + bonus);
                     int added = Storage != null ? Storage.AddUpTo(kv.Key, kv.Value) : AddAll(kv.Key, kv.Value);
                     AnimalSystem.PutStock(item, kv.Key, kv.Value - added);   // sığmayan barınakta kalır
                     if (added <= 0) continue;
@@ -189,6 +204,7 @@ namespace Thatchwick.Core.Work
             if (parts0 != null) parts.Add(parts0);
             if (lost > 0) parts.Add($"depo dolu, {lost} adet kayboldu");
 
+            if (interaction.Skill == SkillType.Fishing && order.Count == 0) parts.Add("bu sefer bir şey çıkmadı");
             if (interaction.TakesFruit) { item.FruitReady = false; item.FruitDays = 0; }
             if (cropHarvest && interaction.RemovesItem) Plants?.OnHarvest(item);
             if (tier > 0) parts.Add($"kalite: {PlantSystem.QualityName(tier)}");

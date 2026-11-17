@@ -510,16 +510,7 @@ namespace Thatchwick.Core.Jobs
             return null;
         }
 
-        public static string SkillName(SkillType skill)
-        {
-            switch (skill)
-            {
-                case SkillType.Farming: return "Çiftçilik";
-                case SkillType.Woodcutting: return "Odunculuk";
-                case SkillType.Cooking: return "Yemek";
-                default: return "Marangozluk";
-            }
-        }
+        public static string SkillName(SkillType skill) => SkillNames.Name(skill);
 
         private static bool IsUnlitHeatSource(ItemInstance item, InteractionDef interaction) =>
             interaction.Need == NeedType.Warmth && item.Def.HeatOutput > 0f && !item.IsLit;

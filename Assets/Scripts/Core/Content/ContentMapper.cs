@@ -59,6 +59,7 @@ namespace Thatchwick.Core.Content
                     FinishGroup = string.IsNullOrWhiteSpace(dto.finishGroup) ? null : dto.finishGroup,
                     RequiresIndoor = dto.requiresIndoor,
                     IsIceBox = dto.iceBox,
+                    IsFishTrap = dto.fishTrap,
                     FoodCapacity = Math.Max(0, dto.foodCapacity),
                     IsTrough = dto.trough,
                     AnimalComfort = dto.animalComfort,
@@ -124,7 +125,7 @@ namespace Thatchwick.Core.Content
                         if (i == null) continue;
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
-                            || i.addIce > 0f || i.requiresFrost || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
+                            || i.addIce > 0f || i.requiresFrost || i.befriendAnimals > 0f || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -161,6 +162,7 @@ namespace Thatchwick.Core.Content
                             MinSkillLevel = i.minLevel,
                             AddFeed = i.addFeed,
                             AddIce = Math.Max(0f, i.addIce),
+                            BefriendAnimals = Math.Max(0f, i.befriendAnimals),
                             RequiresFrost = i.requiresFrost,
                             Collect = i.collect,
                             RequiresAnimal = i.requiresAnimal,
@@ -198,7 +200,8 @@ namespace Thatchwick.Core.Content
                                     Count = p.count <= 0 ? 1 : p.count,
                                     Chance = p.chance <= 0f ? 1f : p.chance,
                                     MinLevel = p.minLevel,
-                                    MaxLevel = p.maxLevel
+                                    MaxLevel = p.maxLevel,
+                                    Seasons = ParseSeasons(p.seasons, $"{dto.id}.{i.id}", errors)
                                 });
                             }
                         }
@@ -348,6 +351,18 @@ namespace Thatchwick.Core.Content
             if (string.IsNullOrWhiteSpace(text)) return false;
             if (!Enum.TryParse(text, true, out need)) return false;
             return Enum.IsDefined(typeof(NeedType), need);
+        }
+
+        private static List<Time.Season> ParseSeasons(string[] names, string where, List<string> errors)
+        {
+            if (names == null || names.Length == 0) return null;
+            var list = new List<Time.Season>();
+            foreach (var n in names)
+            {
+                if (Enum.TryParse(n, true, out Time.Season s) && Enum.IsDefined(typeof(Time.Season), s)) list.Add(s);
+                else errors.Add($"{where}: bilinmeyen mevsim '{n}'.");
+            }
+            return list;
         }
     }
 }

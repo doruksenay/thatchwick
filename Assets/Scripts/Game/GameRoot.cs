@@ -1068,6 +1068,22 @@ namespace Thatchwick.Game
                 var c = _population.Find(id);
                 return c != null && !c.IsDead ? c.Position : (GridPos?)null;
             };
+            _animals.FindCharacter = id => _population.Find(id);
+            // Yavrulama ustalığı: hanenin en iyi hayvancısı (dal ustalığı bir seviye sayılır).
+            _animals.HusbandryLevel = () =>
+            {
+                int best = 1;
+                foreach (var c in _population.Members)
+                    if (!c.IsDead && !c.IsVillager) best = System.Math.Max(best, c.Skills.GetLevel(SkillType.AnimalHusbandry) + c.Modifiers.QualityLevels);
+                return best;
+            };
+            _animals.Born += (mother, baby) =>
+            {
+                ShowMessage($"{mother.Species.DisplayName} yavruladı: {baby.Name}");
+                foreach (var c in _population.Members) if (!c.IsVillager && !c.IsDead) c.AddMoodlet(MoodCatalog.NewFoal);
+            };
+            _effects.Season = () => _clock.Season;
+            _market.Trader = () => Commander?.Character;
             _animals.Dismounted += (a, riderId) => ShowMessage($"{_population.Find(riderId)?.Name} attan indi ({a.Name} kapıda bekliyor)");
             _animalCare = new AnimalCare(_animals, _household);
             _animalCare.Done += (c, a, act) =>
@@ -1102,12 +1118,12 @@ namespace Thatchwick.Game
                 var r = _animals.OnNewDay(_clock.Season, _household, _storage);
                 if (r.Collected > 0) ShowMessage($"Toplama sandığı: +{r.Collected} ürün depoya alındı");
                 if (r.FeedAdded > 0) ShowMessage($"Yem oluğu yemliklere {r.FeedAdded} yem doldurdu");
-                var made = _automation.OnNewDay();
+                var made = _automation.OnNewDay(_clock.Season);
                 if (made.Count > 0)
                 {
                     var parts = new List<string>();
                     foreach (var kv in made) parts.Add($"+{kv.Value} {(_content.Items.TryGet(kv.Key, out var d) ? d.DisplayName : kv.Key)}");
-                    ShowMessage("Değirmen taşı: " + string.Join(", ", parts));
+                    ShowMessage("Düzenekler: " + string.Join(", ", parts));
                 }
             };
         }
@@ -1381,16 +1397,7 @@ namespace Thatchwick.Game
             }
         }
 
-        private static string SkillName(SkillType s)
-        {
-            switch (s)
-            {
-                case SkillType.Farming: return "Çiftçilik";
-                case SkillType.Woodcutting: return "Odunculuk";
-                case SkillType.Cooking: return "Yemek";
-                default: return "Marangozluk";
-            }
-        }
+        private static string SkillName(SkillType s) => SkillNames.Name(s);
 
         private static string SkillsText(Character c)
         {

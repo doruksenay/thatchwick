@@ -1,4 +1,5 @@
 using System;
+using Thatchwick.Core.Characters;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Content;
@@ -124,17 +125,28 @@ namespace Thatchwick.Core.Economy
             return 1.0;
         }
 
+        /// <summary>Pazarlık eden karakter (komut alan); ticaret becerisi fiyatı iyileştirir ve XP kazanır. null ise etki yok.</summary>
+        public Func<Character> Trader { get; set; }
+
+        private int TradeLevel() => Math.Max(1, Trader?.Invoke()?.Skills.GetLevel(SkillType.Trade) ?? 1);
+
+        /// <summary>Ticaret: satış seviye başına %2 pahalı (10. seviyede %18), alış %1 ucuz.</summary>
+        public double TradeSellFactor => 1.0 + 0.02 * (TradeLevel() - 1);
+        public double TradeBuyFactor => 1.0 - 0.01 * (TradeLevel() - 1);
+
+        private void TradeXp(double xp) { if (xp > 0) Trader?.Invoke()?.GainSkillXp(SkillType.Trade, xp); }
+
         public int BuyPrice(string itemId)
         {
             var def = _content.Items.Get(itemId);
-            return Math.Max(1, (int)Math.Ceiling(def.Price * SeasonMultiplier(def)));
+            return Math.Max(1, (int)Math.Ceiling(def.Price * SeasonMultiplier(def) * TradeBuyFactor));
         }
 
         public int SellPrice(string itemId)
         {
             var def = _content.Items.Get(itemId);
             double bonus = 1.0 + (SellBonus != null ? Math.Max(0.0, Math.Min(0.75, SellBonus())) : 0.0);
-            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * bonus, MidpointRounding.AwayFromZero));
+            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * bonus * TradeSellFactor, MidpointRounding.AwayFromZero));
         }
 
         /// <summary>Gün ilerledikçe talep toparlanır; yeni günde teklifler yenilenir.</summary>
@@ -157,8 +169,10 @@ namespace Thatchwick.Core.Economy
             if (!IsBuyable(itemId)) return PlacementCheck.Fail("Bu pazarda satılmaz, yalnızca yapılır (sat ama alınmaz).");
             if (count <= 0) return PlacementCheck.Fail("Adet geçersiz.");
             if (_storage != null && !_storage.HasRoomFor(itemId, count)) return PlacementCheck.Fail("Depo dolu.");
-            if (!_house.TrySpend(BuyPrice(itemId) * count)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            int cost = BuyPrice(itemId) * count;
+            if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
             _house.AddItem(itemId, count);
+            TradeXp(cost * 0.1);
             return PlacementCheck.Success;
         }
 
@@ -174,6 +188,7 @@ namespace Thatchwick.Core.Economy
                 _demand[itemId] = Math.Max(_cfg.MinDemand, Demand(itemId) * (1.0 - _cfg.DemandDropPerUnit));
             }
             if (earned > 0) _house.AddAkce(earned);
+            TradeXp(earned * 0.3);
             return earned;
         }
 
@@ -191,6 +206,7 @@ namespace Thatchwick.Core.Economy
             if (offer.IsContract) _house.AddAkce(offer.RewardAkce);
             else _house.AddItem(offer.GetItem, offer.GetCount);
             offer.Taken = true;
+            TradeXp(10 + offer.RewardAkce * 0.2);
             OfferAccepted?.Invoke(offer);
             return PlacementCheck.Success;
         }

@@ -108,6 +108,7 @@ namespace Thatchwick.Game
             }
 
             GUILayout.Label(_market.Season == Thatchwick.Core.Time.Season.Winter ? "— Mallar (kış: yakıt ve yiyecek pahalı) —" : "— Mallar —");
+            GUILayout.Label($"Pazarlık (ticaret becerisi): satış x{_market.TradeSellFactor:0.00} · alış x{_market.TradeBuyFactor:0.00}");
             foreach (var g in _market.Goods())
             {
                 GUILayout.BeginHorizontal();

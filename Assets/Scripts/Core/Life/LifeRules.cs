@@ -119,16 +119,7 @@ namespace Thatchwick.Core.Life
             return true;
         }
 
-        public static string TradeName(SkillType skill)
-        {
-            switch (skill)
-            {
-                case SkillType.Farming: return "Çiftçi";
-                case SkillType.Woodcutting: return "Oduncu";
-                case SkillType.Cooking: return "Aşçı";
-                default: return "Marangoz";
-            }
-        }
+        public static string TradeName(SkillType skill) => SkillNames.TradeName(skill);
 
         /// <summary>Tek karakterin mesleği: en yüksek kademeli dalın becerisi; dal yoksa null.</summary>
         public static string TradeOf(ContentDatabase db, Character c)

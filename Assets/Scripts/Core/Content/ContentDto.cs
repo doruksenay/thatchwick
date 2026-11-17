@@ -157,6 +157,7 @@ namespace Thatchwick.Core.Content
         public bool powerSource;     // su çarkı: kaynağa bağlı kanala değerse yanındaki makineleri çalıştırır
         public AutoProcessDto autoProcess;   // güç alan makine: her gün kendiliğinden işler (değirmen taşı)
         public bool iceBox;                  // buzluk: içinde buz varken yiyeceği çok soğuk tutar
+        public bool fishTrap;                // balık sepeti: gölete değerken her sabah balık
         public int foodCapacity;             // yiyecek yerleşiminde kapasite (0 = depo kapasitesi; kilerde 60)
     }
 
@@ -205,6 +206,7 @@ namespace Thatchwick.Core.Content
         public int minLevel;             // gereken beceri seviyesi
         public int addFeed;              // barınağa eklenen yem
         public float addIce;             // buzluğa eklenen buz (gün)
+        public float befriendAnimals;    // barınaktaki hayvanlara dostluk (merhem; günlük sevme hakkını kullanmaz)
         public bool requiresFrost;       // yalnızca don varken (buz kesmek)
         public bool collect;             // barınak ürünlerini topla
         public bool requiresAnimal;      // barınakta hayvan olmalı
@@ -238,5 +240,6 @@ namespace Thatchwick.Core.Content
         public float chance;   // 0 ya da eksik = 1 (kesin)
         public int minLevel;   // etkileşimin becerisinde bu seviye ve üstü (0 = sınır yok)
         public int maxLevel;   // bu seviye ve altı (0 = sınır yok)
+        public string[] seasons; // yalnızca bu mevsimlerde (boş = her mevsim): balık türleri
     }
 }

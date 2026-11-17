@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
+using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.World;
 
@@ -223,7 +224,12 @@ namespace Thatchwick.Core.Animals
                     var rider = RiderPosition?.Invoke(a.RiderId);
                     if (rider.HasValue && CanCarryTo(home, rider.Value))
                     {
-                        if (a.Position != rider.Value) _world.Map.Trample(rider.Value, a.Species.Trample);   // at yolu aşındırır
+                        if (a.Position != rider.Value)
+                        {
+                            _world.Map.Trample(rider.Value, a.Species.Trample);   // at yolu aşındırır
+                            int dist = Math.Max(Math.Abs(a.Position.X - rider.Value.X), Math.Abs(a.Position.Y - rider.Value.Y));
+                            FindCharacter?.Invoke(a.RiderId)?.GainSkillXp(SkillType.Riding, RideXpPerTile * Math.Min(dist, 4));
+                        }
                         a.Position = rider.Value; a.NextTile = null; a.Path = null; ridden = true;
                     }
                     else
@@ -356,15 +362,35 @@ namespace Thatchwick.Core.Animals
             return n;
         }
 
-        /// <summary>Barınaktaki hayvanları sever: dostluk artar, günlük bekleme başlar. Sevilen sayı döner.</summary>
-        public int PetResidents(int homeItemId)
+        /// <summary>
+        /// Barınaktaki hayvanları sever: dostluk artar, günlük bekleme başlar. Sevilen sayı döner.
+        /// husbandryLevel: sevenin hayvancılık seviyesi (seviye başına %5 daha çok dostluk).
+        /// </summary>
+        public int PetResidents(int homeItemId, int husbandryLevel = 1)
         {
             int n = 0;
             foreach (var a in _animals)
             {
                 if (a.HomeItemId != homeItemId || a.PetCooldownDays > 0) continue;
-                a.Friendship = Math.Min(100f, a.Friendship + PetFriendship);
+                a.Friendship = Math.Min(100f, a.Friendship + PetFriendship * HusbandryFactor(husbandryLevel));
                 a.PetCooldownDays = 1.0;
+                n++;
+            }
+            return n;
+        }
+
+        /// <summary>Hayvancılık seviyesinin sevgi çarpanı: 1. seviye 1, 10. seviye 1,45.</summary>
+        public static float HusbandryFactor(int level) => 1f + 0.05f * Math.Max(0, level - 1);
+
+        /// <summary>Merhem: barınaktaki hayvanlara dostluk (günlük sevme hakkını kullanmaz). Etkilenen sayı.</summary>
+        public int Befriend(int homeItemId, float amount)
+        {
+            int n = 0;
+            foreach (var a in _animals)
+            {
+                if (a.IsDead || a.HomeItemId != homeItemId) continue;
+                a.Friendship = Math.Min(100f, a.Friendship + amount);
+                a.Comfort = Math.Min(100f, a.Comfort + 5f);
                 n++;
             }
             return n;

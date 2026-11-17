@@ -108,6 +108,8 @@ namespace Thatchwick.Core.Content
         // ---- hayvancılık ve otomasyon ----
         /// <summary>Buzluk: içinde buz varken (FuelDays = kalan buz günü) yiyeceği çok soğuk tutar.</summary>
         public bool IsIceBox { get; set; }
+        /// <summary>Balık sepeti: bir gölete değerken her sabah mevsimine göre bir balık.</summary>
+        public bool IsFishTrap { get; set; }
         /// <summary>Yiyecek yerleşimindeki kapasite (0 = depo kapasitesi, o da yoksa kiler/buzluk için 60).</summary>
         public int FoodCapacity { get; set; }
         /// <summary>Yalnızca kapalı bir odaya konur (folluk, ahır bölmesi, at bölmesi): barınak odası.</summary>
