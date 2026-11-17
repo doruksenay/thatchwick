@@ -253,6 +253,23 @@ namespace Thatchwick.Core.Characters
             return Skills.AddXp(skill, xp * Modifiers.SkillRate(skill), SkillRules.LevelCap(Stage));
         }
 
+        // Son üç öğün (çeşit ödülü); kayda girmez, oturum içinde tutulur.
+        private readonly List<string> _meals = new List<string>(4);
+        public IReadOnlyList<string> RecentMeals => _meals;
+
+        /// <summary>
+        /// Bir öğün yedi: üst üste üç kez aynı yemek "Hep aynı yemek" (-3), son üç öğün üçü de farklıysa "Zengin sofra" (+4).
+        /// </summary>
+        public void RecordMeal(string foodId)
+        {
+            if (string.IsNullOrEmpty(foodId)) return;
+            _meals.Add(foodId);
+            if (_meals.Count > 3) _meals.RemoveAt(0);
+            if (!MoodEnabled || _meals.Count < 3) return;
+            if (_meals[0] == foodId && _meals[1] == foodId) AddMoodlet(MoodCatalog.SameMeal);
+            else if (_meals[0] != _meals[1] && _meals[1] != _meals[2] && _meals[0] != _meals[2]) AddMoodlet(MoodCatalog.VariedTable);
+        }
+
         /// <summary>Hekimlik: soğuk ve açlık yarasını (ölüme sayan günleri) bu kadar gün azaltır. Bir şey iyileştiyse true.</summary>
         public bool Treat(double days)
         {
@@ -286,7 +303,9 @@ namespace Thatchwick.Core.Characters
             float cold = ComfortTemperature - AmbientTemperature;
             if (cold > 0f)
             {
-                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - Modifiers.ColdResist));
+                // Sıcak çorba gibi yemek etkileri de soğuğa dayanıklılık verir (toplam en çok %90).
+                float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f));
+                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - resist));
             }
             else
             {
@@ -295,8 +314,8 @@ namespace Thatchwick.Core.Characters
             }
 
             // Özellik ve dallardan gelen ihtiyaç azalma çarpanları.
-            Needs.SetDecayMultiplier(NeedType.Hunger, Modifiers.HungerDecay);
-            Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay);
+            Needs.SetDecayMultiplier(NeedType.Hunger, Modifiers.HungerDecay * (MoodEnabled ? Mood.HungerDecayFactor() : 1f));
+            Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f));
             Needs.SetDecayMultiplier(NeedType.Social, Modifiers.SocialDecay);
             Needs.SetDecayMultiplier(NeedType.Fun, Modifiers.FunDecay);
 

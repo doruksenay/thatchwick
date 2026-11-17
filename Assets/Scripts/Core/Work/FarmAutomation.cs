@@ -15,7 +15,7 @@ namespace Thatchwick.Core.Work
     public static class WaterNetwork
     {
         /// <summary>Ağın parçası mı (kaynak, kanal ya da su çarkı)?</summary>
-        public static bool IsNode(ItemDef def) => def.WaterSource || def.NeedsWaterSource || def.PowerSource;
+        public static bool IsNode(ItemDef def) => def.WaterSource || def.NeedsWaterSource || def.PowerSource || def.WaterGate;
 
         /// <summary>Kaynağa bağlı ağ parçalarının kimlikleri (kaynaklar dahil).</summary>
         public static HashSet<int> Connected(WorldState world)
@@ -32,6 +32,7 @@ namespace Thatchwick.Core.Work
                 foreach (var n in nodes)
                 {
                     if (connected.Contains(n.Id) || !Touches(cur, n)) continue;
+                    if (n.Def.WaterGate && n.Toggled) continue;  // kapalı kapak suyu kesir
                     connected.Add(n.Id);
                     queue.Enqueue(n);
                 }
@@ -71,6 +72,15 @@ namespace Thatchwick.Core.Work
         private readonly Household _house;
         private readonly Random _rng;
 
+        /// <summary>Toprak verimi (hasat tırmığı toprağı yorar); null ise yormaz.</summary>
+        public PlantSystem Plants { get; set; }
+        /// <summary>İçerik (tohum → ekin); ekim makinesi için.</summary>
+        public ContentDatabase Content { get; set; }
+        /// <summary>Ekim makinesi tohumu bununla eker (yapı kuralları); null ise ekmez.</summary>
+        public BuildService Build { get; set; }
+        /// <summary>Karo sıcaklığı (buz kuyusu don ister); null ise buz toplanmaz.</summary>
+        public Func<GridPos, float> TemperatureAt { get; set; }
+
         /// <summary>Depo kapasitesi; null ise sınırsız.</summary>
         public StorageService Storage { get; set; }
 
@@ -105,14 +115,14 @@ namespace Thatchwick.Core.Work
             network = network ?? WaterNetwork.Connected(_world);
             var list = new List<ItemInstance>();
             foreach (var it in _world.Items)
-                if (!it.IsDecor && it.Def.PowerSource && network.Contains(it.Id)) list.Add(it);
+                if (!it.IsDecor && (it.Def.PowerSource && network.Contains(it.Id) || it.Def.WindPower)) list.Add(it);   // yel değirmeni suya bakmaz
             return list;
         }
 
         /// <summary>Makine güç alıyor mu (çalışan bir su çarkına PowerReach karo yakın)?</summary>
         public bool IsPowered(ItemInstance machine, List<ItemInstance> wheels = null)
         {
-            if (machine == null || machine.Def.AutoProcess == null) return false;
+            if (machine == null || !machine.Def.NeedsPower) return false;
             wheels = wheels ?? TurningWheels();
             foreach (var w in wheels)
             {
@@ -139,11 +149,24 @@ namespace Thatchwick.Core.Work
                 if (!made.ContainsKey(fish)) { made[fish] = 0; order.Add(fish); }
                 made[fish] += got;
             }
+            void Made(string id, int n)
+            {
+                if (n <= 0) return;
+                if (!made.ContainsKey(id)) { made[id] = 0; order.Add(id); }
+                made[id] += n;
+            }
+            // Buz kuyusu: donlu sabahlarda buz toplar.
+            foreach (var well in new List<ItemInstance>(_world.Items))
+                if (!well.IsDecor && well.Def.IceCollect > 0 && TemperatureAt != null && TemperatureAt(well.Position) <= 0f)
+                    Made("item.ice", Storage != null ? Storage.AddUpTo("item.ice", well.Def.IceCollect) : AddAll("item.ice", well.Def.IceCollect));
             var wheels = TurningWheels();
             foreach (var machine in new List<ItemInstance>(_world.Items))
             {
                 if (machine.IsDecor || wheels.Count == 0 || !IsPowered(machine, wheels)) continue;
+                if (machine.Def.HarvestRadius > 0) foreach (var kv in HarvestAround(machine)) Made(kv.Key, kv.Value);
+                if (machine.Def.SeedRadius > 0) foreach (var kv in SeedAround(machine, season)) Made(kv.Key, kv.Value);
                 var p = machine.Def.AutoProcess;
+                if (p == null) continue;
                 for (int b = 0; b < Batches; b++)
                 {
                     if (_house.Count(p.Item) < p.Count) break;
@@ -160,6 +183,71 @@ namespace Thatchwick.Core.Work
         }
 
         private int AddAll(string id, int count) { _house.AddItem(id, count); return count; }
+
+        private static bool Within(ItemInstance machine, GridPos p, int r)
+        {
+            if (p.Z != machine.Position.Z) return false;
+            foreach (var t in machine.OccupiedTiles())
+                if (Math.Max(Math.Abs(t.X - p.X), Math.Abs(t.Y - p.Y)) <= r) return true;
+            return false;
+        }
+
+        /// <summary>Hasat tırmığı: yarıçaptaki olgun ekinleri biçer; kesin ürünleri (şanslı ve ustalık isteyen hariç) depoya koyar.</summary>
+        private List<KeyValuePair<string, int>> HarvestAround(ItemInstance rake)
+        {
+            var got = new List<KeyValuePair<string, int>>();
+            foreach (var crop in new List<ItemInstance>(_world.Items))
+            {
+                if (crop.IsDecor || !crop.IsPlant || !crop.Def.IsCrop || !crop.IsGrown || !Within(rake, crop.Position, rake.Def.HarvestRadius)) continue;
+                InteractionDef harvest = null;
+                foreach (var i in crop.Def.Interactions) if (i.RequiresGrown && i.RemovesItem) { harvest = i; break; }
+                if (harvest == null) continue;
+                foreach (var p in harvest.Produce)
+                {
+                    if (p.Chance < 1f || p.MinLevel > 0) continue;   // makine el kadar özenli değildir
+                    int added = Storage != null ? Storage.AddUpTo(p.ItemId, p.Count) : AddAll(p.ItemId, p.Count);
+                    if (added > 0) got.Add(new KeyValuePair<string, int>(p.ItemId, added));
+                }
+                Plants?.OnHarvest(crop);
+                _world.RemoveItem(crop.Id);
+            }
+            return got;
+        }
+
+        /// <summary>Ekim makinesi: yarıçaptaki boş toprağa, envanterde olup bu mevsim büyüyebilen ilk tohumu eker.</summary>
+        private List<KeyValuePair<string, int>> SeedAround(ItemInstance seeder, Time.Season? season)
+        {
+            var got = new List<KeyValuePair<string, int>>();
+            if (Build == null) return got;
+            var map = _world.Map;
+            int r = seeder.Def.SeedRadius, planted = 0;
+            string seedUsed = null;
+            for (int dy = -r - 2; dy <= r + 2; dy++)
+                for (int dx = -r - 2; dx <= r + 2; dx++)
+                {
+                    var t = new GridPos(seeder.Position.X + dx, seeder.Position.Y + dy, seeder.Position.Z);
+                    if (!map.InBounds(t) || !Within(seeder, t, r) || map.GetFloor(t) != FloorType.Dirt || _world.GetItemAt(t) != null) continue;
+                    string seed = PickSeed(season);
+                    if (seed == null) goto done;
+                    if (Build.Plant(seed, t, out _).Ok) { planted++; seedUsed = seed; }
+                }
+            done:
+            if (planted > 0) got.Add(new KeyValuePair<string, int>("ekim:" + seedUsed, planted));
+            return got;
+        }
+
+        private string PickSeed(Time.Season? season)
+        {
+            foreach (var kv in _house.InventoryList())
+            {
+                if (kv.Value <= 0) continue;
+                if (Content == null || !Content.Items.TryGet(kv.Key, out var def)) continue;
+                if (def.PlantsAs == null || !Content.Items.TryGet(def.PlantsAs, out var crop) || !crop.IsCrop) continue;
+                if (season.HasValue && !PlantSystem.CanGrow(crop, season.Value)) continue;
+                return kv.Key;
+            }
+            return null;
+        }
     }
 
     /// <summary>Canlı modda karo işi: çimi çapalayıp toprak yapmak (yapı modunda akçeyle, burada emekle) ve yol onarmak.</summary>

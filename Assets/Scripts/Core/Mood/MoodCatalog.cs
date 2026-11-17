@@ -20,7 +20,8 @@ namespace Thatchwick.Core.Mood
             NiceChat = "nice_chat", Newlywed = "newlywed", NewBaby = "new_baby", Grief = "grief", Harmony = "harmony",
             BrightRoom = "bright_room", GoodHarvest = "good_harvest", Proud = "proud", PetLove = "pet_love",
             AnimalDied = "animal_died", CropFrozen = "crop_frozen", SharpTools = "sharp_tools", Slaughtered = "slaughtered",
-            PotionVigor = "potion_vigor", PotionFocus = "potion_focus", PotionCalm = "potion_calm", NewFoal = "new_foal";
+            PotionVigor = "potion_vigor", PotionFocus = "potion_focus", PotionCalm = "potion_calm", NewFoal = "new_foal",
+            SameMeal = "same_meal", VariedTable = "varied_table";
 
         private readonly Dictionary<string, MoodletDef> _defs = new Dictionary<string, MoodletDef>(StringComparer.Ordinal);
 
@@ -78,6 +79,9 @@ namespace Thatchwick.Core.Mood
             m = M(PotionFocus, "Odaklanmış", 6, 1.0, "Zihin iksiri içti: bütün becerilerde %30 fazla XP."); m.AllXp = 0.30f; c.Register(m);
             c.Register(M(PotionCalm, "Huzurlu", 15, 1.0, "Huzur şerbeti içti: içi rahat."));
             c.Register(M(NewFoal, "Yavru sevinci", 8, 1.0, "Ahırda bir yavru doğdu."));
+            // Sofra çeşidi.
+            c.Register(M(SameMeal, "Hep aynı yemek", -3, 1.0, "Üç öğündür aynı şeyi yiyor."));
+            c.Register(M(VariedTable, "Zengin sofra", 4, 1.0, "Son üç öğünü birbirinden farklıydı."));
             return c;
         }
     }

@@ -60,6 +60,36 @@ namespace Thatchwick.Core.Build
         /// Kenara duvar, yarım duvar, kapı, pencere, çit, çit kapısı ya da korkuluk koyar, malzemesini/stilini değiştirir ya da
         /// (None) kaldırır. Kapı ve pencere yalnızca duvarın yerine konur; duvar bir eşyanın içinden geçemez.
         /// </summary>
+        // ---- malzeme (tuğla, kiremit, yontma taş, boya) ----
+
+        /// <summary>
+        /// Parçanın malzemesi envanterde yeterliyse akçe yarıya iner ve malzeme harcanır (MaterialUse.Take); yoksa tam akçe.
+        /// Akçe yoksa hiçbir şey harcanmaz.
+        /// </summary>
+        private struct MaterialUse
+        {
+            public string Item; public int Count; public int Cost;
+            public void Take(Household h) { for (int i = 0; i < Count; i++) h.TryTakeItem(Item); }
+            public void GiveBack(Household h) { if (Item != null && Count > 0) h.AddItem(Item, Count); }
+        }
+
+        private MaterialUse PlanMaterial(BuildPartDef part, int units, int cost)
+        {
+            var use = new MaterialUse { Cost = cost };
+            if (part?.MaterialItem == null || units <= 0 || cost <= 0) return use;
+            int need = part.MaterialCount * units;
+            if (_house.Count(part.MaterialItem) < need) return use;
+            use.Item = part.MaterialItem;
+            use.Count = need;
+            use.Cost = cost - cost / 2;
+            return use;
+        }
+
+        /// <summary>Malzemeli parça için kısa ipucu: "tuğla varsa yarı fiyat".</summary>
+        public string MaterialHint(BuildPartDef part) =>
+            part?.MaterialItem == null ? null
+            : $"{(_content.Items.TryGet(part.MaterialItem, out var d) ? d.DisplayName : part.MaterialItem)} varsa ({part.MaterialCount}/birim) yarı fiyat";
+
         public PlacementCheck SetEdge(Edge edge, EdgeKind kind, string style = null)
         {
             var map = _world.Map;
@@ -88,12 +118,14 @@ namespace Thatchwick.Core.Build
             if (EdgeKinds.BlocksMovement(kind) && SplitsItem(edge)) return PlacementCheck.Fail("Duvar bir eşyanın içinden geçemez.");
 
             int newPrice = EdgeCost(kind, newStyle), oldPrice = EdgeCost(old, oldLook?.Style);
-            int cost = Math.Max(0, newPrice - Refund(oldPrice));
+            var mat = PlanMaterial(kind == EdgeKind.None ? null : EdgePart(kind, newStyle), 1, Math.Max(0, newPrice - Refund(oldPrice)));
+            int cost = mat.Cost;
             int refund = kind == EdgeKind.None ? Refund(oldPrice) : 0;
             // Kaplamalar yalnızca duvar türü kenarda kalır; düşen kaplamanın yarısı iade.
             if (!EdgeKinds.IsRoomBoundary(kind) && oldLook != null)
                 refund += Refund(PartPrice(oldLook.FinishA)) + Refund(PartPrice(oldLook.FinishB));
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            mat.Take(_house);
             if (refund > 0) _house.AddAkce(refund);
             // Düz duvar kalkınca (ya da kapı, pencere, yarım duvar olunca) asılı eşyalar envantere döner.
             if (old == EdgeKind.Wall && kind != EdgeKind.Wall)
@@ -105,6 +137,7 @@ namespace Thatchwick.Core.Build
             {
                 if (net > 0) { if (!_house.TrySpend(net)) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz."); }
                 else if (net < 0) _house.AddAkce(-net);
+                mat.GiveBack(_house);
                 map.SetEdgeFull(edge, old, oldLook);
                 return PlacementCheck.Success;
             });
@@ -257,9 +290,11 @@ namespace Thatchwick.Core.Build
             var oldStyle = map.GetFloorStyle(tile);
             if (old == floor && oldStyle == newStyle) return PlacementCheck.Fail("Orası zaten öyle.");
             int newPrice = FloorCost(floor, newStyle), oldPrice = FloorCost(old, oldStyle);
-            int cost = Math.Max(0, newPrice - Refund(oldPrice));
+            var mat = PlanMaterial(floor == FloorType.Grass ? null : FloorPart(floor, style), 1, Math.Max(0, newPrice - Refund(oldPrice)));
+            int cost = mat.Cost;
             int refund = floor == FloorType.Grass ? Refund(oldPrice) : 0;
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            mat.Take(_house);
             if (refund > 0) _house.AddAkce(refund);
             map.SetFloor(tile, floor, newStyle);
             int net = refund - cost;
@@ -268,6 +303,7 @@ namespace Thatchwick.Core.Build
                 if (!map.HasTile(tile)) return PlacementCheck.Fail("Zemin artık yok.");
                 if (net > 0) { if (!_house.TrySpend(net)) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz."); }
                 else if (net < 0) _house.AddAkce(-net);
+                mat.GiveBack(_house);
                 map.SetFloor(tile, old, oldStyle);
                 return PlacementCheck.Success;
             });
@@ -355,7 +391,10 @@ namespace Thatchwick.Core.Build
                 if (stored == GridMap.NoRoof) refund += Refund(oldPrice);
             }
             if (olds.Count == 0) return PlacementCheck.Fail("Çatı zaten öyle.");
+            var mat = PlanMaterial(part, olds.Count, cost);      // kiremit karo başına
+            cost = mat.Cost;
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            mat.Take(_house);
             if (refund > 0) _house.AddAkce(refund);
             foreach (var o in olds) map.SetRoofStyle(o.p, stored);
             int net = refund - cost;
@@ -363,6 +402,7 @@ namespace Thatchwick.Core.Build
             {
                 if (net > 0) { if (!_house.TrySpend(net)) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz."); }
                 else if (net < 0) _house.AddAkce(-net);
+                mat.GiveBack(_house);
                 foreach (var o in olds) if (map.HasTile(o.p)) map.SetRoofStyle(o.p, o.s);
                 return PlacementCheck.Success;
             });
@@ -411,9 +451,11 @@ namespace Thatchwick.Core.Build
             if (old == finishId) return PlacementCheck.Fail("Zaten öyle.");
             float oldF = FinishFactor(item), newF = part != null ? part.PriceFactor : 1f;
             int diff = (int)Math.Round(item.Def.Price * (newF - oldF));
-            int cost = diff > 0 ? diff : 0;
+            var mat = PlanMaterial(part, 1, diff > 0 ? diff : 0);     // boyalı kumaş: boya
+            int cost = mat.Cost;
             int refund = diff < 0 ? (int)Math.Floor(-diff * SellRatio) : 0;
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            mat.Take(_house);
             if (refund > 0) _house.AddAkce(refund);
             item.FinishId = finishId;
             _world.NotifyChanged();
@@ -424,6 +466,7 @@ namespace Thatchwick.Core.Build
                 if (cur == null) return PlacementCheck.Fail("Eşya artık yok.");
                 if (net > 0) { if (!_house.TrySpend(net)) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz."); }
                 else if (net < 0) _house.AddAkce(-net);
+                mat.GiveBack(_house);
                 cur.FinishId = old;
                 _world.NotifyChanged();
                 return PlacementCheck.Success;

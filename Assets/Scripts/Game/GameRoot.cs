@@ -1019,9 +1019,18 @@ namespace Thatchwick.Game
             }
             foreach (var item in items)
             {
-                if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell) && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
+                if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell || item.Def.WaterGate) && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
                 foreach (var it in item.Def.Interactions)
                     _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
+                if (item.Def.WaterGate)
+                {
+                    var gate = item;
+                    _menuOptions.Add(new MenuOption
+                    {
+                        Label = gate.Toggled ? "Kapağı aç (su geçsin)" : "Kapağı kapat (suyu kes)",
+                        Run = () => { gate.Toggled = !gate.Toggled; ShowMessage(gate.Toggled ? "Su kapağı kapandı" : "Su kapağı açıldı"); }
+                    });
+                }
                 if (item.Def.AnimalRole == AnimalRoles.Bell)
                     _menuOptions.Add(new MenuOption
                     {
@@ -1105,7 +1114,10 @@ namespace Thatchwick.Game
             _farmWork.Tilled += (c, t) => _account.Count("act:till");
             _farmWork.Repaired += (c, t) => { ShowMessage($"{c.Name} yolu onardı"); _account.Count("act:repair_road"); };
             _effects.TemperatureAt = p => _heat.TemperatureAt(p);   // buz kesmek için don
-            _automation = new FarmAutomation(_world, _household) { Storage = _storage };
+            _automation = new FarmAutomation(_world, _household)
+            {
+                Storage = _storage, Plants = _plants, Build = _buildService, Content = _content, TemperatureAt = p => _heat.TemperatureAt(p)
+            };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
             {
                 WorkHours = () => HourOfDay >= 7.0 && HourOfDay < 19.0,
@@ -1125,7 +1137,8 @@ namespace Thatchwick.Game
                 if (made.Count > 0)
                 {
                     var parts = new List<string>();
-                    foreach (var kv in made) parts.Add($"+{kv.Value} {(_content.Items.TryGet(kv.Key, out var d) ? d.DisplayName : kv.Key)}");
+                    foreach (var kv in made)
+                        parts.Add(kv.Key.StartsWith("ekim:") ? $"{kv.Value} tohum ekildi" : $"+{kv.Value} {(_content.Items.TryGet(kv.Key, out var d) ? d.DisplayName : kv.Key)}");
                     ShowMessage("Düzenekler: " + string.Join(", ", parts));
                 }
             };
@@ -1645,7 +1658,8 @@ namespace Thatchwick.Game
                     : item.IsPlant ? PlantLabel(item)
                     : item.Def.IsHousing ? $"{item.Def.DisplayName} ({_animals.Residents(item.Id)}/{item.Def.HousingCapacity}, yem {item.FeedStock:0.#}{(item.StockTotal > 0 ? $", ürün {item.StockTotal}" : "")}, {Comfort(item)})"
                     : item.Def.IsTrough ? $"{item.Def.DisplayName} (yem {item.FeedStock:0.#}, günlük {_animals.DailyFeedNeed(item):0.#})"
-                    : item.Def.AutoProcess != null ? $"{item.Def.DisplayName} ({(_automation.IsPowered(item, wheels ?? (wheels = _automation.TurningWheels(Net()))) ? "dönüyor" : "güç yok: su çarkı gerekli")})"
+                    : item.Def.WaterGate ? $"{item.Def.DisplayName} ({(item.Toggled ? "kapalı" : "açık")})"
+                    : item.Def.NeedsPower ? $"{item.Def.DisplayName} ({(_automation.IsPowered(item, wheels ?? (wheels = _automation.TurningWheels(Net()))) ? "dönüyor" : "güç yok: su çarkı ya da yel değirmeni gerekli")})"
                     : item.Def.PowerSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "dönüyor" : "kuru: kaynağa bağlı kanala değmeli")})"
                     : item.Def.NeedsWaterSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "su akıyor" : "kuru: kuyuya bağla")})"
                     : item.Def.DisplayName;

@@ -108,6 +108,7 @@ namespace Thatchwick.Core.Save
         public double fruitDays;
         public double feedStock;    // v2: barınak yemi
         public string finish;       // mobilya kaplaması (renk/malzeme; boş = varsayılan)
+        public bool toggled;        // su kapağı kapalı (eski kayıtta false)
         public KeyInt[] stock;      // v2: barınakta biriken ürünler
     }
 

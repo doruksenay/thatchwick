@@ -178,6 +178,8 @@ namespace Thatchwick.Core.Content
 
         private void ValidateParts(List<string> errors)
         {
+            foreach (var p in Parts.All)
+                if (p.MaterialItem != null && !Items.Contains(p.MaterialItem)) errors.Add($"{p.Id}: malzeme '{p.MaterialItem}' bulunamadı.");
             var defaults = new Dictionary<string, int>(StringComparer.Ordinal);
             var finishGroups = new HashSet<string>(StringComparer.Ordinal);
             foreach (var p in Parts.All)

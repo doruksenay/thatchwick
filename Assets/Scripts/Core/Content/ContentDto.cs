@@ -21,6 +21,7 @@ namespace Thatchwick.Core.Content
         public ToolDto[] tools;
         public RoomTemplateDto[] templates;
         public BuildPartDto[] buildParts;   // yapı modu malzeme ve parça kataloğu (duvar, kapı, pencere, zemin, çatı, kaplama)
+        public EffectDto[] effects;         // yemek ve içki etkileri (moodlet olarak kaydedilir; etkileşimin "moodlet" alanından verilir)
 
         /// <summary>Başka bir içerik dosyasının bölümlerini bunun sonuna ekler (items.json + life.json birleşimi).</summary>
         public void Merge(ContentFileDto other)
@@ -38,6 +39,7 @@ namespace Thatchwick.Core.Content
             tools = Concat(tools, other.tools);
             templates = Concat(templates, other.templates);
             buildParts = Concat(buildParts, other.buildParts);
+            effects = Concat(effects, other.effects);
         }
 
         private static T[] Concat<T>(T[] a, T[] b)
@@ -158,7 +160,29 @@ namespace Thatchwick.Core.Content
         public AutoProcessDto autoProcess;   // güç alan makine: her gün kendiliğinden işler (değirmen taşı)
         public bool iceBox;                  // buzluk: içinde buz varken yiyeceği çok soğuk tutar
         public bool fishTrap;                // balık sepeti: gölete değerken her sabah balık
+        public bool windPower;               // yel değirmeni: suya gerek olmadan güç verir
+        public bool waterGate;               // su kapağı: açıkken suyu geçirir, kapalıyken keser
+        public int harvestRadius;            // hasat tırmığı: güç alınca bu yarıçaptaki olgun ekini her sabah biçer
+        public int seedRadius;               // ekim makinesi: güç alınca bu yarıçaptaki boş toprağa tohum eker
+        public int iceCollect;               // buz kuyusu: donlu sabahlar bu kadar buz toplar
         public int foodCapacity;             // yiyecek yerleşiminde kapasite (0 = depo kapasitesi; kilerde 60)
+    }
+
+    /// <summary>Yemek/içki etkisi: süreli ruh hali etkisi (moodlet) olarak kaydedilir.</summary>
+    [Serializable]
+    public sealed class EffectDto
+    {
+        public string id;
+        public string displayName;
+        public string description;
+        public int value;            // ruh hali
+        public float days;           // süre (gün)
+        public float allSpeed, allXp;
+        public float coldResist;     // soğuğa dayanıklılık (0,2 = %20)
+        public float hungerDecay;    // 0 = 1; 0,9 = %10 yavaş acıkır
+        public float energyDecay;    // 0 = 1
+        public SkillRateDto[] skillSpeed;  // beceriye özel hız (rate = ek oran, 0,1 = %10)
+        public SkillRateDto[] skillXp;     // beceriye özel XP
     }
 
     [Serializable]
@@ -177,6 +201,8 @@ namespace Thatchwick.Core.Content
         public float priceFactor;    // itemFinish: 0 = 1
         public int[] levels;         // konabileceği katlar (boş = hepsi)
         public bool isDefault;
+        public string material;      // varsa: envanterde bu malzeme varken harcanır, akçe yarıya iner (tuğla, kiremit, yontma taş, boya)
+        public int materialCount;    // birim (kenar, karo, eşya) başına; 0 = 1
     }
 
     [Serializable]

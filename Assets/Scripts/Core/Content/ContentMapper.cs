@@ -60,6 +60,11 @@ namespace Thatchwick.Core.Content
                     RequiresIndoor = dto.requiresIndoor,
                     IsIceBox = dto.iceBox,
                     IsFishTrap = dto.fishTrap,
+                    WindPower = dto.windPower,
+                    WaterGate = dto.waterGate,
+                    HarvestRadius = Math.Max(0, dto.harvestRadius),
+                    SeedRadius = Math.Max(0, dto.seedRadius),
+                    IceCollect = Math.Max(0, dto.iceCollect),
                     FoodCapacity = Math.Max(0, dto.foodCapacity),
                     IsTrough = dto.trough,
                     AnimalComfort = dto.animalComfort,
@@ -224,6 +229,7 @@ namespace Thatchwick.Core.Content
             ApplyRecipes(file.recipes, db, errors);
             ApplyAnimals(file.animals, db, errors);
             ApplyBuildParts(file.buildParts, db, errors);
+            ApplyEffects(file.effects, db, errors);
 
             LifeContentMapper.Apply(file, db, errors);
             errors.AddRange(db.Validate());
@@ -254,7 +260,9 @@ namespace Thatchwick.Core.Content
                     Group = string.IsNullOrWhiteSpace(dto.group) ? null : dto.group,
                     PriceFactor = dto.priceFactor <= 0f ? 1f : dto.priceFactor,
                     Levels = dto.levels != null ? new List<int>(dto.levels) : new List<int>(),
-                    IsDefault = dto.isDefault
+                    IsDefault = dto.isDefault,
+                    MaterialItem = string.IsNullOrWhiteSpace(dto.material) ? null : dto.material,
+                    MaterialCount = dto.materialCount <= 0 ? 1 : dto.materialCount
                 };
                 if (kind == BuildPartKind.Floor)
                 {
@@ -311,6 +319,31 @@ namespace Thatchwick.Core.Content
                 AddMaterials(interaction, r.materials);
                 if (interaction.Consume.Count == 0) errors.Add($"tarif {r.id}: malzeme yok.");
                 station.Interactions.Add(interaction);
+            }
+        }
+
+        // Yemek/içki etkileri ruh hali kataloğuna kaydedilir; etkileşimler "moodlet" alanıyla verir.
+        private static void ApplyEffects(EffectDto[] effects, ContentDatabase db, List<string> errors)
+        {
+            if (effects == null) return;
+            foreach (var f in effects)
+            {
+                if (f == null || string.IsNullOrWhiteSpace(f.id)) { errors.Add("Etkinin kimliği boş."); continue; }
+                if (f.days <= 0f) { errors.Add($"{f.id}: etki süresi pozitif olmalı."); continue; }
+                var m = new Mood.MoodletDef
+                {
+                    Id = f.id, DisplayName = f.displayName ?? f.id, Description = f.description ?? "", Value = f.value, DurationDays = f.days,
+                    AllSpeed = f.allSpeed, AllXp = f.allXp, ColdResist = Math.Max(0f, f.coldResist),
+                    HungerDecay = f.hungerDecay > 0f ? f.hungerDecay : 1f, EnergyDecay = f.energyDecay > 0f ? f.energyDecay : 1f
+                };
+                foreach (var (rates, target) in new[] { (f.skillSpeed, m.SkillSpeed), (f.skillXp, m.SkillXp) })
+                    if (rates != null)
+                        foreach (var r in rates)
+                        {
+                            if (r != null && Enum.TryParse(r.skill, true, out SkillType s) && Enum.IsDefined(typeof(SkillType), s)) target[s] = r.rate;
+                            else errors.Add($"{f.id}: bilinmeyen beceri '{r?.skill}'.");
+                        }
+                (db.Moods ?? Mood.MoodCatalog.Default).Register(m);
             }
         }
 

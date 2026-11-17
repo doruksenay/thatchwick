@@ -110,6 +110,17 @@ namespace Thatchwick.Core.Content
         public bool IsIceBox { get; set; }
         /// <summary>Balık sepeti: bir gölete değerken her sabah mevsimine göre bir balık.</summary>
         public bool IsFishTrap { get; set; }
+        /// <summary>Yel değirmeni: kanal gerekmeden güç verir.</summary>
+        public bool WindPower { get; set; }
+        /// <summary>Su kapağı: açıkken sulama ağında suyu geçirir, kapalıyken keser (dokununca aç/kapa).</summary>
+        public bool WaterGate { get; set; }
+        /// <summary>Hasat tırmığı ve ekim makinesi yarıçapı (güç ister).</summary>
+        public int HarvestRadius { get; set; }
+        public int SeedRadius { get; set; }
+        /// <summary>Buz kuyusu: donlu her sabah toplanan buz.</summary>
+        public int IceCollect { get; set; }
+        /// <summary>Güç alınca çalışan düzenek mi (değirmen taşı, yem karıştırıcı, hasat tırmığı, ekim makinesi)?</summary>
+        public bool NeedsPower => AutoProcess != null || HarvestRadius > 0 || SeedRadius > 0;
         /// <summary>Yiyecek yerleşimindeki kapasite (0 = depo kapasitesi, o da yoksa kiler/buzluk için 60).</summary>
         public int FoodCapacity { get; set; }
         /// <summary>Yalnızca kapalı bir odaya konur (folluk, ahır bölmesi, at bölmesi): barınak odası.</summary>

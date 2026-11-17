@@ -139,7 +139,7 @@ namespace Thatchwick.Core.Save
                     {
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, z = it.Position.Z, rotation = it.Rotation,
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
-                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId,
+                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId, toggled = it.Toggled,
                         watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays
                     });
                 }
@@ -409,6 +409,7 @@ namespace Thatchwick.Core.Save
                     restored.FeedStock = Math.Max(0, s.feedStock);
                     if (!string.IsNullOrEmpty(s.finish) && content.Parts.TryGet(s.finish, out var fin) && fin.Kind == BuildPartKind.ItemFinish && fin.Group == def.FinishGroup)
                         restored.FinishId = s.finish;
+                        restored.Toggled = s.toggled;
                     restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));
                     if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(kv.key)) restored.SetStock(kv.key, kv.value);
                 }

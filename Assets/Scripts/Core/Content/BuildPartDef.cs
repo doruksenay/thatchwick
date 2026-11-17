@@ -50,6 +50,9 @@ namespace Thatchwick.Core.Content
         public List<int> Levels { get; set; } = new List<int>();
         /// <summary>Türünün varsayılanı (eski kayıtlar ve stil seçilmemiş araç bunu kullanır).</summary>
         public bool IsDefault { get; set; }
+        /// <summary>Malzeme (tuğla, kiremit, yontma taş, boya): envanterde varsa harcanır ve akçe yarıya iner; yoksa tam akçe.</summary>
+        public string MaterialItem { get; set; }
+        public int MaterialCount { get; set; } = 1;
 
         public bool AllowsLevel(int level) => Levels.Count == 0 || Levels.Contains(level);
 

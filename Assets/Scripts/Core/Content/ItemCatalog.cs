@@ -50,7 +50,7 @@ namespace Thatchwick.Core.Content
             var list = new List<ItemDef>();
             foreach (var d in content.Items.All)
             {
-                if (d.Price <= 0 || d.Placement == ItemPlacement.Resource || d.IsPlant) continue;
+                if (d.Price <= 0 || d.Placement == ItemPlacement.Resource || d.IsPlant || d.HasTag("craftonly")) continue;   // düzenekler yalnızca yapılır
                 if (d.Category != category) continue;
                 if (room != null && !d.Rooms.Contains(room)) continue;
                 if (set != null && d.StyleSet != set) continue;
@@ -96,6 +96,12 @@ namespace Thatchwick.Core.Content
             if (def.WaterRadius > 0) parts.Add(def.NeedsWaterSource ? $"Sular ({def.WaterRadius} karo, kaynağa bağlıyken)" : $"Sular ({def.WaterRadius} karo)");
             if (def.PowerSource) parts.Add($"Güç: kaynağa bağlı kanala değince {Work.FarmAutomation.PowerReach}+ karo (mühendislikle artar) yakındaki makineleri çevirir");
             if (def.AutoProcess != null) parts.Add("Güç alınca her gün kendiliğinden işler");
+            if (def.WindPower) parts.Add("Rüzgârla güç verir (kanal gerekmez)");
+            if (def.WaterGate) parts.Add("Dokun: suyu aç / kes");
+            if (def.HarvestRadius > 0) parts.Add($"Güç alınca her sabah {def.HarvestRadius} karo çevresindeki olgun ekini biçer");
+            if (def.SeedRadius > 0) parts.Add($"Güç alınca her sabah {def.SeedRadius} karo çevresindeki boş toprağa tohum eker");
+            if (def.IceCollect > 0) parts.Add($"Donlu sabahlar {def.IceCollect} buz toplar");
+            if (def.HasTag("craftonly")) parts.Add("Yalnızca yapılır (tarif)");
             if (def.Placement == ItemPlacement.Wall) parts.Add("Duvara asılır");
             if (def.Placement == ItemPlacement.Surface) parts.Add("Masa/raf üstüne");
             return string.Join(" · ", parts);

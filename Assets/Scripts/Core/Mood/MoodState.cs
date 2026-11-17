@@ -101,6 +101,29 @@ namespace Thatchwick.Core.Mood
             return Math.Max(0.3, MoodRules.SpeedMultiplier(Status) * (1.0 + bonus));
         }
 
+        /// <summary>Etkilerden gelen soğuk dayanıklılığı (toplam, en çok 0,6).</summary>
+        public float ColdResist()
+        {
+            float r = 0f;
+            foreach (var a in _active) r += a.Def.ColdResist;
+            return Math.Min(0.6f, Math.Max(0f, r));
+        }
+
+        /// <summary>Etkilerden gelen acıkma ve yorulma çarpanları (çarpılır, en az 0,5).</summary>
+        public float HungerDecayFactor()
+        {
+            float f = 1f;
+            foreach (var a in _active) f *= a.Def.HungerDecay;
+            return Math.Max(0.5f, f);
+        }
+
+        public float EnergyDecayFactor()
+        {
+            float f = 1f;
+            foreach (var a in _active) f *= a.Def.EnergyDecay;
+            return Math.Max(0.5f, f);
+        }
+
         /// <summary>Kayıt için (kimlik, kalan gün).</summary>
         public List<KeyValuePair<string, double>> Export()
         {

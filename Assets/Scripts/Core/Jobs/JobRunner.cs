@@ -391,6 +391,8 @@ namespace Thatchwick.Core.Jobs
                     ? (float)(interaction.Restore * SkillNames.Factor(_character.Skills.GetLevel(SkillType.Music), 0.05)) : interaction.Restore;
                 if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, restore);
                 foreach (var extra in interaction.ExtraRestore) _character.Needs.Restore(extra.Need, extra.Amount);
+                // Öğün: açlık doyuran ve yiyecek harcayan iş sofra çeşidine sayılır.
+                if (interaction.Need == NeedType.Hunger && interaction.RestoresNeed && interaction.ConsumeItem != null) _character.RecordMeal(interaction.ConsumeItem);
                 if (interaction.GivesMood)
                     _character.AddMoodlet(interaction.MoodId, interaction.MoodText ?? interaction.DisplayName, interaction.MoodValue, interaction.MoodDays);
                 if (interaction.Skill.HasValue && interaction.SkillXp > 0f)
