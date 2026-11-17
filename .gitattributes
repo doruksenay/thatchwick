@@ -19,3 +19,6 @@
 *.ttf filter=lfs diff=lfs merge=lfs -text
 *.otf filter=lfs diff=lfs merge=lfs -text
 *.fbx filter=lfs diff=lfs merge=lfs -text
+
+# Araç fontu küçük; LFS dışında tutulur (tools/art/ui_mockup.py)
+tools/art/fonts/*.ttf -filter -diff -merge binary

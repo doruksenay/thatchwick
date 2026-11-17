@@ -5,13 +5,13 @@ Kurallar art/budget.md ve art/README.md ile aynıdır; işçi (pixellab-artist) 
 yerel yoklayıcı (tools/art-poll.cmd) ve bulut işçisi (.github/workflows/art-worker.yml)
 Claude'u boşuna başlatmamak için bunu kullanır.
 
-Bir iş uygundur, eğer:
+Bir iş uygundur, eğer (art/budget.md "Otomatik akış", kullanıcı kararı 2026-11-17):
   - status: pending
-  - approved_by: user, ya da approved_by: auto ve cost_max <= 25
-  - depends_on içindeki her iş `accepted` (art/budget.md kuralı).
-    --allow-review-deps verilirse stil pilotu olmayan (`style_gate: true` DEĞİL) bağımlılıklar `review` iken de
-    karşılanmış sayılır. Bu, kullanıcı kararı bekleyen bir öneridir; budget.md'ye yazılmadan işçiler kullanmaz.
+  - approved_by: user ya da auto (pending = açık soru, çalışmaz)
+  - depends_on içindeki her iş `accepted` ya da `review` (stil pilotları dahil)
+  - cost_max <= 60 (çalışma tavanı; büyük iş bölünmeli)
   - cost_max bugünkü kalan günlük tavana (150) ve rezerve (200) sığıyor
+  --strict: eski kural (yalnızca accepted bağımlılık, auto için cost_max <= 25).
 
 Kullanım:
   python tools/art/queue_ready.py            # uygun işleri ve nedenleri yazar; uygun iş varsa çıkış 0, yoksa 1
@@ -31,7 +31,8 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 QUEUE = os.path.join(ROOT, "art", "queue")
 BUDGET = os.path.join(ROOT, "art", "budget.md")
 
-AUTO_LIMIT = 25.0
+AUTO_LIMIT = 25.0   # yalnızca --strict
+RUN_LIMIT = 60.0
 DAILY_LIMIT = 150.0
 RESERVE = 200.0
 
@@ -108,17 +109,17 @@ def load_jobs():
     return jobs
 
 
-def evaluate(jobs, spent_today, balance, allow_review_deps=False):
+def evaluate(jobs, spent_today, balance, strict=False):
     remaining_today = max(0.0, DAILY_LIMIT - spent_today)
     ready, waiting = [], []
     for j in jobs.values():
         why = []
         if j["status"] != "pending":
             continue
-        if j["approved_by"] == "auto":
+        if j["approved_by"] == "auto" and strict:
             if j["cost_max"] > AUTO_LIMIT:
                 why.append(f"auto ama cost_max {j['cost_max']:g} > {AUTO_LIMIT:g} (approved_by: user gerekir)")
-        elif j["approved_by"] != "user":
+        elif j["approved_by"] not in ("user", "auto"):
             why.append(f"onay yok (approved_by: {j['approved_by'] or '-'})")
         for d in j["depends_on"]:
             dep = jobs.get(d)
@@ -126,12 +127,14 @@ def evaluate(jobs, spent_today, balance, allow_review_deps=False):
                 why.append(f"bağımlılık {d} bulunamadı")
             elif dep["status"] == "accepted":
                 continue
-            elif dep["status"] == "review" and allow_review_deps and not dep["style_gate"]:
+            elif dep["status"] == "review" and not strict:
                 continue
             elif dep["status"] == "review":
                 why.append(f"{d} review, kabulünü bekliyor" + (" (stil pilotu)" if dep["style_gate"] else ""))
             else:
                 why.append(f"{d} {dep['status'] or '?'}")
+        if j["cost_max"] > RUN_LIMIT:
+            why.append(f"cost_max {j['cost_max']:g} > çalışma tavanı {RUN_LIMIT:g}: iş bölünmeli")
         if j["cost_max"] > remaining_today:
             why.append(f"günlük tavan: bugün kalan {remaining_today:g}")
         if balance is not None and balance - j["cost_max"] < RESERVE:
@@ -148,12 +151,13 @@ def main():
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--today", default=datetime.date.today().isoformat())
-    ap.add_argument("--allow-review-deps", action="store_true", help="öneri: pilot olmayan review bağımlılıkları yeterli say")
+    ap.add_argument("--strict", action="store_true", help="eski kural: yalnızca accepted bağımlılık, auto için cost_max <= 25")
+    ap.add_argument("--allow-review-deps", action="store_true", help="artık varsayılan; geriye uyumluluk için kabul edilir")
     a = ap.parse_args()
 
     jobs = load_jobs()
     spent, balance = read_budget(a.today)
-    ready, waiting, remaining = evaluate(jobs, spent, balance, a.allow_review_deps)
+    ready, waiting, remaining = evaluate(jobs, spent, balance, a.strict)
 
     if a.json:
         print(json.dumps({

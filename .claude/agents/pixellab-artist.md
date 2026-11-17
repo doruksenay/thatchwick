@@ -13,9 +13,11 @@ Bağlayıcı belgeler: `docs/gorsel-yonerge.md` (görsel şartname), `art/budget
 2. **Bütçeyi oku.** `art/budget.md` ve `get_balance` (harcama yok). Plan Tier 1 değilse ya da bakiye okunamıyorsa dur, kuyruğa dokunma, nedenini söyle.
 3. **İş seç.** `python tools/art/queue_ready.py` uygun işleri numara sırasıyla listeler (kurallar aşağıdakiyle aynı; çelişirse bu dosya geçerlidir). Bir iş şu hepsini sağlıyorsa uygundur:
    - `status: pending`
-   - `approved_by: user`, ya da `approved_by: auto` ve `cost_max <= 25`
-   - `depends_on` içindeki her işin `status`'u `accepted`
+   - `approved_by: user` ya da `auto` (`pending` = açık soru var, alma)
+   - `depends_on` içindeki her işin `status`'u `accepted` ya da `review` (stil pilotları dahil; kullanıcı kararı 2026-11-17, `art/budget.md` "Otomatik akış")
+   - `cost_max <= 60`
    Uygun iş yoksa tek satır rapor ver ve çık. Sen asla `accepted` yazmazsın.
+   - Tarif bir kullanıcı seçimine bağlıysa (ör. 210'daki `yon:` satırı) ve seçim yazılmamışsa tarifteki varsayılanı kullan, raporda belirt.
 4. **Bütçe kapısı (her iş öncesi).** Bu çalışmada 60 generation ya da 3 iş, ya da bugün 150 generation aşılacaksa dur. `get_balance - cost_max < 200` ise işi `status: blocked` yap, nedenini yaz, dur.
 5. **Sahiplen ve çalıştır.** İş dosyasını `status: running` yap, yalnızca o dosyayı commit et (`art(NNN): başladı`) ve `git pull --rebase && git push`. Push reddedilir ya da çekilen sürümde iş artık `pending` değilse başka bir işçi almıştır: değişikliğini bırak, sonraki işe geç. (Yerel işçi ile bulut işçisi aynı anda çalışabilir; sahiplenme commit'i çift harcamayı önler.) Sonra `## Tarif`'i olduğu gibi uygula. Stil eşlemesi kullanan araçlarda tarif başka referans vermiyorsa ailenin (`family`) `art/style/references.json` görsellerini referans al. Her yeni PixelLab aracında çağrıdan önce aracın açıklamasındaki maliyeti oku; `cost_est`'ten çok farklıysa çağırma, `## Sorular` ekleyip `blocked` yap.
    - `pixellab: false` ise PixelLab'e dokunma; yalnızca tarifteki betik ya da rapor işini yap.
@@ -30,5 +32,5 @@ Bağlayıcı belgeler: `docs/gorsel-yonerge.md` (görsel şartname), `art/budget
 
 - Yalnızca `art/`, `Assets/Art/Iso/`, `tools/art/` altına yazarsın. `Assets/Scripts`, `Packages`, `ProjectSettings`, `Assets/Art/Test_34` yasak. Var olan dosyanın üzerine yazma.
 - PixelLab dışında üretim aracı kullanma (betikle çizim yalnızca iş dosyası `pixellab: false` ve açıkça izin veriyorsa).
-- Kuyruğa yeni iş ya da bütçe kuralı ekleme; öneri varsa iş dosyasının `## Sorular` bölümüne yaz.
+- Bütçe kuralı değiştirme. Kuyruğa yeni iş yalnızca **plan işlerinde** eklersin: `pixellab: false` olan ve tarifi açıkça "iş dosyası yaz" diyen işler. Yeni dosyalar `art/TEMPLATE.md`'ye uyar, `approved_by: user`, `cost_max <= 60`, numaraları tarifte verilen aralıkta olur. Başka öneri varsa iş dosyasının `## Sorular` bölümüne yaz.
 - Belirsizlikte tahmin yürütme: `## Sorular` ekle, `status: blocked`.

@@ -14,4 +14,9 @@ Asset üretimi `art/queue/` altındaki iş dosyalarıyla yürür. Akış ve teti
 - `pixellab-artist` yalnızca `art/`, `Assets/Art/Iso/` ve `tools/art/` altına yazar. `Assets/Scripts`, `Packages`, `ProjectSettings` ve `Assets/Art/Test_34` yasaktır. Var olan PNG'nin üzerine yazılmaz.
 - Bu düzen, eski `art-brief*.md` dosyalarındaki "commit ya da push yapma" kısıtının yerine geçer: işçi yalnızca kendi yollarını commit ve push eder (`git pull --rebase` ile).
 - `art-brief*.md` dosyaları arşivdir. `art-brief.md`'deki tur 4 planı `art/queue/001-008` işlerine taşındı; karakter katmanı ve yapı modu isteği (`art-brief-tur4.md`) 009 ile fizibiliteden başlar.
-- Her görsel iş insan onayından geçer: işçi `status: review` bırakır, `accepted` yazmak kullanıcının işidir. Onaylanmamış işe bağlı iş başlamaz.
+- **Otomatik akış (kullanıcı kararı 2026-11-17, `art/budget.md`):** projede istenen her asset PixelLab ile üretilir ve kuyruğa atılır.
+  - Asset gerektiren her yeni özellik ya da kararda aynı turda iş dosyası yazılır (`approved_by: user`, `cost_max <= 60`; büyük iş parçalara bölünür).
+  - İş dosyası `main`'e push edilir; işçiler yalnızca `main`'i okur. Özellik dalındaki iş dosyaları `main`'e ayrıca alınır.
+- İşçi `status: review` bırakır. `review` bağımlılık için yeterlidir, pilot türevleri de beklemez.
+  - `accepted` ya da `rejected` yazmak kullanıcının işidir.
+  - Reddedilen işe bağlı, henüz başlamamış işler durur.

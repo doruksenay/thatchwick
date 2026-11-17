@@ -10,7 +10,7 @@ Bu dosya işçinin freni ve harcama defteridir. İşçi her iş öncesi okur, he
 ## Kurallar
 | Kural | Değer |
 |---|---|
-| Onaysız tek iş tavanı (`cost_max`) | 25 generation. Üstü için iş dosyasında `approved_by: user` gerekir |
+| Tek iş tavanı (`cost_max`) | 60 generation (çalışma tavanı). Daha büyük iş parçalara bölünür. Onay için ayrıca bir tavan yok (aşağıda "Otomatik akış") |
 | Çalışma başına tavan | 60 generation, en çok 3 iş |
 | Günlük tavan | 150 generation |
 | Rezerv | Kalan bakiye (`get_balance`), işten sonra 200'ün altına düşecekse işçi durur |
@@ -19,6 +19,18 @@ Bu dosya işçinin freni ve harcama defteridir. İşçi her iş öncesi okur, he
 | Doğruluk kaynağı | Bakiye için her zaman `get_balance`. Bu dosyadaki "kalan" sütunu yalnızca defterdir; çelişirse `get_balance` geçerlidir |
 
 Kuralları gevşetmek ya da sıkılaştırmak kullanıcının kararıdır; işçi bu tabloyu değiştirmez.
+
+## Otomatik akış (kullanıcı kararı, 2026-11-17)
+Kullanıcı: "Bunu otomatize et. Bu projede istenen tüm asset'ler PixelLab'e üretilmeli ve kuyruğa atılmalı."
+
+- **Onay:** kuyruğa giren her iş onaylıdır. Yeni iş `approved_by: user` ile yazılır. `pending` yalnızca işin açık bir sorusu varsa kullanılır.
+- **Bağımlılık:** `review` durumundaki iş, stil pilotları dahil, karşılanmış sayılır. Pilot türevleri kullanıcının kabulünü beklemez.
+  - Bekletenler: `pending`, `running`, `blocked`, `failed`, `rejected`.
+  - Kullanıcı bir pilotu `rejected` yaparsa henüz başlamamış türevler durur.
+- **Kullanıcı seçimi gereken yerler:** kullanıcı seçimi yazmamışsa iş dosyasındaki varsayılan kullanılır. Örnek: 210 arayüz yönü, varsayılan `parsomen`.
+- **Plan işleri:** `pixellab: false` olan ve tarifi "iş dosyası yaz" diyen işlerde işçi yeni iş dosyaları yazar. Bu işler `approved_by: user`, en çok 60 `cost_max` olur ve `art/TEMPLATE.md`'ye uyar.
+- **Yeni ihtiyaç:** asset gerektiren her yeni özellik ya da karar için, planlama ve kod oturumları aynı turda iş dosyası yazar ve `main`'e push eder.
+- **Frenler aynen geçerli:** çalışma başına 60 gen / 3 iş, günlük 150 gen, rezerv 200. Kuyruk ayı aşarsa işler bir sonraki dönemde kendiliğinden devam eder.
 
 ## Günlük defter
 | Tarih | İş | Araç | Harcanan | Kalan (get_balance) |

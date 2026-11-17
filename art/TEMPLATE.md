@@ -2,12 +2,12 @@
 id: "000"
 title: Kısa ad
 status: pending          # pending | running | review | accepted | rejected | failed | blocked
-approved_by: auto        # auto (cost_max <= 25) | user (daha pahalı ya da kararı kullanıcıya ait) | pending (kullanıcı kararı bekleniyor, çalışmaz)
+approved_by: user        # user (varsayılan; otomatik akış 2026-11-17) | pending (yalnızca açık soru varsa, çalışmaz)
 family: esya             # zemin | yapi | esya | bitki | karakter | hayvan | arayuz  (art/style/references.json)
 style_gate: false        # true: ailenin stil pilotu (türevleri buna bağımlı yazılır)
 cost_est: 10             # generation
-cost_max: 15             # bunu aşarsa dur
-depends_on: []           # örn. ["001"]: hepsi accepted olmadan başlamaz
+cost_max: 15             # bunu aşarsa dur; en çok 60 (çalışma tavanı)
+depends_on: []           # örn. ["001"]: hepsi review ya da accepted olmadan başlamaz
 max_attempts: 1
 pixellab: true           # false ise PixelLab çağrılmaz (betik ya da rapor işi)
 outputs:
