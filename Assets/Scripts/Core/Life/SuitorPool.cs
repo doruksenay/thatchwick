@@ -95,7 +95,11 @@ namespace Thatchwick.Core.Life
             };
             c.SetAge(ArrivalAgeMin + _rng.NextDouble() * (ArrivalAgeMax - ArrivalAgeMin));
             c.LifespanDays = c.AgeConfig.RollLifespan(_rng);
-            if (AppearanceCatalog != null) c.Appearance = AppearanceCatalog.Randomize(_rng, sex);
+            if (AppearanceCatalog != null)
+            {
+                c.Appearance = AppearanceCatalog.Randomize(_rng, sex);
+                c.Genome = Genetics.FromAppearance(c.Appearance, AppearanceCatalog, _rng);   // gizli kalıtım
+            }
             if (_content.Traits.Count > 0)
             {
                 c.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));

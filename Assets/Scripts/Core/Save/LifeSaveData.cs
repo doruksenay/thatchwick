@@ -52,5 +52,8 @@ namespace Thatchwick.Core.Save
         public string[] goalsDone;
         public VillagerSave[] villagers;
         public int marriages, festivalsCelebrated;
+        // Karakter yaratma 2.0 (17.11.2026): eski kayıtta 0 = belirsiz (Seyrek sayılır), -1 yerine 0 gelir.
+        public int accidentSetting;
+        public double lastHouseholdAccidentDay = -1;
     }
 }

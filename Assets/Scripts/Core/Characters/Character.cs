@@ -32,6 +32,34 @@ namespace Thatchwick.Core.Characters
         public SkillSet Skills { get; } = new SkillSet();
         public Sex Sex { get; set; } = Sex.Female;
         public Appearance Appearance { get; set; } = new Appearance();
+        /// <summary>Gizli kalıtım verisi (oyuncuya gösterilmez). Null ise doğumda görünümden kurulur.</summary>
+        public Genome Genome { get; set; }
+
+        // --- Karakter yaratma 2.0 (doküman 14) ---
+        /// <summary>Doğum günü: mevsim (0-3) ve mevsim günü (0'dan). -1 = belirsiz (eski kayıt).</summary>
+        public int BirthSeason { get; set; } = -1;
+        public int BirthDayOfSeason { get; set; } = -1;
+        /// <summary>Sevdikleri ve sevmedikleri (hediye tepkisi, küçük moodlet). Boş = belirsiz.</summary>
+        public string LikedFood { get; set; } = "";
+        public string LikedColor { get; set; } = "";
+        public string LikedHobby { get; set; } = "";
+        public string DislikedFood { get; set; } = "";
+        /// <summary>Çocuk Genç evresine geçince bir kez açılan ücretsiz Ayna hakkı (karar 17.11.2026).</summary>
+        public bool FreeMirrorAvailable { get; set; }
+        /// <summary>İyileşmekte olan yara (kaza); yoksa null.</summary>
+        public ActiveInjury Injury { get; set; }
+        /// <summary>Son kaza günü (mevsimde en çok bir kaza); -1 = hiç.</summary>
+        public double LastAccidentDay { get; set; } = -1;
+        /// <summary>Kazadan kalmış iz sayısı (görünmeyenler dahil).</summary>
+        public int EventScarCount
+        {
+            get
+            {
+                int n = 0;
+                foreach (var m in Appearance.Marks) if (m.Kind == MarkKind.Scar && m.Source == MarkSource.Event) n++;
+                return n;
+            }
+        }
 
         // --- Ruh hali (keyif, hijyen, moodlet) ---
         public MoodState Mood { get; } = new MoodState();
@@ -354,7 +382,12 @@ namespace Thatchwick.Core.Characters
             var before = Stage;
             AgeDays += gameDays;
             var after = Stage;
-            if (after != before) StageChanged?.Invoke(this, before, after);
+            if (after != before)
+            {
+                // Çocuk Genç'e geçerken bir kez ücretsiz Ayna (karar 17.11.2026).
+                if (before == AgeStage.Child && after == AgeStage.Youth) FreeMirrorAvailable = true;
+                StageChanged?.Invoke(this, before, after);
+            }
 
             if (AgeDays >= LifespanDays)
             {

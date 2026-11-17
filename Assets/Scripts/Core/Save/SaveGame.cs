@@ -256,15 +256,41 @@ namespace Thatchwick.Core.Save
                 birthFatherId = c.BirthFatherId ?? 0,
                 generation = c.Generation,
                 isVillager = c.IsVillager,
-                appearance = new AppearanceSave
+                appearance = CaptureAppearance(a, c.Genome),
+                birthSeason = c.BirthSeason, birthDay = c.BirthDayOfSeason,
+                likedFood = c.LikedFood, likedColor = c.LikedColor, likedHobby = c.LikedHobby, dislikedFood = c.DislikedFood,
+                freeMirror = c.FreeMirrorAvailable,
+                lastAccidentDay = c.LastAccidentDay,
+                injury = c.Injury == null ? null : new InjurySave
                 {
-                    build = (int)a.Build, heightPercent = a.HeightPercent,
-                    skin = a.SkinColor.ToHex(), eye = a.EyeColor.ToHex(),
-                    hairStyle = a.HairStyleId, hair = a.HairColor.ToHex(),
-                    facialHairStyle = a.FacialHairId, facialHair = a.FacialHairColor.ToHex(),
-                    faceMark = a.FaceMarkId, outfit = a.OutfitId, outfitColor = a.OutfitColor.ToHex(), trim = a.TrimColor.ToHex(),
-                    hat = a.HatId, hatColor = a.HatColor.ToHex()
+                    kind = c.Injury.Kind, zone = c.Injury.Zone, pattern = c.Injury.Pattern, reason = c.Injury.Reason,
+                    startDay = c.Injury.StartDay, healDay = c.Injury.HealDay, deep = c.Injury.Deep, treated = c.Injury.Treated
                 }
+            };
+        }
+
+        private static AppearanceSave CaptureAppearance(Appearance a, Genome genome)
+        {
+            var marks = new List<MarkSave>();
+            foreach (var m in a.Marks)
+                marks.Add(new MarkSave { kind = (int)m.Kind, id = m.Id, zone = m.Zone, color = m.Color.ToHex(), fade = m.Fade, source = (int)m.Source, day = m.Day, reason = m.Reason, hidden = m.Hidden });
+            return new AppearanceSave
+            {
+                build = (int)a.Build, heightPercent = 100,
+                skin = a.SkinColor.ToHex(), eye = a.EyeColor.ToHex(),
+                hairStyle = a.HairStyleId, hair = a.HairColor.ToHex(),
+                facialHairStyle = a.FacialHairId, facialHair = a.FacialHairColor.ToHex(),
+                faceMark = a.FaceMarkId, outfit = a.OutfitId, outfitColor = a.OutfitColor.ToHex(), trim = a.TrimColor.ToHex(),
+                hat = a.HatId, hatColor = a.HatColor.ToHex(),
+                frame = (int)a.Frame, faceShape = a.FaceShapeId, eyeShape = a.EyeShapeId,
+                eyeRight = a.EyeColorRight.HasValue ? a.EyeColorRight.Value.ToHex() : "",
+                brow = a.BrowId, browColor = a.BrowColor.ToHex(), browOwn = a.BrowFollowsHair ? 0 : 1,
+                nose = a.NoseId, mouth = a.MouthId, ears = a.EarsId,
+                bangs = a.BangsId, mustache = a.MustacheId, beard = a.BeardId,
+                pattern = a.PatternId, bottom = a.BottomId, shoes = a.ShoesId, outer = a.OuterId, outerColor = a.OuterColor.ToHex(),
+                voice = (int)a.Voice, voicePitch = a.VoicePitch, laugh = a.LaughId,
+                marks = marks.ToArray(),
+                genome = genome?.Export()
             };
         }
 
@@ -514,7 +540,22 @@ namespace Thatchwick.Core.Save
             if (s.skills != null)
                 foreach (var kv in s.skills)
                     if (kv != null && Enum.TryParse(kv.key, out SkillType skill)) c.Skills.RestoreXp(skill, kv.value);
-            if (s.appearance != null) c.Appearance = LoadAppearance(s.appearance);
+            if (s.appearance != null)
+            {
+                c.Appearance = LoadAppearance(s.appearance);
+                c.Genome = Genome.Import(s.appearance.genome);   // eski kayıtta null: ilk doğumda görünüşten kurulur
+            }
+            c.BirthSeason = s.birthSeason;
+            c.BirthDayOfSeason = s.birthDay;
+            c.LikedFood = s.likedFood ?? ""; c.LikedColor = s.likedColor ?? ""; c.LikedHobby = s.likedHobby ?? ""; c.DislikedFood = s.dislikedFood ?? "";
+            c.FreeMirrorAvailable = s.freeMirror;
+            c.LastAccidentDay = s.lastAccidentDay;
+            if (s.injury != null && !string.IsNullOrEmpty(s.injury.kind))
+                c.Injury = new ActiveInjury
+                {
+                    Kind = s.injury.kind, Zone = s.injury.zone, Pattern = s.injury.pattern, Reason = s.injury.reason,
+                    StartDay = s.injury.startDay, HealDay = s.injury.healDay, Deep = s.injury.deep, Treated = s.injury.treated
+                };
             if (s.spouseId > 0) c.SpouseId = s.spouseId;
             if (s.motherId > 0) c.BirthMotherId = s.motherId;
             if (s.birthFatherId > 0) c.BirthFatherId = s.birthFatherId;
@@ -541,6 +582,50 @@ namespace Thatchwick.Core.Save
             if (Rgb.TryParseHex(s.trim, out c)) a.TrimColor = c;
             if (!string.IsNullOrEmpty(s.hat)) a.HatId = s.hat;
             if (Rgb.TryParseHex(s.hatColor, out c)) a.HatColor = c;
+            a.HeightPercent = 100;   // boy kaldırıldı (17.11.2026)
+
+            // Karakter yaratma 2.0 alanları; eski kayıtta yoktur.
+            if (Enum.IsDefined(typeof(BodyFrame), s.frame)) a.Frame = (BodyFrame)s.frame;
+            if (!string.IsNullOrEmpty(s.faceShape)) a.FaceShapeId = s.faceShape;
+            if (!string.IsNullOrEmpty(s.eyeShape)) a.EyeShapeId = s.eyeShape;
+            if (Rgb.TryParseHex(s.eyeRight, out c)) a.EyeColorRight = c;
+            if (!string.IsNullOrEmpty(s.brow)) a.BrowId = s.brow;
+            if (Rgb.TryParseHex(s.browColor, out c)) a.BrowColor = c;
+            a.BrowFollowsHair = s.browOwn == 0;
+            if (!string.IsNullOrEmpty(s.nose)) a.NoseId = s.nose;
+            if (!string.IsNullOrEmpty(s.mouth)) a.MouthId = s.mouth;
+            if (!string.IsNullOrEmpty(s.ears)) a.EarsId = s.ears;
+            if (!string.IsNullOrEmpty(s.bangs)) a.BangsId = s.bangs;
+            if (s.mustache != null || s.beard != null)
+            {
+                a.MustacheId = string.IsNullOrEmpty(s.mustache) ? Appearance.None : s.mustache;
+                a.BeardId = string.IsNullOrEmpty(s.beard) ? Appearance.None : s.beard;
+            }
+            if (!string.IsNullOrEmpty(s.pattern)) a.PatternId = s.pattern;
+            if (!string.IsNullOrEmpty(s.bottom)) a.BottomId = s.bottom;
+            if (!string.IsNullOrEmpty(s.shoes)) a.ShoesId = s.shoes;
+            if (!string.IsNullOrEmpty(s.outer)) a.OuterId = s.outer;
+            if (Rgb.TryParseHex(s.outerColor, out c)) a.OuterColor = c;
+            if (Enum.IsDefined(typeof(VoiceTimbre), s.voice)) a.Voice = (VoiceTimbre)s.voice;
+            a.VoicePitch = Math.Max(Appearance.MinPitch, Math.Min(Appearance.MaxPitch, s.voicePitch));
+            if (!string.IsNullOrEmpty(s.laugh)) a.LaughId = s.laugh;
+            if (s.marks != null)
+            {
+                // Yeni kayıt: işaretler dizisi doğrudan; eski tek yuvalı faceMark'ın yerine geçer.
+                a.Marks.Clear();
+                foreach (var m in s.marks)
+                {
+                    if (m == null || string.IsNullOrEmpty(m.id) || !Enum.IsDefined(typeof(MarkKind), m.kind)) continue;
+                    var mark = new Mark
+                    {
+                        Kind = (MarkKind)m.kind, Id = m.id, Zone = m.zone, Fade = Math.Max(0, Math.Min(2, m.fade)),
+                        Source = Enum.IsDefined(typeof(MarkSource), m.source) ? (MarkSource)m.source : MarkSource.Chosen,
+                        Day = m.day, Reason = m.reason, Hidden = m.hidden
+                    };
+                    if (Rgb.TryParseHex(m.color, out c)) mark.Color = c;
+                    a.Marks.Add(mark);
+                }
+            }
             return a;
         }
     }

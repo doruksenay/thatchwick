@@ -76,6 +76,9 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Karo işleri (çapala). Yoksa bu işler başlamaz.</summary>
         public ITileWork TileWork { get; set; }
 
+        /// <summary>Bir etkileşim başarıyla bitince (kaza sistemi, istatistik). Etkiler uygulandıktan sonra çağrılır.</summary>
+        public event Action<Character, InteractionDef> InteractionCompleted;
+
         /// <summary>Yürüme hızı çarpanı (ata binince ~2); yoksa 1.</summary>
         public Func<double> WalkSpeed { get; set; }
 
@@ -401,6 +404,7 @@ namespace Thatchwick.Core.Jobs
                 Finish();
                 // Etkiler en sonda: eşyayı kaldırabilir (kesilen ağaç) ve dünyayı değiştirir.
                 if (interaction.HasEffects) Effects?.Apply(_character, item, interaction);
+                InteractionCompleted?.Invoke(_character, interaction);
                 return used + remaining;
             }
 

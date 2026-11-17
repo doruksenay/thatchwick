@@ -38,6 +38,10 @@ namespace Thatchwick.Game
             public SpriteRenderer Renderer;
             public int Direction = IsoArt.DefaultDirection;
             public Sprite LastSprite;
+            // Kırlaşma, kırışıklık, sargı: günde bir hesaplanır (AgingLook).
+            public LookState Look;
+            public int LookDay = -1;
+            public string LookInjury;
         }
 
         private WorldState _world;
@@ -327,7 +331,7 @@ namespace Thatchwick.Game
             _life.Villagers.PlaceResolver = key => ResolvePlace(key);
             _life.Villagers.SuccessorArrived += (c, def) =>
             {
-                c.Appearance = _appearanceCatalog.Randomize(_rng, c.Sex);
+                GiveRandomLook(c);
                 CreateActorFor(c);
             };
 
@@ -353,11 +357,8 @@ namespace Thatchwick.Game
             }
 
             // Maud (NPC) rastgele görünümle hemen oluşur; oyuncunun karakteri yaratma ekranından gelir.
-            var maud = new Character(2, "Maud", new GridPos(28, 9), false)
-            {
-                Sex = Sex.Female,
-                Appearance = _appearanceCatalog.Randomize(_rng, Sex.Female)
-            };
+            var maud = new Character(2, "Maud", new GridPos(28, 9), false) { Sex = Sex.Female };
+            GiveRandomLook(maud);
             maud.SetAge(36);
             maud.LifespanDays = maud.AgeConfig.RollLifespan(_rng);
             maud.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));
@@ -371,7 +372,7 @@ namespace Thatchwick.Game
             SpawnNamedVillagers();
             _life.Weather.Seed = _rng.Next(1, int.MaxValue);
 
-            _creator = new CharacterCreator(_appearanceCatalog, seed: 5) { Content = _content };
+            _creator = new CharacterCreator(_appearanceCatalog, seed: 5) { Content = _content, DaysPerSeason = _clock.Config.DaysPerSeason };
             _input.enabled = false;
         }
 
@@ -622,7 +623,7 @@ namespace Thatchwick.Game
         {
             foreach (var c in _life.Villagers.SpawnMissing(key => ResolvePlace(key)))
             {
-                c.Appearance = _appearanceCatalog.Randomize(_rng, c.Sex);
+                GiveRandomLook(c);
                 c.LifespanDays = c.AgeConfig.RollLifespan(_rng) + LifeRules.LifespanBonus(_content, c.TraitIds);
                 CreateActorFor(c);
             }
@@ -944,9 +945,30 @@ namespace Thatchwick.Game
             _familyPanel.Toggle();
         }
 
+        // Köylü, talip ve NPC: rastgele görünüm ve ona uyan gizli genom (çocuklarına geçer).
+        private void GiveRandomLook(Character c)
+        {
+            c.Appearance = _appearanceCatalog.Randomize(_rng, c.Sex);
+            c.Genome = Genetics.FromAppearance(c.Appearance, _appearanceCatalog, _rng);
+        }
+
+        private LookState LookFor(Actor actor)
+        {
+            int day = (int)_clock.TotalDays;
+            string injury = actor.Character.Injury?.Zone;
+            if (actor.Look == null || actor.LookDay != day || actor.LookInjury != injury)
+            {
+                actor.Look = AgingLook.For(actor.Character, _appearanceCatalog);
+                actor.LookDay = day;
+                actor.LookInjury = injury;
+            }
+            return actor.Look;
+        }
+
         private void FinishCreation()
         {
-            var character = _creator.Draft.CreateCharacter(1, new GridPos(24, 10), true, _appearanceCatalog, _rng);
+            var draft = _creator.Draft;
+            var character = draft.CreateCharacter(1, new GridPos(24, 10), true, _appearanceCatalog, _rng);
             _creator.Release();
             _creator = null;
             if (character.TraitIds.Count == 0) character.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));
@@ -956,7 +978,8 @@ namespace Thatchwick.Game
             _player = CreateActorFor(character);
             _selected = _player;
             _dynasty.Found(character, _clock.TotalDays);
-            _dynasty.Name = $"{character.Name} hanedanı";
+            _dynasty.Name = draft.EffectiveDynastyName;
+            _life.Injuries.Setting = draft.Accidents;
             _input.enabled = true;
             ShowMessage($"{character.Name} köye geldi");
         }
@@ -1404,7 +1427,7 @@ namespace Thatchwick.Game
             actor.Renderer.enabled = _view.IsLevelVisible(fromLevel) || _view.IsLevelVisible(toLevel);
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
             var real = IsoArt.Character(actor.Character, actor.Direction);
-            var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance);
+            var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
             actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1, level);
@@ -1414,7 +1437,6 @@ namespace Thatchwick.Game
             else
             {
                 scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : 1f);
-                if (actor.Character.Stage != AgeStage.Baby && actor.Character.Stage != AgeStage.Child) scale *= actor.Character.Appearance.HeightPercent / 100f;
             }
             actor.View.localScale = new Vector3(scale, scale, 1f);
         }
@@ -1570,6 +1592,13 @@ namespace Thatchwick.Game
             GUI.enabled = _hasSave;
             if (GUILayout.Button("Yükle")) { LoadSave(); return; }
             GUI.enabled = true;
+            GUILayout.EndHorizontal();
+            // Kaza ayarı (karar 17.11.2026): yaratmada seçilir, burada değiştirilebilir. Eski kayıtta "Seyrek" sayılır.
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Kazalar", GUILayout.Width(60f));
+            int acc = _life.Injuries.Setting == AccidentSetting.NotSet ? 1 : (int)_life.Injuries.Setting - 1;
+            int newAcc = GUILayout.Toolbar(acc, new[] { "Kapalı", "Seyrek", "Normal" });
+            if (newAcc != acc || _life.Injuries.Setting == AccidentSetting.NotSet) _life.Injuries.Setting = (AccidentSetting)(newAcc + 1);
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Yeni oyun (yeni karakter yaratılınca eski kaydın üzerine yazılır)"))
             {

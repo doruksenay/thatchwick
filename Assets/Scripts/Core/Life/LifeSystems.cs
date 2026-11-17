@@ -49,6 +49,8 @@ namespace Thatchwick.Core.Life
         public ToolService Tools { get; }
         public ProjectService Projects { get; }
         public GoalService Goals { get; }
+        /// <summary>Kazalar ve kazanılmış izler (doküman 14, 3F).</summary>
+        public InjurySystem Injuries { get; }
         /// <summary>Evlilik ve kutlanan şenlik sayıları (hedef ölçütleri için).</summary>
         public int Marriages { get; private set; }
         public int FestivalsCelebrated { get; private set; }
@@ -94,6 +96,21 @@ namespace Thatchwick.Core.Life
             };
             Projects = new ProjectService(content, house, Village);
             Goals = new GoalService(content) { Metric = MetricValue };
+            // Doğum günü: mevsim ve gün (karakter panelinde gösterilir).
+            population.BabyBorn += (baby, mother, father) => { baby.BirthSeason = (int)Clock.Season; baby.BirthDayOfSeason = Clock.DayOfSeason; };
+            Injuries = new InjurySystem(population, seed != 0 ? Seeds.Derive(seed, 4) : 0)
+            {
+                MinDaysBetween = clock.Config.DaysPerSeason,
+                Today = () => Clock.TotalDays,
+                IsOutdoors = c => { var room = World.Map.Rooms.RoomAt(c.Position); return room == null || !room.IsIndoor; },
+                WeatherFactor = () =>
+                {
+                    var w = Weather.Today(Clock.TotalDays);
+                    return w == WeatherType.Storm ? 2.0 : w == WeatherType.Snow ? 1.5 : 1.0;
+                },
+                ToolSpeed = id => Tools.SpeedFor(id),
+                Notify = (text, id) => Say(text, NoticeLevel.Warning, id)
+            };
             Spoilage.Spoiled += (id, n) =>
             {
                 bool ice = content.Items.TryGet(id, out var d) && d.HasTag("ice");
@@ -331,7 +348,11 @@ namespace Thatchwick.Core.Life
             };
         }
 
-        public void Attach(JobRunner runner) { runner.SpeedProvider = WorkSpeedFor; }
+        public void Attach(JobRunner runner)
+        {
+            runner.SpeedProvider = WorkSpeedFor;
+            runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
+        }
         public void Attach(PlantSystem plants)
         {
             _plants = plants;
@@ -400,6 +421,7 @@ namespace Thatchwick.Core.Life
             if (report.Warnings.Count > 0)
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
             DailyHealing();
+            Injuries.DailyUpdate();
             NewDay?.Invoke(day);
         }
 
@@ -427,7 +449,9 @@ namespace Thatchwick.Core.Life
                 goalsDone = new List<string>(Goals.Done).ToArray(),
                 villagers = Villagers.Export().ToArray(),
                 marriages = Marriages,
-                festivalsCelebrated = FestivalsCelebrated
+                festivalsCelebrated = FestivalsCelebrated,
+                accidentSetting = (int)Injuries.Setting,
+                lastHouseholdAccidentDay = Injuries.LastHouseholdAccidentDay
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -451,6 +475,8 @@ namespace Thatchwick.Core.Life
             Goals.Restore(data.goalsDone);
             Villagers.Restore(data.villagers);
             Marriages = Math.Max(0, data.marriages);
+            if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;
+            Injuries.LastHouseholdAccidentDay = data.lastHouseholdAccidentDay;
             // Günlük işler (sulama sıfırlama, kuzgun, fırtına, toplama noktaları) kayıttaki gün için yapılmışsa yeniden yapılmaz.
             // Eski kayıtta alan yoktur (-1): eskisi gibi yüklemeden sonraki ilk turda bir kez çalışır.
             if (data.lastProcessedDay >= 0 && data.lastProcessedDay <= Clock.DayIndex)

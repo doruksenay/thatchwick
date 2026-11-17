@@ -159,6 +159,31 @@ namespace Thatchwick.Core.Save
         public string[] branches;
         public MoodletSave[] extraMoodlets;   // katalog dışı anlık moodlet'ler (şenlik, hediye, oda konforu ...)
         public int duty;                      // hane görevi (DutyKind; eski kayıtta 0 = yok)
+        // Karakter yaratma 2.0 (17.11.2026). Eksik alanlar eski kayıtta varsayılanla gelir.
+        public int birthSeason = -1;
+        public int birthDay = -1;
+        public string likedFood, likedColor, likedHobby, dislikedFood;
+        public bool freeMirror;
+        public InjurySave injury;
+        public double lastAccidentDay = -1;
+    }
+
+    [Serializable]
+    public sealed class InjurySave
+    {
+        public string kind, zone, pattern, reason;
+        public double startDay, healDay;
+        public bool deep, treated;
+    }
+
+    [Serializable]
+    public sealed class MarkSave
+    {
+        public int kind;
+        public string id, zone, color, reason;
+        public int fade, source;
+        public double day = -1;
+        public bool hidden;
     }
 
     [Serializable]
@@ -199,6 +224,17 @@ namespace Thatchwick.Core.Save
         public int build;
         public int heightPercent;
         public string skin, eye, hairStyle, hair, facialHairStyle, facialHair, faceMark, outfit, outfitColor, trim, hat, hatColor;
+        // Karakter yaratma 2.0 (17.11.2026). null alan = eski kayıt (yeni varsayılan ya da eski alandan çevrilir).
+        public int frame = -1;
+        public string faceShape, eyeShape, eyeRight, brow, browColor, nose, mouth, ears;
+        public int browOwn;                    // 0 = kaş saçı izler (eski kayıt dahil), 1 = ayrı renk
+        public string bangs, mustache, beard;  // null ise facialHairStyle'dan çevrilir
+        public string pattern, bottom, shoes, outer, outerColor;
+        public int voice = -1;
+        public int voicePitch;
+        public string laugh;
+        public MarkSave[] marks;               // null ise faceMark'tan çevrilir
+        public string[] genome;                // gizli kalıtım: "gen|A|B"
     }
 
     [Serializable]
