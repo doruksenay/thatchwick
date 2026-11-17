@@ -27,6 +27,8 @@ namespace Thatchwick.Core.Save
         public LifeSaveData life;
         public AnimalSave[] animals;     // v2
         public SoilSave[] soil;          // toprak verimi (eski kayıtta yok)
+        public GrassSave[] pasture;      // yenmiş otlak (eski kayıtta yok)
+        public bool animalsHeld;         // hayvan çanı: barınakta tutuluyorlar (eski kayıtta false = salınmış)
         /// <summary>Oyunun ana rastgelelik tohumu (eski kayıtta 0) ve yükleme sayacı (bkz. Core.Seeds).</summary>
         public int seed;
         public int rngEpoch;
@@ -43,6 +45,16 @@ namespace Thatchwick.Core.Save
         public double age, produce, hungryDays;
         public float friendship;
         public double petCooldown;       // sevme bekleme süresi (eski kayıtta 0)
+        public string saddle;            // takılı eyer (eski kayıtta yok)
+        public float comfort = -1f;      // barınak konforu (eski kayıtta -1 = varsayılan)
+    }
+
+    /// <summary>Yenmiş otlak karosu (dolu karolar kaydedilmez).</summary>
+    [Serializable]
+    public sealed class GrassSave
+    {
+        public int x, y;
+        public float grass;
     }
 
     [Serializable]
@@ -141,6 +153,7 @@ namespace Thatchwick.Core.Save
         public string[] traits;
         public string[] branches;
         public MoodletSave[] extraMoodlets;   // katalog dışı anlık moodlet'ler (şenlik, hediye, oda konforu ...)
+        public int duty;                      // hane görevi (DutyKind; eski kayıtta 0 = yok)
     }
 
     [Serializable]

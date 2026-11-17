@@ -156,6 +156,11 @@ namespace Thatchwick.Game
                         var c = sr.color;
                         sr.color = new Color(c.r * 0.7f + 0.25f, c.g * 0.7f + 0.2f, c.b * 0.7f + 0.05f, 1f); // depo: sarımsı
                     }
+                    else if (Map.GetZone(p) == ZoneType.Pasture)
+                    {
+                        var c = sr.color;
+                        sr.color = new Color(c.r * 0.8f + 0.02f, c.g * 0.8f + 0.16f, c.b * 0.8f, 1f);     // otlak: koyu yeşil
+                    }
                     if (ShowPlot && !Map.IsOwned(p))
                     {
                         var c = sr.color;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Thatchwick.Core.Work;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Family;
 using Thatchwick.Core.Jobs;
@@ -24,6 +25,9 @@ namespace Thatchwick.Game
         private string _status = "";
 
         public bool Active { get; private set; }
+
+        /// <summary>Görev planlayıcısı (bekleyen iş sayısı için); null ise sayı gösterilmez.</summary>
+        public DutyPlanner Duties { get; set; }
 
         public FamilyPanel(Population population, FamilyService family, Dynasty dynasty,
             Func<Character> selected, Action<Character> select, Func<Character, JobRunner> runnerOf)
@@ -92,6 +96,27 @@ namespace Thatchwick.Game
             GUILayout.Label($"{c.Name}{head} ({state}{spouse})");
             if (CanTakeCommands(c) && c != actor && GUILayout.Button("Seç", GUILayout.Width(40f))) { _select(c); _status = $"{c.Name} seçildi."; }
             GUILayout.EndHorizontal();
+
+            // Görev (otomasyonun işçi tarafı): ihtiyaçları iyiyken gündüz kendiliğinden tarlaya ya da hayvanlara bakar.
+            if (!c.IsVillager && DutyPlanner.CanTakeDuty(c))
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(12f);
+                GUILayout.Label("Görev:", GUILayout.Width(44f));
+                foreach (var d in new[] { DutyKind.None, DutyKind.Farm, DutyKind.Animals })
+                {
+                    string label = DutyPlanner.DutyName(d);
+                    if (d != DutyKind.None && Duties != null) label += $" ({Duties.Pending(d)})";
+                    GUI.enabled = c.Duty != d;
+                    if (GUILayout.Button(label, GUILayout.Width(d == DutyKind.None ? 70f : 84f)))
+                    {
+                        c.Duty = d;
+                        _status = d == DutyKind.None ? $"{c.Name} görevden alındı." : $"{c.Name}: {DutyPlanner.DutyName(d)} görevi (gündüz, ihtiyaçları iyiyken).";
+                    }
+                    GUI.enabled = true;
+                }
+                GUILayout.EndHorizontal();
+            }
 
             if (actor == null || c == actor || c.IsDead) return;
             GUILayout.BeginHorizontal();

@@ -63,6 +63,9 @@ namespace Thatchwick.Core.World
         /// <summary>Yer eşyasının (def) verilen konum ve dönüşle konup konamayacağı. ignoreItemId: taşınan eşyanın kendisi.</summary>
         /// <param name="restoring">Kayıttan yükleme: yalnızca yapısal denetimler (sınır, karo, çakışma). Oyun sırasında geçerli
         /// oluşmuş durumlar (merdivenin önüne sonradan gelen eşya gibi) yüklemede eşyayı düşürmesin.</param>
+        /// <summary>Kapalı oda isteyen eşyanın (folluk, ahır bölmesi) açıkta konamama nedeni.</summary>
+        public const string IndoorOnly = "Bu eşya kapalı bir odaya konur (kümes, ahır, at ahırı).";
+
         public PlacementCheck CanPlaceFloor(ItemDef def, GridPos position, int rotation, int? ignoreItemId = null, bool landingMayBeCreated = false, bool restoring = false)
         {
             if (def == null) throw new ArgumentNullException(nameof(def));
@@ -91,6 +94,12 @@ namespace Thatchwick.Core.World
                     if (Map.HasLinkAt(tile) && !(ignored != null && ignored.Def.IsStairs))
                         return PlacementCheck.Fail("Merdivenin ucu kapanmasın.");
                 }
+            }
+
+            if (def.RequiresIndoor && !restoring)
+            {
+                var room = Map.Rooms.RoomAt(position);
+                if (room == null || !room.IsIndoor) return PlacementCheck.Fail(IndoorOnly);
             }
 
             if (def.IsStairs)

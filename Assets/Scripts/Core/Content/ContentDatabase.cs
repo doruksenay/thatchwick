@@ -109,7 +109,7 @@ namespace Thatchwick.Core.Content
                     if (it.Moodlet != null && (Moods == null || !Moods.Contains(it.Moodlet))) errors.Add($"{where}: moodlet '{it.Moodlet}' bulunamadı.");
                     if (it.MinSkillLevel < 0 || it.MinSkillLevel > Characters.SkillRules.MaxLevel) errors.Add($"{where}: minLevel 0-{Characters.SkillRules.MaxLevel} arasında olmalı.");
                     if (it.MinSkillLevel > 0 && !it.Skill.HasValue) errors.Add($"{where}: minLevel için beceri gerekli.");
-                    if ((it.AddFeed > 0 || it.Collect || it.RequiresAnimal) && !item.IsHousing) errors.Add($"{where}: yem/toplama/hayvan yalnızca barınakta kullanılır.");
+                    if ((it.AddFeed > 0 && !item.IsTrough || it.Collect || it.RequiresAnimal) && !item.IsHousing) errors.Add($"{where}: yem/toplama/hayvan yalnızca barınakta kullanılır.");
                     if (it.AddFeed > 0 && it.AllConsumed().Count == 0) errors.Add($"{where}: yem koymak için malzeme (consume) gerekli.");
                     if (it.AddFeed < 0) errors.Add($"{where}: addFeed negatif olamaz.");
                     foreach (var er in it.ExtraRestore)
@@ -145,8 +145,33 @@ namespace Thatchwick.Core.Content
             }
 
             ValidateParts(errors);
+            ValidateFarm(errors);
             ValidateLife(errors);
             return errors;
+        }
+
+        private void ValidateFarm(List<string> errors)
+        {
+            var roles = new HashSet<string> { AnimalRoles.Water, AnimalRoles.Bedding, AnimalRoles.Collector, AnimalRoles.Feeder, AnimalRoles.Bell };
+            foreach (var item in Items.All)
+            {
+                if (item.AnimalRole != null && !roles.Contains(item.AnimalRole)) errors.Add($"{item.Id}: bilinmeyen hayvan rolü '{item.AnimalRole}'.");
+                if (item.AnimalComfort < 0 || item.AnimalComfort > 10) errors.Add($"{item.Id}: hayvan konforu 0-10 arasında olmalı.");
+                if (item.RequiresIndoor && item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: requiresIndoor yalnızca yere konan eşyada.");
+                if (item.IsTrough && item.IsHousing) errors.Add($"{item.Id}: yemlik aynı zamanda barınak olamaz.");
+                if (item.NeedsWaterSource && item.WaterRadius <= 0) errors.Add($"{item.Id}: needsSource yalnızca sulayan eşyada.");
+                if (item.AutoProcess != null)
+                {
+                    if (!Items.Contains(item.AutoProcess.Item)) errors.Add($"{item.Id}: otomatik işin girdisi '{item.AutoProcess.Item}' yok.");
+                    if (!Items.Contains(item.AutoProcess.Produces)) errors.Add($"{item.Id}: otomatik işin ürünü '{item.AutoProcess.Produces}' yok.");
+                }
+            }
+            foreach (var a in Animals.All)
+            {
+                if (a.Hide != null && !Items.Contains(a.Hide)) errors.Add($"{a.Id}: deri '{a.Hide}' bulunamadı.");
+                if (a.Rideable && (a.RideSpeed < 1f || a.RideSpeed > 4f)) errors.Add($"{a.Id}: binek hızı 1-4 arasında olmalı.");
+                if (a.Space <= 0f) errors.Add($"{a.Id}: hayvan başına alan pozitif olmalı.");
+            }
         }
 
         private void ValidateParts(List<string> errors)

@@ -29,7 +29,7 @@ namespace Thatchwick.Game
             Items, Room, Wall, HalfWall, Door, Window, EraseEdge, Fence, Gate, Railing,
             Finish, FinishRoom, Floor, FloorRoom, FloorErase, Roof,
             PushWall, MoveRoom, CopyRoom, Eyedropper, Demolish,
-            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove
+            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture
         }
         private Tool _tool = Tool.Items;
         private GridPos? _roomCorner;
@@ -322,6 +322,7 @@ namespace Thatchwick.Game
                 case Tool.LevelRemove: r = _svc.RemoveLevelTile(tile); break;
                 case Tool.ZoneStorage: r = _svc.SetZone(tile, ZoneType.Storage); break;
                 case Tool.ZoneErase: r = _svc.SetZone(tile, ZoneType.None); break;
+                case Tool.ZonePasture: r = _svc.SetZone(tile, ZoneType.Pasture); break;
                 case Tool.Room: BuildRoomTap(tile); return;
                 default: return;
             }
@@ -743,7 +744,7 @@ namespace Thatchwick.Game
             ToolRow(("Damlalık", Tool.Eyedropper), ("Balyoz", Tool.Demolish), ("Çim", Tool.FloorErase));
             ToolRow((_view.ViewLevel < 0 ? "Kaz" : "Döşeme", Tool.LevelBuild), (_view.ViewLevel < 0 ? "Doldur" : "Döşeme sök", Tool.LevelRemove), ("Arsa", Tool.Plot));
             GUILayout.BeginHorizontal();
-            ToolButton("Depo", Tool.ZoneStorage); ToolButton("Depo sil", Tool.ZoneErase);
+            ToolButton("Depo", Tool.ZoneStorage); ToolButton("Otlak", Tool.ZonePasture); ToolButton("Bölge sil", Tool.ZoneErase);
             if (GUILayout.Toggle(_showRooms, "Odalar", GUI.skin.button) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
             // Düğme her karede çizilir (koşullu denetim IMGUI yerleşimini bozar); boş yığında pasif.
             GUI.enabled = _svc.CanUndo;
@@ -789,6 +790,7 @@ namespace Thatchwick.Game
                     : _view.ViewLevel < 0 ? $"Bodrum kazısı: karo başına {BuildService.DigPrice} akçe; mevcut bodrumun yanını kaz (ilk karo merdivenle açılır)."
                     : "Zemin kat zaten var; Kat: Üst kat ya da Bodrum seç.";
                 case Tool.LevelRemove: return "Döşemeyi sök / bodrum karosunu doldur: üstünde eşya, çevresinde duvar ya da merdiven olmamalı. Yarısı iade.";
+                case Tool.ZonePasture: return "Otlak: hayvanlar gündüz çimde otlar (yem yerine ot, kışın ot büyümez). Çitle çevir; barınağın kapısı otlağa açılsın. Çan ile içeri çağrılır.";
                 case Tool.ZoneStorage:
                 case Tool.ZoneErase: return $"Depo bölgesi: karo başına +{StorageService.UnitsPerZoneTile} kaynak kapasitesi (ücretsiz). Sandık +40.";
                 default: return "";

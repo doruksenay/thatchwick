@@ -114,7 +114,8 @@ namespace Thatchwick.Game
                 GUILayout.Label($"{g.DisplayName} ({_house.Count(g.Id)})", GUILayout.Width(120f));
                 if (GUILayout.Button($"Sat {_market.SellPrice(g.Id)}", GUILayout.Width(52f))) Report(_market.Sell(g.Id, 1), g);
                 if (GUILayout.Button("Sat 5", GUILayout.Width(44f))) Report(_market.Sell(g.Id, 5), g);
-                if (GUILayout.Button($"Al {_market.BuyPrice(g.Id)}", GUILayout.Width(48f)))
+                if (!_market.IsBuyable(g.Id)) GUILayout.Label("yalnızca yapılır", GUILayout.Width(90f));
+                else if (GUILayout.Button($"Al {_market.BuyPrice(g.Id)}", GUILayout.Width(48f)))
                 {
                     var r = _market.Buy(g.Id);
                     _status = r.Ok ? $"{g.DisplayName} alındı." : r.Reason;

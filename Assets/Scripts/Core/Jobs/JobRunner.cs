@@ -68,6 +68,25 @@ namespace Thatchwick.Core.Jobs
         /// </summary>
         public Func<Character, InteractionDef, double> SpeedProvider { get; set; }
 
+        /// <summary>Hayvan işleri (sev, tımar, eyer, bin). Yoksa bu işler başlamaz.</summary>
+        public IAnimalEffects Animals { get; set; }
+
+        /// <summary>Karo işleri (çapala). Yoksa bu işler başlamaz.</summary>
+        public ITileWork TileWork { get; set; }
+
+        /// <summary>Yürüme hızı çarpanı (ata binince ~2); yoksa 1.</summary>
+        public Func<double> WalkSpeed { get; set; }
+
+        /// <summary>
+        /// Görev işi: ihtiyaçlar iyiyken karakterin görevine (tarla, hayvanlar) göre yapılacak iş; yoksa null.
+        /// Yalnızca otonom karakterde, kuyruk boşken sorulur.
+        /// </summary>
+        public Func<Character, Job> DutyProvider { get; set; }
+
+        /// <summary>Görev işi bulunamayınca (ya da başarısız olunca) bu kadar oyun günü yeniden sorulmaz.</summary>
+        public const double DutyIdleDays = 0.03;
+        private double _dutyIdleUntil;
+
         /// <summary>Şu an yürütülen işin nedeni (otonom ihtiyaç); oyuncu komutunda ya da boştayken null.</summary>
         public NeedType? CurrentReason => Queue.Current?.Reason;
 
@@ -149,6 +168,8 @@ namespace Thatchwick.Core.Jobs
                 case JobKind.MoveTo: return AdvanceMove(job, budget);
                 case JobKind.UseItem: return AdvanceUse(job, budget);
                 case JobKind.Social: return AdvanceSocial(job, budget);
+                case JobKind.Animal: return AdvanceAnimal(job, budget);
+                case JobKind.Tile: return AdvanceTile(job, budget);
                 default:
                     Fail($"Bilinmeyen iş türü: {job.Kind}");
                     return 0;
@@ -216,6 +237,96 @@ namespace Thatchwick.Core.Jobs
             {
                 Finish();
                 Social.Apply(_character, target, job.Action);
+                return used + remaining;
+            }
+            _useProgress += available;
+            return used + available;
+        }
+
+        private double AdvanceAnimal(Job job, double budget)
+        {
+            if (Animals == null) { Fail("Bu iş şu an yapılamaz."); return 0; }
+            var pos = Animals.PositionOf(job.AnimalId);
+            if (pos == null) { Fail("Hayvan bulunamadı."); return 0; }
+            var target = pos.Value;
+
+            if (!_using)
+            {
+                string blocked = Animals.CanDo(_character, job.AnimalId, job.AnimalAction);
+                if (blocked != null) { Fail(blocked); return 0; }
+                // Hayvan dolaşır: hedef yer değiştirdiyse yol yenilenir (sohbetteki gibi).
+                if (_path != null && _path.Count > 0 && !IsNear(_path[_path.Count - 1], target)) _path = null;
+                if (_path == null)
+                {
+                    var goals = new HashSet<GridPos> { target };
+                    foreach (var o in AdjacentOffsets) goals.Add(target + o);
+                    _path = Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
+                    if (_path == null) { Fail("Hayvanın yanına gidilemiyor."); return 0; }
+                    _pathIndex = 1;
+                    _stepFraction = 0;
+                }
+            }
+
+            double used = 0;
+            if (!_using)
+            {
+                used = Walk(budget);
+                if (_path == null) return used;
+                if (_pathIndex < _path.Count) return used;
+                if (!IsNear(_character.Position, target)) { _path = null; return used; }
+                _using = true;
+            }
+
+            double remaining = Animals.Duration(job.AnimalAction) - _useProgress;
+            double available = budget - used;
+            if (available >= remaining)
+            {
+                string gone = Animals.CanDo(_character, job.AnimalId, job.AnimalAction);
+                if (gone != null) { Fail(gone); return used + remaining; }
+                Finish();
+                Animals.Apply(_character, job.AnimalId, job.AnimalAction);
+                return used + remaining;
+            }
+            _useProgress += available;
+            return used + available;
+        }
+
+        private double AdvanceTile(Job job, double budget)
+        {
+            if (TileWork == null) { Fail("Bu iş şu an yapılamaz."); return 0; }
+            if (!_using)
+            {
+                string blocked = TileWork.CanDo(_character, job.Target, job.TileAction);
+                if (blocked != null) { Fail(blocked); return 0; }
+                if (_path == null)
+                {
+                    var goals = new HashSet<GridPos>();
+                    if (_world.Map.IsWalkable(job.Target)) goals.Add(job.Target);
+                    foreach (var o in AdjacentOffsets) if (_world.Map.IsWalkable(job.Target + o)) goals.Add(job.Target + o);
+                    _path = goals.Count == 0 ? null : Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
+                    if (_path == null) { Fail("Oraya ulaşılamıyor."); return 0; }
+                    _pathIndex = 1;
+                    _stepFraction = 0;
+                }
+            }
+
+            double used = 0;
+            if (!_using)
+            {
+                used = Walk(budget);
+                if (_path == null) return used;
+                if (_pathIndex < _path.Count) return used;
+                _using = true;
+            }
+
+            double remaining = TileWork.Duration(_character, job.TileAction) - _useProgress;
+            double available = budget - used;
+            if (available >= remaining)
+            {
+                string gone = TileWork.CanDo(_character, job.Target, job.TileAction);
+                if (gone != null) { Fail(gone); return used + remaining; }
+                Finish();
+                TileWork.Apply(_character, job.Target, job.TileAction);
                 return used + remaining;
             }
             _useProgress += available;
@@ -291,6 +402,8 @@ namespace Thatchwick.Core.Jobs
         private double Walk(double budget)
         {
             double used = 0;
+            // Ata binen daha hızlı gider (merdivende de; basitlik için).
+            double tilesPerDay = TilesPerGameDay * Math.Max(0.1, WalkSpeed?.Invoke() ?? 1.0);
             while (_pathIndex < _path.Count && budget - used > 0)
             {
                 // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.
@@ -302,7 +415,7 @@ namespace Thatchwick.Core.Jobs
                 }
                 // Merdiven adımı daha uzundur (yatay mesafe + 1 karo).
                 int span = GridMap.StepSpan(_character.Position, _path[_pathIndex]);
-                double needed = (1.0 - _stepFraction) * span / TilesPerGameDay;
+                double needed = (1.0 - _stepFraction) * span / tilesPerDay;
                 double available = budget - used;
                 if (available >= needed)
                 {
@@ -313,7 +426,7 @@ namespace Thatchwick.Core.Jobs
                 }
                 else
                 {
-                    _stepFraction += available * TilesPerGameDay / span;
+                    _stepFraction += available * tilesPerDay / span;
                     used += available;
                 }
             }
@@ -431,7 +544,7 @@ namespace Thatchwick.Core.Jobs
             _needOrder.Clear();
             foreach (var need in AllNeeds)
                 if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
-            if (_needOrder.Count == 0) return false;
+            if (_needOrder.Count == 0) return TryStartDuty();
             _needOrder.Sort((a, b) =>
             {
                 int ka = NeedKinds.IsSurvival(a) ? 0 : 1, kb = NeedKinds.IsSurvival(b) ? 0 : 1;
@@ -445,6 +558,16 @@ namespace Thatchwick.Core.Jobs
                 if (TryStartNeedItem(need)) return true;
             }
             return false;
+        }
+
+        // Görev: ihtiyaçları eşiğin üstündeyken görevine göre (tarla, hayvanlar) bir iş alır. Bulamazsa bir süre sormaz.
+        private bool TryStartDuty()
+        {
+            if (DutyProvider == null || _character.Duty == DutyKind.None || _elapsedDays < _dutyIdleUntil) return false;
+            var job = DutyProvider(_character);
+            if (job == null) { _dutyIdleUntil = _elapsedDays + DutyIdleDays; return false; }
+            ResetJobState();
+            return Queue.TryEnqueue(job.AsDuty());
         }
 
         private bool TryStartChat()
@@ -523,6 +646,8 @@ namespace Thatchwick.Core.Jobs
 
         private void Fail(string reason)
         {
+            // Başarısız görev işi hemen yeniden seçilip döngüye girmesin.
+            if (Queue.Current != null && Queue.Current.IsDuty) _dutyIdleUntil = _elapsedDays + DutyIdleDays;
             LastFailure = reason;
             Queue.RemoveCurrent();
             ResetJobState();

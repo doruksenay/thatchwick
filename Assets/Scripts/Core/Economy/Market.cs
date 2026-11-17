@@ -154,6 +154,7 @@ namespace Thatchwick.Core.Economy
         public PlacementCheck Buy(string itemId, int count = 1)
         {
             if (!IsGood(itemId)) return PlacementCheck.Fail("Pazarda bu yok.");
+            if (!IsBuyable(itemId)) return PlacementCheck.Fail("Bu pazarda satılmaz, yalnızca yapılır (sat ama alınmaz).");
             if (count <= 0) return PlacementCheck.Fail("Adet geçersiz.");
             if (_storage != null && !_storage.HasRoomFor(itemId, count)) return PlacementCheck.Fail("Depo dolu.");
             if (!_house.TrySpend(BuyPrice(itemId) * count)) return PlacementCheck.Fail("Akçe yetmiyor.");
@@ -197,6 +198,9 @@ namespace Thatchwick.Core.Economy
         public string Describe(TradeOffer o) => o.IsContract
             ? $"Köy işi: {o.GiveCount} {Name(o.GiveItem)} teslim et → {o.RewardAkce} akçe"
             : $"Tüccar: {o.GiveCount} {Name(o.GiveItem)} ver → {o.GetCount} {Name(o.GetItem)} al";
+
+        /// <summary>Pazardan alınabilir mi? "craftonly" etiketli mal (işlenmiş eyer) yalnızca yapılır, satılabilir ama alınmaz.</summary>
+        public bool IsBuyable(string id) => IsGood(id) && _content.Items.TryGet(id, out var d) && !d.HasTag("craftonly");
 
         private bool IsGood(string id) => _content.Items.TryGet(id, out var d) && d.Placement == ItemPlacement.Resource && d.Price > 0;
         private string Name(string id) => _content.Items.TryGet(id, out var d) ? d.DisplayName : id;

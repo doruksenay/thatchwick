@@ -38,8 +38,8 @@ namespace Thatchwick.Core.World
     /// <summary>Zemin kaplaması (iç mekan göstergesi: Grass dışındakiler).</summary>
     public enum FloorType { Grass = 0, Dirt = 1, Wood = 2, Stone = 3 }
 
-    /// <summary>Karo bölgesi (oyuncunun çizdiği alan). Şimdilik yalnızca depo.</summary>
-    public enum ZoneType { None = 0, Storage = 1 }
+    /// <summary>Karo bölgesi (oyuncunun çizdiği alan): depo, otlak (hayvanlar gündüz otlar).</summary>
+    public enum ZoneType { None = 0, Storage = 1, Pasture = 2 }
 
     public enum EdgeAxis
     {

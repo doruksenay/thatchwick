@@ -6,6 +6,16 @@ using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Characters
 {
+    /// <summary>Aile üyesine verilen kalıcı görev (otomasyonun işçi tarafı).</summary>
+    public enum DutyKind
+    {
+        None = 0,
+        /// <summary>Tarla: susuz ekini sula, olgun ekini ve meyveyi topla.</summary>
+        Farm = 1,
+        /// <summary>Hayvanlar: yemliği doldur, ürünü topla, sev.</summary>
+        Animals = 2
+    }
+
     /// <summary>
     /// Oyuncu karakteri ve NPC aynı varlık tipidir; fark yalnızca
     /// "oyuncu kontrolünde" bayrağıdır.
@@ -15,6 +25,8 @@ namespace Thatchwick.Core.Characters
         public int Id { get; }
         public string Name { get; set; }
         public bool IsPlayerControlled { get; set; }
+        /// <summary>Hanede verilen görev: ihtiyaçları iyiyken iş saatinde kendiliğinden yapar (tarla, hayvanlar).</summary>
+        public DutyKind Duty { get; set; }
         public GridPos Position { get; set; }
         public NeedSet Needs { get; } = new NeedSet();
         public SkillSet Skills { get; } = new SkillSet();

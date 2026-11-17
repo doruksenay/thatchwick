@@ -100,10 +100,25 @@ namespace Thatchwick.Core.Life
                         default: info.Icon = "love"; info.Text = "Çocuk istiyor"; break;
                     }
                     break;
+                case JobKind.Animal:
+                    info.Icon = "work";
+                    switch (job.AnimalAction)
+                    {
+                        case AnimalAction.Brush: info.Text = "Atı tımar ediyor"; break;
+                        case AnimalAction.Saddle: info.Text = "Eyerliyor"; break;
+                        case AnimalAction.Unsaddle: info.Text = "Eyeri çıkarıyor"; break;
+                        case AnimalAction.Mount: info.Icon = "walk"; info.Text = "Ata biniyor"; break;
+                        default: info.Icon = "love"; info.Text = "Hayvanı seviyor"; break;
+                    }
+                    break;
+                case JobKind.Tile:
+                    info.Icon = "work"; info.Text = "Çapalıyor";
+                    break;
                 default:
                     info.Icon = "idle"; info.Text = "?";
                     break;
             }
+            if (job.IsDuty) info.Reason = "görevi olduğu için";
             return info;
         }
 

@@ -83,6 +83,20 @@ namespace Thatchwick.Core.Content
         public int level;
         public string meat;       // kesilince verdiği et
         public int meatCount;     // 0 = 1
+        public string hide;       // kesilince verdiği ham deri
+        public int hideCount;     // 0 = 1
+        public bool rideable;     // erişkin ve eyerliyken binilir (at)
+        public float rideSpeed;   // binince yürüme hızı çarpanı (0 = 2)
+        public float space;       // barınak odasında hayvan başına istenen karo (0 = türe göre)
+    }
+
+    [Serializable]
+    public sealed class AutoProcessDto
+    {
+        public string item;          // her gün envanterden alınan girdi
+        public int count;
+        public string produces;      // envantere eklenen ürün
+        public int producesCount;
     }
 
     [Serializable]
@@ -132,6 +146,15 @@ namespace Thatchwick.Core.Content
         public int protectRadius;    // korkuluk: kuzgunlardan korur
         public int pollinate;        // arı kovanı: tozlaştırma yarıçapı
         public string finishGroup;   // mobilya kaplama grubu (wood, cloth, metal, clay): renk/malzeme örnekleri
+        // Hayvancılık ve otomasyon (17.11.2026)
+        public bool requiresIndoor;  // yalnızca kapalı bir odaya konur (folluk, ahır bölmesi)
+        public bool trough;          // yemlik: odadaki bütün hayvanlar buradan yer
+        public int animalComfort;    // hayvan konforuna katkı (süs: saman balyası, tuz yalağı)
+        public string animalRole;    // water (su yalağı), bedding (altlık), collector (toplama sandığı), feeder (yem oluğu), bell (çan)
+        public bool waterSource;     // sulama ağının kaynağı (kuyu, kova-makara)
+        public bool needsSource;     // yalnızca kaynağa bağlı ağdayken sular (kanal)
+        public bool powerSource;     // su çarkı: kaynağa bağlı kanala değerse yanındaki makineleri çalıştırır
+        public AutoProcessDto autoProcess;   // güç alan makine: her gün kendiliğinden işler (değirmen taşı)
     }
 
     [Serializable]

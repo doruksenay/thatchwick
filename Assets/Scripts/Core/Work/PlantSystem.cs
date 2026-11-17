@@ -220,10 +220,17 @@ namespace Thatchwick.Core.Work
                 if (rained && !indoor) crop.Watered = true;
             }
 
+            // Kanal yalnızca kaynağa (kuyu, kova-makara) bağlı bir zincirdeyse sular.
+            HashSet<int> network = null;
             foreach (var source in _world.Items)
             {
                 int r = source.Def.WaterRadius;
                 if (r <= 0) continue;
+                if (source.Def.NeedsWaterSource)
+                {
+                    network = network ?? WaterNetwork.Connected(_world);
+                    if (!network.Contains(source.Id)) continue;
+                }
                 foreach (var crop in crops)
                     if (Near(source.Position, crop.Position, r)) crop.Watered = true;
             }

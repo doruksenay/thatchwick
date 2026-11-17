@@ -100,8 +100,13 @@ namespace Thatchwick.Core.Work
                 if (petted > 0) farmNotes.Add($"{petted} hayvan sevildi");
             }
             string slaughterId = null; int slaughterCount = 0;
+            string hideId = null; int hideCount = 0;
             if (interaction.Slaughter && Animals != null && Animals.Slaughter(item.Id, out var killed, out slaughterId, out slaughterCount))
+            {
                 farmNotes.Add($"{killed.Species.DisplayName} kesildi");
+                hideId = killed.Species.Hide;            // büyükbaş ve küçükbaş deri de verir (tabakhane → saraç)
+                hideCount = hideId != null ? Math.Max(1, killed.Species.HideCount) : 0;
+            }
             if (interaction.Water) { PlantSystem.Water(item); farmNotes.Add("sulandı"); }
             if (interaction.Fertilize > 0f && Plants != null)
             {
@@ -144,14 +149,15 @@ namespace Thatchwick.Core.Work
                 if (!totals.ContainsKey(p.ItemId)) { totals[p.ItemId] = 0; order.Add(p.ItemId); }
                 totals[p.ItemId] += added;
             }
-            if (slaughterId != null)
+            foreach (var (gotId, gotCount) in new[] { (slaughterId, slaughterCount), (hideId, hideCount) })
             {
-                int added = Storage != null ? Storage.AddUpTo(slaughterId, slaughterCount) : AddAll(slaughterId, slaughterCount);
-                lost += slaughterCount - added;
+                if (gotId == null || gotCount <= 0) continue;
+                int added = Storage != null ? Storage.AddUpTo(gotId, gotCount) : AddAll(gotId, gotCount);
+                lost += gotCount - added;
                 if (added > 0)
                 {
-                    if (!totals.ContainsKey(slaughterId)) { totals[slaughterId] = 0; order.Add(slaughterId); }
-                    totals[slaughterId] += added;
+                    if (!totals.ContainsKey(gotId)) { totals[gotId] = 0; order.Add(gotId); }
+                    totals[gotId] += added;
                 }
             }
             if (interaction.Collect)

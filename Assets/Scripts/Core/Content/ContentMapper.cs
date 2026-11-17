@@ -57,6 +57,18 @@ namespace Thatchwick.Core.Content
                     HousingCapacity = dto.capacity,
                     StairsDelta = dto.stairs,
                     FinishGroup = string.IsNullOrWhiteSpace(dto.finishGroup) ? null : dto.finishGroup,
+                    RequiresIndoor = dto.requiresIndoor,
+                    IsTrough = dto.trough,
+                    AnimalComfort = dto.animalComfort,
+                    AnimalRole = string.IsNullOrWhiteSpace(dto.animalRole) ? null : dto.animalRole,
+                    WaterSource = dto.waterSource,
+                    NeedsWaterSource = dto.needsSource,
+                    PowerSource = dto.powerSource,
+                    AutoProcess = dto.autoProcess == null || string.IsNullOrWhiteSpace(dto.autoProcess.item) ? null : new AutoProcessDef
+                    {
+                        Item = dto.autoProcess.item, Count = Math.Max(1, dto.autoProcess.count),
+                        Produces = dto.autoProcess.produces, ProducesCount = Math.Max(1, dto.autoProcess.producesCount)
+                    },
                     AllowedLevels = dto.levels != null ? new List<int>(dto.levels) : new List<int>()
                 };
                 if (dto.stairs != 0 && (dto.width * dto.height != 2 && (dto.width > 0 || dto.height > 0)))
@@ -313,6 +325,11 @@ namespace Thatchwick.Core.Content
                     IsPet = a.pet,
                     Meat = string.IsNullOrWhiteSpace(a.meat) ? null : a.meat,
                     MeatCount = a.meatCount <= 0 ? 1 : a.meatCount,
+                    Hide = string.IsNullOrWhiteSpace(a.hide) ? null : a.hide,
+                    HideCount = a.hideCount <= 0 ? 1 : a.hideCount,
+                    Rideable = a.rideable,
+                    RideSpeed = a.rideSpeed <= 0f ? 2f : a.rideSpeed,
+                    Space = a.space > 0f ? a.space : a.housing == "coop" ? 1.5f : a.housing == "stable" ? 6f : a.housing == "barn" ? 4f : 2f,
                     UnlockLevel = a.level <= 0 ? 1 : a.level
                 };
                 try { db.Animals.Register(def); }

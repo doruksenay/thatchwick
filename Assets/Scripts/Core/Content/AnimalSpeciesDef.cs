@@ -23,6 +23,14 @@ namespace Thatchwick.Core.Content
         /// <summary>Kesilince verdiği et (yoksa null: kesilmez) ve adedi.</summary>
         public string Meat { get; set; }
         public int MeatCount { get; set; } = 1;
+        /// <summary>Kesilince verdiği ham deri (yoksa null) ve adedi.</summary>
+        public string Hide { get; set; }
+        public int HideCount { get; set; } = 1;
+        /// <summary>Binek: erişkin ve eyerliyken binilir; binince yürüme hızı çarpanı.</summary>
+        public bool Rideable { get; set; }
+        public float RideSpeed { get; set; } = 2f;
+        /// <summary>Barınak odasında hayvan başına istenen karo (konfor: sıkışıklık).</summary>
+        public float Space { get; set; } = 2f;
         public int UnlockLevel { get; set; } = 1;
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.World;
 
@@ -51,6 +52,17 @@ namespace Thatchwick.Core.Animals
 
         internal GridPos Target;
         internal double WaitDays;
+        // Oda ve otlak içinde yürüyüş yolu (hedefe kadar karolar).
+        internal List<GridPos> Path;
+
+        /// <summary>Takılı eyer (eşya kimliği); yoksa null.</summary>
+        public string Saddle { get; internal set; }
+        /// <summary>Üstündeki binicinin karakter kimliği (0 = binilmiyor).</summary>
+        public int RiderId { get; internal set; }
+        /// <summary>Barınak konforu 0-100 (gün başında hesaplanır): ürün hızı ve dostluk artışını etkiler.</summary>
+        public float Comfort { get; internal set; } = 50f;
+        /// <summary>Binilebilir: binek türü, erişkin ve eyerli.</summary>
+        public bool CanBeRidden => Species.Rideable && IsMature && Saddle != null;
 
         public Animal(int id, AnimalSpeciesDef species, GridPos position, int homeItemId)
         {

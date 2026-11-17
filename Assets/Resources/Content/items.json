@@ -2404,7 +2404,8 @@
           "restore": 35,
           "durationDays": 0.06
         }
-      ]
+      ],
+      "waterSource": true
     },
     {
       "id": "item.scarecrow",
@@ -5077,7 +5078,7 @@
     {
       "id": "item.irrigation_ditch",
       "displayName": "Sulama hendeği",
-      "category": "garden",
+      "category": "farm",
       "price": 14,
       "level": 3,
       "styleSet": "Köylü",
@@ -5090,7 +5091,7 @@
     {
       "id": "item.bucket_pulley",
       "displayName": "Kova ve makara",
-      "category": "garden",
+      "category": "farm",
       "price": 48,
       "level": 6,
       "styleSet": "Zanaatkâr",
@@ -5098,12 +5099,13 @@
         "outdoor"
       ],
       "waterRadius": 2,
-      "interactions": []
+      "interactions": [],
+      "waterSource": true
     },
     {
       "id": "item.water_channel",
       "displayName": "Su oluğu",
-      "category": "garden",
+      "category": "farm",
       "price": 110,
       "width": 2,
       "level": 9,
@@ -5949,6 +5951,450 @@
           ]
         }
       ]
+    },
+    {
+      "id": "item.nest_box",
+      "displayName": "Folluk",
+      "category": "barn",
+      "price": 12,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "housing": "coop",
+      "capacity": 2,
+      "requiresIndoor": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (2)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 2
+            }
+          ],
+          "addFeed": 2
+        },
+        {
+          "id": "collect",
+          "displayName": "Yumurta topla",
+          "durationDays": 0.06,
+          "collect": true,
+          "skill": "Farming",
+          "skillXp": 3,
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Tavukları sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "Farming",
+          "skillXp": 3,
+          "moodlet": "pet_love"
+        },
+        {
+          "id": "slaughter",
+          "displayName": "Kümes hayvanı kes (dost olmayan yetişkin)",
+          "durationDays": 0.1,
+          "slaughter": true,
+          "requiresAnimal": true,
+          "skill": "Farming",
+          "skillXp": 6,
+          "moodlet": "slaughtered"
+        }
+      ]
+    },
+    {
+      "id": "item.stall",
+      "displayName": "Ahır bölmesi",
+      "category": "barn",
+      "price": 30,
+      "height": 2,
+      "level": 5,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "housing": "barn",
+      "capacity": 1,
+      "requiresIndoor": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (3)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 3
+            }
+          ],
+          "addFeed": 3
+        },
+        {
+          "id": "collect",
+          "displayName": "Sağ ve kırk",
+          "durationDays": 0.06,
+          "collect": true,
+          "skill": "Farming",
+          "skillXp": 6,
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Hayvanı sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "Farming",
+          "skillXp": 3,
+          "moodlet": "pet_love"
+        },
+        {
+          "id": "slaughter",
+          "displayName": "Hayvan kes (dost olmayan yetişkin)",
+          "durationDays": 0.1,
+          "slaughter": true,
+          "requiresAnimal": true,
+          "skill": "Farming",
+          "skillXp": 6,
+          "moodlet": "slaughtered"
+        }
+      ]
+    },
+    {
+      "id": "item.horse_stall",
+      "displayName": "At bölmesi",
+      "category": "barn",
+      "price": 45,
+      "height": 2,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "barn"
+      ],
+      "housing": "stable",
+      "capacity": 1,
+      "requiresIndoor": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (3)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 3
+            }
+          ],
+          "addFeed": 3
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Atı sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "Farming",
+          "skillXp": 3,
+          "moodlet": "pet_love"
+        }
+      ]
+    },
+    {
+      "id": "item.feed_trough",
+      "displayName": "Yemlik",
+      "category": "barn",
+      "price": 10,
+      "width": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "trough": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (6)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 6
+            }
+          ],
+          "addFeed": 6
+        }
+      ]
+    },
+    {
+      "id": "item.water_trough",
+      "displayName": "Su yalağı",
+      "category": "barn",
+      "price": 12,
+      "width": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "animalRole": "water",
+      "interactions": []
+    },
+    {
+      "id": "item.hay_bale",
+      "displayName": "Saman balyası",
+      "category": "barn",
+      "price": 4,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "animalRole": "bedding",
+      "animalComfort": 3,
+      "interactions": []
+    },
+    {
+      "id": "item.salt_lick",
+      "displayName": "Tuz yalağı",
+      "category": "barn",
+      "price": 8,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "animalComfort": 4,
+      "interactions": []
+    },
+    {
+      "id": "item.barn_lantern",
+      "displayName": "Ahır feneri",
+      "category": "barn",
+      "price": 9,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "tags": [
+        "light"
+      ],
+      "animalComfort": 2,
+      "interactions": []
+    },
+    {
+      "id": "item.saddle_rack",
+      "displayName": "Eyer sehpası",
+      "category": "barn",
+      "price": 18,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "barn"
+      ],
+      "animalComfort": 3,
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.animal_bell",
+      "displayName": "Hayvan çanı",
+      "category": "barn",
+      "price": 15,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "animalRole": "bell",
+      "interactions": []
+    },
+    {
+      "id": "item.collection_box",
+      "displayName": "Toplama sandığı",
+      "category": "barn",
+      "price": 60,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "barn"
+      ],
+      "animalRole": "collector",
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.feed_chute",
+      "displayName": "Yem oluğu",
+      "category": "barn",
+      "price": 70,
+      "width": 2,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "barn"
+      ],
+      "animalRole": "feeder",
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.canal",
+      "displayName": "Kanal",
+      "category": "farm",
+      "price": 6,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "waterRadius": 2,
+      "needsSource": true,
+      "interactions": []
+    },
+    {
+      "id": "item.water_wheel",
+      "displayName": "Su çarkı",
+      "category": "farm",
+      "price": 120,
+      "width": 2,
+      "height": 2,
+      "level": 7,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "powerSource": true,
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.millstone",
+      "displayName": "Değirmen taşı",
+      "category": "farm",
+      "price": 90,
+      "width": 2,
+      "height": 2,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "autoProcess": {
+        "item": "item.barley",
+        "count": 1,
+        "produces": "item.feed",
+        "producesCount": 3
+      },
+      "interactions": [
+        {
+          "id": "grind",
+          "displayName": "Arpa öğüt (yem)",
+          "durationDays": 0.04,
+          "materials": [
+            {
+              "item": "item.barley",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.feed",
+              "count": 3
+            }
+          ],
+          "skill": "Farming",
+          "skillXp": 2
+        }
+      ]
+    },
+    {
+      "id": "item.tanning_rack",
+      "displayName": "Tabak germesi",
+      "category": "work",
+      "price": 35,
+      "width": 2,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.saddler_bench",
+      "displayName": "Saraç tezgâhı",
+      "category": "work",
+      "price": 70,
+      "width": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor",
+        "living"
+      ],
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.hide",
+      "displayName": "Ham deri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "hide"
+      ]
+    },
+    {
+      "id": "item.leather",
+      "displayName": "Deri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "leather"
+      ]
+    },
+    {
+      "id": "item.saddle",
+      "displayName": "Eyer",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 60,
+      "tags": [
+        "saddle"
+      ]
+    },
+    {
+      "id": "item.saddle_fine",
+      "displayName": "İşlemeli eyer",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 160,
+      "tags": [
+        "saddle",
+        "fine",
+        "craftonly"
+      ]
     }
   ],
   "recipes": [
@@ -6409,6 +6855,76 @@
       "skill": "Farming",
       "skillXp": 4,
       "displayName": "Arpadan yem karıştır"
+    },
+    {
+      "id": "leather",
+      "station": "item.tanning_rack",
+      "produces": "item.leather",
+      "materials": [
+        {
+          "item": "item.hide",
+          "count": 1
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skillXp": 10,
+      "displayName": "Deri tabakla",
+      "skill": "Carpentry"
+    },
+    {
+      "id": "saddle_basic",
+      "station": "item.saddler_bench",
+      "produces": "item.saddle",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 2
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skillXp": 20,
+      "displayName": "Eyer dik",
+      "skill": "Carpentry"
+    },
+    {
+      "id": "saddle_fine",
+      "station": "item.saddler_bench",
+      "produces": "item.saddle_fine",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 4
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        },
+        {
+          "item": "item.wool",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skillXp": 40,
+      "displayName": "İşlemeli eyer dik",
+      "skill": "Carpentry",
+      "minLevel": 4
     }
   ],
   "animals": [
@@ -6452,7 +6968,9 @@
       "matureDays": 6,
       "level": 5,
       "meat": "item.meat",
-      "meatCount": 2
+      "meatCount": 2,
+      "hide": "item.hide",
+      "hideCount": 1
     },
     {
       "id": "animal.sheep",
@@ -6466,7 +6984,9 @@
       "matureDays": 6,
       "level": 5,
       "meat": "item.meat",
-      "meatCount": 2
+      "meatCount": 2,
+      "hide": "item.hide",
+      "hideCount": 1
     },
     {
       "id": "animal.cow",
@@ -6480,7 +7000,9 @@
       "matureDays": 8,
       "level": 6,
       "meat": "item.meat",
-      "meatCount": 4
+      "meatCount": 4,
+      "hide": "item.hide",
+      "hideCount": 2
     },
     {
       "id": "animal.dog",
@@ -6514,6 +7036,18 @@
       "lifespanDays": 200,
       "matureDays": 2,
       "level": 6
+    },
+    {
+      "id": "animal.horse",
+      "displayName": "At",
+      "price": 110,
+      "housing": "stable",
+      "feedPerDay": 1.5,
+      "lifespanDays": 180,
+      "matureDays": 12,
+      "level": 4,
+      "rideable": true,
+      "rideSpeed": 2.2
     }
   ],
   "buildParts": [

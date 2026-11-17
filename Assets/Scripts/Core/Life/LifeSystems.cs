@@ -345,7 +345,14 @@ namespace Thatchwick.Core.Life
             var report = Forecast.Report(Clock.TotalDays);
             if (report.Warnings.Count > 0)
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
+            NewDay?.Invoke(day);
         }
+
+        /// <summary>Yeni gün işlendikten sonra (ekin, hava, köy) tetiklenir: çiftlik otomasyonu, otlak, hayvan konforu buraya bağlanır.</summary>
+        public event Action<long> NewDay;
+
+        /// <summary>Bugün dışarısı hayvanlar için uygun mu (fırtına yok)?</summary>
+        public bool CalmToday => Weather.Today(Clock.TotalDays) != WeatherType.Storm;
 
         // ---- kayıt ----
 

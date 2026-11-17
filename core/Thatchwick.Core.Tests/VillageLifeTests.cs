@@ -561,7 +561,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(db.Projects.Count >= 5);
             Assert.True(db.Goals.Count >= 15);
             Assert.All(db.Goals.All, g => Assert.Contains(g.Metric, GoalDef.Metrics));
-            Assert.Equal(4, db.Templates.Count);
+            Assert.Equal(7, db.Templates.Count);
             Assert.Equal(24, db.Branches.Count);
         }
 

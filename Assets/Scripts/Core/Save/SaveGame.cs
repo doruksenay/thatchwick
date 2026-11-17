@@ -37,6 +37,9 @@ namespace Thatchwick.Core.Save
         public List<AnimalSave> Animals = new List<AnimalSave>();
         /// <summary>Toprak verimi; PlantSystem kurulunca SaveGame.RestoreSoil ile geri konur.</summary>
         public List<SoilSave> Soil = new List<SoilSave>();
+        /// <summary>Yenmiş otlak ve hayvan çanı; SaveGame.RestoreAnimals ile geri konur.</summary>
+        public List<GrassSave> Pasture = new List<GrassSave>();
+        public bool AnimalsHeld;
         /// <summary>Yüklenemeyen parçalar (ör. içerikten kaldırılmış eşya). Oyun yine açılır.</summary>
         public List<string> Warnings = new List<string>();
         /// <summary>Ana rastgelelik tohumu (eski kayıtta 0) ve kayıttaki yükleme sayacı.</summary>
@@ -201,10 +204,15 @@ namespace Thatchwick.Core.Save
                     {
                         id = a.Id, species = a.Species.Id, x = a.Position.X, y = a.Position.Y, home = a.HomeItemId,
                         fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays, friendship = a.Friendship,
-                        petCooldown = a.PetCooldownDays
+                        petCooldown = a.PetCooldownDays, saddle = a.Saddle, comfort = a.Comfort
                     });
                 }
                 data.animals = list.ToArray();
+                var grass = new List<GrassSave>();
+                foreach (var kv in animals.ExportGrass()) grass.Add(new GrassSave { x = kv.Key.X, y = kv.Key.Y, grass = kv.Value });
+                grass.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+                data.pasture = grass.ToArray();
+                data.animalsHeld = !animals.Released;
             }
             data.life = life?.Export();
             return data;
@@ -228,7 +236,7 @@ namespace Thatchwick.Core.Save
                 social = c.Needs.Get(NeedType.Social),
                 traits = new List<string>(c.TraitIds).ToArray(), branches = new List<string>(c.BranchIds).ToArray(),
                 extraMoodlets = moodlets.ToArray(),
-                id = c.Id, name = c.Name, isPlayer = c.IsPlayerControlled, sex = (int)c.Sex,
+                id = c.Id, name = c.Name, isPlayer = c.IsPlayerControlled, sex = (int)c.Sex, duty = (int)c.Duty,
                 x = c.Position.X, y = c.Position.Y, z = c.Position.Z,
                 ageDays = c.AgeDays, lifespanDays = c.LifespanDays,
                 dead = c.IsDead, deathCause = (int)c.CauseOfDeath,
@@ -279,8 +287,13 @@ namespace Thatchwick.Core.Save
                 if (!content.Animals.TryGet(s.species, out var species)) { loaded.Warnings.Add($"Hayvan türü yok, atlandı: {s.species}"); continue; }
                 var home = loaded.World.GetItem(s.home);
                 if (home == null || home.Def.HousingKind != species.Housing) { loaded.Warnings.Add($"Hayvanın barınağı yok, atlandı: {s.species}"); continue; }
-                system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship, s.petCooldown);
+                system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship, s.petCooldown,
+                    s.saddle, s.comfort >= 0f ? s.comfort : 50f);
             }
+            var grass = new List<KeyValuePair<GridPos, float>>();
+            foreach (var g in loaded.Pasture) if (g != null) grass.Add(new KeyValuePair<GridPos, float>(new GridPos(g.x, g.y), g.grass));
+            system.RestoreGrass(grass);
+            system.Released = !loaded.AnimalsHeld;
         }
 
         /// <summary>Kaydı geri kurar. Sürüm yeniyse ya da harita yoksa InvalidOperationException.</summary>
@@ -437,6 +450,8 @@ namespace Thatchwick.Core.Save
             }
             if (data.animals != null) result.Animals.AddRange(data.animals);
             if (data.soil != null) result.Soil.AddRange(data.soil);
+            if (data.pasture != null) result.Pasture.AddRange(data.pasture);
+            result.AnimalsHeld = data.animalsHeld;
             return result;
         }
 
@@ -459,7 +474,8 @@ namespace Thatchwick.Core.Save
         {
             var c = new Character(s.id, string.IsNullOrWhiteSpace(s.name) ? "İsimsiz" : s.name, new GridPos(s.x, s.y, s.z), s.isPlayer)
             {
-                Sex = Enum.IsDefined(typeof(Sex), s.sex) ? (Sex)s.sex : Sex.Female
+                Sex = Enum.IsDefined(typeof(Sex), s.sex) ? (Sex)s.sex : Sex.Female,
+                Duty = Enum.IsDefined(typeof(DutyKind), s.duty) ? (DutyKind)s.duty : DutyKind.None
             };
             c.RestoreBiology(Math.Max(0, s.ageDays), s.lifespanDays > 0 ? s.lifespanDays : c.LifespanDays, s.dead,
                 Enum.IsDefined(typeof(DeathCause), s.deathCause) ? (DeathCause)s.deathCause : DeathCause.None,

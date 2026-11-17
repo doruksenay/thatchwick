@@ -1294,6 +1294,157 @@
           "rotation": 0
         }
       ]
+    },
+    {
+      "id": "template.coop_room",
+      "displayName": "Kümes odası",
+      "width": 4,
+      "height": 3,
+      "doorSide": "South",
+      "doorOffset": 1,
+      "windows": [
+        2
+      ],
+      "floor": "Dirt",
+      "items": [
+        {
+          "item": "item.nest_box",
+          "x": 0,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.nest_box",
+          "x": 1,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.nest_box",
+          "x": 2,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.feed_trough",
+          "x": 0,
+          "y": 2,
+          "rotation": 0
+        },
+        {
+          "item": "item.water_trough",
+          "x": 2,
+          "y": 2,
+          "rotation": 0
+        },
+        {
+          "item": "item.hay_bale",
+          "x": 3,
+          "y": 0,
+          "rotation": 0
+        }
+      ]
+    },
+    {
+      "id": "template.barn_room",
+      "displayName": "Ahır odası",
+      "width": 6,
+      "height": 4,
+      "doorSide": "South",
+      "doorOffset": 1,
+      "windows": [
+        2,
+        4
+      ],
+      "floor": "Dirt",
+      "items": [
+        {
+          "item": "item.stall",
+          "x": 0,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.stall",
+          "x": 1,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.stall",
+          "x": 2,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.feed_trough",
+          "x": 3,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.water_trough",
+          "x": 3,
+          "y": 3,
+          "rotation": 0
+        },
+        {
+          "item": "item.hay_bale",
+          "x": 5,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.barn_lantern",
+          "x": 5,
+          "y": 3,
+          "rotation": 0
+        }
+      ]
+    },
+    {
+      "id": "template.stable_room",
+      "displayName": "At ahırı",
+      "width": 4,
+      "height": 4,
+      "doorSide": "South",
+      "doorOffset": 1,
+      "windows": [
+        2
+      ],
+      "floor": "Dirt",
+      "items": [
+        {
+          "item": "item.horse_stall",
+          "x": 0,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.feed_trough",
+          "x": 2,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.water_trough",
+          "x": 2,
+          "y": 3,
+          "rotation": 0
+        },
+        {
+          "item": "item.hay_bale",
+          "x": 0,
+          "y": 3,
+          "rotation": 0
+        },
+        {
+          "item": "item.saddle_rack",
+          "x": 3,
+          "y": 1,
+          "rotation": 0
+        }
+      ]
     }
   ]
 }

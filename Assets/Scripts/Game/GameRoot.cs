@@ -88,7 +88,14 @@ namespace Thatchwick.Game
         private readonly Dictionary<int, AnimalView> _animalViews = new Dictionary<int, AnimalView>();
 
         // Etkileşim menüsü (Sims'teki pasta menüsü gibi): eşyaya dokununca seçenekler listelenir.
-        private struct MenuOption { public ItemInstance Item; public InteractionDef Interaction; public string Blocked; }
+        // Eşya etkileşimi ya da özel seçenek (hayvan işi, çapalama, çan): Label/Run doluysa özel seçenektir.
+        private struct MenuOption { public ItemInstance Item; public InteractionDef Interaction; public string Blocked; public string Label; public System.Action Run; }
+        private AnimalCare _animalCare;
+        private FarmWork _farmWork;
+        private FarmAutomation _automation;
+        private DutyPlanner _duties;
+        private double HourOfDay => _clock.DayFraction * 24.0;
+        private bool _hoeMode;      // çapa kipi: boş çime dokununca çapalar
         private readonly List<MenuOption> _menuOptions = new List<MenuOption>();
         private bool _menuOpen;
         private Rect _menuRect;
@@ -300,6 +307,7 @@ namespace Thatchwick.Game
             _life.Attach(_heat);
             _life.Attach(_market);
             _life.Attach(_buildService);
+            SetupFarm();
             _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
             _life.Suitors.SpawnPosition = () => NearestWalkable(Places["square"], 8);
             _life.Suitors.Arrived += c => CreateActorFor(c);
@@ -307,7 +315,7 @@ namespace Thatchwick.Game
             _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
 
             _familyPanel = new FamilyPanel(_population, _family, _dynasty, () => Commander?.Character,
-                c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner);
+                c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner) { Duties = _duties };
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
@@ -733,7 +741,11 @@ namespace Thatchwick.Game
             var actor = new Actor
             {
                 Character = character,
-                Runner = new JobRunner(character, _world) { Effects = _effects, Social = _family },
+                Runner = new JobRunner(character, _world)
+                {
+                    Effects = _effects, Social = _family, Animals = _animalCare, TileWork = _farmWork,
+                    WalkSpeed = () => _animals.RideSpeed(character.Id), DutyProvider = _duties.Next
+                },
                 View = go.transform,
                 Renderer = sr
             };
@@ -957,6 +969,14 @@ namespace Thatchwick.Game
             if (_menuOpen) { _menuOpen = false; return; }   // menü dışına dokunmak menüyü kapatır
 
             CollectOptions(world);
+            // Çapa kipi: boş çime dokunmak orayı çapalar (sıraya eklenir: art arda dokunarak tarla açılır).
+            if (_hoeMode && _menuOptions.Count == 0)
+            {
+                string why = _farmWork.CanDo(Commander.Character, tile, TileAction.Till);
+                if (why != null) { ShowMessage(why); return; }
+                if (!Commander.Runner.Queue.TryEnqueue(Job.OnTile(tile, TileAction.Till))) ShowMessage("İş sırası dolu.");
+                return;
+            }
             if (_menuOptions.Count == 0) { Commander.Runner.Command(Job.MoveTo(tile)); return; }
             if (_menuOptions.Count == 1) { RunOption(_menuOptions[0]); return; }
 
@@ -985,17 +1005,31 @@ namespace Thatchwick.Game
                 items.AddRange(_world.GetDecorOn(root.Id));
             }
             var names = new List<string>();
+            var tile = _view.WorldToTile(world);
+            var animal = AnimalAt(tile);
+            if (animal != null)
+            {
+                names.Add($"{animal.Name} ({animal.Species.DisplayName}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")})");
+                AddAnimalOptions(animal);
+            }
             foreach (var item in items)
             {
-                if (item.Def.Interactions.Count > 0 && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
+                if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell) && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
                 foreach (var it in item.Def.Interactions)
                     _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
+                if (item.Def.AnimalRole == AnimalRoles.Bell)
+                    _menuOptions.Add(new MenuOption
+                    {
+                        Label = _animals.Released ? "Çanı çal: hayvanları içeri çağır" : "Çanı çal: hayvanları otlağa salıver",
+                        Run = () => { _animals.Released = !_animals.Released; ShowMessage(_animals.Released ? "Hayvanlar gündüz otlağa çıkar" : "Hayvanlar barınakta kalır"); }
+                    });
             }
             _menuTitle = string.Join(", ", names);
         }
 
         private void RunOption(MenuOption o)
         {
+            if (o.Run != null) { if (o.Blocked == null) o.Run(); else ShowMessage(o.Blocked); return; }
             Commander.Runner.Command(Job.UseItem(o.Item.Id, o.Interaction.Id));
             ShowMessage($"{Commander.Character.Name}: {o.Interaction.DisplayName} ({o.Item.Def.DisplayName})");
         }
@@ -1010,13 +1044,99 @@ namespace Thatchwick.Game
             foreach (var o in _menuOptions)
             {
                 GUI.enabled = o.Blocked == null;
-                string label = o.Blocked == null ? o.Interaction.DisplayName : $"{o.Interaction.DisplayName} ({o.Blocked})";
+                string name = o.Label ?? o.Interaction.DisplayName;
+                string label = o.Blocked == null ? name : $"{name} ({o.Blocked})";
                 if (GUILayout.Button(label)) { RunOption(o); _menuOpen = false; }
                 GUI.enabled = true;
             }
             if (GUILayout.Button("Buraya yürü")) { Commander.Runner.Command(Job.MoveTo(_menuTile)); _menuOpen = false; }
             GUILayout.EndScrollView();
             GUILayout.EndArea();
+        }
+
+        // Çiftlik ve hayvancılık: barınak odası konforu, otlak, binek, mekanizmalar, görevli aile üyeleri.
+        private void SetupFarm()
+        {
+            _animals.Temperature = p => _heat.TemperatureAt(p);
+            _animals.CanGoOut = () => HourOfDay >= 6.0 && HourOfDay < 20.0 && _life.CalmToday;   // gündüz ve fırtına yokken otlakta
+            _animals.RiderPosition = id =>
+            {
+                var c = _population.Find(id);
+                return c != null && !c.IsDead ? c.Position : (GridPos?)null;
+            };
+            _animals.Dismounted += (a, riderId) => ShowMessage($"{_population.Find(riderId)?.Name} attan indi ({a.Name} kapıda bekliyor)");
+            _animalCare = new AnimalCare(_animals, _household);
+            _animalCare.Done += (c, a, act) =>
+            {
+                switch (act)
+                {
+                    case AnimalAction.Mount: ShowMessage($"{c.Name} {a.Name} sırtında (hız x{_animals.RideSpeed(c.Id):0.#})"); _account.Record("ride", _clock.DayIndex); break;
+                    case AnimalAction.Saddle: ShowMessage($"{a.Name} eyerlendi"); break;
+                    case AnimalAction.Unsaddle: ShowMessage($"{a.Name}: eyer çıkarıldı"); break;
+                    case AnimalAction.Brush: ShowMessage($"{c.Name} {a.Name} tımar etti (dostluk {a.Friendship:0})"); _account.Record("brush", _clock.DayIndex); break;
+                    default: ShowMessage($"{c.Name} {a.Name} sevdi (dostluk {a.Friendship:0})"); _account.Record("pet_animal", _clock.DayIndex); break;
+                }
+                if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
+            };
+            _farmWork = new FarmWork(_world) { HoeSpeed = c => _life.Tools.SpeedFor("hoe") };
+            _farmWork.Tilled += (c, t) => _account.Count("act:till");
+            _automation = new FarmAutomation(_world, _household) { Storage = _storage };
+            _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
+            {
+                WorkHours = () => HourOfDay >= 7.0 && HourOfDay < 19.0,
+                Now = () => _clock.TotalDays
+            };
+            _life.NewDay += day =>
+            {
+                var r = _animals.OnNewDay(_clock.Season, _household, _storage);
+                if (r.Collected > 0) ShowMessage($"Toplama sandığı: +{r.Collected} ürün depoya alındı");
+                if (r.FeedAdded > 0) ShowMessage($"Yem oluğu yemliklere {r.FeedAdded} yem doldurdu");
+                var made = _automation.OnNewDay();
+                if (made.Count > 0)
+                {
+                    var parts = new List<string>();
+                    foreach (var kv in made) parts.Add($"+{kv.Value} {(_content.Items.TryGet(kv.Key, out var d) ? d.DisplayName : kv.Key)}");
+                    ShowMessage("Değirmen taşı: " + string.Join(", ", parts));
+                }
+            };
+        }
+
+        // Dokunulan karodaki hayvan (yakın olanı); yoksa null.
+        private Animal AnimalAt(GridPos tile)
+        {
+            Animal best = null;
+            foreach (var a in _animals.Animals)
+            {
+                if (a.IsDead || a.Position.Z != tile.Z) continue;
+                if (Mathf.Abs(a.Position.X - tile.X) + Mathf.Abs(a.Position.Y - tile.Y) > 1) continue;
+                if (best == null || a.Position == tile) best = a;
+            }
+            return best;
+        }
+
+        // Hayvan seçenekleri: sev / tımar, eyerle, eyeri çıkar, bin.
+        private void AddAnimalOptions(Animal a)
+        {
+            var c = Commander;
+            void Opt(AnimalAction act, string label)
+            {
+                string why = _animalCare.CanDo(c.Character, a.Id, act);
+                _menuOptions.Add(new MenuOption
+                {
+                    Label = $"{label} ({a.Name})", Blocked = why,
+                    Run = () => c.Runner.Command(Job.WithAnimal(a.Id, act))
+                });
+            }
+            Opt(a.Species.Rideable ? AnimalAction.Brush : AnimalAction.Pet, a.Species.Rideable ? "Tımar et" : "Sev");
+            if (a.Species.Rideable)
+            {
+                if (a.Saddle == null) Opt(AnimalAction.Saddle, "Eyerle");
+                else
+                {
+                    Opt(AnimalAction.Mount, "Bin");
+                    Opt(AnimalAction.Unsaddle, "Eyeri çıkar");
+                }
+            }
         }
 
         private void OnAnimalDied(Animal a)
@@ -1034,6 +1154,7 @@ namespace Thatchwick.Game
                 case "animal.goat": return new Color(0.75f, 0.68f, 0.55f);
                 case "animal.sheep": return new Color(0.92f, 0.9f, 0.86f);
                 case "animal.cow": return new Color(0.55f, 0.4f, 0.3f);
+                case "animal.horse": return new Color(0.45f, 0.3f, 0.2f);
                 case "animal.dog": return new Color(0.6f, 0.45f, 0.3f);
                 case "animal.cat": return new Color(0.85f, 0.55f, 0.25f);
                 default: return new Color(0.95f, 0.8f, 0.2f);
@@ -1048,6 +1169,7 @@ namespace Thatchwick.Game
                 case "animal.cat": return 0.26f;
                 case "animal.dog": return 0.3f;
                 case "animal.cow": return 0.5f;
+                case "animal.horse": return 0.55f;
                 default: return 0.4f;
             }
         }
@@ -1068,7 +1190,9 @@ namespace Thatchwick.Game
                     _animalViews[a.Id] = v;
                 }
                 Vector3 pos = _view.TileToWorld(a.Position);
-                if (a.NextTile.HasValue)
+                var rider = a.RiderId != 0 ? _actors.Find(x => x.Character.Id == a.RiderId) : null;
+                if (rider != null && rider.View != null) pos = rider.View.position - new Vector3(0f, 0.02f, 0f);   // binicinin altında, onunla birlikte
+                else if (a.NextTile.HasValue)
                 {
                     var to = _view.TileToWorld(a.NextTile.Value);
                     v.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
@@ -1114,6 +1238,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
+            if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
 
@@ -1203,6 +1328,7 @@ namespace Thatchwick.Game
                 actor.Direction = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
                 pos = Vector3.Lerp(pos, to, actor.Runner.StepProgress);
             }
+            if (_animals != null && _animals.MountOf(actor.Character.Id) != null) pos += new Vector3(0f, 0.35f, 0f);   // at sırtında
             actor.View.position = pos;
             // Merdivende yarıdan sonra hedef katın bandına geçer; iki kattan biri görünürse karakter görünür.
             int fromLevel = actor.Character.Position.Z;
@@ -1369,6 +1495,13 @@ namespace Thatchwick.Game
             if (GUILayout.Button(_villagePanel.Active ? "Köyü kapat (V)" : "Köy (V)")) ToggleVillage();
             if (GUILayout.Button(IsoArt.Enabled ? "Görsel: gerçek (G)" : "Görsel: yer tutucu (G)")) ToggleArt();
             GUILayout.EndHorizontal();
+            // Çiftlik: çapa kipi, binek, hayvan çanı.
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(_hoeMode ? "Çapa kipi: açık (H)" : "Çapa kipi (H)")) _hoeMode = !_hoeMode;
+            var mount = Commander != null ? _animals.MountOf(Commander.Character.Id) : null;
+            if (mount != null && GUILayout.Button($"{mount.Name} sırtından in")) { _animals.Dismount(Commander.Character.Id); ShowMessage($"{Commander.Character.Name} attan indi"); }
+            if (GUILayout.Button(_animals.Released ? "Hayvanlar: gündüz otlakta" : "Hayvanlar: barınakta")) _animals.Released = !_animals.Released;
+            GUILayout.EndHorizontal();
             GUILayout.Label($"{_dynasty.Name} · {_dynasty.CurrentGeneration}. nesil · Baş: {_player?.Character.Name} · Komut alan: {Commander?.Character.Name}");
             GUILayout.Label($"Akçe: {_household.Akce}");
             GUILayout.BeginHorizontal();
@@ -1445,6 +1578,10 @@ namespace Thatchwick.Game
                 };
             }
 
+            HashSet<int> net = null;     // sulama ağı bu karede bir kez hesaplanır
+            HashSet<int> Net() => net ?? (net = WaterNetwork.Connected(_world));
+            List<ItemInstance> wheels = null;
+            string Comfort(ItemInstance home) { var r = _animals.ComfortOf(home); return $"konfor {r.Total:0}: {r.Hint()}"; }
             foreach (var item in _world.Items)
             {
                 if (item.IsDecor || item.IsWallMounted || !_view.IsLevelVisible(item.Position.Z)) continue;
@@ -1454,7 +1591,11 @@ namespace Thatchwick.Game
                 float y = (Screen.height - sp.y) / guiScale;
                 string label = item.Def.HeatOutput > 0f ? $"{item.Def.DisplayName} ({(item.IsLit ? "yanıyor" : "sönük")})"
                     : item.IsPlant ? PlantLabel(item)
-                    : item.Def.IsHousing ? $"{item.Def.DisplayName} ({_animals.Residents(item.Id)}/{item.Def.HousingCapacity}, yem {item.FeedStock:0.#}{(item.StockTotal > 0 ? $", ürün {item.StockTotal}" : "")})"
+                    : item.Def.IsHousing ? $"{item.Def.DisplayName} ({_animals.Residents(item.Id)}/{item.Def.HousingCapacity}, yem {item.FeedStock:0.#}{(item.StockTotal > 0 ? $", ürün {item.StockTotal}" : "")}, {Comfort(item)})"
+                    : item.Def.IsTrough ? $"{item.Def.DisplayName} (yem {item.FeedStock:0.#}, günlük {_animals.DailyFeedNeed(item):0.#})"
+                    : item.Def.AutoProcess != null ? $"{item.Def.DisplayName} ({(_automation.IsPowered(item, wheels ?? (wheels = _automation.TurningWheels(Net()))) ? "dönüyor" : "güç yok: su çarkı gerekli")})"
+                    : item.Def.PowerSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "dönüyor" : "kuru: kaynağa bağlı kanala değmeli")})"
+                    : item.Def.NeedsWaterSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "su akıyor" : "kuru: kuyuya bağla")})"
                     : item.Def.DisplayName;
                 GUI.Label(new Rect(x - 70f, y - 10f, 140f, 20f), label, _labelStyle);
             }
