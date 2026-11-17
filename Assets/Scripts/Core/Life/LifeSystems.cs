@@ -88,7 +88,9 @@ namespace Thatchwick.Core.Life
             Tools = new ToolService(content, house)
             {
                 AccountLevel = () => AccountLevel != null ? AccountLevel() : int.MaxValue,
+                // Hanede 5. seviye demirci varsa köy demircisi gerekmez.
                 SmithAvailable = () => !HasVillagerRole(RoleSmithDefined) || Villagers.HasRole(VillagerService.RoleBlacksmith)
+                    || BestSkill(SkillType.Smithing) >= SmithSelfLevel
             };
             Projects = new ProjectService(content, house, Village);
             Goals = new GoalService(content) { Metric = MetricValue };
@@ -248,7 +250,56 @@ namespace Thatchwick.Core.Life
 
         public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction);
         public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell);
-        public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount));
+        // Ev düzenleme: hanenin en iyi süslemecisi seviye başına %2 indirim (10. seviyede %18) dallarla toplanır.
+        public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount) + 0.02f * Math.Max(0, BestSkill(SkillType.Decorating) - 1));
+
+        /// <summary>Alet yükseltmesini köy demircisi olmadan yapabilmek için hanedeki demircinin seviyesi.</summary>
+        public const int SmithSelfLevel = 5;
+
+        /// <summary>Hanenin (köylü olmayan, yaşayan) üyeleri arasında bir becerinin en yüksek seviyesi; kimse yoksa 1.</summary>
+        public int BestSkill(SkillType skill)
+        {
+            int best = 1;
+            foreach (var c in Population.Members)
+                if (!c.IsDead && !c.IsVillager) best = Math.Max(best, c.Skills.GetLevel(skill));
+            return best;
+        }
+
+        /// <summary>Bir beceride hanenin en iyisi (eşitse ilk); kimse yoksa null.</summary>
+        public Character BestAt(SkillType skill)
+        {
+            Character best = null;
+            foreach (var c in Population.Members)
+                if (!c.IsDead && !c.IsVillager && (best == null || c.Skills.GetXp(skill) > best.Skills.GetXp(skill))) best = c;
+            return best;
+        }
+
+        /// <summary>Hava bilgisi: kaç gün ilerisi görülür (1. seviye yarın, 4. seviye 2 gün, 7. seviye 3 gün, 10. seviye 4 gün).</summary>
+        public int ForecastDays => 1 + (BestSkill(SkillType.WeatherLore) - 1) / 3;
+
+        /// <summary>Önümüzdeki günlerin havası (hava bilgisi seviyesine göre).</summary>
+        public List<WeatherType> WeatherAhead(int days)
+        {
+            var list = new List<WeatherType>();
+            for (int d = 1; d <= days; d++) list.Add(Weather.Today(Clock.TotalDays + d));
+            return list;
+        }
+
+        /// <summary>
+        /// Hekimlik (gün başında): hanenin hekimi soğuk ve açlık yarası olan herkesi seviye başına 0,1 gün iyileştirir,
+        /// iyileştirdiği kişi başına XP alır. Kimse yaralı değilse bir şey olmaz.
+        /// </summary>
+        public int DailyHealing()
+        {
+            var healer = BestAt(SkillType.Medicine);
+            if (healer == null) return 0;
+            double days = 0.1 * healer.Skills.GetLevel(SkillType.Medicine);
+            int n = 0;
+            foreach (var c in Population.Members)
+                if (!c.IsDead && !c.IsVillager && c.Treat(days)) n++;
+            if (n > 0) healer.GainSkillXp(SkillType.Medicine, 6 * n);
+            return n;
+        }
 
         /// <summary>Ekin büyüme çarpanı: hava x (1 + köy) x en iyi yeşil parmak.</summary>
         public float GrowthMultiplier() =>
@@ -348,6 +399,7 @@ namespace Thatchwick.Core.Life
             var report = Forecast.Report(Clock.TotalDays);
             if (report.Warnings.Count > 0)
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
+            DailyHealing();
             NewDay?.Invoke(day);
         }
 

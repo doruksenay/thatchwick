@@ -145,12 +145,18 @@ namespace Thatchwick.Core.Family
                 case SocialAction.Feed:
                     var food = FirstFood();
                     _house.TryTakeItem(food);
-                    target.Needs.Restore(NeedType.Hunger, FeedRestore);
+                    // Ebeveynlik: seviye başına %5 daha doyurucu besleme.
+                    target.Needs.Restore(NeedType.Hunger, (float)(FeedRestore * SkillNames.Factor(actor.Skills.GetLevel(SkillType.Parenting), 0.05)));
+                    actor.GainSkillXp(SkillType.Parenting, 5);
                     msg = $"{actor.Name}, {target.Name} bebeği besledi";
                     break;
                 case SocialAction.Chat:
                     // Kirli (hijyeni düşük) biriyle sohbet yakınlığı yarı artırır.
                     int gain = actor.Mood.Has(MoodCatalog.Dirty) || target.Mood.Has(MoodCatalog.Dirty) ? ChatAffection / 2 : ChatAffection;
+                    // Gönül kazanma: seviye başına %5 daha çok yakınlık.
+                    gain = (int)Math.Round(gain * SkillNames.Factor(actor.Skills.GetLevel(SkillType.Charm), 0.05));
+                    actor.GainSkillXp(SkillType.Charm, 4);
+                    target.GainSkillXp(SkillType.Charm, 2);
                     int now = Math.Min(100, Affection(actor.Id, target.Id) + gain);
                     actor.Needs.Restore(NeedType.Fun, ChatFun);
                     target.Needs.Restore(NeedType.Fun, ChatFun);

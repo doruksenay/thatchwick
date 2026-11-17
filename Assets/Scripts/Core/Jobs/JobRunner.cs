@@ -85,6 +85,9 @@ namespace Thatchwick.Core.Jobs
         /// </summary>
         public Func<Character, Job> DutyProvider { get; set; }
 
+        /// <summary>Görev işlerinin hız çarpanı (kâhyalık); null ise 1.</summary>
+        public Func<double> DutySpeed { get; set; }
+
         /// <summary>Görev işi bulunamayınca (ya da başarısız olunca) bu kadar oyun günü yeniden sorulmaz.</summary>
         public const double DutyIdleDays = 0.03;
         private double _dutyIdleUntil;
@@ -383,7 +386,10 @@ namespace Thatchwick.Core.Jobs
                     string gone = Effects == null ? "Bu iş şu an yapılamaz." : Effects.CanStart(_character, item, interaction);
                     if (gone != null) { Fail(gone); return used + remaining; }
                 }
-                if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, interaction.Restore);
+                // Müzik: çalgı çalmak seviye başına %5 daha çok keyif verir.
+                float restore = interaction.Skill == SkillType.Music
+                    ? (float)(interaction.Restore * SkillNames.Factor(_character.Skills.GetLevel(SkillType.Music), 0.05)) : interaction.Restore;
+                if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, restore);
                 foreach (var extra in interaction.ExtraRestore) _character.Needs.Restore(extra.Need, extra.Amount);
                 if (interaction.GivesMood)
                     _character.AddMoodlet(interaction.MoodId, interaction.MoodText ?? interaction.DisplayName, interaction.MoodValue, interaction.MoodDays);
@@ -467,7 +473,7 @@ namespace Thatchwick.Core.Jobs
         }
 
         /// <summary>İş etkileşimi mi (beceri, ürün ya da eşya kaldırma)? İhtiyaç etkileşimleri hız çarpanından etkilenmez.</summary>
-        public static bool IsWork(InteractionDef i) => i.Skill.HasValue || i.Produce.Count > 0 || i.RemovesItem;
+        public static bool IsWork(InteractionDef i) => (i.Skill.HasValue && i.Skill != SkillType.Music) || i.Produce.Count > 0 || i.RemovesItem;
 
         /// <summary>İş hızı: özellik/dal × ruh hali × (alet, hava...). İhtiyaç etkileşiminde 1.</summary>
         public double SpeedFactor(InteractionDef interaction)
@@ -475,6 +481,7 @@ namespace Thatchwick.Core.Jobs
             if (!IsWork(interaction)) return 1.0;
             double f = _character.Modifiers.WorkSpeed * (interaction.Skill.HasValue ? _character.WorkSpeed(interaction.Skill.Value) : 1.0);
             if (SpeedProvider != null) f *= SpeedProvider(_character, interaction);
+            if (DutySpeed != null && Queue.Current != null && Queue.Current.IsDuty) f *= DutySpeed();
             return f < 0.1 ? 0.1 : f;
         }
 

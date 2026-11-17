@@ -125,7 +125,7 @@ namespace Thatchwick.Core.Content
                         if (i == null) continue;
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
-                            || i.addIce > 0f || i.requiresFrost || i.befriendAnimals > 0f || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
+                            || i.addIce > 0f || i.requiresFrost || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -163,6 +163,8 @@ namespace Thatchwick.Core.Content
                             AddFeed = i.addFeed,
                             AddIce = Math.Max(0f, i.addIce),
                             BefriendAnimals = Math.Max(0f, i.befriendAnimals),
+                            Teach = i.teach,
+                            Heal = Math.Max(0f, i.heal),
                             RequiresFrost = i.requiresFrost,
                             Collect = i.collect,
                             RequiresAnimal = i.requiresAnimal,

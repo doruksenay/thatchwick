@@ -26,6 +26,9 @@ namespace Thatchwick.Core.Work
         private readonly IAnimalEffects _care;
         private readonly Dictionary<long, double> _claims = new Dictionary<long, double>();
 
+        /// <summary>Görevliye iş verildi (kâhyalık XP'si için).</summary>
+        public event Action<Character, Job> Issued;
+
         /// <summary>Karo işleri (yol onarımı); null ise tarla görevlisi yol onarmaz.</summary>
         public ITileWork TileWork { get; set; }
 
@@ -131,6 +134,7 @@ namespace Thatchwick.Core.Work
                     }
             }
             if (best != null && Now != null) _claims[bestKey] = now + ClaimDays;     // saat yoksa tutma da yok
+            if (best != null) Issued?.Invoke(c, best);
             return best;
         }
 

@@ -173,6 +173,7 @@ namespace Thatchwick.Core.Economy
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
             _house.AddItem(itemId, count);
             TradeXp(cost * 0.1);
+            Trader?.Invoke()?.GainSkillXp(SkillType.Carting, 0.5 * count);    // malı taşımak arabacılık
             return PlacementCheck.Success;
         }
 
@@ -189,6 +190,7 @@ namespace Thatchwick.Core.Economy
             }
             if (earned > 0) _house.AddAkce(earned);
             TradeXp(earned * 0.3);
+            if (earned > 0) Trader?.Invoke()?.GainSkillXp(SkillType.Carting, 0.5 * count);
             return earned;
         }
 

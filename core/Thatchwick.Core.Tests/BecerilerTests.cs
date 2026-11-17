@@ -42,7 +42,7 @@ namespace Thatchwick.Core.Tests
         public void Beceriler_AdlariVeMeslekleriFarkli()
         {
             var all = (SkillType[])Enum.GetValues(typeof(SkillType));
-            Assert.Equal(11, all.Length);
+            Assert.Equal(34, all.Length);
             Assert.Equal(all.Length, all.Select(SkillNames.Name).Distinct().Count());
             Assert.Equal(all.Length, all.Select(SkillNames.TradeName).Distinct().Count());
             Assert.True(SkillNames.IsCraft(SkillType.Leatherwork) && SkillNames.IsCraft(SkillType.Weaving) && SkillNames.IsCraft(SkillType.Carpentry));
@@ -61,7 +61,7 @@ namespace Thatchwick.Core.Tests
                 {
                     string n = i.DisplayName.ToLowerInvariant();
                     if (n.Contains("pişir") || n.Contains("haşla") || n.Contains("kızart") || n.Contains("tüttür") || n.Contains("tuzla"))
-                        Assert.True(i.Skill == SkillType.Cooking && i.SkillXp > 0, $"{d.Id}.{i.Id} yemek XP'si vermiyor");
+                        Assert.True((i.Skill == SkillType.Cooking || i.Skill == SkillType.Baking) && i.SkillXp > 0, $"{d.Id}.{i.Id} yemek XP'si vermiyor");
                 }
             var w = new WorldState(new GridMap(8, 8));
             var h = new Household();
@@ -262,7 +262,7 @@ namespace Thatchwick.Core.Tests
 
             var bench = db.Items.Get("item.saddler_bench");
             Assert.All(bench.Interactions.Where(i => i.IsCraft), i => Assert.Equal(SkillType.Leatherwork, i.Skill));
-            Assert.Equal(SkillType.Leatherwork, db.Items.Get("item.tanning_rack").Interactions.Single(i => i.IsCraft).Skill);
+            Assert.All(db.Items.Get("item.tanning_rack").Interactions.Where(i => i.IsCraft), i => Assert.Equal(SkillType.Leatherwork, i.Skill));
             var loom = db.Items.Get("item.loom");
             Assert.Contains(loom.Interactions, i => i.Produce.Any(p => p.ItemId == "item.rug_woven_large") && i.MinSkillLevel >= 5);
             // Mobilya marangozlukla yapılmaya devam eder.

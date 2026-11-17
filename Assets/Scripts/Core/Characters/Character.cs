@@ -248,7 +248,18 @@ namespace Thatchwick.Core.Characters
         {
             if (IsDead) return 0;
             if (MoodEnabled) xp *= Mood.XpMultiplier(skill);
+            // Okuryazarlık: bütün becerilerde seviye başına %2 fazla XP (kendisi hariç).
+            if (skill != SkillType.Literacy) xp *= SkillNames.Factor(Skills.GetLevel(SkillType.Literacy), 0.02);
             return Skills.AddXp(skill, xp * Modifiers.SkillRate(skill), SkillRules.LevelCap(Stage));
+        }
+
+        /// <summary>Hekimlik: soğuk ve açlık yarasını (ölüme sayan günleri) bu kadar gün azaltır. Bir şey iyileştiyse true.</summary>
+        public bool Treat(double days)
+        {
+            if (IsDead || days <= 0 || (FreezeDays <= 0 && StarveDays <= 0)) return false;
+            FreezeDays = Math.Max(0.0, FreezeDays - days);
+            StarveDays = Math.Max(0.0, StarveDays - days);
+            return true;
         }
 
         /// <summary>Karakteri belirli bir yaşta başlatır (başlangıç karakteri, test).</summary>

@@ -746,7 +746,8 @@ namespace Thatchwick.Game
                 Runner = new JobRunner(character, _world)
                 {
                     Effects = _effects, Social = _family, Animals = _animalCare, TileWork = _farmWork,
-                    WalkSpeed = () => _animals.RideSpeed(character.Id), DutyProvider = _duties.Next
+                    WalkSpeed = () => _animals.RideSpeed(character.Id), DutyProvider = _duties.Next,
+                    DutySpeed = () => SkillNames.Factor(_life.BestSkill(SkillType.Stewardship), 0.03)
                 },
                 View = go.transform,
                 Renderer = sr
@@ -1083,6 +1084,7 @@ namespace Thatchwick.Game
                 foreach (var c in _population.Members) if (!c.IsVillager && !c.IsDead) c.AddMoodlet(MoodCatalog.NewFoal);
             };
             _effects.Season = () => _clock.Season;
+            _effects.Household = () => _population.Members;
             _market.Trader = () => Commander?.Character;
             _animals.Dismounted += (a, riderId) => ShowMessage($"{_population.Find(riderId)?.Name} attan indi ({a.Name} kapıda bekliyor)");
             _animalCare = new AnimalCare(_animals, _household);
@@ -1110,11 +1112,12 @@ namespace Thatchwick.Game
                 Now = () => _clock.TotalDays,
                 TileWork = _farmWork
             };
-            _world.Map.WearMultiplier = _life.RainyToday ? 1.5f : 1f;
+            _world.Map.WearMultiplier = RoadWear();
             _life.NewDay += day =>
             {
                 _world.Map.OnNewDayRoads();                                   // kullanılmayan patika çimlenir
-                _world.Map.WearMultiplier = _life.RainyToday ? 1.5f : 1f;     // çamurlu günde yol daha çok aşınır
+                _world.Map.WearMultiplier = RoadWear();                        // çamurlu günde çok, taş ustası varken az aşınır
+                _plants.Config.FallowRecovery = (float)(0.02 * SkillNames.Factor(_life.BestSkill(SkillType.SoilCare), 0.1));   // toprak bakımı
                 var r = _animals.OnNewDay(_clock.Season, _household, _storage);
                 if (r.Collected > 0) ShowMessage($"Toplama sandığı: +{r.Collected} ürün depoya alındı");
                 if (r.FeedAdded > 0) ShowMessage($"Yem oluğu yemliklere {r.FeedAdded} yem doldurdu");
@@ -1126,7 +1129,30 @@ namespace Thatchwick.Game
                     ShowMessage("Düzenekler: " + string.Join(", ", parts));
                 }
             };
+            SetupSkills();
         }
+
+        // İkinci dalga beceriler (çiftlik sistemleri kurulduktan sonra bağlanır).
+        private void SetupSkills()
+        {
+            // İkinci dalga beceriler: hanenin en iyisi düzeneklere, depoya, söküme ve yollara etki eder.
+            _automation.EngineeringLevel = () => _life.BestSkill(SkillType.Engineering);
+            _storage.CartingLevel = () => _life.BestSkill(SkillType.Carting);
+            _buildService.SalvageLevel = () => _life.BestSkill(SkillType.Salvage);
+            _buildService.Salvaged += list =>
+            {
+                int units = 0;
+                var parts = new List<string>();
+                foreach (var kv in list) { units += kv.Value; parts.Add($"+{kv.Value} {(_content.Items.TryGet(kv.Key, out var d) ? d.DisplayName : kv.Key)}"); }
+                Commander?.Character.GainSkillXp(SkillType.Salvage, 3 * units);
+                ShowMessage("Geri kazanım: " + string.Join(", ", parts));
+            };
+            _buildService.Furnished += item => Commander?.Character.GainSkillXp(SkillType.Decorating, 2);
+            _duties.Issued += (c, job) => _player?.Character.GainSkillXp(SkillType.Stewardship, 1);   // hane reisi görevleri yönetir
+        }
+
+        // Yol aşınması: yağmurda x1,5; taş ustalığı seviye başına %4 azaltır.
+        private float RoadWear() => (float)((_life.RainyToday ? 1.5 : 1.0) / SkillNames.Factor(_life.BestSkill(SkillType.Masonry), 0.04));
 
         // Dokunulan karodaki hayvan (yakın olanı); yoksa null.
         private Animal AnimalAt(GridPos tile)
@@ -1542,6 +1568,11 @@ namespace Thatchwick.Game
             int next = AccountProgress.XpForLevel(_account.Level + 1);
             GUILayout.Label($"Hesap Sv {_account.Level} · XP {_account.Xp}/{next} · bugünkü iş XP {_account.WorkXpToday(_clock.DayIndex)}/{AccountProgress.DailyWorkCap}");
             DrawHeatHud();
+            // Hava bilgisi: kaç gün ilerisi görünür.
+            var ahead = _life.WeatherAhead(_life.ForecastDays);
+            var names = new List<string>();
+            foreach (var w in ahead) names.Add(WeatherSystem.Name(w));
+            GUILayout.Label($"Hava ({ahead.Count} gün): {string.Join(" · ", names)}");
             GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
             GUILayout.EndScrollView();

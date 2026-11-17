@@ -33,6 +33,9 @@ namespace Thatchwick.Core.Work
         /// <summary>Karo sıcaklığı (buz kesmek için don); null ise don yok sayılır.</summary>
         public Func<GridPos, float> TemperatureAt { get; set; }
 
+        /// <summary>Hane üyeleri (ders vermek için); null ise ders verilemez.</summary>
+        public Func<IEnumerable<Character>> Household { get; set; }
+
         /// <summary>Şu anki mevsim (balık türleri); null ise her mevsimin ürünü çıkabilir.</summary>
         public Func<Time.Season> Season { get; set; }
 
@@ -68,6 +71,7 @@ namespace Thatchwick.Core.Work
             }
             if (interaction.RequiresAnimal && (Animals == null || Animals.Residents(item.Id) == 0)) return "Burada hayvan yok.";
             if (interaction.Collect && item.StockTotal == 0) return "Toplanacak ürün yok.";
+            if (interaction.Teach && Pupils(character).Count == 0) return "Ders verilecek çocuk ya da genç yok.";
             if (interaction.RequiresFrost && (TemperatureAt == null || TemperatureAt(item.Position) > 0f)) return "Buz yok: don olunca (kışın) kesilir.";
             if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return "Buzluk dolu.";
             if (interaction.Water)
@@ -126,9 +130,16 @@ namespace Thatchwick.Core.Work
                 hideCount = hideId != null ? Math.Max(1, killed.Species.HideCount) : 0;
             }
             if (interaction.Water) { PlantSystem.Water(item); farmNotes.Add("sulandı"); }
+            if (interaction.Teach)
+            {
+                int taught = Teach(character);
+                if (taught > 0) farmNotes.Add($"{taught} öğrenci ders aldı");
+            }
+            if (interaction.Heal > 0f && character.Treat(interaction.Heal)) farmNotes.Add("yaraları iyileşti");
             if (interaction.Fertilize > 0f && Plants != null)
             {
-                Plants.Fertilize(item.Position, interaction.Fertilize);
+                // Toprak bakımı: gübre seviye başına %5 daha etkili.
+                Plants.Fertilize(item.Position, (float)(interaction.Fertilize * SkillNames.Factor(character.Skills.GetLevel(SkillType.SoilCare), 0.05)));
                 farmNotes.Add($"toprak verimi %{Plants.FertilityAt(item.Position) * 100f:0}");
             }
 
@@ -155,6 +166,12 @@ namespace Thatchwick.Core.Work
                 // Yeşil parmak / usta eller gibi: hasat ve kesimde ilk üründen bir tane daha çıkabilir.
                 if (firstRow && character.Modifiers.YieldChance > 0f && (interaction.RequiresGrown || interaction.RemovesItem || interaction.Skill == SkillType.Fishing)
                     && _rng.NextDouble() < character.Modifiers.YieldChance) count += 1;
+                // Toplayıcılık, maden, av, bahçe, fırın…: ilk üründen seviye başına şansla bir fazlası.
+                if (firstRow && interaction.Skill.HasValue)
+                {
+                    double per = SkillNames.ExtraYieldPerLevel(interaction.Skill.Value);
+                    if (per > 0 && _rng.NextDouble() < per * Math.Max(0, character.Skills.GetLevel(interaction.Skill.Value) - 1)) count += 1;
+                }
                 firstRow = false;
                 if (yieldMult > 1f && _content.Items.TryGet(p.ItemId, out var rowDef) && rowDef.PlantsAs == null)
                 {
@@ -214,6 +231,40 @@ namespace Thatchwick.Core.Work
                 _world.RemoveItem(item.Id);
 
             Applied?.Invoke(character, interaction, parts.Count > 0 ? string.Join(", ", parts) : interaction.DisplayName);
+        }
+
+        // ---- öğretmenlik ----
+
+        private List<Character> Pupils(Character teacher)
+        {
+            var list = new List<Character>();
+            if (Household == null) return list;
+            foreach (var c in Household())
+                if (c != teacher && !c.IsDead && !c.IsVillager && (c.Stage == AgeStage.Child || c.Stage == AgeStage.Youth)) list.Add(c);
+            return list;
+        }
+
+        /// <summary>
+        /// Ders: her öğrenci okuryazarlık ve öğretmenin en iyi becerisinden XP alır (öğretmenlik seviyesiyle artar).
+        /// Öğretmenlik ve okuryazarlık "en iyi beceri" sayılmaz.
+        /// </summary>
+        private int Teach(Character teacher)
+        {
+            int level = teacher.Skills.GetLevel(SkillType.Teaching);
+            SkillType best = SkillType.Farming; double bestXp = -1;
+            foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
+            {
+                if (s == SkillType.Teaching || s == SkillType.Literacy) continue;
+                double xp = teacher.Skills.GetXp(s);
+                if (xp > bestXp) { bestXp = xp; best = s; }
+            }
+            var pupils = Pupils(teacher);
+            foreach (var p in pupils)
+            {
+                p.GainSkillXp(SkillType.Literacy, 8 + 2 * level);
+                p.GainSkillXp(best, 5 + 2 * level);
+            }
+            return pupils.Count;
         }
     }
 }

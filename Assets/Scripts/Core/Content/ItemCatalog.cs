@@ -94,7 +94,7 @@ namespace Thatchwick.Core.Content
             if (def.AnimalComfort > 0) parts.Add($"Hayvan konforu +{def.AnimalComfort}");
             if (def.WaterSource) parts.Add("Su kaynağı (kanal bağlanır)");
             if (def.WaterRadius > 0) parts.Add(def.NeedsWaterSource ? $"Sular ({def.WaterRadius} karo, kaynağa bağlıyken)" : $"Sular ({def.WaterRadius} karo)");
-            if (def.PowerSource) parts.Add($"Güç: kaynağa bağlı kanala değince {Work.FarmAutomation.PowerReach} karo yakındaki makineleri çevirir");
+            if (def.PowerSource) parts.Add($"Güç: kaynağa bağlı kanala değince {Work.FarmAutomation.PowerReach}+ karo (mühendislikle artar) yakındaki makineleri çevirir");
             if (def.AutoProcess != null) parts.Add("Güç alınca her gün kendiliğinden işler");
             if (def.Placement == ItemPlacement.Wall) parts.Add("Duvara asılır");
             if (def.Placement == ItemPlacement.Surface) parts.Add("Masa/raf üstüne");

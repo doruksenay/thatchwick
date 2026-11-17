@@ -301,15 +301,67 @@ namespace Thatchwick.Core.Build
             var removed = _world.RemoveItem(itemId);
             foreach (var def in removed) total += SellValue(def);
             if (total > 0) _house.AddAkce(total);
+            // Geri kazanım: sökülen eşyadan malzemenin bir kısmı geri döner (akçeye ek).
+            var salvage = new List<KeyValuePair<string, int>>();
+            int salvageLevel = SalvageLevel?.Invoke() ?? 0;
+            if (salvageLevel > 0) foreach (var def in removed) salvage.AddRange(SalvageOf(def, salvageLevel));
+            foreach (var kv in salvage) _house.AddItem(kv.Key, kv.Value);
+            if (salvage.Count > 0) Salvaged?.Invoke(salvage);
             Record("Eşya satışı", () =>
             {
                 if (!CanPutBack(spot).Ok) return PlacementCheck.Fail("Eski yeri doldu, satış geri alınamaz.");
+                foreach (var kv in salvage) if (_house.Count(kv.Key) < kv.Value) return PlacementCheck.Fail("Kurtarılan malzeme harcandı, geri alınamaz.");
                 if (!_house.TrySpend(total)) return PlacementCheck.Fail("Akçe yetmiyor, satış geri alınamaz.");
+                foreach (var kv in salvage) for (int i = 0; i < kv.Value; i++) _house.TryTakeItem(kv.Key);
                 PutBack(spot);
                 GiveBack(removed, 1);
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;
+        }
+
+        // ---- geri kazanım ----
+
+        /// <summary>Hanenin en iyi geri kazanım seviyesi; null ise sökülen eşyadan malzeme dönmez.</summary>
+        public Func<int> SalvageLevel { get; set; }
+
+        /// <summary>Eşya satılırken malzeme kurtarıldı (kimlik, adet).</summary>
+        public event Action<List<KeyValuePair<string, int>>> Salvaged;
+
+        /// <summary>Geri kazanım oranı: 1. seviye %10, seviye başına +%5 (10. seviyede %55).</summary>
+        public static double SalvageFraction(int level) => level <= 0 ? 0 : 0.10 + 0.05 * (level - 1);
+
+        /// <summary>
+        /// Bir eşyanın sökülünce verdiği malzeme: tarifle yapılan eşyada tarifin malzemesinden, satın alınan ahşap/metal/
+        /// kumaş/kil eşyada fiyatına göre tahta/çivi/iplik/kil. Oran geri kazanım seviyesiyle artar.
+        /// </summary>
+        public List<KeyValuePair<string, int>> SalvageOf(ItemDef def, int level)
+        {
+            var result = new List<KeyValuePair<string, int>>();
+            double f = SalvageFraction(level);
+            if (f <= 0 || def == null) return result;
+            InteractionDef recipe = null;
+            foreach (var station in _content.Items.All)
+            {
+                foreach (var i in station.Interactions)
+                    if (i.IsCraft && i.Produce.Count > 0 && i.Produce[0].ItemId == def.Id) { recipe = i; break; }
+                if (recipe != null) break;
+            }
+            if (recipe != null)
+            {
+                foreach (var c in recipe.AllConsumed())
+                {
+                    int n = (int)Math.Round(c.Count * f, MidpointRounding.AwayFromZero);
+                    if (n > 0) result.Add(new KeyValuePair<string, int>(c.ItemId, n));
+                }
+                return result;
+            }
+            string material = def.FinishGroup == "wood" ? "item.plank" : def.FinishGroup == "metal" ? "item.nails"
+                : def.FinishGroup == "cloth" ? "item.yarn" : def.FinishGroup == "clay" ? "item.clay" : null;
+            if (material == null || !_content.Items.Contains(material)) return result;
+            int units = (int)Math.Round(Math.Max(1, def.Price / 10) * f, MidpointRounding.AwayFromZero);
+            if (units > 0) result.Add(new KeyValuePair<string, int>(material, units));
+            return result;
         }
 
         private PlacementCheck CheckOwned(ItemDef def, GridPos position, int rotation)
@@ -384,8 +436,12 @@ namespace Thatchwick.Core.Build
                 return PlacementCheck.Success;
             });
             if (grouped) EndGroup();
+            if (!def.IsPlant) Furnished?.Invoke(placedItem);
             return PlacementCheck.Success;
         }
+
+        /// <summary>Envanterden bir eşya yerleştirildi (ev düzenleme XP'si için; bitkiler hariç).</summary>
+        public event Action<ItemInstance> Furnished;
 
         /// <summary>Duvar eşyasının karonun bir kenarına asılıp asılamayacağı (envanter, arsa, duvar).</summary>
         public PlacementCheck CanPlaceWallFromInventory(string itemId, GridPos tile, int side)
@@ -411,6 +467,7 @@ namespace Thatchwick.Core.Build
                 GiveBack(_world.RemoveItem(wallId));
                 return PlacementCheck.Success;
             });
+            Furnished?.Invoke(wallItem);
             return PlacementCheck.Success;
         }
 
@@ -431,6 +488,7 @@ namespace Thatchwick.Core.Build
                 GiveBack(_world.RemoveItem(decorId));
                 return PlacementCheck.Success;
             });
+            Furnished?.Invoke(decor);
             return PlacementCheck.Success;
         }
 

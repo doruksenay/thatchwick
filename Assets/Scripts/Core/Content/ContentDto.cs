@@ -207,6 +207,8 @@ namespace Thatchwick.Core.Content
         public int addFeed;              // barınağa eklenen yem
         public float addIce;             // buzluğa eklenen buz (gün)
         public float befriendAnimals;    // barınaktaki hayvanlara dostluk (merhem; günlük sevme hakkını kullanmaz)
+        public bool teach;               // hanedeki çocuk ve gençlere ders (öğretmenlik)
+        public float heal;               // soğuk/açlık yarasını bu kadar gün iyileştirir (hekimlik)
         public bool requiresFrost;       // yalnızca don varken (buz kesmek)
         public bool collect;             // barınak ürünlerini topla
         public bool requiresAnimal;      // barınakta hayvan olmalı

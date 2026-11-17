@@ -56,10 +56,16 @@ namespace Thatchwick.Core.Work
     /// </summary>
     public sealed class FarmAutomation
     {
-        /// <summary>Güç alan makine günde en çok bu kadar parti işler.</summary>
+        /// <summary>Güç alan makine günde en çok bu kadar parti işler (mühendislik her 3 seviyede +1).</summary>
         public const int BatchesPerDay = 4;
-        /// <summary>Su çarkının güç verdiği uzaklık (karo, Chebyshev, kapladığı karolardan).</summary>
+        /// <summary>Su çarkının güç verdiği uzaklık (karo, Chebyshev, kapladığı karolardan); mühendislik 5. ve 9. seviyede +1.</summary>
         public const int PowerReach = 2;
+
+        /// <summary>Hanenin en iyi mühendisinin seviyesi; null ise 1.</summary>
+        public Func<int> EngineeringLevel { get; set; }
+        private int Eng => Math.Max(1, EngineeringLevel?.Invoke() ?? 1);
+        public int Batches => BatchesPerDay + (Eng - 1) / 3;
+        public int Reach => PowerReach + (Eng >= 5 ? 1 : 0) + (Eng >= 9 ? 1 : 0);
 
         private readonly WorldState _world;
         private readonly Household _house;
@@ -113,7 +119,7 @@ namespace Thatchwick.Core.Work
                 if (w.Position.Z != machine.Position.Z) continue;
                 foreach (var tw in w.OccupiedTiles())
                     foreach (var tm in machine.OccupiedTiles())
-                        if (Math.Max(Math.Abs(tw.X - tm.X), Math.Abs(tw.Y - tm.Y)) <= PowerReach) return true;
+                        if (Math.Max(Math.Abs(tw.X - tm.X), Math.Abs(tw.Y - tm.Y)) <= Reach) return true;
             }
             return false;
         }
@@ -138,7 +144,7 @@ namespace Thatchwick.Core.Work
             {
                 if (machine.IsDecor || wheels.Count == 0 || !IsPowered(machine, wheels)) continue;
                 var p = machine.Def.AutoProcess;
-                for (int b = 0; b < BatchesPerDay; b++)
+                for (int b = 0; b < Batches; b++)
                 {
                     if (_house.Count(p.Item) < p.Count) break;
                     if (Storage != null && Storage.IsResource(p.Produces) && Storage.Free + p.Count < p.ProducesCount) break;   // yer yoksa öğütmez
@@ -193,7 +199,7 @@ namespace Thatchwick.Core.Work
                 if (road == RoadType.None) return "Burada yol yok.";
                 if (map.IsNaturalRoad(tile)) return "Kendiliğinden oluşmuş patika onarılmaz (yapı modunda yol döşe).";
                 if (map.GetRoadCondition(tile) >= RepairBelow) return "Yol sağlam.";
-                int stone = BuildService.RepairStone(road);
+                int stone = RepairStoneFor(actor, road);
                 if (stone > 0 && House != null && House.Count("item.stone") < stone) return $"Taş yetmiyor ({House.Count("item.stone")}/{stone}).";
                 return null;
             }
@@ -206,9 +212,17 @@ namespace Thatchwick.Core.Work
             return null;
         }
 
+        /// <summary>Onarımın taşı: taş ustası (5. seviye) bir taş eksik harcar.</summary>
+        public static int RepairStoneFor(Character actor, RoadType road)
+        {
+            int stone = BuildService.RepairStone(road);
+            if (actor != null && actor.Skills.GetLevel(SkillType.Masonry) >= 5) stone = Math.Max(0, stone - 1);
+            return stone;
+        }
+
         public double Duration(Character actor, TileAction action)
         {
-            if (action == TileAction.Repair) return RepairDays;
+            if (action == TileAction.Repair) return RepairDays / SkillNames.Factor(actor.Skills.GetLevel(SkillType.Masonry), 0.05);
             double speed = HoeSpeed?.Invoke(actor) ?? 1.0;
             double skill = Math.Max(0.5, 1.0 - 0.05 * (actor.Skills.GetLevel(SkillType.Farming) - 1));
             return TillDays * skill / Math.Max(0.25, speed);
@@ -219,9 +233,10 @@ namespace Thatchwick.Core.Work
             if (CanDo(actor, tile, action) != null) return;
             if (action == TileAction.Repair)
             {
-                int stone = BuildService.RepairStone(_world.Map.GetRoad(tile));
+                int stone = RepairStoneFor(actor, _world.Map.GetRoad(tile));
                 if (House != null) for (int i = 0; i < stone; i++) House.TryTakeItem("item.stone");
                 _world.Map.RepairRoad(tile);
+                actor.GainSkillXp(SkillType.Masonry, 4 + 2 * stone);
                 Repaired?.Invoke(actor, tile);
                 return;
             }
