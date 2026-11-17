@@ -137,7 +137,7 @@ namespace Thatchwick.Game
                     bool terrainBlocked = _terrainBlocked[y * Map.Width + x];
                     // Gerçek karo varsa (çim, toprak) onu kullan; yoksa yer tutucu elmas + renk.
                     // Gerçek karo yalnızca varsayılan stilde (stil seçilmiş zemin, görseli gelene kadar renkle çizilir).
-                    var real = terrainBlocked ? null
+                    var real = terrainBlocked || floor == FloorType.Water ? null
                         : Map.GetFloorStyle(p) != null ? IsoArt.FloorPart(Map.GetFloorStyle(p), x, y)
                         : IsoArt.Ground(floor, x, y) ?? IsoArt.FloorPart(Content != null ? BuildParts.DefaultFloor(Content, floor)?.Id : null, x, y);
                     sr.sprite = real != null ? real : SpriteMaterials.Diamond;
@@ -149,6 +149,11 @@ namespace Thatchwick.Game
                         case FloorType.Wood: sr.color = ((x + y) & 1) == 0 ? new Color32(168, 124, 76, 255) : new Color32(158, 115, 68, 255); break;
                         case FloorType.Stone: sr.color = ((x + y) & 1) == 0 ? new Color32(140, 140, 148, 255) : new Color32(130, 130, 138, 255); break;
                         case FloorType.Dirt: sr.color = ((x + y) & 1) == 0 ? new Color32(139, 110, 80, 255) : new Color32(131, 103, 74, 255); break;
+                        case FloorType.Water:   // görseli gelene kadar: mavi su, donunca soluk buz
+                            sr.color = Map.WaterFrozen
+                                ? (((x + y) & 1) == 0 ? new Color32(206, 224, 236, 255) : new Color32(196, 216, 230, 255))
+                                : (((x + y) & 1) == 0 ? new Color32(64, 120, 176, 255) : new Color32(58, 112, 168, 255));
+                            break;
                         default: sr.color = terrainBlocked ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB); break;
                     }
                     var road = Map.GetRoad(p);

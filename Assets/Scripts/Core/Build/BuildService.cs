@@ -574,6 +574,7 @@ namespace Thatchwick.Core.Build
                 case FloorType.Dirt: return 1;
                 case FloorType.Wood: return 2;
                 case FloorType.Stone: return 3;
+                case FloorType.Water: return 6;     // gölet kazmak
                 default: return 0;
             }
         }

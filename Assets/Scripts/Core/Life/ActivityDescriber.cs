@@ -30,6 +30,8 @@ namespace Thatchwick.Core.Life
                 case NeedType.Warmth: return "çünkü üşüyor";
                 case NeedType.Social: return "çünkü yalnız";
                 case NeedType.Fun: return "çünkü canı sıkıldı";
+                case NeedType.Hygiene: return "çünkü kirlendi";
+                case NeedType.Bladder: return "çünkü sıkıştı";
                 default: return "emir üzerine";
             }
         }
@@ -74,6 +76,7 @@ namespace Thatchwick.Core.Life
             }
             var info = DescribeJob(job, world);
             info.Walking = job.Kind == JobKind.MoveTo || !runner.IsUsingItem;
+            if (runner.IsFetchingWater) { info.Icon = "work"; info.Text = "Kovayla su taşıyor (" + info.Text + ")"; }
             return info;
         }
 
@@ -116,7 +119,15 @@ namespace Thatchwick.Core.Life
                     }
                     break;
                 case JobKind.Tile:
-                    info.Icon = "work"; info.Text = "Çapalıyor";
+                    info.Icon = "work";
+                    switch (job.TileAction)
+                    {
+                        case TileAction.Repair: info.Text = "Yolu onarıyor"; break;
+                        case TileAction.Bathe: info.Icon = "fun"; info.Text = "Suda yıkanıyor"; break;
+                        case TileAction.Fish: info.Text = "Kıyıda balık tutuyor"; break;
+                        case TileAction.CutIce: info.Text = "Buz kesiyor"; break;
+                        default: info.Text = "Çapalıyor"; break;
+                    }
                     break;
                 default:
                     info.Icon = "idle"; info.Text = "?";

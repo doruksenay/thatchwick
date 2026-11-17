@@ -67,6 +67,8 @@ namespace Thatchwick.Core.Characters
             SetNeedMood(catalog, MoodCatalog.Bored, comfort && Needs.Get(NeedType.Fun) < MoodCatalog.NeedMoodThreshold);
             SetNeedMood(catalog, MoodCatalog.Dirty, comfort && Needs.Get(NeedType.Hygiene) < MoodCatalog.NeedMoodThreshold);
             SetNeedMood(catalog, MoodCatalog.Lonely, comfort && Needs.Get(NeedType.Social) < MoodCatalog.NeedMoodThreshold);
+            SetNeedMood(catalog, MoodCatalog.Bursting, comfort && Needs.Get(NeedType.Bladder) < MoodCatalog.NeedMoodThreshold);
+            SetNeedMood(catalog, MoodCatalog.Wet, Wetness > 0.05f);
             UpdateTraitMood();
         }
 
@@ -253,6 +255,49 @@ namespace Thatchwick.Core.Characters
             return Skills.AddXp(skill, xp * Modifiers.SkillRate(skill), SkillRules.LevelCap(Stage));
         }
 
+        /// <summary>Tuvalete yetişemedi (bildirim için).</summary>
+        public event Action<Character> Accident;
+
+        // ---- ıslaklık ----
+
+        /// <summary>Islaklık 0-1: suya giren, dışarıda yıkanan, yağmurda kalan ıslanır; ısı ve havaya göre kurur.</summary>
+        public float Wetness { get; private set; }
+
+        /// <summary>Yatakta uyuyor (JobRunner): tuvalet uykuda yavaş dolar.</summary>
+        public bool Asleep { get; set; }
+        public const float SleepBladderFactor = 0.35f;
+        // Islak ve soğukta geçen süre (üşütme için).
+        private double _wetColdDays;
+
+        /// <summary>Islanır (0-1, en ıslak olan kalır).</summary>
+        public void Soak(float amount)
+        {
+            if (IsDead || amount <= 0f) return;
+            Wetness = Math.Min(1f, Math.Max(Wetness, amount));
+        }
+
+        /// <summary>Kurulanır (havlu): ıslaklık hemen gider.</summary>
+        public void Dry() { Wetness = 0f; _wetColdDays = 0; }
+
+        /// <summary>Islakken soğukta (bu sıcaklığın altında) bu kadar gün kalan üşütür.</summary>
+        public const float ChillTemperature = 8f;
+        public const double ChillDays = 0.15;
+
+        /// <summary>Kuruma (gün başına): 2 + (sıcaklık - 5) x 0,3; ocak başında birkaç saatte, kışın dışarıda yarım günde.</summary>
+        public static double DryPerDay(float temp) => 2.0 + Math.Max(0f, temp - 5f) * 0.3;
+
+        private void TickWetness(double gameDays)
+        {
+            if (Wetness <= 0f) { _wetColdDays = 0; return; }
+            Wetness = (float)Math.Max(0.0, Wetness - DryPerDay(AmbientTemperature) * gameDays);
+            if (AmbientTemperature < ChillTemperature && Wetness > 0.3f)
+            {
+                _wetColdDays += gameDays;
+                if (_wetColdDays >= ChillDays && MoodEnabled && !Mood.Has(MoodCatalog.Chilled)) AddMoodlet(MoodCatalog.Chilled);
+            }
+            else _wetColdDays = Math.Max(0.0, _wetColdDays - gameDays);
+        }
+
         // Son üç öğün (çeşit ödülü); kayda girmez, oturum içinde tutulur.
         private readonly List<string> _meals = new List<string>(4);
         public IReadOnlyList<string> RecentMeals => _meals;
@@ -273,7 +318,9 @@ namespace Thatchwick.Core.Characters
         /// <summary>Hekimlik: soğuk ve açlık yarasını (ölüme sayan günleri) bu kadar gün azaltır. Bir şey iyileştiyse true.</summary>
         public bool Treat(double days)
         {
-            if (IsDead || days <= 0 || (FreezeDays <= 0 && StarveDays <= 0)) return false;
+            if (IsDead || days <= 0) return false;
+            bool chilled = MoodEnabled && Mood.Remove(MoodCatalog.Chilled);   // hekim üşütmeyi de geçirir
+            if (FreezeDays <= 0 && StarveDays <= 0) return chilled;
             FreezeDays = Math.Max(0.0, FreezeDays - days);
             StarveDays = Math.Max(0.0, StarveDays - days);
             return true;
@@ -305,7 +352,8 @@ namespace Thatchwick.Core.Characters
             {
                 // Sıcak çorba gibi yemek etkileri de soğuğa dayanıklılık verir (toplam en çok %90).
                 float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f));
-                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - resist));
+                // Islak giysi soğukta ısıyı iki kat hızlı kaçırır.
+                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - resist) * (1f + Wetness));
             }
             else
             {
@@ -318,16 +366,27 @@ namespace Thatchwick.Core.Characters
             Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f));
             Needs.SetDecayMultiplier(NeedType.Social, Modifiers.SocialDecay);
             Needs.SetDecayMultiplier(NeedType.Fun, Modifiers.FunDecay);
+            Needs.SetDecayMultiplier(NeedType.Bladder, Asleep ? SleepBladderFactor : 1f);
 
             // Keyif ve hijyen yalnızca ruh hali açıkken (ve bebek değilken) azalır.
-            float fun = Needs.Get(NeedType.Fun), hygiene = Needs.Get(NeedType.Hygiene), social = Needs.Get(NeedType.Social);
+            float fun = Needs.Get(NeedType.Fun), hygiene = Needs.Get(NeedType.Hygiene), social = Needs.Get(NeedType.Social), bladder = Needs.Get(NeedType.Bladder);
             Needs.Tick(gameDays);
             if (!ComfortNeedsActive)
             {
                 Needs.Set(NeedType.Fun, fun);
                 Needs.Set(NeedType.Hygiene, hygiene);
                 Needs.Set(NeedType.Social, social);
+                Needs.Set(NeedType.Bladder, bladder);
             }
+            else if (Needs.Get(NeedType.Bladder) <= NeedSet.Min)
+            {
+                // Kaza: tuvalete yetişemedi. Ölmez; hijyen sıfırlanır, utanır.
+                Needs.Set(NeedType.Bladder, NeedSet.Max);
+                Needs.Set(NeedType.Hygiene, NeedSet.Min);
+                if (MoodEnabled) AddMoodlet(MoodCatalog.Accident);
+                Accident?.Invoke(this);
+            }
+            TickWetness(gameDays);
             if (MoodEnabled)
             {
                 Mood.Tick(gameDays);

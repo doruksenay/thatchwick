@@ -114,6 +114,10 @@ namespace Thatchwick.Core.Content
         public bool WindPower { get; set; }
         /// <summary>Su kapağı: açıkken sulama ağında suyu geçirir, kapalıyken keser (dokununca aç/kapa).</summary>
         public bool WaterGate { get; set; }
+        /// <summary>Lazımlık/hela: bu kadar kullanımda dolar, boşaltılınca FillPerProduct dolum başına bir FillProduct (gübre).</summary>
+        public int FillCapacity { get; set; }
+        public string FillProduct { get; set; }
+        public int FillPerProduct { get; set; } = 4;
         /// <summary>Hasat tırmığı ve ekim makinesi yarıçapı (güç ister).</summary>
         public int HarvestRadius { get; set; }
         public int SeedRadius { get; set; }

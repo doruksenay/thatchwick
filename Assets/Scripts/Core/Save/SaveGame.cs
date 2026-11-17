@@ -139,7 +139,7 @@ namespace Thatchwick.Core.Save
                     {
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, z = it.Position.Z, rotation = it.Rotation,
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
-                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId, toggled = it.Toggled,
+                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId, toggled = it.Toggled, fill = it.Fill,
                         watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays
                     });
                 }
@@ -248,7 +248,7 @@ namespace Thatchwick.Core.Save
                 pregnancyLeft = c.PregnancyLeft, postpartumLeft = c.PostpartumLeft,
                 freezeDays = c.FreezeDays, starveDays = c.StarveDays,
                 hunger = c.Needs.Get(NeedType.Hunger), energy = c.Needs.Get(NeedType.Energy), warmth = c.Needs.Get(NeedType.Warmth),
-                fun = c.Needs.Get(NeedType.Fun), hygiene = c.Needs.Get(NeedType.Hygiene),
+                fun = c.Needs.Get(NeedType.Fun), hygiene = c.Needs.Get(NeedType.Hygiene), bladder = c.Needs.Get(NeedType.Bladder), wet = c.Wetness,
                 moodlets = CaptureMoodlets(c),
                 skills = skills.ToArray(),
                 spouseId = c.SpouseId ?? 0,
@@ -410,6 +410,7 @@ namespace Thatchwick.Core.Save
                     if (!string.IsNullOrEmpty(s.finish) && content.Parts.TryGet(s.finish, out var fin) && fin.Kind == BuildPartKind.ItemFinish && fin.Group == def.FinishGroup)
                         restored.FinishId = s.finish;
                         restored.Toggled = s.toggled;
+                        restored.Fill = Math.Max(0, s.fill);
                     restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));
                     if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(kv.key)) restored.SetStock(kv.key, kv.value);
                 }
@@ -498,6 +499,8 @@ namespace Thatchwick.Core.Save
             c.Needs.Set(NeedType.Warmth, s.warmth);
             c.Needs.Set(NeedType.Fun, s.fun);
             c.Needs.Set(NeedType.Hygiene, s.hygiene);
+            c.Needs.Set(NeedType.Bladder, s.bladder >= 0f ? s.bladder : NeedSet.Max);
+            if (s.wet > 0f) c.Soak(s.wet);
             if (s.moodlets != null)
             {
                 var ms = new List<KeyValuePair<string, double>>();

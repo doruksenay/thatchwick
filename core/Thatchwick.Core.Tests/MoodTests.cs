@@ -28,6 +28,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(100.0, (double)off.Needs.Get(NeedType.Hygiene), 3);
 
             var on = Adult();
+            on.Needs.SetDecayPerDay(NeedType.Bladder, 0f);      // tek günlük adımda tuvalet kazası hijyeni sıfırlamasın
             on.Tick(1.0);
             Assert.Equal(50.0, (double)on.Needs.Get(NeedType.Fun), 3);
             Assert.Equal(65.0, (double)on.Needs.Get(NeedType.Hygiene), 3);
@@ -267,6 +268,7 @@ namespace Thatchwick.Core.Tests
             world.PlaceItem(db.Items.Get("item.mattress_straw"), new GridPos(2, 4));
             world.PlaceItem(db.Items.Get("item.cooking_pot"), new GridPos(6, 2));
             world.PlaceItem(db.Items.Get("item.basin_ewer"), new GridPos(6, 5));
+            world.PlaceItem(db.Items.Get("item.chamber_pot"), new GridPos(10, 2));
             var table = world.PlaceItem(db.Items.Get("item.table_wood"), new GridPos(8, 7));
             world.PlaceOnSurface(db.Items.Get("item.morris_board"), table.Id, "b");
             var effects = new Work.InteractionEffects(world, house, db);

@@ -29,7 +29,7 @@ namespace Thatchwick.Game
             Items, Room, Wall, HalfWall, Door, Window, EraseEdge, Fence, Gate, Railing,
             Finish, FinishRoom, Floor, FloorRoom, FloorErase, Roof,
             PushWall, MoveRoom, CopyRoom, Eyedropper, Demolish,
-            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture, RoadPath, RoadGravel, RoadPaved, RoadErase
+            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture, RoadPath, RoadGravel, RoadPaved, RoadErase, Pond
         }
         private Tool _tool = Tool.Items;
         private GridPos? _roomCorner;
@@ -301,6 +301,7 @@ namespace Thatchwick.Game
                     break;
                 }
                 case Tool.FloorErase: r = _svc.PaintFloor(tile, FloorType.Grass); break;
+                case Tool.Pond: r = _svc.PaintFloor(tile, FloorType.Water); break;
                 case Tool.Roof:
                     r = _svc.SetRoofStyle(tile, Style(BuildPartKind.Roof) ?? BuildParts.Default(_content, BuildPartKind.Roof)?.Id);
                     break;
@@ -745,7 +746,7 @@ namespace Thatchwick.Game
             ToolRow(("Çit", Tool.Fence), ("Çit kapısı", Tool.Gate), ("Korkuluk", Tool.Railing), ("Çatı", Tool.Roof));
             ToolRow(("Kaplama", Tool.Finish), ("Oda kapl.", Tool.FinishRoom), ("Zemin", Tool.Floor), ("Oda zem.", Tool.FloorRoom));
             ToolRow(("Duvar it", Tool.PushWall), ("Oda taşı", Tool.MoveRoom), ("Oda kopyala", Tool.CopyRoom));
-            ToolRow(("Damlalık", Tool.Eyedropper), ("Balyoz", Tool.Demolish), ("Çim", Tool.FloorErase));
+            ToolRow(("Damlalık", Tool.Eyedropper), ("Balyoz", Tool.Demolish), ("Çim", Tool.FloorErase), ("Gölet kaz", Tool.Pond));
             ToolRow(("Patika", Tool.RoadPath), ("Çakıl yol", Tool.RoadGravel), ("Kaldırım", Tool.RoadPaved), ("Yol sil", Tool.RoadErase));
             ToolRow((_view.ViewLevel < 0 ? "Kaz" : "Döşeme", Tool.LevelBuild), (_view.ViewLevel < 0 ? "Doldur" : "Döşeme sök", Tool.LevelRemove), ("Arsa", Tool.Plot));
             GUILayout.BeginHorizontal();
@@ -800,6 +801,7 @@ namespace Thatchwick.Game
                 case Tool.RoadPaved:
                 case Tool.RoadErase:
                     return $"Yol (arsanda, açık havada): patika x{GridMap.PathSpeed:0.#} hız {BuildService.RoadPrice(RoadType.Path)} akçe, çakıl x{GridMap.GravelSpeed:0.#} {BuildService.RoadPrice(RoadType.Gravel)} akçe, kaldırım x{GridMap.PavedSpeed:0.#} {BuildService.RoadPrice(RoadType.Paved)} akçe. Üstünden geçildikçe aşınır (inek, at çok); aynı yolu yeniden döşemek yarı fiyatına onarır. Hayvanlar barınaktan otlağa yoldan gider.";
+                case Tool.Pond: return $"Gölet kaz (açık havada, karo başına {BuildService.FloorPrice(FloorType.Water)} akçe): içine girilip yıkanılır, kova doldurulur, balık tutulur; değirmen ve sulama ona bağlanır. Suda yürümek yavaştır ve ıslatır; kışın donar. Çim aracı geri doldurur.";
                 case Tool.ZonePasture: return "Otlak: hayvanlar gündüz çimde otlar (yem yerine ot, kışın ot büyümez). Çitle çevir; barınağın kapısı otlağa açılsın. Çan ile içeri çağrılır.";
                 case Tool.ZoneStorage:
                 case Tool.ZoneErase: return $"Depo bölgesi: karo başına +{StorageService.UnitsPerZoneTile} kaynak kapasitesi (ücretsiz). Sandık +40.";

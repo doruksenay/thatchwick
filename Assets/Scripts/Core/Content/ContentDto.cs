@@ -162,6 +162,9 @@ namespace Thatchwick.Core.Content
         public bool fishTrap;                // balık sepeti: gölete değerken her sabah balık
         public bool windPower;               // yel değirmeni: suya gerek olmadan güç verir
         public bool waterGate;               // su kapağı: açıkken suyu geçirir, kapalıyken keser
+        public int fillCapacity;             // lazımlık/hela: bu kadar kullanımda dolar
+        public string fillProduct;           // boşaltınca verdiği ürün (gübre)
+        public int fillPerProduct;           // kaç dolum bir ürün (0 = 4)
         public int harvestRadius;            // hasat tırmığı: güç alınca bu yarıçaptaki olgun ekini her sabah biçer
         public int seedRadius;               // ekim makinesi: güç alınca bu yarıçaptaki boş toprağa tohum eker
         public int iceCollect;               // buz kuyusu: donlu sabahlar bu kadar buz toplar
@@ -234,6 +237,13 @@ namespace Thatchwick.Core.Content
         public float addIce;             // buzluğa eklenen buz (gün)
         public float befriendAnimals;    // barınaktaki hayvanlara dostluk (merhem; günlük sevme hakkını kullanmaz)
         public bool teach;               // hanedeki çocuk ve gençlere ders (öğretmenlik)
+        public float bladder;            // tuvaleti doldurur (içecek 15, yemek 4)
+        public bool fetchWater;          // önce en yakın sudan bir kova taşınır (banyo, leğen)
+        public float wets;               // ıslatır (0-1)
+        public bool bath;                // soğuk/sıcak su kuralı (ocak yanan oda sıcak)
+        public int addFill;              // eşyanın dolumunu artırır (lazımlık, hela)
+        public bool emptyFill;           // dolumu boşaltır, gübre verir
+        public bool dries;               // kurular (havlu, ocak başı)
         public float heal;               // soğuk/açlık yarasını bu kadar gün iyileştirir (hekimlik)
         public bool requiresFrost;       // yalnızca don varken (buz kesmek)
         public bool collect;             // barınak ürünlerini topla

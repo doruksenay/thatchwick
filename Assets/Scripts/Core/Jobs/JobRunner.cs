@@ -151,6 +151,7 @@ namespace Thatchwick.Core.Jobs
             if (gameDays < 0) throw new ArgumentOutOfRangeException(nameof(gameDays));
 
             _elapsedDays += gameDays;
+            if (Autonomous) InterruptForToilet();
             double budget = gameDays;
             for (int guard = 0; guard < MaxIterations && budget > 1e-12; guard++)
             {
@@ -306,8 +307,16 @@ namespace Thatchwick.Core.Jobs
                 if (_path == null)
                 {
                     var goals = new HashSet<GridPos>();
-                    if (_world.Map.IsWalkable(job.Target)) goals.Add(job.Target);
-                    foreach (var o in AdjacentOffsets) if (_world.Map.IsWalkable(job.Target + o)) goals.Add(job.Target + o);
+                    var map = _world.Map;
+                    if (map.IsWalkable(job.Target)) goals.Add(job.Target);
+                    if (job.TileAction != TileAction.Bathe)          // yıkanmak için suyun içine girilir; öbür işler kıyıdan da olur
+                        foreach (var o in AdjacentOffsets) if (map.IsWalkable(job.Target + o)) goals.Add(job.Target + o);
+                    if (job.TileAction == TileAction.Fish)           // balık kıyıdan tutulur (kıyı yoksa suya girilir)
+                    {
+                        var dry = new HashSet<GridPos>();
+                        foreach (var g in goals) if (!map.IsWater(g)) dry.Add(g);
+                        if (dry.Count > 0) goals = dry;
+                    }
                     _path = goals.Count == 0 ? null : Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
                     if (_path == null) { Fail("Oraya ulaşılamıyor."); return 0; }
                     _pathIndex = 1;
@@ -352,6 +361,27 @@ namespace Thatchwick.Core.Jobs
                 if (blocked != null) { Fail(blocked); return 0; }
             }
 
+            // Banyo ve leğen: önce en yakın sudan (kuyu, gölet, dere) bir kova su getirilir; her banyoya bir sefer.
+            if (!_using && interaction.FetchWater && !_hasWater && WaterNetworkAccess != null)
+            {
+                if (_path == null)
+                {
+                    var goals = WaterNetworkAccess();
+                    _path = goals.Count == 0 ? null : Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
+                    if (_path == null) { Fail("Yakında su yok: kuyu, gölet ya da dere gerekir."); return 0; }
+                    _pathIndex = 1;
+                    _stepFraction = 0;
+                    _fetching = true;
+                }
+                double walked = Walk(budget);
+                if (_path == null) return walked;
+                if (_pathIndex < _path.Count) return walked;
+                _hasWater = true;            // kova dolu: şimdi eşyaya
+                _fetching = false;
+                _path = null;
+                return walked;
+            }
+
             if (_path == null && !_using)
             {
                 _path = PathToAdjacent(item);
@@ -374,6 +404,7 @@ namespace Thatchwick.Core.Jobs
                 if (_pathIndex < _path.Count) return used;
                 _using = true;
             }
+            _character.Asleep = interaction.Need == NeedType.Energy && interaction.RestoresNeed;
 
             double remaining = EffectiveDuration(interaction) - _useProgress;
             double available = budget - used;
@@ -391,6 +422,9 @@ namespace Thatchwick.Core.Jobs
                     ? (float)(interaction.Restore * SkillNames.Factor(_character.Skills.GetLevel(SkillType.Music), 0.05)) : interaction.Restore;
                 if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, restore);
                 foreach (var extra in interaction.ExtraRestore) _character.Needs.Restore(extra.Need, extra.Amount);
+                // İçmek ve yemek tuvaleti doldurur (içecek çok, yemek az).
+                if (interaction.BladderCost > 0f && _character.ComfortNeedsActive)
+                    _character.Needs.Set(NeedType.Bladder, _character.Needs.Get(NeedType.Bladder) - interaction.BladderCost);
                 // Öğün: açlık doyuran ve yiyecek harcayan iş sofra çeşidine sayılır.
                 if (interaction.Need == NeedType.Hunger && interaction.RestoresNeed && interaction.ConsumeItem != null) _character.RecordMeal(interaction.ConsumeItem);
                 if (interaction.GivesMood)
@@ -436,6 +470,7 @@ namespace Thatchwick.Core.Jobs
                     _pathIndex++;
                     _stepFraction = 0;
                     _world.Map.Trample(_character.Position, HumanTrample);
+                    if (_world.Map.IsOpenWater(_character.Position)) _character.Soak(0.6f);   // suya giren ıslanır
                 }
                 else
                 {
@@ -549,10 +584,10 @@ namespace Thatchwick.Core.Jobs
             _needOrder.Clear();
             foreach (var need in AllNeeds)
                 if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
-            if (_needOrder.Count == 0) return TryStartDuty();
+            if (_needOrder.Count == 0) return TryEmptyToilet() || TryStartDuty();
             _needOrder.Sort((a, b) =>
             {
-                int ka = NeedKinds.IsSurvival(a) ? 0 : 1, kb = NeedKinds.IsSurvival(b) ? 0 : 1;
+                int ka = Rank(a), kb = Rank(b);
                 if (ka != kb) return ka.CompareTo(kb);
                 return _character.Needs.Get(a).CompareTo(_character.Needs.Get(b));
             });
@@ -560,9 +595,70 @@ namespace Thatchwick.Core.Jobs
             foreach (var need in _needOrder)
             {
                 if (need == NeedType.Social && TryStartChat()) return true;
+                // (sıra: kritik hayatta kalma > tuvalet ve öbür hayatta kalma > keyif ihtiyaçları)
+                if (need == NeedType.Energy && _character.ComfortNeedsActive && _character.Needs.Get(NeedType.Bladder) < PreSleepBladder
+                    && TryStartNeedItem(NeedType.Bladder)) return true;          // yatmadan önce tuvalet
                 if (TryStartNeedItem(need)) return true;
             }
             return false;
+        }
+
+        /// <summary>Tuvalet bunun altına inince yürüdüğü işi ya da uykuyu bırakıp tuvalete koşar; iş sonra sürer.</summary>
+        public const float BladderInterrupt = 15f;
+        /// <summary>Yatmadan önce tuvalet bunun altındaysa önce tuvalete gider.</summary>
+        public const float PreSleepBladder = 55f;
+        private double _toiletCheckUntil;
+
+        /// <summary>Hela/lazımlık bu doluluğu geçince ihtiyacı olmayan yetişkin kendiliğinden boşaltır (gübre çıkar).</summary>
+        public const float SelfEmptyAtFill = 0.75f;
+
+        private bool TryEmptyToilet()
+        {
+            if (!_character.ComfortNeedsActive || _character.Stage == AgeStage.Child || Effects == null) return false;
+            ItemInstance best = null; InteractionDef bestI = null; int bestD = int.MaxValue;
+            foreach (var it in _world.Items)
+            {
+                if (it.IsDecor || it.Def.FillCapacity <= 0 || it.Fill < it.Def.FillCapacity * SelfEmptyAtFill) continue;
+                if (_unreachableUntil.TryGetValue(it.Id, out var until) && until > _elapsedDays) continue;
+                foreach (var i in it.Def.Interactions)
+                {
+                    if (!i.EmptyFill || Effects.CanStart(_character, it, i) != null) continue;
+                    int d = Math.Abs(it.Position.X - _character.Position.X) + Math.Abs(it.Position.Y - _character.Position.Y);
+                    if (d < bestD) { best = it; bestI = i; bestD = d; }
+                }
+            }
+            if (best == null) return false;
+            ResetJobState();
+            return Queue.TryEnqueue(Job.UseItem(best.Id, bestI.Id));
+        }
+
+        // Otonomi sırası: kritik açlık/uyku/soğuk önce; sonra tuvalet ve öbür hayatta kalma; en son keyif ihtiyaçları.
+        private int Rank(NeedType need)
+        {
+            if (NeedKinds.IsSurvival(need) && _character.Needs.IsCritical(need)) return 0;
+            return NeedKinds.IsUrgent(need) ? 1 : 2;
+        }
+
+        private void InterruptForToilet()
+        {
+            if (!_character.ComfortNeedsActive || _elapsedDays < _toiletCheckUntil) return;
+            if (_character.Needs.AnyCritical()) return;                    // donan, açlıktan bayılan önce onu giderir
+            if (_character.Needs.Get(NeedType.Bladder) >= BladderInterrupt) return;
+            var cur = Queue.Current;
+            if (cur == null) return;                                         // boştaysa otonomi zaten seçer
+            if (_using && !_character.Asleep) return;                        // yemeği, banyoyu yarıda bırakmaz; uykudan uyanır
+            if (cur.Kind == JobKind.UseItem && cur.Reason == NeedType.Bladder) return;
+            if (cur.Kind == JobKind.UseItem)
+            {
+                var it = _world.GetItem(cur.ItemId);
+                var i = it == null ? null : FindInteraction(it.Def, cur.InteractionId);
+                if (i != null && i.RestoreFor(NeedType.Bladder) > 0f) return;
+            }
+            _toiletCheckUntil = _elapsedDays + 0.05;                        // tuvalet yoksa her an aramasın
+            FindBestFor(NeedType.Bladder, out var item, out var inter);
+            if (item == null) return;
+            Queue.InsertFront(Job.UseItem(item.Id, inter.Id).WithReason(NeedType.Bladder));
+            ResetJobState();
         }
 
         // Görev: ihtiyaçları eşiğin üstündeyken görevine göre (tarla, hayvanlar) bir iş alır. Bulamazsa bir süre sormaz.
@@ -658,8 +754,19 @@ namespace Thatchwick.Core.Jobs
             ResetJobState();
         }
 
+        /// <summary>Su alınabilecek karolar (WaterNetwork.WaterAccess). Null ise su taşınmaz (eşyada su hazır sayılır).</summary>
+        public Func<HashSet<GridPos>> WaterNetworkAccess { get; set; }
+
+        private bool _hasWater, _fetching;
+
+        /// <summary>Şu an banyo için su taşıyor mu (eylem balonu).</summary>
+        public bool IsFetchingWater => _fetching;
+
         private void ResetJobState()
         {
+            _character.Asleep = false;
+            _hasWater = false;
+            _fetching = false;
             _path = null;
             _pathIndex = 0;
             _stepFraction = 0;

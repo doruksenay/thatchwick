@@ -28,7 +28,7 @@ namespace Thatchwick.Core.World
             // Başlangıç kapalı olabilir (üstüne eşya konmuş karakter): oradan dışarı adım atılabilir, böylece kimse hapsolmaz.
             if (!map.HasTile(start) || !map.IsWalkable(goal)) return null;
             if (start == goal) return new List<GridPos> { start };
-            return Search(map, start, p => p == goal, p => Heuristic(p, goal, map.HasRoads));
+            return Search(map, start, p => p == goal, p => Heuristic(p, goal, map.HasTerrainSpeed));
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Thatchwick.Core.World
             return Search(map, start, set.Contains, p =>
             {
                 int best = int.MaxValue;
-                foreach (var t in targets) best = Math.Min(best, Heuristic(p, t, map.HasRoads));
+                foreach (var t in targets) best = Math.Min(best, Heuristic(p, t, map.HasTerrainSpeed));
                 return best;
             });
         }
@@ -63,7 +63,7 @@ namespace Thatchwick.Core.World
             var closed = new HashSet<GridPos>();
 
             // Yol varsa adım maliyeti yolun hızına bölünür (yol tercih edilir); kesirler için maliyetler x10 ölçeklenir.
-            bool roads = map.HasRoads;
+            bool roads = map.HasTerrainSpeed;
             var first = new Node(start, 0, heuristic(start), null);
             open.Add(first);
             best[start] = first;

@@ -295,6 +295,7 @@ namespace Thatchwick.Game
             _world.CharacterPositions = LivingPositions;
             _population.NameGenerator = NextName;
             _population.BabyBorn += OnBabyBorn;
+            _population.BirthPlace = m => Population.ShelterNear(_world, m.Position);   // helada, tarlada doğan bebek eve
             _family = new FamilyService(_population, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 6, _rngEpoch));
             _family.Happened += OnFamilyEvent;
             _family.JoinedHousehold += OnJoinedHousehold;
@@ -375,20 +376,23 @@ namespace Thatchwick.Game
             _input.enabled = false;
         }
 
-        // Test haritası: gölet (dikdörtgen), bir çit hattı ve dağınık engeller.
+        // Test haritası: gölet (su karoları: içine girilir, yıkanılır, balık tutulur, kışın donar), bir çit hattı ve dağınık engeller.
         private static GridMap BuildDemoMap()
         {
             var map = new GridMap(MapWidth, MapHeight);
             for (int x = 10; x < 22; x++)
                 for (int y = 12; y < 20; y++)
-                    map.SetBlocked(new GridPos(x, y), true);
+                    map.SetFloor(new GridPos(x, y), FloorType.Water);
 
             for (int y = 4; y < 26; y++)
                 if (y != 15) map.SetBlocked(new GridPos(32, y), true); // (32,15) bir geçit
 
             var rng = new System.Random(7);
             for (int i = 0; i < 60; i++)
-                map.SetBlocked(new GridPos(rng.Next(MapWidth), rng.Next(MapHeight)), true);
+            {
+                var p = new GridPos(rng.Next(MapWidth), rng.Next(MapHeight));
+                if (!map.IsWater(p)) map.SetBlocked(p, true);
+            }
 
             return map;
         }
@@ -746,6 +750,7 @@ namespace Thatchwick.Game
                 Runner = new JobRunner(character, _world)
                 {
                     Effects = _effects, Social = _family, Animals = _animalCare, TileWork = _farmWork,
+                    WaterNetworkAccess = () => WaterNetwork.WaterAccess(_world),
                     WalkSpeed = () => _animals.RideSpeed(character.Id), DutyProvider = _duties.Next,
                     DutySpeed = () => SkillNames.Factor(_life.BestSkill(SkillType.Stewardship), 0.03)
                 },
@@ -753,6 +758,7 @@ namespace Thatchwick.Game
                 Renderer = sr
             };
             _life.Attach(actor.Runner);
+            character.Accident += c => { if (!c.IsVillager) ShowMessage($"{c.Name} yetişemedi... (tuvalet kazası)"); };
             ApplyVillagerRules(character, actor.Runner);
             _actors.Add(actor);
             return actor;
@@ -1038,6 +1044,23 @@ namespace Thatchwick.Game
                         Run = () => { _animals.Released = !_animals.Released; ShowMessage(_animals.Released ? "Hayvanlar gündüz otlağa çıkar" : "Hayvanlar barınakta kalır"); }
                     });
             }
+            // Su karosu (gölet, dere): yıkan, balık tut; donmuşsa buz kes.
+            if (items.Count == 0 && animal == null && _world.Map.IsWater(tile))
+            {
+                names.Add(_world.Map.WaterFrozen ? "Donmuş su" : "Su");
+                var waterTile = tile;
+                foreach (var (label, act) in new[] { ("Suya gir, yıkan", TileAction.Bathe), ("Kıyıdan balık tut", TileAction.Fish), ("Buz kes", TileAction.CutIce) })
+                {
+                    if (act == TileAction.CutIce && !_world.Map.WaterFrozen) continue;
+                    var a = act;
+                    _menuOptions.Add(new MenuOption
+                    {
+                        Label = label,
+                        Blocked = _farmWork.CanDo(Commander.Character, waterTile, a),
+                        Run = () => Commander.Runner.Command(Job.OnTile(waterTile, a))
+                    });
+                }
+            }
             _menuTitle = string.Join(", ", names);
         }
 
@@ -1110,7 +1133,12 @@ namespace Thatchwick.Game
                 if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
             };
             _storagePanel = new StoragePanel(_life.Spoilage, _household, _content);
-            _farmWork = new FarmWork(_world) { HoeSpeed = c => _life.Tools.SpeedFor("hoe"), House = _household };
+            _farmWork = new FarmWork(_world)
+            {
+                HoeSpeed = c => _life.Tools.SpeedFor("hoe"), House = _household, Content = _content,
+                Season = () => _clock.Season, TemperatureAt = p => _heat.TemperatureAt(p), RodSpeed = c => _life.Tools.SpeedFor("rod")
+            };
+            _farmWork.Worked += (c, t, note) => { ShowMessage($"{c.Name}: {note}"); _account.Count("act:water"); };
             _farmWork.Tilled += (c, t) => _account.Count("act:till");
             _farmWork.Repaired += (c, t) => { ShowMessage($"{c.Name} yolu onardı"); _account.Count("act:repair_road"); };
             _effects.TemperatureAt = p => _heat.TemperatureAt(p);   // buz kesmek için don
@@ -1341,6 +1369,11 @@ namespace Thatchwick.Game
             ShowMessage($"{days:0} gün ileri sarıldı");
         }
 
+        /// <summary>Dış sıcaklık bunun altındayken su donar.</summary>
+        private const float FrozenBelow = -1f;
+        /// <summary>Yağmurda açık havada gün başına ıslaklık (yaklaşık iki saatte sırılsıklam).</summary>
+        private const double RainSoakPerDay = 10.0;
+
         private void Simulate(double gameDays)
         {
             _heat.Tick(gameDays, _clock.TotalDays);
@@ -1355,6 +1388,17 @@ namespace Thatchwick.Game
                 if (heatView != null) { var lit = IsoArt.Item(heatItem, out _); if (lit != null && heatView.sprite != lit) heatView.sprite = lit; }
             foreach (var a in _actors)
                 a.Character.AmbientTemperature = a.Character.IsVillager ? 15f : _heat.TemperatureAt(a.Character.Position);
+            // Su donar: dondurucu soğukta gölet buz tutar (üstünden yürünür, buz kesilir, delikten balık tutulur).
+            _world.Map.WaterFrozen = _heat.OutdoorTemperature <= FrozenBelow;
+            // Yağmurda açık havadaki ıslanır (yalnızca hane; köylüler damda sayılır).
+            if (_life.RainyToday)
+                foreach (var a in _actors)
+                {
+                    var c = a.Character;
+                    if (c.IsVillager || c.IsDead) continue;
+                    var room = _world.Map.Rooms.RoomAt(c.Position);
+                    if (room == null || !room.IsIndoor) c.Soak((float)(gameDays * RainSoakPerDay));
+                }
             _population.Tick(gameDays);
             _life.Tick(gameDays);
             _scheduleTimer += gameDays;
@@ -1533,9 +1577,9 @@ namespace Thatchwick.Game
             {
                 var c = actor.Character;
                 GUILayout.Label(
-                    $"{c.Name} ({(c.IsDead ? "Öldü" : StageName(c.Stage))}{(c.IsPregnant ? ", hamile" : "")}, {c.AgeDays:0}g): Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0} · Isınma {c.Needs.Get(NeedType.Warmth):0}");
+                    $"{c.Name} ({(c.IsDead ? "Öldü" : StageName(c.Stage))}{(c.IsPregnant ? ", hamile" : "")}, {c.AgeDays:0}g): Açlık {c.Needs.Get(NeedType.Hunger):0} · Enerji {c.Needs.Get(NeedType.Energy):0} · Isınma {c.Needs.Get(NeedType.Warmth):0}{(c.Wetness > 0.05f ? $" · Islak %{c.Wetness * 100f:0}" : "")}");
                 if (c.ComfortNeedsActive && !c.IsDead)
-                    GUILayout.Label($"   Keyif {c.Needs.Get(NeedType.Fun):0} · Hijyen {c.Needs.Get(NeedType.Hygiene):0} · Ruh hali: {MoodText(c)}");
+                    GUILayout.Label($"   Keyif {c.Needs.Get(NeedType.Fun):0} · Hijyen {c.Needs.Get(NeedType.Hygiene):0} · Tuvalet {c.Needs.Get(NeedType.Bladder):0} · Ruh hali: {MoodText(c)}");
                 if (!c.IsDead) GUILayout.Label($"   {ActivityText(actor.Runner)}");
                 var skills = SkillsText(c);
                 if (skills.Length > 0) GUILayout.Label($"   Beceri: {skills}");

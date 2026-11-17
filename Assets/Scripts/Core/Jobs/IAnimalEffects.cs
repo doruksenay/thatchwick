@@ -35,7 +35,13 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Çimi çapalayıp ekilebilir toprağa çevir.</summary>
         Till = 0,
         /// <summary>Yıpranmış yolu onar (çakıl ve kaldırım taş ister).</summary>
-        Repair = 1
+        Repair = 1,
+        /// <summary>Dereye/gölete girip yıkan (ıslatır; kışın üşütür, yazın serinletir).</summary>
+        Bathe = 2,
+        /// <summary>Kıyıdan ya da buz deliğinden balık tut.</summary>
+        Fish = 3,
+        /// <summary>Donmuş suda buz kes.</summary>
+        CutIce = 4
     }
 
     /// <summary>Karo işlerinin kuralları ve etkileri (Core.Work.FarmWork uygular).</summary>

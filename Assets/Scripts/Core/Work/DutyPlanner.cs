@@ -64,7 +64,7 @@ namespace Thatchwick.Core.Work
         {
             int n = 0;
             if (duty == DutyKind.Farm)
-                foreach (var it in _world.Items) { if (FarmInteraction(it) != null) n++; }
+                foreach (var it in _world.Items) { if (FarmInteraction(it) != null || EmptyInteraction(it) != null) n++; }
             else if (duty == DutyKind.Animals)
             {
                 foreach (var it in _world.Items) if (FeedInteraction(it) != null || CollectInteraction(it) != null) n++;
@@ -99,6 +99,14 @@ namespace Thatchwick.Core.Work
                 foreach (var it in _world.Items)
                 {
                     var i = FarmInteraction(it);
+                    if (i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;
+                    var item = it; var inter = i;
+                    Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
+                }
+                // Dolmaya yüz tutmuş hela çukuru ve lazımlıklar boşaltılır: gübre tarlaya.
+                foreach (var it in _world.Items)
+                {
+                    var i = EmptyInteraction(it);
                     if (i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;
                     var item = it; var inter = i;
                     Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
@@ -181,6 +189,17 @@ namespace Thatchwick.Core.Work
         {
             if (it.IsDecor || !it.Def.IsHousing || it.StockTotal <= 0) return null;
             foreach (var i in it.Def.Interactions) if (i.Collect) return i;
+            return null;
+        }
+
+        /// <summary>Bu doluluktan sonra tarla görevlisi helayı/lazımlığı boşaltır.</summary>
+        public const float EmptyAtFill = 0.75f;
+
+        // Boşaltma etkileşimi; dolu değilse null.
+        private static InteractionDef EmptyInteraction(ItemInstance it)
+        {
+            if (it.IsDecor || it.Def.FillCapacity <= 0 || it.Fill < it.Def.FillCapacity * EmptyAtFill) return null;
+            foreach (var i in it.Def.Interactions) if (i.EmptyFill) return i;
             return null;
         }
     }

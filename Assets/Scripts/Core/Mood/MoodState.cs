@@ -106,7 +106,7 @@ namespace Thatchwick.Core.Mood
         {
             float r = 0f;
             foreach (var a in _active) r += a.Def.ColdResist;
-            return Math.Min(0.6f, Math.Max(0f, r));
+            return Math.Min(0.6f, Math.Max(-0.5f, r));       // üşütmek dayanıklılığı eksiye düşürür
         }
 
         /// <summary>Etkilerden gelen acıkma ve yorulma çarpanları (çarpılır, en az 0,5).</summary>

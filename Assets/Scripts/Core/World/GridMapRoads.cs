@@ -53,6 +53,30 @@ namespace Thatchwick.Core.World
         /// <summary>Haritada en az bir yol var mı (yol bulucu hızlı yolu kullanır).</summary>
         public bool HasRoads => _roadCount > 0;
 
+        // ---- su karoları (dere, gölet) ----
+        private int _waterCount;
+        private bool _waterFrozen;
+
+        /// <summary>Haritada su karosu var mı.</summary>
+        public bool HasWater => _waterCount > 0;
+        /// <summary>Yürüme hızını değiştiren karo var mı (yol ya da su): yol bulucu ağırlıklı aramayı bununla açar.</summary>
+        public bool HasTerrainSpeed => _roadCount > 0 || _waterCount > 0;
+
+        /// <summary>Su karosu: içine girilen yavaşlar (x0,5) ve ıslanır; donmuşsa üstünde normal yürünür.</summary>
+        public const float WaterSpeed = 0.5f;
+
+        public bool IsWater(GridPos p) => p.Z == 0 && GetFloor(p) == FloorType.Water;
+
+        /// <summary>Sular donmuş mu (kışın dondurucu soğukta; oyun katmanı günlük verir).</summary>
+        public bool WaterFrozen
+        {
+            get => _waterFrozen;
+            set { if (_waterFrozen == value) return; _waterFrozen = value; RoadsChanged?.Invoke(); }
+        }
+
+        /// <summary>Açık (donmamış) su karosu mu: içine girilir, kova doldurulur, balık tutulur, yıkanılır.</summary>
+        public bool IsOpenWater(GridPos p) => !_waterFrozen && IsWater(p);
+
         public RoadType GetRoad(GridPos p) => _road != null && RoadPlane(p) ? _road[PlaneIndex(p)] : RoadType.None;
         public float GetRoadCondition(GridPos p) => _road != null && RoadPlane(p) ? _roadCond[PlaneIndex(p)] : 0f;
         public bool IsNaturalRoad(GridPos p) => _road != null && RoadPlane(p) && _roadNatural[PlaneIndex(p)];
@@ -88,6 +112,8 @@ namespace Thatchwick.Core.World
         /// <summary>Karonun yürüme hız çarpanı: yolun türü ve durumu (sağlam tam, yıpranmış %65, bozuk %35 katkı).</summary>
         public float WalkSpeedAt(GridPos p)
         {
+            if (!HasTerrainSpeed) return 1f;
+            if (IsOpenWater(p)) return WaterSpeed;
             if (_roadCount == 0) return 1f;
             var t = GetRoad(p);
             if (t == RoadType.None) return 1f;
@@ -97,7 +123,7 @@ namespace Thatchwick.Core.World
         }
 
         /// <summary>İki karo arası adımın hız çarpanı (iki ucun ortalaması).</summary>
-        public float StepSpeed(GridPos from, GridPos to) => _roadCount == 0 ? 1f : (WalkSpeedAt(from) + WalkSpeedAt(to)) * 0.5f;
+        public float StepSpeed(GridPos from, GridPos to) => !HasTerrainSpeed ? 1f : (WalkSpeedAt(from) + WalkSpeedAt(to)) * 0.5f;
 
         /// <summary>Yol döşer ya da kaldırır (yapı modu, kayıt). Durum 1 (yeni).</summary>
         public void SetRoad(GridPos p, RoadType type, float condition = 1f, bool natural = false)
