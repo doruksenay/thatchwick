@@ -15,6 +15,8 @@ namespace Thatchwick.Core.Jobs
     {
         /// <summary>Yürüme hızı: oyun günü başına karo (3 karo/sn gerçek zaman, 1x hızda).</summary>
         public const double TilesPerGameDay = 1080.0;
+        /// <summary>Otonomi puanında her etkileşime eklenen sabit süre (karar, yanaşma): küçük ama sık dolduranı cezalandırır.</summary>
+        public const double AutonomyOverheadDays = 0.03;
 
         /// <summary>Otonom karakter, ihtiyacı bu değerin altına düşünce kendiliğinden iş arar.</summary>
         public const float AutonomyThreshold = 30f;
@@ -457,7 +459,7 @@ namespace Thatchwick.Core.Jobs
         private bool PersonOnCooldown(int characterId) =>
             _unreachablePersonUntil.TryGetValue(characterId, out var until) && until > _elapsedDays;
 
-        // İhtiyacı en iyi doyuracak eşyayı seçer: önce en çok doyuran, sonra en yakın.
+        // İhtiyacı en iyi doyuracak eşyayı seçer: birim zamanda en çok dolduran (yürüme ve iş süresi dahil).
         private bool TryStartNeedItem(NeedType need)
         {
             FindBestFor(need, out var bestItem, out var bestInteraction);
@@ -471,8 +473,9 @@ namespace Thatchwick.Core.Jobs
         {
             bestItem = null;
             bestInteraction = null;
-            float bestRestore = 0f;
+            double bestScore = double.MinValue;
             int bestDistance = int.MaxValue;
+            float missing = Math.Max(1f, 100f - _character.Needs.Get(need));
             foreach (var item in _world.Items)
             {
                 foreach (var interaction in item.Def.Interactions)
@@ -494,14 +497,17 @@ namespace Thatchwick.Core.Jobs
                         Math.Abs(item.Position.Y - _character.Position.Y))
                         + Math.Abs(item.Position.Z - _character.Position.Z) * OtherLevelDistance;
 
+                    // Eksik olandan fazlası boşa gider; yürüme ve iş süresine ek sabit bir hazırlık payı, sık sık küçük
+                    // dolduran eşyayı (tabure) uzun dolduranın (yatak) önüne geçirmez.
+                    double score = Math.Min(restore, missing) / (EffectiveDuration(interaction) + distance / TilesPerGameDay + AutonomyOverheadDays);
                     bool better = bestInteraction == null
-                        || restore > bestRestore
-                        || (restore == bestRestore && distance < bestDistance);
+                        || score > bestScore + 1e-9
+                        || (Math.Abs(score - bestScore) <= 1e-9 && distance < bestDistance);
                     if (better)
                     {
                         bestItem = item;
                         bestInteraction = interaction;
-                        bestRestore = restore;
+                        bestScore = score;
                         bestDistance = distance;
                     }
                 }

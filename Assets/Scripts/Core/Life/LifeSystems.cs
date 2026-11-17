@@ -114,7 +114,7 @@ namespace Thatchwick.Core.Life
             Villagers.EventTriggered += (v, e) => Say($"{v.Name}: {e.Text}", NoticeLevel.Info, v.Id);
             Villagers.SuccessorArrived += (v, def) => Say($"{v.Name} köye yerleşti ({def.RoleName}).", NoticeLevel.Info, v.Id);
             Villagers.GiftGiven += (v, item, taste, msg) => Say(msg, taste == GiftTaste.Dislike ? NoticeLevel.Warning : NoticeLevel.Info, v.Id);
-            Watcher.Raised += (level, text, id) => Say(text, level, id);
+            Watcher.Raised += (level, text, id) => Say(text, level, id, transient: true);
             population.BabyBorn += (baby, mother, father) =>
             {
                 Ledger.OnBorn(baby);
@@ -212,9 +212,9 @@ namespace Thatchwick.Core.Life
         public string TradeOf(Character c) => LifeRules.TradeOf(Content, c);
 
         /// <summary>Bildirim akışına ve düz metin olayına yazar. Dış sistemler (aile, pazar) bunu çağırabilir.</summary>
-        public void Say(string message, NoticeLevel level = NoticeLevel.Info, int characterId = 0)
+        public void Say(string message, NoticeLevel level = NoticeLevel.Info, int characterId = 0, bool transient = false)
         {
-            Log.Add(Clock.TotalDays, level, message, characterId);
+            Log.Add(Clock.TotalDays, level, message, characterId, transient);
             Notice?.Invoke(message);
         }
 
@@ -304,7 +304,7 @@ namespace Thatchwick.Core.Life
             {
                 _moodAccumulator = 0;
                 Mood.Update(Population.Members);
-                Watcher.Update(Population.Members);
+                Watcher.Update(Population.Members, day: Clock.TotalDays);
             }
 
             Spoilage.Tick(gameDays);

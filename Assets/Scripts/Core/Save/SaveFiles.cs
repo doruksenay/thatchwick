@@ -12,6 +12,7 @@ namespace Thatchwick.Core.Save
     {
         public const string TempSuffix = ".tmp";
         public const string BackupSuffix = ".bak";
+        public const string CorruptSuffix = ".corrupt";
 
         public static void WriteAtomic(string path, string text)
         {
@@ -48,6 +49,29 @@ namespace Thatchwick.Core.Save
             }
             text = null;
             return false;
+        }
+
+        /// <summary>
+        /// Açılamayan kaydı (ana dosya, yoksa geçici dosya ya da yedek) "&lt;yol&gt;.corrupt" adıyla kopyalar: sonraki kayıtlar
+        /// .bak döngüsüyle onu silmez, oyuncu ya da destek sonradan bakabilir. Önceki .corrupt kopyasının üzerine yazar.
+        /// Dönen: kopyanın yolu; kopyalanacak dosya yoksa ya da kopyalanamazsa null.
+        /// </summary>
+        public static string Quarantine(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return null;
+            string target = path + CorruptSuffix;
+            foreach (var source in new[] { path, path + TempSuffix, path + BackupSuffix })
+            {
+                try
+                {
+                    if (!File.Exists(source)) continue;
+                    File.Copy(source, target, overwrite: true);
+                    return target;
+                }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
+            }
+            return null;
         }
 
         private static bool TryReadOne(string file, Func<string, bool> isValid, out string text)

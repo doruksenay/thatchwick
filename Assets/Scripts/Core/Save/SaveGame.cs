@@ -48,6 +48,8 @@ namespace Thatchwick.Core.Save
     public static class SaveGame
     {
         public const int CurrentVersion = 2;
+        /// <summary>Kayıttan kabul edilen en büyük harita kenarı (oyun haritası 48x32).</summary>
+        public const int MaxMapSide = 256;
 
         public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
             AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null,
@@ -271,6 +273,9 @@ namespace Thatchwick.Core.Save
             if (data == null) throw new ArgumentNullException(nameof(data));
             SaveMigrator.Upgrade(data);
             if (data.map == null || data.map.width <= 0 || data.map.height <= 0) throw new InvalidOperationException("Kayıtta harita yok.");
+            // Bozuk ya da elle oynanmış dosya devasa bir dizi ayırtmasın.
+            if (data.map.width > MaxMapSide || data.map.height > MaxMapSide)
+                throw new InvalidOperationException($"Kayıttaki harita boyutu geçersiz: {data.map.width}x{data.map.height}.");
 
             var result = new LoadedGame();
             result.Clock = new GameClock(timeConfig);
@@ -302,6 +307,7 @@ namespace Thatchwick.Core.Save
             if (m.edges != null)
                 foreach (var e in m.edges)
                 {
+                    if (e == null || !Enum.IsDefined(typeof(EdgeAxis), e.axis)) continue;
                     var edge = new Edge(e.x, e.y, (EdgeAxis)e.axis, e.z);
                     if (map.EdgeInBounds(edge) && Enum.IsDefined(typeof(EdgeKind), e.kind)) map.SetEdge(edge, (EdgeKind)e.kind);
                 }

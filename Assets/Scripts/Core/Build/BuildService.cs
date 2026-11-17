@@ -32,19 +32,23 @@ namespace Thatchwick.Core.Build
         private List<UndoStep> _group;
         private string _groupLabel;
         private bool _undoing;
+        // Bir kez geri alınamayan adım: yığında kalır (sebep geçici olabilir: akçe yetmedi, biri duruyor). Hemen ardından
+        // yine geri alınamazsa atılır; böylece kalıcı olarak geri alınamayan bir adım altındakileri kilitlemez.
+        private UndoStep _failedOnce;
 
         public bool CanUndo => _undo.Count > 0;
         public string UndoLabel => _undo.Count > 0 ? _undo[_undo.Count - 1].Label : null;
         public int UndoCount => _undo.Count;
         /// <summary>Şimdiye dek kaydedilen toplam geri alma adımı (kapasite taşsa da artar).</summary>
         public int UndoPushes { get; private set; }
-        public void ClearUndo() { _undo.Clear(); _group = null; }
+        public void ClearUndo() { _undo.Clear(); _group = null; _failedOnce = null; }
 
         private void Record(string label, Func<PlacementCheck> undo)
         {
             if (_undoing) return;
             var step = new UndoStep { Label = label, Run = undo };
             if (_group != null) { _group.Add(step); return; }
+            _failedOnce = null;
             _undo.Add(step);
             UndoPushes++;
             if (_undo.Count > UndoCapacity) _undo.RemoveAt(0);
@@ -66,10 +70,13 @@ namespace Thatchwick.Core.Build
             if (steps.Count == 0) return;
             Record(_groupLabel, () =>
             {
+                // Geri alınan alt adım listeden çıkar: bir alt adım takılırsa yeniden deneme kaldığı yerden sürer,
+                // önceden geri alınmış adımları ikinci kez çalıştırmaz.
                 for (int i = steps.Count - 1; i >= 0; i--)
                 {
                     var r = steps[i].Run();
                     if (!r.Ok) return r;
+                    steps.RemoveAt(i);
                 }
                 return PlacementCheck.Success;
             });
@@ -84,9 +91,21 @@ namespace Thatchwick.Core.Build
             PlacementCheck result;
             try { result = step.Run(); }
             finally { _undoing = false; }
-            // Başarısız adım da yığından çıkar: geri alınamayan tek bir adım, altındaki bütün adımları kilitlemesin.
-            _undo.RemoveAt(_undo.Count - 1);
-            return result;
+            if (result.Ok)
+            {
+                _undo.RemoveAt(_undo.Count - 1);
+                _failedOnce = null;
+                return result;
+            }
+            if (_failedOnce == step)
+            {
+                // İkinci deneme de olmadı: adım atılır, altındaki adımlar geri alınabilir kalır.
+                _undo.RemoveAt(_undo.Count - 1);
+                _failedOnce = null;
+                return PlacementCheck.Fail($"{result.Reason} Bu adım geri alınamadı ve atlandı.");
+            }
+            _failedOnce = step;
+            return PlacementCheck.Fail($"{result.Reason} (Engel kalkınca yeniden dene; bir daha başarısız olursa adım atlanır.)");
         }
 
         private void GiveBack(List<ItemDef> defs, int from = 0)
@@ -145,6 +164,36 @@ namespace Thatchwick.Core.Build
                 if (oa == remote || ob == remote) return false;
             }
             return true;
+        }
+
+        private const string StairsCutOff = "Merdiven oraya taşınırsa o katta kalan biri inemez.";
+
+        // Zemin kat dışında duran herkes kendi katındaki bir merdiven ucuna yürüyebiliyor mu.
+        private bool AnyoneCutOff()
+        {
+            if (_world.CharacterPositions == null) return false;
+            List<GridPos> ends = null;
+            foreach (var p in _world.CharacterPositions())
+            {
+                if (p.Z == 0) continue;
+                if (ends == null)
+                {
+                    ends = new List<GridPos>();
+                    foreach (var it in _world.Items)
+                    {
+                        if (!it.Def.IsStairs || it.IsDecor) continue;
+                        WorldState.StairsEnds(it.Def, it.Position, it.Rotation, out var entrance, out var landing);
+                        ends.Add(entrance);
+                        ends.Add(landing);
+                    }
+                }
+                var goals = new List<GridPos>();
+                foreach (var e in ends) if (e.Z == p.Z) goals.Add(e);
+                if (goals.Count == 0) return true;
+                if (goals.Contains(p)) continue;
+                if (Pathfinder.FindPathToAny(_world.Map, p, goals) == null) return true;
+            }
+            return false;
         }
 
         // Kaldırılan eşyanın yeri: geri alırken türüne göre (yer, duvar, yüzey yuvası) aynı yere konur.
@@ -298,10 +347,11 @@ namespace Thatchwick.Core.Build
                 WorldState.StairsEnds(def, position, rotation, out _, out var landing);
                 if (!_world.Map.HasTile(landing))
                 {
-                    BeginGroup("Merdiven");
-                    grouped = true;
+                    // Dıştaki bir grubun içindeyse (oda şablonu) yeni grup açılmaz; açmadığı grubu da kapatmaz.
+                    grouped = _group == null;
+                    if (grouped) BeginGroup("Merdiven");
                     var built = BuildLevelTile(landing, stairEnd: true);
-                    if (!built.Ok) { EndGroup(); return built; }
+                    if (!built.Ok) { if (grouped) EndGroup(); return built; }
                 }
             }
             _house.TryTakeItem(itemId);
@@ -385,6 +435,12 @@ namespace Thatchwick.Core.Build
             var oldPos = item != null ? item.Position : position;
             int oldRot = item != null ? item.Rotation : rotation;
             var moved = _world.MoveItem(itemId, position, rotation);
+            // Merdiven taşınınca üst/alt katta duran biri yeni merdivene yürüyemiyorsa taşıma geri çevrilir.
+            if (moved.Ok && item != null && item.Def.IsStairs && !item.IsDecor && AnyoneCutOff())
+            {
+                _world.MoveItem(itemId, oldPos, oldRot);
+                return PlacementCheck.Fail(StairsCutOff);
+            }
             if (moved.Ok && item != null)
                 Record("Taşıma", () => _world.GetItem(itemId) == null ? PlacementCheck.Fail("Eşya artık yok.") : _world.MoveItem(itemId, oldPos, oldRot));
             return moved;
@@ -708,7 +764,6 @@ namespace Thatchwick.Core.Build
             var newSpot = SpotOf(item, variant);
             var fits = CanPutBack(newSpot, itemId);
             if (!fits.Ok) return fits;
-            double fuel = item.FuelDays;
             int diff = variant.Price - oldDef.Price;
             int delta = diff > 0 ? -diff : (int)Math.Floor(-diff * SellRatio);   // eksi = ödedi, artı = iade aldı
             if (diff > 0 && !_house.TrySpend(diff)) return PlacementCheck.Fail("Akçe yetmiyor.");
@@ -716,7 +771,7 @@ namespace Thatchwick.Core.Build
 
             _world.RemoveItem(itemId);
             var created = PutBack(newSpot);
-            created.FuelDays = fuel;        // yanan ocağın yakıtı varyantla birlikte kalır
+            CarryState(item, created);      // ocağın yakıtı, ahırın yemi ve biriken ürünü varyantla birlikte kalır
             replaced = created;
             int newId = created.Id;
             Record("Varyant", () =>
@@ -725,12 +780,20 @@ namespace Thatchwick.Core.Build
                 if (cur == null) return PlacementCheck.Fail("Eşya artık yok.");
                 if (delta > 0) { if (!_house.TrySpend(delta)) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz."); }
                 else if (delta < 0) _house.AddAkce(-delta);
-                double fuelNow = cur.FuelDays;
                 _world.RemoveItem(newId);
-                PutBack(oldSpot).FuelDays = fuelNow;
+                CarryState(cur, PutBack(oldSpot));
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;
+        }
+
+        // Varyant değişiminde eşyanın üstünde biriken durum (yakıt, yem, ürün) yeni eşyaya geçer.
+        private static void CarryState(ItemInstance from, ItemInstance to)
+        {
+            to.FuelDays = from.FuelDays;
+            to.FeedStock = from.FeedStock;
+            foreach (var kv in new List<KeyValuePair<string, int>>(from.Stock))
+                if (kv.Value > 0) to.SetStock(kv.Key, kv.Value);
         }
 
         /// <summary>Mağazada satılan eşyalar (fiyatı olanlar), kategoriye ve ada göre.</summary>

@@ -208,7 +208,7 @@ namespace Thatchwick.Core.Animals
                 var home = _world.GetItem(a.HomeItemId);
 
                 a.AgeDays += gameDays;
-                if (a.AgeDays >= a.Species.LifespanDays) { Kill(a, AnimalDeath.OldAge); continue; }
+                if (a.AgeDays >= a.LifespanDays) { Kill(a, AnimalDeath.OldAge); continue; }
 
                 // Beslenme: barınaktaki yemden payına düşeni yer.
                 double need = a.Species.FeedPerDay * gameDays;

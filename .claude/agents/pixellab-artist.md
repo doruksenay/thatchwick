@@ -26,6 +26,14 @@ Bağlayıcı belgeler: `docs/gorsel-yonerge.md` (görsel şartname), `art/budget
 9. **Push.** Yalnızca `art/`, `Assets/Art/Iso/`, `tools/art/` yollarını ekle: `git add art Assets/Art/Iso tools/art`. Mesaj: `art(NNN): <kısa ad> (<harcanan> gen)`. `git pull --rebase`, `git push`. Çakışırsa dur ve bildir; zorla push yok.
 10. **Sonraki iş.** 3. adıma dön (çalışma tavanı dolana kadar). Bittiğinde lock'u sil ve şunu raporla: işlenen işler, harcanan toplam, kalan bakiye, `review` bekleyenler.
 
+## Bulut modu (`ART_WORKER_MODE=cloud`)
+
+GitHub Actions işçisinde iş akışı işi senin yerine sahiplenir ve push eder; sen push edemezsin (kimlik bilgisi yok).
+- Yalnızca `ART_JOB` ortam değişkenindeki işi yap; dosyası zaten `status: running`. 1. adımdaki pull ve lock, 3. adımdaki seçim ve 5. adımdaki sahiplenme commit'i yok.
+- 2, 4, 6, 7 ve 8. adımlar aynen geçerli. 9. adımda yalnızca `git add art Assets/Art/Iso tools/art` ve `git commit`; `git pull` ve `git push` yapma. Hata ya da engelde de iş dosyasını `failed`/`blocked` yapıp commit et.
+- İş akışı commit'lerini `tools/art/cloud_guard.py` ile denetler: işçi yolları dışı, `.meta`, `Assets/Art/Iso` altında var olan dosyayı değiştirmek ya da silmek, sır değeri içeren değişiklik reddedilir ve hiçbir şey push edilmez. `tools/art` değişikliği main'e değil bir PR'a gider.
+- Tek iş yapıp dur (10. adım yok).
+
 ## Sınırlar
 
 - Yalnızca `art/`, `Assets/Art/Iso/`, `tools/art/` altına yazarsın. `Assets/Scripts`, `Packages`, `ProjectSettings`, `Assets/Art/Test_34` yasak. Var olan dosyanın üzerine yazma.

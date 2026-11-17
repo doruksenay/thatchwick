@@ -121,13 +121,17 @@ namespace Thatchwick.Game
         public static SaveData PendingLoad;
         private long _lastSavedDay = -1;
         private static string SavePath => System.IO.Path.Combine(Application.persistentDataPath, "thatchwick_save.json");
-        public static bool HasSave => SaveFiles.Exists(SavePath);
+        // Menüde "devam et"/"Yükle" yalnızca okunabilir bir kayıt varken görünür; Awake'te ve her başarılı kayıttan sonra güncellenir.
+        private bool _hasSave;
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
         private Rect HudRect => new Rect(8f, 8f, 340f, Mathf.Min(560f, Screen.height / HudScale - 16f));
 
         private void Awake()
         {
+            // Kare hızı açıkça sabit: mobilde 30 (pil), masaüstünde 60. Oyun hızı kareden bağımsızdır (Time.deltaTime).
+            Application.targetFrameRate = Application.isMobilePlatform ? 30 : 60;
+            WaitPendingWrite();   // önceki sahnenin arka plan kaydı bitmeden kayıt okunmasın
             IsoArt.Reset();
             _content = ContentLoader.Load(out var contentErrors);
             foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");
@@ -137,9 +141,16 @@ namespace Thatchwick.Game
             if (PendingLoad != null)
             {
                 try { loaded = SaveGame.Load(PendingLoad, _content); }
-                catch (System.Exception ex) { Debug.LogError($"Kayıt yüklenemedi: {ex.Message}"); }
+                catch (System.Exception ex)
+                {
+                    // Yeni oyun başlar; ama bozuk kayıt ilk otomatik kayıtla silinmesin diye kenara kopyalanır.
+                    Debug.LogError($"Kayıt yüklenemedi: {ex.Message}");
+                    string kept = SaveFiles.Quarantine(SavePath);
+                    ShowMessage(kept != null ? "Kayıt açılamadı. Dosya .corrupt olarak saklandı; yeni oyun başladı." : "Kayıt açılamadı; yeni oyun başladı.", 8f);
+                }
                 PendingLoad = null;
             }
+            _hasSave = SaveFiles.TryRead(SavePath, IsReadableSave, out _, out _);
 
             // Eski kayıtta tohum yoktur (0): yeni bir ana tohum verilir, o oturumda pazar eski sabit tohumuyla kalır.
             bool legacySeed = loaded != null && loaded.Seed == 0;
@@ -220,7 +231,14 @@ namespace Thatchwick.Game
             }
             _storage = new StorageService(_world, _household, _content);
             _effects = new InteractionEffects(_world, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 2, _rngEpoch)) { Storage = _storage };
-            _effects.Applied += (c, i, summary) => { ShowMessage($"{c.Name}: {summary}"); _account.Record(i.Id, _clock.DayIndex); };
+            _effects.Applied += (c, i, summary) =>
+            {
+                if (c.IsVillager) return;
+                // Yemek, uyku, yıkanma gibi ihtiyaç işleri (çoğu otonom) hesap XP'si vermez; yalnızca sayaç (rozet) ilerler.
+                bool work = !i.RestoresNeed || i.Skill.HasValue;
+                if (work) { ShowMessage($"{c.Name}: {summary}"); _account.Record(i.Id, _clock.DayIndex); }
+                else _account.Count("act:" + i.Id);
+            };
             _plants = new PlantSystem(_world, Thatchwick.Core.Seeds.Derive(_seed, 7, _rngEpoch));
             _animals = new AnimalSystem(_world, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 3, _rngEpoch));
             if (loaded != null)
@@ -260,7 +278,7 @@ namespace Thatchwick.Game
             _population = new Population(firstFreeId: 1, seed: Thatchwick.Core.Seeds.Derive(_seed, 5, _rngEpoch));
             // Yerleştirme denetimi karakterleri bilsin: kimsenin üstüne eşya, ekin ya da mezar konmaz.
             _world.CharacterPositions = LivingPositions;
-            _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % (sex == Sex.Female ? GirlNames.Length : BoyNames.Length)];
+            _population.NameGenerator = NextName;
             _population.BabyBorn += OnBabyBorn;
             _family = new FamilyService(_population, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 6, _rngEpoch));
             _family.Happened += OnFamilyEvent;
@@ -530,16 +548,31 @@ namespace Thatchwick.Game
         }
 
         /// <summary>İstenen yerin çevresinde boş (eşyasız, geçilebilir) ilk karo.</summary>
+        // En yakın yürünebilir karo; tercihen meydana yürüyerek ulaşılabilen (eşyaların arasına kapanmış bir cep değil).
         private GridPos NearestWalkable(GridPos near, int maxRadius = 4)
         {
+            GridPos? enclosed = null;
             for (int r = 0; r <= maxRadius; r++)
                 for (int dy = -r; dy <= r; dy++)
                     for (int dx = -r; dx <= r; dx++)
                     {
+                        if (System.Math.Max(System.Math.Abs(dx), System.Math.Abs(dy)) != r) continue;
                         var p = new GridPos(near.X + dx, near.Y + dy);
-                        if (_world.Map.IsWalkable(p)) return p;
+                        if (!_world.Map.IsWalkable(p)) continue;
+                        if (ReachesSquare(p)) return p;
+                        if (!enclosed.HasValue) enclosed = p;
                     }
-            return near;
+            return enclosed ?? near;
+        }
+
+        private bool ReachesSquare(GridPos p)
+        {
+            var square = Places["square"];
+            var goals = new List<GridPos>(9);
+            for (int dy = -1; dy <= 1; dy++)
+                for (int dx = -1; dx <= 1; dx++)
+                    goals.Add(new GridPos(square.X + dx, square.Y + dy));
+            return Pathfinder.FindPathToAny(_world.Map, p, goals) != null;
         }
 
         private GridPos ResolvePlace(string key, int jitterSeed = 0)
@@ -560,10 +593,35 @@ namespace Thatchwick.Game
             }
         }
 
+        // Yeni doğan ya da gelen kişinin adı: listeden sıradaki, ama yaşayan biriyle aynı ad verilmez (yüklemeden sonra sayaç
+        // sıfırlansa da). Liste tükenirse aynı ada sıra eki konur ("Edith II").
+        private string NextName(Sex sex)
+        {
+            var names = sex == Sex.Female ? GirlNames : BoyNames;
+            var taken = new HashSet<string>();
+            foreach (var c in _population.Members) if (!c.IsDead) taken.Add(c.Name);
+            for (int i = 0; i < names.Length; i++)
+            {
+                string n = names[_nameCounter++ % names.Length];
+                if (!taken.Contains(n)) return n;
+            }
+            string baseName = names[_nameCounter++ % names.Length];
+            for (int k = 2; ; k++)
+            {
+                string n = $"{baseName} {Roman(k)}";
+                if (!taken.Contains(n)) return n;
+            }
+        }
+
+        private static string Roman(int n) => n switch { 2 => "II", 3 => "III", 4 => "IV", 5 => "V", 6 => "VI", 7 => "VII", 8 => "VIII", 9 => "IX", _ => n.ToString() };
+
+        // Yapı denetimleri için: herkesin durduğu karo ve yürürken adım attığı sonraki karo (eşya ayağının altına konmasın).
         private IEnumerable<GridPos> LivingPositions()
         {
             foreach (var c in _population.Members)
                 if (!c.IsDead) yield return c.Position;
+            foreach (var a in _actors)
+                if (a.Character != null && !a.Character.IsDead && a.Runner?.NextTile is GridPos next) yield return next;
         }
 
         // Köylüler gün saatine, havaya ve şenliğe göre evinden işine, meydana yürür.
@@ -699,14 +757,39 @@ namespace Thatchwick.Game
 
         // ---- kayıt ----
 
-        private void SaveNow(bool quiet)
+        // Arka planda süren dosya yazımı: yazımlar sırayla yapılır, yeni bir yazım ya da yükleme öncekini bekler.
+        private static System.Threading.Tasks.Task _pendingWrite = System.Threading.Tasks.Task.CompletedTask;
+
+        private static void WaitPendingWrite()
+        {
+            try { _pendingWrite.Wait(); }
+            catch (System.Exception ex) { Debug.LogError($"Kaydetme hatası: {ex.Message}"); }
+        }
+
+        /// <param name="background">Günlük otomatik kayıt: durum ana iş parçacığında alınır, dosya arka planda yazılır
+        /// (oyun takılmaz). Elle kayıt, uygulamadan çıkış ve duraklatma beklemeden yazar.</param>
+        private void SaveNow(bool quiet, bool background = false)
         {
             if (_player == null || _creator != null || _dynastyEnded) return;   // oyun başlamadan ya da bittikten sonra kaydetme
             try
             {
                 var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _animals, _life, _plants, _seed, _rngEpoch);
+                string json = JsonUtility.ToJson(data);
+                string path = SavePath;
                 // Önce geçici dosyaya yazılır, eski kayıt .bak olarak kalır: yazma yarıda kesilse de bir kayıt sağlam kalır.
-                SaveFiles.WriteAtomic(SavePath, JsonUtility.ToJson(data));
+                if (background)
+                {
+                    _pendingWrite = _pendingWrite.ContinueWith(_ =>
+                    {
+                        try { SaveFiles.WriteAtomic(path, json); }
+                        catch (System.Exception ex) { Debug.LogError($"Kaydetme hatası: {ex.Message}"); }
+                    }, System.Threading.Tasks.TaskScheduler.Default);
+                    _hasSave = true;
+                    return;
+                }
+                WaitPendingWrite();
+                SaveFiles.WriteAtomic(path, json);
+                _hasSave = true;
                 if (!quiet) ShowMessage("Kaydedildi");
             }
             catch (System.Exception ex)
@@ -718,13 +801,16 @@ namespace Thatchwick.Game
 
         private void LoadSave()
         {
+            WaitPendingWrite();
             try
             {
-                // Ana dosya yoksa ya da bozuksa yedeğe düşer.
-                if (!SaveFiles.TryRead(SavePath, IsReadableSave, out string json, out bool usedFallback))
+                // Ana dosya yoksa, okunamıyorsa ya da oyuna yüklenemiyorsa yedeğe düşer. Yükleme burada bir kez denenir:
+                // JSON'u geçerli ama içeriği bozuk dosya yeni sahnede sessizce "yeni oyun"a dönmesin.
+                if (!SaveFiles.TryRead(SavePath, CanLoadSave, out string json, out bool usedFallback))
                 {
                     Debug.LogError("Kayıt okunamadı: geçerli bir kayıt ya da yedek yok.");
-                    ShowMessage("Kayıt okunamadı");
+                    string kept = SaveFiles.Quarantine(SavePath);
+                    ShowMessage(kept != null ? "Kayıt açılamadı; dosya .corrupt olarak saklandı." : "Kayıt okunamadı", 6f);
                     return;
                 }
                 if (usedFallback) Debug.LogWarning("Ana kayıt okunamadı; yedekten yüklendi.");
@@ -739,6 +825,22 @@ namespace Thatchwick.Game
             enabled = false;
             new GameObject("GameRoot").AddComponent<GameRoot>();
             Destroy(gameObject);
+        }
+
+        private bool CanLoadSave(string json)
+        {
+            try
+            {
+                var data = JsonUtility.FromJson<SaveData>(json);
+                if (data == null) return false;
+                SaveGame.Load(data, _content);
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"Kayıt yüklenemiyor: {ex.Message}");
+                return false;
+            }
         }
 
         private static bool IsReadableSave(string json)
@@ -997,7 +1099,7 @@ namespace Thatchwick.Game
 
             // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
             double gameDays = _clock.Advance(dt);
-            if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true); }
+            if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true, background: true); }
             Simulate(gameDays);
         }
 
@@ -1175,7 +1277,14 @@ namespace Thatchwick.Game
             if (_creator != null)
             {
                 _creator.OnGUI();
-                if (HasSave)
+                if (Time.unscaledTime < _messageUntil)
+                {
+                    float ms = HudScale;
+                    GUI.matrix = Matrix4x4.Scale(new Vector3(ms, ms, 1f));
+                    GUI.Label(new Rect(8f, Screen.height / ms - 96f, Screen.width / ms - 260f, 40f), _message);
+                    GUI.matrix = Matrix4x4.identity;
+                }
+                if (_hasSave)
                 {
                     float cs = HudScale;
                     GUI.matrix = Matrix4x4.Scale(new Vector3(cs, cs, 1f));
@@ -1240,7 +1349,7 @@ namespace Thatchwick.Game
             GUILayout.BeginHorizontal();
             if (Application.isEditor && GUILayout.Button("Test: +5 gün")) FastForward(5);
             if (GUILayout.Button("Kaydet")) SaveNow(quiet: false);
-            GUI.enabled = HasSave;
+            GUI.enabled = _hasSave;
             if (GUILayout.Button("Yükle")) { LoadSave(); return; }
             GUI.enabled = true;
             GUILayout.EndHorizontal();

@@ -14,11 +14,14 @@ namespace Thatchwick.Core.Life
         public int CharacterId;
         public int Repeats = 1;
         public bool Read;
+        /// <summary>Gelip geçen durum bildirimi (acıktı, yoruldu): akış dolunca önce bunlar silinir.</summary>
+        public bool Transient;
     }
 
     /// <summary>
     /// Bildirim akışı (Adım 18b): yeni olay üstte, aynı metin kısa sürede tekrar gelirse birleşir ("x3").
-    /// Arayüz yalnızca bunu okur; üretim NeedWatcher ve LifeSystems olaylarındadır.
+    /// Akış dolunca önce en eski gelip geçen ihtiyaç bildirimi silinir; ölüm, doğum gibi olaylar ihtiyaç uyarılarının
+    /// arasında kaybolmaz. Arayüz yalnızca bunu okur; üretim NeedWatcher ve LifeSystems olaylarındadır.
     /// </summary>
     public sealed class NotificationLog
     {
@@ -35,13 +38,15 @@ namespace Thatchwick.Core.Life
             get { int n = 0; foreach (var e in _items) if (!e.Read) n++; return n; }
         }
 
-        public NoticeEntry Add(double day, NoticeLevel level, string text, int characterId = 0)
+        public NoticeEntry Add(double day, NoticeLevel level, string text, int characterId = 0, bool transient = false)
         {
             if (string.IsNullOrWhiteSpace(text)) return null;
-            for (int i = _items.Count - 1; i >= 0 && i >= _items.Count - 6; i--)
+            // Pencere içindeki her kayda bakılır (başka kişilerin bildirimleri araya girse de birleşir).
+            for (int i = _items.Count - 1; i >= 0; i--)
             {
                 var e = _items[i];
-                if (e.Text == text && e.CharacterId == characterId && day - e.Day <= MergeWindowDays)
+                if (day - e.Day > MergeWindowDays) continue;
+                if (e.Text == text && e.CharacterId == characterId)
                 {
                     e.Repeats++;
                     e.Day = day;
@@ -50,9 +55,13 @@ namespace Thatchwick.Core.Life
                     return e;
                 }
             }
-            var entry = new NoticeEntry { Day = day, Level = level, Text = text, CharacterId = characterId };
+            var entry = new NoticeEntry { Day = day, Level = level, Text = text, CharacterId = characterId, Transient = transient };
             _items.Add(entry);
-            if (_items.Count > Capacity) _items.RemoveAt(0);
+            if (_items.Count > Capacity)
+            {
+                int victim = _items.FindIndex(e => e.Transient);
+                _items.RemoveAt(victim >= 0 && victim < _items.Count - 1 ? victim : 0);
+            }
             Added?.Invoke(entry);
             return entry;
         }
@@ -70,12 +79,16 @@ namespace Thatchwick.Core.Life
 
     /// <summary>
     /// Ekrandaki ihtiyaç uyarıları ("Maud acıktı", "Bebek aç"): eşiği geçince bir kez uyarır, ihtiyaç
-    /// toparlanıp biraz yükselince yeniden silahlanır. Köylüler izlenmez (ihtiyaçları sahnede).
+    /// toparlanıp biraz yükselince yeniden silahlanır. Aynı kişi ve ihtiyaç için aynı uyarı bekleme süresi dolmadan
+    /// tekrarlanmaz (her gün acıkmak olağandır, akışı doldurmasın). Köylüler izlenmez (ihtiyaçları sahnede).
     /// </summary>
     public sealed class NeedWatcher
     {
         public const float RearmMargin = 12f;
+        /// <summary>Aynı uyarının (kişi, ihtiyaç, basamak) en erken tekrarı: uyarı 1 gün, tehlike yarım gün sonra.</summary>
+        public const double WarnRepeatDays = 1.0, DangerRepeatDays = 0.5;
         private readonly Dictionary<long, int> _level = new Dictionary<long, int>();
+        private readonly Dictionary<long, double> _lastRaised = new Dictionary<long, double>();
 
         public event Action<NoticeLevel, string, int> Raised;
 
@@ -92,7 +105,8 @@ namespace Thatchwick.Core.Life
 
         private static long Key(int id, NeedType n) => ((long)id << 8) | (uint)(int)n;
 
-        public void Update(IEnumerable<Character> characters, float babyHungerThreshold = 45f)
+        /// <param name="day">Şimdiki oyun günü; verilmezse (NaN) bekleme süresi uygulanmaz.</param>
+        public void Update(IEnumerable<Character> characters, float babyHungerThreshold = 45f, double day = double.NaN)
         {
             foreach (var c in characters)
             {
@@ -106,6 +120,13 @@ namespace Thatchwick.Core.Life
 
                     int now = r.Danger >= 0 && v <= r.Danger ? 2 : v <= warn ? 1 : 0;
                     if (now == 0 && level > 0 && v < warn + RearmMargin) now = level;   // histerezis: toparlanmadan yeniden uyarma
+                    if (now > level && !double.IsNaN(day))
+                    {
+                        long raisedKey = key * 4 + now;
+                        double wait = now == 2 ? DangerRepeatDays : WarnRepeatDays;
+                        if (_lastRaised.TryGetValue(raisedKey, out var last) && day - last < wait) { _level[key] = now; continue; }
+                        _lastRaised[raisedKey] = day;
+                    }
                     if (now > level)
                     {
                         if (now == 2) Raised?.Invoke(NoticeLevel.Danger, $"{c.Name} {r.DangerText}", c.Id);

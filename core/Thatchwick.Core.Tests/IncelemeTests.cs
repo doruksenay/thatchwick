@@ -435,7 +435,9 @@ namespace Thatchwick.Core.Tests
             Assert.True(svc.PlaceFromInventory("item.chest_wood", new GridPos(1, 1), 0, out _).Ok);
             Assert.True(svc.SellPlaced(loose.Id).Ok);
             world.PlaceItem(chest, new GridPos(2, 2));                              // eski yeri doldu: satış geri alınamaz
-            Assert.False(svc.Undo().Ok);
+            Assert.False(svc.Undo().Ok);                                            // ilk denemede adım yığında kalır
+            Assert.True(svc.CanUndo);
+            Assert.False(svc.Undo().Ok);                                            // ikinci denemede atlanır
             Assert.True(svc.Undo().Ok);                                             // alttaki adım hâlâ geri alınabilir
             Assert.Equal(1, house.Count("item.chest_wood"));
             Assert.False(svc.CanUndo);

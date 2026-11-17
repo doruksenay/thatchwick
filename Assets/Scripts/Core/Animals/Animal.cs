@@ -27,6 +27,23 @@ namespace Thatchwick.Core.Animals
         public bool IsDead { get; internal set; }
         public AnimalDeath CauseOfDeath { get; internal set; }
         public bool IsMature => AgeDays >= Species.MatureDays;
+        /// <summary>
+        /// Bu hayvanın ömrü: tür ömrünün %85-115'i, kimlikten türetilir (aynı gün alınan hayvanlar aynı gün ölmez;
+        /// kayda ek alan gerekmez, yüklemede değişmez).
+        /// </summary>
+        public double LifespanDays => Species.LifespanDays * LifespanFactor(Id);
+
+        internal static double LifespanFactor(int id)
+        {
+            unchecked
+            {
+                uint h = (uint)id;          // murmur3 karıştırıcısı: ardışık kimlikler de dağınık çıkar
+                h ^= h >> 16; h *= 0x85EBCA6Bu;
+                h ^= h >> 13; h *= 0xC2B2AE35u;
+                h ^= h >> 16;
+                return 0.85 + 0.30 * ((h & 0xFFFF) / 65535.0);
+            }
+        }
         /// <summary>0-100 dostluk: iyi bakılan ve sevilen hayvan daha çok ve ara sıra ekstra ürün verir.</summary>
         public float Friendship { get; internal set; }
         /// <summary>Son sevilmeden bu kadar gün geçmeden yeniden sevilemez (günde bir kez).</summary>
