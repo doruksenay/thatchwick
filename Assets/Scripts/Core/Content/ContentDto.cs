@@ -20,6 +20,7 @@ namespace Thatchwick.Core.Content
         public GoalDto[] goals;
         public ToolDto[] tools;
         public RoomTemplateDto[] templates;
+        public BuildPartDto[] buildParts;   // yapı modu malzeme ve parça kataloğu (duvar, kapı, pencere, zemin, çatı, kaplama)
 
         /// <summary>Başka bir içerik dosyasının bölümlerini bunun sonuna ekler (items.json + life.json birleşimi).</summary>
         public void Merge(ContentFileDto other)
@@ -36,6 +37,7 @@ namespace Thatchwick.Core.Content
             goals = Concat(goals, other.goals);
             tools = Concat(tools, other.tools);
             templates = Concat(templates, other.templates);
+            buildParts = Concat(buildParts, other.buildParts);
         }
 
         private static T[] Concat<T>(T[] a, T[] b)
@@ -129,6 +131,25 @@ namespace Thatchwick.Core.Content
         public int waterRadius;      // sulama hendeği/kova: her sabah sular
         public int protectRadius;    // korkuluk: kuzgunlardan korur
         public int pollinate;        // arı kovanı: tozlaştırma yarıçapı
+        public string finishGroup;   // mobilya kaplama grubu (wood, cloth, metal, clay): renk/malzeme örnekleri
+    }
+
+    [Serializable]
+    public sealed class BuildPartDto
+    {
+        public string id;
+        public string displayName;
+        public string kind;          // wallMaterial, wallFinish, door, window, fence, gate, railing, floor, roof, itemFinish
+        public int price;
+        public int level;            // 0 = 1
+        public string color;         // yer tutucu renk #RRGGBB
+        public string floorBase;     // zemin: Dirt, Wood, Stone
+        public float heatLoss;       // 0 = 1
+        public int comfort;
+        public string group;         // itemFinish: wood, cloth, metal, clay
+        public float priceFactor;    // itemFinish: 0 = 1
+        public int[] levels;         // konabileceği katlar (boş = hepsi)
+        public bool isDefault;
     }
 
     [Serializable]

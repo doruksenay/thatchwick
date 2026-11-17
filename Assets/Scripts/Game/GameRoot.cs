@@ -180,6 +180,7 @@ namespace Thatchwick.Game
             var viewGo = new GameObject("WorldView");
             viewGo.transform.SetParent(transform, false);
             _view = viewGo.AddComponent<WorldView>();
+            _view.Content = _content;
             _view.Build(map);
 
             RebuildItemViews();
@@ -198,7 +199,7 @@ namespace Thatchwick.Game
             var wallsGo = new GameObject("WallView");
             wallsGo.transform.SetParent(transform, false);
             _walls = wallsGo.AddComponent<WallView>();
-            _walls.Init(map, _view);
+            _walls.Init(map, _view, _content);
 
             var cam = Camera.main;
             if (cam == null)
@@ -269,7 +270,12 @@ namespace Thatchwick.Game
                 if (why == PlantLoss.Crows) ShowMessage($"Kuzgunlar {def.DisplayName} yedi (korkuluk dikmeyi düşün)");
                 else if (why == PlantLoss.Storm) ShowMessage($"Fırtına {def.DisplayName} ekinini yıprattı");
             };
-            _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
+            _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays)
+            {
+                // Malzeme yalıtımı: taş duvar az, kalas çok kaçırır; çatı stili üst katın çatı kaybını değiştirir.
+                EdgeLossFactor = e => _buildService?.EdgePart(_world.Map.GetEdge(e), _world.Map.GetEdgeStyle(e))?.HeatLoss ?? 1f,
+                RoofLossFactor = t => BuildParts.Resolve(_content, BuildPartKind.Roof, _world.Map.GetRoofStyle(t) == GridMap.NoRoof ? null : _world.Map.GetRoofStyle(t))?.HeatLoss ?? 1f
+            };
             if (loaded != null) _heat.RestoreTemperatures(loaded.Temperatures);
             _buildService = new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level, HousingResidents = _animals.Residents, Plants = _plants };
             _buildMode = new BuildMode(_world, _household, _buildService, _content, _view, _input, transform, _walls, _animals);
@@ -489,6 +495,17 @@ namespace Thatchwick.Game
                     AddItemSprite(item, pos, color, decorArt != null ? 1f : 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy, level).y, 0, level) + 2, decorArt);
                     continue;
                 }
+                if (item.IsRug)
+                {
+                    // Halı: yere serili düz elmaslar (zeminin hemen üstünde, eşyaların altında).
+                    var rugColor = FinishTint(item, ItemColor(item.Def.Id), 1f);
+                    foreach (var tile in item.OccupiedTiles())
+                    {
+                        var rsr = AddItemSprite(item, _view.TileToWorld(tile), rugColor, 0.92f, -9990 + level * Iso.LevelSortStep, SpriteMaterials.Diamond);
+                        rsr.color = rugColor;
+                    }
+                    continue;
+                }
                 bool flip = false;
                 var art = item.IsPlant ? null : IsoArt.Item(item, out flip);
                 if (art != null)
@@ -496,7 +513,7 @@ namespace Thatchwick.Game
                     // Tek görsel, ayak izinin merkezinde (pivot = taban elmasının merkezi).
                     var center = Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, level);
                     var sr = AddItemSprite(item, center, Color.white, 1f, Iso.SortOrder(center.y, 0, level), art);
-                    sr.color = Color.white;
+                    sr.color = FinishTint(item, Color.white, 0.45f);   // kaplama: gerçek görsel gelene kadar hafif renk
                     sr.flipX = flip;
                     if (item.Def.HeatOutput > 0f) _heatViews.Add((item, sr));
                     continue;
@@ -508,12 +525,21 @@ namespace Thatchwick.Game
                     _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform));
                     continue;
                 }
+                var tinted = FinishTint(item, color, 1f);
                 foreach (var tile in item.OccupiedTiles())
                 {
                     var pos = _view.TileToWorld(tile);
-                    AddItemSprite(item, pos, color, 1f, Iso.SortOrder(pos.y, 0, level));
+                    AddItemSprite(item, pos, tinted, 1f, Iso.SortOrder(pos.y, 0, level));
                 }
             }
+        }
+
+        // Mobilya kaplamasının rengi (amount: 1 = tam kaplama rengi, küçük = beyaza karışık); kaplama yoksa baseColor.
+        private Color FinishTint(ItemInstance item, Color baseColor, float amount)
+        {
+            if (item.FinishId == null || !_content.Parts.TryGet(item.FinishId, out var part)) return baseColor;
+            var c = SpriteMaterials.PartColor(part, baseColor);
+            return amount >= 1f ? c : Color.Lerp(Color.white, c, amount);
         }
 
         // Bitki etiketi: büyüme yüzdesi, ekinde sulu/susuz, meyve ağacında meyve durumu.
@@ -547,7 +573,6 @@ namespace Thatchwick.Game
             return sr;
         }
 
-        /// <summary>İstenen yerin çevresinde boş (eşyasız, geçilebilir) ilk karo.</summary>
         // En yakın yürünebilir karo; tercihen meydana yürüyerek ulaşılabilen (eşyaların arasına kapanmış bir cep değil).
         private GridPos NearestWalkable(GridPos near, int maxRadius = 4)
         {

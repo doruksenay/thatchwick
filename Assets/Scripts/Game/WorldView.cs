@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Thatchwick.Core.Content;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Game
@@ -29,6 +30,22 @@ namespace Thatchwick.Game
         private int _viewLevel;
 
         public GridMap Map { get; private set; }
+
+        /// <summary>Zemin stillerinin rengi için yapı parçası kataloğu (yoksa türün sabit rengi).</summary>
+        public ContentDatabase Content { get; set; }
+
+        // Karonun zemin stili rengi (dama deseni için çift/tek karoda biraz koyulaşır); stil ya da katalog yoksa null.
+        private Color? StyleColor(GridPos p, FloorType floor)
+        {
+            if (Content == null || floor == FloorType.Grass) return null;
+            var style = Map.GetFloorStyle(p);
+            BuildPartDef part = null;
+            if (style != null) Content.Parts.TryGet(style, out part);
+            if (part == null) part = BuildParts.DefaultFloor(Content, floor);
+            if (part == null || !part.TryGetRgb(out byte r, out byte g, out byte b)) return null;
+            float k = ((p.X + p.Y) & 1) == 0 ? 1f : 0.94f;
+            return new Color(r / 255f * k, g / 255f * k, b / 255f * k, 1f);
+        }
 
         /// <summary>Görünen en üst kat (-1 bodrum, 0 zemin, 1 üst kat). Değişince LevelChanged tetiklenir.</summary>
         public int ViewLevel
@@ -119,9 +136,14 @@ namespace Thatchwick.Game
                     var floor = Map.GetFloor(p);
                     bool terrainBlocked = _terrainBlocked[y * Map.Width + x];
                     // Gerçek karo varsa (çim, toprak) onu kullan; yoksa yer tutucu elmas + renk.
-                    var real = terrainBlocked ? null : IsoArt.Ground(floor, x, y);
+                    // Gerçek karo yalnızca varsayılan stilde (stil seçilmiş zemin, görseli gelene kadar renkle çizilir).
+                    var real = terrainBlocked ? null
+                        : Map.GetFloorStyle(p) != null ? IsoArt.FloorPart(Map.GetFloorStyle(p), x, y)
+                        : IsoArt.Ground(floor, x, y) ?? IsoArt.FloorPart(Content != null ? BuildParts.DefaultFloor(Content, floor)?.Id : null, x, y);
                     sr.sprite = real != null ? real : SpriteMaterials.Diamond;
+                    var styled = real == null ? StyleColor(p, floor) : null;
                     if (real != null) sr.color = Color.white;
+                    else if (styled.HasValue) sr.color = styled.Value;
                     else switch (floor)
                     {
                         case FloorType.Wood: sr.color = ((x + y) & 1) == 0 ? new Color32(168, 124, 76, 255) : new Color32(158, 115, 68, 255); break;
@@ -165,7 +187,9 @@ namespace Thatchwick.Game
             }
             var floor = Map.GetFloor(p);
             bool even = ((p.X + p.Y) & 1) == 0;
-            switch (floor)
+            var styled = StyleColor(p, floor);
+            if (styled.HasValue) sr.color = styled.Value;
+            else switch (floor)
             {
                 case FloorType.Stone: sr.color = even ? new Color32(140, 140, 148, 255) : new Color32(130, 130, 138, 255); break;
                 case FloorType.Dirt: sr.color = even ? new Color32(120, 94, 68, 255) : new Color32(112, 88, 62, 255); break;

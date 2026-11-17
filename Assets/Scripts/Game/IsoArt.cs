@@ -95,6 +95,37 @@ namespace Thatchwick.Game
             return Get($"iso_wall_{type}_{a}", axis == EdgeAxis.Horizontal ? 32f : 70f, 19f);
         }
 
+        /// <summary>
+        /// Malzemeli/stilli kenar parçası (yapı parçası kimliğiyle): <c>iso_wall_&lt;parça&gt;[_low|_half]_&lt;eksen&gt;</c>, ör.
+        /// iso_wall_wall_stone_sw_ne, iso_wall_door_iron_se_nw, iso_wall_fence_picket_sw_ne. Tuval ve pivot düz duvarla aynı.
+        /// Görsel yoksa null (çağıran yer tutucu renkle çizer).
+        /// </summary>
+        public static Sprite WallPart(string partId, EdgeAxis axis, string variant = null)
+        {
+            if (string.IsNullOrEmpty(partId)) return null;
+            string a = axis == EdgeAxis.Horizontal ? "sw_ne" : "se_nw";
+            string v = string.IsNullOrEmpty(variant) ? "" : "_" + variant;
+            return Get($"iso_wall_{partId}{v}_{a}", axis == EdgeAxis.Horizontal ? 32f : 70f, 19f);
+        }
+
+        /// <summary>Zemin stili karosu: iso_floor_&lt;ad&gt;_a / _b (parça kimliğinden "floor_" atılır; 64x32 elmas, merkez pivot); yoksa null.</summary>
+        public static Sprite FloorPart(string partId, int x, int y)
+        {
+            if (string.IsNullOrEmpty(partId)) return null;
+            int h = (x * 73856093) ^ (y * 19349663);
+            if (h < 0) h = -h;
+            string n = partId.StartsWith("floor_") ? partId.Substring(6) : partId;   // floor_oak → iso_floor_oak_a
+            return GetCentered($"iso_floor_{n}_{(h % 2 == 0 ? "a" : "b")}") ?? GetCentered($"iso_floor_{n}_a");
+        }
+
+        /// <summary>Çatı karosu dokusu: iso_roof_&lt;ad&gt;_a (eğim), _ridge (sırt; "roof_" atılır); motor eğim yönüne göre gölgeler. Yoksa null.</summary>
+        public static Sprite RoofPart(string partId, bool ridge)
+        {
+            if (string.IsNullOrEmpty(partId)) return null;
+            string n = partId.StartsWith("roof_") ? partId.Substring(5) : partId;     // roof_slate → iso_roof_slate_a
+            return (ridge ? GetCentered($"iso_roof_{n}_ridge") : null) ?? GetCentered($"iso_roof_{n}_a");
+        }
+
         // ---------------- eşyalar ----------------
 
         private sealed class ItemArt

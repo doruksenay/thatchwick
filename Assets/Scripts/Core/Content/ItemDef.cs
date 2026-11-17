@@ -10,7 +10,9 @@ namespace Thatchwick.Core.Content
         /// <summary>Yerleştirilmez; yalnızca envanterde sayılan kaynak (odun gibi).</summary>
         Resource = 2,
         /// <summary>Duvarın iç yüzüne asılır (meşale, duvar rafı, goblen); karo kaplamaz.</summary>
-        Wall = 3
+        Wall = 3,
+        /// <summary>Halı: yere serilir, yolu kapatmaz, üstüne mobilya konur; karo başına bir halı.</summary>
+        Rug = 4
     }
 
     /// <summary>Bir eşyanın yüzeyindeki dekor yuvası. U,V: kapladığı alanın içinde 0-1 arası yerel konum.</summary>
@@ -84,6 +86,9 @@ namespace Thatchwick.Core.Content
         /// <summary>Kiler eşyası: yiyecek bozulmasını bu çarpanla yavaşlatır (0 = kiler değil).</summary>
         public float Preserves { get; set; }
         public List<string> Variants { get; set; } = new List<string>();
+        /// <summary>Mobilya kaplama grubu (wood, cloth, metal, clay); boşsa renk/malzeme seçeneği yok.</summary>
+        public string FinishGroup { get; set; }
+        public bool IsRug => Placement == ItemPlacement.Rug;
         /// <summary>Yabani toplanabilir: görüneceği mevsimler ve haritada en çok kaç tane.</summary>
         public List<Time.Season> ForageSeasons { get; set; } = new List<Time.Season>();
         public int ForageMax { get; set; }

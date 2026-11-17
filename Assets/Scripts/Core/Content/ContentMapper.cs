@@ -56,6 +56,7 @@ namespace Thatchwick.Core.Content
                     HousingKind = string.IsNullOrWhiteSpace(dto.housing) ? null : dto.housing,
                     HousingCapacity = dto.capacity,
                     StairsDelta = dto.stairs,
+                    FinishGroup = string.IsNullOrWhiteSpace(dto.finishGroup) ? null : dto.finishGroup,
                     AllowedLevels = dto.levels != null ? new List<int>(dto.levels) : new List<int>()
                 };
                 if (dto.stairs != 0 && (dto.width * dto.height != 2 && (dto.width > 0 || dto.height > 0)))
@@ -201,10 +202,52 @@ namespace Thatchwick.Core.Content
 
             ApplyRecipes(file.recipes, db, errors);
             ApplyAnimals(file.animals, db, errors);
+            ApplyBuildParts(file.buildParts, db, errors);
 
             LifeContentMapper.Apply(file, db, errors);
             errors.AddRange(db.Validate());
             return errors;
+        }
+
+        private static void ApplyBuildParts(BuildPartDto[] parts, ContentDatabase db, List<string> errors)
+        {
+            if (parts == null) return;
+            foreach (var dto in parts)
+            {
+                if (dto == null) continue;
+                if (!Enum.TryParse(dto.kind, true, out BuildPartKind kind) || !Enum.IsDefined(typeof(BuildPartKind), kind))
+                {
+                    errors.Add($"{dto.id}: bilinmeyen yapı parçası türü '{dto.kind}'.");
+                    continue;
+                }
+                var def = new BuildPartDef
+                {
+                    Id = dto.id,
+                    DisplayName = dto.displayName,
+                    Kind = kind,
+                    Price = dto.price,
+                    UnlockLevel = dto.level <= 0 ? 1 : dto.level,
+                    Color = string.IsNullOrWhiteSpace(dto.color) ? "#C8B490" : dto.color,
+                    HeatLoss = dto.heatLoss <= 0f ? 1f : dto.heatLoss,
+                    Comfort = dto.comfort,
+                    Group = string.IsNullOrWhiteSpace(dto.group) ? null : dto.group,
+                    PriceFactor = dto.priceFactor <= 0f ? 1f : dto.priceFactor,
+                    Levels = dto.levels != null ? new List<int>(dto.levels) : new List<int>(),
+                    IsDefault = dto.isDefault
+                };
+                if (kind == BuildPartKind.Floor)
+                {
+                    if (string.IsNullOrWhiteSpace(dto.floorBase) || !Enum.TryParse(dto.floorBase, true, out World.FloorType fb)
+                        || !Enum.IsDefined(typeof(World.FloorType), fb) || fb == World.FloorType.Grass)
+                    {
+                        errors.Add($"{dto.id}: zemin parçasının floorBase'i Dirt, Wood ya da Stone olmalı.");
+                        continue;
+                    }
+                    def.Base = fb;
+                }
+                try { db.Parts.Register(def); }
+                catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }
+            }
         }
 
         private static void AddMaterials(InteractionDef interaction, ConsumeDto[] materials)

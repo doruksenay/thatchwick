@@ -30,6 +30,9 @@ namespace Thatchwick.Core.World
         /// <summary>Herhangi bir eşya eklendi/taşındı/kaldırıldı (görünüm yenilemesi için).</summary>
         public event Action Changed;
 
+        /// <summary>Eşyanın görünüşü değişti (kaplama): görünüm yenilensin.</summary>
+        public void NotifyChanged() => Changed?.Invoke();
+
         public WorldState(GridMap map)
         {
             Map = map ?? throw new ArgumentNullException(nameof(map));
@@ -141,6 +144,38 @@ namespace Thatchwick.Core.World
             }
         }
 
+        /// <summary>
+        /// Halı serilebilir mi: karolar var, arazi engeli yok (mobilyanın altına serilir) ve karoda başka halı yok.
+        /// Halı yolu kapatmaz.
+        /// </summary>
+        public PlacementCheck CanPlaceRug(ItemDef def, GridPos position, int rotation, int? ignoreItemId = null)
+        {
+            if (def == null) throw new ArgumentNullException(nameof(def));
+            if (!def.IsRug) return PlacementCheck.Fail("Bu eşya halı değil.");
+            if (!GridMap.IsValidLevel(position.Z)) return PlacementCheck.Fail("Geçersiz kat.");
+            if (!def.AllowsLevel(position.Z)) return PlacementCheck.Fail("Bu halı bu katta serilmez.");
+            var (w, h) = Footprint.Dimensions(def.Width, def.Height, rotation);
+            for (int dy = 0; dy < h; dy++)
+                for (int dx = 0; dx < w; dx++)
+                {
+                    var tile = new GridPos(position.X + dx, position.Y + dy, position.Z);
+                    if (!Map.InBounds(tile)) return PlacementCheck.Fail("Harita dışına taşıyor.");
+                    if (!Map.HasTile(tile)) return PlacementCheck.Fail(position.Z > 0 ? "Önce üst kat döşemesi gerekir." : "Önce burayı kazmalısın.");
+                    if (Map.IsBlocked(tile) && GetItemAt(tile) == null) return PlacementCheck.Fail("Orası geçilemez.");
+                    var other = GetRugAt(tile);
+                    if (other != null && other.Id != ignoreItemId) return PlacementCheck.Fail("Orada zaten halı var.");
+                }
+            return PlacementCheck.Success;
+        }
+
+        /// <summary>Karoya serili halı; yoksa null.</summary>
+        public ItemInstance GetRugAt(GridPos tile)
+        {
+            foreach (var item in _items)
+                if (item.IsRug && Occupies(item, tile)) return item;
+            return null;
+        }
+
         public PlacementCheck CanPlaceOnSurface(ItemDef def, int surfaceItemId, string slotId, int? ignoreItemId = null)
         {
             if (def == null) throw new ArgumentNullException(nameof(def));
@@ -219,11 +254,11 @@ namespace Thatchwick.Core.World
         /// <summary>Yer eşyası yerleştirir. Geçersizse InvalidOperationException.</summary>
         public ItemInstance PlaceItem(ItemDef def, GridPos position, int rotation = 0)
         {
-            var check = CanPlaceFloor(def, position, rotation, null, landingMayBeCreated: false);
+            var check = def != null && def.IsRug ? CanPlaceRug(def, position, rotation) : CanPlaceFloor(def, position, rotation, null, landingMayBeCreated: false);
             if (!check.Ok) throw new InvalidOperationException($"{position}: {check.Reason}");
 
             var item = new ItemInstance(_nextId++, def, position, Footprint.Normalize(rotation));
-            foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
+            if (!def.IsRug) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
             _items.Add(item);
             if (def.IsStairs) RebuildLinks();
             Changed?.Invoke();
@@ -257,19 +292,96 @@ namespace Thatchwick.Core.World
             if (item.IsDecor) return PlacementCheck.Fail("Dekor taşınamaz, yuvasından alınıp yeniden konur.");
             if (item.IsWallMounted) return MoveWallItem(itemId, position, rotation);
 
-            var check = CanPlaceFloor(item.Def, position, rotation, itemId);
+            var check = item.IsRug ? CanPlaceRug(item.Def, position, rotation, itemId) : CanPlaceFloor(item.Def, position, rotation, itemId);
             if (!check.Ok) return check;
 
-            foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
+            if (!item.IsRug) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
             item.Position = position;
             item.Rotation = Footprint.Normalize(rotation);
-            foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
+            if (!item.IsRug) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
 
             // Üzerindeki dekorlar yeni konuma uyar.
             foreach (var child in _items)
                 if (child.ParentId == itemId) child.Position = position;
 
             if (item.Def.IsStairs) RebuildLinks();
+            Changed?.Invoke();
+            return PlacementCheck.Success;
+        }
+
+        /// <summary>
+        /// Eşyaları birlikte (dx, dy) kaydırır (oda taşıma): yer eşyaları, halılar ve duvar eşyaları; dekorlar üstündeki
+        /// eşyayla gelir. Kimlik ve durum (yakıt, stok, kaplama) korunur. Hedeflerden biri uymazsa hiçbiri kaymaz.
+        /// Duvar eşyalarının hedef duvarı önceden kurulmuş olmalı.
+        /// </summary>
+        public PlacementCheck ShiftItems(ICollection<int> ids, int dx, int dy)
+        {
+            var moving = new List<ItemInstance>();
+            var set = new HashSet<int>();
+            foreach (var id in ids)
+            {
+                var it = GetItem(id);
+                if (it == null || it.IsDecor || !set.Add(id)) continue;
+                moving.Add(it);
+            }
+            if (moving.Count == 0 || dx == 0 && dy == 0) return PlacementCheck.Success;
+
+            foreach (var it in moving)
+                if (!it.IsRug && !it.IsWallMounted) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, false);
+
+            string fail = null;
+            foreach (var it in moving)
+            {
+                var np = new GridPos(it.Position.X + dx, it.Position.Y + dy, it.Position.Z);
+                if (it.IsWallMounted)
+                {
+                    var e = WallSides.EdgeOf(np, it.Rotation);
+                    if (!Map.EdgeInBounds(e) || Map.GetEdge(e) != EdgeKind.Wall) { fail = $"{it.Def.DisplayName} için hedefte duvar yok."; break; }
+                    foreach (var other in _items)
+                        if (!set.Contains(other.Id) && other.IsWallMounted && other.Position == np && other.Rotation == it.Rotation) { fail = "Hedef duvarda başka bir eşya var."; break; }
+                    if (fail != null) break;
+                    continue;
+                }
+                var (w, h) = Footprint.Dimensions(it.Def.Width, it.Def.Height, it.Rotation);
+                for (int yy = 0; yy < h && fail == null; yy++)
+                    for (int xx = 0; xx < w && fail == null; xx++)
+                    {
+                        var t = new GridPos(np.X + xx, np.Y + yy, np.Z);
+                        if (!Map.InBounds(t) || !Map.HasTile(t)) { fail = "Hedef harita ya da kat dışında."; break; }
+                        if (it.IsRug)
+                        {
+                            if (Map.IsBlocked(t) && GetItemAt(t) == null) fail = "Hedefte geçilmez bir yer var.";
+                            foreach (var other in _items)
+                                if (other.IsRug && !set.Contains(other.Id) && Occupies(other, t)) { fail = "Hedefte başka bir halı var."; break; }
+                            continue;
+                        }
+                        if (Map.IsBlocked(t)) fail = $"{it.Def.DisplayName} için hedef dolu.";
+                        else if (IsOccupiedByCharacter(t)) fail = "Hedefte biri duruyor.";
+                    }
+                if (fail == null && it.Def.IsStairs)
+                {
+                    StairsEnds(it.Def, np, it.Rotation, out var entrance, out var landing);
+                    if (!Map.HasTile(entrance) || !Map.HasTile(landing)) fail = "Merdivenin uçları hedefte açık değil.";
+                }
+                if (fail != null) break;
+            }
+
+            if (fail != null)
+            {
+                foreach (var it in moving)
+                    if (!it.IsRug && !it.IsWallMounted) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, true);
+                return PlacementCheck.Fail(fail);
+            }
+
+            bool stairs = false;
+            foreach (var it in moving)
+            {
+                it.Position = new GridPos(it.Position.X + dx, it.Position.Y + dy, it.Position.Z);
+                if (!it.IsRug && !it.IsWallMounted) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, true);
+                foreach (var child in _items) if (child.ParentId == it.Id) child.Position = it.Position;
+                stairs |= it.Def.IsStairs;
+            }
+            if (stairs) RebuildLinks();
             Changed?.Invoke();
             return PlacementCheck.Success;
         }
@@ -293,7 +405,7 @@ namespace Thatchwick.Core.World
                 returned.Add(c.Def);
             }
 
-            foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
+            if (!item.IsRug && !item.IsDecor && !item.IsWallMounted) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
             _items.Remove(item);
             returned.Insert(0, item.Def);
             if (item.Def.IsStairs) RebuildLinks();
@@ -315,7 +427,7 @@ namespace Thatchwick.Core.World
                 FuelDays = fuelDays,
                 GrowthDays = growthDays
             };
-            if (!item.IsDecor) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
+            if (!item.IsDecor && !item.IsRug && !item.IsWallMounted) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
             _items.Add(item);
             if (id >= _nextId) _nextId = id + 1;
             if (def.IsStairs) RebuildLinks();
@@ -330,11 +442,11 @@ namespace Thatchwick.Core.World
             return null;
         }
 
-        /// <summary>Verilen karoyu kaplayan yer eşyası (dekor değil); yoksa null.</summary>
+        /// <summary>Verilen karoyu kaplayan yer eşyası (dekor ve halı değil); yoksa null.</summary>
         public ItemInstance GetItemAt(GridPos tile)
         {
             foreach (var item in _items)
-                if (!item.IsDecor && Occupies(item, tile)) return item;
+                if (!item.IsDecor && !item.IsRug && Occupies(item, tile)) return item;
             return null;
         }
 

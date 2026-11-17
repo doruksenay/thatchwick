@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Thatchwick.Core.World
 {
-    /// <summary>Duvar, kapı ve pencerelerle çevrili bir karo bölgesi.</summary>
+    /// <summary>Duvar, kapı ve pencerelerle çevrili bir karo bölgesi (çit, yarım duvar ve korkuluk odayı bölmez).</summary>
     public sealed class Room
     {
         public int Id { get; }
@@ -91,14 +91,16 @@ namespace Thatchwick.Core.World
                                 if (!map.InBounds(next) || !map.HasTile(next))
                                 {
                                     // Harita kenarı ya da karo olmayan yan: zemin ve üst katta açık çıkış sayılır
-                                    // (balkon); bodrumda kaya olduğu için kapalıdır.
-                                    if (kind == EdgeKind.None) { if (z >= 0) room.IsIndoor = false; }
+                                    // (balkon); bodrumda kaya olduğu için kapalıdır. Üst kattaki boşluğun altı bir iç
+                                    // odaysa (merdiven boşluğu) dışarı açılmaz.
+                                    bool openToBelowRoom = z > 0 && map.InBounds(next) && byTile[Slot(map, next.OnLevel(z - 1))] is Room below && below.IsIndoor;
+                                    if (!EdgeKinds.IsRoomBoundary(kind) && !openToBelowRoom) { if (z >= 0) room.IsIndoor = false; }
                                     else if (kind == EdgeKind.Door) doorEdges.Add(edge);
                                     continue;
                                 }
                                 if (kind == EdgeKind.Door) { doorEdges.Add(edge); continue; }
                                 if (kind == EdgeKind.Window) { windowEdges.Add(edge); continue; }
-                                if (kind != EdgeKind.None) continue;
+                                if (EdgeKinds.IsRoomBoundary(kind)) continue;     // çit, yarım duvar, korkuluk odayı bölmez
                                 int ni = Slot(map, next);
                                 if (byTile[ni] != null) continue;
                                 byTile[ni] = room;

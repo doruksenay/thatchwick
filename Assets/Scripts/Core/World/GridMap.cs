@@ -3,8 +3,37 @@ using System.Collections.Generic;
 
 namespace Thatchwick.Core.World
 {
-    /// <summary>Karo kenarı türü. Duvar ve pencere geçişi kapatır, kapı açık bırakır.</summary>
-    public enum EdgeKind { None = 0, Wall = 1, Door = 2, Window = 3 }
+    /// <summary>
+    /// Karo kenarı türü. Duvar, kapı ve pencere odayı kapatır (oda sınırı); yarım duvar, çit ve korkuluk yalnızca
+    /// geçişi keser, odayı bölmez; kapı ve çit kapısı geçilebilir.
+    /// </summary>
+    public enum EdgeKind { None = 0, Wall = 1, Door = 2, Window = 3, HalfWall = 4, Fence = 5, Gate = 6, Railing = 7 }
+
+    public static class EdgeKinds
+    {
+        /// <summary>Odayı çevreleyen kenar: duvar, kapı, pencere.</summary>
+        public static bool IsRoomBoundary(EdgeKind k) => k == EdgeKind.Wall || k == EdgeKind.Door || k == EdgeKind.Window;
+
+        /// <summary>Yürüyerek geçilemeyen kenar.</summary>
+        public static bool BlocksMovement(EdgeKind k) =>
+            k == EdgeKind.Wall || k == EdgeKind.Window || k == EdgeKind.HalfWall || k == EdgeKind.Fence || k == EdgeKind.Railing;
+
+        /// <summary>Duvarın içine açılan parça (önce duvar gerekir).</summary>
+        public static bool IsOpening(EdgeKind k) => k == EdgeKind.Door || k == EdgeKind.Window;
+
+        /// <summary>Tam boy duvar sayılan kenar (asılı eşya, kaplama, üst kat desteği).</summary>
+        public static bool IsFullHeight(EdgeKind k) => IsRoomBoundary(k);
+    }
+
+    /// <summary>Kenarın görünüşü: parça (malzeme ya da kapı/pencere/çit stili) ve iki yüzünün kaplaması.</summary>
+    public sealed class EdgeLook
+    {
+        public string Style;
+        /// <summary>A yüzü (SideA karosuna bakan) ve B yüzü kaplaması; null = çıplak malzeme.</summary>
+        public string FinishA, FinishB;
+        public bool IsEmpty => Style == null && FinishA == null && FinishB == null;
+        public EdgeLook Clone() => new EdgeLook { Style = Style, FinishA = FinishA, FinishB = FinishB };
+    }
 
     /// <summary>Zemin kaplaması (iç mekan göstergesi: Grass dışındakiler).</summary>
     public enum FloorType { Grass = 0, Dirt = 1, Wood = 2, Stone = 3 }
@@ -59,6 +88,13 @@ namespace Thatchwick.Core.World
         private readonly ZoneType[] _zone;
         private RoomMap _rooms;
         private readonly Dictionary<Edge, EdgeKind> _edges = new Dictionary<Edge, EdgeKind>();
+        private readonly Dictionary<Edge, EdgeLook> _looks = new Dictionary<Edge, EdgeLook>();
+        // Karo başına zemin stili ve çatı stili (yapı parçası kimliği); null = türün/çatının varsayılanı.
+        private readonly string[] _floorStyle;
+        private readonly string[] _roofStyle;
+
+        /// <summary>Çatı stili olarak verilince o karonun üstü açık kalır (avlu, çardak).</summary>
+        public const string NoRoof = "none";
         private readonly Dictionary<GridPos, List<GridPos>> _links = new Dictionary<GridPos, List<GridPos>>();
 
         /// <summary>Zemin, kenar ya da kat karosu değişti (görünüm yenilemesi için).</summary>
@@ -79,6 +115,8 @@ namespace Thatchwick.Core.World
             _exists = new bool[n];
             _zone = new ZoneType[n];
             _owned = new bool[width * height];
+            _floorStyle = new string[n];
+            _roofStyle = new string[n];
             for (int i = 0; i < _owned.Length; i++) _owned[i] = true; // varsayılan: her yer hanenin
             // Zemin katın her karosu vardır; üst kat ve bodrum karoları yapılınca/kazılınca oluşur.
             for (int i = 0; i < width * height; i++) _exists[(0 - MinLevel) * width * height + i] = true;
@@ -111,7 +149,7 @@ namespace Thatchwick.Core.World
             int i = Index(p);
             if (_exists[i] == exists) return;
             _exists[i] = exists;
-            if (!exists) { _blocked[i] = false; _floor[i] = FloorType.Grass; _zone[i] = ZoneType.None; }
+            if (!exists) { _blocked[i] = false; _floor[i] = FloorType.Grass; _zone[i] = ZoneType.None; _floorStyle[i] = null; _roofStyle[i] = null; }
             _rooms = null;
             Changed?.Invoke();
         }
@@ -193,11 +231,30 @@ namespace Thatchwick.Core.World
 
         public FloorType GetFloor(GridPos p) => InBounds(p) ? _floor[Index(p)] : FloorType.Grass;
 
-        public void SetFloor(GridPos p, FloorType floor)
+        /// <summary>Zemin türü ve stili (yapı parçası kimliği; null = türün varsayılanı).</summary>
+        public void SetFloor(GridPos p, FloorType floor, string style = null)
         {
             if (!InBounds(p)) throw new ArgumentOutOfRangeException(nameof(p), $"{p} ızgara dışında.");
-            if (_floor[Index(p)] == floor) return;
-            _floor[Index(p)] = floor;
+            int i = Index(p);
+            if (floor == FloorType.Grass) style = null;
+            if (_floor[i] == floor && _floorStyle[i] == style) return;
+            _floor[i] = floor;
+            _floorStyle[i] = style;
+            Changed?.Invoke();
+        }
+
+        public string GetFloorStyle(GridPos p) => InBounds(p) ? _floorStyle[Index(p)] : null;
+
+        // ---- çatı stili (çatının kendisi odalardan hesaplanır: RoofBuilder) ----
+
+        public string GetRoofStyle(GridPos p) => InBounds(p) ? _roofStyle[Index(p)] : null;
+
+        public void SetRoofStyle(GridPos p, string style)
+        {
+            if (!InBounds(p)) throw new ArgumentOutOfRangeException(nameof(p), $"{p} ızgara dışında.");
+            int i = Index(p);
+            if (_roofStyle[i] == style) return;
+            _roofStyle[i] = style;
             Changed?.Invoke();
         }
 
@@ -256,13 +313,74 @@ namespace Thatchwick.Core.World
 
         public IEnumerable<KeyValuePair<Edge, EdgeKind>> Edges => _edges;
 
-        public void SetEdge(Edge e, EdgeKind kind)
+        /// <summary>Kenar türünü ve (verilirse) stilini koyar. Tür değişince stil verilen değer olur; kaplamalar duvar
+        /// türü kenarda kalır. None kenarı ve görünüşünü siler.</summary>
+        public void SetEdge(Edge e, EdgeKind kind, string style = null)
         {
             if (!EdgeInBounds(e)) throw new ArgumentOutOfRangeException(nameof(e), $"{e} ızgara dışında.");
-            if (GetEdge(e) == kind) return;
-            if (kind == EdgeKind.None) _edges.Remove(e); else _edges[e] = kind;
-            _rooms = null;
+            var old = GetEdge(e);
+            var look = GetLook(e);
+            if (old == kind && (look?.Style) == style) return;
+            if (kind == EdgeKind.None)
+            {
+                _edges.Remove(e);
+                _looks.Remove(e);
+            }
+            else
+            {
+                _edges[e] = kind;
+                var next = look != null ? look.Clone() : new EdgeLook();
+                next.Style = style;
+                if (!EdgeKinds.IsRoomBoundary(kind)) { next.FinishA = null; next.FinishB = null; }   // çit ve korkulukta kaplama yok
+                if (next.IsEmpty) _looks.Remove(e); else _looks[e] = next;
+            }
+            if (old != kind) _rooms = null;
             Changed?.Invoke();
+        }
+
+        /// <summary>Kenarı türü ve görünüşüyle birlikte olduğu gibi koyar (geri alma, oda taşıma).</summary>
+        public void SetEdgeFull(Edge e, EdgeKind kind, EdgeLook look)
+        {
+            if (!EdgeInBounds(e)) throw new ArgumentOutOfRangeException(nameof(e), $"{e} ızgara dışında.");
+            var old = GetEdge(e);
+            if (kind == EdgeKind.None) { _edges.Remove(e); _looks.Remove(e); }
+            else
+            {
+                _edges[e] = kind;
+                if (look == null || look.IsEmpty) _looks.Remove(e); else _looks[e] = look.Clone();
+            }
+            if (old != kind) _rooms = null;
+            Changed?.Invoke();
+        }
+
+        /// <summary>Kenarın görünüşü; hiç ayarlanmadıysa null (varsayılan stil, çıplak yüzler).</summary>
+        public EdgeLook GetLook(Edge e) => _looks.TryGetValue(e, out var l) ? l : null;
+
+        public string GetEdgeStyle(Edge e) => GetLook(e)?.Style;
+
+        /// <summary>Duvarın bir yüzünün kaplaması. sideB: SideB karosuna bakan yüz.</summary>
+        public string GetFinish(Edge e, bool sideB)
+        {
+            var l = GetLook(e);
+            return l == null ? null : sideB ? l.FinishB : l.FinishA;
+        }
+
+        public void SetFinish(Edge e, bool sideB, string finish)
+        {
+            if (!EdgeInBounds(e)) throw new ArgumentOutOfRangeException(nameof(e), $"{e} ızgara dışında.");
+            if (!EdgeKinds.IsRoomBoundary(GetEdge(e))) throw new InvalidOperationException("Kaplama yalnızca duvara yapılır.");
+            if (GetFinish(e, sideB) == finish) return;
+            var look = GetLook(e)?.Clone() ?? new EdgeLook();
+            if (sideB) look.FinishB = finish; else look.FinishA = finish;
+            if (look.IsEmpty) _looks.Remove(e); else _looks[e] = look;
+            Changed?.Invoke();
+        }
+
+        /// <summary>Kayıttan yükleme: kenarın görünüşünü olduğu gibi koyar (Changed tetiklenmez).</summary>
+        internal void RestoreLook(Edge e, EdgeLook look)
+        {
+            if (look == null || look.IsEmpty || GetEdge(e) == EdgeKind.None) return;
+            _looks[e] = look;
         }
 
         /// <summary>İki komşu (dik) karo arasındaki kenar.</summary>
@@ -277,12 +395,8 @@ namespace Thatchwick.Core.World
             throw new ArgumentException("Karolar dik komşu değil.");
         }
 
-        /// <summary>Kenar geçişi kapatıyor mu (duvar ya da pencere).</summary>
-        public bool EdgeBlocks(Edge e)
-        {
-            var k = GetEdge(e);
-            return k == EdgeKind.Wall || k == EdgeKind.Window;
-        }
+        /// <summary>Kenar geçişi kapatıyor mu (duvar, pencere, yarım duvar, çit, korkuluk).</summary>
+        public bool EdgeBlocks(Edge e) => EdgeKinds.BlocksMovement(GetEdge(e));
 
         /// <summary>
         /// from'dan komşu karo to'ya (dik ya da çapraz) tek adımda geçilebilir mi: hedef karo açık,

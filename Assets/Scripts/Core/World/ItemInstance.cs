@@ -29,6 +29,9 @@ namespace Thatchwick.Core.World
         // ---- barınak (Adım: hayvanlar) ----
         /// <summary>Barınaktaki yem stoğu (birim).</summary>
         public double FeedStock { get; internal set; }
+        /// <summary>Mobilya kaplaması (renk/malzeme örneği, yapı parçası kimliği); null = varsayılan.</summary>
+        public string FinishId { get; internal set; }
+        public bool IsRug => Def.IsRug;
         private Dictionary<string, int> _stock;
         /// <summary>Barınakta toplanmayı bekleyen ürünler (yumurta, süt, yün).</summary>
         public IReadOnlyDictionary<string, int> Stock => _stock ?? (_stock = new Dictionary<string, int>());

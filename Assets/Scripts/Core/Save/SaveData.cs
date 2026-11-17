@@ -57,7 +57,11 @@ namespace Thatchwick.Core.Save
         public int[] zone;
         public EdgeSave[] edges;
         public LevelTileSave[] levelTiles;   // üst kat döşemeleri ve bodrum kazıları (zemin kat dizilerde)
+        public TileStyleSave[] styles;       // zemin ve çatı stili (yalnızca varsayılan olmayan karolar; eski kayıtta yok)
     }
+
+    [Serializable]
+    public sealed class TileStyleSave { public int x, y, z; public string floor; public string roof; }
 
     [Serializable]
     public sealed class LevelTileSave { public int x, y, z, floor; public int zone; }   // zone: depo bölgesi (eski kayıtta 0 = yok)
@@ -67,6 +71,8 @@ namespace Thatchwick.Core.Save
     {
         public int x, y, axis, kind;
         public int z;                       // kat (0 zemin)
+        public string style;                // malzeme ya da kapı/pencere/çit stili (boş = varsayılan)
+        public string finishA, finishB;     // duvar yüzü kaplamaları (boş = çıplak)
     }
 
     [Serializable]
@@ -85,6 +91,7 @@ namespace Thatchwick.Core.Save
         public bool fruitReady;
         public double fruitDays;
         public double feedStock;    // v2: barınak yemi
+        public string finish;       // mobilya kaplaması (renk/malzeme; boş = varsayılan)
         public KeyInt[] stock;      // v2: barınakta biriken ürünler
     }
 

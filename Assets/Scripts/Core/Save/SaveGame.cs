@@ -86,7 +86,15 @@ namespace Thatchwick.Core.Save
                     m.zone[i] = (int)map.GetZone(p);
                 }
             var edges = new List<EdgeSave>();
-            foreach (var kv in map.Edges) edges.Add(new EdgeSave { x = kv.Key.X, y = kv.Key.Y, z = kv.Key.Z, axis = (int)kv.Key.Axis, kind = (int)kv.Value });
+            foreach (var kv in map.Edges)
+            {
+                var look = map.GetLook(kv.Key);
+                edges.Add(new EdgeSave
+                {
+                    x = kv.Key.X, y = kv.Key.Y, z = kv.Key.Z, axis = (int)kv.Key.Axis, kind = (int)kv.Value,
+                    style = look?.Style, finishA = look?.FinishA, finishB = look?.FinishB
+                });
+            }
             edges.Sort((a, b) => a.z != b.z ? a.z.CompareTo(b.z) : a.y != b.y ? a.y.CompareTo(b.y) : a.x != b.x ? a.x.CompareTo(b.x) : a.axis.CompareTo(b.axis));
             m.edges = edges.ToArray();
             var levelTiles = new List<LevelTileSave>();
@@ -96,6 +104,14 @@ namespace Thatchwick.Core.Save
                 foreach (var t in map.TilesOnLevel(z)) levelTiles.Add(new LevelTileSave { x = t.X, y = t.Y, z = z, floor = (int)map.GetFloor(t), zone = (int)map.GetZone(t) });
             }
             m.levelTiles = levelTiles.ToArray();
+            var styles = new List<TileStyleSave>();
+            for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
+                foreach (var t in map.TilesOnLevel(z))
+                {
+                    string fs = map.GetFloorStyle(t), rs = map.GetRoofStyle(t);
+                    if (fs != null || rs != null) styles.Add(new TileStyleSave { x = t.X, y = t.Y, z = z, floor = fs, roof = rs });
+                }
+            m.styles = styles.ToArray();
             data.map = m;
 
             // Eşyalar: önce yer eşyaları, sonra dekorlar (yüklerken üstündeki eşya hazır olsun).
@@ -116,7 +132,7 @@ namespace Thatchwick.Core.Save
                     {
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, z = it.Position.Z, rotation = it.Rotation,
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
-                        feedStock = it.FeedStock, stock = stock,
+                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId,
                         watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays
                     });
                 }
@@ -268,6 +284,9 @@ namespace Thatchwick.Core.Save
         }
 
         /// <summary>Kaydı geri kurar. Sürüm yeniyse ya da harita yoksa InvalidOperationException.</summary>
+        private static string PartOrNull(ContentDatabase content, string id) =>
+            !string.IsNullOrEmpty(id) && content.Parts.Contains(id) ? id : null;
+
         public static LoadedGame Load(SaveData data, ContentDatabase content, TimeConfig timeConfig = null)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
@@ -309,7 +328,24 @@ namespace Thatchwick.Core.Save
                 {
                     if (e == null || !Enum.IsDefined(typeof(EdgeAxis), e.axis)) continue;
                     var edge = new Edge(e.x, e.y, (EdgeAxis)e.axis, e.z);
-                    if (map.EdgeInBounds(edge) && Enum.IsDefined(typeof(EdgeKind), e.kind)) map.SetEdge(edge, (EdgeKind)e.kind);
+                    if (!map.EdgeInBounds(edge) || !Enum.IsDefined(typeof(EdgeKind), e.kind) || e.kind == (int)EdgeKind.None) continue;
+                    map.SetEdge(edge, (EdgeKind)e.kind);
+                    // Bilinmeyen parça kimliği (içerikten kaldırılmış) varsayılana düşer.
+                    string style = PartOrNull(content, e.style), fa = PartOrNull(content, e.finishA), fb = PartOrNull(content, e.finishB);
+                    if (style != null || fa != null || fb != null)
+                        map.RestoreLook(edge, new EdgeLook { Style = style, FinishA = EdgeKinds.IsRoomBoundary((EdgeKind)e.kind) ? fa : null, FinishB = EdgeKinds.IsRoomBoundary((EdgeKind)e.kind) ? fb : null });
+                }
+            if (m.styles != null)
+                foreach (var st in m.styles)
+                {
+                    if (st == null) continue;
+                    var p = new GridPos(st.x, st.y, st.z);
+                    if (!map.HasTile(p)) continue;
+                    var floor = map.GetFloor(p);
+                    if (st.floor != null && content.Parts.TryGet(st.floor, out var fp) && fp.Kind == BuildPartKind.Floor && fp.Base == floor)
+                        map.SetFloor(p, floor, st.floor);
+                    if (st.roof == GridMap.NoRoof || st.roof != null && content.Parts.TryGet(st.roof, out var rp) && rp.Kind == BuildPartKind.Roof)
+                        map.SetRoofStyle(p, st.roof);
                 }
 
             var world = new WorldState(map);
@@ -334,7 +370,9 @@ namespace Thatchwick.Core.Save
                     if (!parent.HasValue)
                     {
                         // Yükleme modu: yalnızca yapısal denetim. Oyun sırasında geçerli oluşmuş durumlar eşyayı düşürmez.
-                        var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation) : world.CanPlaceFloor(def, pos, s.rotation, null, false, restoring: true);
+                        var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation)
+                            : def.IsRug ? world.CanPlaceRug(def, pos, s.rotation)
+                            : world.CanPlaceFloor(def, pos, s.rotation, null, false, restoring: true);
                         if (!fits.Ok)
                         {
                             result.Warnings.Add($"Eşya yerine sığmadı, {(KeepsInInventory(def) ? "envantere alındı" : "atlandı")}: {s.def} {pos}");
@@ -344,6 +382,8 @@ namespace Thatchwick.Core.Save
                     }
                     var restored = world.RestoreItem(def, s.id, pos, s.rotation, parent, s.slotId, Math.Max(0, s.fuelDays), Math.Max(0, s.growthDays));
                     restored.FeedStock = Math.Max(0, s.feedStock);
+                    if (!string.IsNullOrEmpty(s.finish) && content.Parts.TryGet(s.finish, out var fin) && fin.Kind == BuildPartKind.ItemFinish && fin.Group == def.FinishGroup)
+                        restored.FinishId = s.finish;
                     restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));
                     if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(kv.key)) restored.SetStock(kv.key, kv.value);
                 }

@@ -75,7 +75,7 @@ namespace Thatchwick.Core.Life
             Population = population ?? throw new ArgumentNullException(nameof(population));
             Clock = clock ?? throw new ArgumentNullException(nameof(clock));
 
-            Mood = new MoodService(world);
+            Mood = new MoodService(world) { Content = content };
             Graves = new GraveService(world, content);
             Ledger = new DayLedger(house, () => AccountXp != null ? AccountXp() : 0);
             Forecast = new WinterForecast(content, house, world, population, clock.Config);

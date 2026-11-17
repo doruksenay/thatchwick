@@ -130,18 +130,31 @@ namespace Thatchwick.Game
         public const int WallHeightPx = 40;
         public const int LowWallHeightPx = 10;
 
+        public const int HalfWallHeightPx = 20, FenceHeightPx = 14;
+
+        /// <summary>Yapı parçasının yer tutucu rengi (#RRGGBB); yoksa fallback.</summary>
+        public static Color PartColor(Thatchwick.Core.Content.BuildPartDef part, Color fallback)
+        {
+            if (part == null || !part.TryGetRgb(out byte r, out byte g, out byte b)) return fallback;
+            return new Color32(r, g, b, 255);
+        }
+
         /// <summary>
         /// Karo kenarı duvar parçası (32 px geniş paralelkenar, beyaz; renk SpriteRenderer.color ile).
         /// Horizontal: sol-alttan sağ-üste yükselir, pivot sol-alt. Vertical: sağ-alttan sol-üste, pivot sağ-alt.
-        /// kind: Wall/Door/Window (kapı ve pencere açıklıklı); low = kesit modunda alçak duvar.
+        /// kind: Wall/Door/Window (kapı ve pencere açıklıklı), HalfWall (yarım boy), Fence/Gate/Railing (direkli, alçak);
+        /// low = kesit modunda alçak duvar.
         /// </summary>
         public static Sprite Wall(Thatchwick.Core.World.EdgeAxis axis, Thatchwick.Core.World.EdgeKind kind, bool low)
         {
-            int key = ((int)axis * 4 + (int)kind) * 2 + (low ? 1 : 0);
+            int key = ((int)axis * 8 + (int)kind) * 2 + (low ? 1 : 0);
             if (Walls.TryGetValue(key, out var cached) && cached != null) return cached;
 
             const int w = 32;
-            int wallH = low ? LowWallHeightPx : WallHeightPx;
+            bool slatted = kind == Thatchwick.Core.World.EdgeKind.Fence || kind == Thatchwick.Core.World.EdgeKind.Gate || kind == Thatchwick.Core.World.EdgeKind.Railing;
+            int wallH = slatted ? FenceHeightPx
+                : kind == Thatchwick.Core.World.EdgeKind.HalfWall ? (low ? LowWallHeightPx : HalfWallHeightPx)
+                : low ? LowWallHeightPx : WallHeightPx;
             int h = 16 + wallH;
             bool horizontal = axis == Thatchwick.Core.World.EdgeAxis.Horizontal;
             var pixels = new Color32[w * h];
@@ -156,6 +169,14 @@ namespace Thatchwick.Game
                     bool hole = false;
                     if (!low && kind == Thatchwick.Core.World.EdgeKind.Door) hole = x >= 9 && x < 23 && y < bottom + 30;
                     if (!low && kind == Thatchwick.Core.World.EdgeKind.Window) hole = x >= 10 && x < 22 && y >= bottom + 16 && y < bottom + 32;
+                    if (slatted)
+                    {
+                        int dy = y - bottom;
+                        bool post = kind == Thatchwick.Core.World.EdgeKind.Railing ? x % 8 < 2 : x % 5 < 2;
+                        bool rail = dy >= wallH - 3 || (dy >= 5 && dy < 7);
+                        if (kind == Thatchwick.Core.World.EdgeKind.Gate) post = x < 3 || x >= w - 3 || x == w / 2;
+                        hole = !(post || rail);
+                    }
                     if (!hole) pixels[y * w + x] = new Color32(v, v, v, 255);
                 }
             }

@@ -20,7 +20,8 @@
       "rooms": [
         "bedroom"
       ],
-      "comfort": 2
+      "comfort": 2,
+      "finishGroup": "cloth"
     },
     {
       "id": "item.hearth_stone",
@@ -790,7 +791,8 @@
       "rooms": [
         "kitchen"
       ],
-      "comfort": 2
+      "comfort": 2,
+      "finishGroup": "metal"
     },
     {
       "id": "item.stool_wood",
@@ -811,7 +813,8 @@
         "kitchen",
         "living"
       ],
-      "comfort": 1
+      "comfort": 1,
+      "finishGroup": "wood"
     },
     {
       "id": "item.table_wood",
@@ -844,7 +847,8 @@
         "kitchen",
         "living"
       ],
-      "comfort": 3
+      "comfort": 3,
+      "finishGroup": "wood"
     },
     {
       "id": "item.chair_wood",
@@ -871,7 +875,8 @@
       "comfort": 2,
       "variants": [
         "item.chair_carved"
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.chest_wood",
@@ -887,7 +892,8 @@
         "bedroom",
         "living"
       ],
-      "comfort": 1
+      "comfort": 1,
+      "finishGroup": "wood"
     },
     {
       "id": "item.shelf_wood",
@@ -916,7 +922,8 @@
         "living"
       ],
       "storage": 20,
-      "comfort": 2
+      "comfort": 2,
+      "finishGroup": "wood"
     },
     {
       "id": "item.candle",
@@ -940,7 +947,8 @@
       "price": 6,
       "category": "decor",
       "level": 5,
-      "comfort": 4
+      "comfort": 4,
+      "finishGroup": "clay"
     },
     {
       "id": "item.clay_cup",
@@ -951,7 +959,8 @@
       "category": "decor",
       "level": 5,
       "styleSet": "Köylü",
-      "comfort": 2
+      "comfort": 2,
+      "finishGroup": "clay"
     },
     {
       "id": "item.firewood",
@@ -1166,7 +1175,8 @@
       "comfort": 5,
       "variants": [
         "item.chair_wood"
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.plank",
@@ -1258,7 +1268,8 @@
           "restore": 6,
           "durationDays": 0.05
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.armchair_cushion",
@@ -1285,7 +1296,8 @@
           "restore": 15,
           "durationDays": 0.08
         }
-      ]
+      ],
+      "finishGroup": "cloth"
     },
     {
       "id": "item.chair_painted",
@@ -1306,7 +1318,8 @@
           "restore": 10,
           "durationDays": 0.05
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.mattress_straw",
@@ -1326,7 +1339,8 @@
           "restore": 45,
           "durationDays": 0.3
         }
-      ]
+      ],
+      "finishGroup": "cloth"
     },
     {
       "id": "item.bed_frame",
@@ -1348,7 +1362,8 @@
           "durationDays": 0.3,
           "moodlet": "rested"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.cradle",
@@ -1369,7 +1384,8 @@
           "restore": 10,
           "durationDays": 0.05
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.child_bed",
@@ -1391,7 +1407,8 @@
           "durationDays": 0.3,
           "moodlet": "rested"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.stump_table",
@@ -1435,7 +1452,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.dining_table_long",
@@ -1476,7 +1494,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.table_painted",
@@ -1507,7 +1526,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.brazier",
@@ -1531,7 +1551,8 @@
           "restore": 25,
           "durationDays": 0.08
         }
-      ]
+      ],
+      "finishGroup": "metal"
     },
     {
       "id": "item.fireplace_large",
@@ -1572,7 +1593,8 @@
       "tags": [
         "light"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "metal"
     },
     {
       "id": "item.torch_wall",
@@ -1608,7 +1630,8 @@
       "tags": [
         "light"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "metal"
     },
     {
       "id": "item.sconce_brass",
@@ -1625,7 +1648,8 @@
       "tags": [
         "light"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "metal"
     },
     {
       "id": "item.stone_oven",
@@ -1827,7 +1851,8 @@
           "minLevel": 3
         }
       ],
-      "width": 2
+      "width": 2,
+      "finishGroup": "wood"
     },
     {
       "id": "item.pantry_shelf",
@@ -1853,7 +1878,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.copper_pots",
@@ -1903,7 +1929,8 @@
         "outdoor"
       ],
       "storage": 25,
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.chest_iron",
@@ -1918,7 +1945,8 @@
         "living"
       ],
       "storage": 90,
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "metal"
     },
     {
       "id": "item.wall_shelf",
@@ -1944,7 +1972,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.wall_shelf_oak",
@@ -1976,7 +2005,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.workbench",
@@ -1990,7 +2020,8 @@
         "outdoor",
         "living"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.seed_crate",
@@ -2002,7 +2033,8 @@
         "outdoor"
       ],
       "storage": 20,
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.tool_rack_wall",
@@ -2016,7 +2048,8 @@
         "outdoor",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.whetstone",
@@ -2097,7 +2130,8 @@
           "durationDays": 0.15,
           "moodlet": "clean"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.wooden_tub",
@@ -2127,7 +2161,8 @@
           "durationDays": 0.15,
           "moodlet": "clean"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.bread_bowl",
@@ -2136,7 +2171,8 @@
       "price": 3,
       "placement": "Surface",
       "styleSet": "Köylü",
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "clay"
     },
     {
       "id": "item.jug",
@@ -2145,7 +2181,8 @@
       "price": 4,
       "placement": "Surface",
       "styleSet": "Köylü",
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "clay"
     },
     {
       "id": "item.morris_board",
@@ -2208,7 +2245,8 @@
         "living",
         "bedroom"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "clay"
     },
     {
       "id": "item.herb_bundle_wall",
@@ -2234,7 +2272,8 @@
         "living",
         "bedroom"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "cloth"
     },
     {
       "id": "item.shield_crest",
@@ -2248,6 +2287,105 @@
         "living"
       ],
       "interactions": []
+    },
+    {
+      "id": "item.rug_rush",
+      "displayName": "Hasır kilim",
+      "width": 1,
+      "height": 1,
+      "placement": "Rug",
+      "price": 8,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "comfort": 1
+    },
+    {
+      "id": "item.rug_wool_small",
+      "displayName": "Küçük yün halı",
+      "width": 2,
+      "height": 1,
+      "placement": "Rug",
+      "price": 20,
+      "category": "rug",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 2,
+      "finishGroup": "cloth"
+    },
+    {
+      "id": "item.rug_runner",
+      "displayName": "Yolluk",
+      "width": 3,
+      "height": 1,
+      "placement": "Rug",
+      "price": 30,
+      "category": "rug",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 2,
+      "level": 3,
+      "finishGroup": "cloth"
+    },
+    {
+      "id": "item.rug_hide",
+      "displayName": "Post",
+      "width": 1,
+      "height": 2,
+      "placement": "Rug",
+      "price": 25,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 2,
+      "level": 3
+    },
+    {
+      "id": "item.rug_wool",
+      "displayName": "Yün halı",
+      "width": 2,
+      "height": 2,
+      "placement": "Rug",
+      "price": 40,
+      "category": "rug",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 3,
+      "level": 2,
+      "finishGroup": "cloth"
+    },
+    {
+      "id": "item.rug_woven_large",
+      "displayName": "Desenli dokuma halı",
+      "width": 3,
+      "height": 2,
+      "placement": "Rug",
+      "price": 90,
+      "category": "rug",
+      "styleSet": "Tüccar",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 5,
+      "level": 6,
+      "finishGroup": "cloth"
     },
     {
       "id": "item.well",
@@ -2306,7 +2444,8 @@
           "restore": 6,
           "durationDays": 0.05
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.coop",
@@ -2458,7 +2597,8 @@
           ],
           "addFeed": 2
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.cat_basket",
@@ -2540,7 +2680,8 @@
           "durationDays": 0.1,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.child_chair",
@@ -2559,7 +2700,8 @@
           "restore": 6,
           "durationDays": 0.05
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.toy_sword_wall",
@@ -2581,7 +2723,8 @@
           "durationDays": 0.1,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.story_book",
@@ -2690,7 +2833,8 @@
           "durationDays": 0.1,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.grave",
@@ -2721,7 +2865,8 @@
             }
           ]
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.game_table",
@@ -2750,7 +2895,8 @@
           "moodValue": 4,
           "moodDays": 0.7
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.toy_wooden",
@@ -2766,7 +2912,8 @@
           "restore": 35,
           "durationDays": 0.1
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.seed_cabbage",
@@ -3676,7 +3823,8 @@
       ],
       "styleSet": "Köylü",
       "variants": [
-        "item.stairs_down_stone"
+        "item.stairs_down_stone",
+        "item.cellar_hatch"
       ]
     },
     {
@@ -3731,7 +3879,29 @@
         "living"
       ],
       "variants": [
-        "item.stairs_down"
+        "item.stairs_down",
+        "item.cellar_hatch"
+      ]
+    },
+    {
+      "id": "item.cellar_hatch",
+      "displayName": "Kiler kapağı (dış)",
+      "width": 1,
+      "height": 2,
+      "price": 28,
+      "category": "structure",
+      "styleSet": "Köylü",
+      "level": 2,
+      "stairs": -1,
+      "levels": [
+        0
+      ],
+      "rooms": [
+        "outdoor"
+      ],
+      "variants": [
+        "item.stairs_down",
+        "item.stairs_down_stone"
       ]
     },
     {
@@ -6344,6 +6514,616 @@
       "lifespanDays": 200,
       "matureDays": 2,
       "level": 6
+    }
+  ],
+  "buildParts": [
+    {
+      "id": "wall_wattle",
+      "displayName": "Dal örgü sıva",
+      "kind": "wallMaterial",
+      "price": 3,
+      "color": "#C9B48A",
+      "isDefault": true
+    },
+    {
+      "id": "wall_plank",
+      "displayName": "Kalas",
+      "kind": "wallMaterial",
+      "price": 4,
+      "color": "#9C7448",
+      "heatLoss": 1.15
+    },
+    {
+      "id": "wall_cob",
+      "displayName": "Kerpiç",
+      "kind": "wallMaterial",
+      "price": 4,
+      "color": "#B89870",
+      "level": 2,
+      "heatLoss": 0.85
+    },
+    {
+      "id": "wall_timber",
+      "displayName": "Ahşap çatkı",
+      "kind": "wallMaterial",
+      "price": 5,
+      "color": "#B8945E",
+      "level": 2,
+      "heatLoss": 0.9
+    },
+    {
+      "id": "wall_stone",
+      "displayName": "Taş",
+      "kind": "wallMaterial",
+      "price": 8,
+      "color": "#9A968C",
+      "level": 4,
+      "heatLoss": 0.7
+    },
+    {
+      "id": "wall_ashlar",
+      "displayName": "Kesme taş",
+      "kind": "wallMaterial",
+      "price": 12,
+      "color": "#B5AFA2",
+      "level": 7,
+      "heatLoss": 0.6
+    },
+    {
+      "id": "finish_whitewash",
+      "displayName": "Badana",
+      "kind": "wallFinish",
+      "price": 1,
+      "color": "#EDE8DA",
+      "comfort": 1
+    },
+    {
+      "id": "finish_ochre",
+      "displayName": "Aşı boyası",
+      "kind": "wallFinish",
+      "price": 2,
+      "color": "#C98A4B",
+      "comfort": 1
+    },
+    {
+      "id": "finish_plaster",
+      "displayName": "İnce sıva",
+      "kind": "wallFinish",
+      "price": 2,
+      "color": "#DCCDB0",
+      "level": 2,
+      "comfort": 1
+    },
+    {
+      "id": "finish_panel",
+      "displayName": "Ahşap lambri",
+      "kind": "wallFinish",
+      "price": 4,
+      "color": "#8C5E36",
+      "level": 3,
+      "comfort": 2
+    },
+    {
+      "id": "finish_painted",
+      "displayName": "Desenli boya",
+      "kind": "wallFinish",
+      "price": 5,
+      "color": "#6E8C9C",
+      "level": 5,
+      "comfort": 2
+    },
+    {
+      "id": "finish_tapestry",
+      "displayName": "Duvar dokuması",
+      "kind": "wallFinish",
+      "price": 8,
+      "color": "#8E3B3B",
+      "level": 8,
+      "comfort": 3
+    },
+    {
+      "id": "door_plank",
+      "displayName": "Kalas kapı",
+      "kind": "door",
+      "price": 8,
+      "color": "#8A6238",
+      "isDefault": true
+    },
+    {
+      "id": "door_ledged",
+      "displayName": "Çaprazlı kapı",
+      "kind": "door",
+      "price": 10,
+      "color": "#7A5530",
+      "level": 2,
+      "heatLoss": 0.9
+    },
+    {
+      "id": "door_dutch",
+      "displayName": "Yarım kapı",
+      "kind": "door",
+      "price": 12,
+      "color": "#96703F",
+      "level": 3,
+      "heatLoss": 1.1
+    },
+    {
+      "id": "door_iron",
+      "displayName": "Demir kuşaklı kapı",
+      "kind": "door",
+      "price": 16,
+      "color": "#5C4A3A",
+      "level": 5,
+      "heatLoss": 0.8
+    },
+    {
+      "id": "door_arched",
+      "displayName": "Kemerli kapı",
+      "kind": "door",
+      "price": 20,
+      "color": "#6E4A2C",
+      "level": 8,
+      "heatLoss": 0.85
+    },
+    {
+      "id": "window_shutter",
+      "displayName": "Kepenkli pencere",
+      "kind": "window",
+      "price": 6,
+      "color": "#B9CFE0",
+      "levels": [
+        0,
+        1
+      ],
+      "isDefault": true
+    },
+    {
+      "id": "window_slit",
+      "displayName": "Mazgal pencere",
+      "kind": "window",
+      "price": 4,
+      "color": "#A8BCCB",
+      "levels": [
+        0,
+        1
+      ],
+      "heatLoss": 0.6
+    },
+    {
+      "id": "window_lattice",
+      "displayName": "Kafesli pencere",
+      "kind": "window",
+      "price": 9,
+      "color": "#C7D9E6",
+      "level": 3,
+      "levels": [
+        0,
+        1
+      ],
+      "heatLoss": 1.1
+    },
+    {
+      "id": "window_wide",
+      "displayName": "Geniş pencere",
+      "kind": "window",
+      "price": 12,
+      "color": "#D2E3EE",
+      "level": 5,
+      "levels": [
+        0,
+        1
+      ],
+      "heatLoss": 1.3
+    },
+    {
+      "id": "window_leaded",
+      "displayName": "Kurşun çerçeveli cam",
+      "kind": "window",
+      "price": 20,
+      "color": "#DDEBF3",
+      "level": 9,
+      "levels": [
+        0,
+        1
+      ],
+      "heatLoss": 0.9
+    },
+    {
+      "id": "window_cellar",
+      "displayName": "Bodrum penceresi",
+      "kind": "window",
+      "price": 5,
+      "color": "#8FA3B1",
+      "levels": [
+        -1
+      ],
+      "heatLoss": 0.7
+    },
+    {
+      "id": "fence_wattle",
+      "displayName": "Örgü çit",
+      "kind": "fence",
+      "price": 2,
+      "color": "#9B7B4E",
+      "isDefault": true
+    },
+    {
+      "id": "fence_picket",
+      "displayName": "Çıtalı çit",
+      "kind": "fence",
+      "price": 3,
+      "color": "#B89A6A",
+      "level": 2
+    },
+    {
+      "id": "fence_hedge",
+      "displayName": "Budanmış çit bitkisi",
+      "kind": "fence",
+      "price": 4,
+      "color": "#4F7A3A",
+      "level": 3
+    },
+    {
+      "id": "fence_stone",
+      "displayName": "Alçak taş duvar",
+      "kind": "fence",
+      "price": 5,
+      "color": "#8F8B80",
+      "level": 4
+    },
+    {
+      "id": "gate_wood",
+      "displayName": "Bahçe kapısı",
+      "kind": "gate",
+      "price": 6,
+      "color": "#8A6A40",
+      "isDefault": true
+    },
+    {
+      "id": "gate_wicket",
+      "displayName": "Küçük çit kapısı",
+      "kind": "gate",
+      "price": 4,
+      "color": "#9B7B4E"
+    },
+    {
+      "id": "railing_wood",
+      "displayName": "Ahşap korkuluk",
+      "kind": "railing",
+      "price": 3,
+      "color": "#8A6238",
+      "isDefault": true
+    },
+    {
+      "id": "railing_turned",
+      "displayName": "Torna korkuluk",
+      "kind": "railing",
+      "price": 6,
+      "color": "#7A5530",
+      "level": 4
+    },
+    {
+      "id": "railing_iron",
+      "displayName": "Dövme demir korkuluk",
+      "kind": "railing",
+      "price": 10,
+      "color": "#4E4A46",
+      "level": 8
+    },
+    {
+      "id": "floor_earth",
+      "displayName": "Sıkıştırılmış toprak",
+      "kind": "floor",
+      "price": 1,
+      "color": "#8B6E50",
+      "floorBase": "Dirt",
+      "isDefault": true
+    },
+    {
+      "id": "floor_straw",
+      "displayName": "Saman serili",
+      "kind": "floor",
+      "price": 1,
+      "color": "#C6AE6A",
+      "floorBase": "Dirt"
+    },
+    {
+      "id": "floor_rush",
+      "displayName": "Saz serili toprak",
+      "kind": "floor",
+      "price": 2,
+      "color": "#A08A55",
+      "floorBase": "Dirt",
+      "comfort": 1
+    },
+    {
+      "id": "floor_pine",
+      "displayName": "Çam tahta",
+      "kind": "floor",
+      "price": 2,
+      "color": "#A87C4C",
+      "floorBase": "Wood",
+      "isDefault": true,
+      "comfort": 1
+    },
+    {
+      "id": "floor_oak",
+      "displayName": "Meşe tahta",
+      "kind": "floor",
+      "price": 4,
+      "color": "#8A5E34",
+      "level": 3,
+      "floorBase": "Wood",
+      "comfort": 2
+    },
+    {
+      "id": "floor_herringbone",
+      "displayName": "Balıksırtı parke",
+      "kind": "floor",
+      "price": 6,
+      "color": "#9C6B3E",
+      "level": 7,
+      "floorBase": "Wood",
+      "comfort": 3
+    },
+    {
+      "id": "floor_flag",
+      "displayName": "Yassı taş",
+      "kind": "floor",
+      "price": 3,
+      "color": "#8C8C94",
+      "floorBase": "Stone",
+      "isDefault": true,
+      "comfort": 1
+    },
+    {
+      "id": "floor_cobble",
+      "displayName": "Arnavut kaldırımı",
+      "kind": "floor",
+      "price": 2,
+      "color": "#7E7A74",
+      "floorBase": "Stone"
+    },
+    {
+      "id": "floor_brick",
+      "displayName": "Tuğla",
+      "kind": "floor",
+      "price": 4,
+      "color": "#A0583C",
+      "level": 3,
+      "floorBase": "Stone",
+      "comfort": 1
+    },
+    {
+      "id": "floor_tile",
+      "displayName": "Sırlı çini",
+      "kind": "floor",
+      "price": 7,
+      "color": "#3E6E7A",
+      "level": 9,
+      "floorBase": "Stone",
+      "comfort": 3
+    },
+    {
+      "id": "roof_thatch",
+      "displayName": "Saz çatı",
+      "kind": "roof",
+      "price": 0,
+      "color": "#B79A57",
+      "isDefault": true
+    },
+    {
+      "id": "roof_shingle",
+      "displayName": "Ahşap şindıl",
+      "kind": "roof",
+      "price": 1,
+      "color": "#7E5C3A",
+      "level": 3,
+      "heatLoss": 0.85
+    },
+    {
+      "id": "roof_tile",
+      "displayName": "Kiremit",
+      "kind": "roof",
+      "price": 2,
+      "color": "#A5523A",
+      "level": 5,
+      "heatLoss": 0.75
+    },
+    {
+      "id": "roof_slate",
+      "displayName": "Arduvaz",
+      "kind": "roof",
+      "price": 2,
+      "color": "#55606A",
+      "level": 6,
+      "heatLoss": 0.7
+    },
+    {
+      "id": "wood_natural",
+      "displayName": "Doğal ağaç",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#B08A5A",
+      "group": "wood",
+      "priceFactor": 1.0,
+      "isDefault": true
+    },
+    {
+      "id": "wood_dark",
+      "displayName": "Koyu meşe",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#6B4A2E",
+      "group": "wood",
+      "priceFactor": 1.15
+    },
+    {
+      "id": "wood_red",
+      "displayName": "Kırmızı boyalı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#9A3B2E",
+      "level": 2,
+      "group": "wood",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "wood_green",
+      "displayName": "Yeşil boyalı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#4E7046",
+      "level": 2,
+      "group": "wood",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "wood_blue",
+      "displayName": "Mavi boyalı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#3E5E86",
+      "level": 3,
+      "group": "wood",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "wood_walnut",
+      "displayName": "Ceviz",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#5A3B26",
+      "level": 4,
+      "group": "wood",
+      "priceFactor": 1.3
+    },
+    {
+      "id": "cloth_undyed",
+      "displayName": "Ham bez",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#D8CDB4",
+      "group": "cloth",
+      "priceFactor": 1.0,
+      "isDefault": true
+    },
+    {
+      "id": "cloth_madder",
+      "displayName": "Kök boya kırmızısı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#A2392F",
+      "group": "cloth",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "cloth_weld",
+      "displayName": "Cehri sarısı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#C9A83C",
+      "group": "cloth",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "cloth_woad",
+      "displayName": "Çivit mavisi",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#3B5C8C",
+      "level": 2,
+      "group": "cloth",
+      "priceFactor": 1.25
+    },
+    {
+      "id": "cloth_green",
+      "displayName": "Yeşil yün",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#5B7A43",
+      "level": 3,
+      "group": "cloth",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "cloth_purple",
+      "displayName": "Mor",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#6A3A72",
+      "level": 8,
+      "group": "cloth",
+      "priceFactor": 1.6
+    },
+    {
+      "id": "metal_iron",
+      "displayName": "Dövme demir",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#4A4744",
+      "group": "metal",
+      "priceFactor": 1.0,
+      "isDefault": true
+    },
+    {
+      "id": "metal_copper",
+      "displayName": "Bakır",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#B06A3E",
+      "level": 3,
+      "group": "metal",
+      "priceFactor": 1.25
+    },
+    {
+      "id": "metal_brass",
+      "displayName": "Pirinç",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#B08D3F",
+      "level": 4,
+      "group": "metal",
+      "priceFactor": 1.3
+    },
+    {
+      "id": "clay_plain",
+      "displayName": "Sırsız",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#B5734A",
+      "group": "clay",
+      "priceFactor": 1.0,
+      "isDefault": true
+    },
+    {
+      "id": "clay_brown",
+      "displayName": "Kahve sırlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#6E4A2E",
+      "group": "clay",
+      "priceFactor": 1.15
+    },
+    {
+      "id": "clay_green",
+      "displayName": "Yeşil sırlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#5E7F55",
+      "level": 2,
+      "group": "clay",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "clay_white",
+      "displayName": "Beyaz astarlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#E2DCCB",
+      "level": 5,
+      "group": "clay",
+      "priceFactor": 1.3
     }
   ]
 }

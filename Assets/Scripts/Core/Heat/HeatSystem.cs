@@ -113,6 +113,12 @@ namespace Thatchwick.Core.Heat
             return (float)(sum / room.Tiles.Count);
         }
 
+        /// <summary>Kenarın malzeme çarpanı (taş duvar daha iyi yalıtır); null ise 1. Oyun katmanı içerikten verir.</summary>
+        public Func<Edge, float> EdgeLossFactor { get; set; }
+
+        /// <summary>Çatı karosunun malzeme çarpanı (saz, şindıl, arduvaz); null ise 1.</summary>
+        public Func<GridPos, float> RoofLossFactor { get; set; }
+
         private float EdgeLoss(EdgeKind k)
         {
             switch (k)
@@ -196,7 +202,9 @@ namespace Thatchwick.Core.Heat
                         var nr = rooms.RoomAt(n);
                         if (nr == room) continue;
                         double neighborTemp = nr != null ? _roomTemp[nr] : _outdoor;   // harita dışı = dış hava
-                        flow += EdgeLoss(kind) * (neighborTemp - temp);
+                        var edge = GridMap.EdgeBetween(t, n);
+                        float factor = EdgeLossFactor != null ? EdgeLossFactor(edge) : 1f;
+                        flow += EdgeLoss(kind) * factor * (neighborTemp - temp);
                     }
                     flow += VerticalFlow(map, rooms, t, temp);
                 }
@@ -215,7 +223,7 @@ namespace Thatchwick.Core.Heat
             if (GridMap.IsValidLevel(above.Z) && map.HasTile(above))
                 flow += _cfg.FloorLoss * (TempOfRoomAt(rooms, above) - temp);
             else if (t.Z >= 1)
-                flow += _cfg.RoofLoss * (_outdoor - temp);          // en üst kat: çatıdan kaybeder
+                flow += _cfg.RoofLoss * (RoofLossFactor != null ? RoofLossFactor(t) : 1f) * (_outdoor - temp);   // en üst kat: çatıdan kaybeder
 
             var below = t.OnLevel(t.Z - 1);
             if (GridMap.IsValidLevel(below.Z) && map.HasTile(below))

@@ -17,6 +17,8 @@ namespace Thatchwick.Core.Content
         public ContentRegistry<ToolDef> Tools { get; } = new ContentRegistry<ToolDef>();
         public ContentRegistry<RoomTemplateDef> Templates { get; } = new ContentRegistry<RoomTemplateDef>();
         public ContentRegistry<AnimalSpeciesDef> Animals { get; } = new ContentRegistry<AnimalSpeciesDef>();
+        /// <summary>Yapı modu malzeme ve parça kataloğu (duvar, kapı, pencere, zemin, çatı, kaplama).</summary>
+        public ContentRegistry<BuildPartDef> Parts { get; } = new ContentRegistry<BuildPartDef>();
         /// <summary>Etkileşimlerin başvurduğu moodlet kataloğu (doğrulama için).</summary>
         public Mood.MoodCatalog Moods { get; set; } = Mood.MoodCatalog.Default;
 
@@ -142,8 +144,48 @@ namespace Thatchwick.Core.Content
                 if (!housed) errors.Add($"{a.Id}: '{a.Housing}' türünde barınak eşyası yok.");
             }
 
+            ValidateParts(errors);
             ValidateLife(errors);
             return errors;
+        }
+
+        private void ValidateParts(List<string> errors)
+        {
+            var defaults = new Dictionary<string, int>(StringComparer.Ordinal);
+            var finishGroups = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var p in Parts.All)
+            {
+                if (string.IsNullOrWhiteSpace(p.DisplayName)) errors.Add($"{p.Id}: görünen ad boş.");
+                if (p.Price < 0) errors.Add($"{p.Id}: fiyat negatif olamaz.");
+                if (p.UnlockLevel < 1 || p.UnlockLevel > 20) errors.Add($"{p.Id}: açılma seviyesi 1-20 arasında olmalı.");
+                if (!p.TryGetRgb(out _, out _, out _)) errors.Add($"{p.Id}: renk #RRGGBB olmalı.");
+                if (p.HeatLoss <= 0f || p.HeatLoss > 3f) errors.Add($"{p.Id}: ısı kaybı çarpanı 0-3 arasında olmalı.");
+                if (p.Comfort < 0 || p.Comfort > 10) errors.Add($"{p.Id}: konfor 0-10 arasında olmalı.");
+                foreach (var lv in p.Levels)
+                    if (!World.GridMap.IsValidLevel(lv)) errors.Add($"{p.Id}: geçersiz kat {lv}.");
+                if (p.Kind == BuildPartKind.ItemFinish)
+                {
+                    if (string.IsNullOrEmpty(p.Group)) errors.Add($"{p.Id}: mobilya kaplamasının grubu (group) yok.");
+                    else finishGroups.Add(p.Group);
+                    if (p.PriceFactor < 0.5f || p.PriceFactor > 3f) errors.Add($"{p.Id}: fiyat çarpanı 0,5-3 arasında olmalı.");
+                }
+                else if (p.Group != null) errors.Add($"{p.Id}: group yalnızca mobilya kaplamasında kullanılır.");
+                // Varsayılan tür başına birdir; zeminde temel tür, kaplamada grup başına.
+                if (p.IsDefault)
+                {
+                    string key = p.Kind == BuildPartKind.Floor ? $"{p.Kind}:{p.Base}" : p.Kind == BuildPartKind.ItemFinish ? $"{p.Kind}:{p.Group}" : p.Kind.ToString();
+                    defaults.TryGetValue(key, out int n);
+                    defaults[key] = n + 1;
+                }
+            }
+            foreach (var kv in defaults)
+                if (kv.Value > 1) errors.Add($"Yapı parçası: {kv.Key} için birden çok varsayılan var.");
+            foreach (var item in Items.All)
+                if (item.FinishGroup != null && !finishGroups.Contains(item.FinishGroup))
+                    errors.Add($"{item.Id}: '{item.FinishGroup}' kaplama grubunda hiç kaplama yok.");
+            foreach (var item in Items.All)
+                if (item.IsRug && (item.Interactions.Count > 0 || item.SurfaceSlots.Count > 0 || item.IsStairs || item.IsHousing || item.HeatOutput > 0f || item.Storage > 0))
+                    errors.Add($"{item.Id}: halı etkileşimsiz, yuvasız düz bir eşya olmalı.");
         }
 
         private void ValidateLife(List<string> errors)
