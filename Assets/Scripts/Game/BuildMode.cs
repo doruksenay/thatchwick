@@ -842,7 +842,7 @@ namespace Thatchwick.Game
                         : $"{Conduits.Describe(_conduitType)}. Karo başına {Conduits.Price(_conduitType)} akçe"
                           + (Conduits.Material(_conduitType) != null ? $" (envanterde {_content.Items.Get(Conduits.Material(_conduitType)).DisplayName} varsa o harcanır: {_house.Count(Conduits.Material(_conduitType))})" : "")
                           + ". Gölete, dereye, sarnıca ya da sulama dolabına değen hat su taşır; kuyu boruya su vermez. Kapak arkın üstüne konur. Tesisat (küvet, leğen, hela, çeşme) borunun üstüne ya da yanına konur; üst kat için kurşun boru ve su terazisi gerekir.";
-                case Tool.Pond: return $"Gölet kaz (açık havada, karo başına {BuildService.FloorPrice(FloorType.Water)} akçe): içine girilip yıkanılır, kova doldurulur, balık tutulur; değirmen ve sulama ona bağlanır. Suda yürümek yavaştır ve ıslatır; kışın donar. Çim aracı geri doldurur.";
+                case Tool.Pond: return $"Gölet kaz (açık havada, karo başına {BuildService.FloorPrice(FloorType.Water)} akçe): çukur boş kalır, yalnızca yağmurla dolar; yazın yağmursuz günlerde buharlaşır. Dolunca içine girilip yıkanılır, kova doldurulur, değirmen ve sulama ona bağlanır; kışın donar. Birkaç gün dolu kalınca böcekler gelir. Balık için aynı türden en az iki balık at: böcek varken ürerler. Çim aracı geri doldurur.";
                 case Tool.ZonePasture: return "Otlak: hayvanlar gündüz çimde otlar (yem yerine ot, kışın ot büyümez). Çitle çevir; barınağın kapısı otlağa açılsın. Çan ile içeri çağrılır.";
                 case Tool.ZoneStorage:
                 case Tool.ZoneErase: return $"Depo bölgesi: karo başına +{StorageService.UnitsPerZoneTile} kaynak kapasitesi (ücretsiz). Sandık +40.";

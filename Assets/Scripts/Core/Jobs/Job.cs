@@ -66,5 +66,9 @@ namespace Thatchwick.Core.Jobs
 
         public static Job OnTile(GridPos tile, TileAction action) =>
             new Job { Kind = JobKind.Tile, Target = tile, TileAction = action };
+
+        /// <summary>Ek bilgili karo işi (gölete atılacak balık türü; InteractionId'de taşınır).</summary>
+        public static Job OnTile(GridPos tile, TileAction action, string arg) =>
+            new Job { Kind = JobKind.Tile, Target = tile, TileAction = action, InteractionId = arg };
     }
 }

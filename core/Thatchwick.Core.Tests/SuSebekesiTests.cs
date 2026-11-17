@@ -34,6 +34,7 @@ namespace Thatchwick.Core.Tests
         private static void Pond(GridMap map, int x0, int y0, int w, int h)
         {
             for (int y = y0; y < y0 + h; y++) for (int x = x0; x < x0 + w; x++) map.SetFloor(new GridPos(x, y), FloorType.Water);
+            map.SetSpring(new GridPos(x0, y0));     // kaynaklı (doğal) gölet: hep dolu
         }
 
         private static void Line(GridMap map, ConduitType t, int x0, int y0, int x1, int y1)
@@ -294,6 +295,30 @@ namespace Thatchwick.Core.Tests
             Assert.True(r.IsSupplied(a));
             Assert.False(r.IsSupplied(b));
             Assert.Equal(WaterGraph.BodyFlow(1), r.TotalSupply);
+        }
+
+        [Fact]
+        public void KazilanGolet_YagmurSuyunuVerir_CekilenSuAlcaltir_KuruykenVermez()
+        {
+            var map = OwnedMap();
+            for (int y = 0; y < 3; y++) for (int x = 0; x < 3; x++) map.SetFloor(new GridPos(x, y), FloorType.Water);    // kazılan: boş
+            Line(map, ConduitType.ClayPipe, 3, 1, 6, 1);
+            var world = new WorldState(map);
+            var tub = world.PlaceItem(Fixture("tub", 3), new GridPos(6, 2));
+            var works = new WaterWorks(world);
+            Assert.False(works.IsSupplied(tub));                                  // kuru çukur
+            Assert.False(WaterNetwork.Analyze(world).IsWet(new GridPos(3, 1)));
+
+            map.RestorePond(new GridPos(0, 0), 1f, false, false, 0, new KeyValuePair<string, int>[0]);   // yağmurla doldu
+            works.Invalidate();
+            Assert.True(works.IsSupplied(tub), works.Report.WhyDry(tub));
+            var pond = map.PondAt(new GridPos(0, 0));
+            works.OnNewDay(rained: false);
+            Assert.Equal((double)(1f - 3f / (9 * WaterWorks.PondUnitsPerTile)), (double)pond.Level, 3);
+
+            map.SetSpring(new GridPos(0, 0));                                    // kaynaklı gölet alçalmaz
+            works.OnNewDay(rained: false);
+            Assert.Equal(1.0, (double)pond.Level, 3);
         }
 
         [Fact]

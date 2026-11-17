@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Mood;
+using Thatchwick.Core.Save;
+using Thatchwick.Core.Time;
 using Thatchwick.Core.Work;
 using Thatchwick.Core.World;
 using Xunit;
@@ -190,6 +193,8 @@ namespace Thatchwick.Core.Tests
             var map = new GridMap(10, 10);
             map.SetFloor(new GridPos(5, 5), FloorType.Water);
             var world = new WorldState(map);
+            Assert.Empty(WaterNetwork.WaterAccess(world));       // kuru çukurdan su alınmaz
+            map.SetSpring(new GridPos(5, 5));
             var goals = WaterNetwork.WaterAccess(world);
             Assert.Contains(new GridPos(4, 5), goals);
             Assert.DoesNotContain(new GridPos(5, 5), goals);       // suya girmeden kıyıdan
@@ -266,6 +271,9 @@ namespace Thatchwick.Core.Tests
             var p = new GridPos(4, 4);
             map.SetFloor(p, FloorType.Water);
             Assert.True(map.HasWater);
+            Assert.False(map.IsOpenWater(p));                     // kazılan çukur boş: içinde normal yürünür
+            Assert.True(System.Math.Abs(1f - map.WalkSpeedAt(p)) < 0.001);
+            map.SetSpring(p);
             Assert.True(map.IsOpenWater(p));
             Assert.True(System.Math.Abs(GridMap.WaterSpeed - map.WalkSpeedAt(p)) < 0.001);
             map.WaterFrozen = true;
@@ -277,6 +285,7 @@ namespace Thatchwick.Core.Tests
             // Yürürken suya giren ıslanır.
             var m2 = new GridMap(10, 3);
             for (int x = 2; x < 8; x++) for (int y = 0; y < 3; y++) m2.SetFloor(new GridPos(x, y), FloorType.Water);
+            m2.SetSpring(new GridPos(2, 0));
             var world = new WorldState(m2);
             var c = Adult(at: new GridPos(0, 1));
             var r = new JobRunner(c, world);
@@ -303,8 +312,10 @@ namespace Thatchwick.Core.Tests
             var map = new GridMap(10, 10);
             var water = new GridPos(5, 5);
             map.SetFloor(water, FloorType.Water);
+            map.SetSpring(water);
             var world = new WorldState(map);
             var house = new Household(0);
+            house.AddItem("item.fish_carp", 2);
             var fw = new FarmWork(world) { House = house, Content = db, TemperatureAt = _ => 24f, Season = () => Time.Season.Summer };
             var c = Adult(at: new GridPos(1, 1));
             c.Needs.Set(NeedType.Hygiene, 10f);
@@ -319,12 +330,20 @@ namespace Thatchwick.Core.Tests
             Assert.True(c.Wetness > 0.8f);
             Assert.True(c.Mood.Has(MoodCatalog.Swim));             // yaz serinliği
 
-            double xp = c.Skills.GetXp(SkillType.Fishing);
-            r.Command(Job.OnTile(water, TileAction.Fish));
-            RunUntilIdle(c, r);
+            Assert.Equal(FarmWork.NoFishText, fw.CanDo(c, water, TileAction.Fish));   // boş gölette balık yok
+            for (int i = 0; i < 2; i++) { r.Command(Job.OnTile(water, TileAction.Stock, "item.fish_carp")); RunUntilIdle(c, r); }
             Assert.Null(r.LastFailure);
+            Assert.Equal(2, map.PondAt(water).Fish["item.fish_carp"]);
+            Assert.Equal(0, house.Count("item.fish_carp"));
+            Assert.NotNull(fw.CanDo(c, water, TileAction.Stock, "item.fish_carp"));  // elde kalmadı
+            Assert.NotNull(fw.CanDo(c, water, TileAction.Stock, "item.turnip"));     // balık değil
+
+            double xp = c.Skills.GetXp(SkillType.Fishing);
+            for (int i = 0; i < 20 && house.Count("item.fish_carp") == 0; i++) { r.Command(Job.OnTile(water, TileAction.Fish)); RunUntilIdle(c, r); }
             Assert.False(map.IsWater(c.Position));                 // kıyıdan
             Assert.True(c.Skills.GetXp(SkillType.Fishing) > xp);
+            Assert.Equal(1, house.Count("item.fish_carp"));        // gölettekinden tutuldu
+            Assert.Equal(1, map.PondAt(water).FishTotal);
 
             Assert.NotNull(fw.CanDo(c, water, TileAction.CutIce)); // donmamış
             map.WaterFrozen = true;
@@ -340,6 +359,7 @@ namespace Thatchwick.Core.Tests
             var db = Db();
             var map = new GridMap(6, 6);
             map.SetFloor(new GridPos(3, 3), FloorType.Water);
+            map.SetSpring(new GridPos(3, 3));
             var world = new WorldState(map);
             var fw = new FarmWork(world) { Content = db, TemperatureAt = _ => 3f };
             var c = Adult(at: new GridPos(2, 3));
@@ -362,6 +382,8 @@ namespace Thatchwick.Core.Tests
             foreach (var d in db.Items.All) if (d.NeedsWaterSource && !d.PowerSource && d.Width == 1 && d.Height == 1) { node = d; break; }
             Assert.NotNull(node);
             var it = world.PlaceItem(node, new GridPos(5, 4));
+            Assert.False(WaterNetwork.TouchesWater(map, it));      // kuru gölet su vermez
+            map.SetSpring(new GridPos(4, 4));
             Assert.True(WaterNetwork.TouchesWater(map, it));
             Assert.Contains(it.Id, WaterNetwork.Connected(world));
         }
@@ -443,6 +465,142 @@ namespace Thatchwick.Core.Tests
             var spot = Population.ShelterNear(world, new GridPos(11, 11));
             Assert.Same(room, map.Rooms.RoomAt(spot));
             Assert.Equal(new GridPos(4, 4), Population.ShelterNear(world, new GridPos(4, 4)));
+        }
+
+        // ---------- gübre: tavan yok, depo sınırı ----------
+
+        [Fact]
+        public void Gubre_TavanYok_DepoDoluysaBosaltilmaz_DoluHelayiKullananYiginaDoker()
+        {
+            var db = Db();
+            var world = new WorldState(new GridMap(12, 12));
+            var house = new Household(0);
+            var storage = new StorageService(world, house, db, baseCapacity: 40);
+            var fx = new InteractionEffects(world, house, db) { Storage = storage };
+            var oh = world.PlaceItem(db.Items.Get("item.outhouse"), new GridPos(3, 3));
+            var c = Adult();
+            house.AddItem("item.manure", 30);                      // 12 tavanı yok: oyuncu ne koyarsa durur
+            oh.Fill = 40;
+            fx.Apply(c, oh, Inter(oh, "empty_pit"));
+            Assert.Equal(40, house.Count("item.manure"));          // 10 eklendi, depo tam doldu
+            oh.Fill = 20;
+            Assert.Contains("yer yok", fx.CanStart(c, oh, Inter(oh, "empty_pit")));
+            oh.Fill = 40;
+            Assert.Null(fx.CanStart(c, oh, Inter(oh, "use")));    // sıkışan yine kullanır
+            fx.Apply(c, oh, Inter(oh, "use"));
+            Assert.Equal(1, oh.Fill);
+            Assert.Equal(40, house.Count("item.manure"));          // sığmayan yığına döküldü
+        }
+
+        // ---------- gölet: yağmur, böcek, balık ----------
+
+        private static GridMap PondMap(out GridPos a, int w = 3, int h = 2)
+        {
+            var map = new GridMap(12, 12);
+            for (int x = 2; x < 2 + w; x++) for (int y = 2; y < 2 + h; y++) map.SetFloor(new GridPos(x, y), FloorType.Water);
+            a = new GridPos(2, 2);
+            return map;
+        }
+
+        [Fact]
+        public void Golet_KazilincaBosYagmurlaDolarYazinBuharlasir()
+        {
+            var map = PondMap(out var a);
+            var rng = new System.Random(1);
+            var pond = map.PondAt(a);
+            Assert.Equal(6, pond.Tiles.Count);
+            Assert.False(pond.IsFilled);
+            for (int d = 0; d < 10; d++) map.OnNewDayPonds(0f, 25f, false, rng);   // günlerce yağmursuz yaz: boş kalır
+            Assert.False(map.IsFilled(a));
+            map.OnNewDayPonds(GridMap.RainFill, 18f, false, rng);
+            Assert.False(map.IsFilled(a));                         // bir yağmur yetmez
+            var notes = map.OnNewDayPonds(GridMap.StormFill, 18f, false, rng);
+            Assert.True(map.IsFilled(a));
+            Assert.Contains(notes, n => n.Contains("doldu"));
+            for (int d = 0; d < 30 && map.IsFilled(a); d++) map.OnNewDayPonds(0f, 30f, false, rng);
+            Assert.False(map.IsFilled(a));                         // sıcak kuraklıkta kurur
+        }
+
+        [Fact]
+        public void Golet_BocekGelince_AyniTurdenIkiBalikUrer_TekBalikUremez()
+        {
+            var map = PondMap(out var a, 4, 3);
+            var rng = new System.Random(3);
+            map.OnNewDayPonds(1f, 18f, false, rng);
+            var pond = map.PondAt(a);
+            pond.AddFish("item.fish_carp", 2);
+            pond.AddFish("item.fish_trout", 1);
+            Assert.False(pond.Insects);                            // yeni dolan gölette henüz böcek yok
+            var notes = map.OnNewDayPonds(0f, 14f, false, rng);
+            Assert.True(pond.Insects);                             // ikinci dolu gün böcekler gelir
+            Assert.Contains(notes, n => n.Contains("böcek"));
+            Assert.Equal(2, pond.Fish["item.fish_carp"]);          // böcek geldiği gün henüz üreme yok
+            for (int d = 0; d < 20; d++) map.OnNewDayPonds(0f, 14f, false, rng);
+            Assert.True(pond.Insects);
+            Assert.True(pond.Fish["item.fish_carp"] > 2, "sazan üremedi");
+            Assert.Equal(1, pond.Fish["item.fish_trout"]);         // tek alabalık üreyemez
+            Assert.True(pond.FishTotal <= pond.FishCapacity);
+
+            int before = pond.FishTotal;
+            for (int d = 0; d < 10; d++) map.OnNewDayPonds(0f, 14f, true, rng);   // kışın üreme yok
+            Assert.Equal(before, pond.FishTotal);
+        }
+
+        [Fact]
+        public void Golet_KuruyuncaBaliklarOlurBocekGider()
+        {
+            var map = PondMap(out var a);
+            var rng = new System.Random(5);
+            map.OnNewDayPonds(1f, 18f, false, rng);
+            var pond = map.PondAt(a);
+            pond.AddFish("item.fish_carp", 4);
+            for (int d = 0; d < 3; d++) map.OnNewDayPonds(0f, 14f, false, rng);
+            Assert.True(pond.Insects);
+            List<string> all = new List<string>();
+            for (int d = 0; d < 40 && map.IsFilled(a); d++) all.AddRange(map.OnNewDayPonds(0f, 32f, false, rng));
+            Assert.False(pond.IsFilled);
+            Assert.Equal(0, pond.FishTotal);
+            Assert.False(pond.Insects);
+            Assert.Contains(all, n => n.Contains("balık öldü"));
+        }
+
+        [Fact]
+        public void Golet_GenisletinceSuYayilir_KaynakliGoletHepDolu()
+        {
+            var map = PondMap(out var a, 2, 2);
+            map.OnNewDayPonds(1f, 18f, false, new System.Random(1));
+            map.PondAt(a).AddFish("item.fish_carp", 4);
+            Assert.Equal(1.0, (double)map.PondAt(a).Level, 3);
+            for (int x = 4; x < 6; x++) for (int y = 2; y < 4; y++) map.SetFloor(new GridPos(x, y), FloorType.Water);
+            var pond = map.PondAt(new GridPos(5, 3));
+            Assert.Same(pond, map.PondAt(a));
+            Assert.Equal(0.5, (double)pond.Level, 3);                     // aynı su iki kat alana yayıldı
+            Assert.Equal(4, pond.FishTotal);
+
+            var spring = PondMap(out var b);
+            spring.SetSpring(b);
+            for (int d = 0; d < 40; d++) spring.OnNewDayPonds(0f, 35f, false, new System.Random(d));
+            Assert.True(spring.IsFilled(b));
+        }
+
+        [Fact]
+        public void Golet_KaydaGirer()
+        {
+            var db = Db();
+            var map = PondMap(out var a);
+            map.OnNewDayPonds(1f, 18f, false, new System.Random(1));
+            var pond = map.PondAt(a);
+            pond.AddFish("item.fish_carp", 3);
+            for (int d = 0; d < 3; d++) map.OnNewDayPonds(0f, 14f, false, new System.Random(d));
+            var w = new WorldState(map);
+            var data = SaveGame.Capture(new GameClock(), w, new Household(0), new Character[0], null, null, null);
+            data = JsonSerializer.Deserialize<SaveData>(JsonSerializer.Serialize(data, new JsonSerializerOptions { IncludeFields = true }), new JsonSerializerOptions { IncludeFields = true });
+            var back = SaveGame.Load(data, db).World.Map.PondAt(a);
+            Assert.NotNull(back);
+            Assert.Equal((double)pond.Level, (double)back.Level, 3);
+            Assert.True(back.Insects);
+            Assert.Equal(pond.FishTotal, back.FishTotal);
+            Assert.False(back.Spring);
         }
     }
 }

@@ -65,7 +65,11 @@ namespace Thatchwick.Core.World
         /// <summary>Su karosu: içine girilen yavaşlar (x0,5) ve ıslanır; donmuşsa üstünde normal yürünür.</summary>
         public const float WaterSpeed = 0.5f;
 
+        /// <summary>Su (gölet çukuru) karosu mu; dolu olmayabilir (kazılan gölet yağmurla dolar): bkz. IsFilled.</summary>
         public bool IsWater(GridPos p) => p.Z == 0 && GetFloor(p) == FloorType.Water;
+
+        /// <summary>Gölet karosunda kullanılabilir su var mı (kaynak gölet ya da yağmurla dolmuş).</summary>
+        public bool IsFilled(GridPos p) => IsWater(p) && (PondAt(p)?.IsFilled ?? false);
 
         /// <summary>Sular donmuş mu (kışın dondurucu soğukta; oyun katmanı günlük verir).</summary>
         public bool WaterFrozen
@@ -75,7 +79,7 @@ namespace Thatchwick.Core.World
         }
 
         /// <summary>Açık (donmamış) su karosu mu: içine girilir, kova doldurulur, balık tutulur, yıkanılır.</summary>
-        public bool IsOpenWater(GridPos p) => !_waterFrozen && IsWater(p);
+        public bool IsOpenWater(GridPos p) => !_waterFrozen && IsFilled(p);
 
         public RoadType GetRoad(GridPos p) => _road != null && RoadPlane(p) ? _road[PlaneIndex(p)] : RoadType.None;
         public float GetRoadCondition(GridPos p) => _road != null && RoadPlane(p) ? _roadCond[PlaneIndex(p)] : 0f;
@@ -227,6 +231,211 @@ namespace Thatchwick.Core.World
             if (!RoadPlane(p)) return;
             EnsureRoads();
             _trample[PlaneIndex(p)] = Math.Max(0f, Math.Min(NaturalPathThreshold, trample));
+        }
+    }
+
+    /// <summary>
+    /// Bir gölet: birbirine dik komşu su karoları. Kazılan gölet boş başlar ve yalnızca yağmurla dolar; yazın yağmur
+    /// yağmazsa buharlaşır. Kaynaklı (haritadaki doğal) gölet hep doludur. Dolu kaldıkça böcekler gelir; balıklar yalnızca
+    /// böcek varken ve aynı türden en az iki balık varsa ürer. Kuruyan gölette balıklar ölür, böcekler gider.
+    /// </summary>
+    public sealed class Pond
+    {
+        /// <summary>Bu seviyeden sonra kullanılabilir: içine girilir, yıkanılır, kova doldurulur, balık yaşar.</summary>
+        public const float FilledLevel = 0.4f;
+        /// <summary>Dolu kaldıktan bu kadar gün sonra böcekler gelir.</summary>
+        public const double InsectDays = 2.0;
+        /// <summary>Karo başına en çok balık.</summary>
+        public const int FishPerTile = 3;
+
+        internal readonly List<GridPos> TilesList = new List<GridPos>();
+        public IReadOnlyList<GridPos> Tiles => TilesList;
+        public GridPos Anchor => TilesList[0];
+        /// <summary>Su seviyesi 0 (kuru çukur) - 1 (ağzına kadar).</summary>
+        public float Level { get; internal set; }
+        /// <summary>Kaynaklı gölet: hep dolu, kurumaz.</summary>
+        public bool Spring { get; internal set; }
+        public bool Insects { get; internal set; }
+        /// <summary>Kesintisiz dolu kalınan gün.</summary>
+        public double FilledDays { get; internal set; }
+        /// <summary>Tür (eşya kimliği, ör. item.fish_carp) başına balık sayısı.</summary>
+        public Dictionary<string, int> Fish { get; } = new Dictionary<string, int>();
+
+        public bool IsFilled => Spring || Level >= FilledLevel;
+        public int FishCapacity => TilesList.Count * FishPerTile;
+        public int FishTotal { get { int n = 0; foreach (var v in Fish.Values) n += v; return n; } }
+
+        public void AddFish(string species, int count = 1)
+        {
+            if (count <= 0) return;
+            Fish.TryGetValue(species, out int n);
+            Fish[species] = n + count;
+        }
+
+        public bool TakeFish(string species)
+        {
+            if (!Fish.TryGetValue(species, out int n) || n <= 0) return false;
+            if (n == 1) Fish.Remove(species); else Fish[species] = n - 1;
+            return true;
+        }
+    }
+
+    public sealed partial class GridMap
+    {
+        private bool _pondsDirty = true;
+        private List<Pond> _ponds = new List<Pond>();
+        private int[] _pondIndex;           // düzlem karosu -> _ponds sırası (-1 yok)
+
+        /// <summary>Gölet başına yağmur: yağmurlu gün, fırtınalı gün.</summary>
+        public const float RainFill = 0.3f, StormFill = 0.55f;
+        /// <summary>Sıcakta yağmursuz gün buharlaşma (15°C üstü her 10°C için bir kat daha).</summary>
+        public const float EvaporationPerDay = 0.04f;
+
+        /// <summary>Haritadaki göletler (karo kümeleri).</summary>
+        public IReadOnlyList<Pond> Ponds { get { RebuildPonds(); return _ponds; } }
+
+        public Pond PondAt(GridPos p)
+        {
+            if (p.Z != 0 || !PlaneInBounds(p) || GetFloor(p) != FloorType.Water) return null;
+            RebuildPonds();
+            int k = _pondIndex[PlaneIndex(p)];
+            return k >= 0 ? _ponds[k] : null;
+        }
+
+        /// <summary>Göleti kaynaklı yapar (harita üretimi: doğal gölet, dere): hep dolu.</summary>
+        public void SetSpring(GridPos p, bool spring = true)
+        {
+            var pond = PondAt(p);
+            if (pond == null) return;
+            pond.Spring = spring;
+            if (spring) pond.Level = 1f;
+            RoadsChanged?.Invoke();
+        }
+
+        /// <summary>Kayıttan: bir karonun göletinin durumu.</summary>
+        public void RestorePond(GridPos anchor, float level, bool spring, bool insects, double filledDays, IEnumerable<KeyValuePair<string, int>> fish)
+        {
+            var pond = PondAt(anchor);
+            if (pond == null) return;
+            pond.Level = Math.Max(0f, Math.Min(1f, level));
+            pond.Spring = spring;
+            pond.Insects = insects;
+            pond.FilledDays = Math.Max(0, filledDays);
+            pond.Fish.Clear();
+            if (fish != null) foreach (var kv in fish) if (kv.Value > 0) pond.AddFish(kv.Key, kv.Value);
+        }
+
+        // Su karoları değişince (kazıldı, dolduruldu) gölet kümeleri yeniden çıkarılır. Eski göletin suyu (hacim),
+        // balıkları ve böcekleri, yeni kümeyle örtüşen karo oranında aktarılır; yeni kazılan karo kuru gelir.
+        private void RebuildPonds()
+        {
+            if (!_pondsDirty && _pondIndex != null) return;
+            _pondsDirty = false;
+            int n = Width * Height;
+            var oldIndex = _pondIndex;
+            var oldPonds = _ponds;
+            var index = new int[n];
+            for (int i = 0; i < n; i++) index[i] = -1;
+            var ponds = new List<Pond>();
+            var queue = new Queue<GridPos>();
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                {
+                    var start = new GridPos(x, y);
+                    if (index[PlaneIndex(start)] >= 0 || GetFloor(start) != FloorType.Water) continue;
+                    var pond = new Pond();
+                    int k = ponds.Count;
+                    ponds.Add(pond);
+                    index[PlaneIndex(start)] = k;
+                    queue.Enqueue(start);
+                    while (queue.Count > 0)
+                    {
+                        var cur = queue.Dequeue();
+                        pond.TilesList.Add(cur);
+                        foreach (var o in new[] { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) })
+                        {
+                            var nb = cur + o;
+                            if (!PlaneInBounds(nb) || GetFloor(nb) != FloorType.Water || index[PlaneIndex(nb)] >= 0) continue;
+                            index[PlaneIndex(nb)] = k;
+                            queue.Enqueue(nb);
+                        }
+                    }
+                }
+
+            if (oldIndex != null && oldPonds.Count > 0)
+                foreach (var pond in ponds)
+                {
+                    var overlap = new Dictionary<int, int>();
+                    foreach (var t in pond.TilesList)
+                    {
+                        int o = oldIndex[PlaneIndex(t)];
+                        if (o < 0) continue;
+                        overlap.TryGetValue(o, out int c);
+                        overlap[o] = c + 1;
+                    }
+                    double volume = 0;
+                    foreach (var kv in overlap)
+                    {
+                        var old = oldPonds[kv.Key];
+                        double share = (double)kv.Value / old.TilesList.Count;
+                        volume += old.Level * old.TilesList.Count * share;
+                        pond.Spring |= old.Spring;
+                        pond.Insects |= old.Insects;
+                        pond.FilledDays = Math.Max(pond.FilledDays, old.FilledDays);
+                        foreach (var f in old.Fish) pond.AddFish(f.Key, (int)Math.Round(f.Value * share));
+                    }
+                    pond.Level = pond.Spring ? 1f : (float)Math.Min(1.0, volume / pond.TilesList.Count);
+                    if (!pond.IsFilled) { pond.Insects = false; pond.FilledDays = 0; pond.Fish.Clear(); }
+                }
+            _ponds = ponds;
+            _pondIndex = index;
+        }
+
+        /// <summary>
+        /// Göletlerin günü: yağmur doldurur (rain: 0 kuru, RainFill, StormFill), sıcakta buharlaşır. Dolu kalan gölete
+        /// böcek gelir; böcek varken ve kış değilken aynı türden her çift %30 olasılıkla bir yavru verir (karo başına
+        /// 3 balık sınırı). Kuruyan gölette balıklar ölür. Olayları (bildirim metni) döner.
+        /// </summary>
+        public List<string> OnNewDayPonds(float rain, float outdoorTemp, bool winter, Random rng)
+        {
+            var notes = new List<string>();
+            foreach (var pond in Ponds)
+            {
+                bool wasFilled = pond.IsFilled;
+                if (!pond.Spring)
+                {
+                    if (rain > 0f) pond.Level = Math.Min(1f, pond.Level + rain);
+                    else if (outdoorTemp > 15f && !_waterFrozen) pond.Level = Math.Max(0f, pond.Level - EvaporationPerDay * (1f + (outdoorTemp - 15f) / 10f));
+                }
+                if (pond.IsFilled && !wasFilled) notes.Add("Gölet yağmurla doldu.");
+                if (!pond.IsFilled)
+                {
+                    int dead = pond.FishTotal;
+                    if (wasFilled) notes.Add(dead > 0 ? $"Gölet kurudu: {dead} balık öldü." : "Gölet kurudu.");
+                    pond.Fish.Clear();
+                    pond.Insects = false;
+                    pond.FilledDays = 0;
+                    continue;
+                }
+                pond.FilledDays += 1;
+                if (!pond.Insects && pond.FilledDays >= Pond.InsectDays && !_waterFrozen)
+                {
+                    pond.Insects = true;
+                    notes.Add("Gölete böcekler geldi: balıklar artık beslenip üreyebilir.");
+                    continue;                                   // üreme ertesi günden
+                }
+                if (!pond.Insects || winter || _waterFrozen) continue;
+                int born = 0;
+                foreach (var species in new List<string>(pond.Fish.Keys))
+                {
+                    int pairs = pond.Fish[species] / 2;
+                    for (int i = 0; i < pairs && pond.FishTotal < pond.FishCapacity; i++)
+                        if (rng.NextDouble() < 0.3) { pond.AddFish(species); born++; }
+                }
+                if (born > 0) notes.Add($"Gölette {born} yavru balık oldu.");
+            }
+            if (notes.Count > 0) RoadsChanged?.Invoke();
+            return notes;
         }
     }
 }

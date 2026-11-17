@@ -302,7 +302,7 @@ namespace Thatchwick.Core.Jobs
             if (TileWork == null) { Fail("Bu iş şu an yapılamaz."); return 0; }
             if (!_using)
             {
-                string blocked = TileWork.CanDo(_character, job.Target, job.TileAction);
+                string blocked = TileWork.CanDo(_character, job.Target, job.TileAction, job.InteractionId);
                 if (blocked != null) { Fail(blocked); return 0; }
                 if (_path == null)
                 {
@@ -311,7 +311,7 @@ namespace Thatchwick.Core.Jobs
                     if (map.IsWalkable(job.Target)) goals.Add(job.Target);
                     if (job.TileAction != TileAction.Bathe)          // yıkanmak için suyun içine girilir; öbür işler kıyıdan da olur
                         foreach (var o in AdjacentOffsets) if (map.IsWalkable(job.Target + o)) goals.Add(job.Target + o);
-                    if (job.TileAction == TileAction.Fish)           // balık kıyıdan tutulur (kıyı yoksa suya girilir)
+                    if (job.TileAction == TileAction.Fish || job.TileAction == TileAction.Stock)   // kıyıdan (kıyı yoksa suya girilir)
                     {
                         var dry = new HashSet<GridPos>();
                         foreach (var g in goals) if (!map.IsWater(g)) dry.Add(g);
@@ -337,10 +337,10 @@ namespace Thatchwick.Core.Jobs
             double available = budget - used;
             if (available >= remaining)
             {
-                string gone = TileWork.CanDo(_character, job.Target, job.TileAction);
+                string gone = TileWork.CanDo(_character, job.Target, job.TileAction, job.InteractionId);
                 if (gone != null) { Fail(gone); return used + remaining; }
                 Finish();
-                TileWork.Apply(_character, job.Target, job.TileAction);
+                TileWork.Apply(_character, job.Target, job.TileAction, job.InteractionId);
                 return used + remaining;
             }
             _useProgress += available;
@@ -586,7 +586,7 @@ namespace Thatchwick.Core.Jobs
             _needOrder.Clear();
             foreach (var need in AllNeeds)
                 if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
-            if (_needOrder.Count == 0) return TryEmptyToilet() || TryStartDuty();
+            if (_needOrder.Count == 0) return TryStartDuty();
             _needOrder.Sort((a, b) =>
             {
                 int ka = Rank(a), kb = Rank(b);
@@ -610,29 +610,6 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Yatmadan önce tuvalet bunun altındaysa önce tuvalete gider.</summary>
         public const float PreSleepBladder = 55f;
         private double _toiletCheckUntil;
-
-        /// <summary>Hela/lazımlık bu doluluğu geçince ihtiyacı olmayan yetişkin kendiliğinden boşaltır (gübre çıkar).</summary>
-        public const float SelfEmptyAtFill = 0.75f;
-
-        private bool TryEmptyToilet()
-        {
-            if (!_character.ComfortNeedsActive || _character.Stage == AgeStage.Child || Effects == null) return false;
-            ItemInstance best = null; InteractionDef bestI = null; int bestD = int.MaxValue;
-            foreach (var it in _world.Items)
-            {
-                if (it.IsDecor || it.Def.FillCapacity <= 0 || it.Fill < it.Def.FillCapacity * SelfEmptyAtFill) continue;
-                if (_unreachableUntil.TryGetValue(it.Id, out var until) && until > _elapsedDays) continue;
-                foreach (var i in it.Def.Interactions)
-                {
-                    if (!i.EmptyFill || Effects.CanStart(_character, it, i) != null) continue;
-                    int d = Math.Abs(it.Position.X - _character.Position.X) + Math.Abs(it.Position.Y - _character.Position.Y);
-                    if (d < bestD) { best = it; bestI = i; bestD = d; }
-                }
-            }
-            if (best == null) return false;
-            ResetJobState();
-            return Queue.TryEnqueue(Job.UseItem(best.Id, bestI.Id));
-        }
 
         // Otonomi sırası: kritik açlık/uyku/soğuk önce; sonra tuvalet ve öbür hayatta kalma; en son keyif ihtiyaçları.
         private int Rank(NeedType need)

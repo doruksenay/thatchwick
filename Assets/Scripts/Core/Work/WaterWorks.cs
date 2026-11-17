@@ -31,6 +31,8 @@ namespace Thatchwick.Core.Work
         public readonly Dictionary<int, int> Drawn = new Dictionary<int, int>();
         /// <summary>Sarnıca ağdaki artan sudan dolabilecek miktar.</summary>
         public readonly Dictionary<int, int> Refill = new Dictionary<int, int>();
+        /// <summary>Kazılan (kaynaksız) göletten bugün çekilen su: gölet bu kadar alçalır.</summary>
+        public readonly Dictionary<Pond, int> PondDrawn = new Dictionary<Pond, int>();
         public int TotalSupply, TotalDemand, SuppliedDemand;
 
         public bool IsWet(GridPos p) => WetConduits.Contains(p.OnLevel(0));
@@ -56,6 +58,7 @@ namespace Thatchwick.Core.Work
             public ItemInstance Item;
             public GridPos Pos;
             public ConduitType Conduit;
+            public Pond Pond;                // su kütlesi düğümünde gölet
             public bool Passable = true;     // donmuş açık ark ve kapalı kapak geçirmez
             public bool Leaf;                // su çarkı: su alır, iletmez
             public int Capacity = int.MaxValue;
@@ -70,8 +73,7 @@ namespace Thatchwick.Core.Work
         private readonly List<Node> _nodes = new List<Node>();
         private readonly Dictionary<GridPos, int> _itemAt = new Dictionary<GridPos, int>();
         private readonly Dictionary<GridPos, int> _conduitAt = new Dictionary<GridPos, int>();
-        private readonly Dictionary<int, int> _bodyNode = new Dictionary<int, int>();       // su kütlesi kimliği → düğüm
-        private readonly Dictionary<GridPos, int> _bodyOf = new Dictionary<GridPos, int>();  // su karosu → kütle kimliği
+        private readonly Dictionary<Pond, int> _pondNode = new Dictionary<Pond, int>();     // gölet/dere → kaynak düğümü
         private readonly List<ItemInstance> _fixtures = new List<ItemInstance>();
 
         private static readonly GridPos[] Dirs = { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };
@@ -158,34 +160,23 @@ namespace Thatchwick.Core.Work
             for (int k = includeSelf ? -1 : 0; k < 4; k++)
             {
                 var w = k < 0 ? p : p + Dirs[k];
-                if (!map.InBounds(w) || !map.IsWater(w)) continue;
-                Link(node, BodyNode(w));
+                if (!map.InBounds(w) || !map.IsFilled(w)) continue;      // kuru çukurdan su gelmez
+                Link(node, BodyNode(map.PondAt(w)));
             }
         }
 
-        // Su kütlesini (dik komşu su karoları) bir kez etiketler; kütle başına tek kaynak düğümü.
-        private int BodyNode(GridPos w)
+        // Gölet ya da dere (dik komşu su karoları, GridMap.Pond) başına tek kaynak düğümü. Kaynaklı su (doğal gölet,
+        // dere) kendi akışıyla verir; kazılan gölet yağmur suyunu verir ve çekilen su onu alçaltır (WaterWorks.OnNewDay).
+        private int BodyNode(Pond pond)
         {
-            if (!_bodyOf.TryGetValue(w, out int body))
+            if (!_pondNode.TryGetValue(pond, out int id))
             {
-                body = _bodyNode.Count;
-                var map = _world.Map;
-                var q = new Queue<GridPos>();
-                q.Enqueue(w); _bodyOf[w] = body;
-                int size = 0;
-                while (q.Count > 0)
-                {
-                    var p = q.Dequeue(); size++;
-                    foreach (var o in Dirs)
-                    {
-                        var n = p + o;
-                        if (_bodyOf.ContainsKey(n) || !map.InBounds(n) || !map.IsWater(n)) continue;
-                        _bodyOf[n] = body; q.Enqueue(n);
-                    }
-                }
-                _bodyNode[body] = Add(new Node { Kind = Kind.Body, Pos = w, Supply = BodyFlow(size), Seed = true });
+                int flow = BodyFlow(pond.Tiles.Count);
+                if (!pond.Spring) flow = Math.Min(flow, (int)(pond.Level * pond.Tiles.Count * WaterWorks.PondUnitsPerTile));
+                id = Add(new Node { Kind = Kind.Body, Pos = pond.Anchor, Pond = pond, Supply = flow, Seed = true });
+                _pondNode[pond] = id;
             }
-            return _bodyNode[body];
+            return id;
         }
 
         private bool Enterable(Node n) => n.Passable;
@@ -298,29 +289,36 @@ namespace Thatchwick.Core.Work
                 }
                 var src = _nodes[path[path.Count - 1]];
                 src.Supply -= use;
-                if (src.Kind == Kind.Item) report.Drawn[src.Item.Id] = (report.Drawn.TryGetValue(src.Item.Id, out int dr) ? dr : 0) + use;
+                Draw(report, src, use);
                 state.Supplied = true;
                 report.SuppliedDemand += use;
             }
 
             // Kalan kendiliğinden akan su (göl, dere, kaynak eşyası; sarnıç değil) aynı ağdaki sarnıçları doldurur.
-            var surplus = new Dictionary<int, int>();
-            foreach (var n in _nodes)
+            // Kazılan göletten sarnıca giden su da göleti alçaltır.
+            foreach (var c in _nodes)
             {
-                if (n.Comp < 0 || n.Supply <= 0) continue;
-                if (n.Kind == Kind.Item && n.Item.Def.IsCistern) continue;
-                surplus[n.Comp] = (surplus.TryGetValue(n.Comp, out int s) ? s : 0) + n.Supply;
+                if (c.Kind != Kind.Item || !c.Item.Def.IsCistern || c.Comp < 0) continue;
+                int room = c.Item.Def.CisternCapacity - c.Item.Fill;
+                int added = 0;
+                foreach (var n in _nodes)
+                {
+                    if (room - added <= 0) break;
+                    if (n.Comp != c.Comp || n.Supply <= 0 || n.Kind == Kind.Item && n.Item.Def.IsCistern) continue;
+                    int take = Math.Min(n.Supply, room - added);
+                    n.Supply -= take;
+                    added += take;
+                    if (n.Kind == Kind.Body) Draw(report, n, take);
+                }
+                if (added > 0) report.Refill[c.Item.Id] = added;
             }
-            foreach (var n in _nodes)
-            {
-                if (n.Kind != Kind.Item || !n.Item.Def.IsCistern || n.Comp < 0) continue;
-                if (!surplus.TryGetValue(n.Comp, out int left) || left <= 0) continue;
-                int room = n.Item.Def.CisternCapacity - n.Item.Fill;
-                int add = Math.Min(left, Math.Max(0, room));
-                if (add <= 0) continue;
-                report.Refill[n.Item.Id] = add;
-                surplus[n.Comp] = left - add;
-            }
+        }
+
+        private static void Draw(WaterReport report, Node src, int amount)
+        {
+            if (src.Kind == Kind.Item) report.Drawn[src.Item.Id] = (report.Drawn.TryGetValue(src.Item.Id, out int dr) ? dr : 0) + amount;
+            else if (src.Kind == Kind.Body && src.Pond != null && !src.Pond.Spring)
+                report.PondDrawn[src.Pond] = (report.PondDrawn.TryGetValue(src.Pond, out int pd) ? pd : 0) + amount;
         }
 
         // Tesisattan geriye, kapasitesi yeten düğümlerden en yakın yeterli kaynağa (BFS). Yol: başlangıçtan kaynağa.
@@ -365,6 +363,9 @@ namespace Thatchwick.Core.Work
     {
         private readonly WorldState _world;
         private WaterReport _report;
+
+        /// <summary>Dolu bir gölet karosunun tuttuğu su (birim): 3x3 dolu gölet 90 birim. Çekilen su göleti bu oranla alçaltır.</summary>
+        public const float PondUnitsPerTile = 10f;
 
         public WaterWorks(WorldState world)
         {
@@ -422,7 +423,7 @@ namespace Thatchwick.Core.Work
         /// <summary>Gün sonu özeti.</summary>
         public sealed class DayResult
         {
-            public int Flushed, CisternsFilled, DryFixtures;
+            public int Flushed, CisternsFilled, DryFixtures, PondDrawn;
         }
 
         /// <summary>
@@ -433,6 +434,11 @@ namespace Thatchwick.Core.Work
         {
             var r = Solve(_world);
             var result = new DayResult();
+            foreach (var kv in r.PondDrawn)
+            {
+                kv.Key.Level = Math.Max(0f, kv.Key.Level - kv.Value / (kv.Key.Tiles.Count * PondUnitsPerTile));
+                result.PondDrawn += kv.Value;
+            }
             var rooms = _world.Map.Rooms;
             foreach (var it in _world.Items)
             {

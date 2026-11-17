@@ -122,6 +122,14 @@ namespace Thatchwick.Core.Save
             var conduits = new List<ConduitSave>();
             foreach (var (pos, type) in map.ConduitTiles()) conduits.Add(new ConduitSave { x = pos.X, y = pos.Y, type = (int)type });
             m.conduits = conduits.ToArray();
+            var ponds = new List<PondSave>();
+            foreach (var p in map.Ponds)
+            {
+                var ids = new List<string>(); var counts = new List<int>();
+                foreach (var f in p.Fish) { ids.Add(f.Key); counts.Add(f.Value); }
+                ponds.Add(new PondSave { x = p.Anchor.X, y = p.Anchor.Y, level = p.Level, spring = p.Spring, insects = p.Insects, filledDays = p.FilledDays, fishIds = ids.ToArray(), fishCounts = counts.ToArray() });
+            }
+            m.ponds = ponds.ToArray();
             data.map = m;
 
             // Eşyalar: önce yer eşyaları, sonra dekorlar (yüklerken üstündeki eşya hazır olsun).
@@ -368,6 +376,16 @@ namespace Thatchwick.Core.Save
                 {
                     if (c == null || c.x < 0 || c.y < 0 || c.x >= map.Width || c.y >= map.Height) continue;
                     if (c.type > 0 && Enum.IsDefined(typeof(ConduitType), (byte)c.type)) map.SetConduit(new GridPos(c.x, c.y), (ConduitType)c.type);
+                }
+            if (m.ponds != null)
+                foreach (var ps in m.ponds)
+                {
+                    if (ps == null || ps.x < 0 || ps.y < 0 || ps.x >= map.Width || ps.y >= map.Height) continue;
+                    var fish = new List<KeyValuePair<string, int>>();
+                    if (ps.fishIds != null && ps.fishCounts != null)
+                        for (int i = 0; i < ps.fishIds.Length && i < ps.fishCounts.Length; i++)
+                            if (ps.fishIds[i] != null && content.Items.Contains(ps.fishIds[i])) fish.Add(new KeyValuePair<string, int>(ps.fishIds[i], ps.fishCounts[i]));
+                    map.RestorePond(new GridPos(ps.x, ps.y), ps.level, ps.spring, ps.insects, ps.filledDays, fish);
                 }
             if (m.styles != null)
                 foreach (var st in m.styles)
