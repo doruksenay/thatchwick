@@ -11,6 +11,8 @@ Oyun: Thatchwick: Generations of a Village (Unity 6, 2D URP, izometrik 2:1). Tas
 Asset üretimi `art/queue/` altındaki iş dosyalarıyla yürür. Akış ve tetikleme: `art/README.md`. İşçi ajan: `.claude/agents/pixellab-artist.md`. Bütçe kuralları: `art/budget.md` (bağlayıcı).
 
 - Kod oturumu PixelLab'i kendisi çağırmaz. Asset gerekiyorsa `art/TEMPLATE.md`'den bir iş dosyası ekler; çalıştırmak için `pixellab-artist` ajanını arka planda başlatır (Agent aracı, `run_in_background`).
+  - **Paralel:** hızlı üretim için 4 ajanı aynı anda başlatır, her birine görevde "Şerit k/4" (k = 0..3) verir.
+  - Şeritler işleri `queue_ready.py --lane k --lanes 4` ile paylaşır; bulut işçisi de aynı düzeni kullanır (`art/budget.md` "Paralel üretim").
 - `pixellab-artist` yalnızca `art/`, `Assets/Art/Iso/` ve `tools/art/` altına yazar. `Assets/Scripts`, `Packages`, `ProjectSettings` ve `Assets/Art/Test_34` yasaktır. Var olan PNG'nin üzerine yazılmaz.
 - Bu düzen, eski `art-brief*.md` dosyalarındaki "commit ya da push yapma" kısıtının yerine geçer: işçi yalnızca kendi yollarını commit ve push eder (`git pull --rebase` ile).
 - `art-brief*.md` dosyaları arşivdir. `art-brief.md`'deki tur 4 planı `art/queue/001-008` işlerine taşındı; karakter katmanı ve yapı modu isteği (`art-brief-tur4.md`) 009 ile fizibiliteden başlar.

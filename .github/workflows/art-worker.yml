@@ -15,20 +15,29 @@ on:
       - "art/budget.md"
       - "art/style/**"
   schedule:
-    - cron: "17 */3 * * *"      # günlük tavan sıfırlanınca ve kabul sonrası takılı kalan işler için
+    - cron: "17 * * * *"        # saatte bir (2026-11-17: 3 saatten hızlandırıldı); iş varken zaten kendini yeniden başlatır
   workflow_dispatch:
 
+# Paralel üretim (2026-11-17): 4 şerit aynı anda çalışır. Her şerit yalnızca kendi işlerini alır
+# (queue_ready.py --lane, crc32(id) % 4); aynı şeridin iki çalışması üst üste binmez.
 concurrency:
-  group: art-worker
+  group: art-worker-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
   contents: write
+  actions: write   # iş kaldıysa kendini yeniden başlatmak için (workflow_dispatch)
 
 jobs:
   work:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [0, 1, 2, 3]
+    env:
+      ART_LANES: "4"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,7 +58,7 @@ jobs:
           HAS_PIXELLAB: ${{ secrets.PIXELLAB_API_TOKEN != '' }}
         run: |
           set +e
-          python tools/art/queue_ready.py --all
+          python tools/art/queue_ready.py --all --lane ${{ matrix.lane }} --lanes $ART_LANES
           code=$?
           set -e
           if [ "$code" != "0" ]; then
@@ -89,14 +98,54 @@ jobs:
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
-          claude -p "art/queue icindeki uygun isleri art/budget.md kurallariyla isle ve ozet rapor ver. Bulut isçisisin (GitHub Actions); masaustu kopyasi adimlarini atla." \
+          claude -p "Serit ${{ matrix.lane }}/$ART_LANES. art/queue icindeki uygun isleri art/budget.md kurallariyla isle ve ozet rapor ver: yalnizca 'python tools/art/queue_ready.py --lane ${{ matrix.lane }} --lanes $ART_LANES' listesindeki isleri al. Bulut iscisisin (GitHub Actions); masaustu kopyasi adimlarini atla. Bir isteki bagimsiz PixelLab cagrilarini ayni anda gonder." \
             --agent pixellab-artist \
-            --max-turns 80 \
+            --max-turns 150 \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
             --allowedTools "mcp__pixellab" "Read" "Write" "Edit" "Glob" "Grep" "Bash(git:*)" "Bash(python:*)" "Bash(cp:*)" "Bash(ls:*)" "Bash(rm art/.worker.lock)"
 
       - name: Özet
         if: always() && steps.ready.outputs.run == 'true'
         run: |
-          python tools/art/queue_ready.py --all || true
+          python tools/art/queue_ready.py --all --lane ${{ matrix.lane }} --lanes $ART_LANES || true
           git log --oneline -5
+
+  # Bir tur bitince kuyrukta çalışabilir iş kaldıysa iş akışını yeniden başlatır (zincir).
+  # GITHUB_TOKEN ile yapılan push yeni çalışma başlatmaz; workflow_dispatch başlatır.
+  # Uygun iş yoksa (bitti, onay yok, günlük tavan ya da rezerv) zincir kendiliğinden durur.
+  next:
+    needs: work
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: İş kaldıysa yeniden başlat
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HAS_CLAUDE: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
+          HAS_PIXELLAB: ${{ secrets.PIXELLAB_API_TOKEN != '' }}
+        run: |
+          git pull --quiet origin main || true
+          if [ "$HAS_CLAUDE" != "true" ] || [ "$HAS_PIXELLAB" != "true" ]; then
+            echo "::warning::Secret eksik (CLAUDE_CODE_OAUTH_TOKEN / PIXELLAB_API_TOKEN): bulut işçisi üretim yapamaz."
+            exit 0
+          fi
+          # Sonsuz döngü freni: bu turda en az bir iş ilerlemediyse (art(NNN) commit'i yoksa) yeniden başlatma.
+          START=$(gh run view ${{ github.run_id }} --json createdAt -q .createdAt)
+          PROGRESS=$(git log --since="$START" --grep='^art(' --oneline | wc -l)
+          echo "Bu turda art(...) commit'i: $PROGRESS"
+          if python tools/art/queue_ready.py --all; then
+            if [ "$PROGRESS" -eq 0 ]; then
+              echo "::warning::Uygun iş var ama bu turda ilerleme yok; zincir durduruldu (saatlik zamanlayıcı yeniden dener)."
+              exit 0
+            fi
+            echo "Uygun iş kaldı; iş akışı yeniden başlatılıyor."
+            gh workflow run art-worker.yml --ref main
+          else
+            echo "Uygun iş yok; zincir durdu."
+          fi

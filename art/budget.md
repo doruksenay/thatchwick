@@ -11,8 +11,8 @@ Bu dosya işçinin freni ve harcama defteridir. İşçi her iş öncesi okur, he
 | Kural | Değer |
 |---|---|
 | Tek iş tavanı (`cost_max`) | 60 generation (çalışma tavanı). Daha büyük iş parçalara bölünür. Onay için ayrıca bir tavan yok (aşağıda "Otomatik akış") |
-| Çalışma başına tavan | 60 generation, en çok 3 iş |
-| Günlük tavan | 150 generation |
+| Çalışma başına tavan | Şerit başına 120 generation, en çok 5 iş (2026-11-17: 60/3 → 120/5; 4 şerit paralel) |
+| Günlük tavan | 400 generation, tüm şeritler toplamı (2026-11-17: 150 → 400). Şeritler aynı anda başladığında en çok 4 × 60 aşılabilir |
 | Rezerv | Kalan bakiye (`get_balance`), işten sonra 200'ün altına düşecekse işçi durur |
 | Maliyet sapması | Gerçek maliyet `cost_est`'in 2 katını aşarsa işçi durur, `status: failed` yazar |
 | Yeniden deneme | Yok. Hata, Tier kısıtı ya da ayak izi/2:1 doğrulaması tutmazsa durur, hatayı aynen yazar |
@@ -30,7 +30,14 @@ Kullanıcı: "Bunu otomatize et. Bu projede istenen tüm asset'ler PixelLab'e ü
 - **Kullanıcı seçimi gereken yerler:** kullanıcı seçimi yazmamışsa iş dosyasındaki varsayılan kullanılır. Örnek: 210 arayüz yönü, varsayılan `parsomen`.
 - **Plan işleri:** `pixellab: false` olan ve tarifi "iş dosyası yaz" diyen işlerde işçi yeni iş dosyaları yazar. Bu işler `approved_by: user`, en çok 60 `cost_max` olur ve `art/TEMPLATE.md`'ye uyar.
 - **Yeni ihtiyaç:** asset gerektiren her yeni özellik ya da karar için, planlama ve kod oturumları aynı turda iş dosyası yazar ve `main`'e push eder.
-- **Frenler aynen geçerli:** çalışma başına 60 gen / 3 iş, günlük 150 gen, rezerv 200. Kuyruk ayı aşarsa işler bir sonraki dönemde kendiliğinden devam eder.
+- **Frenler:** şerit başına 120 gen / 5 iş, günlük 400 gen, rezerv 200. Kuyruk ayı aşarsa işler bir sonraki dönemde ya da paket yükseltilince kendiliğinden devam eder (kullanıcı: "paketi arttırırız gerekirse sorun değil").
+
+## Paralel üretim (2026-11-17)
+- **4 şerit:** bulut işçisi 4 şeritte aynı anda çalışır. Her iş `crc32(id) % 4` ile bir şeride düşer (`queue_ready.py --lane k --lanes 4`). İki işçi aynı işi almaz; sahiplenme commit'i yine yedek kilittir.
+- **İş içi paralellik:** bir işteki bağımsız PixelLab çağrıları aynı anda gönderilir. Tarif açıkça "sırayla" diyorsa sırayla.
+  - PixelLab eşzamanlılık ya da hız sınırı verirse (429 / "too many"), bekleyip bir kez yeniden denenir. Yeniden denemesiz kuralının tek istisnası budur.
+- **Zincir:** tur bitince uygun iş kaldıysa ve bu turda ilerleme olduysa iş akışı kendini yeniden başlatır. Ayrıca saatte bir zamanlayıcı çalışır.
+- **Defter:** paralel işçiler aynı tabloya yazıp çakışmasın diye her iş defter satırını `art/ledger/NNN.md` dosyasına yazar (aynı tablo biçimi). Yukarıdaki tablo 2026-11-17'ye kadarki geçmiştir. `queue_ready.py` ikisini birlikte okur.
 
 ## Günlük defter
 | Tarih | İş | Araç | Harcanan | Kalan (get_balance) |

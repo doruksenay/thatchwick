@@ -56,6 +56,15 @@ Kuyruk insan onayı beklemeden akar. Kurallar `art/budget.md` "Otomatik akış" 
 
 `queue_ready.py --strict` eski kuralı gösterir.
 
+## Paralel üretim (2026-11-17)
+Bulut işçisi 4 şeritte aynı anda çalışır (`matrix.lane`).
+- **Paylaşım:** her iş tek bir şeride düşer (`queue_ready.py --lane k --lanes 4`).
+- **İş içi:** bir işteki bağımsız PixelLab çağrıları aynı anda gönderilir.
+- **Zincir:** tur bitince iş kaldıysa ve ilerleme olduysa iş akışı kendini yeniden başlatır; ayrıca saatte bir zamanlayıcı çalışır.
+- **Defter:** iş başına `art/ledger/NNN.md`.
+- **Yerelde:** Claude Code'a "pixellab-artist ajanını 4 şeritte paralel çalıştır" demek yeter.
+- **Ayrıntı:** `art/budget.md`.
+
 ## Unity tarafı
 İşçi `.meta` yazmaz. `git pull` sonrası Unity PNG'leri alır; PPU 32, Point, sıkıştırma yok ve pivot ayarı (rapordaki piksel değerinden) yapılır. `art/results/*.md` başında `unity-import: pending` olanlar bekleyen listesidir; import bitince `done` yap. Ad kuralı (repodaki mevcut dosyalar): `iso_item_<ad>_<yön>.png`, çok karolu eşyada uzun eksenin yönü (`iso_item_bed_straw_2x1_se_nw.png`, `_sw_ne`), durum eki yöndan önce (`hearth_stone_lit_se`).
 

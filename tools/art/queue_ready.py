@@ -10,7 +10,8 @@ Bir iş uygundur, eğer (art/budget.md "Otomatik akış", kullanıcı kararı 20
   - approved_by: user ya da auto (pending = açık soru, çalışmaz)
   - depends_on içindeki her iş `accepted` ya da `review` (stil pilotları dahil)
   - cost_max <= 60 (çalışma tavanı; büyük iş bölünmeli)
-  - cost_max bugünkü kalan günlük tavana (150) ve rezerve (200) sığıyor
+  - cost_max bugünkü kalan günlük tavana (400) ve rezerve (200) sığıyor
+  --lane k --lanes N: paralel işçiler için yalnızca k numaralı şeridin işleri (crc32(id) % N)
   --strict: eski kural (yalnızca accepted bağımlılık, auto için cost_max <= 25).
 
 Kullanım:
@@ -20,6 +21,7 @@ Kullanım:
   python tools/art/queue_ready.py --all      # her işin neden bekledigini de yazar
 """
 import argparse
+import zlib
 import datetime
 import glob
 import json
@@ -30,10 +32,11 @@ import sys
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 QUEUE = os.path.join(ROOT, "art", "queue")
 BUDGET = os.path.join(ROOT, "art", "budget.md")
+LEDGER = os.path.join(ROOT, "art", "ledger")   # paralel işçiler: iş başına bir defter dosyası (çakışma olmasın)
 
 AUTO_LIMIT = 25.0   # yalnızca --strict
-RUN_LIMIT = 60.0
-DAILY_LIMIT = 150.0
+RUN_LIMIT = 60.0      # tek iş tavanı (cost_max)
+DAILY_LIMIT = 400.0   # 2026-11-17: paralel üretim için 150 -> 400 (kullanıcı: "paketi arttırırız gerekirse")
 RESERVE = 200.0
 
 
@@ -72,20 +75,30 @@ def parse_list(val):
 
 
 def read_budget(today):
-    """Bugün harcanan ve defterdeki son kalan bakiye (defter; işçi get_balance ile doğrular)."""
-    spent_today, last_balance = 0.0, None
-    if not os.path.exists(BUDGET):
-        return spent_today, last_balance
-    with open(BUDGET, encoding="utf-8") as f:
-        for line in f:
-            cells = [c.strip() for c in line.strip().strip("|").split("|")]
-            if len(cells) < 5 or not re.match(r"\d{4}-\d{2}-\d{2}", cells[0]):
-                continue
-            if cells[0] == today:
-                spent_today += _num(cells[3])
-            bal = _num(cells[4], None)
-            if bal is not None:
-                last_balance = bal
+    """Bugün harcanan ve son kalan bakiye (defter; işçi get_balance ile doğrular).
+
+    Defter: art/budget.md tablosu (eski satırlar) + art/ledger/*.md (2026-11-17'den sonra, iş başına bir dosya;
+    paralel işçiler aynı satıra yazıp çakışmasın diye). Satır biçimi aynı: | tarih | iş | araç | harcanan | kalan |
+    Bakiye olarak en son tarihli satırdaki en küçük "kalan" alınır (paralel işlerde en güncel olan).
+    """
+    spent_today, rows = 0.0, []
+    files = [BUDGET] if os.path.exists(BUDGET) else []
+    files += sorted(glob.glob(os.path.join(LEDGER, "*.md")))
+    for path in files:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                cells = [c.strip() for c in line.strip().strip("|").split("|")]
+                if len(cells) < 5 or not re.match(r"\d{4}-\d{2}-\d{2}", cells[0]):
+                    continue
+                if cells[0] == today:
+                    spent_today += _num(cells[3])
+                bal = _num(cells[4], None)
+                if bal is not None:
+                    rows.append((cells[0], bal))
+    last_balance = None
+    if rows:
+        last_day = max(d for d, _ in rows)
+        last_balance = min(b for d, b in rows if d == last_day)
     return spent_today, last_balance
 
 
@@ -109,12 +122,19 @@ def load_jobs():
     return jobs
 
 
-def evaluate(jobs, spent_today, balance, strict=False):
+def lane_of(job_id, lanes):
+    """Paralel işçi şeridi: iş numarasından sabit (crc32), her işçi yalnızca kendi şeridini alır."""
+    return zlib.crc32(job_id.encode("utf-8")) % lanes
+
+
+def evaluate(jobs, spent_today, balance, strict=False, lane=None, lanes=1):
     remaining_today = max(0.0, DAILY_LIMIT - spent_today)
     ready, waiting = [], []
     for j in jobs.values():
         why = []
         if j["status"] != "pending":
+            continue
+        if lane is not None and lanes > 1 and lane_of(j["id"], lanes) != lane:
             continue
         if j["approved_by"] == "auto" and strict:
             if j["cost_max"] > AUTO_LIMIT:
@@ -153,11 +173,13 @@ def main():
     ap.add_argument("--today", default=datetime.date.today().isoformat())
     ap.add_argument("--strict", action="store_true", help="eski kural: yalnızca accepted bağımlılık, auto için cost_max <= 25")
     ap.add_argument("--allow-review-deps", action="store_true", help="artık varsayılan; geriye uyumluluk için kabul edilir")
+    ap.add_argument("--lane", type=int, help="paralel işçi şeridi (0..lanes-1); yalnızca bu şeridin işleri")
+    ap.add_argument("--lanes", type=int, default=1, help="toplam şerit sayısı")
     a = ap.parse_args()
 
     jobs = load_jobs()
     spent, balance = read_budget(a.today)
-    ready, waiting, remaining = evaluate(jobs, spent, balance, a.strict)
+    ready, waiting, remaining = evaluate(jobs, spent, balance, a.strict, a.lane, a.lanes)
 
     if a.json:
         print(json.dumps({
