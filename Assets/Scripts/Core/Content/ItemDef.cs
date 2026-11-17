@@ -106,6 +106,10 @@ namespace Thatchwick.Core.Content
         public bool IsRug => Placement == ItemPlacement.Rug;
 
         // ---- hayvancılık ve otomasyon ----
+        /// <summary>Buzluk: içinde buz varken (FuelDays = kalan buz günü) yiyeceği çok soğuk tutar.</summary>
+        public bool IsIceBox { get; set; }
+        /// <summary>Yiyecek yerleşimindeki kapasite (0 = depo kapasitesi, o da yoksa kiler/buzluk için 60).</summary>
+        public int FoodCapacity { get; set; }
         /// <summary>Yalnızca kapalı bir odaya konur (folluk, ahır bölmesi, at bölmesi): barınak odası.</summary>
         public bool RequiresIndoor { get; set; }
         /// <summary>Yemlik: aynı odadaki hayvanlar buradaki yemden yer.</summary>

@@ -88,6 +88,7 @@ namespace Thatchwick.Core.Content
         public bool rideable;     // erişkin ve eyerliyken binilir (at)
         public float rideSpeed;   // binince yürüme hızı çarpanı (0 = 2)
         public float space;       // barınak odasında hayvan başına istenen karo (0 = türe göre)
+        public float trample = -1f; // bir adımın aşındırması (-1 = barınağa göre: ahır 2, at ahırı 3, kümes 0)
     }
 
     [Serializable]
@@ -155,6 +156,8 @@ namespace Thatchwick.Core.Content
         public bool needsSource;     // yalnızca kaynağa bağlı ağdayken sular (kanal)
         public bool powerSource;     // su çarkı: kaynağa bağlı kanala değerse yanındaki makineleri çalıştırır
         public AutoProcessDto autoProcess;   // güç alan makine: her gün kendiliğinden işler (değirmen taşı)
+        public bool iceBox;                  // buzluk: içinde buz varken yiyeceği çok soğuk tutar
+        public int foodCapacity;             // yiyecek yerleşiminde kapasite (0 = depo kapasitesi; kilerde 60)
     }
 
     [Serializable]
@@ -201,6 +204,8 @@ namespace Thatchwick.Core.Content
         public string moodlet;           // bitince verilen moodlet
         public int minLevel;             // gereken beceri seviyesi
         public int addFeed;              // barınağa eklenen yem
+        public float addIce;             // buzluğa eklenen buz (gün)
+        public bool requiresFrost;       // yalnızca don varken (buz kesmek)
         public bool collect;             // barınak ürünlerini topla
         public bool requiresAnimal;      // barınakta hayvan olmalı
         public NeedRestoreDto[] extraRestore; // ana ihtiyaca ek olarak doyurulan ihtiyaçlar

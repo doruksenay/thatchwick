@@ -221,7 +221,11 @@ namespace Thatchwick.Core.Animals
                 if (a.RiderId != 0)
                 {
                     var rider = RiderPosition?.Invoke(a.RiderId);
-                    if (rider.HasValue && CanCarryTo(home, rider.Value)) { a.Position = rider.Value; a.NextTile = null; a.Path = null; ridden = true; }
+                    if (rider.HasValue && CanCarryTo(home, rider.Value))
+                    {
+                        if (a.Position != rider.Value) _world.Map.Trample(rider.Value, a.Species.Trample);   // at yolu aşındırır
+                        a.Position = rider.Value; a.NextTile = null; a.Path = null; ridden = true;
+                    }
                     else
                     {
                         // Binici eve (ya da üst kata) girdi: at kapıda kalır, binici iner.
@@ -282,6 +286,7 @@ namespace Thatchwick.Core.Animals
                 if (!ridden) Wander(a, home, gameDays);
             }
             _allowedCache = null;
+            _roadCache = null;
         }
 
         private void Kill(Animal a, AnimalDeath cause)
@@ -324,18 +329,20 @@ namespace Thatchwick.Core.Animals
                     a.StepProgress = 0f;
                 }
 
-                double needed = (1.0 - a.StepProgress) * StepDays;
+                double stepDays = StepDays / _world.Map.StepSpeed(a.Position, a.NextTile.Value);   // yolda daha hızlı
+                double needed = (1.0 - a.StepProgress) * stepDays;
                 if (budget >= needed)
                 {
                     budget -= needed;
                     a.Position = a.NextTile.Value;
                     a.NextTile = null;
                     a.StepProgress = 0f;
+                    _world.Map.Trample(a.Position, a.Species.Trample);
                     if (a.Path == null || a.Path.Count == 0) { a.Path = null; a.WaitDays = MinWaitDays + _rng.NextDouble() * (MaxWaitDays - MinWaitDays); }
                 }
                 else
                 {
-                    a.StepProgress += (float)(budget / StepDays);
+                    a.StepProgress += (float)(budget / stepDays);
                     budget = 0;
                 }
             }

@@ -93,7 +93,10 @@ namespace Thatchwick.Core.Life
             Projects = new ProjectService(content, house, Village);
             Goals = new GoalService(content) { Metric = MetricValue };
             Spoilage.Spoiled += (id, n) =>
-                Say($"{n} {(content.Items.TryGet(id, out var d) ? d.DisplayName : id)} bozuldu.", NoticeLevel.Warning);
+            {
+                bool ice = content.Items.TryGet(id, out var d) && d.HasTag("ice");
+                Say(ice ? $"{n} buz eridi (buzluğa koy)." : $"{n} {(d != null ? d.DisplayName : id)} bozuldu.", ice ? NoticeLevel.Info : NoticeLevel.Warning);
+            };
             Festivals.Announced += f => Say($"Bugün {f.DisplayName}!", NoticeLevel.Info);
             Festivals.Celebrated += (f, n) =>
             {
@@ -353,6 +356,9 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Bugün dışarısı hayvanlar için uygun mu (fırtına yok)?</summary>
         public bool CalmToday => Weather.Today(Clock.TotalDays) != WeatherType.Storm;
+
+        /// <summary>Bugün yağmur ya da fırtına var mı (yol çamurlanır, daha çok aşınır)?</summary>
+        public bool RainyToday => Weather.Today(Clock.TotalDays) == WeatherType.Rain || Weather.Today(Clock.TotalDays) == WeatherType.Storm;
 
         // ---- kayıt ----
 

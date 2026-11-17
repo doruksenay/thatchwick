@@ -127,13 +127,22 @@ namespace Thatchwick.Core.Work
         private int AddAll(string id, int count) { _house.AddItem(id, count); return count; }
     }
 
-    /// <summary>Canlı modda karo işi: çimi çapalayıp toprak yapmak (yapı modunda akçeyle, burada emekle).</summary>
+    /// <summary>Canlı modda karo işi: çimi çapalayıp toprak yapmak (yapı modunda akçeyle, burada emekle) ve yol onarmak.</summary>
     public sealed class FarmWork : ITileWork
     {
         public const double TillDays = 0.02;
+        public const double RepairDays = 0.03;
         public const float TillXp = 1f;
+        /// <summary>Bu durumun altındaki döşenmiş yol onarılabilir.</summary>
+        public const float RepairBelow = 0.95f;
 
         private readonly WorldState _world;
+
+        /// <summary>Onarımın taşını veren hane; null ise taş istenmez.</summary>
+        public Household House { get; set; }
+
+        /// <summary>Yol onarıldı.</summary>
+        public event Action<Character, GridPos> Repaired;
 
         /// <summary>Çapa kademesinin hız çarpanı (alet); yoksa 1.</summary>
         public Func<Character, double> HoeSpeed { get; set; }
@@ -149,6 +158,16 @@ namespace Thatchwick.Core.Work
         public string CanDo(Character actor, GridPos tile, TileAction action)
         {
             var map = _world.Map;
+            if (action == TileAction.Repair)
+            {
+                var road = map.GetRoad(tile);
+                if (road == RoadType.None) return "Burada yol yok.";
+                if (map.IsNaturalRoad(tile)) return "Kendiliğinden oluşmuş patika onarılmaz (yapı modunda yol döşe).";
+                if (map.GetRoadCondition(tile) >= RepairBelow) return "Yol sağlam.";
+                int stone = BuildService.RepairStone(road);
+                if (stone > 0 && House != null && House.Count("item.stone") < stone) return $"Taş yetmiyor ({House.Count("item.stone")}/{stone}).";
+                return null;
+            }
             if (action != TileAction.Till) return "Bilinmeyen iş.";
             if (!map.InBounds(tile) || tile.Z != 0) return "Yalnızca zemin katta çapalanır.";
             if (!map.IsOwned(tile)) return "Arsa senin değil.";
@@ -160,6 +179,7 @@ namespace Thatchwick.Core.Work
 
         public double Duration(Character actor, TileAction action)
         {
+            if (action == TileAction.Repair) return RepairDays;
             double speed = HoeSpeed?.Invoke(actor) ?? 1.0;
             double skill = Math.Max(0.5, 1.0 - 0.05 * (actor.Skills.GetLevel(SkillType.Farming) - 1));
             return TillDays * skill / Math.Max(0.25, speed);
@@ -168,6 +188,14 @@ namespace Thatchwick.Core.Work
         public void Apply(Character actor, GridPos tile, TileAction action)
         {
             if (CanDo(actor, tile, action) != null) return;
+            if (action == TileAction.Repair)
+            {
+                int stone = BuildService.RepairStone(_world.Map.GetRoad(tile));
+                if (House != null) for (int i = 0; i < stone; i++) House.TryTakeItem("item.stone");
+                _world.Map.RepairRoad(tile);
+                Repaired?.Invoke(actor, tile);
+                return;
+            }
             _world.Map.SetFloor(tile, FloorType.Dirt);
             actor.GainSkillXp(SkillType.Farming, TillXp);
             Tilled?.Invoke(actor, tile);

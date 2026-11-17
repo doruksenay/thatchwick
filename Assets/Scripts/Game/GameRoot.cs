@@ -73,6 +73,7 @@ namespace Thatchwick.Game
         private Market _market;
         private AccountProgress _account;
         private MarketPanel _marketPanel;
+        private StoragePanel _storagePanel;
         private FamilyService _family;
         private FamilyPanel _familyPanel;
         private Dynasty _dynasty = new Dynasty();
@@ -198,6 +199,7 @@ namespace Thatchwick.Game
                 foreach (var tile in item.OccupiedTiles()) _view.ClearTerrainBlock(tile);
             _view.RefreshFloors();
             map.Changed += () => _floorsDirty = true;
+            map.RoadsChanged += () => _floorsDirty = true;
             map.Changed += () =>
             {
                 if (_account == null || _account.HasFirst("first:room")) return;
@@ -769,6 +771,7 @@ namespace Thatchwick.Game
             var guiPos = new Vector2(screenPos.x / s, (Screen.height - screenPos.y) / s);
             if (_buildMode != null && _buildMode.Active && _buildMode.PanelRect(s).Contains(guiPos)) return true;
             if (_marketPanel != null && _marketPanel.Active && _marketPanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
@@ -969,12 +972,13 @@ namespace Thatchwick.Game
             if (_menuOpen) { _menuOpen = false; return; }   // menü dışına dokunmak menüyü kapatır
 
             CollectOptions(world);
-            // Çapa kipi: boş çime dokunmak orayı çapalar (sıraya eklenir: art arda dokunarak tarla açılır).
+            // Çapa kipi: boş çime dokunmak orayı çapalar, yıpranmış yola dokunmak onarır (sıraya eklenir).
             if (_hoeMode && _menuOptions.Count == 0)
             {
-                string why = _farmWork.CanDo(Commander.Character, tile, TileAction.Till);
+                var action = _world.Map.GetRoad(tile) != RoadType.None ? TileAction.Repair : TileAction.Till;
+                string why = _farmWork.CanDo(Commander.Character, tile, action);
                 if (why != null) { ShowMessage(why); return; }
-                if (!Commander.Runner.Queue.TryEnqueue(Job.OnTile(tile, TileAction.Till))) ShowMessage("İş sırası dolu.");
+                if (!Commander.Runner.Queue.TryEnqueue(Job.OnTile(tile, action))) ShowMessage("İş sırası dolu.");
                 return;
             }
             if (_menuOptions.Count == 0) { Commander.Runner.Command(Job.MoveTo(tile)); return; }
@@ -1078,16 +1082,23 @@ namespace Thatchwick.Game
                 }
                 if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
             };
-            _farmWork = new FarmWork(_world) { HoeSpeed = c => _life.Tools.SpeedFor("hoe") };
+            _storagePanel = new StoragePanel(_life.Spoilage, _household, _content);
+            _farmWork = new FarmWork(_world) { HoeSpeed = c => _life.Tools.SpeedFor("hoe"), House = _household };
             _farmWork.Tilled += (c, t) => _account.Count("act:till");
+            _farmWork.Repaired += (c, t) => { ShowMessage($"{c.Name} yolu onardı"); _account.Count("act:repair_road"); };
+            _effects.TemperatureAt = p => _heat.TemperatureAt(p);   // buz kesmek için don
             _automation = new FarmAutomation(_world, _household) { Storage = _storage };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
             {
                 WorkHours = () => HourOfDay >= 7.0 && HourOfDay < 19.0,
-                Now = () => _clock.TotalDays
+                Now = () => _clock.TotalDays,
+                TileWork = _farmWork
             };
+            _world.Map.WearMultiplier = _life.RainyToday ? 1.5f : 1f;
             _life.NewDay += day =>
             {
+                _world.Map.OnNewDayRoads();                                   // kullanılmayan patika çimlenir
+                _world.Map.WearMultiplier = _life.RainyToday ? 1.5f : 1f;     // çamurlu günde yol daha çok aşınır
                 var r = _animals.OnNewDay(_clock.Season, _household, _storage);
                 if (r.Collected > 0) ShowMessage($"Toplama sandığı: +{r.Collected} ürün depoya alındı");
                 if (r.FeedAdded > 0) ShowMessage($"Yem oluğu yemliklere {r.FeedAdded} yem doldurdu");
@@ -1238,6 +1249,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
+            if (kb != null && kb.kKey.wasPressedThisFrame) _storagePanel.Toggle();
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
@@ -1450,6 +1462,7 @@ namespace Thatchwick.Game
             DrawItemLabels(s);
             _buildMode.OnGUI(s);
             _marketPanel.OnGUI(s);
+            _storagePanel.OnGUI(s);
             _familyPanel.OnGUI(s);
             _villagePanel.OnGUI(s);
             DrawBalloons(s);
@@ -1491,13 +1504,14 @@ namespace Thatchwick.Game
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(_buildMode.Active ? "Yapı modundan çık (B)" : "Yapı modu (B)")) ToggleBuild();
             if (GUILayout.Button(_marketPanel.Active ? "Pazarı kapat (P)" : "Pazar (P)")) ToggleMarket();
+            if (GUILayout.Button(_storagePanel.Active ? "Kileri kapat (K)" : "Kiler (K)")) _storagePanel.Toggle();
             if (GUILayout.Button(_familyPanel.Active ? "Aileyi kapat (F)" : "Aile (F)")) ToggleFamily();
             if (GUILayout.Button(_villagePanel.Active ? "Köyü kapat (V)" : "Köy (V)")) ToggleVillage();
             if (GUILayout.Button(IsoArt.Enabled ? "Görsel: gerçek (G)" : "Görsel: yer tutucu (G)")) ToggleArt();
             GUILayout.EndHorizontal();
             // Çiftlik: çapa kipi, binek, hayvan çanı.
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(_hoeMode ? "Çapa kipi: açık (H)" : "Çapa kipi (H)")) _hoeMode = !_hoeMode;
+            if (GUILayout.Button(_hoeMode ? "Çapa kipi: açık (H) · çim çapala, yol onar" : "Çapa kipi (H)")) _hoeMode = !_hoeMode;
             var mount = Commander != null ? _animals.MountOf(Commander.Character.Id) : null;
             if (mount != null && GUILayout.Button($"{mount.Name} sırtından in")) { _animals.Dismount(Commander.Character.Id); ShowMessage($"{Commander.Character.Name} attan indi"); }
             if (GUILayout.Button(_animals.Released ? "Hayvanlar: gündüz otlakta" : "Hayvanlar: barınakta")) _animals.Released = !_animals.Released;

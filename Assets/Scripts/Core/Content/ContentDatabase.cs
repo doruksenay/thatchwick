@@ -72,7 +72,7 @@ namespace Thatchwick.Core.Content
                 }
                 if (item.Comfort < 0 || item.Comfort > 50) errors.Add($"{item.Id}: konfor 0-50 arasında olmalı.");
                 if (item.SpoilDays < 0f) errors.Add($"{item.Id}: bozulma süresi negatif olamaz.");
-                if (item.SpoilDays > 0f && !item.HasTag("food")) errors.Add($"{item.Id}: bozulma yalnızca yiyecek etiketli eşyada olur.");
+                if (item.SpoilDays > 0f && !item.HasTag("food") && !item.HasTag("ice")) errors.Add($"{item.Id}: bozulma yalnızca yiyecek (ya da buz) etiketli eşyada olur.");
                 if (item.Preserves < 0f || item.Preserves > 1f) errors.Add($"{item.Id}: kiler çarpanı 0-1 arasında olmalı.");
                 if (item.ForageMax < 0) errors.Add($"{item.Id}: toplama sınırı negatif olamaz.");
                 if (item.IsForage && (item.Placement != ItemPlacement.Floor || !item.IsPlant && item.Interactions.Count == 0)) errors.Add($"{item.Id}: toplanabilir eşya yere konan ve etkileşimli olmalı.");
@@ -159,6 +159,8 @@ namespace Thatchwick.Core.Content
                 if (item.AnimalComfort < 0 || item.AnimalComfort > 10) errors.Add($"{item.Id}: hayvan konforu 0-10 arasında olmalı.");
                 if (item.RequiresIndoor && item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: requiresIndoor yalnızca yere konan eşyada.");
                 if (item.IsTrough && item.IsHousing) errors.Add($"{item.Id}: yemlik aynı zamanda barınak olamaz.");
+                foreach (var it in item.Interactions)
+                    if (it.AddIce > 0f && !item.IsIceBox) errors.Add($"{item.Id}.{it.Id}: buz yalnızca buzluğa konur.");
                 if (item.NeedsWaterSource && item.WaterRadius <= 0) errors.Add($"{item.Id}: needsSource yalnızca sulayan eşyada.");
                 if (item.AutoProcess != null)
                 {

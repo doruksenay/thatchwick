@@ -29,7 +29,7 @@ namespace Thatchwick.Game
             Items, Room, Wall, HalfWall, Door, Window, EraseEdge, Fence, Gate, Railing,
             Finish, FinishRoom, Floor, FloorRoom, FloorErase, Roof,
             PushWall, MoveRoom, CopyRoom, Eyedropper, Demolish,
-            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture
+            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture, RoadPath, RoadGravel, RoadPaved, RoadErase
         }
         private Tool _tool = Tool.Items;
         private GridPos? _roomCorner;
@@ -323,6 +323,10 @@ namespace Thatchwick.Game
                 case Tool.ZoneStorage: r = _svc.SetZone(tile, ZoneType.Storage); break;
                 case Tool.ZoneErase: r = _svc.SetZone(tile, ZoneType.None); break;
                 case Tool.ZonePasture: r = _svc.SetZone(tile, ZoneType.Pasture); break;
+                case Tool.RoadPath: r = _svc.PaintRoad(tile, RoadType.Path); break;
+                case Tool.RoadGravel: r = _svc.PaintRoad(tile, RoadType.Gravel); break;
+                case Tool.RoadPaved: r = _svc.PaintRoad(tile, RoadType.Paved); break;
+                case Tool.RoadErase: r = _svc.PaintRoad(tile, RoadType.None); break;
                 case Tool.Room: BuildRoomTap(tile); return;
                 default: return;
             }
@@ -742,6 +746,7 @@ namespace Thatchwick.Game
             ToolRow(("Kaplama", Tool.Finish), ("Oda kapl.", Tool.FinishRoom), ("Zemin", Tool.Floor), ("Oda zem.", Tool.FloorRoom));
             ToolRow(("Duvar it", Tool.PushWall), ("Oda taşı", Tool.MoveRoom), ("Oda kopyala", Tool.CopyRoom));
             ToolRow(("Damlalık", Tool.Eyedropper), ("Balyoz", Tool.Demolish), ("Çim", Tool.FloorErase));
+            ToolRow(("Patika", Tool.RoadPath), ("Çakıl yol", Tool.RoadGravel), ("Kaldırım", Tool.RoadPaved), ("Yol sil", Tool.RoadErase));
             ToolRow((_view.ViewLevel < 0 ? "Kaz" : "Döşeme", Tool.LevelBuild), (_view.ViewLevel < 0 ? "Doldur" : "Döşeme sök", Tool.LevelRemove), ("Arsa", Tool.Plot));
             GUILayout.BeginHorizontal();
             ToolButton("Depo", Tool.ZoneStorage); ToolButton("Otlak", Tool.ZonePasture); ToolButton("Bölge sil", Tool.ZoneErase);
@@ -790,6 +795,11 @@ namespace Thatchwick.Game
                     : _view.ViewLevel < 0 ? $"Bodrum kazısı: karo başına {BuildService.DigPrice} akçe; mevcut bodrumun yanını kaz (ilk karo merdivenle açılır)."
                     : "Zemin kat zaten var; Kat: Üst kat ya da Bodrum seç.";
                 case Tool.LevelRemove: return "Döşemeyi sök / bodrum karosunu doldur: üstünde eşya, çevresinde duvar ya da merdiven olmamalı. Yarısı iade.";
+                case Tool.RoadPath:
+                case Tool.RoadGravel:
+                case Tool.RoadPaved:
+                case Tool.RoadErase:
+                    return $"Yol (arsanda, açık havada): patika x{GridMap.PathSpeed:0.#} hız {BuildService.RoadPrice(RoadType.Path)} akçe, çakıl x{GridMap.GravelSpeed:0.#} {BuildService.RoadPrice(RoadType.Gravel)} akçe, kaldırım x{GridMap.PavedSpeed:0.#} {BuildService.RoadPrice(RoadType.Paved)} akçe. Üstünden geçildikçe aşınır (inek, at çok); aynı yolu yeniden döşemek yarı fiyatına onarır. Hayvanlar barınaktan otlağa yoldan gider.";
                 case Tool.ZonePasture: return "Otlak: hayvanlar gündüz çimde otlar (yem yerine ot, kışın ot büyümez). Çitle çevir; barınağın kapısı otlağa açılsın. Çan ile içeri çağrılır.";
                 case Tool.ZoneStorage:
                 case Tool.ZoneErase: return $"Depo bölgesi: karo başına +{StorageService.UnitsPerZoneTile} kaynak kapasitesi (ücretsiz). Sandık +40.";

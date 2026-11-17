@@ -58,6 +58,8 @@ namespace Thatchwick.Core.Content
                     StairsDelta = dto.stairs,
                     FinishGroup = string.IsNullOrWhiteSpace(dto.finishGroup) ? null : dto.finishGroup,
                     RequiresIndoor = dto.requiresIndoor,
+                    IsIceBox = dto.iceBox,
+                    FoodCapacity = Math.Max(0, dto.foodCapacity),
                     IsTrough = dto.trough,
                     AnimalComfort = dto.animalComfort,
                     AnimalRole = string.IsNullOrWhiteSpace(dto.animalRole) ? null : dto.animalRole,
@@ -122,7 +124,7 @@ namespace Thatchwick.Core.Content
                         if (i == null) continue;
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
-                            || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
+                            || i.addIce > 0f || i.requiresFrost || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -158,6 +160,8 @@ namespace Thatchwick.Core.Content
                             Moodlet = string.IsNullOrWhiteSpace(i.moodlet) ? null : i.moodlet,
                             MinSkillLevel = i.minLevel,
                             AddFeed = i.addFeed,
+                            AddIce = Math.Max(0f, i.addIce),
+                            RequiresFrost = i.requiresFrost,
                             Collect = i.collect,
                             RequiresAnimal = i.requiresAnimal,
                             Tool = string.IsNullOrWhiteSpace(i.tool) ? null : i.tool,
@@ -329,6 +333,7 @@ namespace Thatchwick.Core.Content
                     HideCount = a.hideCount <= 0 ? 1 : a.hideCount,
                     Rideable = a.rideable,
                     RideSpeed = a.rideSpeed <= 0f ? 2f : a.rideSpeed,
+                    Trample = a.trample >= 0f ? a.trample : a.housing == "stable" ? 3f : a.housing == "barn" ? 2f : a.housing == "kennel" ? 0.5f : 0f,
                     Space = a.space > 0f ? a.space : a.housing == "coop" ? 1.5f : a.housing == "stable" ? 6f : a.housing == "barn" ? 4f : 2f,
                     UnlockLevel = a.level <= 0 ? 1 : a.level
                 };

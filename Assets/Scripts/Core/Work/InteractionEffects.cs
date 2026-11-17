@@ -30,6 +30,12 @@ namespace Thatchwick.Core.Work
         /// <summary>Hayvan sistemi (barınakta hayvan var mı); null ise hayvan gerektiren işler başlamaz.</summary>
         public AnimalSystem Animals { get; set; }
 
+        /// <summary>Karo sıcaklığı (buz kesmek için don); null ise don yok sayılır.</summary>
+        public Func<GridPos, float> TemperatureAt { get; set; }
+
+        /// <summary>Buzluk en çok bu kadar günlük buz alır.</summary>
+        public const float MaxIceDays = 30f;
+
         /// <summary>Çiftçilik sistemi (toprak verimi, kalite); null ise hasat kalitesiz ve toprak yorulmaz.</summary>
         public PlantSystem Plants { get; set; }
 
@@ -59,6 +65,8 @@ namespace Thatchwick.Core.Work
             }
             if (interaction.RequiresAnimal && (Animals == null || Animals.Residents(item.Id) == 0)) return "Burada hayvan yok.";
             if (interaction.Collect && item.StockTotal == 0) return "Toplanacak ürün yok.";
+            if (interaction.RequiresFrost && (TemperatureAt == null || TemperatureAt(item.Position) > 0f)) return "Buz yok: don olunca (kışın) kesilir.";
+            if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return "Buzluk dolu.";
             if (interaction.Water)
             {
                 if (!item.IsPlant || !item.Def.IsCrop) return "Bu sulanacak bir ekin değil.";
@@ -92,6 +100,7 @@ namespace Thatchwick.Core.Work
                 for (int k = 0; k < c.Count; k++) _house.TryTakeItem(c.ItemId);
 
             if (interaction.AddFeed > 0) AnimalSystem.AddFeed(item, interaction.AddFeed);
+            if (interaction.AddIce > 0f) item.FuelDays = Math.Min(MaxIceDays, item.FuelDays + interaction.AddIce);
 
             var farmNotes = new List<string>();
             if (interaction.PetsAnimals && Animals != null)
@@ -176,6 +185,7 @@ namespace Thatchwick.Core.Work
             var parts = new List<string>();
             foreach (var id in order) parts.Add($"+{totals[id]} {Name(id)}");
             if (interaction.AddFeed > 0) parts.Add($"yem +{interaction.AddFeed} (stok {item.FeedStock:0.#})");
+            if (interaction.AddIce > 0f) parts.Add($"buz {item.FuelDays:0.#} gün");
             if (parts0 != null) parts.Add(parts0);
             if (lost > 0) parts.Add($"depo dolu, {lost} adet kayboldu");
 

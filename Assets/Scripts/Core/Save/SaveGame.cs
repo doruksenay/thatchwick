@@ -115,6 +115,10 @@ namespace Thatchwick.Core.Save
                     if (fs != null || rs != null) styles.Add(new TileStyleSave { x = t.X, y = t.Y, z = z, floor = fs, roof = rs });
                 }
             m.styles = styles.ToArray();
+            var roads = new List<RoadSave>();
+            foreach (var r in map.RoadTiles())
+                roads.Add(new RoadSave { x = r.pos.X, y = r.pos.Y, type = (int)r.type, cond = r.cond, natural = r.natural, trample = r.trample });
+            m.roads = roads.ToArray();
             data.map = m;
 
             // Eşyalar: önce yer eşyaları, sonra dekorlar (yüklerken üstündeki eşya hazır olsun).
@@ -347,6 +351,14 @@ namespace Thatchwick.Core.Save
                     string style = PartOrNull(content, e.style), fa = PartOrNull(content, e.finishA), fb = PartOrNull(content, e.finishB);
                     if (style != null || fa != null || fb != null)
                         map.RestoreLook(edge, new EdgeLook { Style = style, FinishA = EdgeKinds.IsRoomBoundary((EdgeKind)e.kind) ? fa : null, FinishB = EdgeKinds.IsRoomBoundary((EdgeKind)e.kind) ? fb : null });
+                }
+            if (m.roads != null)
+                foreach (var r in m.roads)
+                {
+                    if (r == null || r.x < 0 || r.y < 0 || r.x >= map.Width || r.y >= map.Height) continue;
+                    var p = new GridPos(r.x, r.y);
+                    if (r.type > 0 && Enum.IsDefined(typeof(RoadType), (byte)r.type)) map.SetRoad(p, (RoadType)r.type, r.cond, r.natural);
+                    else map.SetTrample(p, r.trample);
                 }
             if (m.styles != null)
                 foreach (var st in m.styles)

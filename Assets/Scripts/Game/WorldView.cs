@@ -151,6 +151,22 @@ namespace Thatchwick.Game
                         case FloorType.Dirt: sr.color = ((x + y) & 1) == 0 ? new Color32(139, 110, 80, 255) : new Color32(131, 103, 74, 255); break;
                         default: sr.color = terrainBlocked ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB); break;
                     }
+                    var road = Map.GetRoad(p);
+                    if (road != RoadType.None)
+                    {
+                        // Yol görseli gelene kadar renk: patika toprak, çakıl kum grisi, kaldırım taş; yıprandıkça koyulaşır.
+                        sr.sprite = SpriteMaterials.Diamond;
+                        bool even = ((x + y) & 1) == 0;
+                        Color rc = road == RoadType.Path ? (Color)(even ? new Color32(150, 122, 88, 255) : new Color32(143, 116, 83, 255))
+                            : road == RoadType.Gravel ? (Color)(even ? new Color32(170, 160, 140, 255) : new Color32(162, 152, 133, 255))
+                            : (Color)(even ? new Color32(128, 126, 132, 255) : new Color32(120, 118, 124, 255));
+                        float cond = Map.GetRoadCondition(p);
+                        if (Map.IsNaturalRoad(p)) rc = Color.Lerp(sr.color, rc, 0.4f + 0.6f * cond);       // silik patika çimle karışır
+                        else if (GridMap.ConditionBand(cond) == 1) rc *= 0.85f;
+                        else if (GridMap.ConditionBand(cond) == 2) rc *= 0.7f;
+                        rc.a = 1f;
+                        sr.color = rc;
+                    }
                     if (Map.GetZone(p) == ZoneType.Storage)
                     {
                         var c = sr.color;

@@ -17,6 +17,8 @@ namespace Thatchwick.Core.Jobs
         public const double TilesPerGameDay = 1080.0;
         /// <summary>Otonomi puanında her etkileşime eklenen sabit süre (karar, yanaşma): küçük ama sık dolduranı cezalandırır.</summary>
         public const double AutonomyOverheadDays = 0.03;
+        /// <summary>İnsanın bir adımda çime/yola bıraktığı iz (inek 3, koyun 1).</summary>
+        public const float HumanTrample = 0.2f;
 
         /// <summary>Otonom karakter, ihtiyacı bu değerin altına düşünce kendiliğinden iş arar.</summary>
         public const float AutonomyThreshold = 30f;
@@ -415,7 +417,9 @@ namespace Thatchwick.Core.Jobs
                 }
                 // Merdiven adımı daha uzundur (yatay mesafe + 1 karo).
                 int span = GridMap.StepSpan(_character.Position, _path[_pathIndex]);
-                double needed = (1.0 - _stepFraction) * span / tilesPerDay;
+                // Yol hızlandırır (çim 1, patika 1,6, kaldırım 2): adımın iki ucunun ortalaması.
+                double stepTiles = tilesPerDay * _world.Map.StepSpeed(_character.Position, _path[_pathIndex]);
+                double needed = (1.0 - _stepFraction) * span / stepTiles;
                 double available = budget - used;
                 if (available >= needed)
                 {
@@ -423,10 +427,11 @@ namespace Thatchwick.Core.Jobs
                     _character.Position = _path[_pathIndex];
                     _pathIndex++;
                     _stepFraction = 0;
+                    _world.Map.Trample(_character.Position, HumanTrample);
                 }
                 else
                 {
-                    _stepFraction += available * tilesPerDay / span;
+                    _stepFraction += available * stepTiles / span;
                     used += available;
                 }
             }

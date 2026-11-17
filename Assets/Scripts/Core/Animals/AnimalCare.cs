@@ -51,6 +51,7 @@ namespace Thatchwick.Core.Animals
         public static readonly string[] BeddingFloors = { "floor_straw", "floor_rush" };
 
         private List<GridPos> _allowedCache;      // bir tur içinde otlak karoları
+        private List<GridPos> _roadCache;         // bir tur içinde arsadaki dış yol karoları
 
         private bool Outside => Released && (CanGoOut == null || CanGoOut());
 
@@ -180,6 +181,7 @@ namespace Thatchwick.Core.Animals
         public float GrassAt(GridPos p)
         {
             if (_world.Map.GetZone(p) != ZoneType.Pasture || _world.Map.GetFloor(p) != FloorType.Grass) return 0f;
+            if (_world.Map.GetRoad(p) != RoadType.None) return 0f;          // çiğnenmiş patikada ot yok
             return _grass.TryGetValue(p, out var g) ? g : 1f;
         }
 
@@ -209,7 +211,32 @@ namespace Thatchwick.Core.Animals
             return list;
         }
 
-        /// <summary>Hayvanın yaşam alanı: barınak odası (yoksa barınak çevresi) ve dışarı çıkabiliyorsa otlak.</summary>
+        // Arsadaki açık hava yol karoları: hayvanlar barınaktan otlağa yoldan gider (yolda durmaz, yalnızca geçer).
+        private List<GridPos> RoadTiles()
+        {
+            if (_roadCache != null) return _roadCache;
+            var list = new List<GridPos>();
+            var map = _world.Map;
+            if (map.HasRoads)
+                foreach (var r in map.RoadTiles())
+                {
+                    if (r.type == RoadType.None || !map.IsOwned(r.pos) || !map.IsWalkable(r.pos)) continue;
+                    var room = map.Rooms.RoomAt(r.pos);
+                    if (room == null || !room.IsIndoor) list.Add(r.pos);
+                }
+            _roadCache = list;
+            return list;
+        }
+
+        /// <summary>Hayvanın dolaşacağı yerler (yol hariç): barınak odası (yoksa çevresi) ve dışarı çıkabiliyorsa otlak.</summary>
+        public HashSet<GridPos> WanderTargets(Animal a, ItemInstance home)
+        {
+            var set = LivingArea(a, home);
+            if (Outside) foreach (var t in RoadTiles()) if (_world.Map.GetZone(t) != ZoneType.Pasture) set.Remove(t);
+            return set;
+        }
+
+        /// <summary>Hayvanın yaşam alanı: barınak odası (yoksa barınak çevresi), dışarı çıkabiliyorsa otlak ve arsadaki yollar.</summary>
         public HashSet<GridPos> LivingArea(Animal a, ItemInstance home)
         {
             var set = new HashSet<GridPos>();
@@ -229,7 +256,11 @@ namespace Thatchwick.Core.Animals
                         if (map.IsWalkable(t)) set.Add(t);
                     }
             }
-            if (Outside) foreach (var t in PastureTiles()) if (t.Z == a.Position.Z) set.Add(t);
+            if (Outside)
+            {
+                foreach (var t in PastureTiles()) if (t.Z == a.Position.Z) set.Add(t);
+                if (a.Position.Z == 0) foreach (var t in RoadTiles()) set.Add(t);
+            }
             return set;
         }
 
@@ -239,7 +270,8 @@ namespace Thatchwick.Core.Animals
         {
             var area = LivingArea(a, home);
             if (area.Count == 0) { a.Path = null; return; }
-            var list = new List<GridPos>(area);
+            var list = new List<GridPos>(WanderTargets(a, home));
+            if (list.Count == 0) list.AddRange(area);
             if (!area.Contains(a.Position))
             {
                 var back = Pathfinder.FindPathToAny(_world.Map, a.Position, area);

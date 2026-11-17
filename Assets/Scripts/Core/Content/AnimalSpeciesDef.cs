@@ -31,6 +31,8 @@ namespace Thatchwick.Core.Content
         public float RideSpeed { get; set; } = 2f;
         /// <summary>Barınak odasında hayvan başına istenen karo (konfor: sıkışıklık).</summary>
         public float Space { get; set; } = 2f;
+        /// <summary>Bir adımda yola/çime bıraktığı iz (aşınma): inek ve at 3, koyun ve keçi 1, tavuk 0.</summary>
+        public float Trample { get; set; }
         public int UnlockLevel { get; set; } = 1;
     }
 }

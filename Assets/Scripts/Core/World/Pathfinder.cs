@@ -28,7 +28,7 @@ namespace Thatchwick.Core.World
             // Başlangıç kapalı olabilir (üstüne eşya konmuş karakter): oradan dışarı adım atılabilir, böylece kimse hapsolmaz.
             if (!map.HasTile(start) || !map.IsWalkable(goal)) return null;
             if (start == goal) return new List<GridPos> { start };
-            return Search(map, start, p => p == goal, p => Heuristic(p, goal));
+            return Search(map, start, p => p == goal, p => Heuristic(p, goal, map.HasRoads));
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Thatchwick.Core.World
             return Search(map, start, set.Contains, p =>
             {
                 int best = int.MaxValue;
-                foreach (var t in targets) best = Math.Min(best, Heuristic(p, t));
+                foreach (var t in targets) best = Math.Min(best, Heuristic(p, t, map.HasRoads));
                 return best;
             });
         }
@@ -62,6 +62,8 @@ namespace Thatchwick.Core.World
             var best = new Dictionary<GridPos, Node>();
             var closed = new HashSet<GridPos>();
 
+            // Yol varsa adım maliyeti yolun hızına bölünür (yol tercih edilir); kesirler için maliyetler x10 ölçeklenir.
+            bool roads = map.HasRoads;
             var first = new Node(start, 0, heuristic(start), null);
             open.Add(first);
             best[start] = first;
@@ -80,7 +82,9 @@ namespace Thatchwick.Core.World
                     if (closed.Contains(next) || !map.CanStep(current.Pos, next)) continue;
 
                     bool diagonal = dir.X != 0 && dir.Y != 0;
-                    Relax(open, best, current, next, current.G + (diagonal ? DiagonalCost : StraightCost), heuristic);
+                    int cost = diagonal ? DiagonalCost : StraightCost;
+                    if (roads) cost = (int)Math.Round(cost * RoadScale / map.StepSpeed(current.Pos, next));
+                    Relax(open, best, current, next, current.G + cost, heuristic);
                 }
 
                 // Merdiven bağlantıları: kat değiştirir; maliyet kat farkı + yatay mesafe kadar adım.
@@ -88,7 +92,7 @@ namespace Thatchwick.Core.World
                 {
                     if (closed.Contains(next)) continue;
                     int span = Math.Abs(next.X - current.Pos.X) + Math.Abs(next.Y - current.Pos.Y) + 1;
-                    Relax(open, best, current, next, current.G + StraightCost * span, heuristic);
+                    Relax(open, best, current, next, current.G + StraightCost * span * (roads ? RoadScale : 1), heuristic);
                 }
             }
 
@@ -108,13 +112,17 @@ namespace Thatchwick.Core.World
         }
 
         // Octile mesafe (kat farkı yok sayılır, böylece hâlâ kabul edilebilir): 8 yönlü harekette kabul edilebilir (admissible) tahmin.
-        private static int Heuristic(GridPos a, GridPos b)
+        private static int Heuristic(GridPos a, GridPos b, bool roads = false)
         {
             int dx = Math.Abs(a.X - b.X);
             int dy = Math.Abs(a.Y - b.Y);
             int diag = Math.Min(dx, dy);
-            return DiagonalCost * diag + StraightCost * (Math.Max(dx, dy) - diag);
+            int h = DiagonalCost * diag + StraightCost * (Math.Max(dx, dy) - diag);
+            // Yollu haritada en hızlı yol (kaldırım x2) varsayılır: tahmin hâlâ kabul edilebilir.
+            return roads ? (int)(h * RoadScale / GridMap.PavedSpeed) : h;
         }
+
+        private const int RoadScale = 10;
 
         private static List<GridPos> Rebuild(Node end)
         {

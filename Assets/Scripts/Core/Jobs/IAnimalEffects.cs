@@ -33,7 +33,9 @@ namespace Thatchwick.Core.Jobs
     public enum TileAction
     {
         /// <summary>Çimi çapalayıp ekilebilir toprağa çevir.</summary>
-        Till = 0
+        Till = 0,
+        /// <summary>Yıpranmış yolu onar (çakıl ve kaldırım taş ister).</summary>
+        Repair = 1
     }
 
     /// <summary>Karo işlerinin kuralları ve etkileri (Core.Work.FarmWork uygular).</summary>

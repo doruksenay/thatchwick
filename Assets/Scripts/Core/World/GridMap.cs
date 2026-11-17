@@ -74,7 +74,7 @@ namespace Thatchwick.Core.World
     /// Baştan karo ızgarası olarak kurulan dünya: karo geçilebilirliği, zemin kaplaması ve
     /// karo kenarlarındaki duvar/kapı/pencereler. Oda tespiti Adım 11'de eklenir.
     /// </summary>
-    public sealed class GridMap
+    public sealed partial class GridMap
     {
         /// <summary>En alt kat (bodrum) ve en üst kat. Zemin kat 0'dır.</summary>
         public const int MinLevel = -1, MaxLevel = 1;

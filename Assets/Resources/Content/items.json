@@ -2403,6 +2403,18 @@
           "need": "Hygiene",
           "restore": 35,
           "durationDays": 0.06
+        },
+        {
+          "id": "cut_ice",
+          "displayName": "Buz kes (donda)",
+          "durationDays": 0.06,
+          "requiresFrost": true,
+          "produce": [
+            {
+              "item": "item.ice",
+              "count": 2
+            }
+          ]
         }
       ],
       "waterSource": true
@@ -6151,7 +6163,20 @@
         "outdoor"
       ],
       "animalRole": "water",
-      "interactions": []
+      "interactions": [
+        {
+          "id": "cut_ice",
+          "displayName": "Buz kes (donda)",
+          "durationDays": 0.06,
+          "requiresFrost": true,
+          "produce": [
+            {
+              "item": "item.ice",
+              "count": 2
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "item.hay_bale",
@@ -6394,6 +6419,102 @@
         "saddle",
         "fine",
         "craftonly"
+      ]
+    },
+    {
+      "id": "item.stone",
+      "displayName": "Taş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "stone"
+      ]
+    },
+    {
+      "id": "item.granary",
+      "displayName": "Ambar (serender)",
+      "category": "storage",
+      "price": 140,
+      "width": 3,
+      "height": 2,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "storage": 150,
+      "preserves": 0.85,
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.ice_box",
+      "displayName": "Buzluk",
+      "category": "storage",
+      "price": 45,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "outdoor"
+      ],
+      "iceBox": true,
+      "foodCapacity": 40,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "add_ice",
+          "displayName": "Buz koy",
+          "durationDays": 0.02,
+          "materials": [
+            {
+              "item": "item.ice",
+              "count": 1
+            }
+          ],
+          "addIce": 4
+        }
+      ]
+    },
+    {
+      "id": "item.ice_house",
+      "displayName": "Buzhane",
+      "category": "storage",
+      "price": 120,
+      "width": 2,
+      "height": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "iceBox": true,
+      "foodCapacity": 120,
+      "interactions": [
+        {
+          "id": "add_ice",
+          "displayName": "Buz koy (3)",
+          "durationDays": 0.04,
+          "materials": [
+            {
+              "item": "item.ice",
+              "count": 3
+            }
+          ],
+          "addIce": 12
+        }
+      ]
+    },
+    {
+      "id": "item.ice",
+      "displayName": "Buz",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "spoilDays": 4,
+      "tags": [
+        "ice"
       ]
     }
   ],
@@ -6970,7 +7091,8 @@
       "meat": "item.meat",
       "meatCount": 2,
       "hide": "item.hide",
-      "hideCount": 1
+      "hideCount": 1,
+      "trample": 1
     },
     {
       "id": "animal.sheep",
@@ -6986,7 +7108,8 @@
       "meat": "item.meat",
       "meatCount": 2,
       "hide": "item.hide",
-      "hideCount": 1
+      "hideCount": 1,
+      "trample": 1
     },
     {
       "id": "animal.cow",
@@ -7002,7 +7125,8 @@
       "meat": "item.meat",
       "meatCount": 4,
       "hide": "item.hide",
-      "hideCount": 2
+      "hideCount": 2,
+      "trample": 3
     },
     {
       "id": "animal.dog",
@@ -7047,7 +7171,8 @@
       "matureDays": 12,
       "level": 4,
       "rideable": true,
-      "rideSpeed": 2.2
+      "rideSpeed": 2.2,
+      "trample": 3
     }
   ],
   "buildParts": [

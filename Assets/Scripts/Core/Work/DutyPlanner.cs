@@ -26,6 +26,9 @@ namespace Thatchwick.Core.Work
         private readonly IAnimalEffects _care;
         private readonly Dictionary<long, double> _claims = new Dictionary<long, double>();
 
+        /// <summary>Karo işleri (yol onarımı); null ise tarla görevlisi yol onarmaz.</summary>
+        public ITileWork TileWork { get; set; }
+
         /// <summary>Şu an iş saati mi (gündüz); null ise hep.</summary>
         public Func<bool> WorkHours { get; set; }
         /// <summary>Geçen toplam oyun günü (tutma süresi için); null ise iş tutulmaz (tek görevli).</summary>
@@ -97,6 +100,15 @@ namespace Thatchwick.Core.Work
                     var item = it; var inter = i;
                     Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
                 }
+                // Tarla işi yoksa yıpranmış yolları onarır (taş varsa).
+                if (best == null && TileWork != null && _world.Map.HasRoads)
+                    foreach (var r in _world.Map.RoadTiles())
+                    {
+                        if (r.type == RoadType.None || r.natural || r.cond >= GridMap.WornBelow) continue;
+                        if (TileWork.CanDo(c, r.pos, TileAction.Repair) != null) continue;
+                        var tile = r.pos;
+                        Consider(RoadKey(tile), tile, () => Job.OnTile(tile, TileAction.Repair));
+                    }
             }
             else if (c.Duty == DutyKind.Animals)
             {
@@ -121,6 +133,9 @@ namespace Thatchwick.Core.Work
             if (best != null && Now != null) _claims[bestKey] = now + ClaimDays;     // saat yoksa tutma da yok
             return best;
         }
+
+        // Yol karosunun tutma anahtarı (eşya ve hayvan kimlikleriyle çakışmaz).
+        private static long RoadKey(GridPos p) => (1L << 40) + ((long)p.Y << 20) + p.X;
 
         private void Expire(double now)
         {
