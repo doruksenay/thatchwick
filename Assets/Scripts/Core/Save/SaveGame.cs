@@ -59,7 +59,12 @@ namespace Thatchwick.Core.Save
         {
             if (!it.HasContents) return null;
             var list = new List<string>();
-            foreach (var c in it.Contents) list.Add(c.Condition == ItemCondition.Sound ? c.ItemId : c.ItemId + "|" + (int)c.Condition);
+            foreach (var c in it.Contents)
+            {
+                if (c.Age > 0 || c.Own)   // doldurulan dekor: "kimlik|durum|yaş|kendi"
+                    list.Add(c.ItemId + "|" + (int)c.Condition + "|" + c.Age.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) + "|" + (c.Own ? 1 : 0));
+                else list.Add(c.Condition == ItemCondition.Sound ? c.ItemId : c.ItemId + "|" + (int)c.Condition);
+            }
             return list.ToArray();
         }
 
@@ -69,8 +74,15 @@ namespace Thatchwick.Core.Save
             if (string.IsNullOrWhiteSpace(entry)) return false;
             int bar = entry.IndexOf('|');
             if (bar < 0) { stored = new StoredItem(entry.Trim(), ItemCondition.Sound); return true; }
-            int.TryParse(entry.Substring(bar + 1), out int c);
-            stored = new StoredItem(entry.Substring(0, bar).Trim(), ParseCondition(c));
+            var parts = entry.Split('|');
+            int.TryParse(parts[1], out int c);
+            stored = new StoredItem(parts[0].Trim(), ParseCondition(c));
+            if (parts.Length >= 4)
+            {
+                double.TryParse(parts[2], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double age);
+                stored.Age = Math.Max(0, age);
+                stored.Own = parts[3].Trim() == "1";
+            }
             return stored.ItemId.Length > 0;
         }
 
@@ -198,7 +210,9 @@ namespace Thatchwick.Core.Save
             foreach (var kv in house.DamagedList()) dmg.Add(new KeyInt { key = kv.Key, value = kv.Value });
             var rep = new List<KeyInt>();
             foreach (var kv in house.RepairedList()) rep.Add(new KeyInt { key = kv.Key, value = kv.Value });
-            data.household = new HouseholdSave { akce = house.Akce, inventory = inv.ToArray(), damaged = dmg.ToArray(), repaired = rep.ToArray() };
+            var bought = new List<KeyInt>();
+            foreach (var kv in house.BoughtList()) bought.Add(new KeyInt { key = kv.Key, value = kv.Value });
+            data.household = new HouseholdSave { akce = house.Akce, inventory = inv.ToArray(), damaged = dmg.ToArray(), repaired = rep.ToArray(), bought = bought.ToArray() };
 
             var chars = new List<CharacterSave>();
             foreach (var c in characters) chars.Add(CaptureCharacter(c));
@@ -532,6 +546,7 @@ namespace Thatchwick.Core.Save
             foreach (var def in returned) house.AddItem(def.Id);
             if (hs.damaged != null) foreach (var kv in hs.damaged) if (kv != null && content.Items.Contains(kv.key)) house.RestoreCondition(kv.key, kv.value, ItemCondition.Damaged);
             if (hs.repaired != null) foreach (var kv in hs.repaired) if (kv != null && content.Items.Contains(kv.key)) house.RestoreCondition(kv.key, kv.value, ItemCondition.Repaired);
+            if (hs.bought != null) foreach (var kv in hs.bought) if (kv != null && content.Items.Contains(kv.key)) house.MarkBought(kv.key, kv.value);
             result.Household = house;
 
             if (data.characters != null)

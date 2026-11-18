@@ -12,6 +12,8 @@ namespace Thatchwick.Core.Build
         public ItemInstance Surface;
         public int Broken;
         public int Damaged;
+        /// <summary>Doldurulan dekordan yere dökülüp kaybolan yiyecek.</summary>
+        public int Spilled;
         public ItemInstance Debris;
         public string Text;
     }
@@ -23,6 +25,9 @@ namespace Thatchwick.Core.Build
     ///   önündeki karoda döküntü yığını olur ("Topla" ile envantere gelir). Odadakiler "Ödüm koptu" der.
     /// - Metal ayna kararır (güzelliği yarıya iner; "Cilala" düzeltir).
     /// - Ergenlikteki ücretsiz Ayna hakkı, evde ayna yoksa bir kez hatırlatılır.
+    /// D2 (§9): doldurulan dekor (meyve sepeti, peynir tahtası) envanterdeki gerçek ürünle dolar; içerik oda sıcaklığında
+    /// bozulur (taze → bayat → çürük), yenebilir, boşaltılınca envantere döner (çürük atılır). Perde ve kumaş duvar
+    /// örtüsü asıldığı kenarın ısı kaybını azaltır (§4.5).
     /// Sayılar yer tutucudur (Adım 28).
     /// </summary>
     public sealed class DecorSystem
@@ -49,6 +54,8 @@ namespace Thatchwick.Core.Build
         public Action<string, int> Notify { get; set; }
         /// <summary>Bir raf çöktü.</summary>
         public event Action<CollapseReport> Collapsed;
+        /// <summary>Karo sıcaklığı (içerik bozulma hızı); null ise normal hız.</summary>
+        public Func<GridPos, float> TemperatureAt { get; set; }
 
         public DecorSystem(WorldState world, ContentDatabase content, int seed = 1)
         {
@@ -72,6 +79,7 @@ namespace Thatchwick.Core.Build
             if (gameDays <= 0) return;
             foreach (var it in _world.Items)
                 if (it.Def.TarnishDays > 0f) it.TarnishDays += gameDays;
+            AgeContents(gameDays);
 
             _hourAccum += gameDays;
             while (_hourAccum >= HourDays)
@@ -104,6 +112,7 @@ namespace Thatchwick.Core.Build
             foreach (var d in _world.GetDecorOn(surface.Id))
             {
                 _world.RemoveSingle(d);
+                if (d.Def.IsFillDecor && d.HasContents) { report.Spilled += d.Contents.Count; d.Contents.Clear(); }   // yiyecek yere döküldü
                 string mat = d.Def.EffectiveMaterial;
                 if (Decor.IsFragile(mat))
                 {
@@ -131,6 +140,7 @@ namespace Thatchwick.Core.Build
             var parts = new List<string>();
             if (report.Broken > 0) parts.Add($"{report.Broken} eşya kırıldı");
             if (report.Damaged > 0) parts.Add($"{report.Damaged} eşya hasar aldı");
+            if (report.Spilled > 0) parts.Add($"{report.Spilled} yiyecek yere döküldü");
             report.Text = $"{what} aşırı yükten çöktü" + (parts.Count > 0 ? ": " + string.Join(", ", parts) : "") + ".";
             _world.RaiseChanged();
             Scare(tile);
@@ -188,6 +198,168 @@ namespace Thatchwick.Core.Build
                 _mirrorReminded.Add(c.Id);
                 Notify?.Invoke($"{c.Name} ücretsiz Ayna hakkı kazandı, ama evde ayna yok. Bir ayna asınca hakkını kullanabilir.", c.Id);
             }
+        }
+
+        // ---- doldurulan dekor (D2, §9) ----
+
+        private string Name(string id) => _content.Items.TryGet(id, out var d) ? d.DisplayName : id;
+
+        private void AgeContents(double gameDays)
+        {
+            foreach (var it in _world.Items)
+            {
+                if (!it.Def.IsFillDecor || !it.HasContents) continue;
+                double rate = TemperatureAt != null ? Life.SpoilageService.TemperatureFactor(TemperatureAt(it.Position)) : 1.0;
+                bool rotted = false;
+                var list = it.Contents;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var c = list[i];
+                    if (!_content.Items.TryGet(c.ItemId, out var food) || food.SpoilDays <= 0f) continue;
+                    int before = Decor.Freshness(food, c.Age);
+                    c.Age += gameDays * rate;
+                    list[i] = c;
+                    if (before != Decor.Rotten && Decor.Freshness(food, c.Age) == Decor.Rotten) rotted = true;
+                }
+                if (rotted) Notify?.Invoke($"{it.Def.DisplayName} içindekiler çürüdü; boşaltılmalı.", 0);
+            }
+        }
+
+        /// <summary>Doldurmanın engeli (metin) ya da null: dolu mu, envanterde uygun ürün var mı.</summary>
+        public static string FillBlocker(ItemInstance item, Household house, ContentDatabase content)
+        {
+            var def = item.Def;
+            if (!def.IsFillDecor) return "Bu eşya doldurulmaz.";
+            if (item.Contents.Count >= def.FillCount) return $"{def.DisplayName} zaten dolu.";
+            int have = 0;
+            foreach (var f in def.FillWith) have += house.Count(f);
+            if (have > 0) return null;
+            string first = def.FillWith.Count > 0 && content.Items.TryGet(def.FillWith[0], out var fd) ? fd.DisplayName.ToLowerInvariant() : "ürün";
+            string what = def.FillWith.Count > 1 ? $"{first} ya da benzeri" : first;
+            return $"Envanterde {what} yok (0/{def.FillCount - item.Contents.Count}).";
+        }
+
+        /// <summary>
+        /// Envanterden gerçek ürünle doldurur: önce hanenin kendi ürünü, sonra pazar malı; tercih sırası FillWith sırasıdır.
+        /// Yaşı envanterdeki en eski partiden alır (ageOf; yoksa taze). Eklenen adet.
+        /// </summary>
+        public static int Fill(ItemInstance item, Household house, ContentDatabase content, Func<string, double> ageOf = null)
+        {
+            var def = item.Def;
+            if (!def.IsFillDecor) return 0;
+            int added = 0;
+            for (int pass = 0; pass < 2 && item.Contents.Count < def.FillCount; pass++)
+                foreach (var f in def.FillWith)
+                    while (item.Contents.Count < def.FillCount && (pass == 0 ? house.OwnCount(f) > 0 : house.Count(f) > 0))
+                    {
+                        double age = ageOf != null ? Math.Max(0, ageOf(f)) : 0;
+                        if (!house.TryTakePreferOwn(f, out bool own)) break;
+                        item.Contents.Add(new StoredItem(f, age, own));
+                        added++;
+                    }
+            return added;
+        }
+
+        /// <summary>İçindekilerden bir tane yer: önce en bayatı (çürük yenmez). Yenen ürünün kimliği ya da null.</summary>
+        public static string EatOne(ItemInstance item, ContentDatabase content)
+        {
+            int best = -1; double bestAge = -1;
+            for (int i = 0; i < item.Contents.Count; i++)
+            {
+                var c = item.Contents[i];
+                content.Items.TryGet(c.ItemId, out var food);
+                if (Decor.Freshness(food, c.Age) == Decor.Rotten) continue;
+                if (c.Age > bestAge) { best = i; bestAge = c.Age; }
+            }
+            if (best < 0) return null;
+            string id = item.Contents[best].ItemId;
+            item.Contents.RemoveAt(best);
+            return id;
+        }
+
+        /// <summary>Yenebilir (çürük olmayan) içerik adedi.</summary>
+        public static int EdibleCount(ItemInstance item, ContentDatabase content)
+        {
+            int n = 0;
+            foreach (var c in item.Contents)
+                if (!content.Items.TryGet(c.ItemId, out var food) || Decor.Freshness(food, c.Age) != Decor.Rotten) n++;
+            return n;
+        }
+
+        /// <summary>
+        /// İçindekileri envantere döndürür: çürük atılır, pazar malı yine "alınmış" sayılır. (dönen, atılan) adet.
+        /// Doldurulan dekor kaldırılırken ya da satılırken de çağrılır.
+        /// </summary>
+        public static (int returned, int discarded) EmptyInto(ItemInstance item, Household house, ContentDatabase content)
+        {
+            int ret = 0, gone = 0;
+            if (item == null || !item.HasContents) return (0, 0);
+            foreach (var c in item.Contents)
+            {
+                if (!content.Items.TryGet(c.ItemId, out var food)) { gone++; continue; }
+                if (Decor.Freshness(food, c.Age) == Decor.Rotten) { gone++; continue; }
+                house.AddItem(c.ItemId, 1, c.Condition);
+                if (!c.Own && item.Def.IsFillDecor) house.MarkBought(c.ItemId, 1);
+                ret++;
+            }
+            item.Contents.Clear();
+            return (ret, gone);
+        }
+
+        /// <summary>İçeriğin en kötü tazeliği (boşsa taze).</summary>
+        public static int WorstFreshness(ItemInstance item, ContentDatabase content)
+        {
+            int worst = Decor.Fresh;
+            foreach (var c in item.Contents)
+                if (content.Items.TryGet(c.ItemId, out var food)) worst = Math.Max(worst, Decor.Freshness(food, c.Age));
+            return worst;
+        }
+
+        /// <summary>
+        /// Doldurulan dekorun güzelliği: boşken taban güzelliğin %30'u, dolulukla tama çıkar; bayat içerik yarım sayılır.
+        /// Tam dolu ve hepsi hanenin kendi ürünü ise "Kendi emeğimiz" eki. Çürük içerik varsa sinek: RottenBeauty.
+        /// </summary>
+        public static double FillBeauty(ItemInstance item, ContentDatabase content)
+        {
+            var def = item.Def;
+            if (!def.IsFillDecor) return def.Beauty;
+            if (WorstFreshness(item, content) == Decor.Rotten) return Decor.RottenBeauty;
+            double filled = 0; bool allOwn = item.Contents.Count >= def.FillCount;
+            foreach (var c in item.Contents)
+            {
+                content.Items.TryGet(c.ItemId, out var food);
+                filled += Decor.Freshness(food, c.Age) == Decor.Stale ? 0.5 : 1.0;
+                if (!c.Own) allOwn = false;
+            }
+            double ratio = Math.Min(1.0, filled / def.FillCount);
+            return def.Beauty * (0.3 + 0.7 * ratio) + (allOwn && item.Contents.Count > 0 ? Decor.OwnWorkBonus : 0);
+        }
+
+        /// <summary>Doldurulan dekorun kısa durumu: "4/6 · bayat · Kendi emeğimiz".</summary>
+        public static string FillLabel(ItemInstance item, ContentDatabase content)
+        {
+            var def = item.Def;
+            if (!def.IsFillDecor) return null;
+            if (!item.HasContents) return $"Boş (0/{def.FillCount})";
+            var parts = new List<string> { $"{item.Contents.Count}/{def.FillCount}" };
+            int worst = WorstFreshness(item, content);
+            if (worst != Decor.Fresh) parts.Add(Decor.FreshnessName(worst));
+            bool allOwn = item.Contents.Count >= def.FillCount;
+            foreach (var c in item.Contents) if (!c.Own) allOwn = false;
+            if (allOwn) parts.Add("Kendi emeğimiz");
+            return string.Join(" · ", parts);
+        }
+
+        // ---- ısı: perde ve kumaş duvar örtüsü (§4.5) ----
+
+        /// <summary>Kenarın ısı kaybı çarpanı: iki yüzünde asılı eşyaların en iyisi (perde 0,75; kumaş örtü 0,85). Yoksa 1.</summary>
+        public static float EdgeInsulation(WorldState world, Edge edge)
+        {
+            float f = 1f;
+            if (world == null) return f;
+            foreach (var it in world.WallItemsOn(edge))
+                if (it.Def.Insulation > 0f && it.Def.Insulation < f && it.Condition != ItemCondition.Damaged) f = it.Def.Insulation;
+            return f;
         }
 
         public static string MaterialName(string material)

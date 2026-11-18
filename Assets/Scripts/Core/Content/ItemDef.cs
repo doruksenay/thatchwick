@@ -38,8 +38,8 @@ namespace Thatchwick.Core.Content
     {
         // Yuva türleri ("rafa yalnızca rafa uyumlu eşya konur").
         public const string Table = "masa", Shelf = "raf", Hook = "kanca", Mantel = "ocak", Sill = "pencere",
-            Pantry = "kiler", Plate = "tabak", Cushion = "minder";
-        public static readonly string[] SlotKinds = { Table, Shelf, Hook, Mantel, Sill, Pantry, Plate, Cushion };
+            Pantry = "kiler", Plate = "tabak", Cushion = "minder", Cover = "ortu";
+        public static readonly string[] SlotKinds = { Table, Shelf, Hook, Mantel, Sill, Pantry, Plate, Cushion, Cover };
         /// <summary>Uyduğu türler yazılmamış dekorun varsayılanı: masa, raf, ocak ve pencere içi.</summary>
         public static readonly string[] DefaultFits = { Table, Shelf, Mantel, Sill };
 
@@ -55,6 +55,7 @@ namespace Thatchwick.Core.Content
                 case Pantry: return "kiler";
                 case Plate: return "tabak";
                 case Cushion: return "minder";
+                case Cover: return "örtü";
                 default: return kind;
             }
         }
@@ -78,6 +79,31 @@ namespace Thatchwick.Core.Content
         /// <summary>Durumun güzellik çarpanı.</summary>
         public static double BeautyFactor(ItemCondition c) => c == ItemCondition.Damaged ? 0.5 : c == ItemCondition.Repaired ? 0.9 : 1.0;
         public static string ConditionName(ItemCondition c) => c == ItemCondition.Damaged ? "Hasarlı" : c == ItemCondition.Repaired ? "Onarılmış" : "Sağlam";
+
+        // ---- D2: tarz ekseni (Project belgesi 27 §6.1) ----
+        /// <summary>Tarzlar (görünüş ekseni; kademe = styleSet işlevi belirler). 1.0'da Çatkı ve Yörük.</summary>
+        public static readonly (string id, string name)[] Themes = { ("Çatkı", "Çatkı Evi"), ("Yörük", "Yörük Odası") };
+        public static string ThemeName(string id)
+        {
+            foreach (var t in Themes) if (t.id == id) return t.name;
+            return id;
+        }
+
+        // ---- D2: doldurulan dekor (§9) ----
+        /// <summary>İçerik tazeliği: taze, bayat (raf ömrünün %60'ı), çürük (raf ömrü doldu).</summary>
+        public const int Fresh = 0, Stale = 1, Rotten = 2;
+        public const double StaleAt = 0.6;
+        public static int Freshness(ItemDef food, double age)
+        {
+            if (food == null || food.SpoilDays <= 0f) return Fresh;
+            if (age >= food.SpoilDays) return Rotten;
+            return age >= food.SpoilDays * StaleAt ? Stale : Fresh;
+        }
+        public static string FreshnessName(int f) => f == Rotten ? "çürük" : f == Stale ? "bayat" : "taze";
+        /// <summary>Hanenin kendi ürettiği içerikle tam dolu dekorun güzellik eki ("Kendi emeğimiz").</summary>
+        public const int OwnWorkBonus = 2;
+        /// <summary>Çürük içerikli dekorun güzelliği (sinek).</summary>
+        public const int RottenBeauty = -4;
     }
 
     /// <summary>Bir eşyanın yüzeyindeki dekor yuvası. U,V: kapladığı alanın içinde 0-1 arası yerel konum.</summary>
@@ -86,6 +112,8 @@ namespace Thatchwick.Core.Content
         public string Id { get; set; }
         public float U { get; set; }
         public float V { get; set; }
+        /// <summary>Örtü yuvası mı (masa örtüsü, sedir örtüsü): eşyanın bütün üstünü kaplar.</summary>
+        public bool IsCover => Kind == Decor.Cover;
         /// <summary>Yuva türü (Decor.Table, Decor.Shelf ...). Boşsa: duvar eşyasında raf, tavanda kanca, diğerlerinde masa.</summary>
         public string Kind { get; set; }
         /// <summary>Yuvanın boyutu: bundan büyük dekor girmez.</summary>
@@ -209,6 +237,18 @@ namespace Thatchwick.Core.Content
         public float TarnishDays { get; set; }
         /// <summary>Tarz ekseni (Çatkı, Yörük ...): kademeden (StyleSet) bağımsız görünüş ailesi.</summary>
         public string StyleTheme { get; set; }
+
+        // ---- D2 ----
+        /// <summary>Doldurulan dekor (meyve sepeti, peynir tahtası): kabul ettiği gerçek ürünler (eşya kimlikleri, tercih sırasıyla).</summary>
+        public List<string> FillWith { get; set; } = new List<string>();
+        /// <summary>Doldurulan dekorun aldığı adet (0 = doldurulmaz).</summary>
+        public int FillCount { get; set; }
+        public bool IsFillDecor => FillCount > 0 && FillWith.Count > 0;
+        public bool AcceptsFill(string itemId) { foreach (var f in FillWith) if (f == itemId) return true; return false; }
+        /// <summary>Yalnızca pencere kenarına asılır (pencere içi tahtası, perde); düz duvara değil.</summary>
+        public bool WindowMount { get; set; }
+        /// <summary>Asıldığı kenarın ısı kaybı çarpanı (perde 0,75; kumaş duvar örtüsü 0,85). 0 = etkisiz.</summary>
+        public float Insulation { get; set; }
 
         /// <summary>Dekorun konabildiği yuva türleri (varsayılan dahil).</summary>
         public IReadOnlyList<string> EffectiveFits => FitsOn.Count > 0 ? (IReadOnlyList<string>)FitsOn : Decor.DefaultFits;

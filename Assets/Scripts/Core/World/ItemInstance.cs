@@ -55,7 +55,7 @@ namespace Thatchwick.Core.World
         public double TarnishDays { get; set; }
         public bool IsTarnished => Def.TarnishDays > 0f && TarnishDays >= Def.TarnishDays;
         private List<StoredItem> _contents;
-        /// <summary>İçindekiler (döküntü yığınındaki eşyalar ve kırık parçalar).</summary>
+        /// <summary>İçindekiler (döküntü yığınındaki eşyalar ve kırık parçalar; doldurulan dekordaki gerçek ürünler).</summary>
         public List<StoredItem> Contents => _contents ?? (_contents = new List<StoredItem>());
         public bool HasContents => _contents != null && _contents.Count > 0;
 
@@ -218,12 +218,17 @@ namespace Thatchwick.Core.World
         }
     }
 
-    /// <summary>Bir kaptaki eşya (döküntü yığını): kimlik ve durum.</summary>
+    /// <summary>Bir kaptaki eşya (döküntü yığını, meyve sepeti): kimlik, durum, yaş (bozulma günü) ve hanenin kendi ürünü mü.</summary>
     public struct StoredItem
     {
         public string ItemId;
         public ItemCondition Condition;
-        public StoredItem(string id, ItemCondition c) { ItemId = id; Condition = c; }
+        /// <summary>Yiyecek içerikte bozulma yaşı (oyun günü, sıcaklık çarpanlı).</summary>
+        public double Age;
+        /// <summary>Hanenin kendi ürünü ("Kendi emeğimiz" güzellik eki); pazardan alınmışsa false.</summary>
+        public bool Own;
+        public StoredItem(string id, ItemCondition c) { ItemId = id; Condition = c; Age = 0; Own = false; }
+        public StoredItem(string id, double age, bool own) { ItemId = id; Condition = ItemCondition.Sound; Age = age; Own = own; }
     }
 
     /// <summary>Kaplama alanı ve dönüş hesapları.</summary>

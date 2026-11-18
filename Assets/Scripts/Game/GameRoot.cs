@@ -44,7 +44,14 @@ namespace Thatchwick.Game
             public LookState Look;
             public int LookDay = -1;
             public string LookInjury;
+            // Yürüme sallantısı (yürüme animasyonu gelene kadar): adım evresi ve önceki karedeki konum.
+            public float WalkPhase;
+            public Vector3 LastPos;
         }
+
+        /// <summary>Yürürken iki piksellik adım sallantısı; bir adım yaklaşık bu kadar dünya birimi.</summary>
+        private const float WalkBobPixels = 2f, WalkStepUnits = 0.55f, ArtPixelsPerUnit = 32f;
+        private static readonly Vector3 ShadowOffset = new Vector3(0.06f, -0.03f, 0f);
 
         private WorldState _world;
         private WorldView _view;
@@ -313,7 +320,9 @@ namespace Thatchwick.Game
             _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays)
             {
                 // Malzeme yalıtımı: taş duvar az, kalas çok kaçırır; çatı stili üst katın çatı kaybını değiştirir.
-                EdgeLossFactor = e => _buildService?.EdgePart(_world.Map.GetEdge(e), _world.Map.GetEdgeStyle(e))?.HeatLoss ?? 1f,
+                // Malzemenin ısı kaybı × perde ya da kumaş duvar örtüsü (27 §4.5).
+                EdgeLossFactor = e => (_buildService?.EdgePart(_world.Map.GetEdge(e), _world.Map.GetEdgeStyle(e))?.HeatLoss ?? 1f)
+                    * Thatchwick.Core.Build.DecorSystem.EdgeInsulation(_world, e),
                 RoofLossFactor = t => BuildParts.Resolve(_content, BuildPartKind.Roof, _world.Map.GetRoofStyle(t) == GridMap.NoRoof ? null : _world.Map.GetRoofStyle(t))?.HeatLoss ?? 1f
             };
             if (loaded != null) _heat.RestoreTemperatures(loaded.Temperatures);
@@ -341,6 +350,7 @@ namespace Thatchwick.Game
             _life.Attach(_heat);
             _life.Attach(_market);
             _life.Attach(_buildService);
+            _life.Attach(_effects);
             // Miras: kurucu (köydeki soy), yadigâr envantere girmez, satılınca geçmişi silinir, komşu haneye giden köylü olur.
             _life.FounderId = () => _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
             _buildService.StoreBlocker = _life.Legacy.StoreBlocker;
@@ -583,9 +593,23 @@ namespace Thatchwick.Game
                     }
                     // Gerçek masanın üst yüzü yer tutucu küpten biraz yüksek.
                     float topPx = IsoArt.Item(parent, out _) != null ? 27f : 24f;
+                    var slotDef = parent.Def.FindSlot(item.SlotId);
+                    if (slotDef != null && slotDef.IsCover)
+                    {
+                        // Masa ya da sedir örtüsü (27 D2): eşyanın bütün üstüne serili düz elmaslar, diğer dekorun altında.
+                        var coverColor = ConditionTint(item, color);
+                        foreach (var t in parent.OccupiedTiles())
+                        {
+                            var cp = _view.TileToWorld(t) + new Vector3(0f, topPx / 32f - 0.02f, 0f);
+                            var csr2 = AddItemSprite(item, cp, coverColor, 0.95f, Iso.SortOrder(_view.TileToWorld(t).y, 0, level) + 1, SpriteMaterials.Diamond);
+                            csr2.color = coverColor;
+                        }
+                        continue;
+                    }
                     var pos = Iso.GridToWorld(gx, gy, level) + new Vector3(0f, topPx / 32f, 0f);
                     var decorArt = IsoArt.Item(item, out _);
-                    AddItemSprite(item, pos, color, decorArt != null ? 1f : 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy, level).y, 0, level) + 2, decorArt);
+                    var dsr2 = AddItemSprite(item, pos, color, decorArt != null ? 1f : 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy, level).y, 0, level) + 2, decorArt);
+                    if (item.Def.IsFillDecor) dsr2.color = FillTint(item, decorArt != null ? Color.white : color);
                     continue;
                 }
                 if (item.IsRug)
@@ -637,6 +661,17 @@ namespace Thatchwick.Game
         }
 
         // Hasarlı eşya koyu ve soluk, onarılmış hafif soluk, kararmış ayna gri (27-ev-dekorasyonu).
+        // Doldurulan dekor (27 D2): boşken soluk, bayatta kahverengimsi, çürükte yeşilimsi (görsel gelene kadar).
+        private Color FillTint(ItemInstance item, Color baseColor)
+        {
+            var c = ConditionTint(item, baseColor);
+            if (!item.HasContents) return Color.Lerp(c, new Color(0.55f, 0.5f, 0.45f), 0.45f);
+            int f = Thatchwick.Core.Build.DecorSystem.WorstFreshness(item, _content);
+            if (f == Thatchwick.Core.Content.Decor.Rotten) return Color.Lerp(c, new Color(0.35f, 0.45f, 0.2f), 0.6f);
+            if (f == Thatchwick.Core.Content.Decor.Stale) return Color.Lerp(c, new Color(0.55f, 0.42f, 0.28f), 0.3f);
+            return c;
+        }
+
         private static Color ConditionTint(ItemInstance item, Color baseColor)
         {
             var c = baseColor;
@@ -945,7 +980,7 @@ namespace Thatchwick.Game
             sr.sprite = IsoArt.Character(character, IsoArt.DefaultDirection) ?? PersonSprites.Get(character.Appearance);
             sr.sharedMaterial = SpriteMaterials.Unlit;
             go.transform.position = _view.TileToWorld(character.Position);
-            var shadow = NewShadow(go.transform, new Vector3(0.06f, -0.03f, 0f), 0.42f);
+            var shadow = NewShadow(go.transform, ShadowOffset, 0.42f);
 
             var actor = new Actor
             {
@@ -1886,7 +1921,15 @@ namespace Thatchwick.Game
                 pos = Vector3.Lerp(pos, to, actor.Runner.StepProgress);
             }
             if (_animals != null && _animals.MountOf(actor.Character.Id) != null) pos += new Vector3(0f, 0.35f, 0f);   // at sırtında
-            actor.View.position = pos;
+            // Yürürken adım sallantısı: gövde iki piksel iner çıkar, gölge yerde kalır (gerçek yürüme animasyonu gelene kadar).
+            bool moving = next.HasValue;
+            float mdx = pos.x - actor.LastPos.x, mdy = pos.y - actor.LastPos.y;
+            float moved = Mathf.Sqrt(mdx * mdx + mdy * mdy);
+            if (moving && moved < 1f) actor.WalkPhase += moved / WalkStepUnits * Mathf.PI;
+            else if (!moving) actor.WalkPhase = 0f;
+            actor.LastPos = pos;
+            float bob = moving ? Mathf.Round(Mathf.Abs(Mathf.Sin(actor.WalkPhase)) * WalkBobPixels) / ArtPixelsPerUnit : 0f;
+            actor.View.position = pos + new Vector3(0f, bob, 0f);
             // Merdivende yarıdan sonra hedef katın bandına geçer; iki kattan biri görünürse karakter görünür.
             int fromLevel = actor.Character.Position.Z;
             int toLevel = next.HasValue ? next.Value.Z : fromLevel;
@@ -1911,6 +1954,7 @@ namespace Thatchwick.Game
                 scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : (actor.Character.Stage == AgeStage.Teen ? 0.92f : 1f));
             }
             actor.View.localScale = new Vector3(scale, scale, 1f);
+            if (actor.Shadow != null) actor.Shadow.transform.localPosition = ShadowOffset - new Vector3(0f, bob / Mathf.Max(0.01f, scale), 0f);
         }
 
         private void ShowMessage(string text, float seconds = 2.5f)
@@ -2184,7 +2228,7 @@ namespace Thatchwick.Game
             foreach (var item in _world.Items)
             {
                 if (item.IsDecor || !_view.IsLevelVisible(item.Position.Z)) continue;
-                if (item.IsWallMounted && !_world.IsOverloaded(item) && item.Condition == Thatchwick.Core.Content.ItemCondition.Sound && !(all || item == hovered)) continue;
+                if (item.IsWallMounted && !_world.IsOverloaded(item) && item.Condition == Thatchwick.Core.Content.ItemCondition.Sound && RottenDecorOn(item) == null && !(all || item == hovered)) continue;
                 bool problem = ItemNeedsAttention(item, Net, Powered);
                 bool show = all || item == hovered;
                 if (!show && !problem) continue;
@@ -2222,6 +2266,7 @@ namespace Thatchwick.Game
             if (item.Def.IsFixture) return !_water.Report.IsSupplied(item);
             if (item.HasContents) return true;                                   // döküntü toplanmayı bekliyor
             if (_world.IsOverloaded(item)) return true;                          // raf çökebilir
+            if (RottenDecorOn(item) != null) return true;                        // üstündeki sepette çürük var
             return false;
         }
 
@@ -2238,7 +2283,19 @@ namespace Thatchwick.Game
                 notes.Add(load > item.Def.MaxLoad ? $"aşırı yük {load}/{item.Def.MaxLoad}: çökebilir" : $"yük {load}/{item.Def.MaxLoad}");
             }
             if (item.IsTarnished) notes.Add("kararmış: cilala");
+            var rotten = RottenDecorOn(item);
+            if (rotten != null) notes.Add($"{rotten.Def.DisplayName} çürüdü: boşalt");
             return notes.Count > 0 ? $"{name} ({string.Join(", ", notes)})" : name;
+        }
+
+        // Yüzeyin üstünde içi çürümüş doldurulan dekor (yoksa null).
+        private ItemInstance RottenDecorOn(ItemInstance surface)
+        {
+            if (surface.Def.SurfaceSlots.Count == 0) return null;
+            foreach (var d in _world.GetDecorOn(surface.Id))
+                if (d.Def.IsFillDecor && d.HasContents && Thatchwick.Core.Build.DecorSystem.WorstFreshness(d, _content) == Thatchwick.Core.Content.Decor.Rotten)
+                    return d;
+            return null;
         }
 
         /// <summary>Fare (ya da son dokunuş) altındaki eşya; arayüzün üstündeyse yok.</summary>

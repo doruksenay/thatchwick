@@ -133,7 +133,7 @@ namespace Thatchwick.Core.Save
         public int layer;           // halı sırası (büyük olan üstte)
         public int condition;       // 0 sağlam, 1 hasarlı, 2 onarılmış
         public double tarnish;      // metal aynanın kararma günü
-        public string[] contents;   // döküntü yığını: "kimlik" ya da "kimlik|durum"
+        public string[] contents;   // döküntü yığını: "kimlik" ya da "kimlik|durum"; doldurulan dekor: "kimlik|durum|yaş|kendi"
     }
 
     [Serializable]
@@ -152,6 +152,7 @@ namespace Thatchwick.Core.Save
         public KeyInt[] inventory;
         public KeyInt[] damaged;    // envanterdeki hasarlı adetler (27; eski kayıtta yok)
         public KeyInt[] repaired;   // onarılmış adetler
+        public KeyInt[] bought;     // pazardan alınmış adetler (D2; "Kendi emeğimiz" eki için)
     }
 
     [Serializable]

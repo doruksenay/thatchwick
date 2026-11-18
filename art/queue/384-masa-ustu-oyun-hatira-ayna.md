@@ -1,7 +1,8 @@
 ---
 id: "384"
 title: Masa ve raf üstü: oyunlar, oymalar, kutu, bez bebek, el aynası (10)
-status: pending
+status: review
+claimed_at: 2026-11-18T12:55Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
 family: esya

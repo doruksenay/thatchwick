@@ -1,7 +1,8 @@
 ---
 id: "004"
 title: Toprak yol seti
-status: running
+status: review
+claimed_at: 2026-11-18T13:00Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: zemin
 style_gate: false

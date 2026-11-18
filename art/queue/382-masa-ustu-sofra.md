@@ -1,7 +1,7 @@
 ---
 id: "382"
 title: Masa ve raf üstü: sofra takımı ve kaplar (10)
-status: running
+status: review
 claimed_at: 2026-11-18T12:50Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10

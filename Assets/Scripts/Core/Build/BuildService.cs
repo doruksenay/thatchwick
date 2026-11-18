@@ -120,6 +120,7 @@ namespace Thatchwick.Core.Build
             {
                 var it = items[i];
                 if (it.Def.Id == Decor.Debris) { foreach (var c in it.Contents) _house.AddItem(c.ItemId, 1, c.Condition); continue; }
+                if (it.Def.IsFillDecor) DecorSystem.EmptyInto(it, _house, _content);   // sepetteki ürünler de döner (çürük atılır)
                 _house.AddItem(it.Def.Id, 1, it.Condition);
             }
         }
@@ -335,7 +336,11 @@ namespace Thatchwick.Core.Build
             int total = FinishSellBonus(target);
             var removedItems = _world.RemoveItemInstances(itemId);
             var removed = new List<ItemDef>();
-            foreach (var it in removedItems) { removed.Add(it.Def); total += SellValue(it); }
+            foreach (var it in removedItems)
+            {
+                removed.Add(it.Def); total += SellValue(it);
+                if (it.Def.IsFillDecor) DecorSystem.EmptyInto(it, _house, _content);   // içindekiler satılmaz, envantere döner
+            }
             if (total > 0) _house.AddAkce(total);
             // Geri kazanım: sökülen eşyadan malzemenin bir kısmı geri döner (akçeye ek).
             var salvage = new List<KeyValuePair<string, int>>();

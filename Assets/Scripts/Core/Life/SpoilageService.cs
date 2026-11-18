@@ -234,6 +234,15 @@ namespace Thatchwick.Core.Life
             }
         }
 
+        /// <summary>Envanterdeki en eski partinin yaşı (bozulma günü); izlenmiyorsa 0. Doldurulan dekora giren ürün bu yaşla girer.</summary>
+        public double OldestAge(string itemId)
+        {
+            if (!_content.Items.TryGet(itemId, out var def) || def.SpoilDays <= 0f) return 0;
+            Reconcile(def);
+            var list = Batches(itemId);
+            return list.Count > 0 ? list[0].Age : 0;
+        }
+
         /// <summary>Bir yiyeceğin en taze ve en eski partisinin kalan günü (kiler çarpanıyla); izlenmiyorsa -1.</summary>
         public double DaysLeftOldest(string itemId)
         {

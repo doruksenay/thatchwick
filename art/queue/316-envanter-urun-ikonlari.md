@@ -1,7 +1,8 @@
 ---
 id: "316"
 title: Envanter ve ürün ikonları (hammadde, ürün, yemek, toplanan)
-status: pending
+status: review
+claimed_at: 2026-11-18T13:00Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: false

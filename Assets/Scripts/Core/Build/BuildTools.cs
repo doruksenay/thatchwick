@@ -128,7 +128,8 @@ namespace Thatchwick.Core.Build
             mat.Take(_house);
             if (refund > 0) _house.AddAkce(refund);
             // Düz duvar kalkınca (ya da kapı, pencere, yarım duvar olunca) asılı eşyalar envantere döner.
-            if (old == EdgeKind.Wall && kind != EdgeKind.Wall)
+            // Pencere değişince pencere eşyaları (pencere içi tahtası, perde) da döner.
+            if ((old == EdgeKind.Wall || old == EdgeKind.Window) && kind != old)
                 foreach (var hung in _world.WallItemsOn(edge))
                     foreach (var def in _world.RemoveItem(hung.Id)) _house.AddItem(def.Id);
             map.SetEdge(edge, kind, newStyle);
