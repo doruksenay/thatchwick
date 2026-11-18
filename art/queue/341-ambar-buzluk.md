@@ -1,7 +1,7 @@
 ---
 id: "341"
 title: Ambar, buzluk, buzhane
-status: running
+status: blocked
 claimed_at: 2026-11-18T11:56Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -33,3 +33,6 @@ Ayrıntılı yöntem **301'deki ile aynıdır** (`create_map_object` stil eşlem
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 - 2026-11-18: yeniden `pending` (Claude, kurtarma): 2026-11-18T09:53Z sahiplenmesinden sonuç gelmedi.
+
+## Sorular
+- 2026-11-18 (bulut işçisi): `get_balance` plan olarak "Tier 2: Pixel Artisan", 4999/5000 generation (yenilenme 2026-12-18) döndürdü; `art/budget.md` Tier 1 / 2000 diyor. İşçi kuralı gereği plan Tier 1 değilse durur. Üretim yapılmadı (0 gen). Kullanıcı `art/budget.md` planını güncelleyince işi `pending` yapın.
