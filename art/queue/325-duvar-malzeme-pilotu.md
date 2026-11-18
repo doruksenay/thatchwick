@@ -1,7 +1,8 @@
 ---
 id: "325"
 title: Duvar malzemesi pilotu: kalas ve taş (iki eksen)
-status: pending
+status: running
+claimed_at: 2026-11-18T08:42Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: yapi
