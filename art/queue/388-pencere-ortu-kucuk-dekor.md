@@ -1,7 +1,7 @@
 ---
 id: "388"
 title: Pencere içi, perdeler, örtüler ve küçük Yörük/Çatkı süsleri (13)
-status: running
+status: review
 claimed_at: 2026-11-18T13:22Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
