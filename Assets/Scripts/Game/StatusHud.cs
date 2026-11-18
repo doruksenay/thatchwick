@@ -166,6 +166,12 @@ namespace Thatchwick.Game
             if (traits.Length > 0) GUILayout.Label(traits, _small);
             GUILayout.EndHorizontal();
 
+            // Çocuk ve Ergen: yetişme göstergesi (çocukluk ruh hali Genç yetişkin'de özelliğe dönüşür).
+            if (c.MoodEnabled && (c.Stage == AgeStage.Child || c.Stage == AgeStage.Teen))
+                GUILayout.Label(MoodBehavior.UpbringingSummary(c.UpbringingAverage, c.UpbringingDays), _small);
+            if (c.InBreakdown)
+                GUILayout.Label($"Bunalımda: {MoodBehavior.BreakdownName(c.Breakdown)} (emirler bitince yapılır)", _small);
+
             GUILayout.BeginHorizontal();
             foreach (NeedType n in Enum.GetValues(typeof(NeedType)))
                 Bar(NeedName(n), c.Needs.Get(n), barWidth);

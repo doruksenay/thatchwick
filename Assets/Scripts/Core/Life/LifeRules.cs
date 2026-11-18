@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Mood;
 using Thatchwick.Core.Content;
 
 namespace Thatchwick.Core.Life
@@ -55,26 +56,94 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>
-        /// Çocuk anneden ve babadan birer özellik alır; çakışırsa ikinci atlanır ve rastgele tamamlanır.
-        /// Ebeveynin özelliği yoksa rastgele çekilir. Her zaman en az 1 özellik döner (içerik varsa).
+        /// Doğumda tek özellik (karar 18.11.2026): rastgele bir ebeveynden bir özellik; o ebeveynin özelliği yoksa öbüründen,
+        /// ikisinin de yoksa rastgele. İkinci yuva çocuklukta dolar (ApplyUpbringing, Genç yetişkin'e geçişte).
         /// </summary>
         public static List<string> InheritTraits(ContentDatabase db, Random rng, Character mother, Character father)
         {
             var result = new List<string>();
-            foreach (var parent in new[] { mother, father })
+            var parents = rng.Next(2) == 0 ? new[] { mother, father } : new[] { father, mother };
+            foreach (var parent in parents)
             {
-                if (parent == null || parent.TraitIds.Count == 0) continue;
-                var ids = new List<string>(parent.TraitIds);
-                // Çocukta olmayan, çakışmayan bir tanesini rastgele seç.
-                while (ids.Count > 0)
-                {
-                    var pick = ids[rng.Next(ids.Count)];
-                    ids.Remove(pick);
-                    if (CanAdd(db, result, pick)) { result.Add(pick); break; }
-                }
+                var pick = PickParentTrait(db, rng, parent, result);
+                if (pick != null) { result.Add(pick); break; }
             }
             if (result.Count == 0) result = RollTraits(db, rng, 1);
             return result;
+        }
+
+        // Ebeveynin, listedekilerle çakışmayan rastgele bir özelliği; yoksa null.
+        private static string PickParentTrait(ContentDatabase db, Random rng, Character parent, List<string> current)
+        {
+            if (parent == null || parent.TraitIds.Count == 0) return null;
+            var ids = new List<string>(parent.TraitIds);
+            while (ids.Count > 0)
+            {
+                var pick = ids[rng.Next(ids.Count)];
+                ids.Remove(pick);
+                if (CanAdd(db, current, pick)) return pick;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Çocukluk ruh hali özelliğe dönüşür (karar 18.11.2026, Project belgesi 23 bölüm 7.3). Ergen'den Genç yetişkin'e
+        /// geçişte çağrılır. Çocuk ve Ergen boyunca ortalama İyi ve üstüyse Neşeli, Mutsuz ve altıysa Kasvetli; arada ise
+        /// (ya da ölçü yetersizse) ebeveyninden bir özellik daha (önce doğumda özellik vermeyen ebeveynden).
+        /// Kalıtım özelliği çocukluk özelliğiyle çakışırsa çocukluk kazanır ve hanedan geçmişine yazılır.
+        /// Özellik yuvaları doluysa ve çakışma yoksa değişmez. Hayat notunu döner (değişiklik yoksa null).
+        /// </summary>
+        public static string ApplyUpbringing(ContentDatabase db, Random rng, Character c, Character mother, Character father)
+        {
+            if (db == null || c == null || c.IsDead) return null;
+            string grown = MoodBehavior.UpbringingTrait(c.UpbringingAverage, c.UpbringingDays);
+            var traits = new List<string>(c.TraitIds);
+            string note = null;
+
+            if (grown != null && db.Traits.TryGet(grown, out var grownDef))
+            {
+                if (traits.Contains(grown)) return null;
+                string conflict = null;
+                foreach (var id in traits)
+                    if (db.Traits.TryGet(id, out var other) && grownDef.ConflictsWith(other)) { conflict = id; break; }
+                bool happy = grown == MoodBehavior.TraitCheerful;
+                if (conflict != null)
+                {
+                    traits.Remove(conflict);
+                    string lineage = db.Traits.TryGet(conflict, out var cd) ? cd.DisplayName : conflict;
+                    note = $"{lineage} bir soydan geldi ama {(happy ? "mutlu" : "zor")} bir çocukluk geçirdi.";
+                    c.LifespanDays -= LifespanBonus(db, new[] { conflict });
+                }
+                else if (traits.Count >= Character.MaxTraits) return null;
+                else note = happy ? $"Mutlu bir çocukluk geçirdi: {grownDef.DisplayName} büyüdü." : $"Zor bir çocukluk geçirdi: {grownDef.DisplayName} büyüdü.";
+                traits.Add(grown);
+                c.LifespanDays += LifespanBonus(db, new[] { grown });
+            }
+            else
+            {
+                if (traits.Count >= Character.MaxTraits) return null;
+                // Ebeveyn huyu: önce henüz huyunu vermemiş ebeveynden.
+                string pick = null;
+                foreach (var parent in new[] { mother, father })
+                {
+                    if (parent == null) continue;
+                    bool alreadyGave = false;
+                    foreach (var id in parent.TraitIds) if (traits.Contains(id)) { alreadyGave = true; break; }
+                    if (alreadyGave) continue;
+                    pick = PickParentTrait(db, rng, parent, traits);
+                    if (pick != null) break;
+                }
+                if (pick == null) foreach (var parent in new[] { mother, father }) { pick = PickParentTrait(db, rng, parent, traits); if (pick != null) break; }
+                if (pick == null) { var rolled = RollTraits(db, rng, traits.Count + 1, traits); if (rolled.Count > traits.Count) pick = rolled[rolled.Count - 1]; }
+                if (pick == null) return null;
+                traits.Add(pick);
+                c.LifespanDays += LifespanBonus(db, new[] { pick });
+                note = db.Traits.TryGet(pick, out var pd) ? $"Ailesinden bir huy aldı: {pd.DisplayName}." : null;
+            }
+
+            c.SetTraits(traits);
+            if (note != null) c.AddChronicle(note);
+            return note;
         }
 
         /// <summary>Doğumda ömre eklenecek gün (özelliklerden).</summary>

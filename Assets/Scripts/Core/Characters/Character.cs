@@ -88,8 +88,8 @@ namespace Thatchwick.Core.Characters
 
         private void UpdateNeedMoodlets(MoodCatalog catalog)
         {
-            SetNeedMood(catalog, MoodCatalog.Hungry, Needs.Get(NeedType.Hunger) < MoodCatalog.NeedMoodThreshold);
-            SetNeedMood(catalog, MoodCatalog.Tired, Needs.Get(NeedType.Energy) < MoodCatalog.NeedMoodThreshold);
+            SetNeedMood(catalog, MoodCatalog.Hungry, Needs.Get(NeedType.Hunger) < MoodCatalog.HungerTiredMoodThreshold);
+            SetNeedMood(catalog, MoodCatalog.Tired, Needs.Get(NeedType.Energy) < MoodCatalog.HungerTiredMoodThreshold);
             SetNeedMood(catalog, MoodCatalog.Cold, Needs.Get(NeedType.Warmth) < MoodCatalog.ColdMoodThreshold);
             bool comfort = ComfortNeedsActive;
             SetNeedMood(catalog, MoodCatalog.Bored, comfort && Needs.Get(NeedType.Fun) < MoodCatalog.NeedMoodThreshold);
@@ -326,20 +326,99 @@ namespace Thatchwick.Core.Characters
             else _wetColdDays = Math.Max(0.0, _wetColdDays - gameDays);
         }
 
+        // --- Ruh halinin davranışa etkisi (18.11.2026, Project belgesi 23) ---
+
+        /// <summary>Süren bunalım; yoksa None. Bunalımda karakter iş yapmaz, oyuncunun emri sıraya girer.</summary>
+        public BreakdownKind Breakdown { get; private set; }
+        /// <summary>Bunalımın kalan süresi (oyun günü).</summary>
+        public double BreakdownLeft { get; private set; }
+        public bool InBreakdown => Breakdown != BreakdownKind.None;
+        /// <summary>Kesintisiz Perişan kalınan süre (bunalım bundan sonra gelebilir; önce uyarı).</summary>
+        public double MiserableDays { get; set; }
+        /// <summary>Son bunalımın bittiği gün (yaş günü cinsinden; bekleme süresi için). Yoksa -1.</summary>
+        public double LastBreakdownAge { get; set; } = -1;
+
+        /// <summary>Bunalım bitti (süre doldu ya da hayati bir ihtiyaç kritikleşti). İkinci değer: süre dolmadan kesildi mi.</summary>
+        public event Action<Character, BreakdownKind, bool> BreakdownEnded;
+
+        public bool BeginBreakdown(BreakdownKind kind, double days)
+        {
+            if (kind == BreakdownKind.None || IsDead || InBreakdown || days <= 0) return false;
+            Breakdown = kind;
+            BreakdownLeft = days;
+            return true;
+        }
+
+        /// <summary>Bunalımı bitirir: "İçini döktü" moodlet'i (+20, 2 gün) sarmalı önler.</summary>
+        public void EndBreakdown(bool interrupted = false)
+        {
+            if (!InBreakdown) return;
+            var kind = Breakdown;
+            Breakdown = BreakdownKind.None;
+            BreakdownLeft = 0;
+            MiserableDays = 0;
+            LastBreakdownAge = AgeDays;
+            if (MoodEnabled) AddMoodlet(MoodCatalog.Catharsis);
+            BreakdownEnded?.Invoke(this, kind, interrupted);
+        }
+
+        /// <summary>Kayıttan yükleme.</summary>
+        public void RestoreBreakdown(BreakdownKind kind, double left)
+        {
+            Breakdown = left > 0 ? kind : BreakdownKind.None;
+            BreakdownLeft = Breakdown == BreakdownKind.None ? 0 : left;
+        }
+
+        private void TickBreakdown(double gameDays)
+        {
+            if (MoodEnabled && Mood.Status == MoodStatus.Miserable) MiserableDays += gameDays;
+            else if (!InBreakdown) MiserableDays = 0;
+            if (!InBreakdown) return;
+            // Hayati güvenlik: açlık, uyku ya da soğuk kritikleşince bunalım biter; karakter ihtiyacını giderir.
+            if (Needs.AnyCritical()) { EndBreakdown(interrupted: true); return; }
+            BreakdownLeft -= gameDays;
+            if (BreakdownLeft <= 0) EndBreakdown();
+        }
+
+        /// <summary>Çocuk ve Ergen evresinde ruh hali toplamının zaman ağırlıklı toplamı ve ölçülen gün (yetişme).</summary>
+        public double UpbringingMoodSum { get; set; }
+        public double UpbringingDays { get; set; }
+        public double UpbringingAverage => UpbringingDays > 0 ? UpbringingMoodSum / UpbringingDays : 0.0;
+
+        private void TickUpbringing(double gameDays)
+        {
+            if (!MoodEnabled) return;
+            var s = Stage;
+            if (s != AgeStage.Child && s != AgeStage.Teen) return;
+            UpbringingMoodSum += Mood.Total * gameDays;
+            UpbringingDays += gameDays;
+        }
+
+        // Kişinin hayat notları (hanedan geçmişinde gösterilir): "Neşeli bir soydan geldi ama zor bir çocukluk geçirdi".
+        private readonly List<string> _chronicle = new List<string>();
+        public IReadOnlyList<string> Chronicle => _chronicle;
+        public void AddChronicle(string note) { if (!string.IsNullOrWhiteSpace(note)) _chronicle.Add(note); }
+        public void RestoreChronicle(IEnumerable<string> notes)
+        {
+            _chronicle.Clear();
+            if (notes != null) foreach (var n in notes) AddChronicle(n);
+        }
+
         // Son üç öğün (çeşit ödülü); kayda girmez, oturum içinde tutulur.
         private readonly List<string> _meals = new List<string>(4);
         public IReadOnlyList<string> RecentMeals => _meals;
 
         /// <summary>
         /// Bir öğün yedi: üst üste üç kez aynı yemek "Hep aynı yemek" (-3), son üç öğün üçü de farklıysa "Zengin sofra" (+4).
+        /// Elde başka yiyecek yoksa (hadAlternative false) "Hep aynı yemek" gelmez: oyuncu, seçeneği olmadığı için cezalanmaz.
         /// </summary>
-        public void RecordMeal(string foodId)
+        public void RecordMeal(string foodId, bool hadAlternative = true)
         {
             if (string.IsNullOrEmpty(foodId)) return;
             _meals.Add(foodId);
             if (_meals.Count > 3) _meals.RemoveAt(0);
             if (!MoodEnabled || _meals.Count < 3) return;
-            if (_meals[0] == foodId && _meals[1] == foodId) AddMoodlet(MoodCatalog.SameMeal);
+            if (_meals[0] == foodId && _meals[1] == foodId) { if (hadAlternative) AddMoodlet(MoodCatalog.SameMeal); }
             else if (_meals[0] != _meals[1] && _meals[1] != _meals[2] && _meals[0] != _meals[2]) AddMoodlet(MoodCatalog.VariedTable);
         }
 
@@ -420,6 +499,8 @@ namespace Thatchwick.Core.Characters
                 Mood.Tick(gameDays);
                 UpdateNeedMoodlets(MoodCatalog.Default);
             }
+            TickBreakdown(gameDays);
+            TickUpbringing(gameDays);
 
             if (Needs.Get(NeedType.Warmth) <= NeedSet.Min) FreezeDays += gameDays;
             else FreezeDays = Math.Max(0.0, FreezeDays - 2.0 * gameDays);

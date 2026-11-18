@@ -181,6 +181,13 @@ namespace Thatchwick.Core.Save
         public bool freeMirror;
         public InjurySave injury;
         public double lastAccidentDay = -1;
+        // Ruh hali davranışı (18.11.2026). Eski kayıtta: bunalım yok, yetişme ölçülmemiş, not yok.
+        public int breakdown;                 // BreakdownKind (0 = yok)
+        public double breakdownLeft;
+        public double miserableDays;
+        public double lastBreakdownAge = -1;
+        public double upbringingSum, upbringingDays;
+        public string[] chronicle;            // hayat notları ("Neşeli bir soydan geldi ama zor bir çocukluk geçirdi.")
     }
 
     [Serializable]
