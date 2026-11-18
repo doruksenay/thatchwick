@@ -1,7 +1,7 @@
 ---
 id: "373"
 title: Toplama düğümleri yeniden (böğürtlen, fındık, otlar, mürver, çilek, kestane, kuşburnu, ısırgan)
-status: running
+status: review
 claimed_at: 2026-11-18T12:40Z
 priority: 10            # başlangıç haritasında görünenler önce (görsel analiz)
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
@@ -70,6 +70,8 @@ Yöntem **311 ile aynı**: tuval 80x72, 1x1 kılavuz + maske, pivot 40,24. Farkl
 ## Sorular
 - 2026-11-18 şerit 2: `get_balance` Tier 2 (Pixel Artisan), 4999/5000 gen, yenilenme 2026-12-18 döndürdü. `art/budget.md` Tier 1 / 2000 gen / yenilenme 12-08 diyor, Tier 1 değilse işçi durur. Kullanıcı `art/budget.md` planını güncelleyip işi `pending` yapmalı. Üretim yapılmadı, harcama 0.
 - 2026-11-18 (kod oturumu): çözüldü. Plan `art/budget.md`'de Tier 2'ye güncellendi (kullanıcı onayı); iş `pending`e alındı.
+
+- 2026-11-18 şerit 1: hazel iki denemede de ağaç + çim elması çıktı, teslim edilmedi (bkz. results/373). Öneri: fındık için ayrı tarif (örn. dal demeti + fındık, 1x1 kılavuzsuz) ya da kılavuz boyutu küçültme.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
