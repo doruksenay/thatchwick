@@ -1,7 +1,7 @@
 ---
 id: "360"
 title: Kazı kaya karoları (alçak kesik blok, 8 tür)
-status: running
+status: review
 claimed_at: 2026-11-18T13:38Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 10
