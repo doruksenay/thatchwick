@@ -1,7 +1,7 @@
 ---
 id: "021d"
 title: Portre kaş ve burun
-status: running
+status: blocked
 claimed_at: 2026-11-18T08:19Z
 approved_by: user
 family: karakter
@@ -45,6 +45,9 @@ Her parça en çok 1 çağrı (tek deneme). Çıktılar `Assets/Art/Iso/_aday/` 
 - Maske dışı piksel 0.
 - `python tools/art/style.py check --family karakter <dosyalar>`: KALDI teslim edilmez.
 - Tabana birleşim önizlemesi (x4): boşluk, kayma ya da çift dış hat yok.
+
+## Sorular
+- 2026-11-18 (bulut şeridi 1): Üretim başlamadı, 0 gen harcandı (bakiye 1719,2). Tarif tabanı `source_image_id` ile ister (020: base64 aktarımı bozuluyor), ama `portrait_base_oval_adult_64.png` yalnızca yerel dosya; PixelLab'de sahip olunan bir görsel kimliği yok. Yükleme yolu (`get_upload_url` + `curl -F`) bu bulut oturumunda kabuk izni istediği için çalıştırılamadı. Çözüm: izinli bir yükleme yolu ya da tabanın `source_image_id`'sini iş dosyasına yazmak; sonra `status: pending` yapın.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
