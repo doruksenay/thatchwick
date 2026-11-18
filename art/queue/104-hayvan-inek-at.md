@@ -1,7 +1,7 @@
 ---
 id: "104"
 title: Hayvanlar 4: inek + at
-status: running
+status: review
 claimed_at: 2026-11-18T08:03Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
