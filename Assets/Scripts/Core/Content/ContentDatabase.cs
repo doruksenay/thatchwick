@@ -82,7 +82,9 @@ namespace Thatchwick.Core.Content
                 if ((item.FillCount > 0) != (item.FillWith.Count > 0)) errors.Add($"{item.Id}: fillWith ve fillCount birlikte yazılmalı.");
                 if (item.IsFillDecor)
                 {
-                    if (item.Placement != ItemPlacement.Surface && item.Placement != ItemPlacement.Wall) errors.Add($"{item.Id}: yalnızca dekor ya da duvar eşyası doldurulur.");
+                    // Yer eşyası da doldurulabilir: çeyiz sandığı dokumalarla dolar (D3b).
+                    if (item.Placement == ItemPlacement.Resource || item.Placement == ItemPlacement.Rug || item.Placement == ItemPlacement.Ceiling)
+                        errors.Add($"{item.Id}: yalnızca dekor, duvar ya da yer eşyası doldurulur.");
                     foreach (var f in item.FillWith)
                         if (!Items.TryGet(f, out var fd)) errors.Add($"{item.Id}: doldurulacak ürün '{f}' bulunamadı.");
                         else if (fd.Placement != ItemPlacement.Resource) errors.Add($"{item.Id}: doldurulacak ürün '{f}' bir kaynak (envanter ürünü) olmalı.");
@@ -90,6 +92,8 @@ namespace Thatchwick.Core.Content
                 foreach (var it in item.Interactions)
                     if ((it.FillDecor || it.EatContents) && !item.IsFillDecor) errors.Add($"{item.Id}/{it.Id}: doldurma ve yeme yalnızca doldurulan dekorda olur.");
                 if (item.WindowMount && item.Placement != ItemPlacement.Wall) errors.Add($"{item.Id}: window yalnızca duvar eşyasında kullanılır.");
+                if (item.IsKeepsake && item.Price > 0) errors.Add($"{item.Id}: hatıra satın alınmaz; price 0 olmalı.");
+                if (item.IsSeasonal && item.Placement == ItemPlacement.Resource) errors.Add($"{item.Id}: mevsim süsü yerleştirilen bir eşya olmalı.");
                 if (item.WindowMount && item.WallWidth != 1) errors.Add($"{item.Id}: pencere eşyası 1 kenar olmalı.");
                 if (item.Insulation < 0f || item.Insulation > 1f) errors.Add($"{item.Id}: insulation 0-1 arasında olmalı.");
                 if (item.Insulation > 0f && item.Placement != ItemPlacement.Wall) errors.Add($"{item.Id}: insulation yalnızca duvar eşyasında kullanılır.");

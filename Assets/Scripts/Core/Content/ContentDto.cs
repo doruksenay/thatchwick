@@ -173,6 +173,7 @@ namespace Thatchwick.Core.Content
         public int fillCount;        // doldurulan dekorun aldığı adet
         public bool window;          // yalnızca pencere kenarına asılır (pencere içi tahtası, perde)
         public float insulation;     // asıldığı kenarın ısı kaybı çarpanı (0 = etkisiz)
+        public string[] seasonal;    // mevsim süsü: taze durduğu mevsimler (D3b)
         // Hayvancılık ve otomasyon (17.11.2026)
         public bool requiresIndoor;  // yalnızca kapalı bir odaya konur (folluk, ahır bölmesi)
         public bool trough;          // yemlik: odadaki bütün hayvanlar buradan yer

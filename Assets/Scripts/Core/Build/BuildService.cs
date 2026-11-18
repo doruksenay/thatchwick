@@ -288,9 +288,12 @@ namespace Thatchwick.Core.Build
         }
 
         /// <summary>Envanterdeki bir eşyayı satar (önce sağlam olanı).</summary>
+        public const string KeepsakeNoSell = "Hatıra satılmaz; yerinde bırak ya da envantere al.";
+
         public PlacementCheck SellFromInventory(string itemId)
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
+            if (def.IsKeepsake) return PlacementCheck.Fail(KeepsakeNoSell);
             if (!_house.TryTakeItem(itemId, out var cond)) return PlacementCheck.Fail("Envanterde yok.");
             return FinishInventorySale(itemId, def, cond);
         }
@@ -299,6 +302,7 @@ namespace Thatchwick.Core.Build
         public PlacementCheck SellFromInventory(string itemId, ItemCondition condition)
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
+            if (def.IsKeepsake) return PlacementCheck.Fail(KeepsakeNoSell);
             if (!_house.TakeCondition(itemId, condition)) return PlacementCheck.Fail($"Envanterde {Decor.ConditionName(condition).ToLowerInvariant()} {def.DisplayName} yok.");
             return FinishInventorySale(itemId, def, condition);
         }
@@ -332,6 +336,7 @@ namespace Thatchwick.Core.Build
                 return PlacementCheck.Success;
             }
             if (target.IsPlant) return PlacementCheck.Fail(PlantLocked);
+            if (target.Def.IsKeepsake) return PlacementCheck.Fail(KeepsakeNoSell);
             string blocker = RemovalBlocker(target);
             if (blocker != null) return PlacementCheck.Fail(blocker);
             PlacedItemSold?.Invoke(target);
@@ -341,6 +346,7 @@ namespace Thatchwick.Core.Build
             var removed = new List<ItemDef>();
             foreach (var it in removedItems)
             {
+                if (it.Def.IsKeepsake) { _house.AddItem(it.Def.Id, 1, it.Condition); continue; }   // üstündeki hatıra satılmaz, envantere döner
                 removed.Add(it.Def); total += SellValue(it);
                 if (it.Def.IsFillDecor) DecorSystem.EmptyInto(it, _house, _content);   // içindekiler satılmaz, envantere döner
             }
@@ -358,6 +364,7 @@ namespace Thatchwick.Core.Build
                 if (!_house.TrySpend(total)) return PlacementCheck.Fail("Akçe yetmiyor, satış geri alınamaz.");
                 foreach (var kv in salvage) for (int i = 0; i < kv.Value; i++) _house.TryTakeItem(kv.Key);
                 PutBack(spot);
+                foreach (var it in removedItems) if (it.Def.IsKeepsake) _house.TryTakeItem(it.Def.Id);   // envantere dönen hatıra GiveBack'te tekrar eklenir
                 GiveBack(removedItems, 1);
                 return PlacementCheck.Success;
             });

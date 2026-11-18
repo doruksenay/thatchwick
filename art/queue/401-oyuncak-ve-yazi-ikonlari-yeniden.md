@@ -1,7 +1,7 @@
 ---
 id: "401"
 title: Oyuncak (4) ve ürün ikonu (5) yeniden: 399'un reddedilen ve zayıf parçaları
-status: running
+status: review
 claimed_at: 2026-11-18T18:46Z
 approved_by: user        # kullanıcı onayı 18.11.2026 ("onaylıyorum"), 399 sonucu üzerine
 priority: 20

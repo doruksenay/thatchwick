@@ -250,6 +250,14 @@ namespace Thatchwick.Core.Content
         /// <summary>Asıldığı kenarın ısı kaybı çarpanı (perde 0,75; kumaş duvar örtüsü 0,85). 0 = etkisiz.</summary>
         public float Insulation { get; set; }
 
+        // ---- D3b ----
+        /// <summary>Mevsim süsü: yalnızca bu mevsimlerde taze durur; mevsim dönünce solar (güzelliği eksiye döner). Boş = mevsimsiz.</summary>
+        public List<Time.Season> DecorSeasons { get; set; } = new List<Time.Season>();
+        public bool IsSeasonal => DecorSeasons.Count > 0;
+        public bool InSeason(Time.Season s) => DecorSeasons.Count == 0 || DecorSeasons.Contains(s);
+        /// <summary>Kazanılan hatıra (şenlik kupası, ilk ayakkabı): satın alınmaz, satılmaz; yazısı hatıra defterinden gelir.</summary>
+        public bool IsKeepsake => HasTag("keepsake");
+
         /// <summary>Dekorun konabildiği yuva türleri (varsayılan dahil).</summary>
         public IReadOnlyList<string> EffectiveFits => FitsOn.Count > 0 ? (IReadOnlyList<string>)FitsOn : Decor.DefaultFits;
         public bool FitsKind(string kind) { foreach (var k in EffectiveFits) if (k == kind) return true; return false; }

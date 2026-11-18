@@ -24,6 +24,27 @@ namespace Thatchwick.Game
 
         private static Texture2D Tex(string n) => Resources.Load<Texture2D>("UI/ui_kit_" + n);
 
+        // Menü ikonları (392-394, 399a/b): Resources/UI/Icons/ui_icon_<anahtar>. Yoksa null (düğme yazıyla kalır).
+        private static readonly System.Collections.Generic.Dictionary<string, Texture2D> _icons = new System.Collections.Generic.Dictionary<string, Texture2D>();
+        // Projede Play'e girerken alan yeniden yüklenmiyor (Enter Play Mode Options): önbellekler her Play'de sıfırlanır,
+        // yoksa önceki oturumda bulunamayan ikon "yok" olarak kalır.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetCaches() { _icons.Clear(); _skin = null; }
+
+        public static Texture2D Icon(params string[] keys)
+        {
+            foreach (var k in keys)
+            {
+                if (string.IsNullOrEmpty(k)) continue;
+                if (!_icons.TryGetValue(k, out var t)) { t = Resources.Load<Texture2D>("UI/Icons/ui_icon_" + k); _icons[k] = t; }
+                if (t != null) return t;
+            }
+            return null;
+        }
+
+        /// <summary>Yazı + ikon (ikon yoksa yalnız yazı).</summary>
+        public static GUIContent C(string text, params string[] iconKeys) => new GUIContent(text, Icon(iconKeys));
+
         private static void Build()
         {
             if (_skin != null) return;

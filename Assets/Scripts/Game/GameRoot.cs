@@ -368,6 +368,8 @@ namespace Thatchwick.Game
             _buildMode.Comfort = _life.Mood;
             _buildMode.Maker = () => _player?.Character;
             _buildMode.Today = () => _clock.TotalDays;
+            _buildMode.Keepsakes = _life.Keepsakes;
+            _buildMode.Season = () => _clock.Season;
             SetupFarm();
             _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
             _life.Suitors.SpawnPosition = () => NearestWalkable(Places["square"], 8);
@@ -716,12 +718,14 @@ namespace Thatchwick.Game
             return c;
         }
 
-        private static Color ConditionTint(ItemInstance item, Color baseColor)
+        private Color ConditionTint(ItemInstance item, Color baseColor)
         {
             var c = baseColor;
             if (item.Condition == Thatchwick.Core.Content.ItemCondition.Damaged) c = Color.Lerp(c, new Color(0.35f, 0.3f, 0.28f), 0.55f);
             else if (item.Condition == Thatchwick.Core.Content.ItemCondition.Repaired) c = Color.Lerp(c, new Color(0.7f, 0.65f, 0.6f), 0.2f);
             if (item.IsTarnished) c = Color.Lerp(c, new Color(0.4f, 0.42f, 0.38f), 0.5f);
+            if (_clock != null && Thatchwick.Core.Build.DecorSystem.IsWilted(item, _clock.Season))
+                c = Color.Lerp(c, new Color(0.5f, 0.38f, 0.22f), 0.55f);    // solmuş mevsim süsü (D3b): kurumuş kahverengi
             return c;
         }
 
@@ -1530,6 +1534,7 @@ namespace Thatchwick.Game
                 Season = () => _clock.Season, TemperatureAt = p => _heat.TemperatureAt(p), RodSpeed = c => _life.Tools.SpeedFor("rod")
             };
             _farmWork.Build = _buildService;
+            _life.Attach(_farmWork);   // kıyıdan ilk balık hatırası (D3b)
             _farmWork.Plants = _plants;
             _farmWork.Mine = new MineWork(_mines);
             _farmWork.Sown += (c, t, seed) => _account.Count("act:sow");
@@ -1562,6 +1567,7 @@ namespace Thatchwick.Game
             _world.Map.WearMultiplier = RoadWear();
             _life.NewDay += day =>
             {
+                if (day % _clock.Config.DaysPerSeason == 0) _itemsDirty = true;   // mevsim döndü: solan mevsim süsleri yeniden boyanır (D3b)
                 _world.Map.OnNewDayRoads();                                   // kullanılmayan patika çimlenir
                 _world.Map.WearMultiplier = RoadWear();                        // çamurlu günde çok, taş ustası varken az aşınır
                 _plants.Config.FallowRecovery = (float)(0.02 * SkillNames.Factor(_life.BestSkill(SkillType.SoilCare), 0.1));   // toprak bakımı
@@ -2404,6 +2410,9 @@ namespace Thatchwick.Game
                 notes.Add(load > item.Def.MaxLoad ? $"aşırı yük {load}/{item.Def.MaxLoad}: çökebilir" : $"yük {load}/{item.Def.MaxLoad}");
             }
             if (item.IsTarnished) notes.Add("kararmış: cilala");
+            if (Thatchwick.Core.Build.DecorSystem.IsWilted(item, _clock.Season)) notes.Add("soldu: kaldır");
+            string inscription = _life?.Keepsakes.LabelOf(item);
+            if (inscription != null) return notes.Count > 0 ? $"{inscription} ({string.Join(", ", notes)})" : inscription;
             var rotten = RottenDecorOn(item);
             if (rotten != null) notes.Add($"{rotten.Def.DisplayName} çürüdü: boşalt");
             return notes.Count > 0 ? $"{name} ({string.Join(", ", notes)})" : name;

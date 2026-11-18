@@ -59,6 +59,8 @@ namespace Thatchwick.Core.Save
         public Thatchwick.Core.Family.LegacySave legacy;
         /// <summary>Çocukluk eşyaları, can yoldaşı, çıraklık, aile tarifleri, itibar (belge 30, 31-8, 34). Eski kayıtta null.</summary>
         public Thatchwick.Core.Upbringing.UpbringingSave upbringing;
+        // Hatıralar ve "ilk"ler (D3b, 18.11.2026). Eski kayıtta null: boş başlar.
+        public Thatchwick.Core.Life.KeepsakeSave keepsakes;
         // Komşu NPC hanedanları (18.11.2026). Eski kayıtta null: haneler mevcut köylülerden kurulur.
         public NeighborHouseSave[] houses;
         // Yaban hayvanları (18.11.2026, belge 31). Eski kayıtta null / 0: defter boş, tehdit yok.
