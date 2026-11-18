@@ -1,7 +1,7 @@
 ---
 id: "381"
 title: Duvar örtüleri: boyalı bez, aplike örtü, kilim örtü (2 karo)
-status: running
+status: review
 claimed_at: 2026-11-18T12:50Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
