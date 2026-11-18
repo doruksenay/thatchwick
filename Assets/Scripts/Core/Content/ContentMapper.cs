@@ -56,6 +56,37 @@ namespace Thatchwick.Core.Content
                     HousingKind = string.IsNullOrWhiteSpace(dto.housing) ? null : dto.housing,
                     HousingCapacity = dto.capacity,
                     StairsDelta = dto.stairs,
+                    FinishGroup = string.IsNullOrWhiteSpace(dto.finishGroup) ? null : dto.finishGroup,
+                    RequiresIndoor = dto.requiresIndoor,
+                    IsIceBox = dto.iceBox,
+                    IsFishTrap = dto.fishTrap,
+                    WindPower = dto.windPower,
+                    WaterGate = dto.waterGate,
+                    FillCapacity = Math.Max(0, dto.fillCapacity),
+                    FillProduct = string.IsNullOrWhiteSpace(dto.fillProduct) ? null : dto.fillProduct,
+                    FillPerProduct = dto.fillPerProduct <= 0 ? 4 : dto.fillPerProduct,
+                    HarvestRadius = Math.Max(0, dto.harvestRadius),
+                    SeedRadius = Math.Max(0, dto.seedRadius),
+                    IceCollect = Math.Max(0, dto.iceCollect),
+                    FoodCapacity = Math.Max(0, dto.foodCapacity),
+                    IsTrough = dto.trough,
+                    AnimalComfort = dto.animalComfort,
+                    AnimalRole = string.IsNullOrWhiteSpace(dto.animalRole) ? null : dto.animalRole,
+                    WaterSource = dto.waterSource,
+                    NeedsWaterSource = dto.needsSource,
+                    PowerSource = dto.powerSource,
+                    WaterFlow = dto.waterFlow < 0 ? -1 : dto.waterFlow,
+                    WaterUse = Math.Max(0, dto.waterUse),
+                    WaterHead = dto.waterHead,
+                    CisternCapacity = Math.Max(0, dto.cistern),
+                    CisternRain = Math.Max(0, dto.cisternRain),
+                    CisternFlow = Math.Max(0, dto.cisternFlow),
+                    IsTap = dto.tap,
+                    AutoProcess = dto.autoProcess == null || string.IsNullOrWhiteSpace(dto.autoProcess.item) ? null : new AutoProcessDef
+                    {
+                        Item = dto.autoProcess.item, Count = Math.Max(1, dto.autoProcess.count),
+                        Produces = dto.autoProcess.produces, ProducesCount = Math.Max(1, dto.autoProcess.producesCount)
+                    },
                     AllowedLevels = dto.levels != null ? new List<int>(dto.levels) : new List<int>()
                 };
                 if (dto.stairs != 0 && (dto.width * dto.height != 2 && (dto.width > 0 || dto.height > 0)))
@@ -109,7 +140,7 @@ namespace Thatchwick.Core.Content
                         if (i == null) continue;
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
-                            || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
+                            || i.addIce > 0f || i.requiresFrost || i.piped || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -145,6 +176,19 @@ namespace Thatchwick.Core.Content
                             Moodlet = string.IsNullOrWhiteSpace(i.moodlet) ? null : i.moodlet,
                             MinSkillLevel = i.minLevel,
                             AddFeed = i.addFeed,
+                            AddIce = Math.Max(0f, i.addIce),
+                            BefriendAnimals = Math.Max(0f, i.befriendAnimals),
+                            Teach = i.teach,
+                            BladderCost = Math.Max(0f, i.bladder),
+                            FetchWater = i.fetchWater,
+                            Wets = Math.Max(0f, Math.Min(1f, i.wets)),
+                            Bath = i.bath,
+                            AddFill = Math.Max(0, i.addFill),
+                            EmptyFill = i.emptyFill,
+                            Dries = i.dries,
+                            Heal = Math.Max(0f, i.heal),
+                            RequiresFrost = i.requiresFrost,
+                            NeedsPipedWater = i.piped,
                             Collect = i.collect,
                             RequiresAnimal = i.requiresAnimal,
                             Tool = string.IsNullOrWhiteSpace(i.tool) ? null : i.tool,
@@ -181,7 +225,8 @@ namespace Thatchwick.Core.Content
                                     Count = p.count <= 0 ? 1 : p.count,
                                     Chance = p.chance <= 0f ? 1f : p.chance,
                                     MinLevel = p.minLevel,
-                                    MaxLevel = p.maxLevel
+                                    MaxLevel = p.maxLevel,
+                                    Seasons = ParseSeasons(p.seasons, $"{dto.id}.{i.id}", errors)
                                 });
                             }
                         }
@@ -201,10 +246,55 @@ namespace Thatchwick.Core.Content
 
             ApplyRecipes(file.recipes, db, errors);
             ApplyAnimals(file.animals, db, errors);
+            ApplyBuildParts(file.buildParts, db, errors);
+            ApplyEffects(file.effects, db, errors);
 
             LifeContentMapper.Apply(file, db, errors);
             errors.AddRange(db.Validate());
             return errors;
+        }
+
+        private static void ApplyBuildParts(BuildPartDto[] parts, ContentDatabase db, List<string> errors)
+        {
+            if (parts == null) return;
+            foreach (var dto in parts)
+            {
+                if (dto == null) continue;
+                if (!Enum.TryParse(dto.kind, true, out BuildPartKind kind) || !Enum.IsDefined(typeof(BuildPartKind), kind))
+                {
+                    errors.Add($"{dto.id}: bilinmeyen yapı parçası türü '{dto.kind}'.");
+                    continue;
+                }
+                var def = new BuildPartDef
+                {
+                    Id = dto.id,
+                    DisplayName = dto.displayName,
+                    Kind = kind,
+                    Price = dto.price,
+                    UnlockLevel = dto.level <= 0 ? 1 : dto.level,
+                    Color = string.IsNullOrWhiteSpace(dto.color) ? "#C8B490" : dto.color,
+                    HeatLoss = dto.heatLoss <= 0f ? 1f : dto.heatLoss,
+                    Comfort = dto.comfort,
+                    Group = string.IsNullOrWhiteSpace(dto.group) ? null : dto.group,
+                    PriceFactor = dto.priceFactor <= 0f ? 1f : dto.priceFactor,
+                    Levels = dto.levels != null ? new List<int>(dto.levels) : new List<int>(),
+                    IsDefault = dto.isDefault,
+                    MaterialItem = string.IsNullOrWhiteSpace(dto.material) ? null : dto.material,
+                    MaterialCount = dto.materialCount <= 0 ? 1 : dto.materialCount
+                };
+                if (kind == BuildPartKind.Floor)
+                {
+                    if (string.IsNullOrWhiteSpace(dto.floorBase) || !Enum.TryParse(dto.floorBase, true, out World.FloorType fb)
+                        || !Enum.IsDefined(typeof(World.FloorType), fb) || fb == World.FloorType.Grass)
+                    {
+                        errors.Add($"{dto.id}: zemin parçasının floorBase'i Dirt, Wood ya da Stone olmalı.");
+                        continue;
+                    }
+                    def.Base = fb;
+                }
+                try { db.Parts.Register(def); }
+                catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }
+            }
         }
 
         private static void AddMaterials(InteractionDef interaction, ConsumeDto[] materials)
@@ -250,6 +340,31 @@ namespace Thatchwick.Core.Content
             }
         }
 
+        // Yemek/içki etkileri ruh hali kataloğuna kaydedilir; etkileşimler "moodlet" alanıyla verir.
+        private static void ApplyEffects(EffectDto[] effects, ContentDatabase db, List<string> errors)
+        {
+            if (effects == null) return;
+            foreach (var f in effects)
+            {
+                if (f == null || string.IsNullOrWhiteSpace(f.id)) { errors.Add("Etkinin kimliği boş."); continue; }
+                if (f.days <= 0f) { errors.Add($"{f.id}: etki süresi pozitif olmalı."); continue; }
+                var m = new Mood.MoodletDef
+                {
+                    Id = f.id, DisplayName = f.displayName ?? f.id, Description = f.description ?? "", Value = f.value, DurationDays = f.days,
+                    AllSpeed = f.allSpeed, AllXp = f.allXp, ColdResist = Math.Max(0f, f.coldResist),
+                    HungerDecay = f.hungerDecay > 0f ? f.hungerDecay : 1f, EnergyDecay = f.energyDecay > 0f ? f.energyDecay : 1f
+                };
+                foreach (var (rates, target) in new[] { (f.skillSpeed, m.SkillSpeed), (f.skillXp, m.SkillXp) })
+                    if (rates != null)
+                        foreach (var r in rates)
+                        {
+                            if (r != null && Enum.TryParse(r.skill, true, out SkillType s) && Enum.IsDefined(typeof(SkillType), s)) target[s] = r.rate;
+                            else errors.Add($"{f.id}: bilinmeyen beceri '{r?.skill}'.");
+                        }
+                (db.Moods ?? Mood.MoodCatalog.Default).Register(m);
+            }
+        }
+
         private static void ApplyAnimals(AnimalDto[] animals, ContentDatabase db, List<string> errors)
         {
             if (animals == null) return;
@@ -265,11 +380,18 @@ namespace Thatchwick.Core.Content
                     FeedPerDay = a.feedPerDay,
                     Produces = string.IsNullOrWhiteSpace(a.produces) ? null : a.produces,
                     ProduceEveryDays = a.produceEveryDays <= 0 ? 1f : a.produceEveryDays,
+                    SeasonOutput = a.seasonOutput != null && a.seasonOutput.Length == 4 ? a.seasonOutput : null,
                     LifespanDays = a.lifespanDays <= 0 ? 120f : a.lifespanDays,
                     MatureDays = a.matureDays,
                     IsPet = a.pet,
                     Meat = string.IsNullOrWhiteSpace(a.meat) ? null : a.meat,
                     MeatCount = a.meatCount <= 0 ? 1 : a.meatCount,
+                    Hide = string.IsNullOrWhiteSpace(a.hide) ? null : a.hide,
+                    HideCount = a.hideCount <= 0 ? 1 : a.hideCount,
+                    Rideable = a.rideable,
+                    RideSpeed = a.rideSpeed <= 0f ? 2f : a.rideSpeed,
+                    Trample = a.trample >= 0f ? a.trample : a.housing == "stable" ? 3f : a.housing == "barn" ? 2f : a.housing == "kennel" ? 0.5f : 0f,
+                    Space = a.space > 0f ? a.space : a.housing == "coop" ? 1.5f : a.housing == "stable" ? 6f : a.housing == "barn" ? 4f : 2f,
                     UnlockLevel = a.level <= 0 ? 1 : a.level
                 };
                 try { db.Animals.Register(def); }
@@ -283,6 +405,18 @@ namespace Thatchwick.Core.Content
             if (string.IsNullOrWhiteSpace(text)) return false;
             if (!Enum.TryParse(text, true, out need)) return false;
             return Enum.IsDefined(typeof(NeedType), need);
+        }
+
+        private static List<Time.Season> ParseSeasons(string[] names, string where, List<string> errors)
+        {
+            if (names == null || names.Length == 0) return null;
+            var list = new List<Time.Season>();
+            foreach (var n in names)
+            {
+                if (Enum.TryParse(n, true, out Time.Season s) && Enum.IsDefined(typeof(Time.Season), s)) list.Add(s);
+                else errors.Add($"{where}: bilinmeyen mevsim '{n}'.");
+            }
+            return list;
         }
     }
 }

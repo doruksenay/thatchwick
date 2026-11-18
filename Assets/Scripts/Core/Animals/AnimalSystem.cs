@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
+using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.World;
 
@@ -11,7 +12,7 @@ namespace Thatchwick.Core.Animals
     /// (yumurta, süt, yün barınağa birikir; "Topla" etkileşimi haneye alır), açlıktan ve yaşlılıktan
     /// ölüm, barınak çevresinde gezinme. Tohumlu rastgele sayı: testlerde tekrarlanabilir.
     /// </summary>
-    public sealed class AnimalSystem
+    public sealed partial class AnimalSystem
     {
         /// <summary>Tokluğun günlük değişimi: yem yetiyorsa artar, yetmiyorsa düşer.</summary>
         public const float FullnessChangePerDay = 50f;
@@ -44,6 +45,9 @@ namespace Thatchwick.Core.Animals
         public event Action<Animal> Died;
         /// <summary>Barınağa ürün bıraktı.</summary>
         public event Action<Animal, string> Produced;
+
+        /// <summary>Şu anki mevsim (ürünün mevsim çarpanı için); null ise hep 1.</summary>
+        public Func<Time.Season> SeasonNow { get; set; }
 
         public AnimalSystem(WorldState world, ContentDatabase content, int seed = 7)
         {
@@ -101,6 +105,8 @@ namespace Thatchwick.Core.Animals
         {
             var a = Get(animalId);
             if (a == null || a.IsDead) return PlacementCheck.Fail("Hayvan bulunamadı.");
+            if (a.RiderId != 0) return PlacementCheck.Fail("Önce attan in.");
+            if (a.Saddle != null) house.AddItem(a.Saddle);    // eyer hayvanla gitmez
             _animals.Remove(a);
             house.AddAkce((int)Math.Floor(a.Species.Price * SellRatio));
             return PlacementCheck.Success;
@@ -172,7 +178,8 @@ namespace Thatchwick.Core.Animals
                 foreach (var o in Offsets)
                 {
                     var n = t + o;
-                    if (_world.Map.IsWalkable(n)) return n;
+                    // Duvarın öbür yanına (ahırın dışına) doğmasın.
+                    if (_world.Map.IsWalkable(n) && !_world.Map.EdgeBlocks(GridMap.EdgeBetween(t, n))) return n;
                 }
             return home.Position;
         }
@@ -180,7 +187,8 @@ namespace Thatchwick.Core.Animals
         private static readonly GridPos[] Offsets = { new GridPos(1, 0), new GridPos(0, 1), new GridPos(-1, 0), new GridPos(0, -1) };
 
         /// <summary>Kayıttan yükleme.</summary>
-        public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays, float friendship = 0f)
+        public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays, float friendship = 0f, double petCooldown = 0,
+            string saddle = null, float comfort = 50f)
         {
             var a = new Animal(id, species, pos, homeId)
             {
@@ -188,7 +196,10 @@ namespace Thatchwick.Core.Animals
                 Fullness = Math.Max(0f, Math.Min(100f, fullness)),
                 AgeDays = Math.Max(0, age),
                 ProduceProgress = Math.Max(0, produce),
-                HungryDays = Math.Max(0, hungryDays)
+                HungryDays = Math.Max(0, hungryDays),
+                PetCooldownDays = Math.Max(0, Math.Min(1.0, petCooldown)),
+                Saddle = species.Rideable && saddle != null && _content.Items.Contains(saddle) ? saddle : null,
+                Comfort = Math.Max(0f, Math.Min(100f, comfort))
             };
             _animals.Add(a);
             if (id >= _nextId) _nextId = id + 1;
@@ -207,22 +218,57 @@ namespace Thatchwick.Core.Animals
                 var home = _world.GetItem(a.HomeItemId);
 
                 a.AgeDays += gameDays;
-                if (a.AgeDays >= a.Species.LifespanDays) { Kill(a, AnimalDeath.OldAge); continue; }
+                if (a.AgeDays >= a.LifespanDays) { Kill(a, AnimalDeath.OldAge); continue; }
 
-                // Beslenme: barınaktaki yemden payına düşeni yer.
-                double need = a.Species.FeedPerDay * gameDays;
-                double eaten = 0;
-                if (need > 0 && home != null)
+                // Binek: binicinin altında gider (binici yoksa iner).
+                bool ridden = false;
+                if (a.RiderId != 0)
                 {
-                    eaten = Math.Min(need, home.FeedStock);
-                    home.FeedStock -= eaten;
+                    var rider = RiderPosition?.Invoke(a.RiderId);
+                    if (rider.HasValue && CanCarryTo(home, rider.Value))
+                    {
+                        if (a.Position != rider.Value)
+                        {
+                            _world.Map.Trample(rider.Value, a.Species.Trample);   // at yolu aşındırır
+                            int dist = Math.Max(Math.Abs(a.Position.X - rider.Value.X), Math.Abs(a.Position.Y - rider.Value.Y));
+                            FindCharacter?.Invoke(a.RiderId)?.GainSkillXp(SkillType.Riding, RideXpPerTile * Math.Min(dist, 4));
+                        }
+                        a.Position = rider.Value; a.NextTile = null; a.Path = null; ridden = true;
+                    }
+                    else
+                    {
+                        // Binici eve (ya da üst kata) girdi: at kapıda kalır, binici iner.
+                        int riderId = a.RiderId;
+                        a.RiderId = 0;
+                        a.Path = null;
+                        if (rider.HasValue) Dismounted?.Invoke(a, riderId);
+                    }
                 }
-                double fed = need > 0 ? eaten / need : 1.0;
+
+                // Beslenme: önce otlaktaki ot, sonra barınağın yemi, sonra aynı odadaki yemlikler.
+                double need = a.Species.FeedPerDay * gameDays;
+                double eaten = Graze(a, need);
+                if (need - eaten > 0 && home != null)
+                {
+                    double take = Math.Min(need - eaten, home.FeedStock);
+                    home.FeedStock -= take;
+                    eaten += take;
+                }
+                if (need - eaten > 0 && home != null)
+                    foreach (var trough in TroughsFor(home))
+                    {
+                        double take = Math.Min(need - eaten, trough.FeedStock);
+                        trough.FeedStock -= take;
+                        eaten += take;
+                        if (need - eaten <= 1e-12) break;
+                    }
+                double fed = need > 0 ? Math.Min(1.0, eaten / need) : 1.0;
                 a.Fullness = (float)Math.Max(0, Math.Min(100, a.Fullness + (fed * 2 - 1) * FullnessChangePerDay * gameDays));
 
                 // Dostluk: iyi bakılınca yavaş yavaş artar, aç bırakılınca düşer.
                 if (a.PetCooldownDays > 0) a.PetCooldownDays = Math.Max(0, a.PetCooldownDays - gameDays);
-                if (a.Fullness >= 60f) a.Friendship = Math.Min(100f, a.Friendship + (float)(FriendshipPerDay * gameDays));
+                // Konforlu barınakta dostluk daha çabuk artar (konfor 50 = eski hız).
+                if (a.Fullness >= 60f) a.Friendship = Math.Min(100f, a.Friendship + (float)(FriendshipPerDay * gameDays * (0.5 + a.Comfort / 100.0)));
                 else if (a.Fullness < 20f) a.Friendship = Math.Max(0f, a.Friendship - (float)(HungerFriendLoss * gameDays));
 
                 if (a.Fullness <= 0f) a.HungryDays += gameDays;
@@ -232,7 +278,9 @@ namespace Thatchwick.Core.Animals
                 // Ürün: tok ve erişkinken barınağa birikir.
                 if (a.Species.Produces != null && home != null && a.IsMature && a.Fullness >= ProduceFullness)
                 {
-                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays * (1.0 + FriendshipBoost * a.Friendship / 100.0);
+                    // Dostluk ve barınak konforu ürünü hızlandırır (konfor 0: x0,85, 50: x1, 100: x1,15).
+                    float seasonal = SeasonNow != null ? a.Species.OutputFactor(SeasonNow()) : 1f;
+                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays * seasonal * (1.0 + FriendshipBoost * a.Friendship / 100.0) * (0.85 + 0.3 * a.Comfort / 100.0);
                     while (a.ProduceProgress >= 1.0)
                     {
                         a.ProduceProgress -= 1.0;
@@ -245,8 +293,10 @@ namespace Thatchwick.Core.Animals
                     }
                 }
 
-                Wander(a, home, gameDays);
+                if (!ridden) Wander(a, home, gameDays);
             }
+            _allowedCache = null;
+            _roadCache = null;
         }
 
         private void Kill(Animal a, AnimalDeath cause)
@@ -258,7 +308,8 @@ namespace Thatchwick.Core.Animals
             Died?.Invoke(a);
         }
 
-        // Barınak çevresinde rastgele bir karoya adım adım yürür, varınca bir süre durur.
+        // Yaşam alanında (barınak odası ya da barınak çevresi; gündüz ve salınmışken otlak) rastgele bir karoya yol
+        // bulup adım adım yürür, varınca bir süre durur. Eve girmez: yaşam alanı dışına yalnızca eve dönerken çıkar.
         private void Wander(Animal a, ItemInstance home, double gameDays)
         {
             double budget = gameDays;
@@ -273,61 +324,38 @@ namespace Thatchwick.Core.Animals
                         budget -= w;
                         continue;
                     }
-                    if (a.Position == a.Target) a.Target = PickTarget(a, home);
-                    var step = StepToward(a.Position, a.Target);
-                    if (step == null)
+                    if (a.Path == null || a.Path.Count == 0) PlanWalk(a, home);
+                    if (a.Path == null || a.Path.Count == 0)
                     {
+                        a.Path = null;
                         a.Target = a.Position;
                         a.WaitDays = MinWaitDays + _rng.NextDouble() * (MaxWaitDays - MinWaitDays);
                         continue;
                     }
-                    a.NextTile = step;
+                    var next = a.Path[0];
+                    a.Path.RemoveAt(0);
+                    if (!_world.Map.CanStep(a.Position, next)) { a.Path = null; continue; }   // yol kapandı
+                    a.NextTile = next;
                     a.StepProgress = 0f;
                 }
 
-                double needed = (1.0 - a.StepProgress) * StepDays;
+                double stepDays = StepDays / _world.Map.StepSpeed(a.Position, a.NextTile.Value);   // yolda daha hızlı
+                double needed = (1.0 - a.StepProgress) * stepDays;
                 if (budget >= needed)
                 {
                     budget -= needed;
                     a.Position = a.NextTile.Value;
                     a.NextTile = null;
                     a.StepProgress = 0f;
-                    if (a.Position == a.Target) a.WaitDays = MinWaitDays + _rng.NextDouble() * (MaxWaitDays - MinWaitDays);
+                    _world.Map.Trample(a.Position, a.Species.Trample);
+                    if (a.Path == null || a.Path.Count == 0) { a.Path = null; a.WaitDays = MinWaitDays + _rng.NextDouble() * (MaxWaitDays - MinWaitDays); }
                 }
                 else
                 {
-                    a.StepProgress += (float)(budget / StepDays);
+                    a.StepProgress += (float)(budget / stepDays);
                     budget = 0;
                 }
             }
-        }
-
-        private GridPos PickTarget(Animal a, ItemInstance home)
-        {
-            var center = home != null ? home.Position : a.Position;
-            for (int tries = 0; tries < 8; tries++)
-            {
-                var t = new GridPos(center.X + _rng.Next(-WanderRadius, WanderRadius + 1), center.Y + _rng.Next(-WanderRadius, WanderRadius + 1));
-                if (_world.Map.IsWalkable(t)) return t;
-            }
-            return a.Position;
-        }
-
-        // Hedefe bir karo yaklaşan, duvarla kesilmeyen adım; yoksa null.
-        private GridPos? StepToward(GridPos from, GridPos to)
-        {
-            if (from == to) return null;
-            int dx = Math.Sign(to.X - from.X), dy = Math.Sign(to.Y - from.Y);
-            var options = Math.Abs(to.X - from.X) >= Math.Abs(to.Y - from.Y)
-                ? new[] { new GridPos(dx, 0), new GridPos(0, dy) }
-                : new[] { new GridPos(0, dy), new GridPos(dx, 0) };
-            foreach (var o in options)
-            {
-                if (o.X == 0 && o.Y == 0) continue;
-                var n = from + o;
-                if (_world.Map.CanStep(from, n)) return n;
-            }
-            return null;
         }
 
         /// <summary>Barınaktaki, bugün henüz sevilmemiş hayvan sayısı.</summary>
@@ -338,15 +366,35 @@ namespace Thatchwick.Core.Animals
             return n;
         }
 
-        /// <summary>Barınaktaki hayvanları sever: dostluk artar, günlük bekleme başlar. Sevilen sayı döner.</summary>
-        public int PetResidents(int homeItemId)
+        /// <summary>
+        /// Barınaktaki hayvanları sever: dostluk artar, günlük bekleme başlar. Sevilen sayı döner.
+        /// husbandryLevel: sevenin hayvancılık seviyesi (seviye başına %5 daha çok dostluk).
+        /// </summary>
+        public int PetResidents(int homeItemId, int husbandryLevel = 1)
         {
             int n = 0;
             foreach (var a in _animals)
             {
                 if (a.HomeItemId != homeItemId || a.PetCooldownDays > 0) continue;
-                a.Friendship = Math.Min(100f, a.Friendship + PetFriendship);
+                a.Friendship = Math.Min(100f, a.Friendship + PetFriendship * HusbandryFactor(husbandryLevel));
                 a.PetCooldownDays = 1.0;
+                n++;
+            }
+            return n;
+        }
+
+        /// <summary>Hayvancılık seviyesinin sevgi çarpanı: 1. seviye 1, 10. seviye 1,45.</summary>
+        public static float HusbandryFactor(int level) => 1f + 0.05f * Math.Max(0, level - 1);
+
+        /// <summary>Merhem: barınaktaki hayvanlara dostluk (günlük sevme hakkını kullanmaz). Etkilenen sayı.</summary>
+        public int Befriend(int homeItemId, float amount)
+        {
+            int n = 0;
+            foreach (var a in _animals)
+            {
+                if (a.IsDead || a.HomeItemId != homeItemId) continue;
+                a.Friendship = Math.Min(100f, a.Friendship + amount);
+                a.Comfort = Math.Min(100f, a.Comfort + 5f);
                 n++;
             }
             return n;

@@ -12,7 +12,8 @@ namespace Thatchwick.Core.Characters
         Warmth = 2,
         Fun = 3,      // Keyif
         Hygiene = 4,  // Hijyen
-        Social = 5    // Sosyal (sohbet, şenlik; azalması ruh halini düşürür, öldürmez)
+        Social = 5,   // Sosyal (sohbet, şenlik; azalması ruh halini düşürür, öldürmez)
+        Bladder = 6   // Tuvalet (100 = rahat; 0'a inerse kaza: hijyen sıfırlanır, öldürmez)
     }
 
     public static class NeedKinds
@@ -20,6 +21,9 @@ namespace Thatchwick.Core.Characters
         /// <summary>Açlık, Enerji ve Isınma: kritik düşünce karakter ölebilir, bakım işi onlara öncelik verir.</summary>
         public static bool IsSurvival(NeedType need) =>
             need == NeedType.Hunger || need == NeedType.Energy || need == NeedType.Warmth;
+
+        /// <summary>Otonomide önce bakılan ihtiyaçlar: hayatta kalma ve tuvalet (beklemez).</summary>
+        public static bool IsUrgent(NeedType need) => IsSurvival(need) || need == NeedType.Bladder;
 
         public static string DisplayName(NeedType need)
         {
@@ -30,6 +34,7 @@ namespace Thatchwick.Core.Characters
                 case NeedType.Warmth: return "Isınma";
                 case NeedType.Fun: return "Keyif";
                 case NeedType.Hygiene: return "Hijyen";
+                case NeedType.Bladder: return "Tuvalet";
                 default: return "Sosyal";
             }
         }

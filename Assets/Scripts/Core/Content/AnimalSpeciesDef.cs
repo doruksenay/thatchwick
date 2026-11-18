@@ -1,3 +1,4 @@
+using System;
 namespace Thatchwick.Core.Content
 {
     /// <summary>
@@ -16,6 +17,11 @@ namespace Thatchwick.Core.Content
         /// <summary>Ürün kimliği (yoksa null: evcil hayvan).</summary>
         public string Produces { get; set; }
         public float ProduceEveryDays { get; set; } = 1f;
+        /// <summary>Ürün hızının mevsim çarpanı [ilkbahar, yaz, güz, kış] (tavuk kışın az yumurtlar, koyun yılda kırkılır); null ise hep 1.</summary>
+        public float[] SeasonOutput { get; set; }
+
+        public float OutputFactor(Time.Season season) =>
+            SeasonOutput == null || SeasonOutput.Length < 4 ? 1f : Math.Max(0f, SeasonOutput[(int)season]);
         public float LifespanDays { get; set; } = 120f;
         /// <summary>Ürün vermeye başladığı yaş (oyun günü).</summary>
         public float MatureDays { get; set; } = 4f;
@@ -23,6 +29,16 @@ namespace Thatchwick.Core.Content
         /// <summary>Kesilince verdiği et (yoksa null: kesilmez) ve adedi.</summary>
         public string Meat { get; set; }
         public int MeatCount { get; set; } = 1;
+        /// <summary>Kesilince verdiği ham deri (yoksa null) ve adedi.</summary>
+        public string Hide { get; set; }
+        public int HideCount { get; set; } = 1;
+        /// <summary>Binek: erişkin ve eyerliyken binilir; binince yürüme hızı çarpanı.</summary>
+        public bool Rideable { get; set; }
+        public float RideSpeed { get; set; } = 2f;
+        /// <summary>Barınak odasında hayvan başına istenen karo (konfor: sıkışıklık).</summary>
+        public float Space { get; set; } = 2f;
+        /// <summary>Bir adımda yola/çime bıraktığı iz (aşınma): inek ve at 3, koyun ve keçi 1, tavuk 0.</summary>
+        public float Trample { get; set; }
         public int UnlockLevel { get; set; } = 1;
     }
 }

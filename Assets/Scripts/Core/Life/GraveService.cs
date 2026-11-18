@@ -22,8 +22,8 @@ namespace Thatchwick.Core.Life
 
     /// <summary>
     /// Ölünce karakter haritadan kalkar, yakın boş karoda taşınamayan bir mezar eşyası oluşur
-    /// (kimliği "item.grave"). Mezar kaydı kalıcıdır; kayıttan yüklemede eşya zaten dünyada olduğundan
-    /// yalnızca kayıtlar geri konur.
+    /// (kimliği "item.grave"); mezar hiçbir geçidi kapatmaz, kimseyi bir cebe hapsetmez. Mezar kaydı kalıcıdır;
+    /// kayıttan yüklemede eşya zaten dünyada olduğundan yalnızca kayıtlar geri konur.
     /// </summary>
     public sealed class GraveService
     {
@@ -71,7 +71,7 @@ namespace Thatchwick.Core.Life
             };
             if (_content.Items.TryGet(GraveItemId, out var def))
             {
-                var spot = FindSpot(dead.Position);
+                var spot = FindSpot(dead.Position, def);
                 if (spot.HasValue)
                 {
                     var item = _world.PlaceItem(def, spot.Value);
@@ -85,7 +85,7 @@ namespace Thatchwick.Core.Life
         }
 
         // En yakın boş karo (halka halka): iç mekâna gömülmez, tercihen dış mekân.
-        private GridPos? FindSpot(GridPos origin)
+        private GridPos? FindSpot(GridPos origin, ItemDef def)
         {
             var rooms = _world.Map.Rooms;
             GridPos? indoorFallback = null;
@@ -97,7 +97,9 @@ namespace Thatchwick.Core.Life
                     {
                         if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != r) continue;
                         var p = new GridPos(origin.X + dx, origin.Y + dy);
-                        if (!_world.Map.InBounds(p) || _world.Map.IsBlocked(p)) continue;
+                        // Boş olmalı; başka birinin durduğu karo ya da merdiven ucu da olmaz (CanPlaceFloor denetler).
+                        if (!_world.Map.InBounds(p) || !_world.CanPlaceFloor(def, p, 0).Ok) continue;
+                        if (!KeepsNeighboursConnected(p)) continue;
                         var room = rooms.RoomAt(p);
                         if (room != null && room.IsIndoor) { if (!indoorFallback.HasValue) indoorFallback = p; continue; }
                         return p;
@@ -105,6 +107,34 @@ namespace Thatchwick.Core.Life
                 }
             }
             return indoorFallback;
+        }
+
+        private static readonly GridPos[] Around =
+        {
+            new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1),
+            new GridPos(1, 1), new GridPos(1, -1), new GridPos(-1, 1), new GridPos(-1, -1)
+        };
+
+        // Mezar bir geçidi ya da bir köşeyi kapatmasın: karodan adım atılabilen komşular, karo kapandıktan sonra da
+        // birbirine yürüyebilmeli (yoksa mezar bir yolu keser ya da biri bir cebe kapanır).
+        private bool KeepsNeighboursConnected(GridPos p)
+        {
+            var map = _world.Map;
+            var next = new List<GridPos>(8);
+            foreach (var d in Around)
+            {
+                var q = new GridPos(p.X + d.X, p.Y + d.Y, p.Z);
+                if (map.CanStep(p, q)) next.Add(q);
+            }
+            if (next.Count <= 1) return true;
+            map.SetBlocked(p, true);
+            try
+            {
+                for (int i = 1; i < next.Count; i++)
+                    if (Pathfinder.FindPath(map, next[0], next[i]) == null) return false;
+                return true;
+            }
+            finally { map.SetBlocked(p, false); }
         }
     }
 }

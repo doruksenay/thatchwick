@@ -23,6 +23,11 @@ namespace Thatchwick.Core.Mood
         public float AllSpeed { get; set; }
         public Dictionary<SkillType, float> SkillXp { get; } = new Dictionary<SkillType, float>();
         public Dictionary<SkillType, float> SkillSpeed { get; } = new Dictionary<SkillType, float>();
+        /// <summary>Yemek etkisi: soğuktan Isınma kaybını bu oranda azaltır (0,2 = %20).</summary>
+        public float ColdResist { get; set; }
+        /// <summary>Yemek etkisi: acıkma ve yorulma hızı çarpanı (0,9 = %10 yavaş; 1 = etkisiz).</summary>
+        public float HungerDecay { get; set; } = 1f;
+        public float EnergyDecay { get; set; } = 1f;
 
         public bool IsCondition => DurationDays <= 0.0;
         public bool IsPositive => Value > 0;

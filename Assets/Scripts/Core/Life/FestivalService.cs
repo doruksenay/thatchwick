@@ -29,6 +29,8 @@ namespace Thatchwick.Core.Life
         private long _announcedDay = -1;
 
         public long CelebratedDay { get => _celebratedDay; set => _celebratedDay = value; }
+        /// <summary>Şenliğin duyurulduğu son gün (gün ortası kayıttan yükleyince yeniden duyurulmasın).</summary>
+        public long AnnouncedDay { get => _announcedDay; set => _announcedDay = value; }
 
         public FestivalService(ContentDatabase content, GameClock clock)
         {

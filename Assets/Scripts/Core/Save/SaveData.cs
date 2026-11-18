@@ -27,6 +27,11 @@ namespace Thatchwick.Core.Save
         public LifeSaveData life;
         public AnimalSave[] animals;     // v2
         public SoilSave[] soil;          // toprak verimi (eski kayıtta yok)
+        public GrassSave[] pasture;      // yenmiş otlak (eski kayıtta yok)
+        public bool animalsHeld;         // hayvan çanı: barınakta tutuluyorlar (eski kayıtta false = salınmış)
+        /// <summary>Oyunun ana rastgelelik tohumu (eski kayıtta 0) ve yükleme sayacı (bkz. Core.Seeds).</summary>
+        public int seed;
+        public int rngEpoch;
     }
 
     [Serializable]
@@ -39,6 +44,17 @@ namespace Thatchwick.Core.Save
         public float fullness;
         public double age, produce, hungryDays;
         public float friendship;
+        public double petCooldown;       // sevme bekleme süresi (eski kayıtta 0)
+        public string saddle;            // takılı eyer (eski kayıtta yok)
+        public float comfort = -1f;      // barınak konforu (eski kayıtta -1 = varsayılan)
+    }
+
+    /// <summary>Yenmiş otlak karosu (dolu karolar kaydedilmez).</summary>
+    [Serializable]
+    public sealed class GrassSave
+    {
+        public int x, y;
+        public float grass;
     }
 
     [Serializable]
@@ -53,16 +69,35 @@ namespace Thatchwick.Core.Save
         public int[] zone;
         public EdgeSave[] edges;
         public LevelTileSave[] levelTiles;   // üst kat döşemeleri ve bodrum kazıları (zemin kat dizilerde)
+        public TileStyleSave[] styles;       // zemin ve çatı stili (yalnızca varsayılan olmayan karolar; eski kayıtta yok)
+        public RoadSave[] roads;             // yollar, patikalar ve çimdeki izler (eski kayıtta yok)
+        public ConduitSave[] conduits;       // su yolları: ark, oluk, boru (eski kayıtta yok)
+        public PondSave[] ponds;             // göletler: su seviyesi, kaynak, böcek, balıklar (eski kayıtta yok)
     }
 
+    /// <summary>Bir gölet (x,y: göletin bir karosu).</summary>
     [Serializable]
-    public sealed class LevelTileSave { public int x, y, z, floor; }
+    public sealed class PondSave { public int x, y; public float level; public bool spring, insects; public double filledDays; public string[] fishIds; public int[] fishCounts; }
+
+    [Serializable]
+    public sealed class RoadSave { public int x, y, type; public float cond; public bool natural; public float trample; }
+
+    [Serializable]
+    public sealed class ConduitSave { public int x, y, type; }
+
+    [Serializable]
+    public sealed class TileStyleSave { public int x, y, z; public string floor; public string roof; }
+
+    [Serializable]
+    public sealed class LevelTileSave { public int x, y, z, floor; public int zone; }   // zone: depo bölgesi (eski kayıtta 0 = yok)
 
     [Serializable]
     public sealed class EdgeSave
     {
         public int x, y, axis, kind;
         public int z;                       // kat (0 zemin)
+        public string style;                // malzeme ya da kapı/pencere/çit stili (boş = varsayılan)
+        public string finishA, finishB;     // duvar yüzü kaplamaları (boş = çıplak)
     }
 
     [Serializable]
@@ -81,6 +116,9 @@ namespace Thatchwick.Core.Save
         public bool fruitReady;
         public double fruitDays;
         public double feedStock;    // v2: barınak yemi
+        public string finish;       // mobilya kaplaması (renk/malzeme; boş = varsayılan)
+        public bool toggled;        // su kapağı kapalı (eski kayıtta false)
+        public int fill;            // lazımlık/hela dolumu
         public KeyInt[] stock;      // v2: barınakta biriken ürünler
     }
 
@@ -116,6 +154,8 @@ namespace Thatchwick.Core.Save
         public double pregnancyLeft, postpartumLeft, freezeDays, starveDays;
         public float hunger, energy, warmth;
         public float fun, hygiene;          // v2
+        public float bladder = -1f;         // tuvalet (eski kayıtta -1 = rahat)
+        public float wet;                   // ıslaklık (eski kayıtta 0)
         public KeyFloat[] moodlets;         // v2: (kimlik, kalan gün)
         public KeyFloat[] skills;
         public AppearanceSave appearance;
@@ -130,6 +170,32 @@ namespace Thatchwick.Core.Save
         public string[] traits;
         public string[] branches;
         public MoodletSave[] extraMoodlets;   // katalog dışı anlık moodlet'ler (şenlik, hediye, oda konforu ...)
+        public int duty;                      // hane görevi (DutyKind; eski kayıtta 0 = yok)
+        // Karakter yaratma 2.0 (17.11.2026). Eksik alanlar eski kayıtta varsayılanla gelir.
+        public int birthSeason = -1;
+        public int birthDay = -1;
+        public string likedFood, likedColor, likedHobby, dislikedFood;
+        public bool freeMirror;
+        public InjurySave injury;
+        public double lastAccidentDay = -1;
+    }
+
+    [Serializable]
+    public sealed class InjurySave
+    {
+        public string kind, zone, pattern, reason;
+        public double startDay, healDay;
+        public bool deep, treated;
+    }
+
+    [Serializable]
+    public sealed class MarkSave
+    {
+        public int kind;
+        public string id, zone, color, reason;
+        public int fade, source;
+        public double day = -1;
+        public bool hidden;
     }
 
     [Serializable]
@@ -147,6 +213,7 @@ namespace Thatchwick.Core.Save
     public sealed class DynastySave
     {
         public string name;
+        public string settlement;            // yerleşim adı (eski kayıtta yok: varsayılan)
         public int headId;
         public bool ended;
         public HeadSave[] history;
@@ -170,6 +237,17 @@ namespace Thatchwick.Core.Save
         public int build;
         public int heightPercent;
         public string skin, eye, hairStyle, hair, facialHairStyle, facialHair, faceMark, outfit, outfitColor, trim, hat, hatColor;
+        // Karakter yaratma 2.0 (17.11.2026). null alan = eski kayıt (yeni varsayılan ya da eski alandan çevrilir).
+        public int frame = -1;
+        public string faceShape, eyeShape, eyeRight, brow, browColor, nose, mouth, ears;
+        public int browOwn;                    // 0 = kaş saçı izler (eski kayıt dahil), 1 = ayrı renk
+        public string bangs, mustache, beard;  // null ise facialHairStyle'dan çevrilir
+        public string pattern, bottom, shoes, outer, outerColor;
+        public int voice = -1;
+        public int voicePitch;
+        public string laugh;
+        public MarkSave[] marks;               // null ise faceMark'tan çevrilir
+        public string[] genome;                // gizli kalıtım: "gen|A|B"
     }
 
     [Serializable]

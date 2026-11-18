@@ -17,6 +17,41 @@ namespace Thatchwick.Core.Family
         public string Trade;
     }
 
+    /// <summary>
+    /// Yerleşim adı kuralları (17.11.2026 kararı: oyun gerçek bir yere bağlı olmayan hayali bir ortaçağ yerleşiminde
+    /// geçer; adı oyuncu yeni oyunda verir).
+    /// </summary>
+    public static class Settlement
+    {
+        public const string DefaultName = "Thatchwick";
+        public const int MinLength = 2, MaxLength = 24;
+
+        /// <summary>Hayali, iki kültürden karışık öneriler ("Rastgele ad").</summary>
+        public static readonly string[] Suggestions =
+        {
+            "Thatchwick", "Ashbrook", "Mereholt", "Fernhollow", "Oakridge", "Willowmere",
+            "Kızılçam", "Değirmendere", "Saztepe", "Söğütlü", "Yeşilova", "Ilıcaköy",
+            "Hollyford", "Elmalı", "Kavakbaşı", "Rushmere"
+        };
+
+        /// <summary>Boşsa, çok kısa ya da uzunsa ya da harf dışı karakterle başlıyorsa neden; uygunsa null.</summary>
+        public static string Validate(string name)
+        {
+            var n = (name ?? "").Trim();
+            if (n.Length < MinLength) return $"Yerleşim adı en az {MinLength} harf olmalı.";
+            if (n.Length > MaxLength) return $"Yerleşim adı en çok {MaxLength} harf olabilir.";
+            if (!char.IsLetter(n[0])) return "Yerleşim adı harfle başlamalı.";
+            foreach (char ch in n)
+                if (!char.IsLetter(ch) && ch != ' ' && ch != '\'' && ch != '-') return "Yerleşim adında yalnızca harf, boşluk, kesme ve tire olabilir.";
+            return null;
+        }
+
+        /// <summary>Doğrulanmış, kırpılmış ad; geçersizse varsayılan.</summary>
+        public static string Clean(string name) => Validate(name) == null ? name.Trim() : DefaultName;
+
+        public static string Random(Random rng) => Suggestions[rng.Next(Suggestions.Length)];
+    }
+
     /// <summary>Baş karakter ölünce kimin geçeceği ve mirasın sonucu.</summary>
     public sealed class SuccessionResult
     {
@@ -27,7 +62,7 @@ namespace Thatchwick.Core.Family
 
     /// <summary>
     /// Hanedan ve miras (Adım 17, T8): baş karakter (oyuncu kontrollü) ölünce sıradaki baş karakter seçilir:
-    /// 1) yaşayan çocuklarından genç/yetişkin olan en büyük, 2) çocuk evresindeki en büyük çocuğu,
+    /// 1) yaşayan çocuklarından genç/yetişkin/yaşlı olan en büyük, 2) çocuk evresindeki en büyük çocuğu,
     /// 3) eşi, 4) hanenin bebek olmayan en yaşlı üyesi. Kimse yoksa hanedan sona erer.
     /// Miras: hane (ev, eşya, akçe, envanter) zaten ortaktır; ayrıca ölenin her becerisindeki XP'nin
     /// %10'u varise "aile bilgisi" olarak geçer (varisin yaş tavanı uygulanır).
@@ -37,6 +72,8 @@ namespace Thatchwick.Core.Family
         public const double SkillInheritance = 0.10;
 
         public string Name { get; set; } = "Hanedan";
+        /// <summary>Oyuncunun yeni oyunda adlandırdığı yerleşim (hayali bir ortaçağ köyü); bildirimlerde ve arayüzde görünür.</summary>
+        public string SettlementName { get; set; } = Settlement.DefaultName;
         public int HeadId { get; private set; }
         public List<HeadRecord> History { get; } = new List<HeadRecord>();
         public bool Ended { get; private set; }
@@ -78,7 +115,7 @@ namespace Thatchwick.Core.Family
             }
 
             bool IsChild(Character c) => c.BirthMotherId == dead.Id || c.BirthFatherId == dead.Id;
-            return Oldest(c => IsChild(c) && FamilyService.IsAdultAge(c))
+            return Oldest(c => IsChild(c) && c.Stage >= AgeStage.Youth)   // genç, yetişkin ya da yaşlı çocuk
                 ?? Oldest(c => IsChild(c) && c.Stage == AgeStage.Child)
                 ?? Oldest(c => dead.SpouseId == c.Id)
                 ?? Oldest(c => c.Stage != AgeStage.Baby);

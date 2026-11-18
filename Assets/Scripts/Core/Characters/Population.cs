@@ -66,13 +66,56 @@ namespace Thatchwick.Core.Characters
             foreach (var c in snapshot) c.Tick(gameDays);
         }
 
-        private void OnMemberDied(Character c) => MemberDied?.Invoke(c);
+        private void OnMemberDied(Character c)
+        {
+            ReleaseSpouseOf(c);
+            MemberDied?.Invoke(c);
+        }
+
+        // Dul kalan yeniden evlenebilsin: yaşayan eşin bağı çözülür. Ölenin SpouseId'si kalır (yas, miras ve soy ağacı için).
+        private void ReleaseSpouseOf(Character dead)
+        {
+            foreach (var m in _members)
+                if (m != dead && !m.IsDead && m.SpouseId == dead.Id) m.SpouseId = null;
+        }
 
         /// <summary>Tüm üyelerin özellik/dal etkilerini yeniden hesaplar (köy projesi bitince, yüklemeden sonra).</summary>
         public void RecomputeAll()
         {
             if (Content == null) return;
             foreach (var c in _members) LifeRules.Recompute(c, Content, Village);
+        }
+
+        /// <summary>
+        /// Bebeğin konacağı yer (ör. annenin bulunduğu kapalı oda, değilse evdeki yatağın yanı). Null ise annenin karosu.
+        /// Bebek kendi yürümez: dışarıda (helada, tarlada) doğarsa kışın donmasın diye eve konur.
+        /// </summary>
+        public Func<Character, World.GridPos> BirthPlace { get; set; }
+
+        /// <summary>Kapalı odadaysa olduğu yer; değilse en yakın yatağın (Enerji eşyası) kapalı odadaki boş komşusu.</summary>
+        public static World.GridPos ShelterNear(World.WorldState world, World.GridPos at)
+        {
+            var room = world.Map.Rooms.RoomAt(at);
+            if (room != null && room.IsIndoor) return at;
+            World.GridPos best = at; int bestD = int.MaxValue;
+            foreach (var it in world.Items)
+            {
+                if (it.IsDecor) continue;
+                bool bed = false;
+                foreach (var i in it.Def.Interactions) if (i.Need == NeedType.Energy && i.RestoresNeed) { bed = true; break; }
+                if (!bed) continue;
+                var r = world.Map.Rooms.RoomAt(it.Position);
+                if (r == null || !r.IsIndoor) continue;
+                foreach (var t in it.OccupiedTiles())
+                    foreach (var o in new[] { new World.GridPos(1, 0), new World.GridPos(-1, 0), new World.GridPos(0, 1), new World.GridPos(0, -1) })
+                    {
+                        var n = t + o;
+                        if (!world.Map.IsWalkable(n) || world.Map.Rooms.RoomAt(n) != r) continue;
+                        int d = Math.Abs(n.X - at.X) + Math.Abs(n.Y - at.Y) + Math.Abs(n.Z - at.Z) * 20;
+                        if (d < bestD) { best = n; bestD = d; }
+                    }
+            }
+            return best;
         }
 
         private void OnGaveBirth(Character mother, int? fatherId)
@@ -82,7 +125,7 @@ namespace Thatchwick.Core.Characters
             if (string.IsNullOrWhiteSpace(name)) name = "Bebek";
 
             var father0 = fatherId.HasValue ? Find(fatherId.Value) : null;
-            var baby = new Character(NextId(), name, mother.Position, false)
+            var baby = new Character(NextId(), name, BirthPlace != null ? BirthPlace(mother) : mother.Position, false)
             {
                 Sex = sex,
                 AgeConfig = mother.AgeConfig,
@@ -101,10 +144,21 @@ namespace Thatchwick.Core.Characters
             }
             if (AppearanceCatalog != null)
             {
+                var cat = AppearanceCatalog;
                 var father = fatherId.HasValue ? Find(fatherId.Value) : null;
-                baby.Appearance = father != null
-                    ? AppearanceCatalog.Inherit(mother.Appearance, father.Appearance, _rng, sex)
-                    : AppearanceCatalog.Randomize(_rng, sex);
+                // Gizli genetik: genomu olmayan ebeveynin (eski kayıt, köylü) genomu görünüşünden kurulur.
+                if (mother.Genome == null) mother.Genome = Genetics.FromAppearance(mother.Appearance, cat, _rng);
+                if (father != null && father.Genome == null) father.Genome = Genetics.FromAppearance(father.Appearance, cat, _rng);
+                if (father != null)
+                {
+                    baby.Genome = Genetics.Inherit(mother.Genome, father.Genome, _rng, cat);
+                    baby.Appearance = cat.FromGenome(baby.Genome, _rng, sex);
+                }
+                else
+                {
+                    baby.Appearance = cat.Randomize(_rng, sex);
+                    baby.Genome = Genetics.FromAppearance(baby.Appearance, cat, _rng);
+                }
             }
             Add(baby);
             BabyBorn?.Invoke(baby, mother, fatherId);

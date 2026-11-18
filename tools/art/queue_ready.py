@@ -13,12 +13,15 @@ Bir iş uygundur, eğer (art/budget.md "Otomatik akış", kullanıcı kararı 20
   - cost_max bugünkü kalan günlük tavana (150; art/budget.md "Günlük tavan istisnaları" o günü
     değiştirebilir, `sınırsız` = tavan yok) ve rezerve (200) sığıyor
   --strict: eski kural (yalnızca accepted bağımlılık, auto için cost_max <= 25).
+  - status: running olan ama iş dosyası STALE_HOURS (6) saattir değişmemiş iş takılı sahiplenme sayılır
+    (çöken işçi); pending gibi yeniden uygun olur. İşçiler en çok 90 dakika çalışır.
 
 Kullanım:
   python tools/art/queue_ready.py            # uygun işleri ve nedenleri yazar; uygun iş varsa çıkış 0, yoksa 1
   python tools/art/queue_ready.py --quiet    # yalnızca çıkış kodu
   python tools/art/queue_ready.py --json     # makine için
   python tools/art/queue_ready.py --all      # her işin neden bekledigini de yazar
+  python tools/art/queue_ready.py --claim    # ilk uygun işi `status: running` yapar, kimliğini yazar (bulut işçisi)
 """
 import argparse
 import datetime
@@ -26,7 +29,9 @@ import glob
 import json
 import os
 import re
+import subprocess
 import sys
+import time
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 QUEUE = os.path.join(ROOT, "art", "queue")
@@ -36,6 +41,7 @@ AUTO_LIMIT = 25.0   # yalnızca --strict
 RUN_LIMIT = 60.0
 DAILY_LIMIT = 150.0
 RESERVE = 200.0
+STALE_HOURS = 6.0
 
 
 def _num(text, default=0.0):
@@ -58,6 +64,19 @@ def front_matter(path):
         val = re.sub(r"\s+#.*$", "", val).strip()     # satır sonu yorumu
         data[key] = val
     return data
+
+
+def last_change(path):
+    """İş dosyasının son commit zamanı (epoch saniye); commit edilmemiş değişiklik varsa ya da git yoksa None."""
+    try:
+        rel = os.path.relpath(path, ROOT)
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", rel], cwd=ROOT, capture_output=True, text=True, timeout=30)
+        if dirty.returncode != 0 or dirty.stdout.strip():
+            return None
+        out = subprocess.run(["git", "log", "-1", "--format=%ct", "--", rel], cwd=ROOT, capture_output=True, text=True, timeout=30)
+        return float(out.stdout.strip()) if out.returncode == 0 and out.stdout.strip() else None
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return None
 
 
 def job_id(path, fm):
@@ -113,10 +132,16 @@ def load_jobs():
         if not fm:
             continue
         jid = job_id(path, fm)
+        status = fm.get("status", "")
+        stale = False
+        if status == "running":
+            changed = last_change(path)
+            stale = changed is not None and time.time() - changed > STALE_HOURS * 3600
         jobs[jid] = {
             "id": jid,
             "file": os.path.relpath(path, ROOT).replace("\\", "/"),
-            "status": fm.get("status", ""),
+            "status": status,
+            "stale_claim": stale,
             "approved_by": fm.get("approved_by", ""),
             "cost_max": _num(fm.get("cost_max"), 0.0),
             "depends_on": parse_list(fm.get("depends_on", "")),
@@ -131,7 +156,7 @@ def evaluate(jobs, spent_today, balance, strict=False, limit=DAILY_LIMIT):
     ready, waiting = [], []
     for j in jobs.values():
         why = []
-        if j["status"] != "pending":
+        if j["status"] != "pending" and not j["stale_claim"]:
             continue
         if j["approved_by"] == "auto" and strict:
             if j["cost_max"] > AUTO_LIMIT:
@@ -162,6 +187,25 @@ def evaluate(jobs, spent_today, balance, strict=False, limit=DAILY_LIMIT):
     return ready, waiting, remaining_today
 
 
+def claim(job):
+    """İş dosyasının ön bilgisindeki status satırını running yapar (yalnızca ilk --- bloğunda)."""
+    path = os.path.join(ROOT, job["file"])
+    with open(path, encoding="utf-8") as f:
+        text = f.read()
+    head, sep, rest = text.partition("---")
+    block, sep2, body = rest.partition("---")
+    new_block, n = re.subn(r"(?m)^status:[^\n]*$", "status: running", block, count=1)
+    if not sep or not sep2 or n != 1:
+        raise SystemExit(f"{job['file']}: status satırı bulunamadı")
+    # Sahiplenme zamanı: takılı sahiplenme yeniden alınırken de dosya değişir (commit edilir, yaşı sıfırlanır).
+    stamp = "claimed_at: " + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%MZ")
+    new_block, m = re.subn(r"(?m)^claimed_at:[^\n]*$", stamp, new_block, count=1)
+    if m == 0:
+        new_block = re.sub(r"(?m)^(status: running)$", "\\1\n" + stamp, new_block, count=1)
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(head + sep + new_block + sep2 + body)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--quiet", action="store_true")
@@ -170,12 +214,21 @@ def main():
     ap.add_argument("--today", default=datetime.date.today().isoformat())
     ap.add_argument("--strict", action="store_true", help="eski kural: yalnızca accepted bağımlılık, auto için cost_max <= 25")
     ap.add_argument("--allow-review-deps", action="store_true", help="artık varsayılan; geriye uyumluluk için kabul edilir")
+    ap.add_argument("--claim", action="store_true", help="ilk uygun işi running yap; kimliğini ve dosyasını yaz")
     a = ap.parse_args()
 
     jobs = load_jobs()
     spent, balance = read_budget(a.today)
     limit = daily_limit(a.today)
     ready, waiting, remaining = evaluate(jobs, spent, balance, a.strict, limit)
+
+    if a.claim:
+        if not ready:
+            sys.exit(1)
+        job = ready[0][0]
+        claim(job)
+        print(f"{job['id']} {job['file']}")
+        sys.exit(0)
 
     if a.json:
         print(json.dumps({
@@ -188,7 +241,8 @@ def main():
         print(f"Bugün harcanan {spent:g}, günlük kalan {'sınırsız' if remaining == float('inf') else f'{remaining:g}'}, defter bakiyesi {balance if balance is not None else '?'}")
         print(f"Uygun iş: {len(ready)}")
         for j, _ in ready:
-            print(f"  {j['id']:>5}  {j['cost_max']:>4g}  {j['file']}")
+            note = "  (takılı sahiplenme: yeniden alınabilir)" if j["stale_claim"] else ""
+            print(f"  {j['id']:>5}  {j['cost_max']:>4g}  {j['file']}{note}")
         if a.all and waiting:
             print(f"Bekleyen: {len(waiting)}")
             for j, w in waiting:

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.World;
 
@@ -27,6 +28,23 @@ namespace Thatchwick.Core.Animals
         public bool IsDead { get; internal set; }
         public AnimalDeath CauseOfDeath { get; internal set; }
         public bool IsMature => AgeDays >= Species.MatureDays;
+        /// <summary>
+        /// Bu hayvanın ömrü: tür ömrünün %85-115'i, kimlikten türetilir (aynı gün alınan hayvanlar aynı gün ölmez;
+        /// kayda ek alan gerekmez, yüklemede değişmez).
+        /// </summary>
+        public double LifespanDays => Species.LifespanDays * LifespanFactor(Id);
+
+        internal static double LifespanFactor(int id)
+        {
+            unchecked
+            {
+                uint h = (uint)id;          // murmur3 karıştırıcısı: ardışık kimlikler de dağınık çıkar
+                h ^= h >> 16; h *= 0x85EBCA6Bu;
+                h ^= h >> 13; h *= 0xC2B2AE35u;
+                h ^= h >> 16;
+                return 0.85 + 0.30 * ((h & 0xFFFF) / 65535.0);
+            }
+        }
         /// <summary>0-100 dostluk: iyi bakılan ve sevilen hayvan daha çok ve ara sıra ekstra ürün verir.</summary>
         public float Friendship { get; internal set; }
         /// <summary>Son sevilmeden bu kadar gün geçmeden yeniden sevilemez (günde bir kez).</summary>
@@ -34,6 +52,17 @@ namespace Thatchwick.Core.Animals
 
         internal GridPos Target;
         internal double WaitDays;
+        // Oda ve otlak içinde yürüyüş yolu (hedefe kadar karolar).
+        internal List<GridPos> Path;
+
+        /// <summary>Takılı eyer (eşya kimliği); yoksa null.</summary>
+        public string Saddle { get; internal set; }
+        /// <summary>Üstündeki binicinin karakter kimliği (0 = binilmiyor).</summary>
+        public int RiderId { get; internal set; }
+        /// <summary>Barınak konforu 0-100 (gün başında hesaplanır): ürün hızı ve dostluk artışını etkiler.</summary>
+        public float Comfort { get; internal set; } = 50f;
+        /// <summary>Binilebilir: binek türü, erişkin ve eyerli.</summary>
+        public bool CanBeRidden => Species.Rideable && IsMature && Saddle != null;
 
         public Animal(int id, AnimalSpeciesDef species, GridPos position, int homeItemId)
         {

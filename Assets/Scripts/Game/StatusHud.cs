@@ -23,6 +23,9 @@ namespace Thatchwick.Game
         private readonly Func<Character, JobRunner> _runnerOf;
         private readonly List<Rect> _rects = new List<Rect>();
         private DaySummary _card;
+        // Kış tahmini pahalıdır (envanter x tüm etkileşimler): her çizimde değil, yarım saniyede bir hesaplanır.
+        private WinterReport _forecast;
+        private float _forecastUntil;
         private bool _logOpen;
         private Vector2 _logScroll;
         private GUIStyle _small, _balloon;
@@ -104,7 +107,13 @@ namespace Thatchwick.Game
                 var next = _life.Festivals.NextFestival(out int days);
                 line2 = (_life.Festivals.IsMarketDayToday ? "Bugün pazar günü · " : "") + (next != null ? $"Sıradaki şenlik: {next.DisplayName} ({days} gün)" : "");
             }
-            var rep = _life.Forecast.Report(clock.TotalDays);
+            line2 = $"Soy Mührü {_life.Legacy.Seals}" + (line2.Length > 0 ? " · " + line2 : "");
+            if (_forecast == null || Time.unscaledTime >= _forecastUntil)
+            {
+                _forecast = _life.Forecast.Report(clock.TotalDays);
+                _forecastUntil = Time.unscaledTime + 0.5f;
+            }
+            var rep = _forecast;
             string line3 = rep.InWinter
                 ? $"Kış: {rep.WinterDaysLeft:0} gün kaldı · yiyecek {rep.FoodDays:0} gün · odun {rep.FirewoodDays:0} gün"
                 : $"Kışa {rep.DaysToWinter:0} gün · yiyecek {rep.FoodDays:0} gün · odun {rep.FirewoodDays:0} gün yeter";

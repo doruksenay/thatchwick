@@ -15,7 +15,8 @@ namespace Thatchwick.Core.Characters
         private static readonly int NeedCount = Enum.GetValues(typeof(NeedType)).Length;
 
         // Oyun günü başına varsayılan azalma. Denge adımında (28) ayarlanır.
-        private static readonly float[] DefaultDecayPerDay = { 120f, 90f, 0f, 50f, 35f, 30f };
+        // Tuvalet: dolu mesaneden ~10 saatte sıkışır (içecekler hızlandırır).
+        private static readonly float[] DefaultDecayPerDay = { 120f, 90f, 0f, 50f, 35f, 30f, 100f };
 
         private readonly float[] _values = new float[NeedCount];
         private readonly float[] _decayPerDay = new float[NeedCount];

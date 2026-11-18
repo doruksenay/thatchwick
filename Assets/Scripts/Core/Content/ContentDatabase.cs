@@ -17,6 +17,8 @@ namespace Thatchwick.Core.Content
         public ContentRegistry<ToolDef> Tools { get; } = new ContentRegistry<ToolDef>();
         public ContentRegistry<RoomTemplateDef> Templates { get; } = new ContentRegistry<RoomTemplateDef>();
         public ContentRegistry<AnimalSpeciesDef> Animals { get; } = new ContentRegistry<AnimalSpeciesDef>();
+        /// <summary>Yapı modu malzeme ve parça kataloğu (duvar, kapı, pencere, zemin, çatı, kaplama).</summary>
+        public ContentRegistry<BuildPartDef> Parts { get; } = new ContentRegistry<BuildPartDef>();
         /// <summary>Etkileşimlerin başvurduğu moodlet kataloğu (doğrulama için).</summary>
         public Mood.MoodCatalog Moods { get; set; } = Mood.MoodCatalog.Default;
 
@@ -70,7 +72,7 @@ namespace Thatchwick.Core.Content
                 }
                 if (item.Comfort < 0 || item.Comfort > 50) errors.Add($"{item.Id}: konfor 0-50 arasında olmalı.");
                 if (item.SpoilDays < 0f) errors.Add($"{item.Id}: bozulma süresi negatif olamaz.");
-                if (item.SpoilDays > 0f && !item.HasTag("food")) errors.Add($"{item.Id}: bozulma yalnızca yiyecek etiketli eşyada olur.");
+                if (item.SpoilDays > 0f && !item.HasTag("food") && !item.HasTag("ice")) errors.Add($"{item.Id}: bozulma yalnızca yiyecek (ya da buz) etiketli eşyada olur.");
                 if (item.Preserves < 0f || item.Preserves > 1f) errors.Add($"{item.Id}: kiler çarpanı 0-1 arasında olmalı.");
                 if (item.ForageMax < 0) errors.Add($"{item.Id}: toplama sınırı negatif olamaz.");
                 if (item.IsForage && (item.Placement != ItemPlacement.Floor || !item.IsPlant && item.Interactions.Count == 0)) errors.Add($"{item.Id}: toplanabilir eşya yere konan ve etkileşimli olmalı.");
@@ -107,7 +109,7 @@ namespace Thatchwick.Core.Content
                     if (it.Moodlet != null && (Moods == null || !Moods.Contains(it.Moodlet))) errors.Add($"{where}: moodlet '{it.Moodlet}' bulunamadı.");
                     if (it.MinSkillLevel < 0 || it.MinSkillLevel > Characters.SkillRules.MaxLevel) errors.Add($"{where}: minLevel 0-{Characters.SkillRules.MaxLevel} arasında olmalı.");
                     if (it.MinSkillLevel > 0 && !it.Skill.HasValue) errors.Add($"{where}: minLevel için beceri gerekli.");
-                    if ((it.AddFeed > 0 || it.Collect || it.RequiresAnimal) && !item.IsHousing) errors.Add($"{where}: yem/toplama/hayvan yalnızca barınakta kullanılır.");
+                    if ((it.AddFeed > 0 && !item.IsTrough || it.Collect || it.RequiresAnimal) && !item.IsHousing) errors.Add($"{where}: yem/toplama/hayvan yalnızca barınakta kullanılır.");
                     if (it.AddFeed > 0 && it.AllConsumed().Count == 0) errors.Add($"{where}: yem koymak için malzeme (consume) gerekli.");
                     if (it.AddFeed < 0) errors.Add($"{where}: addFeed negatif olamaz.");
                     foreach (var er in it.ExtraRestore)
@@ -142,8 +144,84 @@ namespace Thatchwick.Core.Content
                 if (!housed) errors.Add($"{a.Id}: '{a.Housing}' türünde barınak eşyası yok.");
             }
 
+            ValidateParts(errors);
+            ValidateFarm(errors);
             ValidateLife(errors);
             return errors;
+        }
+
+        private void ValidateFarm(List<string> errors)
+        {
+            var roles = new HashSet<string> { AnimalRoles.Water, AnimalRoles.Bedding, AnimalRoles.Collector, AnimalRoles.Feeder, AnimalRoles.Bell };
+            foreach (var item in Items.All)
+            {
+                if (item.AnimalRole != null && !roles.Contains(item.AnimalRole)) errors.Add($"{item.Id}: bilinmeyen hayvan rolü '{item.AnimalRole}'.");
+                if (item.AnimalComfort < 0 || item.AnimalComfort > 10) errors.Add($"{item.Id}: hayvan konforu 0-10 arasında olmalı.");
+                if (item.RequiresIndoor && item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: requiresIndoor yalnızca yere konan eşyada.");
+                if (item.IsTrough && item.IsHousing) errors.Add($"{item.Id}: yemlik aynı zamanda barınak olamaz.");
+                foreach (var it in item.Interactions)
+                    if (it.AddIce > 0f && !item.IsIceBox) errors.Add($"{item.Id}.{it.Id}: buz yalnızca buzluğa konur.");
+                if (item.NeedsWaterSource && item.WaterRadius <= 0) errors.Add($"{item.Id}: needsSource yalnızca sulayan eşyada.");
+                if (item.IsFixture && WaterNetworkNode(item)) errors.Add($"{item.Id}: tesisat (waterUse) ağ parçası olamaz: suyu iletmez.");
+                if (item.WaterUse > 12) errors.Add($"{item.Id}: waterUse en çok 12 (kurşun boru kapasitesi).");
+                if (item.IsTap && !item.IsFixture) errors.Add($"{item.Id}: tap yalnızca tesisatta (waterUse > 0).");
+                if (item.CisternCapacity > 0 && item.WaterSource) errors.Add($"{item.Id}: sarnıç ayrıca waterSource olmaz.");
+                if (item.WaterFlow != 0 && !item.WaterSource) errors.Add($"{item.Id}: waterFlow yalnızca su kaynağında.");
+                foreach (var it in item.Interactions)
+                    if (it.NeedsPipedWater && !item.IsFixture) errors.Add($"{item.Id}.{it.Id}: piped yalnızca tesisatta.");
+                if (item.AutoProcess != null)
+                {
+                    if (!Items.Contains(item.AutoProcess.Item)) errors.Add($"{item.Id}: otomatik işin girdisi '{item.AutoProcess.Item}' yok.");
+                    if (!Items.Contains(item.AutoProcess.Produces)) errors.Add($"{item.Id}: otomatik işin ürünü '{item.AutoProcess.Produces}' yok.");
+                }
+            }
+            foreach (var a in Animals.All)
+            {
+                if (a.Hide != null && !Items.Contains(a.Hide)) errors.Add($"{a.Id}: deri '{a.Hide}' bulunamadı.");
+                if (a.Rideable && (a.RideSpeed < 1f || a.RideSpeed > 4f)) errors.Add($"{a.Id}: binek hızı 1-4 arasında olmalı.");
+                if (a.Space <= 0f) errors.Add($"{a.Id}: hayvan başına alan pozitif olmalı.");
+            }
+        }
+
+        private void ValidateParts(List<string> errors)
+        {
+            foreach (var p in Parts.All)
+                if (p.MaterialItem != null && !Items.Contains(p.MaterialItem)) errors.Add($"{p.Id}: malzeme '{p.MaterialItem}' bulunamadı.");
+            var defaults = new Dictionary<string, int>(StringComparer.Ordinal);
+            var finishGroups = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var p in Parts.All)
+            {
+                if (string.IsNullOrWhiteSpace(p.DisplayName)) errors.Add($"{p.Id}: görünen ad boş.");
+                if (p.Price < 0) errors.Add($"{p.Id}: fiyat negatif olamaz.");
+                if (p.UnlockLevel < 1 || p.UnlockLevel > 20) errors.Add($"{p.Id}: açılma seviyesi 1-20 arasında olmalı.");
+                if (!p.TryGetRgb(out _, out _, out _)) errors.Add($"{p.Id}: renk #RRGGBB olmalı.");
+                if (p.HeatLoss <= 0f || p.HeatLoss > 3f) errors.Add($"{p.Id}: ısı kaybı çarpanı 0-3 arasında olmalı.");
+                if (p.Comfort < 0 || p.Comfort > 10) errors.Add($"{p.Id}: konfor 0-10 arasında olmalı.");
+                foreach (var lv in p.Levels)
+                    if (!World.GridMap.IsValidLevel(lv)) errors.Add($"{p.Id}: geçersiz kat {lv}.");
+                if (p.Kind == BuildPartKind.ItemFinish)
+                {
+                    if (string.IsNullOrEmpty(p.Group)) errors.Add($"{p.Id}: mobilya kaplamasının grubu (group) yok.");
+                    else finishGroups.Add(p.Group);
+                    if (p.PriceFactor < 0.5f || p.PriceFactor > 3f) errors.Add($"{p.Id}: fiyat çarpanı 0,5-3 arasında olmalı.");
+                }
+                else if (p.Group != null) errors.Add($"{p.Id}: group yalnızca mobilya kaplamasında kullanılır.");
+                // Varsayılan tür başına birdir; zeminde temel tür, kaplamada grup başına.
+                if (p.IsDefault)
+                {
+                    string key = p.Kind == BuildPartKind.Floor ? $"{p.Kind}:{p.Base}" : p.Kind == BuildPartKind.ItemFinish ? $"{p.Kind}:{p.Group}" : p.Kind.ToString();
+                    defaults.TryGetValue(key, out int n);
+                    defaults[key] = n + 1;
+                }
+            }
+            foreach (var kv in defaults)
+                if (kv.Value > 1) errors.Add($"Yapı parçası: {kv.Key} için birden çok varsayılan var.");
+            foreach (var item in Items.All)
+                if (item.FinishGroup != null && !finishGroups.Contains(item.FinishGroup))
+                    errors.Add($"{item.Id}: '{item.FinishGroup}' kaplama grubunda hiç kaplama yok.");
+            foreach (var item in Items.All)
+                if (item.IsRug && (item.Interactions.Count > 0 || item.SurfaceSlots.Count > 0 || item.IsStairs || item.IsHousing || item.HeatOutput > 0f || item.Storage > 0))
+                    errors.Add($"{item.Id}: halı etkileşimsiz, yuvasız düz bir eşya olmalı.");
         }
 
         private void ValidateLife(List<string> errors)
@@ -218,5 +296,6 @@ namespace Thatchwick.Core.Content
                 }
             }
         }
+        private static bool WaterNetworkNode(ItemDef d) => d.WaterSource || d.NeedsWaterSource || d.PowerSource || d.WaterGate || d.IsCistern || d.WaterHead;
     }
 }

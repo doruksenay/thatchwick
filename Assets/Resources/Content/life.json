@@ -296,6 +296,60 @@
           "level": 9
         }
       ]
+    },
+    {
+      "id": "rod",
+      "displayName": "Olta",
+      "tiers": [
+        {
+          "name": "Kamış olta",
+          "akce": 30,
+          "firewood": 0,
+          "speed": 1.2,
+          "level": 2
+        },
+        {
+          "name": "Makaralı olta",
+          "akce": 90,
+          "firewood": 0,
+          "speed": 1.4,
+          "level": 5
+        },
+        {
+          "name": "Usta oltası",
+          "akce": 200,
+          "firewood": 0,
+          "speed": 1.6,
+          "level": 8
+        }
+      ]
+    },
+    {
+      "id": "pickaxe",
+      "displayName": "Kazma",
+      "tiers": [
+        {
+          "name": "Demir kazma",
+          "akce": 45,
+          "firewood": 3,
+          "speed": 1.2,
+          "level": 3
+        },
+        {
+          "name": "Çelik kazma",
+          "akce": 120,
+          "firewood": 6,
+          "speed": 1.4,
+          "level": 6
+        },
+        {
+          "name": "Usta kazması",
+          "akce": 260,
+          "firewood": 10,
+          "speed": 1.6,
+          "level": 9
+        }
+      ]
     }
   ],
   "branches": [
@@ -566,6 +620,2155 @@
         "energyDecay": 0.9
       },
       "requires": "branch.carp_craftsman"
+    },
+    {
+      "id": "branch.husb_shepherd",
+      "displayName": "Çoban",
+      "description": "Hayvancılıkta daha hızlı öğrenir.",
+      "skill": "AnimalHusbandry",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "AnimalHusbandry",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.husb_dairy",
+      "displayName": "Sütçü",
+      "description": "Sağarken ve kırkarken ara sıra fazladan ürün.",
+      "skill": "AnimalHusbandry",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.husb_breeder",
+      "displayName": "Yetiştirici",
+      "description": "Hayvanlar daha sık yavrular (bir seviye usta sayılır).",
+      "skill": "AnimalHusbandry",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.husb_shepherd"
+    },
+    {
+      "id": "branch.husb_whisperer",
+      "displayName": "Hayvan Dostu",
+      "description": "Hayvanlarla vakit geçirmek iyi gelir.",
+      "skill": "AnimalHusbandry",
+      "level": 10,
+      "effects": {
+        "moodBase": 2,
+        "funDecay": 0.9
+      },
+      "requires": "branch.husb_shepherd"
+    },
+    {
+      "id": "branch.husb_cheesemaker",
+      "displayName": "Mandıracı",
+      "description": "Daha çok ürün, süt ürünleri geç bozulur.",
+      "skill": "AnimalHusbandry",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15,
+        "spoilReduction": 0.15
+      },
+      "requires": "branch.husb_dairy"
+    },
+    {
+      "id": "branch.husb_drover",
+      "displayName": "Celep",
+      "description": "Hayvan ürünleri pazarda iyi satılır.",
+      "skill": "AnimalHusbandry",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.husb_dairy"
+    },
+    {
+      "id": "branch.ride_groom",
+      "displayName": "Seyis",
+      "description": "At bakımında ve binicilikte hızlı öğrenir.",
+      "skill": "Riding",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Riding",
+            "rate": 1.2
+          },
+          {
+            "skill": "AnimalHusbandry",
+            "rate": 1.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.ride_courier",
+      "displayName": "Ulak",
+      "description": "Uzun yolda daha az yorulur.",
+      "skill": "Riding",
+      "level": 5,
+      "effects": {
+        "energyDecay": 0.9
+      }
+    },
+    {
+      "id": "branch.ride_trainer",
+      "displayName": "At Terbiyecisi",
+      "description": "Hayvanlarla çok hızlı anlaşır.",
+      "skill": "Riding",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "AnimalHusbandry",
+            "rate": 1.25
+          },
+          {
+            "skill": "Riding",
+            "rate": 1.1
+          }
+        ]
+      },
+      "requires": "branch.ride_groom"
+    },
+    {
+      "id": "branch.ride_stablemaster",
+      "displayName": "Seyis Başı",
+      "description": "Hayvan ve eyer ticaretinde kazançlı.",
+      "skill": "Riding",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.1
+      },
+      "requires": "branch.ride_groom"
+    },
+    {
+      "id": "branch.ride_rider",
+      "displayName": "Atlı",
+      "description": "Yolda yorulmaz, soğuğa dayanır.",
+      "skill": "Riding",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.9,
+        "coldResist": 0.1
+      },
+      "requires": "branch.ride_courier"
+    },
+    {
+      "id": "branch.ride_traveler",
+      "displayName": "Yolcu",
+      "description": "Yolculuk keyif verir.",
+      "skill": "Riding",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.85
+      },
+      "requires": "branch.ride_courier"
+    },
+    {
+      "id": "branch.fish_angler",
+      "displayName": "Oltacı",
+      "description": "Ara sıra iki balık birden çıkar.",
+      "skill": "Fishing",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.2
+      }
+    },
+    {
+      "id": "branch.fish_patient",
+      "displayName": "Sabırlı",
+      "description": "Su başında canı sıkılmaz.",
+      "skill": "Fishing",
+      "level": 5,
+      "effects": {
+        "funDecay": 0.85
+      }
+    },
+    {
+      "id": "branch.fish_master",
+      "displayName": "Balıkçı Reisi",
+      "description": "Nadir balıklar daha erken çıkar (bir seviye usta sayılır).",
+      "skill": "Fishing",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.fish_angler"
+    },
+    {
+      "id": "branch.fish_netter",
+      "displayName": "Ağcı",
+      "description": "Çok daha bereketli av.",
+      "skill": "Fishing",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15
+      },
+      "requires": "branch.fish_angler"
+    },
+    {
+      "id": "branch.fish_monger",
+      "displayName": "Balık Tüccarı",
+      "description": "Balık pazarda iyi satılır.",
+      "skill": "Fishing",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.fish_patient"
+    },
+    {
+      "id": "branch.fish_sage",
+      "displayName": "Göl Bilgesi",
+      "description": "Huzurlu bir insan.",
+      "skill": "Fishing",
+      "level": 10,
+      "effects": {
+        "moodBase": 3
+      },
+      "requires": "branch.fish_patient"
+    },
+    {
+      "id": "branch.leather_tanner",
+      "displayName": "Tabak",
+      "description": "Deri işini hızlı yapar.",
+      "skill": "Leatherwork",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.leather_journeyman",
+      "displayName": "Saraç Kalfası",
+      "description": "Saraçlıkta hızlı öğrenir.",
+      "skill": "Leatherwork",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Leatherwork",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.leather_fast",
+      "displayName": "Hızlı Tabak",
+      "description": "Daha da hızlı çalışır.",
+      "skill": "Leatherwork",
+      "level": 10,
+      "effects": {
+        "workSpeed": 1.15
+      },
+      "requires": "branch.leather_tanner"
+    },
+    {
+      "id": "branch.leather_tough",
+      "displayName": "Sağlam El",
+      "description": "Ağır işte az yorulur.",
+      "skill": "Leatherwork",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.9
+      },
+      "requires": "branch.leather_tanner"
+    },
+    {
+      "id": "branch.leather_master",
+      "displayName": "Saraç Ustası",
+      "description": "İşleri daha nitelikli olur.",
+      "skill": "Leatherwork",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1,
+        "sellBonus": 0.05
+      },
+      "requires": "branch.leather_journeyman"
+    },
+    {
+      "id": "branch.leather_trader",
+      "displayName": "Deri Tüccarı",
+      "description": "Deri işleri pazarda iyi satılır.",
+      "skill": "Leatherwork",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.leather_journeyman"
+    },
+    {
+      "id": "branch.weave_spinner",
+      "displayName": "İplikçi",
+      "description": "Eğirir ve dokurken hızlıdır.",
+      "skill": "Weaving",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.weave_patterner",
+      "displayName": "Desen Ustası",
+      "description": "Dokumacılıkta hızlı öğrenir.",
+      "skill": "Weaving",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Weaving",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.weave_fast",
+      "displayName": "Hızlı Mekik",
+      "description": "Daha da hızlı dokur.",
+      "skill": "Weaving",
+      "level": 10,
+      "effects": {
+        "workSpeed": 1.15
+      },
+      "requires": "branch.weave_spinner"
+    },
+    {
+      "id": "branch.weave_warm",
+      "displayName": "Yünlü",
+      "description": "Kendi dokuduğu yünlerle soğuğa dayanır.",
+      "skill": "Weaving",
+      "level": 10,
+      "effects": {
+        "coldResist": 0.15
+      },
+      "requires": "branch.weave_spinner"
+    },
+    {
+      "id": "branch.weave_master",
+      "displayName": "Dokuma Ustası",
+      "description": "Dokumaları daha nitelikli.",
+      "skill": "Weaving",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.weave_patterner"
+    },
+    {
+      "id": "branch.weave_merchant",
+      "displayName": "Kumaşçı",
+      "description": "Kumaş ve halı pazarda iyi satılır.",
+      "skill": "Weaving",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.weave_patterner"
+    },
+    {
+      "id": "branch.trade_haggler",
+      "displayName": "Pazarlıkçı",
+      "description": "Pazarda daha iyi fiyat alır.",
+      "skill": "Trade",
+      "level": 5,
+      "effects": {
+        "sellBonus": 0.1
+      }
+    },
+    {
+      "id": "branch.trade_networker",
+      "displayName": "Tanıdık Yüz",
+      "description": "Herkesle çabuk kaynaşır.",
+      "skill": "Trade",
+      "level": 5,
+      "effects": {
+        "socialGain": 1.15
+      }
+    },
+    {
+      "id": "branch.trade_merchant",
+      "displayName": "Tüccar",
+      "description": "Satışta usta.",
+      "skill": "Trade",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.trade_haggler"
+    },
+    {
+      "id": "branch.trade_broker",
+      "displayName": "Simsar",
+      "description": "Malzemeyi ucuza bulur: yapı ve eşya indirimi.",
+      "skill": "Trade",
+      "level": 10,
+      "effects": {
+        "buildDiscount": 0.1
+      },
+      "requires": "branch.trade_haggler"
+    },
+    {
+      "id": "branch.trade_host",
+      "displayName": "Han Dostu",
+      "description": "Sohbet ve dostluk kolay gelir.",
+      "skill": "Trade",
+      "level": 10,
+      "effects": {
+        "socialGain": 1.1,
+        "moodBase": 2
+      },
+      "requires": "branch.trade_networker"
+    },
+    {
+      "id": "branch.trade_caravaneer",
+      "displayName": "Kervancı",
+      "description": "Yolda ve pazarda canı sıkılmaz.",
+      "skill": "Trade",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.9
+      },
+      "requires": "branch.trade_networker"
+    },
+    {
+      "id": "branch.herb_gatherer",
+      "displayName": "Ot Toplayıcı",
+      "description": "Toplarken fazladan ot bulur.",
+      "skill": "Herbalism",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.herb_brewer",
+      "displayName": "İksirci",
+      "description": "Otacılıkta hızlı öğrenir.",
+      "skill": "Herbalism",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Herbalism",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.herb_healer",
+      "displayName": "Şifacı",
+      "description": "Kendine iyi bakar: az acıkır, soğuğa dayanır.",
+      "skill": "Herbalism",
+      "level": 10,
+      "effects": {
+        "hungerDecay": 0.95,
+        "coldResist": 0.1
+      },
+      "requires": "branch.herb_gatherer"
+    },
+    {
+      "id": "branch.herb_druid",
+      "displayName": "Bitki Bilgesi",
+      "description": "Bitkiler daha hızlı büyür.",
+      "skill": "Herbalism",
+      "level": 10,
+      "effects": {
+        "growthSpeed": 1.1
+      },
+      "requires": "branch.herb_gatherer"
+    },
+    {
+      "id": "branch.herb_master",
+      "displayName": "Usta Otacı",
+      "description": "İksirleri daha güçlü (bir seviye usta sayılır).",
+      "skill": "Herbalism",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.herb_brewer"
+    },
+    {
+      "id": "branch.herb_merchant",
+      "displayName": "Attar",
+      "description": "İksir ve merhem pazarda iyi satılır.",
+      "skill": "Herbalism",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.herb_brewer"
+    },
+    {
+      "id": "branch.eng_a",
+      "displayName": "Çarkçı",
+      "description": "Mühendislikte hızlı öğrenir.",
+      "skill": "Engineering",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Engineering",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.eng_b",
+      "displayName": "Değirmenci",
+      "description": "Daha hızlı çalışır.",
+      "skill": "Engineering",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.eng_a1",
+      "displayName": "Baş Mühendis",
+      "description": "Ustalıkta bir seviye ileride sayılır.",
+      "skill": "Engineering",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.eng_a"
+    },
+    {
+      "id": "branch.eng_a2",
+      "displayName": "Mucit",
+      "description": "İlham verir.",
+      "skill": "Engineering",
+      "level": 10,
+      "effects": {
+        "moodBase": 2
+      },
+      "requires": "branch.eng_a"
+    },
+    {
+      "id": "branch.eng_b1",
+      "displayName": "Su Ustası",
+      "description": "Daha da hızlı.",
+      "skill": "Engineering",
+      "level": 10,
+      "effects": {
+        "workSpeed": 1.15
+      },
+      "requires": "branch.eng_b"
+    },
+    {
+      "id": "branch.eng_b2",
+      "displayName": "Düzenek Tüccarı",
+      "description": "Ürünler iyi satılır.",
+      "skill": "Engineering",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.eng_b"
+    },
+    {
+      "id": "branch.salv_a",
+      "displayName": "Toplayıcı Göz",
+      "description": "Geri kazanımda hızlı öğrenir.",
+      "skill": "Salvage",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Salvage",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.salv_b",
+      "displayName": "Tutumlu",
+      "description": "Yapı ve eşya ucuzlar.",
+      "skill": "Salvage",
+      "level": 5,
+      "effects": {
+        "buildDiscount": 0.05
+      }
+    },
+    {
+      "id": "branch.salv_a1",
+      "displayName": "Hurda Ustası",
+      "description": "Marangozlukta da hızlı öğrenir.",
+      "skill": "Salvage",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Carpentry",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.salv_a"
+    },
+    {
+      "id": "branch.salv_a2",
+      "displayName": "Yenileyici",
+      "description": "Eşya ve yapı daha da ucuz.",
+      "skill": "Salvage",
+      "level": 10,
+      "effects": {
+        "buildDiscount": 0.08
+      },
+      "requires": "branch.salv_a"
+    },
+    {
+      "id": "branch.salv_b1",
+      "displayName": "Eski Eşyacı",
+      "description": "Satışta kazançlı.",
+      "skill": "Salvage",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.12
+      },
+      "requires": "branch.salv_b"
+    },
+    {
+      "id": "branch.salv_b2",
+      "displayName": "Çevreci",
+      "description": "Ekinler daha iyi büyür.",
+      "skill": "Salvage",
+      "level": 10,
+      "effects": {
+        "growthSpeed": 1.05
+      },
+      "requires": "branch.salv_b"
+    },
+    {
+      "id": "branch.mason_a",
+      "displayName": "Taş Kalfası",
+      "description": "Taş ustalığında hızlı öğrenir.",
+      "skill": "Masonry",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Masonry",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.mason_b",
+      "displayName": "Duvarcı",
+      "description": "Daha hızlı çalışır.",
+      "skill": "Masonry",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.mason_a1",
+      "displayName": "Usta Duvarcı",
+      "description": "Yapı daha ucuz.",
+      "skill": "Masonry",
+      "level": 10,
+      "effects": {
+        "buildDiscount": 0.08
+      },
+      "requires": "branch.mason_a"
+    },
+    {
+      "id": "branch.mason_a2",
+      "displayName": "Taş Yontucu",
+      "description": "Ustalıkta bir seviye ileride.",
+      "skill": "Masonry",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.mason_a"
+    },
+    {
+      "id": "branch.mason_b1",
+      "displayName": "Kaldırımcı",
+      "description": "Ağır işte az yorulur.",
+      "skill": "Masonry",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.9
+      },
+      "requires": "branch.mason_b"
+    },
+    {
+      "id": "branch.mason_b2",
+      "displayName": "Ocak Ustası",
+      "description": "Soğuğa dayanıklı.",
+      "skill": "Masonry",
+      "level": 10,
+      "effects": {
+        "coldResist": 0.1
+      },
+      "requires": "branch.mason_b"
+    },
+    {
+      "id": "branch.mine_a",
+      "displayName": "Kazmacı",
+      "description": "Ocaktan fazladan taş.",
+      "skill": "Mining",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.mine_b",
+      "displayName": "Damar Bilen",
+      "description": "Madencilikte hızlı öğrenir.",
+      "skill": "Mining",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Mining",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.mine_a1",
+      "displayName": "Ocak Başı",
+      "description": "Çok daha bereketli.",
+      "skill": "Mining",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15
+      },
+      "requires": "branch.mine_a"
+    },
+    {
+      "id": "branch.mine_a2",
+      "displayName": "Taş Tüccarı",
+      "description": "Satışta kazançlı.",
+      "skill": "Mining",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.12
+      },
+      "requires": "branch.mine_a"
+    },
+    {
+      "id": "branch.mine_b1",
+      "displayName": "Cevher Avcısı",
+      "description": "Demircilikte de hızlı öğrenir.",
+      "skill": "Mining",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Smithing",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.mine_b"
+    },
+    {
+      "id": "branch.mine_b2",
+      "displayName": "Yer Altı İnsanı",
+      "description": "Ağır işte az yorulur.",
+      "skill": "Mining",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.9
+      },
+      "requires": "branch.mine_b"
+    },
+    {
+      "id": "branch.smith_a",
+      "displayName": "Çırak Demirci",
+      "description": "Demircilikte hızlı öğrenir.",
+      "skill": "Smithing",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Smithing",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.smith_b",
+      "displayName": "Örsçü",
+      "description": "Daha hızlı döver.",
+      "skill": "Smithing",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.smith_a1",
+      "displayName": "Usta Demirci",
+      "description": "Ustalıkta bir seviye ileride.",
+      "skill": "Smithing",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.smith_a"
+    },
+    {
+      "id": "branch.smith_a2",
+      "displayName": "Nalbant",
+      "description": "Binicilikte de hızlı öğrenir.",
+      "skill": "Smithing",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Riding",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.smith_a"
+    },
+    {
+      "id": "branch.smith_b1",
+      "displayName": "Ateş Eli",
+      "description": "Soğuğa dayanıklı.",
+      "skill": "Smithing",
+      "level": 10,
+      "effects": {
+        "coldResist": 0.15
+      },
+      "requires": "branch.smith_b"
+    },
+    {
+      "id": "branch.smith_b2",
+      "displayName": "Saban Demircisi",
+      "description": "Demir işler iyi satılır.",
+      "skill": "Smithing",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.smith_b"
+    },
+    {
+      "id": "branch.pot_a",
+      "displayName": "Çamur Eli",
+      "description": "Çömlekçilikte hızlı öğrenir.",
+      "skill": "Pottery",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Pottery",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.pot_b",
+      "displayName": "Çarkçı Çömlekçi",
+      "description": "Daha hızlı.",
+      "skill": "Pottery",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.pot_a1",
+      "displayName": "Usta Çömlekçi",
+      "description": "Ustalıkta bir seviye ileride.",
+      "skill": "Pottery",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.pot_a"
+    },
+    {
+      "id": "branch.pot_a2",
+      "displayName": "Kiler Dostu",
+      "description": "Yiyecek geç bozulur.",
+      "skill": "Pottery",
+      "level": 10,
+      "effects": {
+        "spoilReduction": 0.15
+      },
+      "requires": "branch.pot_a"
+    },
+    {
+      "id": "branch.pot_b1",
+      "displayName": "Desenci",
+      "description": "Çanak çömlek iyi satılır.",
+      "skill": "Pottery",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.pot_b"
+    },
+    {
+      "id": "branch.pot_b2",
+      "displayName": "Sabırlı El",
+      "description": "Keyif kaybı az.",
+      "skill": "Pottery",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.9
+      },
+      "requires": "branch.pot_b"
+    },
+    {
+      "id": "branch.brew_a",
+      "displayName": "Mayacı",
+      "description": "Biracılıkta hızlı öğrenir.",
+      "skill": "Brewing",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Brewing",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.brew_b",
+      "displayName": "Fıçıcı",
+      "description": "Fıçıdan fazladan içki.",
+      "skill": "Brewing",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.brew_a1",
+      "displayName": "Usta Biracı",
+      "description": "Ustalıkta bir seviye ileride.",
+      "skill": "Brewing",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.brew_a"
+    },
+    {
+      "id": "branch.brew_a2",
+      "displayName": "Meyhaneci",
+      "description": "Sohbette iyi.",
+      "skill": "Brewing",
+      "level": 10,
+      "effects": {
+        "socialGain": 1.15
+      },
+      "requires": "branch.brew_a"
+    },
+    {
+      "id": "branch.brew_b1",
+      "displayName": "Şarapçı",
+      "description": "Çok daha bereketli.",
+      "skill": "Brewing",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15
+      },
+      "requires": "branch.brew_b"
+    },
+    {
+      "id": "branch.brew_b2",
+      "displayName": "İçki Tüccarı",
+      "description": "İçki iyi satılır.",
+      "skill": "Brewing",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.brew_b"
+    },
+    {
+      "id": "branch.bake_a",
+      "displayName": "Hamurcu",
+      "description": "Fırıncılıkta hızlı öğrenir.",
+      "skill": "Baking",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Baking",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.bake_b",
+      "displayName": "Fırın Başı",
+      "description": "Daha hızlı pişirir.",
+      "skill": "Baking",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.1
+      }
+    },
+    {
+      "id": "branch.bake_a1",
+      "displayName": "Usta Fırıncı",
+      "description": "Ustalıkta bir seviye ileride.",
+      "skill": "Baking",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.bake_a"
+    },
+    {
+      "id": "branch.bake_a2",
+      "displayName": "Ekmek Kokusu",
+      "description": "Ev keyifli.",
+      "skill": "Baking",
+      "level": 10,
+      "effects": {
+        "moodBase": 2
+      },
+      "requires": "branch.bake_a"
+    },
+    {
+      "id": "branch.bake_b1",
+      "displayName": "Tok Hane",
+      "description": "Az acıkır.",
+      "skill": "Baking",
+      "level": 10,
+      "effects": {
+        "hungerDecay": 0.92
+      },
+      "requires": "branch.bake_b"
+    },
+    {
+      "id": "branch.bake_b2",
+      "displayName": "Fırın Tüccarı",
+      "description": "Ekmek iyi satılır.",
+      "skill": "Baking",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.bake_b"
+    },
+    {
+      "id": "branch.chand_a",
+      "displayName": "Fitilci",
+      "description": "Mumculukta hızlı öğrenir.",
+      "skill": "Chandlery",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Chandlery",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.chand_b",
+      "displayName": "Mumcu Kalfası",
+      "description": "Fazladan mum.",
+      "skill": "Chandlery",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.chand_a1",
+      "displayName": "Usta Mumcu",
+      "description": "Ustalıkta bir seviye ileride.",
+      "skill": "Chandlery",
+      "level": 10,
+      "effects": {
+        "qualityLevels": 1
+      },
+      "requires": "branch.chand_a"
+    },
+    {
+      "id": "branch.chand_a2",
+      "displayName": "Işık Getiren",
+      "description": "Evde huzur.",
+      "skill": "Chandlery",
+      "level": 10,
+      "effects": {
+        "moodBase": 2
+      },
+      "requires": "branch.chand_a"
+    },
+    {
+      "id": "branch.chand_b1",
+      "displayName": "Kandilci",
+      "description": "Daha bereketli.",
+      "skill": "Chandlery",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15
+      },
+      "requires": "branch.chand_b"
+    },
+    {
+      "id": "branch.chand_b2",
+      "displayName": "Mum Tüccarı",
+      "description": "Mum iyi satılır.",
+      "skill": "Chandlery",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.chand_b"
+    },
+    {
+      "id": "branch.hort_a",
+      "displayName": "Aşıcı",
+      "description": "Meyveden fazladan.",
+      "skill": "Horticulture",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.hort_b",
+      "displayName": "Tohumcu",
+      "description": "Bahçıvanlıkta hızlı öğrenir.",
+      "skill": "Horticulture",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Horticulture",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.hort_a1",
+      "displayName": "Bağbozumu",
+      "description": "Çok daha bereketli.",
+      "skill": "Horticulture",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15
+      },
+      "requires": "branch.hort_a"
+    },
+    {
+      "id": "branch.hort_a2",
+      "displayName": "Meyve Tüccarı",
+      "description": "Meyve iyi satılır.",
+      "skill": "Horticulture",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.15
+      },
+      "requires": "branch.hort_a"
+    },
+    {
+      "id": "branch.hort_b1",
+      "displayName": "Fidanlık Ustası",
+      "description": "Bitkiler hızlı büyür.",
+      "skill": "Horticulture",
+      "level": 10,
+      "effects": {
+        "growthSpeed": 1.1
+      },
+      "requires": "branch.hort_b"
+    },
+    {
+      "id": "branch.hort_b2",
+      "displayName": "Bahçe Bilgesi",
+      "description": "Ürün geç bozulur.",
+      "skill": "Horticulture",
+      "level": 10,
+      "effects": {
+        "spoilReduction": 0.15
+      },
+      "requires": "branch.hort_b"
+    },
+    {
+      "id": "branch.forage_a",
+      "displayName": "İz Süren",
+      "description": "Fazladan bulur.",
+      "skill": "Foraging",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.forage_b",
+      "displayName": "Orman Dostu",
+      "description": "Toplayıcılıkta hızlı öğrenir.",
+      "skill": "Foraging",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Foraging",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.forage_a1",
+      "displayName": "Mantarcı",
+      "description": "Çok daha bereketli.",
+      "skill": "Foraging",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15
+      },
+      "requires": "branch.forage_a"
+    },
+    {
+      "id": "branch.forage_a2",
+      "displayName": "Otçu",
+      "description": "Otacılıkta da hızlı öğrenir.",
+      "skill": "Foraging",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Herbalism",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.forage_a"
+    },
+    {
+      "id": "branch.forage_b1",
+      "displayName": "Gezgin",
+      "description": "Keyif kaybı az.",
+      "skill": "Foraging",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.9
+      },
+      "requires": "branch.forage_b"
+    },
+    {
+      "id": "branch.forage_b2",
+      "displayName": "Pazar Sepetçisi",
+      "description": "Toplananlar iyi satılır.",
+      "skill": "Foraging",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.12
+      },
+      "requires": "branch.forage_b"
+    },
+    {
+      "id": "branch.hunt_a",
+      "displayName": "İzci",
+      "description": "Avdan fazladan.",
+      "skill": "Hunting",
+      "level": 5,
+      "effects": {
+        "yieldChance": 0.15
+      }
+    },
+    {
+      "id": "branch.hunt_b",
+      "displayName": "Pusucu",
+      "description": "Avcılıkta hızlı öğrenir.",
+      "skill": "Hunting",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Hunting",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.hunt_a1",
+      "displayName": "Usta Avcı",
+      "description": "Çok daha bereketli.",
+      "skill": "Hunting",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.15
+      },
+      "requires": "branch.hunt_a"
+    },
+    {
+      "id": "branch.hunt_a2",
+      "displayName": "Kürkçü",
+      "description": "Saraçlıkta da hızlı öğrenir.",
+      "skill": "Hunting",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Leatherwork",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.hunt_a"
+    },
+    {
+      "id": "branch.hunt_b1",
+      "displayName": "Dağ Adamı",
+      "description": "Soğuğa dayanıklı.",
+      "skill": "Hunting",
+      "level": 10,
+      "effects": {
+        "coldResist": 0.15
+      },
+      "requires": "branch.hunt_b"
+    },
+    {
+      "id": "branch.hunt_b2",
+      "displayName": "Sabırlı Pusucu",
+      "description": "Az yorulur.",
+      "skill": "Hunting",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.9
+      },
+      "requires": "branch.hunt_b"
+    },
+    {
+      "id": "branch.weather_a",
+      "displayName": "Göğe Bakan",
+      "description": "Hava bilgisinde hızlı öğrenir.",
+      "skill": "WeatherLore",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "WeatherLore",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.weather_b",
+      "displayName": "Rüzgâr Dinleyen",
+      "description": "Soğuğa dayanıklı.",
+      "skill": "WeatherLore",
+      "level": 5,
+      "effects": {
+        "coldResist": 0.1
+      }
+    },
+    {
+      "id": "branch.weather_a1",
+      "displayName": "Hava Bilgesi",
+      "description": "Ekinler iyi büyür.",
+      "skill": "WeatherLore",
+      "level": 10,
+      "effects": {
+        "growthSpeed": 1.05
+      },
+      "requires": "branch.weather_a"
+    },
+    {
+      "id": "branch.weather_a2",
+      "displayName": "Mevsim Okuyucu",
+      "description": "Çiftçilikte de hızlı öğrenir.",
+      "skill": "WeatherLore",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Farming",
+            "rate": 1.15
+          }
+        ]
+      },
+      "requires": "branch.weather_a"
+    },
+    {
+      "id": "branch.weather_b1",
+      "displayName": "Fırtına Kurdu",
+      "description": "Daha da dayanıklı.",
+      "skill": "WeatherLore",
+      "level": 10,
+      "effects": {
+        "coldResist": 0.15
+      },
+      "requires": "branch.weather_b"
+    },
+    {
+      "id": "branch.weather_b2",
+      "displayName": "Yıldız Okuyan",
+      "description": "Huzurlu.",
+      "skill": "WeatherLore",
+      "level": 10,
+      "effects": {
+        "moodBase": 2
+      },
+      "requires": "branch.weather_b"
+    },
+    {
+      "id": "branch.soil_a",
+      "displayName": "Kompostçu",
+      "description": "Toprak bakımında hızlı öğrenir.",
+      "skill": "SoilCare",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "SoilCare",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.soil_b",
+      "displayName": "Nadasçı",
+      "description": "Ekinler iyi büyür.",
+      "skill": "SoilCare",
+      "level": 5,
+      "effects": {
+        "growthSpeed": 1.05
+      }
+    },
+    {
+      "id": "branch.soil_a1",
+      "displayName": "Toprak Bilgesi",
+      "description": "Ekinler daha iyi büyür.",
+      "skill": "SoilCare",
+      "level": 10,
+      "effects": {
+        "growthSpeed": 1.08
+      },
+      "requires": "branch.soil_a"
+    },
+    {
+      "id": "branch.soil_a2",
+      "displayName": "Bereket Eli",
+      "description": "Hasat bereketli.",
+      "skill": "SoilCare",
+      "level": 10,
+      "effects": {
+        "yieldChance": 0.12
+      },
+      "requires": "branch.soil_a"
+    },
+    {
+      "id": "branch.soil_b1",
+      "displayName": "Çevreci Çiftçi",
+      "description": "Ürünler geç bozulur.",
+      "skill": "SoilCare",
+      "level": 10,
+      "effects": {
+        "spoilReduction": 0.12
+      },
+      "requires": "branch.soil_b"
+    },
+    {
+      "id": "branch.soil_b2",
+      "displayName": "Döngü Ustası",
+      "description": "Çiftçilikte de hızlı öğrenir.",
+      "skill": "SoilCare",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Farming",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.soil_b"
+    },
+    {
+      "id": "branch.parent_a",
+      "displayName": "Sabırlı Ebeveyn",
+      "description": "Ebeveynlikte hızlı öğrenir.",
+      "skill": "Parenting",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Parenting",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.parent_b",
+      "displayName": "Neşeli Ev",
+      "description": "Huzurlu.",
+      "skill": "Parenting",
+      "level": 5,
+      "effects": {
+        "moodBase": 2
+      }
+    },
+    {
+      "id": "branch.parent_a1",
+      "displayName": "Koruyucu",
+      "description": "Az yorulur.",
+      "skill": "Parenting",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.92
+      },
+      "requires": "branch.parent_a"
+    },
+    {
+      "id": "branch.parent_a2",
+      "displayName": "Ninni Söyleyen",
+      "description": "Keyif kaybı az.",
+      "skill": "Parenting",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.9
+      },
+      "requires": "branch.parent_a"
+    },
+    {
+      "id": "branch.parent_b1",
+      "displayName": "Kalabalık Sofra",
+      "description": "Sohbette iyi.",
+      "skill": "Parenting",
+      "level": 10,
+      "effects": {
+        "socialGain": 1.1
+      },
+      "requires": "branch.parent_b"
+    },
+    {
+      "id": "branch.parent_b2",
+      "displayName": "Büyük Aile",
+      "description": "Doğurganlık artar.",
+      "skill": "Parenting",
+      "level": 10,
+      "effects": {
+        "fertility": 1.15
+      },
+      "requires": "branch.parent_b"
+    },
+    {
+      "id": "branch.teach_a",
+      "displayName": "Kalfa Yetiştiren",
+      "description": "Öğretmenlikte hızlı öğrenir.",
+      "skill": "Teaching",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Teaching",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.teach_b",
+      "displayName": "Anlatıcı",
+      "description": "Sohbette iyi.",
+      "skill": "Teaching",
+      "level": 5,
+      "effects": {
+        "socialGain": 1.1
+      }
+    },
+    {
+      "id": "branch.teach_a1",
+      "displayName": "Hoca",
+      "description": "Okuryazarlıkta da hızlı öğrenir.",
+      "skill": "Teaching",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Literacy",
+            "rate": 1.25
+          }
+        ]
+      },
+      "requires": "branch.teach_a"
+    },
+    {
+      "id": "branch.teach_a2",
+      "displayName": "Usta Öğretici",
+      "description": "Huzurlu.",
+      "skill": "Teaching",
+      "level": 10,
+      "effects": {
+        "moodBase": 2
+      },
+      "requires": "branch.teach_a"
+    },
+    {
+      "id": "branch.teach_b1",
+      "displayName": "Masalcı",
+      "description": "Keyif kaybı az.",
+      "skill": "Teaching",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.9
+      },
+      "requires": "branch.teach_b"
+    },
+    {
+      "id": "branch.teach_b2",
+      "displayName": "Kuşak Köprüsü",
+      "description": "Doğurganlık artar.",
+      "skill": "Teaching",
+      "level": 10,
+      "effects": {
+        "fertility": 1.1
+      },
+      "requires": "branch.teach_b"
+    },
+    {
+      "id": "branch.lit_a",
+      "displayName": "Okur",
+      "description": "Okuryazarlıkta hızlı öğrenir.",
+      "skill": "Literacy",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Literacy",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.lit_b",
+      "displayName": "Kâtip",
+      "description": "Anlaşmalarda kazançlı.",
+      "skill": "Literacy",
+      "level": 5,
+      "effects": {
+        "sellBonus": 0.05
+      }
+    },
+    {
+      "id": "branch.lit_a1",
+      "displayName": "Âlim",
+      "description": "Öğretmenlikte de hızlı öğrenir.",
+      "skill": "Literacy",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Teaching",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.lit_a"
+    },
+    {
+      "id": "branch.lit_a2",
+      "displayName": "Kitap Kurdu",
+      "description": "Keyif kaybı az.",
+      "skill": "Literacy",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.88
+      },
+      "requires": "branch.lit_a"
+    },
+    {
+      "id": "branch.lit_b1",
+      "displayName": "Defterdar",
+      "description": "Yapı ve eşya indirimi.",
+      "skill": "Literacy",
+      "level": 10,
+      "effects": {
+        "buildDiscount": 0.06
+      },
+      "requires": "branch.lit_b"
+    },
+    {
+      "id": "branch.lit_b2",
+      "displayName": "Senet Ustası",
+      "description": "Satışta kazançlı.",
+      "skill": "Literacy",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.1
+      },
+      "requires": "branch.lit_b"
+    },
+    {
+      "id": "branch.charm_a",
+      "displayName": "Güler Yüz",
+      "description": "Sohbet daha çok doyurur.",
+      "skill": "Charm",
+      "level": 5,
+      "effects": {
+        "socialGain": 1.15
+      }
+    },
+    {
+      "id": "branch.charm_b",
+      "displayName": "Tatlı Dil",
+      "description": "Gönül kazanmada hızlı öğrenir.",
+      "skill": "Charm",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Charm",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.charm_a1",
+      "displayName": "Sevilen",
+      "description": "Sosyal ihtiyaç yavaş azalır.",
+      "skill": "Charm",
+      "level": 10,
+      "effects": {
+        "socialDecay": 0.85
+      },
+      "requires": "branch.charm_a"
+    },
+    {
+      "id": "branch.charm_a2",
+      "displayName": "Gönül Eri",
+      "description": "Huzurlu.",
+      "skill": "Charm",
+      "level": 10,
+      "effects": {
+        "moodBase": 3
+      },
+      "requires": "branch.charm_a"
+    },
+    {
+      "id": "branch.charm_b1",
+      "displayName": "İkna Ustası",
+      "description": "Pazarda kazançlı.",
+      "skill": "Charm",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.1
+      },
+      "requires": "branch.charm_b"
+    },
+    {
+      "id": "branch.charm_b2",
+      "displayName": "Arabulucu",
+      "description": "Ticarette de hızlı öğrenir.",
+      "skill": "Charm",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Trade",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.charm_b"
+    },
+    {
+      "id": "branch.music_a",
+      "displayName": "Kopuzcu",
+      "description": "Müzikte hızlı öğrenir.",
+      "skill": "Music",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Music",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.music_b",
+      "displayName": "Neşe Kaynağı",
+      "description": "Keyif kaybı az.",
+      "skill": "Music",
+      "level": 5,
+      "effects": {
+        "funDecay": 0.88
+      }
+    },
+    {
+      "id": "branch.music_a1",
+      "displayName": "Ozan",
+      "description": "Huzurlu.",
+      "skill": "Music",
+      "level": 10,
+      "effects": {
+        "moodBase": 3
+      },
+      "requires": "branch.music_a"
+    },
+    {
+      "id": "branch.music_a2",
+      "displayName": "Şenlik Çalgıcısı",
+      "description": "Sohbette iyi.",
+      "skill": "Music",
+      "level": 10,
+      "effects": {
+        "socialGain": 1.12
+      },
+      "requires": "branch.music_a"
+    },
+    {
+      "id": "branch.music_b1",
+      "displayName": "Türkücü",
+      "description": "Gönül kazanmada hızlı öğrenir.",
+      "skill": "Music",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Charm",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.music_b"
+    },
+    {
+      "id": "branch.music_b2",
+      "displayName": "Han Çalgıcısı",
+      "description": "Kazançlı.",
+      "skill": "Music",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.08
+      },
+      "requires": "branch.music_b"
+    },
+    {
+      "id": "branch.stew_a",
+      "displayName": "Hesap Bilen",
+      "description": "Kâhyalıkta hızlı öğrenir.",
+      "skill": "Stewardship",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Stewardship",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.stew_b",
+      "displayName": "Düzenli",
+      "description": "Daha hızlı çalışır.",
+      "skill": "Stewardship",
+      "level": 5,
+      "effects": {
+        "workSpeed": 1.05
+      }
+    },
+    {
+      "id": "branch.stew_a1",
+      "displayName": "Kâhya",
+      "description": "Yapı ve eşya ucuz.",
+      "skill": "Stewardship",
+      "level": 10,
+      "effects": {
+        "buildDiscount": 0.08
+      },
+      "requires": "branch.stew_a"
+    },
+    {
+      "id": "branch.stew_a2",
+      "displayName": "Hane Reisi",
+      "description": "Huzurlu.",
+      "skill": "Stewardship",
+      "level": 10,
+      "effects": {
+        "moodBase": 2
+      },
+      "requires": "branch.stew_a"
+    },
+    {
+      "id": "branch.stew_b1",
+      "displayName": "Ambar Emini",
+      "description": "Ürünler geç bozulur.",
+      "skill": "Stewardship",
+      "level": 10,
+      "effects": {
+        "spoilReduction": 0.12
+      },
+      "requires": "branch.stew_b"
+    },
+    {
+      "id": "branch.stew_b2",
+      "displayName": "Vekilharç",
+      "description": "Satışta kazançlı.",
+      "skill": "Stewardship",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.1
+      },
+      "requires": "branch.stew_b"
+    },
+    {
+      "id": "branch.cart_a",
+      "displayName": "Arabacı Kalfası",
+      "description": "Arabacılıkta hızlı öğrenir.",
+      "skill": "Carting",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Carting",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.cart_b",
+      "displayName": "Yük Taşıyan",
+      "description": "Az yorulur.",
+      "skill": "Carting",
+      "level": 5,
+      "effects": {
+        "energyDecay": 0.92
+      }
+    },
+    {
+      "id": "branch.cart_a1",
+      "displayName": "Kervan Başı",
+      "description": "Satışta kazançlı.",
+      "skill": "Carting",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.12
+      },
+      "requires": "branch.cart_a"
+    },
+    {
+      "id": "branch.cart_a2",
+      "displayName": "Yol Bilen",
+      "description": "Binicilikte de hızlı öğrenir.",
+      "skill": "Carting",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Riding",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.cart_a"
+    },
+    {
+      "id": "branch.cart_b1",
+      "displayName": "Güçlü Sırt",
+      "description": "Daha hızlı çalışır.",
+      "skill": "Carting",
+      "level": 10,
+      "effects": {
+        "workSpeed": 1.08
+      },
+      "requires": "branch.cart_b"
+    },
+    {
+      "id": "branch.cart_b2",
+      "displayName": "Yolların Adamı",
+      "description": "Keyif kaybı az.",
+      "skill": "Carting",
+      "level": 10,
+      "effects": {
+        "funDecay": 0.9
+      },
+      "requires": "branch.cart_b"
+    },
+    {
+      "id": "branch.deco_a",
+      "displayName": "Göz Zevki",
+      "description": "Ev düzenlemede hızlı öğrenir.",
+      "skill": "Decorating",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Decorating",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.deco_b",
+      "displayName": "Tutumlu Döşeyen",
+      "description": "Eşya ucuz.",
+      "skill": "Decorating",
+      "level": 5,
+      "effects": {
+        "buildDiscount": 0.05
+      }
+    },
+    {
+      "id": "branch.deco_a1",
+      "displayName": "İç Mimar",
+      "description": "Daha da ucuz.",
+      "skill": "Decorating",
+      "level": 10,
+      "effects": {
+        "buildDiscount": 0.08
+      },
+      "requires": "branch.deco_a"
+    },
+    {
+      "id": "branch.deco_a2",
+      "displayName": "Huzurlu Ev",
+      "description": "Huzurlu.",
+      "skill": "Decorating",
+      "level": 10,
+      "effects": {
+        "moodBase": 3
+      },
+      "requires": "branch.deco_a"
+    },
+    {
+      "id": "branch.deco_b1",
+      "displayName": "Konak Sahibi",
+      "description": "Satışta kazançlı.",
+      "skill": "Decorating",
+      "level": 10,
+      "effects": {
+        "sellBonus": 0.08
+      },
+      "requires": "branch.deco_b"
+    },
+    {
+      "id": "branch.deco_b2",
+      "displayName": "Renk Ustası",
+      "description": "Marangozlukta da hızlı öğrenir.",
+      "skill": "Decorating",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Carpentry",
+            "rate": 1.15
+          }
+        ]
+      },
+      "requires": "branch.deco_b"
+    },
+    {
+      "id": "branch.med_a",
+      "displayName": "Sargıcı",
+      "description": "Hekimlikte hızlı öğrenir.",
+      "skill": "Medicine",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Medicine",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.med_b",
+      "displayName": "Bitki Hekimi",
+      "description": "Otacılıkta da hızlı öğrenir.",
+      "skill": "Medicine",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Herbalism",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.med_a1",
+      "displayName": "Hekim",
+      "description": "Soğuğa dayanıklı.",
+      "skill": "Medicine",
+      "level": 10,
+      "effects": {
+        "coldResist": 0.12
+      },
+      "requires": "branch.med_a"
+    },
+    {
+      "id": "branch.med_a2",
+      "displayName": "Şifa Eli",
+      "description": "Az acıkır.",
+      "skill": "Medicine",
+      "level": 10,
+      "effects": {
+        "hungerDecay": 0.92
+      },
+      "requires": "branch.med_a"
+    },
+    {
+      "id": "branch.med_b1",
+      "displayName": "Ebe",
+      "description": "Doğurganlık artar.",
+      "skill": "Medicine",
+      "level": 10,
+      "effects": {
+        "fertility": 1.1
+      },
+      "requires": "branch.med_b"
+    },
+    {
+      "id": "branch.med_b2",
+      "displayName": "Huzur Veren",
+      "description": "Huzurlu.",
+      "skill": "Medicine",
+      "level": 10,
+      "effects": {
+        "moodBase": 2
+      },
+      "requires": "branch.med_b"
     }
   ],
   "projects": [
@@ -1291,6 +3494,157 @@
           "item": "item.drying_rack",
           "x": 1,
           "y": 2,
+          "rotation": 0
+        }
+      ]
+    },
+    {
+      "id": "template.coop_room",
+      "displayName": "Kümes odası",
+      "width": 4,
+      "height": 3,
+      "doorSide": "South",
+      "doorOffset": 1,
+      "windows": [
+        2
+      ],
+      "floor": "Dirt",
+      "items": [
+        {
+          "item": "item.nest_box",
+          "x": 0,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.nest_box",
+          "x": 1,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.nest_box",
+          "x": 2,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.feed_trough",
+          "x": 0,
+          "y": 2,
+          "rotation": 0
+        },
+        {
+          "item": "item.water_trough",
+          "x": 2,
+          "y": 2,
+          "rotation": 0
+        },
+        {
+          "item": "item.hay_bale",
+          "x": 3,
+          "y": 0,
+          "rotation": 0
+        }
+      ]
+    },
+    {
+      "id": "template.barn_room",
+      "displayName": "Ahır odası",
+      "width": 6,
+      "height": 4,
+      "doorSide": "South",
+      "doorOffset": 1,
+      "windows": [
+        2,
+        4
+      ],
+      "floor": "Dirt",
+      "items": [
+        {
+          "item": "item.stall",
+          "x": 0,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.stall",
+          "x": 1,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.stall",
+          "x": 2,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.feed_trough",
+          "x": 3,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.water_trough",
+          "x": 3,
+          "y": 3,
+          "rotation": 0
+        },
+        {
+          "item": "item.hay_bale",
+          "x": 5,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.barn_lantern",
+          "x": 5,
+          "y": 3,
+          "rotation": 0
+        }
+      ]
+    },
+    {
+      "id": "template.stable_room",
+      "displayName": "At ahırı",
+      "width": 4,
+      "height": 4,
+      "doorSide": "South",
+      "doorOffset": 1,
+      "windows": [
+        2
+      ],
+      "floor": "Dirt",
+      "items": [
+        {
+          "item": "item.horse_stall",
+          "x": 0,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.feed_trough",
+          "x": 2,
+          "y": 0,
+          "rotation": 0
+        },
+        {
+          "item": "item.water_trough",
+          "x": 2,
+          "y": 3,
+          "rotation": 0
+        },
+        {
+          "item": "item.hay_bale",
+          "x": 0,
+          "y": 3,
+          "rotation": 0
+        },
+        {
+          "item": "item.saddle_rack",
+          "x": 3,
+          "y": 1,
           "rotation": 0
         }
       ]

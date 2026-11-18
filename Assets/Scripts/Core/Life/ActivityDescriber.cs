@@ -30,6 +30,8 @@ namespace Thatchwick.Core.Life
                 case NeedType.Warmth: return "çünkü üşüyor";
                 case NeedType.Social: return "çünkü yalnız";
                 case NeedType.Fun: return "çünkü canı sıkıldı";
+                case NeedType.Hygiene: return "çünkü kirlendi";
+                case NeedType.Bladder: return "çünkü sıkıştı";
                 default: return "emir üzerine";
             }
         }
@@ -53,7 +55,11 @@ namespace Thatchwick.Core.Life
                 case SkillType.Woodcutting: return "chop";
                 case SkillType.Farming: return "farm";
                 case SkillType.Cooking: return "cook";
-                case SkillType.Carpentry: return "craft";
+                case SkillType.Carpentry:
+                case SkillType.Leatherwork:
+                case SkillType.Weaving: return "craft";
+                case SkillType.AnimalHusbandry: return "farm";
+                case SkillType.Herbalism: return "cook";
                 default: return "work";
             }
         }
@@ -70,6 +76,7 @@ namespace Thatchwick.Core.Life
             }
             var info = DescribeJob(job, world);
             info.Walking = job.Kind == JobKind.MoveTo || !runner.IsUsingItem;
+            if (runner.IsFetchingWater) { info.Icon = "work"; info.Text = "Kovayla su taşıyor (" + info.Text + ")"; }
             return info;
         }
 
@@ -96,14 +103,38 @@ namespace Thatchwick.Core.Life
                     {
                         case SocialAction.Feed: info.Icon = "care"; info.Text = "Bebeği besliyor"; info.Reason = "çünkü bebek aç"; break;
                         case SocialAction.Chat: info.Text = "Sohbet ediyor"; break;
+                        case SocialAction.TellStory: info.Text = "Masal anlatıyor"; break;
                         case SocialAction.Propose: info.Icon = "love"; info.Text = "Evlenme teklif ediyor"; break;
                         default: info.Icon = "love"; info.Text = "Çocuk istiyor"; break;
+                    }
+                    break;
+                case JobKind.Animal:
+                    info.Icon = "work";
+                    switch (job.AnimalAction)
+                    {
+                        case AnimalAction.Brush: info.Text = "Atı tımar ediyor"; break;
+                        case AnimalAction.Saddle: info.Text = "Eyerliyor"; break;
+                        case AnimalAction.Unsaddle: info.Text = "Eyeri çıkarıyor"; break;
+                        case AnimalAction.Mount: info.Icon = "walk"; info.Text = "Ata biniyor"; break;
+                        default: info.Icon = "love"; info.Text = "Hayvanı seviyor"; break;
+                    }
+                    break;
+                case JobKind.Tile:
+                    info.Icon = "work";
+                    switch (job.TileAction)
+                    {
+                        case TileAction.Repair: info.Text = "Yolu onarıyor"; break;
+                        case TileAction.Bathe: info.Icon = "fun"; info.Text = "Suda yıkanıyor"; break;
+                        case TileAction.Fish: info.Text = "Kıyıda balık tutuyor"; break;
+                        case TileAction.CutIce: info.Text = "Buz kesiyor"; break;
+                        default: info.Text = "Çapalıyor"; break;
                     }
                     break;
                 default:
                     info.Icon = "idle"; info.Text = "?";
                     break;
             }
+            if (job.IsDuty) info.Reason = "görevi olduğu için";
             return info;
         }
 

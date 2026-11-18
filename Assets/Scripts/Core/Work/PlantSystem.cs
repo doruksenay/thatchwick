@@ -220,12 +220,38 @@ namespace Thatchwick.Core.Work
                 if (rained && !indoor) crop.Watered = true;
             }
 
+            // Kanal yalnızca kaynağa (kuyu, kova-makara) bağlı bir zincirdeyse sular.
+            HashSet<int> network = null;
             foreach (var source in _world.Items)
             {
                 int r = source.Def.WaterRadius;
                 if (r <= 0) continue;
+                if (source.Def.NeedsWaterSource)
+                {
+                    network = network ?? WaterNetwork.Connected(_world);
+                    if (!network.Contains(source.Id)) continue;
+                }
                 foreach (var crop in crops)
                     if (Near(source.Position, crop.Position, r)) crop.Watered = true;
+            }
+
+            // Su yolu katmanı: su taşıyan toprak ve taş ark yanındaki ekini sular (oluk ve boru sulamaz).
+            if (_world.Map.HasConduits && crops.Count > 0)
+            {
+                var wet = WaterNetwork.Analyze(_world).WetConduits;
+                foreach (var crop in crops)
+                {
+                    if (crop.Watered || crop.Position.Z != 0) continue;
+                    for (int dy = -1; dy <= 1 && !crop.Watered; dy++)
+                        for (int dx = -1; dx <= 1; dx++)
+                        {
+                            var p = new GridPos(crop.Position.X + dx, crop.Position.Y + dy);
+                            var t = _world.Map.GetConduit(p);
+                            if (t == ConduitType.None || Math.Max(Math.Abs(dx), Math.Abs(dy)) > Conduits.IrrigateRadius(t) || !wet.Contains(p)) continue;
+                            crop.Watered = true;
+                            break;
+                        }
+                }
             }
 
             // Boş toprak varsayılan verime döner.
@@ -282,12 +308,25 @@ namespace Thatchwick.Core.Work
             return (t - Config.GreenhouseMinTemp) / (Config.GreenhouseFullTemp - Config.GreenhouseMinTemp);
         }
 
+        private readonly List<ItemInstance> _activeHives = new List<ItemInstance>();
+
+        // Bu turda çalışan kovanlardan biri yakında mı (kovan listesi tur başında bir kez çıkarılır).
+        private bool NearActiveHive(GridPos p)
+        {
+            foreach (var hive in _activeHives)
+                if (Near(hive.Position, p, hive.Def.PollinateRadius)) return true;
+            return false;
+        }
+
         public void Tick(double gameDays, Season season)
         {
             if (gameDays <= 0) return;
             KillWinterCrops(season);
             var rooms = _world.Map.Rooms;
             float mult = GrowthMultiplier != null ? Math.Max(0f, GrowthMultiplier()) : 1f;
+            _activeHives.Clear();
+            foreach (var it in _world.Items)
+                if (it.Def.PollinateRadius > 0 && (HiveActive == null || HiveActive(it))) _activeHives.Add(it);
             foreach (var item in _world.Items)
             {
                 if (!item.IsPlant) continue;
@@ -304,7 +343,13 @@ namespace Thatchwick.Core.Work
                 bool greenhouse = indoor && IsGreenhouse(room);
                 if (indoor && !greenhouse) continue;   // içeride (seradan başka) büyümez
 
-                if (item.IsGrown) { TickFruit(item, season, gameDays, mult * (IsPollinated(item.Position) ? 1f + Config.PollinationFruit : 1f)); continue; }
+                if (item.IsGrown)
+                {
+                    // Tozlaşma yalnızca meyve ağacı için sorulur (olgun meşe ya da hasat bekleyen ekin için boşuna taranmasın).
+                    if (item.Def.IsFruitTree)
+                        TickFruit(item, season, gameDays, mult * (NearActiveHive(item.Position) ? 1f + Config.PollinationFruit : 1f));
+                    continue;
+                }
 
                 double rate = mult;
                 if (greenhouse)
@@ -319,7 +364,7 @@ namespace Thatchwick.Core.Work
                 if (item.Def.IsCrop)
                 {
                     rate *= Config.FertilityBase + Config.FertilitySpan * FertilityAt(item.Position);
-                    if (IsPollinated(item.Position)) rate *= 1f + Config.PollinationGrowth;
+                    if (NearActiveHive(item.Position)) rate *= 1f + Config.PollinationGrowth;
                     if (!item.Watered) rate *= Config.DryGrowth;
                     item.AgeDays += gameDays;
                     if (item.Watered) item.WetDays += gameDays;
