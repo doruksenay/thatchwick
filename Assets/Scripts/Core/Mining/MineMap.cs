@@ -52,7 +52,7 @@ namespace Thatchwick.Core.Mining
         private readonly MineTile[] _tiles;
 
         /// <summary>Katta birikmiş su (birim).</summary>
-        public double Water { get; internal set; }
+        public double Water { get; set; }
         /// <summary>Ateşle kırmanın dumanı (gün): sıfıra inene kadar burada çalışılmaz.</summary>
         public double SmokeDays { get; internal set; }
 

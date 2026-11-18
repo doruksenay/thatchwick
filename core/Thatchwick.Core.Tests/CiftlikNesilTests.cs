@@ -121,7 +121,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(conceived.Id, calf.MotherId);
             Assert.Equal(conceived.Generation + 1, calf.Generation);
             Assert.False(calf.IsMature);
-            Assert.Equal(conceived.Friendship * AnimalSystem.InheritFriendship, calf.Friendship, 3);
+            Assert.Equal((double)(conceived.Friendship * AnimalSystem.InheritFriendship), (double)calf.Friendship, 3);
         }
 
         [Fact]
@@ -260,15 +260,15 @@ namespace Thatchwick.Core.Tests
             Harvest("item.crop_wheat");
             float f0 = plants.FertilityAt(pos);
             Harvest("item.crop_barley");                            // ikisi de tahıl: yorar
-            Assert.Equal(f0 - cfg.HarvestDraw - cfg.MonocropPenalty, plants.FertilityAt(pos), 4);
+            Assert.Equal((double)(f0 - cfg.HarvestDraw - cfg.MonocropPenalty), (double)plants.FertilityAt(pos), 4);
             Assert.Contains("Aynı aile", plants.RotationHint(pos, x.Db.Items.Get("item.crop_oats")));
             Assert.Contains("Nöbetleşe", plants.RotationHint(pos, x.Db.Items.Get("item.crop_turnip")));
             float f1 = plants.FertilityAt(pos);
             Harvest("item.crop_pea");                               // baklagil: azot + nöbet (önceki iki ekin aynı aile: üç tarla yok)
-            Assert.Equal(f1 - cfg.HarvestDraw + cfg.NitrogenBonus + cfg.RotationBonus, plants.FertilityAt(pos), 4);
+            Assert.Equal((double)(f1 - cfg.HarvestDraw + cfg.NitrogenBonus + cfg.RotationBonus), (double)plants.FertilityAt(pos), 4);
             float f2 = plants.FertilityAt(pos);
             Harvest("item.crop_turnip");                            // tahıl → baklagil → kök: üç tarla
-            Assert.Equal(f2 - cfg.HarvestDraw + cfg.RotationBonus + cfg.ThreeFieldBonus, plants.FertilityAt(pos), 4);
+            Assert.Equal((double)(f2 - cfg.HarvestDraw + cfg.RotationBonus + cfg.ThreeFieldBonus), (double)plants.FertilityAt(pos), 4);
             Assert.Equal("item.crop_pea", plants.SoilPlots.First().Value.PrevCrop);
         }
 
