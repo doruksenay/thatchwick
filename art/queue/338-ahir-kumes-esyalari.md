@@ -1,7 +1,7 @@
 ---
 id: "338"
 title: Ahır ve kümes eşyaları (12)
-status: running
+status: review
 claimed_at: 2026-11-18T11:50Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
