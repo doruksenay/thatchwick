@@ -1,8 +1,7 @@
 ---
 id: "351"
 title: Su yolu karoları: toprak ark, taş ark, ahşap oluk (kuru ve sulu)
-status: blocked
-claimed_at: 2026-11-18T11:56Z
+status: pending
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
 family: zemin
@@ -46,3 +45,4 @@ Motor bağlantısı `WorldView` su yolu çiziminde (şimdilik renk); kabulden so
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.

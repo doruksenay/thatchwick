@@ -1,8 +1,7 @@
 ---
 id: "359"
 title: Mevsim zemini (sonbahar çimeni, karlı çimen, karlı toprak)
-status: blocked
-claimed_at: 2026-11-18T12:02Z
+status: pending
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: zemin
 style_gate: false
@@ -50,3 +49,4 @@ Görsel analiz (Project `26-gorsel-analiz.md`, P1 madde 8): zemin bütün yıl y
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.

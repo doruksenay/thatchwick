@@ -1,8 +1,7 @@
 ---
 id: "012b"
 title: Gerçekçi oranlı dünya karakteri pilotu (012'nin yerine)
-status: blocked
-claimed_at: 2026-11-18T11:58Z
+status: pending
 approved_by: user        # kullanıcı kararı 2026-11-18 (sohbet): 012 sprite'ı fazla chibi, daha uzun ve gerçekçi oran
 family: karakter
 style_gate: true
@@ -48,3 +47,4 @@ Kullanıcı kararı (2026-11-18): 012'deki 56 px dünya sprite'ı oyuna uymuyor.
 ## Notlar
 - Kabulden sonra: 013'te seçilen yürüme yöntemi (pixminimax) korunur, 014-015 ve 016-017, 314 yeni karaktere göre yeniden yazılır.
 - Boy büyürse duvar yüksekliği ve kapı ölçeği yeniden değerlendirilebilir; bu kararı kullanıcı verir.
+- 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.

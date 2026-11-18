@@ -1,8 +1,7 @@
 ---
 id: "210"
 title: Karakter arayüzü stil pilotu (Durum paneli; parşömen + ahşap)
-status: blocked
-claimed_at: 2026-11-18T12:00Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: true
@@ -111,3 +110,4 @@ Hiçbir şeyi silme, üzerine yazma.
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz.
 Kabulde seçilen yönü yaz: yon: parsomen | ahsap -->
+- 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.
