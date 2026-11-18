@@ -57,6 +57,8 @@ namespace Thatchwick.Core.Content
         /// <summary>Bu kuşaktan itibaren soy hayvanı.</summary>
         public const int HeritageGeneration = 3;
         /// <summary>Üreyebilir mi (evcil hayvan ve arı hariç).</summary>
-        public bool Breeds => !IsPet && Housing != "hive";
+        /// <summary>Hep erkek (iğdiş öküz): üremez, satın alınan hep erkektir.</summary>
+        public bool MaleOnly { get; set; }
+        public bool Breeds => !IsPet && Housing != "hive" && !MaleOnly;
     }
 }

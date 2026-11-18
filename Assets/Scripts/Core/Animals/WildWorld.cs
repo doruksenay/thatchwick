@@ -1,0 +1,320 @@
+using System;
+using System.Collections.Generic;
+using Thatchwick.Core.Build;
+using Thatchwick.Core.Characters;
+using Thatchwick.Core.Time;
+using Thatchwick.Core.World;
+
+namespace Thatchwick.Core.Animals
+{
+    /// <summary>Haritada dolaşan bir yaban hayvanı (31-7): kenardan girer, bir süre dolaşır, çıkar.</summary>
+    public sealed class WildVisitor
+    {
+        public int Id;
+        public WildSpecies Species;
+        public GridPos Position;
+        public GridPos? NextTile;
+        public double StepProgress;
+        public double LeaveAt;      // oyun günü
+        public bool Young;
+        public bool Fleeing;
+    }
+
+    /// <summary>
+    /// Yaban ziyaretçileri (belge 31): mevsime ve gündüz/geceye uygun türler arada bir haritaya girer, gezer ve çıkar.
+    /// İlk görüldüğünde Doğa Defteri'ne işlenir. Sevilebilir türler "sakin yaklaş" ile sevilir, avlanabilir türler yayla vurulur.
+    /// Kurt ve ayı ziyaretçi olarak gelmez (kurt baskın sistemiyle, ayı yalnızca uzakta görülür ve deftere yazılır).
+    /// Kement tuzakları her gün tuzağa düşen bir türü yakalayabilir.
+    /// </summary>
+    public sealed class WildRoamers
+    {
+        public const int MaxVisitors = 4;
+        /// <summary>Gün başına ortalama gelen ziyaretçi.</summary>
+        public const double ArrivalsPerDay = 3.0;
+        public const double StayDaysMin = 0.15, StayDaysMax = 0.45;
+        public const double StepsPerDay = 40.0;
+        public const int MaxSnares = 3;
+        public const double BearSightingChance = 0.04;
+
+        private readonly GridMap _map;
+        private readonly Random _rng;
+        private readonly List<WildVisitor> _visitors = new List<WildVisitor>();
+        private int _nextId = 1;
+
+        public NatureJournal Journal { get; set; }
+        public IReadOnlyList<WildVisitor> Visitors => _visitors;
+
+        /// <summary>Doğa Defteri'ne ilk kez işlenen tür.</summary>
+        public event Action<WildSpecies> FirstSeen;
+
+        public WildRoamers(GridMap map, int seed = 211)
+        {
+            _map = map ?? throw new ArgumentNullException(nameof(map));
+            _rng = new Random(seed);
+        }
+
+        public static bool IsNight(double dayFraction) => dayFraction < 0.22 || dayFraction > 0.85;
+
+        /// <summary>Şu an haritaya gelebilecek türler (kurt ve ayı hariç).</summary>
+        public static List<WildSpecies> Candidates(Season season, bool night)
+        {
+            var list = new List<WildSpecies>();
+            foreach (var s in WildCatalog.All)
+            {
+                if (s.Id == "wild.wolf" || s.Id == "wild.bear") continue;
+                if (s.Seasons != null && Array.IndexOf(s.Seasons, season) < 0) continue;
+                if (s.Night != night) continue;
+                list.Add(s);
+            }
+            return list;
+        }
+
+        public void Tick(double gameDays, double now, Season season, double dayFraction)
+        {
+            if (gameDays <= 0) return;
+            bool night = IsNight(dayFraction);
+            // Gelen
+            if (_visitors.Count < MaxVisitors && _rng.NextDouble() < ArrivalsPerDay * gameDays)
+            {
+                var c = Candidates(season, night);
+                if (c.Count > 0) Arrive(c[_rng.Next(c.Count)], now, season == Season.Spring && _rng.NextDouble() < 0.3);
+            }
+            // Dolaşan
+            for (int i = _visitors.Count - 1; i >= 0; i--)
+            {
+                var v = _visitors[i];
+                bool wrongTime = v.Species.Night != night;
+                if (now >= v.LeaveAt || wrongTime) v.Fleeing = true;
+                v.StepProgress += gameDays * StepsPerDay * (v.Fleeing ? 2 : 1);
+                while (v.StepProgress >= 1)
+                {
+                    v.StepProgress -= 1;
+                    if (v.NextTile.HasValue) v.Position = v.NextTile.Value;
+                    if (v.Fleeing && IsEdge(v.Position)) { _visitors.RemoveAt(i); goto next; }
+                    v.NextTile = PickStep(v);
+                }
+                next:;
+            }
+        }
+
+        /// <summary>Gelen ziyaretçi (test ve sahne için de kullanılır).</summary>
+        public WildVisitor Arrive(WildSpecies s, double now, bool young = false)
+        {
+            var pos = EdgeTile();
+            if (!pos.HasValue) return null;
+            var v = new WildVisitor { Id = _nextId++, Species = s, Position = pos.Value, LeaveAt = now + StayDaysMin + _rng.NextDouble() * (StayDaysMax - StayDaysMin), Young = young };
+            _visitors.Add(v);
+            if (Journal != null)
+            {
+                if (Journal.Mark(s.Id, JournalMark.Seen)) FirstSeen?.Invoke(s);
+                if (young) Journal.Mark(s.Id, JournalMark.YoungSeen);
+            }
+            return v;
+        }
+
+        /// <summary>Uzaktan ayı görmek: deftere yazılır, haritaya girmez.</summary>
+        public bool TryBearSighting(Season season)
+        {
+            if (Journal == null || season == Season.Winter || _rng.NextDouble() >= BearSightingChance) return false;
+            if (Journal.Mark("wild.bear", JournalMark.Seen)) { FirstSeen?.Invoke(WildCatalog.Get("wild.bear")); return true; }
+            return false;
+        }
+
+        public WildVisitor Find(int id) { foreach (var v in _visitors) if (v.Id == id) return v; return null; }
+
+        public WildVisitor At(GridPos tile)
+        {
+            WildVisitor best = null;
+            foreach (var v in _visitors)
+            {
+                if (v.Position.Z != tile.Z) continue;
+                if (Math.Abs(v.Position.X - tile.X) + Math.Abs(v.Position.Y - tile.Y) > 1) continue;
+                if (best == null || v.Position == tile) best = v;
+            }
+            return best;
+        }
+
+        /// <summary>Sevme şansı: (1 − ürkeklik) + Hayvancılık seviye başına %4; yavru daha kolay.</summary>
+        public static double PetChance(WildSpecies s, int husbandryLevel, bool young) =>
+            s == null || !s.Pettable ? 0 : Math.Max(0.05, Math.Min(0.95, 1 - s.Shyness + 0.04 * (husbandryLevel - 1) + (young ? 0.15 : 0)));
+
+        /// <summary>Sakin yaklaşıp sevmeyi dener. Başarıda deftere "sevildi" yazılır; başarısızlıkta hayvan kaçar.</summary>
+        public string TryPet(int visitorId, Character c)
+        {
+            var v = Find(visitorId);
+            if (v == null) return "Gitti bile.";
+            if (!v.Species.Pettable) return $"{v.Species.Name} sevilmez; uzaktan izle.";
+            double chance = PetChance(v.Species, c?.Skills.GetLevel(SkillType.AnimalHusbandry) ?? 1, v.Young);
+            if (_rng.NextDouble() < chance)
+            {
+                Journal?.Mark(v.Species.Id, JournalMark.Petted);
+                c?.GainSkillXp(SkillType.AnimalHusbandry, 2);
+                v.LeaveAt = Math.Max(v.LeaveAt, v.LeaveAt + 0.05);
+                return $"{v.Species.Name} elini kokladı, kaçmadı.";
+            }
+            v.Fleeing = true;
+            return $"{v.Species.Name} ürktü, kaçtı.";
+        }
+
+        /// <summary>Yayla avlama: av ürünleri haneye eklenir, hayvan haritadan çıkar ya da kaçar.</summary>
+        public HuntResult Shoot(int visitorId, Character hunter, Household house, bool houndHelps)
+        {
+            var v = Find(visitorId);
+            if (v == null) return new HuntResult { Message = "Gitti bile." };
+            bool motherWithYoung = false;
+            foreach (var o in _visitors) if (o != v && o.Young && o.Species == v.Species) motherWithYoung = !v.Young;
+            var r = Hunting.Try(_rng, v.Species.Id, HuntMethod.Bow, hunter, houndHelps, motherWithYoung);
+            if (r.Success)
+            {
+                _visitors.Remove(v);
+                Give(r, house);
+                Journal?.Mark(v.Species.Id, JournalMark.Hunted);
+            }
+            else if (v.Species.Huntable) v.Fleeing = true;
+            return r;
+        }
+
+        /// <summary>Günlük tuzak kontrolü: her kement (en çok 3) tuzağa düşen türlerden birini yakalayabilir.</summary>
+        public List<HuntResult> CheckSnares(Season season, int snares, Character hunter, Household house)
+        {
+            var results = new List<HuntResult>();
+            var pool = new List<WildSpecies>();
+            foreach (var s in WildCatalog.All)
+                if (s.Trappable && (s.Seasons == null || Array.IndexOf(s.Seasons, season) >= 0)) pool.Add(s);
+            if (pool.Count == 0) return results;
+            for (int i = 0; i < Math.Min(MaxSnares, snares); i++)
+            {
+                var s = pool[_rng.Next(pool.Count)];
+                var r = Hunting.Try(_rng, s.Id, HuntMethod.Trap, hunter);
+                if (!r.Success) continue;
+                Give(r, house);
+                Journal?.Mark(s.Id, JournalMark.Hunted);
+                results.Add(r);
+            }
+            return results;
+        }
+
+        private static void Give(HuntResult r, Household house)
+        {
+            if (house == null) return;
+            if (r.Meat != null && r.MeatCount > 0) house.AddItem(r.Meat, r.MeatCount);
+            if (r.Hide != null && r.HideCount > 0) house.AddItem(r.Hide, r.HideCount);
+        }
+
+        private bool IsEdge(GridPos p) => p.X <= 0 || p.Y <= 0 || p.X >= _map.Width - 1 || p.Y >= _map.Height - 1;
+
+        private GridPos? EdgeTile()
+        {
+            for (int guard = 0; guard < 40; guard++)
+            {
+                int side = _rng.Next(4);
+                int x = side == 0 ? 0 : side == 1 ? _map.Width - 1 : _rng.Next(_map.Width);
+                int y = side == 2 ? 0 : side == 3 ? _map.Height - 1 : _rng.Next(_map.Height);
+                var p = new GridPos(x, y);
+                if (_map.IsWalkable(p)) return p;
+            }
+            return null;
+        }
+
+        private static readonly GridPos[] Dirs = { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };
+
+        private GridPos? PickStep(WildVisitor v)
+        {
+            var options = new List<GridPos>();
+            GridPos best = v.Position; int bestEdge = int.MaxValue;
+            foreach (var d in Dirs)
+            {
+                var n = v.Position + d;
+                if (!_map.InBounds(n) || !_map.CanStep(v.Position, n)) continue;
+                options.Add(n);
+                int edge = Math.Min(Math.Min(n.X, n.Y), Math.Min(_map.Width - 1 - n.X, _map.Height - 1 - n.Y));
+                if (edge < bestEdge) { bestEdge = edge; best = n; }
+            }
+            if (options.Count == 0) return null;
+            if (v.Fleeing) return best;
+            return options[_rng.Next(options.Count)];
+        }
+    }
+
+    /// <summary>Kurt savunmasının dünyadan okunan parçaları: çitli ağıl ve açık havada yanan ateş (31-4).</summary>
+    public static class WildWorld
+    {
+        /// <summary>Ağıl sayılmak için en az bu kadar çit ya da kapı kenarı.</summary>
+        public const int PenFenceEdges = 8;
+
+        private static readonly string[] FireItems = { "item.brazier", "item.torch", "item.bonfire" };
+
+        public static int FenceEdges(GridMap map)
+        {
+            int n = 0;
+            foreach (var kv in map.Edges) if (kv.Value == EdgeKind.Fence || kv.Value == EdgeKind.Gate) n++;
+            return n;
+        }
+
+        public static bool HasPen(GridMap map) => map != null && FenceEdges(map) >= PenFenceEdges;
+
+        public static bool HasOutdoorFire(WorldState world)
+        {
+            if (world == null) return false;
+            foreach (var item in world.Items)
+            {
+                if (Array.IndexOf(FireItems, item.Def.Id) < 0) continue;
+                var room = world.Map.Rooms.RoomAt(item.Position);
+                if (room == null || !room.IsIndoor) return true;
+            }
+            return false;
+        }
+    }
+
+    /// <summary>Haritada atla atlanabilecek engel: çit kenarı ya da alçak eşya (örme çit, kütük, yemlik, fıçı).</summary>
+    public readonly struct JumpSpot
+    {
+        public readonly GridPos Landing;
+        public readonly int Tiles;
+        public readonly string Label;
+        public JumpSpot(GridPos landing, int tiles, string label) { Landing = landing; Tiles = tiles; Label = label; }
+    }
+
+    public static class JumpObstacles
+    {
+        private static readonly string[] LowItems = { "item.wattle_hurdle", "item.log", "item.feed_trough", "item.water_trough", "item.barrel" };
+
+        public static bool IsLow(ItemInstance item) => item != null && Array.IndexOf(LowItems, item.Def.Id) >= 0;
+
+        private static readonly GridPos[] Dirs = { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };
+
+        /// <summary>
+        /// Binicinin yanındaki atlanabilir engeller. Çit kenarı: bir karo öteye iner (2 karo atlama).
+        /// Alçak eşya: üstünden aşıp öteki yana iner (2 karo); iki alçak eşya üst üste ise 3 karo (Yüksek atlama).
+        /// İniş karosu boş ve yürünebilir olmalı.
+        /// </summary>
+        public static List<JumpSpot> Find(WorldState world, GridPos from)
+        {
+            var list = new List<JumpSpot>();
+            if (world == null) return list;
+            var map = world.Map;
+            foreach (var d in Dirs)
+            {
+                var n1 = from + d;
+                if (!map.InBounds(n1)) continue;
+                var edge = map.GetEdge(GridMap.EdgeBetween(from, n1));
+                if (edge == EdgeKind.Fence || edge == EdgeKind.HalfWall || edge == EdgeKind.Railing)
+                {
+                    if (map.IsWalkable(n1)) list.Add(new JumpSpot(n1, 2, edge == EdgeKind.Fence ? "çit" : edge == EdgeKind.Railing ? "korkuluk" : "alçak duvar"));
+                    continue;
+                }
+                if (edge != EdgeKind.None) continue;
+                var low1 = world.GetItemAt(n1);
+                if (!IsLow(low1)) continue;
+                var n2 = n1 + d;
+                if (!map.InBounds(n2)) continue;
+                if (map.IsWalkable(n2) && world.GetItemAt(n2) == null) { list.Add(new JumpSpot(n2, 2, low1.Def.DisplayName.ToLowerInvariant())); continue; }
+                var low2 = world.GetItemAt(n2);
+                var n3 = n2 + d;
+                if (IsLow(low2) && map.InBounds(n3) && map.IsWalkable(n3) && world.GetItemAt(n3) == null)
+                    list.Add(new JumpSpot(n3, 3, "iki engel"));
+            }
+            return list;
+        }
+    }
+}

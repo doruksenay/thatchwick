@@ -549,6 +549,15 @@ namespace Thatchwick.Core.Life
         private PlantSystem _plants;
         private HeatSystem _heat;
         /// <summary>Hayvanlar: attan düşen binici yaralanır (ölümcül değil), at ürkünce bildirim.</summary>
+        /// <summary>Haritada dolaşan yaban hayvanları (kayda yazılmaz, gelip giderler).</summary>
+        public WildRoamers Roamers { get; private set; }
+
+        public void AttachWild(Thatchwick.Core.World.GridMap map)
+        {
+            Roamers = new WildRoamers(map) { Journal = Journal };
+            Roamers.FirstSeen += sp => Say($"Doğa Defteri: {sp.Name} ilk kez görüldü.", NoticeLevel.Info);
+        }
+
         public void Attach(Thatchwick.Core.Animals.AnimalSystem animals)
         {
             animals.RiderFell += (horse, rider) =>
@@ -630,6 +639,7 @@ namespace Thatchwick.Core.Life
             Festivals.Tick(Population.Members);
             Decor.Tick(gameDays);
             Upbringing.Tick(gameDays);
+            Roamers?.Tick(gameDays, Clock.TotalDays, Clock.Season, Clock.DayFraction);
 
             long day = Clock.DayIndex;
             if (day != _lastDay)
@@ -653,6 +663,13 @@ namespace Thatchwick.Core.Life
             Wolves?.OnNewDay(Clock.Season, (int)(day % Clock.Config.DaysPerSeason), Clock.Config.DaysPerSeason);
             var orphan = Adoptions.OnNewDay(Clock.Season);
             if (orphan != null) Say($"Tarlanın kenarında öksüz bir {orphan.Name.ToLowerInvariant()} yavrusu bulundu. Sahiplenmek ister misin?", NoticeLevel.Info);
+            if (Roamers != null)
+            {
+                Roamers.TryBearSighting(Clock.Season);
+                int snares = House.Count("item.snare");
+                if (snares > 0)
+                    foreach (var r in Roamers.CheckSnares(Clock.Season, snares, BestAt(SkillType.Hunting), House)) Say($"Tuzağa {WildCatalog.Get(r.SpeciesId)?.Name.ToLowerInvariant()} düştü.", NoticeLevel.Info);
+            }
             Villagers.PollEvents();
             Goals.Update();
             int season = (int)((day / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);

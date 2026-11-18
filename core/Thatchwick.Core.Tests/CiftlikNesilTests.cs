@@ -66,7 +66,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(a1.IsFemale);
             Assert.False(a2.IsFemale);                       // sürüde dişi var, erkek yok: öküz
             Assert.True(a3.IsFemale);
-            Assert.Equal("öküz", a2.SexText);
+            Assert.Equal("boğa", a2.SexText);
             Assert.True(x.Animals.Buy("animal.cow", x.House, out var a4, female: false).Ok);   // oyuncu seçebilir
             Assert.False(a4.IsFemale);
 
@@ -98,7 +98,7 @@ namespace Thatchwick.Core.Tests
             x.Animals.HusbandryLevel = () => 10;
             var mom = x.Animals.Restore(1, cow, new GridPos(4, 4), barn.Id, 100f, 20, 0, 0, friendship: 80f, comfort: 60f, female: true, generation: 2);
             var other = x.Animals.Restore(3, cow, new GridPos(4, 5), barn.Id, 100f, 20, 0, 0, friendship: 80f, comfort: 60f, female: true);
-            Assert.Contains("öküz", x.Animals.BreedBlocker(mom));
+            Assert.Contains("boğa", x.Animals.BreedBlocker(mom));
             for (int d = 0; d < 60; d++) x.Animals.OnNewDay(Season.Spring);
             Assert.False(mom.IsPregnant || other.IsPregnant);        // erkeksiz gebelik yok
             Assert.Equal(2, x.Animals.Animals.Count);

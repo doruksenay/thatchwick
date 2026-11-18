@@ -269,6 +269,21 @@ namespace Thatchwick.Game
             _draft.SkillFocus = newFocus == 0 ? (SkillType?)null : (SkillType)(newFocus - 1);
             GUILayout.Label("   Eğilim seçilen beceriyle seviye 2 başlatır.", _smallStyle);
 
+            // Yatkınlık (28 karar 1): en çok 2 beceri; o becerilerde XP x1,5 ve günlük doygunluk eşiği yüksek.
+            Section($"Yatkınlıklar ({_draft.Aptitudes.Count}/{CharacterDraft.MaxFounderAptitudes})");
+            var all = (SkillType[])System.Enum.GetValues(typeof(SkillType));
+            for (int i = 0; i < all.Length; i += 4)
+            {
+                GUILayout.BeginHorizontal();
+                for (int j = i; j < Mathf.Min(i + 4, all.Length); j++)
+                {
+                    bool on = _draft.Aptitudes.Contains(all[j]);
+                    if (GUILayout.Toggle(on, SkillNames.Name(all[j]), GUILayout.Width(120f)) != on) _draft.ToggleAptitude(all[j]);
+                }
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.Label("   Seçmezsen yatkınlık yok; çocuklar ana babadan miras alabilir.", _smallStyle);
+
             if (Content != null && Content.Traits.Count > 0)
             {
                 Section($"Özellikler ({_draft.TraitIds.Count}/{Character.MaxTraits})");

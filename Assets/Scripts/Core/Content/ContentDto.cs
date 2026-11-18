@@ -98,6 +98,7 @@ namespace Thatchwick.Core.Content
         public bool femaleProduces;   // ürünü yalnızca dişi verir (yumurta, süt)
         public bool draft;            // çeki hayvanı (düven)
         public string femaleName, maleName;
+        public bool maleOnly;              // iğdiş öküz gibi: hep erkek, üremez
     }
 
     [Serializable]

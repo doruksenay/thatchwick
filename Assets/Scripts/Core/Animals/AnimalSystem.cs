@@ -208,6 +208,13 @@ namespace Thatchwick.Core.Animals
             return n;
         }
 
+        /// <summary>Binicinin atını yeni karoya taşır (engel atlama).</summary>
+        public void MoveMount(int riderId, GridPos to)
+        {
+            var a = MountOf(riderId);
+            if (a != null) a.Position = to;
+        }
+
         public Animal Get(int id)
         {
             foreach (var a in _animals) if (a.Id == id) return a;
@@ -217,7 +224,7 @@ namespace Thatchwick.Core.Animals
         internal Animal Spawn(AnimalSpeciesDef species, ItemInstance home, bool female = true)
         {
             var pos = SpawnTile(home);
-            var a = new Animal(_nextId++, species, pos, home.Id) { IsFemale = female };
+            var a = new Animal(_nextId++, species, pos, home.Id) { IsFemale = female && !species.MaleOnly };
             a.WaitDays = _rng.NextDouble() * MaxWaitDays;
             _animals.Add(a);
             return a;
@@ -245,7 +252,7 @@ namespace Thatchwick.Core.Animals
         {
             var a = new Animal(id, species, pos, homeId)
             {
-                IsFemale = female ?? (id % 2 == 1),          // eski kayıt: tek kimlik dişi, çift kimlik erkek
+                IsFemale = !species.MaleOnly && (female ?? (id % 2 == 1)),          // eski kayıt: tek kimlik dişi, çift kimlik erkek
                 PregnantDays = species.Breeds && (female ?? (id % 2 == 1)) ? Math.Max(0, pregnantDays) : 0,
                 MotherId = Math.Max(0, motherId),
                 Generation = Math.Max(0, generation),

@@ -31,6 +31,17 @@ namespace Thatchwick.Core.Customization
         public AgeStage StartStage { get; set; } = AgeStage.Adult;
         public Appearance Appearance { get; set; } = new Appearance();
         public SkillType? SkillFocus { get; set; }
+        /// <summary>Kurucu yatkınlıkları (28 karar 1): en çok 2 beceri, "Yatkın" kademesi.</summary>
+        public const int MaxFounderAptitudes = 2;
+        public List<SkillType> Aptitudes { get; } = new List<SkillType>();
+
+        public bool ToggleAptitude(SkillType s)
+        {
+            if (Aptitudes.Remove(s)) return true;
+            if (Aptitudes.Count >= MaxFounderAptitudes) return false;
+            Aptitudes.Add(s);
+            return true;
+        }
 
         // --- Karakter yaratma 2.0 (doküman 14) ---
         public const int MaxDynastyLength = 20;
@@ -148,6 +159,7 @@ namespace Thatchwick.Core.Customization
             c.Genome = Genetics.ForFounder(c.Appearance, catalog, rng);
             c.SetAge(StartAge);
             c.LifespanDays = c.AgeConfig.RollLifespan(rng);
+            foreach (var a in Aptitudes) c.Skills.SetAptitude(a, Aptitude.Minor);
             if (SkillFocus.HasValue) c.GainSkillXp(SkillFocus.Value, FocusXp);
             c.SetTraits(TraitIds);
             return c;
