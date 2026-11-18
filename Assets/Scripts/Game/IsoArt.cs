@@ -354,7 +354,9 @@ namespace Thatchwick.Game
             string r84 = AdultR84(c);
             if (r84 != null)
             {
-                var s84 = Get(r84 + "_cand_" + Directions[direction], R84PivotX, R84PivotY);
+                // 018b: 8 yönün durma karesi anim/ altında "_idle_<yön>"; ilk aday yalnızca "_cand_se".
+                var s84 = Get(r84 + "_idle_" + Directions[direction], R84PivotX, R84PivotY)
+                          ?? Get(r84 + "_cand_" + Directions[direction], R84PivotX, R84PivotY);
                 if (s84 != null) return s84;
             }
             string set = CharacterSet(c, out float px, out float py);
