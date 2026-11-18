@@ -1,7 +1,8 @@
 ---
 id: "301"
 title: Ev eşyaları grup 2 (raf, kazan, sandık, bardak, oymalı sandalye, yarma kütüğü, pazar tezgâhı; yalnızca SE)
-status: pending
+status: running
+claimed_at: 2026-11-18T08:41Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: esya
