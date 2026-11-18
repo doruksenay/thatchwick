@@ -1,7 +1,8 @@
 ---
 id: "008b"
 title: Duvar pencere (iki eksen) ve alçak duvar (iki eksen), inpaint ile
-status: pending
+status: running
+claimed_at: 2026-11-18T07:39Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: yapi
 style_gate: false
