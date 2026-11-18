@@ -1458,16 +1458,25 @@ namespace Thatchwick.Game
             if (_seen == null)
             {
                 // İlk açılışta açık olanlar görülmüş sayılır; sonradan açılanlar "Yeni" görünür.
-                _seen = new HashSet<string>();
+                _seen = LoadSet(SeenKey);
+                if (_seen == null) _seen = new HashSet<string>(); else goto seenLoaded;
                 foreach (var c in ItemCatalog.Categories)
                     foreach (var d in ItemCatalog.InCategory(_content, c.id, null, null, null, _house)) if (_svc.IsUnlocked(d)) _seen.Add(d.Id);
             }
+            seenLoaded:
+            if (Event.current.type == EventType.Layout) TrackOwned();
             if (_catNames == null || Event.current.type == EventType.Layout) RebuildShopTabs(level);
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Ara:", GUILayout.Width(32f));
             _search = GUILayout.TextField(_search ?? "", GUILayout.Width(196f));
             GUILayout.EndHorizontal();
+            // Zanaatkâr defteri (belge 29 madde 5 + "???" siluet, madde 3): hesap seviyesi DefterLevel'da açılır.
+            bool defterOpen = level >= DefterLevel;
+            GUI.enabled = defterOpen;
+            string dl = defterOpen ? (_defter ? "Zanaatkâr defteri ▴" : "Zanaatkâr defteri ▾") : $"Zanaatkâr defteri · Sv {DefterLevel}";
+            if (GUILayout.Toggle(_defter && defterOpen, UiSkin.C(dl, "ui_search"), GUI.skin.button) != (_defter && defterOpen)) { bool v = !_defter; _deferred = () => { _defter = v; _scroll = Vector2.zero; }; }
+            GUI.enabled = true;
             string q = _activeSearch.Trim();
             if (q.Length > 0) { DrawSearch(q, level); return; }
 
@@ -1502,6 +1511,7 @@ namespace Thatchwick.Game
             string set = _setFilter > 0 ? ItemCatalog.StyleSets[_setFilter - 1] : null;
             string theme = _themeFilter > 0 ? Decor.Themes[_themeFilter - 1].id : null;
 
+            if (_defter && level >= DefterLevel) { DrawDefter(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme, _house)); return; }
             var list = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme, _house), level);
             if (list.Count == 0) GUILayout.Label("Bu filtreyle eşya yok.");
             foreach (var def in list) DrawCard(def);
@@ -1575,8 +1585,54 @@ namespace Thatchwick.Game
 
         private void MarkSeen()
         {
-            if (_seen != null) _seen.UnionWith(_pendingSeen);
+            if (_seen != null && _pendingSeen.Count > 0) { _seen.UnionWith(_pendingSeen); SaveSet(SeenKey, _seen); }
             _pendingSeen.Clear();
+        }
+
+        // ---------- kalıcı menü durumu ("Yeni" rozeti ve defter koleksiyonu) ----------
+        // Hesap düzeyinde tutulur (AccountProgress gibi): tüm kayıtlar ortak. PlayerPrefs; SaveData'ya dokunmaz.
+        private const string SeenKey = "tw.menu.seen";
+        private const string OwnedKey = "tw.menu.owned";
+        public const int DefterLevel = 5;   // Zanaatkâr defteri açılma seviyesi (varsayılan; belge 33)
+        private HashSet<string> _owned;
+        private bool _defter;
+
+        private static HashSet<string> LoadSet(string key)
+        {
+            if (!PlayerPrefs.HasKey(key)) return null;
+            var s = PlayerPrefs.GetString(key, "");
+            return new HashSet<string>(s.Split(new[] { '|' }, System.StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        private static void SaveSet(string key, HashSet<string> set)
+        {
+            PlayerPrefs.SetString(key, string.Join("|", set.ToArray()));
+            PlayerPrefs.Save();
+        }
+
+        // Bir kez edinilen (envanterde ya da dünyada görülen) her eşya defterde açılır.
+        private void TrackOwned()
+        {
+            if (_owned == null) _owned = LoadSet(OwnedKey) ?? new HashSet<string>();
+            int before = _owned.Count;
+            foreach (var kv in _house.InventoryList()) _owned.Add(kv.Key);
+            foreach (var it in _world.Items) if (it.Def != null) _owned.Add(it.Def.Id);
+            if (_owned.Count != before) SaveSet(OwnedKey, _owned);
+        }
+
+        // Defter: kategorinin tüm eşyaları. Edinilmişler kart olarak (tekrar alınabilir), edinilmemişler "???" siluet.
+        private void DrawDefter(List<ItemDef> all)
+        {
+            int got = all.Count(d => _owned != null && _owned.Contains(d.Id));
+            GUILayout.Label($"Koleksiyon: {got}/{all.Count}", _wrap);
+            foreach (var def in all)
+            {
+                if (_owned != null && _owned.Contains(def.Id)) { DrawCard(def); continue; }
+                GUILayout.BeginVertical(UiSkin.CellLocked);
+                GUILayout.Label(new GUIContent("???", UiSkin.Icon("ui_lock")), GUILayout.Height(22f));
+                GUILayout.Label($"Henüz edinilmedi ({def.Width}x{def.Height})", _wrap);
+                GUILayout.EndVertical();
+            }
         }
 
         private void DrawCard(ItemDef def)

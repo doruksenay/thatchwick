@@ -27,9 +27,13 @@ namespace Thatchwick.Game
     /// </summary>
     public sealed class GameRoot : MonoBehaviour
     {
-        private const int MapWidth = 96;   // 64x64 arsa (4..67) + doğuda köy (18.11.2026)
-        private const int MapHeight = 72;
+        private const int MapWidth = Thatchwick.Core.World.Regions.WorldWidth;   // çiftlik (96x72, 64x64 arsa) + köy yolu + şehir (belge 39-40)
+        private const int MapHeight = Thatchwick.Core.World.Regions.WorldHeight;
         private const int LegacyMapWidth = 48;   // eski kayıtların haritası
+        // Bölgeli dünyada (çiftlik + şehir) etkin bölge; kamera ve zemin çizimi buna kilitli.
+        private bool _regional;
+        private Thatchwick.Core.World.Region _region;
+        private float _fadeUntil;
         private const float MaxFrameSeconds = 0.1f;
 
         private sealed class Actor
@@ -226,6 +230,7 @@ namespace Thatchwick.Game
                 _world = loaded.World;
                 map = _world.Map;
                 Places = map.Width <= LegacyMapWidth ? LegacyPlaces : Places;   // eski kayıt: eski küçük harita
+                if (Thatchwick.Core.World.Regions.IsRegional(map)) { Thatchwick.Core.World.Regions.ApplyPortals(map); Places = Thatchwick.Core.World.Regions.Places(); }
                 ClearLegacyObstacles(map);
                 _clock = loaded.Clock;
                 _lastSavedDay = _clock.DayIndex;
@@ -234,6 +239,7 @@ namespace Thatchwick.Game
             else
             {
                 map = BuildDemoMap();
+                Places = Thatchwick.Core.World.Regions.Places();
                 _world = new WorldState(map);
                 _clock = new GameClock();
                 PlaceDemoItems();
@@ -244,7 +250,10 @@ namespace Thatchwick.Game
             viewGo.transform.SetParent(transform, false);
             _view = viewGo.AddComponent<WorldView>();
             _view.Content = _content;
-            _view.Build(map);
+            _regional = Thatchwick.Core.World.Regions.IsRegional(map);
+            var farm = Thatchwick.Core.World.Regions.Farm;
+            if (_regional) { _region = farm; _view.Build(map, new RectInt(farm.X, farm.Y, farm.W, farm.H)); }
+            else _view.Build(map);
 
             RebuildItemViews();
             _world.Changed += () => _itemsDirty = true;
@@ -286,7 +295,7 @@ namespace Thatchwick.Game
             _juice = gameObject.AddComponent<Juice>();
 
             _input = gameObject.AddComponent<WorldInput>();
-            _input.Init(cam, Iso.MapBounds(map.Width, map.Height));
+            _input.Init(cam, _regional ? Iso.RectBounds(farm.X, farm.Y, farm.W, farm.H) : Iso.MapBounds(map.Width, map.Height));
             _input.IsOverUi = IsOverHud;
             _input.Tapped += OnTapped;
 
@@ -509,6 +518,11 @@ namespace Thatchwick.Game
             });
 
             BuildStarterHouse(map);
+            // Çiftlik yolu doğu kenarına, şehir geçidine kadar uzar; şehir haritası kurulur (belge 39).
+            for (int x = 73; x <= 95; x++) map.SetRoad(new GridPos(x, 40), RoadType.Path);
+            map.SetRoad(new GridPos(94, 41), RoadType.Path); map.SetRoad(new GridPos(95, 41), RoadType.Path);
+            Thatchwick.Core.World.Regions.BuildTerrain(map);
+            Thatchwick.Core.World.Regions.Apply(map);
 
             // Yol bulma testinden kalan çit hattı (x=32) ve 60 rastgele engel kaldırıldı (görsel analiz, 18.11.2026):
             // dünyada karşılıkları yoktu, haritada koyu lekeler olarak görünüyordu. Kaya ve çalı görselleri gelince
@@ -600,9 +614,22 @@ namespace Thatchwick.Game
                 PutGrown(edgeRng.Next(3) == 0 ? "item.tree_pine" : "item.tree_birch", ex, ey, quiet: true);
             }
 
-            // Köy pazarı: arsanın doğusunda, köy yolunun ucunda.
-            if (_content.Items.TryGet("item.market_stall", out var stallDef))
-                _stallId = _world.PlaceItem(stallDef, new GridPos(70, 24)).Id;
+            // Köy yolu ve şehir: dükkân içleri (meslek eşyaları, duvar ve yüzey dekoru), meydan, evler, ağaçlar.
+            foreach (var ti in Thatchwick.Core.World.Regions.Items())
+            {
+                var at = new GridPos(ti.X, ti.Y);
+                if (ti.Grown)
+                {
+                    // Ağaç ve çalı yalnızca açık toprağa: yol, meydan taşı, su, köprü ve bina içi atlanır.
+                    if (_world.Map.GetRoad(at) != RoadType.None || _world.Map.GetFloor(at) != FloorType.Grass) continue;
+                    PutGrown(ti.Id, ti.X, ti.Y, quiet: true);
+                    continue;
+                }
+                if (ti.Slot != null) { PutOn(ti.Id, ti.X, ti.Y, 0, ti.Slot); continue; }
+                if (ti.WallSide >= 0) { PutWall(ti.Id, at, ti.WallSide); continue; }
+                Put(ti.Id, ti.X, ti.Y);
+                if (ti.Id == "item.market_stall") { var st = _world.GetItemAt(at); if (st != null) _stallId = st.Id; }
+            }
 
             // Arsanın dışındaki yabani meşeler (olgun): herkes kesebilir, fidanlarıyla arsaya ağaç dikilir.
             var rng = new System.Random(13);
@@ -652,7 +679,6 @@ namespace Thatchwick.Game
             // Kapıdan güneye patika, sonra doğuya köye giden yol.
             for (int y = 33; y <= 40; y++) map.SetRoad(new GridPos(32, y), RoadType.Path);
             for (int x = 33; x <= 72; x++) map.SetRoad(new GridPos(x, 40), RoadType.Path);
-            for (int y = 26; y <= 39; y++) map.SetRoad(new GridPos(72, y), RoadType.Path);
         }
 
         private void Put(string id, int x, int y, int z = 0, int rotation = 0)
@@ -670,12 +696,64 @@ namespace Thatchwick.Game
             PlantSystem.SetGrown(_world.PlaceItem(def, new GridPos(x, y)));
         }
 
+        private void PutWall(string id, GridPos tile, int side)
+        {
+            if (!_content.Items.TryGet(id, out var def)) { Debug.LogError($"Eşya tanımı yok: {id}"); return; }
+            try { _world.PlaceOnWall(def, tile, side); }
+            catch (System.Exception ex) { Debug.LogWarning($"Başlangıç duvar eşyası konamadı {id} {tile}: {ex.Message}"); }
+        }
+
         private void PutOn(string id, int x, int y, int z, string slot)
         {
             var surface = _world.GetItemAt(new GridPos(x, y, z));
             if (surface == null || !_content.Items.TryGet(id, out var def)) return;
             try { _world.PlaceOnSurface(def, surface.Id, slot); }
             catch (System.Exception ex) { Debug.LogWarning($"Başlangıç dekoru konamadı {id}: {ex.Message}"); }
+        }
+
+        private const float RegionFadeSeconds = 0.7f;
+
+        // Komşu bölgenin eşyaları kenardaki boşluğun üstünde görünmesin: yalnızca etkin bölgenin eşyaları çizilir.
+        private void HideOtherRegions()
+        {
+            if (_region == null) return;
+            // Eşya parçaları, gölgeler, süsler: dünya konumundan karoya çevrilip bölgeye bakılır.
+            foreach (var go in _itemObjects)
+            {
+                if (go == null) continue;
+                var g = Iso.WorldToGrid(go.transform.position, 0);
+                go.SetActive(_region.Contains(new GridPos(Mathf.FloorToInt(g.x), Mathf.FloorToInt(g.y))));
+            }
+        }
+
+        private void HideOtherRegionActors()
+        {
+            if (_region == null) return;
+            foreach (var a in _actors)
+            {
+                if (a.View == null || a.Character == null) continue;
+                bool here = _region.Contains(a.Character.Position);
+                if (a.View.gameObject.activeSelf != here) a.View.gameObject.SetActive(here);
+            }
+        }
+
+        /// <summary>
+        /// Seçili karakter başka bir haritaya (çiftlik, şehir) geçtiyse: zemin o bölge için kurulur, kamera oraya kilitlenir
+        /// ve kısa bir kararma olur. Diğer bölgelerdeki hayat sürer (tek dünya, ekran dışı).
+        /// </summary>
+        private void UpdateRegion()
+        {
+            var a = _selected ?? _player;
+            if (a == null || a.Character == null) return;
+            var r = Thatchwick.Core.World.Regions.At(a.Character.Position);
+            if (r == null || r == _region) return;
+            _region = r;
+            _view.SetArea(new RectInt(r.X, r.Y, r.W, r.H));
+            _input.SetBounds(Iso.RectBounds(r.X, r.Y, r.W, r.H));
+            if (a.View != null) _input.JumpTo(a.View.position);
+            _itemsDirty = true;
+            _fadeUntil = Time.unscaledTime + RegionFadeSeconds;
+            ShowMessage(r.Name);
         }
 
         private void TryPlace(string id, GridPos pos)
@@ -2196,8 +2274,10 @@ namespace Thatchwick.Game
         private void LateUpdate()
         {
             if (_view == null || _world == null) return;
+            if (_regional) UpdateRegion();
             if (_floorsDirty) { _floorsDirty = false; _view.RefreshFloors(); }
-            if (_itemsDirty) { _itemsDirty = false; RebuildItemViews(); }
+            if (_itemsDirty) { _itemsDirty = false; RebuildItemViews(); if (_regional) HideOtherRegions(); }
+            if (_regional) HideOtherRegionActors();
             if (_creator == null) UpdateAmbience();
             UpdateJuice();
         }
@@ -2556,6 +2636,13 @@ namespace Thatchwick.Game
         private void OnGUI()
         {
             if (_clock == null) return;
+            if (Time.unscaledTime < _fadeUntil)
+            {
+                // Harita geçişi: kısa kararma (Stardew gibi).
+                GUI.color = new Color(0f, 0f, 0f, Mathf.Clamp01((_fadeUntil - Time.unscaledTime) / RegionFadeSeconds));
+                GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), Texture2D.whiteTexture);
+                GUI.color = Color.white;
+            }
 
             if (_creator != null)
             {
@@ -2581,12 +2668,13 @@ namespace Thatchwick.Game
 
             DrawItemLabels(s);
             { var prevSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _buildMode.OnGUI(s); } finally { GUI.skin = prevSkin; } }   // 391 arayüz kiti
-            _marketPanel.OnGUI(s);
+            var prevPanelSkin = GUI.skin; GUI.skin = UiSkin.Skin;   // 391 tema tüm panellere (belge 33)
+            try { _marketPanel.OnGUI(s);
             _storagePanel.OnGUI(s);
             _minePanel.OnGUI(s);
             _keepsakePanel?.OnGUI(s);
             _familyPanel.OnGUI(s);
-            _villagePanel.OnGUI(s);
+            _villagePanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }
             DrawBalloons(s);
             _statusHud.LeftInset = HudRect.xMax;
             _statusHud.OnGUI(s);
