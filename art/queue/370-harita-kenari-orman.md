@@ -1,7 +1,8 @@
 ---
 id: "370"
 title: Harita kenarı ormanı (ağaç öbekleri ve çalılık şeritleri)
-status: pending
+status: running
+claimed_at: 2026-11-18T13:10Z
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: bitki
 style_gate: false
