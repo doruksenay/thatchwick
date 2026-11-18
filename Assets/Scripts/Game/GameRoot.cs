@@ -324,6 +324,7 @@ namespace Thatchwick.Game
             _buildService.PlacedItemSold += _life.Legacy.OnItemSold;
             _life.Legacy.MarriedOutHappened += OnMarriedOut;
             _buildMode.Legacy = _life.Legacy;
+            _buildMode.Comfort = _life.Mood;
             _buildMode.Maker = () => _player?.Character;
             _buildMode.Today = () => _clock.TotalDays;
             SetupFarm();

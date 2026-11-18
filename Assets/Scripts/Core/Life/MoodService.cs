@@ -15,8 +15,21 @@ namespace Thatchwick.Core.Life
         public int StyleBonus;
         /// <summary>Yapının katkısı: zemin ve duvar kaplamalarının ortalama konforu (en çok 6).</summary>
         public int Structure;
-        /// <summary>Konfor puanı (eşya konforu + yapı). Stil seti uyumu ayrı moodlet'tir (RoomMoodSystem: Uyumlu ev).</summary>
-        public int Total => Score + Structure;
+        /// <summary>Odanın büyüklüğü: dar oda eksi, ferah oda artı (-3 ile +3 arası).</summary>
+        public int Size;
+        /// <summary>Pencereler: penceresiz oda eksi, her pencere artı (-2 ile +3 arası; bodrumda 0).</summary>
+        public int Windows;
+        /// <summary>Konfor puanı (eşya konforu + yapı + büyüklük + pencere). Stil seti uyumu ayrı moodlet'tir (RoomMoodSystem: Uyumlu ev).</summary>
+        public int Total => Score + Structure + Size + Windows;
+
+        /// <summary>Oyuncuya gösterilen döküm: "Eşya 14 · Zemin ve duvar 3 · Büyüklük +2 · Pencere -2 (penceresiz)".</summary>
+        public string Breakdown()
+        {
+            string sign(int v) => v > 0 ? "+" + v : v.ToString();
+            string win = Windows < 0 ? " (penceresiz)" : "";
+            string size = Size < 0 ? " (dar)" : "";
+            return $"Eşya {Score} · Zemin ve duvar {Structure} · Büyüklük {sign(Size)}{size} · Pencere {sign(Windows)}{win}";
+        }
     }
 
     /// <summary>
@@ -60,7 +73,36 @@ namespace Thatchwick.Core.Life
             foreach (var kv in styleCount)
                 if (kv.Value >= StyleSetMinItems) { result.StyleSet = kv.Key; result.StyleBonus = StyleSetBonus; break; }
             result.Structure = StructureComfort(room);
+            result.Size = SizeComfort(room.Area);
+            result.Windows = WindowComfort(room);
             return result;
+        }
+
+        /// <summary>
+        /// Oda büyüklüğü (karo): 1-3 dar (-3), 4-5 küçük (-1), 6-11 olağan (0), 12-19 geniş (+1),
+        /// 20-29 ferah (+2), 30+ çok ferah (+3). Sayılar yer tutucu (Adım 28).
+        /// </summary>
+        public static int SizeComfort(int area)
+        {
+            if (area <= 0) return 0;
+            if (area <= 3) return -3;
+            if (area <= 5) return -1;
+            if (area <= 11) return 0;
+            if (area <= 19) return 1;
+            if (area <= 29) return 2;
+            return 3;
+        }
+
+        /// <summary>
+        /// Pencere: penceresiz oda -2; 1 pencere +1, 2 pencere +2, 3 ve üstü +3.
+        /// Bodrum (kat -1 ve altı) pencere beklemez: 0.
+        /// </summary>
+        public static int WindowComfort(Room room)
+        {
+            if (room == null || room.Level < 0) return 0;
+            int n = room.WindowCount;
+            if (n <= 0) return -2;
+            return Math.Min(3, n);
         }
 
         private static readonly GridPos[] Dirs = { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };
@@ -94,11 +136,15 @@ namespace Thatchwick.Core.Life
             return Math.Min(6, (int)Math.Round(floor + walls));
         }
 
+        /// <summary>Bu puan ve altı "sıkışık oda" moodlet'i verir (dar ve penceresiz, eşyasız oda).</summary>
+        public const int ComfortCramped = -4;
+
         public static void ComfortMood(int total, out int value, out string text)
         {
             if (total >= ComfortHigh) { value = 12; text = "Rahat ve güzel bir ev"; }
             else if (total >= ComfortMid) { value = 6; text = "Düzenli bir ev"; }
             else if (total > 0) { value = 2; text = "Yaşanır bir ev"; }
+            else if (total <= ComfortCramped) { value = -4; text = "Sıkışık, karanlık bir oda"; }
             else { value = 0; text = null; }
         }
 
