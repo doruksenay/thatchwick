@@ -38,11 +38,17 @@ namespace Thatchwick.Core.Animals
         /// <summary>Hayvan ürün kalitesi puanı = dostluk x 0,6 + konfor x 0,4 (soy hayvanına +10). Seçme 55, birinci sınıf 80.</summary>
         public const float QualityFineScore = 55f, QualityFinestScore = 80f, HeritageQualityBonus = 10f;
 
-        public static int QualityTierOf(float friendship, float comfort, bool heritage)
+        public static int QualityTierOf(float friendship, float comfort, bool heritage, float bonus = 0f)
         {
-            float score = friendship * 0.6f + comfort * 0.4f + (heritage ? HeritageQualityBonus : 0f);
+            float score = friendship * 0.6f + comfort * 0.4f + (heritage ? HeritageQualityBonus : 0f) + bonus;
             return score >= QualityFinestScore ? 2 : (score >= QualityFineScore ? 1 : 0);
         }
+
+        /// <summary>Ek kalite puanı (can yoldaşı yetenekleri: Sabırlı El, Çoban Ruhu, Kümes Çocuğu; belge 31-8).</summary>
+        public Func<Animal, float> QualityBonus { get; set; }
+
+        /// <summary>Hayvanın ürün kalitesi basamağı, ek puanlar dahil.</summary>
+        public int QualityOf(Animal a) => QualityTierOf(a.Friendship, a.Comfort, a.IsHeritage, QualityBonus != null ? QualityBonus(a) : 0f);
 
         public static string QualityName(int tier) => Work.PlantSystem.QualityName(tier);
         public static float QualityYield(int tier) => Work.PlantSystem.QualityYield(tier);
@@ -339,7 +345,7 @@ namespace Thatchwick.Core.Animals
                         int units = 1;
                         if (a.Friendship >= BondedFriendship && _rng.NextDouble() < BondedExtraChance) units++;
                         // Kalite: seçme ürün %25, birinci sınıf %50 daha fazla (ekin kalitesiyle aynı çarpan).
-                        double extra = QualityYield(a.QualityTier) - 1.0;
+                        double extra = QualityYield(QualityOf(a)) - 1.0;
                         if (extra > 0 && _rng.NextDouble() < extra) units++;
                         home.AddStock(a.Species.Produces, units);
                         Produced?.Invoke(a, a.Species.Produces);
