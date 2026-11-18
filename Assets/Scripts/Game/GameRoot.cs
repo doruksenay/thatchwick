@@ -598,10 +598,12 @@ namespace Thatchwick.Game
                     {
                         // Masa ya da sedir örtüsü (27 D2): eşyanın bütün üstüne serili düz elmaslar, diğer dekorun altında.
                         var coverColor = ConditionTint(item, color);
+                        // Tek karoluk yüzeyin (kütük sehpa) üstü karodan dar: örtü taşmasın.
+                        float coverScale = parent.Width * parent.Height <= 1 ? 0.62f : 0.95f;
                         foreach (var t in parent.OccupiedTiles())
                         {
                             var cp = _view.TileToWorld(t) + new Vector3(0f, topPx / 32f - 0.02f, 0f);
-                            var csr2 = AddItemSprite(item, cp, coverColor, 0.95f, Iso.SortOrder(_view.TileToWorld(t).y, 0, level) + 1, SpriteMaterials.Diamond);
+                            var csr2 = AddItemSprite(item, cp, coverColor, coverScale, Iso.SortOrder(_view.TileToWorld(t).y, 0, level) + 1, SpriteMaterials.Diamond);
                             csr2.color = coverColor;
                         }
                         continue;
