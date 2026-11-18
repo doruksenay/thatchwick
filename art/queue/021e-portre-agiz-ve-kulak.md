@@ -1,7 +1,8 @@
 ---
 id: "021e"
 title: Portre ağız ve kulak
-status: pending
+status: running
+claimed_at: 2026-11-18T08:19Z
 approved_by: user
 family: karakter
 style_gate: false
