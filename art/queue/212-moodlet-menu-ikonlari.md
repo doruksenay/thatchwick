@@ -1,7 +1,7 @@
 ---
 id: "212"
 title: Moodlet, menü ve panel ikonları (16x16)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:45Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
@@ -77,6 +77,13 @@ Anahtarlar kodda `MoodCatalog` sabitleridir. `injured` (Yaralı) yeni moodlet'ti
 
 ## Notlar
 - Ad kuralı `ui_icon_<grup>_<anahtar>`; kod eşlemesi 315'teki gibi.
+
+## Sorular
+- Üretilemedi, 2 gen harcandı (cost_max 20 içinde). Ham çıktılar PixelLab'de: job 3d6585b2-a5fb-43ea-8996-bee2c4d3fcd7 (sayfa), 75752e86-06b6-4d06-9d7c-19eeb3f0752c (zar).
+  1. `create_image_pixen` 128x64 "ikon sayfası": ikonlar parşömen çerçeveli karolar, sıra 5+5 (istenen 4x2 değil), aralıklar eşit değil, her ikon ~12 px ve ayrıntılı; 16x16'ya temiz kesilemez.
+  2. `create_image_pixen` 16x16 tek ikon (zar): 45 renk, şekil tanınmıyor (mor yumru). Renk ≤12 ve okunurluk ölçütü tutmaz.
+- Tek ikon başına 1 gen = 31 gen; `cost_max` 20'yi ve 2x sapma sınırını (24) aşar, üstelik 16x16 kalitesi yetersiz.
+- Öneri: (a) `cost_max`'ı 40'a çıkar ve 32x32 tek ikon üret (`create_image_pixen` 32x32 ya da `create_map_object`), 16'ya komşuyla indir + `reduce_colors`; ya da (b) ikonlar `pixellab: false` ile pixelart_workbench'te elle çizilsin. Karar kullanıcıda; 315 de aynı yönteme bağlı.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
