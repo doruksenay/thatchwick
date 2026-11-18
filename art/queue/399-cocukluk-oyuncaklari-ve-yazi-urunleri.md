@@ -1,7 +1,7 @@
 ---
 id: "399"
 title: Çocukluk oyuncakları (7) ve yazı/mum/malt ürün ikonları (6)
-status: running
+status: review
 claimed_at: 2026-11-18T14:32Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgeleri 30 ve 34 (18.11.2026, "hepsini onaylıyorum")
 priority: 20
