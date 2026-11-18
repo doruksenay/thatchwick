@@ -277,6 +277,21 @@ namespace Thatchwick.Core.Characters
             Died?.Invoke(this);
         }
 
+        // ---- Atletizm (18.11.2026) ----
+        /// <summary>Atletizm: seviye başına %2 yürüme hızı (10. seviyede %18).</summary>
+        public const double AthleticSpeedPerLevel = 0.02;
+        /// <summary>Atletizm: seviye başına %2 daha yavaş yorulma (10. seviyede %18).</summary>
+        public const float AthleticEnergyPerLevel = 0.02f;
+        /// <summary>Atletizm: seviye başına %1 soğuğa dayanma (10. seviyede %9).</summary>
+        public const float AthleticColdPerLevel = 0.01f;
+        /// <summary>Yürünen her karo için Atletizm XP'si.</summary>
+        public const double AthleticXpPerTile = 0.05;
+
+        private int AthleticSteps => Math.Max(0, Skills.GetLevel(SkillType.Athletics) - 1);
+        public double AthleticSpeedFactor => 1.0 + AthleticSpeedPerLevel * AthleticSteps;
+        public float AthleticEnergyFactor => 1f - AthleticEnergyPerLevel * AthleticSteps;
+        public float AthleticColdResist => AthleticColdPerLevel * AthleticSteps;
+
         /// <summary>Yetiştirilme sistemlerinden gelen ek XP çarpanı (çocukluk izi, can yoldaşı, çıraklık, aile tarifi).</summary>
         public Func<SkillType, double> ExtraXpFactor { get; set; }
 
@@ -485,7 +500,7 @@ namespace Thatchwick.Core.Characters
             if (cold > 0f)
             {
                 // Sıcak çorba gibi yemek etkileri de soğuğa dayanıklılık verir (toplam en çok %90).
-                float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f));
+                float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f) + AthleticColdResist);
                 // Islak giysi soğukta ısıyı iki kat hızlı kaçırır.
                 Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - resist) * (1f + Wetness));
             }
@@ -497,7 +512,7 @@ namespace Thatchwick.Core.Characters
 
             // Özellik ve dallardan gelen ihtiyaç azalma çarpanları.
             Needs.SetDecayMultiplier(NeedType.Hunger, Modifiers.HungerDecay * (MoodEnabled ? Mood.HungerDecayFactor() : 1f));
-            Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f));
+            Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f) * AthleticEnergyFactor);
             Needs.SetDecayMultiplier(NeedType.Social, Modifiers.SocialDecay);
             Needs.SetDecayMultiplier(NeedType.Fun, Modifiers.FunDecay);
             Needs.SetDecayMultiplier(NeedType.Bladder, Asleep ? SleepBladderFactor : 1f);

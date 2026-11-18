@@ -565,7 +565,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(db.Goals.Count >= 15);
             Assert.All(db.Goals.All, g => Assert.Contains(g.Metric, GoalDef.Metrics));
             Assert.Equal(7, db.Templates.Count);
-            Assert.Equal(116, db.Branches.Count);   // dal düzeni 116 (karar 18.11.2026)
+            Assert.Equal(118, db.Branches.Count);   // dal düzeni 116 + Atletizm 2 (5. seviye)
         }
 
         // ---------- Kayıt ----------

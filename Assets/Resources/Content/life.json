@@ -1724,6 +1724,31 @@
           }
         ]
       }
+    },
+    {
+      "id": "branch.ath_a",
+      "displayName": "Ulak",
+      "description": "Atletizmde hızlı öğrenir.",
+      "skill": "Athletics",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Athletics",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.ath_b",
+      "displayName": "Hamal",
+      "description": "Az yorulur.",
+      "skill": "Athletics",
+      "level": 5,
+      "effects": {
+        "energyDecay": 0.94
+      }
     }
   ],
   "projects": [

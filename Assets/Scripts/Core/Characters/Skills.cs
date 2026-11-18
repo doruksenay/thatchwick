@@ -40,7 +40,8 @@ namespace Thatchwick.Core.Characters
         Stewardship = 30,     // Kâhyalık: görevlilerin verimi
         Carting = 31,         // Arabacılık / taşımacılık: depo kapasitesi
         Decorating = 32,      // Ev düzenleme: eşya ve yapı indirimi
-        Medicine = 33         // Hekimlik: soğuk ve açlık yarasını iyileştirir
+        Medicine = 33,        // Hekimlik: soğuk ve açlık yarasını iyileştirir
+        Athletics = 34        // Atletizm: yürüme hızı, ağır işte az yorulma, soğuğa dayanma (18.11.2026)
     }
 
     /// <summary>Becerilerin görünen adları (zanaatler alt başlıklarıyla ayrı beceridir).</summary>
@@ -84,6 +85,7 @@ namespace Thatchwick.Core.Characters
                 case SkillType.Carting: return "Arabacılık";
                 case SkillType.Decorating: return "Ev düzenleme";
                 case SkillType.Medicine: return "Hekimlik";
+                case SkillType.Athletics: return "Atletizm";
                 default: return s.ToString();
             }
         }
@@ -175,6 +177,7 @@ namespace Thatchwick.Core.Characters
                 case SkillType.Carting: return "Arabacı";
                 case SkillType.Decorating: return "Süslemeci";
                 case SkillType.Medicine: return "Hekim";
+                case SkillType.Athletics: return "Pehlivan";
                 default: return "Köylü";
             }
         }
