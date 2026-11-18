@@ -1,7 +1,7 @@
 ---
 id: "101"
 title: Hayvanlar 1: tavuk (tuval testi) + horoz
-status: running
+status: review
 claimed_at: 2026-11-18T12:26Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
@@ -102,4 +102,5 @@ Bulut işçisi PixelLab sonuç PNG'lerini diske indiremedi (curl onay istiyor). 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 (şerit 1): chicken_3/4/5 indirildi, reduce_colors(32) + style fit ile teslim edildi. 4 horoz tek karesi güney değil (yandan/3/4), 2-4'te zemin/gölge lekesi: döndürülmedi, `art/results/101-red/`e kondu. Ayrıntı raporda.
 - 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.

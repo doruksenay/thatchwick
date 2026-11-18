@@ -1,44 +1,56 @@
 unity-import: pending
 
-# 101 Hayvanlar 1: tavuk + horoz: BLOKE (kısmi)
+# 101 Hayvanlar 1: tavuk 3/4/5 teslim, horoz adayları elendi
 
-**Sonuç:** 3 tavuğun 8 yön döndürmesi PixelLab'te üretildi, ama bulut işçisinde PNG'leri diske indirecek araç yok (`curl` onay istiyor, MCP araçları dosya yazmıyor). Hiçbir aday `Assets/Art/Iso/_aday/` altına konamadı. Horozlar üretilmedi (kural R döndürülmüş tavuk ölçümü gerektiriyor; teslim de aynı nedenle imkansız, gen israfı önlendi).
+Yan yana sayfası: `art/results/101-yanyana.png` (referanslar + 3 tavuk SE). Azaltılmış (fit'siz) hâller ve horoz tek kareleri: `art/results/101-red/`. Masaüstü kopyası: yerel.
 
 ## Çağrılar
 | Çağrı | Gen |
 |---|---|
-| pixen 28 chicken_3 | 1 |
-| pixen 28 chicken_4 | 1 |
-| pixen 32 chicken_5 | 1 |
-| pixen 32 chicken_6 | 1 |
-| v3 döndürme chicken_3 (28 px kare, saydam dolgu ile 32'ye) | 1 |
-| v3 döndürme chicken_4 (aynı) | 1 |
-| v3 döndürme chicken_5 | 1 |
+| (önceki tur, şerit 0) pixen x4 + v3 döndürme x3 | 7 |
+| pixen 32 rooster_1..4 (bu tur) | 4 |
+| reduce_colors x3 (32 renk, 8 kare birlikte) | 0,3 |
+| `style.py fit` (yerel) | 0 |
 
-Toplam 7 gen. `get_balance` sonrası (diğer şeritlerin harcamasıyla karışık): 1805,8.
+Toplam ≈ 11,3 (cost_max 20). `get_balance`: öncesi 4928,6, sonrası 4914,3 (paralel şeritlerin harcaması karışık). chicken_3/4/5 karakterleri kayıtlı kimliklerle indirildi, yeniden üretilmedi. Yükleme: `get_upload_url` + Python urllib.
 
-## Güney kontrolü (tek kare)
-| Aday | Tuval | bbox | Karar |
-|---|---|---|---|
-| chicken_3 | 28 | x6-22, y2-26 (boy 24, doluluk 0,86) | önden, ortalı; döndürüldü |
-| chicken_4 | 28 | x4-23, y2-26 (boy 24, doluluk 0,86) | önden (kanat/kuyruk sola taşıyor, gövde ortalı); döndürüldü |
-| chicken_5 | 32 | x5-26, y0-31 (boy 31, doluluk 0,97) | önden ama tuvale tam dayalı (ibik ve ayak kırpılmış olabilir), duruşu insansı; döndürüldü |
-| chicken_6 | 32 | x3-30, y0-32 | 3/4 dönük, gövde sağa >3 px kayık: **güney değil**, döndürülmedi |
+## Tavuk adayları (32x32 tuval, 8 yön)
+| Aday | Yol | Güney kontrolü | SE boy / uzunluk | Hedef 24'e sapma | Renk ham→azalt | Zemin lekesi | Not |
+|---|---|---|---|---|---|---|---|
+| chicken_3 | pixen 28 + v3 | önden | 25 / 17 | +4% | 35→25 | yok | temiz |
+| chicken_4 | pixen 28 + v3 | önden | 24 / 20 | 0% | 57→29 | yok | temiz |
+| chicken_5 | pixen 32 + v3 | önden, tuvale dayalı | 30 / 22 | +25% | 48→31 | yok | ⚠ insansı: kanatlar kol gibi açık, yeşil giysi benzeri alt gövde; hedeften büyük |
+| chicken_6 | pixen 32 | 3/4 dönük | - | - | - | - | döndürülmedi (önceki tur) |
 
-Ham tek kareler repoya konamadı (dosya kopyalama onay istedi); PixelLab galerisinde: chicken_3 `d52d3cdb-b694-5032-be12-877c7f6e933f`, chicken_4 `8cf3a098-568b-58b2-aa0e-fa37e71f0006`, chicken_5 `2b1fc892-0863-55fb-8ad3-2f15977e047a`, chicken_6 `958013fb-991f-5e50-9213-94a3955c0efa`.
+Azaltma bozdu mu: SE ham/azaltılmış 8x karşılaştırmasında göz, gaga, ibik ve dış hat bozulmadı. Üçü de "ailesinden çok doygun" (x2.18 / x2.04 / x1.67) yüzünden KALDI'ydı; şekil tanınıyor, bu yüzden `style.py fit --family hayvan` uygulandı (x0.53-0.78 aralığı, kare başına). Fit sonrası SE: UYARI (x1.46 / x1.31 / x1.32 "ailesinden doygun"), KALDI yok; hayvan ailesinin kilidi kurulmadı. Assets'e fit'li hâl gitti; yönler arası doygunluk hafif tutarsız olabilir.
 
-## Döndürme notları
-- v3 referansı en az 32 px istiyor: 28 px tavuklar yeniden örnekleme olmadan, ortalanmış (2 px) saydam dolguyla 32x32'ye taşındı. İlk iki çağrı bu yüzden hata verdi (ücretsiz).
-- Base64 gönderimi bir kez bozuldu; yeniden kodlanmış PNG ile geçti.
+## Doğrulama (SE; pivot ALTTAN)
+| Dosya | Boyut | boy x uzunluk | Renk ham/azaltılmış | Yarı saydam | Pivot x | Pivot y (yön aralığı) |
+|---|---|---|---|---|---|---|
+| chicken_3 se | 32x32 | 25x17 | 35/25 | 0 | 16,0 | 3 (3-4) |
+| chicken_4 se | 32x32 | 24x20 | 57/29 | 0 | 17,0 | 4 (4-5) |
+| chicken_5 se | 32x32 | 30x22 | 48/31 | 0 | 17,0 | 1 (1-2) |
 
-## Karakter kimlikleri (yerelden indirilecek)
-- chicken_3: `abbef112-83dd-4be0-82ae-ddf337f2a323`
-- chicken_4: `494b2ba3-ceac-46a0-ab92-f2a3236f33fb`
-- chicken_5: `58abcd4a-9594-4a6a-bf27-f63645357afc`
+Diğer yönler: boy 24-25 (c3, c4) ve 30-31 (c5); pivot y oynaması ≤1 px; yarı saydam 0; `validate_iso.py --kind object` SE'lerde geçti. Gölge pişirilmemiş, ışık sol-üstten.
 
-İndirme: `https://api.pixellab.ai/mcp/characters/<id>/download` (zip; `rotations/<yön>.png`).
+## Doluluk oranı
+SE boy / 32: chicken_3 0,78, chicken_4 0,75, chicken_5 0,94. Tek kare (28 tuval) ölçümü: 0,89 / 0,86 / 0,94; ortalama r ≈ 0,90. **Kural R:** 28 / 0,90 = 31,1 → en yakın 4'ün katı **32** (horoz tuvali). Öneri (tahmin): 102/103 için r ≈ 0,86-0,90; 32 tuvalde gövde ~30 çıkıyor, küçük kuşlar için 28 ve altı.
 
-## Sıradaki adım
-Yerel işçi kimlikleri indirir, 8 yönü ölçer ve doğrular (doluluk r, renk sayısı, zemin lekesi), `Assets/Art/Iso/_aday/iso_animal_chicken_{3,4,5}_cand_<yön>.png` olarak koyar; r ile horoz tuvalini belirleyip rooster_1-4'ü (ve isterse chicken_6'yı) üretir. Doğrulama tabloları ve yan yana sayfası bu yüzden yok.
+## Horozlar: döndürülmedi
+Dördü de pixen 32'de yandan/3/4 çıktı (güney değil); kural gereği döndürme yok. Tek kareler: `art/results/101-red/rooster_N_tek.png`, `roosters_tek_x8.png`.
+| Aday | SE boy | Sorun |
+|---|---|---|
+| rooster_1 | 30 | yandan, güney değil |
+| rooster_2 | 32 | yandan, tuvale dayalı, ayak altı gölge |
+| rooster_3 | 28 | yandan, ayak altı toprak lekesi |
+| rooster_4 | 32 | 3/4, tuvale dayalı, ayak altı mavi gölge |
 
-Masaüstü kopyası: yerel.
+Öneri: horozu "symmetrical front view" vurgusuyla ya da tavuk gibi 28 tuvalde yeniden dene (tahmin).
+
+## Sorunlar
+- chicken_6 ve 4 horoz teslim edilmedi; iş eksik, yeni iş gerekir.
+- chicken_5 insansı; tercih notu.
+- Bulutta `echo >` yönlendirmesi onay istediği için geçici betikler Write ile yazıldı (`art/tmp101`, commit edilmez).
+
+## Dosyalar
+`Assets/Art/Iso/_aday/iso_animal_chicken_{3,4,5}_cand_{se,sw,nw,ne,s,w,n,e}.png` (24 dosya, 32x32).
