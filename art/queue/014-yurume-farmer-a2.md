@@ -1,7 +1,7 @@
 ---
 id: "014"
 title: Yürüme animasyonu farmer_a2_56 (8 yön, pixminimax)
-status: running
+status: blocked
 claimed_at: 2026-11-18T08:37Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
@@ -101,6 +101,9 @@ Betik: `tools/art/anim_walk.py`. 013'teki `anim_pilot.py`'den türetilebilir.
 - 2026-11-18: bulut işçisine `uv`, `python3`, `mkdir -p` izni eklendi, masaüstü kopyası bulutta atlanır (kullanıcı onayı); iş yeniden `pending`.
 
 - 2026-11-18: çıktıyı diske yazmak için `tools/art/save_png.py` eklendi; iş yeniden `pending`. 014: 07:43Z sahiplenmesinden sonuç gelmedi.
+
+## Sorular
+- 2026-11-18 (bulut işçisi, şerit 0): İlk SE çağrısı (animate_character pixminimax, frame_count=8, end_frame=SE rotasyon URL'si, animation_name=walk) "already queued or complete (nothing re-queued)" döndü; hhiçbir şey ücretlenmedi (bakiye 1133,70). Ancak `get_character` animasyon listesinde `walk` grubu yok ve `list_jobs` (son 30 dk) animasyon işi göstermiyor. Muhtemelen 07:43Z'deki önceki denemenin eşleşen ama saklanmamış kaydı. Yeniden üretim için action_description'ı değiştirmek gerekir (tarif "aynı metin" diyor, yeniden deneme yasak). Karar: action_description'a ek söz eklenerek yeniden denensin mi, ya da PixelLab destek kaydı mı bakılsın? Hiç kare indirilmedi, hiçbir dosya yazılmadı.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
