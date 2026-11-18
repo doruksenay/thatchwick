@@ -169,10 +169,12 @@ jobs:
           if [ -n "$(git status --porcelain -- art Assets/Art/Iso tools/art)" ]; then
             echo "::warning::Ajan commit edilmemiş değişiklik bıraktı; push edilmedi."
           fi
+          # Çıkış kodu boruya kaybolmasın (eskiden `| tail -1` yüzünden "değişiklik yok" ve "reddedildi" de PR dalına gidiyordu).
           set +e
-          target=$(python tools/art/cloud_guard.py "$BASE" HEAD | tail -1)
+          guard_out=$(python tools/art/cloud_guard.py "$BASE" HEAD)
           code=$?
           set -e
+          target=$(printf '%s\n' "$guard_out" | tail -1)
           if [ "$code" = "1" ]; then echo "Push edilecek bir şey yok."; exit 0; fi
           if [ "$code" != "0" ]; then
             echo "::error::Denetim reddetti; hiçbir şey push edilmedi. İş $JOB 'running' kalır, 6 saat sonra yeniden alınabilir."
@@ -191,12 +193,15 @@ jobs:
               sleep $(( RANDOM % 20 + 5 ))
             done
             [ -n "$pushed" ] || { echo "::error::$JOB push 5 denemede başarısız."; exit 1; }
-          else
-            branch="art-worker/${GITHUB_RUN_ID}"
+          elif [ "$target" = "pr" ]; then
+            branch="art-worker/${GITHUB_RUN_ID}-${LANE}"   # şeritler aynı dal adına yazmasın
             git push "$remote" "HEAD:refs/heads/$branch"
             gh pr create --base main --head "$branch" \
               --title "art($JOB): tools/art değişikliği içeren işçi sonucu" \
-              --body "Bulut işçisi tools/art altında da değişiklik yaptı; yerel yoklayıcı bu betikleri çalıştırdığı için sonuç doğrudan main'e gitmedi. İnceleyip birleştir."
+              --body "Bulut işçisi tools/art altında da değişiklik yaptı; yerel yoklayıcı bu betikleri çalıştırdığı için sonuç doğrudan main'e gitmedi. İnceleyip birleştir." \
+              || echo "::warning::PR açılamadı (Settings > Actions > General > 'Allow GitHub Actions to create and approve pull requests' kapalı olabilir). Sonuç $branch dalında; elle PR aç."
+          else
+            echo "::error::Denetimden beklenmeyen çıktı: '$target'; hiçbir şey push edilmedi."; exit 1
           fi
 
       - name: Özet
