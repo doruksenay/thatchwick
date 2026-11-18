@@ -43,7 +43,14 @@ namespace Thatchwick.Game
             public LookState Look;
             public int LookDay = -1;
             public string LookInjury;
+            // Yürüme sallantısı (yürüme animasyonu gelene kadar): adım evresi ve önceki karedeki konum.
+            public float WalkPhase;
+            public Vector3 LastPos;
         }
+
+        /// <summary>Yürürken iki piksellik adım sallantısı; bir adım yaklaşık bu kadar dünya birimi.</summary>
+        private const float WalkBobPixels = 2f, WalkStepUnits = 0.55f, ArtPixelsPerUnit = 32f;
+        private static readonly Vector3 ShadowOffset = new Vector3(0.06f, -0.03f, 0f);
 
         private WorldState _world;
         private WorldView _view;
@@ -903,7 +910,7 @@ namespace Thatchwick.Game
             sr.sprite = IsoArt.Character(character, IsoArt.DefaultDirection) ?? PersonSprites.Get(character.Appearance);
             sr.sharedMaterial = SpriteMaterials.Unlit;
             go.transform.position = _view.TileToWorld(character.Position);
-            var shadow = NewShadow(go.transform, new Vector3(0.06f, -0.03f, 0f), 0.42f);
+            var shadow = NewShadow(go.transform, ShadowOffset, 0.42f);
 
             var actor = new Actor
             {
@@ -1705,7 +1712,15 @@ namespace Thatchwick.Game
                 pos = Vector3.Lerp(pos, to, actor.Runner.StepProgress);
             }
             if (_animals != null && _animals.MountOf(actor.Character.Id) != null) pos += new Vector3(0f, 0.35f, 0f);   // at sırtında
-            actor.View.position = pos;
+            // Yürürken adım sallantısı: gövde iki piksel iner çıkar, gölge yerde kalır (gerçek yürüme animasyonu gelene kadar).
+            bool moving = next.HasValue;
+            float mdx = pos.x - actor.LastPos.x, mdy = pos.y - actor.LastPos.y;
+            float moved = Mathf.Sqrt(mdx * mdx + mdy * mdy);
+            if (moving && moved < 1f) actor.WalkPhase += moved / WalkStepUnits * Mathf.PI;
+            else if (!moving) actor.WalkPhase = 0f;
+            actor.LastPos = pos;
+            float bob = moving ? Mathf.Round(Mathf.Abs(Mathf.Sin(actor.WalkPhase)) * WalkBobPixels) / ArtPixelsPerUnit : 0f;
+            actor.View.position = pos + new Vector3(0f, bob, 0f);
             // Merdivende yarıdan sonra hedef katın bandına geçer; iki kattan biri görünürse karakter görünür.
             int fromLevel = actor.Character.Position.Z;
             int toLevel = next.HasValue ? next.Value.Z : fromLevel;
@@ -1730,6 +1745,7 @@ namespace Thatchwick.Game
                 scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : (actor.Character.Stage == AgeStage.Teen ? 0.92f : 1f));
             }
             actor.View.localScale = new Vector3(scale, scale, 1f);
+            if (actor.Shadow != null) actor.Shadow.transform.localPosition = ShadowOffset - new Vector3(0f, bob / Mathf.Max(0.01f, scale), 0f);
         }
 
         private void ShowMessage(string text, float seconds = 2.5f)
