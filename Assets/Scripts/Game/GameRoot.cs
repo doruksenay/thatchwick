@@ -370,7 +370,7 @@ namespace Thatchwick.Game
 
             _familyPanel = new FamilyPanel(_population, _family, _dynasty, () => Commander?.Character,
                 c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner)
-            { Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays };
+            { Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays, Upbringing = _life.Upbringing, House = _household };
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
@@ -2091,6 +2091,7 @@ namespace Thatchwick.Game
 
             GUILayout.BeginHorizontal();
             GUILayout.Label($"Akçe {_household.Akce}", GUILayout.Width(80f));
+            GUILayout.Label(new GUIContent($"İtibar: {_life.Upbringing.Reputation.TierName}", $"{_life.Upbringing.Reputation.Points} puan · satış {_life.Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%"), GUILayout.Width(110f));
             if (HudToggle("Etiketler (L)", _labelsAll)) _labelsAll = !_labelsAll;
             if (GUILayout.Button("Kaydet")) SaveNow(quiet: false);
             if (HudToggle(_hudExpanded ? "Ayrıntı ▴" : "Ayrıntı ▾", _hudExpanded)) _hudExpanded = !_hudExpanded;

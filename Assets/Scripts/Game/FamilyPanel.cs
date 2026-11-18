@@ -5,6 +5,8 @@ using Thatchwick.Core.Work;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Family;
 using Thatchwick.Core.Jobs;
+using Thatchwick.Core.Upbringing;
+using Thatchwick.Core.Build;
 
 namespace Thatchwick.Game
 {
@@ -33,6 +35,11 @@ namespace Thatchwick.Game
         public Legacy Legacy { get; set; }
         public Func<double> Today { get; set; }
 
+        /// <summary>Çocukluk, can yoldaşı, çıraklık, aile tarifi, itibar (belge 30, 31-8, 34); null ise bölümler görünmez.</summary>
+        public UpbringingSystems Upbringing { get; set; }
+        /// <summary>Boş defter ve onarım tahtası için.</summary>
+        public Household House { get; set; }
+
         public FamilyPanel(Population population, FamilyService family, Dynasty dynasty,
             Func<Character> selected, Action<Character> select, Func<Character, JobRunner> runnerOf)
         {
@@ -59,6 +66,9 @@ namespace Thatchwick.Game
             if (GUILayout.Button("Kapat", GUILayout.Width(56f))) Active = false;
             GUILayout.EndHorizontal();
             var actor = _selected();
+            if (Upbringing != null)
+                GUILayout.Label(new GUIContent($"İtibar: {Upbringing.Reputation.TierName} ({Upbringing.Reputation.Points}) · satış {Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%",
+                    string.Join("\n", Upbringing.Reputation.RecentLog)));
             GUILayout.Label(actor != null ? $"Komut alan: {actor.Name} (haritaya dokununca o gider)" : "Komut alacak kişiyi seç.");
             if (_status.Length > 0) GUILayout.Label(_status);
             if (actor != null && actor.MoodEnabled)
@@ -74,6 +84,7 @@ namespace Thatchwick.Game
             _scroll = GUILayout.BeginScrollView(_scroll);
             GUILayout.Label("— Hane —");
             foreach (var c in _population.Members) if (!c.IsVillager) DrawRow(c, actor);
+            DrawRecipes(actor);
             GUILayout.Label("— Köylüler (pazar çevresi) —");
             foreach (var c in _population.Members) if (c.IsVillager) DrawRow(c, actor);
             GUILayout.EndScrollView();
@@ -117,6 +128,7 @@ namespace Thatchwick.Game
             }
 
             if (!c.IsVillager && !c.IsDead) DrawMarryOut(c);
+            if (!c.IsVillager && !c.IsDead) DrawUpbringing(c, actor);
 
             if (actor == null || c == actor || c.IsDead) return;
             GUILayout.BeginHorizontal();
@@ -131,6 +143,106 @@ namespace Thatchwick.Game
                     Action(actor, c, SocialAction.Propose, "Evlen");
             }
             GUILayout.EndHorizontal();
+        }
+
+        // Çocukluk eşyaları, can yoldaşı, çıraklık (belge 30, 31-8, 34-D1).
+        private void DrawUpbringing(Character c, Character actor)
+        {
+            var u = Upbringing;
+            if (u == null) return;
+            var info = new List<string>();
+            foreach (var p in u.Toys.PersonalOf(c.Id))
+                info.Add($"{ToyNames.Name(p.ItemId)}{(p.IsHeirloom ? " (yadigâr)" : "")}{(p.IsBroken ? " kırık" : "")}");
+            foreach (var m in u.Toys.MarksOf(c.Id))
+                foreach (var d in u.Toys.Toys) if (d.MarkId == m) info.Add(d.MarkName);
+            foreach (var b in u.Companions.Bonds)
+                if (b.ChildId == c.Id && (b.Unlocked || b.Friend))
+                    info.Add($"{(b.Unlocked ? CompanionBondSystem.TraitName(CompanionBondSystem.TraitFor(b.SpeciesId)) : "dostu")}: {b.AnimalName}{(b.Memory ? " (anı)" : "")}");
+            var ap = u.Apprentices.OfApprentice(c.Id);
+            if (ap != null) info.Add($"çırak: {SkillNames.Name(ap.Skill)}, ustası {_population.Find(ap.MasterId)?.Name}");
+            var ms = u.Apprentices.OfMaster(c.Id);
+            if (ms != null) info.Add($"çırağı: {_population.Find(ms.ApprenticeId)?.Name} ({SkillNames.Name(ms.Skill)})");
+            if (info.Count > 0) GUILayout.Label("    ◦ " + string.Join(" · ", info));
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(12f);
+            foreach (var p in u.Toys.PersonalOf(c.Id))
+            {
+                if (!p.IsBroken) continue;
+                if (GUILayout.Button(new GUIContent($"Onar: {ToyNames.Name(p.ItemId)}", "1 tahta"), GUILayout.Width(120f)))
+                    _status = u.RepairToy(c, p.ItemId, House) ?? $"{c.Name}'in {ToyNames.Name(p.ItemId)}ı onarıldı.";
+            }
+            if (ap != null && GUILayout.Button("Çıraklığı bitir", GUILayout.Width(100f))) { u.Apprentices.End(c.Id); _status = $"{c.Name} çıraklığı bıraktı."; }
+            if (actor != null && actor != c)
+            {
+                var skill = u.TeachableSkill(actor, c);
+                if (skill.HasValue && GUILayout.Button(new GUIContent($"Çırak al: {SkillNames.Name(skill.Value)}", $"{c.Name}, {actor.Name}'in yanında x{ApprenticeshipSystem.BaseFactor:0.#}+ hızlı öğrenir"), GUILayout.Width(150f)))
+                {
+                    u.Apprentices.Take(actor, c, skill.Value, Today != null ? Today() : 0);
+                    _status = $"{c.Name}, {actor.Name}'in yanında {SkillNames.Name(skill.Value).ToLowerInvariant()} çırağı oldu.";
+                }
+                if (CompanionBondSystem.IsYoung(c))
+                {
+                    string why = u.ParentAssistBlocker(actor, c);
+                    var a = u.AssistTarget(c);
+                    GUI.enabled = why == null;
+                    string label = a != null && a.Species.Rideable ? $"Ata bindir ({a.Name})" : a != null ? $"Hayvana götür ({a.Name})" : "Hayvana götür";
+                    if (GUILayout.Button(new GUIContent(label, why ?? "Can yoldaşı bağını güçlendirir"), GUILayout.Width(150f)))
+                        _status = u.ParentAssist(actor, c) ?? $"{actor.Name}, {c.Name} ile {a?.Name}'e baktı.";
+                    GUI.enabled = true;
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+
+        // Aile sırları: bilenler, öğret (seçili kişi bilir ve hedef hane üyesi bilmez), deftere yaz.
+        private void DrawRecipes(Character actor)
+        {
+            var u = Upbringing;
+            if (u == null || u.Recipes.Recipes.Count == 0) return;
+            GUILayout.Label("— Aile sırları —");
+            foreach (var r in u.Recipes.Recipes)
+            {
+                var names = new List<string>();
+                foreach (var id in r.Knowers) { var k = _population.Find(id); if (k != null && !k.IsDead) names.Add(k.Name); }
+                string state = r.Lost ? "kayboldu" : r.Written ? "yazılı" : names.Count == 1 ? "tek bilen!" : "sözlü";
+                GUILayout.Label($"{r.Name} ({state}, {r.Generations}. kuşak): {(names.Count > 0 ? string.Join(", ", names) : "bilen yok")}");
+                if (r.Lost) continue;
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(12f);
+                if (actor != null && u.Recipes.Knows(actor.Id, r))
+                {
+                    int shown = 0;
+                    foreach (var m in _population.Members)
+                    {
+                        if (m.IsVillager || m.IsDead || m == actor || shown >= 3) continue;
+                        if (u.Recipes.TeachBlocker(actor, m, r) != null) continue;
+                        shown++;
+                        if (GUILayout.Button($"Öğret: {m.Name}", GUILayout.Width(100f)))
+                        {
+                            u.Recipes.Teach(actor, m, r);
+                            _status = $"{actor.Name}, {r.Name} tarifini {m.Name}'e öğretti.";
+                        }
+                    }
+                    if (!r.Written)
+                    {
+                        bool hasBook = House != null && House.Count(FamilyRecipeBook.BlankBookItem) > 0;
+                        string why = u.Recipes.WriteBlocker(actor, r, hasBook);
+                        GUI.enabled = why == null;
+                        if (GUILayout.Button(new GUIContent("Deftere yaz", why ?? "Boş defter harcanır; tarif kaybolmaz"), GUILayout.Width(90f)))
+                            _status = u.WriteRecipe(actor, r, House) ?? $"{r.Name} deftere yazıldı.";
+                        GUI.enabled = true;
+                        if (why != null) GUILayout.Label(why);
+                    }
+                }
+                else if (actor != null && r.Written && u.Recipes.TeachBlocker(null, actor, r) == null
+                         && GUILayout.Button("Defterden oku", GUILayout.Width(100f)))
+                {
+                    u.Recipes.Teach(null, actor, r);
+                    _status = $"{actor.Name}, {r.Name} tarifini defterden öğrendi.";
+                }
+                GUILayout.EndHorizontal();
+            }
         }
 
         // Görücü usulü: hane üyesini yakın olduğu köylüyle evlendirip onun hanesine gönder (Soy Mührü verir, soy köyde sürer).

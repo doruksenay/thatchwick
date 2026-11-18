@@ -438,5 +438,49 @@ namespace Thatchwick.Core.Tests
             life.Upbringing.OnItemUsed(kid, hoop);
             Assert.Equal(4, life.Upbringing.Toys.HabitOf(1, "item.hoop"), 6);
         }
+            // ---------- arayüz eylemleri ----------
+
+        [Fact]
+        public void Arayuz_CirakBeceriSecimi_DefterYazma_OyuncakOnarma_EbeveynYardimi()
+        {
+            var f = MakeFarm();
+            Assert.True(f.Animals.Buy("animal.cow", f.House, out var cow).Ok);
+            double today = 0;
+            var u = new UpbringingSystems(f.Pop) { Today = () => today };
+            u.Attach(f.Animals);
+            var gran = Person(1, ElderAge); var kid = Person(2, ChildAge);
+            f.Pop.Add(gran); f.Pop.Add(kid);
+
+            Assert.Null(u.TeachableSkill(gran, kid));
+            gran.Skills.AddXp(SkillType.Cooking, SkillRules.XpForLevel(6), 10);
+            gran.Skills.AddXp(SkillType.Brewing, SkillRules.XpForLevel(8), 10);
+            Assert.Equal(SkillType.Brewing, u.TeachableSkill(gran, kid));
+
+            var r = u.Recipes.Get("recipe.family_ale");   // 8. seviyede kendiliğinden doğdu
+            Assert.NotNull(r);
+            gran.Skills.AddXp(SkillType.Literacy, SkillRules.XpForLevel(3), 10);
+            Assert.NotNull(u.WriteRecipe(gran, r, f.House));   // defter yok
+            f.House.AddItem("item.blank_book");
+            Assert.Null(u.WriteRecipe(gran, r, f.House));
+            Assert.True(r.Written);
+            Assert.Equal(0, f.House.Count("item.blank_book"));
+
+            for (int i = 0; i < 25; i++) u.Toys.OnPlayed(kid, "item.whittling_knife", 0);
+            var p = u.Toys.Personal(2, "item.whittling_knife");
+            p.Durability = 0;
+            int planks = f.House.Count("item.plank");
+            if (planks > 0) for (int i = 0; i < planks; i++) f.House.TryTakeItem("item.plank");
+            Assert.NotNull(u.RepairToy(kid, "item.whittling_knife", f.House));
+            f.House.AddItem("item.plank");
+            Assert.Null(u.RepairToy(kid, "item.whittling_knife", f.House));
+            Assert.False(p.IsBroken);
+
+            Assert.Same(cow, u.AssistTarget(kid));
+            Assert.Null(u.ParentAssist(gran, kid));
+            Assert.NotNull(u.ParentAssistBlocker(gran, kid));   // günde bir
+            today = 1;
+            Assert.Null(u.ParentAssistBlocker(gran, kid));
+            Assert.NotNull(u.ParentAssistBlocker(kid, gran));
+        }
     }
 }

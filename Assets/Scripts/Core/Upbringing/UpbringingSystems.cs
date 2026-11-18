@@ -131,6 +131,86 @@ namespace Thatchwick.Core.Upbringing
             return show;
         }
 
+        // ---- arayüz eylemleri (aile paneli) ----
+
+        /// <summary>Ustanın çırağa öğretebileceği en iyi beceri (seviye 5+, çırak o beceride usta değil); yoksa null.</summary>
+        public SkillType? TeachableSkill(Character master, Character apprentice)
+        {
+            if (master == null || apprentice == null) return null;
+            SkillType? best = null; int bestLevel = 0;
+            foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
+            {
+                int lv = master.Skills.GetLevel(s);
+                if (lv < ApprenticeshipSystem.MasterLevel || lv <= bestLevel) continue;
+                if (Apprentices.Blocker(master, apprentice, s) != null) continue;
+                best = s; bestLevel = lv;
+            }
+            return best;
+        }
+
+        /// <summary>Tarifi deftere yazar; hanedeki boş defteri harcar. Olmazsa neden.</summary>
+        public string WriteRecipe(Character writer, FamilyRecipe r, Thatchwick.Core.Build.Household house)
+        {
+            bool hasBook = house != null && house.Count(FamilyRecipeBook.BlankBookItem) > 0;
+            string why = Recipes.WriteBlocker(writer, r, hasBook);
+            if (why != null) return why;
+            if (!house.TryTakeItem(FamilyRecipeBook.BlankBookItem)) return "Boş defter gerekir.";
+            Recipes.Write(writer, r, true);
+            Say($"{writer.Name}, {r.Name} tarifini deftere yazdı; artık kaybolmaz.", writer.Id);
+            return null;
+        }
+
+        /// <summary>Kırık kişisel oyuncağı onarır: bir tahta harcar. Olmazsa neden.</summary>
+        public string RepairToy(Character owner, string itemId, Thatchwick.Core.Build.Household house)
+        {
+            var p = Toys.Personal(owner?.Id ?? 0, itemId);
+            if (p == null) return "Böyle bir eşyası yok.";
+            if (p.Durability >= 100) return "Sağlam.";
+            if (house == null || !house.TryTakeItem("item.plank")) return "Onarmak için 1 tahta gerekir.";
+            Toys.Repair(owner.Id, itemId);
+            return null;
+        }
+
+        private readonly Dictionary<int, long> _assistDay = new Dictionary<int, long>();
+
+        /// <summary>Ebeveynin çocukla bakacağı hayvan: çocuğun en güçlü bağı, yoksa ilk sağ hayvan.</summary>
+        public Animal AssistTarget(Character child)
+        {
+            var animals = Companions.Animals;
+            if (animals == null || child == null) return null;
+            Animal best = null; double bestPts = -1;
+            foreach (var a in animals.Animals)
+            {
+                if (a.IsDead) continue;
+                double pts = Companions.Get(child.Id, a.Id)?.Points ?? 0;
+                if (pts > bestPts) { best = a; bestPts = pts; }
+            }
+            return best;
+        }
+
+        /// <summary>"Çocukla hayvana bak" (ata bindir, sağıma götür): günde bir kez çocuk başına. Olmazsa neden.</summary>
+        public string ParentAssistBlocker(Character parent, Character child)
+        {
+            if (parent == null || child == null) return "Kişi yok.";
+            if (parent.Stage < AgeStage.YoungAdult) return "Yetişkin götürebilir.";
+            if (!CompanionBondSystem.IsYoung(child)) return "Yalnızca bebek ve çocuk.";
+            if (AssistTarget(child) == null) return "Hayvan yok.";
+            if (_assistDay.TryGetValue(child.Id, out var d) && d == (long)Math.Floor(Today())) return "Bugün zaten götürüldü.";
+            return null;
+        }
+
+        public string ParentAssist(Character parent, Character child)
+        {
+            string why = ParentAssistBlocker(parent, child);
+            if (why != null) return why;
+            var a = AssistTarget(child);
+            Companions.ParentAssist(parent, child, a);
+            _assistDay[child.Id] = (long)Math.Floor(Today());
+            string verb = a.Species.Rideable ? "ata bindirdi" : "hayvanlara götürdü";
+            Say($"{parent.Name}, {child.Name}'i {verb} ({a.Name}).", child.Id);
+            return null;
+        }
+
         public void Tick(double gameDays) => Companions.Tick(gameDays);
 
         public void OnNewDay()
