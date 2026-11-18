@@ -1,7 +1,7 @@
 ---
 id: "394"
 title: Yapı menüsü ikonları: eşya kategorileri
-status: running
+status: review
 claimed_at: 2026-11-18T14:06Z
 approved_by: user
 priority: 15
@@ -75,6 +75,9 @@ Kullanıcı kararı (2026-11-18, sohbet): "tek seferde yap, PixelLab kuyruğuna 
 - Toplu önizleme x3, koyu (#333333) ve keten (#E9DDC7) zemin üstünde: `art/results/394-yanyana.png`. Aynı sayfadaki ikonlar birbirinden şekliyle ayırt ediliyor mu (renk körü dostu)?
 - `style.py check --family arayuz` (UYARI raporda).
 - Okunmayan ikon için yeniden deneme yok; raporda listele.
+
+## Sorular
+- 10 ikon okunmadığı için teslim edilmedi (animals, barn, decor_wall, farm, hygiene, rug, storage, structure, surfaces, work). Ayrıntı: `art/results/394-yapi-menusu-ikonlari.md`. Yeniden üretim için yeni iş (pro model ya da farklı seed) gerekir.
 
 ## Notlar
 - Ad kuralı `ui_icon_<grup>_<anahtar>` (315 ile aynı). Kod tarafı anahtar → dosya eşlemesini yapar.
