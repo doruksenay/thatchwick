@@ -491,8 +491,8 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(1.0, c.AthleticSpeedFactor, 6);
             c.Skills.AddXp(SkillType.Athletics, SkillRules.XpForLevel(10), 10);
             Assert.Equal(1.18, c.AthleticSpeedFactor, 6);
-            Assert.Equal(0.82f, c.AthleticEnergyFactor, 4);
-            Assert.Equal(0.09f, c.AthleticColdResist, 4);
+            Assert.Equal(0.82, c.AthleticEnergyFactor, 4);
+            Assert.Equal(0.09, c.AthleticColdResist, 4);
             Assert.Equal("Atletizm", SkillNames.Name(SkillType.Athletics));
             foreach (var id in new[] { "item.jump_rope", "item.hoop", "item.toy_sword_wall" })
                 Assert.Equal(SkillType.Athletics, new ToyHabitSystem().Def(id).Skill);
