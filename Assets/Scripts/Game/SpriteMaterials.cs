@@ -217,6 +217,93 @@ namespace Thatchwick.Game
             }
         }
 
+        // ---------------- gölge, ışık, ortam (görsel analiz, 18.11.2026) ----------------
+
+        private static Sprite _shadow, _glow, _white;
+        private static Material _multiply, _additive;
+        private static bool _blendShaderMissing;
+
+        /// <summary>
+        /// Yere düşen yumuşak gölge: 64x32 elips (bir karonun sınır kutusu), merkez pivot. Pikselart ile uyumlu olsun diye
+        /// iki kademeli düz saydamlık (dış halka daha açık), nokta filtre. Rengi siyah; saydamlık SpriteRenderer.color ile ayarlanır.
+        /// </summary>
+        public static Sprite Shadow
+        {
+            get
+            {
+                if (_shadow != null) return _shadow;
+                var pixels = new Color32[TileW * TileH];
+                for (int y = 0; y < TileH; y++)
+                    for (int x = 0; x < TileW; x++)
+                    {
+                        float dx = (x + 0.5f - TileW * 0.5f) / (TileW * 0.5f);
+                        float dy = (y + 0.5f - TileH * 0.5f) / (TileH * 0.5f);
+                        float r = dx * dx + dy * dy;
+                        byte a = r <= 0.62f ? (byte)255 : r <= 1f ? (byte)150 : (byte)0;
+                        pixels[y * TileW + x] = new Color32(0, 0, 0, a);
+                    }
+                _shadow = MakeSprite(pixels, TileW, TileH, new Vector2(0.5f, 0.5f));
+                return _shadow;
+            }
+        }
+
+        /// <summary>Ocak ve mum ışığının yerdeki halesi: 128x64 elips, merkezden dışa yumuşak düşüş (çift doğrusal filtre).</summary>
+        public static Sprite Glow
+        {
+            get
+            {
+                if (_glow != null) return _glow;
+                const int w = 128, h = 64;
+                var pixels = new Color32[w * h];
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float dx = (x + 0.5f - w * 0.5f) / (w * 0.5f);
+                        float dy = (y + 0.5f - h * 0.5f) / (h * 0.5f);
+                        float f = Mathf.Clamp01(1f - Mathf.Sqrt(dx * dx + dy * dy));
+                        pixels[y * w + x] = new Color32(255, 255, 255, (byte)(f * f * 255f));
+                    }
+                _glow = MakeSprite(pixels, w, h, new Vector2(0.5f, 0.5f));
+                _glow.texture.filterMode = FilterMode.Bilinear;
+                return _glow;
+            }
+        }
+
+        /// <summary>Tam ekran örtü için 4x4 beyaz kare (ölçekle büyütülür).</summary>
+        public static Sprite White
+        {
+            get
+            {
+                if (_white != null) return _white;
+                var pixels = new Color32[16];
+                for (int i = 0; i < pixels.Length; i++) pixels[i] = new Color32(255, 255, 255, 255);
+                _white = MakeSprite(pixels, 4, 4, new Vector2(0.5f, 0.5f));
+                return _white;
+            }
+        }
+
+        /// <summary>Çarpma karışımı (sahneyi ortam rengiyle çarpar). Shader derlemede yoksa null.</summary>
+        public static Material Multiply => _multiply != null ? _multiply : (_multiply = BlendMaterial("RuntimeMultiply", 2f, 0f));
+
+        /// <summary>Toplama karışımı (parıltı). Shader derlemede yoksa null.</summary>
+        public static Material Additive => _additive != null ? _additive : (_additive = BlendMaterial("RuntimeAdditive", 5f, 1f));
+
+        private static Material BlendMaterial(string name, float src, float dst)
+        {
+            if (_blendShaderMissing) return null;
+            var shader = Shader.Find("Thatchwick/BlendSprite");
+            if (shader == null)
+            {
+                _blendShaderMissing = true;
+                Debug.LogWarning("Thatchwick/BlendSprite shader'ı bulunamadı: gün ışığı ve parıltı kapalı (Assets/Resources/Shaders).");
+                return null;
+            }
+            var m = new Material(shader) { name = name };
+            m.SetFloat("_SrcBlend", src);   // UnityEngine.Rendering.BlendMode: DstColor = 2, SrcAlpha = 5
+            m.SetFloat("_DstBlend", dst);   // Zero = 0, One = 1
+            return m;
+        }
+
         private static Color32 Shade(Color c, float factor) =>
             new Color32((byte)(c.r * factor * 255f), (byte)(c.g * factor * 255f), (byte)(c.b * factor * 255f), 255);
 

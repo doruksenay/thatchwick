@@ -23,6 +23,12 @@ namespace Thatchwick.Game
         private readonly Func<Character, JobRunner> _runnerOf;
         private readonly List<Rect> _rects = new List<Rect>();
         private DaySummary _card;
+        private float _cardShownAt;
+        /// <summary>Gün sonu kartının ekranda kalma süresi (gerçek saniye).</summary>
+        private const float CardSeconds = 10f;
+
+        /// <summary>Sol panelin sağ kenarı (GUI birimi); üst şerit bunun sağında kalır.</summary>
+        public float LeftInset { get; set; }
         // Kış tahmini pahalıdır (envanter x tüm etkileşimler): her çizimde değil, yarım saniyede bir hesaplanır.
         private WinterReport _forecast;
         private float _forecastUntil;
@@ -36,7 +42,7 @@ namespace Thatchwick.Game
             Func<Thatchwick.Core.Work.FarmSummary> farm = null)
         {
             _life = life; _content = content; _commander = commander; _runnerOf = runnerOf; _farm = farm;
-            _life.Ledger.DayEnded += s => { if (s != null && !s.IsEmpty) _card = s; };
+            _life.Ledger.DayEnded += s => { if (s != null && !s.IsEmpty) { _card = s; _cardShownAt = Time.unscaledTime; } };
         }
 
         public bool LogOpen => _logOpen;
@@ -122,7 +128,9 @@ namespace Thatchwick.Game
             string line4 = farm.Any
                 ? $"Tarla: {farm.Crops} ekin · {farm.Thirsty} susamış · {farm.Ripe} hasada hazır" + (farm.FruitReady > 0 ? $" · meyve hazır: {farm.FruitReady}" : "")
                 : "";
-            var rect = new Rect(w * 0.5f - 250f, 4f, 500f, line4.Length > 0 ? 78f : 62f);
+            // Sol paneli örtmesin: ortalanır, yer yoksa panelin sağına kayar ve daralır.
+            float left = Mathf.Max(w * 0.5f - 250f, LeftInset + 8f);
+            var rect = new Rect(left, 4f, Mathf.Min(500f, w - left - 8f), line4.Length > 0 ? 78f : 62f);
             _rects.Add(rect);
             GUILayout.BeginArea(rect, GUI.skin.box);
             GUILayout.Label(line1, _small);
@@ -144,7 +152,8 @@ namespace Thatchwick.Game
             var runner = _runnerOf(c);
             var queue = runner != null ? ActivityDescriber.Queue(runner, _life.World) : new List<ActivityInfo>();
             float height = 78f + queue.Count * 20f;
-            var rect = new Rect(w * 0.5f - 300f, h - height - 6f, 600f, height);
+            float left = Mathf.Max(w * 0.5f - 300f, 166f);   // bildirim düğmesinin sağında
+            var rect = new Rect(left, h - height - 6f, Mathf.Min(600f, w - left - 8f), height);
             _rects.Add(rect);
             GUILayout.BeginArea(rect, GUI.skin.box);
 
@@ -231,7 +240,15 @@ namespace Thatchwick.Game
         private void DrawCard(float w, float h)
         {
             var d = _card;
-            var rect = new Rect(w * 0.5f - 160f, h * 0.5f - 130f, 320f, 260f);
+            // Ekranın ortasını kapatmasın: sağ üstte, üst şeridin altında. Üstüne gelinmezse
+            // CardSeconds sonra kendiliğinden kapanır, son iki saniyede solar (görsel analiz, 18.11.2026).
+            var rect = new Rect(w - 328f, 90f, 320f, 260f);
+            if (rect.Contains(Event.current.mousePosition)) _cardShownAt = Mathf.Max(_cardShownAt, Time.unscaledTime - 2f);
+            float age = Time.unscaledTime - _cardShownAt;
+            if (age >= CardSeconds) { _card = null; return; }
+            float alpha = Mathf.Clamp01((CardSeconds - age) / 2f);
+            var prevCardColor = GUI.color;
+            GUI.color = new Color(prevCardColor.r, prevCardColor.g, prevCardColor.b, prevCardColor.a * alpha);
             _rects.Add(rect);
             GUILayout.BeginArea(rect, GUI.skin.box);
             GUILayout.Label($"Gün sonu · {_life.Festivals.DateText(d.Day)}");
@@ -246,6 +263,7 @@ namespace Thatchwick.Game
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Tamam")) _card = null;
             GUILayout.EndArea();
+            GUI.color = prevCardColor;
         }
 
         private static string Signed(int v) => v > 0 ? "+" + v : v.ToString();

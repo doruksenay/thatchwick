@@ -206,7 +206,7 @@ namespace Thatchwick.Game
                 case AgeStage.Elder:
                     return male ? "iso_char_elder_m_56_cand" : "iso_char_elder_f_56_cand";
             }
-            if (c.IsVillager && male) { pivotX = 34f; pivotY = 11f; return "iso_char_villager"; }   // 68x68
+            // Eski 68x68 köylü (iso_char_villager) bırakıldı: köylüler de 56'lık K2 setini kullanır (boy kararı 56, 2026-11-08).
             if (male)
             {
                 if (c.IsPlayerControlled || c.Id == 1) return "iso_char_farmer_a2_56_cand";
