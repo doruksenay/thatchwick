@@ -1,7 +1,7 @@
 ---
 id: "018a"
 title: Yürüme pilotu: erkek 84 px, SE
-status: review
+status: rejected   # kullanıcı 18.11.2026: yürürken zıplıyor
 claimed_at: 2026-11-18T18:51Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50
@@ -43,3 +43,5 @@ created: 2026-11-18
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18 kullanıcı: REDDEDİLDİ. Neden: yürürken zıplıyor. Ölçüm: ayak satırı sabit (y=82) ama tepe 2-10 px arasında oynuyor (8 px dikey sekme, 84 px boyda ~%10). Yerine 018a2. -->

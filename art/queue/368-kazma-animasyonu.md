@@ -8,7 +8,7 @@ family: karakter
 style_gate: false
 cost_est: 24
 cost_max: 36
-depends_on: ["018a"]
+depends_on: ["018a2"]
 max_attempts: 1
 pixellab: true
 outputs:
