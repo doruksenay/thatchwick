@@ -10,7 +10,7 @@ Bağlayıcı belgeler: `docs/gorsel-yonerge.md` (görsel şartname), `art/budget
 ## Çalışma sırası
 
 1. **Hazırlık.** `git status --short art Assets/Art/Iso tools/art`: önceki yarım kalmış tur izi (commit edilmemiş değişiklik) varsa dokunma, bunu raporla ve dur. Temizse `git pull --rebase`. `art/.worker.lock` varsa ve 2 saatten yeniyse çık ("başka işçi çalışıyor"). Yoksa oluştur (içine tarih-saat yaz). İşin sonunda, hata olsa da, sil.
-2. **Bütçeyi oku.** `art/budget.md` ve `get_balance` (harcama yok). Plan Tier 1 değilse ya da bakiye okunamıyorsa dur, kuyruğa dokunma, nedenini söyle.
+2. **Bütçeyi oku.** `art/budget.md` ve `get_balance` (harcama yok). `get_balance`'taki plan `art/budget.md` "Plan" bölümündekinden farklıysa ya da bakiye okunamıyorsa dur, kuyruğa dokunma, nedenini söyle (plan yükseltmesi kullanıcı `art/budget.md`'yi güncelleyince geçerli olur).
 3. **İş seç.** `python tools/art/queue_ready.py` uygun işleri numara sırasıyla listeler (kurallar aşağıdakiyle aynı; çelişirse bu dosya geçerlidir). Bir iş şu hepsini sağlıyorsa uygundur:
    - `status: pending`
    - `approved_by: user` ya da `auto` (`pending` = açık soru var, alma)

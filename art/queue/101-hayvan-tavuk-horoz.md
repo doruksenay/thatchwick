@@ -1,8 +1,7 @@
 ---
 id: "101"
 title: Hayvanlar 1: tavuk (tuval testi) + horoz
-status: blocked
-claimed_at: 2026-11-18T12:00Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
 style_gate: false
@@ -102,3 +101,4 @@ Bulut işçisi PixelLab sonuç PNG'lerini diske indiremedi (curl onay istiyor). 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.

@@ -3,9 +3,10 @@
 Bu dosya işçinin freni ve harcama defteridir. İşçi her iş öncesi okur, her iş sonrası günceller.
 
 ## Plan
-- Plan: Tier 1 (Pixel Apprentice), aylık 2000 generation.
-- Dönem: 2026-11-08 → yenilenme 2026-12-08.
-- Başlangıç bakiyesi (2026-11-08, tur 4 Faz A `get_balance`): 1999.
+- Plan: **Tier 2 (Pixel Artisan), aylık 5000 generation** (2026-11-18'de yükseltildi; kullanıcı, sohbet: "yeni pakete geçtik ve 5000 yeni generation geldi").
+- Dönem: 2026-11-18 → yenilenme 2026-12-18.
+- Başlangıç bakiyesi (2026-11-18, işçinin `get_balance` okuması): 4999 / 5000.
+- Önceki dönem: Tier 1 (Pixel Apprentice), 2000/ay, 2026-11-08 başlangıç 1999; yükseltme öncesi defter bakiyesi 625,1.
 
 ## Kurallar
 | Kural | Değer |

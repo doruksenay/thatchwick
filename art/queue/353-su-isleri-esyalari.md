@@ -1,8 +1,7 @@
 ---
 id: "353"
 title: Su işleri eşyaları: çeşme, yalak-lüle, akarsulu hela, sarnıç, yağmur fıçısı, su terazisi
-status: blocked
-claimed_at: 2026-11-18T11:57Z
+status: pending
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
 family: esya
@@ -43,3 +42,4 @@ Ayrıntılı yöntem **301'deki ile aynıdır** (`create_map_object` stil eşlem
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.

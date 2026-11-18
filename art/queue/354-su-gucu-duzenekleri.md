@@ -1,8 +1,7 @@
 ---
 id: "354"
 title: Su gücüyle çalışan düzenekler: su hızarı, dink, su çekici
-status: blocked
-claimed_at: 2026-11-18T11:58Z
+status: pending
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
 family: esya
@@ -38,3 +37,4 @@ status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz
 
 ## Sorular
 - 2026-11-18: `get_balance` plan: Tier 2 (Pixel Artisan), 4999/5000 gen; `art/budget.md` Tier 1 diyor. Kural: plan Tier 1 değilse dur. 0 gen harcandı. Karar kullanıcıda: budget.md planı güncellenirse iş yeniden `pending` yapılabilir.
+- 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.

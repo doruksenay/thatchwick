@@ -1,8 +1,7 @@
 ---
 id: "357"
 title: Arazi engelleri (kaya, çalı, devrik kütük, eski kök kütüğü)
-status: blocked
-claimed_at: 2026-11-18T12:02Z
+status: pending
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: esya
 style_gate: false
@@ -59,3 +58,4 @@ Yöntem **301 ile aynı** (referanssız kılavuz, `create_map_object` stil eşle
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.
