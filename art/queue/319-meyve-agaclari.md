@@ -1,7 +1,8 @@
 ---
 id: "319"
 title: Meyve ağaçları (elma, armut, kiraz, erik; genç, olgun, meyveli)
-status: pending
+status: running
+claimed_at: 2026-11-18T09:19Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: bitki
