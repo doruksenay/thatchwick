@@ -1,7 +1,7 @@
 ---
 id: "399a"
 title: Yapı menüsü ikonları yeniden, bölüm 1/2 (21; 392-394 retleri)
-status: review
+status: accepted
 claimed_at: 2026-11-18T14:36Z
 approved_by: user
 priority: 15

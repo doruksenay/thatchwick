@@ -81,37 +81,61 @@ namespace Thatchwick.Game
 
         private int TileIndex(int x, int y, int z) => ((z - GridMap.MinLevel) * Map.Height + y) * Map.Width + x;
 
-        public void Build(GridMap map)
+        /// <summary>Çizilen alan (etkin bölge). Karolar yalnızca bu dikdörtgende oluşturulur; diğer bölgeler ekran dışıdır.</summary>
+        public RectInt Area => _area;
+        private RectInt _area;
+        private readonly System.Collections.Generic.List<GameObject> _spawned = new System.Collections.Generic.List<GameObject>();
+
+        public void Build(GridMap map) => Build(map, new RectInt(0, 0, map.Width, map.Height));
+
+        public void Build(GridMap map, RectInt area)
         {
             Map = map;
             int plane = map.Width * map.Height;
             _tiles = new SpriteRenderer[plane * GridMap.LevelCount];
             _terrainBlocked = new bool[plane];
+            for (int y = 0; y < map.Height; y++)
+                for (int x = 0; x < map.Width; x++)
+                    _terrainBlocked[y * map.Width + x] = map.IsBlocked(new GridPos(x, y));
+            _area = area;
+            BuildTiles();
+        }
 
+        /// <summary>Etkin bölge değişti (harita geçişi): eski karolar silinir, yeni bölgenin karoları kurulur.</summary>
+        public void SetArea(RectInt area)
+        {
+            if (Map == null || area.Equals(_area)) return;
+            _area = area;
+            BuildTiles();
+            RefreshFloors();
+        }
+
+        private void BuildTiles()
+        {
+            foreach (var go in _spawned) if (go != null) Destroy(go);
+            _spawned.Clear();
+            System.Array.Clear(_tiles, 0, _tiles.Length);
             var diamond = SpriteMaterials.Diamond;
             var material = SpriteMaterials.Unlit;
 
             for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
             {
-                for (int y = 0; y < map.Height; y++)
+                for (int y = _area.yMin; y < _area.yMax; y++)
                 {
-                    for (int x = 0; x < map.Width; x++)
+                    for (int x = _area.xMin; x < _area.xMax; x++)
                     {
                         var p = new GridPos(x, y, z);
                         var go = new GameObject(z == 0 ? $"Tile {x},{y}" : $"Tile {x},{y},{z}");
                         go.transform.SetParent(transform, false);
                         go.transform.position = TileToWorld(p);
+                        _spawned.Add(go);
 
                         var sr = go.AddComponent<SpriteRenderer>();
                         sr.sprite = diamond;
                         sr.sharedMaterial = material;
                         sr.sortingOrder = GroundSortOrder + z * Iso.LevelSortStep;
                         _tiles[TileIndex(x, y, z)] = sr;
-                        if (z == 0)
-                        {
-                            _terrainBlocked[y * map.Width + x] = map.IsBlocked(p);
-                            sr.color = map.IsBlocked(p) ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB);
-                        }
+                        if (z == 0) sr.color = _terrainBlocked[y * Map.Width + x] ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB);
                         else sr.enabled = false;
                     }
                 }
@@ -124,13 +148,13 @@ namespace Thatchwick.Game
         private void BuildFringe()
         {
             var list = new System.Collections.Generic.List<FringeTile>();
-            for (int y = -FringeDepth; y < Map.Height + FringeDepth; y++)
+            for (int y = _area.yMin - FringeDepth; y < _area.yMax + FringeDepth; y++)
             {
-                for (int x = -FringeDepth; x < Map.Width + FringeDepth; x++)
+                for (int x = _area.xMin - FringeDepth; x < _area.xMax + FringeDepth; x++)
                 {
-                    if (x >= 0 && y >= 0 && x < Map.Width && y < Map.Height) continue;
-                    int dx = x < 0 ? -x : (x >= Map.Width ? x - Map.Width + 1 : 0);
-                    int dy = y < 0 ? -y : (y >= Map.Height ? y - Map.Height + 1 : 0);
+                    if (x >= _area.xMin && y >= _area.yMin && x < _area.xMax && y < _area.yMax) continue;
+                    int dx = x < _area.xMin ? _area.xMin - x : (x >= _area.xMax ? x - _area.xMax + 1 : 0);
+                    int dy = y < _area.yMin ? _area.yMin - y : (y >= _area.yMax ? y - _area.yMax + 1 : 0);
                     int d = Mathf.Max(dx, dy);
                     // Halkalar düz görünmesin diye karoya sabit küçük bir sapma.
                     int h = (x * 92837111) ^ (y * 689287499);
@@ -140,6 +164,7 @@ namespace Thatchwick.Game
                     var go = new GameObject($"Edge {x},{y}");
                     go.transform.SetParent(transform, false);
                     go.transform.position = TileToWorld(new GridPos(x, y, 0));
+                    _spawned.Add(go);
                     var sr = go.AddComponent<SpriteRenderer>();
                     sr.sharedMaterial = SpriteMaterials.Unlit;
                     sr.sortingOrder = GroundSortOrder - 1;
@@ -185,9 +210,9 @@ namespace Thatchwick.Game
         private void RefreshLevel(int z)
         {
             bool visible = IsLevelVisible(z);
-            for (int y = 0; y < Map.Height; y++)
+            for (int y = _area.yMin; y < _area.yMax; y++)
             {
-                for (int x = 0; x < Map.Width; x++)
+                for (int x = _area.xMin; x < _area.xMax; x++)
                 {
                     var sr = _tiles[TileIndex(x, y, z)];
                     if (sr == null) continue;

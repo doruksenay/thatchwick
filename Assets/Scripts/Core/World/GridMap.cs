@@ -199,15 +199,34 @@ namespace Thatchwick.Core.World
         /// <summary>p'den merdivenle gidilebilen (iki ucu da açık) karolar.</summary>
         public IEnumerable<GridPos> LinksFrom(GridPos p)
         {
-            if (!_links.TryGetValue(p, out var list) || !IsWalkable(p)) yield break;
-            foreach (var q in list) if (IsWalkable(q)) yield return q;
+            if (!IsWalkable(p)) yield break;
+            if (_links.TryGetValue(p, out var list)) foreach (var q in list) if (IsWalkable(q)) yield return q;
+            if (_portals.TryGetValue(p, out var gates)) foreach (var q in gates) if (IsWalkable(q)) yield return q;
         }
+
+        // ---- geçitler (haritalar arası, aynı kat) ----
+        // Bölgeleri (çiftlik, şehir...) birbirine bağlayan kenar karoları. Merdiven bağlantılarından ayrı tutulur:
+        // ClearLinks merdivenleri yeniden kurarken geçitler kalır. Kayda yazılmaz, bölge düzeninden yeniden kurulur.
+        private readonly Dictionary<GridPos, List<GridPos>> _portals = new Dictionary<GridPos, List<GridPos>>();
+
+        public void AddPortal(GridPos a, GridPos b)
+        {
+            if (!_portals.TryGetValue(a, out var la)) _portals[a] = la = new List<GridPos>();
+            if (!la.Contains(b)) la.Add(b);
+            if (!_portals.TryGetValue(b, out var lb)) _portals[b] = lb = new List<GridPos>();
+            if (!lb.Contains(a)) lb.Add(a);
+        }
+
+        public void ClearPortals() { _portals.Clear(); }
+
+        public bool IsPortal(GridPos p) => _portals.ContainsKey(p);
 
         public bool HasLinkAt(GridPos p) => _links.ContainsKey(p);
 
         /// <summary>Tek adımda geçilebilir mi: aynı katta CanStep, farklı katta bir merdiven bağlantısı.</summary>
         public bool CanTraverse(GridPos from, GridPos to)
         {
+            if (_portals.TryGetValue(from, out var gates) && gates.Contains(to)) return IsWalkable(from) && IsWalkable(to);
             if (from.Z == to.Z) return CanStep(from, to);
             if (!_links.TryGetValue(from, out var list) || !list.Contains(to)) return false;
             return IsWalkable(from) && IsWalkable(to);
@@ -215,7 +234,7 @@ namespace Thatchwick.Core.World
 
         /// <summary>Bir adımın uzunluğu (karo cinsinden): normal adım 1, merdiven bağlantısı yatay mesafe + 1.</summary>
         public static int StepSpan(GridPos from, GridPos to) =>
-            from.Z == to.Z ? 1 : Math.Abs(to.X - from.X) + Math.Abs(to.Y - from.Y) + 1;
+            from.Z == to.Z && Math.Abs(to.X - from.X) <= 1 && Math.Abs(to.Y - from.Y) <= 1 ? 1 : Math.Abs(to.X - from.X) + Math.Abs(to.Y - from.Y) + 1;
 
         public void ClearLinks() { _links.Clear(); }
 

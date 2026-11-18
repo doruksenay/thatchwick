@@ -38,6 +38,9 @@ namespace Thatchwick.Game
             WorldToGrid(new Vector2(world.x, world.y - level * LevelHeight));
 
         /// <summary>Harita (width x height karo) elmasının dünya sınırları (kamera kısıtı için); üst kat ve bodrum payı dahil.</summary>
+        public static Rect RectBounds(int x0, int y0, int width, int height) =>
+            new Rect((x0 - y0 - height) * HalfWidth, (x0 + y0) * HalfHeight - LevelHeight, (width + height) * HalfWidth, (width + height) * HalfHeight + 2f * LevelHeight);
+
         public static Rect MapBounds(int width, int height) =>
             new Rect(-height * HalfWidth, -LevelHeight, (width + height) * HalfWidth, (width + height) * HalfHeight + 2f * LevelHeight);
 

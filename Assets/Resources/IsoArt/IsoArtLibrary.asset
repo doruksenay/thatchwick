@@ -595,6 +595,492 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: a7f28776fdb19444ebf2cff6640b469a, type: 3}
   - name: iso_char_man_r84_cand_se
     texture: {fileID: 2800000, guid: 106cbe1f52119954a922b2238622d1d8, type: 3}
+  - name: iso_char_man_r84_cook_ne_00
+    texture: {fileID: 2800000, guid: daef3fb6598f30e4891605c3ba570fa7, type: 3}
+  - name: iso_char_man_r84_cook_ne_01
+    texture: {fileID: 2800000, guid: 5691be4734ea0314e9f37207f2b9b2e7, type: 3}
+  - name: iso_char_man_r84_cook_ne_02
+    texture: {fileID: 2800000, guid: a49e96d5d71d7cf478839dc0aa7e4edf, type: 3}
+  - name: iso_char_man_r84_cook_ne_03
+    texture: {fileID: 2800000, guid: 2073714ad347b714e97c3c10c8da69a1, type: 3}
+  - name: iso_char_man_r84_cook_ne_04
+    texture: {fileID: 2800000, guid: bfe89ec34f90c0c4bab08ea6cdf8bab0, type: 3}
+  - name: iso_char_man_r84_cook_ne_05
+    texture: {fileID: 2800000, guid: 77624435b4459b54cabedee1f84ace0c, type: 3}
+  - name: iso_char_man_r84_cook_ne_06
+    texture: {fileID: 2800000, guid: 6b16c3ecbcf9e3845ac1f46e1719e35b, type: 3}
+  - name: iso_char_man_r84_cook_ne_07
+    texture: {fileID: 2800000, guid: 50d61b93ac9b3e34f9e7aa3a5b7bfb77, type: 3}
+  - name: iso_char_man_r84_cook_nw_00
+    texture: {fileID: 2800000, guid: cd40fdff345bd2043ad75cb9959a4d38, type: 3}
+  - name: iso_char_man_r84_cook_nw_01
+    texture: {fileID: 2800000, guid: 8066a03e21f89e6468cec0bdb7bfac48, type: 3}
+  - name: iso_char_man_r84_cook_nw_02
+    texture: {fileID: 2800000, guid: 193e1e1d81c80cc4b93804419ca93065, type: 3}
+  - name: iso_char_man_r84_cook_nw_03
+    texture: {fileID: 2800000, guid: 9a384a9cd26c16546ba693363da75a47, type: 3}
+  - name: iso_char_man_r84_cook_nw_04
+    texture: {fileID: 2800000, guid: 78b7dabe6b079c040a9cfbab8aa105fe, type: 3}
+  - name: iso_char_man_r84_cook_nw_05
+    texture: {fileID: 2800000, guid: 039a5a7fdbe331d4c9be1e7fef0ef4ab, type: 3}
+  - name: iso_char_man_r84_cook_nw_06
+    texture: {fileID: 2800000, guid: ad7ee8f2a3b93ed4299e4b187ac59449, type: 3}
+  - name: iso_char_man_r84_cook_nw_07
+    texture: {fileID: 2800000, guid: 80366da3ed609a04fb30054f8e3794fc, type: 3}
+  - name: iso_char_man_r84_cook_se_00
+    texture: {fileID: 2800000, guid: ed4384c07a0c5ba409e3cde19bc8e8d4, type: 3}
+  - name: iso_char_man_r84_cook_se_01
+    texture: {fileID: 2800000, guid: 04f286f8e4ff02c48807850d0002f3a7, type: 3}
+  - name: iso_char_man_r84_cook_se_02
+    texture: {fileID: 2800000, guid: 1d9177f303c6e1e4791d15e84e41af63, type: 3}
+  - name: iso_char_man_r84_cook_se_03
+    texture: {fileID: 2800000, guid: 3d5b48833e57f5948b5eafe9dcf2d3ad, type: 3}
+  - name: iso_char_man_r84_cook_se_04
+    texture: {fileID: 2800000, guid: 579fbdca8d4f5a446aeb8bdebd26978c, type: 3}
+  - name: iso_char_man_r84_cook_se_05
+    texture: {fileID: 2800000, guid: f6a587d9f2712c84fba16fbec4268b3a, type: 3}
+  - name: iso_char_man_r84_cook_se_06
+    texture: {fileID: 2800000, guid: d95a33c636cb9334794d373d9fef4de3, type: 3}
+  - name: iso_char_man_r84_cook_se_07
+    texture: {fileID: 2800000, guid: a3683aa83b30f64429816f0727b05465, type: 3}
+  - name: iso_char_man_r84_cook_sw_00
+    texture: {fileID: 2800000, guid: dc097f1ec963f67488746864b797be60, type: 3}
+  - name: iso_char_man_r84_cook_sw_01
+    texture: {fileID: 2800000, guid: e1714bd00e7a264478da27cae8a2dbb3, type: 3}
+  - name: iso_char_man_r84_cook_sw_02
+    texture: {fileID: 2800000, guid: bf8be99b90789d2449df498e1d6de2d8, type: 3}
+  - name: iso_char_man_r84_cook_sw_03
+    texture: {fileID: 2800000, guid: b575a77eef6ffb94fa9a60e2095c9830, type: 3}
+  - name: iso_char_man_r84_cook_sw_04
+    texture: {fileID: 2800000, guid: 909342697414d0543945658f5553f552, type: 3}
+  - name: iso_char_man_r84_cook_sw_05
+    texture: {fileID: 2800000, guid: 284ead318f99b664b91985d25ab00131, type: 3}
+  - name: iso_char_man_r84_cook_sw_06
+    texture: {fileID: 2800000, guid: d0f4f4fa8eaa05a4d992584f55378930, type: 3}
+  - name: iso_char_man_r84_cook_sw_07
+    texture: {fileID: 2800000, guid: 4db47f25cc65e464990c88aaa1eebe82, type: 3}
+  - name: iso_char_man_r84_craft_hammer_ne_00
+    texture: {fileID: 2800000, guid: 45f9e13a954d7164982f3df757b94698, type: 3}
+  - name: iso_char_man_r84_craft_hammer_ne_01
+    texture: {fileID: 2800000, guid: 96af6c8565db9f8439ba35af672ec3b0, type: 3}
+  - name: iso_char_man_r84_craft_hammer_ne_02
+    texture: {fileID: 2800000, guid: 378c6e9f8c940194e9b4ee4b2c87d8f8, type: 3}
+  - name: iso_char_man_r84_craft_hammer_ne_03
+    texture: {fileID: 2800000, guid: 3390e0f956b978b439642ee3fe3f7724, type: 3}
+  - name: iso_char_man_r84_craft_hammer_ne_04
+    texture: {fileID: 2800000, guid: 1b7969bf73b1fc94db38d0610fd4e687, type: 3}
+  - name: iso_char_man_r84_craft_hammer_ne_05
+    texture: {fileID: 2800000, guid: 3106c40b00fb1794fbe0b9cfa8883c45, type: 3}
+  - name: iso_char_man_r84_craft_hammer_ne_06
+    texture: {fileID: 2800000, guid: 34ecf1e59fc7199499a1033b1d013e9d, type: 3}
+  - name: iso_char_man_r84_craft_hammer_ne_07
+    texture: {fileID: 2800000, guid: aa4ae092951a1df4eb33edec6df62393, type: 3}
+  - name: iso_char_man_r84_craft_hammer_nw_00
+    texture: {fileID: 2800000, guid: d474fc3ad923e3247ad0e16e201bc01e, type: 3}
+  - name: iso_char_man_r84_craft_hammer_nw_01
+    texture: {fileID: 2800000, guid: 56ac50d728078d948be3d94d1f307b33, type: 3}
+  - name: iso_char_man_r84_craft_hammer_nw_02
+    texture: {fileID: 2800000, guid: acf0fef4d47354e43b9a70a25425f1f7, type: 3}
+  - name: iso_char_man_r84_craft_hammer_nw_03
+    texture: {fileID: 2800000, guid: f1189115c1209194cab55776c2ae3382, type: 3}
+  - name: iso_char_man_r84_craft_hammer_nw_04
+    texture: {fileID: 2800000, guid: 541d50cc014ccc245be10e290dd57d74, type: 3}
+  - name: iso_char_man_r84_craft_hammer_nw_05
+    texture: {fileID: 2800000, guid: 5aa00f59d4df81b4fb690fc7d9f94606, type: 3}
+  - name: iso_char_man_r84_craft_hammer_nw_06
+    texture: {fileID: 2800000, guid: 34b2a6f2791258549a1e2c8806e64e9e, type: 3}
+  - name: iso_char_man_r84_craft_hammer_nw_07
+    texture: {fileID: 2800000, guid: 81d068be6478e05439bcb5888527119f, type: 3}
+  - name: iso_char_man_r84_craft_hammer_se_00
+    texture: {fileID: 2800000, guid: 590d0d11d19ac1446bb2b5f73b724e37, type: 3}
+  - name: iso_char_man_r84_craft_hammer_se_01
+    texture: {fileID: 2800000, guid: 68f438313f787b04b9219a95d31840a0, type: 3}
+  - name: iso_char_man_r84_craft_hammer_se_02
+    texture: {fileID: 2800000, guid: 5907c67b24f1d1b4097a0c91513452c7, type: 3}
+  - name: iso_char_man_r84_craft_hammer_se_03
+    texture: {fileID: 2800000, guid: 97e65eb3bab817947849ada58d0a80b5, type: 3}
+  - name: iso_char_man_r84_craft_hammer_se_04
+    texture: {fileID: 2800000, guid: 5bfbcaa04e626ba428f29a79d42f6692, type: 3}
+  - name: iso_char_man_r84_craft_hammer_se_05
+    texture: {fileID: 2800000, guid: d2d9a36ccf3d11e40891a042d3af3d37, type: 3}
+  - name: iso_char_man_r84_craft_hammer_se_06
+    texture: {fileID: 2800000, guid: e278c0ef2bcfdd642bf2a78ea02dc465, type: 3}
+  - name: iso_char_man_r84_craft_hammer_se_07
+    texture: {fileID: 2800000, guid: 3524d08c970c85b4c9ece13f588ddca7, type: 3}
+  - name: iso_char_man_r84_craft_hammer_sw_00
+    texture: {fileID: 2800000, guid: 8a660f98c2296f84c9a17d4ae136020f, type: 3}
+  - name: iso_char_man_r84_craft_hammer_sw_01
+    texture: {fileID: 2800000, guid: 5c188830e0a88a040bc5dc3d7884430d, type: 3}
+  - name: iso_char_man_r84_craft_hammer_sw_02
+    texture: {fileID: 2800000, guid: 173e31858b6a38944aaf8f92b7c26db7, type: 3}
+  - name: iso_char_man_r84_craft_hammer_sw_03
+    texture: {fileID: 2800000, guid: 7b2d1e570ffd67041bde52925154fb8d, type: 3}
+  - name: iso_char_man_r84_craft_hammer_sw_04
+    texture: {fileID: 2800000, guid: 4926fe8f364cce04b899e85cbdf0948e, type: 3}
+  - name: iso_char_man_r84_craft_hammer_sw_05
+    texture: {fileID: 2800000, guid: 45dc3517b469f064a89a8b1de8693ab8, type: 3}
+  - name: iso_char_man_r84_craft_hammer_sw_06
+    texture: {fileID: 2800000, guid: 3d38e56e5583be147a55c1fd69be576f, type: 3}
+  - name: iso_char_man_r84_craft_hammer_sw_07
+    texture: {fileID: 2800000, guid: d5df71457807e564997303ede36e418a, type: 3}
+  - name: iso_char_man_r84_craft_hammer_sw_08
+    texture: {fileID: 2800000, guid: 338b2b260507277478744dc4d6d609b4, type: 3}
+  - name: iso_char_man_r84_craft_hand_ne_00
+    texture: {fileID: 2800000, guid: c3930ba47c078ec4aa637f87473f89c2, type: 3}
+  - name: iso_char_man_r84_craft_hand_ne_01
+    texture: {fileID: 2800000, guid: 5cfb40e5133583d469a1012504491154, type: 3}
+  - name: iso_char_man_r84_craft_hand_ne_02
+    texture: {fileID: 2800000, guid: 1a8c633097ca366489df9341b953fcf5, type: 3}
+  - name: iso_char_man_r84_craft_hand_ne_03
+    texture: {fileID: 2800000, guid: 1bcf7dbc0acee2540b488ebbc7a2ee38, type: 3}
+  - name: iso_char_man_r84_craft_hand_ne_04
+    texture: {fileID: 2800000, guid: 9717d6e7cca58444d9b2698f77eedd4c, type: 3}
+  - name: iso_char_man_r84_craft_hand_ne_05
+    texture: {fileID: 2800000, guid: 638c103c1bfbe704491ab13bdaaa9414, type: 3}
+  - name: iso_char_man_r84_craft_hand_ne_06
+    texture: {fileID: 2800000, guid: e5f16d3e35900494e9cb6d68ada811cc, type: 3}
+  - name: iso_char_man_r84_craft_hand_ne_07
+    texture: {fileID: 2800000, guid: 07bc05841f563f8448e92002fa47bf4d, type: 3}
+  - name: iso_char_man_r84_craft_hand_nw_00
+    texture: {fileID: 2800000, guid: b10fcbe9e612d4e42a47e69eee0c8465, type: 3}
+  - name: iso_char_man_r84_craft_hand_nw_01
+    texture: {fileID: 2800000, guid: a209a7815c832dd4399333608134ae64, type: 3}
+  - name: iso_char_man_r84_craft_hand_nw_02
+    texture: {fileID: 2800000, guid: b14f60cb82a0081459cb56e402855045, type: 3}
+  - name: iso_char_man_r84_craft_hand_nw_03
+    texture: {fileID: 2800000, guid: 99b935e6577b5db44a16dee08a739f58, type: 3}
+  - name: iso_char_man_r84_craft_hand_nw_04
+    texture: {fileID: 2800000, guid: b9115966559054a48b789e963ad7e189, type: 3}
+  - name: iso_char_man_r84_craft_hand_nw_05
+    texture: {fileID: 2800000, guid: 1d3f7548cda1853449747f45f077487a, type: 3}
+  - name: iso_char_man_r84_craft_hand_nw_06
+    texture: {fileID: 2800000, guid: 5b4c4df3c30ff1d43ac22ebe252a7fd3, type: 3}
+  - name: iso_char_man_r84_craft_hand_nw_07
+    texture: {fileID: 2800000, guid: ba05159ad25f8da4f93d6a68a2db2dc0, type: 3}
+  - name: iso_char_man_r84_craft_hand_se_00
+    texture: {fileID: 2800000, guid: 162b7295f50f9ad49b3acf4d67615bce, type: 3}
+  - name: iso_char_man_r84_craft_hand_se_01
+    texture: {fileID: 2800000, guid: 2494d17a5d85fd440a31ef437b19e0c4, type: 3}
+  - name: iso_char_man_r84_craft_hand_se_02
+    texture: {fileID: 2800000, guid: 2bc0c60f99ac7ea4fa15735c537df007, type: 3}
+  - name: iso_char_man_r84_craft_hand_se_03
+    texture: {fileID: 2800000, guid: 1a575445f56e5d14dbb1da0b9360e6ae, type: 3}
+  - name: iso_char_man_r84_craft_hand_se_04
+    texture: {fileID: 2800000, guid: c95f6d8b234b09b4c88f7ae4793f2f3b, type: 3}
+  - name: iso_char_man_r84_craft_hand_se_05
+    texture: {fileID: 2800000, guid: 42c3b8364f6099d4fb57335b2a3cb205, type: 3}
+  - name: iso_char_man_r84_craft_hand_se_06
+    texture: {fileID: 2800000, guid: 748b9459a75415f46b8a459115a3c4ce, type: 3}
+  - name: iso_char_man_r84_craft_hand_se_07
+    texture: {fileID: 2800000, guid: ebe8f1a95a5658142a11f3a710229b96, type: 3}
+  - name: iso_char_man_r84_craft_hand_sw_00
+    texture: {fileID: 2800000, guid: 932443a93fab7354f8579f035157b5b8, type: 3}
+  - name: iso_char_man_r84_craft_hand_sw_01
+    texture: {fileID: 2800000, guid: 73c814401d8f4a7478565e1ba857d850, type: 3}
+  - name: iso_char_man_r84_craft_hand_sw_02
+    texture: {fileID: 2800000, guid: eb42eb4f456487c438c9c6d8a44c4ffe, type: 3}
+  - name: iso_char_man_r84_craft_hand_sw_03
+    texture: {fileID: 2800000, guid: a7ad0c35f073f7e4495c6000b7c6db93, type: 3}
+  - name: iso_char_man_r84_craft_hand_sw_04
+    texture: {fileID: 2800000, guid: 062cfa44e89a6bb4383df5873eb32034, type: 3}
+  - name: iso_char_man_r84_craft_hand_sw_05
+    texture: {fileID: 2800000, guid: 7720c5f33329a984daa9378a64594ecc, type: 3}
+  - name: iso_char_man_r84_craft_hand_sw_06
+    texture: {fileID: 2800000, guid: d745327bed439484f8e85d83ebbbef55, type: 3}
+  - name: iso_char_man_r84_craft_hand_sw_07
+    texture: {fileID: 2800000, guid: 9122ed57649d82947825d705208dad70, type: 3}
+  - name: iso_char_man_r84_eat_ne_00
+    texture: {fileID: 2800000, guid: 32bc79e117f72e44fa276a43be908852, type: 3}
+  - name: iso_char_man_r84_eat_ne_01
+    texture: {fileID: 2800000, guid: 182f38c4db321fc44a5390406b02db86, type: 3}
+  - name: iso_char_man_r84_eat_ne_02
+    texture: {fileID: 2800000, guid: 6f5908c75fa466643a89911554f7ee68, type: 3}
+  - name: iso_char_man_r84_eat_ne_03
+    texture: {fileID: 2800000, guid: dd23c89688cee0e43af2a7ab9ed50b1a, type: 3}
+  - name: iso_char_man_r84_eat_ne_04
+    texture: {fileID: 2800000, guid: d1066852050db1b4bad7d1126fd1936b, type: 3}
+  - name: iso_char_man_r84_eat_ne_05
+    texture: {fileID: 2800000, guid: 431f05278f14aa54d93ef43da0557a0f, type: 3}
+  - name: iso_char_man_r84_eat_ne_06
+    texture: {fileID: 2800000, guid: 063e043aa0469f348a7b81182b125c6f, type: 3}
+  - name: iso_char_man_r84_eat_ne_07
+    texture: {fileID: 2800000, guid: 20dcc5da0c1bca54da0ad49a71fb1cca, type: 3}
+  - name: iso_char_man_r84_eat_nw_00
+    texture: {fileID: 2800000, guid: 1a6419a100f4513498dacdf2b4660ec8, type: 3}
+  - name: iso_char_man_r84_eat_nw_01
+    texture: {fileID: 2800000, guid: 2a17751a721aaa24a8cd9cfd4638def6, type: 3}
+  - name: iso_char_man_r84_eat_nw_02
+    texture: {fileID: 2800000, guid: c530097a19e03fb4699215f6ea8f8c81, type: 3}
+  - name: iso_char_man_r84_eat_nw_03
+    texture: {fileID: 2800000, guid: 73a8db9f18ebe7a48b60701bc64d4e06, type: 3}
+  - name: iso_char_man_r84_eat_nw_04
+    texture: {fileID: 2800000, guid: 3224c80064e5416438e726e63035f52b, type: 3}
+  - name: iso_char_man_r84_eat_nw_05
+    texture: {fileID: 2800000, guid: 5dcfb3226944da94c889dd63ab331e11, type: 3}
+  - name: iso_char_man_r84_eat_nw_06
+    texture: {fileID: 2800000, guid: f41cf2c72da4a9c4681650de7966b70e, type: 3}
+  - name: iso_char_man_r84_eat_nw_07
+    texture: {fileID: 2800000, guid: 9a5f147b16b636146a8dbf1956ba8a4b, type: 3}
+  - name: iso_char_man_r84_eat_se_00
+    texture: {fileID: 2800000, guid: 322d6f7116b54ea4fa3152fa16ba93b8, type: 3}
+  - name: iso_char_man_r84_eat_se_01
+    texture: {fileID: 2800000, guid: 817c4b6a801b991429ac9d1aec777a99, type: 3}
+  - name: iso_char_man_r84_eat_se_02
+    texture: {fileID: 2800000, guid: 011750b2d6059ed4abe79da939d9fc37, type: 3}
+  - name: iso_char_man_r84_eat_se_03
+    texture: {fileID: 2800000, guid: eff73f4adce0abd45a3c014e14b4a603, type: 3}
+  - name: iso_char_man_r84_eat_se_04
+    texture: {fileID: 2800000, guid: 57eace47539efd849abadd41a61cc4ac, type: 3}
+  - name: iso_char_man_r84_eat_se_05
+    texture: {fileID: 2800000, guid: 4a7118301efbc614ca3de1cd9357f0bb, type: 3}
+  - name: iso_char_man_r84_eat_se_06
+    texture: {fileID: 2800000, guid: d3800d3748bd6b54eb779d2db38a080c, type: 3}
+  - name: iso_char_man_r84_eat_se_07
+    texture: {fileID: 2800000, guid: acec449dc3a0b1d4cac87be2d4702221, type: 3}
+  - name: iso_char_man_r84_eat_sw_00
+    texture: {fileID: 2800000, guid: 12ab75207e539dd459884326f2da8a1b, type: 3}
+  - name: iso_char_man_r84_eat_sw_01
+    texture: {fileID: 2800000, guid: e3d9060b52ba57040b6154f6916f735a, type: 3}
+  - name: iso_char_man_r84_eat_sw_02
+    texture: {fileID: 2800000, guid: ef871603e0f96e04e87b805d288f8185, type: 3}
+  - name: iso_char_man_r84_eat_sw_03
+    texture: {fileID: 2800000, guid: 8d623cd4fb635bb4ea1681b64e9bdb49, type: 3}
+  - name: iso_char_man_r84_eat_sw_04
+    texture: {fileID: 2800000, guid: 8c84372653b68cf4da7cc4def011b8bb, type: 3}
+  - name: iso_char_man_r84_eat_sw_05
+    texture: {fileID: 2800000, guid: 69cd91e286ee6ed4d9c2ab048424d496, type: 3}
+  - name: iso_char_man_r84_eat_sw_06
+    texture: {fileID: 2800000, guid: 748aecc3eeda61c4d981a617bff9f315, type: 3}
+  - name: iso_char_man_r84_eat_sw_07
+    texture: {fileID: 2800000, guid: d166067e1f8f5c345867398c03496e4d, type: 3}
+  - name: iso_char_man_r84_idle_e
+    texture: {fileID: 2800000, guid: 46aa074cc8bd3804eb564b52246aaa38, type: 3}
+  - name: iso_char_man_r84_idle_n
+    texture: {fileID: 2800000, guid: 764b1a994837310439423c7fa8b88bb5, type: 3}
+  - name: iso_char_man_r84_idle_ne
+    texture: {fileID: 2800000, guid: 8d6b58b5227d60f46b162966cbc6ad9a, type: 3}
+  - name: iso_char_man_r84_idle_nw
+    texture: {fileID: 2800000, guid: bfbd523dd7f5e06479f4cf995fb62870, type: 3}
+  - name: iso_char_man_r84_idle_s
+    texture: {fileID: 2800000, guid: 1c10996877ea15c498d2b1fec6c8a571, type: 3}
+  - name: iso_char_man_r84_idle_se
+    texture: {fileID: 2800000, guid: 27ae23fe1792df645a726b492a28505d, type: 3}
+  - name: iso_char_man_r84_idle_sw
+    texture: {fileID: 2800000, guid: d365691fada8198419b084e3343de772, type: 3}
+  - name: iso_char_man_r84_idle_w
+    texture: {fileID: 2800000, guid: fcf4b864107fb9b4dadf853e6f8cbc91, type: 3}
+  - name: iso_char_man_r84_walk_e_00
+    texture: {fileID: 2800000, guid: a8b2ae76abef35a46b0f3e024f313305, type: 3}
+  - name: iso_char_man_r84_walk_e_01
+    texture: {fileID: 2800000, guid: af5cb226bca3f2e449e8166dfa64f2c6, type: 3}
+  - name: iso_char_man_r84_walk_e_02
+    texture: {fileID: 2800000, guid: 3fea9e37295051c499df7570278a9a93, type: 3}
+  - name: iso_char_man_r84_walk_e_03
+    texture: {fileID: 2800000, guid: eda514882b95c8e4c894277ce0e79a40, type: 3}
+  - name: iso_char_man_r84_walk_e_04
+    texture: {fileID: 2800000, guid: 13b72df90c35f3948a6b8714192bae32, type: 3}
+  - name: iso_char_man_r84_walk_e_05
+    texture: {fileID: 2800000, guid: 1e5599e145b628e42a3e07397729b114, type: 3}
+  - name: iso_char_man_r84_walk_e_06
+    texture: {fileID: 2800000, guid: 6b0db84ff72a05943ae0e2af192cfbe0, type: 3}
+  - name: iso_char_man_r84_walk_e_07
+    texture: {fileID: 2800000, guid: b827ea23295c78f489fbefb0a3ebfa57, type: 3}
+  - name: iso_char_man_r84_walk_e_08
+    texture: {fileID: 2800000, guid: d39082cb4dbbd2c449205f363f2e2e22, type: 3}
+  - name: iso_char_man_r84_walk_n_00
+    texture: {fileID: 2800000, guid: 2a5f67d845e60074aa619656c5bfe8d8, type: 3}
+  - name: iso_char_man_r84_walk_n_01
+    texture: {fileID: 2800000, guid: a7ecae475ca54ce47ba2b0b5caf5a739, type: 3}
+  - name: iso_char_man_r84_walk_n_02
+    texture: {fileID: 2800000, guid: 0132213e2d1496843870926c34775a94, type: 3}
+  - name: iso_char_man_r84_walk_n_03
+    texture: {fileID: 2800000, guid: 72e775feb278e4e409337e0ea135ea66, type: 3}
+  - name: iso_char_man_r84_walk_n_04
+    texture: {fileID: 2800000, guid: f62d75ce7d4985c4daa5ef8bbdcafa75, type: 3}
+  - name: iso_char_man_r84_walk_n_05
+    texture: {fileID: 2800000, guid: 693619df5e604004ea28610120d7a634, type: 3}
+  - name: iso_char_man_r84_walk_n_06
+    texture: {fileID: 2800000, guid: bb20cdc6df341094a9ef67d0bc6ab931, type: 3}
+  - name: iso_char_man_r84_walk_n_07
+    texture: {fileID: 2800000, guid: 261bab2927e013c4f91ce0c1c9ee32d6, type: 3}
+  - name: iso_char_man_r84_walk_n_08
+    texture: {fileID: 2800000, guid: ebd989b81f5858449a0265b70cab73d6, type: 3}
+  - name: iso_char_man_r84_walk_ne_00
+    texture: {fileID: 2800000, guid: 6d92e50d4c5ba5f4aa4df873c1ceee16, type: 3}
+  - name: iso_char_man_r84_walk_ne_01
+    texture: {fileID: 2800000, guid: b3dbca9aeebe815488f97a824dde3f32, type: 3}
+  - name: iso_char_man_r84_walk_ne_02
+    texture: {fileID: 2800000, guid: 4d36b1e20457a2647bf6301844e123de, type: 3}
+  - name: iso_char_man_r84_walk_ne_03
+    texture: {fileID: 2800000, guid: afb9c61c57f8b5544a9cec156cb4b205, type: 3}
+  - name: iso_char_man_r84_walk_ne_04
+    texture: {fileID: 2800000, guid: 27db9caa3200d8f47abd0be6c4496246, type: 3}
+  - name: iso_char_man_r84_walk_ne_05
+    texture: {fileID: 2800000, guid: 7fc374c9f6871fe42ac8711bfb698797, type: 3}
+  - name: iso_char_man_r84_walk_ne_06
+    texture: {fileID: 2800000, guid: 0747d605f5c8d7f4fb896b448cea34de, type: 3}
+  - name: iso_char_man_r84_walk_ne_07
+    texture: {fileID: 2800000, guid: 000555266fb6e5f47869575ca0c5eda7, type: 3}
+  - name: iso_char_man_r84_walk_ne_08
+    texture: {fileID: 2800000, guid: 68ddfaa1b2296c949a398b2673ed5a88, type: 3}
+  - name: iso_char_man_r84_walk_nw_00
+    texture: {fileID: 2800000, guid: 27fa0f27ed3665e49853f9ab10b6d507, type: 3}
+  - name: iso_char_man_r84_walk_nw_01
+    texture: {fileID: 2800000, guid: 5a68c68b299a6d24ba7b89f036b744e7, type: 3}
+  - name: iso_char_man_r84_walk_nw_02
+    texture: {fileID: 2800000, guid: 39f686d44837fac4ba96b9e8692415cd, type: 3}
+  - name: iso_char_man_r84_walk_nw_03
+    texture: {fileID: 2800000, guid: 1fe7c595cfc6b09469c4b0759340209e, type: 3}
+  - name: iso_char_man_r84_walk_nw_04
+    texture: {fileID: 2800000, guid: 19216b160cb04bb449dfeabee649ea0c, type: 3}
+  - name: iso_char_man_r84_walk_nw_05
+    texture: {fileID: 2800000, guid: 0e76b157ba29aa844bb369f3273c2bd7, type: 3}
+  - name: iso_char_man_r84_walk_nw_06
+    texture: {fileID: 2800000, guid: 8242d7cf5af326d40bb2e38d46951b54, type: 3}
+  - name: iso_char_man_r84_walk_nw_07
+    texture: {fileID: 2800000, guid: c5dbca2ef8a41484686439ba1801a84a, type: 3}
+  - name: iso_char_man_r84_walk_nw_08
+    texture: {fileID: 2800000, guid: cc8bc6f3ead7475489411401baba3ced, type: 3}
+  - name: iso_char_man_r84_walk_s_00
+    texture: {fileID: 2800000, guid: 934628a784802184e858c79e6283a063, type: 3}
+  - name: iso_char_man_r84_walk_s_01
+    texture: {fileID: 2800000, guid: 278e0245a0c780e49beb8ec92bd6b6b9, type: 3}
+  - name: iso_char_man_r84_walk_s_02
+    texture: {fileID: 2800000, guid: 04a354f950009fb438951b82a98750a3, type: 3}
+  - name: iso_char_man_r84_walk_s_03
+    texture: {fileID: 2800000, guid: c6b73bd5299323a449b29805478c17f4, type: 3}
+  - name: iso_char_man_r84_walk_s_04
+    texture: {fileID: 2800000, guid: afa5b868d9b8b974b86727160313165f, type: 3}
+  - name: iso_char_man_r84_walk_s_05
+    texture: {fileID: 2800000, guid: c81576a0d883eeb40811764b2e7edab0, type: 3}
+  - name: iso_char_man_r84_walk_s_06
+    texture: {fileID: 2800000, guid: 4a3fcbb3e44c596479dff76c68621862, type: 3}
+  - name: iso_char_man_r84_walk_s_07
+    texture: {fileID: 2800000, guid: 94fbed74bd244c34a9032d411eb57b31, type: 3}
+  - name: iso_char_man_r84_walk_s_08
+    texture: {fileID: 2800000, guid: e39693dadaff0324cb12034a650bd3b1, type: 3}
+  - name: iso_char_man_r84_walk_se_00
+    texture: {fileID: 2800000, guid: 762670daa757b3a4887cd976c5df5468, type: 3}
+  - name: iso_char_man_r84_walk_se_01
+    texture: {fileID: 2800000, guid: 9296362b5b8b8614892875cf48d1e06f, type: 3}
+  - name: iso_char_man_r84_walk_se_02
+    texture: {fileID: 2800000, guid: aa231e609f454d64b98044f39c8693fa, type: 3}
+  - name: iso_char_man_r84_walk_se_03
+    texture: {fileID: 2800000, guid: 7db2298e5e88246489f21da7b54e0ab7, type: 3}
+  - name: iso_char_man_r84_walk_se_04
+    texture: {fileID: 2800000, guid: 09344fc6c0311104f86d13277df3b8f9, type: 3}
+  - name: iso_char_man_r84_walk_se_05
+    texture: {fileID: 2800000, guid: 2ca4708ef67d0614aa34695c65237d48, type: 3}
+  - name: iso_char_man_r84_walk_se_06
+    texture: {fileID: 2800000, guid: 2d881647f553b1d47983646a7f9bb0f0, type: 3}
+  - name: iso_char_man_r84_walk_se_07
+    texture: {fileID: 2800000, guid: 2545b414dce70b4449f24664116c474d, type: 3}
+  - name: iso_char_man_r84_walk_se_08
+    texture: {fileID: 2800000, guid: 8125fb61a84e95a4aa05feb0b508450e, type: 3}
+  - name: iso_char_man_r84_walk_sw_00
+    texture: {fileID: 2800000, guid: f612adff63d38ae4a8be1a0e981693b5, type: 3}
+  - name: iso_char_man_r84_walk_sw_01
+    texture: {fileID: 2800000, guid: a5f36e0fa09d0d24cae972575f6d20d3, type: 3}
+  - name: iso_char_man_r84_walk_sw_02
+    texture: {fileID: 2800000, guid: 147d454517dc9fc438751b23cefd4a20, type: 3}
+  - name: iso_char_man_r84_walk_sw_03
+    texture: {fileID: 2800000, guid: 4b279bec1c94f99418fcfcd3c454115f, type: 3}
+  - name: iso_char_man_r84_walk_sw_04
+    texture: {fileID: 2800000, guid: 2aefa38c4a08cbc4bab6b2db0dcb1fc5, type: 3}
+  - name: iso_char_man_r84_walk_sw_05
+    texture: {fileID: 2800000, guid: b9a7f36a9e5f5e8438aeccf95d016486, type: 3}
+  - name: iso_char_man_r84_walk_sw_06
+    texture: {fileID: 2800000, guid: dd2f833e2d94a544f88bead961ec23e9, type: 3}
+  - name: iso_char_man_r84_walk_sw_07
+    texture: {fileID: 2800000, guid: 62aab56cb82717b499640fde08b6bb4f, type: 3}
+  - name: iso_char_man_r84_walk_sw_08
+    texture: {fileID: 2800000, guid: b54c5e89e452a2f47ad56a0169811001, type: 3}
+  - name: iso_char_man_r84_walk_w_00
+    texture: {fileID: 2800000, guid: 9dd758169e13d054d853654c5e15e3cd, type: 3}
+  - name: iso_char_man_r84_walk_w_01
+    texture: {fileID: 2800000, guid: 65f9dc26044da804c8c9376df09f06a8, type: 3}
+  - name: iso_char_man_r84_walk_w_02
+    texture: {fileID: 2800000, guid: 7efdd920d248f15429dff1186bb69521, type: 3}
+  - name: iso_char_man_r84_walk_w_03
+    texture: {fileID: 2800000, guid: fa0e3f48a49fe494ba573d333ec688f1, type: 3}
+  - name: iso_char_man_r84_walk_w_04
+    texture: {fileID: 2800000, guid: c3677319e56bf26468710bbb1e5e8693, type: 3}
+  - name: iso_char_man_r84_walk_w_05
+    texture: {fileID: 2800000, guid: 4a14dfadd7791b347879cdde23b83a02, type: 3}
+  - name: iso_char_man_r84_walk_w_06
+    texture: {fileID: 2800000, guid: 5639267d5cd2a5d47b784b8d7ad51f32, type: 3}
+  - name: iso_char_man_r84_walk_w_07
+    texture: {fileID: 2800000, guid: df28d4ed95acac043ab7491649f041e8, type: 3}
+  - name: iso_char_man_r84_walk_w_08
+    texture: {fileID: 2800000, guid: df7ae6fea4215894995af8a163d08690, type: 3}
+  - name: iso_char_man_r84_work_ne_00
+    texture: {fileID: 2800000, guid: f7c80466def007a4ca3284eceaadeee8, type: 3}
+  - name: iso_char_man_r84_work_ne_01
+    texture: {fileID: 2800000, guid: 5b1fd7b45fd64fa478197eaa7a296d58, type: 3}
+  - name: iso_char_man_r84_work_ne_02
+    texture: {fileID: 2800000, guid: fed87d127a63f554eb4f4f3d4757fbd2, type: 3}
+  - name: iso_char_man_r84_work_ne_03
+    texture: {fileID: 2800000, guid: 438dc02c952b2184089aa1557b87cdf6, type: 3}
+  - name: iso_char_man_r84_work_ne_04
+    texture: {fileID: 2800000, guid: 907bb6d969001e249945e685bf828c0a, type: 3}
+  - name: iso_char_man_r84_work_ne_05
+    texture: {fileID: 2800000, guid: 8060a44e88a5d6f4c997c4ead6c53d30, type: 3}
+  - name: iso_char_man_r84_work_ne_06
+    texture: {fileID: 2800000, guid: 8dbe6572bbe1d3b4b91062fe8cfb6de5, type: 3}
+  - name: iso_char_man_r84_work_ne_07
+    texture: {fileID: 2800000, guid: 04c00b16ef44fc04da996a3cb9cdb0b8, type: 3}
+  - name: iso_char_man_r84_work_ne_08
+    texture: {fileID: 2800000, guid: 820d1e184d9163748b42cabc59cded52, type: 3}
+  - name: iso_char_man_r84_work_nw_00
+    texture: {fileID: 2800000, guid: 93f4de8296f2f95408ca354e73483356, type: 3}
+  - name: iso_char_man_r84_work_nw_01
+    texture: {fileID: 2800000, guid: ce33b06a3d7dbf7419c729873a5a5371, type: 3}
+  - name: iso_char_man_r84_work_nw_02
+    texture: {fileID: 2800000, guid: fa8fec6320f06f34db38304c188b27ff, type: 3}
+  - name: iso_char_man_r84_work_nw_03
+    texture: {fileID: 2800000, guid: 2690fe763939c3c4894b2f3cc9adb10a, type: 3}
+  - name: iso_char_man_r84_work_nw_04
+    texture: {fileID: 2800000, guid: 6dc73d20ff569d440b649be9c5aaf6d3, type: 3}
+  - name: iso_char_man_r84_work_nw_05
+    texture: {fileID: 2800000, guid: 3c6940644537b0345aa971728ce6e57f, type: 3}
+  - name: iso_char_man_r84_work_nw_06
+    texture: {fileID: 2800000, guid: 680dceb11fc4b3048a77bb358b0f6aa0, type: 3}
+  - name: iso_char_man_r84_work_nw_07
+    texture: {fileID: 2800000, guid: b34f77fd4d18f1b468af1aff61664f40, type: 3}
+  - name: iso_char_man_r84_work_se_00
+    texture: {fileID: 2800000, guid: 0e0bdfac0d1696e49a6264705e3396a4, type: 3}
+  - name: iso_char_man_r84_work_se_01
+    texture: {fileID: 2800000, guid: a8994aa084719654bbe35a556790f40c, type: 3}
+  - name: iso_char_man_r84_work_se_02
+    texture: {fileID: 2800000, guid: a69071d648197f2499b62d4650ba1489, type: 3}
+  - name: iso_char_man_r84_work_se_03
+    texture: {fileID: 2800000, guid: e15e4c153d04a2e4bbffa2ca58b06752, type: 3}
+  - name: iso_char_man_r84_work_se_04
+    texture: {fileID: 2800000, guid: bb549f89df2ee63449569bee261f1bdf, type: 3}
+  - name: iso_char_man_r84_work_se_05
+    texture: {fileID: 2800000, guid: 360f28236e6fed1439e64252db26cefd, type: 3}
+  - name: iso_char_man_r84_work_se_06
+    texture: {fileID: 2800000, guid: faa9f15b71f98d647b60577264513a8c, type: 3}
+  - name: iso_char_man_r84_work_se_07
+    texture: {fileID: 2800000, guid: 8c330e2b906825f4ba047ab6559c4861, type: 3}
+  - name: iso_char_man_r84_work_se_08
+    texture: {fileID: 2800000, guid: 95e0555d9093a6b44a59f5042e1350db, type: 3}
+  - name: iso_char_man_r84_work_sw_00
+    texture: {fileID: 2800000, guid: bb463ab363d3940439a3bcbd0e295ec2, type: 3}
+  - name: iso_char_man_r84_work_sw_01
+    texture: {fileID: 2800000, guid: a868a4ec342d3194da6fb46839164408, type: 3}
+  - name: iso_char_man_r84_work_sw_02
+    texture: {fileID: 2800000, guid: 3fee87d14a84f1343babf2f25f11fa07, type: 3}
+  - name: iso_char_man_r84_work_sw_03
+    texture: {fileID: 2800000, guid: b1c7ec23c09499a458d7fd63e52a9753, type: 3}
+  - name: iso_char_man_r84_work_sw_04
+    texture: {fileID: 2800000, guid: c28a1a613461b8949ad2b352fe9d7d38, type: 3}
+  - name: iso_char_man_r84_work_sw_05
+    texture: {fileID: 2800000, guid: cba0146960a2702458e2c0f017aa2cbc, type: 3}
+  - name: iso_char_man_r84_work_sw_06
+    texture: {fileID: 2800000, guid: c57f148f3d0e00e4dbf5dda4410336d1, type: 3}
+  - name: iso_char_man_r84_work_sw_07
+    texture: {fileID: 2800000, guid: 75257f1f95b251a41b08afe8f3355976, type: 3}
   - name: iso_char_murat_56_cand_e
     texture: {fileID: 2800000, guid: 9c829edcbaea0a64dad6af94db86a3cc, type: 3}
   - name: iso_char_murat_56_cand_n
@@ -663,6 +1149,486 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 412de0ff6d55f764a87109f8d9f15193, type: 3}
   - name: iso_char_woman_r84_cand_se
     texture: {fileID: 2800000, guid: 89b82ae668f369a49937f0fe1e3400f5, type: 3}
+  - name: iso_char_woman_r84_cook_ne_00
+    texture: {fileID: 2800000, guid: 9a04024086829df45882c6a9f90dee47, type: 3}
+  - name: iso_char_woman_r84_cook_ne_01
+    texture: {fileID: 2800000, guid: 0d0d0bf9cb38a304292d30b25b9f3277, type: 3}
+  - name: iso_char_woman_r84_cook_ne_02
+    texture: {fileID: 2800000, guid: ea505cc027a5ffb4b88d0534ad19aecb, type: 3}
+  - name: iso_char_woman_r84_cook_ne_03
+    texture: {fileID: 2800000, guid: 8619187573f97cc4ea24142188e31ac9, type: 3}
+  - name: iso_char_woman_r84_cook_ne_04
+    texture: {fileID: 2800000, guid: e2faff4145bceda4f8b848a092a4a316, type: 3}
+  - name: iso_char_woman_r84_cook_ne_05
+    texture: {fileID: 2800000, guid: 0f4d5bcc17e2b994b8da2907f196eb64, type: 3}
+  - name: iso_char_woman_r84_cook_ne_06
+    texture: {fileID: 2800000, guid: 45620528bb8497c4c9d0da49ebf59f9a, type: 3}
+  - name: iso_char_woman_r84_cook_ne_07
+    texture: {fileID: 2800000, guid: 03ec2debdbb45ae44b05300968bbea64, type: 3}
+  - name: iso_char_woman_r84_cook_nw_00
+    texture: {fileID: 2800000, guid: a06995849f65afa47aa5bd5e7192ab23, type: 3}
+  - name: iso_char_woman_r84_cook_nw_01
+    texture: {fileID: 2800000, guid: fd4344af8391cfb42b8bd4ea7f705deb, type: 3}
+  - name: iso_char_woman_r84_cook_nw_02
+    texture: {fileID: 2800000, guid: 70583f1abc3ada34fb085631c40dd489, type: 3}
+  - name: iso_char_woman_r84_cook_nw_03
+    texture: {fileID: 2800000, guid: 74a77b4c52bec4148a407cde7d020acb, type: 3}
+  - name: iso_char_woman_r84_cook_nw_04
+    texture: {fileID: 2800000, guid: 9f2f439f8c46ca84db308c32d863cb6f, type: 3}
+  - name: iso_char_woman_r84_cook_nw_05
+    texture: {fileID: 2800000, guid: 923fe58a9d3a1f04ab2e104ddfc67e5b, type: 3}
+  - name: iso_char_woman_r84_cook_nw_06
+    texture: {fileID: 2800000, guid: 0a16ca0fd9660a544b25aada5ba0e7db, type: 3}
+  - name: iso_char_woman_r84_cook_nw_07
+    texture: {fileID: 2800000, guid: 2ab64e3b447ec5d4cb1db8ad96df337a, type: 3}
+  - name: iso_char_woman_r84_cook_se_00
+    texture: {fileID: 2800000, guid: 9d40dbcb2fa94924d8d63b7f8e182c0f, type: 3}
+  - name: iso_char_woman_r84_cook_se_01
+    texture: {fileID: 2800000, guid: d609afd02859a274686715c763b560ea, type: 3}
+  - name: iso_char_woman_r84_cook_se_02
+    texture: {fileID: 2800000, guid: c34b68d1becb5a146877c7d9b2ab52f0, type: 3}
+  - name: iso_char_woman_r84_cook_se_03
+    texture: {fileID: 2800000, guid: e4776bd4f6d5d214fb77d4d9003d2b7d, type: 3}
+  - name: iso_char_woman_r84_cook_se_04
+    texture: {fileID: 2800000, guid: 159e0683638c0464b91f4be425fd3328, type: 3}
+  - name: iso_char_woman_r84_cook_se_05
+    texture: {fileID: 2800000, guid: bb46b1be62dc8ff4f8b56dd1303d1b15, type: 3}
+  - name: iso_char_woman_r84_cook_se_06
+    texture: {fileID: 2800000, guid: 603ed69856e87db48adf974d170e4ffd, type: 3}
+  - name: iso_char_woman_r84_cook_se_07
+    texture: {fileID: 2800000, guid: 7f4e71b6abb1b224d80894b47e67e7e8, type: 3}
+  - name: iso_char_woman_r84_cook_sw_00
+    texture: {fileID: 2800000, guid: 568dedc97ef69e34f8a0a2cfbd10c7f5, type: 3}
+  - name: iso_char_woman_r84_cook_sw_01
+    texture: {fileID: 2800000, guid: 9ec3634a722c92d47903848e85c7c7bd, type: 3}
+  - name: iso_char_woman_r84_cook_sw_02
+    texture: {fileID: 2800000, guid: 92839993b74102840ad8621518bfba1e, type: 3}
+  - name: iso_char_woman_r84_cook_sw_03
+    texture: {fileID: 2800000, guid: b9c438b9b28ce3445b1aeb9b633fdfd1, type: 3}
+  - name: iso_char_woman_r84_cook_sw_04
+    texture: {fileID: 2800000, guid: 8cd59a194395a9a4f9c41a456ba93acb, type: 3}
+  - name: iso_char_woman_r84_cook_sw_05
+    texture: {fileID: 2800000, guid: 20fb752ece3cc5f4fa0fa11984fe3f4e, type: 3}
+  - name: iso_char_woman_r84_cook_sw_06
+    texture: {fileID: 2800000, guid: e3cebe63a2b9f1e44bb3a849a181b3a4, type: 3}
+  - name: iso_char_woman_r84_cook_sw_07
+    texture: {fileID: 2800000, guid: 20ec9f451503b8c4b8590b8cc5b76609, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_ne_00
+    texture: {fileID: 2800000, guid: b7431b62331a947479bce44dc27a28ec, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_ne_01
+    texture: {fileID: 2800000, guid: 293b2ff5c8c8e4747ba20ac24dade00a, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_ne_02
+    texture: {fileID: 2800000, guid: 5395da3bc2bfe4045ad2059368cc7184, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_ne_03
+    texture: {fileID: 2800000, guid: 702b3fec8fd0f1b449dad88c102b3355, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_ne_04
+    texture: {fileID: 2800000, guid: de313a2045ab3f241a8e480b7bf45693, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_ne_05
+    texture: {fileID: 2800000, guid: 3a789b464fe5dfc4eb4f0fdd918468a4, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_ne_06
+    texture: {fileID: 2800000, guid: 845fa0b1eee2d774593c292ea6b81e76, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_ne_07
+    texture: {fileID: 2800000, guid: e7efe5628cecdf84d82f7cf03284e368, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_nw_00
+    texture: {fileID: 2800000, guid: 2be0e8777241d384d93c9804d0b98459, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_nw_01
+    texture: {fileID: 2800000, guid: 8e02fb74194639947a89a1f7530cc0b5, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_nw_02
+    texture: {fileID: 2800000, guid: 93ac479f0aea13948832c21862cad9d5, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_nw_03
+    texture: {fileID: 2800000, guid: da87256db11616d4ba65c956dd6a1772, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_nw_04
+    texture: {fileID: 2800000, guid: 6e202063d00637f47b746ef5125e5dd1, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_nw_05
+    texture: {fileID: 2800000, guid: f2d89939fc304a04e90d65dcd7594a24, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_nw_06
+    texture: {fileID: 2800000, guid: 4c79e0767fcc4c64785772945500ce64, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_nw_07
+    texture: {fileID: 2800000, guid: 05944f5657cfb3645800ac5952bdbbf5, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_se_00
+    texture: {fileID: 2800000, guid: 9f8cd1c42d7d8ee45aa83e8ea4bd6812, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_se_01
+    texture: {fileID: 2800000, guid: 999ea1e3809be2a4280bb0479f0486ed, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_se_02
+    texture: {fileID: 2800000, guid: 9886ac20fffaa4d4296eabc1a085c9f0, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_se_03
+    texture: {fileID: 2800000, guid: 863fb1e9bef437843b94b0b180bf75e0, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_se_04
+    texture: {fileID: 2800000, guid: f3b6bceef6c5ef648a2a94e6795e1a62, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_se_05
+    texture: {fileID: 2800000, guid: 6f31eb1b65e48954b8a1ccf16ee80921, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_se_06
+    texture: {fileID: 2800000, guid: 82b4f2fa5bfc5ba43a0936c4ef486fa5, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_se_07
+    texture: {fileID: 2800000, guid: 81a02a641f14ca44bbd8dc1b9ed52afd, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_sw_00
+    texture: {fileID: 2800000, guid: 0f1fe16a6b032a04b9183190284d9180, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_sw_01
+    texture: {fileID: 2800000, guid: 0350f93651d8efd46a16a2272a72ce09, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_sw_02
+    texture: {fileID: 2800000, guid: 3825993286ccbca448d6bedc68e6c5f5, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_sw_03
+    texture: {fileID: 2800000, guid: 589ffb1886ba61543a3494b9b6ba92c6, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_sw_04
+    texture: {fileID: 2800000, guid: 5567e628c47638041875dde7d6aa2d1a, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_sw_05
+    texture: {fileID: 2800000, guid: 3001142f507220141a0baa8a6190e464, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_sw_06
+    texture: {fileID: 2800000, guid: 62d9e24001ba08c458333db7e95a6a00, type: 3}
+  - name: iso_char_woman_r84_craft_hammer_sw_07
+    texture: {fileID: 2800000, guid: a46cbd48b34e6e04eaf8f6834546ca66, type: 3}
+  - name: iso_char_woman_r84_craft_hand_ne_00
+    texture: {fileID: 2800000, guid: 264178861d6546044a2506bf0f018490, type: 3}
+  - name: iso_char_woman_r84_craft_hand_ne_01
+    texture: {fileID: 2800000, guid: ddf6aaf274e95fc43b1362995ae53f9a, type: 3}
+  - name: iso_char_woman_r84_craft_hand_ne_02
+    texture: {fileID: 2800000, guid: 99b92747c2da83e4888beb55cce4c3b7, type: 3}
+  - name: iso_char_woman_r84_craft_hand_ne_03
+    texture: {fileID: 2800000, guid: f26c7daf8a30bac47910b263791d9052, type: 3}
+  - name: iso_char_woman_r84_craft_hand_ne_04
+    texture: {fileID: 2800000, guid: d1bd27a7153c3a94dae22eadfd49ba79, type: 3}
+  - name: iso_char_woman_r84_craft_hand_ne_05
+    texture: {fileID: 2800000, guid: 92cb864789f17ca4582c5e055e140f97, type: 3}
+  - name: iso_char_woman_r84_craft_hand_ne_06
+    texture: {fileID: 2800000, guid: 4a5bc31001ecfa84c9ca4a4d04445020, type: 3}
+  - name: iso_char_woman_r84_craft_hand_ne_07
+    texture: {fileID: 2800000, guid: fb9b3a5355108a44f80f425da9a7d350, type: 3}
+  - name: iso_char_woman_r84_craft_hand_nw_00
+    texture: {fileID: 2800000, guid: 2d7d5c2b92651cf4ba37af707effdda6, type: 3}
+  - name: iso_char_woman_r84_craft_hand_nw_01
+    texture: {fileID: 2800000, guid: 6b21b9c410f76e74a9e464f24e99c9f9, type: 3}
+  - name: iso_char_woman_r84_craft_hand_nw_02
+    texture: {fileID: 2800000, guid: acf72a4744c14df4282eb2a436496264, type: 3}
+  - name: iso_char_woman_r84_craft_hand_nw_03
+    texture: {fileID: 2800000, guid: 0e35f4e59ea5ca942bfe69e445dbcfde, type: 3}
+  - name: iso_char_woman_r84_craft_hand_nw_04
+    texture: {fileID: 2800000, guid: dcd8ed898e230014fb5d0553617a2e7a, type: 3}
+  - name: iso_char_woman_r84_craft_hand_nw_05
+    texture: {fileID: 2800000, guid: 05253ff1e31f6304f8ecb7178e215913, type: 3}
+  - name: iso_char_woman_r84_craft_hand_nw_06
+    texture: {fileID: 2800000, guid: b3686b766d4e29942a92b2698ab6ad6b, type: 3}
+  - name: iso_char_woman_r84_craft_hand_nw_07
+    texture: {fileID: 2800000, guid: d869d50edabbd47428515036c3e9c3de, type: 3}
+  - name: iso_char_woman_r84_craft_hand_se_00
+    texture: {fileID: 2800000, guid: 06bac1a0e8c673a49ab2bfc9660e1ece, type: 3}
+  - name: iso_char_woman_r84_craft_hand_se_01
+    texture: {fileID: 2800000, guid: 7b205cf099f912d43beac754fc017757, type: 3}
+  - name: iso_char_woman_r84_craft_hand_se_02
+    texture: {fileID: 2800000, guid: cd97ba9fd6ec3d94ea4a6295ec33cbcd, type: 3}
+  - name: iso_char_woman_r84_craft_hand_se_03
+    texture: {fileID: 2800000, guid: 8f82e5cef8554ef40a8fdebe06fcab1e, type: 3}
+  - name: iso_char_woman_r84_craft_hand_se_04
+    texture: {fileID: 2800000, guid: ff8d31ff89f69e945b4e5e0bd14593a2, type: 3}
+  - name: iso_char_woman_r84_craft_hand_se_05
+    texture: {fileID: 2800000, guid: 58e8d6fbc48cd3f43b10aba62013a507, type: 3}
+  - name: iso_char_woman_r84_craft_hand_se_06
+    texture: {fileID: 2800000, guid: f27430a76a1fd06439eb1418dd76de98, type: 3}
+  - name: iso_char_woman_r84_craft_hand_se_07
+    texture: {fileID: 2800000, guid: 34829ca1f623bac478b17b6ab05ab732, type: 3}
+  - name: iso_char_woman_r84_craft_hand_sw_00
+    texture: {fileID: 2800000, guid: 0b99a30f0506e0547b1d7e16eea1fd56, type: 3}
+  - name: iso_char_woman_r84_craft_hand_sw_01
+    texture: {fileID: 2800000, guid: 490ecb8cdf3907642810f20aef79ac5b, type: 3}
+  - name: iso_char_woman_r84_craft_hand_sw_02
+    texture: {fileID: 2800000, guid: f7da229e188950c47ba9916d98c2bddf, type: 3}
+  - name: iso_char_woman_r84_craft_hand_sw_03
+    texture: {fileID: 2800000, guid: d3d76208ba53ce244af0971a5a5e21e2, type: 3}
+  - name: iso_char_woman_r84_craft_hand_sw_04
+    texture: {fileID: 2800000, guid: 8e8d41a14a29c3847aa3fbad9504fe1d, type: 3}
+  - name: iso_char_woman_r84_craft_hand_sw_05
+    texture: {fileID: 2800000, guid: c18b78509d7fc4e49a539678f72d3dbc, type: 3}
+  - name: iso_char_woman_r84_craft_hand_sw_06
+    texture: {fileID: 2800000, guid: d1d1ac119f4daeb4bad268c1a9c1f7f1, type: 3}
+  - name: iso_char_woman_r84_craft_hand_sw_07
+    texture: {fileID: 2800000, guid: 9a4d9782dd0417b4ea2fef297123397c, type: 3}
+  - name: iso_char_woman_r84_eat_ne_00
+    texture: {fileID: 2800000, guid: aa17e3b53d55bcd439577a84a3f5d23d, type: 3}
+  - name: iso_char_woman_r84_eat_ne_01
+    texture: {fileID: 2800000, guid: 31d364c7981a8134a85697394411dddf, type: 3}
+  - name: iso_char_woman_r84_eat_ne_02
+    texture: {fileID: 2800000, guid: d2632994c6b106b4a941a5c081bb37f2, type: 3}
+  - name: iso_char_woman_r84_eat_ne_03
+    texture: {fileID: 2800000, guid: a1530b155645fc64f8215f20289c2ec0, type: 3}
+  - name: iso_char_woman_r84_eat_ne_04
+    texture: {fileID: 2800000, guid: 1108cae1db0e6424198877ddbf834947, type: 3}
+  - name: iso_char_woman_r84_eat_ne_05
+    texture: {fileID: 2800000, guid: 0328b8f28c2859c4d8c7fad19095525c, type: 3}
+  - name: iso_char_woman_r84_eat_ne_06
+    texture: {fileID: 2800000, guid: d2b6faa8017e2084494bb062361f4feb, type: 3}
+  - name: iso_char_woman_r84_eat_ne_07
+    texture: {fileID: 2800000, guid: 1f11fb22f4ebe9c4f970277b42fe47f9, type: 3}
+  - name: iso_char_woman_r84_eat_nw_00
+    texture: {fileID: 2800000, guid: b55b547ca3ba079458275d80556e63ad, type: 3}
+  - name: iso_char_woman_r84_eat_nw_01
+    texture: {fileID: 2800000, guid: 95411ed82eb66634882f9942171df90d, type: 3}
+  - name: iso_char_woman_r84_eat_nw_02
+    texture: {fileID: 2800000, guid: 43981b18b4dbd7247b0daa4ffe1d940f, type: 3}
+  - name: iso_char_woman_r84_eat_nw_03
+    texture: {fileID: 2800000, guid: ed253cf2cdd32d04bbc3a6885a3c7f3b, type: 3}
+  - name: iso_char_woman_r84_eat_nw_04
+    texture: {fileID: 2800000, guid: e56d39dfa51e42a4699d4217b1338215, type: 3}
+  - name: iso_char_woman_r84_eat_nw_05
+    texture: {fileID: 2800000, guid: 7544fd9606721d7459aa15fe7db7af3b, type: 3}
+  - name: iso_char_woman_r84_eat_nw_06
+    texture: {fileID: 2800000, guid: 4895911cbc2fd2043bbb909ca42c0bb2, type: 3}
+  - name: iso_char_woman_r84_eat_nw_07
+    texture: {fileID: 2800000, guid: 2b393327c8e4a4349aaa994fb47b6a1d, type: 3}
+  - name: iso_char_woman_r84_eat_se_00
+    texture: {fileID: 2800000, guid: 6f725acf4d823b9429352a3f57053d2c, type: 3}
+  - name: iso_char_woman_r84_eat_se_01
+    texture: {fileID: 2800000, guid: 077696fdc814c2040a1c1c467a8e379a, type: 3}
+  - name: iso_char_woman_r84_eat_se_02
+    texture: {fileID: 2800000, guid: 89957b9d2b79f1f42aa1198f18c21d4e, type: 3}
+  - name: iso_char_woman_r84_eat_se_03
+    texture: {fileID: 2800000, guid: 246178816b72e094d822067d33c3c210, type: 3}
+  - name: iso_char_woman_r84_eat_se_04
+    texture: {fileID: 2800000, guid: f93b9729363f35940ac3aed760f81f11, type: 3}
+  - name: iso_char_woman_r84_eat_se_05
+    texture: {fileID: 2800000, guid: 88a8a69e533d95046a5c0834b8f6e5b6, type: 3}
+  - name: iso_char_woman_r84_eat_se_06
+    texture: {fileID: 2800000, guid: 0b5e795b2268fda40824956c9fb27359, type: 3}
+  - name: iso_char_woman_r84_eat_se_07
+    texture: {fileID: 2800000, guid: e153c07dd8967804cb07296eba20a759, type: 3}
+  - name: iso_char_woman_r84_eat_sw_00
+    texture: {fileID: 2800000, guid: 3d4df399e237b2c409793c39755a7002, type: 3}
+  - name: iso_char_woman_r84_eat_sw_01
+    texture: {fileID: 2800000, guid: 405ea4085447572489386155cb35fc94, type: 3}
+  - name: iso_char_woman_r84_eat_sw_02
+    texture: {fileID: 2800000, guid: c0d46ab41064f494da51435e7eb73c8e, type: 3}
+  - name: iso_char_woman_r84_eat_sw_03
+    texture: {fileID: 2800000, guid: c1eee84c02da51443889cd06330849ac, type: 3}
+  - name: iso_char_woman_r84_eat_sw_04
+    texture: {fileID: 2800000, guid: 49585718690156142ad5834f0c4076e7, type: 3}
+  - name: iso_char_woman_r84_eat_sw_05
+    texture: {fileID: 2800000, guid: 958810b342fe6b94ba795990bccd3814, type: 3}
+  - name: iso_char_woman_r84_eat_sw_06
+    texture: {fileID: 2800000, guid: 114a81cbe4819da48b835daf330042fa, type: 3}
+  - name: iso_char_woman_r84_eat_sw_07
+    texture: {fileID: 2800000, guid: 35448589cf514444f96dbe79a47f7687, type: 3}
+  - name: iso_char_woman_r84_idle_e
+    texture: {fileID: 2800000, guid: 66100c39686e11949a5fcd715e2c9fca, type: 3}
+  - name: iso_char_woman_r84_idle_n
+    texture: {fileID: 2800000, guid: 9cf85ca17a733a04c9c672b0cad5ee98, type: 3}
+  - name: iso_char_woman_r84_idle_ne
+    texture: {fileID: 2800000, guid: 0a706d81ae63f2043987914eeaf2994f, type: 3}
+  - name: iso_char_woman_r84_idle_nw
+    texture: {fileID: 2800000, guid: 5a34c5f7c5026b2498ada098f0f45221, type: 3}
+  - name: iso_char_woman_r84_idle_s
+    texture: {fileID: 2800000, guid: 90d4d80115d847641b41fd762ae90308, type: 3}
+  - name: iso_char_woman_r84_idle_se
+    texture: {fileID: 2800000, guid: d24acbbf8c00ce1448be3e55619522b9, type: 3}
+  - name: iso_char_woman_r84_idle_sw
+    texture: {fileID: 2800000, guid: c773bd1d2b1efa94f83c08954147ff03, type: 3}
+  - name: iso_char_woman_r84_idle_w
+    texture: {fileID: 2800000, guid: 42ef74712c4385d4d9f2f34c2d5a0676, type: 3}
+  - name: iso_char_woman_r84_walk_e_00
+    texture: {fileID: 2800000, guid: e899dd7fb610b8844922a1196b83d9ed, type: 3}
+  - name: iso_char_woman_r84_walk_e_01
+    texture: {fileID: 2800000, guid: cd0aa4b73ae019843887a5afd6f92e2e, type: 3}
+  - name: iso_char_woman_r84_walk_e_02
+    texture: {fileID: 2800000, guid: 6debb8d194925ec40b63bf13c65a0281, type: 3}
+  - name: iso_char_woman_r84_walk_e_03
+    texture: {fileID: 2800000, guid: 038f77ef15f9b1245920d41b9cc968af, type: 3}
+  - name: iso_char_woman_r84_walk_e_04
+    texture: {fileID: 2800000, guid: 6a33908eb1396d44784370d3b07b83cc, type: 3}
+  - name: iso_char_woman_r84_walk_e_05
+    texture: {fileID: 2800000, guid: 0a192dcc5a5b80648915325f0fccceed, type: 3}
+  - name: iso_char_woman_r84_walk_e_06
+    texture: {fileID: 2800000, guid: 00bd8da39f11b5e4184c59efb60bddff, type: 3}
+  - name: iso_char_woman_r84_walk_e_07
+    texture: {fileID: 2800000, guid: a86c846a286143d40b1304a4c375c2e8, type: 3}
+  - name: iso_char_woman_r84_walk_e_08
+    texture: {fileID: 2800000, guid: f6fd77909033caf46baaa347138678c7, type: 3}
+  - name: iso_char_woman_r84_walk_n_00
+    texture: {fileID: 2800000, guid: 8c5bf212b8a51a64485cd7d28463e883, type: 3}
+  - name: iso_char_woman_r84_walk_n_01
+    texture: {fileID: 2800000, guid: 910216662ede2ad4a9780e926e5b452d, type: 3}
+  - name: iso_char_woman_r84_walk_n_02
+    texture: {fileID: 2800000, guid: 1a3a1a41708b4ef4480a8bbe32dfce6c, type: 3}
+  - name: iso_char_woman_r84_walk_n_03
+    texture: {fileID: 2800000, guid: 33f1d8e42d5d9a4459ee641b553b225d, type: 3}
+  - name: iso_char_woman_r84_walk_n_04
+    texture: {fileID: 2800000, guid: 05b3abdd35b00264ab34b75de69ef024, type: 3}
+  - name: iso_char_woman_r84_walk_n_05
+    texture: {fileID: 2800000, guid: 04abde49d466e2c4e9a84c99ca0a570d, type: 3}
+  - name: iso_char_woman_r84_walk_n_06
+    texture: {fileID: 2800000, guid: 4c57459aadcc4154abbca70b01d3d04d, type: 3}
+  - name: iso_char_woman_r84_walk_n_07
+    texture: {fileID: 2800000, guid: f536e198a12c91c4798f3a5ba6f313c3, type: 3}
+  - name: iso_char_woman_r84_walk_n_08
+    texture: {fileID: 2800000, guid: 43eca1d28bb2eee4cba43b3935c81be3, type: 3}
+  - name: iso_char_woman_r84_walk_ne_00
+    texture: {fileID: 2800000, guid: 7869732a54a735d448cd316e4fab6d23, type: 3}
+  - name: iso_char_woman_r84_walk_ne_01
+    texture: {fileID: 2800000, guid: 928b61698ab7c9842986d388b9b46c25, type: 3}
+  - name: iso_char_woman_r84_walk_ne_02
+    texture: {fileID: 2800000, guid: af78188942a131b47bfde33212b64c05, type: 3}
+  - name: iso_char_woman_r84_walk_ne_03
+    texture: {fileID: 2800000, guid: 942269f19a230fa4aa21eb0a9844d477, type: 3}
+  - name: iso_char_woman_r84_walk_ne_04
+    texture: {fileID: 2800000, guid: a0fc9149e243f6d4bbad4b3085ba8bd9, type: 3}
+  - name: iso_char_woman_r84_walk_ne_05
+    texture: {fileID: 2800000, guid: 39b541c4a2e0dee4dbdcbbae6bf3228b, type: 3}
+  - name: iso_char_woman_r84_walk_ne_06
+    texture: {fileID: 2800000, guid: 2822671b252200141ba2402aefcf7f77, type: 3}
+  - name: iso_char_woman_r84_walk_ne_07
+    texture: {fileID: 2800000, guid: effa74a5002923f468ea1092daca3547, type: 3}
+  - name: iso_char_woman_r84_walk_ne_08
+    texture: {fileID: 2800000, guid: c4a7b234e9eb9a74095d86f2eef3b2af, type: 3}
+  - name: iso_char_woman_r84_walk_nw_00
+    texture: {fileID: 2800000, guid: 9bcda289aa785a74fbb0536b8e902465, type: 3}
+  - name: iso_char_woman_r84_walk_nw_01
+    texture: {fileID: 2800000, guid: f6f1fef5488003541bce720278002069, type: 3}
+  - name: iso_char_woman_r84_walk_nw_02
+    texture: {fileID: 2800000, guid: 7b69de130bf04a9498aa567c3322b9e7, type: 3}
+  - name: iso_char_woman_r84_walk_nw_03
+    texture: {fileID: 2800000, guid: 408894997e4819c40ad0e12fbf26226c, type: 3}
+  - name: iso_char_woman_r84_walk_nw_04
+    texture: {fileID: 2800000, guid: 4e62a0b8025cb8442a19d015ff1661c4, type: 3}
+  - name: iso_char_woman_r84_walk_nw_05
+    texture: {fileID: 2800000, guid: 34cf27a9c9b75c645bb7bbe22a41a9ea, type: 3}
+  - name: iso_char_woman_r84_walk_nw_06
+    texture: {fileID: 2800000, guid: 557f49d9eb17442468c8dc2e23c024f8, type: 3}
+  - name: iso_char_woman_r84_walk_nw_07
+    texture: {fileID: 2800000, guid: ad8dd6610f039bc489cf36688580f5e6, type: 3}
+  - name: iso_char_woman_r84_walk_nw_08
+    texture: {fileID: 2800000, guid: f2f13030d976f15439e597559d78c753, type: 3}
+  - name: iso_char_woman_r84_walk_s_00
+    texture: {fileID: 2800000, guid: dd4730f198923d4428ee9825c95c5a94, type: 3}
+  - name: iso_char_woman_r84_walk_s_01
+    texture: {fileID: 2800000, guid: 0667b74973502ef478ed16d8495f407d, type: 3}
+  - name: iso_char_woman_r84_walk_s_02
+    texture: {fileID: 2800000, guid: e4535c62731312d458acba92893e2c16, type: 3}
+  - name: iso_char_woman_r84_walk_s_03
+    texture: {fileID: 2800000, guid: 1b419aae7afcbe94391657897b7b06e8, type: 3}
+  - name: iso_char_woman_r84_walk_s_04
+    texture: {fileID: 2800000, guid: 162974dc4b765e646b017921a7520341, type: 3}
+  - name: iso_char_woman_r84_walk_s_05
+    texture: {fileID: 2800000, guid: 7dd15cadd1c9c8649b9afefa22fe6764, type: 3}
+  - name: iso_char_woman_r84_walk_s_06
+    texture: {fileID: 2800000, guid: 26fc264120af09147ab38d8c1d1bc63d, type: 3}
+  - name: iso_char_woman_r84_walk_s_07
+    texture: {fileID: 2800000, guid: 398cbcc78ee1bc044abc0f39fca0e72a, type: 3}
+  - name: iso_char_woman_r84_walk_s_08
+    texture: {fileID: 2800000, guid: 2a3eced6aeb9f864a85d44cd8e9dab01, type: 3}
+  - name: iso_char_woman_r84_walk_se_00
+    texture: {fileID: 2800000, guid: 45592c7016e871149bf105e75ae2a0da, type: 3}
+  - name: iso_char_woman_r84_walk_se_01
+    texture: {fileID: 2800000, guid: f77606032e9c4bc4dac81448f9443956, type: 3}
+  - name: iso_char_woman_r84_walk_se_02
+    texture: {fileID: 2800000, guid: f9d03ab97a619124199971ca460976fc, type: 3}
+  - name: iso_char_woman_r84_walk_se_03
+    texture: {fileID: 2800000, guid: ace171290c0ed9c46b2c0f5cad7c733c, type: 3}
+  - name: iso_char_woman_r84_walk_se_04
+    texture: {fileID: 2800000, guid: bea212231b3c987488423028862d4601, type: 3}
+  - name: iso_char_woman_r84_walk_se_05
+    texture: {fileID: 2800000, guid: 32fe7dcd2576d7e429fadf0e73cb49b6, type: 3}
+  - name: iso_char_woman_r84_walk_se_06
+    texture: {fileID: 2800000, guid: 4b84e9da4bab4154ba85e508242c13d7, type: 3}
+  - name: iso_char_woman_r84_walk_se_07
+    texture: {fileID: 2800000, guid: e42c8084cf2524d48942913eb94a30f7, type: 3}
+  - name: iso_char_woman_r84_walk_se_08
+    texture: {fileID: 2800000, guid: 6de14995a675a104ab5b69a10d6299de, type: 3}
+  - name: iso_char_woman_r84_walk_sw_00
+    texture: {fileID: 2800000, guid: a7012b2390303c343a7f23275afd324d, type: 3}
+  - name: iso_char_woman_r84_walk_sw_01
+    texture: {fileID: 2800000, guid: d3392961cccf2f3488e261fe119ef3d3, type: 3}
+  - name: iso_char_woman_r84_walk_sw_02
+    texture: {fileID: 2800000, guid: b041881aa94b34c42899e5f06f3232ba, type: 3}
+  - name: iso_char_woman_r84_walk_sw_03
+    texture: {fileID: 2800000, guid: ac807c91fb1332b4db38d60944517f4c, type: 3}
+  - name: iso_char_woman_r84_walk_sw_04
+    texture: {fileID: 2800000, guid: e106a4f7c16be1241baa3d7ccb7ca43f, type: 3}
+  - name: iso_char_woman_r84_walk_sw_05
+    texture: {fileID: 2800000, guid: 7780ed195ca78f944a8ed941e23b5abf, type: 3}
+  - name: iso_char_woman_r84_walk_sw_06
+    texture: {fileID: 2800000, guid: 101dfc2e8b0f01b42a687fa759adf7a8, type: 3}
+  - name: iso_char_woman_r84_walk_sw_07
+    texture: {fileID: 2800000, guid: 795a73e4b4e02be4caf8aef95dd3e2c5, type: 3}
+  - name: iso_char_woman_r84_walk_sw_08
+    texture: {fileID: 2800000, guid: 9d59d95dca82fe844b837114452f7b6c, type: 3}
+  - name: iso_char_woman_r84_walk_w_00
+    texture: {fileID: 2800000, guid: e305addccfc497d4ebfa01e1e87ada6f, type: 3}
+  - name: iso_char_woman_r84_walk_w_01
+    texture: {fileID: 2800000, guid: 8018b9afcafc8854fa7b70bd2cf38934, type: 3}
+  - name: iso_char_woman_r84_walk_w_02
+    texture: {fileID: 2800000, guid: db4a89d73b1592844893df50ae54d00f, type: 3}
+  - name: iso_char_woman_r84_walk_w_03
+    texture: {fileID: 2800000, guid: df323aabc50c60f46bddb5a0a90a1b6b, type: 3}
+  - name: iso_char_woman_r84_walk_w_04
+    texture: {fileID: 2800000, guid: 283e20e4583ef7044b0ddc59403768ac, type: 3}
+  - name: iso_char_woman_r84_walk_w_05
+    texture: {fileID: 2800000, guid: 82b1d28a29d3901479dca4b565f32a66, type: 3}
+  - name: iso_char_woman_r84_walk_w_06
+    texture: {fileID: 2800000, guid: 9e232434194666347997f5090446b5d3, type: 3}
+  - name: iso_char_woman_r84_walk_w_07
+    texture: {fileID: 2800000, guid: b7c5bbfc8c5398a48b4cf6b1f35cce1e, type: 3}
+  - name: iso_char_woman_r84_walk_w_08
+    texture: {fileID: 2800000, guid: 0fe13f8620e590547930fc0599b73251, type: 3}
+  - name: iso_char_woman_r84_work_ne_00
+    texture: {fileID: 2800000, guid: 9e77b4687b1e7194883335582b76645a, type: 3}
+  - name: iso_char_woman_r84_work_ne_01
+    texture: {fileID: 2800000, guid: 349e1936cd3b31243b48d4af0880fcc0, type: 3}
+  - name: iso_char_woman_r84_work_ne_02
+    texture: {fileID: 2800000, guid: c74546bafbd644440bc2aa5c2e31d9eb, type: 3}
+  - name: iso_char_woman_r84_work_ne_03
+    texture: {fileID: 2800000, guid: 8c19f3cc92e0ad44abd5b8d4d0b80205, type: 3}
+  - name: iso_char_woman_r84_work_ne_04
+    texture: {fileID: 2800000, guid: 71979ae6dbda82747b6235fffd710420, type: 3}
+  - name: iso_char_woman_r84_work_ne_05
+    texture: {fileID: 2800000, guid: 7cb93f47b4f660149ae1ef5fb45b8194, type: 3}
+  - name: iso_char_woman_r84_work_ne_06
+    texture: {fileID: 2800000, guid: 82090668b0bfd9d4a854d30c9ba762de, type: 3}
+  - name: iso_char_woman_r84_work_ne_07
+    texture: {fileID: 2800000, guid: f94629ccf9bbf6044bd7c093b45ddc65, type: 3}
+  - name: iso_char_woman_r84_work_nw_00
+    texture: {fileID: 2800000, guid: 5bb7bf1ee97094948ac9724ead2a1c71, type: 3}
+  - name: iso_char_woman_r84_work_nw_01
+    texture: {fileID: 2800000, guid: 88e0c165e2a8d44469593f028426cedc, type: 3}
+  - name: iso_char_woman_r84_work_nw_02
+    texture: {fileID: 2800000, guid: b12d6149910163442b3923542e3fd482, type: 3}
+  - name: iso_char_woman_r84_work_nw_03
+    texture: {fileID: 2800000, guid: 8f710f84e2b928a40bb66e07d19e3a48, type: 3}
+  - name: iso_char_woman_r84_work_nw_04
+    texture: {fileID: 2800000, guid: 51fe49007e9e3e74eb858adef85e4f14, type: 3}
+  - name: iso_char_woman_r84_work_nw_05
+    texture: {fileID: 2800000, guid: 51d131f2f0ce7aa4d886f0de54542595, type: 3}
+  - name: iso_char_woman_r84_work_nw_06
+    texture: {fileID: 2800000, guid: 99cb3eec5467cd840b58751435f1a158, type: 3}
+  - name: iso_char_woman_r84_work_nw_07
+    texture: {fileID: 2800000, guid: c324938f276e98b429f151341a2a00e1, type: 3}
+  - name: iso_char_woman_r84_work_se_00
+    texture: {fileID: 2800000, guid: a6ff47aeb3e53d946b64b43d71715c6e, type: 3}
+  - name: iso_char_woman_r84_work_se_01
+    texture: {fileID: 2800000, guid: b5544910beff0ec4888875bb57ededa9, type: 3}
+  - name: iso_char_woman_r84_work_se_02
+    texture: {fileID: 2800000, guid: 434d7e6286d48bd41978bd7fc257b43d, type: 3}
+  - name: iso_char_woman_r84_work_se_03
+    texture: {fileID: 2800000, guid: 68df0706252001645bca3520ff20da90, type: 3}
+  - name: iso_char_woman_r84_work_se_04
+    texture: {fileID: 2800000, guid: d9a3306fefe0eda4bbc0acef49d29f68, type: 3}
+  - name: iso_char_woman_r84_work_se_05
+    texture: {fileID: 2800000, guid: c970627710fafa84db39f416fc3249c4, type: 3}
+  - name: iso_char_woman_r84_work_se_06
+    texture: {fileID: 2800000, guid: bedfe2af26702fb4fb837b450febbff8, type: 3}
+  - name: iso_char_woman_r84_work_se_07
+    texture: {fileID: 2800000, guid: bc3d6b54cb0d3e545aab0c9463d2f403, type: 3}
+  - name: iso_char_woman_r84_work_sw_00
+    texture: {fileID: 2800000, guid: c3004e8a6704d2e4282203cb696ec791, type: 3}
+  - name: iso_char_woman_r84_work_sw_01
+    texture: {fileID: 2800000, guid: 0cbf4b37f6391e746846a3f3d0812693, type: 3}
+  - name: iso_char_woman_r84_work_sw_02
+    texture: {fileID: 2800000, guid: 8788757834672f945919b4607cb15ec9, type: 3}
+  - name: iso_char_woman_r84_work_sw_03
+    texture: {fileID: 2800000, guid: 03827702ebad6ff419c54b59850913e0, type: 3}
+  - name: iso_char_woman_r84_work_sw_04
+    texture: {fileID: 2800000, guid: f2f908f34113a63429fbc3bc0e823192, type: 3}
+  - name: iso_char_woman_r84_work_sw_05
+    texture: {fileID: 2800000, guid: de3ded149c4ca8b45bee435ac5d3b0ac, type: 3}
+  - name: iso_char_woman_r84_work_sw_06
+    texture: {fileID: 2800000, guid: 0caec351ca5a55d43a14b0729ab69f7e, type: 3}
+  - name: iso_char_woman_r84_work_sw_07
+    texture: {fileID: 2800000, guid: 3b1858b411450bc49a9859dc6215b398, type: 3}
   - name: iso_char_woodcutter_a_56_cand_e
     texture: {fileID: 2800000, guid: 7b9ebb4c9b7f9714c9d38af19b480c2b, type: 3}
   - name: iso_char_woodcutter_a_56_cand_n
@@ -966,29 +1932,29 @@ MonoBehaviour:
   - name: iso_ground_grass_dirt_1
     texture: {fileID: 2800000, guid: b3e4b9210d55ced4ca0c16fb86de29bb, type: 3}
   - name: iso_ground_grass_dirt_10
-    texture: {fileID: 2800000, guid: 0b75bbe402727504db5b3c9b40cb0428, type: 3}
-  - name: iso_ground_grass_dirt_10
     texture: {fileID: 2800000, guid: 1eaf83bf89a658244b18f260eed652dd, type: 3}
+  - name: iso_ground_grass_dirt_10
+    texture: {fileID: 2800000, guid: 0b75bbe402727504db5b3c9b40cb0428, type: 3}
   - name: iso_ground_grass_dirt_11
     texture: {fileID: 2800000, guid: 6c34864d97da43840a5b4852c999b2b1, type: 3}
   - name: iso_ground_grass_dirt_11
     texture: {fileID: 2800000, guid: d678ba272f8cf4142ac3c74b0b5caac3, type: 3}
   - name: iso_ground_grass_dirt_12
-    texture: {fileID: 2800000, guid: 1f329d85941e8734f9bce09af2b27aef, type: 3}
-  - name: iso_ground_grass_dirt_12
     texture: {fileID: 2800000, guid: 555e273f508427b4999790266d84854b, type: 3}
-  - name: iso_ground_grass_dirt_13
-    texture: {fileID: 2800000, guid: 1ff980a2de6f5064fafed7cf5a1610a5, type: 3}
+  - name: iso_ground_grass_dirt_12
+    texture: {fileID: 2800000, guid: 1f329d85941e8734f9bce09af2b27aef, type: 3}
   - name: iso_ground_grass_dirt_13
     texture: {fileID: 2800000, guid: ddaf6aed47dd38c4cb55c050d5ab9683, type: 3}
-  - name: iso_ground_grass_dirt_14
-    texture: {fileID: 2800000, guid: 6851fa84fe5cc2440b3580686c64114f, type: 3}
+  - name: iso_ground_grass_dirt_13
+    texture: {fileID: 2800000, guid: 1ff980a2de6f5064fafed7cf5a1610a5, type: 3}
   - name: iso_ground_grass_dirt_14
     texture: {fileID: 2800000, guid: a6700491ecfaa2c40afd8bc5e70243bf, type: 3}
-  - name: iso_ground_grass_dirt_15
-    texture: {fileID: 2800000, guid: 6a43c6a95872ac84480c9b8a0b4e5275, type: 3}
+  - name: iso_ground_grass_dirt_14
+    texture: {fileID: 2800000, guid: 6851fa84fe5cc2440b3580686c64114f, type: 3}
   - name: iso_ground_grass_dirt_15
     texture: {fileID: 2800000, guid: bf54da612a5bffa459559b0f315ae581, type: 3}
+  - name: iso_ground_grass_dirt_15
+    texture: {fileID: 2800000, guid: 6a43c6a95872ac84480c9b8a0b4e5275, type: 3}
   - name: iso_ground_grass_dirt_2
     texture: {fileID: 2800000, guid: de2af60ba37a24e4fa24fc8e7f52b3c0, type: 3}
   - name: iso_ground_grass_dirt_2
@@ -1002,21 +1968,21 @@ MonoBehaviour:
   - name: iso_ground_grass_dirt_4
     texture: {fileID: 2800000, guid: 9fee219f545af384c852c9b88af9352f, type: 3}
   - name: iso_ground_grass_dirt_5
-    texture: {fileID: 2800000, guid: 3512e8cbbdf93264ba406fc79bde3015, type: 3}
-  - name: iso_ground_grass_dirt_5
     texture: {fileID: 2800000, guid: ed6e56af5cc4a07488a0ad96e8743d45, type: 3}
-  - name: iso_ground_grass_dirt_6
-    texture: {fileID: 2800000, guid: 5b2055006208e894899c53d2b5cfb5ec, type: 3}
+  - name: iso_ground_grass_dirt_5
+    texture: {fileID: 2800000, guid: 3512e8cbbdf93264ba406fc79bde3015, type: 3}
   - name: iso_ground_grass_dirt_6
     texture: {fileID: 2800000, guid: a050670f68d06144d995530f4ab552bc, type: 3}
-  - name: iso_ground_grass_dirt_7
-    texture: {fileID: 2800000, guid: 1a272aeb8adc1eb4c85742e28fea7611, type: 3}
+  - name: iso_ground_grass_dirt_6
+    texture: {fileID: 2800000, guid: 5b2055006208e894899c53d2b5cfb5ec, type: 3}
   - name: iso_ground_grass_dirt_7
     texture: {fileID: 2800000, guid: 594e93de8fac65b419e9c8ed0d5d27b6, type: 3}
-  - name: iso_ground_grass_dirt_8
-    texture: {fileID: 2800000, guid: 96e9c03bf85386e43aef942d5b6ce842, type: 3}
+  - name: iso_ground_grass_dirt_7
+    texture: {fileID: 2800000, guid: 1a272aeb8adc1eb4c85742e28fea7611, type: 3}
   - name: iso_ground_grass_dirt_8
     texture: {fileID: 2800000, guid: a2d65f3135e177346a2c70e2cd48dacb, type: 3}
+  - name: iso_ground_grass_dirt_8
+    texture: {fileID: 2800000, guid: 96e9c03bf85386e43aef942d5b6ce842, type: 3}
   - name: iso_ground_grass_dirt_9
     texture: {fileID: 2800000, guid: 3bd1e89c91e16214b868691504407aad, type: 3}
   - name: iso_ground_grass_dirt_9
@@ -1105,6 +2071,8 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: f36086b93e06f0c45b60ce337a981a21, type: 3}
   - name: iso_item_aumbry_se
     texture: {fileID: 2800000, guid: d861baa1093c8a34eb2af763c892d359, type: 3}
+  - name: iso_item_baby_first_shoes_se
+    texture: {fileID: 2800000, guid: 9a21b4b66eb7309438c26596ef118d98, type: 3}
   - name: iso_item_backgammon_se
     texture: {fileID: 2800000, guid: c3c8e52c1db88a84e93fd3748fb5bc4d, type: 3}
   - name: iso_item_barn_3x2_se_nw
@@ -1199,10 +2167,14 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 2399738027a70a747bc42b575ccae04c, type: 3}
   - name: iso_item_dice_knucklebones_se
     texture: {fileID: 2800000, guid: 33c455f42cca4544f850ce274edaec1c, type: 3}
+  - name: iso_item_dowry_chest_2x1_se
+    texture: {fileID: 2800000, guid: dbf27fa07bacbfd41ac535f772bc6980, type: 3}
   - name: iso_item_drain_pit_se
     texture: {fileID: 2800000, guid: 42cdfd4ec02b6994c85885b45b27861e, type: 3}
   - name: iso_item_drying_rack_se
     texture: {fileID: 2800000, guid: e580069367743914481120c5641e8fae, type: 3}
+  - name: iso_item_elder_tin_cup_se
+    texture: {fileID: 2800000, guid: 200599911710cf6468002440829034c5, type: 3}
   - name: iso_item_elderflower_jug_se
     texture: {fileID: 2800000, guid: f6ae082f99118224299fc3deedce0862, type: 3}
   - name: iso_item_feed_chute_2x1_se
@@ -1213,6 +2185,8 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 2b9a654d57eba7e4aabf93e06a3b4e4e, type: 3}
   - name: iso_item_felt_rug_large_2x2_se
     texture: {fileID: 2800000, guid: 40128cd40405d93438020fc700f25078, type: 3}
+  - name: iso_item_festival_cup_se
+    texture: {fileID: 2800000, guid: b7cdd4c262f560b4c945b3cb25bf282d, type: 3}
   - name: iso_item_floor_bed_2x1_se
     texture: {fileID: 2800000, guid: 51c054d2bee7ae740ac2df7ffe55b2a4, type: 3}
   - name: iso_item_floor_cushion_se
@@ -1577,10 +2551,22 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 189f8c050da9bd144b24c8f094749265, type: 3}
   - name: iso_wall_fence_wattle_sw_ne
     texture: {fileID: 2800000, guid: a709c592667528d48ad2650f37538f13, type: 3}
+  - name: iso_wall_finish_panel_half_se_nw
+    texture: {fileID: 2800000, guid: 963dc0613ab33504a867d3539430f840, type: 3}
+  - name: iso_wall_finish_panel_half_sw_ne
+    texture: {fileID: 2800000, guid: ac5d15919adbf0544afbff8073b75894, type: 3}
+  - name: iso_wall_finish_panel_low_se_nw
+    texture: {fileID: 2800000, guid: 182d6d7185abbf84a9e0f95c7b708f20, type: 3}
+  - name: iso_wall_finish_panel_low_sw_ne
+    texture: {fileID: 2800000, guid: fe98870ba80cc184e8193283b980c999, type: 3}
   - name: iso_wall_finish_panel_se_nw
     texture: {fileID: 2800000, guid: 759787cfb63fc8d4887eeec8bcee2fac, type: 3}
   - name: iso_wall_finish_panel_sw_ne
     texture: {fileID: 2800000, guid: f8ddeac7fe93f584f93eb0677304d1d6, type: 3}
+  - name: iso_wall_finish_tapestry_half_sw_ne
+    texture: {fileID: 2800000, guid: 3ee9bd90a55c10546be36307dc54b3ff, type: 3}
+  - name: iso_wall_finish_tapestry_low_sw_ne
+    texture: {fileID: 2800000, guid: f62b8121c57237948b6ca6cd474dbb87, type: 3}
   - name: iso_wall_finish_tapestry_sw_ne
     texture: {fileID: 2800000, guid: 0d2bf77edd2b00e469f775790d321411, type: 3}
   - name: iso_wall_gate_wicket_se_nw
@@ -1593,6 +2579,8 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 7015286f5efbfa146975670a3de6339f, type: 3}
   - name: iso_wall_item_embroidery_panel_sw_ne
     texture: {fileID: 2800000, guid: 997b30281ae28f241927486699b92eb0, type: 3}
+  - name: iso_wall_item_first_fish_scale_sw_ne
+    texture: {fileID: 2800000, guid: e0b0771598f74b94bb10c6f2b7c64adb, type: 3}
   - name: iso_wall_item_flower_wreath_sw_ne
     texture: {fileID: 2800000, guid: 555e43539fa957948a54831e0defd972, type: 3}
   - name: iso_wall_item_harvest_wreath_sw_ne

@@ -76,6 +76,18 @@ namespace Thatchwick.Game
         }
 
         /// <summary>bounds: haritanın dünya (izometrik) sınırları; kamera dışına çıkamaz.</summary>
+        /// <summary>Kamera sınırını değiştirir (harita geçişi).</summary>
+        public void SetBounds(Rect bounds) { _bounds = bounds; if (_camera != null) ClampCamera(); }
+
+        /// <summary>Kamerayı yumuşatmadan bu dünya noktasına taşır.</summary>
+        public void JumpTo(Vector2 world)
+        {
+            if (_camera == null) return;
+            _focusing = false;
+            _camera.transform.position = new Vector3(world.x, world.y, _camera.transform.position.z);
+            ClampCamera();
+        }
+
         public void Init(Camera camera, Rect bounds)
         {
             _camera = camera;
