@@ -1638,5 +1638,4033 @@
         }
       ]
     }
+  },
+  "yapi": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          90,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "tab0",
+        "kind": "rounded_rect",
+        "box": [
+          106,
+          10,
+          50,
+          22
+        ],
+        "label": "blank active tab joined to the panel body",
+        "radius": 5
+      },
+      {
+        "id": "tab1",
+        "kind": "rounded_rect",
+        "box": [
+          160,
+          10,
+          50,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "tab2",
+        "kind": "rounded_rect",
+        "box": [
+          214,
+          10,
+          50,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "tab3",
+        "kind": "rounded_rect",
+        "box": [
+          268,
+          10,
+          50,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "tab4",
+        "kind": "rounded_rect",
+        "box": [
+          322,
+          10,
+          50,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "tool0",
+        "kind": "rounded_rect",
+        "box": [
+          8,
+          38,
+          26,
+          26
+        ],
+        "label": "blank square tool button",
+        "radius": 5
+      },
+      {
+        "id": "tool1",
+        "kind": "rounded_rect",
+        "box": [
+          8,
+          68,
+          26,
+          26
+        ],
+        "label": "blank square tool button",
+        "radius": 5
+      },
+      {
+        "id": "tool2",
+        "kind": "rounded_rect",
+        "box": [
+          8,
+          98,
+          26,
+          26
+        ],
+        "label": "blank square tool button",
+        "radius": 5
+      },
+      {
+        "id": "tool3",
+        "kind": "rounded_rect",
+        "box": [
+          8,
+          128,
+          26,
+          26
+        ],
+        "label": "blank square tool button",
+        "radius": 5
+      },
+      {
+        "id": "tool4",
+        "kind": "rounded_rect",
+        "box": [
+          8,
+          158,
+          26,
+          26
+        ],
+        "label": "blank square tool button",
+        "radius": 5
+      },
+      {
+        "id": "card_0",
+        "kind": "rounded_rect",
+        "box": [
+          40,
+          38,
+          86,
+          60
+        ],
+        "label": "blank catalog card",
+        "radius": 4
+      },
+      {
+        "id": "card_1",
+        "kind": "rounded_rect",
+        "box": [
+          130,
+          38,
+          86,
+          60
+        ],
+        "label": "blank catalog card",
+        "radius": 4
+      },
+      {
+        "id": "card_2",
+        "kind": "rounded_rect",
+        "box": [
+          220,
+          38,
+          86,
+          60
+        ],
+        "label": "blank catalog card",
+        "radius": 4
+      },
+      {
+        "id": "card_3",
+        "kind": "rounded_rect",
+        "box": [
+          40,
+          102,
+          86,
+          60
+        ],
+        "label": "blank catalog card",
+        "radius": 4
+      },
+      {
+        "id": "card_4",
+        "kind": "rounded_rect",
+        "box": [
+          130,
+          102,
+          86,
+          60
+        ],
+        "label": "blank catalog card",
+        "radius": 4
+      },
+      {
+        "id": "card_5",
+        "kind": "rounded_rect",
+        "box": [
+          220,
+          102,
+          86,
+          60
+        ],
+        "label": "blank catalog card",
+        "radius": 4
+      },
+      {
+        "id": "floor_up",
+        "kind": "rounded_rect",
+        "box": [
+          312,
+          38,
+          44,
+          22
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "floor_down",
+        "kind": "rounded_rect",
+        "box": [
+          360,
+          38,
+          44,
+          22
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "floor_label",
+        "kind": "rounded_rect",
+        "box": [
+          312,
+          64,
+          92,
+          22
+        ],
+        "label": "blank small plaque",
+        "radius": 4
+      },
+      {
+        "id": "value",
+        "kind": "rounded_rect",
+        "box": [
+          312,
+          92,
+          92,
+          72
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "hint",
+        "kind": "rounded_rect",
+        "box": [
+          40,
+          168,
+          364,
+          18
+        ],
+        "label": "blank thin text strip",
+        "radius": 4
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Yapı",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "tab0",
+          "text": "Zemin",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab1",
+          "text": "Duvar",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab2",
+          "text": "Eşya",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab3",
+          "text": "Kapı",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab4",
+          "text": "Çatı",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            46,
+            78
+          ],
+          "text": "Yatak",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            46,
+            87
+          ],
+          "text": "20 akçe",
+          "size": 8
+        },
+        {
+          "at": [
+            136,
+            78
+          ],
+          "text": "Masa",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            136,
+            87
+          ],
+          "text": "35 akçe",
+          "size": 8
+        },
+        {
+          "at": [
+            226,
+            78
+          ],
+          "text": "Sandık",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            226,
+            87
+          ],
+          "text": "28 akçe",
+          "size": 8
+        },
+        {
+          "at": [
+            46,
+            142
+          ],
+          "text": "Ocak",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            46,
+            151
+          ],
+          "text": "60 akçe",
+          "size": 8
+        },
+        {
+          "at": [
+            136,
+            142
+          ],
+          "text": "Halı",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            136,
+            151
+          ],
+          "text": "18 akçe",
+          "size": 8
+        },
+        {
+          "at": [
+            226,
+            142
+          ],
+          "text": "Kapı",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            226,
+            151
+          ],
+          "text": "25 akçe",
+          "size": 8
+        },
+        {
+          "slot": "floor_up",
+          "text": "Yukarı",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "floor_down",
+          "text": "Aşağı",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "floor_label",
+          "text": "Kat 1 / 2",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            318,
+            98
+          ],
+          "text": "EV DEĞERİ",
+          "size": 8
+        },
+        {
+          "at": [
+            318,
+            109
+          ],
+          "text": "410",
+          "size": 16,
+          "bold": true
+        },
+        {
+          "at": [
+            318,
+            128
+          ],
+          "text": "Konfor +12",
+          "size": 8,
+          "color": "good"
+        },
+        {
+          "slot": "hint",
+          "text": "Eşyayı seç, zemine dokun, yerleştir.",
+          "size": 8,
+          "align": "left"
+        }
+      ]
+    }
+  },
+  "esya_karti": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          150,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "icon",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          38,
+          72,
+          72
+        ],
+        "label": "blank square item icon frame",
+        "radius": 6
+      },
+      {
+        "id": "price",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          114,
+          72,
+          24
+        ],
+        "label": "blank small price plaque",
+        "radius": 4
+      },
+      {
+        "id": "buy",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          144,
+          72,
+          36
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      },
+      {
+        "id": "stat_0",
+        "kind": "rounded_rect",
+        "box": [
+          90,
+          38,
+          150,
+          22
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "stat_1",
+        "kind": "rounded_rect",
+        "box": [
+          90,
+          64,
+          150,
+          22
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "stat_2",
+        "kind": "rounded_rect",
+        "box": [
+          90,
+          90,
+          150,
+          22
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "setcard",
+        "kind": "rounded_rect",
+        "box": [
+          248,
+          38,
+          156,
+          74
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "set_0",
+        "kind": "rounded_rect",
+        "box": [
+          256,
+          62,
+          32,
+          32
+        ],
+        "label": "empty small item slot",
+        "radius": 4
+      },
+      {
+        "id": "set_1",
+        "kind": "rounded_rect",
+        "box": [
+          292,
+          62,
+          32,
+          32
+        ],
+        "label": "empty small item slot",
+        "radius": 4
+      },
+      {
+        "id": "set_2",
+        "kind": "rounded_rect",
+        "box": [
+          328,
+          62,
+          32,
+          32
+        ],
+        "label": "empty small item slot",
+        "radius": 4
+      },
+      {
+        "id": "set_3",
+        "kind": "rounded_rect",
+        "box": [
+          364,
+          62,
+          32,
+          32
+        ],
+        "label": "empty small item slot",
+        "radius": 4
+      },
+      {
+        "id": "desc",
+        "kind": "rounded_rect",
+        "box": [
+          90,
+          118,
+          314,
+          62
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Kayın sandalye",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "price",
+          "text": "24 akçe",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "buy",
+          "text": "Satın al",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "stat_0",
+          "text": "Konfor  +3",
+          "size": 8,
+          "align": "left",
+          "color": "good"
+        },
+        {
+          "slot": "stat_1",
+          "text": "Takım  Hanedan",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "slot": "stat_2",
+          "text": "Ömür  uzun",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "at": [
+            254,
+            44
+          ],
+          "text": "TAKIM 2/4",
+          "size": 8
+        },
+        {
+          "at": [
+            98,
+            124
+          ],
+          "text": "Sağlam kayın ağacından, el işi.",
+          "size": 8
+        },
+        {
+          "at": [
+            98,
+            136
+          ],
+          "text": "Masayla birlikte konforu artırır.",
+          "size": 8
+        },
+        {
+          "at": [
+            98,
+            148
+          ],
+          "text": "Tahta yüzeye göre rahat oturulur.",
+          "size": 8
+        }
+      ]
+    }
+  },
+  "pazar": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          80,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "akce",
+        "kind": "rounded_rect",
+        "box": [
+          250,
+          6,
+          70,
+          24
+        ],
+        "label": "blank small plaque",
+        "radius": 4
+      },
+      {
+        "id": "depo",
+        "kind": "rounded_rect",
+        "box": [
+          324,
+          6,
+          56,
+          24
+        ],
+        "label": "blank small plaque",
+        "radius": 4
+      },
+      {
+        "id": "row_0",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          38,
+          250,
+          25
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "btn_0",
+        "kind": "rounded_rect",
+        "box": [
+          264,
+          38,
+          44,
+          25
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "row_1",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          67,
+          250,
+          25
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "btn_1",
+        "kind": "rounded_rect",
+        "box": [
+          264,
+          67,
+          44,
+          25
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "row_2",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          96,
+          250,
+          25
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "btn_2",
+        "kind": "rounded_rect",
+        "box": [
+          264,
+          96,
+          44,
+          25
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "row_3",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          125,
+          250,
+          25
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "btn_3",
+        "kind": "rounded_rect",
+        "box": [
+          264,
+          125,
+          44,
+          25
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "row_4",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          154,
+          250,
+          25
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "btn_4",
+        "kind": "rounded_rect",
+        "box": [
+          264,
+          154,
+          44,
+          25
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "tab_buy",
+        "kind": "rounded_rect",
+        "box": [
+          316,
+          38,
+          92,
+          22
+        ],
+        "label": "blank active tab joined to the panel body",
+        "radius": 5
+      },
+      {
+        "id": "tab_sell",
+        "kind": "rounded_rect",
+        "box": [
+          316,
+          64,
+          92,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "price_card",
+        "kind": "rounded_rect",
+        "box": [
+          316,
+          92,
+          92,
+          58
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "note",
+        "kind": "rounded_rect",
+        "box": [
+          316,
+          154,
+          92,
+          28
+        ],
+        "label": "blank small plaque",
+        "radius": 4
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Pazar",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "akce",
+          "text": "Akçe 240",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "depo",
+          "text": "Depo 31/60",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab_buy",
+          "text": "Al",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "tab_sell",
+          "text": "Sat",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            322,
+            98
+          ],
+          "text": "FİYAT",
+          "size": 8
+        },
+        {
+          "at": [
+            322,
+            109
+          ],
+          "text": "12 akçe",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            322,
+            121
+          ],
+          "text": "teklif -%10",
+          "size": 8,
+          "color": "good"
+        },
+        {
+          "slot": "note",
+          "text": "Tezgâh yanında",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "row_0",
+          "text": "Bezelye çuvalı",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "at": [
+            200,
+            46
+          ],
+          "text": "12 ak.",
+          "size": 8
+        },
+        {
+          "slot": "btn_0",
+          "text": "Kabul",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "row_1",
+          "text": "Yün balyası",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "at": [
+            200,
+            75
+          ],
+          "text": "30 ak.",
+          "size": 8
+        },
+        {
+          "slot": "btn_1",
+          "text": "Kabul",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "row_2",
+          "text": "Demir çivi",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "at": [
+            200,
+            104
+          ],
+          "text": "8 ak.",
+          "size": 8
+        },
+        {
+          "slot": "btn_2",
+          "text": "Kabul",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "row_3",
+          "text": "Yağ küpü",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "at": [
+            200,
+            133
+          ],
+          "text": "15 ak.",
+          "size": 8
+        },
+        {
+          "slot": "btn_3",
+          "text": "Kabul",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "row_4",
+          "text": "Arpa",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "at": [
+            200,
+            162
+          ],
+          "text": "10 ak.",
+          "size": 8
+        },
+        {
+          "slot": "btn_4",
+          "text": "Kabul",
+          "size": 8,
+          "align": "center"
+        }
+      ]
+    }
+  },
+  "koy": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          60,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "tab0",
+        "kind": "rounded_rect",
+        "box": [
+          90,
+          10,
+          68,
+          22
+        ],
+        "label": "blank active tab joined to the panel body",
+        "radius": 5
+      },
+      {
+        "id": "tab1",
+        "kind": "rounded_rect",
+        "box": [
+          162,
+          10,
+          68,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "tab2",
+        "kind": "rounded_rect",
+        "box": [
+          234,
+          10,
+          68,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "tab3",
+        "kind": "rounded_rect",
+        "box": [
+          306,
+          10,
+          68,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "row_0",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          46,
+          250,
+          32
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "portrait_0",
+        "kind": "rounded_rect",
+        "box": [
+          14,
+          48,
+          28,
+          28
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "bar_0",
+        "kind": "rounded_rect",
+        "box": [
+          96,
+          66,
+          100,
+          8
+        ],
+        "label": "empty horizontal gauge frame",
+        "radius": 3
+      },
+      {
+        "id": "gift_0",
+        "kind": "rounded_rect",
+        "box": [
+          204,
+          50,
+          52,
+          24
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "row_1",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          81,
+          250,
+          32
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "portrait_1",
+        "kind": "rounded_rect",
+        "box": [
+          14,
+          83,
+          28,
+          28
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "bar_1",
+        "kind": "rounded_rect",
+        "box": [
+          96,
+          101,
+          100,
+          8
+        ],
+        "label": "empty horizontal gauge frame",
+        "radius": 3
+      },
+      {
+        "id": "gift_1",
+        "kind": "rounded_rect",
+        "box": [
+          204,
+          85,
+          52,
+          24
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "row_2",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          116,
+          250,
+          32
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "portrait_2",
+        "kind": "rounded_rect",
+        "box": [
+          14,
+          118,
+          28,
+          28
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "bar_2",
+        "kind": "rounded_rect",
+        "box": [
+          96,
+          136,
+          100,
+          8
+        ],
+        "label": "empty horizontal gauge frame",
+        "radius": 3
+      },
+      {
+        "id": "gift_2",
+        "kind": "rounded_rect",
+        "box": [
+          204,
+          120,
+          52,
+          24
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "row_3",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          151,
+          250,
+          32
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "portrait_3",
+        "kind": "rounded_rect",
+        "box": [
+          14,
+          153,
+          28,
+          28
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "bar_3",
+        "kind": "rounded_rect",
+        "box": [
+          96,
+          171,
+          100,
+          8
+        ],
+        "label": "empty horizontal gauge frame",
+        "radius": 3
+      },
+      {
+        "id": "gift_3",
+        "kind": "rounded_rect",
+        "box": [
+          204,
+          155,
+          52,
+          24
+        ],
+        "label": "blank small button",
+        "radius": 5
+      },
+      {
+        "id": "festival",
+        "kind": "rounded_rect",
+        "box": [
+          268,
+          46,
+          140,
+          60
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "proj_0",
+        "kind": "rounded_rect",
+        "box": [
+          268,
+          112,
+          140,
+          34
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "proj_1",
+        "kind": "rounded_rect",
+        "box": [
+          268,
+          150,
+          140,
+          34
+        ],
+        "label": "blank list row",
+        "radius": 4
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Köy",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab0",
+          "text": "Köylüler",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab1",
+          "text": "Projeler",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab2",
+          "text": "Alet",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab3",
+          "text": "Soy",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            48,
+            52
+          ],
+          "text": "Odo · Demirci",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            48,
+            66
+          ],
+          "text": "dostluk",
+          "size": 8
+        },
+        {
+          "slot": "gift_0",
+          "text": "Hediye",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            48,
+            87
+          ],
+          "text": "Maud · Fırıncı",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            48,
+            101
+          ],
+          "text": "dostluk",
+          "size": 8
+        },
+        {
+          "slot": "gift_1",
+          "text": "Hediye",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            48,
+            122
+          ],
+          "text": "Hugh · Çoban",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            48,
+            136
+          ],
+          "text": "dostluk",
+          "size": 8
+        },
+        {
+          "slot": "gift_2",
+          "text": "Hediye",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            48,
+            157
+          ],
+          "text": "Edda · Şifacı",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            48,
+            171
+          ],
+          "text": "dostluk",
+          "size": 8
+        },
+        {
+          "slot": "gift_3",
+          "text": "Hediye",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            274,
+            52
+          ],
+          "text": "FESTİVAL",
+          "size": 8
+        },
+        {
+          "at": [
+            274,
+            64
+          ],
+          "text": "Hasat Şenliği",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            274,
+            76
+          ],
+          "text": "12 gün sonra",
+          "size": 8
+        },
+        {
+          "at": [
+            274,
+            88
+          ],
+          "text": "hazırlık 3/5",
+          "size": 8,
+          "color": "good"
+        },
+        {
+          "slot": "proj_0",
+          "text": "Çit geçidi: bitti",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "slot": "proj_1",
+          "text": "Ortak kuyu 4/8",
+          "size": 8,
+          "align": "left"
+        }
+      ]
+    }
+  },
+  "aile": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          110,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "tab0",
+        "kind": "rounded_rect",
+        "box": [
+          130,
+          10,
+          60,
+          22
+        ],
+        "label": "blank active tab joined to the panel body",
+        "radius": 5
+      },
+      {
+        "id": "tab1",
+        "kind": "rounded_rect",
+        "box": [
+          194,
+          10,
+          60,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "tree",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          38,
+          258,
+          146
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "node_0",
+        "kind": "rounded_rect",
+        "box": [
+          94,
+          44,
+          36,
+          40
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "node_1",
+        "kind": "rounded_rect",
+        "box": [
+          138,
+          44,
+          36,
+          40
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "node_2",
+        "kind": "rounded_rect",
+        "box": [
+          72,
+          88,
+          36,
+          40
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "node_3",
+        "kind": "rounded_rect",
+        "box": [
+          116,
+          88,
+          36,
+          40
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "node_4",
+        "kind": "rounded_rect",
+        "box": [
+          160,
+          88,
+          36,
+          40
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "node_5",
+        "kind": "rounded_rect",
+        "box": [
+          94,
+          132,
+          36,
+          40
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "node_6",
+        "kind": "rounded_rect",
+        "box": [
+          138,
+          132,
+          36,
+          40
+        ],
+        "label": "empty small portrait frame",
+        "radius": 4
+      },
+      {
+        "id": "hist",
+        "kind": "rounded_rect",
+        "box": [
+          276,
+          38,
+          132,
+          112
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "seal",
+        "kind": "rounded_rect",
+        "box": [
+          276,
+          154,
+          132,
+          30
+        ],
+        "label": "blank small plaque",
+        "radius": 4
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Aile ağacı",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab0",
+          "text": "Ağaç",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "tab1",
+          "text": "Hanedan",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            96,
+            75
+          ],
+          "text": "Aldric",
+          "size": 8
+        },
+        {
+          "at": [
+            140,
+            75
+          ],
+          "text": "Maud",
+          "size": 8
+        },
+        {
+          "at": [
+            74,
+            119
+          ],
+          "text": "Wat",
+          "size": 8
+        },
+        {
+          "at": [
+            118,
+            119
+          ],
+          "text": "Ida",
+          "size": 8
+        },
+        {
+          "at": [
+            162,
+            119
+          ],
+          "text": "Tom",
+          "size": 8
+        },
+        {
+          "at": [
+            96,
+            163
+          ],
+          "text": "Jen",
+          "size": 8
+        },
+        {
+          "at": [
+            140,
+            163
+          ],
+          "text": "Rob",
+          "size": 8
+        },
+        {
+          "at": [
+            282,
+            44
+          ],
+          "text": "BAŞ KARAKTERLER",
+          "size": 8
+        },
+        {
+          "at": [
+            282,
+            58
+          ],
+          "text": "1. Aldric (çiftçi)",
+          "size": 8
+        },
+        {
+          "at": [
+            282,
+            70
+          ],
+          "text": "  gün 0 - 410",
+          "size": 8
+        },
+        {
+          "at": [
+            282,
+            84
+          ],
+          "text": "2. Wat (marangoz)",
+          "size": 8
+        },
+        {
+          "at": [
+            282,
+            96
+          ],
+          "text": "  gün 410 -",
+          "size": 8
+        },
+        {
+          "at": [
+            282,
+            112
+          ],
+          "text": "Ashwood · 2. nesil",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "slot": "seal",
+          "text": "Soy Mührü: 3",
+          "size": 8,
+          "align": "center"
+        }
+      ]
+    }
+  },
+  "depo": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          80,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "tab0",
+        "kind": "rounded_rect",
+        "box": [
+          90,
+          10,
+          60,
+          22
+        ],
+        "label": "blank active tab joined to the panel body",
+        "radius": 5
+      },
+      {
+        "id": "tab1",
+        "kind": "rounded_rect",
+        "box": [
+          154,
+          10,
+          60,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "grid",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          38,
+          216,
+          110
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "slot_0",
+        "kind": "rounded_rect",
+        "box": [
+          16,
+          44,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_1",
+        "kind": "rounded_rect",
+        "box": [
+          50,
+          44,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_2",
+        "kind": "rounded_rect",
+        "box": [
+          84,
+          44,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_3",
+        "kind": "rounded_rect",
+        "box": [
+          118,
+          44,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_4",
+        "kind": "rounded_rect",
+        "box": [
+          152,
+          44,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_5",
+        "kind": "rounded_rect",
+        "box": [
+          186,
+          44,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_6",
+        "kind": "rounded_rect",
+        "box": [
+          16,
+          78,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_7",
+        "kind": "rounded_rect",
+        "box": [
+          50,
+          78,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_8",
+        "kind": "rounded_rect",
+        "box": [
+          84,
+          78,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_9",
+        "kind": "rounded_rect",
+        "box": [
+          118,
+          78,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_10",
+        "kind": "rounded_rect",
+        "box": [
+          152,
+          78,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_11",
+        "kind": "rounded_rect",
+        "box": [
+          186,
+          78,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_12",
+        "kind": "rounded_rect",
+        "box": [
+          16,
+          112,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_13",
+        "kind": "rounded_rect",
+        "box": [
+          50,
+          112,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_14",
+        "kind": "rounded_rect",
+        "box": [
+          84,
+          112,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_15",
+        "kind": "rounded_rect",
+        "box": [
+          118,
+          112,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_16",
+        "kind": "rounded_rect",
+        "box": [
+          152,
+          112,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "slot_17",
+        "kind": "rounded_rect",
+        "box": [
+          186,
+          112,
+          30,
+          30
+        ],
+        "label": "empty square inventory slot",
+        "radius": 3
+      },
+      {
+        "id": "sort",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          152,
+          216,
+          32
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      },
+      {
+        "id": "cap_card",
+        "kind": "rounded_rect",
+        "box": [
+          232,
+          38,
+          176,
+          56
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "cap_gauge",
+        "kind": "rounded_rect",
+        "box": [
+          240,
+          76,
+          160,
+          12
+        ],
+        "label": "empty horizontal gauge frame",
+        "radius": 3
+      },
+      {
+        "id": "detail",
+        "kind": "rounded_rect",
+        "box": [
+          232,
+          98,
+          176,
+          86
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Depo",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab0",
+          "text": "Depo",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "tab1",
+          "text": "Çanta",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            240,
+            44
+          ],
+          "text": "KAPASİTE",
+          "size": 8
+        },
+        {
+          "at": [
+            240,
+            56
+          ],
+          "text": "31 / 60",
+          "size": 16,
+          "bold": true
+        },
+        {
+          "slot": "sort",
+          "text": "Sırala: tür",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            240,
+            104
+          ],
+          "text": "Bezelye (12)",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            240,
+            116
+          ],
+          "text": "Kurutulmuş, 3 mevsim",
+          "size": 8
+        },
+        {
+          "at": [
+            240,
+            128
+          ],
+          "text": "Değer 12 akçe",
+          "size": 8
+        }
+      ]
+    }
+  },
+  "etkilesim": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "item",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          10,
+          122,
+          62
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "icon",
+        "kind": "rounded_rect",
+        "box": [
+          18,
+          18,
+          36,
+          36
+        ],
+        "label": "empty small item slot",
+        "radius": 4
+      },
+      {
+        "id": "menu",
+        "kind": "rounded_rect",
+        "box": [
+          140,
+          6,
+          150,
+          180
+        ],
+        "label": "blank popup menu panel",
+        "radius": 8
+      },
+      {
+        "id": "opt_0",
+        "kind": "rounded_rect",
+        "box": [
+          146,
+          12,
+          124,
+          22
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "opt_1",
+        "kind": "rounded_rect",
+        "box": [
+          146,
+          38,
+          124,
+          22
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "opt_2",
+        "kind": "rounded_rect",
+        "box": [
+          146,
+          64,
+          124,
+          22
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "opt_3",
+        "kind": "rounded_rect",
+        "box": [
+          146,
+          90,
+          124,
+          22
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "opt_4",
+        "kind": "rounded_rect",
+        "box": [
+          146,
+          116,
+          124,
+          22
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "opt_5",
+        "kind": "rounded_rect",
+        "box": [
+          146,
+          142,
+          124,
+          22
+        ],
+        "label": "blank list row",
+        "radius": 4
+      },
+      {
+        "id": "scroll",
+        "kind": "rounded_rect",
+        "box": [
+          276,
+          12,
+          8,
+          152
+        ],
+        "label": "empty vertical scrollbar track",
+        "radius": 3
+      },
+      {
+        "id": "detail",
+        "kind": "rounded_rect",
+        "box": [
+          298,
+          10,
+          110,
+          100
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "cancel",
+        "kind": "rounded_rect",
+        "box": [
+          298,
+          150,
+          110,
+          28
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "at": [
+            60,
+            22
+          ],
+          "text": "Yatak",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            60,
+            33
+          ],
+          "text": "Konfor +5",
+          "size": 8,
+          "color": "good"
+        },
+        {
+          "at": [
+            18,
+            60
+          ],
+          "text": "Ev: Ashwood",
+          "size": 8
+        },
+        {
+          "slot": "opt_0",
+          "text": "Otur",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "slot": "opt_1",
+          "text": "Uyu",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "slot": "opt_2",
+          "text": "Taşı",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "slot": "opt_3",
+          "text": "Sat",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "slot": "opt_4",
+          "text": "Yadigâr yap",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "slot": "opt_5",
+          "text": "Kaldır",
+          "size": 8,
+          "align": "left"
+        },
+        {
+          "at": [
+            304,
+            16
+          ],
+          "text": "SEÇİM",
+          "size": 8
+        },
+        {
+          "at": [
+            304,
+            28
+          ],
+          "text": "Uyu",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            304,
+            42
+          ],
+          "text": "Enerji +40",
+          "size": 8,
+          "color": "good"
+        },
+        {
+          "at": [
+            304,
+            54
+          ],
+          "text": "Süre 8 saat",
+          "size": 8
+        },
+        {
+          "slot": "cancel",
+          "text": "Vazgeç",
+          "size": 8,
+          "align": "center"
+        }
+      ]
+    }
+  },
+  "gun_sonu": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          120,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "stat_0",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          38,
+          96,
+          44
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "stat_1",
+        "kind": "rounded_rect",
+        "box": [
+          108,
+          38,
+          96,
+          44
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "stat_2",
+        "kind": "rounded_rect",
+        "box": [
+          206,
+          38,
+          96,
+          44
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "stat_3",
+        "kind": "rounded_rect",
+        "box": [
+          304,
+          38,
+          96,
+          44
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "winter",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          88,
+          250,
+          96
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "winter_icon",
+        "kind": "rounded_rect",
+        "box": [
+          18,
+          96,
+          32,
+          32
+        ],
+        "label": "empty small icon slot",
+        "radius": 4
+      },
+      {
+        "id": "winter_gauge",
+        "kind": "rounded_rect",
+        "box": [
+          18,
+          140,
+          234,
+          12
+        ],
+        "label": "empty horizontal gauge frame",
+        "radius": 3
+      },
+      {
+        "id": "notes",
+        "kind": "rounded_rect",
+        "box": [
+          268,
+          88,
+          140,
+          56
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "next",
+        "kind": "rounded_rect",
+        "box": [
+          268,
+          150,
+          140,
+          34
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Gün sonu",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            16,
+            43
+          ],
+          "text": "AKÇE",
+          "size": 8
+        },
+        {
+          "at": [
+            16,
+            55
+          ],
+          "text": "+42",
+          "size": 16,
+          "bold": true
+        },
+        {
+          "at": [
+            114,
+            43
+          ],
+          "text": "ÜRETİM",
+          "size": 8
+        },
+        {
+          "at": [
+            114,
+            55
+          ],
+          "text": "18",
+          "size": 16,
+          "bold": true
+        },
+        {
+          "at": [
+            212,
+            43
+          ],
+          "text": "DOĞUM",
+          "size": 8
+        },
+        {
+          "at": [
+            212,
+            55
+          ],
+          "text": "1",
+          "size": 16,
+          "bold": true
+        },
+        {
+          "at": [
+            310,
+            43
+          ],
+          "text": "GÖREV",
+          "size": 8
+        },
+        {
+          "at": [
+            310,
+            55
+          ],
+          "text": "2/3",
+          "size": 16,
+          "bold": true
+        },
+        {
+          "at": [
+            56,
+            98
+          ],
+          "text": "KIŞ GELİYOR",
+          "size": 8,
+          "bold": true
+        },
+        {
+          "at": [
+            56,
+            110
+          ],
+          "text": "Odun 14 · yiyecek 9 gün",
+          "size": 8
+        },
+        {
+          "at": [
+            18,
+            160
+          ],
+          "text": "Kış hazırlığı: yeterli",
+          "size": 8,
+          "color": "good"
+        },
+        {
+          "at": [
+            274,
+            94
+          ],
+          "text": "Maud ekmek pişirdi.",
+          "size": 8
+        },
+        {
+          "at": [
+            274,
+            106
+          ],
+          "text": "Hugh çiti onardı.",
+          "size": 8
+        },
+        {
+          "at": [
+            274,
+            118
+          ],
+          "text": "Hava soğuyor.",
+          "size": 8
+        },
+        {
+          "slot": "next",
+          "text": "Yeni güne",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        }
+      ]
+    }
+  },
+  "ayarlar": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          110,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "btn_0",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          38,
+          96,
+          26
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      },
+      {
+        "id": "btn_1",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          68,
+          96,
+          26
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      },
+      {
+        "id": "btn_2",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          98,
+          96,
+          26
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      },
+      {
+        "id": "btn_3",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          128,
+          96,
+          26
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      },
+      {
+        "id": "btn_4",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          158,
+          96,
+          26
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      },
+      {
+        "id": "card",
+        "kind": "rounded_rect",
+        "box": [
+          114,
+          38,
+          294,
+          146
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "slider_0",
+        "kind": "rounded_rect",
+        "box": [
+          124,
+          62,
+          274,
+          12
+        ],
+        "label": "empty slider track",
+        "radius": 3
+      },
+      {
+        "id": "slider_1",
+        "kind": "rounded_rect",
+        "box": [
+          124,
+          92,
+          274,
+          12
+        ],
+        "label": "empty slider track",
+        "radius": 3
+      },
+      {
+        "id": "seg_0",
+        "kind": "rounded_rect",
+        "box": [
+          124,
+          124,
+          88,
+          26
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "seg_1",
+        "kind": "rounded_rect",
+        "box": [
+          217,
+          124,
+          88,
+          26
+        ],
+        "label": "blank active tab joined to the panel body",
+        "radius": 5
+      },
+      {
+        "id": "seg_2",
+        "kind": "rounded_rect",
+        "box": [
+          310,
+          124,
+          88,
+          26
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "note",
+        "kind": "rounded_rect",
+        "box": [
+          124,
+          158,
+          274,
+          20
+        ],
+        "label": "blank thin text strip",
+        "radius": 4
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Duraklatıldı",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "btn_0",
+          "text": "Devam",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "btn_1",
+          "text": "Kaydet",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "btn_2",
+          "text": "Yükle",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "btn_3",
+          "text": "Ayarlar",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "btn_4",
+          "text": "Ana menü",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            124,
+            48
+          ],
+          "text": "Ses",
+          "size": 8
+        },
+        {
+          "at": [
+            124,
+            78
+          ],
+          "text": "Müzik",
+          "size": 8
+        },
+        {
+          "at": [
+            124,
+            110
+          ],
+          "text": "KAZA SIKLIĞI",
+          "size": 8
+        },
+        {
+          "slot": "seg_0",
+          "text": "Kapalı",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "seg_1",
+          "text": "Seyrek",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "seg_2",
+          "text": "Normal",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "note",
+          "text": "Seyrek: ayda bir kaza olabilir.",
+          "size": 8,
+          "align": "left"
+        }
+      ]
+    }
+  },
+  "teklif": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          120,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "tab0",
+        "kind": "rounded_rect",
+        "box": [
+          160,
+          10,
+          60,
+          22
+        ],
+        "label": "blank active tab joined to the panel body",
+        "radius": 5
+      },
+      {
+        "id": "tab1",
+        "kind": "rounded_rect",
+        "box": [
+          224,
+          10,
+          60,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "portrait_a",
+        "kind": "rounded_rect",
+        "box": [
+          14,
+          42,
+          68,
+          68
+        ],
+        "label": "empty small portrait frame",
+        "radius": 6
+      },
+      {
+        "id": "portrait_b",
+        "kind": "rounded_rect",
+        "box": [
+          334,
+          42,
+          68,
+          68
+        ],
+        "label": "empty small portrait frame",
+        "radius": 6
+      },
+      {
+        "id": "name_a",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          114,
+          76,
+          20
+        ],
+        "label": "blank name plaque",
+        "radius": 4
+      },
+      {
+        "id": "name_b",
+        "kind": "rounded_rect",
+        "box": [
+          330,
+          114,
+          76,
+          20
+        ],
+        "label": "blank name plaque",
+        "radius": 4
+      },
+      {
+        "id": "ring",
+        "kind": "rounded_rect",
+        "box": [
+          168,
+          40,
+          80,
+          32
+        ],
+        "label": "blank small plaque",
+        "radius": 4
+      },
+      {
+        "id": "info",
+        "kind": "rounded_rect",
+        "box": [
+          94,
+          76,
+          228,
+          56
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "gene_0",
+        "kind": "rounded_rect",
+        "box": [
+          130,
+          140,
+          50,
+          40
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "gene_1",
+        "kind": "rounded_rect",
+        "box": [
+          186,
+          140,
+          50,
+          40
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "gene_2",
+        "kind": "rounded_rect",
+        "box": [
+          242,
+          140,
+          50,
+          40
+        ],
+        "label": "blank inset card",
+        "radius": 6
+      },
+      {
+        "id": "accept",
+        "kind": "rounded_rect",
+        "box": [
+          14,
+          146,
+          76,
+          34
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      },
+      {
+        "id": "decline",
+        "kind": "rounded_rect",
+        "box": [
+          326,
+          146,
+          76,
+          34
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Evlilik teklifi",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "tab0",
+          "text": "Evlilik",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "tab1",
+          "text": "Çocuk",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "name_a",
+          "text": "Aldric",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "name_b",
+          "text": "Edda",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "ring",
+          "text": "Yüzük",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "at": [
+            100,
+            82
+          ],
+          "text": "Dostluk 100 · yakınlık 100",
+          "size": 8
+        },
+        {
+          "at": [
+            100,
+            94
+          ],
+          "text": "Hane: Ashwood",
+          "size": 8
+        },
+        {
+          "at": [
+            100,
+            106
+          ],
+          "text": "Çeyiz: 2 koyun, 30 akçe",
+          "size": 8
+        },
+        {
+          "slot": "accept",
+          "text": "Evet",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "decline",
+          "text": "Hayır",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "gene_0",
+          "text": "?",
+          "size": 16,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "gene_1",
+          "text": "?",
+          "size": 16,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "gene_2",
+          "text": "?",
+          "size": 16,
+          "align": "center",
+          "bold": true
+        }
+      ]
+    }
+  },
+  "ayna": {
+    "size": [
+      416,
+      192
+    ],
+    "pieces": [
+      {
+        "id": "frame",
+        "kind": "rounded_rect",
+        "box": [
+          2,
+          2,
+          412,
+          188
+        ],
+        "label": "panel frame",
+        "radius": 12
+      },
+      {
+        "id": "header",
+        "kind": "rect",
+        "box": [
+          2,
+          2,
+          412,
+          32
+        ],
+        "label": "panel header strip"
+      },
+      {
+        "id": "title",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          6,
+          80,
+          24
+        ],
+        "label": "blank title plaque",
+        "radius": 4
+      },
+      {
+        "id": "close",
+        "kind": "rounded_rect",
+        "box": [
+          384,
+          6,
+          24,
+          24
+        ],
+        "label": "blank square close button",
+        "radius": 5
+      },
+      {
+        "id": "mirror",
+        "kind": "rounded_rect",
+        "box": [
+          10,
+          38,
+          120,
+          146
+        ],
+        "label": "blank tall mirror frame",
+        "radius": 24
+      },
+      {
+        "id": "preview",
+        "kind": "rounded_rect",
+        "box": [
+          22,
+          50,
+          96,
+          122
+        ],
+        "label": "empty small portrait frame",
+        "radius": 14
+      },
+      {
+        "id": "cat_0",
+        "kind": "rounded_rect",
+        "box": [
+          140,
+          38,
+          64,
+          22
+        ],
+        "label": "blank active tab joined to the panel body",
+        "radius": 5
+      },
+      {
+        "id": "cat_1",
+        "kind": "rounded_rect",
+        "box": [
+          208,
+          38,
+          64,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "cat_2",
+        "kind": "rounded_rect",
+        "box": [
+          276,
+          38,
+          64,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "cat_3",
+        "kind": "rounded_rect",
+        "box": [
+          344,
+          38,
+          64,
+          22
+        ],
+        "label": "blank inactive tab",
+        "radius": 5
+      },
+      {
+        "id": "opt_0",
+        "kind": "rounded_rect",
+        "box": [
+          140,
+          66,
+          64,
+          40
+        ],
+        "label": "blank square option button",
+        "radius": 5
+      },
+      {
+        "id": "opt_1",
+        "kind": "rounded_rect",
+        "box": [
+          208,
+          66,
+          64,
+          40
+        ],
+        "label": "blank square option button",
+        "radius": 5
+      },
+      {
+        "id": "opt_2",
+        "kind": "rounded_rect",
+        "box": [
+          276,
+          66,
+          64,
+          40
+        ],
+        "label": "blank square option button",
+        "radius": 5
+      },
+      {
+        "id": "opt_3",
+        "kind": "rounded_rect",
+        "box": [
+          344,
+          66,
+          64,
+          40
+        ],
+        "label": "blank square option button",
+        "radius": 5
+      },
+      {
+        "id": "opt_4",
+        "kind": "rounded_rect",
+        "box": [
+          140,
+          110,
+          64,
+          40
+        ],
+        "label": "blank square option button",
+        "radius": 5
+      },
+      {
+        "id": "opt_5",
+        "kind": "rounded_rect",
+        "box": [
+          208,
+          110,
+          64,
+          40
+        ],
+        "label": "blank square option button",
+        "radius": 5
+      },
+      {
+        "id": "opt_6",
+        "kind": "rounded_rect",
+        "box": [
+          276,
+          110,
+          64,
+          40
+        ],
+        "label": "blank square option button",
+        "radius": 5
+      },
+      {
+        "id": "opt_7",
+        "kind": "rounded_rect",
+        "box": [
+          344,
+          110,
+          64,
+          40
+        ],
+        "label": "blank square option button",
+        "radius": 5
+      },
+      {
+        "id": "price",
+        "kind": "rounded_rect",
+        "box": [
+          140,
+          156,
+          120,
+          28
+        ],
+        "label": "blank small price plaque",
+        "radius": 4
+      },
+      {
+        "id": "confirm",
+        "kind": "rounded_rect",
+        "box": [
+          270,
+          156,
+          138,
+          28
+        ],
+        "label": "blank wide button",
+        "radius": 6
+      }
+    ],
+    "content": {
+      "texts": [
+        {
+          "slot": "title",
+          "text": "Ayna",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "close",
+          "text": "x",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "cat_0",
+          "text": "Saç",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        },
+        {
+          "slot": "cat_1",
+          "text": "Yüz",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "cat_2",
+          "text": "Renk",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "cat_3",
+          "text": "Giysi",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "opt_0",
+          "text": "1",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "opt_1",
+          "text": "2",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "opt_2",
+          "text": "3",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "opt_3",
+          "text": "4",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "opt_4",
+          "text": "5",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "opt_5",
+          "text": "6",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "opt_6",
+          "text": "7",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "opt_7",
+          "text": "8",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "price",
+          "text": "Elmas 5",
+          "size": 8,
+          "align": "center"
+        },
+        {
+          "slot": "confirm",
+          "text": "Uygula",
+          "size": 8,
+          "align": "center",
+          "bold": true
+        }
+      ]
+    }
   }
 }
