@@ -7,6 +7,7 @@ using Thatchwick.Core.Economy;
 using Thatchwick.Core.Family;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Jobs;
+using Thatchwick.Core.Mood;
 using Thatchwick.Core.Save;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.Work;
@@ -59,6 +60,11 @@ namespace Thatchwick.Core.Life
         public Func<int?> FounderId { get; set; }
         /// <summary>Kazalar ve kazanılmış izler (doküman 14, 3F).</summary>
         public InjurySystem Injuries { get; }
+        /// <summary>Ruh hali uyarıları ve bunalım (Project belgesi 23).</summary>
+        public BreakdownService Breakdowns { get; }
+        /// <summary>Köy meydanı (bunalımda "Meydana kaçtı"); null ise o tür seçilmez.</summary>
+        public Func<GridPos?> SquarePosition { get; set; }
+        private readonly Random _upbringingRng;
         /// <summary>Evlilik ve kutlanan şenlik sayıları (hedef ölçütleri için).</summary>
         public int Marriages { get; private set; }
         public int FestivalsCelebrated { get; private set; }
@@ -132,6 +138,14 @@ namespace Thatchwick.Core.Life
                 ToolSpeed = id => Tools.SpeedFor(id),
                 Notify = (text, id) => Say(text, NoticeLevel.Warning, id)
             };
+            Breakdowns = new BreakdownService(population, seed != 0 ? Seeds.Derive(seed, 12) : 83)
+            {
+                SquarePosition = () => SquarePosition?.Invoke(),
+                FoodScarce = () => Forecast.Report(Clock.TotalDays).HasDanger
+            };
+            Breakdowns.Raised += (level, text, id) => Say(text, level, id);
+            Breakdowns.Started += (c, kind) => Ledger.Note($"{c.Name}: {MoodBehavior.BreakdownName(kind).ToLowerInvariant()}");
+            _upbringingRng = new Random(seed != 0 ? Seeds.Derive(seed, 13) : 89);
             Spoilage.Spoiled += (id, n) =>
             {
                 bool ice = content.Items.TryGet(id, out var d) && d.HasTag("ice");
@@ -172,6 +186,21 @@ namespace Thatchwick.Core.Life
             population.MemberDied += OnMemberDied;
         }
 
+        /// <summary>
+        /// Ergen Genç yetişkin oldu: çocukluk ruh hali özelliğe dönüşür (karar 18.11.2026). Not hanedan geçmişine
+        /// (kişinin hayat notları) yazılır; hane üyesi için bildirim çıkar.
+        /// </summary>
+        public string OnGrownUp(Character c)
+        {
+            var mother = c.BirthMotherId.HasValue ? Population.Find(c.BirthMotherId.Value) : null;
+            var father = c.BirthFatherId.HasValue ? Population.Find(c.BirthFatherId.Value) : null;
+            string note = LifeRules.ApplyUpbringing(Content, _upbringingRng, c, mother, father);
+            if (note == null) return null;
+            LifeRules.Recompute(c, Content, Village);
+            if (!c.IsVillager) Say($"{c.Name} genç bir yetişkin oldu. {note}", NoticeLevel.Info, c.Id);
+            return note;
+        }
+
         private const string RoleSmithDefined = VillagerService.RoleBlacksmith;
 
         private bool HasVillagerRole(string role)
@@ -185,6 +214,16 @@ namespace Thatchwick.Core.Life
         private void WatchSkills(Character c)
         {
             if (!_watched.Add(c)) return;
+            c.BreakdownEnded += (ch, kind, interrupted) =>
+            {
+                if (ch.IsDead) return;
+                Say(interrupted ? $"{ch.Name} bunalımı bırakıp kendine bakıyor." : $"{ch.Name} toparlandı: içini döktü.", NoticeLevel.Info, ch.Id);
+            };
+            c.StageChanged += (ch, before, after) =>
+            {
+                if (after != AgeStage.YoungAdult || before == AgeStage.YoungAdult) return;
+                OnGrownUp(ch);
+            };
             c.Skills.LevelChanged += (skill, before, after) =>
             {
                 if (c.IsDead || c.IsVillager) return;
@@ -383,6 +422,8 @@ namespace Thatchwick.Core.Life
         public void Attach(JobRunner runner)
         {
             runner.SpeedProvider = WorkSpeedFor;
+            runner.SquarePosition = () => SquarePosition?.Invoke();
+            runner.Refused += (c, text) => Say($"{c.Name}: \"{text}\"", NoticeLevel.Info, c.Id, transient: true);
             runner.ItemBonus = Legacy.BonusFor;
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
         }
@@ -410,9 +451,11 @@ namespace Thatchwick.Core.Life
             _moodAccumulator += gameDays;
             if (_moodAccumulator >= MoodUpdateStepDays)
             {
+                double step = _moodAccumulator;
                 _moodAccumulator = 0;
                 Mood.Update(Population.Members);
                 Watcher.Update(Population.Members, day: Clock.TotalDays);
+                Breakdowns.Update(step);
             }
 
             Spoilage.Tick(gameDays);

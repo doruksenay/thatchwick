@@ -273,6 +273,13 @@ namespace Thatchwick.Core.Save
                 likedFood = c.LikedFood, likedColor = c.LikedColor, likedHobby = c.LikedHobby, dislikedFood = c.DislikedFood,
                 freeMirror = c.FreeMirrorAvailable,
                 lastAccidentDay = c.LastAccidentDay,
+                breakdown = (int)c.Breakdown,
+                breakdownLeft = c.BreakdownLeft,
+                miserableDays = c.MiserableDays,
+                lastBreakdownAge = c.LastBreakdownAge,
+                upbringingSum = c.UpbringingMoodSum,
+                upbringingDays = c.UpbringingDays,
+                chronicle = c.Chronicle.Count > 0 ? new List<string>(c.Chronicle).ToArray() : null,
                 injury = c.Injury == null ? null : new InjurySave
                 {
                     kind = c.Injury.Kind, zone = c.Injury.Zone, pattern = c.Injury.Pattern, reason = c.Injury.Reason,
@@ -585,6 +592,12 @@ namespace Thatchwick.Core.Save
             c.LikedFood = s.likedFood ?? ""; c.LikedColor = s.likedColor ?? ""; c.LikedHobby = s.likedHobby ?? ""; c.DislikedFood = s.dislikedFood ?? "";
             c.FreeMirrorAvailable = s.freeMirror;
             c.LastAccidentDay = s.lastAccidentDay;
+            c.RestoreBreakdown((BreakdownKind)s.breakdown, s.breakdownLeft);
+            c.MiserableDays = s.miserableDays;
+            c.LastBreakdownAge = s.lastBreakdownAge;
+            c.UpbringingMoodSum = s.upbringingSum;
+            c.UpbringingDays = s.upbringingDays;
+            c.RestoreChronicle(s.chronicle);
             if (s.injury != null && !string.IsNullOrEmpty(s.injury.kind))
                 c.Injury = new ActiveInjury
                 {

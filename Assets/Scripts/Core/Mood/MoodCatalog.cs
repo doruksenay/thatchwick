@@ -13,6 +13,11 @@ namespace Thatchwick.Core.Mood
         // İhtiyaç moodlet'leri (koşul): ihtiyaç eşiğin altındayken açık.
         public const string Hungry = "need_hungry", Tired = "need_tired", Cold = "need_cold", Bored = "need_bored", Dirty = "need_dirty", Lonely = "need_lonely";
         public const float NeedMoodThreshold = 25f;
+        /// <summary>
+        /// Aç ve Yorgun moodlet'i bunun altında açılır (18.11.2026: 25'ten indirildi). Otonomi 30'da arar; eşikler çakışınca
+        /// iyi işleyen hanede bile zamanın yarısında -25 kalıyordu (Project belgesi 23, bölüm 3).
+        /// </summary>
+        public const float HungerTiredMoodThreshold = 15f;
         public const float ColdMoodThreshold = 40f;
 
         // Olay moodlet'leri.
@@ -23,7 +28,8 @@ namespace Thatchwick.Core.Mood
             PotionVigor = "potion_vigor", PotionFocus = "potion_focus", PotionCalm = "potion_calm", NewFoal = "new_foal",
             SameMeal = "same_meal", VariedTable = "varied_table",
             Bursting = "need_bladder", Accident = "accident", Wet = "wet", Chilled = "chilled", Relieved = "relieved", Ashamed = "ashamed",
-            HotBath = "hot_bath", ColdWater = "cold_water", Swim = "swim";
+            HotBath = "hot_bath", ColdWater = "cold_water", Swim = "swim",
+            Catharsis = "catharsis";
 
         // Kaza yaraları (InjurySystem; süre yaraya göre ayarlanır, buradaki varsayılan).
         public const string InjuredAxe = "injured_axe", InjuredBurn = "injured_burn", InjuredAnimal = "injured_animal",
@@ -62,6 +68,8 @@ namespace Thatchwick.Core.Mood
             m = M(Lonely, "Yalnız", -10, 0, "Kimseyle konuşmadı: sohbet ve şenlik iyi gelir."); m.AllXp = -0.10f; c.Register(m);
 
             c.Register(M(GoodMeal, "Doyurucu yemek", 10, 0.5, "Sıcak bir yemek yedi."));
+            // Bunalımdan sonra (RimWorld'deki catharsis gibi): art arda bunalım sarmalını önler.
+            c.Register(M(Catharsis, "İçini döktü", 20, 2.0, "Bunalımı atlattı, biraz hafifledi."));
             m = M(Rested, "Dinlenmiş", 10, 0.6, "İyi uyudu: odunculuk ve çiftçilik %15 hızlı.");
             m.SkillSpeed[SkillType.Woodcutting] = 0.15f; m.SkillSpeed[SkillType.Farming] = 0.15f; c.Register(m);
             c.Register(M(Clean, "Tertemiz", 10, 1.0, "Yıkandı, kendini iyi hissediyor."));

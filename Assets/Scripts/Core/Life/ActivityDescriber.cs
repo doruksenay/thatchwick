@@ -130,11 +130,15 @@ namespace Thatchwick.Core.Life
                         default: info.Text = "Çapalıyor"; break;
                     }
                     break;
+                case JobKind.Breakdown:
+                    info.Icon = "idle"; info.Text = string.IsNullOrEmpty(job.Note) ? "Bunalımda" : job.Note; info.Reason = "bunalımda";
+                    break;
                 default:
                     info.Icon = "idle"; info.Text = "?";
                     break;
             }
             if (job.IsDuty) info.Reason = "görevi olduğu için";
+            else if (job.Kind != JobKind.Breakdown && !string.IsNullOrEmpty(job.Note)) info.Reason = job.Note;
             return info;
         }
 

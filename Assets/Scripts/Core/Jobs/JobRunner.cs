@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
+using Thatchwick.Core.Mood;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Jobs
@@ -128,6 +129,14 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Mevcut işi ve kuyruğu bırakıp yeni bir işi tek iş olarak başlatır (oyuncu komutu).</summary>
         public bool Command(Job job)
         {
+            if (job != null && _character.InBreakdown && job.Kind != JobKind.Breakdown)
+            {
+                // Bunalımda emir sıraya girer: bunalım (ve bunalımdaki öğün) sürer, bekleyen eski emirler yerini yenisine bırakır.
+                for (int i = Queue.Count - 1; i >= 1; i--)
+                    if (Queue.Jobs[i].Kind != JobKind.Breakdown) Queue.RemoveAt(i);
+                LastRefusal = $"{MoodBehavior.BreakdownName(_character.Breakdown)}: emir bunalım geçince yapılacak.";
+                return Queue.TryEnqueue(job);
+            }
             Cancel();
             return Queue.TryEnqueue(job);
         }
@@ -160,6 +169,7 @@ namespace Thatchwick.Core.Jobs
             if (gameDays < 0) throw new ArgumentOutOfRangeException(nameof(gameDays));
 
             _elapsedDays += gameDays;
+            SyncBreakdown();
             if (Autonomous) InterruptForToilet();
             double budget = gameDays;
             for (int guard = 0; guard < MaxIterations && budget > 1e-12; guard++)
@@ -171,8 +181,170 @@ namespace Thatchwick.Core.Jobs
                     continue;
                 }
 
+                if (!ReferenceEquals(job, _checkedJob))
+                {
+                    _checkedJob = job;
+                    if (RefuseIfDying(job)) continue;
+                }
+
                 budget -= Advance(job, budget);
             }
+        }
+
+        // ---- Ruh halinin davranışa etkisi (18.11.2026, Project belgesi 23) ----
+
+        private static readonly NeedType[] LethalNeeds = { NeedType.Hunger, NeedType.Energy, NeedType.Warmth };
+        private Job _checkedJob;
+
+        /// <summary>Son emir reddinin ya da bunalımda sıraya alınan emrin metni (arayüz); yoksa null.</summary>
+        public string LastRefusal { get; private set; }
+
+        /// <summary>Karakter, ölümcül bir ihtiyacı yüzünden bir işi başlatmadı (önce ihtiyacını gideriyor). Metin balon/bildirim içindir.</summary>
+        public event Action<Character, string> Refused;
+
+        /// <summary>Köy meydanı (bunalımda "Meydana kaçtı"); yoksa null ve karakter yerinde kalır.</summary>
+        public Func<GridPos?> SquarePosition { get; set; }
+
+        /// <summary>
+        /// Uç durumda emir reddi (karar 18.11.2026): açlık, enerji ya da ısınma 5'in altındaysa karakter o ihtiyacı gidermeyen
+        /// işi başlatmaz; önce ihtiyacını giderir, emir silinmez (sırada kalır). Yürüme, bebeği besleme ve ihtiyacı gideren
+        /// işler hiç reddedilmez. Giderecek bir şey yoksa (yiyecek yok) iş engellenmez: hasat edip yiyecek bulabilsin.
+        /// </summary>
+        private bool RefuseIfDying(Job job)
+        {
+            if (job.Kind == JobKind.MoveTo || job.Kind == JobKind.Breakdown) return false;
+            if (job.Kind == JobKind.Social && job.Action == SocialAction.Feed) return false;
+            NeedType? dying = null;
+            foreach (var n in LethalNeeds)
+            {
+                float v = _character.Needs.Get(n);
+                if (v < MoodBehavior.RefuseBelow && (dying == null || v < _character.Needs.Get(dying.Value))) dying = n;
+            }
+            if (dying == null) return false;
+            if (job.Kind == JobKind.UseItem)
+            {
+                var it = _world.GetItem(job.ItemId);
+                var inter = it == null ? null : FindInteraction(it.Def, job.InteractionId);
+                if (inter != null)
+                    foreach (var n in LethalNeeds)
+                        if (_character.Needs.Get(n) < MoodBehavior.RefuseBelow && inter.RestoreFor(n) > 0f) return false;
+            }
+            FindBestFor(dying.Value, out var fixItem, out var fixInteraction);
+            if (fixItem == null) return false;
+            string text = MoodBehavior.RefusalText(dying.Value);
+            LastRefusal = text;
+            Queue.InsertFront(Job.UseItem(fixItem.Id, fixInteraction.Id).WithReason(dying.Value).WithNote(text));
+            ResetJobState();
+            Refused?.Invoke(_character, text);
+            return true;
+        }
+
+        /// <summary>
+        /// Bunalım işini kuyrukla eşler: bunalım başlayınca en öne bunalım işi girer (Tıkındı: önce bir öğün),
+        /// bitince kalkar. Oyuncu bunalım işini iptal etse ya da başka işi öne alsa da bunalım sürdükçe geri gelir;
+        /// yalnızca ihtiyaç işleri (bunalımdaki öğün, tuvalet) önüne geçebilir.
+        /// </summary>
+        private void SyncBreakdown()
+        {
+            int index = -1;
+            for (int i = 0; i < Queue.Count; i++) if (Queue.Jobs[i].Kind == JobKind.Breakdown) { index = i; break; }
+
+            if (!_character.InBreakdown)
+            {
+                if (index < 0) return;
+                Queue.RemoveAt(index);
+                if (index == 0) ResetJobState();
+                return;
+            }
+
+            if (index == 0) return;
+            var cur = Queue.Current;
+            if (index > 0)
+            {
+                if (cur != null && cur.Reason.HasValue) return;     // önce öğün ya da tuvalet
+                Queue.MoveToFront(index);
+                ResetJobState();
+                return;
+            }
+
+            // Bunalım yeni başladı.
+            var kind = _character.Breakdown;
+            GridPos? target = null;
+            int itemId = 0;
+            Job meal = null;
+            switch (kind)
+            {
+                case BreakdownKind.Withdraw:
+                    FindBestFor(NeedType.Energy, out var bed, out _);
+                    if (bed != null) itemId = bed.Id;
+                    break;
+                case BreakdownKind.RunOff:
+                    target = SquarePosition?.Invoke();
+                    break;
+                case BreakdownKind.Binge:
+                    FindBestFor(NeedType.Hunger, out var food, out var eat);
+                    if (food != null) meal = Job.UseItem(food.Id, eat.Id).WithReason(NeedType.Hunger).WithNote("derdini yemekle bastırıyor");
+                    break;
+            }
+            Queue.InsertFront(Job.BreakdownAt(target, itemId).WithNote(MoodBehavior.BreakdownName(kind)));
+            if (meal != null) Queue.InsertFront(meal);
+            ResetJobState();
+        }
+
+        // Bunalım: (varsa) yatağın yanına ya da meydana yürür, sonra bunalım bitene kadar orada kalır.
+        private double AdvanceBreakdown(Job job, double budget)
+        {
+            if (!_character.InBreakdown) { Finish(); return 0; }
+            if (!_using)
+            {
+                if (_path == null)
+                {
+                    var item = job.ItemId != 0 ? _world.GetItem(job.ItemId) : null;
+                    if (item != null) _path = PathToAdjacent(item);
+                    else if (job.HasTarget) _path = Pathfinder.FindPath(_world.Map, _character.Position, job.Target);
+                    if (_path == null) { _using = true; return 0; }   // ulaşılamıyor: yerinde kalır
+                    _pathIndex = 1;
+                    _stepFraction = 0;
+                }
+                double used = Walk(budget);
+                if (_path == null) { _using = true; return used; }
+                if (_pathIndex < _path.Count) return used;
+                _using = true;
+                return used;
+            }
+            return budget;   // bunalım sürüyor: iş yok
+        }
+
+        // Otonomi puanı ruh hali basamağının hız çarpanını içermez (eskiden kazara Mutlu karakteri pişirmeye itiyordu);
+        // pişirme hevesi aşağıda açık kural olarak verilir.
+        private double AutonomyDuration(InteractionDef interaction, ItemInstance item)
+        {
+            double d = EffectiveDuration(interaction, item);
+            if (IsWork(interaction) && interaction.Skill.HasValue && _character.MoodEnabled)
+                d *= MoodRules.SpeedMultiplier(_character.Mood.Status);
+            return d;
+        }
+
+        private bool RepeatsMeal(string foodId)
+        {
+            var meals = _character.RecentMeals;
+            int n = meals.Count;
+            return n >= 2 && meals[n - 1] == foodId && meals[n - 2] == foodId;
+        }
+
+        /// <summary>Şu an başlanabilecek, başka bir yiyecekle doyuran bir etkileşim var mı (sofra çeşidi cezası için).</summary>
+        private bool HasOtherFood(string foodId)
+        {
+            foreach (var item in _world.Items)
+                foreach (var interaction in item.Def.Interactions)
+                {
+                    if (interaction.RestoreFor(NeedType.Hunger) <= 0f || interaction.ConsumeItem == null || interaction.ConsumeItem == foodId) continue;
+                    if (interaction.RemovesItem || interaction.RequiresGrown || interaction.Produce.Count > 0 || interaction.IsCraft) continue;
+                    if (interaction.MinSkillLevel > 0 && interaction.Skill.HasValue && _character.Skills.GetLevel(interaction.Skill.Value) < interaction.MinSkillLevel) continue;
+                    if (interaction.HasEffects && (Effects == null || Effects.CanStart(_character, item, interaction) != null)) continue;
+                    return true;
+                }
+            return false;
         }
 
         // Bir iş için en çok `budget` kadar ilerler; harcanan oyun gününü döner.
@@ -185,6 +357,7 @@ namespace Thatchwick.Core.Jobs
                 case JobKind.Social: return AdvanceSocial(job, budget);
                 case JobKind.Animal: return AdvanceAnimal(job, budget);
                 case JobKind.Tile: return AdvanceTile(job, budget);
+                case JobKind.Breakdown: return AdvanceBreakdown(job, budget);
                 default:
                     Fail($"Bilinmeyen iş türü: {job.Kind}");
                     return 0;
@@ -439,7 +612,8 @@ namespace Thatchwick.Core.Jobs
                 if (interaction.BladderCost > 0f && _character.ComfortNeedsActive)
                     _character.Needs.Set(NeedType.Bladder, _character.Needs.Get(NeedType.Bladder) - interaction.BladderCost);
                 // Öğün: açlık doyuran ve yiyecek harcayan iş sofra çeşidine sayılır.
-                if (interaction.Need == NeedType.Hunger && interaction.RestoresNeed && interaction.ConsumeItem != null) _character.RecordMeal(interaction.ConsumeItem);
+                if (interaction.Need == NeedType.Hunger && interaction.RestoresNeed && interaction.ConsumeItem != null)
+                    _character.RecordMeal(interaction.ConsumeItem, HasOtherFood(interaction.ConsumeItem));
                 if (interaction.GivesMood)
                     _character.AddMoodlet(interaction.MoodId, interaction.MoodText ?? interaction.DisplayName, interaction.MoodValue, interaction.MoodDays);
                 if (interaction.Skill.HasValue && interaction.SkillXp > 0f)
@@ -684,13 +858,19 @@ namespace Thatchwick.Core.Jobs
             if (bestItem == null) return false;
 
             ResetJobState();
-            return Queue.TryEnqueue(Job.UseItem(bestItem.Id, bestInteraction.Id).WithReason(need));
+            var job = Job.UseItem(bestItem.Id, bestInteraction.Id).WithReason(need);
+            if (_lastPickEager) job.WithNote(MoodBehavior.EagerCookNote);
+            return Queue.TryEnqueue(job);
         }
+
+        private bool _lastPickEager;
 
         private void FindBestFor(NeedType need, out ItemInstance bestItem, out InteractionDef bestInteraction)
         {
             bestItem = null;
             bestInteraction = null;
+            _lastPickEager = false;
+            bool eagerMood = need == NeedType.Hunger && _character.MoodEnabled && MoodBehavior.IsEagerCook(_character.Mood.Status);
             double bestScore = double.MinValue;
             int bestDistance = int.MaxValue;
             float missing = Math.Max(1f, 100f - _character.Needs.Get(need));
@@ -717,7 +897,12 @@ namespace Thatchwick.Core.Jobs
 
                     // Eksik olandan fazlası boşa gider; yürüme ve iş süresine ek sabit bir hazırlık payı, sık sık küçük
                     // dolduran eşyayı (tabure) uzun dolduranın (yatak) önüne geçirmez.
-                    double score = Math.Min(restore, missing) / (EffectiveDuration(interaction, item) + distance / TilesPerGameDay + AutonomyOverheadDays);
+                    double score = Math.Min(restore, missing) / (AutonomyDuration(interaction, item) + distance / TilesPerGameDay + AutonomyOverheadDays);
+                    // Sofra çeşidi: iki öğündür yenen yiyecek geri planda kalır (başka yiyecek varsa otonomi çeşitlenir).
+                    if (need == NeedType.Hunger && interaction.ConsumeItem != null && RepeatsMeal(interaction.ConsumeItem)) score *= MoodBehavior.RepeatMealPenalty;
+                    // Pişirme hevesi (açık kural): İyi ya da Mutlu karakter sıcak yemeği yeğler.
+                    bool eager = eagerMood && interaction.Skill == SkillType.Cooking;
+                    if (eager) score *= MoodBehavior.EagerCookBonus;
                     bool better = bestInteraction == null
                         || score > bestScore + 1e-9
                         || (Math.Abs(score - bestScore) <= 1e-9 && distance < bestDistance);
@@ -727,6 +912,7 @@ namespace Thatchwick.Core.Jobs
                         bestInteraction = interaction;
                         bestScore = score;
                         bestDistance = distance;
+                        _lastPickEager = eager;
                     }
                 }
             }

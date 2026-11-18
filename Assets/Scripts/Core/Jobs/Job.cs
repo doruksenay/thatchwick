@@ -12,7 +12,9 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Bir hayvanla yapılan iş: sev, tımar, eyer, bin.</summary>
         Animal = 3,
         /// <summary>Bir karoda yapılan iş: çapala.</summary>
-        Tile = 4
+        Tile = 4,
+        /// <summary>Bunalım: karakter (varsa) bir yere yürür ve bunalım bitene kadar orada kalır. Sistem verir, oyuncu veremez.</summary>
+        Breakdown = 5
     }
 
     public enum SocialAction
@@ -53,6 +55,26 @@ namespace Thatchwick.Core.Jobs
             Reason = need;
             return this;
         }
+
+        /// <summary>Eylem balonunda nedenin yerine yazılan kısa not ("keyfi yerinde, pişirmeye hevesli"); yoksa null.</summary>
+        public string Note { get; private set; }
+
+        public Job WithNote(string note)
+        {
+            Note = note;
+            return this;
+        }
+
+        /// <summary>Bunalım işi: hedef karo (meydan) ya da eşya (yatak) verilirse oraya yürür; ikisi de yoksa yerinde kalır.</summary>
+        public static Job BreakdownAt(GridPos? target, int itemId = 0)
+        {
+            var j = new Job { Kind = JobKind.Breakdown, ItemId = itemId };
+            if (target.HasValue) { j.Target = target.Value; j.HasTarget = true; }
+            return j;
+        }
+
+        /// <summary>Bunalım işinde hedef karo verildi mi.</summary>
+        public bool HasTarget { get; private set; }
 
         public static Job MoveTo(GridPos target) =>
             new Job { Kind = JobKind.MoveTo, Target = target };

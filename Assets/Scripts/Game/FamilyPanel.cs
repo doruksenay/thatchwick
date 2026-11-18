@@ -90,6 +90,8 @@ namespace Thatchwick.Game
             GUILayout.Label($"{c.Name}{head} ({state}{spouse})");
             if (CanTakeCommands(c) && c != actor && GUILayout.Button("Seç", GUILayout.Width(40f))) { _select(c); _status = $"{c.Name} seçildi."; }
             GUILayout.EndHorizontal();
+            // Hanedan geçmişi: kişinin hayat notları ("Neşeli bir soydan geldi ama zor bir çocukluk geçirdi.").
+            if (!c.IsVillager) foreach (var note in c.Chronicle) GUILayout.Label("    · " + note);
 
             // Görev (otomasyonun işçi tarafı): ihtiyaçları iyiyken gündüz kendiliğinden tarlaya ya da hayvanlara bakar.
             if (!c.IsVillager && DutyPlanner.CanTakeDuty(c))

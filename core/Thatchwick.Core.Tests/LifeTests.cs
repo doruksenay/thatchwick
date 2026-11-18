@@ -112,7 +112,7 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
-        public void Cocuk_EbeveynlerdenBirerOzellikAlir()
+        public void Cocuk_DogumdaBirEbeveyndenTekOzellikAlir()
         {
             var db = Db();
             var pop = new Population(seed: 7) { Content = db };
@@ -127,11 +127,12 @@ namespace Thatchwick.Core.Tests
             Assert.True(mother.TryStartPregnancy(father.Id));
             for (int i = 0; i < 400 && baby == null; i++) pop.Tick(0.1);
 
+            // Karar 18.11.2026: doğumda tek özellik (bir ebeveynden); ikinci yuva çocuklukta dolar.
             Assert.NotNull(baby);
-            Assert.Equal(2, baby.TraitIds.Count);
-            Assert.Contains("gluttonous", baby.TraitIds);
-            Assert.Contains("hardy", baby.TraitIds);
-            Assert.True(baby.Modifiers.HungerDecay > 0f && baby.Modifiers.ColdResist > 0.2f);   // etkiler işlendi
+            Assert.Single(baby.TraitIds);
+            Assert.True(baby.HasTrait("gluttonous") || baby.HasTrait("hardy"));
+            if (baby.HasTrait("hardy")) Assert.True(baby.Modifiers.ColdResist > 0.2f);   // etkiler işlendi
+            else Assert.True(baby.Modifiers.HungerDecay > 1f);
         }
 
         [Fact]
