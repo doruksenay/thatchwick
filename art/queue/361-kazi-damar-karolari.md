@@ -1,7 +1,8 @@
 ---
 id: "361"
 title: Kazı damar karoları (8 hammadde) ve damar izi
-status: pending
+status: running
+claimed_at: 2026-11-18T13:45Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 10
 family: zemin
