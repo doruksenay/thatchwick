@@ -65,10 +65,37 @@ namespace Thatchwick.Core.Life
             return spawned;
         }
 
+        /// <summary>Kıyı karosu: kendisi su değil, dört komşusundan biri su (göl kumsalı, 27 §18.2).</summary>
+        public static bool IsShore(GridMap map, GridPos p)
+        {
+            if (!map.InBounds(p) || map.GetFloor(p) == FloorType.Water) return false;
+            foreach (var n in new[] { new GridPos(p.X + 1, p.Y, p.Z), new GridPos(p.X - 1, p.Y, p.Z), new GridPos(p.X, p.Y + 1, p.Z), new GridPos(p.X, p.Y - 1, p.Z) })
+                if (map.InBounds(n) && map.GetFloor(n) == FloorType.Water) return true;
+            return false;
+        }
+
         private bool TrySpawn(ItemDef def)
         {
             var map = _world.Map;
             var rooms = map.Rooms;
+            if (def.HasTag("shore"))
+            {
+                // Kumsal: yalnızca suyun kenarında (rastgele deneme kıyıyı nadiren bulur; aday listesi).
+                var shore = new List<GridPos>();
+                for (int y = 0; y < map.Height; y++)
+                    for (int x = 0; x < map.Width; x++)
+                    {
+                        var q = new GridPos(x, y);
+                        if (!IsShore(map, q) || map.IsBlocked(q)) continue;
+                        if (TileFilter != null && !TileFilter(q)) continue;
+                        if (_world.CanPlaceFloor(def, q, 0).Ok) shore.Add(q);
+                    }
+                if (shore.Count == 0) return false;
+                var at = shore[_rng.Next(shore.Count)];
+                _world.PlaceItem(def, at);
+                Spawned?.Invoke(def, at);
+                return true;
+            }
             for (int attempt = 0; attempt < 40; attempt++)
             {
                 var p = new GridPos(_rng.Next(map.Width), _rng.Next(map.Height));

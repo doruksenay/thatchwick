@@ -132,6 +132,11 @@ namespace Thatchwick.Core.Heat
             }
         }
 
+        /// <summary>Ocağa atılan odunun külü (null = kül yok). Her LogsPerAsh odunda envantere bir kül.</summary>
+        public string AshItemId { get; set; }
+        public const int LogsPerAsh = 4;
+        private readonly System.Collections.Generic.Dictionary<int, int> _ashLogs = new System.Collections.Generic.Dictionary<int, int>();
+
         /// <summary>Isı kaynağına odun atar (envanterden 1 kütük). Yakıt dolu ise ya da odun yoksa false.</summary>
         public bool TryStoke(int itemId, Household house)
         {
@@ -140,6 +145,13 @@ namespace Thatchwick.Core.Heat
             if (item.FuelDays + _cfg.BurnDaysPerLog > _cfg.MaxFuelDays + 1e-9) return false;
             if (!house.TryTakeItem(_cfg.FirewoodId)) return false;
             item.FuelDays += _cfg.BurnDaysPerLog;
+            if (AshItemId != null)
+            {
+                // Her LogsPerAsh odunda bir kül (cam ocağının eriticisi, 27 §18.3). Sayaç kayda girmez.
+                _ashLogs.TryGetValue(itemId, out int n);
+                if (++n >= LogsPerAsh) { n = 0; house.AddItem(AshItemId); }
+                _ashLogs[itemId] = n;
+            }
             return true;
         }
 

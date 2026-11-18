@@ -55,6 +55,13 @@ namespace Thatchwick.Core.Save
         public double pregnant;          // doğuma kalan gün (0 = gebe değil)
         public int mother;               // annenin kimliği (0 = yok)
         public int generation;           // kuşak (satın alınan 0)
+        // Soy ve seviye (18.11.2026, Project belgesi 29). Eski kayıtta Köy, 0 XP.
+        public int lineage;              // 0 Köy, 1 İyi soy, 2 Soylu, 3 Efsane
+        public double xp;
+        public bool legendDescent;
+        public string legendTitle;
+        public float stamina = -1f;      // binek dayanıklılığı (eski kayıtta -1 = dolu)
+        public double shy;               // ürkek gün
     }
 
     /// <summary>Yenmiş otlak karosu (dolu karolar kaydedilmez).</summary>
@@ -176,6 +183,11 @@ namespace Thatchwick.Core.Save
         public float wet;                   // ıslaklık (eski kayıtta 0)
         public KeyFloat[] moodlets;         // v2: (kimlik, kalan gün)
         public KeyFloat[] skills;
+        // Beceri temposu (18.11.2026, Project belgesi 28). Eski kayıtta boş/false gelir.
+        public KeyFloat[] aptitudes;          // (beceri, 1 = Yatkın, 2 = Çok yatkın)
+        public KeyFloat[] skillToday;         // bugünkü doygunluk sayacı
+        public string[] skillUsedSeason;      // bu mevsim kullanılan beceriler
+        public bool elderOnset;               // yaşlılık giriş gerilemesi uygulandı
         public AppearanceSave appearance;
         // Aile (Adım 16-17). Eksik alan eski kayıtta 0/false gelir: kimlikler 1'den başladığı için 0 = yok.
         public int spouseId;

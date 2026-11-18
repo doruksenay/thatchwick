@@ -48,7 +48,7 @@ namespace Thatchwick.Core.Animals
         public Func<Animal, float> QualityBonus { get; set; }
 
         /// <summary>Hayvanın ürün kalitesi basamağı, ek puanlar dahil.</summary>
-        public int QualityOf(Animal a) => QualityTierOf(a.Friendship, a.Comfort, a.IsHeritage, QualityBonus != null ? QualityBonus(a) : 0f);
+        public int QualityOf(Animal a) => QualityTierOf(a.Friendship, a.Comfort, a.IsHeritage, (QualityBonus != null ? QualityBonus(a) : 0f) + AnimalProgress.QualityBonus(a.Lineage, a.Level));
 
         public static string QualityName(int tier) => Work.PlantSystem.QualityName(tier);
         public static float QualityYield(int tier) => Work.PlantSystem.QualityYield(tier);
@@ -235,7 +235,8 @@ namespace Thatchwick.Core.Animals
         /// <summary>Kayıttan yükleme.</summary>
         public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays, float friendship = 0f, double petCooldown = 0,
             string saddle = null, float comfort = 50f, bool sick = false, double sickDays = 0, int coldDays = 0,
-            bool? female = null, double pregnantDays = 0, int motherId = 0, int generation = 0)
+            bool? female = null, double pregnantDays = 0, int motherId = 0, int generation = 0,
+            int lineage = 0, double xp = 0, bool legendaryDescent = false, string legendTitle = null, float stamina = -1f, double shyDays = 0)
         {
             var a = new Animal(id, species, pos, homeId)
             {
@@ -254,7 +255,13 @@ namespace Thatchwick.Core.Animals
                 IsSick = sick,
                 SickDays = sick ? Math.Max(0, sickDays) : 0,
                 ColdDays = Math.Max(0, coldDays),
-                IsCold = coldDays > 0
+                IsCold = coldDays > 0,
+                Lineage = (AnimalLineage)Math.Max(0, Math.Min((int)AnimalLineage.Legendary, lineage)),
+                Xp = Math.Max(0, xp),
+                LegendaryDescent = legendaryDescent,
+                LegendaryTitle = string.IsNullOrEmpty(legendTitle) ? null : legendTitle,
+                Stamina = stamina < 0f ? HorseAbilities.MaxStamina : Math.Min(HorseAbilities.MaxStamina, stamina),
+                ShyDays = Math.Max(0, shyDays)
             };
             _animals.Add(a);
             if (id >= _nextId) _nextId = id + 1;
@@ -286,7 +293,11 @@ namespace Thatchwick.Core.Animals
                         {
                             _world.Map.Trample(rider.Value, a.Species.Trample);   // at yolu aşındırır
                             int dist = Math.Max(Math.Abs(a.Position.X - rider.Value.X), Math.Abs(a.Position.Y - rider.Value.Y));
-                            FindCharacter?.Invoke(a.RiderId)?.GainSkillXp(SkillType.Riding, RideXpPerTile * Math.Min(dist, 4));
+                            var riderChar = FindCharacter?.Invoke(a.RiderId);
+                            riderChar?.GainSkillXp(SkillType.Riding, RideXpPerTile * Math.Min(dist, 4));
+                            // Atın kendi XP'si: iyi binici atını daha hızlı eğitir (Binicilik seviye başına %5).
+                            double trainer = riderChar != null ? SkillNames.Factor(riderChar.Skills.GetLevel(SkillType.Riding), 0.05) : 1.0;
+                            AnimalProgress.AddXp(a, AnimalProgress.XpPerRideTile * Math.Min(dist, 4) * trainer);
                         }
                         a.Position = rider.Value; a.NextTile = null; a.Path = null; ridden = true;
                     }
@@ -299,6 +310,9 @@ namespace Thatchwick.Core.Animals
                         if (rider.HasValue) Dismounted?.Invoke(a, riderId);
                     }
                 }
+
+                HorseAbilities.Tick(a, gameDays, ridden, ridden ? FindCharacter?.Invoke(a.RiderId) : null);
+                if (!ridden) a.Galloping = false;
 
                 // Beslenme: önce otlaktaki ot, sonra barınağın yemi, sonra aynı odadaki yemlikler.
                 double need = a.Species.FeedPerDay * gameDays * WinterFeedFactor(a);
@@ -348,6 +362,7 @@ namespace Thatchwick.Core.Animals
                         double extra = QualityYield(QualityOf(a)) - 1.0;
                         if (extra > 0 && _rng.NextDouble() < extra) units++;
                         home.AddStock(a.Species.Produces, units);
+                        AnimalProgress.AddXp(a, AnimalProgress.XpProduce);
                         Produced?.Invoke(a, a.Species.Produces);
                     }
                 }

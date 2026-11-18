@@ -446,7 +446,7 @@ namespace Thatchwick.Core.Tests
             Assert.StartsWith("Enerji +70 (Dinlenmiş)", ItemCatalog.Describe(db.Items.Get("item.bed_frame")));
             Assert.Contains("Işık", ItemCatalog.Describe(db.Items.Get("item.torch_wall")));
             Assert.Contains("Duvara asılır", ItemCatalog.Describe(db.Items.Get("item.torch_wall")));
-            Assert.Contains("30 tarif", ItemCatalog.Describe(db.Items.Get("item.workbench")));   // su işleri (boru, fıçı, hela, hızar, dink, çekiç) + havluluk + oyuncak ve defter (belge 30, 34)
+            Assert.Contains("33 tarif", ItemCatalog.Describe(db.Items.Get("item.workbench")));   // su işleri (boru, fıçı, hela, hızar, dink, çekiç) + havluluk + oyuncak ve defter (belge 30, 34) + D3 (iki ayna, kutu yatak)
         }
     }
 }

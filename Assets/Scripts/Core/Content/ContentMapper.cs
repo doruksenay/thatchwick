@@ -373,7 +373,8 @@ namespace Thatchwick.Core.Content
                     SkillXp = r.skillXp,
                     MinSkillLevel = r.minLevel,
                     IsCraft = true,
-                    Moodlet = string.IsNullOrWhiteSpace(r.moodlet) ? Mood.MoodCatalog.Proud : r.moodlet
+                    Moodlet = string.IsNullOrWhiteSpace(r.moodlet) ? Mood.MoodCatalog.Proud : r.moodlet,
+                    RequiresBranch = string.IsNullOrWhiteSpace(r.requiresBranch) ? null : r.requiresBranch.Trim()
                 };
                 interaction.Produce.Add(new ProduceDef { ItemId = r.produces, Count = r.count <= 0 ? 1 : r.count, Chance = 1f });
                 AddMaterials(interaction, r.materials);

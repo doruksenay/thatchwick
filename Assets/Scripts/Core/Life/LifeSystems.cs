@@ -214,11 +214,49 @@ namespace Thatchwick.Core.Life
         {
             var mother = c.BirthMotherId.HasValue ? Population.Find(c.BirthMotherId.Value) : null;
             var father = c.BirthFatherId.HasValue ? Population.Find(c.BirthFatherId.Value) : null;
+            string aptitudeNote = LifeRules.ApplyChildhoodAptitude(c);
+            if (aptitudeNote != null && !c.IsVillager) Say($"{c.Name}: {aptitudeNote}", NoticeLevel.Info, c.Id);
             string note = LifeRules.ApplyUpbringing(Content, _upbringingRng, c, mother, father);
             if (note == null) return null;
             LifeRules.Recompute(c, Content, Village);
             if (!c.IsVillager) Say($"{c.Name} genç bir yetişkin oldu. {note}", NoticeLevel.Info, c.Id);
             return note;
+        }
+
+        /// <summary>Beceri temposu (günlük doygunluk, yaşlılık gerilemesi) hane üyelerinde açılsın mı. Varsayılan açık.</summary>
+        public bool SkillPacing
+        {
+            get => _skillPacing;
+            set
+            {
+                _skillPacing = value;
+                foreach (var c in _watched) c.Skills.PacingEnabled = value && !c.IsVillager;
+            }
+        }
+        private bool _skillPacing = true;
+
+        /// <summary>Yaşlılığa giriş: becerilerde bir kereye mahsus küçük gerileme (seviye düşmez).</summary>
+        public void OnBecameElder(Character c)
+        {
+            if (c == null || c.IsDead) return;
+            if (c.Skills.ApplyElderOnset() > 0 && !c.IsVillager)
+                Say($"{c.Name} yaşlandı: elleri eskisi kadar çabuk değil. Becerilerini her mevsim bir kez çalıştırmalı.", NoticeLevel.Info, c.Id);
+        }
+
+        /// <summary>Mevsim sonu: yaşlılarda o mevsim hiç kullanılmayan beceriler geriler; herkesin kullanım kaydı sıfırlanır.</summary>
+        public void OnSkillSeasonEnd()
+        {
+            foreach (var c in Population.Members)
+            {
+                if (c.IsDead) continue;
+                var decayed = c.Skills.OnSeasonEnd(c.Stage == AgeStage.Elder);
+                if (decayed.Count > 0 && !c.IsVillager)
+                {
+                    var names = new List<string>();
+                    foreach (var s in decayed) names.Add(SkillNames.Name(s));
+                    Say($"{c.Name} bu mevsim {string.Join(", ", names)} çalışmadı; biraz paslandı.", NoticeLevel.Info, c.Id);
+                }
+            }
         }
 
         private const string RoleSmithDefined = VillagerService.RoleBlacksmith;
@@ -234,6 +272,8 @@ namespace Thatchwick.Core.Life
         private void WatchSkills(Character c)
         {
             if (!_watched.Add(c)) return;
+            // Beceri temposu (doygunluk, yaşlılık gerilemesi) hane üyeleri için açık; köylüler etkilenmez.
+            if (SkillPacing && !c.IsVillager) c.Skills.PacingEnabled = true;
             c.BreakdownEnded += (ch, kind, interrupted) =>
             {
                 if (ch.IsDead) return;
@@ -241,6 +281,7 @@ namespace Thatchwick.Core.Life
             };
             c.StageChanged += (ch, before, after) =>
             {
+                if (after == AgeStage.Elder && before != AgeStage.Elder) { OnBecameElder(ch); return; }
                 if (after != AgeStage.YoungAdult || before == AgeStage.YoungAdult) return;
                 OnGrownUp(ch);
             };
@@ -419,10 +460,23 @@ namespace Thatchwick.Core.Life
         {
             double f = 1.0;
             if (!string.IsNullOrEmpty(interaction.Tool)) f *= Tools.SpeedFor(interaction.Tool);
+            if (c.HasBranch(GlassBranchId) && ProducesGlass(interaction)) f *= GlassBranchSpeed;   // Camcı dalı (27 §18.3)
             var room = World.Map.Rooms.RoomAt(c.Position);
             bool outdoors = room == null || !room.IsIndoor;
             if (outdoors) f *= WeatherSystem.OutdoorWorkSpeed(Weather.Today(Clock.TotalDays));
             return f;
+        }
+
+        /// <summary>Çömlekçilik altındaki Camcı dalı: "glass" etiketli ürün veren işler bu kadar hızlı.</summary>
+        public const string GlassBranchId = "branch.pot_b";   // "Camcı" (eski adı Çarkçı Çömlekçi; kayıtlar korunur)
+        public const string AshId = "item.ash";
+        public const double GlassBranchSpeed = 1.25;
+
+        private bool ProducesGlass(InteractionDef interaction)
+        {
+            foreach (var p in interaction.Produce)
+                if (Content.Items.TryGet(p.ItemId, out var d) && d.HasTag("glass")) return true;
+            return false;
         }
 
         // ---- diğer sistemlere bağlama (oyun katmanı kurarken bir kez çağırır) ----
@@ -465,10 +519,21 @@ namespace Thatchwick.Core.Life
             heat.OutdoorOffset = () => WeatherSystem.TemperatureOffset(Weather.Today(Clock.TotalDays));
             Spoilage.TemperatureAt = heat.TemperatureAt;   // bodrum mahzeni serinlik şartı
             Decor.TemperatureAt = heat.TemperatureAt;      // sepetteki meyve oda sıcaklığında bozulur
+            if (Content.Items.Contains(AshId)) heat.AshItemId = AshId;   // ocağa atılan odunun külü (cam zinciri, 27 §18.3)
             if (_plants != null) _plants.TemperatureAt = heat.TemperatureAt;
         }
         private PlantSystem _plants;
         private HeatSystem _heat;
+        /// <summary>Hayvanlar: attan düşen binici yaralanır (ölümcül değil), at ürkünce bildirim.</summary>
+        public void Attach(Thatchwick.Core.Animals.AnimalSystem animals)
+        {
+            animals.RiderFell += (horse, rider) =>
+            {
+                Injuries.InjureById(rider, "horse_fall");   // moodlet ve bildirim InjurySystem'den
+            };
+            animals.HorseRefused += horse => Say($"{horse.Name} engelin önünde ürktü.", NoticeLevel.Info);
+        }
+
         public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
         /// <summary>Doldurulan dekora giren yiyecek envanterdeki en eski partinin yaşını taşır.</summary>
@@ -514,8 +579,10 @@ namespace Thatchwick.Core.Life
             Villagers.PollEvents();
             Goals.Update();
             int season = (int)((day / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
+            foreach (var m in Population.Members) m.Skills.NewDay();
             if (_lastSeasonIndex >= 0 && season != _lastSeasonIndex)
             {
+                OnSkillSeasonEnd();
                 Legacy.OnSeasonChanged((Season)_lastSeasonIndex, (Season)season, day, Clock.TotalDays);
                 var guest = Suitors.OnNewSeason();
                 if (guest != null) Say($"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);

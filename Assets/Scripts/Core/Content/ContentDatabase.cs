@@ -266,6 +266,14 @@ namespace Thatchwick.Core.Content
 
         private void ValidateLife(List<string> errors)
         {
+            // Dal isteyen tarifler (D3: Camcı): dal var mı, adı kartta ve uyarıda görünsün.
+            foreach (var item in Items.All)
+                foreach (var it in item.Interactions)
+                {
+                    if (it.RequiresBranch == null) continue;
+                    if (!Branches.TryGet(it.RequiresBranch, out var br)) errors.Add($"{item.Id}/{it.Id}: gereken dal '{it.RequiresBranch}' bulunamadı.");
+                    else it.RequiresBranchName = br.DisplayName;
+                }
             foreach (var t in Traits.All)
             {
                 if (string.IsNullOrWhiteSpace(t.DisplayName)) errors.Add($"{t.Id}: görünen ad boş.");

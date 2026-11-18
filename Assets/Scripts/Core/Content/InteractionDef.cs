@@ -135,6 +135,10 @@ namespace Thatchwick.Core.Content
         public bool FillDecor { get; set; }
         /// <summary>Doldurulan dekordan bir tane yer (Need/Restore ile açlık giderir).</summary>
         public bool EatContents { get; set; }
+        /// <summary>Bu işi yalnızca bu meslek dalını seçmiş karakter yapar (Camcı: berrak cam, ayna küresi). Null = herkes.</summary>
+        public string RequiresBranch { get; set; }
+        /// <summary>Gereken dalın görünen adı (içerik yüklenince doldurulur).</summary>
+        public string RequiresBranchName { get; set; }
         /// <summary>Yalnızca meyvesi olgun ağaçta yapılabilir.</summary>
         public bool RequiresFruit { get; set; }
         /// <summary>Meyveyi toplar: ağaç yerinde kalır, meyve yeniden olgunlaşmaya başlar.</summary>

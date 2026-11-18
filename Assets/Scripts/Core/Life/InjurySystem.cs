@@ -104,6 +104,9 @@ namespace Thatchwick.Core.Life
                     null, ("brow", 40), ("forehead", 35), ("lip", 25)),
                 D("child_fall", "scratch", 0.006, 1, MoodCatalog.InjuredFall, "oynarken düşüp {0} sıyırdı",
                     null, ("forehead", 60), ("brow", 40)),
+                // Attan düşme (29): iş zarıyla gelmez; başarısız atlamada AnimalSystem.RiderFell ile verilir. Ölümcül değildir.
+                D("horse_fall", "split", 0, 2, MoodCatalog.InjuredFall, "attan düşüp {0} yardı",
+                    null, ("brow", 30), ("forehead", 25), ("larm", 25), ("rarm", 20)),
                 // Göçük: iş zarıyla gelmez (şans 0); kazı motoru çöken karodaki karaktere doğrudan verir.
                 D("cave_in", "split", 0, 4, MoodCatalog.InjuredCaveIn, "göçükte {0} yardı",
                     null, ("forehead", 30), ("larm", 25), ("rarm", 25), ("brow", 20))
@@ -208,6 +211,13 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Kazayı uygular (testlerde doğrudan çağrılabilir).</summary>
+        /// <summary>Katalogdaki kimlikle yara verir (attan düşme, göçük); ölü ya da bilinmeyen kimlikte null.</summary>
+        public ActiveInjury InjureById(Character c, string id)
+        {
+            if (c == null || c.IsDead || id == null || !_defs.TryGetValue(id, out var def)) return null;
+            return Injure(c, def);
+        }
+
         public ActiveInjury Injure(Character c, InjuryDef def)
         {
             double today = Today();

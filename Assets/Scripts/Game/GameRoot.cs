@@ -222,6 +222,8 @@ namespace Thatchwick.Game
             RebuildItemViews();
             _world.Changed += () => _itemsDirty = true;
             _view.LevelChanged += () => _itemsDirty = true;   // görünen kat değişince eşyalar yeniden kurulur
+            // Duvar değişince kesitte hangi duvarın alçaldığı değişebilir: asılı eşyalar yeniden çizilir (Yukarı'da gerekmez).
+            _world.Map.Changed += () => { if (_walls != null && _walls.Mode != WallMode.Up) _itemsDirty = true; };
 
             foreach (var item in _world.Items)
                 foreach (var tile in item.OccupiedTiles()) _view.ClearTerrainBlock(tile);
@@ -239,6 +241,7 @@ namespace Thatchwick.Game
             wallsGo.transform.SetParent(transform, false);
             _walls = wallsGo.AddComponent<WallView>();
             _walls.Init(map, _view, _content);
+            _walls.ModeChanged += () => _itemsDirty = true;   // Yukarı / Kesit / Aşağı: asılı eşyalar gizlenir ya da görünür
 
             var cam = Camera.main;
             if (cam == null)
@@ -351,6 +354,7 @@ namespace Thatchwick.Game
             _life.Attach(_market);
             _life.Attach(_buildService);
             _life.Attach(_effects);
+            _life.Attach(_animals);   // attan düşen binici yaralanır, at ürkünce bildirim (Project belgesi 29)
             // Miras: kurucu (köydeki soy), yadigâr envantere girmez, satılınca geçmişi silinir, komşu haneye giden köylü olur.
             _life.FounderId = () => _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
             _buildService.StoreBlocker = _life.Legacy.StoreBlocker;
@@ -554,6 +558,16 @@ namespace Thatchwick.Game
                 var color = ItemColor(item.Def.Id);
                 if (item.IsWallMounted)
                 {
+                    if (WallItemFacesAway(item) && !WallItemHidden(item)) continue;   // Yukarı'da ön duvarın iç yüzü: duvarın arkasında kalır
+                    if (WallItemHidden(item))
+                    {
+                        // Alçak duvar (Kesit'te ön duvar, Aşağı'da hepsi): eşya havada kalmasın; duvarın tepesinde küçük işaret.
+                        var mark = Iso.WallMountSpan(item.Position, item.Rotation, item.WallSpan, item.WallBand)
+                            - new Vector3(0f, Iso.BandHeight(item.WallBand) - LoweredWallTop, 0f);
+                        var msr = AddItemSprite(item, mark, color, 0.12f * Mathf.Max(1, item.WallSpan), Iso.WallMountOrder(item.Position, item.Rotation) + 1, SpriteMaterials.Diamond);
+                        msr.color = new Color(color.r, color.g, color.b, 0.75f);
+                        continue;
+                    }
                     // Bantlı duvar (27): alt, orta, üst yükseklik; geniş eşya kenarlarının ortasında, genişliğince büyük.
                     var wallArt = IsoArt.Item(item, out _);
                     float wscale = (wallArt != null ? 1f : 0.3f) * (item.WallSpan > 1 && wallArt == null ? item.WallSpan : 1f);
@@ -564,6 +578,8 @@ namespace Thatchwick.Game
                 }
                 if (item.IsCeiling)
                 {
+                    // Duvarlar Aşağı'dayken tavan eşyası da gizlenir (alçak duvarların üstünde havada kalmasın).
+                    if (_walls != null && _walls.Mode == WallMode.Down) continue;
                     // Tavan ve kiriş (27): karonun ortasında, tavan yüksekliğinde; kat ya da çatı görünürken zaten çizilmez.
                     var cpos = _view.TileToWorld(item.Position) + new Vector3(0f, Iso.CeilingHeight, 0f);
                     var ceilArt = IsoArt.Item(item, out _);
@@ -577,6 +593,7 @@ namespace Thatchwick.Game
                     if (parent == null || !parent.TryGetSlotPosition(item.SlotId, out float gx, out float gy)) continue;
                     if (parent.IsWallMounted)
                     {
+                        if (WallItemHidden(parent) || WallItemFacesAway(parent)) continue;   // gizli ya da duvar arkasındaki rafın üstündekiler
                         var onShelf = IsoArt.Item(item, out _);
                         var dsr = AddItemSprite(item, Iso.GridToWorld(gx, gy, level) + new Vector3(0f, Iso.BandHeight(parent.WallBand) + 0.1f, 0f), color,
                             onShelf != null ? 1f : 0.25f, Iso.WallMountOrder(parent.Position, parent.Rotation) + parent.WallBand + 1, onShelf);
@@ -585,6 +602,7 @@ namespace Thatchwick.Game
                     }
                     if (parent.IsCeiling)
                     {
+                        if (_walls != null && _walls.Mode == WallMode.Down) continue;
                         // Kiriş kancasında asılı: kancanın biraz altında.
                         var onHook = IsoArt.Item(item, out _);
                         AddItemSprite(item, _view.TileToWorld(parent.Position) + new Vector3(0f, Iso.CeilingHeight - 0.35f, 0f), color,
@@ -663,6 +681,26 @@ namespace Thatchwick.Game
         }
 
         // Hasarlı eşya koyu ve soluk, onarılmış hafif soluk, kararmış ayna gri (27-ev-dekorasyonu).
+        /// <summary>Kesit modunda alçak duvarın tepesi (dünya birimi; SpriteMaterials.LowWallHeightPx / 32).</summary>
+        private const float LoweredWallTop = 0.34f;
+
+        // Duvar eşyası alçak duvarda mı (gizlenir): geniş eşyanın herhangi bir kenarı alçaksa hepsi.
+        private bool WallItemHidden(ItemInstance item)
+        {
+            if (_walls == null || !item.IsWallMounted) return false;
+            foreach (var seg in item.WallSegments()) if (_walls.IsLowered(seg.edge)) return true;
+            return false;
+        }
+
+        // Duvar eşyası kameraya bakmayan yüzde mi (ön duvarın oda içi yüzü): Yukarı modunda duvarın arkasında kalır, çizilmez.
+        // Kameraya bakan yüz kenarın A yüzüdür (WallView); eşya karosu B yüzündeyse arkaya bakar.
+        private static bool WallItemFacesAway(ItemInstance item)
+        {
+            if (!item.IsWallMounted) return false;
+            foreach (var seg in item.WallSegments()) if (seg.tile == seg.edge.SideB) return true;
+            return false;
+        }
+
         // Doldurulan dekor (27 D2): boşken soluk, bayatta kahverengimsi, çürükte yeşilimsi (görsel gelene kadar).
         private Color FillTint(ItemInstance item, Color baseColor)
         {
@@ -2054,7 +2092,7 @@ namespace Thatchwick.Game
             GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
 
             DrawItemLabels(s);
-            _buildMode.OnGUI(s);
+            { var prevSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _buildMode.OnGUI(s); } finally { GUI.skin = prevSkin; } }   // 391 arayüz kiti
             _marketPanel.OnGUI(s);
             _storagePanel.OnGUI(s);
             _minePanel.OnGUI(s);

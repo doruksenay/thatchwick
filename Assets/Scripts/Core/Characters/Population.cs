@@ -136,6 +136,7 @@ namespace Thatchwick.Core.Characters
                 CanStarve = mother.CanStarve
             };
             baby.LifespanDays = mother.AgeConfig.RollLifespan(_rng);
+            LifeRules.InheritAptitudes(_rng, baby, mother, father0);
             if (Content != null && Content.Traits.Count > 0)
             {
                 baby.SetTraits(LifeRules.InheritTraits(Content, _rng, mother, father0));
