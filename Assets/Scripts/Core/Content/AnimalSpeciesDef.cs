@@ -40,5 +40,23 @@ namespace Thatchwick.Core.Content
         /// <summary>Bir adımda yola/çime bıraktığı iz (aşınma): inek ve at 3, koyun ve keçi 1, tavuk 0.</summary>
         public float Trample { get; set; }
         public int UnlockLevel { get; set; } = 1;
+
+        // ---- üreme (28. belge, 18.11.2026) ----
+        /// <summary>Gebelik ya da kuluçka (oyun günü; 1 gün ≈ yarım yıl): inek ~1,5, koyun ve keçi ~1, domuz ~0,7, tavuk kuluçkası bir gece.</summary>
+        public float GestationDays { get; set; } = 1f;
+        /// <summary>Bir doğumdaki yavru sayısı aralığı (barınakta yer kadarı doğar).</summary>
+        public int LitterMin { get; set; } = 1;
+        public int LitterMax { get; set; } = 1;
+        /// <summary>Ürünü yalnızca dişi verir (yumurta, süt); yün ve gübre ikisinden de.</summary>
+        public bool FemaleProduces { get; set; }
+        /// <summary>Çeki hayvanı: düven çeker (at, inek ve öküz).</summary>
+        public bool Draft { get; set; }
+        /// <summary>Cinsiyet adları (tavuk/horoz, inek/boğa ...); null ise dişi/erkek.</summary>
+        public string FemaleName { get; set; }
+        public string MaleName { get; set; }
+        /// <summary>Bu kuşaktan itibaren soy hayvanı.</summary>
+        public const int HeritageGeneration = 3;
+        /// <summary>Üreyebilir mi (evcil hayvan ve arı hariç).</summary>
+        public bool Breeds => !IsPet && Housing != "hive";
     }
 }

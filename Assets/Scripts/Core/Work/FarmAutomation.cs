@@ -192,6 +192,14 @@ namespace Thatchwick.Core.Work
             foreach (var well in new List<ItemInstance>(_world.Items))
                 if (!well.IsDecor && well.Def.IceCollect > 0 && TemperatureAt != null && TemperatureAt(well.Position) <= 0f)
                     Made("item.ice", Storage != null ? Storage.AddUpTo("item.ice", well.Def.IceCollect) : AddAll("item.ice", well.Def.IceCollect));
+            // Düven: çeki hayvanı (at, inek, öküz) her sabah bir düven çeker; envanterdeki demetler dövülür, saman çıkar.
+            int draft = DraftAnimals?.Invoke() ?? 0;
+            foreach (var sledge in new List<ItemInstance>(_world.Items))
+            {
+                if (sledge.IsDecor || sledge.Def.ThreshPerDay <= 0 || draft <= 0) continue;
+                draft--;
+                foreach (var kv in Thresh(sledge.Def.ThreshPerDay)) Made(kv.Key, kv.Value);
+            }
             var wheels = TurningWheels();
             foreach (var machine in new List<ItemInstance>(_world.Items))
             {
@@ -216,6 +224,42 @@ namespace Thatchwick.Core.Work
         }
 
         private int AddAll(string id, int count) { _house.AddItem(id, count); return count; }
+
+        /// <summary>Çalışabilir çeki hayvanı sayısı (her biri günde bir düven çeker); null ise düven çalışmaz.</summary>
+        public Func<int> DraftAnimals { get; set; }
+        /// <summary>Düvenin bir demetten çıkardığı saman (elle harmanda iki demetten bir).</summary>
+        public const int SledgeStrawPerSheaf = 1;
+
+        /// <summary>Envanterdeki demetlerden en çok max tanesini döver: her demet 1 tane + 1 saman.</summary>
+        public List<KeyValuePair<string, int>> Thresh(int max)
+        {
+            var got = new Dictionary<string, int>();
+            var order = new List<string>();
+            if (Content == null) return new List<KeyValuePair<string, int>>();
+            var inv = _house.InventoryList();
+            inv.Sort((a, b) => string.CompareOrdinal(a.Key, b.Key));
+            int left = max;
+            foreach (var kv in inv)
+            {
+                if (left <= 0) break;
+                if (!Content.Items.TryGet(kv.Key, out var def) || def.ThreshesTo == null) continue;
+                int n = Math.Min(left, _house.Count(kv.Key));
+                for (int i = 0; i < n; i++)
+                {
+                    if (Storage != null && Storage.Free < 1) { left = 0; break; }       // demet 1 yer, ürün 2: yer gerekir
+                    _house.TryTakeItem(kv.Key);
+                    int g = Storage != null ? Storage.AddUpTo(def.ThreshesTo, 1) : AddAll(def.ThreshesTo, 1);
+                    int st = Storage != null ? Storage.AddUpTo("item.straw", SledgeStrawPerSheaf) : AddAll("item.straw", SledgeStrawPerSheaf);
+                    if (!got.ContainsKey(def.ThreshesTo)) { got[def.ThreshesTo] = 0; order.Add(def.ThreshesTo); }
+                    if (!got.ContainsKey("item.straw")) { got["item.straw"] = 0; order.Add("item.straw"); }
+                    got[def.ThreshesTo] += g; got["item.straw"] += st;
+                    left--;
+                }
+            }
+            var list = new List<KeyValuePair<string, int>>();
+            foreach (var id in order) if (got[id] > 0) list.Add(new KeyValuePair<string, int>(id, got[id]));
+            return list;
+        }
 
         private static bool Within(ItemInstance machine, GridPos p, int r)
         {
@@ -419,6 +463,15 @@ namespace Thatchwick.Core.Work
                 if (stone > 0 && House != null && House.Count("item.stone") < stone) return $"Taş yetmiyor ({House.Count("item.stone")}/{stone}).";
                 return null;
             }
+            if (action == TileAction.Sow)
+            {
+                if (!map.InBounds(tile) || tile.Z != 0) return "Yalnızca zemin katta ekilir.";
+                if (!map.IsOwned(tile)) return "Arsa senin değil.";
+                if (map.GetFloor(tile) != FloorType.Dirt) return "Yalnızca çapalanmış toprağa ekilir.";
+                if (_world.GetItemAt(tile) != null) return "Üstünde bir şey var.";
+                if (Build == null) return "Ekilemez.";
+                return PickSeed(tile) == null ? "Bu mevsim ekilecek tohum yok." : null;
+            }
             if (action != TileAction.Till) return "Bilinmeyen iş.";
             if (!map.InBounds(tile) || tile.Z != 0) return "Yalnızca zemin katta çapalanır.";
             if (!map.IsOwned(tile)) return "Arsa senin değil.";
@@ -456,8 +509,39 @@ namespace Thatchwick.Core.Work
             return null;
         }
 
+        /// <summary>Ekim (görevli tarlacı tohumu bununla eker); null ise ekmez.</summary>
+        public BuildService Build { get; set; }
+        /// <summary>Toprak geçmişi: nöbete uyan tohumu seçmek için; null ise ilk uygun tohum.</summary>
+        public PlantSystem Plants { get; set; }
+        public const double SowDays = 0.01;
+        public event Action<Character, GridPos, string> Sown;
+
+        /// <summary>
+        /// Karoya ekilecek tohum: envanterde olan ve bu mevsim büyüyebilenlerden, karonun son ekininin ailesinden olmayan
+        /// (nöbet) önce; yoksa herhangi biri. Tohum serpen tarlacı böylece toprağı yormaz.
+        /// </summary>
+        public string PickSeed(GridPos tile)
+        {
+            if (House == null || Content == null) return null;
+            string last = Plants?.LastCropAt(tile);
+            string lastFam = last != null && Content.Items.TryGet(last, out var ld) ? (ld.CropFamily ?? ld.Id) : null;
+            string fallback = null;
+            var inv = House.InventoryList();
+            inv.Sort((a, b) => string.CompareOrdinal(a.Key, b.Key));
+            foreach (var kv in inv)
+            {
+                if (kv.Value <= 0 || !Content.Items.TryGet(kv.Key, out var def)) continue;
+                if (def.PlantsAs == null || !Content.Items.TryGet(def.PlantsAs, out var crop) || !crop.IsCrop) continue;
+                if (Season != null && !PlantSystem.CanGrow(crop, Season())) continue;
+                if (lastFam == null || (crop.CropFamily ?? crop.Id) != lastFam) return kv.Key;
+                if (fallback == null) fallback = kv.Key;
+            }
+            return fallback;
+        }
+
         public double Duration(Character actor, TileAction action)
         {
+            if (action == TileAction.Sow) return SowDays;
             if (action == TileAction.Stock) return 0.02;
             if (action == TileAction.Bathe) return BatheDays;
             if (action == TileAction.CutIce) return CutIceDays;
@@ -472,6 +556,16 @@ namespace Thatchwick.Core.Work
         {
             if (CanDo(actor, tile, action, arg) != null) return;
             if (action == TileAction.Bathe) { BatheIn(actor, tile); return; }
+            if (action == TileAction.Sow)
+            {
+                var seed = PickSeed(tile);
+                if (seed != null && Build.Plant(seed, tile, out _).Ok)
+                {
+                    actor.GainSkillXp(SkillType.Farming, TillXp);
+                    Sown?.Invoke(actor, tile, seed);
+                }
+                return;
+            }
             if (action == TileAction.Fish) { FishAt(actor, tile); return; }
             if (action == TileAction.Stock)
             {

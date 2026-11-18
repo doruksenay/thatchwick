@@ -50,6 +50,10 @@ namespace Thatchwick.Core.Save
         public bool sick;                // hasta (eski kayıtta false)
         public double sickDays;          // kaç gündür hasta
         public int coldDays;             // art arda üşüdüğü gün
+        public int sex;                  // 1 dişi, 2 erkek (eski kayıtta 0: kimliğin tekliğinden)
+        public double pregnant;          // doğuma kalan gün (0 = gebe değil)
+        public int mother;               // annenin kimliği (0 = yok)
+        public int generation;           // kuşak (satın alınan 0)
     }
 
     /// <summary>Yenmiş otlak karosu (dolu karolar kaydedilmez).</summary>
@@ -137,6 +141,7 @@ namespace Thatchwick.Core.Save
         public int x, y;
         public float fertility;
         public string lastCrop;
+        public string prevCrop;     // ondan önceki ekin (üç tarla nöbeti; eski kayıtta yok)
     }
 
     [Serializable]

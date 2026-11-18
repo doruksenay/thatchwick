@@ -43,7 +43,9 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Donmuş suda buz kes.</summary>
         CutIce = 4,
         /// <summary>Gölete balık at (iş argümanı balık türü); aynı türden en az iki balık ürer.</summary>
-        Stock = 5
+        Stock = 5,
+        /// <summary>Boş toprağa tohum serp (görevli tarlacı; mevsime ve nöbete uyan tohumu seçer).</summary>
+        Sow = 6
     }
 
     /// <summary>Karo işlerinin kuralları ve etkileri (Core.Work.FarmWork uygular).</summary>

@@ -55,6 +55,20 @@ namespace Thatchwick.Core.Animals
         // Oda ve otlak içinde yürüyüş yolu (hedefe kadar karolar).
         internal List<GridPos> Path;
 
+        /// <summary>Dişi mi (erkek değilse). Satın alırken sürü dengesine göre, doğumda yarı yarıya seçilir; eski kayıtta tek kimlik dişi.</summary>
+        public bool IsFemale { get; internal set; } = true;
+        public string SexText => IsFemale ? Species.FemaleName ?? "dişi" : Species.MaleName ?? "erkek";
+        /// <summary>Gebe ise doğuma kalan gün (gün başlarında azalır); 0 = gebe değil.</summary>
+        public double PregnantDays { get; internal set; }
+        public bool IsPregnant => PregnantDays > 0;
+        /// <summary>Annenin kimliği (satın alınan ya da eski kayıttaki hayvanda 0).</summary>
+        public int MotherId { get; internal set; }
+        /// <summary>Kaçıncı kuşak: satın alınan 0, yavrusu 1, torunu 2 ... Soy hayvanı (3+) biraz daha verimlidir.</summary>
+        public int Generation { get; internal set; }
+        public bool IsHeritage => Generation >= Content.AnimalSpeciesDef.HeritageGeneration;
+        /// <summary>Ürün kalitesi (0 sıradan, 1 seçme, 2 birinci sınıf): dostluk ve konfordan; soy hayvanında bir basamak kolay.</summary>
+        public int QualityTier => Animals.AnimalSystem.QualityTierOf(Friendship, Comfort, IsHeritage);
+
         /// <summary>Takılı eyer (eşya kimliği); yoksa null.</summary>
         public string Saddle { get; internal set; }
         /// <summary>Üstündeki binicinin karakter kimliği (0 = binilmiyor).</summary>

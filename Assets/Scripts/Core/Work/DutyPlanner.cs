@@ -65,6 +65,7 @@ namespace Thatchwick.Core.Work
             int n = 0;
             if (duty == DutyKind.Farm)
                 foreach (var it in _world.Items) { if (FarmInteraction(it) != null || EmptyInteraction(it) != null) n++; }
+            // (Ekilecek boş toprak "bekleyen iş" sayılmaz: tohum varsa görevli kendiliğinden eker.)
             else if (duty == DutyKind.Animals)
             {
                 foreach (var it in _world.Items) if (FeedInteraction(it) != null || CollectInteraction(it) != null) n++;
@@ -110,6 +111,32 @@ namespace Thatchwick.Core.Work
                     if (i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;
                     var item = it; var inter = i;
                     Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
+                }
+                // Harman: harman yerinde dövülecek demet varsa (elle döven).
+                foreach (var it in _world.Items)
+                {
+                    if (it.IsDecor || !it.Def.HasTag("threshing_floor") || _effects == null) continue;
+                    foreach (var i in it.Def.Interactions)
+                    {
+                        if (_effects.CanStart(c, it, i) != null) continue;
+                        var item = it; var inter = i;
+                        Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
+                        break;
+                    }
+                }
+                // Tohum serpen tarlacı: hasat ve sulama yoksa boş toprağa mevsime ve nöbete uyan tohumu eker.
+                if (best == null && TileWork != null)
+                {
+                    var map = _world.Map;
+                    for (int y = 0; y < map.Height; y++)
+                        for (int x = 0; x < map.Width; x++)
+                        {
+                            var tile = new GridPos(x, y);
+                            if (map.GetFloor(tile) != FloorType.Dirt || _world.GetItemAt(tile) != null) continue;
+                            if (TileWork.CanDo(c, tile, TileAction.Sow) != null) continue;
+                            var t = tile;
+                            Consider(RoadKey(t) + (1L << 41), t, () => Job.OnTile(t, TileAction.Sow));
+                        }
                 }
                 // Tarla işi yoksa yıpranmış yolları onarır (taş varsa).
                 if (best == null && TileWork != null && _world.Map.HasRoads)

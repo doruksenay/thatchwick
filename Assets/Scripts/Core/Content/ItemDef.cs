@@ -157,6 +157,12 @@ namespace Thatchwick.Core.Content
         public bool IsFruitTree => FruitSeasons.Count > 0 && FruitRipenDays > 0f;
         /// <summary>Baklagil: hasatta toprağı zenginleştirir (azot bağlar).</summary>
         public bool FixesNitrogen { get; set; }
+        /// <summary>Ekin ailesi (tahıl, baklagil, kök, lahanagil, soğangil, kabakgil, lif): nöbetleşe ekim aileye bakar.</summary>
+        public string CropFamily { get; set; }
+        /// <summary>Ekin demeti: harmanda dövülünce bu taneye (ve samana) döner; boş = demet değil.</summary>
+        public string ThreshesTo { get; set; }
+        /// <summary>Düven: çeki hayvanı varken her sabah envanterdeki demetlerden bu kadarını döver. 0 = düven değil.</summary>
+        public int ThreshPerDay { get; set; }
         /// <summary>Sulama hendeği, kova ve oluk: her sabah bu yarıçaptaki (Chebyshev) ekinleri sular. 0 = sulamaz.</summary>
         public int WaterRadius { get; set; }
         /// <summary>Arı kovanı: yaşayan koloni varken bu yarıçaptaki ekinler ve meyve ağaçları daha çabuk olgunlaşır. 0 = tozlaştırmaz.</summary>

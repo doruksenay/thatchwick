@@ -32,6 +32,20 @@ namespace Thatchwick.Core.Animals
         /// <summary>Bu dostlukta üründe ekstra bir adet şansı.</summary>
         public const float BondedFriendship = 70f;
         public const double BondedExtraChance = 0.25;
+        /// <summary>Soy hayvanının (3. kuşak ve sonrası) ürün hızı çarpanı.</summary>
+        public const double HeritageOutput = 1.05;
+
+        /// <summary>Hayvan ürün kalitesi puanı = dostluk x 0,6 + konfor x 0,4 (soy hayvanına +10). Seçme 55, birinci sınıf 80.</summary>
+        public const float QualityFineScore = 55f, QualityFinestScore = 80f, HeritageQualityBonus = 10f;
+
+        public static int QualityTierOf(float friendship, float comfort, bool heritage)
+        {
+            float score = friendship * 0.6f + comfort * 0.4f + (heritage ? HeritageQualityBonus : 0f);
+            return score >= QualityFinestScore ? 2 : (score >= QualityFineScore ? 1 : 0);
+        }
+
+        public static string QualityName(int tier) => Work.PlantSystem.QualityName(tier);
+        public static float QualityYield(int tier) => Work.PlantSystem.QualityYield(tier);
 
         private readonly WorldState _world;
         private readonly ContentDatabase _content;
@@ -82,7 +96,7 @@ namespace Thatchwick.Core.Animals
         }
 
         /// <summary>Hayvan satın alır: akçe ve barınakta boş yer gerekir. Barınağın yanında belirir.</summary>
-        public PlacementCheck Buy(string speciesId, Household house, out Animal animal, int accountLevel = int.MaxValue)
+        public PlacementCheck Buy(string speciesId, Household house, out Animal animal, int accountLevel = int.MaxValue, bool? female = null)
         {
             animal = null;
             if (!_content.Animals.TryGet(speciesId, out var species)) return PlacementCheck.Fail("Böyle bir hayvan yok.");
@@ -90,8 +104,25 @@ namespace Thatchwick.Core.Animals
             var home = FindHome(species);
             if (home == null) return PlacementCheck.Fail($"Önce barınak koy ({HousingName(species.Housing)}) ya da yer aç.");
             if (!house.TrySpend(species.Price)) return PlacementCheck.Fail("Akçe yetmiyor.");
-            animal = Spawn(species, home);
+            animal = Spawn(species, home, BuyAsFemale(species, female));
             return PlacementCheck.Success;
+        }
+
+        /// <summary>
+        /// Satın alınanın cinsiyeti: oyuncu seçtiyse o; seçmediyse sürüde dişi varken erkek yoksa erkek (yavru için), yoksa dişi
+        /// (süt ve yumurta dişiden). Böylece ilk iki hayvan bir çift olur, gerisi dişi.
+        /// </summary>
+        public bool BuyAsFemale(AnimalSpeciesDef species, bool? female = null)
+        {
+            if (female.HasValue) return female.Value;
+            if (!species.Breeds) return true;
+            bool anyFemale = false, anyMale = false;
+            foreach (var a in _animals)
+            {
+                if (a.IsDead || a.Species.Id != species.Id) continue;
+                if (a.IsFemale) anyFemale = true; else anyMale = true;
+            }
+            return !(anyFemale && !anyMale);
         }
 
         private string HousingName(string kind)
@@ -157,16 +188,25 @@ namespace Thatchwick.Core.Animals
             return SlaughterCandidate(homeItemId) == null ? "Kalan hayvanlar artık dost; kıyamazsın." : null;
         }
 
+        /// <summary>Düven çekebilecek hayvan: çeki türü, erişkin, sağlıklı, tok, kimsenin altında değil.</summary>
+        public int DraftAnimals()
+        {
+            int n = 0;
+            foreach (var a in _animals)
+                if (!a.IsDead && a.Species.Draft && a.IsMature && !a.IsSick && !a.IsPregnant && a.Fullness >= ProduceFullness && a.RiderId == 0) n++;
+            return n;
+        }
+
         public Animal Get(int id)
         {
             foreach (var a in _animals) if (a.Id == id) return a;
             return null;
         }
 
-        internal Animal Spawn(AnimalSpeciesDef species, ItemInstance home)
+        internal Animal Spawn(AnimalSpeciesDef species, ItemInstance home, bool female = true)
         {
             var pos = SpawnTile(home);
-            var a = new Animal(_nextId++, species, pos, home.Id);
+            var a = new Animal(_nextId++, species, pos, home.Id) { IsFemale = female };
             a.WaitDays = _rng.NextDouble() * MaxWaitDays;
             _animals.Add(a);
             return a;
@@ -188,10 +228,15 @@ namespace Thatchwick.Core.Animals
 
         /// <summary>Kayıttan yükleme.</summary>
         public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays, float friendship = 0f, double petCooldown = 0,
-            string saddle = null, float comfort = 50f, bool sick = false, double sickDays = 0, int coldDays = 0)
+            string saddle = null, float comfort = 50f, bool sick = false, double sickDays = 0, int coldDays = 0,
+            bool? female = null, double pregnantDays = 0, int motherId = 0, int generation = 0)
         {
             var a = new Animal(id, species, pos, homeId)
             {
+                IsFemale = female ?? (id % 2 == 1),          // eski kayıt: tek kimlik dişi, çift kimlik erkek
+                PregnantDays = species.Breeds && (female ?? (id % 2 == 1)) ? Math.Max(0, pregnantDays) : 0,
+                MotherId = Math.Max(0, motherId),
+                Generation = Math.Max(0, generation),
                 Friendship = Math.Max(0f, Math.Min(100f, friendship)),
                 Fullness = Math.Max(0f, Math.Min(100f, fullness)),
                 AgeDays = Math.Max(0, age),
@@ -281,11 +326,11 @@ namespace Thatchwick.Core.Animals
                 if (a.HungryDays >= StarveDeathDays) { Kill(a, AnimalDeath.Starvation); continue; }
 
                 // Ürün: tok ve erişkinken barınağa birikir.
-                if (a.Species.Produces != null && home != null && a.IsMature && a.Fullness >= ProduceFullness && !a.IsSick)
+                if (a.Species.Produces != null && home != null && a.IsMature && a.Fullness >= ProduceFullness && !a.IsSick && (a.IsFemale || !a.Species.FemaleProduces))
                 {
                     // Dostluk ve barınak konforu ürünü hızlandırır (konfor 0: x0,85, 50: x1, 100: x1,15).
                     float seasonal = SeasonNow != null ? a.Species.OutputFactor(SeasonNow()) : 1f;
-                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays * seasonal * (1.0 + FriendshipBoost * a.Friendship / 100.0) * (0.85 + 0.3 * a.Comfort / 100.0) * (a.IsCold ? ColdOutputFactor : 1.0);
+                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays * seasonal * (1.0 + FriendshipBoost * a.Friendship / 100.0) * (0.85 + 0.3 * a.Comfort / 100.0) * (a.IsCold ? ColdOutputFactor : 1.0) * (a.IsHeritage ? HeritageOutput : 1.0);
                     while (a.ProduceProgress >= 1.0)
                     {
                         a.ProduceProgress -= 1.0;
@@ -293,6 +338,9 @@ namespace Thatchwick.Core.Animals
                         if (home.StockTotal >= cap) { a.ProduceProgress = 0; break; }
                         int units = 1;
                         if (a.Friendship >= BondedFriendship && _rng.NextDouble() < BondedExtraChance) units++;
+                        // Kalite: seçme ürün %25, birinci sınıf %50 daha fazla (ekin kalitesiyle aynı çarpan).
+                        double extra = QualityYield(a.QualityTier) - 1.0;
+                        if (extra > 0 && _rng.NextDouble() < extra) units++;
                         home.AddStock(a.Species.Produces, units);
                         Produced?.Invoke(a, a.Species.Produces);
                     }

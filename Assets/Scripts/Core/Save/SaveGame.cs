@@ -184,7 +184,7 @@ namespace Thatchwick.Core.Save
             {
                 var soil = new List<SoilSave>();
                 foreach (var kv in plants.SoilPlots)
-                    soil.Add(new SoilSave { x = kv.Key.X, y = kv.Key.Y, fertility = kv.Value.Fertility, lastCrop = kv.Value.LastCrop });
+                    soil.Add(new SoilSave { x = kv.Key.X, y = kv.Key.Y, fertility = kv.Value.Fertility, lastCrop = kv.Value.LastCrop, prevCrop = kv.Value.PrevCrop });
                 soil.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
                 data.soil = soil.ToArray();
             }
@@ -248,7 +248,8 @@ namespace Thatchwick.Core.Save
                         id = a.Id, species = a.Species.Id, x = a.Position.X, y = a.Position.Y, home = a.HomeItemId,
                         fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays, friendship = a.Friendship,
                         petCooldown = a.PetCooldownDays, saddle = a.Saddle, comfort = a.Comfort,
-                        sick = a.IsSick, sickDays = a.SickDays, coldDays = a.ColdDays
+                        sick = a.IsSick, sickDays = a.SickDays, coldDays = a.ColdDays,
+                        sex = a.IsFemale ? 1 : 2, pregnant = a.PregnantDays, mother = a.MotherId, generation = a.Generation
                     });
                 }
                 data.animals = list.ToArray();
@@ -352,7 +353,7 @@ namespace Thatchwick.Core.Save
         public static void RestoreSoil(LoadedGame loaded, PlantSystem plants)
         {
             foreach (var s in loaded.Soil)
-                if (s != null) plants.SetSoil(new GridPos(s.x, s.y), s.fertility, s.lastCrop);
+                if (s != null) plants.SetSoil(new GridPos(s.x, s.y), s.fertility, s.lastCrop, s.prevCrop);
         }
 
         /// <summary>Kayıttaki hayvanları kurulan hayvan sistemine geri koyar (barınağı olmayanlar atlanır).</summary>
@@ -365,7 +366,8 @@ namespace Thatchwick.Core.Save
                 var home = loaded.World.GetItem(s.home);
                 if (home == null || home.Def.HousingKind != species.Housing) { loaded.Warnings.Add($"Hayvanın barınağı yok, atlandı: {s.species}"); continue; }
                 system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship, s.petCooldown,
-                    s.saddle, s.comfort >= 0f ? s.comfort : 50f, s.sick, s.sickDays, s.coldDays);
+                    s.saddle, s.comfort >= 0f ? s.comfort : 50f, s.sick, s.sickDays, s.coldDays,
+                    s.sex == 1 ? true : s.sex == 2 ? false : (bool?)null, s.pregnant, s.mother, s.generation);
             }
             var grass = new List<KeyValuePair<GridPos, float>>();
             foreach (var g in loaded.Pasture) if (g != null) grass.Add(new KeyValuePair<GridPos, float>(new GridPos(g.x, g.y), g.grass));

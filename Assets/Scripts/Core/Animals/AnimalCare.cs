@@ -339,53 +339,133 @@ namespace Thatchwick.Core.Animals
         /// <summary>Gün başı raporu (bildirim için).</summary>
         public sealed class DayReport
         {
-            public int Collected, FeedAdded, Births;
+            public int Collected, FeedAdded, Births, Conceived;
             /// <summary>Sağlık (Adım 42): bugün hastalanan, kendiliğinden iyileşen, hastalıktan ölen, üşüyen hayvan sayısı.</summary>
             public int Sickened, Recovered, DiedOfSickness, Cold;
         }
 
-        /// <summary>Yavrulama: günlük temel şans ve hayvancılık seviyesi başına ek (10. seviyede ~%17,5).</summary>
+        /// <summary>Gebe kalma: günlük temel şans ve hayvancılık seviyesi başına ek (10. seviyede ~%17,5).</summary>
         public const double BreedBaseChance = 0.04, BreedPerLevel = 0.015;
-        /// <summary>Yavrulamak için çiftin ortalama dostluğu en az bu olmalı.</summary>
+        /// <summary>Dişinin dostluğu en az bu olmalı (sevilmeyen hayvan yavrulamaz).</summary>
         public const float BreedFriendship = 30f;
+        /// <summary>Barınak konforu bunun altındaysa gebe kalınmaz.</summary>
+        public const float BreedComfort = 25f;
+        /// <summary>Yavru annesinin dostluğunun bu oranıyla doğar.</summary>
+        public const float InheritFriendship = 0.5f;
 
         public double BreedChance(int husbandryLevel) => BreedBaseChance + BreedPerLevel * Math.Max(0, husbandryLevel - 1);
 
-        // Aynı odada (ya da aynı dış barınakta) en az iki tok, erişkin, dost hayvanı olan tür, odada boş yer varsa günde
-        // bir yavru verebilir. Evcil hayvan ve arı yavrulamaz.
-        private int Breed()
+        /// <summary>Bir dişi gebe kaldı (anne, babanın kimliği).</summary>
+        public event Action<Animal, int> Conceived;
+        /// <summary>Doğum zamanı geldi ama barınakta yer yok (anne): yer açılana dek bekler.</summary>
+        public event Action<Animal> BirthDelayed;
+
+        /// <summary>Bu dişi neden gebe kalamaz (arayüz için); null = kalabilir.</summary>
+        public string BreedBlocker(Animal a)
         {
+            if (a == null || a.IsDead) return "Hayvan bulunamadı.";
+            if (!a.Species.Breeds) return "Bu hayvan yavrulamaz.";
+            if (!a.IsFemale) return null;
+            if (a.IsPregnant) return $"Gebe; doğuma {Math.Ceiling(a.PregnantDays):0} gün.";
+            if (!a.IsMature) return "Daha genç.";
+            if (a.IsSick) return "Hasta.";
+            if (a.Fullness < 60f) return "Aç.";
+            if (a.Friendship < BreedFriendship) return "Sana henüz ısınmadı (sev, tımar et).";
+            if (a.Comfort < BreedComfort) return "Barınağı rahat değil.";
+            var home = _world.GetItem(a.HomeItemId);
+            if (home == null) return "Barınağı yok.";
+            if (FindMate(a) == null) return $"Yanında erişkin {a.Species.MaleName ?? "erkek"} yok.";
+            return FreeHomeNear(a.Species, home) == null ? "Barınakta yavruya yer yok." : null;
+        }
+
+        // Aynı odadaki (dış barınakta aynı barınaktaki) sağlıklı erişkin erkek.
+        private Animal FindMate(Animal female)
+        {
+            var home = _world.GetItem(female.HomeItemId);
+            if (home == null) return null;
+            var room = RoomOf(home);
+            foreach (var m in _animals)
+            {
+                if (m.IsDead || m.IsFemale || m.IsSick || !m.IsMature || m.Species.Id != female.Species.Id) continue;
+                var mh = _world.GetItem(m.HomeItemId);
+                if (mh == null) continue;
+                if (room != null ? RoomOf(mh) == room : mh.Id == home.Id) return m;
+            }
+            return null;
+        }
+
+        // Gün başı: gebelerin günü azalır, zamanı gelen doğurur; sonra her sürüde (tür + oda) bir dişi gebe kalabilir.
+        // Gebe kalmak için: erişkin erkek, tok ve sağlıklı dişi, dostluk ve konfor eşiği, barınakta yavruya yer.
+        private int Breed(DayReport report = null)
+        {
+            int births = 0;
+            foreach (var mother in new List<Animal>(_animals))
+            {
+                if (mother.IsDead || !mother.IsPregnant) continue;
+                mother.PregnantDays = Math.Max(0, mother.PregnantDays - 1.0);
+                if (mother.PregnantDays > 1e-9) continue;
+                births += GiveBirth(mother);
+            }
+
             double chance = BreedChance(Math.Max(1, HusbandryLevel?.Invoke() ?? 1));
             var groups = new Dictionary<string, List<Animal>>();
-            var groupHome = new Dictionary<string, ItemInstance>();
             foreach (var a in _animals)
             {
-                if (a.IsDead || a.IsSick || !a.IsMature || a.Fullness < 60f || a.Species.IsPet || a.Species.Housing == "hive") continue;
+                if (a.IsDead || !a.IsFemale || !a.Species.Breeds || a.IsPregnant || a.IsSick || !a.IsMature || a.Fullness < 60f) continue;
+                if (a.Friendship < BreedFriendship || a.Comfort < BreedComfort) continue;
                 var home = _world.GetItem(a.HomeItemId);
                 if (home == null) continue;
                 var room = RoomOf(home);
                 string key = a.Species.Id + "|" + (room != null ? "r" + room.Tiles[0] : "h" + home.Id);
-                if (!groups.TryGetValue(key, out var list)) { list = new List<Animal>(); groups[key] = list; groupHome[key] = home; }
+                if (!groups.TryGetValue(key, out var list)) { list = new List<Animal>(); groups[key] = list; }
                 list.Add(a);
             }
-            int births = 0;
             var keys = new List<string>(groups.Keys);
             keys.Sort(StringComparer.Ordinal);
             foreach (var key in keys)
             {
                 var list = groups[key];
-                if (list.Count < 2) continue;
-                float avg = 0f;
-                foreach (var a in list) avg += a.Friendship;
-                if (avg / list.Count < BreedFriendship) continue;
+                list.Sort((x, y) => y.Friendship != x.Friendship ? y.Friendship.CompareTo(x.Friendship) : x.Id.CompareTo(y.Id));
+                var female = list[0];                                     // en dost dişi
+                var father = FindMate(female);
+                if (father == null) continue;
+                if (FreeHomeNear(female.Species, _world.GetItem(female.HomeItemId)) == null) continue;
                 if (_rng.NextDouble() >= chance) continue;
-                var nest = FreeHomeNear(list[0].Species, groupHome[key]);
-                if (nest == null) continue;
-                var baby = Spawn(list[0].Species, nest);
-                births++;
-                Born?.Invoke(list[0], baby);
+                female.PregnantDays = Math.Max(1.0, Math.Ceiling(female.Species.GestationDays));
+                _fathers[female.Id] = father.Id;
+                if (report != null) report.Conceived++;
+                Conceived?.Invoke(female, father.Id);
             }
             return births;
+        }
+
+        // Babanın kimliği (kuşak hesabı için; kayda girmez, yoksa annenin kuşağı sayılır).
+        private readonly Dictionary<int, int> _fathers = new Dictionary<int, int>();
+
+        // Doğum: yavru sayısı türün aralığından, barınakta yer kadar. Yer yoksa doğum bekler (gün sonra yeniden).
+        private int GiveBirth(Animal mother)
+        {
+            var home = _world.GetItem(mother.HomeItemId);
+            var nest = home != null ? FreeHomeNear(mother.Species, home) : null;
+            if (nest == null) { mother.PregnantDays = 0.0001; BirthDelayed?.Invoke(mother); return 0; }
+            mother.PregnantDays = 0;
+            int litter = mother.Species.LitterMin + _rng.Next(mother.Species.LitterMax - mother.Species.LitterMin + 1);
+            int gen = mother.Generation;
+            if (_fathers.TryGetValue(mother.Id, out var fid)) { var f = Get(fid); if (f != null) gen = Math.Max(gen, f.Generation); _fathers.Remove(mother.Id); }
+            int born = 0;
+            for (int i = 0; i < litter; i++)
+            {
+                nest = FreeHomeNear(mother.Species, home);
+                if (nest == null) break;
+                var baby = Spawn(mother.Species, nest, _rng.NextDouble() < 0.5);
+                baby.MotherId = mother.Id;
+                baby.Generation = gen + 1;
+                baby.Friendship = mother.Friendship * InheritFriendship;
+                baby.Fullness = 100f;
+                born++;
+                Born?.Invoke(mother, baby);
+            }
+            return born;
         }
 
         // Annenin barınağıyla aynı odadaki (dış barınakta kendisi) boş yeri olan barınak.
@@ -422,7 +502,7 @@ namespace Thatchwick.Core.Animals
                 a.Comfort = ComfortOf(_world.GetItem(a.HomeItemId)).Total;
             }
             UpdateHealth(season, report);
-            report.Births = Breed();
+            report.Births = Breed(report);
             if (house == null) return report;
 
             foreach (var helper in new List<ItemInstance>(_world.Items))
