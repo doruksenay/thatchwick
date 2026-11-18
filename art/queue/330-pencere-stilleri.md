@@ -1,7 +1,8 @@
 ---
 id: "330"
 title: Pencere stilleri: mazgal, kafesli, geniş, kurşun çerçeveli, bodrum (iki eksen)
-status: pending
+status: running
+claimed_at: 2026-11-18T11:38Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: yapi
