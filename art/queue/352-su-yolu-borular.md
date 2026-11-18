@@ -2,7 +2,7 @@
 id: "352"
 title: Su yolu karoları: kütük boru, künk, kurşun boru (yapı modu görünümü)
 status: running
-claimed_at: 2026-11-18T12:15Z
+claimed_at: 2026-11-18T18:22Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
 family: zemin
