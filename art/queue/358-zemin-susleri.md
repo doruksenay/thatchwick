@@ -1,7 +1,7 @@
 ---
 id: "358"
 title: Zemin süsleri (çiçek, yonca, çakıl, ot öbeği, eğrelti, yaprak, köstebek tepeciği)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:02Z
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: bitki
@@ -50,6 +50,9 @@ Görsel analiz (Project `26-gorsel-analiz.md`, P1 madde 8): çimenin üç varyan
 ## Notlar
 - Dönem: hepsi Eski Dünya türü (papatya, düğün çiçeği, yonca, eğrelti otu).
 - Kod tarafı (serpme yoğunluğu, mevsim süzgeci) bu iş review'a geçince yazılır.
+
+## Sorular
+- `get_balance` plan: Tier 2 (4999/5000), `art/budget.md` Tier 1 diyor. Kural gereği durdum (0 gen). Kullanıcı budget.md'yi Tier 2'ye güncelleyip işi `pending` yapabilir.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
