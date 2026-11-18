@@ -457,14 +457,39 @@ namespace Thatchwick.Game
             return Get(prefix + frame.ToString("00"), R84PivotX, R84PivotY);
         }
 
-        private static int WalkFrameCount(string prefix)
+        /// <summary>
+        /// Etkileşim döngüsü karesi (018c-e): anahtar (cook, craft_hammer, work, eat2...), yön ve 0..1 döngü evresi.
+        /// Kareler yalnızca çapraz 4 yönde (se, sw, nw, ne); düz yön en yakın çapraza düşer (e → se, n → ne,
+        /// w → nw, s → sw), o da yoksa se. Etkileşim karelerinin 9.'su kapanış değil, hepsi oynar.
+        /// Kare yoksa null: çağıran kodla iş vuruşuna düşer.
+        /// </summary>
+        public static Sprite CharacterAction(Character c, string key, int direction, float cycle)
+        {
+            string r84 = AdultR84(c);
+            if (r84 == null || !Enabled || string.IsNullOrEmpty(key)) return null;
+            int diag = direction % 2 == 1 ? direction : (direction + 7) % 8;   // e(0)→se(7), n(2)→ne(1), w(4)→nw(3), s(6)→sw(5)
+            string prefix = r84 + "_" + key + "_" + Directions[diag] + "_";
+            int n = FrameCount(prefix, closingFrame: false);
+            if (n <= 0)
+            {
+                prefix = r84 + "_" + key + "_se_";
+                n = FrameCount(prefix, closingFrame: false);
+                if (n <= 0) return null;
+            }
+            int frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;
+            return Get(prefix + frame.ToString("00"), R84PivotX, R84PivotY);
+        }
+
+        private static int WalkFrameCount(string prefix) => FrameCount(prefix, closingFrame: true);
+
+        private static int FrameCount(string prefix, bool closingFrame)
         {
             if (FrameCounts.TryGetValue(prefix, out int n)) return n;
             EnsureLoaded();
             int count = 0;
             while (count < 32 && _textures.ContainsKey(prefix + count.ToString("00"))) count++;
-            // 9 kare teslim edildiyse son kare kapanıştır (ilk karenin tekrarı): 8 karelik döngü.
-            n = count == 9 ? 8 : count;
+            // Yürüme: 9 kare teslim edildiyse son kare kapanıştır (ilk karenin tekrarı), 8 karelik döngü.
+            n = closingFrame && count == 9 ? 8 : count;
             FrameCounts[prefix] = n;
             return n;
         }

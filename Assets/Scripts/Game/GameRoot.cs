@@ -57,6 +57,33 @@ namespace Thatchwick.Game
             public float LastBeat;
             public object WorkJob;
             public string WorkIcon;
+            public Sprite ActionFrame;
+        }
+
+        /// <summary>Etkileşim karesi döngüsü: 8 kare yaklaşık 0,9 saniyede (kişiye göre evre).</summary>
+        private static float ActionCycle(int seed) => Mathf.Repeat(Time.time / 0.9f + seed * 0.17f, 1f);
+
+        /// <summary>Eylem simgesi (ActivityDescriber) → 018c-e kare anahtarları, sırayla denenir.</summary>
+        private static readonly Dictionary<string, string[]> ActionKeys = new Dictionary<string, string[]>
+        {
+            ["eat"] = new[] { "eat2", "eat" },
+            ["cook"] = new[] { "cook" },
+            ["craft"] = new[] { "craft_hammer", "craft_hand" },
+            ["chop"] = new[] { "chop" },
+            ["farm"] = new[] { "hoe", "sow" },
+            ["work"] = new[] { "work" },
+        };
+
+        private Sprite ActionFrameFor(Actor actor, string icon, int seed)
+        {
+            if (icon == null || !ActionKeys.TryGetValue(icon, out var keys)) return null;
+            float cyc = ActionCycle(seed);
+            foreach (var k in keys)
+            {
+                var f = IsoArt.CharacterAction(actor.Character, k, actor.Direction, cyc);
+                if (f != null) return f;
+            }
+            return null;
         }
 
         /// <summary>Yürürken iki piksellik adım sallantısı; bir adım yaklaşık bu kadar dünya birimi.</summary>
@@ -2468,7 +2495,21 @@ namespace Thatchwick.Game
                 }
                 string icon = actor.WorkIcon;
                 bool beats = icon == "chop" || icon == "farm" || icon == "craft" || icon == "cook" || icon == "work";
-                if (beats)
+                // Gerçek etkileşim kareleri (018c-e) varsa onlar oynar; yoksa kodla vuruş.
+                actor.ActionFrame = ActionFrameFor(actor, icon, seed);
+                if (actor.ActionFrame != null && _juice != null)
+                {
+                    float cyc = ActionCycle(seed);
+                    if (beats && cyc < actor.LastBeat)   // döngü başında işe göre parçacık
+                    {
+                        var at = pos + new Vector3(0f, 0.2f, 0f);
+                        if (icon == "chop") _juice.Emit(Juice.Kind.Chip, at, 3, sortOrder + 1);
+                        else if (icon == "farm") _juice.Emit(Juice.Kind.Soil, pos, 2, sortOrder + 1);
+                        else if (icon == "cook") _juice.Emit(Juice.Kind.Steam, pos + new Vector3(0f, 0.6f, 0f), 1, sortOrder + 1);
+                    }
+                    actor.LastBeat = cyc;
+                }
+                else if (beats)
                 {
                     float rate = icon == "chop" ? 1.3f : icon == "cook" ? 0.9f : 1.1f;
                     float beat = Juice.WorkBeat(seed, rate);
@@ -2503,7 +2544,7 @@ namespace Thatchwick.Game
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
             // Kare animasyonu (018a/018b) varsa yürürken onu oynat: tam döngü = iki adım (WalkPhase iki π).
             var walkFrame = moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
-            var real = walkFrame ?? IsoArt.Character(actor.Character, actor.Direction);
+            var real = walkFrame ?? (actor.Runner.IsUsingItem && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
