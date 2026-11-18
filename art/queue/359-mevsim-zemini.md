@@ -1,7 +1,7 @@
 ---
 id: "359"
 title: Mevsim zemini (sonbahar çimeni, karlı çimen, karlı toprak)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:02Z
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: zemin
@@ -44,6 +44,9 @@ Görsel analiz (Project `26-gorsel-analiz.md`, P1 madde 8): zemin bütün yıl y
 ## Notlar
 - Adlar `outputs` listesindeki gibi. Pivot elmas merkezi (32,16).
 - Kodda karşılığı (mevsim karosu seçimi, kar birikimi) bu iş review'a geçince yazılır.
+
+## Sorular
+- 2026-11-18: `get_balance` Tier 2 (Pixel Artisan, 4999/5000 gen, reset 2026-12-18) gösteriyor; `art/budget.md` Tier 1 (2000 gen, 2026-12-08) diyor. Plan Tier 1 olmadığı için işçi durdu, PixelLab çağrılmadı (0 gen). Kullanıcı `art/budget.md` plan bölümünü günceller ya da onaylarsa işi `pending` yapıp yeniden çalıştırın.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
