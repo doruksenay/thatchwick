@@ -1,7 +1,7 @@
 ---
 id: "106"
 title: Hayvanlar 6: köpek + kedi
-status: running
+status: failed
 claimed_at: 2026-11-18T08:11Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
