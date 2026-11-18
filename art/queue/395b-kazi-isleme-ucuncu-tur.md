@@ -1,7 +1,7 @@
 ---
 id: "395b"
 title: Üçüncü tur: ahşap çatkı, kandil, kömür yığını
-status: running
+status: failed
 claimed_at: 2026-11-18T18:41Z
 approved_by: user        # kullanıcı 18.11.2026: "bunu da yap" (iki denemede teslim edilmeyen üç parça)
 priority: 10
