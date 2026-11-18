@@ -1,7 +1,8 @@
 ---
 id: "404"
 title: "Asil ve Tüccar kademe: goblenler, sancak, düğümlü halılar, kanopili yataklar, taht, oymalı sandık (10)"
-status: pending
+status: running
+claimed_at: 2026-11-18T19:17Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 27 §5.4, §7 (18.11.2026)
 priority: 20
 family: esya
