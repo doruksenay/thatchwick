@@ -1,7 +1,7 @@
 ---
 id: "323"
 title: Katlar: merdivenler ve kat zemin parçaları (el merdiveni, 2 merdiven, 2 taş merdiven, üst kat döşemesi, bodrum zemini)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:25Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -51,3 +51,11 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 - Kat sıralama bantları `Iso.LevelSortStep` (14000) ile kodda çözülüyor; sprite pivotları değişmez.
 - Üst kat duvar parçaları yeni iş gerektirmez: mevcut duvar seti (303/306) tüm katlarda kullanılır.
 - Dosya adlarındaki `2x1` eki yönergedeki çok karolu adlandırmayı izler; ayak izi `items.json`'da width 1, height 2 olduğundan iki karoluk uzun kenar SE görünümünde yatay çizilir. İşçi pivotu elmas çiftinin merkezi olarak raporlar.
+
+## Sorular
+- Tarifteki tuvaller `tools/art/footprint_guide.py` ile uyumsuz (2026-11-18, şerit 0, PixelLab çağrılmadı, 0 gen): araç 1x1 ayak izini 64 px geniş (x 8-71) yazıyor.
+  - merdiven 56x96, `--n 1`: tuval 56 px geniş, ayak izi taşıyor;
+  - `--n 2` 96x96 ve 96x72: ayak izi x 8-103, tuval 96 px geniş, taşıyor;
+  - zemin 64x32, yükseklik 0: ayak izi y -8-23, tuval dışına çıkıyor.
+- Tahmin yürütmemek için durdu. Karar gerekli: tuvalleri genişlet (1x1 için 80, 2x1 için 112, 301'deki gibi) ve zeminleri `create_isometric_tile` ile üret (64x32 zemin için `create_map_object` kılavuzu uygun değil).
+- Tuvaller kararlaştırılınca iş `pending`e alınabilir.
