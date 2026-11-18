@@ -1,7 +1,7 @@
 ---
 id: "012"
 title: Karakter seti K2 (8 karakter, 56 px)
-status: review
+status: rejected   # dünya sprite oranı uymuyor (fazla chibi); daha uzun, gerçekçi oranlı karakter isteniyor, yeni pilot 012b
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet: boy 56, K2 başla)
 family: karakter
 style_gate: true
@@ -94,3 +94,5 @@ Listede belirsizlik (ör. tırpan ya da sepet) kullanıcının brief'inde zaten 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18 kullanıcı kararı (sohbet): dünya sprite oranı uymuyor (fazla chibi); daha uzun, gerçekçi oranlı karakter isteniyor, yeni pilot 012b -->

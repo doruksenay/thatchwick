@@ -1,7 +1,7 @@
 ---
 id: "015c"
 title: Yürüme animasyonu seti 3/3 (boy_a, girl_a)
-status: pending
+status: blocked   # 012 karakter oranı reddedildi; yürüme/animasyon 012b pilotunun kabulünü bekler, iş yeni karaktere göre yeniden yazılacak
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
@@ -71,3 +71,5 @@ Karakterler sırayla işlenir. Bir karakterin bütün yönleri bitmeden sonrakin
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18 kullanıcı kararı (sohbet): 012 karakter oranı reddedildi; yürüme/animasyon 012b pilotunun kabulünü bekler, iş yeni karaktere göre yeniden yazılacak -->

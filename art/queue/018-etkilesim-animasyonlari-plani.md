@@ -1,7 +1,7 @@
 ---
 id: "018"
 title: Etkileşim animasyonları planı (pilot + set iş dosyalarını yazar)
-status: pending
+status: blocked   # 012 karakter oranı reddedildi; yürüme/animasyon 012b pilotunun kabulünü bekler, iş yeni karaktere göre yeniden yazılacak
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
@@ -45,3 +45,5 @@ Proje belgeleri (`09` Riskler, `12` Eksikler 8) etkileşim animasyonu listesinin
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18 kullanıcı kararı (sohbet): 012 karakter oranı reddedildi; yürüme/animasyon 012b pilotunun kabulünü bekler, iş yeni karaktere göre yeniden yazılacak -->

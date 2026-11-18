@@ -1,7 +1,7 @@
 ---
 id: "314"
 title: Adlı köylüler (Orhan, Hatice, Zeynep, Murat, Kerem, Ayşe; 56 px, 8 yön)
-status: review
+status: rejected   # 012 reddedildi (chibi oran); adlı köylüler 012b kabulünden sonra yeniden yazılacak
 claimed_at: 2026-11-18T09:34Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -42,3 +42,5 @@ Karakterler (yaşa göre boy: 52 yaş `size=58`, diğerleri `size=60`):
 
 ## Notlar
 - Yön adlandırma 012 ile aynıdır. `Assets/Art/Iso/` köküne onaysız bir şey konmaz.
+
+<!-- 2026-11-18 kullanıcı kararı (sohbet): 012 reddedildi (chibi oran); adlı köylüler 012b kabulünden sonra yeniden yazılacak -->

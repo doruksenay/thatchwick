@@ -1,7 +1,7 @@
 ---
 id: "008b"
 title: Duvar pencere (iki eksen) ve alçak duvar (iki eksen), inpaint ile
-status: review
+status: accepted   # kabul; pencere kenarındaki boşluk 008c onarım işiyle kapatılacak
 claimed_at: 2026-11-18T07:39Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: yapi
@@ -104,3 +104,5 @@ Hiçbir şeyi silme, üzerine yazma. Klasör tarihi üretim günüdür.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18 kullanıcı kararı (sohbet): kabul; pencere kenarındaki boşluk 008c onarım işiyle kapatılacak -->
