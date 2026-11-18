@@ -559,7 +559,7 @@ namespace Thatchwick.Game
             c.MoodEnabled = !c.IsVillager;   // keyif, hijyen ve ruh hali hane üyelerinde
             c.Needs.SetDecayPerDay(NeedType.Hunger, c.IsVillager ? 0f : 120f);
             c.Needs.SetDecayPerDay(NeedType.Energy, c.IsVillager ? 0f : 90f);
-            runner.Autonomous = !c.IsVillager && !c.IsPlayerControlled;
+            runner.Autonomous = !c.IsVillager;   // Sims tarzı özgür irade: oyuncu karakteri de kuyruğu boşken ihtiyacını kendisi giderir; komut her zaman önce gelir
         }
 
         private void OnJoinedHousehold(Character c)
@@ -592,7 +592,7 @@ namespace Thatchwick.Game
             {
                 _player = heir;
                 _selected = heir;
-                heir.Runner.Autonomous = false;
+                heir.Runner.Autonomous = true;   // varis de özgür iradeyle yaşar
                 heir.Runner.Cancel();
             }
             _account.Record("succession", _clock.DayIndex, isWork: false);

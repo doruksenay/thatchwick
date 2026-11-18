@@ -66,3 +66,4 @@ art/.worker.lock
 # Stil kilidi palet önizlemesi (tools/art/style.py palette --png)
 art/style/palette.png
 Assets/Screenshots/
+Assets/Screenshots/
