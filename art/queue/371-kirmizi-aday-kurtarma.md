@@ -1,7 +1,8 @@
 ---
 id: "371"
 title: Reddedilen adayları doygunluk eşlemesiyle kurtarma (ağaç, düğüm, ekin, mezar, şenlik)
-status: pending
+status: running
+claimed_at: 2026-11-18T12:04Z
 priority: 10            # başlangıç haritasında görünenler önce (görsel analiz)
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
 family: bitki
