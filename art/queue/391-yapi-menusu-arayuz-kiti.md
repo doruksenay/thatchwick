@@ -1,7 +1,8 @@
 ---
 id: "391"
 title: Yapı menüsü arayüz kiti (9-slice panel, düğme, sekme, hücre, rozet)
-status: pending
+status: running
+claimed_at: 2026-11-18T13:57Z
 approved_by: user
 priority: 15
 family: arayuz
