@@ -1,7 +1,7 @@
 ---
 id: "341"
 title: Ambar, buzluk, buzhane
-status: running
+status: review
 claimed_at: 2026-11-18T12:07Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -37,3 +37,5 @@ status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz
 ## Sorular
 - 2026-11-18 (bulut işçisi): `get_balance` plan olarak "Tier 2: Pixel Artisan", 4999/5000 generation (yenilenme 2026-12-18) döndürdü; `art/budget.md` Tier 1 / 2000 diyor. İşçi kuralı gereği plan Tier 1 değilse durur. Üretim yapılmadı (0 gen). Kullanıcı `art/budget.md` planını güncelleyince işi `pending` yapın.
 - 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.
+
+- 2026-11-18 (bulut işçisi): ambar ve buzluk teslim (buzluk palet UYARI, ambar ayak izini ~%60 dolduruyor). Buzhane çimen zemin pişirdiği ve stil denetiminde KALDI olduğu için teslim edilmedi (`art/results/341-red/`); tek deneme hakkı bitti, yeniden üretim için karar gerek. Rapor: `art/results/341-ambar-buzluk.md`.
