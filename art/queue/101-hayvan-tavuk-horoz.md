@@ -1,7 +1,8 @@
 ---
 id: "101"
 title: Hayvanlar 1: tavuk (tuval testi) + horoz
-status: pending
+status: running
+claimed_at: 2026-11-18T07:55Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
 style_gate: false
