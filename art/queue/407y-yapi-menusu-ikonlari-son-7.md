@@ -1,5 +1,5 @@
----
-id: "407"
+﻿---
+id: "407y"
 title: Yapı menüsü ikonları, son 7 (zayıf 5 + eksik 2)
 status: pending
 approved_by: user
@@ -21,12 +21,12 @@ outputs:
   - Assets/Art/Iso/_aday/ui_icon_tool_conduit_clay.png
 created: 2026-11-18
 ---
-# 407 Yapı menüsü ikonları, son 7
+# 407y Yapı menüsü ikonları, son 7
 
 ## Amaç
 399a raporunda zayıf okunan 5 ikon (undo, erase_edge, move_room, filter, eyedropper) ve 399b'de iki denemede de üretilemeyen 2 ikon (tool_gate, tool_conduit_clay). Kullanıcı kararı (2026-11-18, sohbet): "yap bunları".
 
-**Üzerine yazma izni:** zayıf 5 ikonun mevcut dosyaları bu iş için ezilebilir (kullanıcı kararı). Eskileri `art/results/407-eski/` altına taşı. Ayrıca `Assets/Resources/UI/Icons/` altındaki aynı adlı kopyaları da yeni dosyayla değiştir (oyun oradan yükler; adlar aynı).
+**Üzerine yazma izni:** zayıf 5 ikonun mevcut dosyaları bu iş için ezilebilir (kullanıcı kararı). Eskileri `art/results/407y-eski/` altına taşı. Ayrıca `Assets/Resources/UI/Icons/` altındaki aynı adlı kopyaları da yeni dosyayla değiştir (oyun oradan yükler; adlar aynı).
 
 ## Tarif
 399a/399b yöntemi: `create_map_object` 32x32, saydam, `view: side`, `single color outline`, `basic shading`, `medium detail`; okunmazsa ikinci deneme `create_image_pixflux` 32x32 `no_background=true`. Teslim öncesi 16 renge indir (yarı saydam 0). Ortak ek: `, single game icon, one object centered, no frame, no background, no text`. Palet: `earthy medieval palette: wood browns, linen cream, burgundy, wheat gold, iron grey`.
@@ -44,7 +44,7 @@ created: 2026-11-18
 ## Doğrulama
 - 32x32, yarı saydam 0, ≤16 renk.
 - Göz kontrolü x3 koyu ve keten zeminde; okunmayan teslim edilmez.
-- `art/results/407-yanyana.png`: yeni 7 + 399a/b'den 10 komşu ikon.
+- `art/results/407y-yanyana.png`: yeni 7 + 399a/b'den 10 komşu ikon.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
