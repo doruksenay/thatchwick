@@ -1,7 +1,7 @@
 ---
 id: "312"
 title: Saklama eşyaları (tuzlama fıçısı, kök mahzeni)
-status: running
+status: review
 claimed_at: 2026-11-18T09:30Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
