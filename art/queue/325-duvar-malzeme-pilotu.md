@@ -1,8 +1,7 @@
 ---
 id: "325"
 title: Duvar malzemesi pilotu: kalas ve taş (iki eksen)
-status: running
-claimed_at: 2026-11-18T08:42Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: yapi
@@ -40,3 +39,4 @@ Kesit (alçak) ve yarım duvar varyantları 327'de betikle kırpılır; burada �
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18: 08:42Z bulut sahiplenmesinden sonuç gelmedi; iş yeniden `pending` (kullanıcı onayıyla).

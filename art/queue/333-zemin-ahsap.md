@@ -1,7 +1,7 @@
 ---
 id: "333"
 title: Zemin stilleri: çam tahta, meşe tahta, balıksırtı parke
-status: review
+status: accepted
 claimed_at: 2026-11-18T08:42Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -35,3 +35,4 @@ created: 2026-11-17
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+status: accepted (kullanıcı, 2026-11-18)

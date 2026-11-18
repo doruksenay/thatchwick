@@ -1,7 +1,7 @@
 ---
 id: "301"
 title: Ev eşyaları grup 2 (raf, kazan, sandık, bardak, oymalı sandalye, yarma kütüğü, pazar tezgâhı; yalnızca SE)
-status: review
+status: accepted
 claimed_at: 2026-11-18T08:41Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -120,3 +120,4 @@ Hiçbir şeyi silme, üzerine yazma. Klasör tarihi üretim günüdür.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+status: accepted (kullanıcı, 2026-11-18): oymalı sandalye, sandık ve yarma kütüğü kabul. Raf (soluk, tezgâh gibi), pazar tezgâhı (açık ve turuncumsu) kabul değil; kazan ve bardak teslim edilmemişti. Bu dördü baştan: 301b.
