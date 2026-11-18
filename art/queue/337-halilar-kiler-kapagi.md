@@ -1,7 +1,7 @@
 ---
 id: "337"
 title: Halılar (6) ve kiler kapağı
-status: running
+status: review
 claimed_at: 2026-11-18T09:29Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10

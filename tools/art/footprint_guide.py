@@ -22,9 +22,10 @@ def in_diamond(px, py, cx, cy):
     return abs(px + 0.5 - cx) / (TILE_W / 2) + abs(py + 0.5 - cy) / (TILE_H / 2) <= 1.0
 
 
-def centers(n, axis, w, h, margin=8):
+def centers(n, axis, w, h, margin=8, m=1):
     step = (32, 16) if axis == "x" else (-32, 16)
-    raw = [(i * step[0], i * step[1]) for i in range(n)]
+    ostep = (-32, 16) if axis == "x" else (32, 16)
+    raw = [(i * step[0] + j * ostep[0], i * step[1] + j * ostep[1]) for i in range(n) for j in range(m)]
     left = min(cx - 32 for cx, _ in raw)
     bottom = max(cy + 16 for _, cy in raw)
     dx = margin - left
@@ -37,12 +38,13 @@ def main():
     ap.add_argument("--w", type=int, required=True)
     ap.add_argument("--h", type=int, required=True)
     ap.add_argument("--n", type=int, default=1, help="uzun eksendeki karo sayısı")
+    ap.add_argument("--m", type=int, default=1, help="ikinci eksendeki karo sayısı (2x2, 3x2 için)")
     ap.add_argument("--axis", choices=["x", "y"], default="x")
     ap.add_argument("--height", type=int, required=True, help="eşya yüksekliği (px)")
     ap.add_argument("--out", required=True, help="çıktı öneki (klasör/ad)")
     a = ap.parse_args()
 
-    cs = centers(a.n, a.axis, a.w, a.h)
+    cs = centers(a.n, a.axis, a.w, a.h, m=a.m)
     guide = Image.new("RGBA", (a.w, a.h), (0, 0, 0, 0))
     mask = Image.new("L", (a.w, a.h), 0)
     gp, mp = guide.load(), mask.load()
@@ -64,7 +66,7 @@ def main():
     guide.save(a.out + "_guide.png")
     mask.save(a.out + "_mask.png")
     info = (
-        f"canvas {a.w}x{a.h}, n={a.n}, axis={a.axis}, height={a.height}\n"
+        f"canvas {a.w}x{a.h}, n={a.n}, m={a.m}, axis={a.axis}, height={a.height}\n"
         f"footprint x {xs0}-{xs1 - 1}, y {ys0}-{ys1 - 1}\n"
         f"pivot x={pivot_x:g}, pivot y (alttan)={pivot_y_bottom:g}\n"
     )
