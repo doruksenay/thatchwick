@@ -10,7 +10,8 @@ Bir iş uygundur, eğer (art/budget.md "Otomatik akış", kullanıcı kararı 20
   - approved_by: user ya da auto (pending = açık soru, çalışmaz)
   - depends_on içindeki her iş `accepted` ya da `review` (stil pilotları dahil)
   - cost_max <= 60 (çalışma tavanı; büyük iş bölünmeli)
-  - cost_max bugünkü kalan günlük tavana (150) ve rezerve (200) sığıyor
+  - cost_max bugünkü kalan günlük tavana (150; art/budget.md "Günlük tavan istisnaları" o günü
+    değiştirebilir, `sınırsız` = tavan yok) ve rezerve (200) sığıyor
   --strict: eski kural (yalnızca accepted bağımlılık, auto için cost_max <= 25).
 
 Kullanım:
@@ -71,6 +72,22 @@ def parse_list(val):
             if x.strip().strip('"').strip("'")]
 
 
+def daily_limit(today):
+    """Bugünün günlük tavanı: art/budget.md "Günlük tavan istisnaları" listesinde varsa o değer."""
+    if not os.path.exists(BUDGET):
+        return DAILY_LIMIT
+    with open(BUDGET, encoding="utf-8") as f:
+        for line in f:
+            m = re.match(r"^\s*-\s*(\d{4}-\d{2}-\d{2})\s*:\s*(\S+)", line)
+            if not m or m.group(1) != today:
+                continue
+            val = m.group(2).lower()
+            if val.startswith("sınırsız") or val.startswith("sinirsiz") or val.startswith("unlimited"):
+                return float("inf")
+            return _num(val, DAILY_LIMIT)
+    return DAILY_LIMIT
+
+
 def read_budget(today):
     """Bugün harcanan ve defterdeki son kalan bakiye (defter; işçi get_balance ile doğrular)."""
     spent_today, last_balance = 0.0, None
@@ -109,8 +126,8 @@ def load_jobs():
     return jobs
 
 
-def evaluate(jobs, spent_today, balance, strict=False):
-    remaining_today = max(0.0, DAILY_LIMIT - spent_today)
+def evaluate(jobs, spent_today, balance, strict=False, limit=DAILY_LIMIT):
+    remaining_today = max(0.0, limit - spent_today)
     ready, waiting = [], []
     for j in jobs.values():
         why = []
@@ -157,16 +174,18 @@ def main():
 
     jobs = load_jobs()
     spent, balance = read_budget(a.today)
-    ready, waiting, remaining = evaluate(jobs, spent, balance, a.strict)
+    limit = daily_limit(a.today)
+    ready, waiting, remaining = evaluate(jobs, spent, balance, a.strict, limit)
 
     if a.json:
         print(json.dumps({
-            "today": a.today, "spent_today": spent, "remaining_today": remaining, "ledger_balance": balance,
+            "today": a.today, "daily_limit": None if limit == float("inf") else limit,
+            "spent_today": spent, "remaining_today": None if remaining == float("inf") else remaining, "ledger_balance": balance,
             "ready": [j for j, _ in ready],
             "waiting": [dict(j, why=w) for j, w in waiting],
         }, ensure_ascii=False, indent=2))
     elif not a.quiet:
-        print(f"Bugün harcanan {spent:g}, günlük kalan {remaining:g}, defter bakiyesi {balance if balance is not None else '?'}")
+        print(f"Bugün harcanan {spent:g}, günlük kalan {'sınırsız' if remaining == float('inf') else f'{remaining:g}'}, defter bakiyesi {balance if balance is not None else '?'}")
         print(f"Uygun iş: {len(ready)}")
         for j, _ in ready:
             print(f"  {j['id']:>5}  {j['cost_max']:>4g}  {j['file']}")
