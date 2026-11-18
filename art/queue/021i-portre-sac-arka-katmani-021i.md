@@ -1,7 +1,7 @@
 ---
 id: "021i"
 title: Portre saç arka katmanı: long_curly ...
-status: running
+status: review
 claimed_at: 2026-11-18T08:26Z
 approved_by: user
 family: karakter
