@@ -522,6 +522,7 @@ namespace Thatchwick.Game
             for (int x = 73; x <= 95; x++) map.SetRoad(new GridPos(x, 40), RoadType.Path);
             map.SetRoad(new GridPos(94, 41), RoadType.Path); map.SetRoad(new GridPos(95, 41), RoadType.Path);
             Thatchwick.Core.World.Regions.BuildTerrain(map);
+            Thatchwick.Core.World.Regions.Naturalize(map);
             Thatchwick.Core.World.Regions.Apply(map);
 
             // Yol bulma testinden kalan çit hattı (x=32) ve 60 rastgele engel kaldırıldı (görsel analiz, 18.11.2026):
