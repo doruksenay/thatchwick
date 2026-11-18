@@ -1,7 +1,7 @@
 ---
 id: "021a"
 title: Portre yüz tabanları: oval, round, square
-status: running
+status: review
 claimed_at: 2026-11-18T08:10Z
 approved_by: user
 family: karakter
