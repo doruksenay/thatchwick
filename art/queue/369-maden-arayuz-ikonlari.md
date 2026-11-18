@@ -1,8 +1,7 @@
 ---
 id: "369"
 title: Arayüz: kazı uyarıları ve görev ikonları
-status: running
-claimed_at: 2026-11-18T13:51Z
+status: pending   # 18.11.2026: 5+ saat running kaldı (işçi yarıda), kullanıcı isteğiyle yeniden sıraya
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 50
 family: arayuz
