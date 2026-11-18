@@ -104,6 +104,8 @@ namespace Thatchwick.Core.Family
         /// <summary>Evli köylü çiftin günlük gebelik olasılığı (komşu hanelerde soy sürer).</summary>
         public const double NeighborConceiveChance = 0.04;
         public const int NeighborMaxChildren = 3;
+        /// <summary>Komşu hanelerde yaşayan köylü sayısı bu tavana ulaşınca yeni gebelik olmaz (köy dolmasın).</summary>
+        public const int NeighborVillageCap = 32;
 
         private readonly Population _population;
         private readonly Random _rng;
@@ -259,7 +261,7 @@ namespace Thatchwick.Core.Family
         // Komşu haneye evlendirme
         // =====================================================================
 
-        private static bool ShareGrandparent(Character a, Character b, Population pop)
+        internal static bool ShareGrandparent(Character a, Character b, Population pop)
         {
             var ga = Grandparents(a, pop);
             foreach (var g in Grandparents(b, pop)) if (ga.Contains(g)) return true;
@@ -329,6 +331,10 @@ namespace Thatchwick.Core.Family
         public List<Character> NeighborFamiliesDaily()
         {
             var started = new List<Character>();
+            // Köy nüfus tavanı: komşu hanelerin yaşayan köylüsü bu sayıya ulaşınca yeni gebelik olmaz.
+            int villagers = 0;
+            foreach (var c in _population.Members) if (!c.IsDead && c.IsVillager) villagers++;
+            if (villagers >= NeighborVillageCap) return started;
             foreach (var w in _population.Members)
             {
                 if (w.IsDead || !w.IsVillager || w.Sex != Sex.Female || !w.SpouseId.HasValue || w.IsPregnant) continue;

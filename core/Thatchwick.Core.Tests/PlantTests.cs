@@ -242,7 +242,7 @@ namespace Thatchwick.Core.Tests
         {
             var c = Setup();
             var ch = new Character(1, "A", new GridPos(1, 5), true);
-            ch.SetAge(40);
+            ch.SetAge(45);
             var r = Runner(c, ch);
             var chop = c.Db.Items.Get("oak").Interactions[0];
             Assert.Equal(0.15, r.EffectiveDuration(chop), 6);

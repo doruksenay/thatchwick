@@ -188,7 +188,7 @@ namespace Thatchwick.Core.Animals
 
         /// <summary>Kayıttan yükleme.</summary>
         public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays, float friendship = 0f, double petCooldown = 0,
-            string saddle = null, float comfort = 50f)
+            string saddle = null, float comfort = 50f, bool sick = false, double sickDays = 0, int coldDays = 0)
         {
             var a = new Animal(id, species, pos, homeId)
             {
@@ -199,7 +199,11 @@ namespace Thatchwick.Core.Animals
                 HungryDays = Math.Max(0, hungryDays),
                 PetCooldownDays = Math.Max(0, Math.Min(1.0, petCooldown)),
                 Saddle = species.Rideable && saddle != null && _content.Items.Contains(saddle) ? saddle : null,
-                Comfort = Math.Max(0f, Math.Min(100f, comfort))
+                Comfort = Math.Max(0f, Math.Min(100f, comfort)),
+                IsSick = sick,
+                SickDays = sick ? Math.Max(0, sickDays) : 0,
+                ColdDays = Math.Max(0, coldDays),
+                IsCold = coldDays > 0
             };
             _animals.Add(a);
             if (id >= _nextId) _nextId = id + 1;
@@ -246,7 +250,7 @@ namespace Thatchwick.Core.Animals
                 }
 
                 // Beslenme: önce otlaktaki ot, sonra barınağın yemi, sonra aynı odadaki yemlikler.
-                double need = a.Species.FeedPerDay * gameDays;
+                double need = a.Species.FeedPerDay * gameDays * WinterFeedFactor(a);
                 double eaten = Graze(a, need);
                 if (need - eaten > 0 && home != null)
                 {
@@ -268,19 +272,20 @@ namespace Thatchwick.Core.Animals
                 // Dostluk: iyi bakılınca yavaş yavaş artar, aç bırakılınca düşer.
                 if (a.PetCooldownDays > 0) a.PetCooldownDays = Math.Max(0, a.PetCooldownDays - gameDays);
                 // Konforlu barınakta dostluk daha çabuk artar (konfor 50 = eski hız).
-                if (a.Fullness >= 60f) a.Friendship = Math.Min(100f, a.Friendship + (float)(FriendshipPerDay * gameDays * (0.5 + a.Comfort / 100.0)));
+                if (a.Fullness >= 60f && !a.IsCold) a.Friendship = Math.Min(100f, a.Friendship + (float)(FriendshipPerDay * gameDays * (0.5 + a.Comfort / 100.0)));
                 else if (a.Fullness < 20f) a.Friendship = Math.Max(0f, a.Friendship - (float)(HungerFriendLoss * gameDays));
+                if (a.IsCold) a.Friendship = Math.Max(0f, a.Friendship - (float)(ColdFriendLoss * gameDays));
 
                 if (a.Fullness <= 0f) a.HungryDays += gameDays;
                 else a.HungryDays = Math.Max(0, a.HungryDays - gameDays);
                 if (a.HungryDays >= StarveDeathDays) { Kill(a, AnimalDeath.Starvation); continue; }
 
                 // Ürün: tok ve erişkinken barınağa birikir.
-                if (a.Species.Produces != null && home != null && a.IsMature && a.Fullness >= ProduceFullness)
+                if (a.Species.Produces != null && home != null && a.IsMature && a.Fullness >= ProduceFullness && !a.IsSick)
                 {
                     // Dostluk ve barınak konforu ürünü hızlandırır (konfor 0: x0,85, 50: x1, 100: x1,15).
                     float seasonal = SeasonNow != null ? a.Species.OutputFactor(SeasonNow()) : 1f;
-                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays * seasonal * (1.0 + FriendshipBoost * a.Friendship / 100.0) * (0.85 + 0.3 * a.Comfort / 100.0);
+                    a.ProduceProgress += gameDays / a.Species.ProduceEveryDays * seasonal * (1.0 + FriendshipBoost * a.Friendship / 100.0) * (0.85 + 0.3 * a.Comfort / 100.0) * (a.IsCold ? ColdOutputFactor : 1.0);
                     while (a.ProduceProgress >= 1.0)
                     {
                         a.ProduceProgress -= 1.0;
@@ -386,15 +391,20 @@ namespace Thatchwick.Core.Animals
         /// <summary>Hayvancılık seviyesinin sevgi çarpanı: 1. seviye 1, 10. seviye 1,45.</summary>
         public static float HusbandryFactor(int level) => 1f + 0.05f * Math.Max(0, level - 1);
 
-        /// <summary>Merhem: barınaktaki hayvanlara dostluk (günlük sevme hakkını kullanmaz). Etkilenen sayı.</summary>
-        public int Befriend(int homeItemId, float amount)
+        /// <summary>Merhem: barınaktaki hayvanlara dostluk (günlük sevme hakkını kullanmaz) ve hastaları iyileştirir. Etkilenen sayı.</summary>
+        public int Befriend(int homeItemId, float amount) => Befriend(homeItemId, amount, out _);
+
+        /// <summary>Merhem: dostluk ve konfor; hasta hayvanlar iyileşir (cured: iyileşen sayısı).</summary>
+        public int Befriend(int homeItemId, float amount, out int cured)
         {
             int n = 0;
+            cured = 0;
             foreach (var a in _animals)
             {
                 if (a.IsDead || a.HomeItemId != homeItemId) continue;
                 a.Friendship = Math.Min(100f, a.Friendship + amount);
                 a.Comfort = Math.Min(100f, a.Comfort + 5f);
+                if (a.IsSick) { Cure(a); cured++; }
                 n++;
             }
             return n;

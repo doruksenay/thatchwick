@@ -4,7 +4,7 @@ using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Animals
 {
-    public enum AnimalDeath { None = 0, Starvation = 1, OldAge = 2 }
+    public enum AnimalDeath { None = 0, Starvation = 1, OldAge = 2, Sickness = 3 }
 
     /// <summary>
     /// Bir hayvan: barınağının çevresinde gezinir, barınağın yem stoğundan yer, tok ve erişkinken
@@ -61,6 +61,18 @@ namespace Thatchwick.Core.Animals
         public int RiderId { get; internal set; }
         /// <summary>Barınak konforu 0-100 (gün başında hesaplanır): ürün hızı ve dostluk artışını etkiler.</summary>
         public float Comfort { get; internal set; } = 50f;
+        /// <summary>Hasta: ürün vermez, yavrulamaz, aynı barınaktakilere bulaşabilir; merhemle iyileşir (Adım 42).</summary>
+        public bool IsSick { get; internal set; }
+        /// <summary>Kaç gündür hasta; tedavisiz AnimalSystem.SickDeathDays'e ulaşırsa ölür.</summary>
+        public double SickDays { get; internal set; }
+        /// <summary>Üşüyor: barınağı soğuk (ya da kışın açıkta). Ürünü yavaşlar, dostluğu azalır, hastalık riski artar.</summary>
+        public bool IsCold { get; internal set; }
+        /// <summary>Art arda üşüdüğü gün sayısı.</summary>
+        public int ColdDays { get; internal set; }
+
+        /// <summary>Kısa sağlık durumu (arayüz için): "Sağlıklı", "Üşüyor", "Hasta (2 gün)".</summary>
+        public string HealthText => IsSick ? $"Hasta ({System.Math.Floor(SickDays):0} gün)" : IsCold ? "Üşüyor" : "Sağlıklı";
+
         /// <summary>Binilebilir: binek türü, erişkin ve eyerli.</summary>
         public bool CanBeRidden => Species.Rideable && IsMature && Saddle != null;
 

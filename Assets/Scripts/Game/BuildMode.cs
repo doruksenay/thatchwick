@@ -16,6 +16,8 @@ namespace Thatchwick.Game
     {
         /// <summary>Miras: seçili eşyayı yadigâr yapmak (Soy Mührü). Null ise düğme yok.</summary>
         public Thatchwick.Core.Family.Legacy Legacy { get; set; }
+        /// <summary>Oda konforu dökümü (boyut, zemin, pencere); null ise gösterilmez.</summary>
+        public Thatchwick.Core.Life.MoodService Comfort { get; set; }
         /// <summary>Yadigârı yapan kişi (baş karakter) ve bugünün günü.</summary>
         public System.Func<Thatchwick.Core.Characters.Character> Maker { get; set; }
         public System.Func<double> Today { get; set; }
@@ -553,7 +555,9 @@ namespace Thatchwick.Game
             var room = _world.Map.Rooms.RoomAt(tile);
             if (room == null) return "";
             if (!room.IsIndoor) return _world.Map.IsOwned(tile) ? "Dış mekân (senin arsan)." : "Dış mekân (sahipsiz arsa).";
-            return $"Oda: {room.Area} karo, {room.DoorCount} kapı.";
+            var rc = Comfort?.ComfortOf(room);
+            string comfort = rc != null ? $" Konfor {rc.Total}: {rc.Breakdown()}." : "";
+            return $"Oda: {room.Area} karo, {room.DoorCount} kapı, {room.WindowCount} pencere.{comfort}";
         }
 
         private bool TryTapSlot(Vector3 world)
@@ -1264,7 +1268,7 @@ namespace Thatchwick.Game
             foreach (var a in new List<Animal>(_animals.Animals))
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label($"{a.Name} · tokluk {a.Fullness:0}{(a.IsMature ? "" : " · yavru")}");
+                GUILayout.Label($"{a.Name} · tokluk {a.Fullness:0}{(a.IsMature ? "" : " · yavru")} · {a.HealthText}");
                 if (GUILayout.Button($"Sat {(int)(a.Species.Price * AnimalSystem.SellRatio)}", GUILayout.Width(62f)))
                 {
                     var animal = a;

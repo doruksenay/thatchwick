@@ -50,10 +50,17 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Adlandırılmış yeri (home:1, work:smithy ...) karoya çeviren oyun katmanı işlevi; halef buna göre yerleşir.</summary>
         public Func<string, GridPos> PlaceResolver { get; set; }
+        /// <summary>
+        /// Ölen adlı köylünün dükkânını devralacak varis (komşu hane, Adım 55): varsa dışarıdan halef gelmez.
+        /// Null ise ya da null dönerse eski düzen: yeni bir halef köye yerleşir.
+        /// </summary>
+        public Func<VillagerDef, Character, Character> Inheritor { get; set; }
+        /// <summary>Dükkân varise geçti (varis, tanım).</summary>
+        public event Action<Character, VillagerDef> RoleInherited;
         /// <summary>Ölen adlı köylünün yerine halefi geldi (karakter, tanım): oyun katmanı görünüm ve sahne nesnesi verir.</summary>
         public event Action<Character, VillagerDef> SuccessorArrived;
-        /// <summary>Halef bu yaş aralığında (oyun günü) köye gelir: genç bir usta.</summary>
-        public const double SuccessorAgeMin = 24.5, SuccessorAgeMax = 34;
+        /// <summary>Halef bu yaş aralığında (oyun günü) köye gelir: genç yetişkin bir usta.</summary>
+        public const double SuccessorAgeMin = 30.5, SuccessorAgeMax = 40;   // Genç yetişkin
 
         public VillagerService(ContentDatabase content, Population population, Household house, GameClock clock, int seed = 55)
         {
@@ -117,7 +124,7 @@ namespace Thatchwick.Core.Life
         /// alet yükseltme, değirmenci ölünce o köylünün hediye ve olayları kalıcı olarak kapanmasın. Halef yeni bir kişidir:
         /// dostluk ve romantik yakınlık sıfırdan başlar; yaşanmış olaylar (ödüller) yeniden verilmez. Gelenleri döner.
         /// </summary>
-        public List<Character> ReplaceDeparted()
+        public List<Character> ReplaceDeparted(bool inheritOnly = false)
         {
             var arrived = new List<Character>();
             foreach (var def in _content.Villagers.All)
@@ -125,6 +132,18 @@ namespace Thatchwick.Core.Life
                 if (!_states.TryGetValue(def.Id, out var state)) continue;      // hiç oluşmamış: SpawnMissing'in işi
                 var old = _population.Find(state.CharacterId);
                 if (old != null && !old.IsDead) continue;                        // yaşıyor (haneye katılmış olsa da işini sürdürür)
+
+                // Önce hanesinden yetişkin bir varis (çocuğu, eşi ...) dükkânı devralır.
+                var heir = Inheritor != null ? Inheritor(def, old) : null;
+                if (heir != null && !heir.IsDead && heir.IsVillager)
+                {
+                    state.CharacterId = heir.Id;
+                    state.Romance = 0;
+                    state.LastGiftDay = -1;
+                    RoleInherited?.Invoke(heir, def);
+                    continue;
+                }
+                if (inheritOnly) continue;
 
                 string name = _population.NameGenerator != null ? _population.NameGenerator(def.Sex) : null;
                 if (string.IsNullOrWhiteSpace(name) || (old != null && name == old.Name)) name = def.Name;

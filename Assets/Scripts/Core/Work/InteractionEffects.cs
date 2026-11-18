@@ -75,7 +75,7 @@ namespace Thatchwick.Core.Work
             }
             if (interaction.RequiresAnimal && (Animals == null || Animals.Residents(item.Id) == 0)) return "Burada hayvan yok.";
             if (interaction.Collect && item.StockTotal == 0) return "Toplanacak ürün yok.";
-            if (interaction.Teach && Pupils(character).Count == 0) return "Ders verilecek çocuk ya da genç yok.";
+            if (interaction.Teach && Pupils(character).Count == 0) return "Ders verilecek çocuk ya da ergen yok.";
             if (interaction.EmptyFill && item.Fill <= 0) return "Boşaltılacak bir şey yok.";
             if (interaction.EmptyFill && item.Def.FillProduct != null && Storage != null && !Storage.HasRoomFor(item.Def.FillProduct))
                 return "Depoda gübreye yer yok: gübreyi sat, tarlaya ser ya da depoyu büyüt.";
@@ -121,8 +121,9 @@ namespace Thatchwick.Core.Work
             int husbandry = character.Skills.GetLevel(SkillType.AnimalHusbandry);
             if (interaction.BefriendAnimals > 0f && Animals != null)
             {
-                int n = Animals.Befriend(item.Id, interaction.BefriendAnimals * AnimalSystem.HusbandryFactor(husbandry));
+                int n = Animals.Befriend(item.Id, interaction.BefriendAnimals * AnimalSystem.HusbandryFactor(husbandry), out int cured);
                 if (n > 0) farmNotes.Add($"{n} hayvan merhemlendi");
+                if (cured > 0) farmNotes.Add($"{cured} hasta hayvan iyileşti");
             }
             if (interaction.PetsAnimals && Animals != null)
             {
@@ -262,7 +263,7 @@ namespace Thatchwick.Core.Work
             var list = new List<Character>();
             if (Household == null) return list;
             foreach (var c in Household())
-                if (c != teacher && !c.IsDead && !c.IsVillager && (c.Stage == AgeStage.Child || c.Stage == AgeStage.Youth)) list.Add(c);
+                if (c != teacher && !c.IsDead && !c.IsVillager && (c.Stage == AgeStage.Child || c.Stage == AgeStage.Teen)) list.Add(c);
             return list;
         }
 

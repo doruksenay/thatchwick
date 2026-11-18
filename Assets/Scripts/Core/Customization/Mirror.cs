@@ -9,7 +9,7 @@ namespace Thatchwick.Core.Customization
     public sealed class MirrorQuote
     {
         public int Diamonds { get; set; }
-        /// <summary>Bu değişiklik ücretsiz Ayna hakkıyla yapılıyor (Genç'e geçiş).</summary>
+        /// <summary>Bu değişiklik ücretsiz Ayna hakkıyla yapılıyor (Ergen'e geçiş).</summary>
         public bool UsesFreeMirror { get; set; }
         public List<string> Errors { get; } = new List<string>();
         public bool CanApply => Errors.Count == 0;
@@ -17,7 +17,7 @@ namespace Thatchwick.Core.Customization
 
     /// <summary>
     /// Ayna: yaratmadan sonra görünüm ve ad değişikliği (karar 17.11.2026, proje dokümanı 01 ve 14).
-    /// - Görünüm değişikliği elmasla; çocuk Genç'e geçerken bir kez ücretsiz (isim hariç).
+    /// - Görünüm değişikliği elmasla; çocuk Ergen'e geçerken bir kez ücretsiz (isim hariç).
     /// - Genetik alanlar değişmez: ten, göz rengi, yüz şekli, göz şekli, burun, kulak. Boya (saç rengi) serbesttir, geni değiştirmez.
     /// - Kazadan kalan iz silinmez; elmasla gizlenebilir (hikâyede kalır). Ücretsiz Ayna'da gizlenemez.
     /// - Beden yapısı yaşamla değişir, Ayna'da seçilmez.

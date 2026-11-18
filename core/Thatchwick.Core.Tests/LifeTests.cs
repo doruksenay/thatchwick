@@ -331,6 +331,7 @@ namespace Thatchwick.Core.Tests
                 world.Map.SetEdge(new Edge(1, 1 + i, EdgeAxis.Vertical), EdgeKind.Wall);
                 world.Map.SetEdge(new Edge(5, 1 + i, EdgeAxis.Vertical), EdgeKind.Wall);
             }
+            world.Map.SetEdge(new Edge(2, 1, EdgeAxis.Horizontal), EdgeKind.Window);   // pencereli oda (32: penceresiz oda eksi)
             world.PlaceItem(Rug("r1", 10, "koylu"), new GridPos(2, 2));
             world.PlaceItem(Rug("r2", 8, "koylu"), new GridPos(3, 2));
             world.PlaceItem(Rug("r3", 6, "koylu"), new GridPos(2, 3));

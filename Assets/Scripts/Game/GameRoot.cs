@@ -258,7 +258,7 @@ namespace Thatchwick.Game
                 else _account.Count("act:" + i.Id);
             };
             _plants = new PlantSystem(_world, Thatchwick.Core.Seeds.Derive(_seed, 7, _rngEpoch));
-            _animals = new AnimalSystem(_world, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 3, _rngEpoch)) { SeasonNow = () => _clock.Season };
+            _animals = new AnimalSystem(_world, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 3, _rngEpoch)) { SeasonNow = () => _clock.Season, HealthSeed = Thatchwick.Core.Seeds.Derive(_seed, 31, _rngEpoch) };
             if (loaded != null)
             {
                 SaveGame.RestoreAnimals(loaded, _animals, _content);
@@ -324,6 +324,7 @@ namespace Thatchwick.Game
             _buildService.PlacedItemSold += _life.Legacy.OnItemSold;
             _life.Legacy.MarriedOutHappened += OnMarriedOut;
             _buildMode.Legacy = _life.Legacy;
+            _buildMode.Comfort = _life.Mood;
             _buildMode.Maker = () => _player?.Character;
             _buildMode.Today = () => _clock.TotalDays;
             SetupFarm();
@@ -1130,7 +1131,7 @@ namespace Thatchwick.Game
             var animal = AnimalAt(tile);
             if (animal != null)
             {
-                names.Add($"{animal.Name} ({animal.Species.DisplayName}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")})");
+                names.Add($"{animal.Name} ({animal.Species.DisplayName}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")}{(animal.IsSick || animal.IsCold ? ", " + animal.HealthText.ToLowerInvariant() : "")})");
                 AddAnimalOptions(animal);
             }
             foreach (var item in items)
@@ -1248,6 +1249,8 @@ namespace Thatchwick.Game
             _effects.Season = () => _clock.Season;
             _effects.Household = () => _population.Members;
             _market.Trader = () => Commander?.Character;
+            _animals.FellSick += a => ShowMessage($"{a.Name} hastalandı: barınağına hayvan merhemi sür, sıcak ve altlıklı tut");
+            _animals.Recovered += a => ShowMessage($"{a.Name} iyileşti");
             _animals.Dismounted += (a, riderId) => ShowMessage($"{_population.Find(riderId)?.Name} attan indi ({a.Name} kapıda bekliyor)");
             _animalCare = new AnimalCare(_animals, _household);
             _animalCare.Done += (c, a, act) =>
@@ -1383,7 +1386,9 @@ namespace Thatchwick.Game
 
         private void OnAnimalDied(Animal a)
         {
-            ShowMessage(a.CauseOfDeath == AnimalDeath.Starvation ? $"{a.Name} açlıktan öldü (barınağa yem koy)" : $"{a.Name} yaşlılıktan öldü");
+            ShowMessage(a.CauseOfDeath == AnimalDeath.Starvation ? $"{a.Name} açlıktan öldü (barınağa yem koy)"
+                : a.CauseOfDeath == AnimalDeath.Sickness ? $"{a.Name} hastalıktan öldü (merhem sürülmedi)"
+                : $"{a.Name} yaşlılıktan öldü");
             foreach (var c in _population.Members) if (!c.IsVillager) c.AddMoodlet(MoodCatalog.AnimalDied);
         }
 
@@ -1603,10 +1608,10 @@ namespace Thatchwick.Game
             actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1, level);
             float scale;
             if (real != null)   // gerçek setler zaten çocuk/yetişkin boyunda çizildi; bebek çocuk setinin küçüğü
-                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : 1f;
+                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Teen ? 0.94f : 1f);   // ergen yetişkin setinin biraz küçüğü
             else
             {
-                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : 1f);
+                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : (actor.Character.Stage == AgeStage.Teen ? 0.92f : 1f));
             }
             actor.View.localScale = new Vector3(scale, scale, 1f);
         }
@@ -1643,17 +1648,7 @@ namespace Thatchwick.Game
             return parts.Length == 0 ? "" : parts.ToString();
         }
 
-        private static string StageName(AgeStage s)
-        {
-            switch (s)
-            {
-                case AgeStage.Baby: return "Bebek";
-                case AgeStage.Child: return "Çocuk";
-                case AgeStage.Youth: return "Genç";
-                case AgeStage.Adult: return "Yetişkin";
-                default: return "Yaşlı";
-            }
-        }
+        private static string StageName(AgeStage s) => AgeStages.Name(s);
 
         /// <summary>"İyi (+15): Dinlenmiş, Uyumlu ev"</summary>
         public static string MoodText(Character c, int maxNames = 3)

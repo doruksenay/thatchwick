@@ -274,14 +274,14 @@ namespace Thatchwick.Core.Tests
         // ---------- Ayna ----------
 
         [Fact]
-        public void Ayna_CocukGenceGecinceBirKezUcretsiz()
+        public void Ayna_CocukErgeneGecinceBirKezUcretsiz()
         {
             var c = new Character(1, "Edith", new GridPos(0, 0)) { Sex = Sex.Female };
-            c.SetAge(AgeConfig.Default.YouthStartDay - 0.01);
+            c.SetAge(AgeConfig.Default.TeenStartDay - 0.01);
             Assert.Equal(AgeStage.Child, c.Stage);
             Assert.False(c.FreeMirrorAvailable);
             c.Tick(0.05);
-            Assert.Equal(AgeStage.Youth, c.Stage);
+            Assert.Equal(AgeStage.Teen, c.Stage);
             Assert.True(c.FreeMirrorAvailable);
 
             var after = c.Appearance.Clone();

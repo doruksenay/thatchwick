@@ -48,7 +48,7 @@ namespace Thatchwick.Game
         public CharacterDraft Draft => _draft;
 
         private static readonly string[] SexLabels = { "Kadın", "Erkek" };
-        private static readonly string[] StageLabels = { "Genç (30 gün)", "Yetişkin (40 gün)" };
+        private static readonly string[] StageLabels = { "Genç yetişkin (32 gün)", "Yetişkin (45 gün)" };
         private static readonly string[] BuildLabels = { "İnce", "Orta", "Gürbüz", "Dolgun" };
         private static readonly string[] FrameLabels = { "Erkeksi", "Arada", "Kadınsı" };
         private static readonly string[] VoiceLabels = { "Kalın", "Sıcak", "Berrak", "İnce" };
@@ -149,7 +149,7 @@ namespace Thatchwick.Game
             GUI.DrawTexture(r, _preview.texture, ScaleMode.StretchToFill, true);
 
             GUILayout.Space(4f);
-            GUILayout.Label($"{_draft.Name} · {(_draft.Sex == Sex.Female ? "Kadın" : "Erkek")} · {(_draft.StartStage == AgeStage.Youth ? "Genç" : "Yetişkin")}", _smallStyle);
+            GUILayout.Label($"{_draft.Name} · {(_draft.Sex == Sex.Female ? "Kadın" : "Erkek")} · {AgeStages.Name(_draft.StartStage)}", _smallStyle);
             GUILayout.Label(_draft.EffectiveDynastyName, _smallStyle);
 
             GUILayout.BeginHorizontal();
@@ -235,9 +235,9 @@ namespace Thatchwick.Game
             if (newSex != sexIndex) _draft.SetSex(newSex == 0 ? Sex.Female : Sex.Male, _catalog);
             GUILayout.Label("   Bütün saç, sakal ve kıyafetler herkese açık. Hamilelik yalnızca kadında.", _smallStyle);
 
-            int stageIndex = _draft.StartStage == AgeStage.Youth ? 0 : 1;
+            int stageIndex = _draft.StartStage == AgeStage.YoungAdult ? 0 : 1;
             int newStage = Row("Başlangıç", () => GUILayout.Toolbar(stageIndex, StageLabels));
-            _draft.StartStage = newStage == 0 ? AgeStage.Youth : AgeStage.Adult;
+            _draft.StartStage = newStage == 0 ? AgeStage.YoungAdult : AgeStage.Adult;
 
             _draft.BirthSeason = Row("Doğum mevsimi", () => GUILayout.Toolbar(Mathf.Clamp(_draft.BirthSeason, 0, 3), Likes.SeasonNames));
             GUILayout.BeginHorizontal();

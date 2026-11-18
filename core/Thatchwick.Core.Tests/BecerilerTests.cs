@@ -28,7 +28,7 @@ namespace Thatchwick.Core.Tests
         private static Character Person(int level = 1, SkillType skill = SkillType.Farming, int id = 1, GridPos? at = null)
         {
             var c = new Character(id, "Doruk", at ?? new GridPos(0, 0), true);
-            c.SetAge(40);
+            c.SetAge(45);
             if (level > 1) c.GainSkillXp(skill, SkillRules.XpForLevel(level));
             Assert.Equal(level, c.Skills.GetLevel(skill));
             return c;
@@ -151,6 +151,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(f.A.BreedChance(10) > f.A.BreedChance(1) * 3);
             int level = 1;
             f.A.HusbandryLevel = () => level;
+            f.A.DiseaseEnabled = false;                                              // bu test yalnızca yavrulamayı ölçer
             var born = new List<Animal>();
             f.A.Born += (m, b) => born.Add(b);
             for (int d = 0; d < 200 && f.A.Animals.Count < 6; d++) f.A.OnNewDay(Season.Spring);

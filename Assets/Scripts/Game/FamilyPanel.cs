@@ -46,17 +46,7 @@ namespace Thatchwick.Game
         public Rect PanelRect(float guiScale) =>
             new Rect(Screen.width / guiScale - 338f, 8f, 330f, Screen.height / guiScale - 16f);
 
-        private static string StageName(AgeStage s)
-        {
-            switch (s)
-            {
-                case AgeStage.Baby: return "Bebek";
-                case AgeStage.Child: return "Çocuk";
-                case AgeStage.Youth: return "Genç";
-                case AgeStage.Adult: return "Yetişkin";
-                default: return "Yaşlı";
-            }
-        }
+        private static string StageName(AgeStage s) => AgeStages.Name(s);
 
         public static bool CanTakeCommands(Character c) => c != null && !c.IsDead && !c.IsVillager && c.Stage != AgeStage.Baby;
 

@@ -340,6 +340,8 @@ namespace Thatchwick.Core.Animals
         public sealed class DayReport
         {
             public int Collected, FeedAdded, Births;
+            /// <summary>Sağlık (Adım 42): bugün hastalanan, kendiliğinden iyileşen, hastalıktan ölen, üşüyen hayvan sayısı.</summary>
+            public int Sickened, Recovered, DiedOfSickness, Cold;
         }
 
         /// <summary>Yavrulama: günlük temel şans ve hayvancılık seviyesi başına ek (10. seviyede ~%17,5).</summary>
@@ -358,7 +360,7 @@ namespace Thatchwick.Core.Animals
             var groupHome = new Dictionary<string, ItemInstance>();
             foreach (var a in _animals)
             {
-                if (a.IsDead || !a.IsMature || a.Fullness < 60f || a.Species.IsPet || a.Species.Housing == "hive") continue;
+                if (a.IsDead || a.IsSick || !a.IsMature || a.Fullness < 60f || a.Species.IsPet || a.Species.Housing == "hive") continue;
                 var home = _world.GetItem(a.HomeItemId);
                 if (home == null) continue;
                 var room = RoomOf(home);
@@ -419,6 +421,7 @@ namespace Thatchwick.Core.Animals
                 if (a.IsDead) continue;
                 a.Comfort = ComfortOf(_world.GetItem(a.HomeItemId)).Total;
             }
+            UpdateHealth(season, report);
             report.Births = Breed();
             if (house == null) return report;
 

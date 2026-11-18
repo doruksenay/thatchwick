@@ -183,7 +183,7 @@ namespace Thatchwick.Core.Characters
 
         /// <summary>
         /// Evreye göre ulaşılabilecek en yüksek seviye. Bebek öğrenemez (0).
-        /// Varsayım (denge turunda ayarlanır): Çocuk 3, Genç 7, Yetişkin ve Yaşlı 10.
+        /// Varsayım (denge turunda ayarlanır): Çocuk 3, Ergen 7, Genç yetişkin 9, Yetişkin ve Yaşlı 10.
         /// </summary>
         public static int LevelCap(AgeStage stage)
         {
@@ -191,7 +191,8 @@ namespace Thatchwick.Core.Characters
             {
                 case AgeStage.Baby: return 0;
                 case AgeStage.Child: return 3;
-                case AgeStage.Youth: return 7;
+                case AgeStage.Teen: return 7;
+                case AgeStage.YoungAdult: return 9;
                 default: return MaxLevel;
             }
         }
