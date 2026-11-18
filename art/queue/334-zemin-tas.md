@@ -1,7 +1,7 @@
 ---
 id: "334"
 title: Zemin stilleri: yassı taş, arnavut kaldırımı, tuğla, sırlı çini
-status: running
+status: review
 claimed_at: 2026-11-18T09:24Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -24,6 +24,8 @@ outputs:
 created: 2026-11-17
 ---
 # 334 Zemin stilleri: taş
+
+İşçi notu: 6/8 teslim (flag, cobble, brick). tile_a/b (sırlı çini) stil denetiminde KALDI, teslim edilmedi; ayrıntı art/results/334-zemin-tas.md.
 
 ## Amaç
 `floorBase: Stone` parçaları. Yassı taş varsayılandır.
