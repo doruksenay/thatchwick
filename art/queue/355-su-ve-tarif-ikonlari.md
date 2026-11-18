@@ -1,7 +1,8 @@
 ---
 id: "355"
 title: Boru, kurşun ve yeni yiyecek ikonları; su yolu araç ikonları
-status: pending
+status: running
+claimed_at: 2026-11-18T13:05Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 family: arayuz
 style_gate: false
