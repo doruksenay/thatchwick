@@ -1,7 +1,7 @@
 ---
 id: "311"
 title: Toplama düğümleri (çalı, mantar, fındık, ot, yabani kovan, kuru dal)
-status: running
+status: review
 claimed_at: 2026-11-18T09:18Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
