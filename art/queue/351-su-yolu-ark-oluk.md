@@ -1,7 +1,7 @@
 ---
 id: "351"
 title: Su yolu karoları: toprak ark, taş ark, ahşap oluk (kuru ve sulu)
-status: running
+status: blocked
 claimed_at: 2026-11-18T11:56Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
@@ -40,6 +40,9 @@ Yeni su yolu katmanı (Project belgesi 20): göletten ve dereden her yöne **ark
 
 ## Notlar
 Motor bağlantısı `WorldView` su yolu çiziminde (şimdilik renk); kabulden sonra kod oturumu parçaları bağlar.
+
+## Sorular
+- 2026-11-18: `get_balance` Tier 2 (Pixel Artisan, 5000 gen, yenilenme 2026-12-18) döndü; `art/budget.md` planı Tier 1 / 2000 gen / yenilenme 2026-12-08 yazıyor. İşçi kuralı gereği plan Tier 1 değilse durulur. Üretim yapılmadı, harcama 0. Kullanıcı `art/budget.md` Plan bölümünü (gerekirse rezerv ve tavanları) güncelleyince bu iş `pending`e alınabilir.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
