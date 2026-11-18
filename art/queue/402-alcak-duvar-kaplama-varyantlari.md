@@ -1,7 +1,7 @@
 ---
 id: "402"
 title: Alçak ve yarım duvar varyantları, eksikler (kaplamalar): betikle kırpma
-status: running
+status: review
 claimed_at: 2026-11-18T19:12Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 18.11.2026 ("duvarların alçak görseli")
 priority: 10
