@@ -1,7 +1,8 @@
 ---
 id: "359"
 title: Mevsim zemini (sonbahar çimeni, karlı çimen, karlı toprak)
-status: pending
+status: running
+claimed_at: 2026-11-18T12:02Z
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: zemin
 style_gate: false
