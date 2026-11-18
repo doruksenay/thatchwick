@@ -538,45 +538,45 @@ MonoBehaviour:
   - name: iso_ground_grass_c
     texture: {fileID: 2800000, guid: 2bcefb40a449b344293efa88ac92b592, type: 3}
   - name: iso_ground_grass_dirt_0
-    texture: {fileID: 2800000, guid: d2c5eedda9571cf4d859730c2568afa7, type: 3}
-  - name: iso_ground_grass_dirt_0
     texture: {fileID: 2800000, guid: 99e327fb89cb8c14298d57e9c6fb680a, type: 3}
-  - name: iso_ground_grass_dirt_1
-    texture: {fileID: 2800000, guid: b3e4b9210d55ced4ca0c16fb86de29bb, type: 3}
+  - name: iso_ground_grass_dirt_0
+    texture: {fileID: 2800000, guid: d2c5eedda9571cf4d859730c2568afa7, type: 3}
   - name: iso_ground_grass_dirt_1
     texture: {fileID: 2800000, guid: d4dfe602e4eabe24e93ed6ef1506ed6b, type: 3}
+  - name: iso_ground_grass_dirt_1
+    texture: {fileID: 2800000, guid: b3e4b9210d55ced4ca0c16fb86de29bb, type: 3}
   - name: iso_ground_grass_dirt_10
     texture: {fileID: 2800000, guid: 1eaf83bf89a658244b18f260eed652dd, type: 3}
   - name: iso_ground_grass_dirt_10
     texture: {fileID: 2800000, guid: 0b75bbe402727504db5b3c9b40cb0428, type: 3}
   - name: iso_ground_grass_dirt_11
-    texture: {fileID: 2800000, guid: 6c34864d97da43840a5b4852c999b2b1, type: 3}
-  - name: iso_ground_grass_dirt_11
     texture: {fileID: 2800000, guid: d678ba272f8cf4142ac3c74b0b5caac3, type: 3}
-  - name: iso_ground_grass_dirt_12
-    texture: {fileID: 2800000, guid: 555e273f508427b4999790266d84854b, type: 3}
+  - name: iso_ground_grass_dirt_11
+    texture: {fileID: 2800000, guid: 6c34864d97da43840a5b4852c999b2b1, type: 3}
   - name: iso_ground_grass_dirt_12
     texture: {fileID: 2800000, guid: 1f329d85941e8734f9bce09af2b27aef, type: 3}
+  - name: iso_ground_grass_dirt_12
+    texture: {fileID: 2800000, guid: 555e273f508427b4999790266d84854b, type: 3}
   - name: iso_ground_grass_dirt_13
     texture: {fileID: 2800000, guid: ddaf6aed47dd38c4cb55c050d5ab9683, type: 3}
   - name: iso_ground_grass_dirt_13
     texture: {fileID: 2800000, guid: 1ff980a2de6f5064fafed7cf5a1610a5, type: 3}
   - name: iso_ground_grass_dirt_14
-    texture: {fileID: 2800000, guid: a6700491ecfaa2c40afd8bc5e70243bf, type: 3}
-  - name: iso_ground_grass_dirt_14
     texture: {fileID: 2800000, guid: 6851fa84fe5cc2440b3580686c64114f, type: 3}
-  - name: iso_ground_grass_dirt_15
-    texture: {fileID: 2800000, guid: 6a43c6a95872ac84480c9b8a0b4e5275, type: 3}
+  - name: iso_ground_grass_dirt_14
+    texture: {fileID: 2800000, guid: a6700491ecfaa2c40afd8bc5e70243bf, type: 3}
   - name: iso_ground_grass_dirt_15
     texture: {fileID: 2800000, guid: bf54da612a5bffa459559b0f315ae581, type: 3}
-  - name: iso_ground_grass_dirt_2
-    texture: {fileID: 2800000, guid: de2af60ba37a24e4fa24fc8e7f52b3c0, type: 3}
+  - name: iso_ground_grass_dirt_15
+    texture: {fileID: 2800000, guid: 6a43c6a95872ac84480c9b8a0b4e5275, type: 3}
   - name: iso_ground_grass_dirt_2
     texture: {fileID: 2800000, guid: 2dca45c01cfff6741bbdd223bb9517c5, type: 3}
-  - name: iso_ground_grass_dirt_3
-    texture: {fileID: 2800000, guid: 1dbdc207f2da9a84eae41db4ff4434a2, type: 3}
+  - name: iso_ground_grass_dirt_2
+    texture: {fileID: 2800000, guid: de2af60ba37a24e4fa24fc8e7f52b3c0, type: 3}
   - name: iso_ground_grass_dirt_3
     texture: {fileID: 2800000, guid: 531e5a299ae7312448559c1d18ad2256, type: 3}
+  - name: iso_ground_grass_dirt_3
+    texture: {fileID: 2800000, guid: 1dbdc207f2da9a84eae41db4ff4434a2, type: 3}
   - name: iso_ground_grass_dirt_4
     texture: {fileID: 2800000, guid: 9fee219f545af384c852c9b88af9352f, type: 3}
   - name: iso_ground_grass_dirt_4
@@ -586,13 +586,13 @@ MonoBehaviour:
   - name: iso_ground_grass_dirt_5
     texture: {fileID: 2800000, guid: ed6e56af5cc4a07488a0ad96e8743d45, type: 3}
   - name: iso_ground_grass_dirt_6
-    texture: {fileID: 2800000, guid: 5b2055006208e894899c53d2b5cfb5ec, type: 3}
-  - name: iso_ground_grass_dirt_6
     texture: {fileID: 2800000, guid: a050670f68d06144d995530f4ab552bc, type: 3}
-  - name: iso_ground_grass_dirt_7
-    texture: {fileID: 2800000, guid: 594e93de8fac65b419e9c8ed0d5d27b6, type: 3}
+  - name: iso_ground_grass_dirt_6
+    texture: {fileID: 2800000, guid: 5b2055006208e894899c53d2b5cfb5ec, type: 3}
   - name: iso_ground_grass_dirt_7
     texture: {fileID: 2800000, guid: 1a272aeb8adc1eb4c85742e28fea7611, type: 3}
+  - name: iso_ground_grass_dirt_7
+    texture: {fileID: 2800000, guid: 594e93de8fac65b419e9c8ed0d5d27b6, type: 3}
   - name: iso_ground_grass_dirt_8
     texture: {fileID: 2800000, guid: 96e9c03bf85386e43aef942d5b6ce842, type: 3}
   - name: iso_ground_grass_dirt_8
@@ -665,6 +665,8 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 54a34fdfa6c66914a989ce2eba21f3aa, type: 3}
   - name: iso_item_chair_wood_sw
     texture: {fileID: 2800000, guid: f35d2ceefc7f54c409b99d0ab5f35f46, type: 3}
+  - name: iso_item_cheese_press_se
+    texture: {fileID: 2800000, guid: c6b553a289571ee4ea3708bd46cc90d0, type: 3}
   - name: iso_item_chest_wood_se
     texture: {fileID: 2800000, guid: c6d9680a602ec204597d6e494e67c184, type: 3}
   - name: iso_item_child_bed_se
@@ -673,10 +675,14 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 16f0b9d213db53f4cb038cdac1cca757, type: 3}
   - name: iso_item_chopping_block_se
     texture: {fileID: 2800000, guid: eacc5e1222856ce479886314594e11db, type: 3}
+  - name: iso_item_clay_cup_se
+    texture: {fileID: 2800000, guid: 9fc4352bc1ba1214ea975bd9fe7f9658, type: 3}
   - name: iso_item_compost_heap_se
     texture: {fileID: 2800000, guid: 925e6c17e6481a04a988fe6e160a8405, type: 3}
   - name: iso_item_cooking_pot_se
     texture: {fileID: 2800000, guid: 71d31f5faeaaa66419c2b800a9365ff1, type: 3}
+  - name: iso_item_cooking_pot_se_v2
+    texture: {fileID: 2800000, guid: f869d121731d3554c936e587d2d9f83c, type: 3}
   - name: iso_item_drying_rack_se
     texture: {fileID: 2800000, guid: e580069367743914481120c5641e8fae, type: 3}
   - name: iso_item_flower_pot_se
@@ -691,6 +697,8 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 7be805b321cc1fe4697f66aacacd851e, type: 3}
   - name: iso_item_market_stall_2x1_se_nw
     texture: {fileID: 2800000, guid: 238bf661b49f42546b148f4d56c59d4e, type: 3}
+  - name: iso_item_market_stall_2x1_se_nw_v2
+    texture: {fileID: 2800000, guid: d7c1bf7ab668a804183a84da7f46727d, type: 3}
   - name: iso_item_mattress_straw_se
     texture: {fileID: 2800000, guid: edd79404e0592fa47a7654a4ea76cc3b, type: 3}
   - name: iso_item_outhouse_se
@@ -713,6 +721,8 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 4cea40e597616f7448fcadfc01b8cf11, type: 3}
   - name: iso_item_shelf_wood_2x1_se_nw_v2
     texture: {fileID: 2800000, guid: 6d6bdeaa3cd224749a4967f7a90bad2b, type: 3}
+  - name: iso_item_smokehouse_2x1_se
+    texture: {fileID: 2800000, guid: d88fdeefbeb1e4241b8ab9c8acd0f8d3, type: 3}
   - name: iso_item_stone_oven_2x1_se_nw
     texture: {fileID: 2800000, guid: 43f01f1cf4942ac408fba980ffe44a84, type: 3}
   - name: iso_item_stool_se
@@ -759,6 +769,10 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 80bd9cddab6677c42b2932e012648add, type: 3}
   - name: iso_wall_wall_se_nw
     texture: {fileID: 2800000, guid: 86b6220b56733ec41ab3773cbc0d34b2, type: 3}
+  - name: iso_wall_wall_stone_se_nw
+    texture: {fileID: 2800000, guid: 58523d186dde8c446963efd7ef3dd2eb, type: 3}
+  - name: iso_wall_wall_stone_sw_ne
+    texture: {fileID: 2800000, guid: bd55c4b91c4b8b743955dc9b91a5db49, type: 3}
   - name: iso_wall_wall_sw_ne
     texture: {fileID: 2800000, guid: 34ec15125f2e84745be873dc9631cb29, type: 3}
   - name: iso_wall_window_se_nw
