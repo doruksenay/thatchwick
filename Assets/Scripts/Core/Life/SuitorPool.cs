@@ -103,6 +103,7 @@ namespace Thatchwick.Core.Life
             if (_content.Traits.Count > 0)
             {
                 c.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));
+                LifeRules.RollAptitudes(_rng, c, 1 + _rng.Next(2));
                 c.LifespanDays += LifeRules.LifespanBonus(_content, c.TraitIds);
                 LifeRules.Recompute(c, _content, _population.Village);
             }

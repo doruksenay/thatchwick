@@ -146,6 +146,69 @@ namespace Thatchwick.Core.Life
             return note;
         }
 
+        // ---- yatkınlık (karar 18.11.2026, Project belgesi 28) ----
+
+        /// <summary>Ebeveynin her yatkınlığının çocuğa geçme şansı.</summary>
+        public const double AptitudeInheritChance = 0.35;
+        /// <summary>"Çok yatkın" geçtiğinde öyle kalma şansı (yoksa "Yatkın" olarak geçer).</summary>
+        public const double MajorStaysMajorChance = 0.5;
+        /// <summary>Çocuklukta yatkınlık doğması için en çok çalışılan becerinin ulaşması gereken seviye.</summary>
+        public const int ChildhoodAptitudeLevel = 3;
+
+        /// <summary>Doğumda yatkınlık: her ebeveynin her yatkınlığı %35 şansla geçer (en çok 3).</summary>
+        public static void InheritAptitudes(Random rng, Character child, Character mother, Character father)
+        {
+            if (child == null || rng == null) return;
+            foreach (var parent in new[] { mother, father })
+            {
+                if (parent == null) continue;
+                foreach (var kv in new List<KeyValuePair<SkillType, Aptitude>>(parent.Skills.Aptitudes))
+                {
+                    if (rng.NextDouble() >= AptitudeInheritChance) continue;
+                    var a = kv.Value == Aptitude.Major && rng.NextDouble() < MajorStaysMajorChance ? Aptitude.Major : Aptitude.Minor;
+                    child.Skills.SetAptitude(kv.Key, a);
+                }
+            }
+        }
+
+        /// <summary>Dışarıdan gelen karakter (talip, köylü) için rastgele yatkınlık: n tane, %20'si "Çok yatkın".</summary>
+        public static void RollAptitudes(Random rng, Character c, int n)
+        {
+            if (c == null || rng == null) return;
+            var all = (SkillType[])Enum.GetValues(typeof(SkillType));
+            int guard = 0;
+            while (c.Skills.AptitudeCount < Math.Min(n, SkillPacing.MaxAptitudes) && guard++ < 50)
+            {
+                var s = all[rng.Next(all.Length)];
+                if (c.Skills.GetAptitude(s) != Aptitude.None) continue;
+                c.Skills.SetAptitude(s, rng.NextDouble() < 0.2 ? Aptitude.Major : Aptitude.Minor);
+            }
+        }
+
+        /// <summary>
+        /// Çocuklukta sık yapılan iş yatkınlığa dönüşür (Genç yetişkin'e geçişte): en çok XP'li beceri en az 3. seviyedeyse
+        /// ve yuva varsa "Yatkın" olur (zaten yatkınsa "Çok yatkın"a çıkar). Hayat notunu döner; değişiklik yoksa null.
+        /// </summary>
+        public static string ApplyChildhoodAptitude(Character c)
+        {
+            if (c == null || c.IsDead) return null;
+            SkillType best = SkillType.Farming; double bestXp = 0;
+            foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
+            {
+                double xp = c.Skills.GetXp(s);
+                if (xp > bestXp) { bestXp = xp; best = s; }
+            }
+            if (bestXp <= 0 || c.Skills.GetLevel(best) < ChildhoodAptitudeLevel) return null;
+            var cur = c.Skills.GetAptitude(best);
+            var want = cur == Aptitude.None ? Aptitude.Minor : Aptitude.Major;
+            if (cur == Aptitude.Major || !c.Skills.SetAptitude(best, want)) return null;
+            string note = want == Aptitude.Major
+                ? $"Çocukluktan beri {SkillNames.Name(best)} ile büyüdü: artık çok yatkın."
+                : $"Çocukken çok {SkillNames.Name(best).ToLowerInvariant()} işi yaptı: yatkınlık kazandı.";
+            c.AddChronicle(note);
+            return note;
+        }
+
         /// <summary>Doğumda ömre eklenecek gün (özelliklerden).</summary>
         public static int LifespanBonus(ContentDatabase db, IEnumerable<string> traitIds)
         {

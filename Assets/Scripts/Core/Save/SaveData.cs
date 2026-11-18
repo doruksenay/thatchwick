@@ -176,6 +176,11 @@ namespace Thatchwick.Core.Save
         public float wet;                   // ıslaklık (eski kayıtta 0)
         public KeyFloat[] moodlets;         // v2: (kimlik, kalan gün)
         public KeyFloat[] skills;
+        // Beceri temposu (18.11.2026, Project belgesi 28). Eski kayıtta boş/false gelir.
+        public KeyFloat[] aptitudes;          // (beceri, 1 = Yatkın, 2 = Çok yatkın)
+        public KeyFloat[] skillToday;         // bugünkü doygunluk sayacı
+        public string[] skillUsedSeason;      // bu mevsim kullanılan beceriler
+        public bool elderOnset;               // yaşlılık giriş gerilemesi uygulandı
         public AppearanceSave appearance;
         // Aile (Adım 16-17). Eksik alan eski kayıtta 0/false gelir: kimlikler 1'den başladığı için 0 = yok.
         public int spouseId;

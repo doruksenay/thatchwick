@@ -281,6 +281,30 @@ namespace Thatchwick.Core.Save
             return data;
         }
 
+        private static KeyFloat[] CaptureAptitudes(Character c)
+        {
+            var list = new List<KeyFloat>();
+            foreach (var kv in c.Skills.Aptitudes) list.Add(new KeyFloat { key = kv.Key.ToString(), value = (int)kv.Value });
+            list.Sort((a, b) => string.CompareOrdinal(a.key, b.key));
+            return list.ToArray();
+        }
+
+        private static KeyFloat[] CaptureToday(Character c)
+        {
+            var list = new List<KeyFloat>();
+            foreach (var kv in c.Skills.TodayAll) if (kv.Value > 0) list.Add(new KeyFloat { key = kv.Key.ToString(), value = kv.Value });
+            list.Sort((a, b) => string.CompareOrdinal(a.key, b.key));
+            return list.ToArray();
+        }
+
+        private static string[] CaptureUsed(Character c)
+        {
+            var list = new List<string>();
+            foreach (var s in c.Skills.UsedSeasonAll) list.Add(s.ToString());
+            list.Sort(string.CompareOrdinal);
+            return list.ToArray();
+        }
+
         private static CharacterSave CaptureCharacter(Character c)
         {
             var skills = new List<KeyFloat>();
@@ -310,6 +334,8 @@ namespace Thatchwick.Core.Save
                 fun = c.Needs.Get(NeedType.Fun), hygiene = c.Needs.Get(NeedType.Hygiene), bladder = c.Needs.Get(NeedType.Bladder), wet = c.Wetness,
                 moodlets = CaptureMoodlets(c),
                 skills = skills.ToArray(),
+                aptitudes = CaptureAptitudes(c), skillToday = CaptureToday(c), skillUsedSeason = CaptureUsed(c),
+                elderOnset = c.Skills.ElderOnsetApplied,
                 spouseId = c.SpouseId ?? 0,
                 motherId = c.BirthMotherId ?? 0,
                 birthFatherId = c.BirthFatherId ?? 0,
@@ -644,6 +670,17 @@ namespace Thatchwick.Core.Save
             if (s.skills != null)
                 foreach (var kv in s.skills)
                     if (kv != null && Enum.TryParse(kv.key, out SkillType skill)) c.Skills.RestoreXp(skill, kv.value);
+            if (s.aptitudes != null)
+                foreach (var kv in s.aptitudes)
+                    if (kv != null && Enum.TryParse(kv.key, out SkillType skill) && kv.value >= 1 && kv.value <= 2)
+                        c.Skills.SetAptitude(skill, (Aptitude)(int)kv.value);
+            if (s.skillToday != null)
+                foreach (var kv in s.skillToday)
+                    if (kv != null && Enum.TryParse(kv.key, out SkillType skill)) c.Skills.RestoreToday(skill, kv.value);
+            if (s.skillUsedSeason != null)
+                foreach (var id in s.skillUsedSeason)
+                    if (id != null && Enum.TryParse(id, out SkillType skill)) c.Skills.RestoreUsed(skill);
+            c.Skills.ElderOnsetApplied = s.elderOnset;
             if (s.appearance != null)
             {
                 c.Appearance = LoadAppearance(s.appearance);

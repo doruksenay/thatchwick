@@ -53,11 +53,11 @@ namespace Thatchwick.Core.Tests
             foreach (var s in fromItems)
                 Assert.True(db.Items.All.Any(d => d.Interactions.Any(i => i.Skill == s && i.SkillXp > 0)), s.ToString());
             // Geri kalanlar kodla: geri kazanım (söküm), taş ustalığı (yol onarımı), gönül (sohbet), kâhyalık (görev),
-            // arabacılık (pazar), ev düzenleme (eşya yerleştirme). Hepsinin adı ve meslek adı var, dalları tam.
+            // arabacılık (pazar), ev düzenleme (eşya yerleştirme). Hepsinin adı ve meslek adı var; dallar 116 düzenine uyar.
             foreach (var s in Wave2)
             {
                 Assert.NotEqual(s.ToString(), SkillNames.Name(s));
-                Assert.Equal(6, db.Branches.All.Count(b => b.Skill == s));
+                Assert.Equal(SkillNames.BranchCount(s), db.Branches.All.Count(b => b.Skill == s));
             }
             Assert.True(db.Tools.Contains("pickaxe"));
         }
@@ -175,6 +175,7 @@ namespace Thatchwick.Core.Tests
             var pop = new Population();
             var clock = new GameClock();
             var life = new LifeSystems(db, w, h, pop, clock);
+            life.SkillPacing = false;   // bu sınamalar büyük XP'yi tek seferde verir (doygunluk 28)
             var head = Person(1);
             pop.Add(head);
             Assert.Equal(1, life.ForecastDays);

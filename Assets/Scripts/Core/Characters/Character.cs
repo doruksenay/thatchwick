@@ -284,8 +284,27 @@ namespace Thatchwick.Core.Characters
             if (MoodEnabled) xp *= Mood.XpMultiplier(skill);
             // Okuryazarlık: bütün becerilerde seviye başına %2 fazla XP (kendisi hariç).
             if (skill != SkillType.Literacy) xp *= SkillNames.Factor(Skills.GetLevel(SkillType.Literacy), 0.02);
-            return Skills.AddXp(skill, xp * Modifiers.SkillRate(skill), SkillRules.LevelCap(Stage));
+            xp *= Modifiers.SkillRate(skill);
+            // Yatkınlık (Project belgesi 28): XP x1,5 / x2 ve o işi yaparken küçük keyif.
+            var aptitude = Skills.GetAptitude(skill);
+            if (aptitude != Aptitude.None)
+            {
+                xp *= SkillPacing.XpMultiplier(aptitude);
+                if (MoodEnabled && xp > 0 && !Mood.Has(AptitudeMoodId))
+                    Mood.Add(new MoodletDef
+                    {
+                        Id = AptitudeMoodId, DisplayName = "Sevdiği iş",
+                        Description = "Yatkın olduğu işi yapıyor.", Value = AptitudeMoodValue, DurationDays = AptitudeMoodDays
+                    });
+            }
+            // Günlük doygunluk: eşikten sonra XP %25 (yalnızca tempo açıkken).
+            xp = Skills.ApplyDailySaturation(skill, xp);
+            return Skills.AddXp(skill, xp, SkillRules.LevelCap(Stage));
         }
+
+        public const string AptitudeMoodId = "mood.aptitude_work";
+        public const int AptitudeMoodValue = 3;
+        public const double AptitudeMoodDays = 0.25;
 
         /// <summary>Tuvalete yetişemedi (bildirim için).</summary>
         public event Action<Character> Accident;

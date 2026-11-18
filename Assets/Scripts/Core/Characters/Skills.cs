@@ -116,6 +116,26 @@ namespace Thatchwick.Core.Characters
         /// <summary>Seviye başına yüzde etkisi olan beceriler için ortak çarpan: 1 + oran x (seviye - 1).</summary>
         public static double Factor(int level, double perLevel) => 1.0 + perLevel * Math.Max(0, level - 1);
 
+        /// <summary>
+        /// Dal düzeni (karar 18.11.2026, Project belgesi 28): 14 ana beceride tam dal (5. seviyede 2, 10. seviyede 4),
+        /// 16 becerinin yalnızca 5. seviyede 2 dalı, 4 destek becerisi dalsız. Toplam 116. life.json bununla uyuşmalıdır.
+        /// </summary>
+        public static int BranchCount(SkillType s)
+        {
+            switch (s)
+            {
+                case SkillType.Farming: case SkillType.AnimalHusbandry: case SkillType.Cooking: case SkillType.Woodcutting:
+                case SkillType.Carpentry: case SkillType.Mining: case SkillType.Smithing: case SkillType.Weaving:
+                case SkillType.Leatherwork: case SkillType.Pottery: case SkillType.Fishing: case SkillType.Herbalism:
+                case SkillType.Trade: case SkillType.Engineering:
+                    return 6;
+                case SkillType.WeatherLore: case SkillType.Literacy: case SkillType.Carting: case SkillType.Decorating:
+                    return 0;
+                default:
+                    return 2;
+            }
+        }
+
         /// <summary>Meslek adı (hanedan geçmişi, köy).</summary>
         public static string TradeName(SkillType s)
         {
@@ -198,10 +218,169 @@ namespace Thatchwick.Core.Characters
         }
     }
 
+    /// <summary>Yatkınlık (karar 18.11.2026, Project belgesi 28): doğuştan ya da çocukluktan gelen hız.</summary>
+    public enum Aptitude
+    {
+        None = 0,
+        /// <summary>Yatkın: XP x1,5.</summary>
+        Minor = 1,
+        /// <summary>Çok yatkın: XP x2.</summary>
+        Major = 2
+    }
+
+    /// <summary>
+    /// Beceri temposu (karar 18.11.2026, Project belgesi 28): yatkınlık, günlük XP doygunluğu ve yaşlılıkta gerileme.
+    /// Seviye asla düşmez; gerileme yalnızca seviye içindeki ilerlemeyi azaltır.
+    /// </summary>
+    public static class SkillPacing
+    {
+        /// <summary>Bir karakterde en çok yatkınlık sayısı.</summary>
+        public const int MaxAptitudes = 3;
+        /// <summary>Günlük eşik: o seviyenin XP aralığının bu oranı (yaklaşık yarım seviye/gün tam hızla).</summary>
+        public const double DailyThresholdShare = 0.40;
+        /// <summary>Yatkın becerilerde eşik çarpanı.</summary>
+        public const double AptitudeThresholdFactor = 1.5;
+        /// <summary>Eşikten sonra kazanılan XP oranı.</summary>
+        public const double SaturatedRate = 0.25;
+        /// <summary>Yaşlılığa girişte bir kereye mahsus kaybedilen seviye içi ilerleme oranı.</summary>
+        public const double ElderOnsetLoss = 0.10;
+        /// <summary>Yaşlıda bütün mevsim hiç kullanılmayan becerinin mevsim sonunda kaybettiği seviye içi ilerleme oranı.</summary>
+        public const double ElderSeasonLoss = 0.25;
+
+        public static double XpMultiplier(Aptitude a) => a == Aptitude.Major ? 2.0 : a == Aptitude.Minor ? 1.5 : 1.0;
+
+        public static string AptitudeName(Aptitude a) => a == Aptitude.Major ? "Çok yatkın" : a == Aptitude.Minor ? "Yatkın" : "";
+
+        /// <summary>Seviyenin XP aralığı (son seviyede bir önceki aralık kullanılır).</summary>
+        public static double LevelSpan(int level)
+        {
+            if (level >= SkillRules.MaxLevel) return SkillRules.XpForLevel(SkillRules.MaxLevel) - SkillRules.XpForLevel(SkillRules.MaxLevel - 1);
+            return SkillRules.XpForLevel(level + 1) - SkillRules.XpForLevel(level);
+        }
+
+        /// <summary>Günlük doygunluk eşiği (ham XP).</summary>
+        public static double DailyThreshold(int level, Aptitude a)
+        {
+            double t = LevelSpan(level) * DailyThresholdShare;
+            return a != Aptitude.None ? t * AptitudeThresholdFactor : t;
+        }
+    }
+
     /// <summary>Bir karakterin becerileri: XP tutar, seviyeyi XP'den türetir.</summary>
     public sealed class SkillSet
     {
         private readonly Dictionary<SkillType, double> _xp = new Dictionary<SkillType, double>();
+        private readonly Dictionary<SkillType, Aptitude> _aptitudes = new Dictionary<SkillType, Aptitude>();
+        private readonly Dictionary<SkillType, double> _today = new Dictionary<SkillType, double>();
+        private readonly HashSet<SkillType> _usedThisSeason = new HashSet<SkillType>();
+
+        /// <summary>
+        /// Günlük doygunluk ve yaşlılık gerilemesi açık mı. Oyunda hane üyeleri için açılır (LifeSystems);
+        /// köylüler ve eski testler etkilenmesin diye varsayılan kapalı (MoodEnabled gibi).
+        /// </summary>
+        public bool PacingEnabled { get; set; }
+        /// <summary>Yaşlılığa giriş kaybı uygulandı mı (bir kereye mahsus).</summary>
+        public bool ElderOnsetApplied { get; set; }
+
+        // ---- yatkınlık ----
+
+        public Aptitude GetAptitude(SkillType skill) => _aptitudes.TryGetValue(skill, out var a) ? a : Aptitude.None;
+
+        public IEnumerable<KeyValuePair<SkillType, Aptitude>> Aptitudes => _aptitudes;
+
+        public int AptitudeCount => _aptitudes.Count;
+
+        /// <summary>
+        /// Yatkınlık verir. Yeni beceri en çok 3 taneye kadar eklenir; var olanı yalnızca yükseltir (düşürmez).
+        /// Değişiklik olduysa true.
+        /// </summary>
+        public bool SetAptitude(SkillType skill, Aptitude a)
+        {
+            if (a == Aptitude.None) return _aptitudes.Remove(skill);
+            if (_aptitudes.TryGetValue(skill, out var cur))
+            {
+                if (cur >= a) return false;
+                _aptitudes[skill] = a;
+                return true;
+            }
+            if (_aptitudes.Count >= SkillPacing.MaxAptitudes) return false;
+            _aptitudes[skill] = a;
+            return true;
+        }
+
+        // ---- günlük doygunluk ve mevsim kullanımı ----
+
+        /// <summary>Bugün bu beceride kazanılan (doygunluk öncesi) XP.</summary>
+        public double TodayXp(SkillType skill) => _today.TryGetValue(skill, out var v) ? v : 0.0;
+
+        /// <summary>Bugün eşik doldu mu ("bugün yoruldu" göstergesi).</summary>
+        public bool IsSaturated(SkillType skill) => PacingEnabled && TodayXp(skill) >= SkillPacing.DailyThreshold(GetLevel(skill), GetAptitude(skill));
+
+        public bool UsedThisSeason(SkillType skill) => _usedThisSeason.Contains(skill);
+
+        public IEnumerable<KeyValuePair<SkillType, double>> TodayAll => _today;
+        public IEnumerable<SkillType> UsedSeasonAll => _usedThisSeason;
+
+        internal void RestoreToday(SkillType skill, double xp) { if (xp > 0) _today[skill] = xp; }
+        internal void RestoreUsed(SkillType skill) { _usedThisSeason.Add(skill); }
+
+        /// <summary>Gece: günlük sayaçlar sıfırlanır.</summary>
+        public void NewDay() => _today.Clear();
+
+        /// <summary>
+        /// Ham XP'yi doygunluk eşiğine göre kırpar ve sayaca işler (kapalıysa olduğu gibi döner). Kullanım kaydını tutar.
+        /// </summary>
+        public double ApplyDailySaturation(SkillType skill, double xp)
+        {
+            if (xp <= 0) return xp;
+            _usedThisSeason.Add(skill);
+            if (!PacingEnabled) return xp;
+            double threshold = SkillPacing.DailyThreshold(GetLevel(skill), GetAptitude(skill));
+            double before = TodayXp(skill);
+            _today[skill] = before + xp;
+            double full = Math.Max(0.0, Math.Min(xp, threshold - before));
+            return full + (xp - full) * SkillPacing.SaturatedRate;
+        }
+
+        // ---- yaşlılık gerilemesi ----
+
+        /// <summary>Seviye içi ilerlemeyi bu oranda azaltır; seviye düşmez. Kaybedilen XP'yi döner.</summary>
+        public double LoseLevelProgress(SkillType skill, double share)
+        {
+            double xp = GetXp(skill);
+            if (xp <= 0 || share <= 0) return 0;
+            int level = SkillRules.LevelForXp(xp);
+            double floor = SkillRules.XpForLevel(level);
+            double progress = xp - floor;
+            if (progress <= 0) return 0;
+            double loss = progress * Math.Min(1.0, share);
+            _xp[skill] = xp - loss;
+            return loss;
+        }
+
+        /// <summary>Yaşlılığa giriş: bütün becerilerde seviye içi ilerlemenin %10'u gider (bir kez).</summary>
+        public double ApplyElderOnset()
+        {
+            if (!PacingEnabled || ElderOnsetApplied) return 0;
+            ElderOnsetApplied = true;
+            double sum = 0;
+            foreach (var s in new List<SkillType>(_xp.Keys)) sum += LoseLevelProgress(s, SkillPacing.ElderOnsetLoss);
+            return sum;
+        }
+
+        /// <summary>
+        /// Mevsim sonu. Yaşlıysa bu mevsim hiç kullanılmayan beceriler seviye içi ilerlemenin %25'ini kaybeder.
+        /// Gerileyen becerileri döner. Kullanım kaydı her durumda sıfırlanır.
+        /// </summary>
+        public List<SkillType> OnSeasonEnd(bool elder)
+        {
+            var decayed = new List<SkillType>();
+            if (PacingEnabled && elder)
+                foreach (var s in new List<SkillType>(_xp.Keys))
+                    if (!_usedThisSeason.Contains(s) && LoseLevelProgress(s, SkillPacing.ElderSeasonLoss) > 0) decayed.Add(s);
+            _usedThisSeason.Clear();
+            return decayed;
+        }
 
         /// <summary>(beceri, eski seviye, yeni seviye)</summary>
         public event Action<SkillType, int, int> LevelChanged;

@@ -41,6 +41,7 @@ namespace Thatchwick.Core.Tests
             var pop = new Population();
             var clock = new GameClock();
             var life = new LifeSystems(db, world, house, pop, clock);
+            life.SkillPacing = false;   // bu sınamalar büyük XP'yi tek seferde verir (doygunluk 28)
             var family = new FamilyService(pop, house, db, seed: 2);
             life.Attach(family);
             var head = new Character(pop.NextId(), "Aylin", new GridPos(8, 8), true) { Sex = Sex.Female, CanStarve = false, MoodEnabled = true };
@@ -61,8 +62,10 @@ namespace Thatchwick.Core.Tests
             foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
             {
                 var mine = db.Branches.All.Where(b => b.Skill == s).ToList();
-                Assert.Equal(2, mine.Count(b => b.Level == 5));
-                Assert.Equal(4, mine.Count(b => b.Level == 10));
+                // Dal düzeni 116 (karar 18.11.2026): ana beceride 2 + 4, ötekilerde yalnızca 2 ya da hiç.
+                int want = SkillNames.BranchCount(s);
+                Assert.Equal(want == 0 ? 0 : 2, mine.Count(b => b.Level == 5));
+                Assert.Equal(want == 6 ? 4 : 0, mine.Count(b => b.Level == 10));
                 foreach (var b10 in mine.Where(b => b.Level == 10)) Assert.Contains(mine, b5 => b5.Id == b10.Requires && b5.Level == 5);
             }
         }
@@ -562,7 +565,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(db.Goals.Count >= 15);
             Assert.All(db.Goals.All, g => Assert.Contains(g.Metric, GoalDef.Metrics));
             Assert.Equal(7, db.Templates.Count);
-            Assert.Equal(204, db.Branches.Count);
+            Assert.Equal(116, db.Branches.Count);   // dal düzeni 116 (karar 18.11.2026)
         }
 
         // ---------- Kayıt ----------
