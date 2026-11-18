@@ -3,6 +3,7 @@ id: "326"
 title: Duvar malzemeleri: kerpiç, ahşap çatkı, kesme taş (iki eksen)
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: yapi
 style_gate: false
 cost_est: 30

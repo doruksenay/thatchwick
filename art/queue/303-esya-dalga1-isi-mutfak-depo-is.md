@@ -3,6 +3,7 @@ id: "303"
 title: Dalga 1: ısınma, mutfak, depo ve iş (10 eşya, yalnızca SE)
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: esya
 style_gate: false
 cost_est: 11

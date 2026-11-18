@@ -3,6 +3,7 @@ id: "331"
 title: Çitler: örgü, çıtalı, budanmış çit bitkisi, alçak taş duvar (iki eksen)
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: yapi
 style_gate: false
 cost_est: 40

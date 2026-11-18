@@ -3,6 +3,7 @@ id: "345"
 title: Lazımlık, yıkanma kulübesi, havluluk
 status: pending
 approved_by: pending     # kullanıcı kararı bekliyor (tuvalet ve su, 2026-11-17); "user" yapınca işçi alır
+priority: 20
 family: esya
 style_gate: false
 cost_est: 6

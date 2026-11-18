@@ -3,6 +3,7 @@ id: "343"
 title: Taş ocağı, demir ocağı, çömlekçi çarkı, küp, mayalama fıçısı, mum tezgâhı, av pususu, rüzgâr fırıldağı, yazı tahtası, kopuz
 status: pending
 approved_by: pending     # kullanıcı kararı bekliyor (ikinci dalga beceriler, 2026-11-17); "user" yapınca işçi alır
+priority: 20
 family: esya
 style_gate: false
 cost_est: 16

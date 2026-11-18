@@ -3,6 +3,7 @@ id: "344"
 title: Yayık, taş yontma tezgâhı, tuğla fırını, boya kazanı ve 7 düzenek
 status: pending
 approved_by: pending     # kullanıcı kararı bekliyor (tarifler, 2026-11-17); "user" yapınca işçi alır
+priority: 20
 family: esya
 style_gate: false
 cost_est: 18

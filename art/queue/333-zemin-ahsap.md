@@ -3,6 +3,7 @@ id: "333"
 title: Zemin stilleri: çam tahta, meşe tahta, balıksırtı parke
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: zemin
 style_gate: false
 cost_est: 15

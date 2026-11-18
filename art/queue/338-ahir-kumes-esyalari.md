@@ -3,6 +3,7 @@ id: "338"
 title: Ahır ve kümes eşyaları (12)
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 20
 family: esya
 style_gate: false
 cost_est: 14

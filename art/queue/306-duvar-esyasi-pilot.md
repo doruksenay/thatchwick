@@ -3,6 +3,7 @@ id: "306"
 title: Duvar eşyası pilotu (meşale, gaz lambası, duvar rafı, ot demeti, alet askısı)
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: esya
 style_gate: false
 cost_est: 5

@@ -3,6 +3,7 @@ id: "340"
 title: Yol karoları: patika, çakıl, kaldırım (sağlam ve yıpranmış)
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: zemin
 style_gate: false
 cost_est: 16

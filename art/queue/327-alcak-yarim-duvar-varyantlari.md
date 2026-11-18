@@ -3,6 +3,7 @@ id: "327"
 title: Alçak (kesit) ve yarım duvar varyantları: betikle kırpma
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: yapi
 style_gate: false
 cost_est: 0

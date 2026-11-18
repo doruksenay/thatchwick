@@ -47,6 +47,14 @@ Kullanıcı: "Asset üretimini hızlandıramaz mıyız kaliteden taviz vermeden?
 - Kalite kapıları değişmedi: stil kilidi, `validate_iso.py`, yan yana sayfası ve kullanıcının `accepted`/`rejected` kararı aynen geçerli.
 - Not: her şerit ayrı bir Claude Code oturumudur; Claude aboneliğinin kullanım sınırı 3 kat hızlı dolar.
 
+## Öncelik (kullanıcı kararı 2026-11-18)
+Kullanıcı: portre işleri (021o-r ve sonrası) duraklatılsın; kalan bütçe önce oyunun dünyasına gitsin (toprak yol, zemin, duvar malzemeleri, kapı ve pencere, eşya dalgası, ekinler). Portreler bir sonraki dönemde ya da paket yükseltilince tamamlanır.
+- İş dosyasında `priority:` alanı (küçük sayı önce). Yoksa 50. `queue_ready.py` uygun işleri önce önceliğe, sonra numaraya göre sıralar; bulut şeritleri bu sırayla sahiplenir.
+- 10: oyun dünyası (eşya pilotu 301 ve dalgası, duvar pilotu 325 ve malzemeleri, zemin, yol, kapı, pencere, çatı, halı, çit, merdiven, ekin, ağaç, toplama, su karoları).
+- 20: kalan dünya ve zanaat eşyaları, adlı köylüler.
+- 50 (varsayılan): karakter animasyonları, hayvanlar, arayüz ve ikonlar.
+- Ertelenen: 021r (portre makyaj, kırışıklık...), `approved_by: pending`. Yeni portre işleri de aynı şekilde yazılır.
+
 ## Günlük defter
 | Tarih | İş | Araç | Harcanan | Kalan (get_balance) |
 |---|---|---|---|---|

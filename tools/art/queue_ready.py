@@ -42,6 +42,7 @@ AUTO_LIMIT = 25.0   # yalnızca --strict
 RUN_LIMIT = 60.0
 DAILY_LIMIT = 150.0
 RESERVE = 200.0
+DEFAULT_PRIORITY = 50.0   # küçük sayı önce çalışır (art/budget.md "Öncelik"); eşitlikte iş numarası
 STALE_HOURS = 6.0
 
 
@@ -155,6 +156,7 @@ def load_jobs():
             "stale_claim": stale,
             "approved_by": fm.get("approved_by", ""),
             "cost_max": _num(fm.get("cost_max"), 0.0),
+            "priority": _num(fm.get("priority"), DEFAULT_PRIORITY),
             "depends_on": parse_list(fm.get("depends_on", "")),
             "style_gate": fm.get("style_gate", "").lower() == "true",
             "family": fm.get("family", ""),
@@ -193,7 +195,7 @@ def evaluate(jobs, spent_today, balance, strict=False, limit=DAILY_LIMIT):
         if balance is not None and balance - j["cost_max"] < RESERVE:
             why.append(f"rezerv: defter bakiyesi {balance:g}")
         (waiting if why else ready).append((j, why))
-    ready.sort(key=lambda t: t[0]["id"])
+    ready.sort(key=lambda t: (t[0]["priority"], t[0]["id"]))
     waiting.sort(key=lambda t: t[0]["id"])
     return ready, waiting, remaining_today
 

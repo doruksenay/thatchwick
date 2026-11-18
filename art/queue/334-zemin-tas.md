@@ -3,6 +3,7 @@ id: "334"
 title: Zemin stilleri: yassı taş, arnavut kaldırımı, tuğla, sırlı çini
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: zemin
 style_gate: false
 cost_est: 20

@@ -3,6 +3,7 @@ id: "354"
 title: Su gücüyle çalışan düzenekler: su hızarı, dink, su çekici
 status: pending
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
+priority: 20
 family: esya
 style_gate: false
 cost_est: 6

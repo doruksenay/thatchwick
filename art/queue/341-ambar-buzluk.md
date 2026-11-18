@@ -3,6 +3,7 @@ id: "341"
 title: Ambar, buzluk, buzhane
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 20
 family: esya
 style_gate: false
 cost_est: 5

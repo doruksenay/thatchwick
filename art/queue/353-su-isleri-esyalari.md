@@ -3,6 +3,7 @@ id: "353"
 title: Su işleri eşyaları: çeşme, yalak-lüle, akarsulu hela, sarnıç, yağmur fıçısı, su terazisi
 status: pending
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
+priority: 20
 family: esya
 style_gate: false
 cost_est: 10

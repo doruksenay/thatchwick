@@ -3,6 +3,7 @@ id: "329"
 title: Kapı stilleri: çaprazlı, yarım, demir kuşaklı, kemerli (iki eksen)
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: yapi
 style_gate: false
 cost_est: 40

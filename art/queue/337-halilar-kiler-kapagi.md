@@ -3,6 +3,7 @@ id: "337"
 title: Halılar (6) ve kiler kapağı
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: esya
 style_gate: false
 cost_est: 8

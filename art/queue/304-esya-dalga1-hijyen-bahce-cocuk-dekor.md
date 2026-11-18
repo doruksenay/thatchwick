@@ -3,6 +3,7 @@ id: "304"
 title: Dalga 1: hijyen, bahçe, çocuk ve yüzey dekoru (14 eşya; masal kitabı 17.11.2026 dönem kararıyla çıktı)
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: esya
 style_gate: false
 cost_est: 14

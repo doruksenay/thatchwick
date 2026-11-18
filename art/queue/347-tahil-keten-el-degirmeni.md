@@ -3,6 +3,7 @@ id: "347"
 title: Buğday, çavdar, yulaf, keten ekin evreleri ve el değirmeni
 status: pending
 approved_by: pending     # kullanıcı kararı bekliyor (dönem tutarlılığı, 2026-11-17); "user" yapınca işçi alır
+priority: 20
 family: bitki
 style_gate: false
 cost_est: 13

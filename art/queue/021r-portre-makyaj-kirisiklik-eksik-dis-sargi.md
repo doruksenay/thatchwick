@@ -3,7 +3,7 @@ id: "021r"
 title: Portre makyaj, kırışıklık, eksik diş, sargı
 status: running
 claimed_at: 2026-11-18T08:37Z
-approved_by: user
+approved_by: pending     # kullanıcı kararı 2026-11-18: portre işleri sonraki döneme ya da paket yükseltmeye ertelendi; devam için user yap
 family: karakter
 style_gate: false
 cost_est: 35

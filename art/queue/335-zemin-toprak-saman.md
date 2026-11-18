@@ -3,6 +3,7 @@ id: "335"
 title: Zemin stilleri: sıkıştırılmış toprak (iç), saman, saz serili
 status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
+priority: 10
 family: zemin
 style_gate: false
 cost_est: 15
