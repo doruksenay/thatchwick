@@ -1,7 +1,7 @@
 ---
 id: "345"
 title: Lazımlık, yıkanma kulübesi, havluluk
-status: pending
+status: review
 approved_by: user        # 2026-11-18 kullanıcı: toplu işçi mobilya pilotu ("geç")
 worker: batch            # Claude'suz toplu işçi; bulut ajanı almaz
 priority: 20
@@ -96,6 +96,10 @@ Tarifin makine okunur hâli (`tools/art/batch_worker.py`); tuval ve yükseklik 3
 
 ## Doğrulama
 `validate_iso.py`, `style.py check --family esya`, ayak izi kılavuzuyla örtüşme (301 ölçütleri). Kulübe 1x2: ayak izi iki karo.
+
+- 2026-11-18 (toplu işçi): başladı
+
+- 2026-11-18 (toplu işçi): 2/3 teslim, 8 gen, Claude'suz. Rapor: art/results/345-tuvalet-banyo-esyalari.md
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
