@@ -67,6 +67,9 @@ namespace Thatchwick.Game
         private readonly HashSet<string> _pendingSeen = new HashSet<string>();
         private readonly List<int> _catTabs = new List<int>();   // görünen kategori sekmeleri (boşlar gizli)
         private string[] _catNames;
+        private int _shopGroup;              // Eşya ana grubu (ShopGroups)
+        private readonly List<int> _groupTabs = new List<int>();
+        private string[] _groupNames;
         private int _shopCat;                // kategori sırası; Categories.Length = hayvanlar
         private int _roomFilter;             // 0 hepsi, sonra ItemCatalog.Rooms
         private int _setFilter;              // 0 hepsi, sonra ItemCatalog.StyleSets
@@ -108,7 +111,7 @@ namespace Thatchwick.Game
 
         /// <summary>GUI koordinatlarında (ölçeklenmiş) panel dikdörtgeni.</summary>
         public Rect PanelRect(float guiScale) =>
-            new Rect(Screen.width / guiScale - 278f, 8f, 270f, Screen.height / guiScale - 16f);
+            new Rect(Screen.width / guiScale - 278f, 8f, 270f, Screen.height / guiScale - 104f);   // alttaki ihtiyaç çubuğuna binmesin
 
         public void Toggle() { if (Active) Exit(); else Enter(); }
 
@@ -251,7 +254,7 @@ namespace Thatchwick.Game
                 {
                     _surfaceId = surface.Id;
                     Focus(surface);
-                    _status = $"{surface.Def.DisplayName}: bir yuvaya dokun.";
+                    _status = NoFitStatus(surface) ?? $"{surface.Def.DisplayName}: bir yuvaya dokun.";
                 }
                 else _status = surface != null ? $"{surface.Def.DisplayName} dekor taşımaz; masa ya da raf seç." : "Dekor için masa ya da raf seç.";
                 RefreshOverlay();
@@ -793,8 +796,11 @@ namespace Thatchwick.Game
 
             DrawContext();
 
-            _scroll = GUILayout.BeginScrollView(_scroll);
+            // Dikey kaydırma çubuğu her zaman ayrılır, içerik sabit genişlikte: sağdan taşma/kesilme olmasın.
+            _scroll = GUILayout.BeginScrollView(_scroll, false, true, GUIStyle.none, GUI.skin.verticalScrollbar);
+            GUILayout.BeginVertical(GUILayout.Width(236f));
             if (_mode == 2) DrawInventory(); else DrawShop();
+            GUILayout.EndVertical();
             GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
@@ -851,14 +857,14 @@ namespace Thatchwick.Game
         // İnşa araçları iki seviye: grup, sonra araç (en çok 2 seviye kuralı).
         private static readonly (string name, (string label, Tool tool)[] tools)[] BuildGroups =
         {
-            ("Duvar ve oda", new[] { ("Oda", Tool.Room), ("Duvar", Tool.Wall), ("Yarım duvar", Tool.HalfWall), ("Kapı", Tool.Door),
+            ("Duvar", new[] { ("Oda", Tool.Room), ("Duvar", Tool.Wall), ("Yarım duvar", Tool.HalfWall), ("Kapı", Tool.Door),
                 ("Pencere", Tool.Window), ("Kaldır", Tool.EraseEdge), ("Duvar it", Tool.PushWall), ("Oda taşı", Tool.MoveRoom), ("Oda kopyala", Tool.CopyRoom) }),
-            ("Zemin ve çatı", new[] { ("Zemin", Tool.Floor), ("Oda zemini", Tool.FloorRoom), ("Duvar kapl.", Tool.Finish), ("Oda kapl.", Tool.FinishRoom),
+            ("Zemin", new[] { ("Zemin", Tool.Floor), ("Oda zemini", Tool.FloorRoom), ("Duvar kapl.", Tool.Finish), ("Oda kapl.", Tool.FinishRoom),
                 ("Çatı", Tool.Roof), ("Çim", Tool.FloorErase) }),
-            ("Bahçe ve yol", new[] { ("Çit", Tool.Fence), ("Çit kapısı", Tool.Gate), ("Korkuluk", Tool.Railing), ("Gölet kaz", Tool.Pond),
+            ("Bahçe", new[] { ("Çit", Tool.Fence), ("Çit kapısı", Tool.Gate), ("Korkuluk", Tool.Railing), ("Gölet kaz", Tool.Pond),
                 ("Patika", Tool.RoadPath), ("Çakıl yol", Tool.RoadGravel), ("Kaldırım", Tool.RoadPaved), ("Yol sil", Tool.RoadErase) }),
-            ("Su yolu", new (string, Tool)[0]),
-            ("Arsa ve kat", new[] { ("Döşeme", Tool.LevelBuild), ("Döşeme sök", Tool.LevelRemove), ("Arsa al", Tool.Plot),
+            ("Su", new (string, Tool)[0]),
+            ("Arsa", new[] { ("Döşeme", Tool.LevelBuild), ("Döşeme sök", Tool.LevelRemove), ("Arsa al", Tool.Plot),
                 ("Depo", Tool.ZoneStorage), ("Otlak", Tool.ZonePasture), ("Bölge sil", Tool.ZoneErase) }),
         };
         private static readonly string[] BuildGroupNames = BuildGroups.Select(g => g.name).ToArray();
@@ -873,7 +879,7 @@ namespace Thatchwick.Game
 
         private void DrawBuildGroups()
         {
-            int g = GUILayout.SelectionGrid(_buildGroup, BuildGroupNames, 3);
+            int g = GUILayout.Toolbar(_buildGroup, BuildGroupNames, GUILayout.Height(26f));
             if (g != _buildGroup) { int gg = g; _deferred = () => { SelectGroup(gg); ClearSelection(); _status = ""; }; }
             GUILayout.Space(4f);
             var tools = BuildGroups[_buildGroup].tools;
@@ -1008,8 +1014,11 @@ namespace Thatchwick.Game
             _partScroll = GUILayout.BeginScrollView(_partScroll);
             if (kind.Value == BuildPartKind.WallFinish && PartToggle(current == null, "Çıplak (kaplamayı kaldır)", null)) _style[kind.Value] = null;
             int accountLevel = _svc.AccountLevel != null ? _svc.AccountLevel() : int.MaxValue;
+            int nextPart = int.MaxValue;   // yalnızca sıradaki kilit kademesi görünür (29-menu-yapisi)
+            foreach (var p in parts) if (p.UnlockLevel > accountLevel && p.UnlockLevel < nextPart) nextPart = p.UnlockLevel;
             foreach (var p in parts)
             {
+                if (p.UnlockLevel > nextPart) continue;
                 bool selected = current == p.Id || current == null && p.IsDefault && kind.Value != BuildPartKind.WallFinish;
                 bool locked = accountLevel < p.UnlockLevel;
                 string price = kind.Value == BuildPartKind.Roof ? (p.Price > 0 ? $"{p.Price}/karo" : "ücretsiz")
@@ -1091,9 +1100,12 @@ namespace Thatchwick.Game
                 if (def.Placement == ItemPlacement.Surface)
                 {
                     // Dokunma yerine listeden de seçilebilir (mobil ve küçük hedefler için).
+                    // Yalnızca bu eşyanın uyduğu yüzeyler listelenir (örtü yalnızca örtü yuvası olan masaya; 27 D2).
+                    int fitting = 0;
                     foreach (var it in _world.Items)
                     {
-                        if (it.IsDecor || it.Def.SurfaceSlots.Count == 0) continue;
+                        if (it.IsDecor || it.Def.SurfaceSlots.Count == 0 || !ItemCatalog.SurfaceAccepts(it.Def, def)) continue;
+                        fitting++;
                         if (GUILayout.Button($"{it.Def.DisplayName} ({it.Position.X},{it.Position.Y})"))
                         {
                             _surfaceId = it.Id;
@@ -1102,9 +1114,18 @@ namespace Thatchwick.Game
                             RefreshOverlay();
                         }
                     }
+                    if (fitting == 0)
+                    {
+                        var where = ItemCatalog.FittingSurfaces(_content, def);
+                        GUILayout.Label(where.Count > 0
+                            ? $"Evde {def.DisplayName} konacak yer yok. Uyduğu eşyalar: {string.Join(", ", where)}."
+                            : $"Evde {def.DisplayName} konacak yer yok.", _wrap);
+                    }
                     if (_surfaceId != 0)
                     {
                         var surface = _world.GetItem(_surfaceId);
+                        string noFit = surface != null ? NoFitStatus(surface) : null;
+                        if (noFit != null) GUILayout.Label(noFit, _wrap);
                         if (surface != null)
                         {
                             // Yuvalar: tür, boyut ve uyup uymadığı (rafa yalnızca rafa uyumlu eşya; 27-ev-dekorasyonu).
@@ -1221,6 +1242,16 @@ namespace Thatchwick.Game
         }
 
         // Dekor denetimleri (27): duvar bandı, halı sırası, yük, durum, kararma, döküntü.
+        // Seçilen yüzeyde bu dekorun türüne ve boyutuna uyan yuva yoksa nedeni ve uyduğu eşyalar; uyuyorsa null.
+        private string NoFitStatus(ItemInstance surface)
+        {
+            if (_placeId == null || !_content.Items.TryGet(_placeId, out var def) || ItemCatalog.SurfaceAccepts(surface.Def, def)) return null;
+            var where = ItemCatalog.FittingSurfaces(_content, def);
+            string kinds = string.Join(", ", def.EffectiveFits.Select(Decor.KindName));
+            return $"{def.DisplayName} {surface.Def.DisplayName} üstüne konmaz (yalnızca {kinds} yuvası)."
+                + (where.Count > 0 ? $" Uyduğu eşyalar: {string.Join(", ", where)}." : "");
+        }
+
         private void DrawDecorControls(ItemInstance sel)
         {
             if (sel.Condition != ItemCondition.Sound)
@@ -1384,15 +1415,18 @@ namespace Thatchwick.Game
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Ara:", GUILayout.Width(32f));
-            _search = GUILayout.TextField(_search ?? "");
+            _search = GUILayout.TextField(_search ?? "", GUILayout.Width(196f));
             GUILayout.EndHorizontal();
             string q = _activeSearch.Trim();
             if (q.Length > 0) { DrawSearch(q, level); return; }
 
             if (_catTabs.Count == 0) { GUILayout.Label("Henüz alınabilecek eşya yok."); return; }
             int n = ItemCatalog.Categories.Length;
+            int gsel = Mathf.Max(0, _groupTabs.IndexOf(_shopGroup));
+            int gpick = GUILayout.Toolbar(gsel, _groupNames, GUILayout.Height(26f));
+            if (gpick != gsel) { int gg = _groupTabs[gpick]; _deferred = () => { MarkSeen(); _shopGroup = gg; _shopCat = -1; _scroll = Vector2.zero; }; }
             int sel = Mathf.Max(0, _catTabs.IndexOf(_shopCat));
-            int pick = GUILayout.SelectionGrid(sel, _catNames, 3);
+            int pick = GUILayout.SelectionGrid(sel, _catNames, 2);
             if (pick != sel) { int c = _catTabs[pick]; _deferred = () => { MarkSeen(); _shopCat = c; _scroll = Vector2.zero; }; }
             int cat = _catTabs[sel];
             if (cat == n) { DrawAnimals(); return; }
@@ -1428,20 +1462,50 @@ namespace Thatchwick.Game
         }
 
         // Kategori sekmeleri yalnızca Layout'ta kurulur; boş kategori gizli, yeni eşyası olan "•" alır.
+        // Eşya kategorileri iki seviye (Sims gibi): önce ana grup, sonra alt kategori. "animals" = Hayvan sekmesi.
+        private static readonly (string name, string[] cats)[] ShopGroups =
+        {
+            ("Mobilya", new[] { "seating", "sleep", "surfaces", "storage", "kids" }),
+            ("Ev işi", new[] { "kitchen", "work", "hygiene", "heat_light" }),
+            ("Süs", new[] { "decor", "decor_wall", "rug", "ceiling" }),
+            ("Dışarı", new[] { "garden", "farm", "barn", "animals", "structure" }),
+        };
+
+        private int CatIndex(string id)
+        {
+            if (id == "animals") return _animals != null ? ItemCatalog.Categories.Length : -1;
+            for (int i = 0; i < ItemCatalog.Categories.Length; i++) if (ItemCatalog.Categories[i].id == id) return i;
+            return -1;
+        }
+
+        // Sekmeler yalnızca Layout'ta kurulur; boş kategori ve boş grup gizli, yeni eşyası olan "•" alır.
         private void RebuildShopTabs(int level)
         {
-            _catTabs.Clear();
-            var names = new List<string>();
-            for (int i = 0; i < ItemCatalog.Categories.Length; i++)
+            _groupTabs.Clear(); _catTabs.Clear();
+            var groupNames = new List<string>(); var catNames = new List<string>();
+            for (int g = 0; g < ShopGroups.Length; g++)
             {
-                var vis = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[i].id), level);
-                if (vis.Count == 0) continue;
-                bool fresh = vis.Any(d => _svc.IsUnlocked(d) && !_seen.Contains(d.Id));
-                _catTabs.Add(i);
-                names.Add(ItemCatalog.Categories[i].name + (fresh ? " •" : ""));
+                var cats = new List<(int idx, string name)>();
+                bool groupFresh = false;
+                foreach (var id in ShopGroups[g].cats)
+                {
+                    int i = CatIndex(id);
+                    if (i < 0) continue;
+                    if (i == ItemCatalog.Categories.Length) { cats.Add((i, "Hayvan")); continue; }
+                    var vis = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[i].id), level);
+                    if (vis.Count == 0) continue;
+                    bool fresh = vis.Any(d => _svc.IsUnlocked(d) && !_seen.Contains(d.Id));
+                    groupFresh |= fresh;
+                    cats.Add((i, ItemCatalog.Categories[i].name + (fresh ? " •" : "")));
+                }
+                if (cats.Count == 0) continue;
+                _groupTabs.Add(g);
+                groupNames.Add(ShopGroups[g].name + (groupFresh ? " •" : ""));
+                if (g == _shopGroup) foreach (var c in cats) { _catTabs.Add(c.idx); catNames.Add(c.name); }
             }
-            if (_animals != null) { _catTabs.Add(ItemCatalog.Categories.Length); names.Add("Hayvan"); }
-            _catNames = names.ToArray();
+            if (!_groupTabs.Contains(_shopGroup) && _groupTabs.Count > 0) { _shopGroup = _groupTabs[0]; RebuildShopTabs(level); return; }
+            _groupNames = groupNames.ToArray();
+            _catNames = catNames.ToArray();
         }
 
         private void DrawSearch(string q, int level)

@@ -2492,6 +2492,13 @@
           "id": "a",
           "u": 0.5,
           "v": 0.5
+        },
+        {
+          "id": "cover",
+          "u": 0.5,
+          "v": 0.5,
+          "kind": "ortu",
+          "size": "L"
         }
       ],
       "interactions": [],

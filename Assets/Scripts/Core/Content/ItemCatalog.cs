@@ -66,6 +66,28 @@ namespace Thatchwick.Core.Content
         }
 
         /// <summary>Kart özeti (content verilirse doldurulan ürün adları): "Enerji +60 · Dinlenmiş · Isı 80 · Depo +40 · Işık · 3 yuva · Duvara asılır".</summary>
+        /// <summary>Bu dekorun konabildiği yüzey tanımı mı (türü ve boyutu uyan en az bir yuvası var).</summary>
+        public static bool SurfaceAccepts(ItemDef surface, ItemDef decor)
+        {
+            if (surface == null || decor == null || decor.Placement != ItemPlacement.Surface) return false;
+            foreach (var slot in surface.SurfaceSlots)
+                if (decor.FitsKind(surface.SlotKind(slot)) && decor.DecorSize <= slot.Size) return true;
+            return false;
+        }
+
+        /// <summary>Dekorun konabildiği satın alınabilir eşyaların adları (en ucuzdan; en çok max tane).</summary>
+        public static List<string> FittingSurfaces(ContentDatabase content, ItemDef decor, int max = 4)
+        {
+            var defs = new List<ItemDef>();
+            if (content == null || decor == null) return new List<string>();
+            foreach (var d in content.Items.All)
+                if (d.Price > 0 && !d.HasTag("craftonly") && SurfaceAccepts(d, decor)) defs.Add(d);
+            defs.Sort((a, b) => a.Price.CompareTo(b.Price));
+            var names = new List<string>();
+            foreach (var d in defs) { if (names.Count >= max) break; names.Add(d.DisplayName); }
+            return names;
+        }
+
         public static string Describe(ItemDef def, MoodCatalog moods = null) => Describe(def, moods, null);
 
         public static string Describe(ItemDef def, MoodCatalog moods, ContentDatabase content)
@@ -130,7 +152,13 @@ namespace Thatchwick.Core.Content
             {
                 var kinds = new List<string>();
                 foreach (var k in def.EffectiveFits) kinds.Add(Decor.KindName(k));
-                parts.Add($"{string.Join(", ", kinds)} · boyut {Decor.SizeLetter(def.DecorSize)} · yük {def.Weight}");
+                if (def.FitsKind(Decor.Cover) && def.EffectiveFits.Count == 1)
+                {
+                    // Örtü: hangi eşyanın örtü yuvası olduğu kartta yazsın (yalnız "örtü" yetmez).
+                    var where = content != null ? FittingSurfaces(content, def) : new List<string>();
+                    parts.Add(where.Count > 0 ? $"Örtü: {string.Join(", ", where)} üstüne serilir" : "Örtü: örtü yuvası olan masaya serilir");
+                }
+                else parts.Add($"{string.Join(", ", kinds)} · boyut {Decor.SizeLetter(def.DecorSize)} · yük {def.Weight}");
             }
             if (def.SurfaceSlots.Count > 0 && def.MaxLoad > 0) parts.Add($"Taşır {def.MaxLoad}");
             if (def.Tall) parts.Add("Uzun (önündeki duvarın alt ve orta bandını kapatır)");

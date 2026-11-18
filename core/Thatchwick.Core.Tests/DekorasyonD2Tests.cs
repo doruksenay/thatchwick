@@ -297,6 +297,21 @@ namespace Thatchwick.Core.Tests
             Assert.False(k.World.CanPlaceOnSurface(k.D("item.candle"), sedir.Id, "a").Ok);   // minder yuvası
         }
 
+        [Fact]
+        public void Ortu_KutukSehpayaDaSerilir_KartUyduguEsyalariYazar()
+        {
+            var k = Make();
+            var stump = k.World.PlaceItem(k.D("item.stump_table"), new GridPos(4, 3));
+            var cloth = k.D("item.tablecloth_linen");
+            Assert.True(k.World.CanPlaceOnSurface(cloth, stump.Id, "cover").Ok);
+            Assert.True(ItemCatalog.SurfaceAccepts(stump.Def, cloth));
+            Assert.False(ItemCatalog.SurfaceAccepts(k.D("item.hearth_stone"), cloth));
+            var where = ItemCatalog.FittingSurfaces(k.Db, cloth);
+            Assert.Equal("Kütük sehpa", where[0]);                                   // en ucuzu önce
+            Assert.Contains("Tahta masa", where);
+            Assert.Contains("Örtü: Kütük sehpa, ", ItemCatalog.Describe(cloth, null, k.Db));
+        }
+
         // ---------- pencere ve ocak ----------
 
         [Fact]
