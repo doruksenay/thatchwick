@@ -15,7 +15,7 @@ namespace Thatchwick.Game
     /// </summary>
     public sealed class VillagePanel
     {
-        private static readonly string[] Tabs = { "Köylüler", "Proje", "Demirci", "Meslek", "Hedef", "Soy" };
+        private static readonly string[] Tabs = { "Köylüler", "Haneler", "Proje", "Demirci", "Meslek", "Hedef", "Soy" };
 
         private readonly LifeSystems _life;
         private readonly ContentDatabase _content;
@@ -24,6 +24,7 @@ namespace Thatchwick.Game
         private readonly Dynasty _dynasty;
         private readonly Func<Character> _commander;
         private int _tab;
+        private int _openHouse = -1;
         private Vector2 _scroll;
         private string _status = "";
         private string _giftTo;
@@ -56,10 +57,11 @@ namespace Thatchwick.Game
             switch (_tab)
             {
                 case 0: DrawVillagers(); break;
-                case 1: DrawProjects(); break;
-                case 2: DrawSmith(); break;
-                case 3: DrawBranches(); break;
-                case 4: DrawGoals(); break;
+                case 1: DrawHouses(); break;
+                case 2: DrawProjects(); break;
+                case 3: DrawSmith(); break;
+                case 4: DrawBranches(); break;
+                case 5: DrawGoals(); break;
                 default: DrawLineage(); break;
             }
             GUILayout.EndScrollView();
@@ -219,6 +221,43 @@ namespace Thatchwick.Game
         }
 
         // ---- soy ve mezarlar ----
+
+        // ---- komşu hanedanlar ----
+
+        private void DrawHouses()
+        {
+            var svc = _life.Houses;
+            int? founder = _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
+            GUILayout.Label("Köydeki aileler. Başı ölen hanenin yerine varisi geçer; dükkânı yetişkin varis sürdürür.");
+            foreach (var h in svc.Houses)
+            {
+                if (h.Extinct && _openHouse != h.Id) continue;
+                var head = _life.Population.Find(h.HeadId);
+                int ours = 0;
+                foreach (var m in svc.LivingMembers(h)) if (founder.HasValue && _life.Legacy.IsDescendantOf(m, founder.Value)) ours++;
+                string headText = head != null && !head.IsDead ? $"{head.Name} ({AgeStages.Name(head.Stage)})" : "başsız";
+                string line = $"{h.Name} · baş {headText} · {svc.LivingCount(h)} kişi · {svc.Generations(h)} kuşak · {h.HeadCount}. baş"
+                              + (ours > 0 ? $" · senin soyundan {ours}" : "") + (h.Extinct ? " · soyu tükendi" : "");
+                if (GUILayout.Button(line, GUI.skin.label)) _openHouse = _openHouse == h.Id ? -1 : h.Id;
+                if (_openHouse != h.Id) continue;
+                foreach (var n in svc.TreeOf(h))
+                {
+                    var p = n.Person;
+                    string indent = new string(' ', (n.Depth - 1) * 3);
+                    string state = p.IsDead ? "öldü" : AgeStages.Name(p.Stage);
+                    string spouse = n.Spouse != null ? $" ∞ {n.Spouse.Name}" : "";
+                    string mark = n.IsHead ? "★ " : "";
+                    string blood = founder.HasValue && _life.Legacy.IsDescendantOf(p, founder.Value) ? " · senin soyun" : "";
+                    GUILayout.Label($"  {indent}{mark}{p.Name} ({state}){spouse}{blood}");
+                }
+                if (h.Heads.Count > 1)
+                {
+                    var names = new List<string>();
+                    foreach (var r in h.Heads) names.Add(r.Name);
+                    GUILayout.Label("  Başlar: " + string.Join(" → ", names));
+                }
+            }
+        }
 
         private void DrawLineage()
         {

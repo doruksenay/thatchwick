@@ -52,6 +52,8 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Miras: Soy Mührü, yadigârlar, komşu hanelere evlendirme, köydeki soy.</summary>
         public Legacy Legacy { get; }
+        /// <summary>Komşu NPC hanedanları: köydeki aileler, başları, soy ağaçları (Adım 55).</summary>
+        public NeighborHouseService Houses { get; }
 
         /// <summary>Hanedan kurucusunun kimliği (köydeki soy sayımı); oyun katmanı bağlar. Null ise sayım yapılmaz.</summary>
         public Func<int?> FounderId { get; set; }
@@ -104,6 +106,12 @@ namespace Thatchwick.Core.Life
             Goals = new GoalService(content) { Metric = MetricValue };
             Legacy = new Legacy(population, seed != 0 ? Seeds.Derive(seed, 5) : 61) { DaysPerYear = clock.Config.DaysPerYear };
             Mood.ExtraComfort = Legacy.ComfortBonus;
+            Houses = new NeighborHouseService(population, Villagers, content, seed != 0 ? Seeds.Derive(seed, 9) : 71) { Today = () => Clock.TotalDays };
+            Houses.HeadChanged += (h, heir, old) => Say($"{h.Name}: {heir.Name} hanenin başına geçti{(old != null ? $" ({old.Name} yerine)" : "")}.", NoticeLevel.Info, heir.Id);
+            Houses.VillagersMarried += (a, b) => Say($"Köyde düğün: {a.Name} ile {b.Name} evlendi.", NoticeLevel.Info, a.Id);
+            Houses.HouseEnded += h => Say($"{h.Name}nin soyu tükendi.", NoticeLevel.Info);
+            Legacy.MarriedOutHappened += (member, villager) => Houses.JoinSpouses(member, villager);
+            Villagers.RoleInherited += (heir, def) => Say($"{heir.Name}, {def.RoleName.ToLowerInvariant()} dükkânını devraldı.", NoticeLevel.Info, heir.Id);
             Legacy.SealsChanged += e =>
             {
                 if (e.Amount > 0) Say($"Soy Mührü +{e.Amount}: {e.Note}.", NoticeLevel.Info);
@@ -451,6 +459,9 @@ namespace Thatchwick.Core.Life
             // Miras: dünyadan kalkmış yadigârlar düşer; komşu hanelerde soy sürer; köydeki soy eşikleri.
             Legacy.Validate(World.GetItem);
             foreach (var w in Legacy.NeighborFamiliesDaily()) Say($"{w.Name} çocuk bekliyor.", NoticeLevel.Info, w.Id);
+            // Komşu hanedanlar: hanesizleri yerleştir, ölen başın yerine varis, köyde düğün; dükkân yetişkin varise hemen geçer.
+            Houses.OnNewDay();
+            Villagers.ReplaceDeparted(inheritOnly: true);
             var founder = FounderId != null ? FounderId() : null;
             if (founder.HasValue) Legacy.CheckDescendants(founder.Value, Clock.TotalDays);
             NewDay?.Invoke(day);
@@ -483,6 +494,7 @@ namespace Thatchwick.Core.Life
                 festivalsCelebrated = FestivalsCelebrated,
                 accidentSetting = (int)Injuries.Setting,
                 legacy = Legacy.Export(),
+                houses = Houses.Export(),
                 lastHouseholdAccidentDay = Injuries.LastHouseholdAccidentDay
             };
             var graves = new List<GraveSave>();
@@ -507,6 +519,7 @@ namespace Thatchwick.Core.Life
             Goals.Restore(data.goalsDone);
             Villagers.Restore(data.villagers);
             Legacy.Restore(data.legacy);
+            Houses.Restore(data.houses);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;
             Injuries.LastHouseholdAccidentDay = data.lastHouseholdAccidentDay;

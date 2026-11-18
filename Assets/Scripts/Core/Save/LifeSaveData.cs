@@ -57,5 +57,31 @@ namespace Thatchwick.Core.Save
         public double lastHouseholdAccidentDay = -1;
         // Miras (17.11.2026): Soy Mührü, yadigârlar, komşu haneye evlendirilenler. Eski kayıtta null: boş başlar.
         public Thatchwick.Core.Family.LegacySave legacy;
+        // Komşu NPC hanedanları (18.11.2026). Eski kayıtta null: haneler mevcut köylülerden kurulur.
+        public NeighborHouseSave[] houses;
+    }
+
+    [Serializable]
+    public sealed class NeighborHouseSave
+    {
+        public int id;
+        public string name;
+        public string defId;
+        public int headId, founderId;
+        public double foundedDay;
+        public bool extinct;
+        /// <summary>Haneye girmiş herkes (ölüler dahil).</summary>
+        public int[] members;
+        /// <summary>Şu an bu hanede yaşayanlar (evlenip başka haneye gidenler hariç).</summary>
+        public int[] current;
+        public HouseHeadSave[] heads;
+    }
+
+    [Serializable]
+    public sealed class HouseHeadSave
+    {
+        public int id;
+        public string name;
+        public double day;
     }
 }
