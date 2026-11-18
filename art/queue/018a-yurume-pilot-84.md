@@ -1,7 +1,7 @@
 ---
 id: "018a"
 title: Yürüme pilotu: erkek 84 px, SE
-status: running
+status: review
 claimed_at: 2026-11-18T18:51Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50
