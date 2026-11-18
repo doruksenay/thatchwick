@@ -102,11 +102,16 @@ namespace Thatchwick.Core.Animals
         }
 
         /// <summary>Hayvan satın alır: akçe ve barınakta boş yer gerekir. Barınağın yanında belirir.</summary>
+        /// <summary>Hanenin en iyi beceri seviyesi; verilirse hayvan kilidi Hayvancılık'a bakar (karar 28-4).</summary>
+        public Func<SkillType, int> SkillLevel { get; set; }
+
         public PlacementCheck Buy(string speciesId, Household house, out Animal animal, int accountLevel = int.MaxValue, bool? female = null)
         {
             animal = null;
             if (!_content.Animals.TryGet(speciesId, out var species)) return PlacementCheck.Fail("Böyle bir hayvan yok.");
-            if (accountLevel < species.UnlockLevel) return PlacementCheck.Fail($"Hesap seviyesi {species.UnlockLevel} gerekli.");
+            if (SkillLevel != null ? !Thatchwick.Core.Progress.UnlockGate.IsOpen(SkillLevel, null, SkillType.AnimalHusbandry, species.UnlockLevel) : accountLevel < species.UnlockLevel)
+                return PlacementCheck.Fail(Thatchwick.Core.Progress.UnlockGate.Text(SkillLevel, SkillType.AnimalHusbandry, species.UnlockLevel));
+
             var home = FindHome(species);
             if (home == null) return PlacementCheck.Fail($"Önce barınak koy ({HousingName(species.Housing)}) ya da yer aç.");
             if (!house.TrySpend(species.Price)) return PlacementCheck.Fail("Akçe yetmiyor.");
@@ -372,6 +377,9 @@ namespace Thatchwick.Core.Animals
             _allowedCache = null;
             _roadCache = null;
         }
+
+        /// <summary>Yırtıcı (kurt) öldürdü.</summary>
+        public void KillByPredator(Animal a) { if (a != null && !a.IsDead) Kill(a, AnimalDeath.Predator); }
 
         private void Kill(Animal a, AnimalDeath cause)
         {

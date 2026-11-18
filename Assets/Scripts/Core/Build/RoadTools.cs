@@ -42,7 +42,7 @@ namespace Thatchwick.Core.Build
             var room = map.Rooms.RoomAt(tile);
             if (room != null && room.IsIndoor) return "Yol açık havaya döşenir (içeriye zemin döşe).";
             if (type != RoadType.None && (map.IsBlocked(tile) || _world.GetItemAt(tile) != null)) return "Üstünde bir şey var.";
-            if (type != RoadType.None && AccountLevel != null && AccountLevel() < RoadLevel(type)) return $"Hesap seviyesi {RoadLevel(type)} gerekli.";
+            if (type != RoadType.None && !Thatchwick.Core.Progress.UnlockGate.IsOpen(SkillLevel, AccountLevel, Characters.SkillType.Masonry, RoadLevel(type))) return Thatchwick.Core.Progress.UnlockGate.Text(SkillLevel, Characters.SkillType.Masonry, RoadLevel(type));
             var old = map.GetRoad(tile);
             if (old == type && (type == RoadType.None || !map.IsNaturalRoad(tile) && map.GetRoadCondition(tile) >= 0.999f)) return type == RoadType.None ? "Burada yol yok." : "Orası zaten öyle.";
             return null;

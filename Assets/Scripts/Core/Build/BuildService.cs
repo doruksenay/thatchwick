@@ -136,6 +136,8 @@ namespace Thatchwick.Core.Build
 
         /// <summary>Hesap seviyesi sağlayıcı (T10); null ise her eşya açık.</summary>
         public Func<int> AccountLevel { get; set; }
+        /// <summary>Hanenin bir becerideki en iyi seviyesi; verilirse kilitler beceriye bakar (karar 28-4).</summary>
+        public Func<Characters.SkillType, int> SkillLevel { get; set; }
 
         /// <summary>İndirim oranı (0-0.5); hane reisinin Tüccar/Usta dalı gibi özelliklerinden gelir. Yoksa indirim yok.</summary>
         public Func<float> Discount { get; set; }
@@ -249,7 +251,8 @@ namespace Thatchwick.Core.Build
             return it;
         }
 
-        public bool IsUnlocked(ItemDef def) => AccountLevel == null || AccountLevel() >= def.UnlockLevel;
+        public bool IsUnlocked(ItemDef def) => Thatchwick.Core.Progress.UnlockGate.IsOpen(SkillLevel, AccountLevel, Thatchwick.Core.Progress.UnlockGate.SkillFor(def), def.UnlockLevel);
+        public string LockText(ItemDef def) => Thatchwick.Core.Progress.UnlockGate.Text(SkillLevel, Thatchwick.Core.Progress.UnlockGate.SkillFor(def), def.UnlockLevel);
 
         /// <summary>Çiftçilik sistemi; verilirse pencereli sera odalarına da dikilebilir.</summary>
         public Work.PlantSystem Plants { get; set; }
@@ -270,7 +273,7 @@ namespace Thatchwick.Core.Build
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.Price <= 0) return PlacementCheck.Fail("Bu eşya satılmıyor.");
-            if (!IsUnlocked(def)) return PlacementCheck.Fail($"Hesap seviyesi {def.UnlockLevel} gerekli.");
+            if (!IsUnlocked(def)) return PlacementCheck.Fail(LockText(def));
             if (Storage != null && !Storage.HasRoomFor(itemId)) return PlacementCheck.Fail("Depo dolu: depo bölgesi çiz ya da sandık koy.");
             int paid = PriceFor(def);
             if (!_house.TrySpend(paid)) return PlacementCheck.Fail("Akçe yetmiyor.");
@@ -907,7 +910,7 @@ namespace Thatchwick.Core.Build
             if (IsLocked(item)) return PlacementCheck.Fail(Locked);
             if (!item.Def.Variants.Contains(variantId)) return PlacementCheck.Fail("Bu eşyanın böyle bir varyantı yok.");
             if (!_content.Items.TryGet(variantId, out var variant)) return PlacementCheck.Fail("Varyant bulunamadı.");
-            if (!IsUnlocked(variant)) return PlacementCheck.Fail($"Hesap seviyesi {variant.UnlockLevel} gerekli.");
+            if (!IsUnlocked(variant)) return PlacementCheck.Fail(LockText(variant));
             foreach (var other in _world.Items)
                 if (other.ParentId == itemId) return PlacementCheck.Fail("Önce üstündeki dekoru al.");
 

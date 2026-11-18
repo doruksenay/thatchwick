@@ -170,3 +170,93 @@ namespace Thatchwick.Core.Animals
         public static int BetPayout(int stake, double winChance) => (int)Math.Floor(stake / Math.Max(0.05, winChance) * 0.9);
     }
 }
+
+namespace Thatchwick.Core.Animals
+{
+    /// <summary>
+    /// Yarışmaya kayıt defteri (29-4.1): kayıtta giriş ücreti alınır, şenlik günü yarış simüle edilir; ödül kasaya,
+    /// sonuç bildirime ve kroniğe gider. Yaz Panayırı: at yarışı (ana). Hasat Şenliği: güzellik ve kütük çekme (ana).
+    /// İlkbahar şenliği: köy koşusu (unvan vermez).
+    /// </summary>
+    public sealed class ContestBook
+    {
+        public sealed class Entry { public ContestKind Kind; public int AnimalId, HandlerId; }
+
+        private readonly List<Entry> _entries = new List<Entry>();
+        private readonly Random _rng;
+        public ContestBook(int seed = 151) { _rng = new Random(seed); }
+
+        public IReadOnlyList<Entry> Entries => _entries;
+        public event Action<ContestResult, Animal, Character> Finished;
+
+        /// <summary>Bu türden yarışma hangi şenlikte (ana yarış mı).</summary>
+        public static bool RunsAt(ContestKind kind, string festivalId, out bool mainEvent)
+        {
+            mainEvent = false;
+            switch (kind)
+            {
+                case ContestKind.HorseRace:
+                    if (festivalId == "festival.fair") { mainEvent = true; return true; }
+                    return festivalId == "festival.seed";   // köy koşusu
+                default:
+                    if (festivalId == "festival.harvest") { mainEvent = true; return true; }
+                    return false;
+            }
+        }
+
+        public bool IsRegistered(Animal a) { foreach (var e in _entries) if (e.AnimalId == a.Id) return true; return false; }
+
+        /// <summary>Kayıt: engel yoksa giriş ücreti alınır. Hata metni ya da null.</summary>
+        public string Register(ContestKind kind, Animal a, Character handler, Build.Household house)
+        {
+            var block = AnimalContests.Blocker(kind, a, handler);
+            if (block != null) return block;
+            if (IsRegistered(a)) return "Zaten kayıtlı.";
+            if (house != null && !house.TrySpend(AnimalContests.EntryFee)) return "Giriş ücreti için akçe yetmiyor.";
+            _entries.Add(new Entry { Kind = kind, AnimalId = a.Id, HandlerId = handler.Id });
+            return null;
+        }
+
+        public void Cancel(Animal a) => _entries.RemoveAll(e => e.AnimalId == a.Id);
+
+        /// <summary>Şenlik günü: o şenliğe ait kayıtları koşturur, ödülü kasaya ekler. Kayıt kalkar.</summary>
+        public List<ContestResult> RunFestival(string festivalId, int year, Func<int, Animal> findAnimal, Func<int, Character> findCharacter, Build.Household house)
+        {
+            var results = new List<ContestResult>();
+            for (int i = _entries.Count - 1; i >= 0; i--)
+            {
+                var e = _entries[i];
+                if (!RunsAt(e.Kind, festivalId, out bool main)) continue;
+                _entries.RemoveAt(i);
+                var a = findAnimal(e.AnimalId); var h = findCharacter(e.HandlerId);
+                var r = a != null && h != null ? AnimalContests.Run(_rng, e.Kind, a, h, year, main) : null;
+                if (r == null) continue;
+                if (r.PrizeAkce > 0) house?.AddAkce(r.PrizeAkce);
+                h.AddChronicle(r.Summary);
+                results.Add(r);
+                Finished?.Invoke(r, a, h);
+            }
+            return results;
+        }
+
+        public string[] Export()
+        {
+            var l = new List<string>();
+            foreach (var e in _entries) l.Add($"{(int)e.Kind}:{e.AnimalId}:{e.HandlerId}");
+            return l.ToArray();
+        }
+
+        public void Import(string[] data)
+        {
+            _entries.Clear();
+            if (data == null) return;
+            foreach (var s in data)
+            {
+                var p = s?.Split(':');
+                if (p == null || p.Length != 3) continue;
+                if (int.TryParse(p[0], out int k) && int.TryParse(p[1], out int a) && int.TryParse(p[2], out int h) && Enum.IsDefined(typeof(ContestKind), k))
+                    _entries.Add(new Entry { Kind = (ContestKind)k, AnimalId = a, HandlerId = h });
+            }
+        }
+    }
+}

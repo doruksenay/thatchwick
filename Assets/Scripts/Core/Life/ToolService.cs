@@ -21,6 +21,8 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Hesap seviyesi sağlayıcı; null ise sınır yok.</summary>
         public Func<int> AccountLevel { get; set; }
+        /// <summary>Hanenin en iyi beceri seviyesi; verilirse alet kademesi Demircilik'e bakar.</summary>
+        public Func<Thatchwick.Core.Characters.SkillType, int> SkillLevel { get; set; }
         /// <summary>Demirci var mı; null ise gerekmez.</summary>
         public Func<bool> SmithAvailable { get; set; }
 
@@ -63,7 +65,7 @@ namespace Thatchwick.Core.Life
             if (!_content.Tools.TryGet(toolId, out _)) return "Böyle bir alet yok.";
             var next = Next(toolId);
             if (next == null) return "Alet son kademede.";
-            if (AccountLevel != null && AccountLevel() < next.Level) return $"Hesap seviyesi {next.Level} gerekir.";
+            if (!Thatchwick.Core.Progress.UnlockGate.IsOpen(SkillLevel, AccountLevel, Thatchwick.Core.Characters.SkillType.Smithing, next.Level)) return Thatchwick.Core.Progress.UnlockGate.Text(SkillLevel, Thatchwick.Core.Characters.SkillType.Smithing, next.Level);
             if (SmithAvailable != null && !SmithAvailable()) return "Köyde demirci yok.";
             if (_house.Akce < next.Akce) return $"Akçe yetmiyor ({next.Akce} gerekir).";
             if (_house.Count(FuelItem) < next.Firewood) return $"Odun yetmiyor ({next.Firewood} gerekir).";

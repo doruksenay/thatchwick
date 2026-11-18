@@ -1024,17 +1024,17 @@ namespace Thatchwick.Game
             if (kind.Value == BuildPartKind.WallFinish && PartToggle(current == null, "Çıplak (kaplamayı kaldır)", null)) _style[kind.Value] = null;
             int accountLevel = _svc.AccountLevel != null ? _svc.AccountLevel() : int.MaxValue;
             int nextPart = int.MaxValue;   // yalnızca sıradaki kilit kademesi görünür (29-menu-yapisi)
-            foreach (var p in parts) if (p.UnlockLevel > accountLevel && p.UnlockLevel < nextPart) nextPart = p.UnlockLevel;
+            foreach (var p in parts) if (!_svc.IsUnlocked(p) && p.UnlockLevel < nextPart) nextPart = p.UnlockLevel;
             foreach (var p in parts)
             {
-                if (p.UnlockLevel > nextPart) continue;
+                if (!_svc.IsUnlocked(p) && p.UnlockLevel > nextPart) continue;
                 bool selected = current == p.Id || current == null && p.IsDefault && kind.Value != BuildPartKind.WallFinish;
-                bool locked = accountLevel < p.UnlockLevel;
+                bool locked = !_svc.IsUnlocked(p);
                 string price = kind.Value == BuildPartKind.Roof ? (p.Price > 0 ? $"{p.Price}/karo" : "ücretsiz")
                     : kind.Value == BuildPartKind.Floor ? $"{p.Price}/karo · {FloorBaseName(p.Base)}"
                     : _tool == Tool.HalfWall ? $"{System.Math.Max(1, (p.Price + 1) / 2)}"
                     : $"{p.Price}";
-                string label = locked ? $"{p.DisplayName} · Sv {p.UnlockLevel} gerekli" : $"{p.DisplayName} · {price}{(p.Comfort > 0 ? $" · konfor +{p.Comfort}" : "")}";
+                string label = locked ? $"{p.DisplayName} · {_svc.LockText(p)}" : $"{p.DisplayName} · {price}{(p.Comfort > 0 ? $" · konfor +{p.Comfort}" : "")}";
                 GUI.enabled = !locked;
                 if (PartToggle(selected, label, p)) _style[kind.Value] = p.Id;
                 GUI.enabled = true;
@@ -1260,8 +1260,8 @@ namespace Thatchwick.Game
                 {
                     bool selected = sel.FinishId == f.Id || sel.FinishId == null && f.IsDefault;
                     int diff = (int)System.Math.Round(sel.Def.Price * (f.PriceFactor - cur));
-                    string label = lv < f.UnlockLevel ? $"{f.DisplayName} · Sv {f.UnlockLevel}" : diff > 0 ? $"{f.DisplayName} (+{diff})" : f.DisplayName;
-                    GUI.enabled = lv >= f.UnlockLevel;
+                    string label = !_svc.IsUnlocked(f) ? $"{f.DisplayName} · {_svc.LockText(f)}" : diff > 0 ? $"{f.DisplayName} (+{diff})" : f.DisplayName;
+                    GUI.enabled = _svc.IsUnlocked(f);
                     if (PartToggle(selected, label, f))
                     {
                         var id = sel.Id; var fid = f.Id;
@@ -1512,7 +1512,7 @@ namespace Thatchwick.Game
         {
             int next = int.MaxValue;
             foreach (var d in list)
-                if (!_svc.IsUnlocked(d) && d.UnlockLevel > level && d.UnlockLevel < next) next = d.UnlockLevel;
+                if (!_svc.IsUnlocked(d) && d.UnlockLevel < next) next = d.UnlockLevel;
             return list.Where(d => _svc.IsUnlocked(d) || d.UnlockLevel <= next).ToList();
         }
 
@@ -1595,7 +1595,7 @@ namespace Thatchwick.Game
             }
             GUILayout.BeginHorizontal();
             GUI.enabled = unlocked;
-            if (GUILayout.Button(unlocked ? $"Al {def.Price}" : $"Sv {def.UnlockLevel} gerekli"))
+            if (GUILayout.Button(unlocked ? $"Al {def.Price}" : _svc.LockText(def)))
                 _deferred = () =>
                 {
                     var r = _svc.Buy(def.Id);
@@ -1619,16 +1619,18 @@ namespace Thatchwick.Game
             GUILayout.Label("Önce barınak koy (Bahçe: kümes, ahır, kulübe, sepet, kovan), sonra hayvanı al. Yemi pazardan al, barınağa dokunup \"Yem koy\".", _wrap);
             int level = _svc.AccountLevel != null ? _svc.AccountLevel() : int.MaxValue;
             int nextAnimal = int.MaxValue;
-            foreach (var a in _content.Animals.All) if (a.UnlockLevel > level && a.UnlockLevel < nextAnimal) nextAnimal = a.UnlockLevel;
+            System.Func<Thatchwick.Core.Content.AnimalSpeciesDef, bool> animalOpen = sp => _animals.SkillLevel != null
+                ? Thatchwick.Core.Progress.UnlockGate.IsOpen(_animals.SkillLevel, null, Thatchwick.Core.Characters.SkillType.AnimalHusbandry, sp.UnlockLevel) : level >= sp.UnlockLevel;
+            foreach (var a in _content.Animals.All) if (!animalOpen(a) && a.UnlockLevel < nextAnimal) nextAnimal = a.UnlockLevel;
             foreach (var a in _content.Animals.All)
             {
-                if (a.UnlockLevel > nextAnimal) continue;   // uzak kilitler gizli, yalnızca sıradaki kademe görünür
+                if (!animalOpen(a) && a.UnlockLevel > nextAnimal) continue;   // uzak kilitler gizli, yalnızca sıradaki kademe görünür
                 GUILayout.BeginVertical(GUI.skin.box);
                 GUILayout.Label($"{a.DisplayName} · {a.Price} akçe");
                 GUILayout.Label(ItemCatalog.Describe(a, _content), _wrap);
-                bool unlocked = level >= a.UnlockLevel;
+                bool unlocked = animalOpen(a);
                 GUI.enabled = unlocked;
-                if (GUILayout.Button(unlocked ? $"Al {a.Price}" : $"Sv {a.UnlockLevel} gerekli"))
+                if (GUILayout.Button(unlocked ? $"Al {a.Price}" : Thatchwick.Core.Progress.UnlockGate.Text(_animals.SkillLevel, Thatchwick.Core.Characters.SkillType.AnimalHusbandry, a.UnlockLevel)))
                 {
                     var species = a;
                     _deferred = () =>

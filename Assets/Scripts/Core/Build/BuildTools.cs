@@ -31,7 +31,9 @@ namespace Thatchwick.Core.Build
             }
         }
 
-        public bool IsUnlocked(BuildPartDef part) => part == null || AccountLevel == null || AccountLevel() >= part.UnlockLevel;
+        public bool IsUnlocked(BuildPartDef part) => part == null || Thatchwick.Core.Progress.UnlockGate.IsOpen(SkillLevel, AccountLevel, Thatchwick.Core.Progress.UnlockGate.SkillFor(part), part.UnlockLevel);
+        public string LockText(BuildPartDef part) => Thatchwick.Core.Progress.UnlockGate.Text(SkillLevel, Thatchwick.Core.Progress.UnlockGate.SkillFor(part), part.UnlockLevel);
+
 
         /// <summary>Kenarın parçası (stil yoksa ya da tanınmıyorsa türün varsayılanı); katalogda o tür yoksa null.</summary>
         public BuildPartDef EdgePart(EdgeKind kind, string style)
@@ -107,7 +109,7 @@ namespace Thatchwick.Core.Build
                 {
                     if (!part.AllowsLevel(edge.Z))
                         return PlacementCheck.Fail(part.Levels.Count == 1 && part.Levels[0] < 0 ? $"{part.DisplayName} yalnızca bodrumda kullanılır." : $"{part.DisplayName} bu katta kullanılmaz.");
-                    if (!IsUnlocked(part)) return PlacementCheck.Fail($"Hesap seviyesi {part.UnlockLevel} gerekli.");
+                    if (!IsUnlocked(part)) return PlacementCheck.Fail(LockText(part));
                     newStyle = StoredStyle(part);
                 }
             }
@@ -216,7 +218,7 @@ namespace Thatchwick.Core.Build
             if (finishId != null)
             {
                 if (!_content.Parts.TryGet(finishId, out part) || part.Kind != BuildPartKind.WallFinish) return PlacementCheck.Fail("Böyle bir kaplama yok.");
-                if (!IsUnlocked(part)) return PlacementCheck.Fail($"Hesap seviyesi {part.UnlockLevel} gerekli.");
+                if (!IsUnlocked(part)) return PlacementCheck.Fail(LockText(part));
             }
             var old = map.GetFinish(edge, sideB);
             if (old == finishId) return PlacementCheck.Fail("Bu yüz zaten öyle.");
@@ -293,7 +295,7 @@ namespace Thatchwick.Core.Build
             if (floor != FloorType.Grass)
             {
                 var part = FloorPart(floor, style);
-                if (part != null && !IsUnlocked(part)) return PlacementCheck.Fail($"Hesap seviyesi {part.UnlockLevel} gerekli.");
+                if (part != null && !IsUnlocked(part)) return PlacementCheck.Fail(LockText(part));
                 newStyle = StoredStyle(part);
             }
             var old = map.GetFloor(tile);
@@ -385,7 +387,7 @@ namespace Thatchwick.Core.Build
             if (style != GridMap.NoRoof)
             {
                 if (style == null || !_content.Parts.TryGet(style, out part) || part.Kind != BuildPartKind.Roof) return PlacementCheck.Fail("Böyle bir çatı yok.");
-                if (!IsUnlocked(part)) return PlacementCheck.Fail($"Hesap seviyesi {part.UnlockLevel} gerekli.");
+                if (!IsUnlocked(part)) return PlacementCheck.Fail(LockText(part));
             }
             string stored = style == GridMap.NoRoof ? GridMap.NoRoof : StoredStyle(part);
             var map = _world.Map;
@@ -454,7 +456,7 @@ namespace Thatchwick.Core.Build
             {
                 if (!_content.Parts.TryGet(finishId, out part) || part.Kind != BuildPartKind.ItemFinish || part.Group != item.Def.FinishGroup)
                     return PlacementCheck.Fail("Bu eşyaya uymayan kaplama.");
-                if (!IsUnlocked(part)) return PlacementCheck.Fail($"Hesap seviyesi {part.UnlockLevel} gerekli.");
+                if (!IsUnlocked(part)) return PlacementCheck.Fail(LockText(part));
                 if (part.IsDefault) finishId = null;
             }
             var old = item.FinishId;
