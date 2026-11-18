@@ -1,7 +1,7 @@
 ---
 id: "376"
 title: Yol karoları düzeltme (patika b, çakıl, sağlam ve bozuk kaldırım)
-status: review
+status: accepted
 claimed_at: 2026-11-18T13:17Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yol karoları düzeltmesi)
 family: zemin
@@ -56,3 +56,4 @@ Var olan PNG'nin üzerine yazılmaz. Yenileri `_v2` ekiyle gelir, kod tarafı re
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 kullanıcı kararı (sohbet, onay grubu 1): gelen ikisi kabul (patika b v2, yıpranmış çakıl). Çakıl a v2, sağlam ve bozuk kaldırım 376b ile.

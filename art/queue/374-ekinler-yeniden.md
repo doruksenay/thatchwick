@@ -1,7 +1,7 @@
 ---
 id: "374"
 title: Ekin evreleri yeniden (pırasa 1 ve 3, bezelye 2, şalgam 2)
-status: review
+status: accepted
 claimed_at: 2026-11-18T13:16Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
 family: bitki
@@ -51,3 +51,4 @@ Kod tarafı (ekinin büyüme yüzdesine göre evre görseli) bu iş ve 371 revie
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 kullanıcı kararı (sohbet, onay grubu 1): kabul (pırasa 1 ve 3, bezelye 2, şalgam 2).
