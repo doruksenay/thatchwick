@@ -1,7 +1,7 @@
 ---
 id: "211"
 title: Karakter arayüzü seti (Kişi paneli, yaratma ekranı, HUD parçaları)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:41Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
@@ -73,6 +73,11 @@ HUD kit için önizleme yok. Kit 2 kat büyütülüp `art/results/211-hud-kit-x2
 ## Notlar
 - Kişi sekmesindeki beceri şeritleri, iz kartlarının içeriği ve portre koddan gelir. Panelde boş kalır.
 - 315 ve 212 ikonları bu işten bağımsızdır; önizleme bulursa kullanır.
+
+## Sorular
+- (işçi, 2026-11-18, bulut şeridi 2) `create_ui_asset` stil görselini yalnızca satır içi base64 metni olarak alıyor (dosya yolu/URL yok). Zorunlu stil girdisi `ui_panel_durum_parsomen_1.png` 27 KB, base64 ~36 KB; modelin bu metni karakter karakter aktarması güvenilir değil, bozuk ya da değişmiş girdi sessizce yanlış stil verirdi. Stil görseli olmadan üretmek tarife aykırı. 0 generation harcandı, PixelLab çağrılmadı. Yön: 210'da `yon:` satırı yok, varsayılan `parsomen`.
+- Parçalar hazır: 832 -> 512 ölçekli `rounded_rect` listeleri (kisi 21, yaratma 33 parça; `rect` -> radius 0; sanal tuval 512x236). HUD şablonu olduğu gibi kullanılabilir.
+- Öneri: stil görseli küçük bir kopya (ör. 208x96, <6 KB) olarak hazırlanıp base64 ile verilebilsin, ya da bu işi base64'ü araca doğrudan aktarabilen yerel işçi yapsın.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
