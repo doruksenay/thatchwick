@@ -1,7 +1,8 @@
 ---
 id: "394"
 title: Yapı menüsü ikonları: eşya kategorileri
-status: pending
+status: running
+claimed_at: 2026-11-18T14:06Z
 approved_by: user
 priority: 15
 family: arayuz
