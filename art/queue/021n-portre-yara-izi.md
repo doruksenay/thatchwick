@@ -1,7 +1,7 @@
 ---
 id: "021n"
 title: Portre yara izi: yanık
-status: running
+status: review
 claimed_at: 2026-11-18T08:30Z
 approved_by: user
 family: karakter
