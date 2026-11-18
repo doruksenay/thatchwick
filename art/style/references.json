@@ -33,7 +33,9 @@
       "pilot": "310",
       "referanslar": [
         {"dosya": "Assets/Art/Iso/_aday/iso_item_flower_pot_se.png", "durum": "kabul", "not": "310 kabul edilene kadar bitki rengi saksıdan ve çimden alınır"},
-        {"dosya": "Assets/Art/Iso/iso_ground_grass_a.png", "durum": "aday"}
+        {"dosya": "Assets/Art/Iso/iso_ground_grass_a.png", "durum": "aday"},
+        {"dosya": "Assets/Art/Iso/_aday/iso_tree_plum_grown_se.png", "durum": "aday", "not": "319'dan teslim, kapıyı geçen tek ağaç; 371-375 yeniden denemeleri için eklendi (2026-11-18)"},
+        {"dosya": "Assets/Art/Iso/_aday/iso_forage_pinecone_se.png", "durum": "aday", "not": "322'den teslim (2026-11-18)"}
       ]
     },
     "karakter": {
@@ -46,7 +48,8 @@
     "hayvan": {
       "pilot": "100",
       "referanslar": [
-        {"dosya": "Assets/Art/Iso/_aday/iso_animal_sheep_1_cand_se.png", "durum": "aday"}
+        {"dosya": "Assets/Art/Iso/_aday/iso_animal_sheep_1_cand_se.png", "durum": "aday"},
+        {"dosya": "Assets/Art/Iso/_aday/iso_animal_pig_2_cand_se.png", "durum": "aday", "not": "100 pilotundan; 376 köpek-kedi yeniden denemesi için ikinci referans (2026-11-18)"}
       ]
     },
     "arayuz": {
