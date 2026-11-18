@@ -1,7 +1,8 @@
 ---
 id: "020"
 title: Portre pilotu (64x64 göğüs portresi + katman denemesi)
-status: pending
+status: running
+claimed_at: 2026-11-18T07:55Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: true
