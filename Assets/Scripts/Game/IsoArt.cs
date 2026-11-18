@@ -38,6 +38,7 @@ namespace Thatchwick.Game
         {
             _textures = null;
             Sprites.Clear();
+            FrameCounts.Clear();
         }
 
         /// <summary>Adı verilen görselden, pivotu piksel (x soldan, y alttan) olan sprite; görsel yoksa null.</summary>
@@ -295,10 +296,62 @@ namespace Thatchwick.Game
             return Get(a.set + "_" + Directions[direction], a.px, a.py) ?? Get(a.set + "_se", a.px, a.py);
         }
 
+        /// <summary>
+        /// 84 px gerçekçi oranlı yetişkin taban (012b kabul, 018 kararı 18.11.2026): genç yetişkin ve yetişkin
+        /// erkek/kadın. Durma görseli "_cand_<yön>", yürüme kareleri anim/ altında "_walk_<yön>_NN".
+        /// Görseli henüz olmayan yön ya da evre eski 56'lık sete düşer.
+        /// </summary>
+        private static string AdultR84(Character c) =>
+            c.Stage == AgeStage.Baby || c.Stage == AgeStage.Child || c.Stage == AgeStage.Elder
+                ? null
+                : (c.Sex == Sex.Male ? "iso_char_man_r84" : "iso_char_woman_r84");
+
+        private const float R84PivotX = 42f, R84PivotY = 2f;
+
         public static Sprite Character(Character c, int direction)
         {
+            string r84 = AdultR84(c);
+            if (r84 != null)
+            {
+                var s84 = Get(r84 + "_cand_" + Directions[direction], R84PivotX, R84PivotY);
+                if (s84 != null) return s84;
+            }
             string set = CharacterSet(c, out float px, out float py);
-            return Get(set + "_" + Directions[direction], px, py) ?? Get(set + "_se", px, py);
+            var own = Get(set + "_" + Directions[direction], px, py);
+            if (own != null) return own;
+            // Bu yönün 56'lık görseli de yoksa: 84'lük SE, o da yoksa 56'lık SE.
+            return (r84 != null ? Get(r84 + "_cand_se", R84PivotX, R84PivotY) : null) ?? Get(set + "_se", px, py);
+        }
+
+        // (set|yön) → kare sayısı; 0 = kare animasyonu yok.
+        private static readonly Dictionary<string, int> FrameCounts = new Dictionary<string, int>();
+
+        /// <summary>
+        /// Yürüme döngüsü karesi (018a/018b). cycle: 0..1 arası adım evresi (tam döngü = iki adım).
+        /// Kareler _00.._NN; son kare ilkine yakın kapanış karesiyse (018a: 08 ≈ 00) döngüde atlanır.
+        /// Bu yönün karesi yoksa null: çağıran durma görseli + kodla sallantıya düşer.
+        /// </summary>
+        public static Sprite CharacterWalk(Character c, int direction, float cycle)
+        {
+            string r84 = AdultR84(c);
+            if (r84 == null || !Enabled) return null;
+            string prefix = r84 + "_walk_" + Directions[direction] + "_";
+            int n = WalkFrameCount(prefix);
+            if (n <= 0) return null;
+            int frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;
+            return Get(prefix + frame.ToString("00"), R84PivotX, R84PivotY);
+        }
+
+        private static int WalkFrameCount(string prefix)
+        {
+            if (FrameCounts.TryGetValue(prefix, out int n)) return n;
+            EnsureLoaded();
+            int count = 0;
+            while (count < 32 && _textures.ContainsKey(prefix + count.ToString("00"))) count++;
+            // 9 kare teslim edildiyse son kare kapanıştır (ilk karenin tekrarı): 8 karelik döngü.
+            n = count == 9 ? 8 : count;
+            FrameCounts[prefix] = n;
+            return n;
         }
     }
 }
