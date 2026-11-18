@@ -1,7 +1,8 @@
 ---
 id: "374"
 title: Ekin evreleri yeniden (pırasa 1 ve 3, bezelye 2, şalgam 2)
-status: pending
+status: running
+claimed_at: 2026-11-18T13:16Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
 family: bitki
 style_gate: false
