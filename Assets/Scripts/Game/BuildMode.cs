@@ -788,7 +788,7 @@ namespace Thatchwick.Game
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("Kat:", GUILayout.Width(44f));
-            LevelButton("Bodrum", -1); LevelButton("Zemin", 0); LevelButton("Üst kat", 1);
+            LevelButton("Kazı", -2); LevelButton("Bodrum", -1); LevelButton("Zemin", 0); LevelButton("Üst kat", 1);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             if (_walls != null)
@@ -861,6 +861,7 @@ namespace Thatchwick.Game
                 case Tool.Demolish: return "Yıkılacak alanın iki köşesine dokun: eşyalar satılır, duvar ve zemin kalkar. Geri al ile döner.";
                 case Tool.Plot: return $"Bitişik 4x4 parçaya dokun: {BuildService.ChunkPrice} akçe.";
                 case Tool.LevelBuild: return _view.ViewLevel > 0 ? $"Üst kat döşemesi: karo başına {BuildService.SlabPrice} akçe; altında duvarlı oda ya da duvar gerekir (bir karo çıkma: balkon). Merdiven üstüne döşeme olmaz."
+                    : _view.ViewLevel <= -2 ? "Bodrumun altı (kazı) yapı modunda akçeyle kazılmaz: bodruma aşağı inen merdiven koy (Madencilik 2), sonra canlı modda kayaya dokunup kaz."
                     : _view.ViewLevel < 0 ? $"Bodrum kazısı: karo başına {BuildService.DigPrice} akçe; mevcut bodrumun yanını kaz (ilk karo merdivenle açılır)."
                     : "Zemin kat zaten var; Kat: Üst kat ya da Bodrum seç.";
                 case Tool.LevelRemove: return "Döşemeyi sök / bodrum karosunu doldur: üstünde eşya, çevresinde duvar ya da merdiven olmamalı. Yarısı iade.";

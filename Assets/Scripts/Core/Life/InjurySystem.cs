@@ -103,7 +103,10 @@ namespace Thatchwick.Core.Life
                 D("fall", "split", 0.003, 2, MoodCatalog.InjuredFall, "kaygan yerde düşüp {0} yardı",
                     null, ("brow", 40), ("forehead", 35), ("lip", 25)),
                 D("child_fall", "scratch", 0.006, 1, MoodCatalog.InjuredFall, "oynarken düşüp {0} sıyırdı",
-                    null, ("forehead", 60), ("brow", 40))
+                    null, ("forehead", 60), ("brow", 40)),
+                // Göçük: iş zarıyla gelmez (şans 0); kazı motoru çöken karodaki karaktere doğrudan verir.
+                D("cave_in", "split", 0, 4, MoodCatalog.InjuredCaveIn, "göçükte {0} yardı",
+                    null, ("forehead", 30), ("larm", 25), ("rarm", 25), ("brow", 20))
             };
         }
 
