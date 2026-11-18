@@ -1,7 +1,8 @@
 ---
 id: "367"
 title: Ürün ikonları: maden hammaddeleri, işlenmiş ürünler, demetler (23 ikon)
-status: pending
+status: running
+claimed_at: 2026-11-18T13:51Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 50
 family: arayuz
