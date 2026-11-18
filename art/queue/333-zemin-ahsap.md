@@ -1,7 +1,7 @@
 ---
 id: "333"
 title: Zemin stilleri: çam tahta, meşe tahta, balıksırtı parke
-status: running
+status: review
 claimed_at: 2026-11-18T08:42Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
