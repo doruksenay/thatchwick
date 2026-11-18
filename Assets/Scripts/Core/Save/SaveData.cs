@@ -47,6 +47,9 @@ namespace Thatchwick.Core.Save
         public double petCooldown;       // sevme bekleme süresi (eski kayıtta 0)
         public string saddle;            // takılı eyer (eski kayıtta yok)
         public float comfort = -1f;      // barınak konforu (eski kayıtta -1 = varsayılan)
+        public bool sick;                // hasta (eski kayıtta false)
+        public double sickDays;          // kaç gündür hasta
+        public int coldDays;             // art arda üşüdüğü gün
     }
 
     /// <summary>Yenmiş otlak karosu (dolu karolar kaydedilmez).</summary>

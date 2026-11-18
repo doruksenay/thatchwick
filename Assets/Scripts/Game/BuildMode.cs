@@ -1268,7 +1268,7 @@ namespace Thatchwick.Game
             foreach (var a in new List<Animal>(_animals.Animals))
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label($"{a.Name} · tokluk {a.Fullness:0}{(a.IsMature ? "" : " · yavru")}");
+                GUILayout.Label($"{a.Name} · tokluk {a.Fullness:0}{(a.IsMature ? "" : " · yavru")} · {a.HealthText}");
                 if (GUILayout.Button($"Sat {(int)(a.Species.Price * AnimalSystem.SellRatio)}", GUILayout.Width(62f)))
                 {
                     var animal = a;

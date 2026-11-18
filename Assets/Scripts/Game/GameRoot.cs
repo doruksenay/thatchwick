@@ -258,7 +258,7 @@ namespace Thatchwick.Game
                 else _account.Count("act:" + i.Id);
             };
             _plants = new PlantSystem(_world, Thatchwick.Core.Seeds.Derive(_seed, 7, _rngEpoch));
-            _animals = new AnimalSystem(_world, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 3, _rngEpoch)) { SeasonNow = () => _clock.Season };
+            _animals = new AnimalSystem(_world, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 3, _rngEpoch)) { SeasonNow = () => _clock.Season, HealthSeed = Thatchwick.Core.Seeds.Derive(_seed, 31, _rngEpoch) };
             if (loaded != null)
             {
                 SaveGame.RestoreAnimals(loaded, _animals, _content);
@@ -1131,7 +1131,7 @@ namespace Thatchwick.Game
             var animal = AnimalAt(tile);
             if (animal != null)
             {
-                names.Add($"{animal.Name} ({animal.Species.DisplayName}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")})");
+                names.Add($"{animal.Name} ({animal.Species.DisplayName}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")}{(animal.IsSick || animal.IsCold ? ", " + animal.HealthText.ToLowerInvariant() : "")})");
                 AddAnimalOptions(animal);
             }
             foreach (var item in items)
@@ -1249,6 +1249,8 @@ namespace Thatchwick.Game
             _effects.Season = () => _clock.Season;
             _effects.Household = () => _population.Members;
             _market.Trader = () => Commander?.Character;
+            _animals.FellSick += a => ShowMessage($"{a.Name} hastalandı: barınağına hayvan merhemi sür, sıcak ve altlıklı tut");
+            _animals.Recovered += a => ShowMessage($"{a.Name} iyileşti");
             _animals.Dismounted += (a, riderId) => ShowMessage($"{_population.Find(riderId)?.Name} attan indi ({a.Name} kapıda bekliyor)");
             _animalCare = new AnimalCare(_animals, _household);
             _animalCare.Done += (c, a, act) =>
@@ -1384,7 +1386,9 @@ namespace Thatchwick.Game
 
         private void OnAnimalDied(Animal a)
         {
-            ShowMessage(a.CauseOfDeath == AnimalDeath.Starvation ? $"{a.Name} açlıktan öldü (barınağa yem koy)" : $"{a.Name} yaşlılıktan öldü");
+            ShowMessage(a.CauseOfDeath == AnimalDeath.Starvation ? $"{a.Name} açlıktan öldü (barınağa yem koy)"
+                : a.CauseOfDeath == AnimalDeath.Sickness ? $"{a.Name} hastalıktan öldü (merhem sürülmedi)"
+                : $"{a.Name} yaşlılıktan öldü");
             foreach (var c in _population.Members) if (!c.IsVillager) c.AddMoodlet(MoodCatalog.AnimalDied);
         }
 

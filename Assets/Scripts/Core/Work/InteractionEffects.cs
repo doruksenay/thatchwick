@@ -121,8 +121,9 @@ namespace Thatchwick.Core.Work
             int husbandry = character.Skills.GetLevel(SkillType.AnimalHusbandry);
             if (interaction.BefriendAnimals > 0f && Animals != null)
             {
-                int n = Animals.Befriend(item.Id, interaction.BefriendAnimals * AnimalSystem.HusbandryFactor(husbandry));
+                int n = Animals.Befriend(item.Id, interaction.BefriendAnimals * AnimalSystem.HusbandryFactor(husbandry), out int cured);
                 if (n > 0) farmNotes.Add($"{n} hayvan merhemlendi");
+                if (cured > 0) farmNotes.Add($"{cured} hasta hayvan iyileşti");
             }
             if (interaction.PetsAnimals && Animals != null)
             {
