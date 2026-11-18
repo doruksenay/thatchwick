@@ -12,13 +12,19 @@ Bu dosya işçinin freni ve harcama defteridir. İşçi her iş öncesi okur, he
 |---|---|
 | Tek iş tavanı (`cost_max`) | 60 generation (çalışma tavanı). Daha büyük iş parçalara bölünür. Onay için ayrıca bir tavan yok (aşağıda "Otomatik akış") |
 | Çalışma başına tavan | 60 generation, en çok 3 iş |
-| Günlük tavan | 150 generation (2026-11-08 için 250: kullanıcı onayı, sohbet) |
+| Günlük tavan | 150 generation. Gün bazında istisnalar aşağıda "Günlük tavan istisnaları" bölümünde (2026-11-08 için 250 idi: kullanıcı onayı, sohbet) |
 | Rezerv | Kalan bakiye (`get_balance`), işten sonra 200'ün altına düşecekse işçi durur |
 | Maliyet sapması | Gerçek maliyet `cost_est`'in 2 katını aşarsa işçi durur, `status: failed` yazar |
 | Yeniden deneme | Yok. Hata, Tier kısıtı ya da ayak izi/2:1 doğrulaması tutmazsa durur, hatayı aynen yazar |
 | Doğruluk kaynağı | Bakiye için her zaman `get_balance`. Bu dosyadaki "kalan" sütunu yalnızca defterdir; çelişirse `get_balance` geçerlidir |
 
 Kuralları gevşetmek ya da sıkılaştırmak kullanıcının kararıdır; işçi bu tabloyu değiştirmez.
+
+## Günlük tavan istisnaları
+Bu listedeki gün için günlük tavan yerine buradaki değer geçerlidir (`tools/art/queue_ready.py` ve işçi okur). Biçim: `- YYYY-AA-GG: sınırsız` ya da `- YYYY-AA-GG: <sayı>`. Diğer frenler (çalışma başına 60 gen / 3 iş, rezerv 200, maliyet sapması) istisna günlerinde de aynen geçerlidir.
+
+- 2026-11-18: sınırsız (kullanıcı kararı, sohbet: "bugün sınırsız çalışsın")
+- 2026-11-19: sınırsız (aynı karar; bulut işçisi UTC tarihiyle yazar, İstanbul gece yarısı ile UTC 21:00 arasını kapsar)
 
 ## Otomatik akış (kullanıcı kararı, 2026-11-17)
 Kullanıcı: "Bunu otomatize et. Bu projede istenen tüm asset'ler PixelLab'e üretilmeli ve kuyruğa atılmalı."

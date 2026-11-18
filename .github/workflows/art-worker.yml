@@ -16,6 +16,7 @@ on:
       - "art/style/**"
   schedule:
     - cron: "17 */3 * * *"      # günlük tavan sıfırlanınca ve kabul sonrası takılı kalan işler için
+  # Tur sonunda iş kaldıysa "Sonraki tur" adımı workflow_dispatch ile zinciri sürdürür.
   workflow_dispatch:
 
 concurrency:
@@ -24,6 +25,7 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write      # zincir: iş kaldıysa bir sonraki turu kendisi başlatır
 
 jobs:
   work:
@@ -100,3 +102,21 @@ jobs:
         run: |
           python tools/art/queue_ready.py --all || true
           git log --oneline -5
+
+      # Zincir: bu tur en az bir işi bitirdiyse (review/failed/blocked commit'i) ve hâlâ uygun iş varsa
+      # 3 saat beklemeden yeni tur başlatır. Frenler queue_ready.py ve art/budget.md'de; günlük tavan
+      # dolunca uygun iş kalmaz ve zincir kendiliğinden durur. İlerleme yoksa (aynı iş takılı) zincirlemez.
+      - name: Sonraki tur
+        if: success() && steps.ready.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          START_SHA: ${{ github.sha }}
+        run: |
+          git pull --rebase -q || true
+          done=$(git log "$START_SHA"..HEAD --author=thatchwick-art-worker --format=%s | grep -vc ': başladı$' || true)
+          if [ "${done:-0}" -gt 0 ] && python tools/art/queue_ready.py --quiet; then
+            echo "Bu turda $done iş bitti, uygun iş var: yeni tur başlatılıyor."
+            gh workflow run art-worker.yml --ref main
+          else
+            echo "Zincir durdu (biten iş: ${done:-0}, uygun iş yok ya da ilerleme yok)."
+          fi
