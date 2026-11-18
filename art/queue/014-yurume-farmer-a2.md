@@ -1,7 +1,7 @@
 ---
 id: "014"
 title: Yürüme animasyonu farmer_a2_56 (8 yön, pixminimax)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:21Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
@@ -112,3 +112,5 @@ status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz
 - 2026-11-18: yeniden `pending` (Claude, kurtarma): eski izin/indirme hatası; save_png ve izinler artık var.
 
 <!-- 2026-11-18 kullanıcı kararı (sohbet): 012 karakter oranı reddedildi; yürüme/animasyon 012b pilotunun kabulünü bekler, iş yeni karaktere göre yeniden yazılacak -->
+
+- 2026-11-18 (bulut işçisi, şerit 2): 0 generation harcandı. Hedef karakter farmer_a2_56 reddedilen 012 setinden (012 `rejected`: fazla chibi). Kullanıcı kararı (dosya sonu notu): yürüme işi 012b pilotunun kabulünü bekler ve yeni karaktere göre yeniden yazılacak. Bu yüzden çalıştırılmadı. Gerekli: 012b `accepted` olunca tarif yeni karakter id'siyle yeniden yazılıp iş `pending` yapılmalı.
