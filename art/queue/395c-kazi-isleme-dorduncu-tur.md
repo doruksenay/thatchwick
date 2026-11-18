@@ -8,7 +8,7 @@ family: esya
 style_gate: false
 cost_est: 15
 cost_max: 20
-depends_on: ["395b"]
+depends_on: ["364"]
 max_attempts: 1
 pixellab: true
 outputs:
@@ -25,13 +25,13 @@ created: 2026-11-18
 
 ## Tarif
 Yöntem ve doğrulama ana işleriyle aynı (301; `validate_iso.py`, `style.py check --family esya`; kandilde `--light`).
-1. **Ahşap çatkı:** 395b'nin `_c` çıktısı (`395b-red/` ya da `_aday/`, kiriş düzelmiş hâli) üstünde ikinci `inpaint`: maske çapraz kafes ve iki dikme; metin `two plain straight vertical posts of fresh light brown pine wood, no diagonal braces, empty space between the posts`. Sonuç iki dikme + bir kiriş değilse teslim edilmez.
+1. **Ahşap çatkı:** 395b'nin `_c` çıktısı (`art/results/395b-red/iso_item_mine_support_wood_c_se.png`, kiriş düzelmiş hâli) üstünde ikinci `inpaint`: maske çapraz kafes ve iki dikme; metin `two plain straight vertical posts of fresh light brown pine wood, no diagonal braces, empty space between the posts`. Sonuç iki dikme + bir kiriş değilse teslim edilmez.
 2. **Kandil:** `create_map_object`, `background_image` = kabul edilen mum (`_aday/iso_item_mine_candle_se.png`), mumun durduğu bölge maskeli; metin `small plain grey-brown clay oil lamp with a tiny flame, same lighting and palette as the background`. Tuval 48x48. Sonra `reduce_colors` 32, `fit --family esya`.
-3. **Kömür yığını:** `create_map_object`, `background_image` = kabul edilen kavurma yığını (`_aday/iso_item_roasting_heap_2x2_se.png`), yığın bölgesi maskeli; metin 396 ile aynı (`low dome mound covered with dark earth and grass turf, a few log ends visible at the base, thin grey smoke`). Sonra `reduce_colors` 40, `fit --family esya`.
+3. **Kömür yığını:** `create_map_object`, `background_image` = 364'te kabul edilen kireç ocağı (`_aday/iso_item_lime_kiln_2x2_se.png`; kavurma yığını teslim edilmemişti, aynı dış mekân ve toprak paleti), yığın bölgesi maskeli; metin 396 ile aynı (`low dome mound covered with dark earth and grass turf, a few log ends visible at the base, thin grey smoke`). Sonra `reduce_colors` 40, `fit --family esya`.
 Araç şeması tarifteki parametreyi desteklemiyorsa çağırma, `## Sorular` ekle (395b'deki `color_image` hatası tekrarlanmasın).
 
 ## Doğrulama
-Ana işlerle aynı. Yan yana sayfası: üç yeni görsel ve yanında referansları (395b çatkı, mum, kavurma yığını).
+Ana işlerle aynı. Yan yana sayfası: üç yeni görsel ve yanında referansları (395b çatkı, mum, kireç ocağı).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
