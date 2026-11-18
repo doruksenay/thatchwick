@@ -1,7 +1,7 @@
 ---
 id: "363"
 title: Kazı ışıkları (mum, kandil, meşale) ve ışık halkası
-status: running
+status: review
 claimed_at: 2026-11-18T13:39Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 10
