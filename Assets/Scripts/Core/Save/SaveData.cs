@@ -55,6 +55,13 @@ namespace Thatchwick.Core.Save
         public double pregnant;          // doğuma kalan gün (0 = gebe değil)
         public int mother;               // annenin kimliği (0 = yok)
         public int generation;           // kuşak (satın alınan 0)
+        // Soy ve seviye (18.11.2026, Project belgesi 29). Eski kayıtta Köy, 0 XP.
+        public int lineage;              // 0 Köy, 1 İyi soy, 2 Soylu, 3 Efsane
+        public double xp;
+        public bool legendDescent;
+        public string legendTitle;
+        public float stamina = -1f;      // binek dayanıklılığı (eski kayıtta -1 = dolu)
+        public double shy;               // ürkek gün
     }
 
     /// <summary>Yenmiş otlak karosu (dolu karolar kaydedilmez).</summary>

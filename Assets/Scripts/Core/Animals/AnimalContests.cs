@@ -1,0 +1,172 @@
+using System;
+using System.Collections.Generic;
+using Thatchwick.Core.Characters;
+
+namespace Thatchwick.Core.Animals
+{
+    /// <summary>Simüle edilen hayvan yarışmaları (Project belgesi 29, bölüm 4): oynanış ya da yarış ekranı yok.</summary>
+    public enum ContestKind
+    {
+        /// <summary>At yarışı (Yaz Panayırı ana yarışı; ilkbahar/sonbahar köy koşusu unvan vermez).</summary>
+        HorseRace = 0,
+        /// <summary>İnek güzellik yarışması (Hasat Şenliği).</summary>
+        BeautyContest = 1,
+        /// <summary>Öküz kütük çekme (Hasat Şenliği).</summary>
+        LogPull = 2
+    }
+
+    public sealed class ContestResult
+    {
+        public ContestKind Kind;
+        /// <summary>1 = birinci.</summary>
+        public int Place;
+        public int Entrants;
+        public bool Won => Place == 1;
+        /// <summary>Kayıtta gösterilen kazanma şansı ("Bahisçiler: %18").</summary>
+        public double WinChance;
+        public int PrizeAkce;
+        public double AnimalXp;
+        /// <summary>Efsane unvanı bu yarışta kazanıldıysa unvan; yoksa null.</summary>
+        public string LegendTitle;
+        /// <summary>Kısa sonuç metni (sonuç kartı ve kronik).</summary>
+        public string Summary;
+    }
+
+    /// <summary>
+    /// Yarışma motoru: her katılımcının puanı + RNG (±%25; efsane atta ±%15). Rakipler yıla göre güçlenir. Kazanma şansı
+    /// Monte Carlo ile önceden hesaplanır ve en çok %70'tir (favori rakip gerekirse güçlendirilir).
+    /// </summary>
+    public static class AnimalContests
+    {
+        public const int Rivals = 5;
+        public const double RngSpread = 0.25, LegendRngSpread = 0.15, MaxWinChance = 0.70;
+        public const int EstimateRuns = 400;
+        /// <summary>Binici yarışta bu kadar gün yoktur (≈2 oyun saati); oyun katmanı bu sürede onu kasabaya gönderip geri getirir.</summary>
+        public const double DurationDays = 2.0 / 24.0;
+        public const int EntryFee = 10;
+        public const int MinRaceLevel = 3;
+
+        private static readonly int[] Prizes = { 120, 60, 30 };
+        private static readonly double[] XpByPlace = { AnimalProgress.XpRace, AnimalProgress.XpRace / 2, AnimalProgress.XpRace / 4 };
+
+        /// <summary>Katılım engeli; uygunsa null.</summary>
+        public static string Blocker(ContestKind kind, Animal a, Character handler)
+        {
+            if (a == null || a.IsDead) return "Hayvan yok.";
+            if (handler == null || handler.IsDead) return "Götürecek kimse yok.";
+            var st = handler.Stage;
+            if (st == AgeStage.Baby || st == AgeStage.Child || st == AgeStage.Teen) return "Yalnızca genç yetişkin ve üstü katılabilir.";
+            switch (kind)
+            {
+                case ContestKind.HorseRace:
+                    if (!a.Species.Rideable) return "Yalnızca atlar yarışır.";
+                    if (a.Saddle == null) return "At eyerli olmalı.";
+                    if (a.Level < MinRaceLevel) return $"At {MinRaceLevel}. seviyede olmalı.";
+                    return null;
+                case ContestKind.BeautyContest:
+                    return a.Species.Id == "animal.cow" && a.IsFemale && a.IsMature ? null : "Yalnızca erişkin inekler katılır.";
+                case ContestKind.LogPull:
+                    // Öküz şimdilik sığırın erkeğidir (ayrı tür kararı: Project belgesi 29; içerik sonra).
+                    return a.Species.Draft && !a.IsFemale && a.IsMature ? null : "Yalnızca erişkin öküz katılır.";
+            }
+            return "Bilinmeyen yarışma.";
+        }
+
+        /// <summary>Katılımcının taban puanı.</summary>
+        public static double Score(ContestKind kind, Animal a, Character handler)
+        {
+            double lineage = Math.Min((int)a.Lineage, (int)AnimalLineage.Legendary);
+            switch (kind)
+            {
+                case ContestKind.HorseRace:
+                    int riding = handler != null ? handler.Skills.GetLevel(SkillType.Riding) : 1;
+                    return 10 * (lineage + a.Level) + a.Stamina / 5.0 + 3 * riding + a.Friendship / 10.0;
+                case ContestKind.BeautyContest:
+                    return 8 * lineage + 4 * a.Level + a.Comfort * 0.3 + a.Friendship * 0.4;
+                default:
+                    return 8 * (lineage + a.Level) + a.Fullness / 10.0 + a.Friendship / 10.0;
+            }
+        }
+
+        /// <summary>Yıla göre rakip puanları (köy büyüdükçe rakipler güçlenir). year 0'dan.</summary>
+        public static double[] RivalScores(ContestKind kind, int year)
+        {
+            var list = new double[Rivals];
+            double baseScore = kind == ContestKind.HorseRace ? 55 : kind == ContestKind.BeautyContest ? 45 : 45;
+            double growth = 1.0 + 0.06 * Math.Max(0, Math.Min(10, year));
+            for (int i = 0; i < Rivals; i++) list[i] = baseScore * growth * (0.80 + 0.10 * i);   // en güçlüsü favori
+            return list;
+        }
+
+        private static int Place(Random rng, double mine, double spreadMine, double[] rivals)
+        {
+            double me = mine * (1.0 + (rng.NextDouble() * 2 - 1) * spreadMine);
+            int place = 1;
+            foreach (var r in rivals) if (r * (1.0 + (rng.NextDouble() * 2 - 1) * RngSpread) > me) place++;
+            return place;
+        }
+
+        /// <summary>Kazanma şansı tahmini (sabit tohumla, her çağrıda aynı) ve en çok %70'e çeken rakip düzeni.</summary>
+        public static double EstimateWinChance(ContestKind kind, Animal a, Character handler, int year, out double[] rivals)
+        {
+            rivals = RivalScores(kind, year);
+            double mine = Score(kind, a, handler);
+            double spread = a.Lineage == AnimalLineage.Legendary ? LegendRngSpread : RngSpread;
+            double chance = 0;
+            for (int guard = 0; guard < 30; guard++)
+            {
+                var rng = new Random(9173 + year * 31 + (int)kind);
+                int wins = 0;
+                for (int i = 0; i < EstimateRuns; i++) if (Place(rng, mine, spread, rivals) == 1) wins++;
+                chance = (double)wins / EstimateRuns;
+                if (chance <= MaxWinChance) break;
+                rivals[Rivals - 1] *= 1.05;   // favori rakip güçlenir
+            }
+            return Math.Min(MaxWinChance, chance);
+        }
+
+        /// <summary>
+        /// Yarışmayı simüle eder. mainEvent: Yaz Panayırı / Hasat Şenliği ana yarışı (efsane unvanı yalnızca burada).
+        /// Ödül, hayvan XP'si ve efsane unvanı uygulanır; akçe sonucu döner (hane kasasına oyun katmanı ekler).
+        /// </summary>
+        public static ContestResult Run(Random rng, ContestKind kind, Animal a, Character handler, int year, bool mainEvent)
+        {
+            if (Blocker(kind, a, handler) != null) return null;
+            double chance = EstimateWinChance(kind, a, handler, year, out var rivals);
+            double spread = a.Lineage == AnimalLineage.Legendary ? LegendRngSpread : RngSpread;
+            int place = Place(rng, Score(kind, a, handler), spread, rivals);
+            var r = new ContestResult { Kind = kind, Place = place, Entrants = Rivals + 1, WinChance = chance };
+            if (place <= 3)
+            {
+                r.PrizeAkce = mainEvent ? Prizes[place - 1] : Prizes[place - 1] / 2;
+                r.AnimalXp = XpByPlace[place - 1];
+                AnimalProgress.AddXp(a, r.AnimalXp);
+            }
+            if (kind == ContestKind.HorseRace) handler.GainSkillXp(SkillType.Riding, place == 1 ? 30 : 10);
+            if (place == 1 && mainEvent)
+            {
+                string title = TitleFor(kind, a);
+                if (title != null && AnimalProgress.GrantLegend(a, title)) r.LegendTitle = title;
+            }
+            string what = kind == ContestKind.HorseRace ? "at yarışını" : kind == ContestKind.BeautyContest ? "güzellik yarışmasını" : "kütük çekmeyi";
+            r.Summary = place == 1
+                ? $"{a.Name}, {what} kazandı!" + (r.LegendTitle != null ? $" Artık bir efsane: {r.LegendTitle}." : "")
+                : $"{a.Name}, {what} {place}. bitirdi.";
+            return r;
+        }
+
+        private static string TitleFor(ContestKind kind, Animal a)
+        {
+            switch (kind)
+            {
+                case ContestKind.HorseRace: return "Panayır Rüzgârı";
+                case ContestKind.BeautyContest: return "Hasat Güzeli";
+                case ContestKind.LogPull: return "Demir Omuz";
+                default: return AnimalProgress.TitleFor(a.Species.Id);
+            }
+        }
+
+        /// <summary>Bahis (+18 paketi): kazanırsa yatırılanın (1 / şans) x 0,9 katı döner; şans en az %5 sayılır.</summary>
+        public static int BetPayout(int stake, double winChance) => (int)Math.Floor(stake / Math.Max(0.05, winChance) * 0.9);
+    }
+}

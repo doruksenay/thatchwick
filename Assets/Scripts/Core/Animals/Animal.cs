@@ -67,7 +67,25 @@ namespace Thatchwick.Core.Animals
         public int Generation { get; internal set; }
         public bool IsHeritage => Generation >= Content.AnimalSpeciesDef.HeritageGeneration;
         /// <summary>Ürün kalitesi (0 sıradan, 1 seçme, 2 birinci sınıf): dostluk ve konfordan; soy hayvanında bir basamak kolay.</summary>
-        public int QualityTier => Animals.AnimalSystem.QualityTierOf(Friendship, Comfort, IsHeritage);
+        public int QualityTier => Animals.AnimalSystem.QualityTierOf(Friendship, Comfort, IsHeritage, AnimalProgress.QualityBonus(Lineage, Level));
+
+        // ---- soy ve seviye (karar 18.11.2026, Project belgesi 29) ----
+        /// <summary>Soy kademesi: Köy, İyi soy, Soylu, Efsane (kazanılır).</summary>
+        public AnimalLineage Lineage { get; internal set; }
+        /// <summary>Efsane bir ebeveynden geliyor: Soylu doğma şansı yüksek.</summary>
+        public bool LegendaryDescent { get; internal set; }
+        /// <summary>Efsane unvanı ("Panayır Rüzgârı"); yoksa null.</summary>
+        public string LegendaryTitle { get; internal set; }
+        /// <summary>Hayvanın kendi XP'si (kullanım ve bakım).</summary>
+        public double Xp { get; internal set; }
+        /// <summary>Seviye 1-5; tavanı soy belirler.</summary>
+        public int Level => AnimalProgress.LevelForXp(Xp, Lineage);
+        /// <summary>Binek dayanıklılığı 0-100: dörtnala harcar.</summary>
+        public float Stamina { get; internal set; } = HorseAbilities.MaxStamina;
+        /// <summary>Dörtnala gidiyor (binici basılı tutuyor).</summary>
+        public bool Galloping { get; internal set; }
+        /// <summary>Ürkek: başarısız atlamadan sonra bu kadar gün dörtnala ve atlama yok.</summary>
+        public double ShyDays { get; internal set; }
 
         /// <summary>Takılı eyer (eşya kimliği); yoksa null.</summary>
         public string Saddle { get; internal set; }

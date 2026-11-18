@@ -506,6 +506,16 @@ namespace Thatchwick.Core.Life
         }
         private PlantSystem _plants;
         private HeatSystem _heat;
+        /// <summary>Hayvanlar: attan düşen binici yaralanır (ölümcül değil), at ürkünce bildirim.</summary>
+        public void Attach(Thatchwick.Core.Animals.AnimalSystem animals)
+        {
+            animals.RiderFell += (horse, rider) =>
+            {
+                Injuries.InjureById(rider, "horse_fall");   // moodlet ve bildirim InjurySystem'den
+            };
+            animals.HorseRefused += horse => Say($"{horse.Name} engelin önünde ürktü.", NoticeLevel.Info);
+        }
+
         public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
         /// <summary>Doldurulan dekora giren yiyecek envanterdeki en eski partinin yaşını taşır.</summary>

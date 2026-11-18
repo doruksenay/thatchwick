@@ -266,7 +266,9 @@ namespace Thatchwick.Core.Save
                         fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays, friendship = a.Friendship,
                         petCooldown = a.PetCooldownDays, saddle = a.Saddle, comfort = a.Comfort,
                         sick = a.IsSick, sickDays = a.SickDays, coldDays = a.ColdDays,
-                        sex = a.IsFemale ? 1 : 2, pregnant = a.PregnantDays, mother = a.MotherId, generation = a.Generation
+                        sex = a.IsFemale ? 1 : 2, pregnant = a.PregnantDays, mother = a.MotherId, generation = a.Generation,
+                        lineage = (int)a.Lineage, xp = a.Xp, legendDescent = a.LegendaryDescent, legendTitle = a.LegendaryTitle,
+                        stamina = a.Stamina, shy = a.ShyDays
                     });
                 }
                 data.animals = list.ToArray();
@@ -414,7 +416,8 @@ namespace Thatchwick.Core.Save
                 if (home == null || home.Def.HousingKind != species.Housing) { loaded.Warnings.Add($"Hayvanın barınağı yok, atlandı: {s.species}"); continue; }
                 system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship, s.petCooldown,
                     s.saddle, s.comfort >= 0f ? s.comfort : 50f, s.sick, s.sickDays, s.coldDays,
-                    s.sex == 1 ? true : s.sex == 2 ? false : (bool?)null, s.pregnant, s.mother, s.generation);
+                    s.sex == 1 ? true : s.sex == 2 ? false : (bool?)null, s.pregnant, s.mother, s.generation,
+                    s.lineage, s.xp, s.legendDescent, s.legendTitle, s.stamina, s.shy);
             }
             var grass = new List<KeyValuePair<GridPos, float>>();
             foreach (var g in loaded.Pasture) if (g != null) grass.Add(new KeyValuePair<GridPos, float>(new GridPos(g.x, g.y), g.grass));

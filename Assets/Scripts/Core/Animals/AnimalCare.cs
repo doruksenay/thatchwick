@@ -451,7 +451,8 @@ namespace Thatchwick.Core.Animals
             mother.PregnantDays = 0;
             int litter = mother.Species.LitterMin + _rng.Next(mother.Species.LitterMax - mother.Species.LitterMin + 1);
             int gen = mother.Generation;
-            if (_fathers.TryGetValue(mother.Id, out var fid)) { var f = Get(fid); if (f != null) gen = Math.Max(gen, f.Generation); _fathers.Remove(mother.Id); }
+            Animal father = null;
+            if (_fathers.TryGetValue(mother.Id, out var fid)) { father = Get(fid); if (father != null) gen = Math.Max(gen, father.Generation); _fathers.Remove(mother.Id); }
             int born = 0;
             for (int i = 0; i < litter; i++)
             {
@@ -460,6 +461,9 @@ namespace Thatchwick.Core.Animals
                 var baby = Spawn(mother.Species, nest, _rng.NextDouble() < 0.5);
                 baby.MotherId = mother.Id;
                 baby.Generation = gen + 1;
+                // Soy kademesi (29): ebeveyn ortalaması, %15 bir üstü (Hayvancılık dalıyla artabilir), %10 bir altı.
+                baby.Lineage = AnimalProgress.InheritLineage(_rng, mother, father, LineageUpBonus?.Invoke() ?? 0.0, out var descent);
+                baby.LegendaryDescent = descent;
                 baby.Friendship = mother.Friendship * InheritFriendship;
                 baby.Fullness = 100f;
                 born++;
@@ -595,6 +599,10 @@ namespace Thatchwick.Core.Animals
             // Binicilik: seviye başına %3 (10. seviyede %27).
             var rider = FindCharacter?.Invoke(riderId);
             if (rider != null) speed *= 1.0 + 0.03 * Math.Max(0, rider.Skills.GetLevel(SkillType.Riding) - 1);
+            // Dörtnala (29): +%40, dayanıklılık bitene dek.
+            if (a.Galloping && a.Stamina > 0) speed *= HorseAbilities.GallopSpeed;
+            // Efsane "Panayır Rüzgârı": +%10.
+            if (a.Lineage == AnimalLineage.Legendary && a.Species.Rideable) speed *= 1.1;
             return speed;
         }
 
@@ -677,6 +685,7 @@ namespace Thatchwick.Core.Animals
             if (a == null || a.IsDead || a.PetCooldownDays > 0) return false;
             a.Friendship = Math.Min(100f, a.Friendship + PetFriendship * HusbandryFactor(husbandryLevel));
             a.PetCooldownDays = 1.0;
+            AnimalProgress.AddXp(a, AnimalProgress.XpPet);
             return true;
         }
 
@@ -687,7 +696,79 @@ namespace Thatchwick.Core.Animals
             a.Friendship = Math.Min(100f, a.Friendship + (PetFriendship + BrushFriendship) * HusbandryFactor(husbandryLevel));
             a.Comfort = Math.Min(100f, a.Comfort + 10f);
             a.PetCooldownDays = 1.0;
+            AnimalProgress.AddXp(a, AnimalProgress.XpBrush);
             return true;
+        }
+
+        /// <summary>Yavrunun soyunun bir üst kademe çıkma şansına eklenen (Hayvancılık dalı vb.); yoksa 0.</summary>
+        public Func<double> LineageUpBonus { get; set; }
+
+        /// <summary>Tüccar, panayır ya da hile: hayvanın soy kademesini koyar (Efsane buradan verilmez).</summary>
+        public void SetLineage(Animal a, AnimalLineage lineage)
+        {
+            if (a == null || lineage == AnimalLineage.Legendary) return;
+            a.Lineage = lineage;
+        }
+
+        /// <summary>Hayvana doğrudan XP verir (yarış, olay); seviye atladıysa yeni seviye, yoksa 0.</summary>
+        public int AddAnimalXp(Animal a, double xp) => AnimalProgress.AddXp(a, xp);
+
+        // ---------- at yetenekleri (29) ----------
+
+        /// <summary>Atın binicisi yere düştü (yaralanma ölümcül değildir; InjurySystem'e bağlanır).</summary>
+        public event Action<Animal, Character> RiderFell;
+        /// <summary>At engelin önünde ürktü (binici düşmedi).</summary>
+        public event Action<Animal> HorseRefused;
+
+        /// <summary>Dörtnala aç/kapa (buton basılı tutulurken açık). Yetenek, dayanıklılık ya da ürkeklik izin vermezse false.</summary>
+        public bool SetGallop(int riderId, bool on)
+        {
+            var a = MountOf(riderId);
+            if (a == null) return false;
+            if (!on) { a.Galloping = false; return true; }
+            var rider = FindCharacter?.Invoke(riderId);
+            if (!HorseAbilities.Has(HorseAbility.Gallop, a, rider) || a.Stamina <= 0 || a.ShyDays > 0) return false;
+            a.Galloping = true;
+            return true;
+        }
+
+        /// <summary>İkram (yulaf, elma): dayanıklılık +50, dostluk +2.</summary>
+        public bool GiveTreat(Animal a)
+        {
+            if (a == null || a.IsDead || !a.Species.Rideable) return false;
+            a.Stamina = Math.Min(HorseAbilities.MaxStamina, a.Stamina + HorseAbilities.TreatStamina);
+            a.Friendship = Math.Min(100f, a.Friendship + 2f);
+            return true;
+        }
+
+        /// <summary>
+        /// Binici engel atlar (2 karo; 3 karo yalnızca Soylu/Efsane). Başarıda at ve binici XP alır. Başarısızlıkta at ürker
+        /// (1 gün dörtnala/atlama yok, dostluk −3) ve %50 şansla binici düşer: iner, RiderFell tetiklenir.
+        /// </summary>
+        public JumpOutcome TryJump(int riderId, int tiles, bool badWeather = false, int extraPoints = 0)
+        {
+            var a = MountOf(riderId);
+            var rider = FindCharacter?.Invoke(riderId);
+            if (a == null) return JumpOutcome.NotAllowed;
+            double chance = HorseAbilities.JumpChance(a, rider, tiles, badWeather, extraPoints);
+            if (chance <= 0) return JumpOutcome.NotAllowed;
+            if (_rng.NextDouble() < chance)
+            {
+                AnimalProgress.AddXp(a, AnimalProgress.XpJump);
+                rider?.GainSkillXp(SkillType.Riding, 3);
+                return JumpOutcome.Cleared;
+            }
+            a.ShyDays = HorseAbilities.ShyDaysAfterRefusal;
+            a.Galloping = false;
+            a.Friendship = Math.Max(0f, a.Friendship - HorseAbilities.RefusalFriendshipLoss);
+            if (_rng.NextDouble() < 0.5)
+            {
+                Dismount(riderId);
+                if (rider != null) RiderFell?.Invoke(a, rider);
+                return JumpOutcome.Fell;
+            }
+            HorseRefused?.Invoke(a);
+            return JumpOutcome.Refused;
         }
     }
 
