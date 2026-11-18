@@ -1,7 +1,7 @@
 ---
 id: "021c"
 title: Portre göz şekilleri
-status: running
+status: review
 claimed_at: 2026-11-18T08:18Z
 approved_by: user
 family: karakter
