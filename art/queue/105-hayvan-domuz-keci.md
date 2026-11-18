@@ -2,13 +2,9 @@
 id: "105"
 title: Hayvanlar 5: domuz + keçi
 status: pending
-<<<<<<< HEAD
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
 style_gate: false
-=======
-approved_by: user        # kullanıcı onayı: sohbet 2026-11-08
->>>>>>> 8b29d0e (art(101,104,105): onay (approved_by: user), 101 tavuk tuvali 28/32; bütçe: 2026-11-08 günlük 250 notu)
 cost_est: 17
 cost_max: 20
 depends_on: ["100"]
