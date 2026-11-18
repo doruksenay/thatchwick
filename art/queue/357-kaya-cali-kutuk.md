@@ -1,7 +1,7 @@
 ---
 id: "357"
 title: Arazi engelleri (kaya, çalı, devrik kütük, eski kök kütüğü)
-status: pending
+status: review
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 worker: batch            # 2026-11-18 toplu işçi pilotu (Claude'suz); bulut ajanı almaz
 family: esya
@@ -183,6 +183,10 @@ Tarifin makine okunur hâli (`tools/art/batch_worker.py`). Tablodaki değerlerle
 
 ## Sorular
 - 2026-11-18: `get_balance` Tier 2 (Pixel Artisan, 4999/5000 gen, yenilenme 2026-12-18) döndü; `art/budget.md` planı Tier 1 (2000 gen, yenilenme 2026-12-08) yazıyor. Kural: Tier 1 değilse işçi durur. Paket yükseltilmiş görünüyor; kullanıcı `art/budget.md` plan/bakiye/rezerv bölümünü güncelleyince iş `pending`e alınabilir. Üretim yapılmadı, harcama 0.
+
+- 2026-11-18 (toplu işçi): başladı
+
+- 2026-11-18 (toplu işçi): 2/7 teslim, 10 gen, Claude'suz. Rapor: art/results/357-kaya-cali-kutuk.md
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

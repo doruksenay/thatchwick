@@ -56,7 +56,8 @@ LEDGER = os.path.join(ROOT, "art", "ledger")
 TMP = os.path.join(ROOT, "art", "tmp")
 GUIDE_COLOR = (0x78, 0x60, 0x46)
 RESERVE = 200.0
-POLL_EVERY, POLL_TIMEOUT = 6, 300
+POLL_EVERY, POLL_TIMEOUT = 8, 600
+MAX_INFLIGHT = 4          # aynı anda en çok bu kadar nesne (Tier 2 sınırı 10; bulut şeritleri de kullanıyor)
 PY = sys.executable
 
 
@@ -82,11 +83,23 @@ def http(method, path, body=None, raw=False, retry429=True):
             return payload if raw else (json.loads(payload) if payload else {})
     except urllib.error.HTTPError as e:
         text = e.read().decode("utf-8", "replace")[:800]
-        if e.code == 429 and retry429:          # budget.md: hız sınırında bir kez bekleyip yeniden dene
-            print(f"  429 hız sınırı, 45 sn bekleniyor: {text[:120]}")
-            time.sleep(45)
-            return http(method, path, body, raw, retry429=False)
+        if e.code == 423:                         # nesne hâlâ üretiliyor: hata değil
+            raise Pending(text)
+        if e.code == 429 and retry429:          # eşzamanlı iş sınırı (Tier 2: 10, bulut şeritleriyle ortak)
+            for _ in range(8):
+                print(f"  429 eşzamanlılık sınırı, 30 sn bekleniyor: {text[:100]}")
+                time.sleep(30)
+                try:
+                    return http(method, path, body, raw, retry429=False)
+                except RuntimeError as e2:
+                    if "HTTP 429" not in str(e2):
+                        raise
+            raise RuntimeError(f"{method} {path} -> 429 sürüyor")
         raise RuntimeError(f"{method} {path} -> HTTP {e.code}: {text}")
+
+
+class Pending(Exception):
+    pass
 
 
 def balance():
@@ -144,7 +157,13 @@ def fetch_map_object(object_id):
     """Tamamlanana kadar yoklar; PNG baytlarını ve son meta veriyi döndürür."""
     t0 = time.time()
     while True:
-        meta = http("GET", f"/map-objects/{object_id}")
+        try:
+            meta = http("GET", f"/map-objects/{object_id}")
+        except Pending:
+            if time.time() - t0 > POLL_TIMEOUT:
+                raise RuntimeError(f"map object {object_id} {POLL_TIMEOUT} sn'de bitmedi")
+            time.sleep(POLL_EVERY)
+            continue
         status = str(meta.get("status", "")).lower()
         url = meta.get("download_url") or meta.get("image_url") or meta.get("url")
         if url:
@@ -302,7 +321,8 @@ def plan_job(jid):
     return path, fm, p
 
 
-def run_job(jid, dry=False):
+def run_job(jid, dry=False, reuse=None):
+    reuse = reuse or {}
     path, fm, p = plan_job(jid)
     family = p.get("family") or fm.get("family", "esya")
     common = p.get("common", {})
@@ -332,21 +352,8 @@ def run_job(jid, dry=False):
         st = state[it["name"]]
         st["guide"], st["mask"], st["fp"], st["pivot"] = make_guide(jid, it)
 
-    spent_calls = 0
-    for attempt in range(attempts):
-        todo = [s for s in state.values() if not s.get("ok") and len(s["tries"]) == attempt]
-        if not todo:
-            break
-        print(f"  deneme {attempt + 1}: {len(todo)} parça gönderiliyor")
-        for s in todo:                                     # hepsini gönder (paralel üretim), sonra topla
-            try:
-                oid, _, usage = submit_map_object(s["item"], common, s["guide"], s["mask"], seed=attempt)
-                spent_calls += 1
-                s["pending"] = (oid, usage)
-            except RuntimeError as e:
-                s["tries"].append({"hata": str(e)})
-                print(f"   {s['item']['name']}: gönderilemedi: {e}")
-        for s in todo:
+    def collect(todo, attempt):
+        for s in [x for x in todo if "pending" in x]:
             if "pending" not in s:
                 continue
             oid, usage = s.pop("pending")
@@ -382,6 +389,28 @@ def run_job(jid, dry=False):
             print(f"   {name}: {'TUTTU' if not errs else 'tutmadı: ' + '; '.join(errs)} (stil {level})")
             if not errs:
                 s["ok"] = True
+
+    spent_calls = 0
+    for attempt in range(attempts):
+        todo = [s for s in state.values() if not s.get("ok") and len(s["tries"]) == attempt]
+        if not todo:
+            break
+        print(f"  deneme {attempt + 1}: {len(todo)} parça gönderiliyor")
+        for idx, s in enumerate(todo):                     # dalga dalga gönder (eşzamanlılık sınırı)
+            if s["item"]["name"] in reuse and attempt == 0:
+                s["pending"] = (reuse[s["item"]["name"]], None)
+                print(f"   {s['item']['name']}: önceki nesne kullanılıyor ({reuse[s['item']['name']]})")
+                continue
+            if sum(1 for x in todo if "pending" in x and x["pending"][1] != "reused") >= MAX_INFLIGHT:
+                collect(todo, attempt)
+            try:
+                oid, _, usage = submit_map_object(s["item"], common, s["guide"], s["mask"], seed=attempt)
+                spent_calls += 1
+                s["pending"] = (oid, usage)
+            except RuntimeError as e:
+                s["tries"].append({"hata": str(e)})
+                print(f"   {s['item']['name']}: gönderilemedi: {e}")
+        collect(todo, attempt)
 
     raw1, bal1 = balance()
     spent = (bal0 - bal1) if (bal0 is not None and bal1 is not None) else float(spent_calls)
@@ -452,7 +481,9 @@ def run_job(jid, dry=False):
 def main():
     if len(sys.argv) < 2 or sys.argv[1] not in ("probe", "plan", "run"):
         sys.exit(__doc__)
-    cmd, jobs = sys.argv[1], sys.argv[2:]
+    cmd, args = sys.argv[1], sys.argv[2:]
+    jobs = [a for a in args if "=" not in a]
+    reuse = dict(a.split("=", 1) for a in args if "=" in a)   # ad=object_id: önceki çalışmanın nesnesini yeniden üretmeden al
     if cmd == "probe":
         raw, gens = balance()
         print(json.dumps(raw, ensure_ascii=False, indent=2))
@@ -468,7 +499,7 @@ def main():
         return
     total = 0.0
     for j in jobs:
-        total += run_job(j) or 0.0
+        total += run_job(j, reuse=reuse) or 0.0
     print(f"\nToplam {total:g} generation. Sonra: git add art Assets/Art/Iso && git commit && git push")
 
 
