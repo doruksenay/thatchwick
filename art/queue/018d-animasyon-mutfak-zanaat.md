@@ -1,7 +1,7 @@
 ---
 id: "018d"
 title: Etkileşim animasyonları: pişirme, çekiçle zanaat, el işi, genel iş, yemek
-status: review
+status: accepted   # kullanıcı 18.11.2026: cook, craft_hammer, craft_hand, work onaylandı; eat 018d2 ile yeniden
 claimed_at: 2026-11-18T18:54Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50
