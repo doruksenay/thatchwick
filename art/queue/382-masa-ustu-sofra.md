@@ -1,7 +1,8 @@
 ---
 id: "382"
 title: Masa ve raf üstü: sofra takımı ve kaplar (10)
-status: pending
+status: running
+claimed_at: 2026-11-18T12:50Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
 family: esya
