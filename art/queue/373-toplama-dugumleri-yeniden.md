@@ -1,7 +1,7 @@
 ---
 id: "373"
 title: Toplama düğümleri yeniden (böğürtlen, fındık, otlar, mürver, çilek, kestane, kuşburnu, ısırgan)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:05Z
 priority: 10            # başlangıç haritasında görünenler önce (görsel analiz)
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
@@ -66,6 +66,9 @@ Yöntem **311 ile aynı**: tuval 80x72, 1x1 kılavuz + maske, pivot 40,24. Farkl
 ## Notlar
 - Dönem: hepsi Eski Dünya türü (böğürtlen, fındık, mürver, yaban çileği, kestane, köpek gülü, ısırgan).
 - Kod tarafı (eşleme `IsoArt.Items`): iş review'a geçince.
+
+## Sorular
+- 2026-11-18 şerit 2: `get_balance` Tier 2 (Pixel Artisan), 4999/5000 gen, yenilenme 2026-12-18 döndürdü. `art/budget.md` Tier 1 / 2000 gen / yenilenme 12-08 diyor, Tier 1 değilse işçi durur. Kullanıcı `art/budget.md` planını güncelleyip işi `pending` yapmalı. Üretim yapılmadı, harcama 0.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
