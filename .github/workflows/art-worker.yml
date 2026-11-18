@@ -207,7 +207,7 @@ jobs:
       - name: Özet
         if: always() && steps.claim.outputs.run == 'true'
         run: |
-          python tools/art/queue_ready.py --all || true
+          python tools/art/queue_ready.py --all --worker bulut || true
           git log --oneline -5
 
       # Zincir: bu tur en az bir işi bitirdiyse (review/failed/blocked commit'i) ve hâlâ uygun iş varsa
@@ -221,7 +221,7 @@ jobs:
         run: |
           git pull --rebase -q || true
           done=$(git log "$START_SHA"..HEAD --author=thatchwick-art-worker --format=%s | grep -vc ': başladı$' || true)
-          if [ "${done:-0}" -gt 0 ] && python tools/art/queue_ready.py --quiet; then
+          if [ "${done:-0}" -gt 0 ] && python tools/art/queue_ready.py --quiet --worker bulut; then
             echo "Bu turda $done iş bitti, uygun iş var: yeni tur başlatılıyor."
             gh workflow run art-worker.yml --ref main
           else
