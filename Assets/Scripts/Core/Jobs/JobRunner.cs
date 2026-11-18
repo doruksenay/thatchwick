@@ -352,6 +352,7 @@ namespace Thatchwick.Core.Jobs
                     if (interaction.RestoreFor(NeedType.Hunger) <= 0f || interaction.ConsumeItem == null || interaction.ConsumeItem == foodId) continue;
                     if (interaction.RemovesItem || interaction.RequiresGrown || interaction.Produce.Count > 0 || interaction.IsCraft) continue;
                     if (interaction.MinSkillLevel > 0 && interaction.Skill.HasValue && _character.Skills.GetLevel(interaction.Skill.Value) < interaction.MinSkillLevel) continue;
+                    if (interaction.RequiresBranch != null && !_character.HasBranch(interaction.RequiresBranch)) continue;
                     if (interaction.HasEffects && (Effects == null || Effects.CanStart(_character, item, interaction) != null)) continue;
                     return true;
                 }
@@ -757,6 +758,8 @@ namespace Thatchwick.Core.Jobs
             if (interaction.MinSkillLevel > 0 && interaction.Skill.HasValue
                 && _character.Skills.GetLevel(interaction.Skill.Value) < interaction.MinSkillLevel)
                 return $"{SkillName(interaction.Skill.Value)} {interaction.MinSkillLevel}. seviye gerekli.";
+            if (interaction.RequiresBranch != null && !_character.HasBranch(interaction.RequiresBranch))
+                return $"{interaction.RequiresBranchName ?? "Meslek"} dalı gerekir.";
             if (interaction.RequiresLit && !item.IsLit) return "Ateş sönük, önce odun at.";
             if (interaction.HasEffects)
             {

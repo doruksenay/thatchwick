@@ -447,10 +447,23 @@ namespace Thatchwick.Core.Life
         {
             double f = 1.0;
             if (!string.IsNullOrEmpty(interaction.Tool)) f *= Tools.SpeedFor(interaction.Tool);
+            if (c.HasBranch(GlassBranchId) && ProducesGlass(interaction)) f *= GlassBranchSpeed;   // Camcı dalı (27 §18.3)
             var room = World.Map.Rooms.RoomAt(c.Position);
             bool outdoors = room == null || !room.IsIndoor;
             if (outdoors) f *= WeatherSystem.OutdoorWorkSpeed(Weather.Today(Clock.TotalDays));
             return f;
+        }
+
+        /// <summary>Çömlekçilik altındaki Camcı dalı: "glass" etiketli ürün veren işler bu kadar hızlı.</summary>
+        public const string GlassBranchId = "branch.pot_b";   // "Camcı" (eski adı Çarkçı Çömlekçi; kayıtlar korunur)
+        public const string AshId = "item.ash";
+        public const double GlassBranchSpeed = 1.25;
+
+        private bool ProducesGlass(InteractionDef interaction)
+        {
+            foreach (var p in interaction.Produce)
+                if (Content.Items.TryGet(p.ItemId, out var d) && d.HasTag("glass")) return true;
+            return false;
         }
 
         // ---- diğer sistemlere bağlama (oyun katmanı kurarken bir kez çağırır) ----
@@ -488,6 +501,7 @@ namespace Thatchwick.Core.Life
             heat.OutdoorOffset = () => WeatherSystem.TemperatureOffset(Weather.Today(Clock.TotalDays));
             Spoilage.TemperatureAt = heat.TemperatureAt;   // bodrum mahzeni serinlik şartı
             Decor.TemperatureAt = heat.TemperatureAt;      // sepetteki meyve oda sıcaklığında bozulur
+            if (Content.Items.Contains(AshId)) heat.AshItemId = AshId;   // ocağa atılan odunun külü (cam zinciri, 27 §18.3)
             if (_plants != null) _plants.TemperatureAt = heat.TemperatureAt;
         }
         private PlantSystem _plants;

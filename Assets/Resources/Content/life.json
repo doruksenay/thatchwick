@@ -1343,8 +1343,8 @@
     },
     {
       "id": "branch.pot_b",
-      "displayName": "Çarkçı Çömlekçi",
-      "description": "Daha hızlı.",
+      "displayName": "Camcı",
+      "description": "Daha hızlı çalışır; cam işleri %25 daha hızlı. Berrak cam, kadeh ve ayna küresi yalnızca Camcı yapar.",
       "skill": "Pottery",
       "level": 5,
       "effects": {

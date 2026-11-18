@@ -14554,6 +14554,395 @@
       "comfort": 1,
       "beauty": 2,
       "interactions": []
+    },
+    {
+      "id": "item.ash",
+      "displayName": "Odun külü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "raw"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.fine_sand",
+      "displayName": "İnce kum",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "raw"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.glass",
+      "displayName": "Orman camı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "glass",
+        "craft"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.clear_glass",
+      "displayName": "Berrak cam",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 28,
+      "tags": [
+        "glass",
+        "craft"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.leaded_glass",
+      "displayName": "Kurşunlu pencere camı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "glass",
+        "craft"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.mirror_sphere",
+      "displayName": "Ayna küresi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 40,
+      "tags": [
+        "glass",
+        "craft"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.mirror_glass",
+      "displayName": "Dışbükey ayna camı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 16,
+      "tags": [
+        "glass",
+        "craft"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.forage_sand",
+      "displayName": "Kumsal",
+      "category": "forage",
+      "tags": [
+        "shore"
+      ],
+      "forageSeasons": [
+        "Spring",
+        "Summer",
+        "Autumn"
+      ],
+      "forageMax": 3,
+      "interactions": [
+        {
+          "id": "dig_sand",
+          "displayName": "Kum kaz",
+          "durationDays": 0.06,
+          "skill": "Mining",
+          "skillXp": 5,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.sand",
+              "count": 3
+            },
+            {
+              "item": "item.sand",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.sieve",
+      "displayName": "Kalbur",
+      "category": "work",
+      "price": 6,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor",
+        "kitchen"
+      ],
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.glass_furnace",
+      "displayName": "Cam ocağı",
+      "category": "work",
+      "price": 120,
+      "width": 2,
+      "height": 2,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.glass_bench",
+      "displayName": "Camcı tezgâhı",
+      "category": "work",
+      "price": 60,
+      "width": 2,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor",
+        "living"
+      ],
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.glass_bottle",
+      "displayName": "Cam şişe",
+      "category": "decor",
+      "price": 8,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 2,
+      "material": "glass",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak",
+        "pencere",
+        "kiler"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.glass_cup",
+      "displayName": "Cam bardak",
+      "category": "decor",
+      "price": 8,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 2,
+      "material": "glass",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "pencere"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.glass_jar",
+      "displayName": "Cam kavanoz",
+      "category": "decor",
+      "price": 12,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "decorSize": "S",
+      "weight": 2,
+      "beauty": 3,
+      "material": "glass",
+      "fitsOn": [
+        "raf",
+        "kiler",
+        "masa"
+      ],
+      "fillWith": [
+        "item.jam_berry",
+        "item.jam_plum",
+        "item.honey",
+        "item.pickled_cabbage",
+        "item.pickled_beet",
+        "item.pickled_onion",
+        "item.pickled_carrot",
+        "item.pekmez"
+      ],
+      "fillCount": 1,
+      "interactions": [
+        {
+          "id": "fill",
+          "displayName": "Doldur",
+          "durationDays": 0.02,
+          "fillDecor": true
+        },
+        {
+          "id": "eat_one",
+          "displayName": "Bir kaşık ye",
+          "need": "Hunger",
+          "restore": 12,
+          "durationDays": 0.03,
+          "eatContents": true
+        },
+        {
+          "id": "empty",
+          "displayName": "Boşalt",
+          "durationDays": 0.02,
+          "collectContents": true
+        }
+      ]
+    },
+    {
+      "id": "item.glass_goblet",
+      "displayName": "Berrak cam kadeh",
+      "category": "decor",
+      "price": 30,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 4,
+      "material": "glass",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.hourglass",
+      "displayName": "Kum saati",
+      "category": "decor",
+      "price": 40,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "decorSize": "S",
+      "weight": 2,
+      "beauty": 4,
+      "material": "glass",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.convex_mirror",
+      "displayName": "Dışbükey cam ayna",
+      "category": "decor_wall",
+      "price": 70,
+      "level": 8,
+      "placement": "Wall",
+      "styleSet": "Tüccar",
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "rooms": [
+        "bedroom",
+        "living"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "beauty": 5,
+      "material": "glass",
+      "mirror": true,
+      "interactions": []
+    },
+    {
+      "id": "item.large_mirror",
+      "displayName": "Büyük çerçeveli ayna",
+      "category": "decor_wall",
+      "price": 220,
+      "level": 12,
+      "placement": "Wall",
+      "styleSet": "Asil",
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "rooms": [
+        "bedroom",
+        "living"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 2,
+      "beauty": 9,
+      "material": "glass",
+      "mirror": true,
+      "interactions": []
+    },
+    {
+      "id": "item.box_bed",
+      "displayName": "Kutu yatak",
+      "category": "sleep",
+      "price": 90,
+      "width": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Çatkı",
+      "tags": [
+        "craftonly"
+      ],
+      "rooms": [
+        "bedroom"
+      ],
+      "tall": true,
+      "comfort": 4,
+      "beauty": 2,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "sleep",
+          "displayName": "Uyu",
+          "need": "Energy",
+          "restore": 72,
+          "durationDays": 0.3,
+          "moodlet": "rested",
+          "extraRestore": [
+            {
+              "need": "Warmth",
+              "amount": 15
+            }
+          ]
+        }
+      ]
     }
   ],
   "recipes": [
@@ -16516,6 +16905,308 @@
       "skill": "Masonry",
       "skillXp": 3,
       "displayName": "Aşı boyası ez"
+    },
+    {
+      "id": "sift_sand",
+      "station": "item.sieve",
+      "produces": "item.fine_sand",
+      "materials": [
+        {
+          "item": "item.sand",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Pottery",
+      "skillXp": 3,
+      "displayName": "Kumu ele (2 kum)"
+    },
+    {
+      "id": "glass",
+      "station": "item.glass_furnace",
+      "produces": "item.glass",
+      "materials": [
+        {
+          "item": "item.sand",
+          "count": 2
+        },
+        {
+          "item": "item.ash",
+          "count": 1
+        },
+        {
+          "item": "item.charcoal",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Pottery",
+      "skillXp": 20,
+      "displayName": "Cam erit",
+      "minLevel": 6
+    },
+    {
+      "id": "glass_remelt",
+      "station": "item.glass_furnace",
+      "produces": "item.glass",
+      "materials": [
+        {
+          "item": "item.broken_glass",
+          "count": 2
+        },
+        {
+          "item": "item.charcoal",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Pottery",
+      "skillXp": 12,
+      "displayName": "Kırık camı erit",
+      "minLevel": 6
+    },
+    {
+      "id": "clear_glass",
+      "station": "item.glass_furnace",
+      "produces": "item.clear_glass",
+      "materials": [
+        {
+          "item": "item.fine_sand",
+          "count": 2
+        },
+        {
+          "item": "item.ash",
+          "count": 1
+        },
+        {
+          "item": "item.charcoal",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.35,
+      "skill": "Pottery",
+      "skillXp": 30,
+      "displayName": "Berrak cam erit",
+      "minLevel": 9,
+      "requiresBranch": "branch.pot_b"
+    },
+    {
+      "id": "leaded_glass",
+      "station": "item.glass_furnace",
+      "produces": "item.leaded_glass",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 2
+        },
+        {
+          "item": "item.lead",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Pottery",
+      "skillXp": 18,
+      "displayName": "Kurşunlu pencere camı yap",
+      "minLevel": 7
+    },
+    {
+      "id": "glass_bottle",
+      "station": "item.glass_bench",
+      "produces": "item.glass_bottle",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Pottery",
+      "skillXp": 12,
+      "displayName": "Şişe üfle",
+      "count": 2,
+      "minLevel": 6
+    },
+    {
+      "id": "glass_jar",
+      "station": "item.glass_bench",
+      "produces": "item.glass_jar",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Pottery",
+      "skillXp": 12,
+      "displayName": "Kavanoz üfle",
+      "minLevel": 6
+    },
+    {
+      "id": "glass_cup",
+      "station": "item.glass_bench",
+      "produces": "item.glass_cup",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Pottery",
+      "skillXp": 12,
+      "displayName": "Bardak üfle",
+      "count": 2,
+      "minLevel": 6
+    },
+    {
+      "id": "glass_goblet",
+      "station": "item.glass_bench",
+      "produces": "item.glass_goblet",
+      "materials": [
+        {
+          "item": "item.clear_glass",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Pottery",
+      "skillXp": 20,
+      "displayName": "Kadeh üfle",
+      "count": 2,
+      "minLevel": 9,
+      "requiresBranch": "branch.pot_b"
+    },
+    {
+      "id": "hourglass",
+      "station": "item.glass_bench",
+      "produces": "item.hourglass",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        },
+        {
+          "item": "item.fine_sand",
+          "count": 1
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Pottery",
+      "skillXp": 18,
+      "displayName": "Kum saati yap",
+      "minLevel": 7
+    },
+    {
+      "id": "mirror_sphere",
+      "station": "item.glass_bench",
+      "produces": "item.mirror_sphere",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 2
+        },
+        {
+          "item": "item.lead",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Pottery",
+      "skillXp": 25,
+      "displayName": "Ayna küresi üfle (kurşun astarlı)",
+      "minLevel": 8,
+      "requiresBranch": "branch.pot_b"
+    },
+    {
+      "id": "mirror_glass",
+      "station": "item.glass_bench",
+      "produces": "item.mirror_glass",
+      "materials": [
+        {
+          "item": "item.mirror_sphere",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Pottery",
+      "skillXp": 12,
+      "displayName": "Ayna camı kes",
+      "count": 3,
+      "minLevel": 8
+    },
+    {
+      "id": "convex_mirror",
+      "station": "item.workbench",
+      "produces": "item.convex_mirror",
+      "materials": [
+        {
+          "item": "item.mirror_glass",
+          "count": 1
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Carpentry",
+      "skillXp": 15,
+      "displayName": "Ayna çerçevele",
+      "minLevel": 3
+    },
+    {
+      "id": "large_mirror",
+      "station": "item.workbench",
+      "produces": "item.large_mirror",
+      "materials": [
+        {
+          "item": "item.mirror_glass",
+          "count": 4
+        },
+        {
+          "item": "item.plank",
+          "count": 3
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.25,
+      "skill": "Carpentry",
+      "skillXp": 35,
+      "displayName": "Büyük ayna çerçevele",
+      "minLevel": 7
+    },
+    {
+      "id": "box_bed",
+      "station": "item.workbench",
+      "produces": "item.box_bed",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 10
+        },
+        {
+          "item": "item.nails",
+          "count": 4
+        },
+        {
+          "item": "item.linen",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.4,
+      "skill": "Carpentry",
+      "skillXp": 40,
+      "displayName": "Kutu yatak yap",
+      "minLevel": 5
     }
   ],
   "animals": [
@@ -16965,7 +17656,8 @@
         0,
         1
       ],
-      "heatLoss": 0.9
+      "heatLoss": 0.9,
+      "material": "item.leaded_glass"
     },
     {
       "id": "window_cellar",

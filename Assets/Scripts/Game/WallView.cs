@@ -29,7 +29,22 @@ namespace Thatchwick.Game
         public WallMode Mode
         {
             get => _mode;
-            set { _mode = value; Rebuild(); }
+            set { _mode = value; Rebuild(); ModeChanged?.Invoke(); }
+        }
+
+        /// <summary>Duvar modu değişti (duvar eşyaları alçak duvarda gizlenir; eşyalar yeniden çizilmeli).</summary>
+        public event System.Action ModeChanged;
+
+        /// <summary>
+        /// Kenar şu an alçak mı çiziliyor (Aşağı'da bütün duvarlar, Kesit'te ön duvarlar). Alçak duvardaki asılı eşyalar
+        /// havada kalmasın diye gizlenir, yerinde yalnızca küçük bir işaret kalır (Sims davranışı, 27 §4.4).
+        /// </summary>
+        public bool IsLowered(Edge e)
+        {
+            if (_map == null || !_map.EdgeInBounds(e)) return false;
+            var kind = _map.GetEdge(e);
+            bool fullHeight = EdgeKinds.IsRoomBoundary(kind) || kind == EdgeKind.HalfWall;
+            return fullHeight && (_mode == WallMode.Down || (_mode == WallMode.Cutaway && IsFrontWall(e)));
         }
 
         /// <summary>Çatı görünsün mü (duvarlar Yukarı modundayken).</summary>
@@ -165,6 +180,15 @@ namespace Thatchwick.Game
 
         private bool IsFrontWall(Edge e)
         {
+            // Arkası kapalı bir oda, önü oda değilse ön duvardır. (Eskiden yalnızca zemine bakılıyordu: önü su, toprak
+            // ya da taş olan dış duvar kesitte alçalmıyordu.) Oda bilgisi yoksa eski zemin kuralı.
+            var rooms = _map.Rooms;
+            if (rooms != null)
+            {
+                var back = _map.InBounds(e.SideB) ? rooms.RoomAt(e.SideB) : null;
+                var front = _map.InBounds(e.SideA) ? rooms.RoomAt(e.SideA) : null;
+                if (back != null && back.IsIndoor) return front == null || !front.IsIndoor;
+            }
             bool behindFloor = _map.InBounds(e.SideB) && _map.GetFloor(e.SideB) != FloorType.Grass;
             bool frontFloor = _map.InBounds(e.SideA) && _map.GetFloor(e.SideA) != FloorType.Grass;
             return behindFloor && !frontFloor;

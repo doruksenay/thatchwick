@@ -67,6 +67,7 @@ namespace Thatchwick.Core.Content
         public double durationDays;
         public float skillXp;
         public string moodlet;          // boş = "proud"
+        public string requiresBranch;   // yalnızca bu dalı seçmiş karakter yapar (D3: Camcı)
     }
 
     [Serializable]
