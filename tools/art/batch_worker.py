@@ -245,7 +245,7 @@ def make_guide(jid, item):
             (x0, y0, x1 - x0 + 1, y1 - y0 + 1), (float(piv.group(1)), float(piv.group(2))))
 
 
-def measure(img, mask, fp):
+def measure(img, mask, fp, fill=True):
     """Otomatik ölçülebilen 301 ölçütleri. Dönüş: (ölçüler, ikinci deneme gerektiren hatalar)."""
     im = img.convert("RGBA")
     W, H = im.size
@@ -282,7 +282,7 @@ def measure(img, mask, fp):
         errs.append(f"{semi} yarı saydam piksel")
     if out_mask > 20:
         errs.append(f"maske dışına {out_mask} px taşma")
-    if cov_l < 0.8 or cov_r < 0.8:
+    if fill and (cov_l < 0.8 or cov_r < 0.8):     # ince/doğal eşyada ("fill": false) kapalı
         errs.append("ayak izinin bir yanı %80'den az")
     if not touches:
         errs.append("tabana değmiyor")
@@ -315,6 +315,8 @@ def plan_job(jid):
     text, fm, body = front(path)
     if fm.get("worker") != "batch":
         sys.exit(f"{jid}: 'worker: batch' değil; bu işi bulut ajanı yapar")
+    if fm.get("approved_by", "").split("#")[0].strip() not in ("user", "auto"):
+        sys.exit(f"{jid}: onay yok (approved_by: {fm.get('approved_by')}); kullanıcı 'user' yapınca çalışır")
     p = params(body, jid)
     if p.get("tool") != "map_object":
         sys.exit(f"{jid}: şimdilik yalnızca tool=map_object destekleniyor")
@@ -373,7 +375,7 @@ def run_job(jid, dry=False, reuse=None):
             img = Image.open(rawp).convert("RGBA")
             if img.size != tuple(s["item"]["canvas"]):
                 img = img.crop((0, 0) + tuple(s["item"]["canvas"])) if img.width >= s["item"]["canvas"][0] else img
-            m, errs = measure(img, s["mask"], s["fp"])
+            m, errs = measure(img, s["mask"], s["fp"], s["item"].get("fill", True))
             fam = s["item"].get("family", family)
             level, row, sat_only = style_check(rawp, fam)
             fitted = None
