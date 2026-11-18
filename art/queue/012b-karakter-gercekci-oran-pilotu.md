@@ -1,7 +1,7 @@
 ---
 id: "012b"
 title: Gerçekçi oranlı dünya karakteri pilotu (012'nin yerine)
-status: running
+status: blocked
 claimed_at: 2026-11-18T11:58Z
 approved_by: user        # kullanıcı kararı 2026-11-18 (sohbet): 012 sprite'ı fazla chibi, daha uzun ve gerçekçi oran
 family: karakter
@@ -40,6 +40,10 @@ Kullanıcı kararı (2026-11-18): 012'deki 56 px dünya sprite'ı oyuna uymuyor.
 - `style.py check --family karakter`. Not: karakter ailesinin referansları 012'nin chibi karakterleri olabilir; oran farkı yüzünden UYARI çıkarsa teslim et, raporda yaz. Yalnızca palet nedeniyle KALDI olanı teslim etme.
 - **Yan yana sayfası (`012b-yanyana.png`), 4 kat, #333333 zemin, 64x32 elmas karonun üstünde:** eski 56 px köylü (012), 4 aday, ve sağda 020 portrelerinden adam ile kadın. Kullanıcı boy ve tarzı buna bakarak seçecek.
 - Ayrıca 008b duvarının (102x115) yanında bir aday: karakter kapı/pencere ölçeğine uyuyor mu.
+
+## Sorular
+- 2026-11-18 (bulut şerit 2): `get_balance` planı "Tier 2: Pixel Artisan", 4999/5000 generation, yenilenme 2026-12-18 gösteriyor. `art/budget.md` ise Tier 1, 2000 gen, yenilenme 2026-12-08 diyor. Plan Tier 1 değilse işçi durur; PixelLab çağrısı yapılmadı (0 gen).
+- Karar kullanıcıda: `art/budget.md` Plan ve Dönem bölümleri güncellensin (işçi değiştirmez), sonra 012b `pending` yapılıp yeniden çalıştırılsın.
 
 ## Notlar
 - Kabulden sonra: 013'te seçilen yürüme yöntemi (pixminimax) korunur, 014-015 ve 016-017, 314 yeni karaktere göre yeniden yazılır.
