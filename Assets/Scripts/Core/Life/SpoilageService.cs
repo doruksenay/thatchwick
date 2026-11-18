@@ -28,6 +28,8 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Bodrum depolarının bozulma çarpanı (yer tutucu; Adım 28).</summary>
         public double BasementFactor = 0.7;
+        /// <summary>Derin kiler (kat -2) ek çarpanı: bozulma bodrumun yarısı (23. belge 3.4).</summary>
+        public double DeepCellarFactor = 0.5;
         /// <summary>Bodrum sıcaklığı sağlayıcı (HeatSystem); verilmezse bodrum hep serin sayılır.</summary>
         public Func<GridPos, float> TemperatureAt { get; set; }
         /// <summary>Bodrumun serin sayıldığı en yüksek sıcaklık (°C).</summary>
@@ -109,6 +111,7 @@ namespace Thatchwick.Core.Life
                     if (it.Position.Z < 0 && temp.Value <= CoolLimit) rate = Math.Min(rate, BasementFactor);   // toprak altı serin
                 }
                 else rate = it.Position.Z < 0 ? BasementFactor : 1.0;
+                if (it.Position.Z <= -2) rate *= DeepCellarFactor;           // derin kiler (arsa kazısı): bodrumun yarısı
                 if (d.Preserves > 0f) rate *= d.Preserves;
                 bool iced = d.IsIceBox && it.FuelDays > 0;
                 if (iced) rate = Math.Min(rate, IceRate);

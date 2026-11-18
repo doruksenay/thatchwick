@@ -28,6 +28,7 @@ namespace Thatchwick.Core.Save
         public AnimalSave[] animals;     // v2
         public SoilSave[] soil;          // toprak verimi (eski kayıtta yok)
         public GrassSave[] pasture;      // yenmiş otlak (eski kayıtta yok)
+        public Mining.MineSave[] mines;  // kazı yerleri: arsa kazısı ve ocak (eski kayıtta yok)
         public bool animalsHeld;         // hayvan çanı: barınakta tutuluyorlar (eski kayıtta false = salınmış)
         /// <summary>Oyunun ana rastgelelik tohumu (eski kayıtta 0) ve yükleme sayacı (bkz. Core.Seeds).</summary>
         public int seed;

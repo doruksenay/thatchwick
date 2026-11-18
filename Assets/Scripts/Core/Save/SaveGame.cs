@@ -40,6 +40,8 @@ namespace Thatchwick.Core.Save
         /// <summary>Yenmiş otlak ve hayvan çanı; SaveGame.RestoreAnimals ile geri konur.</summary>
         public List<GrassSave> Pasture = new List<GrassSave>();
         public bool AnimalsHeld;
+        /// <summary>Kazı yerleri; MineSystem kurulunca SaveGame.RestoreMines ile geri konur.</summary>
+        public List<Mining.MineSave> Mines = new List<Mining.MineSave>();
         /// <summary>Yüklenemeyen parçalar (ör. içerikten kaldırılmış eşya). Oyun yine açılır.</summary>
         public List<string> Warnings = new List<string>();
         /// <summary>Ana rastgelelik tohumu (eski kayıtta 0) ve kayıttaki yükleme sayacı.</summary>
@@ -78,7 +80,8 @@ namespace Thatchwick.Core.Save
 
         public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
             AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null,
-            AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null, int seed = 0, int rngEpoch = 0)
+            AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null, int seed = 0, int rngEpoch = 0,
+            Mining.MineSystem mines = null)
         {
             var map = world.Map;
             var data = new SaveData
@@ -260,6 +263,7 @@ namespace Thatchwick.Core.Save
                 data.animalsHeld = !animals.Released;
             }
             data.life = life?.Export();
+            data.mines = mines?.Export().ToArray();
             return data;
         }
 
@@ -348,6 +352,9 @@ namespace Thatchwick.Core.Save
             foreach (var kv in c.Mood.Export()) list.Add(new KeyFloat { key = kv.Key, value = kv.Value });
             return list.ToArray();
         }
+
+        /// <summary>Kayıttaki kazı yerlerini kazı motoruna geri koyar.</summary>
+        public static void RestoreMines(LoadedGame loaded, Mining.MineSystem mines) => mines.Restore(loaded.Mines);
 
         /// <summary>Kayıttaki toprak verimini çiftçilik sistemine geri koyar.</summary>
         public static void RestoreSoil(LoadedGame loaded, PlantSystem plants)
@@ -570,6 +577,7 @@ namespace Thatchwick.Core.Save
             if (data.soil != null) result.Soil.AddRange(data.soil);
             if (data.pasture != null) result.Pasture.AddRange(data.pasture);
             result.AnimalsHeld = data.animalsHeld;
+            if (data.mines != null) result.Mines.AddRange(data.mines);
             return result;
         }
 

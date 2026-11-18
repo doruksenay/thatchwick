@@ -328,7 +328,7 @@ namespace Thatchwick.Core.Work
     }
 
     /// <summary>Canlı modda karo işi: çimi çapalayıp toprak yapmak (yapı modunda akçeyle, burada emekle) ve yol onarmak.</summary>
-    public sealed class FarmWork : ITileWork
+    public sealed class FarmWork : ITileWork, ITileDuration
     {
         public const double TillDays = 0.02;
         public const double RepairDays = 0.03;
@@ -426,8 +426,13 @@ namespace Thatchwick.Core.Work
             _world = world ?? throw new ArgumentNullException(nameof(world));
         }
 
+        /// <summary>Kazı işleri (Dig, Support, Bail, Light) bu işe devredilir; null ise yapılamaz.</summary>
+        public ITileWork Mine { get; set; }
+        private static bool IsMineAction(TileAction a) => a >= TileAction.Dig && a <= TileAction.Light;
+
         public string CanDo(Character actor, GridPos tile, TileAction action, string arg = null)
         {
+            if (IsMineAction(action)) return Mine == null ? "Kazı yapılamaz." : Mine.CanDo(actor, tile, action, arg);
             var map = _world.Map;
             switch (action)
             {
@@ -539,8 +544,12 @@ namespace Thatchwick.Core.Work
             return fallback;
         }
 
+        public double Duration(Character actor, GridPos tile, TileAction action) =>
+            IsMineAction(action) && Mine is ITileDuration td ? td.Duration(actor, tile, action) : Duration(actor, action);
+
         public double Duration(Character actor, TileAction action)
         {
+            if (IsMineAction(action)) return Mine?.Duration(actor, action) ?? 0.01;
             if (action == TileAction.Sow) return SowDays;
             if (action == TileAction.Stock) return 0.02;
             if (action == TileAction.Bathe) return BatheDays;
@@ -554,6 +563,7 @@ namespace Thatchwick.Core.Work
 
         public void Apply(Character actor, GridPos tile, TileAction action, string arg = null)
         {
+            if (IsMineAction(action)) { Mine?.Apply(actor, tile, action, arg); return; }
             if (CanDo(actor, tile, action, arg) != null) return;
             if (action == TileAction.Bathe) { BatheIn(actor, tile); return; }
             if (action == TileAction.Sow)

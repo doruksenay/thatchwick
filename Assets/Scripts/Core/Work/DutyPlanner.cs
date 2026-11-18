@@ -29,6 +29,12 @@ namespace Thatchwick.Core.Work
         /// <summary>Görevliye iş verildi (kâhyalık XP'si için).</summary>
         public event Action<Character, Job> Issued;
 
+        /// <summary>Kazı motoru (maden görevi, arsa kazısı); null ise maden görevi iş bulmaz.</summary>
+        public Mining.MineSystem Mines { get; set; }
+
+        /// <summary>Bu görevi alabilir mi: maden görevi ergene verilmez (kazıya inmez).</summary>
+        public static bool CanTakeDuty(Character c, DutyKind d) => CanTakeDuty(c) && !(d == DutyKind.Mine && c.Stage == AgeStage.Teen);
+
         /// <summary>Karo işleri (yol onarımı); null ise tarla görevlisi yol onarmaz.</summary>
         public ITileWork TileWork { get; set; }
 
@@ -55,6 +61,7 @@ namespace Thatchwick.Core.Work
             {
                 case DutyKind.Farm: return "Tarla";
                 case DutyKind.Animals: return "Hayvanlar";
+                case DutyKind.Mine: return "Maden";
                 default: return "Görev yok";
             }
         }
@@ -71,13 +78,16 @@ namespace Thatchwick.Core.Work
                 foreach (var it in _world.Items) if (FeedInteraction(it) != null || CollectInteraction(it) != null) n++;
                 if (_animals != null) foreach (var a in _animals.Animals) if (!a.IsDead && a.PetCooldownDays <= 0) n++;
             }
+            else if (duty == DutyKind.Mine && Mines != null)
+                foreach (var m in Mines.Sites)
+                    foreach (var (_, _, t) in m.All()) if (t.Marked || t.Creaking) n++;
             return n;
         }
 
         /// <summary>Görevliye sıradaki iş; yoksa null. JobRunner.DutyProvider olarak verilir.</summary>
         public Job Next(Character c)
         {
-            if (!CanTakeDuty(c) || c.Duty == DutyKind.None) return null;
+            if (!CanTakeDuty(c, c.Duty) || c.Duty == DutyKind.None) return null;
             if (WorkHours != null && !WorkHours()) return null;
             double now = Now?.Invoke() ?? 0;
             Expire(now);
@@ -168,10 +178,39 @@ namespace Thatchwick.Core.Work
                         Consider(-animal.Id, animal.Position, () => Job.WithAnimal(animal.Id, action));
                     }
             }
+            else if (c.Duty == DutyKind.Mine && TileWork != null && Mines?.Get(Mining.MineSystem.PlotId) is Mining.MineMap plot)
+            {
+                // Önce güvenlik: çatırdayan karoya destek; sonra su; sonra işaretli karoları kaz (en yakını).
+                foreach (var (x, y, t) in plot.All())
+                {
+                    if (!t.Creaking) continue;
+                    var tile = new GridPos(x, y, plot.Level);
+                    if (TileWork.CanDo(c, tile, TileAction.Support) != null) continue;
+                    Consider(MineKey(tile), tile, () => Job.OnTile(tile, TileAction.Support));
+                }
+                if (best == null && plot.WaterDepth >= 1)
+                    foreach (var (x, y, t) in plot.All())
+                    {
+                        if (!t.IsOpen) continue;
+                        var tile = new GridPos(x, y, plot.Level);
+                        Consider(MineKey(tile) + 1, tile, () => Job.OnTile(tile, TileAction.Bail));
+                        break;
+                    }
+                if (best == null)
+                    foreach (var (x, y, t) in plot.All())
+                    {
+                        if (!t.Marked) continue;
+                        var tile = new GridPos(x, y, plot.Level);
+                        if (TileWork.CanDo(c, tile, TileAction.Dig) != null) continue;
+                        Consider(MineKey(tile), tile, () => Job.OnTile(tile, TileAction.Dig));
+                    }
+            }
             if (best != null && Now != null) _claims[bestKey] = now + ClaimDays;     // saat yoksa tutma da yok
             if (best != null) Issued?.Invoke(c, best);
             return best;
         }
+
+        private static long MineKey(GridPos p) => (1L << 42) + ((long)p.Y << 20) + p.X;
 
         // Yol karosunun tutma anahtarı (eşya ve hayvan kimlikleriyle çakışmaz).
         private static long RoadKey(GridPos p) => (1L << 40) + ((long)p.Y << 20) + p.X;

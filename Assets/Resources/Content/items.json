@@ -3285,6 +3285,26 @@
       "beauty": 2
     },
     {
+      "id": "item.treasure_chest",
+      "displayName": "Demir kapılı hazine sandığı",
+      "category": "storage",
+      "price": 70,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living"
+      ],
+      "tags": [
+        "treasure_chest"
+      ],
+      "levels": [
+        -2
+      ],
+      "storage": 20,
+      "interactions": [],
+      "material": "metal"
+    },
+    {
       "id": "item.wall_shelf",
       "displayName": "Duvar rafı",
       "category": "storage",
@@ -8746,7 +8766,8 @@
       "category": "resource",
       "price": 2,
       "tags": [
-        "stone"
+        "stone",
+        "raw"
       ]
     },
     {
@@ -9276,7 +9297,228 @@
       "displayName": "Demir cevheri",
       "placement": "Resource",
       "category": "resource",
-      "price": 5
+      "price": 5,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.rubble",
+      "displayName": "Moloz",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.torch",
+      "displayName": "Meşale",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "light"
+      ]
+    },
+    {
+      "id": "item.relic_foundation_stone",
+      "displayName": "Eski temel taşı",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 8,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "M",
+      "weight": 3,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_buried_jar",
+      "displayName": "Gömülü testi",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 12,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_horseshoe",
+      "displayName": "Kırık nal",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 5,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_fossil",
+      "displayName": "Taşlaşmış kabuk",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 15,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_miner_lamp",
+      "displayName": "Eski madenci kandili",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 14,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_pick_head",
+      "displayName": "Kırık kazma başı",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 9,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_coin",
+      "displayName": "Eski sikke",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 20,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_bone_comb",
+      "displayName": "Kemik tarak",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 12,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_crystal",
+      "displayName": "Kristal yumru",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 25,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.slate_stone",
+      "displayName": "Arduvaz",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "stone",
+        "raw"
+      ]
+    },
+    {
+      "id": "item.ochre",
+      "displayName": "Aşı boyası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "raw",
+        "dye"
+      ]
+    },
+    {
+      "id": "item.gypsum",
+      "displayName": "Alçıtaşı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.coal",
+      "displayName": "Taş kömürü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "fuel",
+        "raw"
+      ]
+    },
+    {
+      "id": "item.limestone",
+      "displayName": "Kireçtaşı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "stone",
+        "raw"
+      ]
     },
     {
       "id": "item.iron_bar",
@@ -10052,6 +10294,42 @@
         "produces": "item.feed",
         "producesCount": 4
       }
+    },
+    {
+      "id": "item.drain_pit",
+      "displayName": "Dren çukuru",
+      "category": "farm",
+      "price": 8,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "drain"
+      ],
+      "levels": [
+        -2
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.underground_cistern",
+      "displayName": "Yer altı sarnıcı",
+      "category": "farm",
+      "price": 45,
+      "width": 2,
+      "height": 2,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "levels": [
+        -2
+      ],
+      "cistern": 60,
+      "interactions": []
     },
     {
       "id": "item.threshing_floor",

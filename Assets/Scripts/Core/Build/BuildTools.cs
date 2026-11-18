@@ -671,6 +671,7 @@ namespace Thatchwick.Core.Build
                 if (it.IsDecor) continue;
                 bool hit = it.IsWallMounted ? InRect(it.Position) : false;
                 foreach (var t in it.OccupiedTiles()) if (InRect(t)) { hit = true; break; }
+                if (hit && ProtectedItem != null && ProtectedItem(it)) { skipped++; continue; }   // hazine odasındaki yadigâr
                 if (hit) items.Add(it.Id);
             }
             var edges = new List<Edge>();

@@ -45,7 +45,15 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Gölete balık at (iş argümanı balık türü); aynı türden en az iki balık ürer.</summary>
         Stock = 5,
         /// <summary>Boş toprağa tohum serp (görevli tarlacı; mevsime ve nöbete uyan tohumu seçer).</summary>
-        Sow = 6
+        Sow = 6,
+        /// <summary>Kazı (arsa kazısı, kat -2): karoyu kaz.</summary>
+        Dig = 7,
+        /// <summary>Kazıda ahşap destek kur (iş argümanı "stone": taş kemer).</summary>
+        Support = 8,
+        /// <summary>Kazıdan kovayla su boşalt.</summary>
+        Bail = 9,
+        /// <summary>Kazıya ışık koy (iş argümanı ışık eşyası).</summary>
+        Light = 10
     }
 
     /// <summary>Karo işlerinin kuralları ve etkileri (Core.Work.FarmWork uygular).</summary>
@@ -55,5 +63,11 @@ namespace Thatchwick.Core.Jobs
         string CanDo(Character actor, GridPos tile, TileAction action, string arg = null);
         double Duration(Character actor, TileAction action);
         void Apply(Character actor, GridPos tile, TileAction action, string arg = null);
+    }
+
+    /// <summary>Süresi karoya bağlı karo işi (kazı: karonun sertliği, ışık, su).</summary>
+    public interface ITileDuration
+    {
+        double Duration(Character actor, GridPos tile, TileAction action);
     }
 }
