@@ -1,7 +1,8 @@
 ---
 id: "403"
 title: "Hatıralar, soy ağacı işlemesi, çeyiz sandığı (7 eşya)"
-status: pending
+status: running
+claimed_at: 2026-11-18T19:12Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 27 §7.7, §8.2, §8.4 (18.11.2026)
 priority: 20
 family: esya
