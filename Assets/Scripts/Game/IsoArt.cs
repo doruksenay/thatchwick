@@ -143,13 +143,79 @@ namespace Thatchwick.Game
             ["item.hearth_stone"] = new ItemArt { AlongX = "iso_item_hearth_stone_unlit_se", Lit = "iso_item_hearth_stone_lit_se", PivotX = 40, PivotY = 24 },
             ["item.stool_wood"] = new ItemArt { AlongX = "iso_item_stool_se", PivotX = 40, PivotY = 24 },
             ["item.table_wood"] = new ItemArt { AlongY = "iso_item_table_wood_2x1_se_nw", PivotX = 56, PivotY = 32 },
-            ["item.shelf_wood"] = new ItemArt { AlongY = "iso_item_shelf_wood_2x1_se_nw", PivotX = 56, PivotY = 32 },
+            ["item.shelf_wood"] = new ItemArt { AlongY = "iso_item_shelf_wood_2x1_se_nw_v2", PivotX = 56, PivotY = 32 },   // 301 kabul (v2)
             ["item.chair_wood"] = new ItemArt { AlongX = "iso_item_chair_wood_sw", PivotX = 40, PivotY = 24 },
-            ["item.chair_carved"] = new ItemArt { AlongX = "iso_item_chair_wood_sw", PivotX = 40, PivotY = 24 },
-            ["item.cooking_pot"] = new ItemArt { AlongX = "iso_item_cooking_pot_se", PivotX = 40, PivotY = 24 },
+            ["item.cooking_pot"] = new ItemArt { AlongX = "iso_item_cooking_pot_se_v2", PivotX = 40, PivotY = 24 },     // 301b (v2)
             ["item.candle"] = new ItemArt { AlongX = "iso_item_candle_se", PivotX = 16, PivotY = 7 },
             ["item.flower_pot"] = new ItemArt { AlongX = "iso_item_flower_pot_se", PivotX = 16, PivotY = 7 },
+
+            // Görsel parti 2 (18.11.2026): kuyruktan gelen adaylar (_aday). Review bağımlılık için yeterli (CLAUDE.md);
+            // kabul edilince dosya Assets/Art/Iso'ya aynı adla taşınır, eşleme değişmez. Pivotlar art/results tablolarından.
+            ["item.chair_carved"] = new ItemArt { AlongX = "iso_item_chair_carved_se", PivotX = 40, PivotY = 24 },          // 301
+            ["item.chest_wood"] = new ItemArt { AlongX = "iso_item_chest_wood_se", PivotX = 40, PivotY = 24 },              // 301
+            ["item.chopping_block"] = new ItemArt { AlongX = "iso_item_chopping_block_se", PivotX = 40, PivotY = 24 },      // 301
+            ["item.market_stall"] = new ItemArt { AlongY = "iso_item_market_stall_2x1_se_nw_v2", PivotX = 56, PivotY = 32 }, // 301b
+            ["item.clay_cup"] = new ItemArt { AlongX = "iso_item_clay_cup_se", PivotX = 16, PivotY = 7 },                    // 301b
+            ["item.bench_long"] = new ItemArt { AlongY = "iso_item_bench_long_2x1_se_nw", PivotX = 56, PivotY = 32 },        // 302
+            ["item.mattress_straw"] = new ItemArt { AlongX = "iso_item_mattress_straw_se", PivotX = 40, PivotY = 24 },       // 302
+            ["item.child_bed"] = new ItemArt { AlongX = "iso_item_child_bed_se", PivotX = 40, PivotY = 24 },                 // 302
+            ["item.stump_table"] = new ItemArt { AlongX = "iso_item_stump_table_se", PivotX = 40, PivotY = 24 },             // 302
+            ["item.prep_counter"] = new ItemArt { AlongY = "iso_item_prep_counter_2x1_se_nw", PivotX = 56, PivotY = 32 },    // 302
+            ["item.armchair_cushion"] = new ItemArt { AlongX = "iso_item_armchair_cushion_se", PivotX = 40, PivotY = 24 },   // 302
+            ["item.brazier"] = new ItemArt { AlongX = "iso_item_brazier_se", PivotX = 40, PivotY = 24 },                     // 303
+            ["item.stone_oven"] = new ItemArt { AlongY = "iso_item_stone_oven_2x1_se_nw", PivotX = 56, PivotY = 32 },        // 303
+            ["item.barrel"] = new ItemArt { AlongX = "iso_item_barrel_se", PivotX = 40, PivotY = 24 },                       // 303
+            ["item.woodshed"] = new ItemArt { AlongY = "iso_item_woodshed_2x1_se_nw", PivotX = 56, PivotY = 32 },            // 303
+            ["item.seed_crate"] = new ItemArt { AlongX = "iso_item_seed_crate_se", PivotX = 40, PivotY = 24 },               // 303
+            ["item.whetstone"] = new ItemArt { AlongX = "iso_item_whetstone_se", PivotX = 40, PivotY = 24 },                 // 303
+            ["item.basin_ewer"] = new ItemArt { AlongX = "iso_item_basin_ewer_se", PivotX = 40, PivotY = 24 },               // 304
+            ["item.water_bucket"] = new ItemArt { AlongX = "iso_item_water_bucket_se", PivotX = 40, PivotY = 24 },           // 304
+            ["item.barrel_tub"] = new ItemArt { AlongX = "iso_item_barrel_tub_se", PivotX = 40, PivotY = 24 },               // 304
+            ["item.outhouse"] = new ItemArt { AlongX = "iso_item_outhouse_se", PivotX = 40, PivotY = 24 },                   // 304
+            ["item.well"] = new ItemArt { AlongX = "iso_item_well_se", PivotX = 40, PivotY = 24 },                           // 304
+            ["item.scarecrow"] = new ItemArt { AlongX = "iso_item_scarecrow_se", PivotX = 40, PivotY = 24 },                 // 304
+            ["item.garden_bench"] = new ItemArt { AlongY = "iso_item_garden_bench_2x1_se_nw", PivotX = 56, PivotY = 32 },    // 304
+            ["item.child_chair"] = new ItemArt { AlongX = "iso_item_child_chair_se", PivotX = 40, PivotY = 24 },             // 304
+            ["item.toy_chest"] = new ItemArt { AlongX = "iso_item_toy_chest_se", PivotX = 40, PivotY = 24 },                 // 304
+            ["item.jug"] = new ItemArt { AlongX = "iso_item_jug_se", PivotX = 16, PivotY = 7 },                              // 304
+            ["item.salting_barrel"] = new ItemArt { AlongX = "iso_item_salting_barrel_se", PivotX = 40, PivotY = 24 },       // 312
+            ["item.compost_heap"] = new ItemArt { AlongX = "iso_item_compost_heap_se", PivotX = 40, PivotY = 24 },           // 321
+            ["item.seed_maker"] = new ItemArt { AlongY = "iso_item_seed_maker_2x1_se", PivotX = 56, PivotY = 32 },           // 321
+            ["item.bucket_pulley"] = new ItemArt { AlongX = "iso_item_bucket_pulley_se", PivotX = 40, PivotY = 24 },         // 321 (72 px tuval)
+            ["item.smokehouse"] = new ItemArt { AlongY = "iso_item_smokehouse_2x1_se", PivotX = 56, PivotY = 32 },           // 324
+            ["item.cheese_press"] = new ItemArt { AlongX = "iso_item_cheese_press_se", PivotX = 40, PivotY = 24 },           // 324 (72 px tuval)
+            ["item.forage_pinecone"] = new ItemArt { AlongX = "iso_forage_pinecone_se", PivotX = 40, PivotY = 24 },          // 322
+            // Bilinçli olarak eşlenmeyen: item.drying_rack (tanım 2x1, görsel 1x1 üretilmiş; yeniden iş gerekir).
         };
+
+        /// <summary>Bitkinin olgun görseli (ağaçlar). Fidan ve genç evreler ölçekle küçültülür. Yoksa null.</summary>
+        private static readonly Dictionary<string, string> Plants = new Dictionary<string, string>
+        {
+            ["item.tree_plum"] = "iso_tree_plum_grown_se",   // 319, 96x112
+        };
+
+        public static Sprite Plant(ItemInstance item) =>
+            Enabled && Plants.TryGetValue(item.Def.Id, out var name) ? Get(name, 40f, 24f) : null;
+
+        // ---------------- yollar ----------------
+
+        /// <summary>
+        /// Yol karosu (340): patika a/b, çakıl a, kaldırım yıpranmış ve bozuk. Sağlam kaldırım ve yıpranmış çakıl teslim
+        /// edilmedi: kaldırımın sağlam hali de "worn" karosunu kullanır. Yoksa null (renkli elmasa düşer).
+        /// </summary>
+        public static Sprite Road(RoadType road, int band, int x, int y)
+        {
+            if (!Enabled) return null;
+            int h = (x * 73856093) ^ (y * 19349663);
+            if (h < 0) h = -h;
+            switch (road)
+            {
+                case RoadType.Path: return GetCentered(h % 2 == 0 ? "iso_road_path_a" : "iso_road_path_b") ?? GetCentered("iso_road_path_a");
+                case RoadType.Gravel: return GetCentered("iso_road_gravel_a");
+                case RoadType.Paved: return GetCentered(band >= 2 ? "iso_road_paved_broken" : "iso_road_paved_worn");
+                default: return null;
+            }
+        }
 
         /// <summary>
         /// Eşyanın görseli. flipX: yalnızca diğer eksen için çizilmiş görselin ayna görüntüsü kullanıldıysa
