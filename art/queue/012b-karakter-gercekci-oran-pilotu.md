@@ -1,7 +1,8 @@
 ---
 id: "012b"
 title: Gerçekçi oranlı dünya karakteri pilotu (012'nin yerine)
-status: pending
+status: running
+claimed_at: 2026-11-18T11:58Z
 approved_by: user        # kullanıcı kararı 2026-11-18 (sohbet): 012 sprite'ı fazla chibi, daha uzun ve gerçekçi oran
 family: karakter
 style_gate: true
