@@ -1,7 +1,7 @@
 ---
 id: "350"
 title: Soy Mührü ve yadigâr ikonları (arayüz ve dünya işareti)
-status: running
+status: failed
 claimed_at: 2026-11-18T13:05Z
 approved_by: user        # otomatik akış (2026-11-17); miras sistemi PR #11
 family: arayuz
