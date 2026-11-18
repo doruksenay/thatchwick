@@ -3,6 +3,7 @@ id: "357"
 title: Arazi engelleri (kaya, çalı, devrik kütük, eski kök kütüğü)
 status: pending
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
+worker: batch            # 2026-11-18 toplu işçi pilotu (Claude'suz); bulut ajanı almaz
 family: esya
 style_gate: false
 cost_est: 7
@@ -42,6 +43,133 @@ Yöntem **301 ile aynı** (referanssız kılavuz, `create_map_object` stil eşle
 | 7 | `item.old_stump` | `iso_terrain_old_stump_se.png` | 1x1 | 64x56 | `--n 1` | 14 | `old weathered tree stump with spreading roots, moss and a small bracket fungus; clearly different from a chopping block (no axe, no flat clean top)` |
 
 - Maliyet 7 × 1 gen; ikinci deneme payı 7 → `cost_max` 14.
+
+## Parametreler (toplu işçi)
+Tarifin makine okunur hâli (`tools/art/batch_worker.py`). Tablodaki değerlerle aynıdır; farklar: 64 px genişlikli tuvaller 80 px (64 px tuval, kenar boşluklu taban elmasını kırpıyordu) ve çalı ile alıç stil denetiminde `bitki` ailesiyle ölçülür.
+
+```json
+{
+  "tool": "map_object",
+  "family": "esya",
+  "max_attempts": 2,
+  "common": {
+    "view": "high top-down",
+    "detail": "low detail",
+    "shading": "basic shading",
+    "outline": "single color outline",
+    "suffix": ", medieval peasant village object, earthy muted palette, muted natural colours, grey-brown stone, dull green foliage, flat simple shading, single dark outline, light from top-left, no ground, no shadow, no extra objects, transparent background"
+  },
+  "items": [
+    {
+      "name": "boulder_small",
+      "out": "Assets/Art/Iso/_aday/iso_terrain_boulder_small_se.png",
+      "canvas": [
+        80,
+        56
+      ],
+      "guide": {
+        "n": 1,
+        "m": 1,
+        "axis": "x",
+        "height": 12
+      },
+      "description": "small rounded grey field stone half sunk in the ground, a few lichen spots"
+    },
+    {
+      "name": "boulder",
+      "out": "Assets/Art/Iso/_aday/iso_terrain_boulder_se.png",
+      "canvas": [
+        80,
+        72
+      ],
+      "guide": {
+        "n": 1,
+        "m": 1,
+        "axis": "x",
+        "height": 24
+      },
+      "description": "large grey granite boulder with cracks and green-grey lichen, knee high to a villager"
+    },
+    {
+      "name": "boulder_large",
+      "out": "Assets/Art/Iso/_aday/iso_terrain_boulder_large_2x1_se_nw.png",
+      "canvas": [
+        112,
+        96
+      ],
+      "guide": {
+        "n": 2,
+        "m": 1,
+        "axis": "x",
+        "height": 32
+      },
+      "description": "long low outcrop of two weathered grey rocks fused together, moss in the cracks"
+    },
+    {
+      "name": "bramble",
+      "out": "Assets/Art/Iso/_aday/iso_terrain_bramble_se.png",
+      "canvas": [
+        72,
+        64
+      ],
+      "guide": {
+        "n": 1,
+        "m": 1,
+        "axis": "x",
+        "height": 24
+      },
+      "description": "tangled thorny bramble bush with arching dark green canes, no berries, no flowers",
+      "family": "bitki"
+    },
+    {
+      "name": "hawthorn",
+      "out": "Assets/Art/Iso/_aday/iso_terrain_hawthorn_se.png",
+      "canvas": [
+        72,
+        80
+      ],
+      "guide": {
+        "n": 1,
+        "m": 1,
+        "axis": "x",
+        "height": 34
+      },
+      "description": "dense round hawthorn shrub with small dark green leaves and twisted grey stems, taller than a stool, smaller than a tree",
+      "family": "bitki"
+    },
+    {
+      "name": "fallen_log",
+      "out": "Assets/Art/Iso/_aday/iso_terrain_fallen_log_2x1_se_nw.png",
+      "canvas": [
+        112,
+        80
+      ],
+      "guide": {
+        "n": 2,
+        "m": 1,
+        "axis": "x",
+        "height": 16
+      },
+      "description": "fallen oak log lying on its side with bark, moss patches and a broken branch stub, no axe"
+    },
+    {
+      "name": "old_stump",
+      "out": "Assets/Art/Iso/_aday/iso_terrain_old_stump_se.png",
+      "canvas": [
+        80,
+        56
+      ],
+      "guide": {
+        "n": 1,
+        "m": 1,
+        "axis": "x",
+        "height": 14
+      },
+      "description": "old weathered tree stump with spreading roots, moss and a small bracket fungus; clearly different from a chopping block (no axe, no flat clean top)"
+    }
+  ]
+}
+```
 
 ## Doğrulama
 301 tablosu. Ek kontroller:
