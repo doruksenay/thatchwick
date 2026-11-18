@@ -1,7 +1,7 @@
 ---
 id: "357"
 title: Arazi engelleri (kaya, çalı, devrik kütük, eski kök kütüğü)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:02Z
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: esya
@@ -53,6 +53,9 @@ Yöntem **301 ile aynı** (referanssız kılavuz, `create_map_object` stil eşle
 ## Notlar
 - Dosya öneki `iso_terrain_`: eşya kataloğunda satılmaz, haritaya serpilir. Kodda karşılığı (kaz, kes, taş ve odun verimi) bu iş review'a geçtikten sonra yazılır.
 - Dönem: hepsi Eski Dünya türü (böğürtlen çalısı, alıç, meşe).
+
+## Sorular
+- 2026-11-18: `get_balance` Tier 2 (Pixel Artisan, 4999/5000 gen, yenilenme 2026-12-18) döndü; `art/budget.md` planı Tier 1 (2000 gen, yenilenme 2026-12-08) yazıyor. Kural: Tier 1 değilse işçi durur. Paket yükseltilmiş görünüyor; kullanıcı `art/budget.md` plan/bakiye/rezerv bölümünü güncelleyince iş `pending`e alınabilir. Üretim yapılmadı, harcama 0.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
