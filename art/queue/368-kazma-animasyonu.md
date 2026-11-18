@@ -31,3 +31,5 @@ Taban (018, kullanıcı kararı 18.11.2026): 84 px gerçekçi karakterler, erkek
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18: yöntem kapısı 018a3 kabul (aday d, pixminimax + simetrik adım metni); etkileşimlerde aynı pixminimax ve 018b2'deki ücretsiz hizalama kullanılır. -->
