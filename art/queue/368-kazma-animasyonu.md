@@ -1,14 +1,14 @@
 ---
 id: "368"
 title: Animasyon: kazma sallama, kova taşıma, destek kurma (4 yön)
-status: pending
+status: blocked   # 018 (etkileşim animasyonları planı) durdu; 012b karakter oranı pilotu kabul edilince 018 ile birlikte açılır (kullanıcı onayı 18.11.2026)
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 50
 family: karakter
 style_gate: false
 cost_est: 24
 cost_max: 36
-depends_on: ["013", "018"]
+depends_on: ["013", "012b", "018"]
 max_attempts: 1
 pixellab: true
 outputs:
