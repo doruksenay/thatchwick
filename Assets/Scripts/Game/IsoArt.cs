@@ -289,7 +289,7 @@ namespace Thatchwick.Game
         {
             ["animal.sheep"] = ("iso_animal_sheep_1_cand", 26f, 14f),   // 56x56, ayaklar alttan 14 px
             ["animal.ox"] = ("iso_animal_ox_cand", 28f, 12f),          // iş 411; dosya yoksa yer tutucu
-            // Yaban hayvanları (iş 408-410): dosya yoksa yer tutucu küp.
+            // Yaban hayvanları (iş 412-414): dosya yoksa yer tutucu küp.
             ["wild.rabbit"] = ("iso_wild_rabbit_cand", 24f, 10f),
             ["wild.squirrel"] = ("iso_wild_squirrel_cand", 24f, 10f),
             ["wild.hedgehog"] = ("iso_wild_hedgehog_cand", 24f, 10f),
