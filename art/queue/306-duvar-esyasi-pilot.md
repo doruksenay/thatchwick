@@ -1,8 +1,8 @@
 ---
 id: "306"
 title: Duvar eşyası pilotu (meşale, kandil, duvar rafı, ot demeti, alet askısı)
-status: pending
-claimed_at: 2026-11-18T09:03Z
+status: running
+claimed_at: 2026-11-18T12:20Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: esya
