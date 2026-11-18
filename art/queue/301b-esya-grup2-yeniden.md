@@ -1,7 +1,7 @@
 ---
 id: "301b"
 title: Ev eşyaları grup 2, yeniden (raf, pazar tezgâhı, kazan, bardak; yalnızca SE)
-status: running
+status: review
 claimed_at: 2026-11-18T09:47Z
 approved_by: user        # kullanıcı kararı 2026-11-18 (sohbet): 301'deki bu dört eşya kabul değil, baştan yapılsın
 priority: 10
@@ -13,7 +13,6 @@ depends_on: ["301"]
 max_attempts: 2          # parça başına en çok 2 deneme
 pixellab: true
 outputs:
-  - Assets/Art/Iso/_aday/iso_item_shelf_wood_2x1_se_nw_v3.png
   - Assets/Art/Iso/_aday/iso_item_market_stall_2x1_se_nw_v2.png
   - Assets/Art/Iso/_aday/iso_item_cooking_pot_se_v2.png
   - Assets/Art/Iso/_aday/iso_item_clay_cup_se.png
