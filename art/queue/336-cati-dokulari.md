@@ -1,7 +1,7 @@
 ---
 id: "336"
 title: Çatı dokuları: saz, ahşap şindıl, kiremit, arduvaz (eğim + sırt)
-status: running
+status: failed
 claimed_at: 2026-11-18T11:45Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
