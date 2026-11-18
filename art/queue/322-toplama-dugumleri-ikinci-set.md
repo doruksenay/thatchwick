@@ -1,7 +1,8 @@
 ---
 id: "322"
 title: Toplama düğümleri ikinci set (yabani sarımsak, ısırgan, mürver, yaban çileği, kestane, kuşburnu, kozalak, su teresi)
-status: pending
+status: running
+claimed_at: 2026-11-18T09:35Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
 family: bitki
