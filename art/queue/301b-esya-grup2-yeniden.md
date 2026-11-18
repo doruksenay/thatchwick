@@ -1,7 +1,8 @@
 ---
 id: "301b"
 title: Ev eşyaları grup 2, yeniden (raf, pazar tezgâhı, kazan, bardak; yalnızca SE)
-status: pending
+status: running
+claimed_at: 2026-11-18T09:47Z
 approved_by: user        # kullanıcı kararı 2026-11-18 (sohbet): 301'deki bu dört eşya kabul değil, baştan yapılsın
 priority: 10
 family: esya
