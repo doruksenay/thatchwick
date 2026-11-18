@@ -1,7 +1,7 @@
 ---
 id: "301b"
 title: Ev eşyaları grup 2, yeniden (raf, pazar tezgâhı, kazan, bardak; yalnızca SE)
-status: review
+status: rejected
 claimed_at: 2026-11-18T09:47Z
 approved_by: user        # kullanıcı kararı 2026-11-18 (sohbet): 301'deki bu dört eşya kabul değil, baştan yapılsın
 priority: 10
@@ -68,3 +68,4 @@ Eşyaya özel kurallar:
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 kullanıcı kararı (sohbet, onay grubu 2): **ret** (pazar tezgâhı v2, kazan v2, toprak bardak). Kullanıcı neden belirtmedi; Claude'un varsayımı: tezgâh sade, kazan küçük ve siyah leke gibi, bardak tanınmıyor. Oyundan kaldırıldı; yeniden üretim 301c.

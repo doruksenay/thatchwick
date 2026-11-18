@@ -1,7 +1,7 @@
 ---
 id: "306"
 title: Duvar eşyası pilotu (meşale, kandil, duvar rafı, ot demeti, alet askısı)
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:20Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -68,3 +68,4 @@ Yöntem, ortak ayarlar, ortak açıklama eki, ikinci deneme kuralı, renk sını
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 kullanıcı kararı (sohbet, onay grubu 2): kabul (meşale, kandil, duvar rafı, ot demeti, alet askısı).
