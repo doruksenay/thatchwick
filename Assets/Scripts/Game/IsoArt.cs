@@ -342,15 +342,37 @@ namespace Thatchwick.Game
         /// erkek/kadın. Durma görseli "_cand_<yön>", yürüme kareleri anim/ altında "_walk_<yön>_NN".
         /// Görseli henüz olmayan yön ya da evre eski 56'lık sete düşer.
         /// </summary>
-        private static string AdultR84(Character c) =>
-            c.Stage == AgeStage.Baby || c.Stage == AgeStage.Child || c.Stage == AgeStage.Elder
-                ? null
-                : (c.Sex == Sex.Male ? "iso_char_man_r84" : "iso_char_woman_r84");
+        private static string AdultR84(Character c)
+        {
+            switch (c.Stage)
+            {
+                case AgeStage.Baby:
+                case AgeStage.Child:
+                    return null;
+                case AgeStage.Elder:   // 415: yaşlı da 84 px gerçekçi tabana geçer
+                    return c.Sex == Sex.Male ? "iso_char_elder_m_r84" : "iso_char_elder_f_r84";
+            }
+            return c.Sex == Sex.Male ? "iso_char_man_r84" : "iso_char_woman_r84";
+        }
 
         private const float R84PivotX = 42f, R84PivotY = 2f;
 
+        /// <summary>416: çocuk 84'e büyümez; aynı tarzda 64 px tuval (bebek bunun 0,6 ölçeği).</summary>
+        private static string ChildR64(Character c) =>
+            c.Stage == AgeStage.Baby || c.Stage == AgeStage.Child
+                ? (c.Sex == Sex.Male ? "iso_char_boy_r64" : "iso_char_girl_r64")
+                : null;
+
+        private const float R64PivotX = 32f, R64PivotY = 2f;
+
         public static Sprite Character(Character c, int direction)
         {
+            string r64 = ChildR64(c);
+            if (r64 != null)
+            {
+                var s64 = Get(r64 + "_idle_" + Directions[direction], R64PivotX, R64PivotY) ?? Get(r64 + "_idle_se", R64PivotX, R64PivotY);
+                if (s64 != null) return s64;
+            }
             string r84 = AdultR84(c);
             if (r84 != null)
             {
