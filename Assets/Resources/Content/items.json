@@ -14931,6 +14931,11 @@
               "item": "item.sand",
               "count": 1,
               "chance": 0.5
+            },
+            {
+              "item": "item.mussel_shell",
+              "count": 2,
+              "chance": 0.35
             }
           ]
         }
@@ -14977,7 +14982,9 @@
         "living"
       ],
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "requiresNear": "item.glass_furnace",
+      "nearRadius": 4
     },
     {
       "id": "item.glass_bottle",
@@ -15001,7 +15008,8 @@
         "pencere",
         "kiler"
       ],
-      "interactions": []
+      "interactions": [],
+      "shopUnlock": "glassworks"
     },
     {
       "id": "item.glass_cup",
@@ -15023,7 +15031,8 @@
         "raf",
         "pencere"
       ],
-      "interactions": []
+      "interactions": [],
+      "shopUnlock": "glassworks"
     },
     {
       "id": "item.glass_jar",
@@ -15034,7 +15043,8 @@
       "styleSet": "Zanaatkâr",
       "tags": [
         "glass",
-        "craftonly"
+        "craftonly",
+        "sealed"
       ],
       "decorSize": "S",
       "weight": 2,
@@ -15053,7 +15063,11 @@
         "item.pickled_beet",
         "item.pickled_onion",
         "item.pickled_carrot",
-        "item.pekmez"
+        "item.pekmez",
+        "item.cherry",
+        "item.plum",
+        "item.berries",
+        "item.wild_strawberry"
       ],
       "fillCount": 1,
       "interactions": [
@@ -15077,7 +15091,8 @@
           "durationDays": 0.02,
           "collectContents": true
         }
-      ]
+      ],
+      "shopUnlock": "glassworks"
     },
     {
       "id": "item.glass_goblet",
@@ -15896,6 +15911,704 @@
           "durationDays": 0.06
         }
       ]
+    },
+    {
+      "id": "item.tin",
+      "displayName": "Kalay",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "metal"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.net_curtain",
+      "displayName": "Ağ perde",
+      "category": "decor_wall",
+      "price": 10,
+      "level": 2,
+      "styleSet": "Köylü",
+      "styleTheme": "Kıyı",
+      "beauty": 3,
+      "placement": "Wall",
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 2,
+      "material": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.oar_rack",
+      "displayName": "Kürek askısı",
+      "category": "decor_wall",
+      "price": 8,
+      "level": 2,
+      "styleSet": "Köylü",
+      "styleTheme": "Kıyı",
+      "beauty": 2,
+      "placement": "Wall",
+      "rooms": [
+        "living",
+        "kitchen",
+        "outdoor"
+      ],
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "material": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.fish_basket_decor",
+      "displayName": "Balık sepeti süsü",
+      "category": "decor",
+      "price": 6,
+      "level": 1,
+      "styleSet": "Köylü",
+      "styleTheme": "Kıyı",
+      "beauty": 2,
+      "placement": "Surface",
+      "decorSize": "M",
+      "weight": 2,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak"
+      ],
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.dried_fish_string",
+      "displayName": "Kurutulmuş balık dizisi",
+      "category": "decor_wall",
+      "price": 8,
+      "level": 2,
+      "styleSet": "Köylü",
+      "styleTheme": "Kıyı",
+      "beauty": 2,
+      "placement": "Wall",
+      "rooms": [
+        "kitchen"
+      ],
+      "wallBands": [
+        "üst"
+      ],
+      "material": "wood",
+      "fillWith": [
+        "item.fish_carp",
+        "item.fish_trout",
+        "item.fish_pike",
+        "item.fish_eel"
+      ],
+      "fillCount": 4,
+      "interactions": [
+        {
+          "id": "fill",
+          "displayName": "Balık as",
+          "durationDays": 0.03,
+          "fillDecor": true
+        },
+        {
+          "id": "eat_one",
+          "displayName": "Bir balık al",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.05,
+          "eatContents": true
+        },
+        {
+          "id": "empty",
+          "displayName": "Boşalt",
+          "durationDays": 0.02,
+          "collectContents": true
+        }
+      ]
+    },
+    {
+      "id": "item.shell_bowl",
+      "displayName": "Midye kabuğu kâsesi",
+      "category": "decor",
+      "price": 0,
+      "level": 1,
+      "styleSet": "Köylü",
+      "styleTheme": "Kıyı",
+      "beauty": 3,
+      "tags": [
+        "craftonly"
+      ],
+      "placement": "Surface",
+      "decorSize": "S",
+      "weight": 1,
+      "material": "clay",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak",
+        "pencere"
+      ],
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.bleached_bench",
+      "displayName": "Ağartılmış ahşap sıra",
+      "category": "seating",
+      "price": 16,
+      "level": 2,
+      "styleSet": "Köylü",
+      "styleTheme": "Kıyı",
+      "beauty": 2,
+      "width": 2,
+      "rooms": [
+        "living",
+        "kitchen",
+        "outdoor"
+      ],
+      "comfort": 2,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 6,
+          "durationDays": 0.05
+        }
+      ]
+    },
+    {
+      "id": "item.green_bottle_shelf",
+      "displayName": "Yeşil şişe rafı",
+      "category": "decor_wall",
+      "price": 24,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Kıyı",
+      "beauty": 3,
+      "placement": "Wall",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "maxLoad": 6,
+      "material": "wood",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.2,
+          "v": 0.5,
+          "size": "S",
+          "kind": "raf"
+        },
+        {
+          "id": "b",
+          "u": 0.5,
+          "v": 0.5,
+          "size": "S",
+          "kind": "raf"
+        },
+        {
+          "id": "c",
+          "u": 0.8,
+          "v": 0.5,
+          "size": "S",
+          "kind": "raf"
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.rope_coil",
+      "displayName": "Halat yumağı",
+      "category": "decor",
+      "price": 5,
+      "level": 1,
+      "styleSet": "Köylü",
+      "styleTheme": "Kıyı",
+      "beauty": 2,
+      "rooms": [
+        "living",
+        "kitchen",
+        "outdoor"
+      ],
+      "finishGroup": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.han_table",
+      "displayName": "Uzun han masası",
+      "category": "surfaces",
+      "price": 42,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Han",
+      "beauty": 3,
+      "width": 3,
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "comfort": 3,
+      "finishGroup": "wood",
+      "maxLoad": 30,
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.17,
+          "v": 0.5,
+          "size": "M"
+        },
+        {
+          "id": "b",
+          "u": 0.5,
+          "v": 0.5,
+          "size": "L"
+        },
+        {
+          "id": "c",
+          "u": 0.83,
+          "v": 0.5,
+          "size": "M"
+        },
+        {
+          "id": "d",
+          "u": 0.33,
+          "v": 0.5,
+          "size": "M"
+        },
+        {
+          "id": "cover",
+          "u": 0.5,
+          "v": 0.5,
+          "kind": "ortu",
+          "size": "L"
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.barrel_table",
+      "displayName": "Fıçı masa",
+      "category": "surfaces",
+      "price": 14,
+      "level": 2,
+      "styleSet": "Köylü",
+      "styleTheme": "Han",
+      "beauty": 2,
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "finishGroup": "wood",
+      "maxLoad": 8,
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.5,
+          "v": 0.5,
+          "size": "M"
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.han_bench",
+      "displayName": "Han sırası",
+      "category": "seating",
+      "price": 18,
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Han",
+      "beauty": 1,
+      "width": 2,
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "comfort": 2,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 7,
+          "durationDays": 0.05
+        }
+      ]
+    },
+    {
+      "id": "item.tankard_rack",
+      "displayName": "Maşrapa rafı",
+      "category": "decor_wall",
+      "price": 20,
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Han",
+      "beauty": 2,
+      "placement": "Wall",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 2,
+      "maxLoad": 8,
+      "finishGroup": "wood",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.125,
+          "v": 0.5,
+          "size": "S",
+          "kind": "tabak"
+        },
+        {
+          "id": "b",
+          "u": 0.375,
+          "v": 0.5,
+          "size": "S",
+          "kind": "tabak"
+        },
+        {
+          "id": "c",
+          "u": 0.625,
+          "v": 0.5,
+          "size": "S",
+          "kind": "tabak"
+        },
+        {
+          "id": "d",
+          "u": 0.875,
+          "v": 0.5,
+          "size": "S",
+          "kind": "tabak"
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.tankard",
+      "displayName": "Maşrapa",
+      "category": "decor",
+      "price": 4,
+      "level": 1,
+      "styleSet": "Köylü",
+      "styleTheme": "Han",
+      "beauty": 1,
+      "placement": "Surface",
+      "decorSize": "S",
+      "weight": 1,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "tabak"
+      ],
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.pewter_jug",
+      "displayName": "Kalay sürahi",
+      "category": "decor",
+      "price": 18,
+      "level": 8,
+      "styleSet": "Tüccar",
+      "styleTheme": "Han",
+      "beauty": 3,
+      "placement": "Surface",
+      "decorSize": "S",
+      "weight": 2,
+      "material": "metal",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak",
+        "tabak"
+      ],
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.notice_board",
+      "displayName": "İlan tahtası",
+      "category": "decor_wall",
+      "price": 10,
+      "level": 2,
+      "styleSet": "Köylü",
+      "styleTheme": "Han",
+      "beauty": 2,
+      "placement": "Wall",
+      "rooms": [
+        "living",
+        "kitchen",
+        "outdoor"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "material": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.singer_stand",
+      "displayName": "Şarkıcı kürsüsü",
+      "category": "decor",
+      "price": 28,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Han",
+      "beauty": 2,
+      "rooms": [
+        "living"
+      ],
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "sing",
+          "displayName": "Şarkı söyle",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.08,
+          "skill": "Music",
+          "skillXp": 4,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 10
+            }
+          ],
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.brass_ewer",
+      "displayName": "Pirinç ibrik",
+      "category": "decor",
+      "price": 30,
+      "level": 8,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "beauty": 4,
+      "tags": [
+        "merchant"
+      ],
+      "placement": "Surface",
+      "decorSize": "S",
+      "weight": 2,
+      "material": "metal",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak"
+      ],
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.tile_bowl",
+      "displayName": "Çini kâse",
+      "category": "decor",
+      "price": 26,
+      "level": 8,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "beauty": 4,
+      "tags": [
+        "merchant"
+      ],
+      "placement": "Surface",
+      "decorSize": "S",
+      "weight": 1,
+      "material": "clay",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak",
+        "tabak"
+      ],
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.lattice_screen",
+      "displayName": "Kafes paravan",
+      "category": "decor",
+      "price": 48,
+      "level": 9,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "beauty": 5,
+      "tags": [
+        "merchant"
+      ],
+      "width": 2,
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "finishGroup": "wood",
+      "tall": true,
+      "interactions": []
+    },
+    {
+      "id": "item.brass_lantern",
+      "displayName": "Asma pirinç fener",
+      "category": "ceiling",
+      "price": 52,
+      "level": 9,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "beauty": 5,
+      "tags": [
+        "merchant",
+        "light"
+      ],
+      "placement": "Ceiling",
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "material": "metal",
+      "interactions": []
+    },
+    {
+      "id": "item.cushioned_divan",
+      "displayName": "Minderli divan",
+      "category": "seating",
+      "price": 90,
+      "level": 9,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "beauty": 5,
+      "tags": [
+        "merchant"
+      ],
+      "width": 3,
+      "rooms": [
+        "living"
+      ],
+      "comfort": 5,
+      "finishGroup": "cloth",
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 12,
+          "durationDays": 0.05
+        }
+      ]
+    },
+    {
+      "id": "item.caravan_rug",
+      "displayName": "Kervan halısı",
+      "category": "rug",
+      "price": 150,
+      "level": 9,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "beauty": 9,
+      "tags": [
+        "merchant"
+      ],
+      "width": 3,
+      "height": 2,
+      "placement": "Rug",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 5,
+      "finishGroup": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.tile_panel",
+      "displayName": "Çini pano",
+      "category": "decor_wall",
+      "price": 64,
+      "level": 9,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "beauty": 5,
+      "tags": [
+        "merchant"
+      ],
+      "placement": "Wall",
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "material": "clay",
+      "interactions": []
+    },
+    {
+      "id": "item.spice_chest",
+      "displayName": "Baharat sandığı",
+      "category": "storage",
+      "price": 40,
+      "level": 8,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "beauty": 3,
+      "tags": [
+        "merchant"
+      ],
+      "rooms": [
+        "kitchen"
+      ],
+      "storage": 20,
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.mussel_shell",
+      "displayName": "Tatlı su midyesi kabuğu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "interactions": []
     }
   ],
   "recipes": [
@@ -18690,6 +19403,52 @@
       "skill": "Smithing",
       "skillXp": 8,
       "displayName": "Nal sergisi yap",
+      "minLevel": 2
+    },
+    {
+      "id": "mirror_sphere_tin",
+      "station": "item.glass_bench",
+      "produces": "item.mirror_sphere",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 2
+        },
+        {
+          "item": "item.lead",
+          "count": 1
+        },
+        {
+          "item": "item.tin",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Pottery",
+      "skillXp": 28,
+      "displayName": "Ayna küresi üfle (kalay-kurşun astarlı)",
+      "count": 2,
+      "minLevel": 8,
+      "requiresBranch": "branch.pot_b"
+    },
+    {
+      "id": "shell_bowl",
+      "station": "item.pottery_wheel",
+      "produces": "item.shell_bowl",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 1
+        },
+        {
+          "item": "item.mussel_shell",
+          "count": 4
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Pottery",
+      "skillXp": 8,
+      "displayName": "Midye kabuğu kâsesi yap",
       "minLevel": 2
     }
   ],

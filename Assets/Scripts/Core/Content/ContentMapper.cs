@@ -124,6 +124,9 @@ namespace Thatchwick.Core.Content
                 item.FillCount = Math.Max(0, dto.fillCount);
                 item.WindowMount = dto.window;
                 item.Insulation = Math.Max(0f, dto.insulation);
+                item.RequiresNearby = string.IsNullOrEmpty(dto.requiresNear) ? null : dto.requiresNear;
+                item.NearbyRadius = dto.nearRadius > 0 ? dto.nearRadius : 4;
+                item.ShopUnlock = string.IsNullOrEmpty(dto.shopUnlock) ? null : dto.shopUnlock;
                 if (dto.fitsOn != null) foreach (var f in dto.fitsOn) if (!string.IsNullOrWhiteSpace(f)) item.FitsOn.Add(f.Trim());
                 if (dto.wallBands != null)
                     foreach (var b in dto.wallBands)

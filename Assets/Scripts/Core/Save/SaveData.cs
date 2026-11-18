@@ -160,6 +160,7 @@ namespace Thatchwick.Core.Save
         public KeyInt[] damaged;    // envanterdeki hasarlı adetler (27; eski kayıtta yok)
         public KeyInt[] repaired;   // onarılmış adetler
         public KeyInt[] bought;     // pazardan alınmış adetler (D2; "Kendi emeğimiz" eki için)
+        public string[] shopUnlocks; // köyde açılan satışlar (glassworks); eski kayıtta null
     }
 
     [Serializable]

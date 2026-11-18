@@ -174,6 +174,9 @@ namespace Thatchwick.Core.Content
         public int fillCount;        // doldurulan dekorun aldığı adet
         public bool window;          // yalnızca pencere kenarına asılır (pencere içi tahtası, perde)
         public float insulation;     // asıldığı kenarın ısı kaybı çarpanı (0 = etkisiz)
+        public string requiresNear;  // üretim için yakında olması gereken istasyon (D3 tamamlama)
+        public int nearRadius;       // requiresNear için en çok karo (0 = 4)
+        public string shopUnlock;    // craftonly eşya bu kilitle katalogda da satılır (glassworks)
         public string[] seasonal;    // mevsim süsü: taze durduğu mevsimler (D3b)
         // Hayvancılık ve otomasyon (17.11.2026)
         public bool requiresIndoor;  // yalnızca kapalı bir odaya konur (folluk, ahır bölmesi)

@@ -186,6 +186,29 @@ namespace Thatchwick.Game
             ["item.smokehouse"] = new ItemArt { AlongY = "iso_item_smokehouse_2x1_se", PivotX = 56, PivotY = 32 },           // 324
             ["item.cheese_press"] = new ItemArt { AlongX = "iso_item_cheese_press_se", PivotX = 40, PivotY = 24 },           // 324 (72 px tuval)
             ["item.forage_pinecone"] = new ItemArt { AlongX = "iso_forage_pinecone_se", PivotX = 40, PivotY = 24 },          // 322
+            // ---- Ev dekorasyonu adayları (387-390, 400; onay bekliyor, oyunda denensin diye bağlı). Tek "_se" görsel uzun ekseni "\\" (AlongY). ----
+            ["item.sedir"] = new ItemArt { AlongY = "iso_item_sedir_2x1_se", PivotX = 56, PivotY = 32 },                    // 390
+            ["item.sedir_long"] = new ItemArt { AlongY = "iso_item_sedir_long_3x1_se", PivotX = 72, PivotY = 40 },          // 390 (144 px)
+            ["item.sedir_bed"] = new ItemArt { AlongY = "iso_item_sedir_bed_2x1_se", PivotX = 56, PivotY = 32 },            // 390
+            ["item.floor_bed"] = new ItemArt { AlongY = "iso_item_floor_bed_2x1_se", PivotX = 56, PivotY = 32 },            // 390
+            ["item.yukluk"] = new ItemArt { AlongY = "iso_item_yukluk_2x1_se", PivotX = 56, PivotY = 32 },                  // 390 (136 px boy)
+            ["item.floor_cushion"] = new ItemArt { AlongX = "iso_item_floor_cushion_se", PivotX = 40, PivotY = 24 },        // 390
+            ["item.box_bed"] = new ItemArt { AlongY = "iso_item_box_bed_2x1_se", PivotX = 56, PivotY = 32 },                // 400
+            ["item.kilim_small"] = new ItemArt { AlongY = "iso_item_kilim_small_2x1_se", PivotX = 56, PivotY = 32 },        // 390 (halı)
+            ["item.kilim_large"] = new ItemArt { AlongY = "iso_item_kilim_large_3x2_se", PivotX = 88, PivotY = 48 },        // 390 (halı, 176 px)
+            ["item.cicim"] = new ItemArt { AlongX = "iso_item_cicim_2x2_se", PivotX = 72, PivotY = 40 },                    // 390 (halı, 144 px)
+            // Masa ve raf üstü (32 px tuval; pivot = nesnenin tabanı)
+            ["item.bread_basket"] = new ItemArt { AlongX = "iso_item_bread_basket_se", PivotX = 16, PivotY = 2 },           // 387
+            ["item.fruit_basket"] = new ItemArt { AlongX = "iso_item_fruit_basket_se", PivotX = 16, PivotY = 2 },           // 387
+            ["item.cheese_board"] = new ItemArt { AlongX = "iso_item_cheese_board_se", PivotX = 16, PivotY = 5 },           // 387
+            ["item.glass_jar"] = new ItemArt { AlongX = "iso_item_glass_jar_se", PivotX = 16, PivotY = 5 },                 // 400
+            ["item.hourglass"] = new ItemArt { AlongX = "iso_item_hourglass_se", PivotX = 16, PivotY = 3 },                 // 400
+            ["item.copper_hand_mirror"] = new ItemArt { AlongX = "iso_item_copper_hand_mirror_se", PivotX = 16, PivotY = 4 }, // 384 (32x40)
+            // Duvar eşyaları (pivot = görselin ortası, duvardaki bant noktasına oturur; diğer duvarda ayna görüntüsü)
+            ["item.flower_wreath"] = new ItemArt { AlongX = "iso_wall_item_flower_wreath_sw_ne", PivotX = 20, PivotY = 20 },   // 381
+            ["item.harvest_wreath"] = new ItemArt { AlongX = "iso_wall_item_harvest_wreath_sw_ne", PivotX = 20, PivotY = 20 }, // 387
+            ["item.kilim_hanging"] = new ItemArt { AlongX = "iso_wall_item_kilim_hanging_2w_sw_ne", PivotX = 48, PivotY = 32 }, // 381 (2 kenar)
+            ["item.large_mirror"] = new ItemArt { AlongX = "iso_wall_item_large_mirror_2w_sw_ne", PivotX = 48, PivotY = 32 },   // 400 (2 kenar)
             // Bilinçli olarak eşlenmeyen: item.drying_rack (tanım 2x1, görsel 1x1 üretilmiş; yeniden iş gerekir).
         };
 

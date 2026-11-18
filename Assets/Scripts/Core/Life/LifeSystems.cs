@@ -140,6 +140,7 @@ namespace Thatchwick.Core.Life
                 Notify = (text, id) => Say(text, NoticeLevel.Info, id)
             };
             Mood.BeautyBonus = it => Keepsakes.BeautyBonus(it) + Thatchwick.Core.Build.DecorSystem.SeasonalBeauty(it, Clock.Season);
+            UpdateMerchant(false);
             Legacy.MarriedOutHappened += (member, villager) => Keepsakes.OnMarriedOut(member, villager, _family, Legacy, Household());
             population.BabyBorn += (baby, mother, father) => Keepsakes.OnBirth(baby);
             Houses = new NeighborHouseService(population, Villagers, content, seed != 0 ? Seeds.Derive(seed, 9) : 71) { Today = () => Clock.TotalDays };
@@ -622,6 +623,78 @@ namespace Thatchwick.Core.Life
         public void Attach(Thatchwick.Core.Work.FarmWork farm) { farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish); }
         private FamilyService _family;
 
+        // ---- şenlik hazırlığı (27 §9 son madde) ----
+        /// <summary>Şenlikten kaç gün önce köy süslenir.</summary>
+        public const int FestivePrepDays = 3;
+        public const string FestiveHomeMoodId = "mood.festive_home";
+        public const int FestiveHomeMood = 5;
+
+        /// <summary>Yaklaşan şenlik (en çok FestivePrepDays gün sonra ya da bugün); köy süslüdür. Yoksa null.</summary>
+        public FestivalDef FestivePrep { get; private set; }
+        private string _festivePrepAnnounced;
+
+        /// <summary>
+        /// Günlük: şenlik yaklaşınca köylüler kapılarına çelenk asar ve meydana bayrak dizisi gerilir (oyun katmanı çizer).
+        /// Hanenin iç odasında mevsimi gelmiş bir mevsim süsü varsa aileye "Şenliğe hazır ev" (+5).
+        /// </summary>
+        public void UpdateFestivePrep()
+        {
+            var next = Festivals.NextFestival(out int days);
+            FestivePrep = next != null && days >= 0 && days <= FestivePrepDays ? next : null;
+            if (FestivePrep == null) return;
+            string key = $"{FestivePrep.Id}:{Clock.DayIndex + days}";
+            if (_festivePrepAnnounced != key)
+            {
+                _festivePrepAnnounced = key;
+                Say(days == 0
+                    ? $"{FestivePrep.DisplayName} bugün: köy süslendi."
+                    : $"{FestivePrep.DisplayName} {days} gün sonra: köylüler kapılarına çelenk astı, meydana bayrak dizisi gerildi. Evine bir mevsim süsü as, aile \"Şenliğe hazır ev\" sevinci yaşasın.",
+                    NoticeLevel.Info);
+            }
+            if (!HomeIsFestive()) return;
+            foreach (var c in Household())
+                if (!c.IsDead) c.AddMoodlet(FestiveHomeMoodId, "Şenliğe hazır ev", FestiveHomeMood, 1.1);
+        }
+
+        /// <summary>Kapalı iç odada mevsimi gelmiş (solmamış) bir mevsim süsü var mı?</summary>
+        public bool HomeIsFestive()
+        {
+            foreach (var it in World.Items)
+            {
+                if (!it.Def.IsSeasonal || !it.Def.InSeason(Clock.Season)) continue;
+                var room = World.Map.Rooms.RoomAt(it.IsDecor && it.ParentId.HasValue && World.GetItem(it.ParentId.Value) != null ? World.GetItem(it.ParentId.Value).Position : it.Position);
+                if (room != null && room.IsIndoor) return true;
+            }
+            return false;
+        }
+
+        /// <summary>Pazar günü gezgin tüccar köydedir: Kervan Odası eşyaları katalogda görünür (27 §6.1).</summary>
+        public void UpdateMerchant(bool announce)
+        {
+            bool here = Festivals.IsMarketDayToday;
+            bool arrived = here && !House.MerchantInVillage;
+            House.MerchantInVillage = here;
+            if (announce && arrived) Say("Gezgin tüccar köyde: pirinç ibrik, çini, kervan halısı bugün satılıyor (yapı kataloğu, Kervan Odası).", NoticeLevel.Info);
+        }
+
+        /// <summary>Köye camcılık geldi: cam ocağı kurulunca çömlekçi cam şişe, kavanoz ve bardak satar (27 §18.3).</summary>
+        public const string GlassworksUnlock = "glassworks";
+        public const string GlassFurnaceId = "item.glass_furnace";
+
+        /// <summary>Cam ocağı dünyadaysa ve kilit kapalıysa açar, bildirir. Yeni açıldıysa true.</summary>
+        public bool CheckGlassworks()
+        {
+            if (House.HasShopUnlock(GlassworksUnlock)) return false;
+            foreach (var it in World.Items)
+            {
+                if (it.Def.Id != GlassFurnaceId) continue;
+                House.UnlockShop(GlassworksUnlock);
+                Say("Köye camcılık geldi: çömlekçi artık cam şişe, kavanoz ve bardak satıyor (yapı kataloğu, Süs).", NoticeLevel.Info);
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>Ruh hali kaynaklarını yeniler (oyun hızından bağımsız, küçük adımlarla).</summary>
         public void Tick(double gameDays)
         {
@@ -695,6 +768,9 @@ namespace Thatchwick.Core.Life
             Injuries.DailyUpdate();
             Decor.RemindFreeMirror();
             Keepsakes.Daily(Household());
+            CheckGlassworks();
+            UpdateFestivePrep();
+            UpdateMerchant(true);
             // Miras: dünyadan kalkmış yadigârlar düşer; komşu hanelerde soy sürer; köydeki soy eşikleri.
             Legacy.Validate(World.GetItem);
             foreach (var w in Legacy.NeighborFamiliesDaily()) Say($"{w.Name} çocuk bekliyor.", NoticeLevel.Info, w.Id);
@@ -773,6 +849,7 @@ namespace Thatchwick.Core.Life
             Legacy.Restore(data.legacy);
             Houses.Restore(data.houses);
             Keepsakes.Restore(data.keepsakes);
+            UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;
             Injuries.LastHouseholdAccidentDay = data.lastHouseholdAccidentDay;

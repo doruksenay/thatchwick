@@ -27,8 +27,9 @@ namespace Thatchwick.Game
     /// </summary>
     public sealed class GameRoot : MonoBehaviour
     {
-        private const int MapWidth = 48;
-        private const int MapHeight = 32;
+        private const int MapWidth = 96;   // 64x64 arsa (4..67) + doğuda köy (18.11.2026)
+        private const int MapHeight = 72;
+        private const int LegacyMapWidth = 48;   // eski kayıtların haritası
         private const float MaxFrameSeconds = 0.1f;
 
         private sealed class Actor
@@ -108,6 +109,8 @@ namespace Thatchwick.Game
         private MarketPanel _marketPanel;
         private StoragePanel _storagePanel;
         private MinePanel _minePanel;
+        private KeepsakePanel _keepsakePanel;
+        private bool _buntingShown;
         private FamilyService _family;
         private FamilyPanel _familyPanel;
         private Dynasty _dynasty = new Dynasty();
@@ -154,7 +157,17 @@ namespace Thatchwick.Game
         private double _scheduleTimer;
 
         // Adlandırılmış yerler (life.json'daki home/work/square anahtarları) harita karolarına çevrilir.
-        private static readonly Dictionary<string, GridPos> Places = new Dictionary<string, GridPos>
+        // Köy arsanın doğusunda (x70-78). Eski kayıtların (48x32) haritasında LegacyPlaces kullanılır.
+        private static Dictionary<string, GridPos> Places = new Dictionary<string, GridPos>
+        {
+            { "home:1", new GridPos(74, 22) }, { "home:2", new GridPos(76, 22) }, { "home:3", new GridPos(74, 29) },
+            { "home:4", new GridPos(77, 30) }, { "home:5", new GridPos(72, 21) }, { "home:6", new GridPos(76, 27) },
+            { "work:smithy", new GridPos(75, 24) }, { "work:mill", new GridPos(77, 20) }, { "work:herb", new GridPos(73, 31) },
+            { "work:pasture", new GridPos(78, 33) }, { "work:market", new GridPos(71, 25) }, { "work:pottery", new GridPos(76, 29) },
+            { "square", new GridPos(72, 26) }
+        };
+
+        private static readonly Dictionary<string, GridPos> LegacyPlaces = new Dictionary<string, GridPos>
         {
             { "home:1", new GridPos(38, 12) }, { "home:2", new GridPos(40, 12) }, { "home:3", new GridPos(38, 19) },
             { "home:4", new GridPos(41, 20) }, { "home:5", new GridPos(36, 11) }, { "home:6", new GridPos(40, 17) },
@@ -212,6 +225,7 @@ namespace Thatchwick.Game
                 foreach (var w in loaded.Warnings) Debug.LogWarning($"Kayıt: {w}");
                 _world = loaded.World;
                 map = _world.Map;
+                Places = map.Width <= LegacyMapWidth ? LegacyPlaces : Places;   // eski kayıt: eski küçük harita
                 ClearLegacyObstacles(map);
                 _clock = loaded.Clock;
                 _lastSavedDay = _clock.DayIndex;
@@ -223,7 +237,7 @@ namespace Thatchwick.Game
                 _world = new WorldState(map);
                 _clock = new GameClock();
                 PlaceDemoItems();
-                _world.Map.RestrictOwnership(20, 8, 31, 15); // başlangıç arsası: 12x8, genişletilebilir
+                _world.Map.RestrictOwnership(4, 4, 67, 67); // başlangıç arsası: 64x64
             }
 
             var viewGo = new GameObject("WorldView");
@@ -438,7 +452,7 @@ namespace Thatchwick.Game
             }
 
             // Maud (NPC) rastgele görünümle hemen oluşur; oyuncunun karakteri yaratma ekranından gelir.
-            var maud = new Character(2, "Maud", new GridPos(28, 9), false) { Sex = Sex.Female };
+            var maud = new Character(2, "Maud", new GridPos(33, 31), false) { Sex = Sex.Female };
             GiveRandomLook(maud);
             maud.SetAge(36);
             maud.LifespanDays = maud.AgeConfig.RollLifespan(_rng);
@@ -481,10 +495,10 @@ namespace Thatchwick.Game
         private static GridMap BuildDemoMap()
         {
             var map = new GridMap(MapWidth, MapHeight);
-            for (int x = 10; x < 22; x++)
-                for (int y = 12; y < 20; y++)
+            for (int x = 8; x < 20; x++)
+                for (int y = 44; y < 52; y++)
                     map.SetFloor(new GridPos(x, y), FloorType.Water);
-            var natural = new GridPos(10, 12);
+            var natural = new GridPos(8, 44);
             map.SetSpring(natural);
             map.RestorePond(natural, 1f, spring: true, insects: true, filledDays: 30, new[]
             {
@@ -494,6 +508,8 @@ namespace Thatchwick.Game
                 new KeyValuePair<string, int>("item.fish_pike", 2)
             });
 
+            BuildStarterHouse(map);
+
             // Yol bulma testinden kalan çit hattı (x=32) ve 60 rastgele engel kaldırıldı (görsel analiz, 18.11.2026):
             // dünyada karşılıkları yoktu, haritada koyu lekeler olarak görünüyordu. Kaya ve çalı görselleri gelince
             // (art/queue/357) engeller eşya olarak dönecek.
@@ -501,34 +517,165 @@ namespace Thatchwick.Game
         }
 
         // Başlangıç eşyalarını yerleştirir.
+        // Başlangıç evi (BuildStarterHouse): iç 28-36 x 26-32; zemin kat mutfak ve oturma, üst kat yatak odaları, bodrum kiler.
+        // Oyuncu (31,31), Maud (33,31), kapı içi (32,32) ve merdiven uçları boş kalır.
         private void PlaceDemoItems()
         {
-            TryPlace("item.bed_straw", new GridPos(26, 13));
-            TryPlace("item.hearth_stone", new GridPos(28, 13));
-            TryPlace("item.cooking_pot", new GridPos(30, 13));
-            TryPlace("item.stool_wood", new GridPos(26, 15));
-            TryPlace("item.chopping_block", new GridPos(22, 15));
-            TryPlace("item.chest_wood", new GridPos(24, 15));
-            // Keyif ve hijyen için başlangıç: leğen ve kütük sehpada değirmen oyunu.
-            TryPlace("item.basin_ewer", new GridPos(30, 15));
-            TryPlace("item.stump_table", new GridPos(28, 15));
-            var stump = _world.GetItemAt(new GridPos(28, 15));
-            if (stump != null && _content.Items.TryGet("item.morris_board", out var board)) _world.PlaceOnSurface(board, stump.Id, "a");
+            // --- zemin kat: merdivenler, mutfak, yemek ve oturma ---
+            Put("item.stairs_down", 29, 27);              // bodruma (giriş 29,26; iniş 29,29 kat -1)
+            Put("item.stairs_up", 35, 27);                // üst kata (giriş 35,26; iniş 35,29 kat 1)
+            Put("item.pantry_shelf", 30, 26);
+            Put("item.hearth_stone", 32, 26);
+            Put("item.cooking_pot", 33, 26);
+            Put("item.water_barrel", 36, 26);
+            Put("item.rug_wool", 31, 30);
+            Put("item.table_wood", 31, 29);
+            Put("item.chair_wood", 30, 29);
+            Put("item.chair_wood", 33, 29);
+            Put("item.basin_ewer", 28, 30);
+            Put("item.candlestick", 28, 32);
+            Put("item.armchair_cushion", 36, 31);
+            Put("item.chest_wood", 36, 32);
+            Put("item.stool_wood", 34, 32);
+            PutOn("item.candle", 31, 29, 0, "a");
+            PutOn("item.flower_pot", 31, 29, 0, "c");
+            PutOn("item.clay_cup", 31, 29, 0, "b");
 
-            // Köy pazarı: arsanın doğusunda, eski çit geçidinin (32,15) yanında.
+            // --- üst kat: üç yatak, sandıklar, kilimler, okuma köşesi ---
+            Put("item.bed_straw", 28, 26, 1);
+            Put("item.chest_wood", 30, 26, 1);
+            Put("item.rug_wool_small", 28, 27, 1);
+            Put("item.bed_straw", 32, 26, 1);
+            Put("item.chest_wood", 34, 26, 1);
+            Put("item.bed_straw", 28, 32, 1);
+            Put("item.rug_woven_large", 30, 29, 1);
+            Put("item.shelf_wood", 31, 32, 1);
+            Put("item.armchair_cushion", 36, 30, 1);
+            Put("item.candlestick", 36, 32, 1);
+            Put("item.stool_wood", 33, 32, 1);
+            PutOn("item.clay_cup", 31, 32, 1, "a");
+
+            // --- bodrum: kiler ve atölye ---
+            Put("item.barrel", 28, 26, -1);
+            Put("item.barrel", 28, 27, -1);
+            Put("item.salting_barrel", 31, 26, -1);
+            Put("item.pantry_shelf", 32, 26, -1);
+            Put("item.barrel", 35, 26, -1);
+            Put("item.seed_crate", 36, 26, -1);
+            Put("item.brew_barrel", 36, 28, -1);
+            Put("item.barrel_tub", 36, 30, -1);
+            Put("item.workbench", 28, 32, -1);
+            Put("item.shelf_wood", 33, 32, -1);
+            Put("item.barn_lantern", 32, 30, -1);
+
+            // --- avlu ---
+            Put("item.well", 25, 30);
+            Put("item.chopping_block", 24, 27);
+            Put("item.rain_barrel", 38, 26);
+            Put("item.hay_bale", 24, 34);
+            Put("item.garden_bench", 29, 35);
+            Put("item.stool_wood", 34, 35);
+            Put("item.stump_table", 35, 35);
+            var stump = _world.GetItemAt(new GridPos(35, 35));
+            if (stump != null && _content.Items.TryGet("item.morris_board", out var board)) _world.PlaceOnSurface(board, stump.Id, "a");
+            Put("item.scarecrow", 48, 32);                // tarla alanı: 42-56 x 26-38 (boş bırakıldı)
+
+            // --- ağaçlar: meyve bahçesi (kuzeybatı), gölet söğütleri, arsa kenarı ---
+            string[] fruit = { "item.tree_apple", "item.tree_pear", "item.tree_cherry", "item.tree_plum" };
+            int k = 0;
+            for (int y = 10; y <= 19; y += 3)
+                for (int x = 9; x <= 21; x += 4) PutGrown(fruit[k++ % fruit.Length], x, y);
+            PutGrown("item.forage_berry_bush", 24, 10);
+            PutGrown("item.forage_berry_bush", 26, 12);
+            PutGrown("item.tree_willow", 7, 42);
+            PutGrown("item.tree_willow", 21, 50);
+            PutGrown("item.tree_willow", 13, 54);
+            var edgeRng = new System.Random(64);
+            for (int i = 0; i < 40; i++)
+            {
+                int side = edgeRng.Next(4), t = 6 + edgeRng.Next(58);
+                int ex = side == 0 ? 5 + edgeRng.Next(2) : side == 1 ? 65 + edgeRng.Next(2) : t;
+                int ey = side == 2 ? 5 + edgeRng.Next(2) : side == 3 ? 65 + edgeRng.Next(2) : t;
+                if (_world.Map.GetRoad(new GridPos(ex, ey)) != RoadType.None) continue;
+                PutGrown(edgeRng.Next(3) == 0 ? "item.tree_pine" : "item.tree_birch", ex, ey, quiet: true);
+            }
+
+            // Köy pazarı: arsanın doğusunda, köy yolunun ucunda.
             if (_content.Items.TryGet("item.market_stall", out var stallDef))
-                _stallId = _world.PlaceItem(stallDef, new GridPos(34, 14)).Id;
+                _stallId = _world.PlaceItem(stallDef, new GridPos(70, 24)).Id;
 
             // Arsanın dışındaki yabani meşeler (olgun): herkes kesebilir, fidanlarıyla arsaya ağaç dikilir.
             var rng = new System.Random(13);
             int placed = 0;
-            for (int i = 0; i < 200 && placed < 14; i++)
+            for (int i = 0; i < 400 && placed < 24; i++)
             {
-                var p = new GridPos(rng.Next(33, 44), rng.Next(4, 26));
-                if (_world.Map.IsBlocked(p) || (p.Y == 15 && p.X <= 35) || !_content.Items.TryGet("item.tree_oak", out var oak)) continue;
+                var p = new GridPos(rng.Next(70, 94), rng.Next(36, 70));
+                if (_world.Map.IsBlocked(p) || _world.Map.GetRoad(p) != RoadType.None || !_content.Items.TryGet("item.tree_oak", out var oak)) continue;
                 PlantSystem.SetGrown(_world.PlaceItem(oak, p));
                 placed++;
             }
+        }
+
+        // Başlangıç evi: iki katlı 9x7 ev (iç 28-36 x 26-32), ahşap zemin; altında taş döşeli bodrum.
+        // Güneyde kapı (32), her katta pencereler; çatı en üst katın duvarlarından otomatik. Merdiven boşluğu üst katta açık.
+        private static void BuildStarterHouse(GridMap map)
+        {
+            const int x0 = 28, x1 = 36, y0 = 26, y1 = 32;
+            for (int z = -1; z <= 1; z++)
+            {
+                for (int x = x0; x <= x1; x++)
+                    for (int y = y0; y <= y1; y++)
+                    {
+                        var p = new GridPos(x, y, z);
+                        if (z != 0) map.SetTile(p, true);
+                        map.SetFloor(p, z < 0 ? FloorType.Stone : FloorType.Wood);
+                    }
+                bool cellar = z < 0;
+                for (int x = x0; x <= x1; x++)
+                {
+                    bool win = !cellar && (x == 30 || x == 34);
+                    map.SetEdge(new Edge(x, y0, EdgeAxis.Horizontal, z), win ? EdgeKind.Window : EdgeKind.Wall);
+                    var south = z == 0 && x == 32 ? EdgeKind.Door : win ? EdgeKind.Window : EdgeKind.Wall;
+                    map.SetEdge(new Edge(x, y1 + 1, EdgeAxis.Horizontal, z), south);
+                }
+                for (int y = y0; y <= y1; y++)
+                {
+                    bool win = !cellar && y == 29;
+                    map.SetEdge(new Edge(x0, y, EdgeAxis.Vertical, z), win ? EdgeKind.Window : EdgeKind.Wall);
+                    map.SetEdge(new Edge(x1 + 1, y, EdgeAxis.Vertical, z), win ? EdgeKind.Window : EdgeKind.Wall);
+                }
+            }
+            // Merdiven boşluğu: üst kata çıkan merdivenin (35,27-28) üstü açık.
+            map.SetTile(new GridPos(35, 27, 1), false);
+            map.SetTile(new GridPos(35, 28, 1), false);
+
+            // Kapıdan güneye patika, sonra doğuya köye giden yol.
+            for (int y = 33; y <= 40; y++) map.SetRoad(new GridPos(32, y), RoadType.Path);
+            for (int x = 33; x <= 72; x++) map.SetRoad(new GridPos(x, 40), RoadType.Path);
+            for (int y = 26; y <= 39; y++) map.SetRoad(new GridPos(72, y), RoadType.Path);
+        }
+
+        private void Put(string id, int x, int y, int z = 0, int rotation = 0)
+        {
+            if (!_content.Items.TryGet(id, out var def)) { Debug.LogError($"Eşya tanımı yok: {id}"); return; }
+            try { _world.PlaceItem(def, new GridPos(x, y, z), rotation); }
+            catch (System.Exception ex) { Debug.LogWarning($"Başlangıç eşyası konamadı {id} ({x},{y},{z}): {ex.Message}"); }
+        }
+
+        private void PutGrown(string id, int x, int y, bool quiet = false)
+        {
+            if (!_content.Items.TryGet(id, out var def)) return;
+            var check = _world.CanPlaceFloor(def, new GridPos(x, y), 0);
+            if (!check.Ok) { if (!quiet) Debug.LogWarning($"Başlangıç ağacı konamadı {id} ({x},{y}): {check.Reason}"); return; }
+            PlantSystem.SetGrown(_world.PlaceItem(def, new GridPos(x, y)));
+        }
+
+        private void PutOn(string id, int x, int y, int z, string slot)
+        {
+            var surface = _world.GetItemAt(new GridPos(x, y, z));
+            if (surface == null || !_content.Items.TryGet(id, out var def)) return;
+            try { _world.PlaceOnSurface(def, surface.Id, slot); }
+            catch (System.Exception ex) { Debug.LogWarning($"Başlangıç dekoru konamadı {id}: {ex.Message}"); }
         }
 
         private void TryPlace(string id, GridPos pos)
@@ -582,10 +729,42 @@ namespace Thatchwick.Game
             _seenItemsReady = true;
         }
 
+        // Şenlik hazırlığı (27 §9): yaklaşan şenlikte meydanda iki direk arasında renkli bayrak dizisi. Görsel gelene kadar elmaslar.
+        private static readonly Color[] BuntingColors =
+        {
+            new Color(0.78f, 0.22f, 0.18f), new Color(0.9f, 0.75f, 0.25f), new Color(0.22f, 0.4f, 0.7f), new Color(0.35f, 0.6f, 0.3f)
+        };
+
+        private void AddFestiveBunting()
+        {
+            _buntingShown = _life != null && _life.FestivePrep != null;
+            if (!_buntingShown || !_view.IsLevelVisible(0)) return;
+            var sq = Places["square"];
+            var a = Iso.GridToWorld(sq.X - 2.5f, sq.Y + 0.5f, 0) + new Vector3(0f, 1.1f, 0f);
+            var b = Iso.GridToWorld(sq.X + 3.5f, sq.Y + 0.5f, 0) + new Vector3(0f, 1.1f, 0f);
+            const int flags = 11;
+            for (int i = 0; i <= flags; i++)
+            {
+                float t = i / (float)flags;
+                var p = Vector3.Lerp(a, b, t) - new Vector3(0f, 0.35f * Mathf.Sin(t * Mathf.PI), 0f);   // sarkan ip
+                var go = new GameObject("festive_bunting");
+                go.transform.SetParent(transform, false);
+                go.transform.position = p;
+                go.transform.localScale = new Vector3(0.16f, i == 0 || i == flags ? 0.5f : 0.22f, 1f);
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = SpriteMaterials.Diamond;
+                sr.sharedMaterial = SpriteMaterials.Unlit;
+                sr.color = i == 0 || i == flags ? new Color(0.45f, 0.32f, 0.2f) : BuntingColors[i % BuntingColors.Length];
+                sr.sortingOrder = Iso.SortOrder(p.y - 1.1f, 3, 0);
+                _itemObjects.Add(go);
+            }
+        }
+
         private void RebuildItemViewsCore()
         {
             foreach (var go in _itemObjects) if (go != null) Destroy(go);
             _itemObjects.Clear();
+            AddFestiveBunting();
             _itemViews.Clear();
             _plantViews.Clear();
             _heatViews.Clear();
@@ -676,6 +855,19 @@ namespace Thatchwick.Game
                     // Halı: yere serili düz elmaslar (zeminin hemen üstünde, eşyaların altında). Halılar üst üste serilir (27):
                     // karodaki sırası çizim sırasını belirler. Döküntü yığını küçük, koyu bir leke.
                     bool debris = item.Def.Id == Thatchwick.Core.Content.Decor.Debris;
+                    bool rugFlip = false;
+                    var rugArt = debris ? null : IsoArt.Item(item, out rugFlip);
+                    if (rugArt != null)
+                    {
+                        // Gerçek halı görseli (390): tek düz görsel, ayak izinin merkezinde; sırası en alttaki karoya göre.
+                        var rc = Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, level);
+                        int rugRank = 0;
+                        foreach (var tile in item.OccupiedTiles()) rugRank = Mathf.Max(rugRank, _world.RugsAt(tile).IndexOf(item));
+                        var rart = AddItemSprite(item, rc, Color.white, 1f, -9990 + Mathf.Clamp(rugRank, 0, 9) + level * Iso.LevelSortStep, rugArt);
+                        rart.color = ConditionTint(item, FinishTint(item, Color.white, 0.45f));
+                        rart.flipX = rugFlip;
+                        continue;
+                    }
                     var rugColor = debris ? new Color(0.35f, 0.27f, 0.2f) : ConditionTint(item, FinishTint(item, ItemColor(item.Def.Id), 1f));
                     foreach (var tile in item.OccupiedTiles())
                     {
@@ -1103,6 +1295,7 @@ namespace Thatchwick.Game
             if (_marketPanel != null && _marketPanel.Active && _marketPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
@@ -1328,7 +1521,7 @@ namespace Thatchwick.Game
         private void FinishCreation()
         {
             var draft = _creator.Draft;
-            var character = draft.CreateCharacter(1, new GridPos(24, 10), true, _appearanceCatalog, _rng);
+            var character = draft.CreateCharacter(1, new GridPos(31, 31), true, _appearanceCatalog, _rng);
             _creator.Release();
             _creator = null;
             if (character.TraitIds.Count == 0) character.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));
@@ -1605,6 +1798,7 @@ namespace Thatchwick.Game
             _life.NewDay += day =>
             {
                 if (day % _clock.Config.DaysPerSeason == 0) _itemsDirty = true;   // mevsim döndü: solan mevsim süsleri yeniden boyanır (D3b)
+                if ((_life.FestivePrep != null) != _buntingShown) _itemsDirty = true;   // şenlik yaklaştı ya da geçti: meydan bayrakları
                 _world.Map.OnNewDayRoads();                                   // kullanılmayan patika çimlenir
                 _world.Map.WearMultiplier = RoadWear();                        // çamurlu günde çok, taş ustası varken az aşınır
                 _plants.Config.FallowRecovery = (float)(0.02 * SkillNames.Factor(_life.BestSkill(SkillType.SoilCare), 0.1));   // toprak bakımı
@@ -1690,6 +1884,7 @@ namespace Thatchwick.Game
             _mines.RelicFound += (c, relic) => { ShowMessage($"{c.Name} bir kalıntı buldu: {(_content.Items.TryGet(relic, out var rd) ? rd.DisplayName : relic)}", 4f); c.AddMoodlet(MoodCatalog.VeinFound); };
             _mines.Dug += (c, m, x, y, got) => { _floorsDirty = true; if (c != null) c.AddMoodlet(MoodCatalog.Dusty); };
             _buildService.DeepDigBlocker = p => _mines.ShaftBlocker(_life.BestSkill(SkillType.Mining));
+            _keepsakePanel = new KeepsakePanel(_life.Keepsakes, _world, _clock);
             _minePanel = new MinePanel(_mines, _household, _content)
             {
                 Actor = () => Commander?.Character,
@@ -1978,6 +2173,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
             if (kb != null && kb.kKey.wasPressedThisFrame) _storagePanel.Toggle();
             if (kb != null && kb.mKey.wasPressedThisFrame) _minePanel.Toggle();
+            if (kb != null && kb.jKey.wasPressedThisFrame) _keepsakePanel?.Toggle();
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
@@ -2388,6 +2584,7 @@ namespace Thatchwick.Game
             _marketPanel.OnGUI(s);
             _storagePanel.OnGUI(s);
             _minePanel.OnGUI(s);
+            _keepsakePanel?.OnGUI(s);
             _familyPanel.OnGUI(s);
             _villagePanel.OnGUI(s);
             DrawBalloons(s);
@@ -2417,6 +2614,7 @@ namespace Thatchwick.Game
             if (HudToggle("Ocak (M)", _minePanel.Active)) _minePanel.Toggle();
             if (HudToggle("Aile (F)", _familyPanel.Active)) ToggleFamily();
             if (HudToggle("Köy (V)", _villagePanel.Active)) ToggleVillage();
+            if (_keepsakePanel != null && HudToggle("Hatıra (J)", _keepsakePanel.Active)) _keepsakePanel.Toggle();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();

@@ -1412,7 +1412,7 @@ namespace Thatchwick.Game
             ClearSelection();
             _pendingFinish = null;
             _placeId = itemId;
-            _ghostPos = new GridPos(24, 12, _view.ViewLevel);
+            _ghostPos = new GridPos(32, 36, _view.ViewLevel);
             var def = _content.Items.Get(itemId);
             _band = -1;
             _confirmSlot = null;
@@ -1460,7 +1460,7 @@ namespace Thatchwick.Game
                 // İlk açılışta açık olanlar görülmüş sayılır; sonradan açılanlar "Yeni" görünür.
                 _seen = new HashSet<string>();
                 foreach (var c in ItemCatalog.Categories)
-                    foreach (var d in ItemCatalog.InCategory(_content, c.id)) if (_svc.IsUnlocked(d)) _seen.Add(d.Id);
+                    foreach (var d in ItemCatalog.InCategory(_content, c.id, null, null, null, _house)) if (_svc.IsUnlocked(d)) _seen.Add(d.Id);
             }
             if (_catNames == null || Event.current.type == EventType.Layout) RebuildShopTabs(level);
 
@@ -1502,7 +1502,7 @@ namespace Thatchwick.Game
             string set = _setFilter > 0 ? ItemCatalog.StyleSets[_setFilter - 1] : null;
             string theme = _themeFilter > 0 ? Decor.Themes[_themeFilter - 1].id : null;
 
-            var list = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme), level);
+            var list = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme, _house), level);
             if (list.Count == 0) GUILayout.Label("Bu filtreyle eşya yok.");
             foreach (var def in list) DrawCard(def);
         }
@@ -1547,7 +1547,7 @@ namespace Thatchwick.Game
                     int i = CatIndex(id);
                     if (i < 0) continue;
                     if (i == ItemCatalog.Categories.Length) { cats.Add((i, "Hayvan")); continue; }
-                    var vis = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[i].id), level);
+                    var vis = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[i].id, null, null, null, _house), level);
                     if (vis.Count == 0) continue;
                     bool fresh = vis.Any(d => _svc.IsUnlocked(d) && !_seen.Contains(d.Id));
                     groupFresh |= fresh;
@@ -1568,7 +1568,7 @@ namespace Thatchwick.Game
             var ids = new HashSet<string>();
             int shown = 0;
             foreach (var c in ItemCatalog.Categories)
-                foreach (var d in Visible(ItemCatalog.InCategory(_content, c.id), level))
+                foreach (var d in Visible(ItemCatalog.InCategory(_content, c.id, null, null, null, _house), level))
                     if (ids.Add(d.Id) && d.DisplayName.IndexOf(q, System.StringComparison.CurrentCultureIgnoreCase) >= 0) { DrawCard(d); shown++; }
             if (shown == 0) GUILayout.Label("Bulunamadı.");
         }

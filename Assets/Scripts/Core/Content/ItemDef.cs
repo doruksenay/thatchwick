@@ -82,7 +82,13 @@ namespace Thatchwick.Core.Content
 
         // ---- D2: tarz ekseni (Project belgesi 27 §6.1) ----
         /// <summary>Tarzlar (görünüş ekseni; kademe = styleSet işlevi belirler). 1.0'da Çatkı ve Yörük.</summary>
-        public static readonly (string id, string name)[] Themes = { ("Çatkı", "Çatkı Evi"), ("Yörük", "Yörük Odası") };
+        public static readonly (string id, string name)[] Themes =
+        {
+            ("Çatkı", "Çatkı Evi"), ("Yörük", "Yörük Odası"),
+            ("Kıyı", "Kıyı Evi"), ("Han", "Han Salonu"), ("Kervan", "Kervan Odası")   // D4
+        };
+        /// <summary>Yalnızca gezgin tüccarın getirdiği eşya (Kervan Odası): katalogda yalnızca pazar günü görünür.</summary>
+        public const string MerchantTag = "merchant";
         public static string ThemeName(string id)
         {
             foreach (var t in Themes) if (t.id == id) return t.name;
@@ -101,6 +107,9 @@ namespace Thatchwick.Core.Content
         }
         public static string FreshnessName(int f) => f == Rotten ? "çürük" : f == Stale ? "bayat" : "taze";
         /// <summary>Hanenin kendi ürettiği içerikle tam dolu dekorun güzellik eki ("Kendi emeğimiz").</summary>
+        /// <summary>Ağzı bağlı kap (cam kavanoz): içindeki yiyecek bu çarpanla yavaş bozulur (D3 tamamlama).</summary>
+        public const string SealedTag = "sealed";
+        public const double SealedAgeFactor = 0.25;
         public const int OwnWorkBonus = 2;
         /// <summary>Çürük içerikli dekorun güzelliği (sinek).</summary>
         public const int RottenBeauty = -4;
@@ -249,6 +258,16 @@ namespace Thatchwick.Core.Content
         public bool WindowMount { get; set; }
         /// <summary>Asıldığı kenarın ısı kaybı çarpanı (perde 0,75; kumaş duvar örtüsü 0,85). 0 = etkisiz.</summary>
         public float Insulation { get; set; }
+        /// <summary>Bu istasyonda üretim için yakında olması gereken eşya (camcı tezgâhı → cam ocağı); null ise yok.</summary>
+        public string RequiresNearby { get; set; }
+        /// <summary>RequiresNearby için en çok uzaklık (karo, ayak izleri arası).</summary>
+        public int NearbyRadius { get; set; }
+        /// <summary>RequiresNearby'nin görünen adı (içerik yüklenirken doldurulur).</summary>
+        public string RequiresNearbyName { get; set; }
+        /// <summary>
+        /// "craftonly" eşya bu kilit açılınca katalogdan da alınır (cam şişe: "glassworks" = köye camcılık geldi). null ise hep yalnızca yapılır.
+        /// </summary>
+        public string ShopUnlock { get; set; }
 
         // ---- D3b ----
         /// <summary>Mevsim süsü: yalnızca bu mevsimlerde taze durur; mevsim dönünce solar (güzelliği eksiye döner). Boş = mevsimsiz.</summary>

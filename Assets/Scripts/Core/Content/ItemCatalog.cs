@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Mood;
 
@@ -49,12 +50,26 @@ namespace Thatchwick.Core.Content
             InCategory(content, category, room, set, null);
 
         /// <summary>Kategori ve süzgeçler (oda, takım/kademe, tarz). Tarz süzgeci D2 (Çatkı, Yörük).</summary>
-        public static List<ItemDef> InCategory(ContentDatabase content, string category, string room, string set, string theme)
+        public static List<ItemDef> InCategory(ContentDatabase content, string category, string room, string set, string theme) =>
+            InCategory(content, category, room, set, theme, null);
+
+        /// <summary>
+        /// "craftonly" eşya yalnızca yapılır; ama ShopUnlock'u olan (cam şişe) hane o kilidi açınca katalogda da satılır.
+        /// </summary>
+        public static bool IsCraftOnly(ItemDef d, Household house) =>
+            d.HasTag("craftonly") && !(d.ShopUnlock != null && house != null && house.HasShopUnlock(d.ShopUnlock));
+
+        /// <summary>Gezgin tüccar eşyası bugün alınabilir mi (hane verilmezse kısıt yok).</summary>
+        public static bool MerchantAway(ItemDef d, Household house) =>
+            d.HasTag(Decor.MerchantTag) && house != null && !house.MerchantInVillage;
+
+        public static List<ItemDef> InCategory(ContentDatabase content, string category, string room, string set, string theme, Household house)
         {
             var list = new List<ItemDef>();
             foreach (var d in content.Items.All)
             {
-                if (d.Price <= 0 || d.Placement == ItemPlacement.Resource || d.IsPlant || d.HasTag("craftonly")) continue;   // düzenekler yalnızca yapılır
+                if (d.Price <= 0 || d.Placement == ItemPlacement.Resource || d.IsPlant || IsCraftOnly(d, house)) continue;   // düzenekler yalnızca yapılır
+                if (MerchantAway(d, house)) continue;   // Kervan eşyası: yalnızca pazar günü
                 if (d.Category != category) continue;
                 if (room != null && !d.Rooms.Contains(room)) continue;
                 if (set != null && d.StyleSet != set) continue;
@@ -120,6 +135,7 @@ namespace Thatchwick.Core.Content
                 case AnimalRoles.Feeder: parts.Add("Her sabah yemlikleri envanterden doldurur"); break;
                 case AnimalRoles.Bell: parts.Add("Dokun: hayvanları içeri çağır / salıver"); break;
             }
+            if (def.RequiresNearby != null) parts.Add($"{def.RequiresNearbyName ?? def.RequiresNearby} {def.NearbyRadius} karo yakınında çalışır");
             if (def.AnimalComfort > 0) parts.Add($"Hayvan konforu +{def.AnimalComfort}");
             if (def.WaterSource) parts.Add(def.EffectiveWaterFlow > 0 ? $"Su kaynağı: ark ve boruya günde {def.EffectiveWaterFlow} su verir" : "Su kaynağı (kanal bağlanır; boruya akmaz, kovayla çekilir)");
             if (def.IsFixture) parts.Add(def.FillCapacity > 0 ? $"Tesisat: boruya bağlıyken günde {def.WaterUse} su, kendi kendine yıkanır" : $"Tesisat: boruya bağlıyken günde {def.WaterUse} su{(def.IsTap ? ", kova buradan dolar" : ", kova taşınmaz")}");
@@ -133,7 +149,9 @@ namespace Thatchwick.Core.Content
             if (def.HarvestRadius > 0) parts.Add($"Güç alınca her sabah {def.HarvestRadius} karo çevresindeki olgun ekini biçer");
             if (def.SeedRadius > 0) parts.Add($"Güç alınca her sabah {def.SeedRadius} karo çevresindeki boş toprağa tohum eker");
             if (def.IceCollect > 0) parts.Add($"Donlu sabahlar {def.IceCollect} buz toplar");
-            if (def.HasTag("craftonly")) parts.Add("Yalnızca yapılır (tarif)");
+            if (def.HasTag("craftonly")) parts.Add(def.ShopUnlock == "glassworks" ? "Yapılır; köye camcılık gelince çömlekçide de satılır" : "Yalnızca yapılır (tarif)");
+            if (def.HasTag(Decor.SealedTag)) parts.Add("Ağzı bağlı: içindeki yiyecek 4 kat yavaş bozulur");
+            if (def.HasTag(Decor.MerchantTag)) parts.Add("Gezgin tüccar getirir: yalnızca pazar günü satılır");
             if (def.IsKeepsake) parts.Add("Hatıra: kazanılır, satılmaz; nesiller geçtikçe güzelleşir");
             if (def.IsSeasonal)
             {

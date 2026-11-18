@@ -27,6 +27,8 @@ namespace Thatchwick.Core.Work
         public event Action<Character, ItemInstance, int> CropHarvested;
         /// <summary>Balık tutuldu (karakter, balık eşyası): ilk balık hatırası (D3b).</summary>
         public event Action<Character, string> FishCaught;
+        /// <summary>Boş cam şişe (D3 tamamlama): iksir yapılırken biri harcanır, bir iksir fazla çıkar. null ise kapalı.</summary>
+        public string BottleItemId { get; set; } = "item.glass_bottle";
 
         /// <summary>Depo kapasitesi; null ise sınırsız. Dolunca fazla ürün kaybolur ve özette yazılır.</summary>
         public StorageService Storage { get; set; }
@@ -283,6 +285,18 @@ namespace Thatchwick.Core.Work
                 if (added <= 0) continue;
                 if (!totals.ContainsKey(p.ItemId)) { totals[p.ItemId] = 0; order.Add(p.ItemId); }
                 totals[p.ItemId] += added;
+            }
+            // Şişeleme (27 §18.3): iksir yapılırken envanterde boş cam şişe varsa biri kullanılır; şişelenen iksir dökülmez, bir fazla çıkar.
+            if (BottleItemId != null && interaction.Consume.Count > 0)
+            {
+                string potion = null;
+                foreach (var id in order) if (_content.Items.TryGet(id, out var pd) && pd.HasTag("potion")) { potion = id; break; }
+                if (potion != null && _house.TryTakeItem(BottleItemId))
+                {
+                    int extra = Storage != null ? Storage.AddUpTo(potion, 1) : AddAll(potion, 1);
+                    if (extra > 0) { totals[potion] += extra; farmNotes.Add("şişelendi (+1, 1 cam şişe)"); }
+                    else _house.AddItem(BottleItemId);
+                }
             }
             foreach (var (gotId, gotCount) in new[] { (slaughterId, slaughterCount), (hideId, hideCount) })
             {

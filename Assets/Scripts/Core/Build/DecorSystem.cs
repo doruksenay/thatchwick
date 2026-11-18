@@ -236,6 +236,7 @@ namespace Thatchwick.Core.Build
             {
                 if (!it.Def.IsFillDecor || !it.HasContents) continue;
                 double rate = TemperatureAt != null ? Life.SpoilageService.TemperatureFactor(TemperatureAt(it.Position)) : 1.0;
+                if (it.Def.HasTag(Decor.SealedTag)) rate *= Decor.SealedAgeFactor;   // ağzı bağlı kavanoz: içindeki dört kat yavaş bozulur
                 bool rotted = false;
                 var list = it.Contents;
                 for (int i = 0; i < list.Count; i++)

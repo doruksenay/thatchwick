@@ -756,6 +756,25 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Etkileşime şu an başlanamıyorsa nedeni (etkileşim menüsünde gri seçenek); başlanabiliyorsa null.</summary>
         public string WhyCannotStart(ItemInstance item, InteractionDef interaction) => StartBlocker(item, interaction);
 
+        /// <summary>
+        /// İstasyonun yanında olması gereken eşya yoksa nedeni (camcı tezgâhı → "Cam ocağı yakında olmalı (4 karo)."); varsa null.
+        /// Uzaklık iki ayak izi arasındaki en kısa karo farkıdır (Chebyshev), aynı kat.
+        /// </summary>
+        public static string NearbyBlocker(WorldState world, ItemInstance station)
+        {
+            string need = station.Def.RequiresNearby;
+            if (need == null) return null;
+            int r = station.Def.NearbyRadius;
+            foreach (var other in world.Items)
+            {
+                if (other.Def.Id != need || other.Position.Z != station.Position.Z) continue;
+                int dx = Math.Max(0, Math.Max(other.Position.X - (station.Position.X + station.Width - 1), station.Position.X - (other.Position.X + other.Width - 1)));
+                int dy = Math.Max(0, Math.Max(other.Position.Y - (station.Position.Y + station.Height - 1), station.Position.Y - (other.Position.Y + other.Height - 1)));
+                if (Math.Max(dx, dy) <= r) return null;
+            }
+            return $"{station.Def.RequiresNearbyName ?? need} yakında olmalı ({r} karo).";
+        }
+
         // Etkileşime başlanamıyorsa nedeni (arayüzde gösterilir); başlanabiliyorsa null.
         private string StartBlocker(ItemInstance item, InteractionDef interaction)
         {
@@ -767,6 +786,11 @@ namespace Thatchwick.Core.Jobs
             if (interaction.RequiresBranch != null && !_character.HasBranch(interaction.RequiresBranch))
                 return $"{interaction.RequiresBranchName ?? "Meslek"} dalı gerekir.";
             if (interaction.RequiresLit && !item.IsLit) return "Ateş sönük, önce odun at.";
+            if (interaction.Consume.Count > 0 && item.Def.RequiresNearby != null)
+            {
+                string near = NearbyBlocker(_world, item);
+                if (near != null) return near;
+            }
             if (interaction.HasEffects)
             {
                 if (Effects == null) return "Bu iş şu an yapılamaz.";

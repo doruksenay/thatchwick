@@ -17,6 +17,15 @@ namespace Thatchwick.Core.Build
         // Pazardan alınmış adetler (D2: doldurulan dekorda "Kendi emeğimiz" eki yalnızca hanenin kendi ürününe).
         // Tüketimde hangisinin gittiği izlenmez; alınmış sayısı envanteri aşamaz (Bought ≤ Count).
         private readonly Dictionary<string, int> _bought = new Dictionary<string, int>(StringComparer.Ordinal);
+        private readonly HashSet<string> _shopUnlocks = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>Köyde açılan satış (ör. "glassworks": çömlekçi cam eşya satar). Yeni açıldıysa true.</summary>
+        public bool UnlockShop(string key) => !string.IsNullOrEmpty(key) && _shopUnlocks.Add(key);
+        public bool HasShopUnlock(string key) => key != null && _shopUnlocks.Contains(key);
+        public IEnumerable<string> ShopUnlocks => _shopUnlocks;
+
+        /// <summary>Gezgin tüccar bugün köyde mi (pazar günü; D4 Kervan Odası eşyaları). Kayda yazılmaz, her gün yeniden hesaplanır.</summary>
+        public bool MerchantInVillage { get; set; }
 
         public int Akce { get; private set; }
 

@@ -96,6 +96,11 @@ namespace Thatchwick.Core.Content
                 if (item.IsSeasonal && item.Placement == ItemPlacement.Resource) errors.Add($"{item.Id}: mevsim süsü yerleştirilen bir eşya olmalı.");
                 if (item.WindowMount && item.WallWidth != 1) errors.Add($"{item.Id}: pencere eşyası 1 kenar olmalı.");
                 if (item.Insulation < 0f || item.Insulation > 1f) errors.Add($"{item.Id}: insulation 0-1 arasında olmalı.");
+                if (item.RequiresNearby != null)
+                {
+                    if (Items.TryGet(item.RequiresNearby, out var nearDef)) item.RequiresNearbyName = nearDef.DisplayName;
+                    else errors.Add($"{item.Id}: requiresNear bilinmeyen eşya '{item.RequiresNearby}'.");
+                }
                 if (item.Insulation > 0f && item.Placement != ItemPlacement.Wall) errors.Add($"{item.Id}: insulation yalnızca duvar eşyasında kullanılır.");
                 if (item.FitsKind(Decor.Cover) && item.EffectiveFits.Count > 1) errors.Add($"{item.Id}: örtü yalnızca örtü yuvasına konur.");
                 if (item.SurfaceSlots.FindAll(sl => sl.Kind == Decor.Cover).Count > 1) errors.Add($"{item.Id}: en çok bir örtü yuvası olur.");
