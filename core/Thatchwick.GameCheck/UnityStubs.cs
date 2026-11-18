@@ -56,7 +56,7 @@ namespace UnityEngine {
   public static Sprite Create(Texture2D t,Rect r,Vector2 p)=>null; public static Sprite Create(Texture2D t,Rect r,Vector2 p,float ppu)=>null; public static Sprite Create(Texture2D t,Rect r,Vector2 p,float ppu,uint e)=>null; public static Sprite Create(Texture2D t,Rect r,Vector2 p,float ppu,uint e,SpriteMeshType m)=>null;}
  public struct Bounds{public Vector3 center,size,extents,min,max;}
  public class TextAsset:Object{public string text; public byte[] bytes;}
- public class Shader:Object{public static Shader Find(string n)=>null;}
+ public class Shader:Object{public static Shader Find(string n)=>null; public static void SetGlobalFloat(string n,float f){}}
  public class Material:Object{public Color color; public Material(Shader s){} public Material(Material m){} public Shader shader; public void SetColor(string n,Color c){} public void SetFloat(string n,float f){}}
  public class Renderer:Component{public Material sharedMaterial,material; public bool enabled; public int sortingOrder; public string sortingLayerName;}
  public class SpriteRenderer:Renderer{public Sprite sprite;public Color color;public bool flipX,flipY; public Vector2 size;}

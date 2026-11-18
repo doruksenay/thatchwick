@@ -288,6 +288,29 @@ namespace Thatchwick.Game
         /// <summary>Toplama karışımı (parıltı). Shader derlemede yoksa null.</summary>
         public static Material Additive => _additive != null ? _additive : (_additive = BlendMaterial("RuntimeAdditive", 5f, 1f));
 
+        private static Material _sway;
+        private static bool _swayMissing;
+
+        /// <summary>
+        /// Rüzgârda sallanan bitki malzemesi (Thatchwick/SwaySprite). Güç küresel <c>_TwWind</c> (piksel).
+        /// Shader derlemede yoksa null: bitkiler düz <see cref="Unlit"/> ile çizilir.
+        /// </summary>
+        public static Material Sway
+        {
+            get
+            {
+                if (_sway != null || _swayMissing) return _sway;
+                var shader = Shader.Find("Thatchwick/SwaySprite");
+                if (shader == null)
+                {
+                    _swayMissing = true;
+                    Debug.LogWarning("Thatchwick/SwaySprite shader'ı bulunamadı: bitkiler sallanmaz (Assets/Resources/Shaders).");
+                    return null;
+                }
+                return _sway = new Material(shader) { name = "RuntimeSway" };
+            }
+        }
+
         private static Material BlendMaterial(string name, float src, float dst)
         {
             if (_blendShaderMissing) return null;

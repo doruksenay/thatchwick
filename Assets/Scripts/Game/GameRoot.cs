@@ -47,6 +47,11 @@ namespace Thatchwick.Game
             // Yürüme sallantısı (yürüme animasyonu gelene kadar): adım evresi ve önceki karedeki konum.
             public float WalkPhase;
             public Vector3 LastPos;
+            // Animasyon partisi 1: son adım (toz için), iş vuruşu ve işin simgesi (parçacık türü).
+            public int LastStep;
+            public float LastBeat;
+            public object WorkJob;
+            public string WorkIcon;
         }
 
         /// <summary>Yürürken iki piksellik adım sallantısı; bir adım yaklaşık bu kadar dünya birimi.</summary>
@@ -68,6 +73,14 @@ namespace Thatchwick.Game
         private GUIStyle _labelStyle;
         private Ambience _ambience;
         private WeatherFx _weatherFx;
+        private Juice _juice;
+        /// <summary>Son kurulumda görünen eşyalar: yeni gelen eşya "pop" ile belirir.</summary>
+        private readonly HashSet<int> _seenItemIds = new HashSet<int>();
+        private bool _seenItemsReady;
+        /// <summary>HUD'da yuvarlanarak sayılan akçe ve son değişimin rengi.</summary>
+        private float _akceShown = float.NaN;
+        private float _akceFlashUntil;
+        private bool _akceFlashUp;
         private readonly List<Ambience.LightSource> _lights = new List<Ambience.LightSource>();
         private bool _ambienceSnap = true;
         private GUIStyle _alertStyle;
@@ -256,6 +269,7 @@ namespace Thatchwick.Game
             _ambience.Init(cam);
             _weatherFx = gameObject.AddComponent<WeatherFx>();
             _weatherFx.Init(cam);
+            _juice = gameObject.AddComponent<Juice>();
 
             _input = gameObject.AddComponent<WorldInput>();
             _input.Init(cam, Iso.MapBounds(map.Width, map.Height));
@@ -547,6 +561,22 @@ namespace Thatchwick.Game
         // çok karolu eşya karo başına bir küp, dekor küçük küp olarak yuvasında durur.
         private void RebuildItemViews()
         {
+            RebuildItemViewsCore();
+            // Yeni gelen eşya (satın alınan, konan, hasatla düşen) kısa bir ezilip esnemeyle belirir.
+            if (_juice != null && _seenItemsReady)
+                foreach (var kv in _itemViews)
+                    if (!_seenItemIds.Contains(kv.Key) && kv.Value != null)
+                    {
+                        _juice.Pop(kv.Value);
+                        _juice.Emit(Juice.Kind.Dust, kv.Value.position, 4, Iso.SortOrder(kv.Value.position.y, 2, 0));
+                    }
+            _seenItemIds.Clear();
+            foreach (var kv in _itemViews) _seenItemIds.Add(kv.Key);
+            _seenItemsReady = true;
+        }
+
+        private void RebuildItemViewsCore()
+        {
             foreach (var go in _itemObjects) if (go != null) Destroy(go);
             _itemObjects.Clear();
             _itemViews.Clear();
@@ -666,7 +696,9 @@ namespace Thatchwick.Game
                 {
                     var pos = _view.TileToWorld(item.Position);
                     var plantArt = IsoArt.Plant(item);
-                    AddItemSprite(item, pos, plantArt != null ? Color.white : color, PlantScale(item), Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
+                    var psr = AddItemSprite(item, pos, plantArt != null ? Color.white : color, PlantScale(item), Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
+                    var sway = SpriteMaterials.Sway;   // rüzgârda sallanma (vertex shader; yoksa düz)
+                    if (sway != null) psr.sharedMaterial = sway;
                     // Ağaç gölgesi: ışık sol üstten, gölge taç boyunca sağ alta uzanır; büyüdükçe büyür.
                     AddShadowObject(pos + new Vector3(0.18f, -0.06f, 0f) * PlantScale(item), 0.95f * PlantScale(item), level);
                     _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform));
@@ -1880,7 +1912,70 @@ namespace Thatchwick.Game
             if (_floorsDirty) { _floorsDirty = false; _view.RefreshFloors(); }
             if (_itemsDirty) { _itemsDirty = false; RebuildItemViews(); }
             if (_creator == null) UpdateAmbience();
+            UpdateJuice();
         }
+
+        /// <summary>
+        /// Animasyon partisi 1 (0 gen): ocak dumanı ve kıvılcımı, düşen yaprak, rüzgâr gücü, akçe sayacı.
+        /// Karakterin nefesi ve iş vuruşu <see cref="UpdateView"/>'da.
+        /// </summary>
+        private void UpdateJuice()
+        {
+            if (_juice == null || _clock == null) return;
+            _juice.Paused = _creator != null;
+            _juice.SpeedScale = _clock.EffectiveSpeed;
+            if (_juice.Paused) return;
+            float dt = Mathf.Min(Time.deltaTime, 0.1f);
+            var weather = _life != null ? _life.Weather.Today(_clock.TotalDays) : WeatherType.Clear;
+            bool building = _buildMode != null && _buildMode.Active;
+
+            // Rüzgâr: piksel cinsinden en büyük kayma. Fırtına ağaçları belirgin eğer; yapı modunda durur.
+            float wind = weather == WeatherType.Storm ? 3f : weather == WeatherType.Rain ? 1.6f : weather == WeatherType.Snow ? 0.6f : 1f;
+            if (_clock.Season == Season.Autumn) wind += 0.5f;
+            Shader.SetGlobalFloat("_TwWind", building ? 0f : wind);
+
+            // Yanan ocak: duman yükselir, arada kıvılcım. Yağmurda duman daha sık (ıslak odun).
+            foreach (var (heatItem, heatView) in _heatViews)
+            {
+                if (heatView == null || !heatItem.IsLit) continue;
+                var top = heatView.transform.position + new Vector3(0f, 0.55f, 0f);
+                int order = heatView.sortingOrder + 2;
+                float smokeRate = weather == WeatherType.Rain || weather == WeatherType.Storm ? 1.6f : 1.0f;
+                if (Random01() < dt * smokeRate) _juice.Emit(Juice.Kind.Smoke, top + new Vector3(0f, 0.15f, 0f), 1, order);
+                if (Random01() < dt * 1.4f) _juice.Emit(Juice.Kind.Spark, top - new Vector3(0f, 0.25f, 0f), 1, order);
+            }
+
+            // Ağaçlardan yaprak: sonbaharda sık, fırtınada her mevsim (kışın çıplak dal, yaprak yok).
+            float leafRate = _clock.Season == Season.Autumn ? 0.08f : (weather == WeatherType.Storm && _clock.Season != Season.Winter ? 0.05f : 0f);
+            if (leafRate > 0f)
+            {
+                _juice.LeafColor = _clock.Season == Season.Autumn
+                    ? (Random01() < 0.5f ? new Color(0.84f, 0.5f, 0.18f, 1f) : new Color(0.72f, 0.32f, 0.14f, 1f))
+                    : new Color(0.42f, 0.6f, 0.26f, 1f);
+                foreach (var (plant, view) in _plantViews)
+                {
+                    if (view == null || plant.Def.IsCrop) continue;
+                    float s = PlantScale(plant);
+                    if (s < 0.6f || Random01() >= dt * leafRate * s) continue;
+                    _juice.Emit(Juice.Kind.Leaf, view.position + new Vector3(0f, 1.3f * s, 0f), 1, Iso.SortOrder(view.position.y, 3, plant.Position.Z));
+                }
+            }
+
+            // Akçe sayacı: değişince yuvarlanarak sayar, artışta yeşil, azalışta kırmızı yanar.
+            float real = _household != null ? _household.Akce : 0f;
+            if (float.IsNaN(_akceShown)) _akceShown = real;
+            if (Mathf.Abs(real - _akceShown) >= 0.5f)
+            {
+                if (Time.unscaledTime > _akceFlashUntil - 0.6f) { _akceFlashUp = real > _akceShown; }
+                _akceFlashUntil = Time.unscaledTime + 0.8f;
+                float step = Mathf.Max(1f, Mathf.Abs(real - _akceShown) * 6f * Time.unscaledDeltaTime);
+                _akceShown = Mathf.MoveTowards(_akceShown, real, step);
+            }
+            else _akceShown = real;
+        }
+
+        private readonly System.Random _fxRng = new System.Random(7);
+        private float Random01() => (float)_fxRng.NextDouble();
 
         /// <summary>Editörde oyun testi için zamanı ileri sarar (küçük adımlarla gerçek simülasyon).</summary>
         private void FastForward(double days)
@@ -1977,6 +2072,57 @@ namespace Thatchwick.Game
             else if (!moving) actor.WalkPhase = 0f;
             actor.LastPos = pos;
             float bob = moving ? Mathf.Round(Mathf.Abs(Mathf.Sin(actor.WalkPhase)) * WalkBobPixels) / ArtPixelsPerUnit : 0f;
+            // Animasyon partisi 1: adım tozu, boştayken nefes, eşyada çalışırken vuruş (kare animasyonu gelene kadar).
+            float squash = 0f;   // + ezilme (geniş, alçak), - esneme
+            int seed = actor.Character.Id;
+            int sortOrder = Iso.SortOrder(pos.y, 1, actor.Character.Position.Z);
+            if (moving)
+            {
+                int stepIdx = Mathf.FloorToInt(actor.WalkPhase / Mathf.PI);
+                if (stepIdx != actor.LastStep)
+                {
+                    actor.LastStep = stepIdx;
+                    squash = 0.04f;   // ayak yere basınca kısa ezilme
+                    if (_juice != null && Random01() < 0.45f && _animals?.MountOf(actor.Character.Id) == null)
+                        _juice.Emit(Juice.Kind.Dust, pos + new Vector3(0f, 0.02f, 0f), 1, sortOrder - 1);
+                }
+            }
+            else if (actor.Runner.IsUsingItem && actor.Character.Stage != AgeStage.Baby)
+            {
+                var job = actor.Runner.Queue.Current;
+                if (!ReferenceEquals(job, actor.WorkJob))
+                {
+                    actor.WorkJob = job;
+                    actor.WorkIcon = job != null ? ActivityDescriber.DescribeJob(job, _world).Icon : null;
+                }
+                string icon = actor.WorkIcon;
+                bool beats = icon == "chop" || icon == "farm" || icon == "craft" || icon == "cook" || icon == "work";
+                if (beats)
+                {
+                    float rate = icon == "chop" ? 1.3f : icon == "cook" ? 0.9f : 1.1f;
+                    float beat = Juice.WorkBeat(seed, rate);
+                    if (beat < 0.16f) { bob = -Juice.Px; squash = 0.06f; }        // vuruş anı: çöker
+                    else if (beat > 0.75f) { bob = Juice.Px; squash = -0.03f; }   // hazırlık: kalkar
+                    if (beat < actor.LastBeat && _juice != null)                  // yeni vuruş
+                    {
+                        var at = pos + new Vector3(0f, 0.2f, 0f);
+                        switch (icon)
+                        {
+                            case "chop": _juice.Emit(Juice.Kind.Chip, at, 3, sortOrder + 1); break;
+                            case "farm": _juice.Emit(Juice.Kind.Soil, pos, 2, sortOrder + 1); break;
+                            case "cook": _juice.Emit(Juice.Kind.Steam, pos + new Vector3(0f, 0.6f, 0f), 1, sortOrder + 1); break;
+                            case "craft": _juice.Emit(Juice.Kind.Chip, at, 1, sortOrder + 1); break;
+                            default: _juice.Emit(Juice.Kind.Dust, pos, 1, sortOrder - 1); break;
+                        }
+                    }
+                    actor.LastBeat = beat;
+                }
+            }
+            else
+            {
+                // Nefes: göğüs 1 px kabarır (dikey esneme); herkes kendi evresinde.
+                if (Juice.BreathOffset(seed) > 0f) squash = -0.018f;
+            }
             actor.View.position = pos + new Vector3(0f, bob, 0f);
             // Merdivende yarıdan sonra hedef katın bandına geçer; iki kattan biri görünürse karakter görünür.
             int fromLevel = actor.Character.Position.Z;
@@ -2001,7 +2147,7 @@ namespace Thatchwick.Game
             {
                 scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : (actor.Character.Stage == AgeStage.Teen ? 0.92f : 1f));
             }
-            actor.View.localScale = new Vector3(scale, scale, 1f);
+            actor.View.localScale = new Vector3(scale * (1f + squash * 0.5f), scale * (1f - squash), 1f);
             if (actor.Shadow != null) actor.Shadow.transform.localPosition = ShadowOffset - new Vector3(0f, bob / Mathf.Max(0.01f, scale), 0f);
         }
 
@@ -2134,7 +2280,10 @@ namespace Thatchwick.Game
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"Akçe {_household.Akce}", GUILayout.Width(80f));
+            var akceColor = GUI.contentColor;
+            if (Time.unscaledTime < _akceFlashUntil) GUI.contentColor = _akceFlashUp ? new Color(0.6f, 1f, 0.55f) : new Color(1f, 0.55f, 0.5f);
+            GUILayout.Label($"Akçe {(float.IsNaN(_akceShown) ? _household.Akce : Mathf.RoundToInt(_akceShown))}", GUILayout.Width(80f));
+            GUI.contentColor = akceColor;
             GUILayout.Label(new GUIContent($"İtibar: {_life.Upbringing.Reputation.TierName}", $"{_life.Upbringing.Reputation.Points} puan · satış {_life.Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%"), GUILayout.Width(110f));
             if (HudToggle("Etiketler (L)", _labelsAll)) _labelsAll = !_labelsAll;
             if (GUILayout.Button("Kaydet")) SaveNow(quiet: false);
