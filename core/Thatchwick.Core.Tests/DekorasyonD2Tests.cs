@@ -365,10 +365,10 @@ namespace Thatchwick.Core.Tests
             var wall = new Edge(5, 2, EdgeAxis.Horizontal);
             Assert.Equal(1f, DecorSystem.EdgeInsulation(k.World, win));
             var curtain = k.World.PlaceOnWall(k.D("item.wool_curtain"), Win, 0);
-            Assert.Equal(0.6f, DecorSystem.EdgeInsulation(k.World, win), 3);
+            Assert.Equal(0.6, (double)DecorSystem.EdgeInsulation(k.World, win), 3);
             k.World.PlaceOnWall(k.D("item.painted_cloth"), Plain, 0);                      // 2 karo genişliğinde
-            Assert.Equal(0.9f, DecorSystem.EdgeInsulation(k.World, wall), 3);
-            Assert.Equal(0.9f, DecorSystem.EdgeInsulation(k.World, new Edge(6, 2, EdgeAxis.Horizontal)), 3);
+            Assert.Equal(0.9, (double)DecorSystem.EdgeInsulation(k.World, wall), 3);
+            Assert.Equal(0.9, (double)DecorSystem.EdgeInsulation(k.World, new Edge(6, 2, EdgeAxis.Horizontal)), 3);
             curtain.Condition = ItemCondition.Damaged;                                       // yırtık perde işe yaramaz
             Assert.Equal(1f, DecorSystem.EdgeInsulation(k.World, win));
             Assert.Contains("Isı kaybını azaltır (%40)", ItemCatalog.Describe(k.D("item.wool_curtain")));
