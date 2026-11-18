@@ -1,7 +1,7 @@
 ---
 id: "372"
 title: Ağaçlar yeniden (meşe, huş olgun, çam genç, söğüt, erik genç)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:05Z
 priority: 10            # başlangıç haritasında görünenler önce (görsel analiz)
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
@@ -63,6 +63,9 @@ Yöntem **320 ile aynı** (301 yöntemi, `create_map_object` stil eşleme, refer
 ## Notlar
 - Oyun olgun görseli `IsoArt.Plant`'tan alır. Genç evre için kod tarafı, iş review'a geçince yazılır.
 - Dönem: hepsi Eski Dünya türü.
+
+## Sorular
+- 2026-11-18 bulut şeridi 1: `get_balance` hesabı Tier 2 (Pixel Artisan), 4999/5000 gen gösteriyor; `art/budget.md` ise Tier 1 / 2000 gen yazıyor. Bütçe kuralı "plan Tier 1 değilse dur" olduğundan üretim yapılmadı (0 gen). Kullanıcı `art/budget.md` planını güncelleyip işi `pending` yapmalı.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
