@@ -1,7 +1,8 @@
 ---
 id: "417"
 title: Bilye (açık, çok renkli bilyeler) ve mazı (kahverengi, ahşap) yeniden
-status: pending
+status: running
+claimed_at: 2026-11-18T19:35Z
 approved_by: user        # kullanıcı 18.11.2026: mazı "kahverengi ve ahşap" vurgusuyla; bilyede kese aynı, bilyeler açık ve farklı renkli
 priority: 15
 family: esya
