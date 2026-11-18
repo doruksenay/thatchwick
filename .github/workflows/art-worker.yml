@@ -108,7 +108,7 @@ jobs:
         env:
           PIXELLAB_API_TOKEN: ${{ secrets.PIXELLAB_API_TOKEN }}
         run: |
-          pip install --quiet "pillow==12.3.0"
+          pip install --quiet "pillow==12.3.0" "uv==0.13.9"   # iş dosyaları doğrulamayı `uv run --with pillow python ...` ile ister
           npm install -g "@anthropic-ai/claude-code@2.1.326"
           python - <<'PY'
           import json, os
@@ -137,7 +137,7 @@ jobs:
             --mcp-config "$RUNNER_TEMP/mcp.json" \
             --allowedTools "mcp__pixellab" "Read" "Write" "Edit" "Glob" "Grep" \
               "Bash(git status:*)" "Bash(git diff:*)" "Bash(git log:*)" "Bash(git add:*)" "Bash(git commit:*)" \
-              "Bash(python:*)" "Bash(cp -n:*)" "Bash(ls:*)"
+              "Bash(python:*)" "Bash(python3:*)" "Bash(uv run:*)" "Bash(mkdir -p:*)" "Bash(cp -n:*)" "Bash(ls:*)"
 
       - name: Denetle ve push et
         if: always() && steps.claim.outputs.run == 'true'

@@ -35,6 +35,8 @@ GitHub Actions işçisinde iş akışı işi senin yerine sahiplenir ve push ede
 - 2, 4, 6, 7 ve 8. adımlar aynen geçerli. 9. adımda yalnızca `git add art Assets/Art/Iso tools/art` ve `git commit`; `git pull` ve `git push` yapma. Hata ya da engelde de iş dosyasını `failed`/`blocked` yapıp commit et.
 - İş akışı commit'lerini `tools/art/cloud_guard.py` ile denetler: işçi yolları dışı, `.meta`, `Assets/Art/Iso` altında var olan dosyayı değiştirmek ya da silmek, sır değeri içeren değişiklik reddedilir ve hiçbir şey push edilmez. `tools/art` değişikliği main'e değil bir PR'a gider.
 - Tek iş yapıp dur (10. adım yok).
+- Araçlar: Pillow kurulu; betikleri `python` ya da `uv run --with pillow python` ile çalıştır. Klasör için `mkdir -p`, kopya için `cp -n`. Başka kabuk komutu yok; gerekirse işi Python ile yap.
+- Masaüstü kopyası (`C:\Users\User\OneDrive\Desktop\art`) bulutta yapılamaz: atla, raporda "masaüstü kopyası: yerel" yaz. Bu bir engel sebebi değildir.
 
 ## Sınırlar
 

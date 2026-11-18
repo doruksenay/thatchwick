@@ -1,8 +1,7 @@
 ---
 id: "008b"
 title: Duvar pencere (iki eksen) ve alçak duvar (iki eksen), inpaint ile
-status: blocked
-claimed_at: 2026-11-18T07:21Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: yapi
 style_gate: false
@@ -99,6 +98,8 @@ Hiçbir şeyi silme, üzerine yazma. Klasör tarihi üretim günüdür.
 - Pivotları kullanıcı `IsoPivots.txt`'e ekler; işçi `.meta` yazmaz.
 - Alçak direk (`iso_wall_post_low`) bu işte yok; gerekirse ayrı iş.
 - 008 (eski plan, `depends_on: ["007"]`, 007 reddedildi) bu iş ve 008a ile karşılandı; 008'in durumunu kullanıcı belirler.
+
+- 2026-11-18: bulut işçisine `uv`, `python3`, `mkdir -p` izni eklendi, masaüstü kopyası bulutta atlanır (kullanıcı onayı); iş yeniden `pending`.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
