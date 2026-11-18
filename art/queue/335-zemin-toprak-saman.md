@@ -1,7 +1,7 @@
 ---
 id: "335"
 title: Zemin stilleri: sıkıştırılmış toprak (iç), saman, saz serili
-status: running
+status: review
 claimed_at: 2026-11-18T11:44Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -35,4 +35,5 @@ created: 2026-11-17
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 (işçi): kısmi teslim, 4/6 dosya. straw_b ve rush_b maske içi boş piksel nedeniyle doğrulamadan geçmedi, teslim edilmedi. Ayrıntı: art/results/335-zemin-toprak-saman.md
 - 2026-11-18: yeniden `pending` (Claude, kurtarma): 2026-11-18T09:25Z sahiplenmesinden sonuç gelmedi.
