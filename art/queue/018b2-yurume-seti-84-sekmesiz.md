@@ -8,7 +8,7 @@ family: karakter
 style_gate: false
 cost_est: 40
 cost_max: 60
-depends_on: ["018a2"]
+depends_on: ["018a3"]
 max_attempts: 1
 pixellab: true
 outputs:
@@ -22,7 +22,7 @@ created: 2026-11-18
 018b reddedildi: yürürken zıplıyor (kafa 4-8 px oynuyor). Kullanıcı yalnızca bozuk yönleri değil, yürümeyi bütünüyle zıplamalı buldu; set baştan yapılır.
 
 ## Tarif
-- **Yöntem 018a2'nin raporundaki kazanan yöntemdir** (şablon yürüyüş ya da sekmesiz pixminimax metni). 018a2 `rejected` ise bu iş başlamaz.
+- **Yöntem 018a3'ün raporundaki kazanan yöntemdir** (şablon yürüyüş ya da sekmesiz pixminimax metni). 018a3 `rejected` ise bu iş başlamaz.
 - 018b'nin karakter kimlikleri, 8 yön, ortak işleme kuralları aynen; dosya adı `walk2`.
 - Çağrılar bağımsız: paralel.
 

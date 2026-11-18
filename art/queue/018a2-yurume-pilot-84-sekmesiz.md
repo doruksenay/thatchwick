@@ -1,7 +1,7 @@
 ---
 id: "018a2"
 title: Yürüme pilotu yeniden, erkek 84 px SE (dikey sekme yok)
-status: failed
+status: rejected   # kullanıcı 18.11.2026: şablon yürüyüş topallama gibi
 claimed_at: 2026-11-18T19:12Z
 approved_by: user        # kullanıcı 18.11.2026: 018a reddedildi ("yürürken zıplıyor")
 priority: 5
@@ -36,3 +36,5 @@ Her yolda üretimden sonra **ücretsiz düzeltme** denenebilir: tepe oynaması 4
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18 kullanıcı: şablon (6 kare) topallama gibi; reddedildi. Ayak satırı kuralı gereksiz katıydı (kod oturumu hatası). Yerine 018a3. -->
