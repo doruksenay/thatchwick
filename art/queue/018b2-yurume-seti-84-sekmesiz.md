@@ -1,7 +1,7 @@
 ---
 id: "018b2"
 title: Yürüme seti yeniden: erkek ve kadın 84 px, 8 yön, sekmesiz
-status: running
+status: blocked
 claimed_at: 2026-11-18T19:40Z
 approved_by: user        # kullanıcı 18.11.2026 (sohbet)
 priority: 10
@@ -30,6 +30,9 @@ created: 2026-11-18
 ## Doğrulama
 - **Sekme ölçütü (bağlayıcı):** her yönde kareler arası kafa (opak bbox tepesi) farkı ≤ 3 px, ayak satırı sabit. Geçmeyen yön teslim edilmez; raporda yön × karakter tablosu.
 - 018b doğrulamaları, iki GIF (erkek, kadın; 8 yön ızgara) ve yan yana.
+
+## Sorular
+- 018a3 raporunda "kazanan yöntem" yok: kullanıcı seçimi yazılmamış (iş dosyasında karar notu yok). Rapor yalnızca a (şablon 8 kare) ile c (skeleton-v3 8 kare) arasında öneri veriyor; ikisinde de hafif topallama riski, b ve d elenmiş. Hangi harf (a, c ya da başka)? Seçim yazılınca (örn. bu dosyaya `yöntem: c`) iş `pending` yapılıp yeniden alınabilir. Harcama yapılmadı (0 gen).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
