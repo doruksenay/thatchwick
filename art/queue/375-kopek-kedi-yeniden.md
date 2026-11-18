@@ -1,7 +1,8 @@
 ---
 id: "375"
 title: Köpek ve kedi yeniden (106, renk düzeltmeli)
-status: pending
+status: running
+claimed_at: 2026-11-18T13:16Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
 family: hayvan
 style_gate: false
