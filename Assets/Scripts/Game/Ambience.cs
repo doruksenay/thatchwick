@@ -85,7 +85,10 @@ namespace Thatchwick.Game
                     var l = lights[i];
                     var sr = used < _glows.Count ? _glows[used] : NewGlow(additive);
                     used++;
-                    float flicker = l.Fire ? 0.92f + 0.08f * Mathf.PerlinNoise(Time.time * 3.1f, l.Key * 0.37f) : 1f;
+                    // Ateş titrer: yavaş nefes + hızlı çıtırtı; mum çok hafif kıpırdar.
+                    float flicker = l.Fire
+                        ? 0.84f + 0.10f * Mathf.PerlinNoise(Time.time * 2.3f, l.Key * 0.37f) + 0.06f * Mathf.PerlinNoise(Time.time * 9.5f, l.Key * 1.91f + 5f)
+                        : 0.97f + 0.03f * Mathf.PerlinNoise(Time.time * 1.7f, l.Key * 0.53f);
                     float scale = 1.5f * l.Strength * flicker;
                     sr.transform.position = l.Position;
                     sr.transform.localScale = new Vector3(scale, scale, 1f);
