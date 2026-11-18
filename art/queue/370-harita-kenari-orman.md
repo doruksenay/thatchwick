@@ -7,7 +7,7 @@ family: bitki
 style_gate: false
 cost_est: 6
 cost_max: 12
-depends_on: ["320"]
+depends_on: ["372"]   # 320 başarısız oldu; ağaç türleri 372 ile yeniden (2026-11-18)
 max_attempts: 2
 pixellab: true
 outputs:
@@ -26,7 +26,7 @@ Görsel analiz (Project `26-gorsel-analiz.md`, P1 madde 9): harita kenarı sert,
 
 ## Tarif
 Yöntem **301 ile aynı** (referanssız kılavuz, `create_map_object` stil eşleme, ikinci deneme kuralı, masaüstü kopyası). Farklar:
-- Referans: 320 ağaç türleri adayları (meşe, huş, çam). Kenar öbekleri o ağaçlardan **daha koyu ve ayrıntısız** olmalı: oyun alanındaki etkileşimli ağaçlarla karışmasın, arka plan gibi okunsun.
+- Referans: 372 ve 371'in ağaçları (meşe, huş, çam). 320 başarısız olduğu için ağaçlar orada yeniden üretilir. Kenar öbekleri o ağaçlardan **daha koyu ve ayrıntısız** olmalı: oyun alanındaki etkileşimli ağaçlarla karışmasın, arka plan gibi okunsun.
 - Ortak ek: `, dense medieval European forest edge seen from high top-down isometric view, dark muted greens, simple shading, single dark outline, light from top-left, no ground tile, no shadow, transparent background`
 - Öbekler:
 
@@ -43,7 +43,7 @@ Yöntem **301 ile aynı** (referanssız kılavuz, `create_map_object` stil eşle
 
 ## Doğrulama
 301 tablosu. Ek kontroller:
-- Sayfa: 12x6 karolık kenar şeridi, öbekler sık ve rastgele dizilmiş, önünde bir 320 meşesi ve köylü. Öbekler arka plan gibi mi okunuyor; etkileşimli ağaçtan ayırt ediliyor mu.
+- Sayfa: 12x6 karolık kenar şeridi, öbekler sık ve rastgele dizilmiş, önünde bir 372 meşesi ve köylü. Öbekler arka plan gibi mi okunuyor; etkileşimli ağaçtan ayırt ediliyor mu.
 - Öbekler birbirine bindiğinde dikiş ya da çerçeve görünmüyor.
 
 ## Notlar
