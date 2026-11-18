@@ -1,7 +1,8 @@
 ---
 id: "386"
 title: Hasır, keçe ve post halılar, döküntü yığını (8)
-status: pending
+status: running
+claimed_at: 2026-11-18T12:59Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
 family: esya
