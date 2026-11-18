@@ -1,7 +1,8 @@
 ---
 id: "389"
 title: Çatkı Evi mobilyası (9)
-status: pending
+status: running
+claimed_at: 2026-11-18T13:22Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
 family: esya
