@@ -1,8 +1,7 @@
 ---
 id: "014"
 title: Yürüme animasyonu farmer_a2_56 (8 yön, pixminimax)
-status: running
-claimed_at: 2026-11-18T07:43Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
@@ -99,6 +98,8 @@ Betik: `tools/art/anim_walk.py`. 013'teki `anim_pilot.py`'den türetilebilir.
 - 015a, 015b ve 015c bu işe bağlıdır: 014 `accepted` olmadan başlamazlar.
 
 - 2026-11-18: bulut işçisine `uv`, `python3`, `mkdir -p` izni eklendi, masaüstü kopyası bulutta atlanır (kullanıcı onayı); iş yeniden `pending`.
+
+- 2026-11-18: çıktıyı diske yazmak için `tools/art/save_png.py` eklendi; iş yeniden `pending`. 014: 07:43Z sahiplenmesinden sonuç gelmedi.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

@@ -37,6 +37,7 @@ GitHub Actions işçisinde iş akışı işi senin yerine sahiplenir ve push ede
 - İş akışı commit'lerini `tools/art/cloud_guard.py` ile denetler: işçi yolları dışı, `.meta`, `Assets/Art/Iso` altında var olan dosyayı değiştirmek ya da silmek, sır değeri içeren değişiklik reddedilir ve hiçbir şey push edilmez. `tools/art` değişikliği main'e değil bir PR'a gider.
 - Tek iş yapıp dur (10. adım yok). Bulutta birkaç şerit aynı anda çalışır; her şerit kendi işini yapar, başka işin dosyalarına dokunma.
 - Araçlar: Pillow kurulu; betikleri `python` ya da `uv run --with pillow python` ile çalıştır. Klasör için `mkdir -p`, kopya için `cp -n`. Başka kabuk komutu yok; gerekirse işi Python ile yap.
+- **PixelLab çıktısını diske yazmak:** `curl` yok. Her zaman `python tools/art/save_png.py <kaynak> <hedef.png>` kullan. Kaynak; aracın verdiği indirme URL'si, Claude Code'un araç çıktısını kaydettiği dosya (tool-results yolu) ya da `data:image/png;base64,...` olabilir. ZIP gelirse `--all` ile klasöre açar; birden çok görsel varsa `--index N`. Ham çıktıyı önce `art/tmpNNN/` gibi geçici bir klasöre al, işin sonunda o klasörü commit etme. Kaydedemezsen yeni üretim yapmadan dur ve image_id/character_id'leri rapora yaz.
 - Masaüstü kopyası (`C:\Users\User\OneDrive\Desktop\art`) bulutta yapılamaz: atla, raporda "masaüstü kopyası: yerel" yaz. Bu bir engel sebebi değildir.
 
 ## Sınırlar

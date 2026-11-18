@@ -1,8 +1,7 @@
 ---
 id: "101"
 title: Hayvanlar 1: tavuk (tuval testi) + horoz
-status: blocked
-claimed_at: 2026-11-18T07:55Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
 style_gate: false
@@ -95,6 +94,8 @@ Hiçbir şeyi silme ya da üzerine yazma. Klasör tarihi üretim günü (`yyyy-m
 
 ## Sorular
 Bulut işçisi PixelLab sonuç PNG'lerini diske indiremedi (curl onay istiyor). 3 tavuk döndürmesi üretildi (kimlikler `art/results/101-hayvan-tavuk-horoz.md`); teslim ve horozlar yerel işçiye kaldı. Yerelde chicken_3/4/5 yeniden üretilmeden sürdürülmeli.
+
+- 2026-11-18: çıktıyı diske yazmak için `tools/art/save_png.py` eklendi; iş yeniden `pending`. 101: chicken_3/4/5 döndürmeleri zaten üretildi (kimlikler raporda), önce onları `save_png.py` ile indir; yeniden üretme.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

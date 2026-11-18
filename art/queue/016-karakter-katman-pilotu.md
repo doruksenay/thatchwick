@@ -1,8 +1,7 @@
 ---
 id: "016"
 title: Karakter katman pilotu (kel taban + saç, sakal, kıyafet katmanı; 8 yön denemesi)
-status: blocked
-claimed_at: 2026-11-18T07:54Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: true
@@ -78,6 +77,8 @@ Bu pilot şunları ölçer:
 
 ## Sorular
 - Bulut işçisi PixelLab çıktısını diske alamadı (tool-results kopyası ve curl izni yok). 5 gen harcandı (kel taban SE, image_id 3f59b7f4-c710-5fb5-b1d6-95f73756736f). Rapor: art/results/016-karakter-katman-pilotu.md
+
+- 2026-11-18: çıktıyı diske yazmak için `tools/art/save_png.py` eklendi; iş yeniden `pending`. 016: kel taban SE zaten üretildi (image_id raporda), yeniden üretmeden `source_image_id` ile kullan.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
