@@ -1,7 +1,7 @@
 ---
 id: "018b"
 title: Yürüme seti: erkek ve kadın 84 px, 8 yön
-status: running
+status: review
 claimed_at: 2026-11-18T18:54Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50
