@@ -1,7 +1,7 @@
 ---
 id: "008c"
 title: Pencere kenarındaki boşluğun onarımı (008b)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:16Z
 approved_by: user        # kullanıcı kararı 2026-11-18 (sohbet): 008b kabul, boşluk onarılsın
 family: yapi
@@ -41,3 +41,4 @@ Pivotlar 008b ile aynı (sw_ne 32,19; se_nw 70,19).
 ## Sorular
 - 2026-11-18 (bulut şerit 1): `get_balance` plan olarak Tier 2 (Pixel Artisan), 4999/5000 generation, yenilenme 2026-12-18 gösteriyor. `art/budget.md` ise Tier 1, 2000 generation, yenilenme 2026-12-08 yazıyor. Kural "Plan Tier 1 değilse dur" olduğu için PixelLab çağrılmadı, harcama 0. Kullanıcı `art/budget.md` planını güncelleyip (Tier 2 kabulü) işi `pending` yapınca iş tekrar alınabilir.
 - 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.
+- 2026-11-18 (bulut şerit 2): Betikle arandı (dış dolgu ile ulaşılamayan saydam pikseller + silüet kenarı). sw_ne'de tek kapalı saydam bölge var: 203 px (x43-55, y43-63), se_nw'de 117 px (x55-62, y49-66). İkisi de pencere açıklığının kendisi; açıklık dışında saydam şerit yok, çerçeve-sıva arası saydam piksel 0. "Çok koyu" ölçütü (R+G+B<150) çerçeve kirişlerini de yakaladığı için ayırt edici değil. Tarif gereği şerit bulunamadı, PixelLab çağrılmadı, harcama 0 (bakiye 4968). Not: 008b raporunda se_nw açıklığı 88 px, burada 117 px ölçüldü (tanım farkı). Şeridin yeri (ekran görüntüsüyle, ör. piksel koordinatı ya da renk) belirtilirse iş yeniden `pending` yapılabilir.
