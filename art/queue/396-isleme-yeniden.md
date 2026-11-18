@@ -1,7 +1,7 @@
 ---
 id: "396"
 title: İşleme yeniden: kömür yığını, körüklü çiçek ocağı
-status: running
+status: review
 claimed_at: 2026-11-18T14:10Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 18.11.2026: "önerilerini uygula" (360-367 yeniden üretim)
 priority: 20
