@@ -1,7 +1,8 @@
 ---
 id: "200"
 title: Arayüz menü stili pilotu (parşömen + ahşap, ana menü paneli)
-status: pending
+status: running
+claimed_at: 2026-11-18T12:00Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: true
