@@ -85,6 +85,8 @@ namespace Thatchwick.Core.Jobs
 
         /// <summary>Bir etkileşim başarıyla bitince (kaza sistemi, istatistik). Etkiler uygulandıktan sonra çağrılır.</summary>
         public event Action<Character, InteractionDef> InteractionCompleted;
+        /// <summary>Eşya etkileşimi bitti; eşya da verilir (oyuncak alışkanlığı için). Eşya kaldırılmış olabilir.</summary>
+        public event Action<Character, ItemInstance, InteractionDef> ItemUsed;
 
         /// <summary>Yürüme hızı çarpanı (ata binince ~2); yoksa 1.</summary>
         public Func<double> WalkSpeed { get; set; }
@@ -635,6 +637,7 @@ namespace Thatchwick.Core.Jobs
                 // Etkiler en sonda: eşyayı kaldırabilir (kesilen ağaç) ve dünyayı değiştirir.
                 if (interaction.HasEffects) Effects?.Apply(_character, item, interaction);
                 InteractionCompleted?.Invoke(_character, interaction);
+                ItemUsed?.Invoke(_character, item, interaction);
                 return used + remaining;
             }
 

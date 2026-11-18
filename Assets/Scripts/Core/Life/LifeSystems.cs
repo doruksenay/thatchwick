@@ -64,6 +64,8 @@ namespace Thatchwick.Core.Life
         public Thatchwick.Core.Build.DecorSystem Decor { get; }
         /// <summary>Ruh hali uyarıları ve bunalım (Project belgesi 23).</summary>
         public BreakdownService Breakdowns { get; }
+        /// <summary>Çocukluk eşyaları, can yoldaşı, çıraklık, aile tarifleri ve itibar (belge 30, 31-8, 34).</summary>
+        public Thatchwick.Core.Upbringing.UpbringingSystems Upbringing { get; }
         /// <summary>Köy meydanı (bunalımda "Meydana kaçtı"); null ise o tür seçilmez.</summary>
         public Func<GridPos?> SquarePosition { get; set; }
         private readonly Random _upbringingRng;
@@ -154,6 +156,14 @@ namespace Thatchwick.Core.Life
             Breakdowns.Raised += (level, text, id) => Say(text, level, id);
             Breakdowns.Started += (c, kind) => Ledger.Note($"{c.Name}: {MoodBehavior.BreakdownName(kind).ToLowerInvariant()}");
             _upbringingRng = new Random(seed != 0 ? Seeds.Derive(seed, 13) : 89);
+            Upbringing = new Thatchwick.Core.Upbringing.UpbringingSystems(population, seed != 0 ? Seeds.Derive(seed, 15) : 0)
+            {
+                Today = () => Clock.TotalDays,
+                Notify = (text, id) => Say(text, NoticeLevel.Info, id),
+                Chronicle = text => Ledger.Note(text)
+            };
+            Thatchwick.Core.Upbringing.ToyNames.Lookup = id => content.Items.TryGet(id, out var td) ? td.DisplayName : null;
+            Breakdowns.Started += (c, kind) => { if (!c.IsVillager) Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Breakdown, "bunalım"); };
             Spoilage.Spoiled += (id, n) =>
             {
                 bool ice = content.Items.TryGet(id, out var d) && d.HasTag("ice");
@@ -163,6 +173,7 @@ namespace Thatchwick.Core.Life
             Festivals.Celebrated += (f, n) =>
             {
                 FestivalsCelebrated++;
+                Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Festival, f.DisplayName);
                 Say($"{f.DisplayName}: {n} kişi şenliğe katıldı.", NoticeLevel.Info);
                 Ledger.Note(f.DisplayName);
                 Goals.Update();
@@ -174,6 +185,7 @@ namespace Thatchwick.Core.Life
                 Say($"Köy projesi tamamlandı: {p.DisplayName}.", NoticeLevel.Info);
                 Ledger.Note(p.DisplayName);
                 Legacy.OnProjectCompleted(p.DisplayName, Clock.TotalDays);
+                Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Project, p.DisplayName);
                 Goals.Update();
             };
             Goals.Completed += OnGoalCompleted;
@@ -348,6 +360,7 @@ namespace Thatchwick.Core.Life
         public void OnSuccession(Dynasty dynasty, Character heir)
         {
             Legacy.OnSuccession(dynasty, heir, Clock.TotalDays);
+            Upbringing.OnSuccession();
             foreach (var h in Legacy.Heirlooms)
                 if (h.Level > 1) { Say($"Yadigârlar bir nesil daha hanede: bonuslar güçlendi.", NoticeLevel.Info); break; }
         }
@@ -386,7 +399,7 @@ namespace Thatchwick.Core.Life
         }
 
         public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction);
-        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell);
+        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus());
         // Ev düzenleme: hanenin en iyi süslemecisi seviye başına %2 indirim (10. seviyede %18) dallarla toplanır.
         public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount) + 0.02f * Math.Max(0, BestSkill(SkillType.Decorating) - 1));
 
@@ -477,6 +490,7 @@ namespace Thatchwick.Core.Life
             {
                 if (action != SocialAction.Propose) return;
                 Marriages++;
+                Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Wedding, "düğün");
                 Goals.Update();
             };
         }
@@ -488,7 +502,11 @@ namespace Thatchwick.Core.Life
             runner.Refused += (c, text) => Say($"{c.Name}: \"{text}\"", NoticeLevel.Info, c.Id, transient: true);
             runner.ItemBonus = Legacy.BonusFor;
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
+            runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
         }
+        /// <summary>Hayvanlar: can yoldaşı bağı (yakınlık, bakım, ölüm), kalite ve binicilik bonusu.</summary>
+        public void Attach(Thatchwick.Core.Animals.AnimalSystem animals, Thatchwick.Core.Animals.AnimalCare care) => Upbringing.Attach(animals, care);
+
         public void Attach(PlantSystem plants)
         {
             _plants = plants;
@@ -537,6 +555,7 @@ namespace Thatchwick.Core.Life
             Spoilage.Tick(gameDays);
             Festivals.Tick(Population.Members);
             Decor.Tick(gameDays);
+            Upbringing.Tick(gameDays);
 
             long day = Clock.DayIndex;
             if (day != _lastDay)
@@ -587,6 +606,7 @@ namespace Thatchwick.Core.Life
             Villagers.ReplaceDeparted(inheritOnly: true);
             var founder = FounderId != null ? FounderId() : null;
             if (founder.HasValue) Legacy.CheckDescendants(founder.Value, Clock.TotalDays);
+            Upbringing.OnNewDay();
             NewDay?.Invoke(day);
         }
 
@@ -618,7 +638,8 @@ namespace Thatchwick.Core.Life
                 accidentSetting = (int)Injuries.Setting,
                 legacy = Legacy.Export(),
                 houses = Houses.Export(),
-                lastHouseholdAccidentDay = Injuries.LastHouseholdAccidentDay
+                lastHouseholdAccidentDay = Injuries.LastHouseholdAccidentDay,
+                upbringing = Upbringing.Export()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -636,6 +657,7 @@ namespace Thatchwick.Core.Life
             if (data == null) { Population.RecomputeAll(); return; }
             Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
             Festivals.CelebratedDay = data.festivalCelebratedDay;
+            Upbringing.Import(data.upbringing);
             Spoilage.Restore(data.spoilage);
             Tools.Restore(data.tools);
             Projects.Restore(data.projectsDone);
