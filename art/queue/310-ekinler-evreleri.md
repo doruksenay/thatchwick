@@ -1,7 +1,8 @@
 ---
 id: "310"
 title: Ekin büyüme evreleri (şalgam, lahana, pırasa, bezelye, kabak; 3 evre)
-status: pending
+status: running
+claimed_at: 2026-11-18T09:03Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: bitki
