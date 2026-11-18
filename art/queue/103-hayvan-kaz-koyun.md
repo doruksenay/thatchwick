@@ -1,7 +1,8 @@
 ---
 id: "103"
 title: Hayvanlar 3: kaz + koyun
-status: pending
+status: running
+claimed_at: 2026-11-18T12:32Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
 style_gate: false
