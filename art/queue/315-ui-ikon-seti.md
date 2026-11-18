@@ -1,7 +1,8 @@
 ---
 id: "315"
 title: Arayüz ikon seti (ihtiyaç, ruh hali, etkinlik, hava, gösterge)
-status: pending
+status: running
+claimed_at: 2026-11-18T12:46Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: false
