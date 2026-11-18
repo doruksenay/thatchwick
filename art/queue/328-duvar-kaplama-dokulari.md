@@ -1,7 +1,8 @@
 ---
 id: "328"
 title: Duvar kaplama dokuları: ahşap lambri ve duvar dokuması (iki eksen)
-status: pending
+status: running
+claimed_at: 2026-11-18T11:32Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: yapi
