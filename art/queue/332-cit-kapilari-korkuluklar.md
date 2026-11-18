@@ -1,7 +1,7 @@
 ---
 id: "332"
 title: Çit kapıları ve korkuluklar (iki eksen)
-status: running
+status: review
 claimed_at: 2026-11-18T11:49Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
