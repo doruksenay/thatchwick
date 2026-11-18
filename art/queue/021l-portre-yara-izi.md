@@ -1,7 +1,8 @@
 ---
 id: "021l"
 title: Portre yara izi: yarık
-status: pending
+status: running
+claimed_at: 2026-11-18T08:30Z
 approved_by: user
 family: karakter
 style_gate: false
