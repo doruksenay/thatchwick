@@ -1,7 +1,7 @@
 ---
 id: "018a3"
 title: Yürüme adayları, erkek 84 px SE (kullanıcı seçer)
-status: running
+status: review
 claimed_at: 2026-11-18T19:35Z
 approved_by: user        # kullanıcı 18.11.2026: 018a zıplıyor, 018a2 şablonu topallıyor
 priority: 5
