@@ -26,6 +26,14 @@ namespace Thatchwick.Core.Jobs
 
         public void Clear() => _jobs.Clear();
 
+        /// <summary>İşi en öne koyar (sıkışınca tuvalet); kuyruk doluysa en sondaki düşer.</summary>
+        internal void InsertFront(Job job)
+        {
+            if (job == null) return;
+            if (_jobs.Count >= MaxLength) _jobs.RemoveAt(_jobs.Count - 1);
+            _jobs.Insert(0, job);
+        }
+
         internal bool RemoveAt(int index)
         {
             if (index < 0 || index >= _jobs.Count) return false;

@@ -33,6 +33,8 @@ namespace Thatchwick.Core.World
         public string FinishId { get; internal set; }
         /// <summary>Açılıp kapanan düzenek (su kapağı) kapalı mı.</summary>
         public bool Toggled { get; set; }
+        /// <summary>Lazımlık/hela dolumu (kullanım sayısı).</summary>
+        public int Fill { get; set; }
         public bool IsRug => Def.IsRug;
         private Dictionary<string, int> _stock;
         /// <summary>Barınakta toplanmayı bekleyen ürünler (yumurta, süt, yün).</summary>

@@ -87,12 +87,28 @@ namespace Thatchwick.Core.Content
         public float AddIce { get; set; }
         /// <summary>Barınaktaki hayvanlara dostluk (merhem); günlük sevme hakkını kullanmaz.</summary>
         public float BefriendAnimals { get; set; }
+        /// <summary>Tuvaleti bu kadar doldurur (içecek 15, yemek 4).</summary>
+        public float BladderCost { get; set; }
+        /// <summary>Banyo/leğen: başlamadan önce en yakın sudan (kuyu, gölet, dere) bir kova su taşınır.</summary>
+        public bool FetchWater { get; set; }
+        /// <summary>Yıkananı bu kadar ıslatır (0-1): dışarıda ya da suya girerek yıkanmak.</summary>
+        public float Wets { get; set; }
+        /// <summary>Soğuk su: ocak yanmayan yerde ve soğukta yıkanınca üşür; ocak yanan odada sıcak banyo.</summary>
+        public bool Bath { get; set; }
+        /// <summary>Kullanınca eşyanın dolumunu artırır (lazımlık, hela çukuru).</summary>
+        public int AddFill { get; set; }
+        /// <summary>Eşyanın dolumunu boşaltır; dolum başına ürün verir (gübre).</summary>
+        public bool EmptyFill { get; set; }
+        /// <summary>Kurular (havlu): ıslaklığı alır.</summary>
+        public bool Dries { get; set; }
         /// <summary>Hanedeki çocuk ve gençlere ders verir (öğretmenlik).</summary>
         public bool Teach { get; set; }
         /// <summary>Kullananın soğuk/açlık yarasını bu kadar gün iyileştirir (şifa merhemi).</summary>
         public float Heal { get; set; }
         /// <summary>Yalnızca don varken yapılır (buz kesmek).</summary>
         public bool RequiresFrost { get; set; }
+        /// <summary>Yalnızca tesisata su gelirken yapılır (çeşmede yüz yıkamak).</summary>
+        public bool NeedsPipedWater { get; set; }
         /// <summary>Barınaktaki ürünleri (yumurta, süt, yün) haneye toplar.</summary>
         public bool Collect { get; set; }
         /// <summary>Barınakta yaşayan bir hayvan gerektirir (köpekle oyna).</summary>
@@ -128,7 +144,7 @@ namespace Thatchwick.Core.Content
         }
 
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
-            || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || BefriendAnimals > 0f || Teach || Heal > 0f
+            || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
             || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter;
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;

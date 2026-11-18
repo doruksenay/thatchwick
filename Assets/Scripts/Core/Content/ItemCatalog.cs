@@ -92,7 +92,10 @@ namespace Thatchwick.Core.Content
                 case AnimalRoles.Bell: parts.Add("Dokun: hayvanları içeri çağır / salıver"); break;
             }
             if (def.AnimalComfort > 0) parts.Add($"Hayvan konforu +{def.AnimalComfort}");
-            if (def.WaterSource) parts.Add("Su kaynağı (kanal bağlanır)");
+            if (def.WaterSource) parts.Add(def.EffectiveWaterFlow > 0 ? $"Su kaynağı: ark ve boruya günde {def.EffectiveWaterFlow} su verir" : "Su kaynağı (kanal bağlanır; boruya akmaz, kovayla çekilir)");
+            if (def.IsFixture) parts.Add(def.FillCapacity > 0 ? $"Tesisat: boruya bağlıyken günde {def.WaterUse} su, kendi kendine yıkanır" : $"Tesisat: boruya bağlıyken günde {def.WaterUse} su{(def.IsTap ? ", kova buradan dolar" : ", kova taşınmaz")}");
+            if (def.IsCistern) parts.Add($"Sarnıç: {def.CisternCapacity} su biriktirir (yağmurda +{def.CisternRain}, ağdaki artan su da dolar), günde en çok {(def.CisternFlow > 0 ? def.CisternFlow : ItemDef.DefaultWaterFlow)} verir");
+            if (def.WaterHead) parts.Add("Su terazisi: ağa basınç verir, kurşun boru kolonuyla üst kata su çıkar");
             if (def.WaterRadius > 0) parts.Add(def.NeedsWaterSource ? $"Sular ({def.WaterRadius} karo, kaynağa bağlıyken)" : $"Sular ({def.WaterRadius} karo)");
             if (def.PowerSource) parts.Add($"Güç: kaynağa bağlı kanala değince {Work.FarmAutomation.PowerReach}+ karo (mühendislikle artar) yakındaki makineleri çevirir");
             if (def.AutoProcess != null) parts.Add("Güç alınca her gün kendiliğinden işler");

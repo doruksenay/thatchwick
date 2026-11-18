@@ -14,30 +14,63 @@ namespace Thatchwick.Core.Work
     /// </summary>
     public static class WaterNetwork
     {
-        /// <summary>Ağın parçası mı (kaynak, kanal ya da su çarkı)?</summary>
-        public static bool IsNode(ItemDef def) => def.WaterSource || def.NeedsWaterSource || def.PowerSource || def.WaterGate;
+        /// <summary>Ağın parçası mı (kaynak, kanal, kapak, su çarkı, sarnıç ya da su terazisi)? Tesisat ağ parçası değildir: suyu iletmez.</summary>
+        public static bool IsNode(ItemDef def) => def.WaterSource || def.NeedsWaterSource || def.PowerSource || def.WaterGate || def.IsCistern || def.WaterHead;
 
-        /// <summary>Kaynağa bağlı ağ parçalarının kimlikleri (kaynaklar dahil).</summary>
-        public static HashSet<int> Connected(WorldState world)
+        /// <summary>
+        /// Kaynağa bağlı ağ parçalarının kimlikleri (kaynaklar dahil). Su yolu katmanındaki ark ve borular da ağı birleştirir
+        /// (17.11.2026); donmuş açık ark ve kapalı kapak suyu keser, çark yalnızca açık sudan (ark, oluk, kanal) döner.
+        /// </summary>
+        public static HashSet<int> Connected(WorldState world) => Analyze(world).ConnectedItems;
+
+        /// <summary>Bağlantı hesabı (tesisat dağıtımı olmadan): ıslak su yolları ve bağlı eşyalar.</summary>
+        public static WaterReport Analyze(WorldState world)
         {
-            var nodes = new List<ItemInstance>();
-            foreach (var it in world.Items) if (!it.IsDecor && IsNode(it.Def)) nodes.Add(it);
-            var connected = new HashSet<int>();
-            var queue = new Queue<ItemInstance>();
-            foreach (var n in nodes) if (n.Def.WaterSource) { connected.Add(n.Id); queue.Enqueue(n); }
-            while (queue.Count > 0)
+            var report = new WaterReport();
+            new WaterGraph(world).Connect(report);
+            return report;
+        }
+
+        /// <summary>Eşya bir su karosuna (dere, gölet) değiyor mu?</summary>
+        public static bool TouchesWater(GridMap map, ItemInstance it)
+        {
+            if (!map.HasWater || it.Position.Z != 0) return false;
+            foreach (var t in it.OccupiedTiles())
+                for (int dy = -1; dy <= 1; dy++)
+                    for (int dx = -1; dx <= 1; dx++)
+                        if (Math.Abs(dx) + Math.Abs(dy) <= 1 && map.IsFilled(new GridPos(t.X + dx, t.Y + dy))) return true;
+            return false;
+        }
+
+        /// <summary>Kova doldurulabilecek karolar: su kaynağı eşyalarının (kuyu, gölet) ve su karolarının kıyısı.</summary>
+        public static HashSet<GridPos> WaterAccess(WorldState world)
+        {
+            var goals = new HashSet<GridPos>();
+            var map = world.Map;
+            foreach (var it in world.Items)
             {
-                var cur = queue.Dequeue();
-                if (cur.Def.PowerSource) continue;           // çark suyu iletmez, yalnızca kullanır
-                foreach (var n in nodes)
-                {
-                    if (connected.Contains(n.Id) || !Touches(cur, n)) continue;
-                    if (n.Def.WaterGate && n.Toggled) continue;  // kapalı kapak suyu kesir
-                    connected.Add(n.Id);
-                    queue.Enqueue(n);
-                }
+                if (it.IsDecor || !it.Def.WaterSource) continue;
+                foreach (var t in it.OccupiedTiles())
+                    foreach (var o in new[] { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) })
+                    {
+                        var n = t + o;
+                        if (map.IsWalkable(n) && !map.EdgeBlocks(GridMap.EdgeBetween(t, n))) goals.Add(n);
+                    }
             }
-            return connected;
+            // Gölet ve dere: kıyı karosundan kova daldırılır (suya girmeden; donmuşsa buz kırılır).
+            if (map.HasWater)
+                for (int y = 0; y < map.Height; y++)
+                    for (int x = 0; x < map.Width; x++)
+                    {
+                        var p = new GridPos(x, y);
+                        if (!map.IsFilled(p)) continue;                // kuru çukurdan su alınmaz
+                        foreach (var o in new[] { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) })
+                        {
+                            var n = p + o;
+                            if (map.InBounds(n) && !map.IsWater(n) && map.IsWalkable(n) && !map.EdgeBlocks(GridMap.EdgeBetween(p, n))) goals.Add(n);
+                        }
+                    }
+            return goals;
         }
 
         /// <summary>İki eşyanın kapladığı karolar aynı katta yan yana (dik komşu) ya da üst üste mi?</summary>
@@ -263,9 +296,80 @@ namespace Thatchwick.Core.Work
 
         /// <summary>Onarımın taşını veren hane; null ise taş istenmez.</summary>
         public Household House { get; set; }
+        /// <summary>İçerik (balık türleri: gölet eşyasının "fish" ürünleri); null ise dereden balık tutulmaz.</summary>
+        public ContentDatabase Content { get; set; }
+        /// <summary>Mevsim ve karo sıcaklığı (balık türü, soğuk su); null ise her mevsim / ılık.</summary>
+        public Func<Time.Season> Season { get; set; }
+        public Func<GridPos, float> TemperatureAt { get; set; }
+        /// <summary>Olta kademesinin hızı; null ise 1.</summary>
+        public Func<Character, double> RodSpeed { get; set; }
+        private readonly Random _rng = new Random(29);
+
+        public const double BatheDays = 0.08, FishDays = 0.12, CutIceDays = 0.06;
+        /// <summary>Suya girip yıkanmanın hijyeni; yaz serinliği keyfi.</summary>
+        public const float BatheHygiene = 60f, SwimFun = 15f;
 
         /// <summary>Yol onarıldı.</summary>
         public event Action<Character, GridPos> Repaired;
+        /// <summary>Su işi bitti (karakter, karo, özet).</summary>
+        public event Action<Character, GridPos, string> Worked;
+
+        // Dereye girip yıkanmak: hijyen; tamamen ıslanır. Soğuk suda Isınma düşer, yazın serinletir.
+        private void BatheIn(Character c, GridPos tile)
+        {
+            c.Needs.Restore(NeedType.Hygiene, BatheHygiene);
+            c.Soak(1f);
+            float t = TemperatureAt != null ? TemperatureAt(tile) : 15f;
+            string note;
+            if (t < InteractionEffects.ColdBathTemperature)
+            {
+                c.Needs.Set(NeedType.Warmth, c.Needs.Get(NeedType.Warmth) - Math.Min(50f, (InteractionEffects.ColdBathTemperature - t) * 2.5f));
+                c.AddMoodlet(Mood.MoodCatalog.ColdWater);
+                note = "buz gibi suda yıkandı";
+            }
+            else
+            {
+                if (t >= 18f) { c.Needs.Restore(NeedType.Fun, SwimFun); c.AddMoodlet(Mood.MoodCatalog.Swim); }
+                note = "suda yıkandı";
+            }
+            Worked?.Invoke(c, tile, note);
+        }
+
+        // Kıyıdan balık: göletteki balıklardan (sayıyla ağırlıklı) tutulur, gölette eksilir. Gölet doluluğu şansı
+        // artırır; türün ustalık eşiği (gölet balık listesi) altındaysa o tür kaçar. Balıkçılık XP'si.
+        private void FishAt(Character c, GridPos tile)
+        {
+            var pond = _world.Map.PondAt(tile);
+            var fish = PondFishing();
+            int level = c.Skills.GetLevel(SkillType.Fishing) + c.Modifiers.QualityLevels;
+            var catchable = new List<KeyValuePair<string, int>>();
+            int total = 0;
+            foreach (var kv in pond.Fish)
+            {
+                int min = 0;
+                if (fish != null) foreach (var p in fish.Produce) if (p.ItemId == kv.Key) min = p.MinLevel;
+                if (level < min) continue;
+                catchable.Add(kv);
+                total += kv.Value;
+            }
+            string note = "bu sefer bir şey çıkmadı";
+            double chance = Math.Min(0.75, 0.2 + 0.6 * pond.FishTotal / Math.Max(1.0, pond.FishCapacity));
+            if (total == 0) note = "buradaki balıklar için ustalığı yetmiyor";
+            else if (_rng.NextDouble() < chance)
+            {
+                int pick = _rng.Next(total);
+                foreach (var kv in catchable)
+                {
+                    if (pick >= kv.Value) { pick -= kv.Value; continue; }
+                    pond.TakeFish(kv.Key);
+                    House?.AddItem(kv.Key, 1);
+                    note = $"balık: {Content.Items.Get(kv.Key).DisplayName} (gölette {pond.FishTotal} kaldı)";
+                    break;
+                }
+            }
+            c.GainSkillXp(SkillType.Fishing, fish != null ? fish.SkillXp : 10f);
+            Worked?.Invoke(c, c.Position, note);
+        }
 
         /// <summary>Çapa kademesinin hız çarpanı (alet); yoksa 1.</summary>
         public Func<Character, double> HoeSpeed { get; set; }
@@ -278,9 +382,33 @@ namespace Thatchwick.Core.Work
             _world = world ?? throw new ArgumentNullException(nameof(world));
         }
 
-        public string CanDo(Character actor, GridPos tile, TileAction action)
+        public string CanDo(Character actor, GridPos tile, TileAction action, string arg = null)
         {
             var map = _world.Map;
+            switch (action)
+            {
+                case TileAction.Bathe:
+                case TileAction.Fish:
+                case TileAction.CutIce:
+                case TileAction.Stock:
+                    if (!map.IsWater(tile)) return "Burada su yok.";
+                    if (!map.IsFilled(tile)) return EmptyPondText;
+                    break;
+            }
+            switch (action)
+            {
+                case TileAction.Bathe:
+                    return map.WaterFrozen ? "Su donmuş: önce buz kes." : null;
+                case TileAction.Fish:                                   // buz deliğinden de olur
+                    return map.PondAt(tile).FishTotal == 0 ? NoFishText : null;
+                case TileAction.CutIce:
+                    return map.WaterFrozen ? null : "Su donmamış (kışın dondurucu soğukta donar).";
+                case TileAction.Stock:
+                    if (arg == null || Content == null || !Content.Items.Contains(arg) || !IsFishSpecies(arg)) return "Gölete yalnızca balık atılır.";
+                    if (House != null && House.Count(arg) <= 0) return $"Elinde {Content.Items.Get(arg).DisplayName} yok.";
+                    var pond = map.PondAt(tile);
+                    return pond.FishTotal >= pond.FishCapacity ? "Gölet dolu: daha fazla balık sığmaz (göleti büyüt)." : null;
+            }
             if (action == TileAction.Repair)
             {
                 var road = map.GetRoad(tile);
@@ -308,17 +436,61 @@ namespace Thatchwick.Core.Work
             return stone;
         }
 
+        public const string EmptyPondText = "Gölet boş: kazılan gölet yalnızca yağmurla dolar.";
+        public const string NoFishText = "Gölette balık yok: önce aynı türden en az iki balık at, böcekler gelince ürerler.";
+
+        /// <summary>Gölete atılabilen, gölette yaşayan balık türleri (gölet eşyasının balık listesi).</summary>
+        public IEnumerable<string> FishSpecies()
+        {
+            var fish = PondFishing();
+            if (fish == null) yield break;
+            foreach (var p in fish.Produce) yield return p.ItemId;
+        }
+
+        public bool IsFishSpecies(string itemId) { foreach (var s in FishSpecies()) if (s == itemId) return true; return false; }
+
+        private InteractionDef PondFishing()
+        {
+            if (Content == null || !Content.Items.TryGet("item.pond", out var pond)) return null;
+            foreach (var i in pond.Interactions) if (i.Skill == SkillType.Fishing) return i;
+            return null;
+        }
+
         public double Duration(Character actor, TileAction action)
         {
+            if (action == TileAction.Stock) return 0.02;
+            if (action == TileAction.Bathe) return BatheDays;
+            if (action == TileAction.CutIce) return CutIceDays;
+            if (action == TileAction.Fish) return FishDays / Math.Max(0.25, RodSpeed?.Invoke(actor) ?? 1.0);
             if (action == TileAction.Repair) return RepairDays / SkillNames.Factor(actor.Skills.GetLevel(SkillType.Masonry), 0.05);
             double speed = HoeSpeed?.Invoke(actor) ?? 1.0;
             double skill = Math.Max(0.5, 1.0 - 0.05 * (actor.Skills.GetLevel(SkillType.Farming) - 1));
             return TillDays * skill / Math.Max(0.25, speed);
         }
 
-        public void Apply(Character actor, GridPos tile, TileAction action)
+        public void Apply(Character actor, GridPos tile, TileAction action, string arg = null)
         {
-            if (CanDo(actor, tile, action) != null) return;
+            if (CanDo(actor, tile, action, arg) != null) return;
+            if (action == TileAction.Bathe) { BatheIn(actor, tile); return; }
+            if (action == TileAction.Fish) { FishAt(actor, tile); return; }
+            if (action == TileAction.Stock)
+            {
+                House?.TryTakeItem(arg);
+                var pond = _world.Map.PondAt(tile);
+                pond.AddFish(arg);
+                pond.Fish.TryGetValue(arg, out int n);
+                string name = Content.Items.Get(arg).DisplayName;
+                Worked?.Invoke(actor, tile, n >= 2
+                    ? $"gölete {name} attı ({n} tane){(pond.Insects ? ": üreyebilirler" : ": böcekler gelince ürerler")}"
+                    : $"gölete {name} attı (1 tane: üremesi için bir tane daha gerek)");
+                return;
+            }
+            if (action == TileAction.CutIce)
+            {
+                House?.AddItem("item.ice", 3);
+                Worked?.Invoke(actor, tile, "+3 Buz");
+                return;
+            }
             if (action == TileAction.Repair)
             {
                 int stone = RepairStoneFor(actor, _world.Map.GetRoad(tile));

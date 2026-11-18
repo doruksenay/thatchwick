@@ -119,6 +119,17 @@ namespace Thatchwick.Core.Save
             foreach (var r in map.RoadTiles())
                 roads.Add(new RoadSave { x = r.pos.X, y = r.pos.Y, type = (int)r.type, cond = r.cond, natural = r.natural, trample = r.trample });
             m.roads = roads.ToArray();
+            var conduits = new List<ConduitSave>();
+            foreach (var (pos, type) in map.ConduitTiles()) conduits.Add(new ConduitSave { x = pos.X, y = pos.Y, type = (int)type });
+            m.conduits = conduits.ToArray();
+            var ponds = new List<PondSave>();
+            foreach (var p in map.Ponds)
+            {
+                var ids = new List<string>(); var counts = new List<int>();
+                foreach (var f in p.Fish) { ids.Add(f.Key); counts.Add(f.Value); }
+                ponds.Add(new PondSave { x = p.Anchor.X, y = p.Anchor.Y, level = p.Level, spring = p.Spring, insects = p.Insects, filledDays = p.FilledDays, fishIds = ids.ToArray(), fishCounts = counts.ToArray() });
+            }
+            m.ponds = ponds.ToArray();
             data.map = m;
 
             // Eşyalar: önce yer eşyaları, sonra dekorlar (yüklerken üstündeki eşya hazır olsun).
@@ -139,7 +150,7 @@ namespace Thatchwick.Core.Save
                     {
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, z = it.Position.Z, rotation = it.Rotation,
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
-                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId, toggled = it.Toggled,
+                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId, toggled = it.Toggled, fill = it.Fill,
                         watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays
                     });
                 }
@@ -248,7 +259,7 @@ namespace Thatchwick.Core.Save
                 pregnancyLeft = c.PregnancyLeft, postpartumLeft = c.PostpartumLeft,
                 freezeDays = c.FreezeDays, starveDays = c.StarveDays,
                 hunger = c.Needs.Get(NeedType.Hunger), energy = c.Needs.Get(NeedType.Energy), warmth = c.Needs.Get(NeedType.Warmth),
-                fun = c.Needs.Get(NeedType.Fun), hygiene = c.Needs.Get(NeedType.Hygiene),
+                fun = c.Needs.Get(NeedType.Fun), hygiene = c.Needs.Get(NeedType.Hygiene), bladder = c.Needs.Get(NeedType.Bladder), wet = c.Wetness,
                 moodlets = CaptureMoodlets(c),
                 skills = skills.ToArray(),
                 spouseId = c.SpouseId ?? 0,
@@ -386,6 +397,22 @@ namespace Thatchwick.Core.Save
                     if (r.type > 0 && Enum.IsDefined(typeof(RoadType), (byte)r.type)) map.SetRoad(p, (RoadType)r.type, r.cond, r.natural);
                     else map.SetTrample(p, r.trample);
                 }
+            if (m.conduits != null)
+                foreach (var c in m.conduits)
+                {
+                    if (c == null || c.x < 0 || c.y < 0 || c.x >= map.Width || c.y >= map.Height) continue;
+                    if (c.type > 0 && Enum.IsDefined(typeof(ConduitType), (byte)c.type)) map.SetConduit(new GridPos(c.x, c.y), (ConduitType)c.type);
+                }
+            if (m.ponds != null)
+                foreach (var ps in m.ponds)
+                {
+                    if (ps == null || ps.x < 0 || ps.y < 0 || ps.x >= map.Width || ps.y >= map.Height) continue;
+                    var fish = new List<KeyValuePair<string, int>>();
+                    if (ps.fishIds != null && ps.fishCounts != null)
+                        for (int i = 0; i < ps.fishIds.Length && i < ps.fishCounts.Length; i++)
+                            if (ps.fishIds[i] != null && content.Items.Contains(ps.fishIds[i])) fish.Add(new KeyValuePair<string, int>(ps.fishIds[i], ps.fishCounts[i]));
+                    map.RestorePond(new GridPos(ps.x, ps.y), ps.level, ps.spring, ps.insects, ps.filledDays, fish);
+                }
             if (m.styles != null)
                 foreach (var st in m.styles)
                 {
@@ -436,6 +463,7 @@ namespace Thatchwick.Core.Save
                     if (!string.IsNullOrEmpty(s.finish) && content.Parts.TryGet(s.finish, out var fin) && fin.Kind == BuildPartKind.ItemFinish && fin.Group == def.FinishGroup)
                         restored.FinishId = s.finish;
                         restored.Toggled = s.toggled;
+                        restored.Fill = Math.Max(0, s.fill);
                     restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));
                     if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(kv.key)) restored.SetStock(kv.key, kv.value);
                 }
@@ -524,6 +552,8 @@ namespace Thatchwick.Core.Save
             c.Needs.Set(NeedType.Warmth, s.warmth);
             c.Needs.Set(NeedType.Fun, s.fun);
             c.Needs.Set(NeedType.Hygiene, s.hygiene);
+            c.Needs.Set(NeedType.Bladder, s.bladder >= 0f ? s.bladder : NeedSet.Max);
+            if (s.wet > 0f) c.Soak(s.wet);
             if (s.moodlets != null)
             {
                 var ms = new List<KeyValuePair<string, double>>();

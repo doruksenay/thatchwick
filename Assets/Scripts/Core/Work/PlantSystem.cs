@@ -235,6 +235,25 @@ namespace Thatchwick.Core.Work
                     if (Near(source.Position, crop.Position, r)) crop.Watered = true;
             }
 
+            // Su yolu katmanı: su taşıyan toprak ve taş ark yanındaki ekini sular (oluk ve boru sulamaz).
+            if (_world.Map.HasConduits && crops.Count > 0)
+            {
+                var wet = WaterNetwork.Analyze(_world).WetConduits;
+                foreach (var crop in crops)
+                {
+                    if (crop.Watered || crop.Position.Z != 0) continue;
+                    for (int dy = -1; dy <= 1 && !crop.Watered; dy++)
+                        for (int dx = -1; dx <= 1; dx++)
+                        {
+                            var p = new GridPos(crop.Position.X + dx, crop.Position.Y + dy);
+                            var t = _world.Map.GetConduit(p);
+                            if (t == ConduitType.None || Math.Max(Math.Abs(dx), Math.Abs(dy)) > Conduits.IrrigateRadius(t) || !wet.Contains(p)) continue;
+                            crop.Watered = true;
+                            break;
+                        }
+                }
+            }
+
             // Boş toprak varsayılan verime döner.
             var planted = new HashSet<GridPos>();
             foreach (var crop in crops) planted.Add(crop.Position.OnLevel(0));

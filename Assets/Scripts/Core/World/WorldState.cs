@@ -88,6 +88,7 @@ namespace Thatchwick.Core.World
                     if (!Map.HasTile(tile)) return PlacementCheck.Fail(position.Z > 0 ? "Önce üst kat döşemesi gerekir." : "Önce burayı kazmalısın.");
                     if (Map.IsBlocked(tile) && !(ignored != null && Occupies(ignored, tile)))
                         return PlacementCheck.Fail("Orası dolu ya da geçilemez.");
+                    if (Map.IsWater(tile)) return PlacementCheck.Fail("Suyun üstüne bir şey konmaz.");
                     if (restoring) continue;
                     if (IsOccupiedByCharacter(tile)) return PlacementCheck.Fail("Orada biri duruyor.");
                     // Merdivenin önü ve inişi açık kalmalı (taşınan şey merdivenin kendisi değilse).

@@ -32,7 +32,8 @@
           "displayName": "Isın",
           "need": "Warmth",
           "restore": 40,
-          "durationDays": 0.1
+          "durationDays": 0.1,
+          "dries": true
         },
         {
           "id": "sit_fire",
@@ -76,7 +77,8 @@
           "need": "Hunger",
           "restore": 50,
           "durationDays": 0.15,
-          "consume": "item.turnip"
+          "consume": "item.turnip",
+          "bladder": 4
         },
         {
           "id": "cook",
@@ -87,7 +89,8 @@
           "skill": "Cooking",
           "skillXp": 25,
           "consume": "item.turnip",
-          "moodlet": "good_meal"
+          "moodlet": "good_meal",
+          "bladder": 4
         },
         {
           "id": "eat_egg",
@@ -97,7 +100,8 @@
           "durationDays": 0.1,
           "consume": "item.egg",
           "skill": "Cooking",
-          "skillXp": 15
+          "skillXp": 15,
+          "bladder": 4
         },
         {
           "id": "drink_milk",
@@ -105,7 +109,8 @@
           "need": "Hunger",
           "restore": 25,
           "durationDays": 0.03,
-          "consume": "item.milk"
+          "consume": "item.milk",
+          "bladder": 15
         },
         {
           "id": "eat_honey",
@@ -118,7 +123,8 @@
           "moodId": "mood.meal",
           "moodText": "Tatlı bir lokma",
           "moodValue": 4,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_cabbage",
@@ -126,7 +132,8 @@
           "need": "Hunger",
           "restore": 45,
           "durationDays": 0.15,
-          "consume": "item.cabbage"
+          "consume": "item.cabbage",
+          "bladder": 4
         },
         {
           "id": "eat_leek",
@@ -134,7 +141,8 @@
           "need": "Hunger",
           "restore": 40,
           "durationDays": 0.15,
-          "consume": "item.leek"
+          "consume": "item.leek",
+          "bladder": 4
         },
         {
           "id": "eat_pea",
@@ -142,7 +150,8 @@
           "need": "Hunger",
           "restore": 35,
           "durationDays": 0.15,
-          "consume": "item.pea"
+          "consume": "item.pea",
+          "bladder": 4
         },
         {
           "id": "eat_pumpkin",
@@ -150,7 +159,8 @@
           "need": "Hunger",
           "restore": 70,
           "durationDays": 0.15,
-          "consume": "item.pumpkin"
+          "consume": "item.pumpkin",
+          "bladder": 4
         },
         {
           "id": "eat_pickled_cabbage",
@@ -158,7 +168,8 @@
           "need": "Hunger",
           "restore": 45,
           "durationDays": 0.15,
-          "consume": "item.pickled_cabbage"
+          "consume": "item.pickled_cabbage",
+          "bladder": 4
         },
         {
           "id": "eat_pickled_turnip",
@@ -166,7 +177,8 @@
           "need": "Hunger",
           "restore": 45,
           "durationDays": 0.15,
-          "consume": "item.pickled_turnip"
+          "consume": "item.pickled_turnip",
+          "bladder": 4
         },
         {
           "id": "eat_dried_pea",
@@ -174,7 +186,8 @@
           "need": "Hunger",
           "restore": 40,
           "durationDays": 0.15,
-          "consume": "item.dried_pea"
+          "consume": "item.dried_pea",
+          "bladder": 4
         },
         {
           "id": "eat_dried_leek",
@@ -182,7 +195,8 @@
           "need": "Hunger",
           "restore": 40,
           "durationDays": 0.15,
-          "consume": "item.dried_leek"
+          "consume": "item.dried_leek",
+          "bladder": 4
         },
         {
           "id": "eat_berries",
@@ -194,7 +208,8 @@
           "moodId": "mood.meal",
           "moodText": "Taze meyve",
           "moodValue": 2,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_mushroom",
@@ -202,7 +217,8 @@
           "need": "Hunger",
           "restore": 30,
           "durationDays": 0.15,
-          "consume": "item.mushroom"
+          "consume": "item.mushroom",
+          "bladder": 4
         },
         {
           "id": "eat_nut",
@@ -210,7 +226,8 @@
           "need": "Hunger",
           "restore": 30,
           "durationDays": 0.15,
-          "consume": "item.nut"
+          "consume": "item.nut",
+          "bladder": 4
         },
         {
           "id": "eat_stew_plain",
@@ -222,7 +239,8 @@
           "moodId": "mood.meal",
           "moodText": "Sıcak yemek",
           "moodValue": 3,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_stew_good",
@@ -234,7 +252,8 @@
           "moodId": "mood.meal",
           "moodText": "Lezzetli yemek",
           "moodValue": 6,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_stew_fine",
@@ -246,7 +265,8 @@
           "moodId": "mood.meal",
           "moodText": "Muhteşem yemek",
           "moodValue": 9,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_soup_pea",
@@ -258,7 +278,8 @@
           "moodId": "mood.meal",
           "moodText": "Sıcak çorba",
           "moodValue": 3,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_soup_pea_good",
@@ -270,7 +291,8 @@
           "moodId": "mood.meal",
           "moodText": "Lezzetli yemek",
           "moodValue": 6,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_omelet",
@@ -282,7 +304,8 @@
           "moodId": "mood.meal",
           "moodText": "Sıcak yemek",
           "moodValue": 3,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "cook_stew",
@@ -380,7 +403,8 @@
           "need": "Hunger",
           "restore": 40,
           "durationDays": 0.12,
-          "consume": "item.parsnip"
+          "consume": "item.parsnip",
+          "bladder": 4
         },
         {
           "id": "eat_carrot",
@@ -388,7 +412,8 @@
           "need": "Hunger",
           "restore": 40,
           "durationDays": 0.12,
-          "consume": "item.carrot"
+          "consume": "item.carrot",
+          "bladder": 4
         },
         {
           "id": "eat_onion",
@@ -396,7 +421,8 @@
           "need": "Hunger",
           "restore": 30,
           "durationDays": 0.12,
-          "consume": "item.onion"
+          "consume": "item.onion",
+          "bladder": 4
         },
         {
           "id": "eat_garlic",
@@ -404,7 +430,8 @@
           "need": "Hunger",
           "restore": 20,
           "durationDays": 0.12,
-          "consume": "item.garlic"
+          "consume": "item.garlic",
+          "bladder": 4
         },
         {
           "id": "eat_beet",
@@ -412,7 +439,8 @@
           "need": "Hunger",
           "restore": 40,
           "durationDays": 0.12,
-          "consume": "item.beet"
+          "consume": "item.beet",
+          "bladder": 4
         },
         {
           "id": "eat_radish",
@@ -420,7 +448,8 @@
           "need": "Hunger",
           "restore": 25,
           "durationDays": 0.12,
-          "consume": "item.radish"
+          "consume": "item.radish",
+          "bladder": 4
         },
         {
           "id": "eat_lettuce",
@@ -428,7 +457,8 @@
           "need": "Hunger",
           "restore": 25,
           "durationDays": 0.12,
-          "consume": "item.lettuce"
+          "consume": "item.lettuce",
+          "bladder": 4
         },
         {
           "id": "eat_broad_bean",
@@ -436,7 +466,8 @@
           "need": "Hunger",
           "restore": 35,
           "durationDays": 0.12,
-          "consume": "item.broad_bean"
+          "consume": "item.broad_bean",
+          "bladder": 4
         },
         {
           "id": "eat_spinach",
@@ -444,7 +475,8 @@
           "need": "Hunger",
           "restore": 25,
           "durationDays": 0.12,
-          "consume": "item.spinach"
+          "consume": "item.spinach",
+          "bladder": 4
         },
         {
           "id": "eat_apple",
@@ -452,7 +484,8 @@
           "need": "Hunger",
           "restore": 30,
           "durationDays": 0.12,
-          "consume": "item.apple"
+          "consume": "item.apple",
+          "bladder": 4
         },
         {
           "id": "eat_pear",
@@ -460,7 +493,8 @@
           "need": "Hunger",
           "restore": 30,
           "durationDays": 0.12,
-          "consume": "item.pear"
+          "consume": "item.pear",
+          "bladder": 4
         },
         {
           "id": "eat_cherry",
@@ -468,7 +502,8 @@
           "need": "Hunger",
           "restore": 25,
           "durationDays": 0.12,
-          "consume": "item.cherry"
+          "consume": "item.cherry",
+          "bladder": 4
         },
         {
           "id": "eat_plum",
@@ -476,7 +511,8 @@
           "need": "Hunger",
           "restore": 25,
           "durationDays": 0.12,
-          "consume": "item.plum"
+          "consume": "item.plum",
+          "bladder": 4
         },
         {
           "id": "roast_meat",
@@ -490,7 +526,8 @@
           "moodId": "mood.meal",
           "moodText": "Etli yemek",
           "moodValue": 5,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "roast_poultry",
@@ -504,7 +541,8 @@
           "moodId": "mood.meal",
           "moodText": "Etli yemek",
           "moodValue": 4,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_salted_meat",
@@ -514,7 +552,8 @@
           "durationDays": 0.15,
           "consume": "item.salted_meat",
           "skill": "Cooking",
-          "skillXp": 6
+          "skillXp": 6,
+          "bladder": 4
         },
         {
           "id": "eat_salted_poultry",
@@ -524,7 +563,8 @@
           "durationDays": 0.15,
           "consume": "item.salted_poultry",
           "skill": "Cooking",
-          "skillXp": 6
+          "skillXp": 6,
+          "bladder": 4
         },
         {
           "id": "eat_pastirma",
@@ -536,7 +576,8 @@
           "moodId": "mood.meal",
           "moodText": "Pastırma",
           "moodValue": 7,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_smoked_meat",
@@ -548,7 +589,8 @@
           "moodId": "mood.meal",
           "moodText": "Füme lezzeti",
           "moodValue": 6,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_smoked_poultry",
@@ -560,7 +602,8 @@
           "moodId": "mood.meal",
           "moodText": "Füme lezzeti",
           "moodValue": 5,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_cheese",
@@ -568,7 +611,8 @@
           "need": "Hunger",
           "restore": 35,
           "durationDays": 0.15,
-          "consume": "item.cheese"
+          "consume": "item.cheese",
+          "bladder": 4
         },
         {
           "id": "eat_brined_cheese",
@@ -576,7 +620,8 @@
           "need": "Hunger",
           "restore": 45,
           "durationDays": 0.15,
-          "consume": "item.brined_cheese"
+          "consume": "item.brined_cheese",
+          "bladder": 4
         },
         {
           "id": "eat_smoked_cheese",
@@ -588,7 +633,8 @@
           "moodId": "mood.meal",
           "moodText": "Füme lezzeti",
           "moodValue": 4,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_pickled_carrot",
@@ -596,7 +642,8 @@
           "need": "Hunger",
           "restore": 35,
           "durationDays": 0.15,
-          "consume": "item.pickled_carrot"
+          "consume": "item.pickled_carrot",
+          "bladder": 4
         },
         {
           "id": "eat_pickled_beet",
@@ -604,7 +651,8 @@
           "need": "Hunger",
           "restore": 35,
           "durationDays": 0.15,
-          "consume": "item.pickled_beet"
+          "consume": "item.pickled_beet",
+          "bladder": 4
         },
         {
           "id": "eat_pickled_onion",
@@ -612,7 +660,8 @@
           "need": "Hunger",
           "restore": 35,
           "durationDays": 0.15,
-          "consume": "item.pickled_onion"
+          "consume": "item.pickled_onion",
+          "bladder": 4
         },
         {
           "id": "eat_pickled_radish",
@@ -620,7 +669,8 @@
           "need": "Hunger",
           "restore": 35,
           "durationDays": 0.15,
-          "consume": "item.pickled_radish"
+          "consume": "item.pickled_radish",
+          "bladder": 4
         },
         {
           "id": "eat_dried_apple",
@@ -628,7 +678,8 @@
           "need": "Hunger",
           "restore": 30,
           "durationDays": 0.15,
-          "consume": "item.dried_apple"
+          "consume": "item.dried_apple",
+          "bladder": 4
         },
         {
           "id": "eat_dried_pear",
@@ -636,7 +687,8 @@
           "need": "Hunger",
           "restore": 30,
           "durationDays": 0.15,
-          "consume": "item.dried_pear"
+          "consume": "item.dried_pear",
+          "bladder": 4
         },
         {
           "id": "eat_dried_plum",
@@ -644,7 +696,8 @@
           "need": "Hunger",
           "restore": 30,
           "durationDays": 0.15,
-          "consume": "item.dried_plum"
+          "consume": "item.dried_plum",
+          "bladder": 4
         },
         {
           "id": "eat_dried_mushroom",
@@ -652,7 +705,8 @@
           "need": "Hunger",
           "restore": 30,
           "durationDays": 0.15,
-          "consume": "item.dried_mushroom"
+          "consume": "item.dried_mushroom",
+          "bladder": 4
         },
         {
           "id": "eat_jam_berry",
@@ -664,7 +718,8 @@
           "moodId": "mood.meal",
           "moodText": "Tatlı bir lokma",
           "moodValue": 3,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_jam_plum",
@@ -676,7 +731,8 @@
           "moodId": "mood.meal",
           "moodText": "Tatlı bir lokma",
           "moodValue": 3,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "cook_jam_berry",
@@ -732,7 +788,8 @@
           "need": "Hunger",
           "restore": 20,
           "durationDays": 0.15,
-          "consume": "item.wild_garlic"
+          "consume": "item.wild_garlic",
+          "bladder": 4
         },
         {
           "id": "eat_elderflower",
@@ -744,7 +801,8 @@
           "moodId": "mood.meal",
           "moodText": "Sıcak çay",
           "moodValue": 2,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 15
         },
         {
           "id": "eat_wild_strawberry",
@@ -756,7 +814,8 @@
           "moodId": "mood.meal",
           "moodText": "Taze meyve",
           "moodValue": 2,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_chestnut",
@@ -770,7 +829,8 @@
           "moodId": "mood.meal",
           "moodText": "Közlenmiş kestane",
           "moodValue": 3,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_rosehip",
@@ -778,7 +838,8 @@
           "need": "Hunger",
           "restore": 20,
           "durationDays": 0.15,
-          "consume": "item.rosehip"
+          "consume": "item.rosehip",
+          "bladder": 4
         },
         {
           "id": "eat_cress",
@@ -786,7 +847,8 @@
           "need": "Hunger",
           "restore": 20,
           "durationDays": 0.15,
-          "consume": "item.cress"
+          "consume": "item.cress",
+          "bladder": 4
         },
         {
           "id": "cook_fish_crayfish",
@@ -800,7 +862,8 @@
           "moodId": "mood.meal",
           "moodText": "Balık yemeği",
           "moodValue": 4,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "cook_fish_carp",
@@ -814,7 +877,8 @@
           "moodId": "mood.meal",
           "moodText": "Balık yemeği",
           "moodValue": 4,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "cook_fish_trout",
@@ -828,7 +892,8 @@
           "moodId": "mood.meal",
           "moodText": "Balık yemeği",
           "moodValue": 4,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "cook_fish_pike",
@@ -842,7 +907,8 @@
           "moodId": "mood.meal",
           "moodText": "Balık yemeği",
           "moodValue": 4,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "cook_fish_eel",
@@ -856,7 +922,8 @@
           "moodId": "mood.meal",
           "moodText": "Balık yemeği",
           "moodValue": 4,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_salted_fish",
@@ -866,7 +933,8 @@
           "durationDays": 0.15,
           "consume": "item.salted_fish",
           "skill": "Cooking",
-          "skillXp": 4
+          "skillXp": 4,
+          "bladder": 4
         },
         {
           "id": "eat_smoked_fish",
@@ -878,7 +946,8 @@
           "moodId": "mood.meal",
           "moodText": "Füme lezzeti",
           "moodValue": 5,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "drink_ale",
@@ -896,7 +965,8 @@
           "moodId": "mood.drink",
           "moodText": "Neşeli",
           "moodValue": 4,
-          "moodDays": 0.5
+          "moodDays": 0.5,
+          "bladder": 15
         },
         {
           "id": "drink_cider",
@@ -914,7 +984,8 @@
           "moodId": "mood.drink",
           "moodText": "Neşeli",
           "moodValue": 4,
-          "moodDays": 0.5
+          "moodDays": 0.5,
+          "bladder": 15
         },
         {
           "id": "drink_mead",
@@ -932,7 +1003,8 @@
           "moodId": "mood.drink",
           "moodText": "Neşeli",
           "moodValue": 4,
-          "moodDays": 0.5
+          "moodDays": 0.5,
+          "bladder": 15
         },
         {
           "id": "eat_bread",
@@ -940,7 +1012,8 @@
           "need": "Hunger",
           "restore": 45,
           "durationDays": 0.1,
-          "consume": "item.bread"
+          "consume": "item.bread",
+          "bladder": 4
         },
         {
           "id": "roast_game",
@@ -954,7 +1027,8 @@
           "moodId": "mood.meal",
           "moodText": "Etli yemek",
           "moodValue": 5,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "drink_ayran",
@@ -963,7 +1037,8 @@
           "restore": 15,
           "durationDays": 0.03,
           "consume": "item.ayran",
-          "moodlet": "eff_refresh"
+          "moodlet": "eff_refresh",
+          "bladder": 15
         },
         {
           "id": "drink_boza",
@@ -978,7 +1053,8 @@
               "amount": 20
             }
           ],
-          "moodlet": "eff_boza"
+          "moodlet": "eff_boza",
+          "bladder": 15
         },
         {
           "id": "drink_serbet",
@@ -987,7 +1063,8 @@
           "restore": 25,
           "durationDays": 0.03,
           "consume": "item.serbet",
-          "moodlet": "eff_sweet"
+          "moodlet": "eff_sweet",
+          "bladder": 15
         },
         {
           "id": "cook_tarhana",
@@ -998,7 +1075,8 @@
           "consume": "item.tarhana",
           "skill": "Cooking",
           "skillXp": 8,
-          "moodlet": "eff_warm_soup"
+          "moodlet": "eff_warm_soup",
+          "bladder": 4
         },
         {
           "id": "make_soup_bean",
@@ -1030,7 +1108,8 @@
           "restore": 55,
           "durationDays": 0.12,
           "consume": "item.soup_bean",
-          "moodlet": "eff_full"
+          "moodlet": "eff_full",
+          "bladder": 4
         },
         {
           "id": "make_soup_fish",
@@ -1067,7 +1146,8 @@
           "restore": 60,
           "durationDays": 0.12,
           "consume": "item.soup_fish",
-          "moodlet": "eff_fisher"
+          "moodlet": "eff_fisher",
+          "bladder": 4
         },
         {
           "id": "make_stew_meat",
@@ -1104,7 +1184,8 @@
           "restore": 80,
           "durationDays": 0.12,
           "consume": "item.stew_meat",
-          "moodlet": "eff_hearty"
+          "moodlet": "eff_hearty",
+          "bladder": 4
         },
         {
           "id": "make_soup_chicken",
@@ -1137,7 +1218,8 @@
           "durationDays": 0.12,
           "consume": "item.soup_chicken",
           "moodlet": "eff_broth",
-          "heal": 0.5
+          "heal": 0.5,
+          "bladder": 4
         },
         {
           "id": "make_saute_mushroom",
@@ -1170,7 +1252,8 @@
           "restore": 45,
           "durationDays": 0.12,
           "consume": "item.saute_mushroom",
-          "moodlet": "eff_forager"
+          "moodlet": "eff_forager",
+          "bladder": 4
         },
         {
           "id": "make_kaygana",
@@ -1211,7 +1294,8 @@
               "need": "Energy",
               "amount": 10
             }
-          ]
+          ],
+          "bladder": 4
         },
         {
           "id": "make_breakfast",
@@ -1247,7 +1331,8 @@
           "restore": 60,
           "durationDays": 0.12,
           "consume": "item.breakfast",
-          "moodlet": "eff_breakfast"
+          "moodlet": "eff_breakfast",
+          "bladder": 4
         },
         {
           "id": "make_pilaf",
@@ -1282,7 +1367,8 @@
           "moodId": "mood.meal",
           "moodText": "Bulgur pilavı",
           "moodValue": 2,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "make_sarma",
@@ -1319,7 +1405,8 @@
           "restore": 75,
           "durationDays": 0.12,
           "consume": "item.sarma",
-          "moodlet": "eff_feast"
+          "moodlet": "eff_feast",
+          "bladder": 4
         },
         {
           "id": "make_hosaf",
@@ -1357,7 +1444,8 @@
               "need": "Fun",
               "amount": 15
             }
-          ]
+          ],
+          "bladder": 4
         },
         {
           "id": "make_helva",
@@ -1394,7 +1482,8 @@
           "restore": 40,
           "durationDays": 0.12,
           "consume": "item.helva",
-          "moodlet": "eff_solace"
+          "moodlet": "eff_solace",
+          "bladder": 4
         },
         {
           "id": "make_pekmez",
@@ -1425,7 +1514,8 @@
           "moodId": "mood.meal",
           "moodText": "Pekmez",
           "moodValue": 3,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "make_stew_game",
@@ -1462,7 +1552,8 @@
           "restore": 80,
           "durationDays": 0.12,
           "consume": "item.stew_game",
-          "moodlet": "eff_hunter"
+          "moodlet": "eff_hunter",
+          "bladder": 4
         },
         {
           "id": "make_wrap_fish",
@@ -1494,7 +1585,8 @@
           "restore": 60,
           "durationDays": 0.12,
           "consume": "item.wrap_fish",
-          "moodlet": "eff_travel"
+          "moodlet": "eff_travel",
+          "bladder": 4
         },
         {
           "id": "eat_borek_leek",
@@ -1506,7 +1598,8 @@
           "moodId": "mood.meal",
           "moodText": "Pırasalı börek",
           "moodValue": 5,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_kete_meat",
@@ -1515,7 +1608,8 @@
           "restore": 70,
           "durationDays": 0.12,
           "consume": "item.kete_meat",
-          "moodlet": "eff_full_long"
+          "moodlet": "eff_full_long",
+          "bladder": 4
         },
         {
           "id": "eat_tart_apple",
@@ -1524,7 +1618,8 @@
           "restore": 50,
           "durationDays": 0.12,
           "consume": "item.tart_apple",
-          "moodlet": "eff_host"
+          "moodlet": "eff_host",
+          "bladder": 4
         },
         {
           "id": "eat_simit",
@@ -1536,7 +1631,8 @@
           "moodId": "mood.meal",
           "moodText": "Simit",
           "moodValue": 2,
-          "moodDays": 1.0
+          "moodDays": 1.0,
+          "bladder": 4
         },
         {
           "id": "eat_rusk",
@@ -1544,7 +1640,46 @@
           "need": "Hunger",
           "restore": 35,
           "durationDays": 0.12,
-          "consume": "item.rusk"
+          "consume": "item.rusk",
+          "bladder": 4
+        },
+        {
+          "id": "eat_kasar",
+          "displayName": "Kaşar ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.12,
+          "consume": "item.kasar",
+          "bladder": 4
+        },
+        {
+          "id": "drink_kimiz",
+          "displayName": "Kımız iç",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.05,
+          "consume": "item.kimiz",
+          "extraRestore": [
+            {
+              "need": "Hunger",
+              "amount": 12
+            }
+          ],
+          "moodId": "mood.drink",
+          "moodText": "Neşeli",
+          "moodValue": 4,
+          "moodDays": 0.5,
+          "bladder": 15
+        },
+        {
+          "id": "drink_salgam",
+          "displayName": "Şalgam suyu iç",
+          "need": "Hunger",
+          "restore": 12,
+          "durationDays": 0.03,
+          "consume": "item.salgam",
+          "moodlet": "eff_refresh",
+          "bladder": 15
         }
       ],
       "price": 25,
@@ -1785,6 +1920,14 @@
             }
           ],
           "tool": "axe"
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -1914,6 +2057,15 @@
           "consume": "item.potion_growth",
           "fertilize": 0.5,
           "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
           "skillXp": 3
         }
       ]
@@ -2322,7 +2474,8 @@
           "displayName": "Isın",
           "need": "Warmth",
           "restore": 25,
-          "durationDays": 0.08
+          "durationDays": 0.08,
+          "dries": true
         }
       ],
       "finishGroup": "metal"
@@ -2348,7 +2501,8 @@
           "displayName": "Isın",
           "need": "Warmth",
           "restore": 50,
-          "durationDays": 0.1
+          "durationDays": 0.1,
+          "dries": true
         }
       ]
     },
@@ -2847,7 +3001,8 @@
           "skill": "Cooking",
           "skillXp": 35,
           "consume": "item.turnip",
-          "moodlet": "good_meal"
+          "moodlet": "good_meal",
+          "bladder": 4
         }
       ]
     },
@@ -3034,9 +3189,12 @@
           "displayName": "Yıkan",
           "need": "Hygiene",
           "restore": 50,
-          "durationDays": 0.08
+          "durationDays": 0.08,
+          "fetchWater": true,
+          "bath": true
         }
-      ]
+      ],
+      "waterUse": 1
     },
     {
       "id": "item.outhouse",
@@ -3051,11 +3209,24 @@
         {
           "id": "use",
           "displayName": "Kullan",
-          "need": "Hygiene",
-          "restore": 20,
-          "durationDays": 0.04
+          "need": "Bladder",
+          "restore": 100,
+          "durationDays": 0.03,
+          "addFill": 1,
+          "moodlet": "relieved"
+        },
+        {
+          "id": "empty_pit",
+          "displayName": "Çukuru boşalt (gübre)",
+          "durationDays": 0.1,
+          "emptyFill": true,
+          "skill": "SoilCare",
+          "skillXp": 4
         }
-      ]
+      ],
+      "fillCapacity": 40,
+      "fillProduct": "item.manure",
+      "fillPerProduct": 4
     },
     {
       "id": "item.barrel_tub",
@@ -3074,7 +3245,9 @@
           "need": "Hygiene",
           "restore": 100,
           "durationDays": 0.15,
-          "moodlet": "clean"
+          "moodlet": "clean",
+          "fetchWater": true,
+          "bath": true
         },
         {
           "id": "soap_bath",
@@ -3083,10 +3256,13 @@
           "restore": 95,
           "durationDays": 0.08,
           "consume": "item.soap",
-          "moodlet": "clean"
+          "moodlet": "clean",
+          "fetchWater": true,
+          "bath": true
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "waterUse": 2
     },
     {
       "id": "item.wooden_tub",
@@ -3106,7 +3282,9 @@
           "need": "Hygiene",
           "restore": 100,
           "durationDays": 0.15,
-          "moodlet": "clean"
+          "moodlet": "clean",
+          "fetchWater": true,
+          "bath": true
         },
         {
           "id": "soak",
@@ -3114,7 +3292,9 @@
           "need": "Fun",
           "restore": 40,
           "durationDays": 0.15,
-          "moodlet": "clean"
+          "moodlet": "clean",
+          "fetchWater": true,
+          "bath": true
         },
         {
           "id": "soap_bath",
@@ -3123,10 +3303,13 @@
           "restore": 95,
           "durationDays": 0.08,
           "consume": "item.soap",
-          "moodlet": "clean"
+          "moodlet": "clean",
+          "fetchWater": true,
+          "bath": true
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "waterUse": 2
     },
     {
       "id": "item.bread_bowl",
@@ -3368,7 +3551,9 @@
           "displayName": "Su çek ve yıkan",
           "need": "Hygiene",
           "restore": 35,
-          "durationDays": 0.06
+          "durationDays": 0.06,
+          "bath": true,
+          "wets": 0.7
         },
         {
           "id": "cut_ice",
@@ -3383,7 +3568,8 @@
           ]
         }
       ],
-      "waterSource": true
+      "waterSource": true,
+      "waterFlow": -1
     },
     {
       "id": "item.scarecrow",
@@ -3798,7 +3984,10 @@
           "displayName": "Kovayla yıkan",
           "need": "Hygiene",
           "restore": 30,
-          "durationDays": 0.06
+          "durationDays": 0.06,
+          "fetchWater": true,
+          "bath": true,
+          "wets": 0.6
         }
       ]
     },
@@ -3820,7 +4009,9 @@
           "need": "Hygiene",
           "restore": 100,
           "durationDays": 0.15,
-          "moodlet": "clean"
+          "moodlet": "clean",
+          "fetchWater": true,
+          "bath": true
         },
         {
           "id": "soak",
@@ -3828,7 +4019,9 @@
           "need": "Fun",
           "restore": 60,
           "durationDays": 0.15,
-          "moodlet": "clean"
+          "moodlet": "clean",
+          "fetchWater": true,
+          "bath": true
         },
         {
           "id": "soap_bath",
@@ -3837,9 +4030,12 @@
           "restore": 95,
           "durationDays": 0.08,
           "consume": "item.soap",
-          "moodlet": "clean"
+          "moodlet": "clean",
+          "fetchWater": true,
+          "bath": true
         }
-      ]
+      ],
+      "waterUse": 3
     },
     {
       "id": "item.spinning_top",
@@ -4048,6 +4244,15 @@
           "fertilize": 0.5,
           "skill": "Herbalism",
           "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
         }
       ]
     },
@@ -4138,6 +4343,15 @@
           "fertilize": 0.5,
           "skill": "Herbalism",
           "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
         }
       ]
     },
@@ -4226,6 +4440,15 @@
           "consume": "item.potion_growth",
           "fertilize": 0.5,
           "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
           "skillXp": 3
         }
       ],
@@ -4317,6 +4540,15 @@
           "consume": "item.potion_growth",
           "fertilize": 0.5,
           "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
           "skillXp": 3
         }
       ]
@@ -4505,6 +4737,14 @@
               "chance": 0.5
             }
           ]
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -4558,6 +4798,14 @@
               "count": 3
             }
           ]
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -5204,6 +5452,15 @@
           "fertilize": 0.5,
           "skill": "Herbalism",
           "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -5295,6 +5552,15 @@
           "fertilize": 0.5,
           "skill": "Herbalism",
           "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
         }
       ]
     },
@@ -5381,6 +5647,15 @@
           "consume": "item.potion_growth",
           "fertilize": 0.5,
           "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
           "skillXp": 3
         }
       ],
@@ -5473,6 +5748,15 @@
           "fertilize": 0.5,
           "skill": "Herbalism",
           "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -5564,6 +5848,15 @@
           "fertilize": 0.5,
           "skill": "Herbalism",
           "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -5654,6 +5947,15 @@
           "consume": "item.potion_growth",
           "fertilize": 0.5,
           "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
           "skillXp": 3
         }
       ],
@@ -5747,6 +6049,15 @@
           "fertilize": 0.5,
           "skill": "Herbalism",
           "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -5837,6 +6148,15 @@
           "consume": "item.potion_growth",
           "fertilize": 0.5,
           "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
           "skillXp": 3
         }
       ],
@@ -5929,6 +6249,15 @@
           "fertilize": 0.5,
           "skill": "Herbalism",
           "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -6020,6 +6349,15 @@
           "fertilize": 0.5,
           "skill": "Herbalism",
           "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -6098,6 +6436,14 @@
             }
           ],
           "tool": "axe"
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -6172,6 +6518,14 @@
             }
           ],
           "tool": "axe"
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -6246,6 +6600,14 @@
             }
           ],
           "tool": "axe"
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -6321,6 +6683,14 @@
             }
           ],
           "tool": "axe"
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -6363,7 +6733,8 @@
       ],
       "waterRadius": 2,
       "interactions": [],
-      "waterSource": true
+      "waterSource": true,
+      "waterFlow": 2
     },
     {
       "id": "item.water_channel",
@@ -6730,6 +7101,14 @@
             }
           ],
           "tool": "axe"
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -6776,6 +7155,14 @@
             }
           ],
           "tool": "axe"
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -6822,6 +7209,14 @@
             }
           ],
           "tool": "axe"
+        },
+        {
+          "id": "relieve",
+          "displayName": "Çalı dibine (utanç)",
+          "need": "Bladder",
+          "restore": 70,
+          "durationDays": 0.05,
+          "moodlet": "ashamed"
         }
       ]
     },
@@ -8150,7 +8545,8 @@
             }
           ]
         }
-      ]
+      ],
+      "waterFlow": 6
     },
     {
       "id": "item.fish_trap",
@@ -8263,7 +8659,8 @@
           "restore": 50,
           "durationDays": 0.02,
           "consume": "item.potion_energy",
-          "moodlet": "potion_vigor"
+          "moodlet": "potion_vigor",
+          "bladder": 15
         },
         {
           "id": "drink_warmth",
@@ -8271,7 +8668,8 @@
           "need": "Warmth",
           "restore": 60,
           "durationDays": 0.02,
-          "consume": "item.potion_warmth"
+          "consume": "item.potion_warmth",
+          "bladder": 15
         },
         {
           "id": "drink_calm",
@@ -8280,14 +8678,16 @@
           "restore": 40,
           "durationDays": 0.02,
           "consume": "item.potion_calm",
-          "moodlet": "potion_calm"
+          "moodlet": "potion_calm",
+          "bladder": 15
         },
         {
           "id": "drink_focus",
           "displayName": "Zihin iksiri iç",
           "durationDays": 0.02,
           "consume": "item.potion_focus",
-          "moodlet": "potion_focus"
+          "moodlet": "potion_focus",
+          "bladder": 15
         },
         {
           "id": "use_remedy",
@@ -9049,7 +9449,8 @@
       "height": 2,
       "waterSource": true,
       "waterRadius": 2,
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "waterFlow": 8
     },
     {
       "id": "item.feed_mixer",
@@ -9228,6 +9629,380 @@
       "tags": [
         "cloth"
       ]
+    },
+    {
+      "id": "item.chamber_pot",
+      "displayName": "Lazımlık",
+      "category": "hygiene",
+      "price": 6,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "bedroom",
+        "kids"
+      ],
+      "fillCapacity": 4,
+      "fillProduct": "item.manure",
+      "fillPerProduct": 4,
+      "finishGroup": "clay",
+      "interactions": [
+        {
+          "id": "use",
+          "displayName": "Kullan",
+          "need": "Bladder",
+          "restore": 100,
+          "durationDays": 0.025,
+          "addFill": 1,
+          "moodlet": "relieved"
+        },
+        {
+          "id": "empty",
+          "displayName": "Boşalt",
+          "durationDays": 0.04,
+          "emptyFill": true
+        }
+      ]
+    },
+    {
+      "id": "item.manure",
+      "displayName": "Gübre",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.bath_hut",
+      "displayName": "Yıkanma kulübesi",
+      "category": "hygiene",
+      "price": 35,
+      "width": 1,
+      "height": 2,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "wash",
+          "displayName": "Kulübede yıkan (bir kova su)",
+          "need": "Hygiene",
+          "restore": 70,
+          "durationDays": 0.1,
+          "fetchWater": true,
+          "bath": true
+        }
+      ],
+      "waterUse": 2
+    },
+    {
+      "id": "item.towel_rack",
+      "displayName": "Havluluk",
+      "category": "hygiene",
+      "price": 8,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "bedroom",
+        "kitchen",
+        "outdoor"
+      ],
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "dry",
+          "displayName": "Kurulan",
+          "durationDays": 0.02,
+          "dries": true
+        }
+      ]
+    },
+    {
+      "id": "item.lead",
+      "displayName": "Kurşun",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "metal"
+      ]
+    },
+    {
+      "id": "item.pipe_wood",
+      "displayName": "Kütük boru",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.pipe_clay",
+      "displayName": "Künk",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.pipe_lead",
+      "displayName": "Kurşun boru",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "craft",
+        "metal"
+      ]
+    },
+    {
+      "id": "item.kasar",
+      "displayName": "Kaşar",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 40
+    },
+    {
+      "id": "item.kimiz",
+      "displayName": "Kımız",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "tags": [
+        "drink"
+      ]
+    },
+    {
+      "id": "item.salgam",
+      "displayName": "Şalgam suyu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "drink",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.fountain",
+      "displayName": "Çeşme",
+      "category": "garden",
+      "price": 70,
+      "width": 2,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "waterUse": 2,
+      "tap": true,
+      "comfort": 3,
+      "interactions": [
+        {
+          "id": "wash_face",
+          "displayName": "Elini yüzünü yıka",
+          "need": "Hygiene",
+          "restore": 30,
+          "durationDays": 0.03,
+          "piped": true
+        },
+        {
+          "id": "cool_off",
+          "displayName": "Serinle",
+          "need": "Fun",
+          "restore": 10,
+          "durationDays": 0.03,
+          "piped": true,
+          "moodlet": "eff_refresh"
+        }
+      ]
+    },
+    {
+      "id": "item.kitchen_spout",
+      "displayName": "Taş yalak ve lüle",
+      "category": "kitchen",
+      "price": 45,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen"
+      ],
+      "waterUse": 1,
+      "tap": true,
+      "finishGroup": "clay",
+      "interactions": [
+        {
+          "id": "wash_hands",
+          "displayName": "Elini yüzünü yıka",
+          "need": "Hygiene",
+          "restore": 25,
+          "durationDays": 0.03,
+          "piped": true
+        }
+      ]
+    },
+    {
+      "id": "item.flush_privy",
+      "displayName": "Akarsulu hela",
+      "category": "hygiene",
+      "price": 70,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "bedroom",
+        "living"
+      ],
+      "waterUse": 2,
+      "comfort": 2,
+      "fillCapacity": 12,
+      "fillProduct": "item.manure",
+      "fillPerProduct": 4,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "use",
+          "displayName": "Kullan",
+          "need": "Bladder",
+          "restore": 100,
+          "durationDays": 0.025,
+          "addFill": 1,
+          "moodlet": "relieved"
+        },
+        {
+          "id": "empty_pit",
+          "displayName": "Çukuru boşalt (gübre)",
+          "durationDays": 0.08,
+          "emptyFill": true,
+          "skill": "SoilCare",
+          "skillXp": 3
+        }
+      ]
+    },
+    {
+      "id": "item.cistern",
+      "displayName": "Sarnıç",
+      "category": "garden",
+      "price": 90,
+      "width": 2,
+      "height": 2,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "cistern": 40,
+      "cisternRain": 12,
+      "cisternFlow": 4,
+      "interactions": []
+    },
+    {
+      "id": "item.rain_barrel",
+      "displayName": "Yağmur fıçısı",
+      "category": "garden",
+      "price": 18,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "cistern": 10,
+      "cisternRain": 5,
+      "cisternFlow": 2,
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.water_tower",
+      "displayName": "Su terazisi",
+      "category": "farm",
+      "price": 140,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "waterHead": true,
+      "interactions": []
+    },
+    {
+      "id": "item.sawmill",
+      "displayName": "Su hızarı",
+      "category": "farm",
+      "price": 130,
+      "width": 2,
+      "height": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "finishGroup": "wood",
+      "autoProcess": {
+        "item": "item.log",
+        "count": 1,
+        "produces": "item.plank",
+        "producesCount": 3
+      },
+      "interactions": []
+    },
+    {
+      "id": "item.fulling_mill",
+      "displayName": "Dink (keçe çırpma)",
+      "category": "farm",
+      "price": 110,
+      "width": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "finishGroup": "wood",
+      "autoProcess": {
+        "item": "item.wool",
+        "count": 3,
+        "produces": "item.felt",
+        "producesCount": 1
+      },
+      "interactions": []
+    },
+    {
+      "id": "item.trip_hammer",
+      "displayName": "Su çekici",
+      "category": "farm",
+      "price": 160,
+      "width": 2,
+      "level": 7,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "autoProcess": {
+        "item": "item.iron_ore",
+        "count": 2,
+        "produces": "item.iron_bar",
+        "producesCount": 1
+      },
+      "interactions": []
     }
   ],
   "recipes": [
@@ -10718,6 +11493,311 @@
       "skill": "Weaving",
       "skillXp": 12,
       "displayName": "Keçe döv"
+    },
+    {
+      "id": "pipe_wood",
+      "station": "item.workbench",
+      "produces": "item.pipe_wood",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.log",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Carpentry",
+      "skillXp": 6,
+      "displayName": "Kütük boru oy"
+    },
+    {
+      "id": "rain_barrel",
+      "station": "item.workbench",
+      "produces": "item.rain_barrel",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Carpentry",
+      "skillXp": 12,
+      "displayName": "Yağmur fıçısı yap"
+    },
+    {
+      "id": "flush_privy",
+      "station": "item.workbench",
+      "produces": "item.flush_privy",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 6
+        },
+        {
+          "item": "item.pipe_wood",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.25,
+      "skill": "Carpentry",
+      "skillXp": 20,
+      "displayName": "Akarsulu hela yap",
+      "minLevel": 2
+    },
+    {
+      "id": "pipe_clay",
+      "station": "item.kiln",
+      "produces": "item.pipe_clay",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 2
+        },
+        {
+          "item": "item.firewood",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Pottery",
+      "skillXp": 10,
+      "displayName": "Künk pişir"
+    },
+    {
+      "id": "kitchen_spout",
+      "station": "item.pottery_wheel",
+      "produces": "item.kitchen_spout",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 3
+        },
+        {
+          "item": "item.pipe_clay",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Pottery",
+      "skillXp": 14,
+      "displayName": "Yalak ve lüle yap",
+      "minLevel": 2
+    },
+    {
+      "id": "pipe_lead",
+      "station": "item.forge",
+      "produces": "item.pipe_lead",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.lead",
+          "count": 1
+        },
+        {
+          "item": "item.firewood",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Smithing",
+      "skillXp": 8,
+      "displayName": "Kurşun boru dök",
+      "minLevel": 2
+    },
+    {
+      "id": "fountain",
+      "station": "item.stonecutter",
+      "produces": "item.fountain",
+      "materials": [
+        {
+          "item": "item.cut_stone",
+          "count": 6
+        },
+        {
+          "item": "item.pipe_clay",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Masonry",
+      "skillXp": 22,
+      "displayName": "Çeşme yont",
+      "minLevel": 2
+    },
+    {
+      "id": "cistern",
+      "station": "item.stonecutter",
+      "produces": "item.cistern",
+      "materials": [
+        {
+          "item": "item.stone",
+          "count": 12
+        },
+        {
+          "item": "item.clay",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.35,
+      "skill": "Masonry",
+      "skillXp": 24,
+      "displayName": "Sarnıç ör",
+      "minLevel": 2
+    },
+    {
+      "id": "water_tower",
+      "station": "item.stonecutter",
+      "produces": "item.water_tower",
+      "materials": [
+        {
+          "item": "item.cut_stone",
+          "count": 8
+        },
+        {
+          "item": "item.pipe_lead",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.4,
+      "skill": "Masonry",
+      "skillXp": 30,
+      "displayName": "Su terazisi ör",
+      "minLevel": 4
+    },
+    {
+      "id": "sawmill",
+      "station": "item.workbench",
+      "produces": "item.sawmill",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 8
+        },
+        {
+          "item": "item.gear",
+          "count": 1
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.35,
+      "skill": "Engineering",
+      "skillXp": 25,
+      "displayName": "Su hızarı yap",
+      "minLevel": 2
+    },
+    {
+      "id": "fulling_mill",
+      "station": "item.workbench",
+      "produces": "item.fulling_mill",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 6
+        },
+        {
+          "item": "item.gear",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Engineering",
+      "skillXp": 20,
+      "displayName": "Dink yap",
+      "minLevel": 2
+    },
+    {
+      "id": "trip_hammer",
+      "station": "item.workbench",
+      "produces": "item.trip_hammer",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.gear",
+          "count": 1
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 2
+        },
+        {
+          "item": "item.cut_stone",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.4,
+      "skill": "Engineering",
+      "skillXp": 30,
+      "displayName": "Su çekici yap",
+      "minLevel": 4
+    },
+    {
+      "id": "kasar",
+      "station": "item.churn",
+      "produces": "item.kasar",
+      "materials": [
+        {
+          "item": "item.milk",
+          "count": 4
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Kaşar bas",
+      "minLevel": 3
+    },
+    {
+      "id": "kimiz",
+      "station": "item.brew_barrel",
+      "produces": "item.kimiz",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.milk",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Brewing",
+      "skillXp": 12,
+      "displayName": "Kımız mayala",
+      "minLevel": 2
+    },
+    {
+      "id": "salgam",
+      "station": "item.brew_barrel",
+      "produces": "item.salgam",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.pickled_turnip",
+          "count": 2
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Brewing",
+      "skillXp": 8,
+      "displayName": "Şalgam suyu yap"
     }
   ],
   "animals": [

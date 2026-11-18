@@ -36,7 +36,8 @@ namespace Thatchwick.Core.World
     }
 
     /// <summary>Zemin kaplaması (iç mekan göstergesi: Grass dışındakiler).</summary>
-    public enum FloorType { Grass = 0, Dirt = 1, Wood = 2, Stone = 3 }
+    /// <summary>Zemin türü. Water: dere ve gölet karosu (zemin katta, açık havada): içine girilir, yavaşlatır, ıslatır; kışın donar.</summary>
+    public enum FloorType { Grass = 0, Dirt = 1, Wood = 2, Stone = 3, Water = 4 }
 
     /// <summary>Karo bölgesi (oyuncunun çizdiği alan): depo, otlak (hayvanlar gündüz otlar).</summary>
     public enum ZoneType { None = 0, Storage = 1, Pasture = 2 }
@@ -238,6 +239,9 @@ namespace Thatchwick.Core.World
             int i = Index(p);
             if (floor == FloorType.Grass) style = null;
             if (_floor[i] == floor && _floorStyle[i] == style) return;
+            if (_floor[i] == FloorType.Water) _waterCount--;
+            if (floor == FloorType.Water) _waterCount++;
+            if ((_floor[i] == FloorType.Water || floor == FloorType.Water) && _floor[i] != floor) _pondsDirty = true;
             _floor[i] = floor;
             _floorStyle[i] = style;
             Changed?.Invoke();

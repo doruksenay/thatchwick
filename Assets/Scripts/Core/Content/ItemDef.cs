@@ -114,6 +114,10 @@ namespace Thatchwick.Core.Content
         public bool WindPower { get; set; }
         /// <summary>Su kapağı: açıkken sulama ağında suyu geçirir, kapalıyken keser (dokununca aç/kapa).</summary>
         public bool WaterGate { get; set; }
+        /// <summary>Lazımlık/hela: bu kadar kullanımda dolar, boşaltılınca FillPerProduct dolum başına bir FillProduct (gübre).</summary>
+        public int FillCapacity { get; set; }
+        public string FillProduct { get; set; }
+        public int FillPerProduct { get; set; } = 4;
         /// <summary>Hasat tırmığı ve ekim makinesi yarıçapı (güç ister).</summary>
         public int HarvestRadius { get; set; }
         public int SeedRadius { get; set; }
@@ -137,6 +141,27 @@ namespace Thatchwick.Core.Content
         public bool NeedsWaterSource { get; set; }
         /// <summary>Su çarkı: kaynağa bağlı bir kanala değince yanındaki makinelere güç verir.</summary>
         public bool PowerSource { get; set; }
+
+        // ---- su şebekesi ve tesisat (17.11.2026) ----
+        /// <summary>Kaynağın günde boruya verdiği su (birim); 0 = varsayılan (DefaultWaterFlow), -1 = vermez (kuyudan su kovayla çekilir).</summary>
+        public int WaterFlow { get; set; }
+        public const int DefaultWaterFlow = 4;
+        /// <summary>Kaynaksa günlük suyu (WaterFlow ya da varsayılan); kaynak değilse 0.</summary>
+        public int EffectiveWaterFlow => WaterSource ? (WaterFlow > 0 ? WaterFlow : WaterFlow < 0 ? 0 : DefaultWaterFlow) : 0;
+        /// <summary>Tesisat: bir su yoluna ya da kaynağa bağlıyken günde bu kadar su ister (leğen, küvet, akarsulu hela, çeşme). 0 = tesisat değil.</summary>
+        public int WaterUse { get; set; }
+        public bool IsFixture => WaterUse > 0;
+        /// <summary>Su terazisi: ağa basınç verir; üst kattaki tesisata kurşun boru kolonuyla su çıkar.</summary>
+        public bool WaterHead { get; set; }
+        /// <summary>Sarnıç / yağmur fıçısı: bu kadar su biriktirir (Fill = içindeki su). 0 = sarnıç değil.</summary>
+        public int CisternCapacity { get; set; }
+        /// <summary>Yağmurlu gün sarnıca dolan su.</summary>
+        public int CisternRain { get; set; }
+        /// <summary>Sarnıcın günde en çok verdiği su (0 = DefaultWaterFlow).</summary>
+        public int CisternFlow { get; set; }
+        public bool IsCistern => CisternCapacity > 0;
+        /// <summary>Çeşme ve lüle: su gelirken yanından kova doldurulur (banyo için kuyuya gitmek gerekmez).</summary>
+        public bool IsTap { get; set; }
         /// <summary>Güç alınca her gün kendiliğinden yaptığı iş (değirmen taşı: arpa → yem).</summary>
         public AutoProcessDef AutoProcess { get; set; }
         /// <summary>Yabani toplanabilir: görüneceği mevsimler ve haritada en çok kaç tane.</summary>

@@ -71,10 +71,19 @@ namespace Thatchwick.Core.Save
         public LevelTileSave[] levelTiles;   // üst kat döşemeleri ve bodrum kazıları (zemin kat dizilerde)
         public TileStyleSave[] styles;       // zemin ve çatı stili (yalnızca varsayılan olmayan karolar; eski kayıtta yok)
         public RoadSave[] roads;             // yollar, patikalar ve çimdeki izler (eski kayıtta yok)
+        public ConduitSave[] conduits;       // su yolları: ark, oluk, boru (eski kayıtta yok)
+        public PondSave[] ponds;             // göletler: su seviyesi, kaynak, böcek, balıklar (eski kayıtta yok)
     }
+
+    /// <summary>Bir gölet (x,y: göletin bir karosu).</summary>
+    [Serializable]
+    public sealed class PondSave { public int x, y; public float level; public bool spring, insects; public double filledDays; public string[] fishIds; public int[] fishCounts; }
 
     [Serializable]
     public sealed class RoadSave { public int x, y, type; public float cond; public bool natural; public float trample; }
+
+    [Serializable]
+    public sealed class ConduitSave { public int x, y, type; }
 
     [Serializable]
     public sealed class TileStyleSave { public int x, y, z; public string floor; public string roof; }
@@ -109,6 +118,7 @@ namespace Thatchwick.Core.Save
         public double feedStock;    // v2: barınak yemi
         public string finish;       // mobilya kaplaması (renk/malzeme; boş = varsayılan)
         public bool toggled;        // su kapağı kapalı (eski kayıtta false)
+        public int fill;            // lazımlık/hela dolumu
         public KeyInt[] stock;      // v2: barınakta biriken ürünler
     }
 
@@ -144,6 +154,8 @@ namespace Thatchwick.Core.Save
         public double pregnancyLeft, postpartumLeft, freezeDays, starveDays;
         public float hunger, energy, warmth;
         public float fun, hygiene;          // v2
+        public float bladder = -1f;         // tuvalet (eski kayıtta -1 = rahat)
+        public float wet;                   // ıslaklık (eski kayıtta 0)
         public KeyFloat[] moodlets;         // v2: (kimlik, kalan gün)
         public KeyFloat[] skills;
         public AppearanceSave appearance;

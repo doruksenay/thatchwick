@@ -39,6 +39,10 @@ namespace Thatchwick.Core.Work
         /// <summary>Şu anki mevsim (balık türleri); null ise her mevsimin ürünü çıkabilir.</summary>
         public Func<Time.Season> Season { get; set; }
 
+        /// <summary>Tesisata (çeşme, akarsulu hela, borulu küvet) şu an su geliyor mu (su işleri).</summary>
+        public Func<ItemInstance, bool> PipedWater { get; set; }
+        private bool Piped(ItemInstance item) => item != null && item.Def.IsFixture && PipedWater != null && PipedWater(item);
+
         /// <summary>Buzluk en çok bu kadar günlük buz alır.</summary>
         public const float MaxIceDays = 30f;
 
@@ -72,7 +76,11 @@ namespace Thatchwick.Core.Work
             if (interaction.RequiresAnimal && (Animals == null || Animals.Residents(item.Id) == 0)) return "Burada hayvan yok.";
             if (interaction.Collect && item.StockTotal == 0) return "Toplanacak ürün yok.";
             if (interaction.Teach && Pupils(character).Count == 0) return "Ders verilecek çocuk ya da genç yok.";
+            if (interaction.EmptyFill && item.Fill <= 0) return "Boşaltılacak bir şey yok.";
+            if (interaction.EmptyFill && item.Def.FillProduct != null && Storage != null && !Storage.HasRoomFor(item.Def.FillProduct))
+                return "Depoda gübreye yer yok: gübreyi sat, tarlaya ser ya da depoyu büyüt.";
             if (interaction.RequiresFrost && (TemperatureAt == null || TemperatureAt(item.Position) > 0f)) return "Buz yok: don olunca (kışın) kesilir.";
+            if (interaction.NeedsPipedWater && !Piped(item)) return "Su gelmiyor: bir kaynağa bağlı boruya bağla.";
             if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return "Buzluk dolu.";
             if (interaction.Water)
             {
@@ -136,6 +144,20 @@ namespace Thatchwick.Core.Work
                 if (taught > 0) farmNotes.Add($"{taught} öğrenci ders aldı");
             }
             if (interaction.Heal > 0f && character.Treat(interaction.Heal)) farmNotes.Add("yaraları iyileşti");
+            // Dolu hela/lazımlığı kullanan önce kendisi boşaltır (sıkışan beklemez); boşaltılan gübre olur.
+            // Akarsulu hela: su gelirken yıkanır, dolmaz (gübre çıkmaz, boşaltma işi kalmaz).
+            bool flushed = interaction.AddFill > 0 && Piped(item);
+            if (flushed) { if (item.Fill > 0) item.Fill = 0; }
+            else
+            {
+                if (interaction.AddFill > 0 && item.Def.FillCapacity > 0 && item.Fill + interaction.AddFill > item.Def.FillCapacity)
+                    farmNotes.Add("doluydu, boşalttı " + EmptyInto(item));
+                if (interaction.AddFill > 0) item.Fill += interaction.AddFill;
+            }
+            if (interaction.EmptyFill && item.Def.FillProduct != null) farmNotes.Add(EmptyInto(item));
+            if (interaction.Bath) farmNotes.Add(BathEffect(character, item));
+            if (interaction.Wets > 0f) character.Soak(interaction.Wets);
+            if (interaction.Dries && character.Wetness > 0f) { character.Dry(); farmNotes.Add("kurulandı"); }
             if (interaction.Fertilize > 0f && Plants != null)
             {
                 // Toprak bakımı: gübre seviye başına %5 daha etkili.
@@ -265,6 +287,44 @@ namespace Thatchwick.Core.Work
                 p.GainSkillXp(best, 5 + 2 * level);
             }
             return pupils.Count;
+        }
+
+        // ---- banyo: sıcak ya da soğuk su ----
+
+        /// <summary>Bu sıcaklığın altında ocak yanmayan yerde yıkanmak üşütür.</summary>
+        public const float ColdBathTemperature = 12f;
+
+        /// <summary>
+        /// Ocak yanan bir odadaki banyo sıcaktır ("Sıcak banyo"). Değilse ve hava serinse soğuk su Isınma'yı düşürür
+        /// ("Buz gibi su"); kışın dışarıda ıslak kalan üşütür (karakter ıslaklığı).
+        /// </summary>
+        private string BathEffect(Character c, ItemInstance item)
+        {
+            var room = _world.Map.Rooms.RoomAt(item.Position);
+            bool hot = false;
+            if (room != null && room.IsIndoor)
+                foreach (var it in _world.Items)
+                    if (!it.IsDecor && it.Def.HeatOutput > 0f && it.IsLit && room == _world.Map.Rooms.RoomAt(it.Position)) { hot = true; break; }
+            if (hot) { c.AddMoodlet(Mood.MoodCatalog.HotBath); return "sıcak banyo"; }
+            float t = TemperatureAt != null ? TemperatureAt(item.Position) : 15f;
+            if (t >= ColdBathTemperature) return "ılık su";
+            float loss = Math.Min(40f, (ColdBathTemperature - t) * 2f);
+            c.Needs.Set(NeedType.Warmth, c.Needs.Get(NeedType.Warmth) - loss);
+            c.AddMoodlet(Mood.MoodCatalog.ColdWater);
+            return "buz gibi su";
+        }
+
+        // Dolumu gübreye çevirip depoya koyar. Tavan yok: depo ne kadar alırsa; sığmayan (dolu helayı kullanan
+        // boşaltınca) yığına dökülür.
+        private string EmptyInto(ItemInstance item)
+        {
+            if (item.Def.FillProduct == null) { item.Fill = 0; return ""; }
+            int n = Math.Max(1, item.Fill / item.Def.FillPerProduct);
+            item.Fill = 0;
+            int got = Storage != null ? Storage.AddUpTo(item.Def.FillProduct, n) : AddAll(item.Def.FillProduct, n);
+            string s = got > 0 ? $"+{got} {Name(item.Def.FillProduct)}" : "";
+            if (got < n) s += (s.Length > 0 ? ", " : "") + $"{n - got} {Name(item.Def.FillProduct)} depoya sığmadı, yığına döküldü";
+            return s;
         }
     }
 }

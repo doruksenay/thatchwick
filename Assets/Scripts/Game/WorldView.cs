@@ -33,6 +33,8 @@ namespace Thatchwick.Game
 
         /// <summary>Zemin stillerinin rengi için yapı parçası kataloğu (yoksa türün sabit rengi).</summary>
         public ContentDatabase Content { get; set; }
+        /// <summary>Su yolu karosu su taşıyor mu (su işleri); null ise hepsi kuru çizilir.</summary>
+        public Func<GridPos, bool> WetConduit { get; set; }
 
         // Karonun zemin stili rengi (dama deseni için çift/tek karoda biraz koyulaşır); stil ya da katalog yoksa null.
         private Color? StyleColor(GridPos p, FloorType floor)
@@ -137,7 +139,7 @@ namespace Thatchwick.Game
                     bool terrainBlocked = _terrainBlocked[y * Map.Width + x];
                     // Gerçek karo varsa (çim, toprak) onu kullan; yoksa yer tutucu elmas + renk.
                     // Gerçek karo yalnızca varsayılan stilde (stil seçilmiş zemin, görseli gelene kadar renkle çizilir).
-                    var real = terrainBlocked ? null
+                    var real = terrainBlocked || floor == FloorType.Water ? null
                         : Map.GetFloorStyle(p) != null ? IsoArt.FloorPart(Map.GetFloorStyle(p), x, y)
                         : IsoArt.Ground(floor, x, y) ?? IsoArt.FloorPart(Content != null ? BuildParts.DefaultFloor(Content, floor)?.Id : null, x, y);
                     sr.sprite = real != null ? real : SpriteMaterials.Diamond;
@@ -149,6 +151,13 @@ namespace Thatchwick.Game
                         case FloorType.Wood: sr.color = ((x + y) & 1) == 0 ? new Color32(168, 124, 76, 255) : new Color32(158, 115, 68, 255); break;
                         case FloorType.Stone: sr.color = ((x + y) & 1) == 0 ? new Color32(140, 140, 148, 255) : new Color32(130, 130, 138, 255); break;
                         case FloorType.Dirt: sr.color = ((x + y) & 1) == 0 ? new Color32(139, 110, 80, 255) : new Color32(131, 103, 74, 255); break;
+                        case FloorType.Water:   // görseli gelene kadar: kuru çukur çamur, mavi su, donunca soluk buz
+                            sr.color = !Map.IsFilled(p)
+                                ? (((x + y) & 1) == 0 ? new Color32(104, 84, 62, 255) : new Color32(98, 79, 58, 255))
+                                : Map.WaterFrozen
+                                ? (((x + y) & 1) == 0 ? new Color32(206, 224, 236, 255) : new Color32(196, 216, 230, 255))
+                                : (((x + y) & 1) == 0 ? new Color32(64, 120, 176, 255) : new Color32(58, 112, 168, 255));
+                            break;
                         default: sr.color = terrainBlocked ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB); break;
                     }
                     var road = Map.GetRoad(p);
@@ -166,6 +175,26 @@ namespace Thatchwick.Game
                         else if (GridMap.ConditionBand(cond) == 2) rc *= 0.7f;
                         rc.a = 1f;
                         sr.color = rc;
+                    }
+                    var conduit = Map.GetConduit(p);
+                    if (conduit != ConduitType.None && (Conduits.IsOpen(conduit) || ShowPlot))
+                    {
+                        // Su yolu görseli gelene kadar renk: açık ark ve oluk hep görünür (ıslakken mavi), gömülü boru
+                        // yalnızca yapı modunda (künk kiremit, kütük kahve, kurşun gri).
+                        sr.sprite = SpriteMaterials.Diamond;
+                        bool wet = WetConduit != null && WetConduit(p);
+                        bool frozen = wet == false && Map.WaterFrozen && Conduits.Freezes(conduit);
+                        Color bed = conduit == ConduitType.Ditch ? new Color32(112, 88, 62, 255)
+                            : conduit == ConduitType.StoneChannel ? new Color32(126, 128, 134, 255)
+                            : conduit == ConduitType.Flume ? new Color32(150, 110, 70, 255)
+                            : conduit == ConduitType.WoodPipe ? new Color32(120, 84, 50, 255)
+                            : conduit == ConduitType.ClayPipe ? new Color32(176, 102, 72, 255)
+                            : new Color32(110, 116, 124, 255);
+                        Color water = frozen ? new Color32(206, 224, 236, 255) : new Color32(64, 120, 176, 255);
+                        var c = Conduits.IsOpen(conduit) ? Color.Lerp(bed, water, wet || frozen ? 0.55f : 0f)
+                            : Color.Lerp(sr.color, bed, 0.7f) * (wet ? 1f : 0.8f);
+                        c.a = 1f;
+                        sr.color = c;
                     }
                     if (Map.GetZone(p) == ZoneType.Storage)
                     {

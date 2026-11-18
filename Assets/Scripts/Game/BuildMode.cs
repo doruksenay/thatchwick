@@ -35,7 +35,7 @@ namespace Thatchwick.Game
             Items, Room, Wall, HalfWall, Door, Window, EraseEdge, Fence, Gate, Railing,
             Finish, FinishRoom, Floor, FloorRoom, FloorErase, Roof,
             PushWall, MoveRoom, CopyRoom, Eyedropper, Demolish,
-            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture, RoadPath, RoadGravel, RoadPaved, RoadErase
+            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture, RoadPath, RoadGravel, RoadPaved, RoadErase, Pond, Conduit
         }
         private Tool _tool = Tool.Items;
         private GridPos? _roomCorner;
@@ -49,6 +49,9 @@ namespace Thatchwick.Game
         private int _houseValue = -1;         // ev değeri önbelleği (harita ya da eşya değişince yeniden)
         private const string NoRoofChoice = GridMap.NoRoof;
         private Tool? _pendingTool;
+        private ConduitType _conduitType = ConduitType.Ditch;     // su yolu aracında seçili tür (None = kaldır)
+        private ConduitType? _pendingConduit;
+        private GridPos? _conduitStart;                           // su yolu hattının ilk karosu
         private int? _pendingLevel;
         private bool _showRooms;
         private WallView _walls;
@@ -115,7 +118,7 @@ namespace Thatchwick.Game
 
         private void ClearSelection()
         {
-            _roomCorner = null; _lineStart = null; _roomPick = null; _pushEdge = null;
+            _roomCorner = null; _lineStart = null; _roomPick = null; _pushEdge = null; _conduitStart = null;
             _placeId = null; _plantId = null; _selectedId = 0; _surfaceId = 0; _moving = false; _rot = 0;
             if (_focused) { _input.RestoreView(); _focused = false; }
             RefreshOverlay();
@@ -307,6 +310,7 @@ namespace Thatchwick.Game
                     break;
                 }
                 case Tool.FloorErase: r = _svc.PaintFloor(tile, FloorType.Grass); break;
+                case Tool.Pond: r = _svc.PaintFloor(tile, FloorType.Water); break;
                 case Tool.Roof:
                     r = _svc.SetRoofStyle(tile, Style(BuildPartKind.Roof) ?? BuildParts.Default(_content, BuildPartKind.Roof)?.Id);
                     break;
@@ -333,10 +337,29 @@ namespace Thatchwick.Game
                 case Tool.RoadGravel: r = _svc.PaintRoad(tile, RoadType.Gravel); break;
                 case Tool.RoadPaved: r = _svc.PaintRoad(tile, RoadType.Paved); break;
                 case Tool.RoadErase: r = _svc.PaintRoad(tile, RoadType.None); break;
+                case Tool.Conduit: ConduitTap(tile); return;
                 case Tool.Room: BuildRoomTap(tile); return;
                 default: return;
             }
             _status = r.Ok ? "Tamam." : r.Reason;
+        }
+
+        // Su yolu: hattın iki ucuna dokun; arası L biçiminde (önce yatay, sonra dikey) döşenir. Aynı karoya iki kez
+        // dokunmak tek karo döşer.
+        private void ConduitTap(GridPos tile)
+        {
+            if (tile.Z != 0) { _status = "Su yolu zemin katta döşenir: Kat'tan zemin katı seç (üst kata kurşun boru kolonuyla çıkar)."; return; }
+            if (!_conduitStart.HasValue)
+            {
+                _conduitStart = tile;
+                _status = $"{Conduits.Name(_conduitType)}: hattın öbür ucuna dokun (aynı karo: tek karo).";
+                return;
+            }
+            var from = _conduitStart.Value;
+            _conduitStart = null;
+            int n = _svc.PaintConduitRun(from, tile, _conduitType, out var problem);
+            string what = _conduitType == ConduitType.None ? "su yolu kaldırıldı" : $"{Conduits.Name(_conduitType)} döşendi";
+            _status = n > 0 ? $"{n} karo {what}." + (problem != null ? $" Atlanan: {problem}" : "") : problem ?? "Değişen bir şey yok.";
         }
 
         // Çizgi araçları: iki köşeye dokun; arası düz hat olarak kurulur (aynı köşeye iki kez dokunmak vazgeçer).
@@ -702,6 +725,13 @@ namespace Thatchwick.Game
                 ClearSelection();
                 _status = "";
             }
+            if (_pendingConduit.HasValue && Event.current.type == EventType.Layout)
+            {
+                _conduitType = _pendingConduit.Value;
+                _pendingConduit = null;
+                _conduitStart = null;
+                _status = "";
+            }
             GUILayout.BeginArea(PanelRect(guiScale), GUI.skin.box);
             GUILayout.BeginHorizontal();
             GUILayout.Label($"YAPI MODU · Akçe: {_house.Akce}");
@@ -751,8 +781,14 @@ namespace Thatchwick.Game
             ToolRow(("Çit", Tool.Fence), ("Çit kapısı", Tool.Gate), ("Korkuluk", Tool.Railing), ("Çatı", Tool.Roof));
             ToolRow(("Kaplama", Tool.Finish), ("Oda kapl.", Tool.FinishRoom), ("Zemin", Tool.Floor), ("Oda zem.", Tool.FloorRoom));
             ToolRow(("Duvar it", Tool.PushWall), ("Oda taşı", Tool.MoveRoom), ("Oda kopyala", Tool.CopyRoom));
-            ToolRow(("Damlalık", Tool.Eyedropper), ("Balyoz", Tool.Demolish), ("Çim", Tool.FloorErase));
+            ToolRow(("Damlalık", Tool.Eyedropper), ("Balyoz", Tool.Demolish), ("Çim", Tool.FloorErase), ("Gölet kaz", Tool.Pond));
             ToolRow(("Patika", Tool.RoadPath), ("Çakıl yol", Tool.RoadGravel), ("Kaldırım", Tool.RoadPaved), ("Yol sil", Tool.RoadErase));
+            GUILayout.BeginHorizontal();
+            ConduitButton("Ark", ConduitType.Ditch); ConduitButton("Taş ark", ConduitType.StoneChannel); ConduitButton("Oluk", ConduitType.Flume);
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            ConduitButton("Kütük boru", ConduitType.WoodPipe); ConduitButton("Künk", ConduitType.ClayPipe); ConduitButton("Kurşun", ConduitType.LeadPipe); ConduitButton("Su yolu sil", ConduitType.None);
+            GUILayout.EndHorizontal();
             ToolRow((_view.ViewLevel < 0 ? "Kaz" : "Döşeme", Tool.LevelBuild), (_view.ViewLevel < 0 ? "Doldur" : "Döşeme sök", Tool.LevelRemove), ("Arsa", Tool.Plot));
             GUILayout.BeginHorizontal();
             ToolButton("Depo", Tool.ZoneStorage); ToolButton("Otlak", Tool.ZonePasture); ToolButton("Bölge sil", Tool.ZoneErase);
@@ -806,6 +842,13 @@ namespace Thatchwick.Game
                 case Tool.RoadPaved:
                 case Tool.RoadErase:
                     return $"Yol (arsanda, açık havada): patika x{GridMap.PathSpeed:0.#} hız {BuildService.RoadPrice(RoadType.Path)} akçe, çakıl x{GridMap.GravelSpeed:0.#} {BuildService.RoadPrice(RoadType.Gravel)} akçe, kaldırım x{GridMap.PavedSpeed:0.#} {BuildService.RoadPrice(RoadType.Paved)} akçe. Üstünden geçildikçe aşınır (inek, at çok); aynı yolu yeniden döşemek yarı fiyatına onarır. Hayvanlar barınaktan otlağa yoldan gider.";
+                case Tool.Conduit:
+                    return _conduitType == ConduitType.None
+                        ? "Su yolu sil: hattın iki ucuna dokun. Boru envantere döner, ark kazısının yarısı iade."
+                        : $"{Conduits.Describe(_conduitType)}. Karo başına {Conduits.Price(_conduitType)} akçe"
+                          + (Conduits.Material(_conduitType) != null ? $" (envanterde {_content.Items.Get(Conduits.Material(_conduitType)).DisplayName} varsa o harcanır: {_house.Count(Conduits.Material(_conduitType))})" : "")
+                          + ". Gölete, dereye, sarnıca ya da sulama dolabına değen hat su taşır; kuyu boruya su vermez. Kapak arkın üstüne konur. Tesisat (küvet, leğen, hela, çeşme) borunun üstüne ya da yanına konur; üst kat için kurşun boru ve su terazisi gerekir.";
+                case Tool.Pond: return $"Gölet kaz (açık havada, karo başına {BuildService.FloorPrice(FloorType.Water)} akçe): çukur boş kalır, yalnızca yağmurla dolar; yazın yağmursuz günlerde buharlaşır. Dolunca içine girilip yıkanılır, kova doldurulur, değirmen ve sulama ona bağlanır; kışın donar. Birkaç gün dolu kalınca böcekler gelir. Balık için aynı türden en az iki balık at: böcek varken ürerler. Çim aracı geri doldurur.";
                 case Tool.ZonePasture: return "Otlak: hayvanlar gündüz çimde otlar (yem yerine ot, kışın ot büyümez). Çitle çevir; barınağın kapısı otlağa açılsın. Çan ile içeri çağrılır.";
                 case Tool.ZoneStorage:
                 case Tool.ZoneErase: return $"Depo bölgesi: karo başına +{StorageService.UnitsPerZoneTile} kaynak kapasitesi (ücretsiz). Sandık +40.";
@@ -909,6 +952,16 @@ namespace Thatchwick.Game
         {
             // Kat değişimi de bir sonraki Layout olayında uygulanır (çizim ve işaretler yeniden kurulur).
             if (GUILayout.Toggle(_view.ViewLevel == level, label, GUI.skin.button) && _view.ViewLevel != level) _pendingLevel = level;
+        }
+
+        private void ConduitButton(string label, ConduitType type)
+        {
+            bool on = _tool == Tool.Conduit && _conduitType == type;
+            if (GUILayout.Toggle(on, label, GUI.skin.button) && !on)
+            {
+                if (_tool != Tool.Conduit) _pendingTool = Tool.Conduit;
+                _pendingConduit = type;
+            }
         }
 
         private void ToolButton(string label, Tool tool)

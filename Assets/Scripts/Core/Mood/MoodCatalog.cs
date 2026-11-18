@@ -21,7 +21,9 @@ namespace Thatchwick.Core.Mood
             BrightRoom = "bright_room", GoodHarvest = "good_harvest", Proud = "proud", PetLove = "pet_love",
             AnimalDied = "animal_died", CropFrozen = "crop_frozen", SharpTools = "sharp_tools", Slaughtered = "slaughtered",
             PotionVigor = "potion_vigor", PotionFocus = "potion_focus", PotionCalm = "potion_calm", NewFoal = "new_foal",
-            SameMeal = "same_meal", VariedTable = "varied_table";
+            SameMeal = "same_meal", VariedTable = "varied_table",
+            Bursting = "need_bladder", Accident = "accident", Wet = "wet", Chilled = "chilled", Relieved = "relieved", Ashamed = "ashamed",
+            HotBath = "hot_bath", ColdWater = "cold_water", Swim = "swim";
 
         // Kaza yaraları (InjurySystem; süre yaraya göre ayarlanır, buradaki varsayılan).
         public const string InjuredAxe = "injured_axe", InjuredBurn = "injured_burn", InjuredAnimal = "injured_animal",
@@ -95,6 +97,17 @@ namespace Thatchwick.Core.Mood
             m = M(InjuredSickle, "Yaralı", -8, 2.0, "Orakla elini kesti: çiftçilik %20 yavaş.");
             m.SkillSpeed[SkillType.Farming] = -0.20f; c.Register(m);
             m = M(InjuredFall, "Yaralı", -8, 2.0, "Düşüp yaralandı: bütün işler %10 yavaş."); m.AllSpeed = -0.10f; c.Register(m);
+            // Tuvalet, ıslaklık, yıkanma.
+            m = M(Bursting, "Sıkışmış", -10, 0, "Tuvalete gitmeli: işler %10 yavaş."); m.AllSpeed = -0.10f; c.Register(m);
+            c.Register(M(Accident, "Altına kaçırdı", -15, 1.0, "Tuvalete yetişemedi."));
+            c.Register(M(Relieved, "Rahatladı", 3, 0.3, "Tuvalete gitti."));
+            c.Register(M(Ashamed, "Utandı", -4, 0.5, "Çalı dibine gitmek zorunda kaldı."));
+            c.Register(M(Wet, "Islak", -5, 0, "Islak: soğukta ısıyı iki kat hızlı kaybeder; ocak başında kurur."));
+            m = M(Chilled, "Üşüttü", -8, 2.0, "Islak ve soğukta kaldı: soğuktan %30 fazla etkilenir, işler %10 yavaş. Hekim iyileştirir.");
+            m.AllSpeed = -0.10f; m.ColdResist = -0.3f; c.Register(m);
+            c.Register(M(HotBath, "Sıcak banyo", 8, 1.0, "Ocak yanan odada sıcak suyla yıkandı."));
+            m = M(ColdWater, "Buz gibi su", -6, 0.5, "Soğuk suyla yıkandı, titredi."); c.Register(m);
+            c.Register(M(Swim, "Suya girdi", 6, 0.5, "Yazın dereye girip serinledi."));
             return c;
         }
     }
