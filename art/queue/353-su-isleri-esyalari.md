@@ -3,6 +3,7 @@ id: "353"
 title: Su işleri eşyaları: çeşme, yalak-lüle, akarsulu hela, sarnıç, yağmur fıçısı, su terazisi
 status: pending
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
+worker: batch            # 2026-11-18 toplu işçi pilotu (Claude'suz); bulut ajanı almaz
 priority: 20
 family: esya
 style_gate: false
@@ -33,6 +34,116 @@ Ayrıntılı yöntem **301'deki ile aynıdır** (`create_map_object` stil eşlem
 - sarnıç (2x2) = low square stone cistern with a wooden lid and a hand winch;
 - yağmur fıçısı (1x1) = wooden barrel with iron hoops under a short wooden gutter spout;
 - su terazisi (1x1, uzun) = slender square stone pressure tower about two storeys tall with a small lead tank on top (Ottoman water balance tower), narrow base.
+
+## Parametreler (toplu işçi)
+Tarifin makine okunur hâli (`tools/art/batch_worker.py`). Tablodaki değerlerle aynıdır; tuval ve yükseklik 301/357 oranlarıyla Claude tarafından eklendi.
+
+```json
+{
+  "tool": "map_object",
+  "family": "esya",
+  "max_attempts": 2,
+  "common": {
+    "view": "high top-down",
+    "detail": "low detail",
+    "shading": "basic shading",
+    "outline": "single color outline",
+    "suffix": ", medieval peasant village object, earthy muted palette, dark brown wood, flat simple shading, single dark outline, light from top-left, no ground, no shadow, no extra objects, transparent background"
+  },
+  "items": [
+    {
+      "name": "fountain",
+      "out": "Assets/Art/Iso/_aday/iso_item_fountain_2x1_se.png",
+      "canvas": [
+        112,
+        104
+      ],
+      "guide": {
+        "n": 2,
+        "m": 1,
+        "axis": "x",
+        "height": 40
+      },
+      "description": "medieval stone wall fountain with a carved stone basin and a small bronze spout pouring water into a trough"
+    },
+    {
+      "name": "kitchen_spout",
+      "out": "Assets/Art/Iso/_aday/iso_item_kitchen_spout_se.png",
+      "canvas": [
+        80,
+        72
+      ],
+      "guide": {
+        "n": 1,
+        "m": 1,
+        "axis": "x",
+        "height": 24
+      },
+      "description": "small carved stone sink with a clay spout on a short wall pipe, kitchen use"
+    },
+    {
+      "name": "flush_privy",
+      "out": "Assets/Art/Iso/_aday/iso_item_flush_privy_se.png",
+      "canvas": [
+        80,
+        80
+      ],
+      "guide": {
+        "n": 1,
+        "m": 1,
+        "axis": "x",
+        "height": 28
+      },
+      "description": "wooden privy seat box with a lid, a small wooden water trough running behind it (monastery latrine)"
+    },
+    {
+      "name": "cistern",
+      "out": "Assets/Art/Iso/_aday/iso_item_cistern_2x2_se.png",
+      "canvas": [
+        144,
+        112
+      ],
+      "guide": {
+        "n": 2,
+        "m": 2,
+        "axis": "x",
+        "height": 24
+      },
+      "description": "low square stone cistern with a wooden lid and a hand winch"
+    },
+    {
+      "name": "rain_barrel",
+      "out": "Assets/Art/Iso/_aday/iso_item_rain_barrel_se.png",
+      "canvas": [
+        80,
+        80
+      ],
+      "guide": {
+        "n": 1,
+        "m": 1,
+        "axis": "x",
+        "height": 32
+      },
+      "description": "wooden barrel with iron hoops under a short wooden gutter spout"
+    },
+    {
+      "name": "water_tower",
+      "out": "Assets/Art/Iso/_aday/iso_item_water_tower_se.png",
+      "canvas": [
+        80,
+        136
+      ],
+      "guide": {
+        "n": 1,
+        "m": 1,
+        "axis": "x",
+        "height": 88
+      },
+      "description": "slender square stone pressure tower about two storeys tall with a small lead tank on top (Ottoman water balance tower), narrow base"
+    }
+  ]
+}
+```
 
 ## Doğrulama
 `validate_iso.py`, `style.py check --family esya`, ayak izi kılavuzuyla örtüşme (301 ölçütleri). Su terazisi 1x1 tabanından taşmamalı, yüksekliği iki kat kadar.

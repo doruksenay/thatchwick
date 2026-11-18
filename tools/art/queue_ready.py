@@ -160,6 +160,7 @@ def load_jobs():
             "depends_on": parse_list(fm.get("depends_on", "")),
             "style_gate": fm.get("style_gate", "").lower() == "true",
             "family": fm.get("family", ""),
+            "worker": fm.get("worker", "").split("#")[0].strip(),
         }
     return jobs
 
@@ -188,6 +189,8 @@ def evaluate(jobs, spent_today, balance, strict=False, limit=DAILY_LIMIT):
                 why.append(f"{d} review, kabulünü bekliyor" + (" (stil pilotu)" if dep["style_gate"] else ""))
             else:
                 why.append(f"{d} {dep['status'] or '?'}")
+        if j["worker"] == "batch":
+            why.append("toplu işçi işi (tools/art/batch_worker.py)")
         if j["cost_max"] > RUN_LIMIT:
             why.append(f"cost_max {j['cost_max']:g} > çalışma tavanı {RUN_LIMIT:g}: iş bölünmeli")
         if j["cost_max"] > remaining_today:
