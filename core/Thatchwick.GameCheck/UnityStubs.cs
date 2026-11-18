@@ -4,6 +4,16 @@
 using System;
 using System.Collections.Generic;
 namespace UnityEngine {
+    public static class PlayerPrefs{static readonly System.Collections.Generic.Dictionary<string,object> d=new System.Collections.Generic.Dictionary<string,object>();
+        public static int GetInt(string k,int def=0)=>d.TryGetValue(k,out var v)&&v is int i?i:def; public static void SetInt(string k,int v)=>d[k]=v;
+        public static float GetFloat(string k,float def=0)=>d.TryGetValue(k,out var v)&&v is float f?f:def; public static void SetFloat(string k,float v)=>d[k]=v;
+        public static string GetString(string k,string def="")=>d.TryGetValue(k,out var v)&&v is string s?s:def; public static void SetString(string k,string v)=>d[k]=v;
+        public static bool HasKey(string k)=>d.ContainsKey(k); public static void DeleteKey(string k)=>d.Remove(k); public static void Save(){} }
+    public struct RectInt{public int x,y,width,height;public RectInt(int x,int y,int w,int h){this.x=x;this.y=y;width=w;height=h;}
+        public int xMin=>x; public int yMin=>y; public int xMax=>x+width; public int yMax=>y+height;
+        public Vector2Int position=>new Vector2Int(x,y); public Vector2Int size=>new Vector2Int(width,height);
+        public bool Contains(Vector2Int p)=>p.x>=x&&p.y>=y&&p.x<xMax&&p.y<yMax;}
+
  public struct Vector2{public float x,y;public static Vector2 zero=>default;public static Vector2 one=>new Vector2(1,1);public Vector2(float a,float b){x=a;y=b;} public static float Distance(Vector2 a,Vector2 b)=>0; public float magnitude=>0; public float sqrMagnitude=>0; public Vector2 normalized=>this;
   public static Vector2 operator+(Vector2 a,Vector2 b)=>a; public static Vector2 operator-(Vector2 a,Vector2 b)=>a; public static Vector2 operator-(Vector2 a)=>a; public static Vector2 operator*(Vector2 a,float f)=>a; public static Vector2 operator*(float f,Vector2 a)=>a; public static Vector2 operator/(Vector2 a,float f)=>a; public static implicit operator Vector3(Vector2 v)=>new Vector3(v.x,v.y,0); public static Vector2 Lerp(Vector2 a,Vector2 b,float t)=>a;}
  public struct Vector3{public float x,y,z;public Vector3(float a,float b,float c){x=a;y=b;z=c;} public Vector3(float a,float b){x=a;y=b;z=0;} public static Vector3 zero=>default; public static Vector3 one=>new Vector3(1,1,1);
