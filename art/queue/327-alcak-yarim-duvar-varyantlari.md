@@ -1,7 +1,7 @@
 ---
 id: "327"
 title: Alçak (kesit) ve yarım duvar varyantları: betikle kırpma
-status: running
+status: review
 claimed_at: 2026-11-18T11:37Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
