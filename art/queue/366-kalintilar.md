@@ -1,7 +1,7 @@
 ---
 id: "366"
 title: Kalıntılar (9 dekor: raf ve masa üstü)
-status: review
+status: accepted   # kullanıcı 18.11.2026: "hepsi iyi duruyor"
 claimed_at: 2026-11-18T13:50Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 20
