@@ -1,7 +1,8 @@
 ---
 id: "395c"
 title: Dördüncü tur: ahşap çatkı rötuşu, kandil ve kömür yığını (referans görselle)
-status: pending
+status: running
+claimed_at: 2026-11-18T19:40Z
 approved_by: user        # kullanıcı 18.11.2026: "bir tur daha deneyelim"
 priority: 20
 family: esya
