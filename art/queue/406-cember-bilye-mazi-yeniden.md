@@ -1,7 +1,7 @@
 ---
 id: "406"
 title: Çember, bilye, mazı yeniden (401'in zayıf üç parçası)
-status: running
+status: review
 claimed_at: 2026-11-18T19:17Z
 approved_by: user        # kullanıcı 18.11.2026: "bunları baştan yapsın"
 priority: 20
