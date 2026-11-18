@@ -1,8 +1,8 @@
 ---
 id: "016"
 title: Karakter katman pilotu (kel taban + saç, sakal, kıyafet katmanı; 8 yön denemesi)
-status: running
-claimed_at: 2026-11-18T08:37Z
+status: blocked
+claimed_at: 2026-11-18T07:23Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: true
@@ -69,6 +69,10 @@ Bu pilot şunları ölçer:
   - kimlik başına gen (SE ve 8 yön);
   - elle düzeltme ihtiyacı;
   - 4 yön ile 8 yön maliyet farkı.
+
+## Sorular
+- 2026-11-18 (bulut işçisi): `blocked`. Hiç generation harcanmadı (bakiye 1843,80). Bu ortamda `python3` çalıştırmak onay istiyor ve bulut modunda onay verilemiyor. Maske üretimi, `get_upload_url` yüklemesi, `validate_iso.py` ve `style.py` olmadan tarif uygulanamaz. Python çalıştırma izni verilip iş yeniden `pending` yapılırsa devam edilir.
+- Not: `tools/art/char_mask.py` (HLS maske denemesi) yanlışlıkla yazıldı, çalıştırılmadı. Gerekmezse silinmeli.
 
 ## Notlar
 - Yön adları: s, se, e, ne, n, nw, w, sw (012 ile aynı).
