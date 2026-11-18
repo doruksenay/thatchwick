@@ -1,7 +1,8 @@
 ---
 id: "211"
 title: Karakter arayüzü seti (Kişi paneli, yaratma ekranı, HUD parçaları)
-status: pending
+status: running
+claimed_at: 2026-11-18T12:41Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: false
