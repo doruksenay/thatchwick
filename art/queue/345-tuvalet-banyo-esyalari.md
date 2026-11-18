@@ -102,5 +102,9 @@ Tarifin makine okunur hâli (`tools/art/batch_worker.py`); tuval ve yükseklik 3
 
 - 2026-11-18 (toplu işçi): 2/3 teslim, 8 gen, Claude'suz. Rapor: art/results/345-tuvalet-banyo-esyalari.md
 
+- 2026-11-18 (toplu işçi): başladı
+
+- 2026-11-18 (toplu işçi): 1/1 teslim, 1 gen, Claude'suz. Rapor: art/results/345-tuvalet-banyo-esyalari.md
+
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
