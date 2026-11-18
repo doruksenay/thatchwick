@@ -1,7 +1,7 @@
 ---
 id: "302"
 title: Dalga 1: oturma, uyku ve masa (8 eşya, yalnızca SE)
-status: running
+status: review
 claimed_at: 2026-11-18T08:48Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
