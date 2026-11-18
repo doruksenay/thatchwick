@@ -10,6 +10,11 @@ Kullanım:
   python tools/art/style.py palette [--png]              # referanslardan art/style/palette.json üret (--png: önizleme)
   python tools/art/style.py check <png>... [--family F]  # palet uyumu; eşik altıysa çıkış 1
   python tools/art/style.py sheet --family F --out X.png <png>...   # referanslar + yeni görseller, 4x, aynı taban çizgisi
+  python tools/art/style.py fit --family F <girdi.png> <çıktı.png>  # yalnızca doygunluğu aileye indirir (renk/ton aynı)
+
+Kilidi kurulmamış aile (KILIT_ESIGI'nden az "kabul" referans): palet uyumu kalma sebebi değil UYARI'dır,
+çünkü palet o ailenin renklerini henüz içermez (2026-11-18: bitki ailesinde palet 3 yeşil içeriyordu, 310/311/320/322
+pilot dahil hiç teslim çıkaramadı). Doygunluk denetimi her ailede aynen geçerli.
 """
 import argparse
 import json
@@ -33,6 +38,8 @@ MEAN_WARN, MEAN_FAIL = 10.0, 16.0          # palete ortalama uzaklık
 NEAR_FAIL = 0.80                            # palete yakın piksel oranı bunun altındaysa kalır
 SAT_WARN, SAT_FAIL = 1.25, 1.50            # ortalama doygunluk / aile referanslarının ortalaması
 SAT_LOW_WARN = 0.60
+KILIT_ESIGI = 3                             # ailede en az bu kadar "kabul" referans yoksa palet denetimi uyarıdır
+FIT_TARGET = 1.15                           # fit: hedef doygunluk / aile ortalaması
 
 
 def load_refs():
@@ -131,6 +138,9 @@ def check(args):
     palette = load_palette()
     refs = ref_files([args.family]) if args.family else []
     ref_sat = sum(mean_saturation(r) for r in refs) / len(refs) if refs else None
+    locked = (not args.family) or len(ref_files([args.family], only_accepted=True)) >= KILIT_ESIGI
+    if not locked:
+        print(f"Not: '{args.family}' ailesinin kilidi kurulmadı (kabul referans < {KILIT_ESIGI}); palet uyumu yalnızca uyarı.")
     cache, failed = {}, False
     print("| Dosya | Palete yakın | Ortalama uzaklık | Doygunluk / aile | Sonuç | Bulgu |")
     print("|---|---|---|---|---|---|")
@@ -139,7 +149,10 @@ def check(args):
         sat = mean_saturation(p) / ref_sat if ref_sat else None
         notes, level = [], 0
         if mean > MEAN_FAIL or ratio < NEAR_FAIL:
-            notes.append("palet dışı renkler"); level = 2
+            if locked:
+                notes.append("palet dışı renkler"); level = 2
+            else:
+                notes.append("palet dışı renkler (kilit kurulmadı: uyarı)"); level = max(level, 1)
         elif mean > MEAN_WARN:
             notes.append("palete uzak"); level = max(level, 1)
         if sat is not None:
@@ -154,6 +167,32 @@ def check(args):
         sat_txt = f"x{sat:.2f}" if sat is not None else "-"
         print(f"| {os.path.basename(p)} | %{ratio * 100:.0f} | {mean:.1f} | {sat_txt} | {res} | {', '.join(notes)} |")
     sys.exit(1 if failed else 0)
+
+
+def fit(args):
+    """Yalnızca doygunluğu aile ortalamasının FIT_TARGET katına indirir; ton, açıklık ve saydamlık aynı kalır.
+    Renkleri palete zorlamaz (palete eşleme gölgelemeyi bozuyor; 2026-11-18 denemesi). Üzerine yazmaz."""
+    import colorsys
+    refs = ref_files([args.family])
+    if not refs:
+        sys.exit(f"'{args.family}' ailesinin referansı yok.")
+    if os.path.exists(args.out):
+        sys.exit(f"hedef zaten var, üzerine yazılmaz: {args.out}")
+    target = args.target * sum(mean_saturation(r) for r in refs) / len(refs)
+    im = Image.open(args.src).convert("RGBA")
+    px = im.load()
+    pts = [(x, y) for y in range(im.height) for x in range(im.width) if px[x, y][3] >= 128]
+    if not pts:
+        sys.exit("opak piksel yok")
+    hls = {p: colorsys.rgb_to_hls(*(c / 255 for c in px[p][:3])) for p in pts}
+    mean = sum(v[2] for v in hls.values()) / len(hls)
+    k = min(1.0, target / mean) if mean else 1.0
+    for p, (h, l, s) in hls.items():
+        r, g, b = colorsys.hls_to_rgb(h, l, s * k)
+        px[p] = (round(r * 255), round(g * 255), round(b * 255), px[p][3])
+    os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
+    im.save(args.out)
+    print(f"{os.path.basename(args.src)} -> {args.out}: doygunluk x{k:.2f} (aile hedefi {target:.3f})")
 
 
 def sheet(args):
@@ -190,6 +229,12 @@ def main():
     c.add_argument("files", nargs="+")
     c.add_argument("--family", default="")
     c.set_defaults(fn=check)
+    f = sub.add_parser("fit")
+    f.add_argument("--family", required=True)
+    f.add_argument("--target", type=float, default=FIT_TARGET)
+    f.add_argument("src")
+    f.add_argument("out")
+    f.set_defaults(fn=fit)
     s = sub.add_parser("sheet")
     s.add_argument("files", nargs="*")
     s.add_argument("--family", default="")

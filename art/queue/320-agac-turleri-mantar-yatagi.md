@@ -40,3 +40,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 
 ## Sonuç
 7 çıktının hiçbiri stil denetimini/şekil ölçütünü geçmedi, teslim yok. Ayrıntı: art/results/320-agac-turleri-mantar-yatagi.md. 8 gen harcandı.
+- 2026-11-18 (tamir oturumu, 0 gen): stil kapısı bitki ailesinde yanlış ayarlıydı (palette 3 yeşil, aile kilidi kurulmamış). Reddedilen adayların doygunluk düzeltilmiş hâlleri `art/results/320-duzeltme/`, karşılaştırma `art/results/320-duzeltme-once-sonra.png`, ayrıntı `art/results/bitki-duzeltme.md`. Durum değişmedi; kabul/red kararı kullanıcının.
