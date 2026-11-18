@@ -108,8 +108,9 @@ namespace Thatchwick.Game
         private GridPos _menuTile;
         private Vector2 _menuScroll;
         private string _menuTitle;
-        private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan", "Isolde", "Mabel", "Cecily", "Alys" };
-        private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric", "Godric", "Tobias", "Alard", "Hugh" };
+        // Hayali yerleşim: iki kültürün adları tek havuzda (karar 17.11.2026).
+        private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan", "Isolde", "Mabel", "Cecily", "Alys", "Elif", "Gülbahar", "Selcan", "Esma", "Nergis", "Ayla" };
+        private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric", "Godric", "Tobias", "Alard", "Hugh", "Tolga", "Baran", "Kaya", "Alp", "Oğuz", "Doğan" };
         private int _nameCounter;
 
         // Yaşam katmanı (Adım 18-43): tüm kurallar Core.Life'ta; burası kurar, her karede ilerletir, çizer.
@@ -257,7 +258,7 @@ namespace Thatchwick.Game
                 else _account.Count("act:" + i.Id);
             };
             _plants = new PlantSystem(_world, Thatchwick.Core.Seeds.Derive(_seed, 7, _rngEpoch));
-            _animals = new AnimalSystem(_world, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 3, _rngEpoch));
+            _animals = new AnimalSystem(_world, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 3, _rngEpoch)) { SeasonNow = () => _clock.Season };
             if (loaded != null)
             {
                 SaveGame.RestoreAnimals(loaded, _animals, _content);
@@ -360,7 +361,12 @@ namespace Thatchwick.Game
                 foreach (var (a, b, v) in loaded.Affection) _family.SetAffection(a, b, v);
                 _life.Restore(loaded.Life);
                 SpawnNamedVillagers();
-                if (loaded.Dynasty != null) _dynasty.Restore(loaded.Dynasty.HeadId, loaded.Dynasty.History, loaded.Dynasty.Ended);
+                if (loaded.Dynasty != null)
+                {
+                    _dynasty.Restore(loaded.Dynasty.HeadId, loaded.Dynasty.History, loaded.Dynasty.Ended);
+                    _dynasty.Name = loaded.Dynasty.Name;
+                    _dynasty.SettlementName = loaded.Dynasty.SettlementName;
+                }
                 else if (_player != null) _dynasty.Found(_player.Character, _clock.TotalDays);
                 _dynastyEnded = _dynasty.Ended || _player == null;
                 _selected = _player;
@@ -386,6 +392,8 @@ namespace Thatchwick.Game
             _life.Weather.Seed = _rng.Next(1, int.MaxValue);
 
             _creator = new CharacterCreator(_appearanceCatalog, seed: 5) { Content = _content, DaysPerSeason = _clock.Config.DaysPerSeason };
+            _namingSettlement = true;                       // önce yerleşimin adı, sonra karakter
+            _settlementDraft = Settlement.DefaultName;
             _input.enabled = false;
         }
 
@@ -750,7 +758,8 @@ namespace Thatchwick.Game
             {
                 case SocialAction.Feed: _account.Record("feed", _clock.DayIndex); break;
                 case SocialAction.Propose: _account.Record("marriage", _clock.DayIndex, isWork: false); break;
-                case SocialAction.Chat: _account.Record("chat", _clock.DayIndex, isWork: false); break;
+                case SocialAction.Chat:
+                case SocialAction.TellStory: _account.Record("chat", _clock.DayIndex, isWork: false); break;
             }
         }
 
@@ -1018,6 +1027,37 @@ namespace Thatchwick.Game
             return actor.Look;
         }
 
+        // ---- yerleşim adı (yeni oyunun ilk adımı) ----
+        private bool _namingSettlement;
+        private string _settlementDraft = Settlement.DefaultName;
+        private string _settlementError;
+
+        private void DrawSettlementNaming()
+        {
+            float s = HudScale;
+            GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
+            var r = new Rect(Screen.width / s * 0.5f - 180f, Screen.height / s * 0.5f - 90f, 360f, 180f);
+            GUILayout.BeginArea(r, GUI.skin.box);
+            GUILayout.Label("Hanen hangi yerleşimde yaşayacak?");
+            GUILayout.Label("Hayali bir ortaçağ köyü: adını sen koy.");
+            _settlementDraft = GUILayout.TextField(_settlementDraft ?? "", Settlement.MaxLength);
+            if (!string.IsNullOrEmpty(_settlementError)) GUILayout.Label(_settlementError);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Rastgele ad")) { _settlementDraft = Settlement.Random(_rng); _settlementError = null; }
+            if (GUILayout.Button("Devam"))
+            {
+                _settlementError = Settlement.Validate(_settlementDraft);
+                if (_settlementError == null)
+                {
+                    _dynasty.SettlementName = Settlement.Clean(_settlementDraft);
+                    _namingSettlement = false;
+                }
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+            GUI.matrix = Matrix4x4.identity;
+        }
+
         private void FinishCreation()
         {
             var draft = _creator.Draft;
@@ -1034,7 +1074,7 @@ namespace Thatchwick.Game
             _dynasty.Name = draft.EffectiveDynastyName;
             _life.Injuries.Setting = draft.Accidents;
             _input.enabled = true;
-            ShowMessage($"{character.Name} köye geldi");
+            ShowMessage($"{character.Name} {_dynasty.SettlementName} yerleşimine geldi");
         }
 
         private void OnTapped(Vector2 screenPos)
@@ -1258,7 +1298,9 @@ namespace Thatchwick.Game
                 // Göletler: yağmur doldurur, sıcakta buharlaşır; böcek gelir, balıklar ürer ya da kurur.
                 var todays = _life.Weather.Today(_clock.TotalDays);
                 float rain = todays == WeatherType.Storm ? GridMap.StormFill : todays == WeatherType.Rain ? GridMap.RainFill : 0f;
-                foreach (var note in _world.Map.OnNewDayPonds(rain, _heat.OutdoorTemperature, _clock.Season == Season.Winter, _pondRng))
+                foreach (var note in _world.Map.OnNewDayPonds(rain, _heat.OutdoorTemperature, _clock.Season == Season.Winter, _pondRng,
+                    breeds: id => !(_content.Items.TryGet(id, out var fd) && fd.HasTag("nobreed")),
+                    predator: id => _content.Items.TryGet(id, out var fd) && fd.HasTag("predator")))
                     ShowMessage(note);
                 // Gübre için tavan yok: depo dolduysa oyuncuyu uyar (sat, tarlaya ser, depoyu büyüt).
                 int manure = _household.Count("item.manure");
@@ -1635,7 +1677,7 @@ namespace Thatchwick.Game
 
             if (_creator != null)
             {
-                _creator.OnGUI();
+                if (_namingSettlement) DrawSettlementNaming(); else _creator.OnGUI();
                 if (Time.unscaledTime < _messageUntil)
                 {
                     float ms = HudScale;
@@ -1712,7 +1754,7 @@ namespace Thatchwick.Game
             if (mount != null && GUILayout.Button($"{mount.Name} sırtından in")) { _animals.Dismount(Commander.Character.Id); ShowMessage($"{Commander.Character.Name} attan indi"); }
             if (GUILayout.Button(_animals.Released ? "Hayvanlar: gündüz otlakta" : "Hayvanlar: barınakta")) _animals.Released = !_animals.Released;
             GUILayout.EndHorizontal();
-            GUILayout.Label($"{_dynasty.Name} · {_dynasty.CurrentGeneration}. nesil · Baş: {_player?.Character.Name} · Komut alan: {Commander?.Character.Name}");
+            GUILayout.Label($"{_dynasty.SettlementName} · {_dynasty.Name} · {_dynasty.CurrentGeneration}. nesil · Baş: {_player?.Character.Name} · Komut alan: {Commander?.Character.Name}");
             GUILayout.Label($"Akçe: {_household.Akce}");
             GUILayout.BeginHorizontal();
             if (Application.isEditor && GUILayout.Button("Test: +5 gün")) FastForward(5);

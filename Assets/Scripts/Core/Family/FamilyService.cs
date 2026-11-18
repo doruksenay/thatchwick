@@ -24,6 +24,8 @@ namespace Thatchwick.Core.Family
         public const int ChatAffection = 20;
         /// <summary>Sohbetin iki tarafa verdiği keyif.</summary>
         public const float ChatFun = 25f;
+        /// <summary>Masal: çocuğa keyif ve sosyal.</summary>
+        public const float StoryFun = 40f, StorySocial = 30f;
         public const int MarriageAffection = 100;
         public const double ConceiveChance = 0.6;
         /// <summary>Sohbetin sohbet edenlerin Sosyal ihtiyacına verdiği doygunluk (Sosyal özelliğiyle çarpılır).</summary>
@@ -104,6 +106,10 @@ namespace Thatchwick.Core.Family
                 case SocialAction.Chat:
                     if (target.Stage == AgeStage.Baby) return "Bebekle sohbet edilmez.";
                     return null;
+                case SocialAction.TellStory:
+                    if (target.Stage != AgeStage.Child) return "Masal çocuklara anlatılır.";
+                    if (actor.Stage == AgeStage.Child) return "Çocuk masal anlatamaz; dinler.";
+                    return null;
                 case SocialAction.Propose:
                     if (!IsAdultAge(actor) || !IsAdultAge(target)) return "Evlilik için ikisi de genç ya da yetişkin olmalı.";
                     if (actor.SpouseId.HasValue || target.SpouseId.HasValue) return "Zaten evli.";
@@ -132,6 +138,7 @@ namespace Thatchwick.Core.Family
                 case SocialAction.Feed: return 0.05;
                 case SocialAction.Chat: return 0.08;
                 case SocialAction.Propose: return 0.05;
+                case SocialAction.TellStory: return 0.08;
                 default: return 0.1;
             }
         }
@@ -171,6 +178,18 @@ namespace Thatchwick.Core.Family
                     msg = now >= MarriageAffection && !actor.SpouseId.HasValue && !target.SpouseId.HasValue && IsAdultAge(actor) && IsAdultAge(target)
                         ? $"{actor.Name} ve {target.Name} çok yakınlaştı; evlenme teklif edilebilir"
                         : $"{actor.Name} ve {target.Name} sohbet etti (yakınlık {now})";
+                    break;
+                case SocialAction.TellStory:
+                    // Sözlü masal: çocuğun keyfi ve sosyali dolar; anlatanın ebeveynlik ve gönül becerisi büyür.
+                    target.Needs.Restore(NeedType.Fun, StoryFun);
+                    target.Needs.Restore(NeedType.Social, StorySocial);
+                    actor.Needs.Restore(NeedType.Social, StorySocial * 0.5f * actor.Modifiers.SocialGain);
+                    actor.Needs.Restore(NeedType.Fun, ChatFun * 0.4f);
+                    target.AddMoodlet(MoodCatalog.NiceChat);
+                    actor.GainSkillXp(SkillType.Parenting, 4);
+                    actor.GainSkillXp(SkillType.Charm, 2);
+                    SetAffection(actor.Id, target.Id, Math.Min(100, Affection(actor.Id, target.Id) + ChatAffection / 2));
+                    msg = $"{actor.Name}, {target.Name} için bir masal anlattı";
                     break;
                 case SocialAction.Propose:
                     actor.SpouseId = target.Id;

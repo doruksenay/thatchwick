@@ -380,6 +380,7 @@ namespace Thatchwick.Core.Content
                     FeedPerDay = a.feedPerDay,
                     Produces = string.IsNullOrWhiteSpace(a.produces) ? null : a.produces,
                     ProduceEveryDays = a.produceEveryDays <= 0 ? 1f : a.produceEveryDays,
+                    SeasonOutput = a.seasonOutput != null && a.seasonOutput.Length == 4 ? a.seasonOutput : null,
                     LifespanDays = a.lifespanDays <= 0 ? 120f : a.lifespanDays,
                     MatureDays = a.matureDays,
                     IsPet = a.pet,

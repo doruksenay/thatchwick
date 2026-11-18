@@ -20,7 +20,9 @@ namespace Thatchwick.Core.Jobs
         Feed = 0,
         Chat = 1,
         Propose = 2,
-        TryForBaby = 3
+        TryForBaby = 3,
+        /// <summary>Çocuğa masal anlat (kitap gerekmez; ortaçağda masal sözlüydü).</summary>
+        TellStory = 4
     }
 
     /// <summary>Karakterin yapacağı bir iş. Oyuncu komutu ve NPC otonomisi aynı işleri üretir.</summary>

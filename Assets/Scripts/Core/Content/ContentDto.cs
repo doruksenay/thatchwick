@@ -79,6 +79,7 @@ namespace Thatchwick.Core.Content
         public float feedPerDay;
         public string produces;
         public float produceEveryDays;
+        public float[] seasonOutput;   // ürün hızı çarpanı mevsime göre [ilkbahar, yaz, güz, kış]; boşsa hep 1
         public float lifespanDays;
         public float matureDays;
         public bool pet;

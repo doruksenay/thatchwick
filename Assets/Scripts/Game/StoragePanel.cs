@@ -46,7 +46,7 @@ namespace Thatchwick.Game
             _scroll = GUILayout.BeginScrollView(_scroll);
 
             GUILayout.Label("— Depolar —");
-            if (plan.Slots.Count == 0) GUILayout.Label("Yiyecek deposu yok: kiler rafı, sandık, ambar, buzluk koy.");
+            if (plan.Slots.Count == 0) GUILayout.Label("Yiyecek deposu yok: kiler rafı, sandık, ambar ya da soğuk kiler koy.");
             foreach (var s in plan.Slots)
             {
                 string temp = s.Temperature.HasValue ? $"{s.Temperature.Value:0}°C, " : "";

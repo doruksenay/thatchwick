@@ -155,7 +155,7 @@
         },
         {
           "id": "eat_pumpkin",
-          "displayName": "Kabak ye",
+          "displayName": "Su kabağı ye",
           "need": "Hunger",
           "restore": 70,
           "durationDays": 0.15,
@@ -1342,7 +1342,7 @@
           "skillXp": 12,
           "materials": [
             {
-              "item": "item.barley",
+              "item": "item.wheat",
               "count": 2
             },
             {
@@ -1382,7 +1382,7 @@
               "count": 1
             },
             {
-              "item": "item.barley",
+              "item": "item.wheat",
               "count": 1
             },
             {
@@ -1641,6 +1641,95 @@
           "restore": 35,
           "durationDays": 0.12,
           "consume": "item.rusk",
+          "bladder": 4
+        },
+        {
+          "id": "eat_bread_rye",
+          "displayName": "Çavdar ekmeği ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.1,
+          "consume": "item.bread_rye",
+          "bladder": 4
+        },
+        {
+          "id": "eat_bread_maslin",
+          "displayName": "Karma ekmek ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.1,
+          "consume": "item.bread_maslin",
+          "bladder": 4
+        },
+        {
+          "id": "make_porridge_oats",
+          "displayName": "Yulaf lapası pişir (2 yulaf, 1 süt)",
+          "durationDays": 0.12,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.oats",
+              "count": 2
+            },
+            {
+              "item": "item.milk",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.porridge_oats",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "eat_porridge_oats",
+          "displayName": "Yulaf lapası ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.1,
+          "consume": "item.porridge_oats",
+          "moodlet": "eff_warm_soup",
+          "bladder": 4
+        },
+        {
+          "id": "make_porridge_wheat",
+          "displayName": "Buğday lapası pişir (2 buğday, 1 süt, 1 bal)",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "minLevel": 1,
+          "materials": [
+            {
+              "item": "item.wheat",
+              "count": 2
+            },
+            {
+              "item": "item.milk",
+              "count": 1
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.porridge_wheat",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "eat_porridge_wheat",
+          "displayName": "Buğday lapası ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.1,
+          "consume": "item.porridge_wheat",
+          "moodlet": "eff_breakfast",
           "bladder": 4
         },
         {
@@ -2543,7 +2632,7 @@
     },
     {
       "id": "item.oil_lamp_wall",
-      "displayName": "Gaz lambası",
+      "displayName": "Duvar kandili",
       "category": "heat_light",
       "price": 25,
       "placement": "Wall",
@@ -2782,6 +2871,56 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "bake_rye",
+          "displayName": "Çavdar ekmeği pişir (2 çavdar unu, 1 odun)",
+          "durationDays": 0.2,
+          "materials": [
+            {
+              "item": "item.rye_flour",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.bread_rye",
+              "count": 3
+            }
+          ],
+          "skill": "Baking",
+          "skillXp": 14
+        },
+        {
+          "id": "bake_maslin",
+          "displayName": "Karma ekmek pişir (buğday ve çavdar unu, 1 odun)",
+          "durationDays": 0.2,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 1
+            },
+            {
+              "item": "item.rye_flour",
+              "count": 1
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.bread_maslin",
+              "count": 3
+            }
+          ],
+          "skill": "Baking",
+          "skillXp": 14
         }
       ]
     },
@@ -3948,27 +4087,6 @@
       "finishGroup": "wood"
     },
     {
-      "id": "item.story_book",
-      "displayName": "Masal kitabı",
-      "category": "kids",
-      "price": 10,
-      "placement": "Surface",
-      "level": 2,
-      "styleSet": "Köylü",
-      "interactions": [
-        {
-          "id": "read",
-          "displayName": "Masal oku",
-          "need": "Fun",
-          "restore": 30,
-          "durationDays": 0.08,
-          "moodlet": "had_fun",
-          "skill": "Literacy",
-          "skillXp": 3
-        }
-      ]
-    },
-    {
       "id": "item.water_bucket",
       "displayName": "Su kovası",
       "category": "hygiene",
@@ -4456,7 +4574,7 @@
     },
     {
       "id": "item.seed_pumpkin",
-      "displayName": "Kabak tohumu",
+      "displayName": "Su kabağı tohumu",
       "placement": "Resource",
       "price": 3,
       "category": "resource",
@@ -4464,7 +4582,7 @@
     },
     {
       "id": "item.pumpkin",
-      "displayName": "Kabak",
+      "displayName": "Su kabağı",
       "placement": "Resource",
       "price": 5,
       "category": "resource",
@@ -4475,7 +4593,7 @@
     },
     {
       "id": "item.crop_pumpkin",
-      "displayName": "Kabak ekini",
+      "displayName": "Su kabağı ekini",
       "category": "plant",
       "growDays": 9,
       "tilled": true,
@@ -6214,6 +6332,10 @@
               "item": "item.seed_barley",
               "count": 1,
               "chance": 0.5
+            },
+            {
+              "item": "item.straw",
+              "count": 2
             }
           ],
           "tool": "hoe"
@@ -7906,7 +8028,7 @@
     },
     {
       "id": "item.hay_bale",
-      "displayName": "Saman balyası",
+      "displayName": "Ot tınazı",
       "category": "barn",
       "price": 4,
       "level": 2,
@@ -8119,6 +8241,44 @@
           ],
           "skill": "Baking",
           "skillXp": 4
+        },
+        {
+          "id": "grind_wheat",
+          "displayName": "Buğday öğüt (2 buğday)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.wheat",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.flour",
+              "count": 3
+            }
+          ],
+          "skill": "Baking",
+          "skillXp": 4
+        },
+        {
+          "id": "grind_rye",
+          "displayName": "Çavdar öğüt (2 çavdar)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.rye",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.rye_flour",
+              "count": 2
+            }
+          ],
+          "skill": "Baking",
+          "skillXp": 4
         }
       ]
     },
@@ -8222,7 +8382,7 @@
     },
     {
       "id": "item.ice_box",
-      "displayName": "Buzluk",
+      "displayName": "Soğuk kiler",
       "category": "storage",
       "price": 45,
       "level": 2,
@@ -8251,7 +8411,7 @@
     },
     {
       "id": "item.ice_house",
-      "displayName": "Buzhane",
+      "displayName": "Buz çukuru",
       "category": "storage",
       "price": 120,
       "width": 2,
@@ -8429,7 +8589,8 @@
       "tags": [
         "food",
         "raw",
-        "fish"
+        "fish",
+        "predator"
       ]
     },
     {
@@ -8442,7 +8603,8 @@
       "tags": [
         "food",
         "raw",
-        "fish"
+        "fish",
+        "nobreed"
       ]
     },
     {
@@ -9722,6 +9884,574 @@
       ]
     },
     {
+      "id": "item.straw",
+      "displayName": "Saman",
+      "placement": "Resource",
+      "price": 1,
+      "category": "resource",
+      "tags": [
+        "straw"
+      ]
+    },
+    {
+      "id": "item.wheat",
+      "displayName": "Buğday",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "grain"
+      ]
+    },
+    {
+      "id": "item.seed_wheat",
+      "displayName": "Buğday tohumu",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "level": 2,
+      "plantsAs": "item.crop_wheat"
+    },
+    {
+      "id": "item.crop_wheat",
+      "displayName": "Buğday ekini",
+      "category": "plant",
+      "growDays": 14,
+      "tilled": true,
+      "diesInWinter": false,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.wheat",
+              "count": 5
+            },
+            {
+              "item": "item.seed_wheat",
+              "count": 1
+            },
+            {
+              "item": "item.seed_wheat",
+              "count": 1,
+              "chance": 0.5
+            },
+            {
+              "item": "item.straw",
+              "count": 2
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
+        }
+      ],
+      "growSeasons": [
+        "Autumn",
+        "Spring"
+      ]
+    },
+    {
+      "id": "item.rye",
+      "displayName": "Çavdar",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "tags": [
+        "grain"
+      ]
+    },
+    {
+      "id": "item.seed_rye",
+      "displayName": "Çavdar tohumu",
+      "placement": "Resource",
+      "price": 4,
+      "category": "resource",
+      "level": 3,
+      "plantsAs": "item.crop_rye"
+    },
+    {
+      "id": "item.crop_rye",
+      "displayName": "Çavdar ekini",
+      "category": "plant",
+      "growDays": 12,
+      "tilled": true,
+      "diesInWinter": false,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.rye",
+              "count": 5
+            },
+            {
+              "item": "item.seed_rye",
+              "count": 1
+            },
+            {
+              "item": "item.seed_rye",
+              "count": 1,
+              "chance": 0.5
+            },
+            {
+              "item": "item.straw",
+              "count": 3
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
+        }
+      ],
+      "growSeasons": [
+        "Autumn",
+        "Spring"
+      ]
+    },
+    {
+      "id": "item.oats",
+      "displayName": "Yulaf",
+      "placement": "Resource",
+      "price": 2,
+      "category": "resource",
+      "tags": [
+        "grain"
+      ]
+    },
+    {
+      "id": "item.seed_oats",
+      "displayName": "Yulaf tohumu",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "level": 2,
+      "plantsAs": "item.crop_oats"
+    },
+    {
+      "id": "item.crop_oats",
+      "displayName": "Yulaf ekini",
+      "category": "plant",
+      "growDays": 10,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.oats",
+              "count": 6
+            },
+            {
+              "item": "item.seed_oats",
+              "count": 1
+            },
+            {
+              "item": "item.seed_oats",
+              "count": 1,
+              "chance": 0.5
+            },
+            {
+              "item": "item.straw",
+              "count": 2
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ]
+    },
+    {
+      "id": "item.flax",
+      "displayName": "Keten sapı",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "fiber"
+      ]
+    },
+    {
+      "id": "item.seed_flax",
+      "displayName": "Keten tohumu",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "level": 3,
+      "plantsAs": "item.crop_flax"
+    },
+    {
+      "id": "item.crop_flax",
+      "displayName": "Keten ekini",
+      "category": "plant",
+      "growDays": 9,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.flax",
+              "count": 4
+            },
+            {
+              "item": "item.seed_flax",
+              "count": 1
+            },
+            {
+              "item": "item.seed_flax",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ]
+    },
+    {
+      "id": "item.rye_flour",
+      "displayName": "Çavdar unu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "grain"
+      ]
+    },
+    {
+      "id": "item.quern",
+      "displayName": "El değirmeni",
+      "category": "kitchen",
+      "price": 15,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "living",
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "quern_wheat",
+          "displayName": "El değirmeninde buğday öğüt",
+          "durationDays": 0.12,
+          "materials": [
+            {
+              "item": "item.wheat",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.flour",
+              "count": 2
+            }
+          ],
+          "skill": "Baking",
+          "skillXp": 3
+        },
+        {
+          "id": "quern_rye",
+          "displayName": "El değirmeninde çavdar öğüt",
+          "durationDays": 0.12,
+          "materials": [
+            {
+              "item": "item.rye",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.rye_flour",
+              "count": 2
+            }
+          ],
+          "skill": "Baking",
+          "skillXp": 3
+        },
+        {
+          "id": "quern_barley",
+          "displayName": "El değirmeninde arpa öğüt",
+          "durationDays": 0.12,
+          "materials": [
+            {
+              "item": "item.barley",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.flour",
+              "count": 1
+            }
+          ],
+          "skill": "Baking",
+          "skillXp": 3
+        }
+      ]
+    },
+    {
+      "id": "item.bread_rye",
+      "displayName": "Çavdar ekmeği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 9
+    },
+    {
+      "id": "item.bread_maslin",
+      "displayName": "Karma ekmek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 7
+    },
+    {
+      "id": "item.porridge_oats",
+      "displayName": "Yulaf lapası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.porridge_wheat",
+      "displayName": "Buğday lapası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.linen_yarn",
+      "displayName": "Keten ipliği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "cloth"
+      ]
+    },
+    {
+      "id": "item.linen",
+      "displayName": "Keten bezi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 16,
+      "tags": [
+        "cloth"
+      ]
+    },
+    {
       "id": "item.lead",
       "displayName": "Kurşun",
       "placement": "Resource",
@@ -10286,7 +11016,7 @@
       "durationDays": 0.05,
       "skill": "Horticulture",
       "skillXp": 4,
-      "displayName": "Tohum çıkar: Kabak"
+      "displayName": "Tohum çıkar: Su kabağı"
     },
     {
       "id": "seed_parsnip",
@@ -11217,7 +11947,7 @@
           "count": 2
         },
         {
-          "item": "item.cloth",
+          "item": "item.linen",
           "count": 2
         }
       ],
@@ -11493,6 +12223,174 @@
       "skill": "Weaving",
       "skillXp": 12,
       "displayName": "Keçe döv"
+    },
+    {
+      "id": "seed_wheat",
+      "station": "item.seed_maker",
+      "produces": "item.seed_wheat",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.wheat",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Buğday"
+    },
+    {
+      "id": "seed_rye",
+      "station": "item.seed_maker",
+      "produces": "item.seed_rye",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.rye",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Çavdar"
+    },
+    {
+      "id": "seed_oats",
+      "station": "item.seed_maker",
+      "produces": "item.seed_oats",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.oats",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Yulaf"
+    },
+    {
+      "id": "seed_flax",
+      "station": "item.seed_maker",
+      "produces": "item.seed_flax",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.flax",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Keten"
+    },
+    {
+      "id": "feed_oats",
+      "station": "item.seed_maker",
+      "produces": "item.feed",
+      "count": 5,
+      "materials": [
+        {
+          "item": "item.oats",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Farming",
+      "skillXp": 4,
+      "displayName": "Yulaftan yem karıştır"
+    },
+    {
+      "id": "feed_straw",
+      "station": "item.seed_maker",
+      "produces": "item.feed",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.straw",
+          "count": 2
+        },
+        {
+          "item": "item.barley",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Farming",
+      "skillXp": 3,
+      "displayName": "Saman ve arpadan yem karıştır"
+    },
+    {
+      "id": "linen_yarn",
+      "station": "item.spinning_wheel",
+      "produces": "item.linen_yarn",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.flax",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Weaving",
+      "skillXp": 6,
+      "displayName": "Keten eğir"
+    },
+    {
+      "id": "linen",
+      "station": "item.loom",
+      "produces": "item.linen",
+      "materials": [
+        {
+          "item": "item.linen_yarn",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Weaving",
+      "skillXp": 14,
+      "displayName": "Keten bezi doku"
+    },
+    {
+      "id": "towel_rack",
+      "station": "item.workbench",
+      "produces": "item.towel_rack",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 1
+        },
+        {
+          "item": "item.linen",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skillXp": 10,
+      "displayName": "Havluluk yap"
+    },
+    {
+      "id": "mattress_straw",
+      "station": "item.loom",
+      "produces": "item.mattress_straw",
+      "materials": [
+        {
+          "item": "item.straw",
+          "count": 4
+        },
+        {
+          "item": "item.linen",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Weaving",
+      "skillXp": 10,
+      "displayName": "Saman şilte dik"
     },
     {
       "id": "pipe_wood",
@@ -11809,11 +12707,17 @@
       "feedPerDay": 0.5,
       "produces": "item.egg",
       "produceEveryDays": 1,
-      "lifespanDays": 60,
+      "lifespanDays": 14,
       "matureDays": 3,
       "level": 2,
       "meat": "item.poultry",
-      "meatCount": 1
+      "meatCount": 1,
+      "seasonOutput": [
+        1.0,
+        1.0,
+        0.6,
+        0.25
+      ]
     },
     {
       "id": "animal.duck",
@@ -11823,11 +12727,17 @@
       "feedPerDay": 0.6,
       "produces": "item.egg",
       "produceEveryDays": 1.5,
-      "lifespanDays": 70,
+      "lifespanDays": 16,
       "matureDays": 4,
       "level": 3,
       "meat": "item.poultry",
-      "meatCount": 2
+      "meatCount": 2,
+      "seasonOutput": [
+        1.0,
+        0.9,
+        0.5,
+        0.2
+      ]
     },
     {
       "id": "animal.goat",
@@ -11837,14 +12747,20 @@
       "feedPerDay": 1.5,
       "produces": "item.milk",
       "produceEveryDays": 1,
-      "lifespanDays": 90,
+      "lifespanDays": 26,
       "matureDays": 6,
       "level": 5,
       "meat": "item.meat",
       "meatCount": 2,
       "hide": "item.hide",
       "hideCount": 1,
-      "trample": 1
+      "trample": 1,
+      "seasonOutput": [
+        1.1,
+        1.0,
+        0.8,
+        0.5
+      ]
     },
     {
       "id": "animal.sheep",
@@ -11853,15 +12769,21 @@
       "housing": "barn",
       "feedPerDay": 1.5,
       "produces": "item.wool",
-      "produceEveryDays": 3,
-      "lifespanDays": 100,
+      "produceEveryDays": 10,
+      "lifespanDays": 24,
       "matureDays": 6,
       "level": 5,
       "meat": "item.meat",
       "meatCount": 2,
       "hide": "item.hide",
       "hideCount": 1,
-      "trample": 1
+      "trample": 1,
+      "seasonOutput": [
+        1.5,
+        1.0,
+        0.5,
+        0.0
+      ]
     },
     {
       "id": "animal.cow",
@@ -11871,14 +12793,20 @@
       "feedPerDay": 2.5,
       "produces": "item.milk",
       "produceEveryDays": 0.5,
-      "lifespanDays": 120,
+      "lifespanDays": 36,
       "matureDays": 8,
       "level": 6,
       "meat": "item.meat",
       "meatCount": 4,
       "hide": "item.hide",
       "hideCount": 2,
-      "trample": 3
+      "trample": 3,
+      "seasonOutput": [
+        1.1,
+        1.0,
+        0.8,
+        0.6
+      ]
     },
     {
       "id": "animal.dog",
@@ -11887,7 +12815,7 @@
       "housing": "kennel",
       "feedPerDay": 0.5,
       "pet": true,
-      "lifespanDays": 100,
+      "lifespanDays": 24,
       "matureDays": 2,
       "level": 2
     },
@@ -11898,7 +12826,7 @@
       "housing": "cat",
       "feedPerDay": 0.3,
       "pet": true,
-      "lifespanDays": 110,
+      "lifespanDays": 30,
       "matureDays": 2
     },
     {
@@ -11911,7 +12839,13 @@
       "produceEveryDays": 3,
       "lifespanDays": 200,
       "matureDays": 2,
-      "level": 6
+      "level": 6,
+      "seasonOutput": [
+        0.6,
+        1.2,
+        0.7,
+        0.0
+      ]
     },
     {
       "id": "animal.horse",
@@ -11919,7 +12853,7 @@
       "price": 110,
       "housing": "stable",
       "feedPerDay": 1.5,
-      "lifespanDays": 180,
+      "lifespanDays": 56,
       "matureDays": 12,
       "level": 4,
       "rideable": true,
@@ -12240,9 +13174,11 @@
       "id": "floor_straw",
       "displayName": "Saman serili",
       "kind": "floor",
-      "price": 1,
+      "price": 2,
       "color": "#C6AE6A",
-      "floorBase": "Dirt"
+      "floorBase": "Dirt",
+      "material": "item.straw",
+      "materialCount": 1
     },
     {
       "id": "floor_rush",

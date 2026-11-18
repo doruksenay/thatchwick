@@ -286,6 +286,9 @@ namespace Thatchwick.Core.World
         private List<Pond> _ponds = new List<Pond>();
         private int[] _pondIndex;           // düzlem karosu -> _ponds sırası (-1 yok)
 
+        /// <summary>Yırtıcı balığın (turna) günde bir av yeme olasılığı.</summary>
+        public const double PredatorEatChance = 0.15;
+
         /// <summary>Gölet başına yağmur: yağmurlu gün, fırtınalı gün.</summary>
         public const float RainFill = 0.3f, StormFill = 0.55f;
         /// <summary>Sıcakta yağmursuz gün buharlaşma (15°C üstü her 10°C için bir kat daha).</summary>
@@ -396,7 +399,10 @@ namespace Thatchwick.Core.World
         /// böcek gelir; böcek varken ve kış değilken aynı türden her çift %30 olasılıkla bir yavru verir (karo başına
         /// 3 balık sınırı). Kuruyan gölette balıklar ölür. Olayları (bildirim metni) döner.
         /// </summary>
-        public List<string> OnNewDayPonds(float rain, float outdoorTemp, bool winter, Random rng)
+        /// <param name="breeds">Tür gölette ürer mi (yılan balığı ürememek için denize göç eder); null ise hepsi ürer.</param>
+        /// <param name="predator">Yırtıcı tür mü (turna): her gün %15 olasılıkla öbür türlerden bir balık yer.</param>
+        public List<string> OnNewDayPonds(float rain, float outdoorTemp, bool winter, Random rng,
+            Func<string, bool> breeds = null, Func<string, bool> predator = null)
         {
             var notes = new List<string>();
             foreach (var pond in Ponds)
@@ -424,10 +430,29 @@ namespace Thatchwick.Core.World
                     notes.Add("Gölete böcekler geldi: balıklar artık beslenip üreyebilir.");
                     continue;                                   // üreme ertesi günden
                 }
+                if (predator != null && !_waterFrozen)
+                {
+                    int eaten = 0;
+                    foreach (var hunter in new List<string>(pond.Fish.Keys))
+                    {
+                        if (!predator(hunter) || !pond.Fish.ContainsKey(hunter)) continue;
+                        for (int i = 0; i < pond.Fish[hunter]; i++)
+                        {
+                            if (rng.NextDouble() >= PredatorEatChance) continue;
+                            var prey = new List<string>();
+                            foreach (var kv in pond.Fish) if (!predator(kv.Key)) for (int k = 0; k < kv.Value; k++) prey.Add(kv.Key);
+                            if (prey.Count == 0) break;
+                            pond.TakeFish(prey[rng.Next(prey.Count)]);
+                            eaten++;
+                        }
+                    }
+                    if (eaten > 0) notes.Add($"Turna göletteki {eaten} balığı yedi.");
+                }
                 if (!pond.Insects || winter || _waterFrozen) continue;
                 int born = 0;
                 foreach (var species in new List<string>(pond.Fish.Keys))
                 {
+                    if (breeds != null && !breeds(species)) continue;
                     int pairs = pond.Fish[species] / 2;
                     for (int i = 0; i < pairs && pond.FishTotal < pond.FishCapacity; i++)
                         if (rng.NextDouble() < 0.3) { pond.AddFish(species); born++; }

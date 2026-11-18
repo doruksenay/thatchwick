@@ -207,7 +207,7 @@ namespace Thatchwick.Core.Save
                 var hist = new List<HeadSave>();
                 foreach (var h in dynasty.History)
                     hist.Add(new HeadSave { characterId = h.CharacterId, name = h.Name, generation = h.Generation, startDay = h.StartDay, endDay = h.EndDay, endCause = (int)h.EndCause, trade = h.Trade });
-                data.dynasty = new DynastySave { name = dynasty.Name, headId = dynasty.HeadId, ended = dynasty.Ended, history = hist.ToArray() };
+                data.dynasty = new DynastySave { name = dynasty.Name, settlement = dynasty.SettlementName, headId = dynasty.HeadId, ended = dynasty.Ended, history = hist.ToArray() };
             }
             if (animals != null)
             {
@@ -506,7 +506,11 @@ namespace Thatchwick.Core.Save
             if (data.affection != null) foreach (var a in data.affection) if (a != null) result.Affection.Add((a.a, a.b, a.value));
             if (data.dynasty != null)
             {
-                var d = new Dynasty { Name = string.IsNullOrEmpty(data.dynasty.name) ? "Hanedan" : data.dynasty.name };
+                var d = new Dynasty
+                {
+                    Name = string.IsNullOrEmpty(data.dynasty.name) ? "Hanedan" : data.dynasty.name,
+                    SettlementName = Settlement.Clean(data.dynasty.settlement)
+                };
                 var hist = new List<HeadRecord>();
                 if (data.dynasty.history != null)
                     foreach (var h in data.dynasty.history)
