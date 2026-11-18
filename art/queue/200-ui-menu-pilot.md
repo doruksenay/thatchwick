@@ -1,7 +1,7 @@
 ---
 id: "200"
 title: Arayüz menü stili pilotu (parşömen + ahşap, ana menü paneli)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:00Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
@@ -83,6 +83,9 @@ Hiçbir şeyi silme, üzerine yazma. Klasör tarihi üretim günüdür (`yyyy-mm
 - Pivot ve import ayarı UI klasöründe kullanıcının editör betiğinde; işçi `.meta` yazmaz.
 - Telif: bilinen oyunların arayüzü, logosu ya da çerçeve motifi kopyalanmaz; açıklamada oyun adı geçmez.
 - Bu iş 012'den (karakter oturumu) sonra çalışır. Sıra kod oturumu tarafından `approved_by` ile tutulur.
+
+## Sorular
+- 2026-11-18 bulut şeridi: `get_balance` Tier 2 (Pixel Artisan), 4999/5000 gen, yenilenme 2026-12-18 döndürdü; `art/budget.md` Tier 1, 2000 gen, 2026-12-08 yazıyor. Kural "plan Tier 1 değilse dur" gereği üretim yapılmadı (0 gen). Kullanıcı `art/budget.md` planını güncelleyip işi `pending` yapmalı.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
