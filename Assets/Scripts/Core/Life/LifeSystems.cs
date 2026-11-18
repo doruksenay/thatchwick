@@ -62,6 +62,8 @@ namespace Thatchwick.Core.Life
         public InjurySystem Injuries { get; }
         /// <summary>Ev dekorasyonu: raf çökmesi, ayna kararması, ayna hatırlatması (Project belgesi 27).</summary>
         public Thatchwick.Core.Build.DecorSystem Decor { get; }
+        /// <summary>Hatıralar, soy ağacı işlemesi ve çeyiz sandığı (Project belgesi 27, D3b).</summary>
+        public KeepsakeService Keepsakes { get; }
         /// <summary>Ruh hali uyarıları ve bunalım (Project belgesi 23).</summary>
         public BreakdownService Breakdowns { get; }
         /// <summary>Çocukluk eşyaları, can yoldaşı, çıraklık, aile tarifleri ve itibar (belge 30, 31-8, 34).</summary>
@@ -122,6 +124,17 @@ namespace Thatchwick.Core.Life
             Goals = new GoalService(content) { Metric = MetricValue };
             Legacy = new Legacy(population, seed != 0 ? Seeds.Derive(seed, 5) : 61) { DaysPerYear = clock.Config.DaysPerYear };
             Mood.ExtraComfort = Legacy.ComfortBonus;
+            Keepsakes = new KeepsakeService(world, content, house)
+            {
+                Generation = () => MetricValue("generations"),
+                Year = () => Clock.YearIndex + 1,
+                Today = () => Clock.TotalDays,
+                People = () => Population.Members,
+                Notify = (text, id) => Say(text, NoticeLevel.Info, id)
+            };
+            Mood.BeautyBonus = it => Keepsakes.BeautyBonus(it) + Thatchwick.Core.Build.DecorSystem.SeasonalBeauty(it, Clock.Season);
+            Legacy.MarriedOutHappened += (member, villager) => Keepsakes.OnMarriedOut(member, villager, _family, Legacy, Household());
+            population.BabyBorn += (baby, mother, father) => Keepsakes.OnBirth(baby);
             Houses = new NeighborHouseService(population, Villagers, content, seed != 0 ? Seeds.Derive(seed, 9) : 71) { Today = () => Clock.TotalDays };
             Houses.HeadChanged += (h, heir, old) => Say($"{h.Name}: {heir.Name} hanenin başına geçti{(old != null ? $" ({old.Name} yerine)" : "")}.", NoticeLevel.Info, heir.Id);
             Houses.VillagersMarried += (a, b) => Say($"Köyde düğün: {a.Name} ile {b.Name} evlendi.", NoticeLevel.Info, a.Id);
@@ -175,6 +188,7 @@ namespace Thatchwick.Core.Life
                 FestivalsCelebrated++;
                 Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Festival, f.DisplayName);
                 Say($"{f.DisplayName}: {n} kişi şenliğe katıldı.", NoticeLevel.Info);
+                Keepsakes.OnFestival(f.DisplayName, n);
                 Ledger.Note(f.DisplayName);
                 Goals.Update();
             };
@@ -375,6 +389,7 @@ namespace Thatchwick.Core.Life
         private void OnMemberDied(Character dead)
         {
             if (!dead.IsVillager) Legacy.OnHouseholdDeath(Clock.Season);
+            Keepsakes.OnDeath(dead);
             Ledger.OnDied(dead);
             Graves.Bury(dead, Clock.TotalDays);
             int mourners = Mood.Mourn(dead, Population.Members);
@@ -484,6 +499,8 @@ namespace Thatchwick.Core.Life
         /// <summary>Aile sistemine bağlanır: köylü hediye/yakınlık kuralları ve evlilik sayacı.</summary>
         public void Attach(FamilyService family)
         {
+            _family = family;
+            family.JoinedHousehold += c => Keepsakes.OnJoined(c);
             Villagers.Family = family;
             family.ExtraProposalCheck = Villagers.ProposalCheck;
             family.Happened += (actor, target, action, msg) =>
@@ -537,7 +554,15 @@ namespace Thatchwick.Core.Life
         public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
         /// <summary>Doldurulan dekora giren yiyecek envanterdeki en eski partinin yaşını taşır.</summary>
-        public void Attach(Thatchwick.Core.Work.InteractionEffects effects) { effects.FoodAge = Spoilage.OldestAge; }
+        public void Attach(Thatchwick.Core.Work.InteractionEffects effects)
+        {
+            effects.FoodAge = Spoilage.OldestAge;
+            effects.CropHarvested += (c, crop, tier) => Keepsakes.OnCropHarvested(c, crop, tier);
+            effects.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish);
+        }
+        /// <summary>Kıyıdan balık: ilk balık hatırası.</summary>
+        public void Attach(Thatchwick.Core.Work.FarmWork farm) { farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish); }
+        private FamilyService _family;
 
         /// <summary>Ruh hali kaynaklarını yeniler (oyun hızından bağımsız, küçük adımlarla).</summary>
         public void Tick(double gameDays)
@@ -584,6 +609,7 @@ namespace Thatchwick.Core.Life
             {
                 OnSkillSeasonEnd();
                 Legacy.OnSeasonChanged((Season)_lastSeasonIndex, (Season)season, day, Clock.TotalDays);
+                Decor.OnSeasonChanged((Season)season);
                 var guest = Suitors.OnNewSeason();
                 if (guest != null) Say($"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
                 Villagers.ReplaceDeparted();   // ölen adlı köylünün (demirci ...) yerine halefi mevsim başında gelir
@@ -598,6 +624,7 @@ namespace Thatchwick.Core.Life
             DailyHealing();
             Injuries.DailyUpdate();
             Decor.RemindFreeMirror();
+            Keepsakes.Daily(Household());
             // Miras: dünyadan kalkmış yadigârlar düşer; komşu hanelerde soy sürer; köydeki soy eşikleri.
             Legacy.Validate(World.GetItem);
             foreach (var w in Legacy.NeighborFamiliesDaily()) Say($"{w.Name} çocuk bekliyor.", NoticeLevel.Info, w.Id);
@@ -639,7 +666,8 @@ namespace Thatchwick.Core.Life
                 legacy = Legacy.Export(),
                 houses = Houses.Export(),
                 lastHouseholdAccidentDay = Injuries.LastHouseholdAccidentDay,
-                upbringing = Upbringing.Export()
+                upbringing = Upbringing.Export(),
+                keepsakes = Keepsakes.Export()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -665,6 +693,7 @@ namespace Thatchwick.Core.Life
             Villagers.Restore(data.villagers);
             Legacy.Restore(data.legacy);
             Houses.Restore(data.houses);
+            Keepsakes.Restore(data.keepsakes);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;
             Injuries.LastHouseholdAccidentDay = data.lastHouseholdAccidentDay;

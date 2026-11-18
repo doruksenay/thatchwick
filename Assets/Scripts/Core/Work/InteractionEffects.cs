@@ -23,6 +23,10 @@ namespace Thatchwick.Core.Work
 
         /// <summary>İş bitince (karakter, etkileşim, özet metin: "+3 Kütük, +1 Meşe fidanı").</summary>
         public event Action<Character, InteractionDef, string> Applied;
+        /// <summary>Ekin hasat edildi (karakter, ekin, kalite basamağı 0-2): hasat kurdelesi (D3b).</summary>
+        public event Action<Character, ItemInstance, int> CropHarvested;
+        /// <summary>Balık tutuldu (karakter, balık eşyası): ilk balık hatırası (D3b).</summary>
+        public event Action<Character, string> FishCaught;
 
         /// <summary>Depo kapasitesi; null ise sınırsız. Dolunca fazla ürün kaybolur ve özette yazılır.</summary>
         public StorageService Storage { get; set; }
@@ -319,6 +323,10 @@ namespace Thatchwick.Core.Work
             if (interaction.Skill == SkillType.Fishing && order.Count == 0) parts.Add("bu sefer bir şey çıkmadı");
             if (interaction.TakesFruit) { item.FruitReady = false; item.FruitDays = 0; }
             if (cropHarvest && interaction.RemovesItem) Plants?.OnHarvest(item);
+            if (cropHarvest && order.Count > 0) CropHarvested?.Invoke(character, item, tier);
+            if (interaction.Skill == SkillType.Fishing)
+                foreach (var id in order)
+                    if (_content.Items.TryGet(id, out var fishDef) && fishDef.HasTag("fish")) { FishCaught?.Invoke(character, id); break; }
             if (tier > 0) parts.Add($"kalite: {PlantSystem.QualityName(tier)}");
             parts.AddRange(farmNotes);
 

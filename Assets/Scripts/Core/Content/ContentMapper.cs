@@ -138,6 +138,12 @@ namespace Thatchwick.Core.Content
                         if (LifeContentMapper.TryParseSeason(gs, out var gsSeason)) item.GrowSeasons.Add(gsSeason);
                         else errors.Add($"{dto.id}: bilinmeyen büyüme mevsimi '{gs}'.");
                     }
+                if (dto.seasonal != null)
+                    foreach (var ss in dto.seasonal)
+                    {
+                        if (LifeContentMapper.TryParseSeason(ss, out var sSeason)) { if (!item.DecorSeasons.Contains(sSeason)) item.DecorSeasons.Add(sSeason); }
+                        else errors.Add($"{dto.id}: bilinmeyen süs mevsimi '{ss}'.");
+                    }
                 if (dto.forageSeasons != null)
                     foreach (var fs in dto.forageSeasons)
                     {

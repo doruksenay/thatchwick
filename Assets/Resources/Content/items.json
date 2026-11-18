@@ -15207,6 +15207,637 @@
           ]
         }
       ]
+    },
+    {
+      "id": "item.festival_cup",
+      "displayName": "Şenlik kupası",
+      "category": "decor",
+      "price": 0,
+      "placement": "Surface",
+      "tags": [
+        "keepsake"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 3,
+      "material": "metal",
+      "fitsOn": [
+        "ocak",
+        "raf",
+        "masa"
+      ],
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.harvest_ribbon",
+      "displayName": "Hasat kurdelesi",
+      "category": "decor",
+      "price": 0,
+      "placement": "Surface",
+      "tags": [
+        "keepsake"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 3,
+      "material": "cloth",
+      "fitsOn": [
+        "ocak",
+        "raf"
+      ],
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.baby_first_shoes",
+      "displayName": "Bebeğin ilk ayakkabısı",
+      "category": "decor",
+      "price": 0,
+      "placement": "Surface",
+      "tags": [
+        "keepsake"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 3,
+      "material": "cloth",
+      "fitsOn": [
+        "raf",
+        "ocak",
+        "masa"
+      ],
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.elder_tin_cup",
+      "displayName": "Kalaylı kupa (hatıra)",
+      "category": "decor",
+      "price": 0,
+      "placement": "Surface",
+      "tags": [
+        "keepsake"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 3,
+      "material": "metal",
+      "fitsOn": [
+        "ocak",
+        "raf",
+        "masa"
+      ],
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.first_fish_scale",
+      "displayName": "Çerçeveli ilk balık",
+      "category": "decor_wall",
+      "price": 0,
+      "placement": "Wall",
+      "tags": [
+        "keepsake"
+      ],
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "wallBands": [
+        "orta",
+        "alt"
+      ],
+      "beauty": 3,
+      "material": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.family_tree_embroidery",
+      "displayName": "Soy ağacı işlemesi",
+      "category": "decor_wall",
+      "price": 90,
+      "level": 5,
+      "placement": "Wall",
+      "styleSet": "Zanaatkâr",
+      "tags": [
+        "craftonly"
+      ],
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 3,
+      "beauty": 6,
+      "material": "cloth",
+      "insulation": 0.85,
+      "interactions": []
+    },
+    {
+      "id": "item.dowry_chest",
+      "displayName": "Çeyiz sandığı",
+      "category": "storage",
+      "price": 45,
+      "width": 2,
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "bedroom",
+        "living"
+      ],
+      "beauty": 4,
+      "comfort": 1,
+      "finishGroup": "wood",
+      "material": "wood",
+      "fillWith": [
+        "item.linen",
+        "item.cloth",
+        "item.felt",
+        "item.blanket",
+        "item.yarn"
+      ],
+      "fillCount": 6,
+      "interactions": [
+        {
+          "id": "fill",
+          "displayName": "Çeyiz koy",
+          "durationDays": 0.03,
+          "fillDecor": true
+        },
+        {
+          "id": "empty",
+          "displayName": "Boşalt",
+          "durationDays": 0.02,
+          "collectContents": true
+        }
+      ]
+    },
+    {
+      "id": "item.tapestry_hunt",
+      "displayName": "Av sahnesi goblen",
+      "category": "decor_wall",
+      "price": 260,
+      "level": 12,
+      "placement": "Wall",
+      "styleSet": "Asil",
+      "rooms": [
+        "living"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "beauty": 12,
+      "material": "cloth",
+      "wallWidth": 3,
+      "insulation": 0.75,
+      "interactions": []
+    },
+    {
+      "id": "item.tapestry_garden",
+      "displayName": "Bahçe goblen",
+      "category": "decor_wall",
+      "price": 240,
+      "level": 12,
+      "placement": "Wall",
+      "styleSet": "Asil",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "beauty": 11,
+      "material": "cloth",
+      "wallWidth": 3,
+      "insulation": 0.75,
+      "interactions": []
+    },
+    {
+      "id": "item.dynasty_banner",
+      "displayName": "Hanedan sancağı",
+      "category": "decor_wall",
+      "price": 90,
+      "level": 12,
+      "placement": "Wall",
+      "styleSet": "Asil",
+      "rooms": [
+        "living"
+      ],
+      "wallBands": [
+        "üst"
+      ],
+      "beauty": 5,
+      "material": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.rug_knotted",
+      "displayName": "Düğümlü yün halı",
+      "width": 3,
+      "height": 3,
+      "placement": "Rug",
+      "price": 180,
+      "category": "rug",
+      "styleSet": "Tüccar",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 6,
+      "level": 9,
+      "finishGroup": "cloth",
+      "beauty": 9,
+      "interactions": []
+    },
+    {
+      "id": "item.rug_kufic",
+      "displayName": "Kûfi kenarlı büyük halı",
+      "width": 4,
+      "height": 3,
+      "placement": "Rug",
+      "price": 320,
+      "category": "rug",
+      "styleSet": "Asil",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 7,
+      "level": 13,
+      "finishGroup": "cloth",
+      "beauty": 13,
+      "interactions": []
+    },
+    {
+      "id": "item.rug_crest",
+      "displayName": "Armalı halı",
+      "width": 3,
+      "height": 3,
+      "placement": "Rug",
+      "price": 200,
+      "category": "rug",
+      "styleSet": "Asil",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 6,
+      "level": 12,
+      "finishGroup": "cloth",
+      "beauty": 12,
+      "tags": [
+        "craftonly"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.canopy_bed",
+      "displayName": "Kanopili yatak",
+      "category": "sleep",
+      "price": 160,
+      "width": 2,
+      "height": 2,
+      "level": 9,
+      "styleSet": "Tüccar",
+      "rooms": [
+        "bedroom"
+      ],
+      "tall": true,
+      "comfort": 5,
+      "beauty": 5,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "sleep",
+          "displayName": "Uyu",
+          "need": "Energy",
+          "restore": 75,
+          "durationDays": 0.3,
+          "moodlet": "rested"
+        }
+      ]
+    },
+    {
+      "id": "item.canopy_bed_curtained",
+      "displayName": "Perdeli kanopili yatak",
+      "category": "sleep",
+      "price": 260,
+      "width": 2,
+      "height": 2,
+      "level": 12,
+      "styleSet": "Asil",
+      "rooms": [
+        "bedroom"
+      ],
+      "tall": true,
+      "comfort": 6,
+      "beauty": 8,
+      "finishGroup": "cloth",
+      "interactions": [
+        {
+          "id": "sleep",
+          "displayName": "Uyu",
+          "need": "Energy",
+          "restore": 78,
+          "durationDays": 0.3,
+          "moodlet": "rested",
+          "extraRestore": [
+            {
+              "need": "Warmth",
+              "amount": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.throne_chair",
+      "displayName": "Oymalı taht sandalye",
+      "category": "seating",
+      "price": 140,
+      "level": 13,
+      "styleSet": "Asil",
+      "rooms": [
+        "living"
+      ],
+      "comfort": 5,
+      "beauty": 7,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Energy",
+          "restore": 14,
+          "durationDays": 0.05
+        }
+      ]
+    },
+    {
+      "id": "item.carved_chest",
+      "displayName": "Oymalı sandık",
+      "category": "storage",
+      "price": 110,
+      "width": 2,
+      "level": 11,
+      "styleSet": "Asil",
+      "rooms": [
+        "bedroom",
+        "living"
+      ],
+      "storage": 60,
+      "comfort": 1,
+      "beauty": 5,
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.spring_branch",
+      "displayName": "Bahar dalı (testide)",
+      "category": "decor",
+      "price": 6,
+      "styleSet": "Köylü",
+      "tags": [
+        "craftonly"
+      ],
+      "seasonal": [
+        "Spring"
+      ],
+      "beauty": 4,
+      "placement": "Surface",
+      "decorSize": "M",
+      "weight": 2,
+      "material": "clay",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak",
+        "pencere"
+      ],
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.spring_garland",
+      "displayName": "Bahar çelengi",
+      "category": "decor_wall",
+      "price": 6,
+      "styleSet": "Köylü",
+      "tags": [
+        "craftonly"
+      ],
+      "seasonal": [
+        "Spring",
+        "Summer"
+      ],
+      "beauty": 4,
+      "placement": "Wall",
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "material": "cloth",
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.harvest_heap",
+      "displayName": "Hasat yığını süsü",
+      "category": "garden",
+      "price": 6,
+      "styleSet": "Köylü",
+      "tags": [
+        "craftonly"
+      ],
+      "seasonal": [
+        "Autumn"
+      ],
+      "beauty": 4,
+      "rooms": [
+        "outdoor",
+        "living",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.winter_greenery",
+      "displayName": "Kış dalı (çam ve ardıç)",
+      "category": "decor_wall",
+      "price": 6,
+      "styleSet": "Köylü",
+      "tags": [
+        "craftonly"
+      ],
+      "seasonal": [
+        "Winter"
+      ],
+      "beauty": 4,
+      "placement": "Wall",
+      "wallBands": [
+        "üst"
+      ],
+      "material": "wood",
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.door_wreath",
+      "displayName": "Kapı çelengi",
+      "category": "decor_wall",
+      "price": 6,
+      "styleSet": "Köylü",
+      "tags": [
+        "craftonly"
+      ],
+      "seasonal": [
+        "Autumn",
+        "Winter"
+      ],
+      "beauty": 5,
+      "placement": "Wall",
+      "wallBands": [
+        "orta"
+      ],
+      "material": "wood",
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.name_plaque",
+      "displayName": "İsimlik tahta",
+      "category": "barn",
+      "price": 6,
+      "level": 2,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "animalComfort": 2,
+      "beauty": 1,
+      "material": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.horseshoe_display",
+      "displayName": "Nal sergisi",
+      "category": "barn",
+      "price": 20,
+      "level": 2,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "animalComfort": 2,
+      "beauty": 2,
+      "material": "metal",
+      "tags": [
+        "craftonly"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.saddle_peg",
+      "displayName": "Eyer askısı (duvar)",
+      "category": "barn",
+      "price": 10,
+      "level": 2,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "animalComfort": 2,
+      "beauty": 1,
+      "material": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.straw_ornament",
+      "displayName": "Saman süsü",
+      "category": "barn",
+      "price": 3,
+      "level": 2,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "wallBands": [
+        "üst"
+      ],
+      "animalComfort": 1,
+      "beauty": 2,
+      "material": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.coop_curtain",
+      "displayName": "Folluk perdesi",
+      "category": "barn",
+      "price": 12,
+      "level": 2,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "wallBands": [
+        "orta",
+        "alt"
+      ],
+      "animalComfort": 3,
+      "beauty": 1,
+      "material": "cloth",
+      "interactions": []
     }
   ],
   "recipes": [
@@ -17747,6 +18378,261 @@
       "skillXp": 40,
       "displayName": "Kutu yatak yap",
       "minLevel": 5
+    },
+    {
+      "id": "family_tree_embroidery",
+      "station": "item.loom",
+      "produces": "item.family_tree_embroidery",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 4
+        },
+        {
+          "item": "item.dye_red",
+          "count": 1
+        },
+        {
+          "item": "item.dye_blue",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Weaving",
+      "skillXp": 50,
+      "displayName": "Soy ağacı işle",
+      "minLevel": 5
+    },
+    {
+      "id": "rug_knotted",
+      "station": "item.loom",
+      "produces": "item.rug_knotted",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 8
+        },
+        {
+          "item": "item.dye_red",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.6,
+      "skill": "Weaving",
+      "skillXp": 60,
+      "displayName": "Düğümlü halı doku",
+      "minLevel": 7
+    },
+    {
+      "id": "rug_crest",
+      "station": "item.loom",
+      "produces": "item.rug_crest",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 4
+        },
+        {
+          "item": "item.yarn",
+          "count": 8
+        },
+        {
+          "item": "item.dye_red",
+          "count": 2
+        },
+        {
+          "item": "item.dye_blue",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.7,
+      "skill": "Weaving",
+      "skillXp": 75,
+      "displayName": "Armalı halı doku",
+      "minLevel": 8
+    },
+    {
+      "id": "coop_curtain",
+      "station": "item.loom",
+      "produces": "item.coop_curtain",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Weaving",
+      "skillXp": 6,
+      "displayName": "Folluk perdesi dik",
+      "minLevel": 1
+    },
+    {
+      "id": "dowry_chest",
+      "station": "item.workbench",
+      "produces": "item.dowry_chest",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 6
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        },
+        {
+          "item": "item.dye_red",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Carpentry",
+      "skillXp": 30,
+      "displayName": "Çeyiz sandığı yap ve boya",
+      "minLevel": 3
+    },
+    {
+      "id": "spring_branch",
+      "station": "item.workbench",
+      "produces": "item.spring_branch",
+      "materials": [
+        {
+          "item": "item.elderflower",
+          "count": 2
+        },
+        {
+          "item": "item.withy",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Weaving",
+      "skillXp": 4,
+      "displayName": "Bahar dalı hazırla"
+    },
+    {
+      "id": "spring_garland",
+      "station": "item.workbench",
+      "produces": "item.spring_garland",
+      "materials": [
+        {
+          "item": "item.elderflower",
+          "count": 3
+        },
+        {
+          "item": "item.withy",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Weaving",
+      "skillXp": 5,
+      "displayName": "Bahar çelengi ör"
+    },
+    {
+      "id": "harvest_heap",
+      "station": "item.workbench",
+      "produces": "item.harvest_heap",
+      "materials": [
+        {
+          "item": "item.sheaf_wheat",
+          "count": 3
+        },
+        {
+          "item": "item.straw",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Weaving",
+      "skillXp": 5,
+      "displayName": "Hasat yığını kur"
+    },
+    {
+      "id": "winter_greenery",
+      "station": "item.workbench",
+      "produces": "item.winter_greenery",
+      "materials": [
+        {
+          "item": "item.pinecone",
+          "count": 2
+        },
+        {
+          "item": "item.withy",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Weaving",
+      "skillXp": 4,
+      "displayName": "Kış dalı bağla"
+    },
+    {
+      "id": "door_wreath",
+      "station": "item.workbench",
+      "produces": "item.door_wreath",
+      "materials": [
+        {
+          "item": "item.straw",
+          "count": 2
+        },
+        {
+          "item": "item.pinecone",
+          "count": 2
+        },
+        {
+          "item": "item.dye_red",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Weaving",
+      "skillXp": 6,
+      "displayName": "Kapı çelengi ör",
+      "minLevel": 2
+    },
+    {
+      "id": "straw_ornament",
+      "station": "item.workbench",
+      "produces": "item.straw_ornament",
+      "materials": [
+        {
+          "item": "item.straw",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.03,
+      "skill": "Weaving",
+      "skillXp": 3,
+      "displayName": "Saman süsü ör"
+    },
+    {
+      "id": "horseshoe_display",
+      "station": "item.forge",
+      "produces": "item.horseshoe_display",
+      "materials": [
+        {
+          "item": "item.horseshoe",
+          "count": 3
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Smithing",
+      "skillXp": 8,
+      "displayName": "Nal sergisi yap",
+      "minLevel": 2
     }
   ],
   "animals": [

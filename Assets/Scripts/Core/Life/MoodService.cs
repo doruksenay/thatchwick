@@ -83,6 +83,8 @@ namespace Thatchwick.Core.Life
         /// <summary>İç mekân odasının konforu: eşya konfor toplamı + stil seti bonusu (aynı setten 4+ eşya).</summary>
         /// <summary>Eşyanın odaya ek konforu (yadigâr). Null ise yok.</summary>
         public Func<ItemInstance, int> ExtraComfort { get; set; }
+        /// <summary>Eşyanın güzelliğine ek (hatıra eskidikçe, soy ağacı nesille, solmuş mevsim süsü eksi); null ise yok (D3b).</summary>
+        public Func<ItemInstance, double> BeautyBonus { get; set; }
 
         public RoomComfort ComfortOf(Room room)
         {
@@ -214,6 +216,7 @@ namespace Thatchwick.Core.Life
             {
                 if (!tiles.Contains(item.Position)) continue;
                 double b = BeautyOfItem(item, Content);
+                if (BeautyBonus != null) b += BeautyBonus(item);
                 if (item.IsRug && b > 0)
                 {
                     // Halılar üst üste serilir: güzelliğe yalnızca en üstte kaldığı karolar sayılır.

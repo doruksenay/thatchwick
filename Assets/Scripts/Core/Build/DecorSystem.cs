@@ -189,6 +189,32 @@ namespace Thatchwick.Core.Build
         }
 
         /// <summary>Ücretsiz Ayna hakkı olup evde aynası olmayanları bir kez hatırlatır (yeni günde çağrılır).</summary>
+        // ---- mevsim süsü (D3b, §7.11, §9) ----
+
+        /// <summary>Solmuş mevsim süsünün güzelliği (eksi).</summary>
+        public const int WiltedBeauty = -2;
+
+        /// <summary>Mevsimi geçmiş süs soldu mu (bahar dalı yazın, kış dalı baharda)?</summary>
+        public static bool IsWilted(ItemInstance item, Time.Season season) => item != null && item.Def.IsSeasonal && !item.Def.InSeason(season);
+
+        /// <summary>Güzellik eki: solmuş süs kendi güzelliğini kaybeder ve WiltedBeauty olur; değilse 0.</summary>
+        public static double SeasonalBeauty(ItemInstance item, Time.Season season) => IsWilted(item, season) ? -item.Def.Beauty + WiltedBeauty : 0;
+
+        /// <summary>Mevsim döndü: solan süsleri sayar ve bildirir. Solan adet.</summary>
+        public int OnSeasonChanged(Time.Season season)
+        {
+            var names = new List<string>();
+            int n = 0;
+            foreach (var it in _world.Items)
+            {
+                if (!IsWilted(it, season)) continue;
+                n++;
+                if (!names.Contains(it.Def.DisplayName)) names.Add(it.Def.DisplayName);
+            }
+            if (n > 0) Notify?.Invoke($"Mevsim döndü: {n} mevsim süsü soldu ({string.Join(", ", names).ToLowerInvariant()}). Kaldırıp mevsimin süsünü as.", 0);
+            return n;
+        }
+
         public void RemindFreeMirror()
         {
             if (Members == null || HasMirror(_world)) return;

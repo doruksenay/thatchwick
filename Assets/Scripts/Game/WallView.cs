@@ -108,11 +108,17 @@ namespace Thatchwick.Game
                 // Kaplamanın kendi dokusu varsa (lambri, duvar dokuması) o çizilir; yoksa malzeme görseli + kaplama rengi.
                 var finishArt = finish != null ? IsoArt.WallPart(finish, e.Axis, variant) : null;
                 var real = finishArt ?? IsoArt.WallPart(part?.Id, e.Axis, variant);
-                if (real == null && look?.Style == null && (kind == EdgeKind.Wall || kind == EdgeKind.Door || kind == EdgeKind.Window)) real = IsoArt.Wall(e.Axis, kind);
+                if (low && real == null)
+                {
+                    // Alçak duvar (Kesit'te ön duvar, Aşağı'da hepsi): asla tam boy çizilmez. Kapı ve pencere alçakta düz alçak
+                    // duvar olur (art/queue 327): komşu duvarın malzemesi, yoksa varsayılan duvarın alçak görseli.
+                    real = IsoArt.WallPart(LowPartFor(e, kind, look?.Style), e.Axis, "low") ?? IsoArt.WallPart("wall", e.Axis, "low");
+                }
+                if (!low && real == null && look?.Style == null && (kind == EdgeKind.Wall || kind == EdgeKind.Door || kind == EdgeKind.Window)) real = IsoArt.Wall(e.Axis, kind);
                 if (real != null)
                 {
                     sr.sprite = real;
-                    float alpha = low ? 0.3f : 1f;
+                    float alpha = 1f;   // alçak duvar opak: zaten kısa, arkası görünür (eskiden tam boy %30 saydamdı)
                     var tint = finish != null && finishArt == null ? Color.Lerp(Color.white, EdgeColor(kind, look?.Style, finish), 0.6f) : Color.white;
                     sr.color = kind == EdgeKind.Window && plain ? new Color(0.75f, 0.85f, 1f, alpha) : new Color(tint.r, tint.g, tint.b, alpha);
                 }
@@ -129,6 +135,21 @@ namespace Thatchwick.Game
             }
 
             if (_showRoof && _mode == WallMode.Up) DrawRoofs();
+        }
+
+        // Alçak çizimde kullanılacak duvar parçası: düz duvarın kendisi; kapı ve pencerede aynı hattaki komşu duvarın malzemesi.
+        private string LowPartFor(Edge e, EdgeKind kind, string style)
+        {
+            if (_content == null) return "wall";
+            if (kind == EdgeKind.Wall || kind == EdgeKind.HalfWall)
+                return BuildParts.Resolve(_content, BuildPartKind.WallMaterial, style)?.Id ?? "wall";
+            foreach (int d in new[] { -1, 1, -2, 2 })
+            {
+                var n = e.Axis == EdgeAxis.Horizontal ? new Edge(e.X + d, e.Y, e.Axis, e.Z) : new Edge(e.X, e.Y + d, e.Axis, e.Z);
+                if (!_map.EdgeInBounds(n) || _map.GetEdge(n) != EdgeKind.Wall) continue;
+                return BuildParts.Resolve(_content, BuildPartKind.WallMaterial, _map.GetLook(n)?.Style)?.Id ?? "wall";
+            }
+            return "wall";
         }
 
         private Color EdgeColor(EdgeKind kind, string style, string finish)

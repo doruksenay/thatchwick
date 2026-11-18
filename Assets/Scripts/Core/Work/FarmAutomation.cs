@@ -375,6 +375,8 @@ namespace Thatchwick.Core.Work
         public event Action<Character, GridPos> Repaired;
         /// <summary>Su işi bitti (karakter, karo, özet).</summary>
         public event Action<Character, GridPos, string> Worked;
+        /// <summary>Kıyıdan balık tutuldu (karakter, balık eşyası): ilk balık hatırası (D3b).</summary>
+        public event Action<Character, string> FishCaught;
 
         // Dereye girip yıkanmak: hijyen; tamamen ıslanır. Soğuk suda Isınma düşer, yazın serinletir.
         private void BatheIn(Character c, GridPos tile)
@@ -426,6 +428,7 @@ namespace Thatchwick.Core.Work
                     pond.TakeFish(kv.Key);
                     House?.AddItem(kv.Key, 1);
                     note = $"balık: {Content.Items.Get(kv.Key).DisplayName} (gölette {pond.FishTotal} kaldı)";
+                    FishCaught?.Invoke(c, kv.Key);
                     break;
                 }
             }

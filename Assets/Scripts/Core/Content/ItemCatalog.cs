@@ -134,6 +134,15 @@ namespace Thatchwick.Core.Content
             if (def.SeedRadius > 0) parts.Add($"Güç alınca her sabah {def.SeedRadius} karo çevresindeki boş toprağa tohum eker");
             if (def.IceCollect > 0) parts.Add($"Donlu sabahlar {def.IceCollect} buz toplar");
             if (def.HasTag("craftonly")) parts.Add("Yalnızca yapılır (tarif)");
+            if (def.IsKeepsake) parts.Add("Hatıra: kazanılır, satılmaz; nesiller geçtikçe güzelleşir");
+            if (def.IsSeasonal)
+            {
+                var ss = new List<string>();
+                foreach (var s0 in def.DecorSeasons) ss.Add(Life.FestivalService.SeasonName(s0));
+                parts.Add($"Mevsim süsü ({string.Join(", ", ss)}); mevsimi geçince solar");
+            }
+            if (def.Id == "item.family_tree_embroidery") parts.Add("Nesil arttıkça dallanır; evdeki aileye \"Köklerimiz\", yası kısaltır");
+            if (def.Id == "item.dowry_chest") parts.Add("Evlenip giden kızla gider; doluysa Soy Mührü ve yakınlık");
             if (def.Placement == ItemPlacement.Wall)
             {
                 var bands = new List<string>();

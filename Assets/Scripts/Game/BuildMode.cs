@@ -22,6 +22,10 @@ namespace Thatchwick.Game
         /// <summary>Yadigârı yapan kişi (baş karakter) ve bugünün günü.</summary>
         public System.Func<Thatchwick.Core.Characters.Character> Maker { get; set; }
         public System.Func<double> Today { get; set; }
+        /// <summary>Hatıra ve soy ağacı yazıları (D3b); null ise yazı yok.</summary>
+        public Thatchwick.Core.Life.KeepsakeService Keepsakes { get; set; }
+        /// <summary>Şu anki mevsim (solmuş mevsim süsü); null ise solma gösterilmez.</summary>
+        public System.Func<Thatchwick.Core.Time.Season> Season { get; set; }
 
         private const float FocusZoom = 3.6f;
 
@@ -1309,6 +1313,10 @@ namespace Thatchwick.Game
                     : $"Yük {load}/{sel.Def.MaxLoad}");
             }
             if (sel.IsTarnished) GUILayout.Label("Ayna kararmış: canlı modda \"Cilala\".");
+            string inscription = Keepsakes?.LabelOf(sel);
+            if (inscription != null) GUILayout.Label(sel.Def.IsKeepsake ? $"Hatıra: {inscription}. Satılmaz; nesiller geçtikçe güzelleşir." : inscription, _wrap);
+            if (Season != null && Thatchwick.Core.Build.DecorSystem.IsWilted(sel, Season()))
+                GUILayout.Label("Soldu: mevsimi geçti, odayı çirkinleştiriyor. Kaldır ya da mevsimin süsünü as.", _wrap);
             if (sel.Def.IsFillDecor)
             {
                 // Doldurulan dekor (D2): içi gerçek ürünle, canlı modda "Doldur"; envantere alınınca içindekiler de döner.
