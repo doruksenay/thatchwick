@@ -2,7 +2,7 @@
 id: "014"
 title: Yürüme animasyonu farmer_a2_56 (8 yön, pixminimax)
 status: blocked
-claimed_at: 2026-11-18T08:37Z
+claimed_at: 2026-11-18T07:43Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
@@ -100,10 +100,10 @@ Betik: `tools/art/anim_walk.py`. 013'teki `anim_pilot.py`'den türetilebilir.
 
 - 2026-11-18: bulut işçisine `uv`, `python3`, `mkdir -p` izni eklendi, masaüstü kopyası bulutta atlanır (kullanıcı onayı); iş yeniden `pending`.
 
-- 2026-11-18: çıktıyı diske yazmak için `tools/art/save_png.py` eklendi; iş yeniden `pending`. 014: 07:43Z sahiplenmesinden sonuç gelmedi.
-
 ## Sorular
-- 2026-11-18 (bulut işçisi, şerit 0): İlk SE çağrısı (animate_character pixminimax, frame_count=8, end_frame=SE rotasyon URL'si, animation_name=walk) "already queued or complete (nothing re-queued)" döndü; hhiçbir şey ücretlenmedi (bakiye 1133,70). Ancak `get_character` animasyon listesinde `walk` grubu yok ve `list_jobs` (son 30 dk) animasyon işi göstermiyor. Muhtemelen 07:43Z'deki önceki denemenin eşleşen ama saklanmamış kaydı. Yeniden üretim için action_description'ı değiştirmek gerekir (tarif "aynı metin" diyor, yeniden deneme yasak). Karar: action_description'a ek söz eklenerek yeniden denensin mi, ya da PixelLab destek kaydı mı bakılsın? Hiç kare indirilmedi, hiçbir dosya yazılmadı.
+- 2026-11-18 (bulut işçisi): 0 generation harcandı. İlk `animate_character` çağrısı (pixminimax, south-east, frame_count=8, keep_first_frame=true, tarifteki `action_description`, `animation_name=walk`) şu yanıtı verdi: `status: already queued or complete (nothing re-queued)`. PixelLab aynı isteği 013'ün `walk_pilot_pmm` klibiyle eşleştirdi (aynı metin) ve yeni iş açmadı; `list_jobs` boş, karakterde yeni `walk` grubu yok. Yanıt: "to generate a fresh take ... reword action_description".
+- Karar gerekli: `action_description` küçük bir yeniden ifadeyle (ör. "walking forward at a calm pace, one complete step cycle") verilebilir mi? Tarif "013 ile aynı" dediği için işçi kendi başına değiştirmedi. Onaylanırsa tarife yeni metin yazılıp iş `pending` yapılmalı.
+- Rotasyon görüntüleri `tools/art/fetch_rot.py` ile indirilip yüklendi (8 yön, 60x60). Betik indirmede User-Agent gerektiriyor (aksi halde 403).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
