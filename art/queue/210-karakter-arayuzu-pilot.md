@@ -1,7 +1,7 @@
 ---
 id: "210"
 title: Karakter arayüzü stil pilotu (Durum paneli; parşömen + ahşap)
-status: running
+status: review
 claimed_at: 2026-11-18T12:33Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
