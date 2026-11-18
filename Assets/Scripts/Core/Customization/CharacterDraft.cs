@@ -16,8 +16,10 @@ namespace Thatchwick.Core.Customization
     {
         public const int MinNameLength = 2;
         public const int MaxNameLength = 16;
-        public const double YouthStartAge = 30.0;
-        public const double AdultStartAge = 40.0;
+        /// <summary>Genç yetişkin başlangıç yaşı (evre 30-42).</summary>
+        public const double YoungAdultStartAge = 32.0;
+        /// <summary>Yetişkin başlangıç yaşı (evre 42-72).</summary>
+        public const double AdultStartAge = 45.0;
         /// <summary>Beceri eğilimi: seçilen beceri bu kadar XP ile başlar (seviye 2).</summary>
         public const double FocusXp = 100.0;
 
@@ -25,7 +27,7 @@ namespace Thatchwick.Core.Customization
 
         public string Name { get; set; } = "";
         public Sex Sex { get; private set; } = Sex.Male;
-        /// <summary>Başlangıç evresi: yalnızca Genç ya da Yetişkin seçilebilir.</summary>
+        /// <summary>Başlangıç evresi: yalnızca Genç yetişkin ya da Yetişkin seçilebilir.</summary>
         public AgeStage StartStage { get; set; } = AgeStage.Adult;
         public Appearance Appearance { get; set; } = new Appearance();
         public SkillType? SkillFocus { get; set; }
@@ -86,7 +88,7 @@ namespace Thatchwick.Core.Customization
         {
             var d = new CharacterDraft { Name = name };
             d.Sex = rng.Next(2) == 0 ? Sex.Female : Sex.Male;
-            d.StartStage = rng.Next(2) == 0 ? AgeStage.Youth : AgeStage.Adult;
+            d.StartStage = rng.Next(2) == 0 ? AgeStage.YoungAdult : AgeStage.Adult;
             d.Appearance = catalog.Randomize(rng, d.Sex);
             d.BirthSeason = rng.Next(4);
             d.BirthDayOfSeason = rng.Next(10);
@@ -104,8 +106,8 @@ namespace Thatchwick.Core.Customization
             else if (!NamePattern.IsMatch(name))
                 errors.Add("İsim yalnızca harf, boşluk, kesme işareti ve tire içerebilir.");
 
-            if (StartStage != AgeStage.Youth && StartStage != AgeStage.Adult)
-                errors.Add("Başlangıç evresi Genç ya da Yetişkin olmalı.");
+            if (!AgeStages.IsStartStage(StartStage))
+                errors.Add("Başlangıç evresi Genç yetişkin ya da Yetişkin olmalı.");
 
             string dyn = DynastyName == null ? "" : DynastyName.Trim();
             if (dyn.Length > 0 && (dyn.Length < MinNameLength || dyn.Length > MaxDynastyLength || !NamePattern.IsMatch(dyn)))
@@ -125,7 +127,7 @@ namespace Thatchwick.Core.Customization
             return errors;
         }
 
-        public double StartAge => StartStage == AgeStage.Youth ? YouthStartAge : AdultStartAge;
+        public double StartAge => StartStage == AgeStage.YoungAdult ? YoungAdultStartAge : AdultStartAge;
 
         /// <summary>Taslaktan karakter üretir. Geçersizse ArgumentException fırlatır (önce Validate).</summary>
         public Character CreateCharacter(int id, GridPos position, bool playerControlled, AppearanceCatalog catalog, Random rng)

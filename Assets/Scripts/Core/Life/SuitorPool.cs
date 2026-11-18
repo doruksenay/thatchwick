@@ -17,7 +17,7 @@ namespace Thatchwick.Core.Life
     {
         public const int MinCandidates = 3;
         public const int MaxVillagers = 18;
-        public const double ArrivalAgeMin = 24.5, ArrivalAgeMax = 34;
+        public const double ArrivalAgeMin = 30.5, ArrivalAgeMax = 40;   // Genç yetişkin
 
         private readonly ContentDatabase _content;
         private readonly Population _population;
@@ -35,9 +35,9 @@ namespace Thatchwick.Core.Life
             _rng = new Random(seed);
         }
 
-        /// <summary>Genç ya da yetişkin, bekâr, yaşayan.</summary>
+        /// <summary>Genç yetişkin ya da yetişkin, bekâr, yaşayan.</summary>
         public static bool IsSingleAdult(Character c) =>
-            !c.IsDead && !c.SpouseId.HasValue && (c.Stage == AgeStage.Youth || c.Stage == AgeStage.Adult);
+            !c.IsDead && !c.SpouseId.HasValue && AgeStages.CanMarry(c.Stage);
 
         public static bool IsEligible(Character household, Character villager) =>
             villager != household && villager.IsVillager && IsSingleAdult(villager) && villager.Sex != household.Sex

@@ -80,7 +80,7 @@ namespace Thatchwick.Core.Tests
         public void Yetiskin_Seviye10aUlasir()
         {
             var c = new Character(1, "Aldric", new GridPos(0, 0));
-            c.SetAge(40);
+            c.SetAge(45);
             c.GainSkillXp(SkillType.Carpentry, 100000);
             Assert.Equal(10, c.Skills.GetLevel(SkillType.Carpentry));
         }
@@ -89,7 +89,7 @@ namespace Thatchwick.Core.Tests
         public void OluKarakter_Kazanmaz()
         {
             var c = new Character(1, "Aldric", new GridPos(0, 0));
-            c.SetAge(40);
+            c.SetAge(45);
             c.LifespanDays = 41;
             c.Tick(5);
             Assert.True(c.IsDead);
@@ -112,7 +112,7 @@ namespace Thatchwick.Core.Tests
             var world = new WorldState(new GridMap(10, 10));
             var placed = world.PlaceItem(item, new GridPos(5, 5));
             var c = new Character(1, "Aldric", new GridPos(0, 5), isPlayerControlled: true);
-            c.SetAge(40);
+            c.SetAge(45);
             var runner = new JobRunner(c, world);
             runner.Command(Job.UseItem(placed.Id, "cook"));
             runner.Tick(2.0);

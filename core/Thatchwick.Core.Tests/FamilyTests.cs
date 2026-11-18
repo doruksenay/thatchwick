@@ -96,7 +96,7 @@ namespace Thatchwick.Core.Tests
         {
             var c = Setup();
             var aldric = c.Add(1, "Aldric", Sex.Male, 30, new GridPos(2, 2), player: true);
-            var edith = c.Add(2, "Edith", Sex.Female, 28, new GridPos(10, 5), villager: true);
+            var edith = c.Add(2, "Edith", Sex.Female, 32, new GridPos(10, 5), villager: true);
             Character joined = null;
             c.Family.JoinedHousehold += x => joined = x;
 
@@ -117,14 +117,14 @@ namespace Thatchwick.Core.Tests
             var mom = c.Add(1, "Ana", Sex.Female, 50, new GridPos(1, 1));
             var son = c.Add(2, "Oğul", Sex.Male, 30, new GridPos(2, 1));
             son.BirthMotherId = 1;
-            var sis = c.Add(3, "Kız", Sex.Female, 28, new GridPos(3, 1));
+            var sis = c.Add(3, "Kız", Sex.Female, 32, new GridPos(3, 1));
             sis.BirthMotherId = 1;
             var kid = c.Add(4, "Çocuk", Sex.Female, 15, new GridPos(4, 1));
             var man = c.Add(5, "Wat", Sex.Male, 30, new GridPos(5, 1));
             foreach (var (a, b) in new[] { (1, 2), (2, 3), (2, 4), (2, 5) }) c.Family.SetAffection(a, b, 100);
             Assert.Contains("akraba", c.Family.CanDo(son, mom, SocialAction.Propose));
             Assert.Contains("akraba", c.Family.CanDo(son, sis, SocialAction.Propose));
-            Assert.Contains("genç ya da yetişkin", c.Family.CanDo(son, kid, SocialAction.Propose));
+            Assert.Contains("genç yetişkin ya da yetişkin", c.Family.CanDo(son, kid, SocialAction.Propose));
             Assert.Contains("kadın ile erkek", c.Family.CanDo(son, man, SocialAction.Propose));
         }
 
@@ -133,7 +133,7 @@ namespace Thatchwick.Core.Tests
         {
             var c = Setup();
             var aldric = c.Add(1, "Aldric", Sex.Male, 30, new GridPos(2, 2), player: true);
-            var edith = c.Add(2, "Edith", Sex.Female, 28, new GridPos(3, 2));
+            var edith = c.Add(2, "Edith", Sex.Female, 32, new GridPos(3, 2));
             aldric.SpouseId = 2; edith.SpouseId = 1;
             edith.PregnancyDays = 1;
             for (int i = 0; i < 10 && !edith.IsPregnant; i++) c.Run(1, Job.Social(2, SocialAction.TryForBaby));

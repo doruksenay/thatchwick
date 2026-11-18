@@ -115,7 +115,7 @@ namespace Thatchwick.Core.Family
             }
 
             bool IsChild(Character c) => c.BirthMotherId == dead.Id || c.BirthFatherId == dead.Id;
-            return Oldest(c => IsChild(c) && c.Stage >= AgeStage.Youth)   // genç, yetişkin ya da yaşlı çocuk
+            return Oldest(c => IsChild(c) && c.Stage >= AgeStage.Teen)   // ergen, genç yetişkin, yetişkin ya da yaşlı çocuk
                 ?? Oldest(c => IsChild(c) && c.Stage == AgeStage.Child)
                 ?? Oldest(c => dead.SpouseId == c.Id)
                 ?? Oldest(c => c.Stage != AgeStage.Baby);

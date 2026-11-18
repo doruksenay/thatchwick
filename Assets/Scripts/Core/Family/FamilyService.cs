@@ -70,7 +70,8 @@ namespace Thatchwick.Core.Family
             foreach (var kv in _affection) yield return ((int)(kv.Key >> 32), (int)(kv.Key & 0xffffffff), kv.Value);
         }
 
-        public static bool IsAdultAge(Character c) => c.Stage == AgeStage.Youth || c.Stage == AgeStage.Adult;
+        /// <summary>Evlenecek yaşta: Genç yetişkin ya da Yetişkin (Ergen değil).</summary>
+        public static bool IsAdultAge(Character c) => AgeStages.CanMarry(c.Stage);
 
         /// <summary>Ebeveyn-çocuk ya da en az bir ortak ebeveyni olan kardeşler.</summary>
         public static bool AreCloseRelatives(Character a, Character b)
@@ -111,7 +112,7 @@ namespace Thatchwick.Core.Family
                     if (actor.Stage == AgeStage.Child) return "Çocuk masal anlatamaz; dinler.";
                     return null;
                 case SocialAction.Propose:
-                    if (!IsAdultAge(actor) || !IsAdultAge(target)) return "Evlilik için ikisi de genç ya da yetişkin olmalı.";
+                    if (!IsAdultAge(actor) || !IsAdultAge(target)) return "Evlilik için ikisi de genç yetişkin ya da yetişkin olmalı.";
                     if (actor.SpouseId.HasValue || target.SpouseId.HasValue) return "Zaten evli.";
                     if (actor.Sex == target.Sex) return "Bu çağda evlilik kadın ile erkek arasında.";
                     if (AreCloseRelatives(actor, target)) return "Yakın akrabalar evlenemez.";

@@ -106,8 +106,11 @@ namespace Thatchwick.Core.Tests
         [InlineData(0, AgeStage.Baby)]
         [InlineData(11.99, AgeStage.Baby)]
         [InlineData(12, AgeStage.Child)]
-        [InlineData(24, AgeStage.Youth)]
-        [InlineData(36, AgeStage.Adult)]
+        [InlineData(24, AgeStage.Teen)]
+        [InlineData(29.99, AgeStage.Teen)]
+        [InlineData(30, AgeStage.YoungAdult)]
+        [InlineData(41.99, AgeStage.YoungAdult)]
+        [InlineData(42, AgeStage.Adult)]
         [InlineData(71.99, AgeStage.Adult)]
         [InlineData(72, AgeStage.Elder)]
         [InlineData(143, AgeStage.Elder)]
@@ -119,7 +122,7 @@ namespace Thatchwick.Core.Tests
         [Fact]
         public void Gecersiz_Sinirlar_Reddedilir()
         {
-            Assert.Throws<ArgumentException>(() => new AgeConfig(childStart: 30, youthStart: 24));
+            Assert.Throws<ArgumentException>(() => new AgeConfig(childStart: 30, teenStart: 24));
             Assert.Throws<ArgumentException>(() => new AgeConfig(elderStart: 72, earliestDeath: 60));
             Assert.Throws<ArgumentException>(() => new AgeConfig(earliestDeath: 96, maxLifespan: 90));
         }
@@ -157,7 +160,7 @@ namespace Thatchwick.Core.Tests
             var c = new Character(1, "Aldric", new GridPos(0, 0));
             int count = 0;
             c.StageChanged += (_, __, ___) => count++;
-            c.Tick(40.0); // Bebek -> Yetişkin
+            c.Tick(45.0); // Bebek -> Yetişkin
             Assert.Equal(AgeStage.Adult, c.Stage);
             Assert.Equal(1, count);
         }

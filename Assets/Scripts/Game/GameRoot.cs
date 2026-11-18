@@ -1603,10 +1603,10 @@ namespace Thatchwick.Game
             actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1, level);
             float scale;
             if (real != null)   // gerçek setler zaten çocuk/yetişkin boyunda çizildi; bebek çocuk setinin küçüğü
-                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : 1f;
+                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Teen ? 0.94f : 1f);   // ergen yetişkin setinin biraz küçüğü
             else
             {
-                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : 1f);
+                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : (actor.Character.Stage == AgeStage.Teen ? 0.92f : 1f));
             }
             actor.View.localScale = new Vector3(scale, scale, 1f);
         }
@@ -1643,17 +1643,7 @@ namespace Thatchwick.Game
             return parts.Length == 0 ? "" : parts.ToString();
         }
 
-        private static string StageName(AgeStage s)
-        {
-            switch (s)
-            {
-                case AgeStage.Baby: return "Bebek";
-                case AgeStage.Child: return "Çocuk";
-                case AgeStage.Youth: return "Genç";
-                case AgeStage.Adult: return "Yetişkin";
-                default: return "Yaşlı";
-            }
-        }
+        private static string StageName(AgeStage s) => AgeStages.Name(s);
 
         /// <summary>"İyi (+15): Dinlenmiş, Uyumlu ev"</summary>
         public static string MoodText(Character c, int maxNames = 3)

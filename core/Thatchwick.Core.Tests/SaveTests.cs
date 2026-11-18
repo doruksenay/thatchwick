@@ -241,5 +241,20 @@ namespace Thatchwick.Core.Tests
             Assert.True(loaded.Household.Count("firewood") > 0);
             Assert.True(loaded.Account.HasFirst("first:chop"));
         }
+
+        [Fact]
+        public void T16_EskiGencKarakterler_YaslarinaGoreErgenYaDaGencYetiskinOlur()
+        {
+            // 56: evre kayda yazılmaz, yaştan türetilir. Eski kayıttaki "Genç" (24-36) karakterler
+            // yeni sınırlara göre Ergen (24-30) ya da Genç yetişkin (30-42) olur; göç kodu gerekmez.
+            var path = Path.Combine(System.AppContext.BaseDirectory, "SaveFixtures", "save_v1.json");
+            var data = JsonSerializer.Deserialize<SaveData>(File.ReadAllText(path), Json);
+            var loaded = SaveGame.Load(data, Content());
+            var aldric = loaded.Characters.Single(c => c.Name == "Aldric");   // 30 gün: eskiden Genç
+            var maud = loaded.Characters.Single(c => c.Name == "Maud");       // 40 gün: eskiden Yetişkin
+            Assert.Equal(AgeStage.YoungAdult, aldric.Stage);
+            Assert.Equal(AgeStage.YoungAdult, maud.Stage);
+            Assert.Equal(9, SkillRules.LevelCap(maud.Stage));
+        }
     }
 }

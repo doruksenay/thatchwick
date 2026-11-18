@@ -123,7 +123,7 @@ namespace Thatchwick.Core.Tests
         [Fact]
         public void Taslak_Karakter_Uretir_YasVeBeceriEgilimiUygulanir()
         {
-            var d = new CharacterDraft { Name = "Aldric", StartStage = AgeStage.Youth, SkillFocus = SkillType.Carpentry };
+            var d = new CharacterDraft { Name = "Aldric", StartStage = AgeStage.YoungAdult, SkillFocus = SkillType.Carpentry };
             d.Appearance.SkinColor = Catalog.SkinTones[1];
             d.SetSex(Sex.Male, Catalog);
             d.Appearance.HairColor = new Rgb(10, 20, 30);
@@ -134,8 +134,8 @@ namespace Thatchwick.Core.Tests
             Assert.Equal("Aldric", c.Name);
             Assert.Equal(Sex.Male, c.Sex);
             Assert.True(c.IsPlayerControlled);
-            Assert.Equal(AgeStage.Youth, c.Stage);
-            Assert.Equal(30.0, c.AgeDays, 6);
+            Assert.Equal(AgeStage.YoungAdult, c.Stage);
+            Assert.Equal(32.0, c.AgeDays, 6);
             Assert.Equal(2, c.Skills.GetLevel(SkillType.Carpentry));
             Assert.Equal(1, c.Skills.GetLevel(SkillType.Cooking));
             Assert.Equal(new Rgb(10, 20, 30), c.Appearance.HairColor);

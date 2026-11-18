@@ -44,7 +44,7 @@ namespace Thatchwick.Core.Tests
             var family = new FamilyService(pop, house, db, seed: 2);
             life.Attach(family);
             var head = new Character(pop.NextId(), "Aylin", new GridPos(8, 8), true) { Sex = Sex.Female, CanStarve = false, MoodEnabled = true };
-            head.SetAge(40);
+            head.SetAge(45);
             pop.Add(head);
             var build = new BuildService(world, house, db);
             return new Rig { Db = db, World = world, House = house, Pop = pop, Clock = clock, Life = life, Family = family, Head = head, Build = build };

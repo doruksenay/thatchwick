@@ -28,7 +28,7 @@ namespace Thatchwick.Core.Tests
         private static Character Person(int level = 1, SkillType skill = SkillType.Farming, int id = 1, GridPos? at = null)
         {
             var c = new Character(id, "Doruk", at ?? new GridPos(0, 0), true);
-            c.SetAge(40);
+            c.SetAge(45);
             if (level > 1) c.GainSkillXp(skill, SkillRules.XpForLevel(level));
             Assert.Equal(level, c.Skills.GetLevel(skill));
             return c;

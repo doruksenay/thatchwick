@@ -44,7 +44,7 @@ namespace Thatchwick.Core.Characters
         public string LikedColor { get; set; } = "";
         public string LikedHobby { get; set; } = "";
         public string DislikedFood { get; set; } = "";
-        /// <summary>Çocuk Genç evresine geçince bir kez açılan ücretsiz Ayna hakkı (karar 17.11.2026).</summary>
+        /// <summary>Çocuk Ergen evresine geçince bir kez açılan ücretsiz Ayna hakkı (karar 17.11.2026).</summary>
         public bool FreeMirrorAvailable { get; set; }
         /// <summary>İyileşmekte olan yara (kaza); yoksa null.</summary>
         public ActiveInjury Injury { get; set; }
@@ -195,10 +195,10 @@ namespace Thatchwick.Core.Characters
         /// <summary>Doğumda (anne, babanın kimliği) ile bir kez tetiklenir. Ölürse doğum olmaz.</summary>
         public event Action<Character, int?> GaveBirth;
 
-        /// <summary>Genç ya da Yetişkin, ölmemiş, hamile olmayan, doğum sonrası süresini doldurmuş kadın hamile kalabilir.</summary>
+        /// <summary>Genç yetişkin ya da Yetişkin (Ergen değil), ölmemiş, hamile olmayan, doğum sonrası süresini doldurmuş kadın hamile kalabilir.</summary>
         public bool CanConceive =>
             !IsDead && Sex == Sex.Female && !IsPregnant && _postpartumLeft <= 0
-            && (Stage == AgeStage.Youth || Stage == AgeStage.Adult);
+            && AgeStages.CanConceive(Stage);
 
         public bool TryStartPregnancy(int fatherId)
         {
@@ -443,8 +443,8 @@ namespace Thatchwick.Core.Characters
             var after = Stage;
             if (after != before)
             {
-                // Çocuk Genç'e geçerken bir kez ücretsiz Ayna (karar 17.11.2026).
-                if (before == AgeStage.Child && after == AgeStage.Youth) FreeMirrorAvailable = true;
+                // Çocuk Ergen'e geçerken bir kez ücretsiz Ayna (karar 17.11.2026).
+                if (before == AgeStage.Child && after == AgeStage.Teen) FreeMirrorAvailable = true;
                 StageChanged?.Invoke(this, before, after);
             }
 

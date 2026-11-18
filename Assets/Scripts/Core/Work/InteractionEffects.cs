@@ -75,7 +75,7 @@ namespace Thatchwick.Core.Work
             }
             if (interaction.RequiresAnimal && (Animals == null || Animals.Residents(item.Id) == 0)) return "Burada hayvan yok.";
             if (interaction.Collect && item.StockTotal == 0) return "Toplanacak ürün yok.";
-            if (interaction.Teach && Pupils(character).Count == 0) return "Ders verilecek çocuk ya da genç yok.";
+            if (interaction.Teach && Pupils(character).Count == 0) return "Ders verilecek çocuk ya da ergen yok.";
             if (interaction.EmptyFill && item.Fill <= 0) return "Boşaltılacak bir şey yok.";
             if (interaction.EmptyFill && item.Def.FillProduct != null && Storage != null && !Storage.HasRoomFor(item.Def.FillProduct))
                 return "Depoda gübreye yer yok: gübreyi sat, tarlaya ser ya da depoyu büyüt.";
@@ -262,7 +262,7 @@ namespace Thatchwick.Core.Work
             var list = new List<Character>();
             if (Household == null) return list;
             foreach (var c in Household())
-                if (c != teacher && !c.IsDead && !c.IsVillager && (c.Stage == AgeStage.Child || c.Stage == AgeStage.Youth)) list.Add(c);
+                if (c != teacher && !c.IsDead && !c.IsVillager && (c.Stage == AgeStage.Child || c.Stage == AgeStage.Teen)) list.Add(c);
             return list;
         }
 

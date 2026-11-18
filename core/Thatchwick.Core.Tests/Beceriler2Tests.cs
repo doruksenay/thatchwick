@@ -26,7 +26,7 @@ namespace Thatchwick.Core.Tests
             return db;
         }
 
-        private static Character Person(int id = 1, int age = 40, SkillType? skill = null, int level = 1)
+        private static Character Person(int id = 1, int age = 45, SkillType? skill = null, int level = 1)
         {
             var c = new Character(id, "K" + id, new GridPos(0, 0), true);
             c.SetAge(age);
@@ -73,7 +73,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(SkillType.Mining, mine.Skill);
             var fx1 = new InteractionEffects(w, h1, db, seed: 4);
             var fx2 = new InteractionEffects(w, h2, db, seed: 4);
-            var novice = Person(1); var master = Person(2, 40, SkillType.Mining, 10);
+            var novice = Person(1); var master = Person(2, 45, SkillType.Mining, 10);
             for (int k = 0; k < 100; k++) { fx1.Apply(novice, quarry, mine); fx2.Apply(master, quarry, mine); }
             Assert.Equal(200, h1.Count("item.stone"));
             Assert.True(h2.Count("item.stone") > 220, $"usta {h2.Count("item.stone")}");
@@ -88,7 +88,7 @@ namespace Thatchwick.Core.Tests
         public void Okuryazarlik_ButunBecerilerdeFazlaXp()
         {
             var plain = Person(1);
-            var reader = Person(2, 40, SkillType.Literacy, 10);
+            var reader = Person(2, 45, SkillType.Literacy, 10);
             plain.GainSkillXp(SkillType.Farming, 100);
             reader.GainSkillXp(SkillType.Farming, 100);
             Assert.Equal(100.0, plain.Skills.GetXp(SkillType.Farming), 3);
@@ -154,7 +154,7 @@ namespace Thatchwick.Core.Tests
             var t = new GridPos(4, 4);
             w.Map.SetRoad(t, RoadType.Paved, 0.2f);
             var work = new FarmWork(w) { House = h };
-            var novice = Person(1); var mason = Person(2, 40, SkillType.Masonry, 5);
+            var novice = Person(1); var mason = Person(2, 45, SkillType.Masonry, 5);
             Assert.Equal(2, FarmWork.RepairStoneFor(novice, RoadType.Paved));
             Assert.Equal(1, FarmWork.RepairStoneFor(mason, RoadType.Paved));
             h.AddItem("item.stone", 1);
@@ -209,7 +209,7 @@ namespace Thatchwick.Core.Tests
             var h = new Household();
             var pop = new Population();
             var family = new FamilyService(pop, h, db);
-            var mom = Person(1, 40, SkillType.Parenting, 10);
+            var mom = Person(1, 45, SkillType.Parenting, 10);
             var baby = Person(2, 1);
             pop.Add(mom); pop.Add(baby);
             h.AddItem("item.turnip", 3);
@@ -218,14 +218,14 @@ namespace Thatchwick.Core.Tests
             family.Apply(mom, baby, SocialAction.Feed);
             Assert.True(baby.Needs.Get(NeedType.Hunger) >= 10f + FamilyService.FeedRestore * 1.4f);
 
-            var a = Person(3, 40, SkillType.Charm, 10); var b = Person(4);
+            var a = Person(3, 45, SkillType.Charm, 10); var b = Person(4);
             pop.Add(a); pop.Add(b);
             family.Apply(a, b, SocialAction.Chat);
             Assert.True(family.Affection(a.Id, b.Id) > FamilyService.ChatAffection);
             Assert.True(a.Skills.GetXp(SkillType.Charm) > SkillRules.XpForLevel(10));
 
             // Öğretmen: çocuklar okuryazarlık ve öğretmenin en iyi becerisinden XP alır.
-            var teacher = Person(5, 40, SkillType.Teaching, 5);
+            var teacher = Person(5, 45, SkillType.Teaching, 5);
             teacher.GainSkillXp(SkillType.Cooking, 500);
             var kid = Person(6, 14);
             pop.Add(teacher); pop.Add(kid);
@@ -255,7 +255,7 @@ namespace Thatchwick.Core.Tests
                 for (int k = 0; k < 40 && !r.IsIdle; k++) r.Tick(0.01);
                 return c.Needs.Get(NeedType.Fun);
             }
-            Assert.True(FunAfter(Person(2, 40, SkillType.Music, 10)) > FunAfter(Person(1)) * 1.4);
+            Assert.True(FunAfter(Person(2, 45, SkillType.Music, 10)) > FunAfter(Person(1)) * 1.4);
 
             // Arabacılık: depo büyür. Kâhyalık: görev işleri hızlanır.
             var storage = new StorageService(w, h, db);

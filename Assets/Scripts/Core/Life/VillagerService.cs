@@ -52,8 +52,8 @@ namespace Thatchwick.Core.Life
         public Func<string, GridPos> PlaceResolver { get; set; }
         /// <summary>Ölen adlı köylünün yerine halefi geldi (karakter, tanım): oyun katmanı görünüm ve sahne nesnesi verir.</summary>
         public event Action<Character, VillagerDef> SuccessorArrived;
-        /// <summary>Halef bu yaş aralığında (oyun günü) köye gelir: genç bir usta.</summary>
-        public const double SuccessorAgeMin = 24.5, SuccessorAgeMax = 34;
+        /// <summary>Halef bu yaş aralığında (oyun günü) köye gelir: genç yetişkin bir usta.</summary>
+        public const double SuccessorAgeMin = 30.5, SuccessorAgeMax = 40;   // Genç yetişkin
 
         public VillagerService(ContentDatabase content, Population population, Household house, GameClock clock, int seed = 55)
         {
