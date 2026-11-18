@@ -1,7 +1,7 @@
 ---
 id: "383"
 title: Masa ve raf üstü: ışık, saksı otları, iplik ve sepetler (12)
-status: running
+status: review
 claimed_at: 2026-11-18T12:55Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
