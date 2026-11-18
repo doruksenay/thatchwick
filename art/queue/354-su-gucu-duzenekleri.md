@@ -1,7 +1,8 @@
 ---
 id: "354"
 title: Su gücüyle çalışan düzenekler: su hızarı, dink, su çekici
-status: pending
+status: running
+claimed_at: 2026-11-18T11:58Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
 family: esya
