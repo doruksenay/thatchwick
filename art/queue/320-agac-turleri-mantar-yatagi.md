@@ -1,7 +1,7 @@
 ---
 id: "320"
 title: Yeni ağaç türleri ve bodrum mantar yatağı (huş, çam, söğüt; mantar yatağı)
-status: running
+status: failed
 claimed_at: 2026-11-18T09:19Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -37,3 +37,6 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 
 ## Notlar
 - Reçine, söğüt filizi ve fidan ikonları 316 kapsamında.
+
+## Sonuç
+7 çıktının hiçbiri stil denetimini/şekil ölçütünü geçmedi, teslim yok. Ayrıntı: art/results/320-agac-turleri-mantar-yatagi.md. 8 gen harcandı.
