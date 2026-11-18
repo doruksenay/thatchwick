@@ -36,17 +36,21 @@ namespace Thatchwick.Core.Mood
             InjuredSickle = "injured_sickle", InjuredFall = "injured_fall";
 
         private readonly Dictionary<string, MoodletDef> _defs = new Dictionary<string, MoodletDef>(StringComparer.Ordinal);
+        // Default paylaşılan bir örnek: her ContentDatabase içerik yüklerken yemek ve içki etkilerini buraya kaydeder.
+        // Testler paralel koştuğunda (xUnit sınıf başına) aynı anda yazıldığı için sözlük bozuluyordu (CI, 2026-11-18).
+        private readonly object _lock = new object();
 
-        public IEnumerable<MoodletDef> All => _defs.Values;
+        /// <summary>Kayıtların anlık kopyası (döngü sırasında başka kayıt gelse de güvenli).</summary>
+        public IEnumerable<MoodletDef> All { get { lock (_lock) return new List<MoodletDef>(_defs.Values); } }
 
         public void Register(MoodletDef def)
         {
             if (def == null || string.IsNullOrWhiteSpace(def.Id)) throw new ArgumentException("Moodlet kimliği boş.");
-            _defs[def.Id] = def;
+            lock (_lock) _defs[def.Id] = def;
         }
 
-        public bool TryGet(string id, out MoodletDef def) => _defs.TryGetValue(id ?? "", out def);
-        public bool Contains(string id) => id != null && _defs.ContainsKey(id);
+        public bool TryGet(string id, out MoodletDef def) { lock (_lock) return _defs.TryGetValue(id ?? "", out def); }
+        public bool Contains(string id) { if (id == null) return false; lock (_lock) return _defs.ContainsKey(id); }
 
         public static readonly MoodCatalog Default = CreateDefault();
 
