@@ -113,6 +113,23 @@ namespace Thatchwick.Core.Build
             for (int i = from; i < defs.Count; i++) _house.AddItem(defs[i].Id);
         }
 
+        /// <summary>Kaldırılan eşyaları durumlarıyla envantere koyar (döküntü yığını içindekileri de verir, kendisi envantere girmez).</summary>
+        private void GiveBack(List<ItemInstance> items, int from = 0)
+        {
+            for (int i = from; i < items.Count; i++)
+            {
+                var it = items[i];
+                if (it.Def.Id == Decor.Debris) { foreach (var c in it.Contents) _house.AddItem(c.ItemId, 1, c.Condition); continue; }
+                _house.AddItem(it.Def.Id, 1, it.Condition);
+            }
+        }
+
+        /// <summary>Örneğin satış değeri: fiyatın oranı × durum çarpanı (hasarlı %50, onarılmış %75).</summary>
+        public int SellValue(ItemInstance item) => item == null ? 0 : (int)Math.Floor(item.Def.Price * SellRatio * Decor.SellFactor(item.Condition));
+
+        /// <summary>Envanterdeki belirli durumdaki bir adedin satış değeri.</summary>
+        public int SellValue(ItemDef def, ItemCondition condition) => (int)Math.Floor(def.Price * SellRatio * Decor.SellFactor(condition));
+
         /// <summary>Depo kapasitesi; null ise sınırsız (testler, eski kurulumlar).</summary>
         public StorageService Storage { get; set; }
 
@@ -206,24 +223,28 @@ namespace Thatchwick.Core.Build
             public string SlotId;
             public bool Wall;
             public string Finish;
+            public int Band = -1;
+            public ItemCondition Condition;
         }
 
         private static Spot SpotOf(ItemInstance it, ItemDef def = null) =>
             new Spot { Def = def ?? it.Def, Pos = it.Position, Rot = it.Rotation, ParentId = it.ParentId, SlotId = it.SlotId, Wall = it.IsWallMounted,
-                Finish = def == null || def == it.Def ? it.FinishId : null };
+                Finish = def == null || def == it.Def ? it.FinishId : null, Band = it.IsWallMounted ? it.WallBand : -1, Condition = it.Condition };
 
         private PlacementCheck CanPutBack(Spot s, int? ignoreItemId = null) =>
             s.ParentId.HasValue ? _world.CanPlaceOnSurface(s.Def, s.ParentId.Value, s.SlotId, ignoreItemId)
-            : s.Wall ? _world.CanPlaceOnWall(s.Def, s.Pos, s.Rot, ignoreItemId)
+            : s.Wall ? _world.CanPlaceOnWall(s.Def, s.Pos, s.Rot, s.Band, ignoreItemId)
             : s.Def.IsRug ? _world.CanPlaceRug(s.Def, s.Pos, s.Rot, ignoreItemId)
+            : s.Def.IsCeiling ? _world.CanPlaceCeiling(s.Def, s.Pos, ignoreItemId)
             : _world.CanPlaceFloor(s.Def, s.Pos, s.Rot, ignoreItemId);
 
         private ItemInstance PutBack(Spot s)
         {
             var it = s.ParentId.HasValue ? _world.PlaceOnSurface(s.Def, s.ParentId.Value, s.SlotId)
-                : s.Wall ? _world.PlaceOnWall(s.Def, s.Pos, s.Rot)
+                : s.Wall ? _world.PlaceOnWall(s.Def, s.Pos, s.Rot, s.Band)
                 : _world.PlaceItem(s.Def, s.Pos, s.Rot);
             it.FinishId = s.Finish;
+            it.Condition = s.Condition;
             return it;
         }
 
@@ -262,17 +283,30 @@ namespace Thatchwick.Core.Build
             return PlacementCheck.Success;
         }
 
-        /// <summary>Envanterdeki bir eşyayı satar.</summary>
+        /// <summary>Envanterdeki bir eşyayı satar (önce sağlam olanı).</summary>
         public PlacementCheck SellFromInventory(string itemId)
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
-            if (!_house.TryTakeItem(itemId)) return PlacementCheck.Fail("Envanterde yok.");
-            int value = SellValue(def);
+            if (!_house.TryTakeItem(itemId, out var cond)) return PlacementCheck.Fail("Envanterde yok.");
+            return FinishInventorySale(itemId, def, cond);
+        }
+
+        /// <summary>Envanterden belirli durumdaki (hasarlı, onarılmış) bir adedi satar; değeri durumla düşer.</summary>
+        public PlacementCheck SellFromInventory(string itemId, ItemCondition condition)
+        {
+            if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
+            if (!_house.TakeCondition(itemId, condition)) return PlacementCheck.Fail($"Envanterde {Decor.ConditionName(condition).ToLowerInvariant()} {def.DisplayName} yok.");
+            return FinishInventorySale(itemId, def, condition);
+        }
+
+        private PlacementCheck FinishInventorySale(string itemId, ItemDef def, ItemCondition cond)
+        {
+            int value = SellValue(def, cond);
             _house.AddAkce(value);
             Record("Satış", () =>
             {
                 if (!_house.TrySpend(value)) return PlacementCheck.Fail("Akçe yetmiyor, satış geri alınamaz.");
-                _house.AddItem(itemId);
+                _house.AddItem(itemId, 1, cond);
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;
@@ -299,8 +333,9 @@ namespace Thatchwick.Core.Build
             PlacedItemSold?.Invoke(target);
             var spot = SpotOf(target);
             int total = FinishSellBonus(target);
-            var removed = _world.RemoveItem(itemId);
-            foreach (var def in removed) total += SellValue(def);
+            var removedItems = _world.RemoveItemInstances(itemId);
+            var removed = new List<ItemDef>();
+            foreach (var it in removedItems) { removed.Add(it.Def); total += SellValue(it); }
             if (total > 0) _house.AddAkce(total);
             // Geri kazanım: sökülen eşyadan malzemenin bir kısmı geri döner (akçeye ek).
             var salvage = new List<KeyValuePair<string, int>>();
@@ -315,7 +350,7 @@ namespace Thatchwick.Core.Build
                 if (!_house.TrySpend(total)) return PlacementCheck.Fail("Akçe yetmiyor, satış geri alınamaz.");
                 foreach (var kv in salvage) for (int i = 0; i < kv.Value; i++) _house.TryTakeItem(kv.Key);
                 PutBack(spot);
-                GiveBack(removed, 1);
+                GiveBack(removedItems, 1);
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;
@@ -382,6 +417,11 @@ namespace Thatchwick.Core.Build
             if (_house.Count(itemId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
             var def = _content.Items.Get(itemId);
             if (def.Placement == ItemPlacement.Wall) return PlacementCheck.Fail("Bu eşya duvara asılır.");
+            if (def.IsCeiling)
+            {
+                if (!_world.Map.IsOwned(position)) return PlacementCheck.Fail(NotOwned);
+                return _world.CanPlaceCeiling(def, position);
+            }
             var owned = CheckOwned(def, position, rotation);
             if (!owned.Ok) return owned;
             if (def.IsRug) return _world.CanPlaceRug(def, position, rotation);
@@ -423,8 +463,9 @@ namespace Thatchwick.Core.Build
                 BeginGroup("Merdiven");
             }
             CutStairwell(def, position, rotation);
-            _house.TryTakeItem(itemId);
+            _house.TryTakeItem(itemId, out var cond);
             var placedItem = _world.PlaceItem(def, position, rotation);
+            placedItem.Condition = cond;
             placed = placedItem;
             int placedId = placedItem.Id;
             Record("Yerleştirme", () =>
@@ -433,7 +474,7 @@ namespace Thatchwick.Core.Build
                 if (current == null) return PlacementCheck.Fail("Eşya artık orada değil.");
                 string why = RemovalBlocker(current);      // bu arada hayvan alınmış barınak, katta biri kalmış merdiven
                 if (why != null) return PlacementCheck.Fail(why);
-                GiveBack(_world.RemoveItem(placedId));
+                GiveBack(_world.RemoveItemInstances(placedId));
                 return PlacementCheck.Success;
             });
             if (grouped) EndGroup();
@@ -451,27 +492,30 @@ namespace Thatchwick.Core.Build
         public Func<ItemInstance, string> StoreBlocker { get; set; }
 
         /// <summary>Duvar eşyasının karonun bir kenarına asılıp asılamayacağı (envanter, arsa, duvar).</summary>
-        public PlacementCheck CanPlaceWallFromInventory(string itemId, GridPos tile, int side)
+        public PlacementCheck CanPlaceWallFromInventory(string itemId, GridPos tile, int side, int band = -1)
         {
             if (_house.Count(itemId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
             var def = _content.Items.Get(itemId);
-            if (!_world.Map.IsOwned(tile)) return PlacementCheck.Fail(NotOwned);
-            return _world.CanPlaceOnWall(def, tile, side);
+            foreach (var (t, _) in WallSides.Segments(tile, Footprint.Normalize(side), Math.Max(1, def.WallWidth)))
+                if (!_world.Map.IsOwned(t)) return PlacementCheck.Fail(NotOwned);
+            return _world.CanPlaceOnWall(def, tile, side, band, null);
         }
 
-        public PlacementCheck PlaceWallFromInventory(string itemId, GridPos tile, int side, out ItemInstance placed)
+        /// <summary>Duvar eşyasını envanterden asar. band &lt; 0: eşyanın ilk boş bandı (alt, orta, üst).</summary>
+        public PlacementCheck PlaceWallFromInventory(string itemId, GridPos tile, int side, out ItemInstance placed, int band = -1)
         {
             placed = null;
-            var check = CanPlaceWallFromInventory(itemId, tile, side);
+            var check = CanPlaceWallFromInventory(itemId, tile, side, band);
             if (!check.Ok) return check;
-            _house.TryTakeItem(itemId);
-            var wallItem = _world.PlaceOnWall(_content.Items.Get(itemId), tile, side);
+            _house.TryTakeItem(itemId, out var cond);
+            var wallItem = _world.PlaceOnWall(_content.Items.Get(itemId), tile, side, band);
+            wallItem.Condition = cond;
             placed = wallItem;
             int wallId = wallItem.Id;
             Record("Duvara asma", () =>
             {
                 if (_world.GetItem(wallId) == null) return PlacementCheck.Fail("Eşya artık orada değil.");
-                GiveBack(_world.RemoveItem(wallId));
+                GiveBack(_world.RemoveItemInstances(wallId));
                 return PlacementCheck.Success;
             });
             Furnished?.Invoke(wallItem);
@@ -485,14 +529,15 @@ namespace Thatchwick.Core.Build
             var def = _content.Items.Get(itemId);
             var check = _world.CanPlaceOnSurface(def, surfaceItemId, slotId);
             if (!check.Ok) return check;
-            _house.TryTakeItem(itemId);
+            _house.TryTakeItem(itemId, out var cond);
             var decor = _world.PlaceOnSurface(def, surfaceItemId, slotId);
+            decor.Condition = cond;
             placed = decor;
             int decorId = decor.Id;
             Record("Dekor", () =>
             {
                 if (_world.GetItem(decorId) == null) return PlacementCheck.Fail("Dekor artık orada değil.");
-                GiveBack(_world.RemoveItem(decorId));
+                GiveBack(_world.RemoveItemInstances(decorId));
                 return PlacementCheck.Success;
             });
             Furnished?.Invoke(decor);
@@ -504,7 +549,7 @@ namespace Thatchwick.Core.Build
             var item = _world.GetItem(itemId);
             if (item != null && item.IsPlant) return PlacementCheck.Fail(PlantLocked);
             if (IsLocked(item)) return PlacementCheck.Fail(Locked);
-            if (item != null && item.IsWallMounted)
+            if (item != null && (item.IsWallMounted || item.IsCeiling))
             {
                 if (!_world.Map.IsOwned(position)) return PlacementCheck.Fail(NotOwned);
             }
@@ -527,6 +572,38 @@ namespace Thatchwick.Core.Build
             return moved;
         }
 
+        /// <summary>Duvar eşyasını aynı duvarda başka banda (alt, orta, üst) taşır; geri alınabilir.</summary>
+        public PlacementCheck SetWallBand(int itemId, int band)
+        {
+            var item = _world.GetItem(itemId);
+            if (item == null || !item.IsWallMounted) return PlacementCheck.Fail("Duvar eşyası bulunamadı.");
+            if (IsLocked(item)) return PlacementCheck.Fail(Locked);
+            if (item.WallBand == band) return PlacementCheck.Fail($"Zaten {Decor.BandName(band)} bantta.");
+            int old = item.WallBand;
+            var r = _world.MoveWallItem(itemId, item.Position, item.Rotation, band);
+            if (r.Ok) Record("Bant", () => _world.GetItem(itemId) == null ? PlacementCheck.Fail("Eşya artık yok.") : _world.MoveWallItem(itemId, item.Position, item.Rotation, old));
+            return r;
+        }
+
+        /// <summary>Halının sırası: +2 en üste, +1 bir üste, -1 bir alta, -2 en alta (halılar üst üste serilir).</summary>
+        public PlacementCheck MoveRugLayer(int itemId, int step)
+        {
+            var rug = _world.GetItem(itemId);
+            if (rug == null || !rug.IsRug) return PlacementCheck.Fail("Halı bulunamadı.");
+            int old = rug.LayerOrder;
+            bool ok = step >= 2 ? _world.RugToFront(itemId) : step <= -2 ? _world.RugToBack(itemId) : _world.RugStep(itemId, step);
+            if (!ok) return PlacementCheck.Fail(step > 0 ? "Üstünde başka halı yok." : "Altında başka halı yok.");
+            Record("Halı sırası", () =>
+            {
+                var r = _world.GetItem(itemId);
+                if (r == null) return PlacementCheck.Fail("Halı artık yok.");
+                _world.RestoreDecorState(r, -1, old, r.Condition, r.TarnishDays);
+                _world.NotifyChanged();
+                return PlacementCheck.Success;
+            });
+            return PlacementCheck.Success;
+        }
+
         /// <summary>Eşyayı (ve dekorlarını) envantere geri alır.</summary>
         public PlacementCheck StoreToInventory(int itemId)
         {
@@ -539,14 +616,14 @@ namespace Thatchwick.Core.Build
             var spot = SpotOf(target);
             // Envanter eşya kimliğiyle sayar: kaplama (renk/malzeme) envantere gitmez, farkının satış oranı iade edilir.
             int finishRefund = FinishSellBonus(target);
-            var removed = _world.RemoveItem(itemId);
+            var removed = _world.RemoveItemInstances(itemId);
             GiveBack(removed);
             if (finishRefund > 0) _house.AddAkce(finishRefund);
             Record("Envantere alma", () =>
             {
                 if (!CanPutBack(spot).Ok) return PlacementCheck.Fail("Eski yeri doldu.");
                 if (finishRefund > 0 && _house.Akce < finishRefund) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz.");
-                if (!_house.TryTakeItem(spot.Def.Id)) return PlacementCheck.Fail("Eşya artık envanterde değil.");
+                if (!_house.TakeCondition(spot.Def.Id, spot.Condition) && !_house.TryTakeItem(spot.Def.Id)) return PlacementCheck.Fail("Eşya artık envanterde değil.");
                 if (finishRefund > 0) _house.TrySpend(finishRefund);
                 PutBack(spot);
                 return PlacementCheck.Success;

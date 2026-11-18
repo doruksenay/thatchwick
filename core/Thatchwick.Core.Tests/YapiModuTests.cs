@@ -257,7 +257,7 @@ namespace Thatchwick.Core.Tests
         // ---------- halı ve mobilya kaplaması ----------
 
         [Fact]
-        public void Hali_YoluKapatmaz_UstuneMobilyaKonur_UstUsteSerilmez()
+        public void Hali_YoluKapatmaz_UstuneMobilyaKonur_UstUsteSerilir()
         {
             var (svc, w, h, db) = Setup();
             h.AddItem("item.rug_wool", 2);
@@ -267,7 +267,11 @@ namespace Thatchwick.Core.Tests
             Assert.Null(w.GetItemAt(new GridPos(4, 4)));
             Assert.Same(rug, w.GetRugAt(new GridPos(5, 5)));
             Assert.True(svc.PlaceFromInventory("item.table_wood", new GridPos(4, 4), 0, out _).Ok);   // halının üstüne masa
-            Assert.False(svc.PlaceFromInventory("item.rug_wool", new GridPos(5, 5), 0, out _).Ok);    // halı üstüne halı
+            // Karar 18.11.2026: halılar sınırsız üst üste serilir; yeni halı üstte.
+            Assert.True(svc.PlaceFromInventory("item.rug_wool", new GridPos(5, 5), 0, out var top).Ok);
+            Assert.Same(top, w.GetRugAt(new GridPos(5, 5)));
+            Assert.Same(rug, w.GetRugAt(new GridPos(4, 4)));
+            Assert.True(svc.StoreToInventory(top.Id).Ok);
             Assert.True(svc.Move(rug.Id, new GridPos(8, 8), 0).Ok);                                  // masanın altından da taşınır
             Assert.True(svc.SellPlaced(rug.Id).Ok);
             Assert.Null(w.GetRugAt(new GridPos(8, 8)));

@@ -123,6 +123,14 @@ namespace Thatchwick.Core.Content
         public bool PetsAnimals { get; set; }
         /// <summary>Barınaktaki yetişkin, dostu olmayan bir hayvanı keser; hayvanın türüne göre et verir.</summary>
         public bool Slaughter { get; set; }
+
+        // ---- ev dekorasyonu (Project belgesi 27) ----
+        /// <summary>Onarım istasyonu: bu malzemeden (wood, metal, cloth) hasarlı bir eşyayı onarır (önce envanterdeki).</summary>
+        public string RepairMaterial { get; set; }
+        /// <summary>Kararmış metal aynayı cilalar.</summary>
+        public bool Polish { get; set; }
+        /// <summary>İçindekileri (döküntü yığını) durumlarıyla envantere alır.</summary>
+        public bool CollectContents { get; set; }
         /// <summary>Yalnızca meyvesi olgun ağaçta yapılabilir.</summary>
         public bool RequiresFruit { get; set; }
         /// <summary>Meyveyi toplar: ağaç yerinde kalır, meyve yeniden olgunlaşmaya başlar.</summary>
@@ -145,7 +153,8 @@ namespace Thatchwick.Core.Content
 
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
             || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
-            || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter;
+            || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter
+            || RepairMaterial != null || Polish || CollectContents;
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;
 

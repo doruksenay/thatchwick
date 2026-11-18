@@ -50,6 +50,28 @@ namespace Thatchwick.Core.Save
     /// <summary>Oyun durumunu SaveData'ya çevirir ve geri kurar (T16: sürümlü, geriye uyumlu).</summary>
     public static class SaveGame
     {
+        // ---- ev dekorasyonu (27) ----
+        private static ItemCondition ParseCondition(int c) => c == 1 ? ItemCondition.Damaged : c == 2 ? ItemCondition.Repaired : ItemCondition.Sound;
+
+        private static string[] ContentsOf(ItemInstance it)
+        {
+            if (!it.HasContents) return null;
+            var list = new List<string>();
+            foreach (var c in it.Contents) list.Add(c.Condition == ItemCondition.Sound ? c.ItemId : c.ItemId + "|" + (int)c.Condition);
+            return list.ToArray();
+        }
+
+        private static bool TryParseStored(string entry, out StoredItem stored)
+        {
+            stored = default;
+            if (string.IsNullOrWhiteSpace(entry)) return false;
+            int bar = entry.IndexOf('|');
+            if (bar < 0) { stored = new StoredItem(entry.Trim(), ItemCondition.Sound); return true; }
+            int.TryParse(entry.Substring(bar + 1), out int c);
+            stored = new StoredItem(entry.Substring(0, bar).Trim(), ParseCondition(c));
+            return stored.ItemId.Length > 0;
+        }
+
         public const int CurrentVersion = 2;
         /// <summary>Kayıttan kabul edilen en büyük harita kenarı (oyun haritası 48x32).</summary>
         public const int MaxMapSide = 256;
@@ -151,7 +173,9 @@ namespace Thatchwick.Core.Save
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, z = it.Position.Z, rotation = it.Rotation,
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
                         feedStock = it.FeedStock, stock = stock, finish = it.FinishId, toggled = it.Toggled, fill = it.Fill,
-                        watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays
+                        watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays,
+                        band = it.IsWallMounted ? it.WallBand : -1, layer = it.IsRug ? it.LayerOrder : 0, condition = (int)it.Condition,
+                        tarnish = it.TarnishDays, contents = ContentsOf(it)
                     });
                 }
             data.items = items.ToArray();
@@ -167,7 +191,11 @@ namespace Thatchwick.Core.Save
 
             var inv = new List<KeyInt>();
             foreach (var kv in house.InventoryList()) inv.Add(new KeyInt { key = kv.Key, value = kv.Value });
-            data.household = new HouseholdSave { akce = house.Akce, inventory = inv.ToArray() };
+            var dmg = new List<KeyInt>();
+            foreach (var kv in house.DamagedList()) dmg.Add(new KeyInt { key = kv.Key, value = kv.Value });
+            var rep = new List<KeyInt>();
+            foreach (var kv in house.RepairedList()) rep.Add(new KeyInt { key = kv.Key, value = kv.Value });
+            data.household = new HouseholdSave { akce = house.Akce, inventory = inv.ToArray(), damaged = dmg.ToArray(), repaired = rep.ToArray() };
 
             var chars = new List<CharacterSave>();
             foreach (var c in characters) chars.Add(CaptureCharacter(c));
@@ -456,8 +484,9 @@ namespace Thatchwick.Core.Save
                     if (!parent.HasValue)
                     {
                         // Yükleme modu: yalnızca yapısal denetim. Oyun sırasında geçerli oluşmuş durumlar eşyayı düşürmez.
-                        var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation)
+                        var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation, s.band, null, restoring: true)
                             : def.IsRug ? world.CanPlaceRug(def, pos, s.rotation)
+                            : def.IsCeiling ? world.CanPlaceCeiling(def, pos, null, restoring: true)
                             : world.CanPlaceFloor(def, pos, s.rotation, null, false, restoring: true);
                         if (!fits.Ok)
                         {
@@ -474,6 +503,12 @@ namespace Thatchwick.Core.Save
                         restored.Fill = Math.Max(0, s.fill);
                     restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));
                     if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(kv.key)) restored.SetStock(kv.key, kv.value);
+                    int band = s.band;
+                    if (restored.IsWallMounted && band < 0) band = world.FirstFreeBand(def, pos, s.rotation, restored.Id);
+                    world.RestoreDecorState(restored, band, s.layer, ParseCondition(s.condition), s.tarnish);
+                    if (s.contents != null)
+                        foreach (var entry in s.contents)
+                            if (TryParseStored(entry, out var stored) && content.Items.Contains(stored.ItemId)) restored.Contents.Add(stored);
                 }
 
             var hs = data.household ?? new HouseholdSave();
@@ -486,6 +521,8 @@ namespace Thatchwick.Core.Save
                     house.AddItem(kv.key, kv.value);
                 }
             foreach (var def in returned) house.AddItem(def.Id);
+            if (hs.damaged != null) foreach (var kv in hs.damaged) if (kv != null && content.Items.Contains(kv.key)) house.RestoreCondition(kv.key, kv.value, ItemCondition.Damaged);
+            if (hs.repaired != null) foreach (var kv in hs.repaired) if (kv != null && content.Items.Contains(kv.key)) house.RestoreCondition(kv.key, kv.value, ItemCondition.Repaired);
             result.Household = house;
 
             if (data.characters != null)

@@ -33,6 +33,32 @@ namespace Thatchwick.Core.Life
     }
 
     /// <summary>
+    /// Bir odanın güzellik özeti (Project belgesi 27): eşyaların görünüşü. Konfordan (fiziksel rahatlık) ayrıdır.
+    /// </summary>
+    public sealed class RoomBeauty
+    {
+        /// <summary>Eşyaların güzelliği (kategori tavanlı; hasar, kararma ve alttaki halılar düşülür).</summary>
+        public int Items;
+        /// <summary>Çeşitlilik: farklı katmanlardan güzel eşya (halı, duvar, yüzey, tavan, ışık).</summary>
+        public int Variety;
+        /// <summary>Eksiler (döküntü, is yapan mum, kırık eşya).</summary>
+        public int Penalty;
+        /// <summary>Üst kademe (Tüccar, Asil) eşya sayısı: "Göz alıcı" için en az 2.</summary>
+        public int FineItems;
+        public int Area;
+        /// <summary>Ham toplam (eşya + çeşitlilik - eksi).</summary>
+        public int Raw => Items + Variety - Penalty;
+        /// <summary>Alana göre ölçekli puan: 3x3 odada ham toplam; büyük oda aynı eşyayla daha düşük.</summary>
+        public int Score => (int)Math.Round(Raw * 3.0 / Math.Sqrt(Math.Max(9, Area)));
+        public int Tier => MoodService.BeautyTier(Score, FineItems);
+
+        public string Breakdown()
+        {
+            return $"Eşya {Items} · Çeşitlilik +{Variety}" + (Penalty > 0 ? $" · Eksi -{Penalty}" : "") + $" · Alan {Area} karo → {Score}";
+        }
+    }
+
+    /// <summary>
     /// Ruh hali kaynakları (Adım 32): oda konforu (eşya konfor puanı toplamı) ve yas. Soğuk, açlık, kirlilik gibi
     /// ihtiyaç moodlet'leri Character.Tick'te, stil uyumu/ışık RoomMoodSystem'de, yemek-sohbet-eğlence ilgili
     /// sistemlerde verilir (Core.Mood).
@@ -136,6 +162,83 @@ namespace Thatchwick.Core.Life
             return Math.Min(6, (int)Math.Round(floor + walls));
         }
 
+        // ---- güzellik (Project belgesi 27) ----
+        public const string BeautyId = "mood.beauty";
+        public const int BeautyCategoryCap = 15;
+        public const int BeautyNice = 8, BeautyLovely = 16, BeautyStunning = 28;
+
+        /// <summary>Puan basamağı: 0 sade, 1 hoş, 2 güzel, 3 göz alıcı (üst kademeden en az 2 eşya ister).</summary>
+        public static int BeautyTier(int score, int fineItems)
+        {
+            if (score >= BeautyStunning && fineItems >= 2) return 3;
+            if (score >= BeautyLovely) return 2;
+            if (score >= BeautyNice) return 1;
+            return 0;
+        }
+
+        public static void BeautyMood(int tier, out int value, out string text)
+        {
+            switch (tier)
+            {
+                case 3: value = 15; text = "Göz alıcı oda"; break;
+                case 2: value = 10; text = "Güzel oda"; break;
+                case 1: value = 5; text = "Hoş oda"; break;
+                default: value = 0; text = null; break;
+            }
+        }
+
+        /// <summary>Eşyanın odaya kattığı güzellik (durum ve kararma çarpanlı; döküntü eksi).</summary>
+        public static double BeautyOfItem(ItemInstance item)
+        {
+            double b = item.Def.Beauty;
+            if (b > 0)
+            {
+                b *= Decor.BeautyFactor(item.Condition);
+                if (item.IsTarnished) b *= 0.5;
+            }
+            return b;
+        }
+
+        public RoomBeauty BeautyOf(Room room)
+        {
+            var result = new RoomBeauty();
+            if (room == null || !room.IsIndoor) return result;
+            result.Area = room.Area;
+            var tiles = new HashSet<GridPos>(room.Tiles);
+            var perCategory = new Dictionary<string, double>(StringComparer.Ordinal);
+            bool rug = false, wall = false, surface = false, ceiling = false, light = false;
+            double penalty = 0;
+            foreach (var item in _world.Items)
+            {
+                if (!tiles.Contains(item.Position)) continue;
+                double b = BeautyOfItem(item);
+                if (item.IsRug && b > 0)
+                {
+                    // Halılar üst üste serilir: güzelliğe yalnızca en üstte kaldığı karolar sayılır.
+                    int top = 0, all = 0;
+                    foreach (var t in item.OccupiedTiles()) { all++; if (_world.GetRugAt(t) == item) top++; }
+                    b = all > 0 ? b * top / all : 0;
+                }
+                if (b < 0) { penalty -= b; continue; }
+                if (b <= 0) continue;
+                string cat = item.Def.Category ?? "";
+                perCategory[cat] = (perCategory.TryGetValue(cat, out var c) ? c : 0) + b;
+                if (item.IsRug) rug = true;
+                else if (item.IsWallMounted) wall = true;
+                else if (item.IsDecor) surface = true;
+                else if (item.IsCeiling) ceiling = true;
+                if (item.Def.HasTag("light")) light = true;
+                if (item.Def.StyleSet == "Tüccar" || item.Def.StyleSet == "Asil") result.FineItems++;
+            }
+            double sum = 0;
+            foreach (var kv in perCategory) sum += Math.Min(BeautyCategoryCap, kv.Value);
+            result.Items = (int)Math.Round(sum);
+            int kinds = (rug ? 1 : 0) + (wall ? 1 : 0) + (surface ? 1 : 0) + (ceiling ? 1 : 0) + (light ? 1 : 0);
+            result.Variety = kinds >= 2 ? 2 * (kinds - 1) : 0;
+            result.Penalty = (int)Math.Round(penalty);
+            return result;
+        }
+
         /// <summary>Bu puan ve altı "sıkışık oda" moodlet'i verir (dar ve penceresiz, eşyasız oda).</summary>
         public const int ComfortCramped = -4;
 
@@ -159,6 +262,9 @@ namespace Thatchwick.Core.Life
                 var comfort = ComfortOf(room);
                 ComfortMood(comfort.Total, out int v, out string text);
                 if (v != 0) c.AddMoodlet(ComfortId, text, v, RefreshDays); else c.Mood.Remove(ComfortId);
+                // Güzellik (27): ayrı moodlet; yalnızca iç odada.
+                BeautyMood(BeautyOf(room).Tier, out int bv, out string btext);
+                if (bv != 0) c.AddMoodlet(BeautyId, btext, bv, RefreshDays); else c.Mood.Remove(BeautyId);
 
             }
         }

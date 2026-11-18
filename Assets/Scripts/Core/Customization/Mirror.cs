@@ -45,9 +45,17 @@ namespace Thatchwick.Core.Customization
         public static bool AppearanceChanged(Appearance before, Appearance after) => before.Key() != after.Key()
             || before.Voice != after.Voice || before.VoicePitch != after.VoicePitch || before.LaughId != after.LaughId;
 
-        public static MirrorQuote Quote(Character c, Appearance after, string newName, AppearanceCatalog catalog)
+        /// <summary>Evde ayna yokken verilen engel (karar 18.11.2026: görünüş değiştirmek için evde ayna şart).</summary>
+        public const string NoMirror = "Evde ayna yok: görünüşünü değiştirmek için bir ayna as ya da koy.";
+
+        public static MirrorQuote Quote(Character c, Appearance after, string newName, AppearanceCatalog catalog) =>
+            Quote(c, after, newName, catalog, hasMirror: true);
+
+        /// <summary>Fiyat ve engeller. hasMirror: evde ayna var mı (Build.DecorSystem.HasMirror); yoksa hiçbir değişiklik yapılamaz.</summary>
+        public static MirrorQuote Quote(Character c, Appearance after, string newName, AppearanceCatalog catalog, bool hasMirror)
         {
             var q = new MirrorQuote();
+            if (!hasMirror) q.Errors.Add(NoMirror);
             var before = c.Appearance;
             foreach (var f in LockedChanges(before, after)) q.Errors.Add($"Ayna {f} değiştiremez.");
             q.Errors.AddRange(catalog.Validate(after, c.Sex));
@@ -71,9 +79,13 @@ namespace Thatchwick.Core.Customization
         /// <summary>
         /// Değişikliği uygular. trySpend(elmas) ödemeyi yapar (oyun katmanı verir); false dönerse hiçbir şey değişmez.
         /// </summary>
-        public static bool Apply(Character c, Appearance after, string newName, AppearanceCatalog catalog, Func<int, bool> trySpend, out string error)
+        public static bool Apply(Character c, Appearance after, string newName, AppearanceCatalog catalog, Func<int, bool> trySpend, out string error) =>
+            Apply(c, after, newName, catalog, trySpend, true, out error);
+
+        /// <summary>Değişikliği uygular; evde ayna yoksa (hasMirror false) hiçbir şey değişmez.</summary>
+        public static bool Apply(Character c, Appearance after, string newName, AppearanceCatalog catalog, Func<int, bool> trySpend, bool hasMirror, out string error)
         {
-            var q = Quote(c, after, newName, catalog);
+            var q = Quote(c, after, newName, catalog, hasMirror);
             error = null;
             if (!q.CanApply) { error = string.Join(" ", q.Errors); return false; }
             if (q.Diamonds > 0 && (trySpend == null || !trySpend(q.Diamonds))) { error = "Yeterli elmas yok."; return false; }

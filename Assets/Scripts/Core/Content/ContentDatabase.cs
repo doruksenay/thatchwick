@@ -56,9 +56,25 @@ namespace Thatchwick.Core.Content
                     errors.Add($"{item.Id}: kaynak 1x1 olmalı, yuvası ve etkileşimi olamaz.");
                 if (item.Placement == ItemPlacement.Wall)
                 {
-                    if (item.Width != 1 || item.Height != 1) errors.Add($"{item.Id}: duvar eşyası 1x1 olmalı.");
+                    if (item.Width != 1 || item.Height != 1) errors.Add($"{item.Id}: duvar eşyası 1x1 olmalı (genişlik wallWidth ile verilir).");
                     if (item.IsHousing) errors.Add($"{item.Id}: duvar eşyası barınak olamaz.");
                 }
+                if (item.IsCeiling && (item.Width != 1 || item.Height != 1 || item.IsHousing || item.IsStairs))
+                    errors.Add($"{item.Id}: tavan eşyası 1x1 olmalı.");
+                // Ev dekorasyonu (27).
+                if (item.WallWidth < 1 || item.WallWidth > 3) errors.Add($"{item.Id}: wallWidth 1-3 arasında olmalı.");
+                if (item.WallWidth > 1 && item.Placement != ItemPlacement.Wall) errors.Add($"{item.Id}: wallWidth yalnızca duvar eşyasında kullanılır.");
+                if (item.WallBands.Count > 0 && item.Placement != ItemPlacement.Wall) errors.Add($"{item.Id}: wallBands yalnızca duvar eşyasında kullanılır.");
+                if (item.Weight < 1 || item.Weight > 12) errors.Add($"{item.Id}: yük 1-12 arasında olmalı.");
+                if (item.MaxLoad < 0 || item.MaxLoad > 100) errors.Add($"{item.Id}: maxLoad 0-100 arasında olmalı.");
+                if (item.MaxLoad > 0 && item.SurfaceSlots.Count == 0) errors.Add($"{item.Id}: maxLoad yalnızca yuvası olan eşyada kullanılır.");
+                if (item.Beauty < -10 || item.Beauty > 30) errors.Add($"{item.Id}: güzellik -10 ile 30 arasında olmalı.");
+                if (item.Material != null && Array.IndexOf(Decor.Materials, item.Material) < 0) errors.Add($"{item.Id}: bilinmeyen malzeme '{item.Material}'.");
+                foreach (var f in item.FitsOn)
+                    if (Array.IndexOf(Decor.SlotKinds, f) < 0) errors.Add($"{item.Id}: bilinmeyen yuva türü '{f}' (fitsOn).");
+                if (item.FitsOn.Count > 0 && item.Placement != ItemPlacement.Surface) errors.Add($"{item.Id}: fitsOn yalnızca dekorda (Surface) kullanılır.");
+                if (item.TarnishDays > 0f && !item.IsMirror) errors.Add($"{item.Id}: kararma yalnızca aynada olur.");
+                if (item.IsMirror && item.Placement == ItemPlacement.Resource) errors.Add($"{item.Id}: ayna yerleştirilebilir olmalı.");
                 if (item.IsHousing)
                 {
                     if (item.HousingCapacity < 1) errors.Add($"{item.Id}: barınak kapasitesi en az 1 olmalı.");
@@ -83,6 +99,7 @@ namespace Thatchwick.Core.Content
                     if (string.IsNullOrWhiteSpace(slot.Id)) { errors.Add($"{item.Id}: kimliksiz yuva."); continue; }
                     if (!slotIds.Add(slot.Id)) errors.Add($"{item.Id}/{slot.Id}: yuva kimliği tekrar ediyor.");
                     if (slot.U < 0f || slot.U > 1f || slot.V < 0f || slot.V > 1f) errors.Add($"{item.Id}/{slot.Id}: U ve V 0-1 arasında olmalı.");
+                    if (slot.Kind != null && Array.IndexOf(Decor.SlotKinds, slot.Kind) < 0) errors.Add($"{item.Id}/{slot.Id}: bilinmeyen yuva türü '{slot.Kind}'.");
                 }
 
                 var seen = new HashSet<string>(StringComparer.Ordinal);
@@ -220,8 +237,11 @@ namespace Thatchwick.Core.Content
                 if (item.FinishGroup != null && !finishGroups.Contains(item.FinishGroup))
                     errors.Add($"{item.Id}: '{item.FinishGroup}' kaplama grubunda hiç kaplama yok.");
             foreach (var item in Items.All)
-                if (item.IsRug && (item.Interactions.Count > 0 || item.SurfaceSlots.Count > 0 || item.IsStairs || item.IsHousing || item.HeatOutput > 0f || item.Storage > 0))
+            {
+                bool onlyCollect = item.Interactions.TrueForAll(i => i.CollectContents);   // döküntü yığını: "Topla"
+                if (item.IsRug && (!onlyCollect || item.SurfaceSlots.Count > 0 || item.IsStairs || item.IsHousing || item.HeatOutput > 0f || item.Storage > 0))
                     errors.Add($"{item.Id}: halı etkileşimsiz, yuvasız düz bir eşya olmalı.");
+            }
         }
 
         private void ValidateLife(List<string> errors)

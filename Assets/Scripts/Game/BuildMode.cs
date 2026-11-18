@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
@@ -73,6 +74,8 @@ namespace Thatchwick.Game
         private bool _moving;
         private GridPos _ghostPos;
         private int _rot;
+        private int _band = -1;              // duvar eşyası bandı (-1: kendiliğinden ilk boş bant; 27-ev-dekorasyonu)
+        private string _confirmSlot;         // aşırı yük onayı bekleyen yuva (raf çökebilir)
         private string _status = "";
         private Vector2 _scroll;
         private bool _focused;
@@ -143,7 +146,14 @@ namespace Thatchwick.Game
             if (wall != null) return wall;
             var raised = _view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f));
             var tile = _view.WorldToTile(world);
-            return _world.GetItemAt(raised) ?? _world.GetItemAt(tile) ?? _world.GetRugAt(tile);
+            return _world.GetItemAt(raised) ?? _world.GetItemAt(tile) ?? CeilingNear(world) ?? _world.GetRugAt(tile);
+        }
+
+        // Tavan eşyası: tavan yüksekliğinde dokunulan karo (kat görünürken ve çatı açıkken).
+        private ItemInstance CeilingNear(Vector3 world)
+        {
+            var t = _view.WorldToTile(world - new Vector3(0f, Iso.CeilingHeight, 0f));
+            return _world.CeilingAt(t);
         }
 
         /// <summary>Dokunulan noktaya yakın (çizildiği yerde) duvar eşyası; yoksa null.</summary>
@@ -155,7 +165,7 @@ namespace Thatchwick.Game
             {
                 if (!it.IsWallMounted) continue;
                 if (view != null && !view.IsLevelVisible(it.Position.Z)) continue;
-                float d = Vector2.Distance(Iso.WallMount(it.Position, it.Rotation), point);
+                float d = Vector2.Distance(Iso.WallMountSpan(it.Position, it.Rotation, it.WallSpan, it.WallBand), point);
                 if (d < bestD) { bestD = d; best = it; }
             }
             return best;
@@ -200,8 +210,8 @@ namespace Thatchwick.Game
             if (_placeId != null && IsWallDef(_placeId))
             {
                 if (!NearestWallSide(world, out var wt, out int side)) { _status = "Bir duvarın yüzüne dokun (kapı ve pencere olmaz)."; return; }
-                var wr = _svc.PlaceWallFromInventory(_placeId, wt, side, out _);
-                _status = wr.Ok ? $"Asıldı. Kalan: {_house.Count(_placeId)}" : wr.Reason;
+                var wr = _svc.PlaceWallFromInventory(_placeId, wt, side, out var hungItem, _band);
+                _status = wr.Ok ? $"Asıldı ({Decor.BandName(hungItem.WallBand)} bant). Kalan: {_house.Count(_placeId)}" : wr.Reason;
                 if (wr.Ok && _house.Count(_placeId) <= 0) ClearSelectionKeepStatus();
                 RefreshOverlay();
                 return;
@@ -578,8 +588,20 @@ namespace Thatchwick.Game
 
         private void PlaceDecor(string slotId)
         {
+            // Aşırı yük engellenmez ama raf çökebilir (karar 18.11.2026): bir kez onay istenir.
+            var def = _content.Items.Get(_placeId);
+            var surfaceNow = _world.GetItem(_surfaceId);
+            if (surfaceNow != null && _world.WouldOverload(def, _surfaceId) && _world.CanPlaceOnSurface(def, _surfaceId, slotId).Ok && _confirmSlot != slotId)
+            {
+                _confirmSlot = slotId;
+                int load = _world.LoadOf(_surfaceId) + def.Weight;
+                _status = $"{surfaceNow.Def.DisplayName} bu yükü taşımaz ({load}/{surfaceNow.Def.MaxLoad}). Çökebilir. Yine de koymak için yuvaya tekrar dokun.";
+                RefreshOverlay();
+                return;
+            }
+            _confirmSlot = null;
             var r = _svc.PlaceDecorFromInventory(_placeId, _surfaceId, slotId, out _);
-            _status = r.Ok ? "Yerleştirildi." : r.Reason;
+            _status = r.Ok ? (surfaceNow != null && _world.IsOverloaded(surfaceNow) ? "Yerleştirildi. Dikkat: raf aşırı yüklü, çökebilir." : "Yerleştirildi.") : r.Reason;
             if (r.Ok && _house.Count(_placeId) <= 0) { _placeId = null; _surfaceId = 0; ClearSelectionKeepStatus(); }
             RefreshOverlay();
         }
@@ -592,7 +614,8 @@ namespace Thatchwick.Game
         private Vector3 SlotWorld(ItemInstance surface, string slotId)
         {
             surface.TryGetSlotPosition(slotId, out float gx, out float gy);
-            if (surface.IsWallMounted) return Iso.GridToWorld(gx, gy, surface.Position.Z) + new Vector3(0f, Iso.WallMountHeight + 0.1f, 0f); // duvar rafı
+            if (surface.IsWallMounted) return Iso.GridToWorld(gx, gy, surface.Position.Z) + new Vector3(0f, Iso.BandHeight(surface.WallBand) + 0.1f, 0f); // duvar rafı
+            if (surface.IsCeiling) return _view.TileToWorld(surface.Position) + new Vector3(0f, Iso.CeilingHeight - 0.35f, 0f); // kiriş kancası
             return Iso.GridToWorld(gx, gy, surface.Position.Z) + new Vector3(0f, 24f / 32f, 0f); // masa üstü yüksekliği
         }
 
@@ -1007,16 +1030,38 @@ namespace Thatchwick.Game
                     if (_surfaceId != 0)
                     {
                         var surface = _world.GetItem(_surfaceId);
-                        GUILayout.BeginHorizontal();
                         if (surface != null)
+                        {
+                            // Yuvalar: tür, boyut ve uyup uymadığı (rafa yalnızca rafa uyumlu eşya; 27-ev-dekorasyonu).
+                            if (surface.Def.MaxLoad > 0) GUILayout.Label($"Yük {_world.LoadOf(surface.Id)}/{surface.Def.MaxLoad} (bu eşya {def.Weight})");
                             foreach (var slot in surface.Def.SurfaceSlots)
-                                if (GUILayout.Button($"Yuva {slot.Id}")) PlaceDecor(slot.Id);
-                        GUILayout.EndHorizontal();
+                            {
+                                var fit = _world.CanPlaceOnSurface(def, surface.Id, slot.Id);
+                                string kind = Decor.KindName(surface.Def.SlotKind(slot));
+                                string label = $"Yuva {slot.Id} ({kind}, {Decor.SizeLetter(slot.Size)})" + (fit.Ok ? (_confirmSlot == slot.Id ? " · yine de koy" : "") : " ✗");
+                                if (GUILayout.Button(new GUIContent(label, fit.Ok ? null : fit.Reason)))
+                                {
+                                    if (fit.Ok) PlaceDecor(slot.Id); else _status = fit.Reason;
+                                }
+                            }
+                        }
                     }
                 }
                 else if (def.Placement == ItemPlacement.Wall)
                 {
                     GUILayout.Label("Bir duvarın iç yüzüne dokun: eşya oraya asılır. (Duvarı göremiyorsan Duvar: Yukarı.)");
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Bant:");
+                    if (GUILayout.Toggle(_band < 0, "Kendiliğinden", GUI.skin.button)) _band = -1;
+                    foreach (var b in def.EffectiveBands)
+                        if (GUILayout.Toggle(_band == b, Decor.BandName(b), GUI.skin.button)) _band = b;
+                    GUILayout.EndHorizontal();
+                    if (def.WallWidth > 1) GUILayout.Label($"{def.WallWidth} karo düz duvar ister; dokunduğun karodan sağa/ileri uzanır.");
+                }
+                else if (def.IsCeiling)
+                {
+                    GUILayout.Label("Kapalı bir odada bir karoya dokun: eşya tavana asılır (yolu kapatmaz).");
+                    if (GUILayout.Button("As")) PlaceFloor();
                 }
                 else
                 {
@@ -1082,6 +1127,7 @@ namespace Thatchwick.Game
                     GUI.enabled = true;
                 }
             }
+            DrawDecorControls(sel);
             if (Legacy != null) DrawHeirloom(sel);
             if (sel.Def.IsHousing && _animals != null)
                 GUILayout.Label($"Hayvan {_animals.Residents(sel.Id)}/{sel.Def.HousingCapacity} · yem {sel.FeedStock:0.#} · ürün {sel.StockTotal}");
@@ -1095,8 +1141,49 @@ namespace Thatchwick.Game
                 if (GUILayout.Button("Ekini sök")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Ekin söküldü." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
             }
             else if (GUILayout.Button(Legacy != null && Legacy.HeirloomOf(sel.Id) != null
-                ? $"Sat (+{_svc.SellValue(sel.Def)} akçe; yadigârın geçmişi silinir)"
-                : $"Sat (+{_svc.SellValue(sel.Def)} akçe, dekorlar dahil)")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Satıldı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
+                ? $"Sat (+{_svc.SellValue(sel)} akçe; yadigârın geçmişi silinir)"
+                : $"Sat (+{_svc.SellValue(sel)} akçe, dekorlar dahil)")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Satıldı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
+        }
+
+        // Dekor denetimleri (27): duvar bandı, halı sırası, yük, durum, kararma, döküntü.
+        private void DrawDecorControls(ItemInstance sel)
+        {
+            if (sel.Condition != ItemCondition.Sound)
+                GUILayout.Label(sel.Condition == ItemCondition.Damaged
+                    ? "Hasarlı: yuvaları kapalı, değeri yarı. Marangoz tezgâhında, demircide ya da dokuma tezgâhında onarılır."
+                    : "Onarılmış: işler, ama değeri kalıcı olarak %75.", _wrap);
+            if (sel.Def.MaxLoad > 0 && sel.Def.SurfaceSlots.Count > 0)
+            {
+                int load = _world.LoadOf(sel.Id);
+                GUILayout.Label(load > sel.Def.MaxLoad
+                    ? $"Aşırı yük {load}/{sel.Def.MaxLoad}: her saat çökme şansı %{Thatchwick.Core.Build.DecorSystem.CollapseChance(load, sel.Def.MaxLoad) * 100:0}. Bir eşyayı al."
+                    : $"Yük {load}/{sel.Def.MaxLoad}");
+            }
+            if (sel.IsTarnished) GUILayout.Label("Ayna kararmış: canlı modda \"Cilala\".");
+            if (sel.HasContents) GUILayout.Label($"Döküntü: {sel.Contents.Count} eşya. Canlı modda \"Topla\" ya da envantere al.");
+            if (sel.IsWallMounted && sel.Def.EffectiveBands.Count > 1)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Bant:");
+                foreach (var b in sel.Def.EffectiveBands)
+                    if (GUILayout.Toggle(sel.WallBand == b, Decor.BandName(b), GUI.skin.button) && sel.WallBand != b)
+                    {
+                        int id = sel.Id, band = b;
+                        _deferred = () => { var r = _svc.SetWallBand(id, band); _status = r.Ok ? $"{Decor.BandName(band)} banda taşındı." : r.Reason; };
+                    }
+                GUILayout.EndHorizontal();
+            }
+            if (sel.IsRug && _world.RugsAt(sel.Position).Count > 1 || sel.IsRug && sel.OccupiedTiles().Any(t => _world.RugsAt(t).Count > 1))
+            {
+                GUILayout.BeginHorizontal();
+                foreach (var (label, step) in new[] { ("En üste", 2), ("Bir üste", 1), ("Bir alta", -1), ("En alta", -2) })
+                    if (GUILayout.Button(label))
+                    {
+                        int id = sel.Id, st = step;
+                        _deferred = () => { var r = _svc.MoveRugLayer(id, st); _status = r.Ok ? "Halı sırası değişti." : r.Reason; };
+                    }
+                GUILayout.EndHorizontal();
+            }
         }
 
         // Yadigâr: Soy Mührü harcanarak eşya hanedanın yadigârı olur; her nesil hız, XP, ihtiyaç doldurma ve konfor bonusu büyür.
@@ -1142,7 +1229,9 @@ namespace Thatchwick.Game
             {
                 if (!_content.Items.TryGet(kv.Key, out var def)) continue;
                 GUILayout.BeginHorizontal();
-                GUILayout.Label($"{def.DisplayName} x{kv.Value}");
+                int damaged = _house.DamagedCount(kv.Key), repaired = _house.RepairedCount(kv.Key);
+                string worn = damaged + repaired == 0 ? "" : $" ({(damaged > 0 ? $"{damaged} hasarlı" : "")}{(damaged > 0 && repaired > 0 ? ", " : "")}{(repaired > 0 ? $"{repaired} onarılmış" : "")})";
+                GUILayout.Label($"{def.DisplayName} x{kv.Value}{worn}");
                 if (def.PlantsAs != null && GUILayout.Button("Dik", GUILayout.Width(44f)))
                 {
                     ClearSelection();
@@ -1150,7 +1239,8 @@ namespace Thatchwick.Game
                     _status = "Dışarıda bir karoya dokun.";
                 }
                 if (def.Placement != ItemPlacement.Resource && GUILayout.Button("Koy", GUILayout.Width(44f))) StartPlacing(kv.Key);
-                if (def.Placement != ItemPlacement.Resource && GUILayout.Button($"Sat {_svc.SellValue(def)}", GUILayout.Width(62f))) { _svc.SellFromInventory(kv.Key); _status = "Satıldı."; }
+                if (def.Placement != ItemPlacement.Resource && _house.SoundCount(kv.Key) > 0 && GUILayout.Button($"Sat {_svc.SellValue(def)}", GUILayout.Width(62f))) { _svc.SellFromInventory(kv.Key, ItemCondition.Sound); _status = "Satıldı."; }
+                if (damaged > 0 && GUILayout.Button($"Hasarlıyı sat {_svc.SellValue(def, ItemCondition.Damaged)}", GUILayout.Width(120f))) { _svc.SellFromInventory(kv.Key, ItemCondition.Damaged); _status = "Hasarlı eşya satıldı."; }
                 GUILayout.EndHorizontal();
             }
         }
@@ -1162,8 +1252,11 @@ namespace Thatchwick.Game
             _placeId = itemId;
             _ghostPos = new GridPos(24, 12, _view.ViewLevel);
             var def = _content.Items.Get(itemId);
-            _status = def.Placement == ItemPlacement.Surface ? "Bir masa ya da rafa dokun."
-                : def.Placement == ItemPlacement.Wall ? "Bir duvarın iç yüzüne dokun." : "Haritaya dokun.";
+            _band = -1;
+            _confirmSlot = null;
+            _status = def.Placement == ItemPlacement.Surface ? "Bir masa, raf ya da kancaya dokun."
+                : def.Placement == ItemPlacement.Wall ? "Bir duvarın iç yüzüne dokun."
+                : def.IsCeiling ? "Kapalı bir odada bir karoya dokun (tavana asılır)." : "Haritaya dokun.";
             RefreshOverlay();
         }
 

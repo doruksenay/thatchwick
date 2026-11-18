@@ -60,6 +60,8 @@ namespace Thatchwick.Core.Life
         public Func<int?> FounderId { get; set; }
         /// <summary>Kazalar ve kazanılmış izler (doküman 14, 3F).</summary>
         public InjurySystem Injuries { get; }
+        /// <summary>Ev dekorasyonu: raf çökmesi, ayna kararması, ayna hatırlatması (Project belgesi 27).</summary>
+        public Thatchwick.Core.Build.DecorSystem Decor { get; }
         /// <summary>Ruh hali uyarıları ve bunalım (Project belgesi 23).</summary>
         public BreakdownService Breakdowns { get; }
         /// <summary>Köy meydanı (bunalımda "Meydana kaçtı"); null ise o tür seçilmez.</summary>
@@ -92,6 +94,12 @@ namespace Thatchwick.Core.Life
             Clock = clock ?? throw new ArgumentNullException(nameof(clock));
 
             Mood = new MoodService(world) { Content = content };
+            Decor = new Thatchwick.Core.Build.DecorSystem(world, content, seed != 0 ? Seeds.Derive(seed, 14) : 97)
+            {
+                Members = () => Population.Members,
+                House = house,
+                Notify = (text, id) => Say(text, NoticeLevel.Warning, id)
+            };
             Graves = new GraveService(world, content);
             Ledger = new DayLedger(house, () => AccountXp != null ? AccountXp() : 0);
             Forecast = new WinterForecast(content, house, world, population, clock.Config);
@@ -460,6 +468,7 @@ namespace Thatchwick.Core.Life
 
             Spoilage.Tick(gameDays);
             Festivals.Tick(Population.Members);
+            Decor.Tick(gameDays);
 
             long day = Clock.DayIndex;
             if (day != _lastDay)
@@ -499,6 +508,7 @@ namespace Thatchwick.Core.Life
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
             DailyHealing();
             Injuries.DailyUpdate();
+            Decor.RemindFreeMirror();
             // Miras: dünyadan kalkmış yadigârlar düşer; komşu hanelerde soy sürer; köydeki soy eşikleri.
             Legacy.Validate(World.GetItem);
             foreach (var w in Legacy.NeighborFamiliesDaily()) Say($"{w.Name} çocuk bekliyor.", NoticeLevel.Info, w.Id);

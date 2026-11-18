@@ -137,10 +137,6 @@ namespace Thatchwick.Core.Jobs
                 LastRefusal = $"{MoodBehavior.BreakdownName(_character.Breakdown)}: emir bunalım geçince yapılacak.";
                 return Queue.TryEnqueue(job);
             }
-            // Aynı yere art arda dokunmak yolu baştan kurmasın (hızlı dokunuşta takılma).
-            var cur = Queue.Current;
-            if (job != null && job.Kind == JobKind.MoveTo && cur != null && cur.Kind == JobKind.MoveTo && Queue.Count == 1 && cur.Target.Equals(job.Target))
-                return true;
             Cancel();
             return Queue.TryEnqueue(job);
         }
@@ -179,12 +175,6 @@ namespace Thatchwick.Core.Jobs
             for (int guard = 0; guard < MaxIterations && budget > 1e-12; guard++)
             {
                 var job = Queue.Current;
-                if (job == null && (_carryTile.HasValue || _settling))
-                {
-                    // İş iptal edildi ya da bitti ama karakter iki karonun arasında: adımı tamamlar (geri sıçramaz).
-                    budget -= FinishCarriedStep(budget);
-                    continue;
-                }
                 if (job == null)
                 {
                     if (!Autonomous || !TryStartAutonomy()) return;
@@ -198,7 +188,6 @@ namespace Thatchwick.Core.Jobs
                 }
 
                 budget -= Advance(job, budget);
-                if (_using) _carryTile = null;   // yürümeden başlayan iş: yarım adım geçersiz
             }
         }
 
@@ -313,7 +302,7 @@ namespace Thatchwick.Core.Jobs
                     var item = job.ItemId != 0 ? _world.GetItem(job.ItemId) : null;
                     if (item != null) _path = PathToAdjacent(item);
                     else if (job.HasTarget) _path = Pathfinder.FindPath(_world.Map, _character.Position, job.Target);
-                    if (_path == null) _path = new List<GridPos> { _character.Position };   // hedef yok ya da ulaşılamıyor: yerinde kalır (yarım adım tamamlanır)
+                    if (_path == null) { _using = true; return 0; }   // ulaşılamıyor: yerinde kalır
                     _pathIndex = 1;
                     _stepFraction = 0;
                 }
@@ -644,7 +633,6 @@ namespace Thatchwick.Core.Jobs
         // Yol boyunca yürür (kesirli ilerleme korunur); harcanan oyun gününü döner.
         private double Walk(double budget)
         {
-            ContinueCarriedStep();
             double used = 0;
             // Ata binen daha hızlı gider (merdivende de; basitlik için).
             double tilesPerDay = TilesPerGameDay * Math.Max(0.1, WalkSpeed?.Invoke() ?? 1.0);
@@ -692,8 +680,19 @@ namespace Thatchwick.Core.Jobs
             var goals = new HashSet<GridPos>();
             if (owner.IsWallMounted)
             {
-                // Duvar eşyası önündeki karodan kullanılır.
+                // Duvar eşyası önündeki karodan kullanılır (geniş eşyada herhangi bir kenarın önü).
+                foreach (var seg in owner.WallSegments()) if (_world.Map.IsWalkable(seg.tile)) goals.Add(seg.tile);
+                return goals.Count == 0 ? null : Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
+            }
+            if (owner.IsCeiling)
+            {
+                // Tavan eşyası altındaki karodan (ya da yanından) kullanılır.
                 if (_world.Map.IsWalkable(owner.Position)) goals.Add(owner.Position);
+                foreach (var offset in AdjacentOffsets)
+                {
+                    var tile = owner.Position + offset;
+                    if (_world.Map.IsWalkable(tile) && !_world.Map.EdgeBlocks(GridMap.EdgeBetween(tile, owner.Position))) goals.Add(tile);
+                }
                 return goals.Count == 0 ? null : Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
             }
             foreach (var occupied in owner.OccupiedTiles())
@@ -956,85 +955,8 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Şu an banyo için su taşıyor mu (eylem balonu).</summary>
         public bool IsFetchingWater => _fetching;
 
-        // ---- Yarım kalan adım (18.11.2026: hızlı dokunuşta geri sıçrama ve takılma) ----
-        // Karakter iki karonun arasındayken iş değişirse (yeni emir, iptal, öne alma, otonomi) konumu mantıkta hâlâ
-        // çıktığı karodur. Eskiden adım ilerlemesi sıfırlanınca görünüm o karoya geri sıçrıyor, hızlı dokunuşta karakter
-        // hiç ilerleyemiyordu. Şimdi yarım adım saklanır: yeni yol aynı yöne gidiyorsa adım kaldığı yerden sürer, başka yöne
-        // gidiyorsa karakter adımın ortasından geri döner; iş yoksa adımı tamamlar.
-        private GridPos? _carryTile;
-        private double _carryFraction;
-
-        /// <summary>Şu an iki karo arasında yarım kalmış bir adım var mı (test ve görünüm için).</summary>
-        public bool HasCarriedStep => _carryTile.HasValue;
-
-        private void CaptureCarry()
-        {
-            if (_path != null && !_using && _pathIndex > 0 && _pathIndex < _path.Count && _stepFraction > 1e-9)
-            {
-                _carryTile = _path[_pathIndex];
-                _carryFraction = _stepFraction;
-            }
-        }
-
-        private void ContinueCarriedStep()
-        {
-            if (!_carryTile.HasValue || _path == null || _pathIndex != 1 || _stepFraction > 0 || _path.Count == 0
-                || !_path[0].Equals(_character.Position))
-                return;
-            var b = _carryTile.Value;
-            double f = _carryFraction;
-            _carryTile = null;
-            if (_path.Count > 1 && _path[1].Equals(b))
-            {
-                _stepFraction = f;                     // aynı yöne: kaldığı yerden
-                return;
-            }
-            // Başka yöne: adımı bitirip oradan gitmek daha kısaysa öyle (hızlı dokunuşta ileri-geri salınmasın) ...
-            var goal = _path[_path.Count - 1];
-            var fromB = Pathfinder.FindPath(_world.Map, b, goal);
-            if (fromB != null && (1.0 - f) + (fromB.Count - 1) <= f + (_path.Count - 1))
-            {
-                fromB.Insert(0, _character.Position);
-                _path.Clear();
-                _path.AddRange(fromB);
-                _stepFraction = f;
-                return;
-            }
-            // ... değilse karakter adımın ortasından çıktığı karoya döner (görünüm aynı noktadan başlar).
-            _character.Position = b;
-            _path.Insert(0, b);
-            _stepFraction = 1.0 - f;
-        }
-
-        private bool _settling;
-
-        // İş yokken yarım adımı tamamlar; yol görünüm için kurulu kalır (NextTile, StepProgress).
-        private double FinishCarriedStep(double budget)
-        {
-            if (!_settling)
-            {
-                var b = _carryTile.Value;
-                _path = new List<GridPos> { _character.Position, b };
-                _pathIndex = 1;
-                _stepFraction = _carryFraction;
-                _using = false;
-                _carryTile = null;
-                _settling = true;
-            }
-            double used = Walk(budget);
-            if (_path == null || _pathIndex >= _path.Count)
-            {
-                _settling = false;
-                _path = null; _pathIndex = 0; _stepFraction = 0;
-                return Math.Max(used, 1e-12);
-            }
-            return budget;   // adım bu karede bitmedi
-        }
-
         private void ResetJobState()
         {
-            if (!_carryTile.HasValue) CaptureCarry();
-            _settling = false;
             _character.Asleep = false;
             _hasWater = false;
             _fetching = false;

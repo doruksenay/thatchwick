@@ -123,6 +123,12 @@ namespace Thatchwick.Core.Save
         public bool toggled;        // su kapağı kapalı (eski kayıtta false)
         public int fill;            // lazımlık/hela dolumu
         public KeyInt[] stock;      // v2: barınakta biriken ürünler
+        // Ev dekorasyonu (27). Eski kayıtta: bant -1 (eşyanın varsayılanı), sıra 0, sağlam, kararmamış, boş.
+        public int band = -1;       // duvar bandı (0 alt, 1 orta, 2 üst)
+        public int layer;           // halı sırası (büyük olan üstte)
+        public int condition;       // 0 sağlam, 1 hasarlı, 2 onarılmış
+        public double tarnish;      // metal aynanın kararma günü
+        public string[] contents;   // döküntü yığını: "kimlik" ya da "kimlik|durum"
     }
 
     [Serializable]
@@ -138,6 +144,8 @@ namespace Thatchwick.Core.Save
     {
         public int akce;
         public KeyInt[] inventory;
+        public KeyInt[] damaged;    // envanterdeki hasarlı adetler (27; eski kayıtta yok)
+        public KeyInt[] repaired;   // onarılmış adetler
     }
 
     [Serializable]

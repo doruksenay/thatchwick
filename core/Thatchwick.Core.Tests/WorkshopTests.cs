@@ -192,7 +192,8 @@ namespace Thatchwick.Core.Tests
             Assert.True(x.World.Map.IsWalkable(tile));
             Assert.Empty(torch.OccupiedTiles());
             Assert.Null(x.World.GetItemAt(tile));
-            Assert.Equal("Bu duvarda zaten bir eşya var.", x.Build.PlaceWallFromInventory("torch", tile, 0, out _).Reason);
+            // Bantlı duvar (27): meşalenin tek bandı doluysa ikincisi asılmaz.
+            Assert.Equal("Duvarın orta bandında zaten Duvar meşalesi var.", x.Build.PlaceWallFromInventory("torch", tile, 0, out _).Reason);
             // aynı duvarın öbür yüzü (karo 4,3'ün 2. kenarı) ayrı yerdir
             Assert.True(x.Build.PlaceWallFromInventory("torch", new GridPos(4, 3), 2, out _).Ok);
 

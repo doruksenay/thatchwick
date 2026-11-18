@@ -44,6 +44,22 @@ namespace Thatchwick.Game
         /// <summary>Duvar eşyasının asılma yüksekliği (dünya birimi; duvar görseli ~3 birim boyunda).</summary>
         public const float WallMountHeight = 1.3f;
 
+        /// <summary>Duvar bandının yüksekliği (27-ev-dekorasyonu): alt bel altı, orta göz hizası, üst kiriş altı.</summary>
+        public static float BandHeight(int band) => band <= 0 ? 0.6f : band == 1 ? WallMountHeight : 2.1f;
+
+        /// <summary>Tavan eşyasının yüksekliği (karonun ortasından; kat yüksekliğinin altında).</summary>
+        public const float CeilingHeight = 2.5f;
+
+        /// <summary>Geniş duvar eşyasının ortası (ilk kenarın başı ile son kenarın sonu arası), bandının yüksekliğinde.</summary>
+        public static Vector3 WallMountSpan(Thatchwick.Core.World.GridPos tile, int side, int span, int band)
+        {
+            float extra = BandHeight(band) - WallMountHeight;
+            if (span <= 1) return WallMount(tile, side, 0.5f, extra);
+            var (dx, dy) = Thatchwick.Core.World.WallSides.SegmentOffset(side, span - 1);
+            var last = new Thatchwick.Core.World.GridPos(tile.X + dx, tile.Y + dy, tile.Z);
+            return (WallMount(tile, side, 0f, extra) + WallMount(last, side, 1f, extra)) * 0.5f;
+        }
+
         /// <summary>
         /// Karonun bir kenarına (WallSides) asılı eşyanın dünya konumu: kenar boyunca along (0-1) noktası,
         /// duvardan biraz içeride, asılma yüksekliğinde.

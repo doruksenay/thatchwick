@@ -56,7 +56,7 @@ namespace Thatchwick.Core.Tests
             var db = LoadDb(out _);
             Assert.True(db.Traits.Count >= 10);
             Assert.True(db.Items.Get("item.grave").Category == "memorial");
-            Assert.True(db.Items.Get("item.candle").Comfort > 0);
+            Assert.True(db.Items.Get("item.candle").Beauty > 0);   // 27: süsün katkısı güzelliktir (konfor fiziksel rahatlık)
             foreach (var t in db.Traits.All) Assert.False(string.IsNullOrWhiteSpace(t.Description), t.Id);
         }
     }

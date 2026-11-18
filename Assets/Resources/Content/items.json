@@ -1814,17 +1814,20 @@
         {
           "id": "a",
           "u": 0.25,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         },
         {
           "id": "b",
           "u": 0.5,
-          "v": 0.5
+          "v": 0.5,
+          "size": "L"
         },
         {
           "id": "c",
           "u": 0.75,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         }
       ],
       "level": 2,
@@ -1834,7 +1837,8 @@
         "living"
       ],
       "comfort": 3,
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "maxLoad": 20
     },
     {
       "id": "item.chair_wood",
@@ -1893,12 +1897,16 @@
         {
           "id": "a",
           "u": 0.3,
-          "v": 0.5
+          "v": 0.5,
+          "kind": "raf",
+          "size": "M"
         },
         {
           "id": "b",
           "u": 0.7,
-          "v": 0.5
+          "v": 0.5,
+          "kind": "raf",
+          "size": "M"
         }
       ],
       "level": 3,
@@ -1909,7 +1917,9 @@
       ],
       "storage": 20,
       "comfort": 2,
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "tall": true,
+      "maxLoad": 16
     },
     {
       "id": "item.candle",
@@ -1923,7 +1933,10 @@
       "tags": [
         "light"
       ],
-      "comfort": 3
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "wood"
     },
     {
       "id": "item.flower_pot",
@@ -1933,8 +1946,17 @@
       "price": 6,
       "category": "decor",
       "level": 5,
-      "comfort": 4,
-      "finishGroup": "clay"
+      "finishGroup": "clay",
+      "beauty": 4,
+      "decorSize": "S",
+      "weight": 2,
+      "material": "clay",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak",
+        "pencere"
+      ]
     },
     {
       "id": "item.clay_cup",
@@ -1945,8 +1967,11 @@
       "category": "decor",
       "level": 5,
       "styleSet": "Köylü",
-      "comfort": 2,
-      "finishGroup": "clay"
+      "finishGroup": "clay",
+      "beauty": 2,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "clay"
     },
     {
       "id": "item.firewood",
@@ -2188,7 +2213,8 @@
       "variants": [
         "item.chair_wood"
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "beauty": 4
     },
     {
       "id": "item.plank",
@@ -2309,7 +2335,8 @@
           "durationDays": 0.08
         }
       ],
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "beauty": 3
     },
     {
       "id": "item.chair_painted",
@@ -2331,7 +2358,8 @@
           "durationDays": 0.05
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "beauty": 3
     },
     {
       "id": "item.mattress_straw",
@@ -2375,7 +2403,8 @@
           "moodlet": "rested"
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "beauty": 2
     },
     {
       "id": "item.cradle",
@@ -2441,7 +2470,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "maxLoad": 6
     },
     {
       "id": "item.prep_counter",
@@ -2458,16 +2488,19 @@
         {
           "id": "a",
           "u": 0.333,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         },
         {
           "id": "b",
           "u": 0.667,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         }
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "maxLoad": 16
     },
     {
       "id": "item.dining_table_long",
@@ -2485,31 +2518,38 @@
         {
           "id": "a",
           "u": 0.167,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         },
         {
           "id": "b",
           "u": 0.333,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         },
         {
           "id": "c",
           "u": 0.5,
-          "v": 0.5
+          "v": 0.5,
+          "size": "L"
         },
         {
           "id": "d",
           "u": 0.667,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         },
         {
           "id": "e",
           "u": 0.833,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         }
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "maxLoad": 30,
+      "beauty": 2
     },
     {
       "id": "item.table_painted",
@@ -2527,21 +2567,26 @@
         {
           "id": "a",
           "u": 0.25,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         },
         {
           "id": "b",
           "u": 0.5,
-          "v": 0.5
+          "v": 0.5,
+          "size": "L"
         },
         {
           "id": "c",
           "u": 0.75,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         }
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "maxLoad": 22,
+      "beauty": 4
     },
     {
       "id": "item.brazier",
@@ -2593,6 +2638,32 @@
           "durationDays": 0.1,
           "dries": true
         }
+      ],
+      "tall": true,
+      "maxLoad": 10,
+      "beauty": 4,
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.2,
+          "v": 0.15,
+          "kind": "ocak",
+          "size": "M"
+        },
+        {
+          "id": "b",
+          "u": 0.5,
+          "v": 0.15,
+          "kind": "ocak",
+          "size": "M"
+        },
+        {
+          "id": "c",
+          "u": 0.8,
+          "v": 0.15,
+          "kind": "ocak",
+          "size": "M"
+        }
       ]
     },
     {
@@ -2610,7 +2681,8 @@
         "light"
       ],
       "interactions": [],
-      "finishGroup": "metal"
+      "finishGroup": "metal",
+      "beauty": 3
     },
     {
       "id": "item.torch_wall",
@@ -2628,7 +2700,11 @@
       "tags": [
         "light"
       ],
-      "interactions": []
+      "interactions": [],
+      "wallBands": [
+        "üst"
+      ],
+      "beauty": 1
     },
     {
       "id": "item.oil_lamp_wall",
@@ -2647,7 +2723,13 @@
         "light"
       ],
       "interactions": [],
-      "finishGroup": "metal"
+      "finishGroup": "metal",
+      "wallBands": [
+        "üst",
+        "orta"
+      ],
+      "beauty": 2,
+      "material": "clay"
     },
     {
       "id": "item.sconce_brass",
@@ -2665,7 +2747,12 @@
         "light"
       ],
       "interactions": [],
-      "finishGroup": "metal"
+      "finishGroup": "metal",
+      "wallBands": [
+        "üst",
+        "orta"
+      ],
+      "beauty": 4
     },
     {
       "id": "item.stone_oven",
@@ -3109,16 +3196,22 @@
         {
           "id": "a",
           "u": 0.333,
-          "v": 0.5
+          "v": 0.5,
+          "kind": "kiler",
+          "size": "L"
         },
         {
           "id": "b",
           "u": 0.667,
-          "v": 0.5
+          "v": 0.5,
+          "kind": "kiler",
+          "size": "L"
         }
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "tall": true,
+      "maxLoad": 30
     },
     {
       "id": "item.copper_pots",
@@ -3143,7 +3236,8 @@
           "moodlet": "good_meal",
           "bladder": 4
         }
-      ]
+      ],
+      "beauty": 3
     },
     {
       "id": "item.woodshed",
@@ -3186,7 +3280,8 @@
       ],
       "storage": 90,
       "interactions": [],
-      "finishGroup": "metal"
+      "finishGroup": "metal",
+      "beauty": 2
     },
     {
       "id": "item.wall_shelf",
@@ -3204,16 +3299,24 @@
         {
           "id": "a",
           "u": 0.333,
-          "v": 0.5
+          "v": 0.5,
+          "size": "S"
         },
         {
           "id": "b",
           "u": 0.667,
-          "v": 0.5
+          "v": 0.5,
+          "size": "S"
         }
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "wallBands": [
+        "orta",
+        "alt"
+      ],
+      "maxLoad": 4,
+      "beauty": 1
     },
     {
       "id": "item.wall_shelf_oak",
@@ -3232,21 +3335,30 @@
         {
           "id": "a",
           "u": 0.25,
-          "v": 0.5
+          "v": 0.5,
+          "size": "S"
         },
         {
           "id": "b",
           "u": 0.5,
-          "v": 0.5
+          "v": 0.5,
+          "size": "M"
         },
         {
           "id": "c",
           "u": 0.75,
-          "v": 0.5
+          "v": 0.5,
+          "size": "S"
         }
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "wallBands": [
+        "orta",
+        "alt"
+      ],
+      "maxLoad": 9,
+      "beauty": 2
     },
     {
       "id": "item.workbench",
@@ -3260,7 +3372,26 @@
         "outdoor",
         "living"
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "repair_wood",
+          "displayName": "Onar: ahşap eşya",
+          "durationDays": 0.08,
+          "skill": "Carpentry",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 1
+            },
+            {
+              "item": "item.nails",
+              "count": 2
+            }
+          ],
+          "repair": "wood"
+        }
+      ],
       "finishGroup": "wood"
     },
     {
@@ -3289,7 +3420,11 @@
         "kitchen"
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "wallBands": [
+        "orta",
+        "alt"
+      ]
     },
     {
       "id": "item.whetstone",
@@ -3458,7 +3593,11 @@
       "placement": "Surface",
       "styleSet": "Köylü",
       "interactions": [],
-      "finishGroup": "clay"
+      "finishGroup": "clay",
+      "beauty": 2,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "clay"
     },
     {
       "id": "item.jug",
@@ -3468,7 +3607,17 @@
       "placement": "Surface",
       "styleSet": "Köylü",
       "interactions": [],
-      "finishGroup": "clay"
+      "finishGroup": "clay",
+      "beauty": 2,
+      "decorSize": "M",
+      "weight": 3,
+      "material": "clay",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak",
+        "kiler"
+      ]
     },
     {
       "id": "item.morris_board",
@@ -3486,6 +3635,12 @@
           "durationDays": 0.1,
           "moodlet": "had_fun"
         }
+      ],
+      "beauty": 2,
+      "decorSize": "M",
+      "weight": 2,
+      "fitsOn": [
+        "masa"
       ]
     },
     {
@@ -3507,6 +3662,14 @@
           "skill": "Literacy",
           "skillXp": 4
         }
+      ],
+      "beauty": 3,
+      "decorSize": "M",
+      "weight": 2,
+      "material": "cloth",
+      "fitsOn": [
+        "masa",
+        "raf"
       ]
     },
     {
@@ -3520,7 +3683,8 @@
         "kitchen"
       ],
       "storage": 10,
-      "interactions": []
+      "interactions": [],
+      "beauty": 1
     },
     {
       "id": "item.plant_large",
@@ -3534,7 +3698,8 @@
         "bedroom"
       ],
       "interactions": [],
-      "finishGroup": "clay"
+      "finishGroup": "clay",
+      "beauty": 5
     },
     {
       "id": "item.herb_bundle_wall",
@@ -3546,7 +3711,13 @@
       "rooms": [
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "wallBands": [
+        "üst",
+        "orta"
+      ],
+      "beauty": 2,
+      "material": "cloth"
     },
     {
       "id": "item.tapestry",
@@ -3561,7 +3732,12 @@
         "bedroom"
       ],
       "interactions": [],
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "wallBands": [
+        "orta"
+      ],
+      "beauty": 6,
+      "material": "cloth"
     },
     {
       "id": "item.shield_crest",
@@ -3574,7 +3750,13 @@
       "rooms": [
         "living"
       ],
-      "interactions": []
+      "interactions": [],
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "beauty": 6,
+      "material": "metal"
     },
     {
       "id": "item.rug_rush",
@@ -3590,7 +3772,8 @@
         "bedroom",
         "kitchen"
       ],
-      "comfort": 1
+      "comfort": 1,
+      "beauty": 1
     },
     {
       "id": "item.rug_wool_small",
@@ -3606,7 +3789,8 @@
         "bedroom"
       ],
       "comfort": 2,
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "beauty": 2
     },
     {
       "id": "item.rug_runner",
@@ -3623,7 +3807,8 @@
       ],
       "comfort": 2,
       "level": 3,
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "beauty": 3
     },
     {
       "id": "item.rug_hide",
@@ -3639,7 +3824,8 @@
         "bedroom"
       ],
       "comfort": 2,
-      "level": 3
+      "level": 3,
+      "beauty": 2
     },
     {
       "id": "item.rug_wool",
@@ -3656,7 +3842,8 @@
       ],
       "comfort": 3,
       "level": 2,
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "beauty": 4
     },
     {
       "id": "item.rug_woven_large",
@@ -3673,7 +3860,8 @@
       ],
       "comfort": 5,
       "level": 6,
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "beauty": 7
     },
     {
       "id": "item.well",
@@ -4084,7 +4272,12 @@
           "moodlet": "had_fun"
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "wallBands": [
+        "alt",
+        "orta"
+      ],
+      "beauty": 1
     },
     {
       "id": "item.water_bucket",
@@ -4153,7 +4346,8 @@
           "bath": true
         }
       ],
-      "waterUse": 3
+      "waterUse": 3,
+      "beauty": 5
     },
     {
       "id": "item.spinning_top",
@@ -4171,6 +4365,13 @@
           "durationDays": 0.06,
           "moodlet": "had_fun"
         }
+      ],
+      "beauty": 1,
+      "decorSize": "S",
+      "weight": 1,
+      "fitsOn": [
+        "masa",
+        "raf"
       ]
     },
     {
@@ -8497,7 +8698,22 @@
         "outdoor"
       ],
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [
+        {
+          "id": "repair_cloth",
+          "displayName": "Onar: kumaş eşya",
+          "durationDays": 0.08,
+          "skill": "Weaving",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.yarn",
+              "count": 1
+            }
+          ],
+          "repair": "cloth"
+        }
+      ]
     },
     {
       "id": "item.yarn",
@@ -8860,7 +9076,8 @@
           "consume": "item.remedy",
           "heal": 1.0
         }
-      ]
+      ],
+      "tall": true
     },
     {
       "id": "item.clay",
@@ -9061,7 +9278,22 @@
       "rooms": [
         "outdoor"
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "repair_metal",
+          "displayName": "Onar: metal eşya",
+          "durationDays": 0.08,
+          "skill": "Smithing",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.iron_bar",
+              "count": 1
+            }
+          ],
+          "repair": "metal"
+        }
+      ],
       "width": 2,
       "height": 2
     },
@@ -9228,7 +9460,8 @@
           "moodlet": "had_fun"
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "beauty": 3
     },
     {
       "id": "item.churn",
@@ -10733,6 +10966,1163 @@
         "producesCount": 1
       },
       "interactions": []
+    },
+    {
+      "id": "item.peg_rail",
+      "displayName": "Kancalı çıta",
+      "category": "decor_wall",
+      "price": 8,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "kitchen",
+        "living",
+        "bedroom"
+      ],
+      "wallBands": [
+        "alt",
+        "orta"
+      ],
+      "maxLoad": 9,
+      "beauty": 1,
+      "finishGroup": "wood",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.2,
+          "v": 0.5,
+          "kind": "kanca",
+          "size": "M"
+        },
+        {
+          "id": "b",
+          "u": 0.5,
+          "v": 0.5,
+          "kind": "kanca",
+          "size": "M"
+        },
+        {
+          "id": "c",
+          "u": 0.8,
+          "v": 0.5,
+          "kind": "kanca",
+          "size": "M"
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.plate_rack",
+      "displayName": "Tabak rafı",
+      "category": "decor_wall",
+      "price": 22,
+      "level": 3,
+      "placement": "Wall",
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "kitchen"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 2,
+      "maxLoad": 8,
+      "beauty": 2,
+      "finishGroup": "wood",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.125,
+          "v": 0.5,
+          "kind": "tabak",
+          "size": "S"
+        },
+        {
+          "id": "b",
+          "u": 0.375,
+          "v": 0.5,
+          "kind": "tabak",
+          "size": "S"
+        },
+        {
+          "id": "c",
+          "u": 0.625,
+          "v": 0.5,
+          "kind": "tabak",
+          "size": "S"
+        },
+        {
+          "id": "d",
+          "u": 0.875,
+          "v": 0.5,
+          "kind": "tabak",
+          "size": "S"
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.long_shelf_iron",
+      "displayName": "Demir destekli uzun raf",
+      "category": "storage",
+      "price": 60,
+      "level": 9,
+      "placement": "Wall",
+      "styleSet": "Tüccar",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "wallBands": [
+        "orta",
+        "alt"
+      ],
+      "wallWidth": 2,
+      "maxLoad": 18,
+      "beauty": 2,
+      "finishGroup": "wood",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.15,
+          "v": 0.5,
+          "size": "M"
+        },
+        {
+          "id": "b",
+          "u": 0.4,
+          "v": 0.5,
+          "size": "L"
+        },
+        {
+          "id": "c",
+          "u": 0.65,
+          "v": 0.5,
+          "size": "M"
+        },
+        {
+          "id": "d",
+          "u": 0.88,
+          "v": 0.5,
+          "size": "M"
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.spoon_rack",
+      "displayName": "Kaşıklık",
+      "category": "decor_wall",
+      "price": 9,
+      "level": 2,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "kitchen"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "beauty": 2,
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.painted_cloth",
+      "displayName": "Boyalı bez",
+      "category": "decor_wall",
+      "price": 18,
+      "level": 2,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 2,
+      "beauty": 4,
+      "material": "cloth",
+      "finishGroup": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.applique_hanging",
+      "displayName": "Aplike duvar örtüsü",
+      "category": "decor_wall",
+      "price": 38,
+      "level": 5,
+      "placement": "Wall",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 2,
+      "beauty": 6,
+      "material": "cloth",
+      "finishGroup": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.kilim_hanging",
+      "displayName": "Kilim duvar örtüsü",
+      "category": "decor_wall",
+      "price": 34,
+      "level": 4,
+      "placement": "Wall",
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 2,
+      "beauty": 5,
+      "material": "cloth",
+      "finishGroup": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.flower_wreath",
+      "displayName": "Kurutulmuş çiçek çelengi",
+      "category": "decor_wall",
+      "price": 7,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "beauty": 3,
+      "material": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.nazar_charm",
+      "displayName": "Nazarlık",
+      "category": "decor_wall",
+      "price": 5,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "wallBands": [
+        "üst"
+      ],
+      "beauty": 2,
+      "material": "glass",
+      "interactions": []
+    },
+    {
+      "id": "item.bronze_mirror_wall",
+      "displayName": "Cilalı tunç duvar aynası",
+      "category": "decor_wall",
+      "price": 60,
+      "level": 4,
+      "placement": "Wall",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "bedroom",
+        "living"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "beauty": 4,
+      "material": "metal",
+      "mirror": true,
+      "tarnishDays": 10,
+      "interactions": [
+        {
+          "id": "polish",
+          "displayName": "Cilala",
+          "durationDays": 0.02,
+          "polish": true
+        }
+      ]
+    },
+    {
+      "id": "item.copper_hand_mirror",
+      "displayName": "Cilalı bakır el aynası",
+      "category": "decor",
+      "price": 25,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 2,
+      "material": "metal",
+      "mirror": true,
+      "tarnishDays": 10,
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "interactions": [
+        {
+          "id": "polish",
+          "displayName": "Cilala",
+          "durationDays": 0.02,
+          "polish": true
+        }
+      ]
+    },
+    {
+      "id": "item.wooden_plate",
+      "displayName": "Ahşap tabak",
+      "category": "decor",
+      "price": 3,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "styleTheme": "Çatkı",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "tabak",
+        "ocak"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.clay_plate",
+      "displayName": "Kil tabak",
+      "category": "decor",
+      "price": 4,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 2,
+      "material": "clay",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "tabak",
+        "ocak"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.tin_plate",
+      "displayName": "Kalaylı bakır tabak",
+      "category": "decor",
+      "price": 24,
+      "level": 9,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "decorSize": "S",
+      "weight": 2,
+      "beauty": 4,
+      "material": "metal",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "tabak",
+        "ocak"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.serving_tray",
+      "displayName": "Sini",
+      "category": "decor",
+      "price": 14,
+      "level": 3,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Yörük",
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 3,
+      "material": "metal",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "tabak"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.wooden_bowl",
+      "displayName": "Ahşap kâse",
+      "category": "decor",
+      "price": 3,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "kiler"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.ladle",
+      "displayName": "Kepçe",
+      "category": "decor",
+      "price": 4,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "kanca"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.mortar_pestle",
+      "displayName": "Havan ve tokmak",
+      "category": "decor",
+      "price": 10,
+      "level": 2,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 1,
+      "material": "stone",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "kiler"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.oil_jug",
+      "displayName": "Yağ testisi",
+      "category": "decor",
+      "price": 6,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 1,
+      "material": "clay",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "kiler"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.copper_pot",
+      "displayName": "Bakır tencere",
+      "category": "decor",
+      "price": 40,
+      "level": 9,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "decorSize": "M",
+      "weight": 5,
+      "beauty": 4,
+      "material": "metal",
+      "fitsOn": [
+        "ocak",
+        "kanca",
+        "raf",
+        "masa"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.storage_pot_small",
+      "displayName": "Küçük küp",
+      "category": "decor",
+      "price": 12,
+      "level": 2,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "L",
+      "weight": 8,
+      "beauty": 1,
+      "material": "clay",
+      "fitsOn": [
+        "kiler",
+        "raf",
+        "masa"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.tallow_candle",
+      "displayName": "İç yağı mumu",
+      "category": "decor",
+      "price": 2,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "tags": [
+        "light"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.beeswax_candle",
+      "displayName": "Balmumu mumu",
+      "category": "decor",
+      "price": 12,
+      "level": 9,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "tags": [
+        "light"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 3,
+      "material": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.pricket_candlestick",
+      "displayName": "Şiş şamdan",
+      "category": "heat_light",
+      "price": 9,
+      "level": 2,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "tags": [
+        "light"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 2,
+      "material": "metal",
+      "interactions": []
+    },
+    {
+      "id": "item.folding_candlestick",
+      "displayName": "Katlanır üç ayaklı şamdan",
+      "category": "heat_light",
+      "price": 20,
+      "level": 4,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "tags": [
+        "light"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 3,
+      "material": "metal",
+      "interactions": []
+    },
+    {
+      "id": "item.clay_lamp",
+      "displayName": "Kil kandil",
+      "category": "heat_light",
+      "price": 5,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "styleTheme": "Yörük",
+      "tags": [
+        "light"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 2,
+      "material": "clay",
+      "interactions": []
+    },
+    {
+      "id": "item.horn_lantern",
+      "displayName": "Boynuz camlı fener",
+      "category": "heat_light",
+      "price": 28,
+      "level": 4,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "tags": [
+        "light"
+      ],
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 3,
+      "material": "metal",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "kanca",
+        "ocak"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.herb_pot_basil",
+      "displayName": "Fesleğen saksısı",
+      "category": "decor",
+      "price": 7,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 2,
+      "beauty": 3,
+      "material": "clay",
+      "interactions": []
+    },
+    {
+      "id": "item.herb_pot_rosemary",
+      "displayName": "Biberiye saksısı",
+      "category": "decor",
+      "price": 7,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 2,
+      "beauty": 3,
+      "material": "clay",
+      "interactions": []
+    },
+    {
+      "id": "item.herb_pot_thyme",
+      "displayName": "Kekik saksısı",
+      "category": "decor",
+      "price": 7,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 2,
+      "beauty": 3,
+      "material": "clay",
+      "interactions": []
+    },
+    {
+      "id": "item.yarn_spindle",
+      "displayName": "İplik yumağı ve iğ",
+      "category": "decor",
+      "price": 5,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 2,
+      "material": "cloth",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.sewing_basket",
+      "displayName": "Dikiş sepeti",
+      "category": "decor",
+      "price": 9,
+      "level": 2,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 2,
+      "material": "wood",
+      "fitsOn": [
+        "masa"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.hanging_basket",
+      "displayName": "Asılı sepet",
+      "category": "decor",
+      "price": 6,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 2,
+      "material": "wood",
+      "fitsOn": [
+        "kanca"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.wood_carving",
+      "displayName": "Küçük tahta heykel",
+      "category": "decor",
+      "price": 11,
+      "level": 3,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 4,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf",
+        "ocak",
+        "pencere"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.carved_bird",
+      "displayName": "Oyulmuş kuş",
+      "category": "decor",
+      "price": 6,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 3,
+      "material": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.lockbox",
+      "displayName": "Kilitli küçük kutu",
+      "category": "decor",
+      "price": 30,
+      "level": 9,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "decorSize": "S",
+      "weight": 2,
+      "beauty": 3,
+      "material": "metal",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.tally_stick",
+      "displayName": "Sayı çubuğu",
+      "category": "decor",
+      "price": 2,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.dice_knucklebones",
+      "displayName": "Zar ve aşık",
+      "category": "decor",
+      "price": 4,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Aşık oyna",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.06,
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.chess_set",
+      "displayName": "Satranç takımı",
+      "category": "decor",
+      "price": 45,
+      "level": 9,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 4,
+      "material": "wood",
+      "fitsOn": [
+        "masa"
+      ],
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Satranç oyna",
+          "need": "Fun",
+          "restore": 45,
+          "durationDays": 0.12,
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.backgammon",
+      "displayName": "Tavla",
+      "category": "decor",
+      "price": 22,
+      "level": 4,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Yörük",
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 3,
+      "material": "wood",
+      "fitsOn": [
+        "masa"
+      ],
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Tavla oyna",
+          "need": "Fun",
+          "restore": 40,
+          "durationDays": 0.1,
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.rag_doll",
+      "displayName": "Bez bebek",
+      "category": "kids",
+      "price": 5,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "cloth",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.wooden_whistle",
+      "displayName": "Tahta düdük",
+      "category": "kids",
+      "price": 3,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.beam_hook",
+      "displayName": "Kiriş kancası",
+      "category": "ceiling",
+      "price": 4,
+      "placement": "Ceiling",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "living",
+        "bedroom"
+      ],
+      "maxLoad": 5,
+      "material": "metal",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.5,
+          "v": 0.5,
+          "kind": "kanca",
+          "size": "M"
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.hanging_lantern",
+      "displayName": "Asma fener",
+      "category": "ceiling",
+      "price": 30,
+      "level": 4,
+      "placement": "Ceiling",
+      "styleSet": "Zanaatkâr",
+      "tags": [
+        "light"
+      ],
+      "rooms": [
+        "kitchen",
+        "living",
+        "bedroom"
+      ],
+      "beauty": 3,
+      "material": "metal",
+      "interactions": []
+    },
+    {
+      "id": "item.iron_chandelier",
+      "displayName": "Demir çember avize",
+      "category": "ceiling",
+      "price": 150,
+      "level": 10,
+      "placement": "Ceiling",
+      "styleSet": "Asil",
+      "tags": [
+        "light"
+      ],
+      "rooms": [
+        "living"
+      ],
+      "beauty": 8,
+      "material": "metal",
+      "interactions": []
+    },
+    {
+      "id": "item.ceiling_herbs",
+      "displayName": "Kirişte kuru ot demetleri",
+      "category": "ceiling",
+      "price": 5,
+      "placement": "Ceiling",
+      "styleSet": "Köylü",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "kitchen"
+      ],
+      "beauty": 2,
+      "material": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.ceiling_garland",
+      "displayName": "Kiriş çelengi",
+      "category": "ceiling",
+      "price": 9,
+      "level": 2,
+      "placement": "Ceiling",
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "beauty": 3,
+      "material": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.ceiling_tassels",
+      "displayName": "Püsküllü tavan süsü",
+      "category": "ceiling",
+      "price": 12,
+      "level": 3,
+      "placement": "Ceiling",
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "beauty": 3,
+      "material": "cloth",
+      "interactions": []
+    },
+    {
+      "id": "item.rush_mat",
+      "displayName": "Saz örgü hasır",
+      "width": 2,
+      "height": 1,
+      "placement": "Rug",
+      "price": 10,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "comfort": 1,
+      "beauty": 1
+    },
+    {
+      "id": "item.rush_mat_large",
+      "displayName": "Büyük saz hasır",
+      "width": 2,
+      "height": 2,
+      "placement": "Rug",
+      "price": 16,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "comfort": 1,
+      "beauty": 2
+    },
+    {
+      "id": "item.rush_mat_hall",
+      "displayName": "Salon hasırı",
+      "width": 3,
+      "height": 2,
+      "placement": "Rug",
+      "price": 22,
+      "level": 2,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "living"
+      ],
+      "comfort": 2,
+      "beauty": 2
+    },
+    {
+      "id": "item.felt_rug_small",
+      "displayName": "Küçük keçe",
+      "placement": "Rug",
+      "price": 9,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 1,
+      "beauty": 1,
+      "finishGroup": "cloth"
+    },
+    {
+      "id": "item.felt_rug",
+      "displayName": "Keçe halı",
+      "width": 2,
+      "height": 1,
+      "placement": "Rug",
+      "price": 15,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 2,
+      "beauty": 2,
+      "finishGroup": "cloth"
+    },
+    {
+      "id": "item.felt_rug_large",
+      "displayName": "Büyük keçe",
+      "width": 2,
+      "height": 2,
+      "placement": "Rug",
+      "price": 26,
+      "level": 2,
+      "category": "rug",
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 3,
+      "beauty": 3,
+      "finishGroup": "cloth"
+    },
+    {
+      "id": "item.goat_hide",
+      "displayName": "Keçi postu",
+      "width": 1,
+      "height": 2,
+      "placement": "Rug",
+      "price": 20,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 2,
+      "beauty": 2
+    },
+    {
+      "id": "item.debris",
+      "displayName": "Döküntü",
+      "category": "utility",
+      "placement": "Rug",
+      "beauty": -3,
+      "interactions": [
+        {
+          "id": "collect",
+          "displayName": "Topla",
+          "durationDays": 0.03,
+          "collectContents": true,
+          "removeItem": true
+        }
+      ]
+    },
+    {
+      "id": "item.broken_pottery",
+      "displayName": "Kırık çömlek",
+      "category": "resource",
+      "placement": "Resource",
+      "price": 1,
+      "tags": [
+        "salvage"
+      ]
+    },
+    {
+      "id": "item.broken_glass",
+      "displayName": "Kırık cam",
+      "category": "resource",
+      "placement": "Resource",
+      "price": 1,
+      "tags": [
+        "salvage"
+      ]
     }
   ],
   "recipes": [

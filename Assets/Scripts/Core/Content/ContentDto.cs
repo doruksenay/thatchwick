@@ -150,6 +150,19 @@ namespace Thatchwick.Core.Content
         public int protectRadius;    // korkuluk: kuzgunlardan korur
         public int pollinate;        // arı kovanı: tozlaştırma yarıçapı
         public string finishGroup;   // mobilya kaplama grubu (wood, cloth, metal, clay): renk/malzeme örnekleri
+        // Ev dekorasyonu (Project belgesi 27, D1)
+        public string decorSize;     // dekor boyutu: S/M/L ya da K/O/B (boş = küçük)
+        public int weight;           // dekor yükü (0 = 1)
+        public string[] fitsOn;      // konabildiği yuva türleri: masa, raf, kanca, ocak, pencere, kiler, tabak, minder (boş = masa, raf, ocak, pencere)
+        public int maxLoad;          // yüzeyin toplam taşıması (0 = sınırsız)
+        public string[] wallBands;   // duvar eşyasının bantları: alt, orta, üst (boş = orta)
+        public int wallWidth;        // duvar eşyasının genişliği (kenar; 0 = 1)
+        public bool tall;            // uzun mobilya: önündeki duvarın alt ve orta bandını kapatır
+        public int beauty;           // oda güzelliğine katkı
+        public string material;      // wood, metal, cloth, clay, glass, stone (boş = kaplama grubundan)
+        public bool mirror;          // ayna: Mirror (görünüş değiştirme) bunu ister
+        public float tarnishDays;    // metal ayna bu kadar günde kararır (0 = kararmaz)
+        public string styleTheme;    // tarz ekseni: Çatkı, Yörük ...
         // Hayvancılık ve otomasyon (17.11.2026)
         public bool requiresIndoor;  // yalnızca kapalı bir odaya konur (folluk, ahır bölmesi)
         public bool trough;          // yemlik: odadaki bütün hayvanlar buradan yer
@@ -223,6 +236,8 @@ namespace Thatchwick.Core.Content
         public string id;
         public float u;
         public float v;
+        public string kind;          // masa, raf, kanca, ocak, pencere, kiler, tabak, minder (boş = yerleşime göre)
+        public string size;          // S/M/L ya da K/O/B (boş = büyük)
     }
 
     [Serializable]
@@ -271,6 +286,9 @@ namespace Thatchwick.Core.Content
         public bool takesFruit;             // meyveyi toplar (ağaç kalır)
         public bool petAnimals;             // barınaktaki hayvanları sever
         public bool slaughter;              // barınaktan bir yetişkin hayvanı keser (et verir)
+        public string repair;               // onarım istasyonu: wood, metal, cloth (hasarlı eşyayı onarır)
+        public bool polish;                 // kararmış metal aynayı cilalar
+        public bool collectContents;        // döküntü yığınındakileri envantere alır
     }
 
     [Serializable]

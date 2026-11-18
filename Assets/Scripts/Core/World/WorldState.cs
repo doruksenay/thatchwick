@@ -97,6 +97,18 @@ namespace Thatchwick.Core.World
                 }
             }
 
+            if (def.Tall && !restoring)
+            {
+                for (int dy = 0; dy < h; dy++)
+                    for (int dx = 0; dx < w; dx++)
+                    {
+                        var tile = new GridPos(position.X + dx, position.Y + dy, position.Z);
+                        foreach (var other in _items)
+                            if (other.IsWallMounted && other.Id != ignoreItemId && other.WallBand < Decor.BandHigh && HangsInFrontOf(other, tile))
+                                return PlacementCheck.Fail($"Uzun eşya duvardaki {other.Def.DisplayName} önünü kapatır.");
+                    }
+            }
+
             if (def.RequiresIndoor && !restoring)
             {
                 var room = Map.Rooms.RoomAt(position);
@@ -155,8 +167,8 @@ namespace Thatchwick.Core.World
         }
 
         /// <summary>
-        /// Halı serilebilir mi: karolar var, arazi engeli yok (mobilyanın altına serilir) ve karoda başka halı yok.
-        /// Halı yolu kapatmaz.
+        /// Halı serilebilir mi: karolar var ve arazi engeli yok (mobilyanın altına serilir). Halılar sınırsız üst üste
+        /// serilir (karar 18.11.2026); yeni halı en üste gelir. Halı yolu kapatmaz.
         /// </summary>
         public PlacementCheck CanPlaceRug(ItemDef def, GridPos position, int rotation, int? ignoreItemId = null)
         {
@@ -172,18 +184,111 @@ namespace Thatchwick.Core.World
                     if (!Map.InBounds(tile)) return PlacementCheck.Fail("Harita dışına taşıyor.");
                     if (!Map.HasTile(tile)) return PlacementCheck.Fail(position.Z > 0 ? "Önce üst kat döşemesi gerekir." : "Önce burayı kazmalısın.");
                     if (Map.IsBlocked(tile) && GetItemAt(tile) == null) return PlacementCheck.Fail("Orası geçilemez.");
-                    var other = GetRugAt(tile);
-                    if (other != null && other.Id != ignoreItemId) return PlacementCheck.Fail("Orada zaten halı var.");
                 }
             return PlacementCheck.Success;
         }
 
-        /// <summary>Karoya serili halı; yoksa null.</summary>
+        /// <summary>Karodaki en üstteki halı; yoksa null.</summary>
         public ItemInstance GetRugAt(GridPos tile)
         {
+            ItemInstance top = null;
             foreach (var item in _items)
-                if (item.IsRug && Occupies(item, tile)) return item;
+                if (item.IsRug && Occupies(item, tile) && (top == null || item.LayerOrder > top.LayerOrder)) top = item;
+            return top;
+        }
+
+        /// <summary>Karodaki halılar, alttan üste.</summary>
+        public List<ItemInstance> RugsAt(GridPos tile)
+        {
+            var list = new List<ItemInstance>();
+            foreach (var item in _items)
+                if (item.IsRug && Occupies(item, tile)) list.Add(item);
+            list.Sort((a, b) => a.LayerOrder.CompareTo(b.LayerOrder));
+            return list;
+        }
+
+        private int _nextLayer = 1;
+        private int NextLayer() => _nextLayer++;
+
+        /// <summary>Halıyı en üste alır.</summary>
+        public bool RugToFront(int itemId)
+        {
+            var rug = GetItem(itemId);
+            if (rug == null || !rug.IsRug) return false;
+            rug.LayerOrder = NextLayer();
+            Changed?.Invoke();
+            return true;
+        }
+
+        /// <summary>Halıyı en alta indirir.</summary>
+        public bool RugToBack(int itemId)
+        {
+            var rug = GetItem(itemId);
+            if (rug == null || !rug.IsRug) return false;
+            int min = int.MaxValue;
+            foreach (var it in _items) if (it.IsRug && it.LayerOrder < min) min = it.LayerOrder;
+            rug.LayerOrder = min == int.MaxValue ? 0 : min - 1;
+            Changed?.Invoke();
+            return true;
+        }
+
+        /// <summary>Halıyı bir kat yukarı (dir +1) ya da aşağı (-1) alır: üstünden ya da altından geçen ilk halıyla yer değiştirir.</summary>
+        public bool RugStep(int itemId, int dir)
+        {
+            var rug = GetItem(itemId);
+            if (rug == null || !rug.IsRug || dir == 0) return false;
+            var tiles = new HashSet<GridPos>(rug.OccupiedTiles());
+            ItemInstance swap = null;
+            foreach (var it in _items)
+            {
+                if (!it.IsRug || it.Id == itemId) continue;
+                bool overlaps = false;
+                foreach (var t in it.OccupiedTiles()) if (tiles.Contains(t)) { overlaps = true; break; }
+                if (!overlaps) continue;
+                if (dir > 0 && it.LayerOrder > rug.LayerOrder && (swap == null || it.LayerOrder < swap.LayerOrder)) swap = it;
+                if (dir < 0 && it.LayerOrder < rug.LayerOrder && (swap == null || it.LayerOrder > swap.LayerOrder)) swap = it;
+            }
+            if (swap == null) return false;
+            int tmp = rug.LayerOrder; rug.LayerOrder = swap.LayerOrder; swap.LayerOrder = tmp;
+            Changed?.Invoke();
+            return true;
+        }
+
+        // ---- tavan ----
+
+        /// <summary>Tavan eşyası asılabilir mi: kapalı iç oda, döşeli karo, karoda başka tavan eşyası yok.</summary>
+        public PlacementCheck CanPlaceCeiling(ItemDef def, GridPos tile, int? ignoreItemId = null, bool restoring = false)
+        {
+            if (def == null) throw new ArgumentNullException(nameof(def));
+            if (!def.IsCeiling) return PlacementCheck.Fail("Bu eşya tavana asılmaz.");
+            if (!GridMap.IsValidLevel(tile.Z) || !Map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
+            if (!Map.HasTile(tile)) return PlacementCheck.Fail("Burada döşeme yok.");
+            if (!restoring)
+            {
+                var room = Map.Rooms.RoomAt(tile);
+                if (room == null || !room.IsIndoor) return PlacementCheck.Fail("Tavan eşyası kapalı bir odaya asılır.");
+            }
+            var other = CeilingAt(tile);
+            if (other != null && other.Id != ignoreItemId) return PlacementCheck.Fail("Bu karonun tavanında zaten bir eşya var.");
+            return PlacementCheck.Success;
+        }
+
+        /// <summary>Karonun tavanına asılı eşya; yoksa null.</summary>
+        public ItemInstance CeilingAt(GridPos tile)
+        {
+            foreach (var item in _items)
+                if (item.IsCeiling && item.Position == tile) return item;
             return null;
+        }
+
+        public ItemInstance PlaceOnCeiling(ItemDef def, GridPos tile)
+        {
+            var check = CanPlaceCeiling(def, tile);
+            if (!check.Ok) throw new InvalidOperationException(check.Reason);
+            var item = new ItemInstance(_nextId++, def, tile);
+            _items.Add(item);
+            Changed?.Invoke();
+            return item;
         }
 
         public PlacementCheck CanPlaceOnSurface(ItemDef def, int surfaceItemId, string slotId, int? ignoreItemId = null)
@@ -193,7 +298,14 @@ namespace Thatchwick.Core.World
 
             var parent = GetItem(surfaceItemId);
             if (parent == null || parent.IsDecor) return PlacementCheck.Fail("Yüzey eşyası bulunamadı.");
-            if (parent.Def.FindSlot(slotId) == null) return PlacementCheck.Fail("Bu yuva yok.");
+            var slot = parent.Def.FindSlot(slotId);
+            if (slot == null) return PlacementCheck.Fail("Bu yuva yok.");
+            if (parent.Condition == ItemCondition.Damaged) return PlacementCheck.Fail($"{parent.Def.DisplayName} hasarlı: önce onarılmalı.");
+
+            string kind = parent.Def.SlotKind(slot);
+            if (!def.FitsKind(kind)) return PlacementCheck.Fail($"Bu yuva yalnızca {Decor.KindName(kind)} eşyası alır; {def.DisplayName} oraya uymaz.");
+            if (def.DecorSize > slot.Size)
+                return PlacementCheck.Fail($"{def.DisplayName} bu yuvaya büyük ({Decor.SizeLetter(def.DecorSize)} > {Decor.SizeLetter(slot.Size)}).");
 
             foreach (var other in _items)
             {
@@ -203,53 +315,127 @@ namespace Thatchwick.Core.World
             return PlacementCheck.Success;
         }
 
-        /// <summary>Duvar eşyasının karonun verilen kenarına (WallSides) asılıp asılamayacağı.</summary>
-        public PlacementCheck CanPlaceOnWall(ItemDef def, GridPos tile, int side, int? ignoreItemId = null)
+        /// <summary>Yüzeyin üstündeki dekorların toplam yükü.</summary>
+        public int LoadOf(int surfaceItemId, int? ignoreItemId = null)
+        {
+            int load = 0;
+            foreach (var other in _items)
+                if (other.ParentId == surfaceItemId && other.Id != ignoreItemId) load += Math.Max(0, other.Def.Weight);
+            return load;
+        }
+
+        /// <summary>Bu dekor konunca yüzeyin taşıması aşılır mı (aşım engellenmez, raf çökebilir: karar 18.11.2026).</summary>
+        public bool WouldOverload(ItemDef def, int surfaceItemId, int? ignoreItemId = null)
+        {
+            var parent = GetItem(surfaceItemId);
+            if (parent == null || parent.Def.MaxLoad <= 0 || def == null) return false;
+            return LoadOf(surfaceItemId, ignoreItemId) + Math.Max(0, def.Weight) > parent.Def.MaxLoad;
+        }
+
+        /// <summary>Yüzey aşırı yüklü mü (çökme şansı var).</summary>
+        public bool IsOverloaded(ItemInstance surface) =>
+            surface != null && surface.Def.MaxLoad > 0 && LoadOf(surface.Id) > surface.Def.MaxLoad;
+
+        /// <summary>Duvar eşyasının karonun verilen kenarına (WallSides) asılıp asılamayacağı. band &lt; 0: eşyanın ilk boş bandı.</summary>
+        public PlacementCheck CanPlaceOnWall(ItemDef def, GridPos tile, int side, int? ignoreItemId = null) =>
+            CanPlaceOnWall(def, tile, side, -1, ignoreItemId);
+
+        /// <summary>
+        /// Duvar eşyası verilen banda asılabilir mi: geniş eşyanın bütün kenarları düz duvar olmalı (kapı ve pencere değil);
+        /// aynı yüzde aynı bandı başka eşya tutmamalı; alt ve orta bandın önünde uzun mobilya olmamalı.
+        /// </summary>
+        public PlacementCheck CanPlaceOnWall(ItemDef def, GridPos tile, int side, int band, int? ignoreItemId, bool restoring = false)
         {
             if (def == null) throw new ArgumentNullException(nameof(def));
             if (def.Placement != ItemPlacement.Wall) return PlacementCheck.Fail("Bu eşya duvara asılmaz.");
             if (!Map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
             side = Footprint.Normalize(side);
-            var edge = WallSides.EdgeOf(tile, side);
-            if (!Map.EdgeInBounds(edge) || Map.GetEdge(edge) != EdgeKind.Wall) return PlacementCheck.Fail("Yalnızca düz duvara asılır (kapı ve pencereye değil).");
-            foreach (var other in _items)
-                if (other.Id != ignoreItemId && other.IsWallMounted && other.Position == tile && other.Rotation == side)
-                    return PlacementCheck.Fail("Bu duvarda zaten bir eşya var.");
+            if (band < 0)
+            {
+                PlacementCheck first = PlacementCheck.Fail("Bu duvarda yer yok.");
+                foreach (var b in def.EffectiveBands)
+                {
+                    var c = CanPlaceOnWall(def, tile, side, b, ignoreItemId, restoring);
+                    if (c.Ok) return c;
+                    if (b == def.DefaultBand) first = c;
+                }
+                return first;
+            }
+            if (!def.AllowsBand(band)) return PlacementCheck.Fail($"{def.DisplayName} {Decor.BandName(band)} banda asılmaz.");
+            int span = Math.Max(1, def.WallWidth);
+            foreach (var (t, edge) in WallSides.Segments(tile, side, span))
+            {
+                if (!Map.InBounds(t)) return PlacementCheck.Fail("Harita dışı.");
+                if (!Map.EdgeInBounds(edge) || Map.GetEdge(edge) != EdgeKind.Wall)
+                    return PlacementCheck.Fail(span > 1 ? $"{def.DisplayName} {span} karo düz duvar ister (kapı ve pencere araya girmesin)." : "Yalnızca düz duvara asılır (kapı ve pencereye değil).");
+                foreach (var other in _items)
+                {
+                    if (other.Id == ignoreItemId || !other.IsWallMounted || other.Rotation != side || other.WallBand != band) continue;
+                    foreach (var seg in other.WallSegments())
+                        if (seg.tile == t) return PlacementCheck.Fail($"Duvarın {Decor.BandName(band)} bandında zaten {other.Def.DisplayName} var.");
+                }
+                if (!restoring && band < Decor.BandHigh)
+                {
+                    var front = GetItemAt(t);
+                    if (front != null && front.Def.Tall && front.Id != ignoreItemId)
+                        return PlacementCheck.Fail($"Önünde uzun bir eşya ({front.Def.DisplayName}) var: yalnızca üst banda asılır.");
+                }
+            }
             return PlacementCheck.Success;
         }
 
-        /// <summary>Duvar eşyasını karonun kenarına asar.</summary>
-        public ItemInstance PlaceOnWall(ItemDef def, GridPos tile, int side)
+        /// <summary>Bu karonun önündeki duvarda asılı mı (geniş eşyanın herhangi bir kenarı).</summary>
+        private static bool HangsInFrontOf(ItemInstance wallItem, GridPos tile)
         {
-            var check = CanPlaceOnWall(def, tile, side);
+            foreach (var seg in wallItem.WallSegments()) if (seg.tile == tile) return true;
+            return false;
+        }
+
+        /// <summary>Duvar eşyasını karonun kenarına asar (band &lt; 0: ilk uygun bant).</summary>
+        public ItemInstance PlaceOnWall(ItemDef def, GridPos tile, int side, int band = -1)
+        {
+            int chosen = band >= 0 ? band : FirstFreeBand(def, tile, side, null);
+            var check = CanPlaceOnWall(def, tile, side, chosen, null);
             if (!check.Ok) throw new InvalidOperationException(check.Reason);
-            var item = new ItemInstance(_nextId++, def, tile, Footprint.Normalize(side));
+            var item = new ItemInstance(_nextId++, def, tile, Footprint.Normalize(side)) { WallBand = chosen };
             _items.Add(item);
             Changed?.Invoke();
             return item;
         }
 
-        /// <summary>Duvar eşyasını başka bir duvara taşır (üstündeki dekorlar da gelir).</summary>
-        public PlacementCheck MoveWallItem(int itemId, GridPos tile, int side)
+        /// <summary>Eşyanın asılabileceği ilk bant (varsayılan bant önce); hiçbiri uymuyorsa varsayılan bant.</summary>
+        public int FirstFreeBand(ItemDef def, GridPos tile, int side, int? ignoreItemId)
+        {
+            if (CanPlaceOnWall(def, tile, side, def.DefaultBand, ignoreItemId).Ok) return def.DefaultBand;
+            foreach (var b in def.EffectiveBands)
+                if (CanPlaceOnWall(def, tile, side, b, ignoreItemId).Ok) return b;
+            return def.DefaultBand;
+        }
+
+        /// <summary>Duvar eşyasını başka bir duvara ya da banda taşır (üstündeki dekorlar da gelir). band &lt; 0: bandı korur, olmazsa ilk uygun bant.</summary>
+        public PlacementCheck MoveWallItem(int itemId, GridPos tile, int side, int band = -1)
         {
             var item = GetItem(itemId);
             if (item == null || !item.IsWallMounted) return PlacementCheck.Fail("Duvar eşyası bulunamadı.");
-            var check = CanPlaceOnWall(item.Def, tile, side, itemId);
+            int b = band;
+            if (b < 0) b = CanPlaceOnWall(item.Def, tile, side, item.WallBand, itemId).Ok ? item.WallBand : FirstFreeBand(item.Def, tile, side, itemId);
+            var check = CanPlaceOnWall(item.Def, tile, side, b, itemId);
             if (!check.Ok) return check;
             item.Position = tile;
             item.Rotation = Footprint.Normalize(side);
+            item.WallBand = b;
             foreach (var child in _items)
                 if (child.ParentId == itemId) child.Position = tile;
             Changed?.Invoke();
             return PlacementCheck.Success;
         }
 
-        /// <summary>Bir kenara (iki yüzüne de) asılı duvar eşyaları.</summary>
+        /// <summary>Bir kenara (iki yüzüne de) asılı duvar eşyaları (geniş eşyanın herhangi bir kenarı).</summary>
         public List<ItemInstance> WallItemsOn(Edge edge)
         {
             var list = new List<ItemInstance>();
             foreach (var item in _items)
-                if (item.IsWallMounted && item.WallEdge.Equals(edge)) list.Add(item);
+                if (item.IsWallMounted && item.HangsOn(edge)) list.Add(item);
             return list;
         }
 
@@ -264,10 +450,12 @@ namespace Thatchwick.Core.World
         /// <summary>Yer eşyası yerleştirir. Geçersizse InvalidOperationException.</summary>
         public ItemInstance PlaceItem(ItemDef def, GridPos position, int rotation = 0)
         {
+            if (def != null && def.IsCeiling) return PlaceOnCeiling(def, position);
             var check = def != null && def.IsRug ? CanPlaceRug(def, position, rotation) : CanPlaceFloor(def, position, rotation, null, landingMayBeCreated: false);
             if (!check.Ok) throw new InvalidOperationException($"{position}: {check.Reason}");
 
             var item = new ItemInstance(_nextId++, def, position, Footprint.Normalize(rotation));
+            if (def.IsRug) item.LayerOrder = NextLayer();
             if (!def.IsRug) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
             _items.Add(item);
             if (def.IsStairs) RebuildLinks();
@@ -301,6 +489,15 @@ namespace Thatchwick.Core.World
             if (item == null) return PlacementCheck.Fail("Eşya bulunamadı.");
             if (item.IsDecor) return PlacementCheck.Fail("Dekor taşınamaz, yuvasından alınıp yeniden konur.");
             if (item.IsWallMounted) return MoveWallItem(itemId, position, rotation);
+            if (item.IsCeiling)
+            {
+                var cc = CanPlaceCeiling(item.Def, position, itemId);
+                if (!cc.Ok) return cc;
+                item.Position = position;
+                foreach (var child in _items) if (child.ParentId == itemId) child.Position = position;
+                Changed?.Invoke();
+                return PlacementCheck.Success;
+            }
 
             var check = item.IsRug ? CanPlaceRug(item.Def, position, rotation, itemId) : CanPlaceFloor(item.Def, position, rotation, itemId);
             if (!check.Ok) return check;
@@ -337,7 +534,7 @@ namespace Thatchwick.Core.World
             if (moving.Count == 0 || dx == 0 && dy == 0) return PlacementCheck.Success;
 
             foreach (var it in moving)
-                if (!it.IsRug && !it.IsWallMounted) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, false);
+                if (Blocks(it)) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, false);
 
             string fail = null;
             foreach (var it in moving)
@@ -345,10 +542,25 @@ namespace Thatchwick.Core.World
                 var np = new GridPos(it.Position.X + dx, it.Position.Y + dy, it.Position.Z);
                 if (it.IsWallMounted)
                 {
-                    var e = WallSides.EdgeOf(np, it.Rotation);
-                    if (!Map.EdgeInBounds(e) || Map.GetEdge(e) != EdgeKind.Wall) { fail = $"{it.Def.DisplayName} için hedefte duvar yok."; break; }
+                    foreach (var (st, e) in WallSides.Segments(np, it.Rotation, it.WallSpan))
+                    {
+                        if (!Map.EdgeInBounds(e) || Map.GetEdge(e) != EdgeKind.Wall) { fail = $"{it.Def.DisplayName} için hedefte duvar yok."; break; }
+                        foreach (var other in _items)
+                        {
+                            if (set.Contains(other.Id) || !other.IsWallMounted || other.Rotation != it.Rotation || other.WallBand != it.WallBand) continue;
+                            foreach (var seg in other.WallSegments()) if (seg.tile == st) { fail = "Hedef duvarda başka bir eşya var."; break; }
+                            if (fail != null) break;
+                        }
+                        if (fail != null) break;
+                    }
+                    if (fail != null) break;
+                    continue;
+                }
+                if (it.IsCeiling)
+                {
+                    if (!Map.InBounds(np) || !Map.HasTile(np)) { fail = "Hedef harita ya da kat dışında."; break; }
                     foreach (var other in _items)
-                        if (!set.Contains(other.Id) && other.IsWallMounted && other.Position == np && other.Rotation == it.Rotation) { fail = "Hedef duvarda başka bir eşya var."; break; }
+                        if (!set.Contains(other.Id) && other.IsCeiling && other.Position == np) { fail = "Hedefin tavanında başka bir eşya var."; break; }
                     if (fail != null) break;
                     continue;
                 }
@@ -361,8 +573,6 @@ namespace Thatchwick.Core.World
                         if (it.IsRug)
                         {
                             if (Map.IsBlocked(t) && GetItemAt(t) == null) fail = "Hedefte geçilmez bir yer var.";
-                            foreach (var other in _items)
-                                if (other.IsRug && !set.Contains(other.Id) && Occupies(other, t)) { fail = "Hedefte başka bir halı var."; break; }
                             continue;
                         }
                         if (Map.IsBlocked(t)) fail = $"{it.Def.DisplayName} için hedef dolu.";
@@ -379,7 +589,7 @@ namespace Thatchwick.Core.World
             if (fail != null)
             {
                 foreach (var it in moving)
-                    if (!it.IsRug && !it.IsWallMounted) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, true);
+                    if (Blocks(it)) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, true);
                 return PlacementCheck.Fail(fail);
             }
 
@@ -387,7 +597,7 @@ namespace Thatchwick.Core.World
             foreach (var it in moving)
             {
                 it.Position = new GridPos(it.Position.X + dx, it.Position.Y + dy, it.Position.Z);
-                if (!it.IsRug && !it.IsWallMounted) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, true);
+                if (Blocks(it)) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, true);
                 foreach (var child in _items) if (child.ParentId == it.Id) child.Position = it.Position;
                 stairs |= it.Def.IsStairs;
             }
@@ -403,6 +613,14 @@ namespace Thatchwick.Core.World
         public List<ItemDef> RemoveItem(int itemId)
         {
             var returned = new List<ItemDef>();
+            foreach (var it in RemoveItemInstances(itemId)) returned.Add(it.Def);
+            return returned;
+        }
+
+        /// <summary>RemoveItem gibi, ama örnekleri döner (durum ve içindekiler envantere taşınabilsin). İlk eleman eşyanın kendisi.</summary>
+        public List<ItemInstance> RemoveItemInstances(int itemId)
+        {
+            var returned = new List<ItemInstance>();
             var item = GetItem(itemId);
             if (item == null) return returned;
 
@@ -412,16 +630,30 @@ namespace Thatchwick.Core.World
             foreach (var c in children)
             {
                 _items.Remove(c);
-                returned.Add(c.Def);
+                returned.Add(c);
             }
 
-            if (!item.IsRug && !item.IsDecor && !item.IsWallMounted) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
+            if (Blocks(item)) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
             _items.Remove(item);
-            returned.Insert(0, item.Def);
+            returned.Insert(0, item);
             if (item.Def.IsStairs) RebuildLinks();
             Changed?.Invoke();
             return returned;
         }
+
+        /// <summary>Dekor eşyasını yuvasından kaldırır (yalnızca kendisi).</summary>
+        internal void RemoveSingle(ItemInstance item)
+        {
+            if (item == null) return;
+            if (Blocks(item)) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
+            _items.Remove(item);
+        }
+
+        /// <summary>Karo kapatan yer eşyası mı (halı, dekor, duvar ve tavan eşyası kapatmaz).</summary>
+        private static bool Blocks(ItemInstance item) => !item.IsRug && !item.IsDecor && !item.IsWallMounted && !item.IsCeiling;
+
+        /// <summary>Dekor sistemi için olay yayını.</summary>
+        internal void RaiseChanged() => Changed?.Invoke();
 
         /// <summary>
         /// Kayıttan yükleme: eşyayı kimliğiyle olduğu gibi koyar. Yer eşyası karolarını kapatır; dekor,
@@ -437,11 +669,25 @@ namespace Thatchwick.Core.World
                 FuelDays = fuelDays,
                 GrowthDays = growthDays
             };
-            if (!item.IsDecor && !item.IsRug && !item.IsWallMounted) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
+            if (Blocks(item)) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
             _items.Add(item);
             if (id >= _nextId) _nextId = id + 1;
             if (def.IsStairs) RebuildLinks();
             return item;
+        }
+
+        /// <summary>Kayıttan yükleme: duvar bandı, halı sırası, durum ve kararma.</summary>
+        internal void RestoreDecorState(ItemInstance item, int band, int layer, ItemCondition condition, double tarnish)
+        {
+            if (item == null) return;
+            if (item.IsWallMounted && band >= 0 && band < Decor.BandCount) item.WallBand = band;
+            if (item.IsRug)
+            {
+                item.LayerOrder = layer;
+                if (layer >= _nextLayer) _nextLayer = layer + 1;
+            }
+            item.Condition = condition;
+            item.TarnishDays = Math.Max(0, tarnish);
         }
 
         /// <summary>Kimliğe göre eşya; yoksa null.</summary>

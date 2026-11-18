@@ -15,7 +15,7 @@ namespace Thatchwick.Core.Content
         {
             ("seating", "Oturma"), ("sleep", "Uyku"), ("surfaces", "Masa"), ("heat_light", "Isı ve ışık"),
             ("kitchen", "Mutfak"), ("storage", "Depo"), ("work", "İş"), ("hygiene", "Hijyen"),
-            ("decor", "Süs (masa)"), ("decor_wall", "Süs (yer, duvar)"), ("rug", "Halı"), ("garden", "Bahçe"), ("barn", "Ahır ve kümes"), ("farm", "Tarım düzenekleri"), ("kids", "Çocuk"), ("structure", "Merdiven ve yapı")
+            ("decor", "Süs (masa)"), ("decor_wall", "Süs (yer, duvar)"), ("ceiling", "Tavan"), ("rug", "Halı"), ("garden", "Bahçe"), ("barn", "Ahır ve kümes"), ("farm", "Tarım düzenekleri"), ("kids", "Çocuk"), ("structure", "Merdiven ve yapı")
         };
 
         public static readonly (string id, string name)[] Rooms =
@@ -105,8 +105,23 @@ namespace Thatchwick.Core.Content
             if (def.SeedRadius > 0) parts.Add($"Güç alınca her sabah {def.SeedRadius} karo çevresindeki boş toprağa tohum eker");
             if (def.IceCollect > 0) parts.Add($"Donlu sabahlar {def.IceCollect} buz toplar");
             if (def.HasTag("craftonly")) parts.Add("Yalnızca yapılır (tarif)");
-            if (def.Placement == ItemPlacement.Wall) parts.Add("Duvara asılır");
-            if (def.Placement == ItemPlacement.Surface) parts.Add("Masa/raf üstüne");
+            if (def.Placement == ItemPlacement.Wall)
+            {
+                var bands = new List<string>();
+                foreach (var b in def.EffectiveBands) bands.Add(Decor.BandName(b));
+                parts.Add($"Duvara asılır ({string.Join("/", bands)} bant{(def.WallWidth > 1 ? $", {def.WallWidth} karo" : "")})");
+            }
+            if (def.IsCeiling) parts.Add("Tavana asılır");
+            if (def.Placement == ItemPlacement.Surface)
+            {
+                var kinds = new List<string>();
+                foreach (var k in def.EffectiveFits) kinds.Add(Decor.KindName(k));
+                parts.Add($"{string.Join(", ", kinds)} · boyut {Decor.SizeLetter(def.DecorSize)} · yük {def.Weight}");
+            }
+            if (def.SurfaceSlots.Count > 0 && def.MaxLoad > 0) parts.Add($"Taşır {def.MaxLoad}");
+            if (def.Tall) parts.Add("Uzun (önündeki duvarın alt ve orta bandını kapatır)");
+            if (def.Beauty > 0) parts.Add($"Güzellik +{def.Beauty}");
+            if (def.IsMirror) parts.Add(def.TarnishDays > 0f ? "Ayna (görünüş değiştirme; kararır, cilalanır)" : "Ayna (görünüş değiştirme)");
             return string.Join(" · ", parts);
         }
 

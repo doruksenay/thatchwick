@@ -102,6 +102,29 @@ namespace Thatchwick.Core.Content
                         item.Placement = placement;
                 }
 
+                // Ev dekorasyonu (27): boyut, yük, uyduğu yuvalar, duvar bantları, güzellik, malzeme, ayna.
+                if (!string.IsNullOrWhiteSpace(dto.decorSize))
+                {
+                    if (TryParseDecorSize(dto.decorSize, out var ds)) item.DecorSize = ds;
+                    else errors.Add($"{dto.id}: bilinmeyen dekor boyutu '{dto.decorSize}'.");
+                }
+                item.Weight = dto.weight <= 0 ? 1 : dto.weight;
+                item.MaxLoad = Math.Max(0, dto.maxLoad);
+                item.WallWidth = dto.wallWidth <= 0 ? 1 : dto.wallWidth;
+                item.Tall = dto.tall;
+                item.Beauty = dto.beauty;
+                item.Material = string.IsNullOrWhiteSpace(dto.material) ? null : dto.material.Trim();
+                item.IsMirror = dto.mirror;
+                item.TarnishDays = Math.Max(0f, dto.tarnishDays);
+                item.StyleTheme = string.IsNullOrWhiteSpace(dto.styleTheme) ? null : dto.styleTheme.Trim();
+                if (dto.fitsOn != null) foreach (var f in dto.fitsOn) if (!string.IsNullOrWhiteSpace(f)) item.FitsOn.Add(f.Trim());
+                if (dto.wallBands != null)
+                    foreach (var b in dto.wallBands)
+                    {
+                        if (TryParseBand(b, out int band)) { if (!item.WallBands.Contains(band)) item.WallBands.Add(band); }
+                        else errors.Add($"{dto.id}: bilinmeyen duvar bandı '{b}'.");
+                    }
+
                 if (dto.growSeasons != null)
                     foreach (var gs in dto.growSeasons)
                     {
@@ -129,7 +152,13 @@ namespace Thatchwick.Core.Content
                     foreach (var s in dto.surfaceSlots)
                     {
                         if (s == null) continue;
-                        item.SurfaceSlots.Add(new SurfaceSlotDef { Id = s.id, U = s.u, V = s.v });
+                        var slot = new SurfaceSlotDef { Id = s.id, U = s.u, V = s.v, Kind = string.IsNullOrWhiteSpace(s.kind) ? null : s.kind.Trim() };
+                        if (!string.IsNullOrWhiteSpace(s.size))
+                        {
+                            if (TryParseDecorSize(s.size, out var ss)) slot.Size = ss;
+                            else errors.Add($"{dto.id}/{s.id}: bilinmeyen yuva boyutu '{s.size}'.");
+                        }
+                        item.SurfaceSlots.Add(slot);
                     }
                 }
 
@@ -140,7 +169,8 @@ namespace Thatchwick.Core.Content
                         if (i == null) continue;
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
-                            || i.addIce > 0f || i.requiresFrost || i.piped || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter;
+                            || i.addIce > 0f || i.requiresFrost || i.piped || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter
+                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents;
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -202,7 +232,10 @@ namespace Thatchwick.Core.Content
                             RequiresFruit = i.requiresFruit,
                             TakesFruit = i.takesFruit,
                             PetsAnimals = i.petAnimals,
-                            Slaughter = i.slaughter
+                            Slaughter = i.slaughter,
+                            RepairMaterial = string.IsNullOrWhiteSpace(i.repair) ? null : i.repair,
+                            Polish = i.polish,
+                            CollectContents = i.collectContents
                         };
                         AddMaterials(interaction, i.materials);
                         bool badExtra = false;
@@ -417,6 +450,32 @@ namespace Thatchwick.Core.Content
                 else errors.Add($"{where}: bilinmeyen mevsim '{n}'.");
             }
             return list;
+        }
+
+        /// <summary>S/M/L, K/O/B ya da small/medium/large.</summary>
+        public static bool TryParseDecorSize(string text, out DecorSize size)
+        {
+            size = DecorSize.Small;
+            switch ((text ?? "").Trim().ToLowerInvariant())
+            {
+                case "s": case "k": case "small": case "küçük": size = DecorSize.Small; return true;
+                case "m": case "o": case "medium": case "orta": size = DecorSize.Medium; return true;
+                case "l": case "b": case "large": case "büyük": size = DecorSize.Large; return true;
+                default: return false;
+            }
+        }
+
+        /// <summary>alt/orta/üst ya da low/mid/high ya da 0/1/2.</summary>
+        public static bool TryParseBand(string text, out int band)
+        {
+            band = Decor.BandMid;
+            switch ((text ?? "").Trim().ToLowerInvariant())
+            {
+                case "alt": case "low": case "0": band = Decor.BandLow; return true;
+                case "orta": case "mid": case "1": band = Decor.BandMid; return true;
+                case "üst": case "ust": case "high": case "2": band = Decor.BandHigh; return true;
+                default: return false;
+            }
         }
     }
 }

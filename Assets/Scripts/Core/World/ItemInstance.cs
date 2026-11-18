@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Content;
 
@@ -23,8 +24,40 @@ namespace Thatchwick.Core.World
 
         /// <summary>Duvara asılı eşya: Position = önündeki karo, Rotation = asıldığı kenar (WallSide).</summary>
         public bool IsWallMounted => Def.Placement == ItemPlacement.Wall && !IsDecor;
-        /// <summary>Duvar eşyasının asıldığı kenar.</summary>
+        /// <summary>Duvar eşyasının asıldığı (ilk) kenar.</summary>
         public Edge WallEdge => WallSides.EdgeOf(Position, Rotation);
+        /// <summary>Tavana asılı eşya (kiriş kancası, asma fener): karo kaplamaz.</summary>
+        public bool IsCeiling => Def.Placement == ItemPlacement.Ceiling && !IsDecor;
+        /// <summary>Duvar eşyasının bandı (Decor.BandLow, BandMid, BandHigh).</summary>
+        public int WallBand { get; internal set; } = Decor.BandMid;
+        /// <summary>Duvar eşyasının kapladığı kenar sayısı (geniş duvar halısı 2-3).</summary>
+        public int WallSpan => IsWallMounted ? Math.Max(1, Def.WallWidth) : 0;
+
+        /// <summary>Geniş duvar eşyasının bütün kenarları ve önlerindeki karolar (kenar boyunca + yönde).</summary>
+        public IEnumerable<(GridPos tile, Edge edge)> WallSegments()
+        {
+            if (!IsWallMounted) yield break;
+            foreach (var seg in WallSides.Segments(Position, Rotation, WallSpan)) yield return seg;
+        }
+
+        public bool HangsOn(Edge edge)
+        {
+            foreach (var seg in WallSegments()) if (seg.edge.Equals(edge)) return true;
+            return false;
+        }
+
+        // ---- ev dekorasyonu (Project belgesi 27) ----
+        /// <summary>Durum: çöken raftan düşen eşya hasar alır; onarılan eşya "Onarılmış" kalır.</summary>
+        public ItemCondition Condition { get; set; }
+        /// <summary>Halı sırası: büyük olan üstte (halılar sınırsız üst üste serilir).</summary>
+        public int LayerOrder { get; internal set; }
+        /// <summary>Metal aynanın son cilasından beri geçen gün.</summary>
+        public double TarnishDays { get; set; }
+        public bool IsTarnished => Def.TarnishDays > 0f && TarnishDays >= Def.TarnishDays;
+        private List<StoredItem> _contents;
+        /// <summary>İçindekiler (döküntü yığınındaki eşyalar ve kırık parçalar).</summary>
+        public List<StoredItem> Contents => _contents ?? (_contents = new List<StoredItem>());
+        public bool HasContents => _contents != null && _contents.Count > 0;
 
         // ---- barınak (Adım: hayvanlar) ----
         /// <summary>Barınaktaki yem stoğu (birim).</summary>
@@ -84,8 +117,8 @@ namespace Thatchwick.Core.World
         public float GrowthFraction => IsPlant ? (float)System.Math.Min(1.0, GrowthDays / Def.GrowDays) : 1f;
 
         /// <summary>Dönüş uygulanmış genişlik/yükseklik.</summary>
-        public int Width => IsDecor || IsWallMounted ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).w;
-        public int Height => IsDecor || IsWallMounted ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).h;
+        public int Width => IsDecor || IsWallMounted || IsCeiling ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).w;
+        public int Height => IsDecor || IsWallMounted || IsCeiling ? 1 : Footprint.Dimensions(Def.Width, Def.Height, Rotation).h;
 
         public ItemInstance(int id, ItemDef def, GridPos position, int rotation = 0)
         {
@@ -98,7 +131,7 @@ namespace Thatchwick.Core.World
         /// <summary>Kapladığı karolar (dekor ve duvar eşyası için boş).</summary>
         public IEnumerable<GridPos> OccupiedTiles()
         {
-            if (IsDecor || IsWallMounted) yield break;
+            if (IsDecor || IsWallMounted || IsCeiling) yield break;
             int w = Width, h = Height;
             for (int dy = 0; dy < h; dy++)
                 for (int dx = 0; dx < w; dx++)
@@ -113,10 +146,20 @@ namespace Thatchwick.Core.World
             if (slot == null) return false;
             if (IsWallMounted)
             {
-                // Duvar rafı: yuvalar duvar boyunca dizilir (U), duvarın hemen önünde.
-                var (ax, ay) = WallSides.AlongWall(Rotation, slot.U);
-                gx = Position.X + ax;
-                gy = Position.Y + ay;
+                // Duvar rafı: yuvalar duvar boyunca dizilir (U, geniş rafta bütün genişliğe yayılır), duvarın hemen önünde.
+                int span = WallSpan;
+                float along = slot.U * span;
+                int segIndex = Math.Min(span - 1, (int)Math.Floor(along));
+                var (ox, oy) = WallSides.SegmentOffset(Rotation, segIndex);
+                var (ax, ay) = WallSides.AlongWall(Rotation, along - segIndex);
+                gx = Position.X + ox + ax;
+                gy = Position.Y + oy + ay;
+                return true;
+            }
+            if (IsCeiling)
+            {
+                gx = Position.X + slot.U;
+                gy = Position.Y + slot.V;
                 return true;
             }
             var p = Footprint.RotatePoint(slot.U, slot.V, Def.Width, Def.Height, Rotation);
@@ -143,6 +186,24 @@ namespace Thatchwick.Core.World
             }
         }
 
+        /// <summary>Geniş duvar eşyasında i. kenarın önündeki karonun ilk karoya göre kayması (kenar boyunca + yön).</summary>
+        public static (int dx, int dy) SegmentOffset(int side, int i)
+        {
+            // Yatay kenarlar (0, 2) x boyunca, dikey kenarlar (1, 3) y boyunca uzanır.
+            return Footprint.Normalize(side) % 2 == 0 ? (i, 0) : (0, i);
+        }
+
+        /// <summary>Geniş duvar eşyasının kenarları ve önlerindeki karolar.</summary>
+        public static IEnumerable<(GridPos tile, Edge edge)> Segments(GridPos first, int side, int span)
+        {
+            for (int i = 0; i < Math.Max(1, span); i++)
+            {
+                var (dx, dy) = SegmentOffset(side, i);
+                var t = new GridPos(first.X + dx, first.Y + dy, first.Z);
+                yield return (t, EdgeOf(t, side));
+            }
+        }
+
         /// <summary>Kenar üzerindeki yerel nokta (u: kenar boyunca 0-1), karo köşesine göre, duvardan biraz içeride.</summary>
         public static (float x, float y) AlongWall(int side, float u)
         {
@@ -155,6 +216,14 @@ namespace Thatchwick.Core.World
                 default: return (inset, u);
             }
         }
+    }
+
+    /// <summary>Bir kaptaki eşya (döküntü yığını): kimlik ve durum.</summary>
+    public struct StoredItem
+    {
+        public string ItemId;
+        public ItemCondition Condition;
+        public StoredItem(string id, ItemCondition c) { ItemId = id; Condition = c; }
     }
 
     /// <summary>Kaplama alanı ve dönüş hesapları.</summary>

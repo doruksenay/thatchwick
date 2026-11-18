@@ -67,6 +67,9 @@ namespace Thatchwick.Core.Work
 
         public string CanStart(Character character, ItemInstance item, InteractionDef interaction)
         {
+            // Onarılacak eşya yoksa malzeme sorulmaz (önce asıl neden).
+            if (interaction.RepairMaterial != null && FindRepairTarget(interaction.RepairMaterial, out _, out _) == null)
+                return $"Onarılacak hasarlı {Build.DecorSystem.MaterialName(interaction.RepairMaterial)} eşya yok.";
             foreach (var c in interaction.AllConsumed())
             {
                 int have = _house.Count(c.ItemId);
@@ -103,6 +106,31 @@ namespace Thatchwick.Core.Work
                 return "Hayvanlar bugün zaten sevildi.";
             if (interaction.RequiresFruit && !item.FruitReady)
                 return item.IsGrown ? "Meyve henüz olgunlaşmadı." : $"{item.Def.DisplayName} henüz büyümedi.";
+            if (interaction.Polish && !item.IsTarnished) return "Ayna zaten parlak.";
+            if (interaction.CollectContents && !item.HasContents) return "Toplanacak bir şey yok.";
+            return null;
+        }
+
+        /// <summary>
+        /// Onarılacak eşya: önce envanterdeki (en değerli) hasarlı eşya, yoksa yerleştirilmiş hasarlı eşya. Bulunan
+        /// envanter kimliği ya da dünya örneği döner; hiçbiri yoksa null.
+        /// </summary>
+        private string FindRepairTarget(string material, out ItemInstance placed, out ItemDef def)
+        {
+            placed = null; def = null;
+            string best = null; int bestPrice = -1;
+            foreach (var kv in _house.DamagedList())
+            {
+                if (!_content.Items.TryGet(kv.Key, out var d) || d.EffectiveMaterial != material) continue;
+                if (d.Price > bestPrice) { best = kv.Key; bestPrice = d.Price; def = d; }
+            }
+            if (best != null) return best;
+            foreach (var it in _world.Items)
+            {
+                if (it.Condition != ItemCondition.Damaged || it.Def.EffectiveMaterial != material) continue;
+                if (placed == null || it.Def.Price > placed.Def.Price) placed = it;
+            }
+            if (placed != null) { def = placed.Def; return placed.Def.Id; }
             return null;
         }
 
@@ -159,6 +187,27 @@ namespace Thatchwick.Core.Work
             if (interaction.Bath) farmNotes.Add(BathEffect(character, item));
             if (interaction.Wets > 0f) character.Soak(interaction.Wets);
             if (interaction.Dries && character.Wetness > 0f) { character.Dry(); farmNotes.Add("kurulandı"); }
+            if (interaction.Polish && item.TarnishDays > 0) { item.TarnishDays = 0; farmNotes.Add($"{item.Def.DisplayName} parladı"); }
+            if (interaction.RepairMaterial != null)
+            {
+                string target = FindRepairTarget(interaction.RepairMaterial, out var placedTarget, out var targetDef);
+                if (target != null && placedTarget == null && _house.RepairOne(target)) farmNotes.Add($"{targetDef.DisplayName} onarıldı");
+                else if (placedTarget != null) { placedTarget.Condition = ItemCondition.Repaired; _world.NotifyChanged(); farmNotes.Add($"{targetDef.DisplayName} onarıldı"); }
+            }
+            if (interaction.CollectContents && item.HasContents)
+            {
+                var got = new Dictionary<string, int>();
+                var gotOrder = new List<string>();
+                foreach (var c in item.Contents)
+                {
+                    _house.AddItem(c.ItemId, 1, c.Condition);
+                    string key = (c.Condition == ItemCondition.Damaged ? "hasarlı " : "") + Name(c.ItemId);
+                    if (!got.ContainsKey(key)) { got[key] = 0; gotOrder.Add(key); }
+                    got[key]++;
+                }
+                item.Contents.Clear();
+                foreach (var k in gotOrder) farmNotes.Add($"+{got[k]} {k}");
+            }
             if (interaction.Fertilize > 0f && Plants != null)
             {
                 // Toprak bakımı: gübre seviye başına %5 daha etkili.

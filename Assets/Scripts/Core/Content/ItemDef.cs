@@ -11,8 +11,73 @@ namespace Thatchwick.Core.Content
         Resource = 2,
         /// <summary>Duvarın iç yüzüne asılır (meşale, duvar rafı, goblen); karo kaplamaz.</summary>
         Wall = 3,
-        /// <summary>Halı: yere serilir, yolu kapatmaz, üstüne mobilya konur; karo başına bir halı.</summary>
-        Rug = 4
+        /// <summary>Halı: yere serilir, yolu kapatmaz, üstüne mobilya konur; halılar sınırsız üst üste serilir (27-ev-dekorasyonu).</summary>
+        Rug = 4,
+        /// <summary>Tavan ve kiriş: kapalı iç odada karonun tavanına asılır, yolu kapatmaz; karo başına bir tane.</summary>
+        Ceiling = 5
+    }
+
+    /// <summary>Dekorun boyut sınıfı (Sims gibi): eşya, kendi sınıfından küçük olmayan yuvaya girer.</summary>
+    public enum DecorSize
+    {
+        Small = 1,   // K: mum, bardak, ot demeti
+        Medium = 2,  // O: testi, kitap, saksı
+        Large = 3    // B: küp, bakır kazan
+    }
+
+    /// <summary>Eşyanın durumu: çöken raftan düşen eşya hasar alır, onarılan eşya değerinin bir kısmını kalıcı kaybeder.</summary>
+    public enum ItemCondition
+    {
+        Sound = 0,
+        Damaged = 1,
+        Repaired = 2
+    }
+
+    /// <summary>Dekor sistemi sözlüğü: yuva türleri, duvar bantları, malzemeler ve durum çarpanları (Project belgesi 27).</summary>
+    public static class Decor
+    {
+        // Yuva türleri ("rafa yalnızca rafa uyumlu eşya konur").
+        public const string Table = "masa", Shelf = "raf", Hook = "kanca", Mantel = "ocak", Sill = "pencere",
+            Pantry = "kiler", Plate = "tabak", Cushion = "minder";
+        public static readonly string[] SlotKinds = { Table, Shelf, Hook, Mantel, Sill, Pantry, Plate, Cushion };
+        /// <summary>Uyduğu türler yazılmamış dekorun varsayılanı: masa, raf, ocak ve pencere içi.</summary>
+        public static readonly string[] DefaultFits = { Table, Shelf, Mantel, Sill };
+
+        public static string KindName(string kind)
+        {
+            switch (kind)
+            {
+                case Table: return "masa";
+                case Shelf: return "raf";
+                case Hook: return "kanca";
+                case Mantel: return "ocak rafı";
+                case Sill: return "pencere içi";
+                case Pantry: return "kiler";
+                case Plate: return "tabak";
+                case Cushion: return "minder";
+                default: return kind;
+            }
+        }
+
+        public static string SizeName(DecorSize s) => s == DecorSize.Small ? "küçük" : s == DecorSize.Medium ? "orta" : "büyük";
+        public static string SizeLetter(DecorSize s) => s == DecorSize.Small ? "K" : s == DecorSize.Medium ? "O" : "B";
+
+        // Duvar bantları: bir kenarın her iç yüzünde üç yükseklik.
+        public const int BandLow = 0, BandMid = 1, BandHigh = 2, BandCount = 3;
+        public static string BandName(int band) => band == BandLow ? "alt" : band == BandMid ? "orta" : "üst";
+
+        // Malzemeler (çökmede akıbet, onarım yeri).
+        public const string Wood = "wood", Metal = "metal", Cloth = "cloth", Clay = "clay", Glass = "glass", Stone = "stone";
+        public static readonly string[] Materials = { Wood, Metal, Cloth, Clay, Glass, Stone };
+        /// <summary>Kırılgan malzeme: düşünce kırılır (kırık çömlek ya da kırık cam).</summary>
+        public static bool IsFragile(string material) => material == Clay || material == Glass;
+        public const string BrokenPottery = "item.broken_pottery", BrokenGlass = "item.broken_glass", Debris = "item.debris";
+
+        /// <summary>Durumun satış değeri çarpanı (karar: düşen eşyanın değeri azalır).</summary>
+        public static double SellFactor(ItemCondition c) => c == ItemCondition.Damaged ? 0.5 : c == ItemCondition.Repaired ? 0.75 : 1.0;
+        /// <summary>Durumun güzellik çarpanı.</summary>
+        public static double BeautyFactor(ItemCondition c) => c == ItemCondition.Damaged ? 0.5 : c == ItemCondition.Repaired ? 0.9 : 1.0;
+        public static string ConditionName(ItemCondition c) => c == ItemCondition.Damaged ? "Hasarlı" : c == ItemCondition.Repaired ? "Onarılmış" : "Sağlam";
     }
 
     /// <summary>Bir eşyanın yüzeyindeki dekor yuvası. U,V: kapladığı alanın içinde 0-1 arası yerel konum.</summary>
@@ -21,6 +86,10 @@ namespace Thatchwick.Core.Content
         public string Id { get; set; }
         public float U { get; set; }
         public float V { get; set; }
+        /// <summary>Yuva türü (Decor.Table, Decor.Shelf ...). Boşsa: duvar eşyasında raf, tavanda kanca, diğerlerinde masa.</summary>
+        public string Kind { get; set; }
+        /// <summary>Yuvanın boyutu: bundan büyük dekor girmez.</summary>
+        public DecorSize Size { get; set; } = DecorSize.Large;
     }
 
     /// <summary>Yerleştirilebilir/kullanılabilir eşya tanımı. İçerik sonradan paketlerle genişler.</summary>
@@ -104,6 +173,48 @@ namespace Thatchwick.Core.Content
         /// <summary>Mobilya kaplama grubu (wood, cloth, metal, clay); boşsa renk/malzeme seçeneği yok.</summary>
         public string FinishGroup { get; set; }
         public bool IsRug => Placement == ItemPlacement.Rug;
+        public bool IsCeiling => Placement == ItemPlacement.Ceiling;
+
+        // ---- ev dekorasyonu (Project belgesi 27, D1) ----
+        /// <summary>Dekorun boyut sınıfı (yüzeye konan eşya).</summary>
+        public DecorSize DecorSize { get; set; } = DecorSize.Small;
+        /// <summary>Dekorun yükü (1-12): rafın taşıması aşılırsa raf çökebilir.</summary>
+        public int Weight { get; set; } = 1;
+        /// <summary>Dekorun konabildiği yuva türleri (Decor.Table ...). Boşsa Decor.DefaultFits.</summary>
+        public List<string> FitsOn { get; set; } = new List<string>();
+        /// <summary>Yüzeyin toplam taşıması (bütün yuvalar). 0 = sınırsız (eski içerik).</summary>
+        public int MaxLoad { get; set; }
+        /// <summary>Duvar eşyasının asılabildiği bantlar (Decor.BandLow ...). Boşsa yalnızca orta.</summary>
+        public List<int> WallBands { get; set; } = new List<int>();
+        /// <summary>Duvar eşyasının genişliği (kenar sayısı, 1-3).</summary>
+        public int WallWidth { get; set; } = 1;
+        /// <summary>Uzun mobilya: önündeki duvarın alt ve orta bandını kapatır (dolap, yer rafı, büyük şömine).</summary>
+        public bool Tall { get; set; }
+        /// <summary>Odanın güzellik puanına katkısı (görünüş). Konfor (Comfort) fiziksel rahatlıktır, ayrı tutulur.</summary>
+        public int Beauty { get; set; }
+        /// <summary>Malzeme (Decor.Wood ...): çöken raftan düşünce kırılır mı, nerede onarılır.</summary>
+        public string Material { get; set; }
+        /// <summary>Etkin malzeme: yazılmamışsa kaplama grubundan, o da yoksa ahşap.</summary>
+        public string EffectiveMaterial => !string.IsNullOrEmpty(Material) ? Material
+            : FinishGroup == "cloth" ? Decor.Cloth : FinishGroup == "metal" ? Decor.Metal : FinishGroup == "clay" ? Decor.Clay : Decor.Wood;
+        /// <summary>Ayna: evde bulunursa görünüş değiştirilebilir (Mirror).</summary>
+        public bool IsMirror { get; set; }
+        /// <summary>Metal ayna: bu kadar günde kararır (güzelliği yarıya iner, "Cilala" düzeltir). 0 = kararmaz.</summary>
+        public float TarnishDays { get; set; }
+        /// <summary>Tarz ekseni (Çatkı, Yörük ...): kademeden (StyleSet) bağımsız görünüş ailesi.</summary>
+        public string StyleTheme { get; set; }
+
+        /// <summary>Dekorun konabildiği yuva türleri (varsayılan dahil).</summary>
+        public IReadOnlyList<string> EffectiveFits => FitsOn.Count > 0 ? (IReadOnlyList<string>)FitsOn : Decor.DefaultFits;
+        public bool FitsKind(string kind) { foreach (var k in EffectiveFits) if (k == kind) return true; return false; }
+        /// <summary>Duvar eşyasının bantları (varsayılan: orta).</summary>
+        public IReadOnlyList<int> EffectiveBands => WallBands.Count > 0 ? (IReadOnlyList<int>)WallBands : new[] { Decor.BandMid };
+        public bool AllowsBand(int band) { foreach (var b in EffectiveBands) if (b == band) return true; return false; }
+        public int DefaultBand => EffectiveBands[0];
+
+        /// <summary>Yuvanın etkin türü (boşsa yerleşime göre varsayılan).</summary>
+        public string SlotKind(SurfaceSlotDef slot) => !string.IsNullOrEmpty(slot.Kind) ? slot.Kind
+            : Placement == ItemPlacement.Wall ? Decor.Shelf : Placement == ItemPlacement.Ceiling ? Decor.Hook : Decor.Table;
 
         // ---- hayvancılık ve otomasyon ----
         /// <summary>Buzluk: içinde buz varken (FuelDays = kalan buz günü) yiyeceği çok soğuk tutar.</summary>
