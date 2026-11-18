@@ -44,3 +44,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 
 ## Notlar
 - Şalgam evresi `item.crop_turnip` için ilk görseldir; dosya adındaki `crop_turnip` pivot tablosu önek eşleşmesini kullanır.
+- 2026-11-18 (tamir oturumu, 0 gen): stil kapısı bitki ailesinde yanlış ayarlıydı (palette 3 yeşil, aile kilidi kurulmamış). Reddedilen adayların doygunluk düzeltilmiş hâlleri `art/results/310-duzeltme/`, karşılaştırma `art/results/310-duzeltme-once-sonra.png`, ayrıntı `art/results/bitki-duzeltme.md`. Durum değişmedi; kabul/red kararı kullanıcının.
