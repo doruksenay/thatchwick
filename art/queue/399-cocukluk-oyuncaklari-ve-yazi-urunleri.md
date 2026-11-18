@@ -1,7 +1,7 @@
 ---
 id: "399"
 title: Çocukluk oyuncakları (7) ve yazı/mum/malt ürün ikonları (6)
-status: review
+status: accepted
 claimed_at: 2026-11-18T14:32Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgeleri 30 ve 34 (18.11.2026, "hepsini onaylıyorum")
 priority: 20
@@ -61,3 +61,6 @@ Belge 30 (çocukluk eşyaları ve alışkanlık sistemi) ve 34 (eksik zincirler:
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+Karar (kullanıcı, 18.11.2026): accepted (kısmi). Kabul: sapan, atlama ipi, uçurtma, parşömen.
+Yeniden yapılacak (iş 401): çember (sopa yok), bilye (bilye seçilmiyor), boş defter (sandık gibi, renk uyumsuz)
+ve teslim edilmeyen oyma bıçağı, jonglör topları, iç yağı, mazı, mürekkep, malt.
