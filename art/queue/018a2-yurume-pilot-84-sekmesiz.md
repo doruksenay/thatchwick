@@ -1,7 +1,8 @@
 ---
 id: "018a2"
 title: Yürüme pilotu yeniden, erkek 84 px SE (dikey sekme yok)
-status: pending
+status: running
+claimed_at: 2026-11-18T19:12Z
 approved_by: user        # kullanıcı 18.11.2026: 018a reddedildi ("yürürken zıplıyor")
 priority: 5
 family: karakter
