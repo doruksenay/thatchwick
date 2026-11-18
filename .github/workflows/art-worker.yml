@@ -39,6 +39,14 @@ jobs:
   work:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    # Paralel üretim (art/budget.md "Paralel üretim", kullanıcı kararı 2026-11-18): her tur 3 şeritte 3 işi aynı anda
+    # yürütür. Her şerit sıradaki uygun işi sahiplenir; çakışan sahiplenmede push reddedilir, şerit geri alıp sonrakini dener.
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [0, 1, 2]
+    env:
+      LANE: ${{ matrix.lane }}
     steps:
       # LFS dosyaları ancak iş varsa çekilir; kimlik bilgisi .git/config'e yazılmaz (ajan push edemez).
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -79,16 +87,24 @@ jobs:
           git config user.name "thatchwick-art-worker"
           git config user.email "art-worker@users.noreply.github.com"
           remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git pull --ff-only --quiet "$remote" main      # tetikten sonra main ilerlediyse en uca gel
-          if ! out=$(python tools/art/queue_ready.py --claim); then
-            echo "Uygun iş kalmadı."; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
-          fi
-          read -r job file <<< "$out"
-          git add "$file"
-          git commit -m "art($job): başladı (bulut)"
-          # Yerel işçi aynı işi bu arada aldıysa push reddedilir: o zaman bu çalıştırma işi bırakır.
-          if ! git push "$remote" HEAD:main; then
-            echo "::notice::$job başka bir işçide; atlandı."; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+          sleep $(( LANE * 20 ))                         # şeritler aynı anda sahiplenmeye kalkmasın
+          claimed=""
+          for attempt in 1 2 3 4 5; do
+            git pull --ff-only --quiet "$remote" main    # tetikten sonra main ilerlediyse en uca gel
+            if ! out=$(python tools/art/queue_ready.py --claim); then
+              echo "Uygun iş kalmadı."; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+            read -r job file <<< "$out"
+            git add "$file"
+            git commit -q -m "art($job): başladı (bulut, şerit $LANE)"
+            # Başka şerit ya da yerel işçi araya girdiyse push reddedilir: sahiplenmeyi geri al, güncel main'le yeniden dene.
+            if git push "$remote" HEAD:main; then claimed="$job"; break; fi
+            echo "::notice::$job sahiplenmesi çakıştı (deneme $attempt); yeniden deneniyor."
+            git reset --hard -q HEAD~1
+            sleep $(( RANDOM % 15 + 5 ))
+          done
+          if [ -z "$claimed" ]; then
+            echo "::notice::Şerit $LANE iş sahiplenemedi; atlandı."; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
           echo "job=$job" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
@@ -131,7 +147,7 @@ jobs:
           ART_WORKER_MODE: cloud
           ART_JOB: ${{ steps.claim.outputs.job }}
         run: |
-          claude -p "Bulut modundasin: yalnizca art/queue icindeki $ART_JOB numarali isi (zaten sahiplenildi) art/budget.md kurallariyla isle, commit et, push etme ve ozet rapor ver." \
+          claude -p "Bulut modundasin (serit $LANE): yalnizca art/queue icindeki $ART_JOB numarali isi (zaten sahiplenildi) art/budget.md kurallariyla isle, commit et, push etme ve ozet rapor ver." \
             --agent pixellab-artist \
             --max-turns 80 \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
@@ -163,9 +179,18 @@ jobs:
             exit 1
           fi
           if [ "$target" = "main" ]; then
-            git pull --rebase "$remote" main
-            python tools/art/cloud_guard.py "$(git merge-base HEAD FETCH_HEAD)" HEAD > /dev/null
-            git push "$remote" HEAD:main
+            # Paralel şeritler aynı anda push edebilir: reddedilirse yeniden çek ve dene. İçerik çakışması olursa zorlama yok.
+            pushed=""
+            for attempt in 1 2 3 4 5; do
+              if ! git pull --rebase "$remote" main; then
+                git rebase --abort || true
+                echo "::error::$JOB sonucu main ile çakıştı; push edilmedi."; exit 1
+              fi
+              python tools/art/cloud_guard.py "$(git merge-base HEAD FETCH_HEAD)" HEAD > /dev/null
+              if git push "$remote" HEAD:main; then pushed=1; break; fi
+              sleep $(( RANDOM % 20 + 5 ))
+            done
+            [ -n "$pushed" ] || { echo "::error::$JOB push 5 denemede başarısız."; exit 1; }
           else
             branch="art-worker/${GITHUB_RUN_ID}"
             git push "$remote" "HEAD:refs/heads/$branch"

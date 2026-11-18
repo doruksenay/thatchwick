@@ -1,8 +1,7 @@
 ---
 id: "016"
 title: Karakter katman pilotu (kel taban + saç, sakal, kıyafet katmanı; 8 yön denemesi)
-status: running
-claimed_at: 2026-11-18T07:23Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: true
@@ -73,6 +72,8 @@ Bu pilot şunları ölçer:
 ## Notlar
 - Yön adları: s, se, e, ne, n, nw, w, sw (012 ile aynı).
 - Telif yok; açıklamada oyun adı geçmez.
+
+- 2026-11-18: 07:23Z bulut sahiplenmesi eski izinlerle başladı ve sonuç gelmedi (uv izni yoktu); iş yeniden `pending`.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

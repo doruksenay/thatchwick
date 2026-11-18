@@ -36,6 +36,7 @@ import time
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 QUEUE = os.path.join(ROOT, "art", "queue")
 BUDGET = os.path.join(ROOT, "art", "budget.md")
+LEDGER = os.path.join(ROOT, "art", "ledger")   # paralel işçiler: iş başına bir defter dosyası (çakışma olmasın)
 
 AUTO_LIMIT = 25.0   # yalnızca --strict
 RUN_LIMIT = 60.0
@@ -108,20 +109,30 @@ def daily_limit(today):
 
 
 def read_budget(today):
-    """Bugün harcanan ve defterdeki son kalan bakiye (defter; işçi get_balance ile doğrular)."""
-    spent_today, last_balance = 0.0, None
-    if not os.path.exists(BUDGET):
-        return spent_today, last_balance
-    with open(BUDGET, encoding="utf-8") as f:
-        for line in f:
-            cells = [c.strip() for c in line.strip().strip("|").split("|")]
-            if len(cells) < 5 or not re.match(r"\d{4}-\d{2}-\d{2}", cells[0]):
-                continue
-            if cells[0] == today:
-                spent_today += _num(cells[3])
-            bal = _num(cells[4], None)
-            if bal is not None:
-                last_balance = bal
+    """Bugün harcanan ve son kalan bakiye (defter; işçi get_balance ile doğrular).
+
+    Defter: art/budget.md tablosu (eski satırlar) + art/ledger/*.md (paralel üretimden sonra, iş başına bir dosya;
+    paralel işçiler aynı tabloya yazıp çakışmasın diye). Satır biçimi aynı: | tarih | iş | araç | harcanan | kalan |
+    Bakiye olarak en son tarihli satırlardaki en küçük "kalan" alınır (paralel işlerde en güncel olan).
+    """
+    spent_today, rows = 0.0, []
+    files = [BUDGET] if os.path.exists(BUDGET) else []
+    files += sorted(glob.glob(os.path.join(LEDGER, "*.md")))
+    for path in files:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                cells = [c.strip() for c in line.strip().strip("|").split("|")]
+                if len(cells) < 5 or not re.match(r"\d{4}-\d{2}-\d{2}", cells[0]):
+                    continue
+                if cells[0] == today:
+                    spent_today += _num(cells[3])
+                bal = _num(cells[4], None)
+                if bal is not None:
+                    rows.append((cells[0], bal))
+    last_balance = None
+    if rows:
+        last_day = max(d for d, _ in rows)
+        last_balance = min(b for d, b in rows if d == last_day)
     return spent_today, last_balance
 
 

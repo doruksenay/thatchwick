@@ -38,6 +38,15 @@ Kullanıcı: "Bunu otomatize et. Bu projede istenen tüm asset'ler PixelLab'e ü
 - **Yeni ihtiyaç:** asset gerektiren her yeni özellik ya da karar için, planlama ve kod oturumları aynı turda iş dosyası yazar ve `main`'e push eder.
 - **Frenler aynen geçerli:** çalışma başına 60 gen / 3 iş, günlük 150 gen, rezerv 200. Kuyruk ayı aşarsa işler bir sonraki dönemde kendiliğinden devam eder.
 
+## Paralel üretim (kullanıcı kararı 2026-11-18)
+Kullanıcı: "Asset üretimini hızlandıramaz mıyız kaliteden taviz vermeden? Paralel bir agent vs."
+- **3 şerit:** bulut işçisi her turda 3 işi aynı anda yürütür (`art-worker.yml` matrisi). Her şerit sıradaki uygun işi sahiplenir; iki şerit aynı işe denk gelirse push reddedilir, kaybeden şerit sahiplenmesini geri alıp sonraki işi dener.
+- **İş içi paralellik:** bir işteki bağımsız PixelLab çağrıları aynı anda gönderilir; tarif "sırayla" diyorsa sırayla.
+- **Hız sınırı:** PixelLab eşzamanlılık ya da hız sınırı hatası verirse (429 / "too many") o çağrı bekleyip bir kez yeniden denenir. "Yeniden deneme: yok" kuralının tek istisnası budur.
+- **Defter:** paralel işler aynı tabloya yazıp çakışmasın diye her iş defter satırını `art/ledger/NNN.md` dosyasına yazar (aynı tablo biçimi). Aşağıdaki tablo 2026-11-18'e kadarki geçmiştir; `queue_ready.py` ikisini birlikte okur.
+- Kalite kapıları değişmedi: stil kilidi, `validate_iso.py`, yan yana sayfası ve kullanıcının `accepted`/`rejected` kararı aynen geçerli.
+- Not: her şerit ayrı bir Claude Code oturumudur; Claude aboneliğinin kullanım sınırı 3 kat hızlı dolar.
+
 ## Günlük defter
 | Tarih | İş | Araç | Harcanan | Kalan (get_balance) |
 |---|---|---|---|---|
