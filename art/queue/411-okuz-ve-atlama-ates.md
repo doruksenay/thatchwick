@@ -1,7 +1,8 @@
 ---
 id: "407"
 title: "Öküz, örme çit ve bekçi ateşi"
-status: pending
+status: running
+claimed_at: 2026-11-18T19:22Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 31, 29 (kullanıcı 18.11.2026 "önerdiklerinin tamamını yap")
 family: hayvan
 style_gate: false
