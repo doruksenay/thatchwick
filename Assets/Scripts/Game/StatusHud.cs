@@ -130,7 +130,7 @@ namespace Thatchwick.Game
                 : "";
             // Sol paneli örtmesin: ortalanır, yer yoksa panelin sağına kayar ve daralır.
             float left = Mathf.Max(w * 0.5f - 250f, LeftInset + 8f);
-            var rect = new Rect(left, 4f, Mathf.Min(500f, w - left - 8f), line4.Length > 0 ? 78f : 62f);
+            var rect = new Rect(left, 4f, Mathf.Min(500f, w - left - 8f), line4.Length > 0 ? 88f : 70f);   // üçüncü satır kesilmesin
             _rects.Add(rect);
             GUILayout.BeginArea(rect, GUI.skin.box);
             GUILayout.Label(line1, _small);
@@ -152,8 +152,11 @@ namespace Thatchwick.Game
             var runner = _runnerOf(c);
             var queue = runner != null ? ActivityDescriber.Queue(runner, _life.World) : new List<ActivityInfo>();
             float height = 78f + queue.Count * 20f;
-            float left = Mathf.Max(w * 0.5f - 300f, 166f);   // bildirim düğmesinin sağında
-            var rect = new Rect(left, h - height - 6f, Mathf.Min(600f, w - left - 8f), height);
+            float left = Mathf.Max(w * 0.5f - 380f, 166f);   // bildirim düğmesinin sağında
+            var rect = new Rect(left, h - height - 6f, Mathf.Min(760f, w - left - 8f), height);
+            // İhtiyaç çubukları şeride sığsın (dar ekranda son çubuk kesilmesin).
+            int needCount = Enum.GetValues(typeof(NeedType)).Length;
+            float barWidth = Mathf.Min(108f, (rect.width - 16f) / needCount - 4f);
             _rects.Add(rect);
             GUILayout.BeginArea(rect, GUI.skin.box);
 
@@ -165,7 +168,7 @@ namespace Thatchwick.Game
 
             GUILayout.BeginHorizontal();
             foreach (NeedType n in Enum.GetValues(typeof(NeedType)))
-                Bar(NeedName(n), c.Needs.Get(n), 108f);
+                Bar(NeedName(n), c.Needs.Get(n), barWidth);
             GUILayout.EndHorizontal();
 
             if (c.Mood.Active.Count > 0)
