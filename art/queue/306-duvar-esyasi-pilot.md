@@ -1,7 +1,7 @@
 ---
 id: "306"
 title: Duvar eşyası pilotu (meşale, gaz lambası, duvar rafı, ot demeti, alet askısı)
-status: running
+status: blocked
 claimed_at: 2026-11-18T09:03Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -50,6 +50,10 @@ Yöntem, ortak ayarlar, ortak açıklama eki, ikinci deneme kuralı, renk sını
 301 ile aynı (validate_iso, ayak izi kaplaması, maske dışı, kılavuz rengi, ışık sırası, ayna uygunluğu). Ek olarak:
 - Aynı takımdaki eşyalar yan yana önizlemede (renk uyumu): baskın ahşap tonlarının ortalama ton/doygunluğu tabloda.
 - Yüzeyi olan eşyalarda üst yüzeyin y aralığı (ALTTAN) ve yuvaların üst yüzeye düştüğü önizlemede işaretli.
+
+## Sorular
+- Pilot (yalnızca meşale) tutmadı, kalan dört eşya denenmedi. Deneme 1: meşale gibi okunmuyor (sap yok, bordo ahşap, dev alev). Deneme 2: tanınır bir duvar meşalesi ama stil denetimi KALDI (palete yakın %79, palet dışı renkler); teslim edilmedi. Dosyalar `art/results/306-red/`.
+- Karar gerekli: (a) 2. denemeyi yine de kabul edip stil eşiğini gevşetmek, (b) tarifteki alternatif: `create_image_pixflux` ile önden çizip kodda eğmek, (c) kılavuz rengini (`tools/art/wall_guide.py`, şimdi sarımsı kahve) duvarın gerçek rengine çekip yeniden denemek. Hangisi?
 
 ## Notlar
 - Hepsi yalnızca `sw_ne` ("/" duvar yüzü). Diğer yüz aynayla.
