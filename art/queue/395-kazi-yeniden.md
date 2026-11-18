@@ -1,7 +1,7 @@
 ---
 id: "395"
 title: Kazı yeniden: korsuz çatlak taş, ahşap çatkı, dren çukuru, kandil, kristal
-status: running
+status: review
 claimed_at: 2026-11-18T14:10Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 18.11.2026: "önerilerini uygula" (360-367 yeniden üretim)
 priority: 10
