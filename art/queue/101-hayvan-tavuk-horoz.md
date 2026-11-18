@@ -1,7 +1,7 @@
 ---
 id: "101"
 title: Hayvanlar 1: tavuk (tuval testi) + horoz
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:00Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
@@ -97,6 +97,8 @@ Hiçbir şeyi silme ya da üzerine yazma. Klasör tarihi üretim günü (`yyyy-m
 Bulut işçisi PixelLab sonuç PNG'lerini diske indiremedi (curl onay istiyor). 3 tavuk döndürmesi üretildi (kimlikler `art/results/101-hayvan-tavuk-horoz.md`); teslim ve horozlar yerel işçiye kaldı. Yerelde chicken_3/4/5 yeniden üretilmeden sürdürülmeli.
 
 - 2026-11-18: çıktıyı diske yazmak için `tools/art/save_png.py` eklendi; iş yeniden `pending`. 101: chicken_3/4/5 döndürmeleri zaten üretildi (kimlikler raporda), önce onları `save_png.py` ile indir; yeniden üretme.
+
+- 2026-11-18 (bulut şerit 0): `get_balance` "Tier 2: Pixel Artisan, 4999/5000 gen, yenilenme 2026-12-18" döndürdü; `art/budget.md` ise Tier 1 / 2000 gen / yenilenme 2026-12-08 diyor. Kural gereği plan Tier 1 değilse işçi durur: hiç üretim yapılmadı (0 gen). Karar kullanıcıda: `art/budget.md` Plan bölümü Tier 2'ye güncellenirse iş `pending` yapılıp sürdürülebilir. Not: `save_png.py` ile chicken_3/4/5 karakter indirmesi çalışıyor (ölçüm: SE boy 25/24/30, doluluk 0,89/0,86/0,94, ortalama r≈0,90 → kural R horoz tuvali 32). Renk sayısı 32'yi aşıyor (c3 35, c4 57, c5 48 SE): `reduce_colors` gerekecek. Dosyalar teslim edilmedi.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
