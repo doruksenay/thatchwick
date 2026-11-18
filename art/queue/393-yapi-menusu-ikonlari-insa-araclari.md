@@ -1,7 +1,8 @@
 ---
 id: "393"
 title: Yapı menüsü ikonları: inşa araçları
-status: pending
+status: running
+claimed_at: 2026-11-18T13:58Z
 approved_by: user
 priority: 15
 family: arayuz
