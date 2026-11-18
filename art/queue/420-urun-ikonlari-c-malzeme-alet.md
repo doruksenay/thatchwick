@@ -1,7 +1,7 @@
 ---
 id: "420"
 title: Ürün ikonları C: malzeme, alet, kumaş, iksir, inşaat (59)
-status: running
+status: blocked
 claimed_at: 2026-11-18T20:02Z
 approved_by: user        # kullanıcı 18.11.2026: "bu sistemi getir" (ürün ikon sistemi); otomatik akış (art/budget.md)
 priority: 30
@@ -153,6 +153,10 @@ Boyut 32x32, ≤16 renk, `python tools/art/style.py check --family arayuz <dosya
 
 ## Notlar
 - Dosya adı `icon_item_<id>` olduğu sürece kod kendiliğinden bulur; v2 gibi farklı ad gerekirse kod oturumu `IsoArt.IconOverrides`'a ekler.
+
+## Sorular
+- Maliyet uyuşmazlığı: 401'de `create_map_object` 32x32 çağrısı 1 gen/ikon çıktı (9 çağrı = 9 gen). Bu iş 59 ikon = ~59 gen; `cost_est` 20 ve `cost_max` 34'ü aşar (2,9 kat). Kural gereği üretime devam edilmedi. Tek deneme çağrısı yapıldı (nails, object_id 5dbab83e-32eb-4526-a4c4-a2e79b50f9cb, 19 sn'de tamamlandı); `get_balance` 4025,70 değişmedi (faturalama gecikmeli olabilir, maliyet ölçülemedi).
+- Karar gerekli: `cost_max` ~60'a yükseltilip tek iş olarak mı, yoksa iki işe (420a/420b, ~30'ar ikon) bölünerek mi devam edilsin? Bölme önerilir (çalışma tavanı 60).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
