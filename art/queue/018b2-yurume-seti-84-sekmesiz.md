@@ -1,7 +1,7 @@
 ---
 id: "018b2"
 title: Yürüme seti yeniden: erkek ve kadın 84 px, 8 yön, sekmesiz
-status: running
+status: review
 claimed_at: 2026-11-18T19:55Z
 approved_by: user        # kullanıcı 18.11.2026 (sohbet)
 priority: 10
