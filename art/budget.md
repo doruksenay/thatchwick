@@ -12,7 +12,7 @@ Bu dosya işçinin freni ve harcama defteridir. İşçi her iş öncesi okur, he
 |---|---|
 | Tek iş tavanı (`cost_max`) | 60 generation (çalışma tavanı). Daha büyük iş parçalara bölünür. Onay için ayrıca bir tavan yok (aşağıda "Otomatik akış") |
 | Çalışma başına tavan | 60 generation, en çok 3 iş |
-| Günlük tavan | 150 generation |
+| Günlük tavan | 150 generation (2026-11-08 için 250: kullanıcı onayı, sohbet) |
 | Rezerv | Kalan bakiye (`get_balance`), işten sonra 200'ün altına düşecekse işçi durur |
 | Maliyet sapması | Gerçek maliyet `cost_est`'in 2 katını aşarsa işçi durur, `status: failed` yazar |
 | Yeniden deneme | Yok. Hata, Tier kısıtı ya da ayak izi/2:1 doğrulaması tutmazsa durur, hatayı aynen yazar |

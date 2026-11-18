@@ -1,8 +1,8 @@
 ---
 id: "003"
 title: Çimen-toprak geçiş seti
-status: blocked
-approved_by: auto
+status: review
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: zemin
 style_gate: false
 cost_est: 10
@@ -35,3 +35,5 @@ Adlar `iso_ground_grass_dirt_<nn>.png` (nn = 00-15, köşe kodu sırası). Diki�
 
 ## Sorular
 BLOKE (2026-11-08, Unity/geliştirme sohbeti): 003 işi zemin oturumuna verildi (create_tiles_pro tileset, palette modu). Çift harcama olmasın diye bloke. Zemin oturumu bitince kullanıcı durumu accepted/rejected yapar ya da pending'e geri alır.
+
+OTOMATİK AKIŞ: çıktılar zemin oturumunda teslim edilmişti (Assets'te var); `blocked` yerine `review`. Kabul ya da red kullanıcının.

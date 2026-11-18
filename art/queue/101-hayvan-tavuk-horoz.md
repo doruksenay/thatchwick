@@ -2,9 +2,13 @@
 id: "101"
 title: Hayvanlar 1: tavuk (tuval testi) + horoz
 status: pending
-approved_by: pending     # kullanıcı çalıştırma onayı bekleniyor (plan 2026-11-08'de onaylandı)
+<<<<<<< HEAD
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
 style_gate: false
+=======
+approved_by: user        # kullanıcı onayı: sohbet 2026-11-08
+>>>>>>> 8b29d0e (art(101,104,105): onay (approved_by: user), 101 tavuk tuvali 28/32; bütçe: 2026-11-08 günlük 250 notu)
 cost_est: 17
 cost_max: 20
 depends_on: ["100"]
@@ -24,7 +28,7 @@ created: 2026-11-08
 # 101 Hayvanlar 1: tavuk (tuval testi) + horoz
 
 ## Amaç
-Öncelik 1 toplu üretiminin ilk işi. Önce tavukta pixen tuvali doğrulanır (kullanıcı isteği: 24x24 ve 28x28), sonra ölçülen doluluk oranıyla horoz üretilir. 102 ve 103'teki kuş tuvalleri bu işin raporundaki doluluk oranını kullanır. Her tür 4 aday; hepsi aynı çizim stili ve kamera. Kullanıcı Unity'de bakıp seçecek.
+Öncelik 1 toplu üretiminin ilk işi. Önce tavukta pixen tuvali doğrulanır (kullanıcı isteği 2026-11-08: 28x28 ve 32x32), sonra ölçülen doluluk oranıyla horoz üretilir. 102 ve 103'teki kuş tuvalleri bu işin raporundaki doluluk oranını kullanır. Her tür 4 aday; hepsi aynı çizim stili ve kamera. Kullanıcı Unity'de bakıp seçecek.
 
 ## Tarif
 
@@ -33,10 +37,10 @@ Her aday 2 gen (tek kare 1 + v3 döndürme 1) + gerekirse renk azaltma 0,1. 8 ad
 
 | Aday | Yol | Tuval ve ayar | Açıklama metni (+ ortak ek) |
 |---|---|---|---|
-| chicken_3 | B' | pixen 24x24 | `small white farm hen seen straight from the front facing the viewer, red comb and wattle, yellow beak and legs, standing` |
-| chicken_4 | B' | pixen 24x24 | `small red-brown farm hen seen straight from the front facing the viewer, red comb and wattle, yellow beak and legs, standing` |
-| chicken_5 | B' | pixen 28x28 | `small black farm hen with a faint green sheen seen straight from the front facing the viewer, red comb and wattle, dark grey beak and legs, standing` |
-| chicken_6 | B' | pixen 28x28 | `small grey and white barred speckled farm hen seen straight from the front facing the viewer, red comb and wattle, yellow beak and legs, standing` |
+| chicken_3 | B' | pixen 28x28 | `small white farm hen seen straight from the front facing the viewer, red comb and wattle, yellow beak and legs, standing` |
+| chicken_4 | B' | pixen 28x28 | `small red-brown farm hen seen straight from the front facing the viewer, red comb and wattle, yellow beak and legs, standing` |
+| chicken_5 | B' | pixen 32x32 | `small black farm hen with a faint green sheen seen straight from the front facing the viewer, red comb and wattle, dark grey beak and legs, standing` |
+| chicken_6 | B' | pixen 32x32 | `small grey and white barred speckled farm hen seen straight from the front facing the viewer, red comb and wattle, yellow beak and legs, standing` |
 | rooster_1 | B' | pixen, kural R | `medieval farm rooster seen straight from the front facing the viewer, red-gold plumage, dark green arching tail feathers, large red comb and wattles, yellow beak and legs, standing proudly` |
 | rooster_2 | B' | pixen, kural R | `white farm rooster seen straight from the front facing the viewer, large red comb and wattles, white arching tail, yellow beak and legs, standing proudly` |
 | rooster_3 | B' | pixen, kural R | `black farm rooster seen straight from the front facing the viewer, copper-gold neck feathers, black tail with green sheen, large red comb, standing proudly` |
@@ -44,7 +48,7 @@ Her aday 2 gen (tek kare 1 + v3 döndürme 1) + gerekirse renk azaltma 0,1. 8 ad
 
 **Sıra:** önce dört tavuk (çağrılar, döndürme, ölçüm), sonra horozlar.
 
-**Kural R (horoz tuvali):** tavuk adaylarından 8 yönü döndürülmüş olanların her biri için doluluk = SE boy / tuval. r = bunların ortalaması (döndürülmüş tavuk yoksa r = 0,81). Horoz tuvali = 28 / r'ye en yakın 4'ün katı (eşitlikte büyük olan). Hesabı ve sonucu rapora yaz. Not: 100 pilotunda pixen 32'de tavuk gövdesi ~26 çıkmıştı; 24 tuval ~19-20, 28 tuval ~23 verebilir (tahmin).
+**Kural R (horoz tuvali):** tavuk adaylarından 8 yönü döndürülmüş olanların her biri için doluluk = SE boy / tuval. r = bunların ortalaması (döndürülmüş tavuk yoksa r = 0,81). Horoz tuvali = 28 / r'ye en yakın 4'ün katı (eşitlikte büyük olan). Hesabı ve sonucu rapora yaz. Not: 100 pilotunda pixen 32'de tavuk gövdesi ~26 çıkmıştı; 28 tuval ~23, 32 tuval ~26 verebilir (tahmin). Horoz tuvali bu tavuk bulgusuna göre ayarlanır (kullanıcı kararı).
 
 Rapora ayrıca: tavuk için hangi tuvalin hedef 24'e yakın olduğu ve 102/103 için önerilen pixen doluluk oranı r.
 

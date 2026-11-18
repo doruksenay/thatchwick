@@ -2,7 +2,7 @@
 id: "332"
 title: Çit kapıları ve korkuluklar (iki eksen)
 status: pending
-approved_by: pending     # kullanıcı kararı bekliyor (Sims düzeyinde yapı modu, 2026-11-17); "user" yapınca işçi alır
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: yapi
 style_gate: false
 cost_est: 50

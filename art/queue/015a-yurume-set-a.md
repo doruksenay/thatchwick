@@ -2,7 +2,7 @@
 id: "015a"
 title: Yürüme animasyonu seti 1/3 (woman_a, elder_m, elder_f)
 status: pending
-approved_by: pending     # kullanıcı bütçe günü onaylayacak
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
 cost_est: 24

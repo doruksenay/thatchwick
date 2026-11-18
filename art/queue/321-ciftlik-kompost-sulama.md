@@ -2,7 +2,7 @@
 id: "321"
 title: Çiftlik eşyaları (kompost yığını, tohum yapıcı, sulama hendeği, kova-makara, su oluğu)
 status: pending
-approved_by: pending
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: esya
 style_gate: false
 cost_est: 5

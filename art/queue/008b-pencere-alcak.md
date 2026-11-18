@@ -2,7 +2,7 @@
 id: "008b"
 title: Duvar pencere (iki eksen) ve alçak duvar (iki eksen), inpaint ile
 status: pending
-approved_by: pending     # kullanıcı kararı 2026-11-08: yarın çalışacak; kullanıcı "user" yapınca işçi alır
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: yapi
 style_gate: false
 cost_est: 20

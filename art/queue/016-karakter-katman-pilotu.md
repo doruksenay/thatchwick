@@ -2,7 +2,7 @@
 id: "016"
 title: Karakter katman pilotu (kel taban + saç, sakal, kıyafet katmanı; 8 yön denemesi)
 status: pending
-approved_by: pending     # tools/art/approve_all.py --uygula ile açılır (otomatik akış, kullanıcı kararı 2026-11-17)
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: true
 cost_est: 45

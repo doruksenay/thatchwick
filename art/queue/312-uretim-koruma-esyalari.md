@@ -2,7 +2,7 @@
 id: "312"
 title: Saklama eşyaları (tuzlama fıçısı, kök mahzeni)
 status: pending
-approved_by: pending
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: esya
 style_gate: false
 cost_est: 2

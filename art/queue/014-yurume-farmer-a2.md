@@ -2,7 +2,7 @@
 id: "014"
 title: Yürüme animasyonu farmer_a2_56 (8 yön, pixminimax)
 status: pending
-approved_by: pending     # kullanıcı bütçe günü onaylayacak (planlanan: 2026-11-09)
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
 cost_est: 8

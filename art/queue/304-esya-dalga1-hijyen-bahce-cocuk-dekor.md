@@ -2,7 +2,7 @@
 id: "304"
 title: Dalga 1: hijyen, bahçe, çocuk ve yüzey dekoru (15 eşya)
 status: pending
-approved_by: pending     # Dalga 1 planı (09 belgesi, 2026-11-08); kullanıcı "user" yapınca işçi alır
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: esya
 style_gate: false
 cost_est: 15

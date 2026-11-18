@@ -2,7 +2,7 @@
 id: "318"
 title: Yapraklı ve tahıl ekinleri evreleri (turp, marul, bakla, arpa, ıspanak; 3 evre)
 status: pending
-approved_by: pending
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: bitki
 style_gate: false
 cost_est: 15

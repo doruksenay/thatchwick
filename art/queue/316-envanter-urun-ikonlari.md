@@ -2,7 +2,7 @@
 id: "316"
 title: Envanter ve ürün ikonları (hammadde, ürün, yemek, toplanan)
 status: pending
-approved_by: pending     # 25'in üstünde olabilir; kullanıcı onayı şart
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: false
 cost_est: 24

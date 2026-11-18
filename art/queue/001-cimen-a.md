@@ -1,8 +1,8 @@
 ---
 id: "001"
 title: Çimen karosu a
-status: blocked
-approved_by: auto
+status: review
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: zemin
 style_gate: true
 cost_est: 10
@@ -36,3 +36,5 @@ Dosya adı: `iso_ground_grass_a.png`. Pivot: elmas merkezi (32,16). Seçilmeyen 
 
 ## Sorular
 BLOKE (2026-11-08, Unity/geliştirme sohbeti): 001 işi zemin oturumu tarafından (eski brief düzeniyle) yapıldı: iso_ground_grass_a.png = aday 9 olarak teslim edildi (Assets/Art/Iso). Kullanıcı kabulü bekleniyor; çift harcama olmasın diye bloke. Zemin oturumu bitince kullanıcı durumu accepted/rejected yapar ya da pending'e geri alır.
+
+OTOMATİK AKIŞ: çıktılar zemin oturumunda teslim edilmişti (Assets'te var); `blocked` yerine `review`. Kabul ya da red kullanıcının.

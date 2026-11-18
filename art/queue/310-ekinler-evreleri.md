@@ -2,7 +2,7 @@
 id: "310"
 title: Ekin büyüme evreleri (şalgam, lahana, pırasa, bezelye, kabak; 3 evre)
 status: pending
-approved_by: pending     # kullanıcı "user" yapınca işçi alır (cost_max 25 altında ama görsel iş; v0 kapsamı)
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: bitki
 style_gate: true
 cost_est: 15

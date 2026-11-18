@@ -2,7 +2,7 @@
 id: "200"
 title: Arayüz menü stili pilotu (parşömen + ahşap, ana menü paneli)
 status: pending
-approved_by: pending     # kullanıcı onayı 2026-11-08 (sohbet). 012 review'a geçip kilit kalkınca kod oturumu "user" yapar; o zamana kadar işçi almaz
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: true
 cost_est: 20

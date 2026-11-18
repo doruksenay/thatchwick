@@ -2,7 +2,7 @@
 id: "315"
 title: Arayüz ikon seti (ihtiyaç, ruh hali, etkinlik, hava, gösterge)
 status: pending
-approved_by: pending     # 200 menü stili seçilince stil sabitlenir; o zamana kadar işçi almaz
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: false
 cost_est: 14

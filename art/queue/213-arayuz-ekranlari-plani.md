@@ -2,7 +2,7 @@
 id: "213"
 title: Arayüz ekranları planı (kalan ekranlar için yerleşim + iş dosyası yazar)
 status: pending
-approved_by: pending     # tools/art/approve_all.py --uygula ile açılır (otomatik akış, kullanıcı kararı 2026-11-17)
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: false
 cost_est: 0

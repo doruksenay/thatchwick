@@ -2,7 +2,7 @@
 id: "341"
 title: Ambar, buzluk, buzhane
 status: pending
-approved_by: pending     # kullanıcı kararı bekliyor (kiler ve ambar, 2026-11-17); "user" yapınca işçi alır
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: esya
 style_gate: false
 cost_est: 5

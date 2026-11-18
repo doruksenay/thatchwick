@@ -2,7 +2,7 @@
 id: "210"
 title: Karakter arayüzü stil pilotu (Durum paneli; parşömen + ahşap)
 status: pending
-approved_by: pending     # kullanıcının bütçe onayı bekleniyor (2026-11-17); onaylanınca user yapılır
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: true
 cost_est: 40

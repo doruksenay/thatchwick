@@ -2,7 +2,7 @@
 id: "017"
 title: Karakter katman seti planı (iş dosyalarını yazar)
 status: pending
-approved_by: pending     # tools/art/approve_all.py --uygula ile açılır (otomatik akış, kullanıcı kararı 2026-11-17)
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
 cost_est: 0

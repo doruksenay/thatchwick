@@ -2,7 +2,7 @@
 id: "004"
 title: Toprak yol seti
 status: pending
-approved_by: pending
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: zemin
 style_gate: false
 cost_est: 10

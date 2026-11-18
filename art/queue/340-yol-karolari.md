@@ -2,7 +2,7 @@
 id: "340"
 title: Yol karoları: patika, çakıl, kaldırım (sağlam ve yıpranmış)
 status: pending
-approved_by: pending     # kullanıcı kararı bekliyor (yollar ve patikalar, 2026-11-17); "user" yapınca işçi alır
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: zemin
 style_gate: false
 cost_est: 16

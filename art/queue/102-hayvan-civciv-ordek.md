@@ -2,7 +2,7 @@
 id: "102"
 title: Hayvanlar 2: civciv + ördek
 status: pending
-approved_by: pending     # kullanıcı çalıştırma onayı bekleniyor (plan 2026-11-08'de onaylandı)
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
 style_gate: false
 cost_est: 17

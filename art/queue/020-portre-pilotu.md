@@ -2,7 +2,7 @@
 id: "020"
 title: Portre pilotu (64x64 göğüs portresi + katman denemesi)
 status: pending
-approved_by: pending     # kullanıcının bütçe onayı bekleniyor (2026-11-17); onaylanınca user yapılır
+approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: true
 cost_est: 22
