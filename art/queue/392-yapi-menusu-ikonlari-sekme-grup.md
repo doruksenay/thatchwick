@@ -1,7 +1,8 @@
 ---
 id: "392"
 title: Yapı menüsü ikonları: sekmeler, gruplar, üst şerit, durum
-status: pending
+status: running
+claimed_at: 2026-11-18T13:58Z
 approved_by: user
 priority: 15
 family: arayuz
