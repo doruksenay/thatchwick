@@ -814,18 +814,18 @@ namespace Thatchwick.Game
             if (_walls != null)
             {
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Toggle(_walls.Mode == WallMode.Up, "Yukarı", GUI.skin.button)) _walls.Mode = WallMode.Up;
-                if (GUILayout.Toggle(_walls.Mode == WallMode.Cutaway, "Kesit", GUI.skin.button)) _walls.Mode = WallMode.Cutaway;
-                if (GUILayout.Toggle(_walls.Mode == WallMode.Down, "Aşağı", GUI.skin.button)) _walls.Mode = WallMode.Down;
-                if (GUILayout.Toggle(_walls.ShowRoof, "Çatı", GUI.skin.button) != _walls.ShowRoof) _walls.ShowRoof = !_walls.ShowRoof;
+                if (GUILayout.Toggle(_walls.Mode == WallMode.Up, UiSkin.C("Yukarı", "top_walls_up"), GUI.skin.button)) _walls.Mode = WallMode.Up;
+                if (GUILayout.Toggle(_walls.Mode == WallMode.Cutaway, UiSkin.C("Kesit", "top_walls_cut"), GUI.skin.button)) _walls.Mode = WallMode.Cutaway;
+                if (GUILayout.Toggle(_walls.Mode == WallMode.Down, UiSkin.C("Aşağı", "top_walls_down"), GUI.skin.button)) _walls.Mode = WallMode.Down;
+                if (GUILayout.Toggle(_walls.ShowRoof, UiSkin.C("Çatı", "top_roof"), GUI.skin.button) != _walls.ShowRoof) _walls.ShowRoof = !_walls.ShowRoof;
                 GUILayout.EndHorizontal();
             }
             GUILayout.BeginHorizontal();
             ToolButton("Damlalık", Tool.Eyedropper); ToolButton("Balyoz", Tool.Demolish);
-            if (GUILayout.Toggle(_showRooms, "Odalar", GUI.skin.button) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
+            if (GUILayout.Toggle(_showRooms, UiSkin.C("Odalar", "top_rooms"), GUI.skin.button) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
             // Düğme her karede çizilir (koşullu denetim IMGUI yerleşimini bozar); boş yığında pasif.
             GUI.enabled = _svc.CanUndo;
-            if (GUILayout.Button(new GUIContent("Geri al", _svc.CanUndo ? _svc.UndoLabel : null))) _deferred = () => { var u = _svc.Undo(); _status = u.Ok ? "Geri alındı." : u.Reason; RefreshOverlay(); };
+            if (GUILayout.Button(new GUIContent("Geri al", UiSkin.Icon("top_undo"), _svc.CanUndo ? _svc.UndoLabel : null))) _deferred = () => { var u = _svc.Undo(); _status = u.Ok ? "Geri alındı." : u.Reason; RefreshOverlay(); };
             GUI.enabled = true;
             GUILayout.EndHorizontal();
         }
@@ -835,14 +835,14 @@ namespace Thatchwick.Game
         {
             GUILayout.Space(4f);
             GUILayout.BeginHorizontal();
-            ModeTab("İNŞA", 0); ModeTab("EŞYA", 1); ModeTab("ENVANTER", 2);
+            ModeTab("İNŞA", "tab_build", 0); ModeTab("EŞYA", "tab_items", 1); ModeTab("ENVANTER", "tab_inventory", 2);
             GUILayout.EndHorizontal();
             GUILayout.Space(4f);
         }
 
-        private void ModeTab(string label, int mode)
+        private void ModeTab(string label, string icon, int mode)
         {
-            if (!GUILayout.Toggle(_mode == mode, label, GUI.skin.button, GUILayout.Height(28f)) || _mode == mode) return;
+            if (!GUILayout.Toggle(_mode == mode, UiSkin.C(label, icon), GUI.skin.button, GUILayout.Height(30f)) || _mode == mode) return;
             _deferred = () =>
             {
                 MarkSeen();
@@ -868,6 +868,8 @@ namespace Thatchwick.Game
                 ("Depo", Tool.ZoneStorage), ("Otlak", Tool.ZonePasture), ("Bölge sil", Tool.ZoneErase) }),
         };
         private static readonly string[] BuildGroupNames = BuildGroups.Select(g => g.name).ToArray();
+        private static readonly string[] BuildGroupIcons = { "bgroup_wall", "bgroup_floor", "bgroup_garden", "bgroup_water", "bgroup_plot" };
+        private static readonly string[] ShopGroupIcons = { "sgroup_furniture", "sgroup_household", "sgroup_decor", "sgroup_outdoor" };
 
         private void SelectGroup(int g)
         {
@@ -879,7 +881,9 @@ namespace Thatchwick.Game
 
         private void DrawBuildGroups()
         {
-            int g = GUILayout.Toolbar(_buildGroup, BuildGroupNames, GUILayout.Height(26f));
+            var gc = new GUIContent[BuildGroupNames.Length];
+            for (int i = 0; i < gc.Length; i++) gc[i] = UiSkin.C(BuildGroupNames[i], BuildGroupIcons[i]);
+            int g = GUILayout.Toolbar(_buildGroup, gc, GUILayout.Height(26f), GUILayout.Width(246f));
             if (g != _buildGroup) { int gg = g; _deferred = () => { SelectGroup(gg); ClearSelection(); _status = ""; }; }
             GUILayout.Space(4f);
             var tools = BuildGroups[_buildGroup].tools;
@@ -1063,23 +1067,58 @@ namespace Thatchwick.Game
         private void LevelButton(string label, int level)
         {
             // Kat değişimi de bir sonraki Layout olayında uygulanır (çizim ve işaretler yeniden kurulur).
-            if (GUILayout.Toggle(_view.ViewLevel == level, label, GUI.skin.button) && _view.ViewLevel != level) _pendingLevel = level;
+            string icon = level == -1 ? "top_level_basement" : level == 0 ? "top_level_ground" : level == 1 ? "top_level_upper" : null;
+            if (GUILayout.Toggle(_view.ViewLevel == level, UiSkin.C(label, icon), GUI.skin.button) && _view.ViewLevel != level) _pendingLevel = level;
         }
 
         private void ConduitButton(string label, ConduitType type)
         {
             bool on = _tool == Tool.Conduit && _conduitType == type;
-            if (GUILayout.Toggle(on, label, GUI.skin.button) && !on)
+            if (GUILayout.Toggle(on, UiSkin.C(label, ConduitIcon(type)), GUI.skin.button) && !on)
             {
                 if (_tool != Tool.Conduit) _pendingTool = Tool.Conduit;
                 _pendingConduit = type;
             }
         }
 
+        private static string[] ConduitIcon(ConduitType t)
+        {
+            switch (t)
+            {
+                case ConduitType.Ditch: return new[] { "tool_conduit_ditch" };
+                case ConduitType.StoneChannel: return new[] { "tool_conduit_stone" };
+                case ConduitType.Flume: return new[] { "tool_conduit_flume" };
+                case ConduitType.WoodPipe: return new[] { "tool_conduit_wood", "tool_conduit_pipe_wood" };
+                case ConduitType.ClayPipe: return new[] { "tool_conduit_clay", "tool_conduit_pipe_clay" };
+                case ConduitType.LeadPipe: return new[] { "tool_conduit_lead", "tool_conduit_pipe_lead" };
+                default: return new[] { "tool_conduit_erase" };
+            }
+        }
+
+        // Araç → ikon anahtarı (ui_icon_<anahtar>, 392-394 ve 399a/b).
+        private static string ToolIcon(Tool t)
+        {
+            switch (t)
+            {
+                case Tool.Room: return "tool_room"; case Tool.Wall: return "tool_wall"; case Tool.HalfWall: return "tool_halfwall";
+                case Tool.Door: return "tool_door"; case Tool.Window: return "tool_window"; case Tool.EraseEdge: return "tool_erase_edge";
+                case Tool.Fence: return "tool_fence"; case Tool.Gate: return "tool_gate"; case Tool.Railing: return "tool_railing";
+                case Tool.Finish: return "tool_finish"; case Tool.FinishRoom: return "tool_finish_room"; case Tool.Floor: return "tool_floor";
+                case Tool.FloorRoom: return "tool_floor_room"; case Tool.FloorErase: return "tool_grass"; case Tool.Roof: return "tool_roof";
+                case Tool.PushWall: return "tool_push_wall"; case Tool.MoveRoom: return "tool_move_room"; case Tool.CopyRoom: return "tool_copy_room";
+                case Tool.Eyedropper: return "top_eyedropper"; case Tool.Demolish: return "top_sledgehammer"; case Tool.Plot: return "tool_plot";
+                case Tool.ZoneStorage: return "tool_zone_storage"; case Tool.ZoneErase: return "tool_zone_erase"; case Tool.ZonePasture: return "tool_zone_pasture";
+                case Tool.LevelBuild: return "tool_level_build"; case Tool.LevelRemove: return "tool_level_remove";
+                case Tool.RoadPath: return "tool_road_path"; case Tool.RoadGravel: return "tool_road_gravel"; case Tool.RoadPaved: return "tool_road_paved";
+                case Tool.RoadErase: return "tool_road_erase"; case Tool.Pond: return "tool_pond";
+                default: return null;
+            }
+        }
+
         private void ToolButton(string label, Tool tool)
         {
             // Arayüz yerleşimi bozulmasın diye araç değişimi bir sonraki Layout olayında uygulanır.
-            if (GUILayout.Toggle(_tool == tool, label, GUI.skin.button) && _tool != tool) _pendingTool = tool;
+            if (GUILayout.Toggle(_tool == tool, UiSkin.C(label, ToolIcon(tool)), GUI.skin.button) && _tool != tool) _pendingTool = tool;
         }
 
         private void DrawContext()
@@ -1424,10 +1463,14 @@ namespace Thatchwick.Game
             if (_catTabs.Count == 0) { GUILayout.Label("Henüz alınabilecek eşya yok."); return; }
             int n = ItemCatalog.Categories.Length;
             int gsel = Mathf.Max(0, _groupTabs.IndexOf(_shopGroup));
-            int gpick = GUILayout.Toolbar(gsel, _groupNames, GUILayout.Height(26f));
+            var grc = new GUIContent[_groupNames.Length];
+            for (int i = 0; i < grc.Length; i++) { int gi = _groupTabs[i]; grc[i] = UiSkin.C(_groupNames[i], gi < ShopGroupIcons.Length ? ShopGroupIcons[gi] : null); }
+            int gpick = GUILayout.Toolbar(gsel, grc, GUILayout.Height(26f), GUILayout.Width(232f));
             if (gpick != gsel) { int gg = _groupTabs[gpick]; _deferred = () => { MarkSeen(); _shopGroup = gg; _shopCat = -1; _scroll = Vector2.zero; }; }
             int sel = Mathf.Max(0, _catTabs.IndexOf(_shopCat));
-            int pick = GUILayout.SelectionGrid(sel, _catNames, 2);
+            var cc = new GUIContent[_catNames.Length];
+            for (int i = 0; i < cc.Length; i++) { int ci = _catTabs[i]; cc[i] = UiSkin.C(_catNames[i], ci < ItemCatalog.Categories.Length ? "cat_" + ItemCatalog.Categories[ci].id : "cat_animals"); }
+            int pick = GUILayout.SelectionGrid(sel, cc, 2, GUILayout.Width(232f));
             if (pick != sel) { int c = _catTabs[pick]; _deferred = () => { MarkSeen(); _shopCat = c; _scroll = Vector2.zero; }; }
             int cat = _catTabs[sel];
             if (cat == n) { DrawAnimals(); return; }
