@@ -241,7 +241,9 @@ namespace Thatchwick.Core.Content
         /// <summary>Buz kuyusu: donlu her sabah toplanan buz.</summary>
         public int IceCollect { get; set; }
         /// <summary>Güç alınca çalışan düzenek mi (değirmen taşı, yem karıştırıcı, hasat tırmığı, ekim makinesi)?</summary>
-        public bool NeedsPower => AutoProcess != null || HarvestRadius > 0 || SeedRadius > 0;
+        public bool NeedsPower => (AutoProcess != null && !IsPassive) || HarvestRadius > 0 || SeedRadius > 0;
+        /// <summary>Güç istemeyen sabah işi (kömür yığını, kavurma yığını, kireç ocağı): her sabah bir parti, ateşle/zamanla.</summary>
+        public bool IsPassive => AutoProcess != null && HasTag("passive");
         /// <summary>Yiyecek yerleşimindeki kapasite (0 = depo kapasitesi, o da yoksa kiler/buzluk için 60).</summary>
         public int FoodCapacity { get; set; }
         /// <summary>Yalnızca kapalı bir odaya konur (folluk, ahır bölmesi, at bölmesi): barınak odası.</summary>

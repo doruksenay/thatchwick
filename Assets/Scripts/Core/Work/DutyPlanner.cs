@@ -62,6 +62,7 @@ namespace Thatchwick.Core.Work
                 case DutyKind.Farm: return "Tarla";
                 case DutyKind.Animals: return "Hayvanlar";
                 case DutyKind.Mine: return "Maden";
+                case DutyKind.Steward: return "Kâhya";
                 default: return "Görev yok";
             }
         }
@@ -211,6 +212,50 @@ namespace Thatchwick.Core.Work
         }
 
         private static long MineKey(GridPos p) => (1L << 42) + ((long)p.Y << 20) + p.X;
+
+        /// <summary>
+        /// Kâhya (sabah): hanede "Kâhya" görevli biri varsa öbür görev alabilen üyeler bekleyen işe göre dağıtılır. Her yeni
+        /// görevli, işi en çok / görevlisi en az olan göreve gider (eşitlikte tarla, hayvan, maden sırası); hiç iş yoksa
+        /// görevsiz kalır. Oyuncunun karakteri ve kâhyanın kendisi atanmaz. (karakter, eski görev, yeni görev) listesi döner.
+        /// </summary>
+        public List<(Character who, DutyKind from, DutyKind to)> AutoAssign(IEnumerable<Character> members)
+        {
+            var changes = new List<(Character, DutyKind, DutyKind)>();
+            Character steward = null;
+            var pool = new List<Character>();
+            foreach (var c in members)
+            {
+                if (!CanTakeDuty(c)) continue;
+                if (c.Duty == DutyKind.Steward && steward == null) { steward = c; continue; }
+                if (c.Duty == DutyKind.Steward) continue;          // ikinci kâhya kendi işinde kalır
+                pool.Add(c);
+            }
+            if (steward == null || pool.Count == 0) return changes;
+            pool.Sort((a, b) => a.Id.CompareTo(b.Id));
+            var kinds = new[] { DutyKind.Farm, DutyKind.Animals, DutyKind.Mine };
+            var pending = new Dictionary<DutyKind, int>();
+            var assigned = new Dictionary<DutyKind, int>();
+            foreach (var k in kinds) { pending[k] = Pending(k); assigned[k] = 0; }
+            // Kâhyalık: seviye başına bir görevli daha (en az 2): büyük hanede iyi kâhya herkesi işe koşar.
+            int capacity = Math.Max(2, steward.Skills.GetLevel(SkillType.Stewardship) + 1);
+            int given = 0;
+            foreach (var c in pool)
+            {
+                DutyKind pick = DutyKind.None;
+                double bestScore = 0;
+                if (given < capacity)
+                    foreach (var k in kinds)
+                    {
+                        if (pending[k] <= 0 || !CanTakeDuty(c, k)) continue;
+                        double score = pending[k] / (double)(assigned[k] + 1);
+                        if (score > bestScore) { bestScore = score; pick = k; }
+                    }
+                if (pick != DutyKind.None) { assigned[pick]++; given++; }
+                if (c.Duty != pick) { changes.Add((c, c.Duty, pick)); c.Duty = pick; }
+            }
+            if (changes.Count > 0) steward.GainSkillXp(SkillType.Stewardship, 2 * changes.Count);
+            return changes;
+        }
 
         // Yol karosunun tutma anahtarı (eşya ve hayvan kimlikleriyle çakışmaz).
         private static long RoadKey(GridPos p) => (1L << 40) + ((long)p.Y << 20) + p.X;

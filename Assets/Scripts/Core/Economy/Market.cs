@@ -25,6 +25,10 @@ namespace Thatchwick.Core.Economy
         public double ContractRewardRatio = 0.9;
         /// <summary>Takas teklifinde tüccarın verdiği değer, aldığının bu katı.</summary>
         public double BarterBonus = 1.15;
+        /// <summary>Ham madde doygunluğu (23. belge karar 7): aynı ham maddeden haftada bu kadardan fazla satılınca fiyat
+        /// birim başına RawDropPerUnit düşer, en çok RawFloor'a kadar; hafta dönünce sıfırlanır. İşlenmiş üründe düşmez.</summary>
+        public int RawWeeklyFree = 30;
+        public double RawDropPerUnit = 0.01, RawFloor = 0.8;
     }
 
     /// <summary>Günlük teklif: köy işi (mal ver, akçe al) ya da tüccar takası (mal ver, mal al).</summary>
@@ -117,6 +121,20 @@ namespace Thatchwick.Core.Economy
 
         public double Demand(string itemId) => _demand.TryGetValue(itemId, out var d) ? d : 1.0;
 
+        private readonly Dictionary<string, int> _rawSold = new Dictionary<string, int>();
+        private long _rawWeek = -1;
+
+        /// <summary>Bu hafta satılan ham madde (doygunluk) çarpanı: 1 ya da RawFloor'a kadar düşük.</summary>
+        public double RawSaturation(string itemId)
+        {
+            if (!_content.Items.TryGet(itemId, out var d) || !d.HasTag("raw")) return 1.0;
+            int sold = _rawSold.TryGetValue(itemId, out var n) ? n : 0;
+            if (sold <= _cfg.RawWeeklyFree) return 1.0;
+            return Math.Max(_cfg.RawFloor, 1.0 - _cfg.RawDropPerUnit * (sold - _cfg.RawWeeklyFree));
+        }
+
+        public int RawSoldThisWeek(string itemId) => _rawSold.TryGetValue(itemId, out var n) ? n : 0;
+
         public double SeasonMultiplier(ItemDef def)
         {
             if (_season != Season.Winter) return 1.0;
@@ -146,7 +164,7 @@ namespace Thatchwick.Core.Economy
         {
             var def = _content.Items.Get(itemId);
             double bonus = 1.0 + (SellBonus != null ? Math.Max(0.0, Math.Min(0.75, SellBonus())) : 0.0);
-            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * bonus * TradeSellFactor, MidpointRounding.AwayFromZero));
+            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * bonus * TradeSellFactor * RawSaturation(itemId), MidpointRounding.AwayFromZero));
         }
 
         /// <summary>Gün ilerledikçe talep toparlanır; yeni günde teklifler yenilenir.</summary>
@@ -161,6 +179,8 @@ namespace Thatchwick.Core.Economy
             }
             long day = (long)Math.Floor(totalDays);
             if (day != _offerDay) RefreshOffers(day);
+            long week = day / 7;
+            if (week != _rawWeek) { _rawWeek = week; _rawSold.Clear(); }
         }
 
         public PlacementCheck Buy(string itemId, int count = 1)
@@ -187,6 +207,7 @@ namespace Thatchwick.Core.Economy
                 if (!_house.TryTakeItem(itemId)) break;
                 earned += SellPrice(itemId);
                 _demand[itemId] = Math.Max(_cfg.MinDemand, Demand(itemId) * (1.0 - _cfg.DemandDropPerUnit));
+                if (_content.Items.TryGet(itemId, out var sd) && sd.HasTag("raw")) _rawSold[itemId] = RawSoldThisWeek(itemId) + 1;
             }
             if (earned > 0) _house.AddAkce(earned);
             TradeXp(earned * 0.3);

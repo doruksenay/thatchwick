@@ -203,7 +203,9 @@ namespace Thatchwick.Core.Work
             var wheels = TurningWheels();
             foreach (var machine in new List<ItemInstance>(_world.Items))
             {
-                if (machine.IsDecor || wheels.Count == 0 || !IsPowered(machine, wheels)) continue;
+                if (machine.IsDecor) continue;
+                if (machine.Def.IsPassive) { foreach (var kv in RunBatches(machine.Def.AutoProcess, 1)) Made(kv.Key, kv.Value); continue; }
+                if (wheels.Count == 0 || !IsPowered(machine, wheels)) continue;
                 if (machine.Def.HarvestRadius > 0) foreach (var kv in HarvestAround(machine)) Made(kv.Key, kv.Value);
                 if (machine.Def.SeedRadius > 0) foreach (var kv in SeedAround(machine, season)) Made(kv.Key, kv.Value);
                 var p = machine.Def.AutoProcess;
@@ -224,6 +226,22 @@ namespace Thatchwick.Core.Work
         }
 
         private int AddAll(string id, int count) { _house.AddItem(id, count); return count; }
+
+        // Bir sabah işinin partileri (güçsüz düzenek: bir parti).
+        private List<KeyValuePair<string, int>> RunBatches(AutoProcessDef p, int batches)
+        {
+            var list = new List<KeyValuePair<string, int>>();
+            int total = 0;
+            for (int b = 0; b < batches; b++)
+            {
+                if (_house.Count(p.Item) < p.Count) break;
+                if (Storage != null && Storage.IsResource(p.Produces) && Storage.Free + p.Count < p.ProducesCount) break;
+                for (int k = 0; k < p.Count; k++) _house.TryTakeItem(p.Item);
+                total += Storage != null ? Storage.AddUpTo(p.Produces, p.ProducesCount) : AddAll(p.Produces, p.ProducesCount);
+            }
+            if (total > 0) list.Add(new KeyValuePair<string, int>(p.Produces, total));
+            return list;
+        }
 
         /// <summary>Çalışabilir çeki hayvanı sayısı (her biri günde bir düven çeker); null ise düven çalışmaz.</summary>
         public Func<int> DraftAnimals { get; set; }

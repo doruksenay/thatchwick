@@ -244,7 +244,7 @@ namespace Thatchwick.Core.Mining
                 Give(t.Ore, n);
                 xp *= 2;
             }
-            else if (t.Rock == RockKind.Soil) { if (_rng.NextDouble() < 0.2) Give("item.clay", 1); }
+            else if (t.Rock == RockKind.Soil) { double r = _rng.NextDouble(); if (r < 0.2) Give("item.clay", 1); else if (r < 0.35) Give("item.sand", 1); }
             else if (t.Rock == RockKind.Soft || t.Rock == RockKind.Rubble) Give("item.rubble", 1);
             else Give("item.stone", 1);
             if (t.Rock >= RockKind.Stone && t.Rock <= RockKind.Bedrock && table != null && table.Relics.Length > 0 && _rng.NextDouble() < table.RelicChance)

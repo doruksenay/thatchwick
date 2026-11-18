@@ -2223,7 +2223,10 @@
       "placement": "Resource",
       "category": "resource",
       "price": 2,
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "keep"
+      ]
     },
     {
       "id": "item.nails",
@@ -2231,7 +2234,10 @@
       "placement": "Resource",
       "category": "resource",
       "price": 1,
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "keep"
+      ]
     },
     {
       "id": "item.feed",
@@ -2241,6 +2247,7 @@
       "price": 1,
       "interactions": [],
       "tags": [
+        "feed",
         "feed"
       ]
     },
@@ -9323,6 +9330,95 @@
       ]
     },
     {
+      "id": "item.sand",
+      "displayName": "Kum",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.charcoal",
+      "displayName": "Odun kömürü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "fuel"
+      ]
+    },
+    {
+      "id": "item.roasted_ore",
+      "displayName": "Kavrulmuş demir cevheri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6
+    },
+    {
+      "id": "item.iron_bloom",
+      "displayName": "Demir çiçeği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8
+    },
+    {
+      "id": "item.slag",
+      "displayName": "Cüruf",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.quicklime",
+      "displayName": "Sönmemiş kireç",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4
+    },
+    {
+      "id": "item.lime",
+      "displayName": "Kireç",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3
+    },
+    {
+      "id": "item.mortar",
+      "displayName": "Harç",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4
+    },
+    {
+      "id": "item.plaster",
+      "displayName": "Alçı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5
+    },
+    {
+      "id": "item.ochre_paint",
+      "displayName": "Toprak boya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.slate_tile",
+      "displayName": "Arduvaz levha",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4
+    },
+    {
       "id": "item.relic_foundation_stone",
       "displayName": "Eski temel taşı",
       "placement": "Surface",
@@ -10296,6 +10392,224 @@
       }
     },
     {
+      "id": "item.charcoal_clamp",
+      "displayName": "Kömür yığını",
+      "category": "farm",
+      "price": 10,
+      "width": 2,
+      "height": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [],
+      "tags": [
+        "passive"
+      ],
+      "autoProcess": {
+        "item": "item.firewood",
+        "count": 6,
+        "produces": "item.charcoal",
+        "producesCount": 4
+      }
+    },
+    {
+      "id": "item.roasting_heap",
+      "displayName": "Kavurma yığını",
+      "category": "farm",
+      "price": 12,
+      "width": 2,
+      "height": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [],
+      "tags": [
+        "passive"
+      ],
+      "autoProcess": {
+        "item": "item.iron_ore",
+        "count": 4,
+        "produces": "item.roasted_ore",
+        "producesCount": 4
+      }
+    },
+    {
+      "id": "item.bloomery",
+      "displayName": "Çiçek ocağı",
+      "category": "work",
+      "price": 40,
+      "width": 2,
+      "height": 2,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "smelt_roasted",
+          "displayName": "Kavrulmuş cevheri erit (2 + 2 kömür)",
+          "durationDays": 0.12,
+          "materials": [
+            {
+              "item": "item.roasted_ore",
+              "count": 2
+            },
+            {
+              "item": "item.charcoal",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.iron_bloom",
+              "count": 1
+            },
+            {
+              "item": "item.slag",
+              "count": 1
+            }
+          ],
+          "skill": "Smithing",
+          "skillXp": 10
+        },
+        {
+          "id": "smelt_raw",
+          "displayName": "Ham cevheri erit (3 + 2 kömür)",
+          "durationDays": 0.14,
+          "materials": [
+            {
+              "item": "item.iron_ore",
+              "count": 3
+            },
+            {
+              "item": "item.charcoal",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.iron_bloom",
+              "count": 1
+            },
+            {
+              "item": "item.slag",
+              "count": 1
+            }
+          ],
+          "skill": "Smithing",
+          "skillXp": 10
+        }
+      ]
+    },
+    {
+      "id": "item.lime_kiln",
+      "displayName": "Kireç ocağı",
+      "category": "farm",
+      "price": 50,
+      "width": 2,
+      "height": 2,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "slake",
+          "displayName": "Kireç söndür",
+          "durationDays": 0.04,
+          "materials": [
+            {
+              "item": "item.quicklime",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.lime",
+              "count": 2
+            }
+          ],
+          "skill": "Masonry",
+          "skillXp": 3
+        },
+        {
+          "id": "mix_mortar",
+          "displayName": "Harç karıştır (1 kireç + 2 kum)",
+          "durationDays": 0.04,
+          "materials": [
+            {
+              "item": "item.lime",
+              "count": 1
+            },
+            {
+              "item": "item.sand",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.mortar",
+              "count": 3
+            }
+          ],
+          "skill": "Masonry",
+          "skillXp": 3
+        },
+        {
+          "id": "burn_gypsum",
+          "displayName": "Alçıtaşı yak (2 alçıtaşı + 1 odun)",
+          "durationDays": 0.08,
+          "materials": [
+            {
+              "item": "item.gypsum",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.plaster",
+              "count": 2
+            }
+          ],
+          "skill": "Masonry",
+          "skillXp": 5
+        }
+      ],
+      "tags": [
+        "passive"
+      ],
+      "autoProcess": {
+        "item": "item.limestone",
+        "count": 4,
+        "produces": "item.quicklime",
+        "producesCount": 3
+      }
+    },
+    {
+      "id": "item.ox_cart",
+      "displayName": "Öküz arabası",
+      "category": "farm",
+      "price": 90,
+      "width": 2,
+      "height": 1,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": []
+    },
+    {
       "id": "item.drain_pit",
       "displayName": "Dren çukuru",
       "category": "farm",
@@ -10565,7 +10879,8 @@
       "category": "resource",
       "price": 5,
       "tags": [
-        "stone"
+        "stone",
+        "keep"
       ]
     },
     {
@@ -11578,10 +11893,10 @@
         "craftonly"
       ],
       "autoProcess": {
-        "item": "item.iron_ore",
+        "item": "item.iron_bloom",
         "count": 2,
         "produces": "item.iron_bar",
-        "producesCount": 1
+        "producesCount": 2
       },
       "interactions": []
     },
@@ -13589,18 +13904,14 @@
       "produces": "item.iron_bar",
       "materials": [
         {
-          "item": "item.iron_ore",
-          "count": 2
-        },
-        {
-          "item": "item.firewood",
+          "item": "item.iron_bloom",
           "count": 1
         }
       ],
       "durationDays": 0.12,
       "skill": "Smithing",
       "skillXp": 10,
-      "displayName": "Demir dök"
+      "displayName": "Demir çiçeğini döv"
     },
     {
       "id": "nails_forge",
@@ -14675,6 +14986,38 @@
       "skill": "Carpentry",
       "skillXp": 15,
       "displayName": "Düven yap (çakmaktaşı dişli)"
+    },
+    {
+      "id": "slate_tile",
+      "station": "item.stonecutter",
+      "produces": "item.slate_tile",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.slate_stone",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Masonry",
+      "skillXp": 8,
+      "displayName": "Arduvaz yar",
+      "minLevel": 3
+    },
+    {
+      "id": "ochre_paint",
+      "station": "item.mortar_pestle",
+      "produces": "item.ochre_paint",
+      "materials": [
+        {
+          "item": "item.ochre",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Masonry",
+      "skillXp": 3,
+      "displayName": "Aşı boyası ez"
     }
   ],
   "animals": [
@@ -14933,6 +15276,17 @@
       "color": "#B8945E",
       "level": 2,
       "heatLoss": 0.9
+    },
+    {
+      "id": "wall_whitewash",
+      "displayName": "Badanalı sıva",
+      "kind": "wallMaterial",
+      "price": 5,
+      "color": "#ECE6D6",
+      "level": 3,
+      "heatLoss": 0.8,
+      "material": "item.lime",
+      "materialCount": 1
     },
     {
       "id": "wall_stone",
@@ -15339,7 +15693,7 @@
       "color": "#55606A",
       "level": 6,
       "heatLoss": 0.7,
-      "material": "item.cut_stone",
+      "material": "item.slate_tile",
       "materialCount": 1
     },
     {
