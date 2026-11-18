@@ -1,7 +1,7 @@
 ---
 id: "324"
 title: Saklama eşyaları 2 (tütsülük, peynir presi)
-status: running
+status: review
 claimed_at: 2026-11-18T09:48Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
