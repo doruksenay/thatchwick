@@ -1,7 +1,7 @@
 ---
 id: "351"
 title: Su yolu karoları: toprak ark, taş ark, ahşap oluk (kuru ve sulu)
-status: running
+status: review
 claimed_at: 2026-11-18T12:07Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
