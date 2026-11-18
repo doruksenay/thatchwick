@@ -54,6 +54,7 @@ namespace UnityEngine {
  public class Texture2D:Texture{public static Texture2D whiteTexture,blackTexture; public Texture2D(int w,int h){} public Texture2D(int w,int h,TextureFormat f,bool m){} public void SetPixel(int x,int y,Color c){} public void SetPixels(Color[] c){} public void SetPixels32(Color32[] c){} public Color GetPixel(int x,int y)=>default; public Color[] GetPixels()=>null; public Color32[] GetPixels32()=>null; public void Apply(bool a=true,bool b=false){}}
  public class Sprite:Object{public Texture2D texture; public Rect rect,textureRect; public Vector2 pivot; public float pixelsPerUnit; public Bounds bounds;
   public static Sprite Create(Texture2D t,Rect r,Vector2 p)=>null; public static Sprite Create(Texture2D t,Rect r,Vector2 p,float ppu)=>null; public static Sprite Create(Texture2D t,Rect r,Vector2 p,float ppu,uint e)=>null; public static Sprite Create(Texture2D t,Rect r,Vector2 p,float ppu,uint e,SpriteMeshType m)=>null;}
+ public struct RectInt{public int x,y,width,height; public RectInt(int x,int y,int w,int h){this.x=x;this.y=y;width=w;height=h;} public int xMin=>x; public int yMin=>y; public int xMax=>x+width; public int yMax=>y+height; public bool Contains(Vector2Int p)=>false;}
  public struct Bounds{public Vector3 center,size,extents,min,max;}
  public class TextAsset:Object{public string text; public byte[] bytes;}
  public class Shader:Object{public static Shader Find(string n)=>null; public static void SetGlobalFloat(string n,float f){}}
