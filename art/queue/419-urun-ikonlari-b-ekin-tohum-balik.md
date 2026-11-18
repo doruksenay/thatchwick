@@ -1,7 +1,8 @@
 ---
 id: "419"
 title: Ürün ikonları B: ekin, tohum, fidan, meyve, toplanan, balık, et (55)
-status: pending
+status: running
+claimed_at: 2026-11-18T19:55Z
 approved_by: user        # kullanıcı 18.11.2026: "bu sistemi getir" (ürün ikon sistemi); otomatik akış (art/budget.md)
 priority: 30
 family: arayuz
