@@ -2075,7 +2075,9 @@ namespace Thatchwick.Game
             if (moving && moved < 1f) actor.WalkPhase += moved / WalkStepUnits * Mathf.PI;
             else if (!moving) actor.WalkPhase = 0f;
             actor.LastPos = pos;
-            float bob = moving ? Mathf.Round(Mathf.Abs(Mathf.Sin(actor.WalkPhase)) * WalkBobPixels) / ArtPixelsPerUnit : 0f;
+            // Gerçek yürüme kareleri varsa kodla sallantı gerekmez (kareler zaten iniş çıkışı taşır).
+            bool framed = moving && IsoArt.CharacterWalk(actor.Character, actor.Direction, 0f) != null;
+            float bob = moving && !framed ? Mathf.Round(Mathf.Abs(Mathf.Sin(actor.WalkPhase)) * WalkBobPixels) / ArtPixelsPerUnit : 0f;
             // Animasyon partisi 1: adım tozu, boştayken nefes, eşyada çalışırken vuruş (kare animasyonu gelene kadar).
             float squash = 0f;   // + ezilme (geniş, alçak), - esneme
             int seed = actor.Character.Id;
@@ -2086,7 +2088,7 @@ namespace Thatchwick.Game
                 if (stepIdx != actor.LastStep)
                 {
                     actor.LastStep = stepIdx;
-                    squash = 0.04f;   // ayak yere basınca kısa ezilme
+                    if (!framed) squash = 0.04f;   // ayak yere basınca kısa ezilme (kare animasyonunda gerekmez)
                     if (_juice != null && Random01() < 0.45f && _animals?.MountOf(actor.Character.Id) == null)
                         _juice.Emit(Juice.Kind.Dust, pos + new Vector3(0f, 0.02f, 0f), 1, sortOrder - 1);
                 }
@@ -2134,7 +2136,9 @@ namespace Thatchwick.Game
             int level = toLevel != fromLevel && actor.Runner.StepProgress > 0.5f ? toLevel : fromLevel;
             actor.Renderer.enabled = _view.IsLevelVisible(fromLevel) || _view.IsLevelVisible(toLevel);
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
-            var real = IsoArt.Character(actor.Character, actor.Direction);
+            // Kare animasyonu (018a/018b) varsa yürürken onu oynat: tam döngü = iki adım (WalkPhase iki π).
+            var walkFrame = moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
+            var real = walkFrame ?? IsoArt.Character(actor.Character, actor.Direction);
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.

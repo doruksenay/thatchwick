@@ -20,7 +20,9 @@ namespace Thatchwick.Editor
 
         private static bool IsArt(string path) =>
             path.Replace('\\', '/').StartsWith(ArtRoot + "/") && path.EndsWith(".png")
-            && !path.Contains("/_ham/") && !path.Contains("/anim/");
+            && !path.Contains("/_ham/")
+            // anim/: yalnızca 84'lük taban karelerini al (eski 56'lık deneme kareleri kütüphaneye girmez).
+            && (!path.Contains("/anim/") || path.Contains("_r84_"));
 
         private void OnPreprocessTexture()
         {
