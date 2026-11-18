@@ -1,7 +1,7 @@
 ---
 id: "300"
 title: Ev eşyaları grup 1 (masa, sandalye, sandık, raf, kazan, mum, saksı, bardak; yalnızca SE)
-status: review
+status: accepted   # masa, sandalye(sw), mum, saksi kabul; raf, kazan red; sandik ve bardak teslim edilmedi, 301'de (sohbet 2026-11-08)
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet): cost_est 8, cost_max 15
 family: esya
 style_gate: true

@@ -1,7 +1,7 @@
 ---
 id: "013"
 title: Yürüme animasyonu pilotu (farmer_a2_56, SE, 4 yöntem)
-status: review
+status: accepted   # pixminimax secildi (sohbet 2026-11-08), 014 ile devam
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet)
 family: karakter
 style_gate: false

@@ -1,7 +1,7 @@
 ---
 id: "100"
 title: Hayvan pilotu (koyun + tavuk, 4 aday, araç karşılaştırması)
-status: review
+status: accepted   # sheep_2 kabul, sheep_1 ve tavuklar red (sohbet 2026-11-08)
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet)
 family: hayvan
 style_gate: true
