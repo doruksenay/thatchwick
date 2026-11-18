@@ -1,7 +1,7 @@
 ---
 id: "021d"
 title: Portre kaş ve burun
-status: blocked
+status: pending
 claimed_at: 2026-11-18T08:19Z
 approved_by: user
 family: karakter
@@ -11,6 +11,7 @@ cost_max: 60
 depends_on: ["020", "021a"]
 max_attempts: 1
 pixellab: true
+worker: yerel            # taban görseli PixelLab'e yüklenmeli; bulut işçisinin buna izni yok (kullanıcı kararı 2026-11-18)
 outputs:
   - Assets/Art/Iso/_aday/portrait_layer_brow_thin_arched_64.png
   - Assets/Art/Iso/_aday/portrait_layer_brow_thick_straight_64.png
@@ -48,6 +49,8 @@ Her parça en çok 1 çağrı (tek deneme). Çıktılar `Assets/Art/Iso/_aday/` 
 
 ## Sorular
 - 2026-11-18 (bulut şeridi 1): Üretim başlamadı, 0 gen harcandı (bakiye 1719,2). Tarif tabanı `source_image_id` ile ister (020: base64 aktarımı bozuluyor), ama `portrait_base_oval_adult_64.png` yalnızca yerel dosya; PixelLab'de sahip olunan bir görsel kimliği yok. Yükleme yolu (`get_upload_url` + `curl -F`) bu bulut oturumunda kabuk izni istediği için çalıştırılamadı. Çözüm: izinli bir yükleme yolu ya da tabanın `source_image_id`'sini iş dosyasına yazmak; sonra `status: pending` yapın.
+
+- 2026-11-18 (kod oturumu): `worker: yerel` eklendi; iş yalnızca bilgisayardaki işçide çalışır (yükleme izni orada var). Bulut işçisi atlar. İş `pending`.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

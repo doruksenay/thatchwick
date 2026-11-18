@@ -66,7 +66,7 @@ jobs:
           HAS_PIXELLAB: ${{ secrets.PIXELLAB_API_TOKEN != '' }}
         run: |
           set +e
-          python tools/art/queue_ready.py --all
+          python tools/art/queue_ready.py --all --worker bulut
           code=$?
           set -e
           if [ "$code" != "0" ]; then
@@ -91,7 +91,7 @@ jobs:
           claimed=""
           for attempt in 1 2 3 4 5; do
             git pull --ff-only --quiet "$remote" main    # tetikten sonra main ilerlediyse en uca gel
-            if ! out=$(python tools/art/queue_ready.py --claim); then
+            if ! out=$(python tools/art/queue_ready.py --claim --worker bulut); then
               echo "Uygun iş kalmadı."; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
             fi
             read -r job file <<< "$out"
@@ -207,7 +207,7 @@ jobs:
       - name: Özet
         if: always() && steps.claim.outputs.run == 'true'
         run: |
-          python tools/art/queue_ready.py --all || true
+          python tools/art/queue_ready.py --all --worker bulut || true
           git log --oneline -5
 
       # Zincir: bu tur en az bir işi bitirdiyse (review/failed/blocked commit'i) ve hâlâ uygun iş varsa
@@ -221,7 +221,7 @@ jobs:
         run: |
           git pull --rebase -q || true
           done=$(git log "$START_SHA"..HEAD --author=thatchwick-art-worker --format=%s | grep -vc ': başladı$' || true)
-          if [ "${done:-0}" -gt 0 ] && python tools/art/queue_ready.py --quiet; then
+          if [ "${done:-0}" -gt 0 ] && python tools/art/queue_ready.py --quiet --worker bulut; then
             echo "Bu turda $done iş bitti, uygun iş var: yeni tur başlatılıyor."
             gh workflow run art-worker.yml --ref main
           else

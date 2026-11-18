@@ -10,6 +10,7 @@ cost_max: 15             # bunu aşarsa dur; en çok 60 (çalışma tavanı)
 depends_on: []           # örn. ["001"]: hepsi review ya da accepted olmadan başlamaz
 max_attempts: 1
 pixellab: true           # false ise PixelLab çağrılmaz (betik ya da rapor işi)
+# worker: yerel          # isteğe bağlı: yerel = yalnızca bilgisayardaki işçi (bulutta izinsiz adımlar, ör. PixelLab'e görsel yükleme); batch = toplu işçi (tools/art/batch_worker.py)
 outputs:
   - Assets/Art/Iso/iso_ground_grass_a.png
 created: 2026-11-08

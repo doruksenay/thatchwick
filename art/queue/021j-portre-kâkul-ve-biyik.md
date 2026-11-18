@@ -1,7 +1,7 @@
 ---
 id: "021j"
 title: Portre kâkül ve bıyık
-status: blocked
+status: pending
 claimed_at: 2026-11-18T08:23Z
 approved_by: user
 family: karakter
@@ -11,6 +11,7 @@ cost_max: 55
 depends_on: ["020", "021a"]
 max_attempts: 1
 pixellab: true
+worker: yerel            # taban görseli PixelLab'e yüklenmeli; bulut işçisinin buna izni yok (kullanıcı kararı 2026-11-18)
 outputs:
   - Assets/Art/Iso/_aday/portrait_layer_bangs_straight_64.png
   - Assets/Art/Iso/_aday/portrait_layer_bangs_side_swept_64.png
@@ -47,6 +48,8 @@ Her parça en çok 1 çağrı (tek deneme). Çıktılar `Assets/Art/Iso/_aday/` 
 
 ## Sorular
 - Taban yüklemesi (`get_upload_url` + curl/Python multipart POST) bulut işçisinde izin verilmediği için yapılamadı; `source_image_id` yok, base64 aktarımı 020'de bozulmuştu. Harcama: 0 gen. Çözüm: yükleme izni ya da tabanın PixelLab'e alınmış bir `source_image_id`'si. Planlanan maskeler: kâkül (19,5,26,13), bıyık (24,28,16,6).
+
+- 2026-11-18 (kod oturumu): `worker: yerel` eklendi; iş yalnızca bilgisayardaki işçide çalışır (yükleme izni orada var). Bulut işçisi atlar. İş `pending`.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
