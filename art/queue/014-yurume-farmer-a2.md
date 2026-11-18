@@ -1,7 +1,7 @@
 ---
 id: "014"
 title: Yürüme animasyonu farmer_a2_56 (8 yön, pixminimax)
-status: running
+status: blocked
 claimed_at: 2026-11-18T07:22Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
