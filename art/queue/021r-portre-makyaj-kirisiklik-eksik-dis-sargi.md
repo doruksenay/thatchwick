@@ -1,7 +1,8 @@
 ---
 id: "021r"
 title: Portre makyaj, kırışıklık, eksik diş, sargı
-status: pending
+status: running
+claimed_at: 2026-11-18T08:37Z
 approved_by: user
 family: karakter
 style_gate: false
