@@ -12818,7 +12818,18 @@
         "masa",
         "raf"
       ],
-      "interactions": []
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Bebekle oyna",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.06,
+          "skill": "Parenting",
+          "skillXp": 1,
+          "moodlet": "had_fun"
+        }
+      ]
     },
     {
       "id": "item.wooden_whistle",
@@ -12835,7 +12846,18 @@
         "masa",
         "raf"
       ],
-      "interactions": []
+      "interactions": [
+        {
+          "id": "play_music",
+          "displayName": "Kaval çal",
+          "need": "Fun",
+          "restore": 28,
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "moodlet": "had_fun"
+        }
+      ]
     },
     {
       "id": "item.beam_hook",
@@ -14554,6 +14576,248 @@
       "comfort": 1,
       "beauty": 2,
       "interactions": []
+    },
+    {
+      "id": "item.slingshot",
+      "displayName": "Sapan",
+      "category": "kids",
+      "price": 4,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Sapanla nişan al",
+          "need": "Fun",
+          "restore": 28,
+          "durationDays": 0.06,
+          "moodlet": "had_fun",
+          "skill": "Hunting",
+          "skillXp": 2
+        }
+      ],
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.jump_rope",
+      "displayName": "Atlama ipi",
+      "category": "kids",
+      "price": 3,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "cloth",
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "İp atla",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.06,
+          "moodlet": "had_fun"
+        }
+      ],
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.hoop",
+      "displayName": "Çember ve çubuk",
+      "category": "kids",
+      "price": 5,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Çember sür",
+          "need": "Fun",
+          "restore": 35,
+          "durationDays": 0.08,
+          "moodlet": "had_fun"
+        }
+      ],
+      "finishGroup": "wood",
+      "beauty": 1
+    },
+    {
+      "id": "item.whittling_knife",
+      "displayName": "Oyma bıçağı",
+      "category": "kids",
+      "price": 8,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Tahta yont",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.08,
+          "moodlet": "had_fun",
+          "skill": "Carpentry",
+          "skillXp": 3
+        }
+      ],
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.marbles",
+      "displayName": "Bilye kesesi",
+      "category": "kids",
+      "price": 3,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "cloth",
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Bilye oyna",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.06,
+          "moodlet": "had_fun"
+        }
+      ],
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.kite",
+      "displayName": "Uçurtma",
+      "category": "kids",
+      "price": 6,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Uçurtma uçur",
+          "need": "Fun",
+          "restore": 40,
+          "durationDays": 0.08,
+          "moodlet": "had_fun",
+          "skill": "WeatherLore",
+          "skillXp": 2
+        }
+      ],
+      "finishGroup": "wood",
+      "beauty": 1
+    },
+    {
+      "id": "item.juggling_balls",
+      "displayName": "Jonglör topları",
+      "category": "kids",
+      "price": 5,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "cloth",
+      "interactions": [
+        {
+          "id": "play",
+          "displayName": "Top çevir",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.06,
+          "moodlet": "had_fun",
+          "skill": "Music",
+          "skillXp": 1
+        }
+      ],
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.tallow",
+      "displayName": "İç yağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "fat"
+      ]
+    },
+    {
+      "id": "item.parchment",
+      "displayName": "Parşömen",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "writing"
+      ]
+    },
+    {
+      "id": "item.oak_gall",
+      "displayName": "Mazı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "writing"
+      ]
+    },
+    {
+      "id": "item.ink",
+      "displayName": "Mürekkep",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "writing"
+      ]
+    },
+    {
+      "id": "item.blank_book",
+      "displayName": "Boş defter",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 40,
+      "tags": [
+        "writing"
+      ]
+    },
+    {
+      "id": "item.malt",
+      "displayName": "Malt",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "grain"
+      ]
     }
   ],
   "recipes": [
@@ -16516,6 +16780,282 @@
       "skill": "Masonry",
       "skillXp": 3,
       "displayName": "Aşı boyası ez"
+    },
+    {
+      "id": "slingshot",
+      "station": "item.workbench",
+      "produces": "item.slingshot",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 1
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Carpentry",
+      "skillXp": 8,
+      "displayName": "Sapan yap"
+    },
+    {
+      "id": "hoop",
+      "station": "item.workbench",
+      "produces": "item.hoop",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Carpentry",
+      "skillXp": 8,
+      "displayName": "Çember bük"
+    },
+    {
+      "id": "whittling_knife",
+      "station": "item.forge",
+      "produces": "item.whittling_knife",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Smithing",
+      "skillXp": 8,
+      "displayName": "Oyma bıçağı döv"
+    },
+    {
+      "id": "jump_rope",
+      "station": "item.spinning_wheel",
+      "produces": "item.jump_rope",
+      "materials": [
+        {
+          "item": "item.linen_yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Weaving",
+      "skillXp": 5,
+      "displayName": "Atlama ipi bük"
+    },
+    {
+      "id": "marbles",
+      "station": "item.kiln",
+      "produces": "item.marbles",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Pottery",
+      "skillXp": 6,
+      "displayName": "Kil bilye pişir"
+    },
+    {
+      "id": "kite",
+      "station": "item.workbench",
+      "produces": "item.kite",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Carpentry",
+      "skillXp": 8,
+      "displayName": "Uçurtma yap"
+    },
+    {
+      "id": "juggling_balls",
+      "station": "item.saddler_bench",
+      "produces": "item.juggling_balls",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        },
+        {
+          "item": "item.wool",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Leatherwork",
+      "skillXp": 6,
+      "displayName": "Jonglör topu dik"
+    },
+    {
+      "id": "render_tallow",
+      "station": "item.cooking_pot",
+      "produces": "item.tallow",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.meat",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Chandlery",
+      "skillXp": 5,
+      "displayName": "İç yağı erit"
+    },
+    {
+      "id": "tallow_candle",
+      "station": "item.chandler_table",
+      "produces": "item.tallow_candle",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.tallow",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Chandlery",
+      "skillXp": 6,
+      "displayName": "Don yağı mumu dök"
+    },
+    {
+      "id": "beeswax_candle",
+      "station": "item.chandler_table",
+      "produces": "item.beeswax_candle",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.beeswax",
+          "count": 2
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Chandlery",
+      "skillXp": 10,
+      "displayName": "Balmumu mumu dök"
+    },
+    {
+      "id": "parchment",
+      "station": "item.tanning_rack",
+      "produces": "item.parchment",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.hide",
+          "count": 1
+        },
+        {
+          "item": "item.lime",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Leatherwork",
+      "skillXp": 10,
+      "displayName": "Parşömen ger ve kazı"
+    },
+    {
+      "id": "ink",
+      "station": "item.mortar_pestle",
+      "produces": "item.ink",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.oak_gall",
+          "count": 2
+        },
+        {
+          "item": "item.slag",
+          "count": 1
+        },
+        {
+          "item": "item.resin",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Literacy",
+      "skillXp": 4,
+      "displayName": "Mazı mürekkebi ez"
+    },
+    {
+      "id": "blank_book",
+      "station": "item.workbench",
+      "produces": "item.blank_book",
+      "materials": [
+        {
+          "item": "item.parchment",
+          "count": 4
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        },
+        {
+          "item": "item.ink",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Literacy",
+      "skillXp": 12,
+      "displayName": "Boş defter cilt"
+    },
+    {
+      "id": "malt",
+      "station": "item.drying_rack",
+      "produces": "item.malt",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.barley",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Brewing",
+      "skillXp": 6,
+      "displayName": "Arpa çimlendir ve kurut (malt)"
+    },
+    {
+      "id": "ale_malt",
+      "station": "item.brew_barrel",
+      "produces": "item.ale",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.malt",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Brewing",
+      "skillXp": 14,
+      "displayName": "Malttan bira mayala"
     }
   ],
   "animals": [

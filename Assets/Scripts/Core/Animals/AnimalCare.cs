@@ -585,6 +585,9 @@ namespace Thatchwick.Core.Animals
             return null;
         }
 
+        /// <summary>Binicinin kendinden gelen ek hız çarpanı (Doğuştan Binici; belge 31-8).</summary>
+        public Func<int, double> RiderSpeedFactor { get; set; }
+
         /// <summary>Binicinin yürüme hızı çarpanı (binmiyorsa 1). İşlenmiş eyer %25 daha hızlı.</summary>
         public double RideSpeed(int riderId)
         {
@@ -595,6 +598,7 @@ namespace Thatchwick.Core.Animals
             // Binicilik: seviye başına %3 (10. seviyede %27).
             var rider = FindCharacter?.Invoke(riderId);
             if (rider != null) speed *= 1.0 + 0.03 * Math.Max(0, rider.Skills.GetLevel(SkillType.Riding) - 1);
+            if (RiderSpeedFactor != null) speed *= RiderSpeedFactor(riderId);
             return speed;
         }
 
