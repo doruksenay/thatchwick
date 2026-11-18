@@ -21,6 +21,14 @@ namespace Thatchwick.Game
         private static readonly Color EarthColor = new Color32(38, 30, 26, 255);
         private static readonly Color VoidColor = new Color(1f, 1f, 1f, 0.07f);
 
+        /// <summary>Haritanın dışı (kamera arka planı): kenar şeridi bu renge solar.</summary>
+        public static readonly Color OutsideColor = new Color32(22, 31, 24, 255);
+        /// <summary>Harita kenarındaki solan çim şeridinin derinliği (karo). Sert kenar yerine koyu ormana karışır.</summary>
+        private const int FringeDepth = 7;
+
+        private struct FringeTile { public SpriteRenderer R; public int X, Y; public float T; }
+        private FringeTile[] _fringe;
+
         // Kat başına bir karo dizisi: dizin ((z - MinLevel) * H + y) * W + x.
         private SpriteRenderer[] _tiles;
 
@@ -105,6 +113,55 @@ namespace Thatchwick.Game
                     }
                 }
             }
+            BuildFringe();
+        }
+
+        // Harita kenarı (görsel analiz, 18.11.2026): haritanın çevresine, dışa doğru koyulaşıp saydamlaşan bir çim şeridi.
+        // Yalnızca görsel; oyun mantığında karşılığı yok. Orman sınırı görseli gelince (art/queue/370) üstüne ağaç dizilecek.
+        private void BuildFringe()
+        {
+            var list = new System.Collections.Generic.List<FringeTile>();
+            for (int y = -FringeDepth; y < Map.Height + FringeDepth; y++)
+            {
+                for (int x = -FringeDepth; x < Map.Width + FringeDepth; x++)
+                {
+                    if (x >= 0 && y >= 0 && x < Map.Width && y < Map.Height) continue;
+                    int dx = x < 0 ? -x : (x >= Map.Width ? x - Map.Width + 1 : 0);
+                    int dy = y < 0 ? -y : (y >= Map.Height ? y - Map.Height + 1 : 0);
+                    int d = Mathf.Max(dx, dy);
+                    // Halkalar düz görünmesin diye karoya sabit küçük bir sapma.
+                    int h = (x * 92837111) ^ (y * 689287499);
+                    float jitter = ((h & 0xFF) / 255f - 0.5f) * 0.12f;
+                    float t = Mathf.Clamp01((d - 0.5f) / FringeDepth + jitter);
+
+                    var go = new GameObject($"Edge {x},{y}");
+                    go.transform.SetParent(transform, false);
+                    go.transform.position = TileToWorld(new GridPos(x, y, 0));
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    sr.sharedMaterial = SpriteMaterials.Unlit;
+                    sr.sortingOrder = GroundSortOrder - 1;
+                    list.Add(new FringeTile { R = sr, X = x, Y = y, T = t });
+                }
+            }
+            _fringe = list.ToArray();
+            RefreshFringe();
+        }
+
+        private void RefreshFringe()
+        {
+            if (_fringe == null) return;
+            bool visible = _viewLevel >= 0;
+            foreach (var f in _fringe)
+            {
+                f.R.enabled = visible;
+                if (!visible) continue;
+                var real = IsoArt.Ground(FloorType.Grass, f.X, f.Y);
+                f.R.sprite = real != null ? real : SpriteMaterials.Diamond;
+                Color baseColor = real != null ? Color.white : (((f.X + f.Y) & 1) == 0 ? GrassA : GrassB);
+                float k = Mathf.Lerp(0.92f, 0.45f, f.T);
+                float a = 1f - f.T * f.T;
+                f.R.color = new Color(baseColor.r * k, baseColor.g * k, baseColor.b * k, a);
+            }
         }
 
         /// <summary>Bu karo arazi engeli değil (üstündeki eşya engelliyordu); mavi boyanmaz.</summary>
@@ -119,6 +176,7 @@ namespace Thatchwick.Game
             if (Map == null || _tiles == null) return;
             for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
                 RefreshLevel(z);
+            RefreshFringe();
         }
 
         private void RefreshLevel(int z)
