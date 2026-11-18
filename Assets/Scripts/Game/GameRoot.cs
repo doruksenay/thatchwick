@@ -1468,6 +1468,7 @@ namespace Thatchwick.Game
             _animals.Recovered += a => ShowMessage($"{a.Name} iyileşti");
             _animals.Dismounted += (a, riderId) => ShowMessage($"{_population.Find(riderId)?.Name} attan indi ({a.Name} kapıda bekliyor)");
             _animalCare = new AnimalCare(_animals, _household);
+            _life?.Attach(_animals, _animalCare);   // can yoldaşı bağı (belge 31-8)
             _animalCare.Done += (c, a, act) =>
             {
                 switch (act)
@@ -1899,6 +1900,7 @@ namespace Thatchwick.Game
                     continue;
                 }
                 if (actor.Character.Stage != AgeStage.Baby) actor.Runner.Tick(gameDays);   // bebek iş yapmaz; büyükler besler
+                TickIdleShow(actor, gameDays);
                 UpdateView(actor);
             }
 
@@ -2001,6 +2003,22 @@ namespace Thatchwick.Game
             string more = c.Mood.Active.Count > maxNames ? " ..." : "";
             string total = c.Mood.Total > 0 ? $"+{c.Mood.Total}" : c.Mood.Total.ToString();
             return names.Count == 0 ? $"{MoodRules.Name(c.Mood.Status)}" : $"{MoodRules.Name(c.Mood.Status)} ({total}): {string.Join(", ", names)}{more}";
+        }
+
+        // Boşta gösterisi (belge 30): ustalaşılmış kişisel eşyasıyla bekleyen hane üyesi arada bir gösteri yapar.
+        private const double IdleShowEveryDays = 0.08;
+        private readonly Dictionary<int, double> _idleShowTimer = new Dictionary<int, double>();
+
+        private void TickIdleShow(Actor actor, double gameDays)
+        {
+            var c = actor.Character;
+            if (c.IsVillager || c.IsDead || c.Stage == AgeStage.Baby || !actor.Runner.IsIdle) { _idleShowTimer.Remove(c.Id); return; }
+            _idleShowTimer.TryGetValue(c.Id, out var t);
+            t += gameDays;
+            if (t < IdleShowEveryDays) { _idleShowTimer[c.Id] = t; return; }
+            _idleShowTimer[c.Id] = 0;
+            var show = _life.Upbringing.IdleShow(c);
+            if (show != null && (_selected == actor || show.Watchers > 0)) ShowMessage(show.Text);
         }
 
         private static string ActivityText(JobRunner runner)

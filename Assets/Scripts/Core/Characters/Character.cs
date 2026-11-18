@@ -277,6 +277,9 @@ namespace Thatchwick.Core.Characters
             Died?.Invoke(this);
         }
 
+        /// <summary>Yetiştirilme sistemlerinden gelen ek XP çarpanı (çocukluk izi, can yoldaşı, çıraklık, aile tarifi).</summary>
+        public Func<SkillType, double> ExtraXpFactor { get; set; }
+
         /// <summary>Çalışarak beceri XP'si kazanır; yaş evresine göre seviye tavanı uygulanır. Ölü karakter kazanmaz.</summary>
         public double GainSkillXp(SkillType skill, double xp)
         {
@@ -284,6 +287,7 @@ namespace Thatchwick.Core.Characters
             if (MoodEnabled) xp *= Mood.XpMultiplier(skill);
             // Okuryazarlık: bütün becerilerde seviye başına %2 fazla XP (kendisi hariç).
             if (skill != SkillType.Literacy) xp *= SkillNames.Factor(Skills.GetLevel(SkillType.Literacy), 0.02);
+            if (ExtraXpFactor != null) xp *= ExtraXpFactor(skill);
             return Skills.AddXp(skill, xp * Modifiers.SkillRate(skill), SkillRules.LevelCap(Stage));
         }
 
