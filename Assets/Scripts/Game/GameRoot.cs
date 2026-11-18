@@ -373,6 +373,9 @@ namespace Thatchwick.Game
             _life.Attach(_buildService);
             _life.Attach(_effects);
             _life.Attach(_animals);   // attan düşen binici yaralanır, at ürkünce bildirim (Project belgesi 29)
+            // Kurt savunması dünyadan okunur: çitli ağıl ve açık havada yanan ateş (belge 31-4).
+            if (_life.Wolves != null) { _life.Wolves.Fenced = () => WildWorld.HasPen(_world.Map); _life.Wolves.HasFire = () => WildWorld.HasOutdoorFire(_world); }
+            _life.AttachWild(_world.Map);   // haritada dolaşan yaban hayvanları
             // Miras: kurucu (köydeki soy), yadigâr envantere girmez, satılınca geçmişi silinir, komşu haneye giden köylü olur.
             _life.FounderId = () => _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
             _buildService.StoreBlocker = _life.Legacy.StoreBlocker;
@@ -1391,6 +1394,8 @@ namespace Thatchwick.Game
             }
             var names = new List<string>();
             var tile = _view.WorldToTile(world);
+            var visitor = _life?.Roamers?.At(tile);
+            if (visitor != null) AddWildOptions(visitor, names);
             var animal = AnimalAt(tile);
             if (animal != null)
             {
@@ -1786,6 +1791,76 @@ namespace Thatchwick.Game
             }
         }
 
+        // Yaban ziyaretçisi seçenekleri: sakin yaklaş (sev), yayla vur (av yayı gerekir; köpek yardım eder).
+        private void AddWildOptions(WildVisitor v, List<string> names)
+        {
+            var c = Commander;
+            names.Add($"{v.Species.Name}{(v.Young ? " yavrusu" : "")} (yaban)");
+            if (c == null) return;
+            int id = v.Id;
+            _menuOptions.Add(new MenuOption
+            {
+                Label = $"Sakin yaklaş, sev ({v.Species.Name})",
+                Blocked = v.Species.Pettable ? null : $"{v.Species.Name} sevilmez; uzaktan izle.",
+                Run = () => ShowMessage(_life.Roamers.TryPet(id, c.Character))
+            });
+            if (v.Species.Huntable)
+                _menuOptions.Add(new MenuOption
+                {
+                    Label = $"Yayla vur ({v.Species.Name})",
+                    Blocked = _household.Count("item.hunting_bow") <= 0 ? "Av yayı gerekli (pazardan)." : c.Character.Stage < AgeStage.Teen ? "Çocuk avlanmaz." : null,
+                    Run = () =>
+                    {
+                        bool hound = false;
+                        foreach (var a in _animals.Animals) if (!a.IsDead && a.Species.Id == "animal.dog" && a.IsMature && a.ShyDays <= 0) { hound = true; break; }
+                        var r = _life.Roamers.Shoot(id, c.Character, _household, hound);
+                        if (r.Success && r.SpeciesId == "wild.wolf") _life.Wolves?.OnWolfHunted();
+                        ShowMessage(r.Message);
+                    }
+                });
+        }
+
+        private sealed class WildView { public Transform T; public SpriteRenderer R; public int Dir = IsoArt.DefaultDirection; }
+        private readonly Dictionary<int, WildView> _wildViews = new Dictionary<int, WildView>();
+
+        // Yaban ziyaretçileri: görseli gelene kadar renkli yer tutucu küp.
+        private void UpdateWildViews()
+        {
+            var roam = _life?.Roamers;
+            if (roam == null) return;
+            var alive = new HashSet<int>();
+            foreach (var v in roam.Visitors)
+            {
+                alive.Add(v.Id);
+                if (!_wildViews.TryGetValue(v.Id, out var w))
+                {
+                    var go = new GameObject(v.Species.Name);
+                    go.transform.SetParent(transform, false);
+                    w = new WildView { T = go.transform, R = go.AddComponent<SpriteRenderer>() };
+                    w.R.sharedMaterial = SpriteMaterials.Unlit;
+                    _wildViews[v.Id] = w;
+                }
+                Vector3 pos = _view.TileToWorld(v.Position);
+                if (v.NextTile.HasValue)
+                {
+                    var to = _view.TileToWorld(v.NextTile.Value);
+                    w.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
+                    pos = Vector3.Lerp(pos, to, (float)v.StepProgress);
+                }
+                w.T.position = pos;
+                w.R.enabled = _view.IsLevelVisible(v.Position.Z);
+                var real = IsoArt.Animal(v.Species.Id, w.Dir);
+                float scale = v.Young ? 0.7f : 1f;
+                if (real != null) w.R.sprite = real;
+                else { w.R.sprite = SpriteMaterials.Cube(AnimalColor(v.Species.Id)); scale *= AnimalScale(v.Species.Id); }
+                w.T.localScale = new Vector3(scale, scale, 1f);
+                w.R.sortingOrder = Iso.SortOrder(pos.y, 1, v.Position.Z);
+            }
+            var gone = new List<int>();
+            foreach (var kv in _wildViews) if (!alive.Contains(kv.Key)) gone.Add(kv.Key);
+            foreach (var id in gone) { if (_wildViews[id].T != null) Destroy(_wildViews[id].T.gameObject); _wildViews.Remove(id); }
+        }
+
         private void OnAnimalDied(Animal a)
         {
             ShowMessage(a.CauseOfDeath == AnimalDeath.Starvation ? $"{a.Name} açlıktan öldü (barınağa yem koy)"
@@ -1803,6 +1878,14 @@ namespace Thatchwick.Game
                 case "animal.goat": return new Color(0.75f, 0.68f, 0.55f);
                 case "animal.sheep": return new Color(0.92f, 0.9f, 0.86f);
                 case "animal.cow": return new Color(0.55f, 0.4f, 0.3f);
+                case "animal.ox": return new Color(0.42f, 0.32f, 0.25f);
+                case "wild.rabbit": case "wild.squirrel": case "wild.roe_deer": return new Color(0.6f, 0.45f, 0.3f);
+                case "wild.fox": return new Color(0.85f, 0.45f, 0.15f);
+                case "wild.boar": case "wild.hedgehog": case "wild.rat": return new Color(0.35f, 0.3f, 0.27f);
+                case "wild.crow": case "wild.owl": case "wild.sparrow": case "wild.stork": return new Color(0.2f, 0.2f, 0.22f);
+                case "wild.frog": return new Color(0.4f, 0.6f, 0.3f);
+                case "wild.butterfly": return new Color(0.95f, 0.85f, 0.3f);
+                case "wild.firefly": return new Color(1f, 1f, 0.5f);
                 case "animal.horse": return new Color(0.45f, 0.3f, 0.2f);
                 case "animal.dog": return new Color(0.6f, 0.45f, 0.3f);
                 case "animal.cat": return new Color(0.85f, 0.55f, 0.25f);
@@ -1817,7 +1900,11 @@ namespace Thatchwick.Game
                 case "animal.chicken": case "animal.duck": case "animal.bees": return 0.22f;
                 case "animal.cat": return 0.26f;
                 case "animal.dog": return 0.3f;
-                case "animal.cow": return 0.5f;
+                case "animal.cow": case "animal.ox": return 0.5f;
+                case "wild.butterfly": case "wild.firefly": case "wild.sparrow": case "wild.frog": return 0.12f;
+                case "wild.rabbit": case "wild.squirrel": case "wild.hedgehog": case "wild.rat": case "wild.crow": return 0.18f;
+                case "wild.owl": case "wild.fox": case "wild.stork": return 0.26f;
+                case "wild.roe_deer": case "wild.boar": return 0.38f;
                 case "animal.horse": return 0.55f;
                 default: return 0.4f;
             }
@@ -2009,6 +2096,7 @@ namespace Thatchwick.Game
             _mines.Tick(gameDays);
             _roomMood.Tick(gameDays, _population.Members);
             UpdateAnimalViews();
+            UpdateWildViews();
             foreach (var (plant, view) in _plantViews)
                 if (view != null) { float s = PlantScale(plant); view.localScale = new Vector3(s, s, 1f); }
             foreach (var (heatItem, heatView) in _heatViews)
@@ -2382,6 +2470,21 @@ namespace Thatchwick.Game
                         if (!_animals.SetGallop(Commander.Character.Id, !mount.Galloping)) ShowMessage(mount.Stamina <= 0 ? $"{mount.Name} yoruldu; dinlenmeli ya da ikram ver." : mount.ShyDays > 0 ? $"{mount.Name} ürkek; bugün dörtnala olmaz." : "Dörtnala olmaz.");
                     }
                     GUI.enabled = true;
+                    // Engel atlama (29-2): yandaki çit ya da alçak eşya; başarıda at ve binici öteye iner.
+                    foreach (var spot in JumpObstacles.Find(_world, Commander.Character.Position))
+                    {
+                        double jc = HorseAbilities.JumpChance(mount, Commander.Character, spot.Tiles, _life != null && _life.RainyToday);
+                        GUI.enabled = jc > 0;
+                        if (GUILayout.Button(jc > 0 ? $"Atla: {spot.Label} ({spot.Tiles} karo, %{jc * 100:0})" : $"Atla: {spot.Label} (at ya da Binicilik yetmez)"))
+                        {
+                            Commander.Runner.Cancel();
+                            var o = _animals.TryJump(Commander.Character.Id, spot.Tiles, _life != null && _life.RainyToday);
+                            if (o == JumpOutcome.Cleared) { Commander.Character.Position = spot.Landing; _animals.MoveMount(Commander.Character.Id, spot.Landing); ShowMessage($"{mount.Name} {spot.Label} üstünden aştı!"); }
+                            else if (o == JumpOutcome.Refused) ShowMessage($"{mount.Name} engelin önünde durdu, ürktü.");
+                            else if (o == JumpOutcome.Fell) ShowMessage($"{Commander.Character.Name} attan düştü!");
+                        }
+                        GUI.enabled = true;
+                    }
                     if (_household.Count("item.apple") > 0 && GUILayout.Button("Elma ikram et") && _household.TryTakeItem("item.apple")) { _animals.GiveTreat(mount); ShowMessage($"{mount.Name} elmayı yedi (dayanıklılık {mount.Stamina:0})"); }
                 }
                 if (GUILayout.Button(_animals.Released ? "Hayvanlar: gündüz otlakta" : "Hayvanlar: barınakta")) _animals.Released = !_animals.Released;

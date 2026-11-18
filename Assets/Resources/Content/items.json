@@ -15838,6 +15838,64 @@
       "beauty": 1,
       "material": "cloth",
       "interactions": []
+    },
+    {
+      "id": "item.hunting_bow",
+      "displayName": "Av yayı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "level": 3,
+      "tags": [
+        "tool"
+      ]
+    },
+    {
+      "id": "item.snare",
+      "displayName": "Kement tuzağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "level": 2,
+      "tags": [
+        "tool"
+      ]
+    },
+    {
+      "id": "item.wattle_hurdle",
+      "displayName": "Örme çit (atlama engeli)",
+      "category": "farm",
+      "price": 6,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.bonfire",
+      "displayName": "Bekçi ateşi",
+      "category": "heat_light",
+      "price": 8,
+      "level": 2,
+      "heat": 20,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "light"
+      ],
+      "interactions": [
+        {
+          "id": "warm",
+          "displayName": "Isın",
+          "need": "Warmth",
+          "restore": 15,
+          "durationDays": 0.06
+        }
+      ]
     }
   ],
   "recipes": [
@@ -18773,6 +18831,24 @@
       "femaleProduces": true,
       "draft": true,
       "femaleName": "inek",
+      "maleName": "boğa"
+    },
+    {
+      "id": "animal.ox",
+      "displayName": "Öküz",
+      "price": 55,
+      "housing": "barn",
+      "feedPerDay": 2.5,
+      "lifespanDays": 36,
+      "matureDays": 8,
+      "level": 5,
+      "meat": "item.meat",
+      "meatCount": 4,
+      "hide": "item.hide",
+      "hideCount": 2,
+      "trample": 3,
+      "draft": true,
+      "maleOnly": true,
       "maleName": "öküz"
     },
     {

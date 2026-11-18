@@ -288,6 +288,24 @@ namespace Thatchwick.Game
         private static readonly Dictionary<string, (string set, float px, float py)> Animals = new Dictionary<string, (string, float, float)>
         {
             ["animal.sheep"] = ("iso_animal_sheep_1_cand", 26f, 14f),   // 56x56, ayaklar alttan 14 px
+            ["animal.ox"] = ("iso_animal_ox_cand", 28f, 12f),          // iş 407; dosya yoksa yer tutucu
+            // Yaban hayvanları (iş 408-410): dosya yoksa yer tutucu küp.
+            ["wild.rabbit"] = ("iso_wild_rabbit_cand", 24f, 10f),
+            ["wild.squirrel"] = ("iso_wild_squirrel_cand", 24f, 10f),
+            ["wild.hedgehog"] = ("iso_wild_hedgehog_cand", 24f, 10f),
+            ["wild.roe_deer"] = ("iso_wild_roe_deer_cand", 24f, 10f),
+            ["wild.frog"] = ("iso_wild_frog_cand", 24f, 10f),
+            ["wild.stork"] = ("iso_wild_stork_cand", 24f, 10f),
+            ["wild.crow"] = ("iso_wild_crow_cand", 24f, 10f),
+            ["wild.owl"] = ("iso_wild_owl_cand", 24f, 10f),
+            ["wild.sparrow"] = ("iso_wild_sparrow_cand", 24f, 10f),
+            ["wild.butterfly"] = ("iso_wild_butterfly_cand", 24f, 10f),
+            ["wild.firefly"] = ("iso_wild_firefly_cand", 24f, 10f),
+            ["wild.fox"] = ("iso_wild_fox_cand", 24f, 10f),
+            ["wild.wolf"] = ("iso_wild_wolf_cand", 24f, 10f),
+            ["wild.boar"] = ("iso_wild_boar_cand", 24f, 10f),
+            ["wild.rat"] = ("iso_wild_rat_cand", 24f, 10f),
+            ["wild.bear"] = ("iso_wild_bear_cand", 24f, 10f),
         };
 
         public static Sprite Animal(string speciesId, int direction)
