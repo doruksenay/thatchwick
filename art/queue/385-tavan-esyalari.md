@@ -1,7 +1,7 @@
 ---
 id: "385"
 title: Tavan ve kiriş: kiriş kancası, asma fener, demir avize, ot demetleri, çelenk, püskül (6)
-status: running
+status: review
 claimed_at: 2026-11-18T12:56Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
