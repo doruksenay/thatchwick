@@ -209,6 +209,7 @@ namespace Thatchwick.Game
 
         private void RefreshLevel(int z)
         {
+            if (z == 0) RebuildPathFringe(IsLevelVisible(0));
             bool visible = IsLevelVisible(z);
             for (int y = _area.yMin; y < _area.yMax; y++)
             {
@@ -253,7 +254,9 @@ namespace Thatchwick.Game
                         int band = GridMap.ConditionBand(roadCond);
                         bool natural = Map.IsNaturalRoad(p);
                         // Yol karosu (340). Kendiliğinden oluşan patika silikken çim kalır, belirginleşince patika karosuna döner.
-                        var roadArt = natural && roadCond < 0.5f ? null : IsoArt.Road(road, band, x, y);
+                        var roadArt = natural && roadCond < 0.5f ? null
+                            : road == RoadType.Path ? PathArt(p) ?? IsoArt.Road(road, band, x, y)
+                            : IsoArt.Road(road, band, x, y);
                         if (roadArt != null)
                         {
                             sr.sprite = roadArt;
@@ -319,6 +322,127 @@ namespace Thatchwick.Game
                     }
                 }
             }
+        }
+
+        // Patika komşusu: yol, meydan taşı, köprü ya da kapıdan girilen döşeme (arada duvar yoksa). Harita kenarındaki
+        // geçit karosu dışarıya bağlı sayılır (yol haritadan çıkıyormuş gibi görünür).
+        private bool Connects(GridPos from, GridPos to)
+        {
+            if (!Map.InBounds(to)) return Map.IsPortal(from);
+            if (!_area.Contains(new Vector2Int(to.X, to.Y))) return Map.IsPortal(from);
+            if (!Map.EdgeFree(from, to)) return false;
+            if (Map.GetRoad(to) != RoadType.None) return true;
+            var f = Map.GetFloor(to);
+            return f == FloorType.Stone || f == FloorType.Wood;
+        }
+
+        /// <summary>Toprak patika: komşulara göre otomatik karo (düz, köşe, T, kavşak, yol sonu). Görsel yoksa null.</summary>
+        private Sprite PathArt(GridPos p)
+        {
+            int mask = 0;
+            if (Connects(p, new GridPos(p.X + 1, p.Y, p.Z))) mask |= 1;   // N
+            if (Connects(p, new GridPos(p.X, p.Y - 1, p.Z))) mask |= 2;   // E
+            if (Connects(p, new GridPos(p.X - 1, p.Y, p.Z))) mask |= 4;   // S
+            if (Connects(p, new GridPos(p.X, p.Y + 1, p.Z))) mask |= 8;   // W
+            bool full = mask == 15
+                && Connects(p, new GridPos(p.X + 1, p.Y - 1, p.Z)) && Connects(p, new GridPos(p.X - 1, p.Y - 1, p.Z))
+                && Connects(p, new GridPos(p.X + 1, p.Y + 1, p.Z)) && Connects(p, new GridPos(p.X - 1, p.Y + 1, p.Z));
+            return IsoArt.PathTile(mask, full, p.X, p.Y);
+        }
+
+        // ---------------- doğal yol kenarı ----------------
+        // Yolun değdiği çim karosuna, yol tarafındaki kenardan içeri doğru düzensiz (piksel piksel) sızan bir toprak katmanı
+        // çizilir. Sınır karonun içinden, dalgalı geçer; karo karo boyamanın basamaklı görüntüsü oluşmaz.
+        // Görsel: kodla üretilir (toprak paleti, 4 yön x 3 varyant), 64x32 elmas, PPU 32.
+        private const int FringeVariants = 3;
+        public static bool ProceduralPathFringe = false;
+        private static Sprite[,] _pathFringe;
+        private readonly System.Collections.Generic.List<GameObject> _fringeObjects = new System.Collections.Generic.List<GameObject>();
+
+        /// <summary>Konuma bağlı sabit gürültü (0..1): her yenilemede aynı desen.</summary>
+        private static float Noise(int x, int y, int salt)
+        {
+            unchecked
+            {
+                uint h = (uint)(x * 374761393 + y * 668265263 + salt * 1442695041);
+                h = (h ^ (h >> 13)) * 1274126177u;
+                h ^= h >> 16;
+                return (h & 0xFFFF) / 65535f;
+            }
+        }
+
+        private bool IsPath(GridPos q) => Map.InBounds(q) && Map.GetRoad(q) == RoadType.Path;
+
+        // dir: 0 = N (x+1, ekranda sağ üst kenar), 1 = E (y-1, sağ alt), 2 = S (x-1, sol alt), 3 = W (y+1, sol üst).
+        private static Sprite PathFringe(int dir, int variant)
+        {
+            if (_pathFringe == null)
+            {
+                _pathFringe = new Sprite[4, FringeVariants];
+                var dark = new Color32(112, 84, 56, 255);
+                var mid = new Color32(138, 104, 68, 255);
+                var light = new Color32(156, 120, 82, 255);
+                for (int d = 0; d < 4; d++)
+                    for (int k = 0; k < FringeVariants; k++)
+                    {
+                        var tex = new Texture2D(64, 32, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+                        var px = new Color32[64 * 32];
+                        for (int py = 0; py < 32; py++)
+                            for (int pxx = 0; pxx < 64; pxx++)
+                            {
+                                float u = (pxx + 0.5f - 32f) / 32f, w = (py + 0.5f - 16f) / 16f;   // w yukarı +
+                                float inside = Mathf.Abs(u) + Mathf.Abs(w);
+                                var c = new Color32(0, 0, 0, 0);
+                                if (inside <= 1f)
+                                {
+                                    // Yol tarafındaki kenara olan uzaklık (0 kenarda, 2 karşı köşede).
+                                    float dist = d == 0 ? 1f - (u + w) : d == 1 ? 1f - (u - w) : d == 2 ? 1f + u + w : 1f + u - w;
+                                    float n = Noise(pxx, py, 100 + d * 10 + k);
+                                    float n2 = Noise(pxx / 3, py / 2, 200 + d * 10 + k);   // iri dalga
+                                    if (dist + 0.30f * n + 0.35f * n2 < 0.62f)
+                                    {
+                                        float s = Noise(pxx, py, 300 + k);
+                                        c = s < 0.25f ? dark : s > 0.8f ? light : mid;
+                                    }
+                                }
+                                px[py * 64 + pxx] = c;
+                            }
+                        tex.SetPixels32(px);
+                        tex.Apply();
+                        _pathFringe[d, k] = Sprite.Create(tex, new Rect(0, 0, 64, 32), new Vector2(0.5f, 0.5f), 32f);
+                    }
+            }
+            return _pathFringe[dir, variant];
+        }
+
+        private void RebuildPathFringe(bool visible)
+        {
+            foreach (var go in _fringeObjects) if (go != null) Destroy(go);
+            _fringeObjects.Clear();
+            // Kodla üretilen kenar denemesi kullanıcıya doğal gelmedi (18.11.2026): elle çizilmiş geçiş seti (art/queue/004c)
+            // gelene kadar kapalı.
+            if (!ProceduralPathFringe || !visible || !IsoArt.Enabled) return;
+            var dirs = new[] { new GridPos(1, 0), new GridPos(0, -1), new GridPos(-1, 0), new GridPos(0, 1) };
+            for (int y = _area.yMin; y < _area.yMax; y++)
+                for (int x = _area.xMin; x < _area.xMax; x++)
+                {
+                    var p = new GridPos(x, y);
+                    if (Map.GetRoad(p) != RoadType.None || Map.GetFloor(p) != FloorType.Grass || _terrainBlocked[y * Map.Width + x]) continue;
+                    for (int d = 0; d < 4; d++)
+                    {
+                        var q = new GridPos(x + dirs[d].X, y + dirs[d].Y);
+                        if (!IsPath(q) || Map.IsNaturalRoad(q) || !Map.EdgeFree(p, q)) continue;
+                        if (Noise(x, y, 11 + d) < 0.15f) continue;     // kenar boyunca ara ara hiç sızma yok
+                        var go = new GameObject("PathEdge");
+                        go.transform.SetParent(transform, false);
+                        go.transform.position = TileToWorld(p);
+                        var sr = go.AddComponent<SpriteRenderer>();
+                        sr.sprite = PathFringe(d, (int)(Noise(x, y, 21 + d) * FringeVariants) % FringeVariants);
+                        sr.sharedMaterial = SpriteMaterials.Unlit;
+                        sr.sortingOrder = GroundSortOrder + 1;
+                        _fringeObjects.Add(go);
+                    }
+                }
         }
 
         // Üst kat döşemesi ve bodrum: yer tutucu elmaslar. Kazılmamış toprak (bodrum görünümünde) koyu çizilir;

@@ -1,7 +1,8 @@
 ---
 id: "018e"
 title: Etkileşim animasyonları: sohbet, eğlence, bakım, sevgi, balık
-status: pending
+status: review
+claimed_at: 2026-11-18T19:41Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50
 family: karakter
@@ -49,3 +50,5 @@ Etkileşim animasyonları (84 px erkek ve kadın). Anahtar eşlemesi: `art/resul
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18: yöntem kapısı 018a3 kabul (aday d, pixminimax + simetrik adım metni); etkileşimlerde aynı pixminimax ve 018b2'deki ücretsiz hizalama kullanılır. -->

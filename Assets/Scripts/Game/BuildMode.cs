@@ -1391,6 +1391,7 @@ namespace Thatchwick.Game
             {
                 if (!_content.Items.TryGet(kv.Key, out var def)) continue;
                 GUILayout.BeginHorizontal();
+                IsoArt.IconCell(kv.Key);
                 int damaged = _house.DamagedCount(kv.Key), repaired = _house.RepairedCount(kv.Key);
                 string worn = damaged + repaired == 0 ? "" : $" ({(damaged > 0 ? $"{damaged} hasarlı" : "")}{(damaged > 0 && repaired > 0 ? ", " : "")}{(repaired > 0 ? $"{repaired} onarılmış" : "")})";
                 GUILayout.Label($"{def.DisplayName} x{kv.Value}{worn}");
@@ -1514,7 +1515,7 @@ namespace Thatchwick.Game
             if (_defter && level >= DefterLevel) { DrawDefter(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme, _house)); return; }
             var list = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme, _house), level);
             if (list.Count == 0) GUILayout.Label("Bu filtreyle eşya yok.");
-            foreach (var def in list) DrawCard(def);
+            DrawGrid(list, false);
         }
 
         // Görünür eşyalar: açıklar + yalnızca bir sonraki kilit kademesi (kilitli, şartıyla). Daha uzaktakiler gizli.
@@ -1621,18 +1622,88 @@ namespace Thatchwick.Game
         }
 
         // Defter: kategorinin tüm eşyaları. Edinilmişler kart olarak (tekrar alınabilir), edinilmemişler "???" siluet.
+        // Defter: kategorinin tüm eşyaları. Edinilmişler normal hücre, edinilmemişler "???" siluet.
         private void DrawDefter(List<ItemDef> all)
         {
             int got = all.Count(d => _owned != null && _owned.Contains(d.Id));
             GUILayout.Label($"Koleksiyon: {got}/{all.Count}", _wrap);
-            foreach (var def in all)
+            DrawGrid(all, true);
+        }
+
+        // ---------- eşya ızgarası (belge 33, katman 3) ----------
+        private string _gridSel;              // ızgarada seçili eşya; ayrıntı kartı altında
+        private const int GridCols = 3;
+        private const float CellW = 76f, CellH = 82f;
+        private GUIStyle _cellName, _cellPrice;
+
+        // Sims/Stardew gibi: kare hücrede eşyanın kendi görseli, altında ad ve fiyat. Tıklananın kartı (açıklama, Al) ızgaranın altında.
+        private void DrawGrid(List<ItemDef> list, bool defter)
+        {
+            if (_cellName == null)
             {
-                if (_owned != null && _owned.Contains(def.Id)) { DrawCard(def); continue; }
-                GUILayout.BeginVertical(UiSkin.CellLocked);
-                GUILayout.Label(new GUIContent("???", UiSkin.Icon("ui_lock")), GUILayout.Height(22f));
-                GUILayout.Label($"Henüz edinilmedi ({def.Width}x{def.Height})", _wrap);
-                GUILayout.EndVertical();
+                _cellName = new GUIStyle(GUI.skin.label) { fontSize = 9, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Clip };
+                _cellPrice = new GUIStyle(GUI.skin.label) { fontSize = 10, alignment = TextAnchor.LowerCenter, fontStyle = FontStyle.Bold };
             }
+            ItemDef selected = null;
+            for (int i = 0; i < list.Count; i += GridCols)
+            {
+                GUILayout.BeginHorizontal();
+                for (int j = i; j < i + GridCols; j++)
+                {
+                    var r = GUILayoutUtility.GetRect(CellW, CellH, GUILayout.Width(CellW), GUILayout.Height(CellH));
+                    if (j >= list.Count) continue;
+                    var def = list[j];
+                    bool known = !defter || _owned != null && _owned.Contains(def.Id);
+                    bool unlocked = _svc.IsUnlocked(def);
+                    bool sel = _gridSel == def.Id;
+                    if (sel) selected = def;
+                    if (Event.current.type == EventType.Repaint)
+                        (sel ? UiSkin.CellSelected : !known || !unlocked ? UiSkin.CellLocked : UiSkin.Cell).Draw(r, false, false, false, false);
+                    var ink = sel ? UiSkin.Ink : UiSkin.Linen;
+                    _cellName.normal.textColor = ink; _cellPrice.normal.textColor = sel ? UiSkin.Ink : UiSkin.Gold;
+                    var pic = new Rect(r.x + 14f, r.y + 6f, r.width - 28f, 44f);
+                    if (!known)
+                    {
+                        var lockIcon = UiSkin.Icon("ui_lock");
+                        if (lockIcon != null) GUI.DrawTexture(new Rect(r.center.x - 12f, r.y + 14f, 24f, 24f), lockIcon, ScaleMode.ScaleToFit);
+                        GUI.Label(new Rect(r.x + 3f, r.y + 52f, r.width - 6f, 26f), "???", _cellName);
+                    }
+                    else
+                    {
+                        DrawSprite(pic, IsoArt.ItemPreview(def.Id), !unlocked);
+                        GUI.Label(new Rect(r.x + 3f, r.y + 50f, r.width - 6f, 20f), def.DisplayName, _cellName);
+                        GUI.Label(new Rect(r.x + 3f, r.y + 60f, r.width - 6f, 18f), unlocked ? $"{def.Price}" : $"Sv {def.UnlockLevel}", _cellPrice);
+                        if (unlocked && _seen != null && !_seen.Contains(def.Id))
+                        {
+                            _pendingSeen.Add(def.Id);
+                            GUI.Label(new Rect(r.xMax - 30f, r.y + 2f, 28f, 12f), "YENİ", _cellPrice);
+                        }
+                        if (_house.Count(def.Id) > 0) GUI.Label(new Rect(r.x + 4f, r.y + 2f, 24f, 12f), $"x{_house.Count(def.Id)}", _cellName);
+                    }
+                    if (known && GUI.Button(r, new GUIContent("", def.DisplayName), GUIStyle.none))
+                    {
+                        var id = def.Id;
+                        _deferred = () => _gridSel = _gridSel == id ? null : id;
+                    }
+                }
+                GUILayout.EndHorizontal();
+            }
+            if (selected != null) DrawCard(selected);
+        }
+
+        private static void DrawSprite(Rect area, Sprite s, bool dim)
+        {
+            if (s == null || s.texture == null) return;
+            var tr = s.textureRect;
+            float scale = Mathf.Min(area.width / tr.width, area.height / tr.height);
+            scale = scale >= 1f ? Mathf.Floor(scale) : scale;   // piksel sanat: mümkünse tam sayı ölçek
+            float w = tr.width * scale, h = tr.height * scale;
+            var dst = new Rect(area.center.x - w / 2f, area.yMax - h, w, h);
+            var uv = new Rect(tr.x / s.texture.width, tr.y / s.texture.height, tr.width / s.texture.width, tr.height / s.texture.height);
+            var old = GUI.color;
+            if (dim) GUI.color = new Color(0.35f, 0.35f, 0.35f, 0.9f);
+            GUI.DrawTextureWithTexCoords(dst, s.texture, uv);
+            GUI.color = old;
         }
 
         private void DrawCard(ItemDef def)

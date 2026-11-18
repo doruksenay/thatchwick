@@ -1,7 +1,7 @@
 ---
 id: "417"
 title: Bilye (açık, çok renkli bilyeler) ve mazı (kahverengi, ahşap) yeniden
-status: review
+status: accepted
 claimed_at: 2026-11-18T19:35Z
 approved_by: user        # kullanıcı 18.11.2026: mazı "kahverengi ve ahşap" vurgusuyla; bilyede kese aynı, bilyeler açık ve farklı renkli
 priority: 15
@@ -39,3 +39,4 @@ created: 2026-11-18
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+Karar (kullanıcı, 18.11.2026): accepted. Bilye v4 ve mazı v3 kabul; oyuncak/ikon seti (399, 401, 406, 417) tamam.

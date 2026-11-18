@@ -38,6 +38,8 @@ namespace Thatchwick.Game
         {
             _textures = null;
             Sprites.Clear();
+            IconCache.Clear();
+            IconMissing.Clear();
             FrameCounts.Clear();
         }
 
@@ -55,6 +57,46 @@ namespace Thatchwick.Game
             sprite.name = name;
             Sprites[key] = sprite;
             return sprite;
+        }
+
+        // ---------------- ürün ikonları ----------------
+
+        /// <summary>Kabul edilen ikonun adı varsayılan addan farklıysa (v2, v3...).</summary>
+        private static readonly Dictionary<string, string> IconOverrides = new Dictionary<string, string>
+        {
+            ["item.blank_book"] = "icon_blank_book_v2",   // 401
+            ["item.oak_gall"] = "icon_oak_gall_v3",       // 417
+        };
+
+        private static readonly Dictionary<string, Texture2D> IconCache = new Dictionary<string, Texture2D>();
+        private static readonly HashSet<string> IconMissing = new HashSet<string>();
+
+        /// <summary>
+        /// Eşyanın ürün ikonu (arayüz listeleri için). Sırayla: geçersiz kılma, icon_ad, icon_item_ad.
+        /// Yoksa null (liste yalnızca yazı gösterir).
+        /// </summary>
+        public static Texture2D ItemIcon(string itemId)
+        {
+            if (!Enabled || string.IsNullOrEmpty(itemId) || IconMissing.Contains(itemId)) return null;
+            if (IconCache.TryGetValue(itemId, out var hit) && hit != null) return hit;
+            EnsureLoaded();
+            string shortId = itemId.StartsWith("item.") ? itemId.Substring(5) : itemId;
+            Texture2D tex = null;
+            if (IconOverrides.TryGetValue(itemId, out var name)) _textures.TryGetValue(name, out tex);
+            if (tex == null) _textures.TryGetValue("icon_" + shortId, out tex);
+            if (tex == null) _textures.TryGetValue("icon_item_" + shortId, out tex);
+            if (tex == null) { IconMissing.Add(itemId); return null; }
+            tex.filterMode = FilterMode.Point;
+            IconCache[itemId] = tex;
+            return tex;
+        }
+
+        /// <summary>IMGUI satırında ikon kutusu (ikon yoksa aynı genişlikte boşluk, hizalı kalsın).</summary>
+        public static void IconCell(string itemId, float size = 24f)
+        {
+            var tex = ItemIcon(itemId);
+            if (tex != null) GUILayout.Label(tex, GUILayout.Width(size), GUILayout.Height(size));
+            else GUILayout.Space(size + 4f);
         }
 
         private static Sprite GetCentered(string name)
@@ -197,6 +239,14 @@ namespace Thatchwick.Game
             ["item.kilim_small"] = new ItemArt { AlongY = "iso_item_kilim_small_2x1_se", PivotX = 56, PivotY = 32 },        // 390 (halı)
             ["item.kilim_large"] = new ItemArt { AlongY = "iso_item_kilim_large_3x2_se", PivotX = 88, PivotY = 48 },        // 390 (halı, 176 px)
             ["item.cicim"] = new ItemArt { AlongX = "iso_item_cicim_2x2_se", PivotX = 72, PivotY = 40 },                    // 390 (halı, 144 px)
+            // Çocukluk oyuncakları (399, 401, 406, 417 kabul; belge 30). Yuva oyuncakları 32 px, pivot taban elması.
+            ["item.slingshot"] = new ItemArt { AlongX = "iso_item_slingshot_se", PivotX = 16, PivotY = 7 },                 // 399
+            ["item.jump_rope"] = new ItemArt { AlongX = "iso_item_jump_rope_se", PivotX = 16, PivotY = 7 },                 // 399
+            ["item.kite"] = new ItemArt { AlongX = "iso_item_kite_se", PivotX = 16, PivotY = 10 },                          // 399 (32x40, dış)
+            ["item.hoop"] = new ItemArt { AlongX = "iso_item_hoop_se_v3", PivotX = 16, PivotY = 10 },                       // 406 (dış)
+            ["item.marbles"] = new ItemArt { AlongX = "iso_item_marbles_se_v4", PivotX = 16, PivotY = 4 },                  // 417
+            ["item.whittling_knife"] = new ItemArt { AlongX = "iso_item_whittling_knife_se", PivotX = 16, PivotY = 7 },     // 401
+            ["item.juggling_balls"] = new ItemArt { AlongX = "iso_item_juggling_balls_se", PivotX = 16, PivotY = 7 },       // 401
             // Masa ve raf üstü (32 px tuval; pivot = nesnenin tabanı)
             ["item.bread_basket"] = new ItemArt { AlongX = "iso_item_bread_basket_se", PivotX = 16, PivotY = 2 },           // 387
             ["item.fruit_basket"] = new ItemArt { AlongX = "iso_item_fruit_basket_se", PivotX = 16, PivotY = 2 },           // 387
@@ -227,6 +277,29 @@ namespace Thatchwick.Game
         /// Yol karosu (340): patika a/b, çakıl a, kaldırım yıpranmış ve bozuk. Sağlam kaldırım ve yıpranmış çakıl teslim
         /// edilmedi: kaldırımın sağlam hali de "worn" karosunu kullanır. Yoksa null (renkli elmasa düşer).
         /// </summary>
+        // Toprak yol otomatik karo seti (art/results/004): maske bitleri N=1 E=2 S=4 W=8 (PixelLab), dosya = tile_N.
+        // Izgarada: N = x+1, E = y-1, S = x-1, W = y+1 (Iso.GridToWorld). 0 (tek başına) ve tam iç: tamamı toprak (17).
+        /// <summary>Otomatik karo seti dış çizgisiz yeniden üretildiğinde true yapılır.</summary>
+        public static bool PathSetSeamless = false;
+
+        private static readonly int[] PathTileByMask = { 17, 2, 3, 10, 4, 7, 8, 15, 5, 11, 6, 14, 9, 13, 12, 16 };
+
+        /// <summary>Patika karosu komşu maskesine göre (düz, köşe, T, kavşak, yol sonu); fullInterior: dört komşu ve köşeler de yol.</summary>
+        public static Sprite PathTile(int mask, bool fullInterior, int x, int y)
+        {
+            if (!Enabled) return null;
+            // 004 seti "outline" moduyla üretilmiş: her karonun çevresinde koyu çizgi var (kenar parlaklığı 0,31, iç 0,47),
+            // yol ızgara gibi görünüyor. Set dış çizgisiz yeniden üretilene kadar (art/queue) dikişsiz toprak zemin karosu çizilir.
+            if (!PathSetSeamless) return Ground(FloorType.Dirt, x, y);
+            // Set 1 karoluk patika için çizilmiş: kenar payı ve köşe çentikleri 2 karoluk yolda zincir gibi görünüyor.
+            // Bu yüzden yalnızca yol sonu (tek komşu) kendi karosunu alır; geri kalan her yol karosu kenarsız tam topraktır,
+            // yan yana gelince kesintisiz bir şerit olur.
+            int m = mask & 15;
+            bool end = m == 1 || m == 2 || m == 4 || m == 8;
+            int idx = end && !fullInterior ? PathTileByMask[m] : 17;
+            return GetCentered($"iso_ground_path_dirt_{idx:00}");
+        }
+
         public static Sprite Road(RoadType road, int band, int x, int y)
         {
             if (!Enabled) return null;
@@ -245,6 +318,13 @@ namespace Thatchwick.Game
         /// Eşyanın görseli. flipX: yalnızca diğer eksen için çizilmiş görselin ayna görüntüsü kullanıldıysa
         /// (ışık yönü ters olur; doğru görsel gelince kendiliğinden düzelir). Görsel yoksa null.
         /// </summary>
+        /// <summary>Katalog önizlemesi (yapı menüsü eşya ızgarası, belge 33): eşyanın varsayılan yöndeki görseli; yoksa null.</summary>
+        public static Sprite ItemPreview(string itemId)
+        {
+            if (itemId == null || !Items.TryGetValue(itemId, out var art)) return null;
+            return Get(art.AlongX ?? art.AlongY, art.PivotX, art.PivotY);
+        }
+
         public static Sprite Item(ItemInstance item, out bool flipX)
         {
             flipX = false;

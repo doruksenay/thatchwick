@@ -182,6 +182,43 @@ namespace Thatchwick.Core.World
             TownMap(new Painter(m, Town.X, Town.Y));
         }
 
+        /// <summary>
+        /// Yolları doğallaştırır (yeni oyunda, eşyalardan önce): kenar boyunca yer yer bir karoluk şişkinlik, böylece yol
+        /// cetvelle çizilmiş gibi durmaz. Yalnızca aynı bölgedeki açık çime taşar; sabit desen (tohumdan bağımsız).
+        /// </summary>
+        public static void Naturalize(GridMap m)
+        {
+            var add = new List<GridPos>();
+            var dirs = new[] { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };
+            for (int y = 0; y < m.Height; y++)
+                for (int x = 0; x < m.Width; x++)
+                {
+                    var p = new GridPos(x, y);
+                    if (m.GetRoad(p) != RoadType.Path) continue;
+                    var home = At(p);
+                    foreach (var d in dirs)
+                    {
+                        var q = new GridPos(x + d.X, y + d.Y);
+                        if (!m.InBounds(q) || m.GetRoad(q) != RoadType.None || m.GetFloor(q) != FloorType.Grass || m.IsBlocked(q)) continue;
+                        if (home != null && !home.Contains(q)) continue;
+                        if (!m.EdgeFree(p, q)) continue;
+                        if (Hash(q.X, q.Y) < 0.09f) add.Add(q);
+                    }
+                }
+            foreach (var q in add) m.SetRoad(q, RoadType.Path);
+        }
+
+        private static float Hash(int x, int y)
+        {
+            unchecked
+            {
+                uint h = (uint)(x * 73856093 ^ y * 19349663);
+                h = (h ^ (h >> 13)) * 1274126177u;
+                h ^= h >> 16;
+                return (h & 0xFFFF) / 65535f;
+            }
+        }
+
         /// <summary>Köy yolu ve şehrin başlangıç eşyaları.</summary>
         public static List<RegionItem> Items()
         {

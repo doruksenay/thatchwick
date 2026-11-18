@@ -100,7 +100,8 @@ namespace Thatchwick.Game
                     foreach (var kv in _house.InventoryList())
                     {
                         if (kv.Value <= 0 || !_content.Items.TryGet(kv.Key, out var item) || item.Placement != ItemPlacement.Resource) continue;
-                        if (GUILayout.Button($"   {item.DisplayName} ({kv.Value})", GUILayout.Width(220f)))
+                        var icon = IsoArt.ItemIcon(kv.Key);
+                        if (GUILayout.Button(new GUIContent($"   {item.DisplayName} ({kv.Value})", icon), GUILayout.Width(220f), GUILayout.Height(icon != null ? 28f : 20f)))
                         {
                             _life.Villagers.Give(giver, s.DefId, kv.Key, out var msg);
                             _status = msg;
