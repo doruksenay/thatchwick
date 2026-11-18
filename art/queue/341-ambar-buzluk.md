@@ -1,7 +1,8 @@
 ---
 id: "341"
 title: Ambar, buzluk, buzhane
-status: pending
+status: running
+claimed_at: 2026-11-18T11:56Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
 family: esya
