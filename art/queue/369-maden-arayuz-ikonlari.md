@@ -1,7 +1,7 @@
 ---
 id: "369"
 title: Arayüz: kazı uyarıları ve görev ikonları
-status: review
+status: accepted   # kullanıcı 18.11.2026: "arayüz ikonlarını beğendim"
 claimed_at: 2026-11-18T18:51Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 50
