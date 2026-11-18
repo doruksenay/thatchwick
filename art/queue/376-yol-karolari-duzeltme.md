@@ -1,7 +1,7 @@
 ---
 id: "376"
 title: Yol karoları düzeltme (patika b, çakıl, sağlam ve bozuk kaldırım)
-status: running
+status: review
 claimed_at: 2026-11-18T13:17Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yol karoları düzeltmesi)
 family: zemin
