@@ -1,7 +1,8 @@
 ---
 id: "018"
 title: Animasyon planı, 84 px gerçekçi karakter (yürüme + etkileşim; pilot ve set iş dosyalarını yazar)
-status: pending   # 18.11.2026: 012b kabul edildi, kullanıcı boyu 84 px seçti; plan yeni karaktere göre yeniden yazıldı
+status: running
+claimed_at: 2026-11-18T18:46Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
