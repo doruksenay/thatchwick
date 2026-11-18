@@ -1,7 +1,8 @@
 ---
 id: "021j"
 title: Portre kâkül ve bıyık
-status: pending
+status: running
+claimed_at: 2026-11-18T08:23Z
 approved_by: user
 family: karakter
 style_gate: false
