@@ -1,7 +1,8 @@
 ---
 id: "021"
 title: Portre parça seti planı (iş dosyalarını yazar)
-status: pending
+status: running
+claimed_at: 2026-11-18T08:03Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
