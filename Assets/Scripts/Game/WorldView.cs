@@ -73,6 +73,9 @@ namespace Thatchwick.Game
 
         public event Action LevelChanged;
 
+        /// <summary>Kat -2'de kazılmamış karonun rengi (kazı motoru); null ise toprak rengi.</summary>
+        public Func<GridPos, Color?> RockTint { get; set; }
+
         /// <summary>Bu katın nesneleri (eşya, duvar, karakter) şu an çizilmeli mi.</summary>
         public bool IsLevelVisible(int z) => _viewLevel < 0 ? z == _viewLevel : z >= 0 && z <= _viewLevel;
 
@@ -311,6 +314,8 @@ namespace Thatchwick.Game
             {
                 sr.color = p.Z < 0 ? EarthColor : VoidColor;
                 if (p.Z < 0 && ShowPlot && Map.IsOwned(p)) sr.color = new Color32(52, 42, 36, 255);
+                // Arsa kazısı (kat -2): kaya karoları türüne ve durumuna göre boyanır (işaretli, çatırdıyor, damar izi).
+                if (p.Z <= -2 && RockTint != null) { var tint = RockTint(p); if (tint.HasValue) sr.color = tint.Value; }
                 return;
             }
             var floor = Map.GetFloor(p);

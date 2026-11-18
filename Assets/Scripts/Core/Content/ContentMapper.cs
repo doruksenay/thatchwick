@@ -46,6 +46,9 @@ namespace Thatchwick.Core.Content
                     ForageMax = dto.forageMax,
                     FruitRipenDays = dto.fruitDays,
                     FixesNitrogen = dto.nitrogen,
+                    CropFamily = string.IsNullOrWhiteSpace(dto.cropFamily) ? null : dto.cropFamily,
+                    ThreshesTo = string.IsNullOrWhiteSpace(dto.threshesTo) ? null : dto.threshesTo,
+                    ThreshPerDay = Math.Max(0, dto.threshPerDay),
                     WaterRadius = dto.waterRadius,
                     ProtectRadius = dto.protectRadius,
                     PollinateRadius = dto.pollinate,
@@ -431,7 +434,14 @@ namespace Thatchwick.Core.Content
                     RideSpeed = a.rideSpeed <= 0f ? 2f : a.rideSpeed,
                     Trample = a.trample >= 0f ? a.trample : a.housing == "stable" ? 3f : a.housing == "barn" ? 2f : a.housing == "kennel" ? 0.5f : 0f,
                     Space = a.space > 0f ? a.space : a.housing == "coop" ? 1.5f : a.housing == "stable" ? 6f : a.housing == "barn" ? 4f : 2f,
-                    UnlockLevel = a.level <= 0 ? 1 : a.level
+                    UnlockLevel = a.level <= 0 ? 1 : a.level,
+                    GestationDays = a.gestationDays > 0f ? a.gestationDays : 1f,
+                    LitterMin = Math.Max(1, a.litterMin),
+                    LitterMax = Math.Max(Math.Max(1, a.litterMin), a.litterMax),
+                    FemaleProduces = a.femaleProduces,
+                    Draft = a.draft,
+                    FemaleName = string.IsNullOrWhiteSpace(a.femaleName) ? null : a.femaleName,
+                    MaleName = string.IsNullOrWhiteSpace(a.maleName) ? null : a.maleName
                 };
                 try { db.Animals.Register(def); }
                 catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }

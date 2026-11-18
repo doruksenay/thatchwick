@@ -162,8 +162,8 @@ namespace Thatchwick.Core.Tests
             var coop = w.PlaceItem(db.Items.Get("item.coop"), new GridPos(5, 5));
             AnimalSystem.AddFeed(coop, 100);
             var species = db.Animals.Get("animal.chicken");
-            var stranger = animals.Restore(1, species, new GridPos(4, 4), coop.Id, 100f, 10, 0, 0, friendship: 0f);
-            var friend = animals.Restore(2, species, new GridPos(4, 5), coop.Id, 100f, 10, 0, 0, friendship: 100f);
+            var stranger = animals.Restore(1, species, new GridPos(4, 4), coop.Id, 100f, 10, 0, 0, friendship: 0f, female: true);
+            var friend = animals.Restore(2, species, new GridPos(4, 5), coop.Id, 100f, 10, 0, 0, friendship: 100f, female: true);
             animals.Tick(0.5);
             Assert.Equal(0.5, stranger.ProduceProgress, 2);
             Assert.Equal(0.7, friend.ProduceProgress, 2);                          // 1 + 0,4 x dostluk

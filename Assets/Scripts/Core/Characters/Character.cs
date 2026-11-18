@@ -13,7 +13,11 @@ namespace Thatchwick.Core.Characters
         /// <summary>Tarla: susuz ekini sula, olgun ekini ve meyveyi topla.</summary>
         Farm = 1,
         /// <summary>Hayvanlar: yemliği doldur, ürünü topla, sev.</summary>
-        Animals = 2
+        Animals = 2,
+        /// <summary>Maden: işaretli karoları kaz, çatırdayana destek kur, suyu boşalt (arsa kazısı; ocakta sabah vardiyası).</summary>
+        Mine = 3,
+        /// <summary>Kâhya: her sabah öbür aile üyelerine bekleyen işe göre görev dağıtır (kendisi tarlaya inmez).</summary>
+        Steward = 4
     }
 
     /// <summary>

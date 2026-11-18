@@ -10,6 +10,7 @@ using Thatchwick.Core.Family;
 using Thatchwick.Core.Heat;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Life;
+using Thatchwick.Core.Mining;
 using Thatchwick.Core.Mood;
 using Thatchwick.Core.Progress;
 using Thatchwick.Core.Save;
@@ -93,6 +94,7 @@ namespace Thatchwick.Game
         private AccountProgress _account;
         private MarketPanel _marketPanel;
         private StoragePanel _storagePanel;
+        private MinePanel _minePanel;
         private FamilyService _family;
         private FamilyPanel _familyPanel;
         private Dynasty _dynasty = new Dynasty();
@@ -112,6 +114,8 @@ namespace Thatchwick.Game
         private struct MenuOption { public ItemInstance Item; public InteractionDef Interaction; public string Blocked; public string Label; public System.Action Run; }
         private AnimalCare _animalCare;
         private FarmWork _farmWork;
+        private MineSystem _mines;
+        private OxCart _cart;
         private FarmAutomation _automation;
         private WaterWorks _water;                    // su şebekesi ve tesisat (ark, boru, sarnıç)
         private DutyPlanner _duties;
@@ -291,6 +295,9 @@ namespace Thatchwick.Game
             _effects.Plants = _plants;
             _plants.HiveActive = hive => _animals.Residents(hive.Id) > 0;   // kovanda koloni varken tozlaştırır
             if (loaded != null) SaveGame.RestoreSoil(loaded, _plants);
+            _plants.FamilyOf = id => _content.Items.TryGet(id, out var cd) ? cd.CropFamily : null;   // nöbet aileye bakar
+            _mines = new MineSystem(_world, _household, Thatchwick.Core.Seeds.Derive(_seed, 53, 0));   // kazı katı tohumdan: yüklemede aynı
+            if (loaded != null) SaveGame.RestoreMines(loaded, _mines);
             _animals.Died += OnAnimalDied;
             _roomMood = new RoomMoodSystem(_world);
             // Pazar teklifleri gün ve tohumdan yeniden üretilir: yüklemeden sonra aynı kalsın diye epoch'suz türetilir.
@@ -1012,6 +1019,7 @@ namespace Thatchwick.Game
             if (_buildMode != null && _buildMode.Active && _buildMode.PanelRect(s).Contains(guiPos)) return true;
             if (_marketPanel != null && _marketPanel.Active && _marketPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
@@ -1053,7 +1061,7 @@ namespace Thatchwick.Game
             if (_player == null || _creator != null || _dynastyEnded) return;   // oyun başlamadan ya da bittikten sonra kaydetme
             try
             {
-                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _animals, _life, _plants, _seed, _rngEpoch);
+                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _animals, _life, _plants, _seed, _rngEpoch, _mines);
                 string json = JsonUtility.ToJson(data);
                 string path = SavePath;
                 // Önce geçici dosyaya yazılır, eski kayıt .bak olarak kalır: yazma yarıda kesilse de bir kayıt sağlam kalır.
@@ -1367,7 +1375,37 @@ namespace Thatchwick.Game
                     });
                 }
             }
+            AddMineOptions(tile, names);
             _menuTitle = string.Join(", ", names);
+        }
+
+        // Arsa kazısı (kat -2): kayaya dokununca kaz ya da işaretle; açık karoda destek, ışık ve su.
+        private void AddMineOptions(GridPos tile, List<string> names)
+        {
+            if (tile.Z > -2) return;
+            var m = _mines.Get(MineSystem.PlotId);
+            var t = m?.Get(tile.X, tile.Y);
+            if (t == null) return;
+            var c = Commander.Character;
+            var target = tile;
+            if (!t.IsOpen)
+            {
+                string vein = m.TouchesOpen(tile.X, tile.Y) && t.Ore != null ? $", damar: {(_content.Items.TryGet(t.Ore, out var od) ? od.DisplayName : t.Ore)}" : "";
+                names.Add($"{MineSystem.RockName(t.Rock)} (sertlik {MineSystem.Hardness(t.Rock)}{vein}){(t.Creaking ? ", ÇATIRDIYOR" : "")}");
+                _menuOptions.Add(new MenuOption { Label = "Kaz", Blocked = _farmWork.CanDo(c, target, TileAction.Dig), Run = () => { if (!Commander.Runner.Queue.TryEnqueue(Job.OnTile(target, TileAction.Dig))) ShowMessage("İş sırası dolu."); } });
+                _menuOptions.Add(new MenuOption { Label = t.Marked ? "İşareti kaldır" : "Kazılacak diye işaretle (görevli kazar)", Run = () => { _mines.Mark(m, target.X, target.Y, !t.Marked); _floorsDirty = true; } });
+                return;
+            }
+            names.Add($"Kazı · su derinliği {m.WaterDepth} (yarın {_mines.TomorrowDepth(m)}){(t.Support != SupportKind.None ? ", destekli" : "")}");
+            _menuOptions.Add(new MenuOption { Label = "Ahşap destek kur (2 tahta)", Blocked = _farmWork.CanDo(c, target, TileAction.Support), Run = () => Commander.Runner.Command(Job.OnTile(target, TileAction.Support)) });
+            _menuOptions.Add(new MenuOption { Label = "Taş kemer kur (3 yontma taş)", Blocked = _farmWork.CanDo(c, target, TileAction.Support, "stone"), Run = () => Commander.Runner.Command(Job.OnTile(target, TileAction.Support, "stone")) });
+            foreach (var light in new[] { "item.tallow_candle", "item.beeswax_candle", "item.clay_lamp", "item.torch" })
+            {
+                if (_household.Count(light) <= 0) continue;
+                var l = light;
+                _menuOptions.Add(new MenuOption { Label = $"Işık koy: {_content.Items.Get(l).DisplayName}", Blocked = _farmWork.CanDo(c, target, TileAction.Light, l), Run = () => Commander.Runner.Command(Job.OnTile(target, TileAction.Light, l)) });
+            }
+            if (m.Water > 0) _menuOptions.Add(new MenuOption { Label = "Kovayla su boşalt", Blocked = _farmWork.CanDo(c, target, TileAction.Bail), Run = () => Commander.Runner.Command(Job.OnTile(target, TileAction.Bail)) });
         }
 
         private void RunOption(MenuOption o)
@@ -1446,6 +1484,11 @@ namespace Thatchwick.Game
                 HoeSpeed = c => _life.Tools.SpeedFor("hoe"), House = _household, Content = _content,
                 Season = () => _clock.Season, TemperatureAt = p => _heat.TemperatureAt(p), RodSpeed = c => _life.Tools.SpeedFor("rod")
             };
+            _farmWork.Build = _buildService;
+            _farmWork.Plants = _plants;
+            _farmWork.Mine = new MineWork(_mines);
+            _farmWork.Sown += (c, t, seed) => _account.Count("act:sow");
+            SetupMines();
             _farmWork.Worked += (c, t, note) => { ShowMessage($"{c.Name}: {note}"); _account.Count("act:water"); };
             _farmWork.Tilled += (c, t) => _account.Count("act:till");
             _farmWork.Repaired += (c, t) => { ShowMessage($"{c.Name} yolu onardı"); _account.Count("act:repair_road"); };
@@ -1456,13 +1499,20 @@ namespace Thatchwick.Game
             _floorsDirty = true;
             _automation = new FarmAutomation(_world, _household)
             {
-                Storage = _storage, Plants = _plants, Build = _buildService, Content = _content, TemperatureAt = p => _heat.TemperatureAt(p)
+                Storage = _storage, Plants = _plants, Build = _buildService, Content = _content, TemperatureAt = p => _heat.TemperatureAt(p),
+                DraftAnimals = _animals.DraftAnimals                          // düven: çeki hayvanı (at, öküz)
+            };
+            _cart = new OxCart(_world, _household, _market, _content)
+            {
+                DraftAnimals = _animals.DraftAnimals,
+                Carter = () => BestMember(SkillType.Carting)
             };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
             {
                 WorkHours = () => HourOfDay >= 7.0 && HourOfDay < 19.0,
                 Now = () => _clock.TotalDays,
-                TileWork = _farmWork
+                TileWork = _farmWork,
+                Mines = _mines
             };
             _world.Map.WearMultiplier = RoadWear();
             _life.NewDay += day =>
@@ -1472,6 +1522,20 @@ namespace Thatchwick.Game
                 _plants.Config.FallowRecovery = (float)(0.02 * SkillNames.Factor(_life.BestSkill(SkillType.SoilCare), 0.1));   // toprak bakımı
                 var r = _animals.OnNewDay(_clock.Season, _household, _storage);
                 if (r.Collected > 0) ShowMessage($"Toplama sandığı: +{r.Collected} ürün depoya alındı");
+                if (r.Births > 0) ShowMessage(r.Births == 1 ? "Ahırda bir yavru doğdu" : $"Ahırda {r.Births} yavru doğdu");
+                // Kâhya: görevleri bekleyen işe göre dağıtır.
+                foreach (var (who, from, to) in _duties.AutoAssign(_population.Members))
+                    ShowMessage($"Kâhya: {who.Name} {(to == DutyKind.None ? "görevden alındı" : DutyPlanner.DutyName(to) + " görevine")}");
+                // Kazı: çürüyen destek, su, çatırdama ve göçük (her biri bir gün önceden görünür).
+                _mines.NewDay();
+                MineShifts();
+                _floorsDirty = true;
+                int cartEarned = _cart.OnNewDay(_clock.DayIndex, out var cartSold);
+                if (cartEarned > 0)
+                {
+                    int units = 0; foreach (var kv in cartSold) units += kv.Value;
+                    ShowMessage($"Öküz arabası pazara indi: {units} mal satıldı, +{cartEarned} akçe");
+                }
                 if (r.FeedAdded > 0) ShowMessage($"Yem oluğu yemliklere {r.FeedAdded} yem doldurdu");
                 // Göletler: yağmur doldurur, sıcakta buharlaşır; böcek gelir, balıklar ürer ya da kurur.
                 var todays = _life.Weather.Today(_clock.TotalDays);
@@ -1497,6 +1561,86 @@ namespace Thatchwick.Game
                 }
             };
             SetupSkills();
+        }
+
+        // Hanenin bu beceride en iyisi (canlı ve hanede); yoksa null.
+        private Character BestMember(SkillType skill)
+        {
+            Character best = null;
+            foreach (var c in _population.Members)
+            {
+                if (c.IsDead || c.IsVillager) continue;
+                if (best == null || c.Skills.GetLevel(skill) > best.Skills.GetLevel(skill)) best = c;
+            }
+            return best;
+        }
+
+        // Kazı motorunu oyuna bağlar: kazma kademesi, depo, göçük yarası, yapı modundan kuyu inişi, hazine odası, kaya rengi.
+        private void SetupMines()
+        {
+            _mines.PickTier = c => _life.Tools.Tier("pickaxe");
+            _mines.PickSpeed = c => _life.Tools.SpeedFor("pickaxe");
+            _mines.Store = (id, n) => _storage.AddUpTo(id, n);
+            _mines.CarriedLight = c => _household.Count("item.horn_lantern") > 0 ? 3 : 0;
+            _mines.CharactersAt = p =>
+            {
+                var list = new List<Character>();
+                foreach (var a in _actors) if (!a.Character.IsDead && a.Character.Position == p) list.Add(a.Character);
+                return list;
+            };
+            _mines.CaughtInCaveIn += (c, m) =>
+            {
+                var def = System.Linq.Enumerable.FirstOrDefault(_life.Injuries.Defs, d => d.Id == "cave_in");
+                if (def != null && _life.Injuries.Setting != AccidentSetting.Off) _life.Injuries.Injure(c, def);
+                c.AddMoodlet(MoodCatalog.CaveInSurvived);
+                // Göçükten çıkar: en yakın açık karoya.
+                c.Position = NearestWalkable(c.Position, 6);
+            };
+            _mines.CaveIn += (m, tiles) => { ShowMessage($"Göçük! {tiles.Count} karo molozla doldu (destek kur, molozu yeniden kaz)", 5f); _floorsDirty = true; };
+            _mines.Creaked += (m, n) => ShowMessage($"Kazıda {n} karo çatırdıyor: bugün destek kurulmazsa yarın çöker", 5f);
+            _mines.SupportRotted += (m, x, y, gone) => ShowMessage(gone ? "Çürüyen bir çatkı çöktü (yenisini kur)" : "Bir ahşap çatkı çürüyor (1 tahta ile yenile)");
+            _mines.RelicFound += (c, relic) => { ShowMessage($"{c.Name} bir kalıntı buldu: {(_content.Items.TryGet(relic, out var rd) ? rd.DisplayName : relic)}", 4f); c.AddMoodlet(MoodCatalog.VeinFound); };
+            _mines.Dug += (c, m, x, y, got) => { _floorsDirty = true; if (c != null) c.AddMoodlet(MoodCatalog.Dusty); };
+            _buildService.DeepDigBlocker = p => _mines.ShaftBlocker(_life.BestSkill(SkillType.Mining));
+            _minePanel = new MinePanel(_mines, _household, _content)
+            {
+                Actor = () => Commander?.Character,
+                OpenBlocker = () => _life.BestSkill(SkillType.Mining) < 1 ? "Madencilik gerekir." : null
+            };
+            _minePanel.Message += m => ShowMessage(m, 4f);
+            _buildService.DeepShaftOpened += p => { _mines.OpenShaft(p); _floorsDirty = true; };
+            _buildService.ProtectedItem = it => _life.Legacy.HeirloomOf(it.Id) != null && MineSystem.InTreasureRoom(_world, it);
+            _view.RockTint = p =>
+            {
+                var m = _mines.Get(MineSystem.PlotId);
+                var t = m?.Get(p.X, p.Y);
+                if (t == null || t.IsOpen) return null;
+                if (!m.TouchesOpen(p.X, p.Y)) return new Color32(46, 38, 33, 255);         // görünmeyen kaya (sis)
+                if (t.Creaking) return new Color32(150, 60, 50, 255);
+                if (t.Marked) return new Color32(170, 150, 80, 255);
+                if (t.Ore != null) return new Color32(110, 96, 120, 255);                  // damar izi
+                switch (t.Rock)
+                {
+                    case RockKind.Soil: return new Color32(98, 78, 58, 255);
+                    case RockKind.Soft: return new Color32(104, 96, 86, 255);
+                    case RockKind.Hard: return new Color32(78, 76, 80, 255);
+                    case RockKind.Rubble: return new Color32(120, 110, 98, 255);
+                    default: return new Color32(90, 88, 86, 255);
+                }
+            };
+        }
+
+        // Ocakta sabah vardiyası (ekran dışı): maden görevli yetişkinler işaretli karoları kazar.
+        private void MineShifts()
+        {
+            var mine = _mines.Get(MineSystem.MineId);
+            if (mine == null) return;
+            foreach (var c in _population.Members)
+            {
+                if (c.IsDead || c.IsVillager || c.Duty != DutyKind.Mine || !DutyPlanner.CanTakeDuty(c, DutyKind.Mine)) continue;
+                int dug = _mines.Shift(mine, c, 0.25);
+                if (dug > 0) ShowMessage($"{c.Name} ocakta {dug} karo kazdı");
+            }
         }
 
         // İkinci dalga beceriler (çiftlik sistemleri kurulduktan sonra bağlanır).
@@ -1663,6 +1807,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
             if (kb != null && kb.kKey.wasPressedThisFrame) _storagePanel.Toggle();
+            if (kb != null && kb.mKey.wasPressedThisFrame) _minePanel.Toggle();
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
@@ -1715,6 +1860,7 @@ namespace Thatchwick.Game
             _plants.Tick(gameDays, _clock.Season);
             _market.Tick(gameDays, _clock.TotalDays, _clock.Season);
             _animals.Tick(gameDays);
+            _mines.Tick(gameDays);
             _roomMood.Tick(gameDays, _population.Members);
             UpdateAnimalViews();
             foreach (var (plant, view) in _plantViews)
@@ -1891,6 +2037,7 @@ namespace Thatchwick.Game
             _buildMode.OnGUI(s);
             _marketPanel.OnGUI(s);
             _storagePanel.OnGUI(s);
+            _minePanel.OnGUI(s);
             _familyPanel.OnGUI(s);
             _villagePanel.OnGUI(s);
             DrawBalloons(s);
@@ -1917,6 +2064,7 @@ namespace Thatchwick.Game
             if (HudToggle("Yapı (B)", _buildMode.Active)) ToggleBuild();
             if (HudToggle("Pazar (P)", _marketPanel.Active)) ToggleMarket();
             if (HudToggle("Kiler (K)", _storagePanel.Active)) _storagePanel.Toggle();
+            if (HudToggle("Ocak (M)", _minePanel.Active)) _minePanel.Toggle();
             if (HudToggle("Aile (F)", _familyPanel.Active)) ToggleFamily();
             if (HudToggle("Köy (V)", _villagePanel.Active)) ToggleVillage();
             GUILayout.EndHorizontal();

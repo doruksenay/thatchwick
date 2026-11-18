@@ -33,7 +33,8 @@ namespace Thatchwick.Core.Mood
 
         // Kaza yaraları (InjurySystem; süre yaraya göre ayarlanır, buradaki varsayılan).
         public const string InjuredAxe = "injured_axe", InjuredBurn = "injured_burn", InjuredAnimal = "injured_animal",
-            InjuredSickle = "injured_sickle", InjuredFall = "injured_fall";
+            InjuredSickle = "injured_sickle", InjuredFall = "injured_fall",
+            InjuredCaveIn = "injured_cave_in", CaveInSurvived = "cave_in_survived", VeinFound = "vein_found", Dusty = "dusty";
 
         private readonly Dictionary<string, MoodletDef> _defs = new Dictionary<string, MoodletDef>(StringComparer.Ordinal);
         // Default paylaşılan bir örnek: her ContentDatabase içerik yüklerken yemek ve içki etkilerini buraya kaydeder.
@@ -110,6 +111,12 @@ namespace Thatchwick.Core.Mood
             m = M(InjuredSickle, "Yaralı", -8, 2.0, "Orakla elini kesti: çiftçilik %20 yavaş.");
             m.SkillSpeed[SkillType.Farming] = -0.20f; c.Register(m);
             m = M(InjuredFall, "Yaralı", -8, 2.0, "Düşüp yaralandı: bütün işler %10 yavaş."); m.AllSpeed = -0.10f; c.Register(m);
+            // Madencilik (23. belge 6.3, 7.1): göçük yaralar, öldürmez.
+            m = M(InjuredCaveIn, "Yaralı", -10, 4.0, "Göçük altında kaldı: madencilik %30, bütün işler %10 yavaş.");
+            m.SkillSpeed[SkillType.Mining] = -0.30f; m.AllSpeed = -0.10f; c.Register(m);
+            c.Register(M(CaveInSurvived, "Göçükten kurtuldu", -15, 2.0, "Az kalsın taşın altında kalıyordu."));
+            c.Register(M(VeinFound, "Damar buldu!", 10, 1.0, "Kayanın içinden bir kalıntı ya da parlak bir taş çıktı."));
+            c.Register(M(Dusty, "Tozlu", -5, 0.25, "Kazıdan toz toprak içinde çıktı; yıkanınca geçer."));
             // Tuvalet, ıslaklık, yıkanma.
             m = M(Bursting, "Sıkışmış", -10, 0, "Tuvalete gitmeli: işler %10 yavaş."); m.AllSpeed = -0.10f; c.Register(m);
             c.Register(M(Accident, "Altına kaçırdı", -15, 1.0, "Tuvalete yetişemedi."));

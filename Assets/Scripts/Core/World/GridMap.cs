@@ -78,7 +78,7 @@ namespace Thatchwick.Core.World
     public sealed partial class GridMap
     {
         /// <summary>En alt kat (bodrum) ve en üst kat. Zemin kat 0'dır.</summary>
-        public const int MinLevel = -1, MaxLevel = 1;
+        public const int MinLevel = -2, MaxLevel = 1;   // -2: arsa kazısı (bodrumun altı, 23. belge 3.4)
         public static int LevelCount => MaxLevel - MinLevel + 1;
         public static bool IsValidLevel(int z) => z >= MinLevel && z <= MaxLevel;
 

@@ -92,6 +92,11 @@ namespace Thatchwick.Core.Content
         public float rideSpeed;   // binince yürüme hızı çarpanı (0 = 2)
         public float space;       // barınak odasında hayvan başına istenen karo (0 = türe göre)
         public float trample = -1f; // bir adımın aşındırması (-1 = barınağa göre: ahır 2, at ahırı 3, kümes 0)
+        public float gestationDays;   // gebelik/kuluçka günü (0 = 1)
+        public int litterMin, litterMax;  // yavru sayısı (0 = 1)
+        public bool femaleProduces;   // ürünü yalnızca dişi verir (yumurta, süt)
+        public bool draft;            // çeki hayvanı (düven)
+        public string femaleName, maleName;
     }
 
     [Serializable]
@@ -183,6 +188,9 @@ namespace Thatchwick.Core.Content
         public int fillCapacity;             // lazımlık/hela: bu kadar kullanımda dolar
         public string fillProduct;           // boşaltınca verdiği ürün (gübre)
         public int fillPerProduct;           // kaç dolum bir ürün (0 = 4)
+        public string cropFamily;            // ekin ailesi (nöbetleşe ekim)
+        public string threshesTo;            // demet: harmanda bu taneye döner
+        public int threshPerDay;             // düven: çeki hayvanıyla her sabah dövdüğü demet
         public int harvestRadius;            // hasat tırmığı: güç alınca bu yarıçaptaki olgun ekini her sabah biçer
         public int seedRadius;               // ekim makinesi: güç alınca bu yarıçaptaki boş toprağa tohum eker
         public int iceCollect;               // buz kuyusu: donlu sabahlar bu kadar buz toplar

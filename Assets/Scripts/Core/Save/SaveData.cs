@@ -28,6 +28,7 @@ namespace Thatchwick.Core.Save
         public AnimalSave[] animals;     // v2
         public SoilSave[] soil;          // toprak verimi (eski kayıtta yok)
         public GrassSave[] pasture;      // yenmiş otlak (eski kayıtta yok)
+        public Mining.MineSave[] mines;  // kazı yerleri: arsa kazısı ve ocak (eski kayıtta yok)
         public bool animalsHeld;         // hayvan çanı: barınakta tutuluyorlar (eski kayıtta false = salınmış)
         /// <summary>Oyunun ana rastgelelik tohumu (eski kayıtta 0) ve yükleme sayacı (bkz. Core.Seeds).</summary>
         public int seed;
@@ -50,6 +51,10 @@ namespace Thatchwick.Core.Save
         public bool sick;                // hasta (eski kayıtta false)
         public double sickDays;          // kaç gündür hasta
         public int coldDays;             // art arda üşüdüğü gün
+        public int sex;                  // 1 dişi, 2 erkek (eski kayıtta 0: kimliğin tekliğinden)
+        public double pregnant;          // doğuma kalan gün (0 = gebe değil)
+        public int mother;               // annenin kimliği (0 = yok)
+        public int generation;           // kuşak (satın alınan 0)
     }
 
     /// <summary>Yenmiş otlak karosu (dolu karolar kaydedilmez).</summary>
@@ -137,6 +142,7 @@ namespace Thatchwick.Core.Save
         public int x, y;
         public float fertility;
         public string lastCrop;
+        public string prevCrop;     // ondan önceki ekin (üç tarla nöbeti; eski kayıtta yok)
     }
 
     [Serializable]

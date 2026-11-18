@@ -526,7 +526,7 @@ namespace Thatchwick.Core.Jobs
                 _using = true;
             }
 
-            double remaining = TileWork.Duration(_character, job.TileAction) - _useProgress;
+            double remaining = (TileWork is ITileDuration td ? td.Duration(_character, job.Target, job.TileAction) : TileWork.Duration(_character, job.TileAction)) - _useProgress;
             double available = budget - used;
             if (available >= remaining)
             {

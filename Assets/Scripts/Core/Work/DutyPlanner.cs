@@ -29,6 +29,12 @@ namespace Thatchwick.Core.Work
         /// <summary>Görevliye iş verildi (kâhyalık XP'si için).</summary>
         public event Action<Character, Job> Issued;
 
+        /// <summary>Kazı motoru (maden görevi, arsa kazısı); null ise maden görevi iş bulmaz.</summary>
+        public Mining.MineSystem Mines { get; set; }
+
+        /// <summary>Bu görevi alabilir mi: maden görevi ergene verilmez (kazıya inmez).</summary>
+        public static bool CanTakeDuty(Character c, DutyKind d) => CanTakeDuty(c) && !(d == DutyKind.Mine && c.Stage == AgeStage.Teen);
+
         /// <summary>Karo işleri (yol onarımı); null ise tarla görevlisi yol onarmaz.</summary>
         public ITileWork TileWork { get; set; }
 
@@ -55,6 +61,8 @@ namespace Thatchwick.Core.Work
             {
                 case DutyKind.Farm: return "Tarla";
                 case DutyKind.Animals: return "Hayvanlar";
+                case DutyKind.Mine: return "Maden";
+                case DutyKind.Steward: return "Kâhya";
                 default: return "Görev yok";
             }
         }
@@ -65,18 +73,22 @@ namespace Thatchwick.Core.Work
             int n = 0;
             if (duty == DutyKind.Farm)
                 foreach (var it in _world.Items) { if (FarmInteraction(it) != null || EmptyInteraction(it) != null) n++; }
+            // (Ekilecek boş toprak "bekleyen iş" sayılmaz: tohum varsa görevli kendiliğinden eker.)
             else if (duty == DutyKind.Animals)
             {
                 foreach (var it in _world.Items) if (FeedInteraction(it) != null || CollectInteraction(it) != null) n++;
                 if (_animals != null) foreach (var a in _animals.Animals) if (!a.IsDead && a.PetCooldownDays <= 0) n++;
             }
+            else if (duty == DutyKind.Mine && Mines != null)
+                foreach (var m in Mines.Sites)
+                    foreach (var (_, _, t) in m.All()) if (t.Marked || t.Creaking) n++;
             return n;
         }
 
         /// <summary>Görevliye sıradaki iş; yoksa null. JobRunner.DutyProvider olarak verilir.</summary>
         public Job Next(Character c)
         {
-            if (!CanTakeDuty(c) || c.Duty == DutyKind.None) return null;
+            if (!CanTakeDuty(c, c.Duty) || c.Duty == DutyKind.None) return null;
             if (WorkHours != null && !WorkHours()) return null;
             double now = Now?.Invoke() ?? 0;
             Expire(now);
@@ -111,6 +123,32 @@ namespace Thatchwick.Core.Work
                     var item = it; var inter = i;
                     Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
                 }
+                // Harman: harman yerinde dövülecek demet varsa (elle döven).
+                foreach (var it in _world.Items)
+                {
+                    if (it.IsDecor || !it.Def.HasTag("threshing_floor") || _effects == null) continue;
+                    foreach (var i in it.Def.Interactions)
+                    {
+                        if (_effects.CanStart(c, it, i) != null) continue;
+                        var item = it; var inter = i;
+                        Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
+                        break;
+                    }
+                }
+                // Tohum serpen tarlacı: hasat ve sulama yoksa boş toprağa mevsime ve nöbete uyan tohumu eker.
+                if (best == null && TileWork != null)
+                {
+                    var map = _world.Map;
+                    for (int y = 0; y < map.Height; y++)
+                        for (int x = 0; x < map.Width; x++)
+                        {
+                            var tile = new GridPos(x, y);
+                            if (map.GetFloor(tile) != FloorType.Dirt || _world.GetItemAt(tile) != null) continue;
+                            if (TileWork.CanDo(c, tile, TileAction.Sow) != null) continue;
+                            var t = tile;
+                            Consider(RoadKey(t) + (1L << 41), t, () => Job.OnTile(t, TileAction.Sow));
+                        }
+                }
                 // Tarla işi yoksa yıpranmış yolları onarır (taş varsa).
                 if (best == null && TileWork != null && _world.Map.HasRoads)
                     foreach (var r in _world.Map.RoadTiles())
@@ -141,9 +179,82 @@ namespace Thatchwick.Core.Work
                         Consider(-animal.Id, animal.Position, () => Job.WithAnimal(animal.Id, action));
                     }
             }
+            else if (c.Duty == DutyKind.Mine && TileWork != null && Mines?.Get(Mining.MineSystem.PlotId) is Mining.MineMap plot)
+            {
+                // Önce güvenlik: çatırdayan karoya destek; sonra su; sonra işaretli karoları kaz (en yakını).
+                foreach (var (x, y, t) in plot.All())
+                {
+                    if (!t.Creaking) continue;
+                    var tile = new GridPos(x, y, plot.Level);
+                    if (TileWork.CanDo(c, tile, TileAction.Support) != null) continue;
+                    Consider(MineKey(tile), tile, () => Job.OnTile(tile, TileAction.Support));
+                }
+                if (best == null && plot.WaterDepth >= 1)
+                    foreach (var (x, y, t) in plot.All())
+                    {
+                        if (!t.IsOpen) continue;
+                        var tile = new GridPos(x, y, plot.Level);
+                        Consider(MineKey(tile) + 1, tile, () => Job.OnTile(tile, TileAction.Bail));
+                        break;
+                    }
+                if (best == null)
+                    foreach (var (x, y, t) in plot.All())
+                    {
+                        if (!t.Marked) continue;
+                        var tile = new GridPos(x, y, plot.Level);
+                        if (TileWork.CanDo(c, tile, TileAction.Dig) != null) continue;
+                        Consider(MineKey(tile), tile, () => Job.OnTile(tile, TileAction.Dig));
+                    }
+            }
             if (best != null && Now != null) _claims[bestKey] = now + ClaimDays;     // saat yoksa tutma da yok
             if (best != null) Issued?.Invoke(c, best);
             return best;
+        }
+
+        private static long MineKey(GridPos p) => (1L << 42) + ((long)p.Y << 20) + p.X;
+
+        /// <summary>
+        /// Kâhya (sabah): hanede "Kâhya" görevli biri varsa öbür görev alabilen üyeler bekleyen işe göre dağıtılır. Her yeni
+        /// görevli, işi en çok / görevlisi en az olan göreve gider (eşitlikte tarla, hayvan, maden sırası); hiç iş yoksa
+        /// görevsiz kalır. Oyuncunun karakteri ve kâhyanın kendisi atanmaz. (karakter, eski görev, yeni görev) listesi döner.
+        /// </summary>
+        public List<(Character who, DutyKind from, DutyKind to)> AutoAssign(IEnumerable<Character> members)
+        {
+            var changes = new List<(Character, DutyKind, DutyKind)>();
+            Character steward = null;
+            var pool = new List<Character>();
+            foreach (var c in members)
+            {
+                if (!CanTakeDuty(c)) continue;
+                if (c.Duty == DutyKind.Steward && steward == null) { steward = c; continue; }
+                if (c.Duty == DutyKind.Steward) continue;          // ikinci kâhya kendi işinde kalır
+                pool.Add(c);
+            }
+            if (steward == null || pool.Count == 0) return changes;
+            pool.Sort((a, b) => a.Id.CompareTo(b.Id));
+            var kinds = new[] { DutyKind.Farm, DutyKind.Animals, DutyKind.Mine };
+            var pending = new Dictionary<DutyKind, int>();
+            var assigned = new Dictionary<DutyKind, int>();
+            foreach (var k in kinds) { pending[k] = Pending(k); assigned[k] = 0; }
+            // Kâhyalık: seviye başına bir görevli daha (en az 2): büyük hanede iyi kâhya herkesi işe koşar.
+            int capacity = Math.Max(2, steward.Skills.GetLevel(SkillType.Stewardship) + 1);
+            int given = 0;
+            foreach (var c in pool)
+            {
+                DutyKind pick = DutyKind.None;
+                double bestScore = 0;
+                if (given < capacity)
+                    foreach (var k in kinds)
+                    {
+                        if (pending[k] <= 0 || !CanTakeDuty(c, k)) continue;
+                        double score = pending[k] / (double)(assigned[k] + 1);
+                        if (score > bestScore) { bestScore = score; pick = k; }
+                    }
+                if (pick != DutyKind.None) { assigned[pick]++; given++; }
+                if (c.Duty != pick) { changes.Add((c, c.Duty, pick)); c.Duty = pick; }
+            }
+            if (changes.Count > 0) steward.GainSkillXp(SkillType.Stewardship, 2 * changes.Count);
+            return changes;
         }
 
         // Yol karosunun tutma anahtarı (eşya ve hayvan kimlikleriyle çakışmaz).

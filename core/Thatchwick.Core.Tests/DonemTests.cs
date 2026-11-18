@@ -165,8 +165,14 @@ namespace Thatchwick.Core.Tests
         public void Tahil_HasatSamanVerir_ElDegirmeni_KarmaEkmek_Lapa()
         {
             var db = Db();
-            foreach (var id in new[] { "item.crop_wheat", "item.crop_rye", "item.crop_oats", "item.crop_barley" })
-                Assert.Contains(Inter(db.Items.Get(id), "harvest").Produce, p => p.ItemId == "item.straw");
+            // Tahıl hasadı demet verir; saman harmanda (harman yeri ya da düven) dövülünce çıkar (28. belge).
+            foreach (var g in new[] { "wheat", "rye", "oats", "barley" })
+            {
+                Assert.Contains(Inter(db.Items.Get("item.crop_" + g), "harvest").Produce, p => p.ItemId == "item.sheaf_" + g);
+                var thresh = Inter(db.Items.Get("item.threshing_floor"), "thresh_" + g);
+                Assert.Contains(thresh.Produce, p => p.ItemId == "item.straw");
+                Assert.Contains(thresh.Produce, p => p.ItemId == "item." + g);
+            }
 
             var w = new WorldState(new GridMap(10, 10));
             var house = new Household(0);

@@ -92,6 +92,8 @@ namespace Thatchwick.Core.Heat
         {
             if (temps == null) return;
             if (temps.Length == _temp.Length) { Array.Copy(temps, _temp, _temp.Length); return; }
+            // Eski kayıt: kat -2 (arsa kazısı) eklenmeden önceki üç kat (-1, 0, 1).
+            if (temps.Length == _plane * 3) { Array.Copy(temps, 0, _temp, _plane * (-1 - GridMap.MinLevel), temps.Length); return; }
             // Eski kayıt: yalnızca zemin kat sıcaklıkları (kat eklenmeden önce).
             if (temps.Length == _plane) Array.Copy(temps, 0, _temp, _plane * (0 - GridMap.MinLevel), _plane);
         }
@@ -229,7 +231,7 @@ namespace Thatchwick.Core.Heat
             if (GridMap.IsValidLevel(below.Z) && map.HasTile(below))
                 flow += _cfg.FloorLoss * (TempOfRoomAt(rooms, below) - temp);
             if (t.Z < 0)
-                flow += _cfg.GroundLoss * (GroundTemperature - temp); // bodrum toprakla dengelenir
+                flow += _cfg.GroundLoss * (t.Z <= -2 ? 2.0 : 1.0) * (GroundTemperature - temp); // bodrum toprakla dengelenir; derin kat daha çok
             return flow;
         }
 

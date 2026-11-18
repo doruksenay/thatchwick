@@ -2206,7 +2206,8 @@
           "skill": "SoilCare",
           "skillXp": 3
         }
-      ]
+      ],
+      "cropFamily": "kok"
     },
     {
       "id": "item.market_stall",
@@ -2246,7 +2247,10 @@
       "placement": "Resource",
       "category": "resource",
       "price": 2,
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "keep"
+      ]
     },
     {
       "id": "item.nails",
@@ -2254,7 +2258,10 @@
       "placement": "Resource",
       "category": "resource",
       "price": 1,
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "keep"
+      ]
     },
     {
       "id": "item.feed",
@@ -2264,6 +2271,7 @@
       "price": 1,
       "interactions": [],
       "tags": [
+        "feed",
         "feed"
       ]
     },
@@ -3329,6 +3337,26 @@
       "beauty": 2
     },
     {
+      "id": "item.treasure_chest",
+      "displayName": "Demir kapılı hazine sandığı",
+      "category": "storage",
+      "price": 70,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living"
+      ],
+      "tags": [
+        "treasure_chest"
+      ],
+      "levels": [
+        -2
+      ],
+      "storage": 20,
+      "interactions": [],
+      "material": "metal"
+    },
+    {
       "id": "item.wall_shelf",
       "displayName": "Duvar rafı",
       "category": "storage",
@@ -4138,6 +4166,82 @@
       ]
     },
     {
+      "id": "item.pigsty",
+      "displayName": "Domuz ağılı",
+      "category": "garden",
+      "price": 45,
+      "width": 2,
+      "height": 2,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "housing": "sty",
+      "capacity": 3,
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (4)",
+          "durationDays": 0.06,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 4
+            }
+          ],
+          "addFeed": 4,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
+        },
+        {
+          "id": "collect",
+          "displayName": "Gübreyi topla",
+          "durationDays": 0.1,
+          "collect": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 8,
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Hayvanları sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 3,
+          "moodlet": "pet_love"
+        },
+        {
+          "id": "slaughter",
+          "displayName": "Hayvan kes (dost olmayan yetişkin)",
+          "durationDays": 0.1,
+          "slaughter": true,
+          "requiresAnimal": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "slaughtered"
+        },
+        {
+          "id": "salve",
+          "displayName": "Hayvan merhemi sür",
+          "durationDays": 0.04,
+          "requiresAnimal": true,
+          "materials": [
+            {
+              "item": "item.animal_salve",
+              "count": 1
+            }
+          ],
+          "befriendAnimals": 12,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "pet_love"
+        }
+      ]
+    },
+    {
       "id": "item.kennel",
       "displayName": "Köpek kulübesi",
       "category": "garden",
@@ -4619,7 +4723,8 @@
           "skill": "SoilCare",
           "skillXp": 3
         }
-      ]
+      ],
+      "cropFamily": "yaprak"
     },
     {
       "id": "item.seed_leek",
@@ -4718,7 +4823,8 @@
           "skill": "SoilCare",
           "skillXp": 3
         }
-      ]
+      ],
+      "cropFamily": "sogan"
     },
     {
       "id": "item.seed_pea",
@@ -4817,7 +4923,8 @@
           "skillXp": 3
         }
       ],
-      "nitrogen": true
+      "nitrogen": true,
+      "cropFamily": "baklagil"
     },
     {
       "id": "item.seed_pumpkin",
@@ -4916,7 +5023,8 @@
           "skill": "SoilCare",
           "skillXp": 3
         }
-      ]
+      ],
+      "cropFamily": "kabak"
     },
     {
       "id": "item.pickled_cabbage",
@@ -5831,7 +5939,8 @@
       "growSeasons": [
         "Spring",
         "Autumn"
-      ]
+      ],
+      "cropFamily": "kok"
     },
     {
       "id": "item.carrot",
@@ -5927,7 +6036,8 @@
           "skill": "SoilCare",
           "skillXp": 3
         }
-      ]
+      ],
+      "cropFamily": "kok"
     },
     {
       "id": "item.onion",
@@ -6027,7 +6137,8 @@
       "growSeasons": [
         "Spring",
         "Summer"
-      ]
+      ],
+      "cropFamily": "sogan"
     },
     {
       "id": "item.garlic",
@@ -6127,7 +6238,8 @@
       "growSeasons": [
         "Autumn",
         "Spring"
-      ]
+      ],
+      "cropFamily": "sogan"
     },
     {
       "id": "item.beet",
@@ -6227,7 +6339,8 @@
       "growSeasons": [
         "Summer",
         "Autumn"
-      ]
+      ],
+      "cropFamily": "kok"
     },
     {
       "id": "item.radish",
@@ -6328,7 +6441,8 @@
         "Spring",
         "Summer",
         "Autumn"
-      ]
+      ],
+      "cropFamily": "kok"
     },
     {
       "id": "item.lettuce",
@@ -6428,7 +6542,8 @@
       "growSeasons": [
         "Spring",
         "Autumn"
-      ]
+      ],
+      "cropFamily": "yaprak"
     },
     {
       "id": "item.broad_bean",
@@ -6529,7 +6644,8 @@
         "Spring",
         "Summer"
       ],
-      "nitrogen": true
+      "nitrogen": true,
+      "cropFamily": "baklagil"
     },
     {
       "id": "item.barley",
@@ -6540,6 +6656,17 @@
       "tags": [
         "grain"
       ]
+    },
+    {
+      "id": "item.sheaf_barley",
+      "displayName": "Arpa demeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "sheaf"
+      ],
+      "threshesTo": "item.barley"
     },
     {
       "id": "item.seed_barley",
@@ -6568,7 +6695,7 @@
           "removeItem": true,
           "produce": [
             {
-              "item": "item.barley",
+              "item": "item.sheaf_barley",
               "count": 5
             },
             {
@@ -6579,10 +6706,6 @@
               "item": "item.seed_barley",
               "count": 1,
               "chance": 0.5
-            },
-            {
-              "item": "item.straw",
-              "count": 2
             }
           ],
           "tool": "hoe"
@@ -6632,7 +6755,8 @@
       "growSeasons": [
         "Spring",
         "Summer"
-      ]
+      ],
+      "cropFamily": "tahil"
     },
     {
       "id": "item.spinach",
@@ -6732,7 +6856,8 @@
       "growSeasons": [
         "Spring",
         "Autumn"
-      ]
+      ],
+      "cropFamily": "yaprak"
     },
     {
       "id": "item.apple",
@@ -8157,6 +8282,83 @@
       ]
     },
     {
+      "id": "item.pig_pen",
+      "displayName": "Domuz bölmesi",
+      "category": "barn",
+      "price": 20,
+      "height": 2,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "housing": "sty",
+      "capacity": 2,
+      "requiresIndoor": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (3)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 3
+            }
+          ],
+          "addFeed": 3,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
+        },
+        {
+          "id": "collect",
+          "displayName": "Gübreyi topla",
+          "durationDays": 0.06,
+          "collect": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Hayvanı sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 3,
+          "moodlet": "pet_love"
+        },
+        {
+          "id": "slaughter",
+          "displayName": "Hayvan kes (dost olmayan yetişkin)",
+          "durationDays": 0.1,
+          "slaughter": true,
+          "requiresAnimal": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "slaughtered"
+        },
+        {
+          "id": "salve",
+          "displayName": "Hayvan merhemi sür",
+          "durationDays": 0.04,
+          "requiresAnimal": true,
+          "materials": [
+            {
+              "item": "item.animal_salve",
+              "count": 1
+            }
+          ],
+          "befriendAnimals": 12,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "pet_love"
+        }
+      ]
+    },
+    {
       "id": "item.horse_stall",
       "displayName": "At bölmesi",
       "category": "barn",
@@ -8608,6 +8810,17 @@
       "price": 2,
       "tags": [
         "stone"
+      ]
+    },
+    {
+      "id": "item.flint",
+      "displayName": "Çakmaktaşı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "stone",
+        "raw"
       ]
     },
     {
@@ -9137,7 +9350,317 @@
       "displayName": "Demir cevheri",
       "placement": "Resource",
       "category": "resource",
+      "price": 5,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.rubble",
+      "displayName": "Moloz",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.torch",
+      "displayName": "Meşale",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "light"
+      ]
+    },
+    {
+      "id": "item.sand",
+      "displayName": "Kum",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.charcoal",
+      "displayName": "Odun kömürü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "fuel"
+      ]
+    },
+    {
+      "id": "item.roasted_ore",
+      "displayName": "Kavrulmuş demir cevheri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6
+    },
+    {
+      "id": "item.iron_bloom",
+      "displayName": "Demir çiçeği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8
+    },
+    {
+      "id": "item.slag",
+      "displayName": "Cüruf",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.quicklime",
+      "displayName": "Sönmemiş kireç",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4
+    },
+    {
+      "id": "item.lime",
+      "displayName": "Kireç",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3
+    },
+    {
+      "id": "item.mortar",
+      "displayName": "Harç",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4
+    },
+    {
+      "id": "item.plaster",
+      "displayName": "Alçı",
+      "placement": "Resource",
+      "category": "resource",
       "price": 5
+    },
+    {
+      "id": "item.ochre_paint",
+      "displayName": "Toprak boya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.slate_tile",
+      "displayName": "Arduvaz levha",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4
+    },
+    {
+      "id": "item.relic_foundation_stone",
+      "displayName": "Eski temel taşı",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 8,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "M",
+      "weight": 3,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_buried_jar",
+      "displayName": "Gömülü testi",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 12,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_horseshoe",
+      "displayName": "Kırık nal",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 5,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_fossil",
+      "displayName": "Taşlaşmış kabuk",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 15,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_miner_lamp",
+      "displayName": "Eski madenci kandili",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 14,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_pick_head",
+      "displayName": "Kırık kazma başı",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 9,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_coin",
+      "displayName": "Eski sikke",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 20,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_bone_comb",
+      "displayName": "Kemik tarak",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 12,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.relic_crystal",
+      "displayName": "Kristal yumru",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 25,
+      "tags": [
+        "relic",
+        "craftonly"
+      ],
+      "beauty": 3,
+      "decorSize": "S",
+      "weight": 1,
+      "material": "stone",
+      "interactions": []
+    },
+    {
+      "id": "item.slate_stone",
+      "displayName": "Arduvaz",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "stone",
+        "raw"
+      ]
+    },
+    {
+      "id": "item.ochre",
+      "displayName": "Aşı boyası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "raw",
+        "dye"
+      ]
+    },
+    {
+      "id": "item.gypsum",
+      "displayName": "Alçıtaşı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.coal",
+      "displayName": "Taş kömürü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "fuel",
+        "raw"
+      ]
+    },
+    {
+      "id": "item.limestone",
+      "displayName": "Kireçtaşı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "stone",
+        "raw"
+      ]
     },
     {
       "id": "item.iron_bar",
@@ -9915,8 +10438,390 @@
       }
     },
     {
+      "id": "item.charcoal_clamp",
+      "displayName": "Kömür yığını",
+      "category": "farm",
+      "price": 10,
+      "width": 2,
+      "height": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [],
+      "tags": [
+        "passive"
+      ],
+      "autoProcess": {
+        "item": "item.firewood",
+        "count": 6,
+        "produces": "item.charcoal",
+        "producesCount": 4
+      }
+    },
+    {
+      "id": "item.roasting_heap",
+      "displayName": "Kavurma yığını",
+      "category": "farm",
+      "price": 12,
+      "width": 2,
+      "height": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [],
+      "tags": [
+        "passive"
+      ],
+      "autoProcess": {
+        "item": "item.iron_ore",
+        "count": 4,
+        "produces": "item.roasted_ore",
+        "producesCount": 4
+      }
+    },
+    {
+      "id": "item.bloomery",
+      "displayName": "Çiçek ocağı",
+      "category": "work",
+      "price": 40,
+      "width": 2,
+      "height": 2,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "smelt_roasted",
+          "displayName": "Kavrulmuş cevheri erit (2 + 2 kömür)",
+          "durationDays": 0.12,
+          "materials": [
+            {
+              "item": "item.roasted_ore",
+              "count": 2
+            },
+            {
+              "item": "item.charcoal",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.iron_bloom",
+              "count": 1
+            },
+            {
+              "item": "item.slag",
+              "count": 1
+            }
+          ],
+          "skill": "Smithing",
+          "skillXp": 10
+        },
+        {
+          "id": "smelt_raw",
+          "displayName": "Ham cevheri erit (3 + 2 kömür)",
+          "durationDays": 0.14,
+          "materials": [
+            {
+              "item": "item.iron_ore",
+              "count": 3
+            },
+            {
+              "item": "item.charcoal",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.iron_bloom",
+              "count": 1
+            },
+            {
+              "item": "item.slag",
+              "count": 1
+            }
+          ],
+          "skill": "Smithing",
+          "skillXp": 10
+        }
+      ]
+    },
+    {
+      "id": "item.lime_kiln",
+      "displayName": "Kireç ocağı",
+      "category": "farm",
+      "price": 50,
+      "width": 2,
+      "height": 2,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "slake",
+          "displayName": "Kireç söndür",
+          "durationDays": 0.04,
+          "materials": [
+            {
+              "item": "item.quicklime",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.lime",
+              "count": 2
+            }
+          ],
+          "skill": "Masonry",
+          "skillXp": 3
+        },
+        {
+          "id": "mix_mortar",
+          "displayName": "Harç karıştır (1 kireç + 2 kum)",
+          "durationDays": 0.04,
+          "materials": [
+            {
+              "item": "item.lime",
+              "count": 1
+            },
+            {
+              "item": "item.sand",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.mortar",
+              "count": 3
+            }
+          ],
+          "skill": "Masonry",
+          "skillXp": 3
+        },
+        {
+          "id": "burn_gypsum",
+          "displayName": "Alçıtaşı yak (2 alçıtaşı + 1 odun)",
+          "durationDays": 0.08,
+          "materials": [
+            {
+              "item": "item.gypsum",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.plaster",
+              "count": 2
+            }
+          ],
+          "skill": "Masonry",
+          "skillXp": 5
+        }
+      ],
+      "tags": [
+        "passive"
+      ],
+      "autoProcess": {
+        "item": "item.limestone",
+        "count": 4,
+        "produces": "item.quicklime",
+        "producesCount": 3
+      }
+    },
+    {
+      "id": "item.ox_cart",
+      "displayName": "Öküz arabası",
+      "category": "farm",
+      "price": 90,
+      "width": 2,
+      "height": 1,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.drain_pit",
+      "displayName": "Dren çukuru",
+      "category": "farm",
+      "price": 8,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "drain"
+      ],
+      "levels": [
+        -2
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.underground_cistern",
+      "displayName": "Yer altı sarnıcı",
+      "category": "farm",
+      "price": 45,
+      "width": 2,
+      "height": 2,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "levels": [
+        -2
+      ],
+      "cistern": 60,
+      "interactions": []
+    },
+    {
+      "id": "item.threshing_floor",
+      "displayName": "Harman yeri",
+      "category": "farm",
+      "price": 15,
+      "width": 3,
+      "height": 3,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "threshing_floor"
+      ],
+      "interactions": [
+        {
+          "id": "thresh_wheat",
+          "displayName": "Buğday döv (2 demet)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.sheaf_wheat",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.wheat",
+              "count": 2
+            },
+            {
+              "item": "item.straw",
+              "count": 1
+            }
+          ],
+          "skill": "Farming",
+          "skillXp": 4
+        },
+        {
+          "id": "thresh_barley",
+          "displayName": "Arpa döv (2 demet)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.sheaf_barley",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.barley",
+              "count": 2
+            },
+            {
+              "item": "item.straw",
+              "count": 1
+            }
+          ],
+          "skill": "Farming",
+          "skillXp": 4
+        },
+        {
+          "id": "thresh_rye",
+          "displayName": "Çavdar döv (2 demet)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.sheaf_rye",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.rye",
+              "count": 2
+            },
+            {
+              "item": "item.straw",
+              "count": 1
+            }
+          ],
+          "skill": "Farming",
+          "skillXp": 4
+        },
+        {
+          "id": "thresh_oats",
+          "displayName": "Yulaf döv (2 demet)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.sheaf_oats",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.oats",
+              "count": 2
+            },
+            {
+              "item": "item.straw",
+              "count": 1
+            }
+          ],
+          "skill": "Farming",
+          "skillXp": 4
+        }
+      ]
+    },
+    {
+      "id": "item.threshing_sledge",
+      "displayName": "Düven",
+      "category": "farm",
+      "price": 45,
+      "width": 2,
+      "height": 1,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "threshPerDay": 8,
+      "interactions": []
+    },
+    {
       "id": "item.harvest_rake",
-      "displayName": "Hasat tırmığı",
+      "displayName": "Hasat tırmığı (eski)",
       "category": "farm",
       "price": 110,
       "level": 1,
@@ -9925,14 +10830,15 @@
         "outdoor"
       ],
       "tags": [
-        "craftonly"
+        "craftonly",
+        "legacy"
       ],
       "interactions": [],
       "harvestRadius": 2
     },
     {
       "id": "item.seeder",
-      "displayName": "Ekim makinesi",
+      "displayName": "Ekim makinesi (eski)",
       "category": "farm",
       "price": 120,
       "level": 1,
@@ -9941,7 +10847,8 @@
         "outdoor"
       ],
       "tags": [
-        "craftonly"
+        "craftonly",
+        "legacy"
       ],
       "interactions": [],
       "seedRadius": 2
@@ -10018,7 +10925,8 @@
       "category": "resource",
       "price": 5,
       "tags": [
-        "stone"
+        "stone",
+        "keep"
       ]
     },
     {
@@ -10183,6 +11091,17 @@
       ]
     },
     {
+      "id": "item.sheaf_wheat",
+      "displayName": "Buğday demeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "sheaf"
+      ],
+      "threshesTo": "item.wheat"
+    },
+    {
       "id": "item.seed_wheat",
       "displayName": "Buğday tohumu",
       "placement": "Resource",
@@ -10209,7 +11128,7 @@
           "removeItem": true,
           "produce": [
             {
-              "item": "item.wheat",
+              "item": "item.sheaf_wheat",
               "count": 5
             },
             {
@@ -10220,10 +11139,6 @@
               "item": "item.seed_wheat",
               "count": 1,
               "chance": 0.5
-            },
-            {
-              "item": "item.straw",
-              "count": 2
             }
           ],
           "tool": "hoe"
@@ -10273,7 +11188,8 @@
       "growSeasons": [
         "Autumn",
         "Spring"
-      ]
+      ],
+      "cropFamily": "tahil"
     },
     {
       "id": "item.rye",
@@ -10284,6 +11200,17 @@
       "tags": [
         "grain"
       ]
+    },
+    {
+      "id": "item.sheaf_rye",
+      "displayName": "Çavdar demeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "sheaf"
+      ],
+      "threshesTo": "item.rye"
     },
     {
       "id": "item.seed_rye",
@@ -10312,7 +11239,7 @@
           "removeItem": true,
           "produce": [
             {
-              "item": "item.rye",
+              "item": "item.sheaf_rye",
               "count": 5
             },
             {
@@ -10323,10 +11250,6 @@
               "item": "item.seed_rye",
               "count": 1,
               "chance": 0.5
-            },
-            {
-              "item": "item.straw",
-              "count": 3
             }
           ],
           "tool": "hoe"
@@ -10376,7 +11299,8 @@
       "growSeasons": [
         "Autumn",
         "Spring"
-      ]
+      ],
+      "cropFamily": "tahil"
     },
     {
       "id": "item.oats",
@@ -10387,6 +11311,17 @@
       "tags": [
         "grain"
       ]
+    },
+    {
+      "id": "item.sheaf_oats",
+      "displayName": "Yulaf demeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "sheaf"
+      ],
+      "threshesTo": "item.oats"
     },
     {
       "id": "item.seed_oats",
@@ -10415,7 +11350,7 @@
           "removeItem": true,
           "produce": [
             {
-              "item": "item.oats",
+              "item": "item.sheaf_oats",
               "count": 6
             },
             {
@@ -10426,10 +11361,6 @@
               "item": "item.seed_oats",
               "count": 1,
               "chance": 0.5
-            },
-            {
-              "item": "item.straw",
-              "count": 2
             }
           ],
           "tool": "hoe"
@@ -10479,7 +11410,8 @@
       "growSeasons": [
         "Spring",
         "Summer"
-      ]
+      ],
+      "cropFamily": "tahil"
     },
     {
       "id": "item.flax",
@@ -10578,7 +11510,8 @@
       "growSeasons": [
         "Spring",
         "Summer"
-      ]
+      ],
+      "cropFamily": "lif"
     },
     {
       "id": "item.rye_flour",
@@ -11006,10 +11939,10 @@
         "craftonly"
       ],
       "autoProcess": {
-        "item": "item.iron_ore",
+        "item": "item.iron_bloom",
         "count": 2,
         "produces": "item.iron_bar",
-        "producesCount": 1
+        "producesCount": 2
       },
       "interactions": []
     },
@@ -14469,18 +15402,14 @@
       "produces": "item.iron_bar",
       "materials": [
         {
-          "item": "item.iron_ore",
-          "count": 2
-        },
-        {
-          "item": "item.firewood",
+          "item": "item.iron_bloom",
           "count": 1
         }
       ],
       "durationDays": 0.12,
       "skill": "Smithing",
       "skillXp": 10,
-      "displayName": "Demir dök"
+      "displayName": "Demir çiçeğini döv"
     },
     {
       "id": "nails_forge",
@@ -14904,54 +15833,6 @@
       "skillXp": 15,
       "displayName": "Yem karıştırıcı yap",
       "minLevel": 1
-    },
-    {
-      "id": "harvest_rake",
-      "station": "item.workbench",
-      "produces": "item.harvest_rake",
-      "materials": [
-        {
-          "item": "item.iron_bar",
-          "count": 2
-        },
-        {
-          "item": "item.gear",
-          "count": 1
-        },
-        {
-          "item": "item.plank",
-          "count": 2
-        }
-      ],
-      "durationDays": 0.3,
-      "skill": "Engineering",
-      "skillXp": 25,
-      "displayName": "Hasat tırmığı yap",
-      "minLevel": 3
-    },
-    {
-      "id": "seeder",
-      "station": "item.workbench",
-      "produces": "item.seeder",
-      "materials": [
-        {
-          "item": "item.iron_bar",
-          "count": 1
-        },
-        {
-          "item": "item.gear",
-          "count": 2
-        },
-        {
-          "item": "item.plank",
-          "count": 3
-        }
-      ],
-      "durationDays": 0.3,
-      "skill": "Engineering",
-      "skillXp": 25,
-      "displayName": "Ekim makinesi yap",
-      "minLevel": 5
     },
     {
       "id": "ice_well",
@@ -15584,6 +16465,57 @@
       "skill": "Brewing",
       "skillXp": 8,
       "displayName": "Şalgam suyu yap"
+    },
+    {
+      "id": "threshing_sledge",
+      "station": "item.workbench",
+      "produces": "item.threshing_sledge",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.flint",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Carpentry",
+      "skillXp": 15,
+      "displayName": "Düven yap (çakmaktaşı dişli)"
+    },
+    {
+      "id": "slate_tile",
+      "station": "item.stonecutter",
+      "produces": "item.slate_tile",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.slate_stone",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Masonry",
+      "skillXp": 8,
+      "displayName": "Arduvaz yar",
+      "minLevel": 3
+    },
+    {
+      "id": "ochre_paint",
+      "station": "item.mortar_pestle",
+      "produces": "item.ochre_paint",
+      "materials": [
+        {
+          "item": "item.ochre",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Masonry",
+      "skillXp": 3,
+      "displayName": "Aşı boyası ez"
     }
   ],
   "animals": [
@@ -15605,7 +16537,13 @@
         1.0,
         0.6,
         0.25
-      ]
+      ],
+      "gestationDays": 1,
+      "litterMin": 1,
+      "litterMax": 3,
+      "femaleProduces": true,
+      "femaleName": "tavuk",
+      "maleName": "horoz"
     },
     {
       "id": "animal.duck",
@@ -15625,7 +16563,13 @@
         0.9,
         0.5,
         0.2
-      ]
+      ],
+      "gestationDays": 1,
+      "litterMin": 1,
+      "litterMax": 3,
+      "femaleProduces": true,
+      "femaleName": "dişi ördek",
+      "maleName": "erkek ördek"
     },
     {
       "id": "animal.goat",
@@ -15648,7 +16592,13 @@
         1.0,
         0.8,
         0.5
-      ]
+      ],
+      "gestationDays": 1,
+      "litterMin": 1,
+      "litterMax": 2,
+      "femaleProduces": true,
+      "femaleName": "keçi",
+      "maleName": "teke"
     },
     {
       "id": "animal.sheep",
@@ -15671,7 +16621,12 @@
         1.0,
         0.5,
         0.0
-      ]
+      ],
+      "gestationDays": 1,
+      "litterMin": 1,
+      "litterMax": 2,
+      "femaleName": "koyun",
+      "maleName": "koç"
     },
     {
       "id": "animal.cow",
@@ -15694,7 +16649,37 @@
         1.0,
         0.8,
         0.6
-      ]
+      ],
+      "gestationDays": 2,
+      "litterMin": 1,
+      "litterMax": 1,
+      "femaleProduces": true,
+      "draft": true,
+      "femaleName": "inek",
+      "maleName": "öküz"
+    },
+    {
+      "id": "animal.pig",
+      "displayName": "Domuz",
+      "price": 22,
+      "housing": "sty",
+      "feedPerDay": 1.5,
+      "produces": "item.manure",
+      "produceEveryDays": 2,
+      "lifespanDays": 30,
+      "matureDays": 3,
+      "level": 4,
+      "meat": "item.meat",
+      "meatCount": 3,
+      "hide": "item.hide",
+      "hideCount": 1,
+      "trample": 2,
+      "space": 3,
+      "gestationDays": 1,
+      "litterMin": 2,
+      "litterMax": 4,
+      "femaleName": "dişi domuz",
+      "maleName": "erkek domuz"
     },
     {
       "id": "animal.dog",
@@ -15746,7 +16731,13 @@
       "level": 4,
       "rideable": true,
       "rideSpeed": 2.2,
-      "trample": 3
+      "trample": 3,
+      "gestationDays": 2,
+      "litterMin": 1,
+      "litterMax": 1,
+      "draft": true,
+      "femaleName": "kısrak",
+      "maleName": "aygır"
     }
   ],
   "buildParts": [
@@ -15783,6 +16774,17 @@
       "color": "#B8945E",
       "level": 2,
       "heatLoss": 0.9
+    },
+    {
+      "id": "wall_whitewash",
+      "displayName": "Badanalı sıva",
+      "kind": "wallMaterial",
+      "price": 5,
+      "color": "#ECE6D6",
+      "level": 3,
+      "heatLoss": 0.8,
+      "material": "item.lime",
+      "materialCount": 1
     },
     {
       "id": "wall_stone",
@@ -16189,7 +17191,7 @@
       "color": "#55606A",
       "level": 6,
       "heatLoss": 0.7,
-      "material": "item.cut_stone",
+      "material": "item.slate_tile",
       "materialCount": 1
     },
     {

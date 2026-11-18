@@ -185,6 +185,12 @@ namespace Thatchwick.Core.Content
         public bool IsFruitTree => FruitSeasons.Count > 0 && FruitRipenDays > 0f;
         /// <summary>Baklagil: hasatta toprağı zenginleştirir (azot bağlar).</summary>
         public bool FixesNitrogen { get; set; }
+        /// <summary>Ekin ailesi (tahıl, baklagil, kök, lahanagil, soğangil, kabakgil, lif): nöbetleşe ekim aileye bakar.</summary>
+        public string CropFamily { get; set; }
+        /// <summary>Ekin demeti: harmanda dövülünce bu taneye (ve samana) döner; boş = demet değil.</summary>
+        public string ThreshesTo { get; set; }
+        /// <summary>Düven: çeki hayvanı varken her sabah envanterdeki demetlerden bu kadarını döver. 0 = düven değil.</summary>
+        public int ThreshPerDay { get; set; }
         /// <summary>Sulama hendeği, kova ve oluk: her sabah bu yarıçaptaki (Chebyshev) ekinleri sular. 0 = sulamaz.</summary>
         public int WaterRadius { get; set; }
         /// <summary>Arı kovanı: yaşayan koloni varken bu yarıçaptaki ekinler ve meyve ağaçları daha çabuk olgunlaşır. 0 = tozlaştırmaz.</summary>
@@ -275,7 +281,9 @@ namespace Thatchwick.Core.Content
         /// <summary>Buz kuyusu: donlu her sabah toplanan buz.</summary>
         public int IceCollect { get; set; }
         /// <summary>Güç alınca çalışan düzenek mi (değirmen taşı, yem karıştırıcı, hasat tırmığı, ekim makinesi)?</summary>
-        public bool NeedsPower => AutoProcess != null || HarvestRadius > 0 || SeedRadius > 0;
+        public bool NeedsPower => (AutoProcess != null && !IsPassive) || HarvestRadius > 0 || SeedRadius > 0;
+        /// <summary>Güç istemeyen sabah işi (kömür yığını, kavurma yığını, kireç ocağı): her sabah bir parti, ateşle/zamanla.</summary>
+        public bool IsPassive => AutoProcess != null && HasTag("passive");
         /// <summary>Yiyecek yerleşimindeki kapasite (0 = depo kapasitesi, o da yoksa kiler/buzluk için 60).</summary>
         public int FoodCapacity { get; set; }
         /// <summary>Yalnızca kapalı bir odaya konur (folluk, ahır bölmesi, at bölmesi): barınak odası.</summary>

@@ -361,7 +361,7 @@ namespace Thatchwick.Core.Tests
             var old = new float[36];
             for (int i = 0; i < old.Length; i++) old[i] = 7f;
             heat.RestoreTemperatures(old);
-            Assert.Equal(7f, heat.ExportTemperatures()[36 + 8]);   // zemin kat dilimi
+            Assert.Equal(7f, heat.ExportTemperatures()[36 * (0 - GridMap.MinLevel) + 8]);   // zemin kat dilimi
         }
 
         // ---------- bozulma: bodrum mahzeni ----------

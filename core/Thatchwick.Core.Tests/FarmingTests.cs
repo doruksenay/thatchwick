@@ -259,12 +259,12 @@ namespace Thatchwick.Core.Tests
             var b = Sow(c, "seed_turnip", 5, 5);                                 // aynı ekin: ek ceza
             PlantSystem.SetGrown(b);
             Do(c, b, "harvest");
-            Assert.Equal(0.20, (double)c.Plants.FertilityAt(pos), 2);                 // 0.38 - 0.12 - 0.06
+            Assert.Equal(0.17, (double)c.Plants.FertilityAt(pos), 2);                 // 0.38 - 0.12 - 0.06 x 1,5 (aynı ekin)
 
             var p = Sow(c, "seed_pea", 5, 5);                                    // baklagil: azot + nöbetleşe ekim
             PlantSystem.SetGrown(p);
             Do(c, p, "harvest");
-            Assert.Equal(0.36, (double)c.Plants.FertilityAt(pos), 2);                 // 0.20 - 0.12 + 0.20 + 0.08
+            Assert.Equal(0.33, (double)c.Plants.FertilityAt(pos), 2);                 // 0.17 - 0.12 + 0.20 + 0.08
         }
 
         [Fact]

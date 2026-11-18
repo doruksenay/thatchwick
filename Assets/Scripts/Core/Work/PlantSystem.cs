@@ -10,6 +10,8 @@ namespace Thatchwick.Core.Work
     {
         public float Fertility;
         public string LastCrop;
+        /// <summary>Ondan önceki ekin: üç tarla nöbeti (üç ayrı aile art arda) ek verim verir.</summary>
+        public string PrevCrop;
     }
 
     /// <summary>Çiftçilik ayarları: sayılar tek yerde, testlerde değiştirilebilir.</summary>
@@ -23,6 +25,8 @@ namespace Thatchwick.Core.Work
         public float FertilityBase = 0.75f, FertilitySpan = 0.5f;
         /// <summary>Hasat toprağı yorar; farklı ekin sonra gelirse nefes alır; baklagil zenginleştirir; aynı ekin yorar.</summary>
         public float HarvestDraw = 0.12f, RotationBonus = 0.08f, NitrogenBonus = 0.2f, MonocropPenalty = 0.06f;
+        /// <summary>Üç tarla nöbeti: son üç ekin üç ayrı aileden. Aynı aile üst üste gelince yorgunluk MonocropPenalty x bu.</summary>
+        public float ThreeFieldBonus = 0.06f, SameFamilyFactor = 1.5f;
         /// <summary>Boş toprak günde bu kadar varsayılan verime döner.</summary>
         public float FallowRecovery = 0.02f;
         /// <summary>Kalite puanı = sulu oran x WetWeight + verim x FertWeight + beceri x SkillWeight.</summary>
@@ -133,11 +137,26 @@ namespace Thatchwick.Core.Work
 
         public string LastCropAt(GridPos p) => _soil.TryGetValue(p.OnLevel(0), out var plot) ? plot.LastCrop : null;
 
-        public void SetSoil(GridPos p, float fertility, string lastCrop)
+        public void SetSoil(GridPos p, float fertility, string lastCrop, string prevCrop = null)
         {
             var plot = PlotAt(p);
             plot.Fertility = Clamp01(fertility);
             plot.LastCrop = string.IsNullOrEmpty(lastCrop) ? null : lastCrop;
+            plot.PrevCrop = string.IsNullOrEmpty(prevCrop) ? null : prevCrop;
+        }
+
+        /// <summary>Ekin kimliğinden aileyi bulur (içerik yoksa kimliğin kendisi aile sayılır).</summary>
+        public Func<string, string> FamilyOf { get; set; }
+        private string Family(string cropId) => cropId == null ? null : (FamilyOf?.Invoke(cropId) ?? cropId);
+
+        /// <summary>Bu karoya bu ekin ekilirse nöbet nasıl: "aynı aile", "nöbet", "üç tarla" ya da null (geçmiş yok). Arayüz ipucu.</summary>
+        public string RotationHint(GridPos p, Content.ItemDef crop)
+        {
+            if (crop == null || !_soil.TryGetValue(p.OnLevel(0), out var plot) || plot.LastCrop == null) return null;
+            string fam = crop.CropFamily ?? crop.Id;
+            if (Family(plot.LastCrop) == fam) return "Aynı aile üst üste: toprak çabuk yorulur";
+            if (plot.PrevCrop != null && Family(plot.PrevCrop) != fam && Family(plot.PrevCrop) != Family(plot.LastCrop)) return "Üç tarla nöbeti: toprak dinlenir";
+            return "Nöbetleşe ekim: toprak toparlanır";
         }
 
         private SoilPlot PlotAt(GridPos p)
@@ -173,9 +192,22 @@ namespace Thatchwick.Core.Work
             var plot = PlotAt(item.Position);
             float delta = -Config.HarvestDraw;
             if (item.Def.FixesNitrogen) delta += Config.NitrogenBonus;
+            // Nöbet aileye bakar: buğdaydan sonra arpa da yorar (ikisi de tahıl); baklagil ve kök araya girince toprak dinlenir.
+            string fam = item.Def.CropFamily ?? item.Def.Id;
             if (plot.LastCrop != null)
-                delta += plot.LastCrop == item.Def.Id ? -Config.MonocropPenalty : Config.RotationBonus;
+            {
+                string last = Family(plot.LastCrop);
+                if (plot.LastCrop == item.Def.Id) delta -= Config.MonocropPenalty * Config.SameFamilyFactor;
+                else if (last == fam) delta -= Config.MonocropPenalty;
+                else
+                {
+                    delta += Config.RotationBonus;
+                    string prev = Family(plot.PrevCrop);
+                    if (prev != null && prev != fam && prev != last) delta += Config.ThreeFieldBonus;
+                }
+            }
             plot.Fertility = Clamp01(plot.Fertility + delta);
+            plot.PrevCrop = plot.LastCrop;
             plot.LastCrop = item.Def.Id;
         }
 

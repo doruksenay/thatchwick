@@ -148,10 +148,23 @@ namespace Thatchwick.Core.Tests
         public void Duzenekler_YalnizcaYapilirKatalogdaYok()
         {
             var db = Db();
-            foreach (var id in new[] { "item.windmill", "item.water_gate", "item.noria", "item.feed_mixer", "item.harvest_rake", "item.seeder", "item.ice_well" })
+            foreach (var id in new[] { "item.windmill", "item.water_gate", "item.noria", "item.feed_mixer", "item.threshing_sledge", "item.ice_well" })
             {
                 Assert.True(db.Items.Get(id).HasTag("craftonly"), id);
                 Assert.True(db.Items.All.Any(s => s.Interactions.Any(i => i.IsCraft && i.Produce.Any(p => p.ItemId == id))), $"{id} tarifi yok");
+                Assert.DoesNotContain(ItemCatalog.InCategory(db, db.Items.Get(id).Category), d => d.Id == id);
+            }
+        }
+
+        [Fact]
+        public void HasatTirmigiVeEkimMakinesi_EskiKayitIcinKalir_YapilamazAlinamaz()
+        {
+            // Dönem kararı (28. belge): mekanik biçer ve ekici yerine düven ve tohum serpen tarlacı.
+            var db = Db();
+            foreach (var id in new[] { "item.harvest_rake", "item.seeder" })
+            {
+                Assert.True(db.Items.Get(id).HasTag("legacy"), id);
+                Assert.False(db.Items.All.Any(s => s.Interactions.Any(i => i.IsCraft && i.Produce.Any(p => p.ItemId == id))), $"{id} hâlâ yapılıyor");
                 Assert.DoesNotContain(ItemCatalog.InCategory(db, db.Items.Get(id).Category), d => d.Id == id);
             }
         }

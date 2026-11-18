@@ -705,6 +705,13 @@ namespace Thatchwick.Core.Build
         }
 
         /// <summary>Verilen karoda üst kat döşemesi (Z &gt; 0) ya da bodrum kazısı (Z &lt; 0) yapılabilir mi.</summary>
+        /// <summary>Kat -2'ye inen kuyunun engeli (Madencilik seviyesi); null ise serbest.</summary>
+        public Func<GridPos, string> DeepDigBlocker { get; set; }
+        /// <summary>Merdivenle kat -2'de kuyu inişi açıldı (kazı motoru karoyu açık sayar).</summary>
+        public event Action<GridPos> DeepShaftOpened;
+        /// <summary>Korunan eşya (hazine odasındaki yadigâr): balyoz ve yıkım kaldırmaz.</summary>
+        public Func<ItemInstance, bool> ProtectedItem { get; set; }
+
         public PlacementCheck CanBuildLevelTile(GridPos p, bool stairEnd = false)
         {
             var map = _world.Map;
@@ -712,6 +719,13 @@ namespace Thatchwick.Core.Build
             if (!map.InBounds(p)) return PlacementCheck.Fail("Harita dışı.");
             if (!map.IsOwned(p)) return PlacementCheck.Fail(NotOwned);
             if (map.HasTile(p)) return PlacementCheck.Fail("Orası zaten yapılmış.");
+            if (p.Z <= -2)
+            {
+                // Arsa kazısı: kat -2 yapı modunda akçeyle kazılmaz; bodrumdan inen merdivenle kuyu açılır, gerisi kazmayla.
+                if (!stairEnd) return PlacementCheck.Fail("Bodrumun altı kazmayla kazılır (canlı mod, Madencilik 2).");
+                var why = DeepDigBlocker?.Invoke(p);
+                return why != null ? PlacementCheck.Fail(why) : PlacementCheck.Success;
+            }
             if (p.Z > 0)
             {
                 if (IsAboveStairs(p)) return PlacementCheck.Fail("Merdiven boşluğu: merdivenin üstüne döşeme yapılmaz.");
@@ -736,6 +750,7 @@ namespace Thatchwick.Core.Build
             var map = _world.Map;
             map.SetTile(p, true);
             map.SetFloor(p, p.Z < 0 ? FloorType.Dirt : FloorType.Wood);
+            if (p.Z <= -2) DeepShaftOpened?.Invoke(p);
             Record(p.Z > 0 ? "Üst kat döşemesi" : "Bodrum kazısı", () =>
             {
                 if (_world.GetItemAt(p) != null) return PlacementCheck.Fail("Üzerinde eşya var, geri alınamaz.");
@@ -752,6 +767,7 @@ namespace Thatchwick.Core.Build
         {
             var map = _world.Map;
             if (p.Z == 0 || !map.HasTile(p)) return PlacementCheck.Fail("Orada kaldırılacak bir şey yok.");
+            if (p.Z <= -2) return PlacementCheck.Fail("Kazılan yer doldurulmaz.");
             if (!map.IsOwned(p)) return PlacementCheck.Fail(NotOwned);
             if (_world.GetItemAt(p) != null) return PlacementCheck.Fail("Önce üstündeki eşyayı kaldır.");
             if (_world.IsOccupiedByCharacter(p)) return PlacementCheck.Fail("Üzerinde biri duruyor.");
