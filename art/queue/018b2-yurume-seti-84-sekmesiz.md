@@ -23,8 +23,9 @@ created: 2026-11-18
 018b reddedildi: yürürken zıplıyor (kafa 4-8 px oynuyor). Kullanıcı yalnızca bozuk yönleri değil, yürümeyi bütünüyle zıplamalı buldu; set baştan yapılır.
 
 ## Tarif
-- **Yöntem 018a3'ün raporundaki kazanan yöntemdir** (şablon yürüyüş ya da sekmesiz pixminimax metni). 018a3 `rejected` ise bu iş başlamaz.
-- 018b'nin karakter kimlikleri, 8 yön, ortak işleme kuralları aynen; dosya adı `walk2`.
+- **Yöntem: 018a3 aday d (kullanıcı seçimi).** `animate_character`, `pixminimax`, `frame_count=8`, `keep_first_frame=true`, `end_frame` ilgili yönün durma karesi, metin aynen: `walking at a calm steady pace, a full stride cycle with the left foot then the right foot stepping equally, head and shoulders level, no bouncing, no limping`.
+- **Ücretsiz düzeltme (zorunlu):** 018a3 d'de son kareler 2-3 px yere gömüldü ve döngü kapanmadı. Her yönde: (1) her kareyi, yere basan ayağın en alt pikseli durma karesinin ayak satırına gelecek şekilde bütün olarak dikey kaydır; (2) son kare 00 ile neredeyse aynı pozsa ya da döngüyü bozuyorsa at. Kafa ölçütü düzeltmeden sonra yeniden ölçülür.
+- 018b'nin karakter kimlikleri, 8 yön, ortak işleme kuralları aynen; dosya adı `walk2` (karar: 018a3 d).
 - Çağrılar bağımsız: paralel.
 
 ## Doğrulama

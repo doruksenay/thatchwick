@@ -1,7 +1,7 @@
 ---
 id: "018a3"
 title: Yürüme adayları, erkek 84 px SE (kullanıcı seçer)
-status: review
+status: accepted   # kullanıcı 18.11.2026: aday d (pixminimax, simetrik adım metni) seçildi, "çok iyi"
 claimed_at: 2026-11-18T19:35Z
 approved_by: user        # kullanıcı 18.11.2026: 018a zıplıyor, 018a2 şablonu topallıyor
 priority: 5
@@ -42,3 +42,5 @@ Araçta olmayan şablonu atla, raporda yaz.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18 kullanıcı: aday d seçildi. İşçinin notu: son iki kare 2-3 px yere gömülü, döngü tam kapanmıyor; 018b2 bunu ücretsiz düzeltir (yere basan ayağa hizalama, kapanmayan son kareyi atma). -->
