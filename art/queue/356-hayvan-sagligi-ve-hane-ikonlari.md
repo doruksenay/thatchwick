@@ -1,7 +1,7 @@
 ---
 id: "356"
 title: Hayvan sağlığı ve komşu hane ikonları
-status: running
+status: review
 claimed_at: 2026-11-18T13:06Z
 approved_by: user        # otomatik akış: kullanıcı onayı (art/budget.md)
 family: arayuz
