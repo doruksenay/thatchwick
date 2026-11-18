@@ -59,6 +59,7 @@ namespace Thatchwick.Game
         private string _message = "";
         private GUIStyle _labelStyle;
         private Ambience _ambience;
+        private WeatherFx _weatherFx;
         private readonly List<Ambience.LightSource> _lights = new List<Ambience.LightSource>();
         private bool _ambienceSnap = true;
         private GUIStyle _alertStyle;
@@ -239,6 +240,8 @@ namespace Thatchwick.Game
 
             _ambience = gameObject.AddComponent<Ambience>();
             _ambience.Init(cam);
+            _weatherFx = gameObject.AddComponent<WeatherFx>();
+            _weatherFx.Init(cam);
 
             _input = gameObject.AddComponent<WorldInput>();
             _input.Init(cam, Iso.MapBounds(map.Width, map.Height));
@@ -583,7 +586,8 @@ namespace Thatchwick.Game
                 if (item.IsPlant)
                 {
                     var pos = _view.TileToWorld(item.Position);
-                    AddItemSprite(item, pos, color, PlantScale(item), Iso.SortOrder(pos.y, 1, level), SpriteMaterials.Tree);
+                    var plantArt = IsoArt.Plant(item);
+                    AddItemSprite(item, pos, plantArt != null ? Color.white : color, PlantScale(item), Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
                     // Ağaç gölgesi: ışık sol üstten, gölge taç boyunca sağ alta uzanır; büyüdükçe büyür.
                     AddShadowObject(pos + new Vector3(0.18f, -0.06f, 0f) * PlantScale(item), 0.95f * PlantScale(item), level);
                     _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform));
@@ -676,7 +680,10 @@ namespace Thatchwick.Game
         private void UpdateAmbience()
         {
             if (_ambience == null || _clock == null || _life == null) return;
-            var target = DayLight.Ambient(HourOfDay, _clock.Season, _life.Weather.Today(_clock.TotalDays));
+            var weather = _life.Weather.Today(_clock.TotalDays);
+            var target = DayLight.Ambient(HourOfDay, _clock.Season, weather);
+            bool building = _buildMode != null && _buildMode.Active;
+            if (_weatherFx != null) _weatherFx.Set(weather, building);
             _lights.Clear();
             if (_ambience.Night > 0.02f || _ambienceSnap)
             {
@@ -694,7 +701,7 @@ namespace Thatchwick.Game
                     });
                 }
             }
-            _ambience.Apply(target, _buildMode != null && _buildMode.Active, _lights, _ambienceSnap);
+            _ambience.Apply(target, building, _lights, _ambienceSnap);
             _ambienceSnap = false;
         }
 

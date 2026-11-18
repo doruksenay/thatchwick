@@ -221,18 +221,38 @@ namespace Thatchwick.Game
                     var road = Map.GetRoad(p);
                     if (road != RoadType.None)
                     {
-                        // Yol görseli gelene kadar renk: patika toprak, çakıl kum grisi, kaldırım taş; yıprandıkça koyulaşır.
-                        sr.sprite = SpriteMaterials.Diamond;
-                        bool even = ((x + y) & 1) == 0;
-                        Color rc = road == RoadType.Path ? (Color)(even ? new Color32(150, 122, 88, 255) : new Color32(143, 116, 83, 255))
-                            : road == RoadType.Gravel ? (Color)(even ? new Color32(170, 160, 140, 255) : new Color32(162, 152, 133, 255))
-                            : (Color)(even ? new Color32(128, 126, 132, 255) : new Color32(120, 118, 124, 255));
-                        float cond = Map.GetRoadCondition(p);
-                        if (Map.IsNaturalRoad(p)) rc = Color.Lerp(sr.color, rc, 0.4f + 0.6f * cond);       // silik patika çimle karışır
-                        else if (GridMap.ConditionBand(cond) == 1) rc *= 0.85f;
-                        else if (GridMap.ConditionBand(cond) == 2) rc *= 0.7f;
-                        rc.a = 1f;
-                        sr.color = rc;
+                        float roadCond = Map.GetRoadCondition(p);
+                        int band = GridMap.ConditionBand(roadCond);
+                        bool natural = Map.IsNaturalRoad(p);
+                        // Yol karosu (340). Kendiliğinden oluşan patika silikken çim kalır, belirginleşince patika karosuna döner.
+                        var roadArt = natural && roadCond < 0.5f ? null : IsoArt.Road(road, band, x, y);
+                        if (roadArt != null)
+                        {
+                            sr.sprite = roadArt;
+                            float k = band == 0 ? 1f : band == 1 ? 0.9f : 0.8f;
+                            sr.color = new Color(k, k, k, 1f);
+                        }
+                        else if (natural && real != null && roadCond < 0.5f)
+                        {
+                            // Silik patika: çim karosu toprağa doğru hafifçe kararır.
+                            float t = 0.25f + 0.5f * roadCond;
+                            sr.color = Color.Lerp(Color.white, new Color(0.86f, 0.74f, 0.58f), t);
+                        }
+                        else
+                        {
+                            // Yol görseli yoksa renk: patika toprak, çakıl kum grisi, kaldırım taş; yıprandıkça koyulaşır.
+                            sr.sprite = SpriteMaterials.Diamond;
+                            bool even = ((x + y) & 1) == 0;
+                            Color rc = road == RoadType.Path ? (Color)(even ? new Color32(150, 122, 88, 255) : new Color32(143, 116, 83, 255))
+                                : road == RoadType.Gravel ? (Color)(even ? new Color32(170, 160, 140, 255) : new Color32(162, 152, 133, 255))
+                                : (Color)(even ? new Color32(128, 126, 132, 255) : new Color32(120, 118, 124, 255));
+                            float cond = Map.GetRoadCondition(p);
+                            if (Map.IsNaturalRoad(p)) rc = Color.Lerp(sr.color, rc, 0.4f + 0.6f * cond);       // silik patika çimle karışır
+                            else if (GridMap.ConditionBand(cond) == 1) rc *= 0.85f;
+                            else if (GridMap.ConditionBand(cond) == 2) rc *= 0.7f;
+                            rc.a = 1f;
+                            sr.color = rc;
+                        }
                     }
                     var conduit = Map.GetConduit(p);
                     if (conduit != ConduitType.None && (Conduits.IsOpen(conduit) || ShowPlot))
