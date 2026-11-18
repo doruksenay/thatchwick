@@ -38,6 +38,8 @@ namespace Thatchwick.Game
         {
             _textures = null;
             Sprites.Clear();
+            IconCache.Clear();
+            IconMissing.Clear();
             FrameCounts.Clear();
         }
 
@@ -55,6 +57,46 @@ namespace Thatchwick.Game
             sprite.name = name;
             Sprites[key] = sprite;
             return sprite;
+        }
+
+        // ---------------- ürün ikonları ----------------
+
+        /// <summary>Kabul edilen ikonun adı varsayılan addan farklıysa (v2, v3...).</summary>
+        private static readonly Dictionary<string, string> IconOverrides = new Dictionary<string, string>
+        {
+            ["item.blank_book"] = "icon_blank_book_v2",   // 401
+            ["item.oak_gall"] = "icon_oak_gall_v3",       // 417
+        };
+
+        private static readonly Dictionary<string, Texture2D> IconCache = new Dictionary<string, Texture2D>();
+        private static readonly HashSet<string> IconMissing = new HashSet<string>();
+
+        /// <summary>
+        /// Eşyanın ürün ikonu (arayüz listeleri için). Sırayla: geçersiz kılma, icon_ad, icon_item_ad.
+        /// Yoksa null (liste yalnızca yazı gösterir).
+        /// </summary>
+        public static Texture2D ItemIcon(string itemId)
+        {
+            if (!Enabled || string.IsNullOrEmpty(itemId) || IconMissing.Contains(itemId)) return null;
+            if (IconCache.TryGetValue(itemId, out var hit) && hit != null) return hit;
+            EnsureLoaded();
+            string shortId = itemId.StartsWith("item.") ? itemId.Substring(5) : itemId;
+            Texture2D tex = null;
+            if (IconOverrides.TryGetValue(itemId, out var name)) _textures.TryGetValue(name, out tex);
+            if (tex == null) _textures.TryGetValue("icon_" + shortId, out tex);
+            if (tex == null) _textures.TryGetValue("icon_item_" + shortId, out tex);
+            if (tex == null) { IconMissing.Add(itemId); return null; }
+            tex.filterMode = FilterMode.Point;
+            IconCache[itemId] = tex;
+            return tex;
+        }
+
+        /// <summary>IMGUI satırında ikon kutusu (ikon yoksa aynı genişlikte boşluk, hizalı kalsın).</summary>
+        public static void IconCell(string itemId, float size = 24f)
+        {
+            var tex = ItemIcon(itemId);
+            if (tex != null) GUILayout.Label(tex, GUILayout.Width(size), GUILayout.Height(size));
+            else GUILayout.Space(size + 4f);
         }
 
         private static Sprite GetCentered(string name)

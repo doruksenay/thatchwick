@@ -1391,6 +1391,7 @@ namespace Thatchwick.Game
             {
                 if (!_content.Items.TryGet(kv.Key, out var def)) continue;
                 GUILayout.BeginHorizontal();
+                IsoArt.IconCell(kv.Key);
                 int damaged = _house.DamagedCount(kv.Key), repaired = _house.RepairedCount(kv.Key);
                 string worn = damaged + repaired == 0 ? "" : $" ({(damaged > 0 ? $"{damaged} hasarlı" : "")}{(damaged > 0 && repaired > 0 ? ", " : "")}{(repaired > 0 ? $"{repaired} onarılmış" : "")})";
                 GUILayout.Label($"{def.DisplayName} x{kv.Value}{worn}");

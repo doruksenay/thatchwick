@@ -112,6 +112,7 @@ namespace Thatchwick.Game
             foreach (var g in _market.Goods())
             {
                 GUILayout.BeginHorizontal();
+                IsoArt.IconCell(g.Id);
                 GUILayout.Label($"{g.DisplayName} ({_house.Count(g.Id)})", GUILayout.Width(120f));
                 if (GUILayout.Button($"Sat {_market.SellPrice(g.Id)}", GUILayout.Width(52f))) Report(_market.Sell(g.Id, 1), g);
                 if (GUILayout.Button("Sat 5", GUILayout.Width(44f))) Report(_market.Sell(g.Id, 5), g);
