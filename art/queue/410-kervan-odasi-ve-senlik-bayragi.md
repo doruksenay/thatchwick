@@ -1,7 +1,7 @@
 ---
 id: "410"
 title: "Kervan Odası tarzı (8 eşya) ve şenlik bayrak dizisi"
-status: pending
+status: review
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 18.11.2026 ("hepsini"), Project belgesi 27 §6.1 ve 27e
 priority: 30
 family: esya
