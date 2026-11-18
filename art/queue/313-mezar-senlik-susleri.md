@@ -1,7 +1,8 @@
 ---
 id: "313"
 title: Mezar taşı + festival süsleri (flama, şenlik direği, şenlik ateşi, kış feneri)
-status: pending
+status: running
+claimed_at: 2026-11-18T09:34Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
 family: esya
