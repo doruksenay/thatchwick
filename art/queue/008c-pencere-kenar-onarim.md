@@ -1,7 +1,8 @@
 ---
 id: "008c"
 title: Pencere kenarındaki boşluğun onarımı (008b)
-status: pending
+status: running
+claimed_at: 2026-11-18T12:16Z
 approved_by: user        # kullanıcı kararı 2026-11-18 (sohbet): 008b kabul, boşluk onarılsın
 family: yapi
 style_gate: false
