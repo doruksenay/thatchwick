@@ -1,7 +1,7 @@
 ---
 id: "354"
 title: Su gücüyle çalışan düzenekler: su hızarı, dink, su çekici
-status: running
+status: blocked
 claimed_at: 2026-11-18T11:58Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
@@ -34,3 +34,7 @@ Ayrıntılı yöntem **301'deki ile aynıdır**; 339'daki su çarkı ve değirme
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+
+## Sorular
+- 2026-11-18: `get_balance` plan: Tier 2 (Pixel Artisan), 4999/5000 gen; `art/budget.md` Tier 1 diyor. Kural: plan Tier 1 değilse dur. 0 gen harcandı. Karar kullanıcıda: budget.md planı güncellenirse iş yeniden `pending` yapılabilir.
