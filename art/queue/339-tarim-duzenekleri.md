@@ -1,7 +1,7 @@
 ---
 id: "339"
 title: Tarım düzenekleri ve saraç (5)
-status: running
+status: review
 claimed_at: 2026-11-18T11:50Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -31,6 +31,8 @@ Ayrıntılı yöntem **301'deki ile aynıdır** (`create_map_object` stil eşlem
 
 ## Doğrulama
 `validate_iso.py`, `style.py check --family esya`, ayak izi kılavuzuyla örtüşme (301 ölçütleri). Kanal parçası iki yanından komşusuna ekleşmeli (yan yana iki kopyayla bak).
+
+- 2026-11-18 (işçi): kanal teslim edilmedi (su yok, kırmızı dal benzeri çıktı); diğer 4 teslim. Ayrıntı: art/results/339-tarim-duzenekleri.md
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
