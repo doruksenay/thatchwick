@@ -58,10 +58,19 @@ namespace Thatchwick.Game
         private int? _pendingLevel;
         private bool _showRooms;
         private WallView _walls;
-        private int _tab;                    // 0 envanter, 1 satın al
+        private int _mode = 1;               // 0 İnşa, 1 Eşya (satın al), 2 Envanter (29-menu-yapisi)
+        private int _buildGroup;             // İnşa sekmesinde seçili araç grubu
+        private string _search = "";         // eşya arama kutusu
+        private string _activeSearch = "";   // Layout'ta kesinleşen arama (aynı olayda denetim sayısı değişmesin)
+        private bool _showFilters;
+        private HashSet<string> _seen;       // görülmüş açık eşyalar ("Yeni" rozeti; şimdilik kayda yazılmaz)
+        private readonly HashSet<string> _pendingSeen = new HashSet<string>();
+        private readonly List<int> _catTabs = new List<int>();   // görünen kategori sekmeleri (boşlar gizli)
+        private string[] _catNames;
         private int _shopCat;                // kategori sırası; Categories.Length = hayvanlar
         private int _roomFilter;             // 0 hepsi, sonra ItemCatalog.Rooms
         private int _setFilter;              // 0 hepsi, sonra ItemCatalog.StyleSets
+        private int _themeFilter;            // 0 hepsi, sonra Decor.Themes (Çatkı, Yörük)
         private GUIStyle _wrap;
         // Arayüz yapısını değiştiren tıklamalar (kategori, satın alma) bir sonraki Layout olayında uygulanır;
         // aynı olayda denetim sayısı değişip IMGUI hatası vermesin.
@@ -118,7 +127,9 @@ namespace Thatchwick.Game
             _view.ShowPlot = false;
             _view.RefreshFloors();
             ClearSelection();
-            _tab = 0;
+            MarkSeen();
+            _mode = 1;
+            _tool = Tool.Items;
         }
 
         private void ClearSelection()
@@ -175,8 +186,9 @@ namespace Thatchwick.Game
         /// Duvar eşyası için dokunulan noktaya en yakın düz duvar: (önündeki karo, kenar). Dokunuş duvarın
         /// yüzüne (asılma yüksekliğine) yapılır; o yükseklik düşülüp karonun duvarlı kenarlarından en yakını seçilir.
         /// </summary>
-        private bool NearestWallSide(Vector3 world, out GridPos tile, out int side)
+        private bool NearestWallSide(Vector3 world, out GridPos tile, out int side, bool window = false)
         {
+            var want = window ? EdgeKind.Window : EdgeKind.Wall;   // pencere içi tahtası ve perde yalnızca pencereye (D2)
             int z = _view.ViewLevel;
             var g = Iso.WorldToGrid(new Vector2(world.x, world.y - Iso.WallMountHeight), z);
             tile = new GridPos(Mathf.FloorToInt(g.x), Mathf.FloorToInt(g.y), z);
@@ -186,7 +198,7 @@ namespace Thatchwick.Game
             float best = float.MaxValue;
             for (int k = 0; k < 4; k++)
             {
-                if (_world.Map.GetEdge(WallSides.EdgeOf(tile, k)) != EdgeKind.Wall) continue;
+                if (_world.Map.GetEdge(WallSides.EdgeOf(tile, k)) != want) continue;
                 if (dist[k] < best) { best = dist[k]; side = k; }
             }
             return side >= 0;
@@ -209,7 +221,8 @@ namespace Thatchwick.Game
             // Duvar eşyası: dokunulan duvarın iç yüzüne asılır.
             if (_placeId != null && IsWallDef(_placeId))
             {
-                if (!NearestWallSide(world, out var wt, out int side)) { _status = "Bir duvarın yüzüne dokun (kapı ve pencere olmaz)."; return; }
+                bool win = _content.Items.TryGet(_placeId, out var wdef) && wdef.WindowMount;
+                if (!NearestWallSide(world, out var wt, out int side, win)) { _status = win ? "Bir pencereye dokun." : "Bir duvarın yüzüne dokun (kapı ve pencere olmaz)."; return; }
                 var wr = _svc.PlaceWallFromInventory(_placeId, wt, side, out var hungItem, _band);
                 _status = wr.Ok ? $"Asıldı ({Decor.BandName(hungItem.WallBand)} bant). Kalan: {_house.Count(_placeId)}" : wr.Reason;
                 if (wr.Ok && _house.Count(_placeId) <= 0) ClearSelectionKeepStatus();
@@ -221,7 +234,7 @@ namespace Thatchwick.Game
             var movingSel = _moving && _selectedId != 0 ? _world.GetItem(_selectedId) : null;
             if (movingSel != null && movingSel.IsWallMounted)
             {
-                if (!NearestWallSide(world, out var mt, out int mside)) { _status = "Bir duvarın yüzüne dokun."; return; }
+                if (!NearestWallSide(world, out var mt, out int mside, movingSel.Def.WindowMount)) { _status = movingSel.Def.WindowMount ? "Bir pencereye dokun." : "Bir duvarın yüzüne dokun."; return; }
                 var mr = _svc.Move(movingSel.Id, mt, mside);
                 _status = mr.Ok ? "Taşındı." : mr.Reason;
                 if (mr.Ok) _moving = false;
@@ -765,68 +778,130 @@ namespace Thatchwick.Game
             if (GUILayout.Button("Kapat", GUILayout.Width(60f))) { Exit(); GUILayout.EndHorizontal(); GUILayout.EndArea(); return; }
             GUILayout.EndHorizontal();
             if (_status.Length > 0) GUILayout.Label(_status, _wrap);
-            if (Application.isEditor) // yalnızca geliştirirken: girdinin nerede takıldığını gösterir
-                GUILayout.Label($"Girdi: basma {_input.PressCount}, arayüzde {_input.BlockedCount}, dokunma {_input.TapCount}");
+            // (Girdi sayıları hata ayıklama satırı menu sadeleştirmesiyle kaldırıldı.)
 
-            DrawTools();
-            if (_tool != Tool.Items) { DrawToolContext(); GUILayout.EndArea(); return; }
+            if (Event.current.type == EventType.Layout)
+            {
+                // Araç seçiliyse İnşa sekmesi; Eşya aracına dönülünce (ör. damlalık) Eşya sekmesi.
+                if (_tool != Tool.Items) _mode = 0;
+                else if (_mode == 0) _mode = 1;
+                _activeSearch = _search ?? "";
+            }
+            DrawHeader();
+            DrawModeTabs();
+            if (_mode == 0) { DrawBuildGroups(); DrawToolContext(); GUILayout.EndArea(); return; }
 
             DrawContext();
 
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Toggle(_tab == 0, "Envanter", GUI.skin.button)) _tab = 0;
-            if (GUILayout.Toggle(_tab == 1, "Satın al", GUI.skin.button)) _tab = 1;
-            GUILayout.EndHorizontal();
-
             _scroll = GUILayout.BeginScrollView(_scroll);
-            if (_tab == 0) DrawInventory(); else DrawShop();
+            if (_mode == 2) DrawInventory(); else DrawShop();
             GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
 
-        private void DrawTools()
+        // Üst şerit (her sekmede): kat, duvar görünümü, hızlı araçlar.
+        private void DrawHeader()
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Kat:", GUILayout.Width(44f));
             LevelButton("Bodrum", -1); LevelButton("Zemin", 0); LevelButton("Üst kat", 1);
             GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
             if (_walls != null)
             {
-                GUILayout.Label("Duvar:", GUILayout.Width(44f));
+                GUILayout.BeginHorizontal();
                 if (GUILayout.Toggle(_walls.Mode == WallMode.Up, "Yukarı", GUI.skin.button)) _walls.Mode = WallMode.Up;
                 if (GUILayout.Toggle(_walls.Mode == WallMode.Cutaway, "Kesit", GUI.skin.button)) _walls.Mode = WallMode.Cutaway;
                 if (GUILayout.Toggle(_walls.Mode == WallMode.Down, "Aşağı", GUI.skin.button)) _walls.Mode = WallMode.Down;
                 if (GUILayout.Toggle(_walls.ShowRoof, "Çatı", GUI.skin.button) != _walls.ShowRoof) _walls.ShowRoof = !_walls.ShowRoof;
+                GUILayout.EndHorizontal();
             }
-            GUILayout.EndHorizontal();
-            if (_houseValue < 0) _houseValue = _svc.HouseValue();
-            GUILayout.Label($"Ev değeri: {_houseValue} akçe", _wrap);
-
-            ToolRow(("Eşya", Tool.Items), ("Oda", Tool.Room), ("Duvar", Tool.Wall), ("Yarım duvar", Tool.HalfWall));
-            ToolRow(("Kapı", Tool.Door), ("Pencere", Tool.Window), ("Kaldır", Tool.EraseEdge));
-            ToolRow(("Çit", Tool.Fence), ("Çit kapısı", Tool.Gate), ("Korkuluk", Tool.Railing), ("Çatı", Tool.Roof));
-            ToolRow(("Kaplama", Tool.Finish), ("Oda kapl.", Tool.FinishRoom), ("Zemin", Tool.Floor), ("Oda zem.", Tool.FloorRoom));
-            ToolRow(("Duvar it", Tool.PushWall), ("Oda taşı", Tool.MoveRoom), ("Oda kopyala", Tool.CopyRoom));
-            ToolRow(("Damlalık", Tool.Eyedropper), ("Balyoz", Tool.Demolish), ("Çim", Tool.FloorErase), ("Gölet kaz", Tool.Pond));
-            ToolRow(("Patika", Tool.RoadPath), ("Çakıl yol", Tool.RoadGravel), ("Kaldırım", Tool.RoadPaved), ("Yol sil", Tool.RoadErase));
             GUILayout.BeginHorizontal();
-            ConduitButton("Ark", ConduitType.Ditch); ConduitButton("Taş ark", ConduitType.StoneChannel); ConduitButton("Oluk", ConduitType.Flume);
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            ConduitButton("Kütük boru", ConduitType.WoodPipe); ConduitButton("Künk", ConduitType.ClayPipe); ConduitButton("Kurşun", ConduitType.LeadPipe); ConduitButton("Su yolu sil", ConduitType.None);
-            GUILayout.EndHorizontal();
-            ToolRow((_view.ViewLevel < 0 ? "Kaz" : "Döşeme", Tool.LevelBuild), (_view.ViewLevel < 0 ? "Doldur" : "Döşeme sök", Tool.LevelRemove), ("Arsa", Tool.Plot));
-            GUILayout.BeginHorizontal();
-            ToolButton("Depo", Tool.ZoneStorage); ToolButton("Otlak", Tool.ZonePasture); ToolButton("Bölge sil", Tool.ZoneErase);
+            ToolButton("Damlalık", Tool.Eyedropper); ToolButton("Balyoz", Tool.Demolish);
             if (GUILayout.Toggle(_showRooms, "Odalar", GUI.skin.button) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
             // Düğme her karede çizilir (koşullu denetim IMGUI yerleşimini bozar); boş yığında pasif.
             GUI.enabled = _svc.CanUndo;
-            if (GUILayout.Button(_svc.CanUndo ? $"Geri al: {_svc.UndoLabel}" : "Geri al")) _deferred = () => { var u = _svc.Undo(); _status = u.Ok ? "Geri alındı." : u.Reason; RefreshOverlay(); };
+            if (GUILayout.Button(new GUIContent("Geri al", _svc.CanUndo ? _svc.UndoLabel : null))) _deferred = () => { var u = _svc.Undo(); _status = u.Ok ? "Geri alındı." : u.Reason; RefreshOverlay(); };
             GUI.enabled = true;
             GUILayout.EndHorizontal();
-            if (_tool != Tool.Items) GUILayout.Label(ToolHelp(), _wrap);
         }
+
+        // Üç ana sekme (Sims/AC gibi): İnşa · Eşya · Envanter.
+        private void DrawModeTabs()
+        {
+            GUILayout.Space(4f);
+            GUILayout.BeginHorizontal();
+            ModeTab("İNŞA", 0); ModeTab("EŞYA", 1); ModeTab("ENVANTER", 2);
+            GUILayout.EndHorizontal();
+            GUILayout.Space(4f);
+        }
+
+        private void ModeTab(string label, int mode)
+        {
+            if (!GUILayout.Toggle(_mode == mode, label, GUI.skin.button, GUILayout.Height(28f)) || _mode == mode) return;
+            _deferred = () =>
+            {
+                MarkSeen();
+                _mode = mode;
+                if (mode == 0) SelectGroup(_buildGroup); else _tool = Tool.Items;
+                ClearSelection();
+                _status = "";
+                _scroll = Vector2.zero;
+            };
+        }
+
+        // İnşa araçları iki seviye: grup, sonra araç (en çok 2 seviye kuralı).
+        private static readonly (string name, (string label, Tool tool)[] tools)[] BuildGroups =
+        {
+            ("Duvar ve oda", new[] { ("Oda", Tool.Room), ("Duvar", Tool.Wall), ("Yarım duvar", Tool.HalfWall), ("Kapı", Tool.Door),
+                ("Pencere", Tool.Window), ("Kaldır", Tool.EraseEdge), ("Duvar it", Tool.PushWall), ("Oda taşı", Tool.MoveRoom), ("Oda kopyala", Tool.CopyRoom) }),
+            ("Zemin ve çatı", new[] { ("Zemin", Tool.Floor), ("Oda zemini", Tool.FloorRoom), ("Duvar kapl.", Tool.Finish), ("Oda kapl.", Tool.FinishRoom),
+                ("Çatı", Tool.Roof), ("Çim", Tool.FloorErase) }),
+            ("Bahçe ve yol", new[] { ("Çit", Tool.Fence), ("Çit kapısı", Tool.Gate), ("Korkuluk", Tool.Railing), ("Gölet kaz", Tool.Pond),
+                ("Patika", Tool.RoadPath), ("Çakıl yol", Tool.RoadGravel), ("Kaldırım", Tool.RoadPaved), ("Yol sil", Tool.RoadErase) }),
+            ("Su yolu", new (string, Tool)[0]),
+            ("Arsa ve kat", new[] { ("Döşeme", Tool.LevelBuild), ("Döşeme sök", Tool.LevelRemove), ("Arsa al", Tool.Plot),
+                ("Depo", Tool.ZoneStorage), ("Otlak", Tool.ZonePasture), ("Bölge sil", Tool.ZoneErase) }),
+        };
+        private static readonly string[] BuildGroupNames = BuildGroups.Select(g => g.name).ToArray();
+
+        private void SelectGroup(int g)
+        {
+            _buildGroup = g;
+            var tools = BuildGroups[g].tools;
+            if (tools.Length > 0) _tool = tools[0].tool;
+            else { _tool = Tool.Conduit; _conduitType = ConduitType.Ditch; _conduitStart = null; }
+        }
+
+        private void DrawBuildGroups()
+        {
+            int g = GUILayout.SelectionGrid(_buildGroup, BuildGroupNames, 3);
+            if (g != _buildGroup) { int gg = g; _deferred = () => { SelectGroup(gg); ClearSelection(); _status = ""; }; }
+            GUILayout.Space(4f);
+            var tools = BuildGroups[_buildGroup].tools;
+            if (tools.Length == 0)
+            {
+                GUILayout.BeginHorizontal();
+                ConduitButton("Ark", ConduitType.Ditch); ConduitButton("Taş ark", ConduitType.StoneChannel); ConduitButton("Oluk", ConduitType.Flume);
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                ConduitButton("Kütük boru", ConduitType.WoodPipe); ConduitButton("Künk", ConduitType.ClayPipe); ConduitButton("Kurşun", ConduitType.LeadPipe); ConduitButton("Sil", ConduitType.None);
+                GUILayout.EndHorizontal();
+            }
+            else
+            {
+                for (int i = 0; i < tools.Length; i += 3)
+                {
+                    GUILayout.BeginHorizontal();
+                    for (int j = i; j < i + 3 && j < tools.Length; j++) ToolButton(ToolLabel(tools[j].label, tools[j].tool), tools[j].tool);
+                    GUILayout.EndHorizontal();
+                }
+            }
+            GUILayout.Label(ToolHelp(), _wrap);
+        }
+
+        private string ToolLabel(string label, Tool tool) =>
+            tool == Tool.LevelBuild ? (_view.ViewLevel < 0 ? "Kaz" : "Döşeme")
+            : tool == Tool.LevelRemove ? (_view.ViewLevel < 0 ? "Doldur" : "Döşeme sök")
+            : label;
 
         private void ToolRow(params (string label, Tool tool)[] tools)
         {
@@ -1160,7 +1235,12 @@ namespace Thatchwick.Game
                     : $"Yük {load}/{sel.Def.MaxLoad}");
             }
             if (sel.IsTarnished) GUILayout.Label("Ayna kararmış: canlı modda \"Cilala\".");
-            if (sel.HasContents) GUILayout.Label($"Döküntü: {sel.Contents.Count} eşya. Canlı modda \"Topla\" ya da envantere al.");
+            if (sel.Def.IsFillDecor)
+            {
+                // Doldurulan dekor (D2): içi gerçek ürünle, canlı modda "Doldur"; envantere alınınca içindekiler de döner.
+                GUILayout.Label($"İçi: {Thatchwick.Core.Build.DecorSystem.FillLabel(sel, _content)}. Canlı modda \"Doldur\" envanterden gerçek ürün alır.", _wrap);
+            }
+            else if (sel.HasContents) GUILayout.Label($"Döküntü: {sel.Contents.Count} eşya. Canlı modda \"Topla\" ya da envantere al.");
             if (sel.IsWallMounted && sel.Def.EffectiveBands.Count > 1)
             {
                 GUILayout.BeginHorizontal();
@@ -1262,6 +1342,15 @@ namespace Thatchwick.Game
 
         private static readonly string[] RoomFilterNames = BuildRoomFilterNames();
         private static readonly string[] SetFilterNames = BuildSetFilterNames();
+        private static readonly string[] ThemeFilterNames = BuildThemeFilterNames();
+
+        private static string[] BuildThemeFilterNames()
+        {
+            var n = new string[Decor.Themes.Length + 1];
+            n[0] = "Her tarz";
+            for (int i = 0; i < Decor.Themes.Length; i++) n[i + 1] = Decor.Themes[i].name;
+            return n;
+        }
 
         private static string[] BuildRoomFilterNames()
         {
@@ -1280,26 +1369,95 @@ namespace Thatchwick.Game
         }
 
         // Sims tarzı satın alma: kategori sekmeleri, oda ve takım filtresi, eşya kartları.
+        // Eşya sekmesi: arama, boş kategoriler gizli, karma kilit modeli, "Yeni" rozeti (29-menu-yapisi).
         private void DrawShop()
         {
-            int n = ItemCatalog.Categories.Length;
-            var names = new string[n + 1];
-            for (int i = 0; i < n; i++) names[i] = ItemCatalog.Categories[i].name;
-            names[n] = "Hayvan";
-            int cat = GUILayout.SelectionGrid(_shopCat, names, 3);
-            if (cat != _shopCat) _deferred = () => { _shopCat = cat; _scroll = Vector2.zero; };
-            if (_shopCat == n) { DrawAnimals(); return; }
+            int level = _svc.AccountLevel != null ? _svc.AccountLevel() : int.MaxValue;
+            if (_seen == null)
+            {
+                // İlk açılışta açık olanlar görülmüş sayılır; sonradan açılanlar "Yeni" görünür.
+                _seen = new HashSet<string>();
+                foreach (var c in ItemCatalog.Categories)
+                    foreach (var d in ItemCatalog.InCategory(_content, c.id)) if (_svc.IsUnlocked(d)) _seen.Add(d.Id);
+            }
+            if (_catNames == null || Event.current.type == EventType.Layout) RebuildShopTabs(level);
 
-            int roomF = GUILayout.SelectionGrid(_roomFilter, RoomFilterNames, 3);
-            if (roomF != _roomFilter) _deferred = () => _roomFilter = roomF;
-            int setF = GUILayout.SelectionGrid(_setFilter, SetFilterNames, 3);
-            if (setF != _setFilter) _deferred = () => _setFilter = setF;
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Ara:", GUILayout.Width(32f));
+            _search = GUILayout.TextField(_search ?? "");
+            GUILayout.EndHorizontal();
+            string q = _activeSearch.Trim();
+            if (q.Length > 0) { DrawSearch(q, level); return; }
+
+            if (_catTabs.Count == 0) { GUILayout.Label("Henüz alınabilecek eşya yok."); return; }
+            int n = ItemCatalog.Categories.Length;
+            int sel = Mathf.Max(0, _catTabs.IndexOf(_shopCat));
+            int pick = GUILayout.SelectionGrid(sel, _catNames, 3);
+            if (pick != sel) { int c = _catTabs[pick]; _deferred = () => { MarkSeen(); _shopCat = c; _scroll = Vector2.zero; }; }
+            int cat = _catTabs[sel];
+            if (cat == n) { DrawAnimals(); return; }
+
+            bool filtering = _roomFilter > 0 || _setFilter > 0 || _themeFilter > 0;
+            string fl = (filtering ? "Filtre (açık)" : "Filtre") + (_showFilters ? " ▴" : " ▾");
+            if (GUILayout.Toggle(_showFilters, fl, GUI.skin.button) != _showFilters) { bool v = !_showFilters; _deferred = () => _showFilters = v; }
+            if (_showFilters)
+            {
+                int roomF = GUILayout.SelectionGrid(_roomFilter, RoomFilterNames, 3);
+                if (roomF != _roomFilter) _deferred = () => _roomFilter = roomF;
+                int setF = GUILayout.SelectionGrid(_setFilter, SetFilterNames, 3);
+                if (setF != _setFilter) _deferred = () => _setFilter = setF;
+                int themeF = GUILayout.SelectionGrid(_themeFilter, ThemeFilterNames, 3);
+                if (themeF != _themeFilter) _deferred = () => _themeFilter = themeF;
+            }
             string room = _roomFilter > 0 ? ItemCatalog.Rooms[_roomFilter - 1].id : null;
             string set = _setFilter > 0 ? ItemCatalog.StyleSets[_setFilter - 1] : null;
+            string theme = _themeFilter > 0 ? Decor.Themes[_themeFilter - 1].id : null;
 
-            var list = ItemCatalog.InCategory(_content, ItemCatalog.Categories[_shopCat].id, room, set);
+            var list = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme), level);
             if (list.Count == 0) GUILayout.Label("Bu filtreyle eşya yok.");
             foreach (var def in list) DrawCard(def);
+        }
+
+        // Görünür eşyalar: açıklar + yalnızca bir sonraki kilit kademesi (kilitli, şartıyla). Daha uzaktakiler gizli.
+        private List<ItemDef> Visible(List<ItemDef> list, int level)
+        {
+            int next = int.MaxValue;
+            foreach (var d in list)
+                if (!_svc.IsUnlocked(d) && d.UnlockLevel > level && d.UnlockLevel < next) next = d.UnlockLevel;
+            return list.Where(d => _svc.IsUnlocked(d) || d.UnlockLevel <= next).ToList();
+        }
+
+        // Kategori sekmeleri yalnızca Layout'ta kurulur; boş kategori gizli, yeni eşyası olan "•" alır.
+        private void RebuildShopTabs(int level)
+        {
+            _catTabs.Clear();
+            var names = new List<string>();
+            for (int i = 0; i < ItemCatalog.Categories.Length; i++)
+            {
+                var vis = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[i].id), level);
+                if (vis.Count == 0) continue;
+                bool fresh = vis.Any(d => _svc.IsUnlocked(d) && !_seen.Contains(d.Id));
+                _catTabs.Add(i);
+                names.Add(ItemCatalog.Categories[i].name + (fresh ? " •" : ""));
+            }
+            if (_animals != null) { _catTabs.Add(ItemCatalog.Categories.Length); names.Add("Hayvan"); }
+            _catNames = names.ToArray();
+        }
+
+        private void DrawSearch(string q, int level)
+        {
+            var ids = new HashSet<string>();
+            int shown = 0;
+            foreach (var c in ItemCatalog.Categories)
+                foreach (var d in Visible(ItemCatalog.InCategory(_content, c.id), level))
+                    if (ids.Add(d.Id) && d.DisplayName.IndexOf(q, System.StringComparison.CurrentCultureIgnoreCase) >= 0) { DrawCard(d); shown++; }
+            if (shown == 0) GUILayout.Label("Bulunamadı.");
+        }
+
+        private void MarkSeen()
+        {
+            if (_seen != null) _seen.UnionWith(_pendingSeen);
+            _pendingSeen.Clear();
         }
 
         private void DrawCard(ItemDef def)
@@ -1307,10 +1465,15 @@ namespace Thatchwick.Game
             GUILayout.BeginVertical(GUI.skin.box);
             string set = string.IsNullOrEmpty(def.StyleSet) ? "" : $" · {def.StyleSet}";
             GUILayout.Label($"{def.DisplayName} ({def.Width}x{def.Height}){set}");
-            string info = ItemCatalog.Describe(def);
+            string info = ItemCatalog.Describe(def, null, _content);
             if (info.Length > 0) GUILayout.Label(info, _wrap);
             bool unlocked = _svc.IsUnlocked(def);
             int have = _house.Count(def.Id);
+            if (unlocked && _seen != null && !_seen.Contains(def.Id))
+            {
+                _pendingSeen.Add(def.Id);
+                GUILayout.Label("YENİ");
+            }
             GUILayout.BeginHorizontal();
             GUI.enabled = unlocked;
             if (GUILayout.Button(unlocked ? $"Al {def.Price}" : $"Sv {def.UnlockLevel} gerekli"))
@@ -1336,8 +1499,11 @@ namespace Thatchwick.Game
             if (_animals == null) { GUILayout.Label("Hayvanlar bu sahnede yok."); return; }
             GUILayout.Label("Önce barınak koy (Bahçe: kümes, ahır, kulübe, sepet, kovan), sonra hayvanı al. Yemi pazardan al, barınağa dokunup \"Yem koy\".", _wrap);
             int level = _svc.AccountLevel != null ? _svc.AccountLevel() : int.MaxValue;
+            int nextAnimal = int.MaxValue;
+            foreach (var a in _content.Animals.All) if (a.UnlockLevel > level && a.UnlockLevel < nextAnimal) nextAnimal = a.UnlockLevel;
             foreach (var a in _content.Animals.All)
             {
+                if (a.UnlockLevel > nextAnimal) continue;   // uzak kilitler gizli, yalnızca sıradaki kademe görünür
                 GUILayout.BeginVertical(GUI.skin.box);
                 GUILayout.Label($"{a.DisplayName} · {a.Price} akçe");
                 GUILayout.Label(ItemCatalog.Describe(a, _content), _wrap);

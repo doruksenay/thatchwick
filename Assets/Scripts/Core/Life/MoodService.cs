@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Mood;
@@ -188,9 +189,10 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Eşyanın odaya kattığı güzellik (durum ve kararma çarpanlı; döküntü eksi).</summary>
-        public static double BeautyOfItem(ItemInstance item)
+        public static double BeautyOfItem(ItemInstance item, ContentDatabase content = null)
         {
-            double b = item.Def.Beauty;
+            // Doldurulan dekor: dolulukla artar, çürükte eksi, kendi ürünüyle ek (D2).
+            double b = item.Def.IsFillDecor && content != null ? DecorSystem.FillBeauty(item, content) : item.Def.Beauty;
             if (b > 0)
             {
                 b *= Decor.BeautyFactor(item.Condition);
@@ -211,7 +213,7 @@ namespace Thatchwick.Core.Life
             foreach (var item in _world.Items)
             {
                 if (!tiles.Contains(item.Position)) continue;
-                double b = BeautyOfItem(item);
+                double b = BeautyOfItem(item, Content);
                 if (item.IsRug && b > 0)
                 {
                     // Halılar üst üste serilir: güzelliğe yalnızca en üstte kaldığı karolar sayılır.

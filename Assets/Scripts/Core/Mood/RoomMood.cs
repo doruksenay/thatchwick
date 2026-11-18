@@ -31,7 +31,7 @@ namespace Thatchwick.Core.Mood
             if (_accum < IntervalDays) return;
             _accum = 0;
 
-            var cache = new Dictionary<int, (string set, bool light)>();
+            var cache = new Dictionary<int, (string set, bool light, string theme)>();
             foreach (var c in characters)
             {
                 if (c.IsDead || !c.MoodEnabled) continue;
@@ -39,10 +39,12 @@ namespace Thatchwick.Core.Mood
                 if (room == null || !room.IsIndoor) continue;
                 if (!cache.TryGetValue(room.Id, out var info))
                 {
-                    info = (HarmonySet(room, _world), HasLight(room, _world));
+                    info = (HarmonySet(room, _world), HasLight(room, _world), HarmonyTheme(room, _world));
                     cache[room.Id] = info;
                 }
-                if (info.set != null) c.AddMoodlet(MoodCatalog.Harmony, _catalog);
+                // Aynı takım (kademe) ya da aynı tarz (Çatkı, Yörük) "Uyumlu ev"; ikisi birden "Özenli ev" (27 §6.1).
+                if (info.set != null && info.theme != null) c.AddMoodlet(MoodCatalog.HarmonyFine, _catalog);
+                else if (info.set != null || info.theme != null) c.AddMoodlet(MoodCatalog.Harmony, _catalog);
                 if (info.light) c.AddMoodlet(MoodCatalog.BrightRoom, _catalog);
             }
         }
@@ -55,12 +57,19 @@ namespace Thatchwick.Core.Mood
         }
 
         /// <summary>Odada eşik kadar eşyası olan stil seti (en çok olan); yoksa null.</summary>
-        public static string HarmonySet(Room room, WorldState world, int threshold = HarmonyThreshold)
+        public static string HarmonySet(Room room, WorldState world, int threshold = HarmonyThreshold) =>
+            MostCommon(room, world, threshold, d => d.StyleSet);
+
+        /// <summary>Odada eşik kadar eşyası olan tarz (Çatkı, Yörük; en çok olan); yoksa null.</summary>
+        public static string HarmonyTheme(Room room, WorldState world, int threshold = HarmonyThreshold) =>
+            MostCommon(room, world, threshold, d => d.StyleTheme);
+
+        private static string MostCommon(Room room, WorldState world, int threshold, Func<Content.ItemDef, string> key)
         {
             var counts = new Dictionary<string, int>(StringComparer.Ordinal);
             foreach (var item in ItemsIn(room, world))
             {
-                var set = item.Def.StyleSet;
+                var set = key(item.Def);
                 if (string.IsNullOrEmpty(set)) continue;
                 counts.TryGetValue(set, out int n);
                 counts[set] = n + 1;

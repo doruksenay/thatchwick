@@ -14,6 +14,9 @@ namespace Thatchwick.Core.Build
         // Envanterdeki hasarlı ve onarılmış adetler (kalan sağlamdır). Çöken raftan düşen eşya hasarlı gelir (27-ev-dekorasyonu).
         private readonly Dictionary<string, int> _damaged = new Dictionary<string, int>(StringComparer.Ordinal);
         private readonly Dictionary<string, int> _repaired = new Dictionary<string, int>(StringComparer.Ordinal);
+        // Pazardan alınmış adetler (D2: doldurulan dekorda "Kendi emeğimiz" eki yalnızca hanenin kendi ürününe).
+        // Tüketimde hangisinin gittiği izlenmez; alınmış sayısı envanteri aşamaz (Bought ≤ Count).
+        private readonly Dictionary<string, int> _bought = new Dictionary<string, int>(StringComparer.Ordinal);
 
         public int Akce { get; private set; }
 
@@ -124,6 +127,42 @@ namespace Thatchwick.Core.Build
             int n = Math.Min(room, count);
             if (n <= 0) return;
             Bump(condition == ItemCondition.Damaged ? _damaged : _repaired, itemId, n);
+        }
+
+        // ---- pazardan alınan ve hanenin kendi ürünü (D2) ----
+
+        /// <summary>Envantere pazardan alınarak giren adetleri işaretler (AddItem'dan sonra çağrılır).</summary>
+        public void MarkBought(string itemId, int count)
+        {
+            if (string.IsNullOrEmpty(itemId) || count <= 0) return;
+            Bump(_bought, itemId, count);
+            if (_bought[itemId] > Count(itemId)) _bought[itemId] = Count(itemId);
+        }
+
+        /// <summary>Envanterdeki pazardan alınmış adet (envanteri aşmaz).</summary>
+        public int BoughtCount(string itemId) => itemId != null && _bought.TryGetValue(itemId, out int n) ? Math.Min(n, Count(itemId)) : 0;
+        /// <summary>Envanterdeki hanenin kendi ürünü (toplam − alınmış).</summary>
+        public int OwnCount(string itemId) => Count(itemId) - BoughtCount(itemId);
+
+        /// <summary>Bir adet alır; önce hanenin kendi ürününden. own: alınan adet kendi ürünü mü.</summary>
+        public bool TryTakePreferOwn(string itemId, out bool own)
+        {
+            own = false;
+            if (Count(itemId) <= 0) return false;
+            own = OwnCount(itemId) > 0;
+            if (!own) Bump(_bought, itemId, -1);
+            if (!TryTakeItem(itemId)) return false;
+            if (_bought.TryGetValue(itemId, out int b) && b > Count(itemId)) { if (Count(itemId) <= 0) _bought.Remove(itemId); else _bought[itemId] = Count(itemId); }
+            return true;
+        }
+
+        /// <summary>Alınmış adetler (kayıt).</summary>
+        public List<KeyValuePair<string, int>> BoughtList()
+        {
+            var list = new List<KeyValuePair<string, int>>();
+            foreach (var kv in _bought) { int n = BoughtCount(kv.Key); if (n > 0) list.Add(new KeyValuePair<string, int>(kv.Key, n)); }
+            list.Sort((a, b) => string.CompareOrdinal(a.Key, b.Key));
+            return list;
         }
 
         /// <summary>Envanterdeki (kimlik, adet) çiftleri, kimliğe göre sıralı.</summary>

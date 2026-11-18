@@ -131,6 +131,10 @@ namespace Thatchwick.Core.Content
         public bool Polish { get; set; }
         /// <summary>İçindekileri (döküntü yığını) durumlarıyla envantere alır.</summary>
         public bool CollectContents { get; set; }
+        /// <summary>Doldurulan dekoru envanterdeki gerçek ürünle doldurur (D2).</summary>
+        public bool FillDecor { get; set; }
+        /// <summary>Doldurulan dekordan bir tane yer (Need/Restore ile açlık giderir).</summary>
+        public bool EatContents { get; set; }
         /// <summary>Yalnızca meyvesi olgun ağaçta yapılabilir.</summary>
         public bool RequiresFruit { get; set; }
         /// <summary>Meyveyi toplar: ağaç yerinde kalır, meyve yeniden olgunlaşmaya başlar.</summary>
@@ -154,7 +158,7 @@ namespace Thatchwick.Core.Content
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
             || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
             || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter
-            || RepairMaterial != null || Polish || CollectContents;
+            || RepairMaterial != null || Polish || CollectContents || FillDecor || EatContents;
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;
 

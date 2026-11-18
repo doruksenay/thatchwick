@@ -172,6 +172,7 @@ namespace Thatchwick.Core.Economy
             int cost = BuyPrice(itemId) * count;
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
             _house.AddItem(itemId, count);
+            _house.MarkBought(itemId, count);   // pazar malı: "Kendi emeğimiz" eki almaz (27 §9)
             TradeXp(cost * 0.1);
             Trader?.Invoke()?.GainSkillXp(SkillType.Carting, 0.5 * count);    // malı taşımak arabacılık
             return PlacementCheck.Success;
@@ -206,7 +207,7 @@ namespace Thatchwick.Core.Economy
 
             for (int i = 0; i < offer.GiveCount; i++) _house.TryTakeItem(offer.GiveItem);
             if (offer.IsContract) _house.AddAkce(offer.RewardAkce);
-            else _house.AddItem(offer.GetItem, offer.GetCount);
+            else { _house.AddItem(offer.GetItem, offer.GetCount); _house.MarkBought(offer.GetItem, offer.GetCount); }
             offer.Taken = true;
             TradeXp(10 + offer.RewardAkce * 0.2);
             OfferAccepted?.Invoke(offer);

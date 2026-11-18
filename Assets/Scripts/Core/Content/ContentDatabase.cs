@@ -75,6 +75,26 @@ namespace Thatchwick.Core.Content
                 if (item.FitsOn.Count > 0 && item.Placement != ItemPlacement.Surface) errors.Add($"{item.Id}: fitsOn yalnızca dekorda (Surface) kullanılır.");
                 if (item.TarnishDays > 0f && !item.IsMirror) errors.Add($"{item.Id}: kararma yalnızca aynada olur.");
                 if (item.IsMirror && item.Placement == ItemPlacement.Resource) errors.Add($"{item.Id}: ayna yerleştirilebilir olmalı.");
+                // D2: tarz, doldurulan dekor, pencere, örtü.
+                if (item.StyleTheme != null && Array.FindIndex(Decor.Themes, t => t.id == item.StyleTheme) < 0)
+                    errors.Add($"{item.Id}: bilinmeyen tarz '{item.StyleTheme}'.");
+                if (item.FillCount < 0 || item.FillCount > 12) errors.Add($"{item.Id}: fillCount 0-12 arasında olmalı.");
+                if ((item.FillCount > 0) != (item.FillWith.Count > 0)) errors.Add($"{item.Id}: fillWith ve fillCount birlikte yazılmalı.");
+                if (item.IsFillDecor)
+                {
+                    if (item.Placement != ItemPlacement.Surface && item.Placement != ItemPlacement.Wall) errors.Add($"{item.Id}: yalnızca dekor ya da duvar eşyası doldurulur.");
+                    foreach (var f in item.FillWith)
+                        if (!Items.TryGet(f, out var fd)) errors.Add($"{item.Id}: doldurulacak ürün '{f}' bulunamadı.");
+                        else if (fd.Placement != ItemPlacement.Resource) errors.Add($"{item.Id}: doldurulacak ürün '{f}' bir kaynak (envanter ürünü) olmalı.");
+                }
+                foreach (var it in item.Interactions)
+                    if ((it.FillDecor || it.EatContents) && !item.IsFillDecor) errors.Add($"{item.Id}/{it.Id}: doldurma ve yeme yalnızca doldurulan dekorda olur.");
+                if (item.WindowMount && item.Placement != ItemPlacement.Wall) errors.Add($"{item.Id}: window yalnızca duvar eşyasında kullanılır.");
+                if (item.WindowMount && item.WallWidth != 1) errors.Add($"{item.Id}: pencere eşyası 1 kenar olmalı.");
+                if (item.Insulation < 0f || item.Insulation > 1f) errors.Add($"{item.Id}: insulation 0-1 arasında olmalı.");
+                if (item.Insulation > 0f && item.Placement != ItemPlacement.Wall) errors.Add($"{item.Id}: insulation yalnızca duvar eşyasında kullanılır.");
+                if (item.FitsKind(Decor.Cover) && item.EffectiveFits.Count > 1) errors.Add($"{item.Id}: örtü yalnızca örtü yuvasına konur.");
+                if (item.SurfaceSlots.FindAll(sl => sl.Kind == Decor.Cover).Count > 1) errors.Add($"{item.Id}: en çok bir örtü yuvası olur.");
                 if (item.IsHousing)
                 {
                     if (item.HousingCapacity < 1) errors.Add($"{item.Id}: barınak kapasitesi en az 1 olmalı.");

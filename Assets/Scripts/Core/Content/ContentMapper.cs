@@ -117,6 +117,10 @@ namespace Thatchwick.Core.Content
                 item.IsMirror = dto.mirror;
                 item.TarnishDays = Math.Max(0f, dto.tarnishDays);
                 item.StyleTheme = string.IsNullOrWhiteSpace(dto.styleTheme) ? null : dto.styleTheme.Trim();
+                if (dto.fillWith != null) foreach (var f in dto.fillWith) if (!string.IsNullOrWhiteSpace(f)) item.FillWith.Add(f.Trim());
+                item.FillCount = Math.Max(0, dto.fillCount);
+                item.WindowMount = dto.window;
+                item.Insulation = Math.Max(0f, dto.insulation);
                 if (dto.fitsOn != null) foreach (var f in dto.fitsOn) if (!string.IsNullOrWhiteSpace(f)) item.FitsOn.Add(f.Trim());
                 if (dto.wallBands != null)
                     foreach (var b in dto.wallBands)
@@ -170,7 +174,7 @@ namespace Thatchwick.Core.Content
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
                             || i.addIce > 0f || i.requiresFrost || i.piped || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter
-                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents;
+                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents || i.fillDecor || i.eatContents;
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -235,7 +239,9 @@ namespace Thatchwick.Core.Content
                             Slaughter = i.slaughter,
                             RepairMaterial = string.IsNullOrWhiteSpace(i.repair) ? null : i.repair,
                             Polish = i.polish,
-                            CollectContents = i.collectContents
+                            CollectContents = i.collectContents,
+                            FillDecor = i.fillDecor,
+                            EatContents = i.eatContents
                         };
                         AddMaterials(interaction, i.materials);
                         bool badExtra = false;

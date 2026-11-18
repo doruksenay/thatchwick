@@ -446,12 +446,15 @@ namespace Thatchwick.Core.Life
             _heat = heat;
             heat.OutdoorOffset = () => WeatherSystem.TemperatureOffset(Weather.Today(Clock.TotalDays));
             Spoilage.TemperatureAt = heat.TemperatureAt;   // bodrum mahzeni serinlik şartı
+            Decor.TemperatureAt = heat.TemperatureAt;      // sepetteki meyve oda sıcaklığında bozulur
             if (_plants != null) _plants.TemperatureAt = heat.TemperatureAt;
         }
         private PlantSystem _plants;
         private HeatSystem _heat;
         public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
+        /// <summary>Doldurulan dekora giren yiyecek envanterdeki en eski partinin yaşını taşır.</summary>
+        public void Attach(Thatchwick.Core.Work.InteractionEffects effects) { effects.FoodAge = Spoilage.OldestAge; }
 
         /// <summary>Ruh hali kaynaklarını yeniler (oyun hızından bağımsız, küçük adımlarla).</summary>
         public void Tick(double gameDays)

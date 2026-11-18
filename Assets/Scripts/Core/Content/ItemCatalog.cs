@@ -45,7 +45,11 @@ namespace Thatchwick.Core.Content
         }
 
         /// <summary>Menüde gösterilen eşyalar: fiyatı olan, kaynak ya da bitki olmayan; kategoriye göre.</summary>
-        public static List<ItemDef> InCategory(ContentDatabase content, string category, string room = null, string set = null)
+        public static List<ItemDef> InCategory(ContentDatabase content, string category, string room = null, string set = null) =>
+            InCategory(content, category, room, set, null);
+
+        /// <summary>Kategori ve süzgeçler (oda, takım/kademe, tarz). Tarz süzgeci D2 (Çatkı, Yörük).</summary>
+        public static List<ItemDef> InCategory(ContentDatabase content, string category, string room, string set, string theme)
         {
             var list = new List<ItemDef>();
             foreach (var d in content.Items.All)
@@ -54,14 +58,17 @@ namespace Thatchwick.Core.Content
                 if (d.Category != category) continue;
                 if (room != null && !d.Rooms.Contains(room)) continue;
                 if (set != null && d.StyleSet != set) continue;
+                if (theme != null && d.StyleTheme != theme) continue;
                 list.Add(d);
             }
             list.Sort((a, b) => a.UnlockLevel != b.UnlockLevel ? a.UnlockLevel.CompareTo(b.UnlockLevel) : a.Price.CompareTo(b.Price));
             return list;
         }
 
-        /// <summary>Kart özeti: "Enerji +60 · Dinlenmiş · Isı 80 · Depo +40 · Işık · 3 yuva · Duvara asılır".</summary>
-        public static string Describe(ItemDef def, MoodCatalog moods = null)
+        /// <summary>Kart özeti (content verilirse doldurulan ürün adları): "Enerji +60 · Dinlenmiş · Isı 80 · Depo +40 · Işık · 3 yuva · Duvara asılır".</summary>
+        public static string Describe(ItemDef def, MoodCatalog moods = null) => Describe(def, moods, null);
+
+        public static string Describe(ItemDef def, MoodCatalog moods, ContentDatabase content)
         {
             moods = moods ?? MoodCatalog.Default;
             var parts = new List<string>();
@@ -109,7 +116,14 @@ namespace Thatchwick.Core.Content
             {
                 var bands = new List<string>();
                 foreach (var b in def.EffectiveBands) bands.Add(Decor.BandName(b));
-                parts.Add($"Duvara asılır ({string.Join("/", bands)} bant{(def.WallWidth > 1 ? $", {def.WallWidth} karo" : "")})");
+                parts.Add($"{(def.WindowMount ? "Pencereye" : "Duvara")} asılır ({string.Join("/", bands)} bant{(def.WallWidth > 1 ? $", {def.WallWidth} karo" : "")})");
+            }
+            if (def.Insulation > 0f) parts.Add($"Isı kaybını azaltır (%{(1f - def.Insulation) * 100f:0})");
+            if (def.IsFillDecor)
+            {
+                var names = new List<string>();
+                foreach (var f in def.FillWith) if (names.Count < 3) names.Add(content != null && content.Items.TryGet(f, out var fd) ? fd.DisplayName.ToLowerInvariant() : f);
+                parts.Add($"Doldurulur: {def.FillCount} × {string.Join(", ", names)}{(def.FillWith.Count > 3 ? "..." : "")}");
             }
             if (def.IsCeiling) parts.Add("Tavana asılır");
             if (def.Placement == ItemPlacement.Surface)
@@ -121,6 +135,7 @@ namespace Thatchwick.Core.Content
             if (def.SurfaceSlots.Count > 0 && def.MaxLoad > 0) parts.Add($"Taşır {def.MaxLoad}");
             if (def.Tall) parts.Add("Uzun (önündeki duvarın alt ve orta bandını kapatır)");
             if (def.Beauty > 0) parts.Add($"Güzellik +{def.Beauty}");
+            if (def.StyleTheme != null) parts.Add($"Tarz: {Decor.ThemeName(def.StyleTheme)}");
             if (def.IsMirror) parts.Add(def.TarnishDays > 0f ? "Ayna (görünüş değiştirme; kararır, cilalanır)" : "Ayna (görünüş değiştirme)");
             return string.Join(" · ", parts);
         }

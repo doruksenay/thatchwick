@@ -366,7 +366,12 @@ namespace Thatchwick.Core.World
             foreach (var (t, edge) in WallSides.Segments(tile, side, span))
             {
                 if (!Map.InBounds(t)) return PlacementCheck.Fail("Harita dışı.");
-                if (!Map.EdgeInBounds(edge) || Map.GetEdge(edge) != EdgeKind.Wall)
+                if (def.WindowMount)
+                {
+                    if (!Map.EdgeInBounds(edge) || Map.GetEdge(edge) != EdgeKind.Window)
+                        return PlacementCheck.Fail($"{def.DisplayName} yalnızca pencereye asılır.");
+                }
+                else if (!Map.EdgeInBounds(edge) || Map.GetEdge(edge) != EdgeKind.Wall)
                     return PlacementCheck.Fail(span > 1 ? $"{def.DisplayName} {span} karo düz duvar ister (kapı ve pencere araya girmesin)." : "Yalnızca düz duvara asılır (kapı ve pencereye değil).");
                 foreach (var other in _items)
                 {

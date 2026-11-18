@@ -46,6 +46,9 @@ namespace Thatchwick.Core.Work
         /// <summary>Buzluk en çok bu kadar günlük buz alır.</summary>
         public const float MaxIceDays = 30f;
 
+        /// <summary>Envanterdeki bir yiyeceğin en eski partisinin yaşı (doldurulan dekora o yaşla girer); null ise taze.</summary>
+        public Func<string, double> FoodAge { get; set; }
+
         /// <summary>Çiftçilik sistemi (toprak verimi, kalite); null ise hasat kalitesiz ve toprak yorulmaz.</summary>
         public PlantSystem Plants { get; set; }
 
@@ -107,7 +110,10 @@ namespace Thatchwick.Core.Work
             if (interaction.RequiresFruit && !item.FruitReady)
                 return item.IsGrown ? "Meyve henüz olgunlaşmadı." : $"{item.Def.DisplayName} henüz büyümedi.";
             if (interaction.Polish && !item.IsTarnished) return "Ayna zaten parlak.";
-            if (interaction.CollectContents && !item.HasContents) return "Toplanacak bir şey yok.";
+            if (interaction.CollectContents && !item.HasContents) return item.Def.IsFillDecor ? $"{item.Def.DisplayName} zaten boş." : "Toplanacak bir şey yok.";
+            if (interaction.FillDecor) { var why = DecorSystem.FillBlocker(item, _house, _content); if (why != null) return why; }
+            if (interaction.EatContents && DecorSystem.EdibleCount(item, _content) == 0)
+                return item.HasContents ? "İçindekiler çürümüş; önce boşalt." : $"{item.Def.DisplayName} boş.";
             return null;
         }
 
@@ -194,7 +200,24 @@ namespace Thatchwick.Core.Work
                 if (target != null && placedTarget == null && _house.RepairOne(target)) farmNotes.Add($"{targetDef.DisplayName} onarıldı");
                 else if (placedTarget != null) { placedTarget.Condition = ItemCondition.Repaired; _world.NotifyChanged(); farmNotes.Add($"{targetDef.DisplayName} onarıldı"); }
             }
-            if (interaction.CollectContents && item.HasContents)
+            if (interaction.FillDecor)
+            {
+                int added = DecorSystem.Fill(item, _house, _content, FoodAge);
+                if (added > 0) { farmNotes.Add($"{item.Def.DisplayName} dolduruldu ({DecorSystem.FillLabel(item, _content)})"); _world.NotifyChanged(); }
+            }
+            if (interaction.EatContents)
+            {
+                string ate = DecorSystem.EatOne(item, _content);
+                if (ate != null) { farmNotes.Add($"{Name(ate)} yedi"); _world.NotifyChanged(); }
+            }
+            if (interaction.CollectContents && item.HasContents && item.Def.IsFillDecor)
+            {
+                var (back, gone) = DecorSystem.EmptyInto(item, _house, _content);
+                if (back > 0) farmNotes.Add($"+{back} envantere döndü");
+                if (gone > 0) farmNotes.Add($"{gone} çürük atıldı");
+                _world.NotifyChanged();
+            }
+            else if (interaction.CollectContents && item.HasContents)
             {
                 var got = new Dictionary<string, int>();
                 var gotOrder = new List<string>();

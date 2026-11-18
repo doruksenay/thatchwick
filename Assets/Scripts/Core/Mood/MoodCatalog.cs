@@ -29,7 +29,7 @@ namespace Thatchwick.Core.Mood
             SameMeal = "same_meal", VariedTable = "varied_table",
             Bursting = "need_bladder", Accident = "accident", Wet = "wet", Chilled = "chilled", Relieved = "relieved", Ashamed = "ashamed",
             HotBath = "hot_bath", ColdWater = "cold_water", Swim = "swim",
-            Catharsis = "catharsis";
+            Catharsis = "catharsis", HarmonyFine = "harmony_fine";
 
         // Kaza yaraları (InjurySystem; süre yaraya göre ayarlanır, buradaki varsayılan).
         public const string InjuredAxe = "injured_axe", InjuredBurn = "injured_burn", InjuredAnimal = "injured_animal",
@@ -83,7 +83,8 @@ namespace Thatchwick.Core.Mood
             c.Register(M(Newlywed, "Yeni evli", 25, 6.0, "Evlendi."));
             c.Register(M(NewBaby, "Bebeğimiz oldu", 20, 5.0, "Aileye yeni bir bebek katıldı."));
             m = M(Grief, "Yas", -30, 8.0, "Yakınını kaybetti: tüm becerilerde %20 az XP, işler %10 yavaş."); m.AllXp = -0.20f; m.AllSpeed = -0.10f; c.Register(m);
-            c.Register(M(Harmony, "Uyumlu ev", 10, 0.5, "Odadaki eşyalar aynı takımdan (4+)."));
+            c.Register(M(Harmony, "Uyumlu ev", 10, 0.5, "Odadaki eşyalar aynı takımdan ya da aynı tarzdan (4+)."));
+            c.Register(M(HarmonyFine, "Özenli ev", 15, 0.5, "Odada hem aynı takımdan hem aynı tarzdan 4+ eşya var."));
             c.Register(M(BrightRoom, "Aydınlık oda", 5, 0.3, "Odada kandil, meşale ya da lamba var."));
             m = M(GoodHarvest, "Bereketli hasat", 10, 1.0, "Ürün topladı: çiftçilikte %20 fazla XP."); m.SkillXp[SkillType.Farming] = 0.20f; c.Register(m);
             m = M(Proud, "Gururlu", 15, 1.0, "Kendi elleriyle bir eşya yaptı: marangozluk %10 hızlı."); m.SkillSpeed[SkillType.Carpentry] = 0.10f; c.Register(m);
