@@ -4,7 +4,7 @@ using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Animals
 {
-    public enum AnimalDeath { None = 0, Starvation = 1, OldAge = 2, Sickness = 3 }
+    public enum AnimalDeath { None = 0, Starvation = 1, OldAge = 2, Sickness = 3, Predator = 4 }
 
     /// <summary>
     /// Bir hayvan: barınağının çevresinde gezinir, barınağın yem stoğundan yer, tok ve erişkinken

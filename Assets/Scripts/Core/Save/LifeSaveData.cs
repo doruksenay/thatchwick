@@ -61,6 +61,12 @@ namespace Thatchwick.Core.Save
         public Thatchwick.Core.Upbringing.UpbringingSave upbringing;
         // Komşu NPC hanedanları (18.11.2026). Eski kayıtta null: haneler mevcut köylülerden kurulur.
         public NeighborHouseSave[] houses;
+        // Yaban hayvanları (18.11.2026, belge 31). Eski kayıtta null / 0: defter boş, tehdit yok.
+        public string[] natureJournal;
+        public string[] adoptedWild;
+        public string[] contests;
+        public int wolfRaidIn = -1;
+        public int wolfHunted;
     }
 
     [Serializable]

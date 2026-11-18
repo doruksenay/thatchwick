@@ -348,6 +348,10 @@ namespace Thatchwick.Game
                 AccountLevel = () => _account.Level,
                 AccountXp = () => _account.Xp
             };
+            // Kilitler beceride (karar 28-4): hanenin o becerideki en iyi seviyesi.
+            _life.SkillLocks = true;
+            _buildService.SkillLevel = _life.BestSkill;
+            _animals.SkillLevel = _life.BestSkill;
             _life.Attach(_family);
             _life.Attach(_plants);
             _life.Attach(_heat);
@@ -1354,7 +1358,7 @@ namespace Thatchwick.Game
             var animal = AnimalAt(tile);
             if (animal != null)
             {
-                names.Add($"{animal.Name} ({animal.Species.DisplayName}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")}{(animal.IsSick || animal.IsCold ? ", " + animal.HealthText.ToLowerInvariant() : "")})");
+                names.Add($"{animal.Name} ({animal.Species.DisplayName}, {AnimalProgress.LineageName(animal.Lineage)} · sv {animal.Level}{(animal.LegendaryTitle != null ? " · " + animal.LegendaryTitle : "")}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")}{(animal.IsSick || animal.IsCold ? ", " + animal.HealthText.ToLowerInvariant() : "")}{(animal.Species.Rideable ? $", dayanıklılık {animal.Stamina:0}" : "")})");
                 AddAnimalOptions(animal);
             }
             foreach (var item in items)
@@ -2024,14 +2028,58 @@ namespace Thatchwick.Game
             foreach (SkillType t in System.Enum.GetValues(typeof(SkillType)))
             {
                 int level = c.Skills.GetLevel(t);
-                if (level <= 1 && c.Skills.GetXp(t) <= 0) continue;
+                var apt = c.Skills.GetAptitude(t);
+                if (level <= 1 && c.Skills.GetXp(t) <= 0 && apt == Aptitude.None) continue;
                 if (parts.Length > 0) parts.Append(" · ");
-                parts.Append($"{SkillName(t)} {level}");
+                // Yatkınlık (★ yatkın, ★★ çok yatkın), doygunluk ("yoruldu"), yaşlıda mevsim kullanımı (karar 28).
+                parts.Append($"{SkillName(t)} {level}{(apt == Aptitude.Major ? "★★" : apt == Aptitude.Minor ? "★" : "")}");
+                if (c.Skills.IsSaturated(t)) parts.Append(" (bugün yoruldu)");
+                else if (c.Stage == AgeStage.Elder && c.Skills.PacingEnabled && !c.Skills.UsedThisSeason(t)) parts.Append(" (bu mevsim çalışılmadı)");
             }
             return parts.Length == 0 ? "" : parts.ToString();
         }
 
         private static string StageName(AgeStage s) => AgeStages.Name(s);
+
+        // Kurt riski, öksüz yavru, Doğa Defteri ve yarışma kaydı (belge 29, 31). Basit IMGUI; asıl arayüz PixelLab ekranlarıyla gelecek.
+        private void DrawNatureAndContests(Character handler)
+        {
+            if (_life == null) return;
+            if (_life.Wolves != null)
+            {
+                var (wolves, defense) = _life.Wolves.Risk(_clock.Season);
+                string warn = _life.Wolves.RaidInDays >= 0 ? $" · kurtlar {(_life.Wolves.RaidInDays <= 0 ? "bu gece" : $"{_life.Wolves.RaidInDays} gün içinde")} gelebilir" : "";
+                if (wolves > 0 || warn.Length > 0) GUILayout.Label($"   Kurt riski: {wolves} kurt / savunma {defense}{warn}");
+            }
+            var pending = _life.Adoptions.Pending;
+            if (pending != null)
+            {
+                var sp = WildCatalog.Get(pending);
+                GUILayout.BeginHorizontal();
+                GUILayout.Label($"   Öksüz {sp?.Name.ToLowerInvariant()} yavrusu:");
+                if (GUILayout.Button("Sahiplen")) { _life.Adoptions.Decide(true, _life.Journal); ShowMessage($"{sp?.Name} yavrusu bahçeye yerleşti."); }
+                if (GUILayout.Button("Doğaya bırak")) { _life.Adoptions.Decide(false, _life.Journal); ShowMessage("Yavru ormana döndü."); }
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.Label($"   Doğa Defteri: {_life.Journal.SeenCount}/{NatureJournal.Total} tür");
+            foreach (var a in _animals.Animals)
+            {
+                ContestKind kind;
+                if (a.Species.Rideable) kind = ContestKind.HorseRace;
+                else if (a.Species.Id == "animal.cow" && a.IsFemale) kind = ContestKind.BeautyContest;
+                else if (a.Species.Draft && !a.IsFemale) kind = ContestKind.LogPull;
+                else continue;
+                if (_life.Contests.IsRegistered(a)) { GUILayout.Label($"   {a.Name}: yarışmaya kayıtlı"); continue; }
+                string block = AnimalContests.Blocker(kind, a, handler);
+                if (block != null) continue;
+                double chance = AnimalContests.EstimateWinChance(kind, a, handler, (int)(_clock.DayIndex / _clock.Config.DaysPerYear), out _);
+                if (GUILayout.Button($"   {a.Name}: yarışa yaz ({AnimalContests.EntryFee} akçe · Bahisçiler: %{chance * 100:0})"))
+                {
+                    var err = _life.Contests.Register(kind, a, handler, _household);
+                    ShowMessage(err ?? $"{a.Name} yarışa yazıldı; şenlik günü {handler.Name} götürecek.");
+                }
+            }
+        }
 
         /// <summary>"İyi (+15): Dinlenmiş, Uyumlu ev"</summary>
         public static string MoodText(Character c, int maxNames = 3)
@@ -2149,6 +2197,7 @@ namespace Thatchwick.Game
                     if (!c.IsDead) GUILayout.Label($"   {ActivityText(actor.Runner)}");
                     var skills = SkillsText(c);
                     if (skills.Length > 0) GUILayout.Label($"   Beceri: {skills}");
+                    if (c == Commander?.Character) DrawNatureAndContests(c);
                 }
 
                 if (Application.isEditor && _maud != null && _player != null && !_maud.Character.IsDead && GUILayout.Button("Test: Maud hamile (2 günde doğurur)"))
@@ -2163,6 +2212,19 @@ namespace Thatchwick.Game
                 if (GUILayout.Button(_hoeMode ? "Çapa kipi: açık (H) · çim çapala, yol onar" : "Çapa kipi (H)")) _hoeMode = !_hoeMode;
                 var mount = Commander != null ? _animals.MountOf(Commander.Character.Id) : null;
                 if (mount != null && GUILayout.Button($"{mount.Name} sırtından in")) { _animals.Dismount(Commander.Character.Id); ShowMessage($"{Commander.Character.Name} attan indi"); }
+                if (mount != null)
+                {
+                    // Dörtnala (29-2): at 2 · Binicilik 2; dayanıklılık biter.
+                    string gallopBlock = HorseAbilities.Blocker(HorseAbility.Gallop, mount, Commander.Character);
+                    string gallopLabel = gallopBlock != null ? $"Dörtnala ({gallopBlock})" : mount.Galloping ? $"Dörtnala: açık · {mount.Stamina:0}" : $"Dörtnala · {mount.Stamina:0}";
+                    GUI.enabled = gallopBlock == null;
+                    if (GUILayout.Button(gallopLabel))
+                    {
+                        if (!_animals.SetGallop(Commander.Character.Id, !mount.Galloping)) ShowMessage(mount.Stamina <= 0 ? $"{mount.Name} yoruldu; dinlenmeli ya da ikram ver." : mount.ShyDays > 0 ? $"{mount.Name} ürkek; bugün dörtnala olmaz." : "Dörtnala olmaz.");
+                    }
+                    GUI.enabled = true;
+                    if (_household.Count("item.apple") > 0 && GUILayout.Button("Elma ikram et") && _household.TryTakeItem("item.apple")) { _animals.GiveTreat(mount); ShowMessage($"{mount.Name} elmayı yedi (dayanıklılık {mount.Stamina:0})"); }
+                }
                 if (GUILayout.Button(_animals.Released ? "Hayvanlar: gündüz otlakta" : "Hayvanlar: barınakta")) _animals.Released = !_animals.Released;
                 GUILayout.EndHorizontal();
                 GUILayout.Label($"{_dynasty.SettlementName} · {_dynasty.Name} · {_dynasty.CurrentGeneration}. nesil · Baş: {_player?.Character.Name} · Komut alan: {Commander?.Character.Name}");

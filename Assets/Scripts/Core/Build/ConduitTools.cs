@@ -22,7 +22,7 @@ namespace Thatchwick.Core.Build
             if (map.GetRoad(tile) != RoadType.None && !Conduits.AllowedOnRoad(type)) return "Yolun altından boru, üstünden oluk geçer; arkı yola açma.";
             if (Conduits.IsOpen(type) && type != ConduitType.Flume && map.IsBlocked(tile) && _world.GetItemAt(tile) == null)
                 return "Burası kazılamaz.";
-            if (AccountLevel != null && AccountLevel() < Conduits.Level(type)) return $"Hesap seviyesi {Conduits.Level(type)} gerekli.";
+            if (!Thatchwick.Core.Progress.UnlockGate.IsOpen(SkillLevel, AccountLevel, Characters.SkillType.Engineering, Conduits.Level(type))) return Thatchwick.Core.Progress.UnlockGate.Text(SkillLevel, Characters.SkillType.Engineering, Conduits.Level(type));
             return null;
         }
 

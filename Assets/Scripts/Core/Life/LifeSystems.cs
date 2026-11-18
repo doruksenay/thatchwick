@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
@@ -74,6 +75,12 @@ namespace Thatchwick.Core.Life
         public int FestivalsCelebrated { get; private set; }
         /// <summary>Hesap seviyesi sağlayıcı (alet yükseltmesi); null ise sınır yok.</summary>
         public Func<int> AccountLevel { get; set; }
+        /// <summary>Alet kademesi kilidi Demircilik'e bakar (oyunda açık; eski sınamalar için kapatılabilir).</summary>
+        public bool SkillLocks
+        {
+            get => Tools.SkillLevel != null;
+            set => Tools.SkillLevel = value ? BestSkill : (Func<SkillType, int>)null;
+        }
 
         /// <summary>Yaşam olayları (düz metin): mezar, yas vb. Ayrıntılı akış için Log.</summary>
         public event Action<string> Notice;
@@ -532,7 +539,49 @@ namespace Thatchwick.Core.Life
                 Injuries.InjureById(rider, "horse_fall");   // moodlet ve bildirim InjurySystem'den
             };
             animals.HorseRefused += horse => Say($"{horse.Name} engelin önünde ürktü.", NoticeLevel.Info);
+            // Kurt saldırısı (31-4.1): çoban = "Hayvanlar" görevli genç yetişkin ve üstü.
+            Wolves = new WolfSystem(animals, _wolfSeed)
+            {
+                Shepherds = () =>
+                {
+                    int n = 0;
+                    foreach (var c in Population.Members)
+                        if (!c.IsDead && !c.IsVillager && c.Duty == DutyKind.Animals && c.Stage != AgeStage.Baby && c.Stage != AgeStage.Child && c.Stage != AgeStage.Teen) n++;
+                    return n;
+                }
+            };
+            Wolves.Warning += text => Say(text, NoticeLevel.Warning);
+            Contests.Finished += (r, a, h) => Say($"{h.Name}: {r.Summary}" + (r.PrizeAkce > 0 ? $" Ödül {r.PrizeAkce} akçe." : ""), r.Won ? NoticeLevel.Info : NoticeLevel.Info, h.Id);
+            // Yarışmalar şenlik günü koşar (29-4.1).
+            Festivals.Celebrated += (f, n) =>
+                Contests.RunFestival(f.Id, (int)(Clock.DayIndex / Clock.Config.DaysPerYear), id => FindAnimal(animals, id), Population.Find, House);
+            Wolves.Raided += r =>
+            {
+                if (r.Pack == 0) return;
+                if (r.Repelled) Say($"Gece {r.Pack} kurt sürüye yaklaştı; köpekler ve çoban onları kovdu.", NoticeLevel.Info);
+                else
+                {
+                    var names = new List<string>();
+                    foreach (var a in r.Killed) names.Add(a.Name);
+                    Say($"Kurtlar gece sürüye saldırdı ({r.Pack} kurt, savunma {r.Defense}): {string.Join(", ", names)} öldü.", NoticeLevel.Danger);
+                    foreach (var c in Population.Members)
+                        if (!c.IsDead && !c.IsVillager && c.MoodEnabled)
+                            c.Mood.Add(new Thatchwick.Core.Mood.MoodletDef { Id = "mood.wolf_loss", DisplayName = "Sürüden kayıp", Description = "Kurtlar hayvanlarımızı aldı.", Value = -6, DurationDays = 2 });
+                }
+                foreach (var d in r.InjuredDogs) Say($"{d.Name} kurtlarla boğuşurken yaralandı; birkaç gün dinlenecek.", NoticeLevel.Info);
+            };
         }
+
+        /// <summary>Kurt saldırısı; hayvan sistemi bağlanınca kurulur.</summary>
+        public WolfSystem Wolves { get; private set; }
+        /// <summary>Doğa Defteri (31-6); hanedanla kalır.</summary>
+        public NatureJournal Journal { get; } = new NatureJournal();
+        /// <summary>Öksüz yaban yavruları (31-2).</summary>
+        public WildAdoptions Adoptions { get; } = new WildAdoptions();
+        private int _wolfSeed = 113;
+        /// <summary>Yarışma kayıtları ve şenlik günü simülasyonu (29-4).</summary>
+        public ContestBook Contests { get; } = new ContestBook();
+        private static Animal FindAnimal(AnimalSystem animals, int id) { foreach (var a in animals.Animals) if (a.Id == id) return a; return null; }
 
         public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
@@ -576,6 +625,9 @@ namespace Thatchwick.Core.Life
             if (tomorrow != WeatherType.Clear) Say(Weather.ForecastText(Clock.TotalDays), tomorrow == WeatherType.Storm ? NoticeLevel.Warning : NoticeLevel.Info);
 
             Ledger.Tick(day);
+            Wolves?.OnNewDay(Clock.Season, (int)(day % Clock.Config.DaysPerSeason), Clock.Config.DaysPerSeason);
+            var orphan = Adoptions.OnNewDay(Clock.Season);
+            if (orphan != null) Say($"Tarlanın kenarında öksüz bir {orphan.Name.ToLowerInvariant()} yavrusu bulundu. Sahiplenmek ister misin?", NoticeLevel.Info);
             Villagers.PollEvents();
             Goals.Update();
             int season = (int)((day / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
@@ -583,6 +635,7 @@ namespace Thatchwick.Core.Life
             if (_lastSeasonIndex >= 0 && season != _lastSeasonIndex)
             {
                 OnSkillSeasonEnd();
+                Wolves?.OnSeasonEnd();
                 Legacy.OnSeasonChanged((Season)_lastSeasonIndex, (Season)season, day, Clock.TotalDays);
                 var guest = Suitors.OnNewSeason();
                 if (guest != null) Say($"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
@@ -639,7 +692,12 @@ namespace Thatchwick.Core.Life
                 legacy = Legacy.Export(),
                 houses = Houses.Export(),
                 lastHouseholdAccidentDay = Injuries.LastHouseholdAccidentDay,
-                upbringing = Upbringing.Export()
+                upbringing = Upbringing.Export(),
+                natureJournal = Journal.Export(),
+                adoptedWild = Adoptions.Export(),
+                contests = Contests.Export(),
+                wolfRaidIn = Wolves != null ? Wolves.RaidInDays : -1,
+                wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -658,6 +716,10 @@ namespace Thatchwick.Core.Life
             Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
             Festivals.CelebratedDay = data.festivalCelebratedDay;
             Upbringing.Import(data.upbringing);
+            Journal.Import(data.natureJournal);
+            Adoptions.Import(data.adoptedWild);
+            Contests.Import(data.contests);
+            Wolves?.Restore(data.wolfRaidIn, data.wolfHunted);
             Spoilage.Restore(data.spoilage);
             Tools.Restore(data.tools);
             Projects.Restore(data.projectsDone);

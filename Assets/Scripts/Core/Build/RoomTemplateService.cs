@@ -155,7 +155,7 @@ namespace Thatchwick.Core.Build
             foreach (var kv in needed)
             {
                 var def = _content.Items.Get(kv.Key);
-                if (!_build.IsUnlocked(def)) { q.Problem = $"{def.DisplayName}: hesap seviyesi {def.UnlockLevel} gerekli."; return q; }
+                if (!_build.IsUnlocked(def)) { q.Problem = $"{def.DisplayName}: {_build.LockText(def)}"; return q; }
                 int have = Math.Min(kv.Value, _house.Count(kv.Key));
                 int buy = kv.Value - have;
                 q.FromInventory += have;
