@@ -1,8 +1,8 @@
 ---
 id: "373"
 title: Toplama düğümleri yeniden (böğürtlen, fındık, otlar, mürver, çilek, kestane, kuşburnu, ısırgan)
-status: pending
-claimed_at: 2026-11-18T12:05Z
+status: running
+claimed_at: 2026-11-18T12:40Z
 priority: 10            # başlangıç haritasında görünenler önce (görsel analiz)
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
 family: bitki
