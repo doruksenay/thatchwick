@@ -1,7 +1,7 @@
 ---
 id: "401"
 title: Oyuncak (4) ve ürün ikonu (5) yeniden: 399'un reddedilen ve zayıf parçaları
-status: review
+status: accepted
 claimed_at: 2026-11-18T18:46Z
 approved_by: user        # kullanıcı onayı 18.11.2026 ("onaylıyorum"), 399 sonucu üzerine
 priority: 20
@@ -61,3 +61,5 @@ created: 2026-11-18
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+Karar (kullanıcı, 18.11.2026): accepted (kısmi). Kabul: oyma bıçağı, jonglör topları, iç yağı, mürekkep, malt, boş defter v2.
+Yeniden (iş 406): çember (ince, dağınık), bilye (kese soluk, bilyeler dışarıda saçık), mazı (şeftali gibi, pembe).
