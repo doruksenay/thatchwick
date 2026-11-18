@@ -1,7 +1,7 @@
 ---
 id: "021p"
 title: Portre dövme: face
-status: running
+status: review
 claimed_at: 2026-11-18T08:33Z
 approved_by: user
 family: karakter
