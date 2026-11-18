@@ -197,6 +197,14 @@ namespace Thatchwick.Game
             ["item.kilim_small"] = new ItemArt { AlongY = "iso_item_kilim_small_2x1_se", PivotX = 56, PivotY = 32 },        // 390 (halı)
             ["item.kilim_large"] = new ItemArt { AlongY = "iso_item_kilim_large_3x2_se", PivotX = 88, PivotY = 48 },        // 390 (halı, 176 px)
             ["item.cicim"] = new ItemArt { AlongX = "iso_item_cicim_2x2_se", PivotX = 72, PivotY = 40 },                    // 390 (halı, 144 px)
+            // Çocukluk oyuncakları (399, 401, 406, 417 kabul; belge 30). Yuva oyuncakları 32 px, pivot taban elması.
+            ["item.slingshot"] = new ItemArt { AlongX = "iso_item_slingshot_se", PivotX = 16, PivotY = 7 },                 // 399
+            ["item.jump_rope"] = new ItemArt { AlongX = "iso_item_jump_rope_se", PivotX = 16, PivotY = 7 },                 // 399
+            ["item.kite"] = new ItemArt { AlongX = "iso_item_kite_se", PivotX = 16, PivotY = 10 },                          // 399 (32x40, dış)
+            ["item.hoop"] = new ItemArt { AlongX = "iso_item_hoop_se_v3", PivotX = 16, PivotY = 10 },                       // 406 (dış)
+            ["item.marbles"] = new ItemArt { AlongX = "iso_item_marbles_se_v4", PivotX = 16, PivotY = 4 },                  // 417
+            ["item.whittling_knife"] = new ItemArt { AlongX = "iso_item_whittling_knife_se", PivotX = 16, PivotY = 7 },     // 401
+            ["item.juggling_balls"] = new ItemArt { AlongX = "iso_item_juggling_balls_se", PivotX = 16, PivotY = 7 },       // 401
             // Masa ve raf üstü (32 px tuval; pivot = nesnenin tabanı)
             ["item.bread_basket"] = new ItemArt { AlongX = "iso_item_bread_basket_se", PivotX = 16, PivotY = 2 },           // 387
             ["item.fruit_basket"] = new ItemArt { AlongX = "iso_item_fruit_basket_se", PivotX = 16, PivotY = 2 },           // 387
