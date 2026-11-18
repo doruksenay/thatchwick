@@ -1,7 +1,7 @@
 ---
 id: "016"
 title: Karakter katman pilotu (kel taban + saç, sakal, kıyafet katmanı; 8 yön denemesi)
-status: running
+status: blocked
 claimed_at: 2026-11-18T07:54Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
@@ -75,6 +75,9 @@ Bu pilot şunları ölçer:
 - Telif yok; açıklamada oyun adı geçmez.
 
 - 2026-11-18: 07:23Z bulut sahiplenmesi eski izinlerle başladı ve sonuç gelmedi (uv izni yoktu); iş yeniden `pending`.
+
+## Sorular
+- Bulut işçisi PixelLab çıktısını diske alamadı (tool-results kopyası ve curl izni yok). 5 gen harcandı (kel taban SE, image_id 3f59b7f4-c710-5fb5-b1d6-95f73756736f). Rapor: art/results/016-karakter-katman-pilotu.md
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
