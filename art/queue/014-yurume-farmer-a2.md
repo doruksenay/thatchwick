@@ -1,7 +1,7 @@
 ---
 id: "014"
 title: Yürüme animasyonu farmer_a2_56 (8 yön, pixminimax)
-status: blocked   # 012 karakter oranı reddedildi; yürüme/animasyon 012b pilotunun kabulünü bekler, iş yeni karaktere göre yeniden yazılacak
+status: pending   # 012 karakter oranı reddedildi; yürüme/animasyon 012b pilotunun kabulünü bekler, iş yeni karaktere göre yeniden yazılacak
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
@@ -36,7 +36,7 @@ Bu iş, 015a-c'deki karakter seti için **ortak işleme kurallarının** kaynağ
 - Ön kontrol (ücretsiz): `get_character`. Karakter `completed` olmalı ve 8 rotasyonu bulunmalı.
 - 8 yönün her biri için ayrı `animate_character` çağrısı:
   - `mode=pixminimax`, `directions=[<yön>]`, `frame_count=8`, `keep_first_frame=true`
-  - `action_description="walking forward at a calm pace, one full step cycle"` (013 ile aynı)
+  - `action_description="walking forward at a calm, steady pace, one complete step cycle"` (013'ten bilerek az farklı: PixelLab aynı karakter ve aynı metinle yeni iş açmıyor, 013 klibini döndürüyor; kullanıcı kararı 2026-11-18)
   - `end_frame_url`: o yönün **PixelLab rotasyon görüntüsü**. `get_character`'daki rotasyon bağlantısından indir, `get_upload_url` ile yükle. Doğal boyutundadır; başlangıç karesiyle aynı boyutta olmalı.
   - `animation_name=walk`. İlk çağrıdan sonra kalan yönleri `animation_group_id` ile aynı gruba ekle, `animation_name=walk` yine verilir.
 - Yönler, sırasıyla: south-east, south, east, north-east, north, north-west, west, south-west.
@@ -103,6 +103,8 @@ Betik: `tools/art/anim_walk.py`. 013'teki `anim_pilot.py`'den türetilebilir.
 - 2026-11-18 (bulut işçisi): 0 generation harcandı. İlk `animate_character` çağrısı (pixminimax, south-east, frame_count=8, keep_first_frame=true, tarifteki `action_description`, `animation_name=walk`) şu yanıtı verdi: `status: already queued or complete (nothing re-queued)`. PixelLab aynı isteği 013'ün `walk_pilot_pmm` klibiyle eşleştirdi (aynı metin) ve yeni iş açmadı; `list_jobs` boş, karakterde yeni `walk` grubu yok. Yanıt: "to generate a fresh take ... reword action_description".
 - Karar gerekli: `action_description` küçük bir yeniden ifadeyle (ör. "walking forward at a calm pace, one complete step cycle") verilebilir mi? Tarif "013 ile aynı" dediği için işçi kendi başına değiştirmedi. Onaylanırsa tarife yeni metin yazılıp iş `pending` yapılmalı.
 - Rotasyon görüntüleri `tools/art/fetch_rot.py` ile indirilip yüklendi (8 yön, 60x60). Betik indirmede User-Agent gerektiriyor (aksi halde 403).
+
+- 2026-11-18 (kod oturumu): çözüldü. Kullanıcı yeniden ifadeyi onayladı; tarifte `action_description` değişti, iş `pending`. 015a-c bu işi bekliyor.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

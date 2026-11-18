@@ -1,7 +1,7 @@
 ---
 id: "306"
-title: Duvar eşyası pilotu (meşale, gaz lambası, duvar rafı, ot demeti, alet askısı)
-status: blocked
+title: Duvar eşyası pilotu (meşale, kandil, duvar rafı, ot demeti, alet askısı)
+status: pending
 claimed_at: 2026-11-18T09:03Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -20,7 +20,7 @@ outputs:
   - Assets/Art/Iso/_aday/iso_wall_item_tool_rack_wall_sw_ne.png
 created: 2026-11-08
 ---
-# 306 Duvar eşyası pilotu (meşale, gaz lambası, duvar rafı, ot demeti, alet askısı)
+# 306 Duvar eşyası pilotu (meşale, kandil, duvar rafı, ot demeti, alet askısı)
 
 ## Amaç
 Duvar eşyaları 1.0'a girdi (kullanıcı kararı: duvar rafları, meşale, gaz lambası). Kodda yeni yerleşim türü `Wall`: eşya duvarın iç yüzüne asılır, karo kaplamaz. Bu iş, duvar yüzüne oturan eşyanın nasıl üretileceğini dener.
@@ -35,13 +35,16 @@ Yöntem, ortak ayarlar, ortak açıklama eki, ikinci deneme kuralı, renk sını
 - **Duvar kılavuzu (yeni):** eşya, kabul edilmiş duvar görselinin (`iso_wall_wall_sw_ne.png`, 102x115, pivot (32,19)) iç yüzüne asılı durur. Yüz "/" eğiminde (sw_ne): kılavuz, tuvalde 2:1 eğimli bir paralelkenar (duvar yüzü parçası), maske bu paralelkenarın eşyanın sığacağı kısmı. İşçi kılavuzu `tools/art/` altında küçük bir betikle üretir.
 - Açıklama ekine `mounted flat against a wall that slopes up to the right (isometric), seen from the room side` eklenir.
 - Pilot olduğu için önce **yalnızca meşale** denenir; tutarsa diğer dördü. Tutmazsa durur ve `## Sorular` yazar (alternatif: `create_image_pixflux` ile önden çizip kodda eğmek).
+- **Kullanıcı kararı (2026-11-18): meşale tuttu.** `art/results/306-red/torch_deneme2.png` kabul edildi. Yeniden üretilmez: `style.py check --family esya --light` ile denetlenir (kod oturumunun denemesinde GEÇTİ, ışık pikseli %25), `validate_iso.py` ile doğrulanır ve `cp -n` ile `iso_wall_item_torch_wall_sw_ne.png` adıyla teslim edilir. Ardından kalan dört eşya üretilir.
+- **Işık kaynağı kuralı:** meşale ve kandilde `check --light` kullanılır (`art/TEMPLATE.md`). Raf, ot demeti ve alet askısında normal `check`.
+- **Kandil (2026-11-18, dönem düzeltmesi):** ilk tarifteki cam şişeli lamba ortaçağ sonrası (cam baca 18. yüzyıl sonu). Açık demir kandil (cruisie) olarak değiştirildi. Oyundaki adı zaten "Duvar kandili".
 - Ayna: "\" yüzü (se_nw) aynayla çıkar; ışık sağ-üstten gelir, not et. Kodda: karonun +y kenarındaki duvar "/" (sw_ne), +x kenarındaki "\" (se_nw).
 
 ### Eşyalar
 | # | items.json id | Dosya (`_aday/`) | Ayak izi | Tuval | Kılavuz | Yükseklik | Açıklama metni (+ ortak ek + takım eki) |
 |---|---|---|---|---|---|---|---|
 | 1 | `item.torch_wall` (duvar, Köylü) | `iso_wall_item_torch_wall_sw_ne.png` | duvar | 48x64 | duvar (aşağıda) | 40 | `burning wall torch in an iron bracket` |
-| 2 | `item.oil_lamp_wall` (duvar, Zanaatkâr) | `iso_wall_item_oil_lamp_wall_sw_ne.png` | duvar | 48x64 | duvar (aşağıda) | 36 | `small iron oil lamp with a glass chimney hanging from a wall hook, lit` |
+| 2 | `item.oil_lamp_wall` (duvar, Zanaatkâr) | `iso_wall_item_oil_lamp_wall_sw_ne.png` | duvar | 48x64 | duvar (aşağıda) | 36 | `small open iron cruisie oil lamp (shallow dish with a wick, no glass) hanging from a wall hook, small lit flame` |
 | 3 | `item.wall_shelf` (duvar, Köylü, 2 yuva) | `iso_wall_item_wall_shelf_sw_ne.png` | duvar | 64x48 | duvar (aşağıda) | 20 | `single rough plank wall shelf on two wooden brackets, empty top` |
 | 4 | `item.herb_bundle_wall` (duvar, Köylü) | `iso_wall_item_herb_bundle_wall_sw_ne.png` | duvar | 40x56 | duvar (aşağıda) | 36 | `bundle of dried herbs hanging upside down from a wall peg` |
 | 5 | `item.tool_rack_wall` (duvar, Zanaatkâr) | `iso_wall_item_tool_rack_wall_sw_ne.png` | duvar | 64x64 | duvar (aşağıda) | 40 | `wooden wall rack holding an axe, a hoe and a saw` |
@@ -60,6 +63,8 @@ Yöntem, ortak ayarlar, ortak açıklama eki, ikinci deneme kuralı, renk sını
 - Pivot değerlerini kullanıcı `Assets/Editor/IsoPivots.txt`'e ekler; işçi o dosyaya dokunmaz. Kodda eşya → dosya eşlemesi (`Assets/Scripts/Game/IsoArt.cs`) kod oturumunun işidir.
 - Pivot: görselin **merkezi** (kod, eşyanın merkezini duvarda asılma noktasına koyar: kenar ortası, yerden ~1,3 birim yukarıda).
 - Önizleme: duvar görselinin üstüne asılı hâli, yanında köylü (ölçek).
+
+- 2026-11-18 (kod oturumu): çözüldü. Kullanıcı (a) seçeneğini onayladı (meşale deneme 2 kabul). Genel eşik gevşemedi; yalnızca ışık pikselleri `--light` ile denetim dışı. İş `pending`; kalan dört eşya devam eder.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
