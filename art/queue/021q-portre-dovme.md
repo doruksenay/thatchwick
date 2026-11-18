@@ -1,7 +1,8 @@
 ---
 id: "021q"
 title: Portre dövme: neck
-status: pending
+status: running
+claimed_at: 2026-11-18T08:34Z
 approved_by: user
 family: karakter
 style_gate: false
