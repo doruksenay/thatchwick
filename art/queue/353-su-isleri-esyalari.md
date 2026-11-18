@@ -1,7 +1,7 @@
 ---
 id: "353"
 title: Su işleri eşyaları: çeşme, yalak-lüle, akarsulu hela, sarnıç, yağmur fıçısı, su terazisi
-status: running
+status: blocked
 claimed_at: 2026-11-18T11:57Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
@@ -37,6 +37,9 @@ Ayrıntılı yöntem **301'deki ile aynıdır** (`create_map_object` stil eşlem
 
 ## Doğrulama
 `validate_iso.py`, `style.py check --family esya`, ayak izi kılavuzuyla örtüşme (301 ölçütleri). Su terazisi 1x1 tabanından taşmamalı, yüksekliği iki kat kadar.
+
+## Sorular
+- 2026-11-18 (bulut, şerit 2): `get_balance` plan olarak **Tier 2: Pixel Artisan**, 4999/5000 generation (yenilenme 2026-12-18) döndürdü. `art/budget.md` planı Tier 1 / 2000 gen / yenilenme 2026-12-08 olarak yazıyor ve işçi kuralı "Tier 1 değilse dur". Hiçbir PixelLab çağrısı yapılmadı, harcama 0. Kullanıcı `art/budget.md` "Plan" bölümünü (ve rezerv/günlük tavan geçerliliğini) güncelleyince iş `pending`e alınıp yeniden çalıştırılabilir.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
