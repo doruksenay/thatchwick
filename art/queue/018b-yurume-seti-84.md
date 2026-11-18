@@ -1,7 +1,7 @@
 ---
 id: "018b"
 title: Yürüme seti: erkek ve kadın 84 px, 8 yön
-status: review
+status: rejected   # kullanıcı 18.11.2026: yürürken hâlâ zıplıyor
 claimed_at: 2026-11-18T18:54Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50
@@ -41,3 +41,5 @@ Her yönde validate_iso + style check; 018a ölçüm tablosunun yön başına ö
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18 kullanıcı: REDDEDİLDİ, hâlâ zıplama var. Ölçüm (kafa oynaması): erkek se 8, sw 6, ne 6, nw 5; kadın se 5, sw 4, nw 4 px. Yerine 018b2 (018a2 yöntemiyle). -->

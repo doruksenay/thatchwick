@@ -50,3 +50,5 @@ Etkileşim animasyonları (84 px erkek ve kadın). Anahtar eşlemesi: `art/resul
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-18 kullanıcı: eat beğenilmedi ("direkt ağzına gitmesin, eliyle ağzına götürsün"); 018d2 ile yeniden. cook, craft_hammer, craft_hand, work için karar bekleniyor. -->
