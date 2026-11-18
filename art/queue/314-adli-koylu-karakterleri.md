@@ -1,7 +1,7 @@
 ---
 id: "314"
 title: Adlı köylüler (Orhan, Hatice, Zeynep, Murat, Kerem, Ayşe; 56 px, 8 yön)
-status: running
+status: review
 claimed_at: 2026-11-18T09:34Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
