@@ -1,7 +1,8 @@
 ---
 id: "366"
 title: Kalıntılar (9 dekor: raf ve masa üstü)
-status: pending
+status: running
+claimed_at: 2026-11-18T13:50Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 20
 family: esya
