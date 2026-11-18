@@ -1,7 +1,8 @@
 ---
 id: "323"
 title: Katlar: merdivenler ve kat zemin parçaları (el merdiveni, 2 merdiven, 2 taş merdiven, üst kat döşemesi, bodrum zemini)
-status: pending
+status: running
+claimed_at: 2026-11-18T12:25Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: esya
