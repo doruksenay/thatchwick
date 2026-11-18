@@ -814,18 +814,18 @@ namespace Thatchwick.Game
             if (_walls != null)
             {
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Toggle(_walls.Mode == WallMode.Up, UiSkin.C("Yukarı", "top_walls_up"), GUI.skin.button)) _walls.Mode = WallMode.Up;
-                if (GUILayout.Toggle(_walls.Mode == WallMode.Cutaway, UiSkin.C("Kesit", "top_walls_cut"), GUI.skin.button)) _walls.Mode = WallMode.Cutaway;
-                if (GUILayout.Toggle(_walls.Mode == WallMode.Down, UiSkin.C("Aşağı", "top_walls_down"), GUI.skin.button)) _walls.Mode = WallMode.Down;
-                if (GUILayout.Toggle(_walls.ShowRoof, UiSkin.C("Çatı", "top_roof"), GUI.skin.button) != _walls.ShowRoof) _walls.ShowRoof = !_walls.ShowRoof;
+                if (GUILayout.Toggle(_walls.Mode == WallMode.Up, UiSkin.C("Yukarı", "top_walls_up"), GUI.skin.button, GUILayout.Width(HeaderW))) _walls.Mode = WallMode.Up;
+                if (GUILayout.Toggle(_walls.Mode == WallMode.Cutaway, UiSkin.C("Kesit", "top_walls_cut"), GUI.skin.button, GUILayout.Width(HeaderW))) _walls.Mode = WallMode.Cutaway;
+                if (GUILayout.Toggle(_walls.Mode == WallMode.Down, UiSkin.C("Aşağı", "top_walls_down"), GUI.skin.button, GUILayout.Width(HeaderW))) _walls.Mode = WallMode.Down;
+                if (GUILayout.Toggle(_walls.ShowRoof, UiSkin.C("Çatı", "top_roof"), GUI.skin.button, GUILayout.Width(HeaderW)) != _walls.ShowRoof) _walls.ShowRoof = !_walls.ShowRoof;
                 GUILayout.EndHorizontal();
             }
             GUILayout.BeginHorizontal();
-            ToolButton("Damlalık", Tool.Eyedropper); ToolButton("Balyoz", Tool.Demolish);
-            if (GUILayout.Toggle(_showRooms, UiSkin.C("Odalar", "top_rooms"), GUI.skin.button) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
+            _headerRow = true; ToolButton("Damlalık", Tool.Eyedropper); ToolButton("Balyoz", Tool.Demolish); _headerRow = false;
+            if (GUILayout.Toggle(_showRooms, UiSkin.C("Odalar", "top_rooms"), GUI.skin.button, GUILayout.Width(HeaderW)) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
             // Düğme her karede çizilir (koşullu denetim IMGUI yerleşimini bozar); boş yığında pasif.
             GUI.enabled = _svc.CanUndo;
-            if (GUILayout.Button(new GUIContent("Geri al", UiSkin.Icon("top_undo"), _svc.CanUndo ? _svc.UndoLabel : null))) _deferred = () => { var u = _svc.Undo(); _status = u.Ok ? "Geri alındı." : u.Reason; RefreshOverlay(); };
+            if (GUILayout.Button(new GUIContent("Geri al", UiSkin.Icon("top_undo"), _svc.CanUndo ? _svc.UndoLabel : null), GUILayout.Width(HeaderW))) _deferred = () => { var u = _svc.Undo(); _status = u.Ok ? "Geri alındı." : u.Reason; RefreshOverlay(); };
             GUI.enabled = true;
             GUILayout.EndHorizontal();
         }
@@ -1064,11 +1064,14 @@ namespace Thatchwick.Game
             RefreshOverlay();
         }
 
+        private const float HeaderW = 60f;   // üst şeritte dörtlü satır: ikonla birlikte taşmasın
+        private bool _headerRow;
+
         private void LevelButton(string label, int level)
         {
             // Kat değişimi de bir sonraki Layout olayında uygulanır (çizim ve işaretler yeniden kurulur).
             string icon = level == -1 ? "top_level_basement" : level == 0 ? "top_level_ground" : level == 1 ? "top_level_upper" : null;
-            if (GUILayout.Toggle(_view.ViewLevel == level, UiSkin.C(label, icon), GUI.skin.button) && _view.ViewLevel != level) _pendingLevel = level;
+            if (GUILayout.Toggle(_view.ViewLevel == level, UiSkin.C(label, icon), GUI.skin.button, GUILayout.Width(HeaderW)) && _view.ViewLevel != level) _pendingLevel = level;
         }
 
         private void ConduitButton(string label, ConduitType type)
@@ -1118,7 +1121,7 @@ namespace Thatchwick.Game
         private void ToolButton(string label, Tool tool)
         {
             // Arayüz yerleşimi bozulmasın diye araç değişimi bir sonraki Layout olayında uygulanır.
-            if (GUILayout.Toggle(_tool == tool, UiSkin.C(label, ToolIcon(tool)), GUI.skin.button) && _tool != tool) _pendingTool = tool;
+            if (GUILayout.Toggle(_tool == tool, UiSkin.C(label, ToolIcon(tool)), GUI.skin.button, _headerRow ? GUILayout.Width(HeaderW) : GUILayout.MinWidth(0f)) && _tool != tool) _pendingTool = tool;
         }
 
         private void DrawContext()
