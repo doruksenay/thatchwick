@@ -1,7 +1,7 @@
 ---
 id: "398"
 title: Ürün ikonları yeniden (6)
-status: running
+status: review
 claimed_at: 2026-11-18T14:19Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 18.11.2026: "önerilerini uygula" (360-367 yeniden üretim)
 priority: 50
