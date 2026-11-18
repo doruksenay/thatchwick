@@ -1,8 +1,7 @@
 ---
 id: "335"
 title: Zemin stilleri: sıkıştırılmış toprak (iç), saman, saz serili
-status: running
-claimed_at: 2026-11-18T09:25Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
 family: zemin
@@ -35,3 +34,4 @@ created: 2026-11-17
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18: yeniden `pending` (Claude, kurtarma): 2026-11-18T09:25Z sahiplenmesinden sonuç gelmedi.

@@ -1,8 +1,7 @@
 ---
 id: "014"
 title: Yürüme animasyonu farmer_a2_56 (8 yön, pixminimax)
-status: blocked
-claimed_at: 2026-11-18T07:43Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: false
@@ -107,3 +106,4 @@ Betik: `tools/art/anim_walk.py`. 013'teki `anim_pilot.py`'den türetilebilir.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18: yeniden `pending` (Claude, kurtarma): eski izin/indirme hatası; save_png ve izinler artık var.

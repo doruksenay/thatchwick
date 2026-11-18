@@ -1,8 +1,7 @@
 ---
 id: "016"
 title: Karakter katman pilotu (kel taban + saç, sakal, kıyafet katmanı; 8 yön denemesi)
-status: blocked
-claimed_at: 2026-11-18T07:23Z
+status: pending
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
 style_gate: true
@@ -87,3 +86,4 @@ Bu pilot şunları ölçer:
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18: yeniden `pending` (Claude, kurtarma): eski izin/indirme hatası; save_png ve izinler artık var.

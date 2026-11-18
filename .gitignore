@@ -72,3 +72,7 @@ __pycache__/
 
 # Unity MCP ekran görüntüleri
 Assets/Screenshots/
+
+# Asset işçisi geçici dosyaları (kılavuz, maske, ham indirme, yardımcı betik)
+art/tmp/
+art/tmp*/
