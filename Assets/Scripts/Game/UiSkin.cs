@@ -55,7 +55,7 @@ namespace Thatchwick.Game
             var box = _skin.box;
             box.normal.background = Tex("panel");
             box.border = new RectOffset(14, 14, 14, 14);
-            box.padding = new RectOffset(8, 8, 8, 8);
+            box.padding = new RectOffset(6, 6, 6, 6);
             box.normal.textColor = Ink;
 
             var label = _skin.label;
@@ -71,14 +71,14 @@ namespace Thatchwick.Game
             b.onActive.background = Tex("btn_press");
             b.onFocused.background = Tex("btn_sel");
             b.border = new RectOffset(12, 12, 12, 12);
-            b.padding = new RectOffset(3, 3, 4, 4);
+            b.padding = new RectOffset(2, 2, 4, 4);   // dar paneller (Pazar "Sat 1") eski skin genişliklerine göre
             b.margin = new RectOffset(1, 1, 1, 1);
             b.fixedHeight = 24f;
             b.fontSize = 11;
             b.clipping = TextClipping.Clip;
             b.normal.textColor = b.hover.textColor = b.active.textColor = b.focused.textColor = Linen;
             b.onNormal.textColor = b.onHover.textColor = b.onActive.textColor = b.onFocused.textColor = Gold;
-            b.fontStyle = FontStyle.Bold;
+            b.fontStyle = FontStyle.Normal;   // kalın yazı dar düğmelerde kesiliyordu
 
             // Toolbar özel stilleri (ButtonLeft/Mid/Right) da aynı düğme görünümünü alsın.
             foreach (var n in new[] { "ButtonLeft", "ButtonMid", "ButtonRight" })
