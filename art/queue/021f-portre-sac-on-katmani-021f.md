@@ -1,7 +1,8 @@
 ---
 id: "021f"
 title: Portre saç ön katmanı: short_crop ...
-status: pending
+status: running
+claimed_at: 2026-11-18T08:22Z
 approved_by: user
 family: karakter
 style_gate: false
