@@ -1,7 +1,7 @@
 ---
 id: "406"
 title: Çember, bilye, mazı yeniden (401'in zayıf üç parçası)
-status: review
+status: accepted
 claimed_at: 2026-11-18T19:17Z
 approved_by: user        # kullanıcı 18.11.2026: "bunları baştan yapsın"
 priority: 20
@@ -37,3 +37,5 @@ Renk: bilye kesesi sıcak orta kahve (palete yakın, soluk değil); mazı mat a�
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+Karar (kullanıcı, 18.11.2026): accepted (kısmi). Kabul: çember v3.
+Yeniden (iş 417): bilye (kese aynı kalsın; bilyeler daha açık ve farklı renklerde), mazı (kahverengi ve ahşap vurgusu; v2 mor-bordo, erik gibi).
