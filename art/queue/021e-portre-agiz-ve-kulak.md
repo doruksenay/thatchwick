@@ -1,7 +1,7 @@
 ---
 id: "021e"
 title: Portre ağız ve kulak
-status: running
+status: review
 claimed_at: 2026-11-18T08:19Z
 approved_by: user
 family: karakter
