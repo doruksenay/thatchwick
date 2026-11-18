@@ -1,7 +1,7 @@
 ---
 id: "008b"
 title: Duvar pencere (iki eksen) ve alçak duvar (iki eksen), inpaint ile
-status: running
+status: blocked
 claimed_at: 2026-11-18T07:21Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: yapi
@@ -90,6 +90,9 @@ Hiçbir şeyi silme, üzerine yazma. Klasör tarihi üretim günüdür.
 - **Alçak:** en üst opak satır, tabanın en çok 10 + 6 px üstünde mi? Kesim yüzü okunuyor mu?
 - Işık (sol yüz orta, sağ yüz en koyu), pişmiş gölge yok. Önizlemede parçaların komşularla dikişsiz birleşmesi.
 - Rapor: her dosya için piksel boyutu, renk sayısı, yarı saydam sayısı, pivot (ALTTAN) ve maske dışı değişen piksel sayısı.
+
+## Sorular
+- 2026-11-18 bulut işçisi: PixelLab çağrısı yapılmadı (0 gen harcandı). Ortamda python betiği çalıştırma izni yoktu; maske üretimi, kırpma ve doğrulama (validate_iso, style.py) yapılamadı. İzin verilince işi `pending` yapıp yeniden çalıştırın. Masaüstü kopyası (Windows yolu) bulutta zaten yapılamaz.
 
 ## Notlar
 - Ad kuralı (kullanıcı onaylı): `iso_wall_<tür>_<eksen>.png`. "/" = `sw_ne`, "\" = `se_nw` (kod eksenine göre; `Iso.GridToWorld`, +x ekranda sağ-yukarı).
