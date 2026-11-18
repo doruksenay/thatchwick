@@ -23,7 +23,7 @@ Bu varlık oyunda ne işe yarıyor, nerede görünecek.
 Araç, ayarlar, ayrıntılı açıklama metni, referans dosyalar. Stil eşlemesi kullanan araçlarda, tarif başka referans yazmıyorsa ailenin `art/style/references.json` görselleri referanstır. İşçi bunu olduğu gibi uygular; araç açıklamasıyla çelişki varsa durur ve `## Sorular` ekler.
 
 ## Doğrulama
-`python tools/art/validate_iso.py <dosya> ...`, `python tools/art/style.py check --family <aile> <dosya> ...` (KALDI teslim edilmez, UYARI raporda yazılır) ve işe özgü ek kontroller (döşeme testi, ayak izi, ışık sırası). Başarı ölçütleri burada yazılır.
+`python tools/art/validate_iso.py <dosya> ...`, `python tools/art/style.py check --family <aile> <dosya> ...` (KALDI teslim edilmez, UYARI raporda yazılır). **Işık kaynağı kuralı** (kullanıcı kararı 2026-11-18): alev ya da yanan ışık içeren görselde (meşale, mum, kandil, fener, şenlik ateşi, ocak) `check`'e `--light` eklenir. Alev ve ışık pikselleri palet ve doygunluk denetiminin dışında kalır, eşyanın geri kalanı (ahşap, metal, taş) denetlenir; ışık payı %35'i aşarsa yine KALDI ve işe özgü ek kontroller (döşeme testi, ayak izi, ışık sırası). Başarı ölçütleri burada yazılır.
 
 ## Notlar
 Dosya adı kuralı, pivot, bağımlılık açıklaması.

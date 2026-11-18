@@ -8,7 +8,8 @@ Tutarlılığın üç ayağı (art/style/README.md):
 
 Kullanım:
   python tools/art/style.py palette [--png]              # referanslardan art/style/palette.json üret (--png: önizleme)
-  python tools/art/style.py check <png>... [--family F]  # palet uyumu; eşik altıysa çıkış 1
+  python tools/art/style.py check <png>... [--family F] [--light]  # palet uyumu; eşik altıysa çıkış 1
+                                                         # --light: alev/ışık pikselleri denetim dışı (ışık kaynağı kuralı)
   python tools/art/style.py sheet --family F --out X.png <png>...   # referanslar + yeni görseller, 4x, aynı taban çizgisi
   python tools/art/style.py fit --family F <girdi.png> <çıktı.png>  # yalnızca doygunluğu aileye indirir (renk/ton aynı)
 
@@ -36,6 +37,7 @@ NEAR = 20.0                # bir pikselin palete "yakın" sayıldığı en büy�
 # Bu denetim kaba sapmayı yakalar; ince stil farkı insan gözüyle (yan yana sayfası) ve pilot kabulüyle çözülür.
 MEAN_WARN, MEAN_FAIL = 10.0, 16.0          # palete ortalama uzaklık
 NEAR_FAIL = 0.80                            # palete yakın piksel oranı bunun altındaysa kalır
+LIGHT_MAX = 0.35                            # --light: ışık pikseli bu oranı aşarsa KALDI (eşyanın kendisi denetlenebilmeli)
 SAT_WARN, SAT_FAIL = 1.25, 1.50            # ortalama doygunluk / aile referanslarının ortalaması
 SAT_LOW_WARN = 0.60
 KILIT_ESIGI = 3                             # ailede en az bu kadar "kabul" referans yoksa palet denetimi uyarıdır
@@ -111,8 +113,27 @@ def load_palette():
     return [tuple(int(h[i: i + 2], 16) for i in (1, 3, 5)) for h in d["renkler"]]
 
 
-def conformity(path, palette, cache):
+def is_light_pixel(c):
+    """Alev ve ışık pikseli: sıcak ton (kırmızı-turuncu-sarı), parlak ve doygun ya da alevin beyaza yakın sıcak çekirdeği.
+    Ahşap ve pirinç gibi koyu sıcak tonlar (değer < 0,75) dışarıda kalır."""
+    import colorsys
+    h, sat, v = colorsys.rgb_to_hsv(c[0] / 255, c[1] / 255, c[2] / 255)
+    hue = h * 360
+    warm = hue <= 60 or hue >= 345
+    if warm and v >= 0.75 and sat >= 0.45:
+        return True
+    return v >= 0.92 and sat < 0.35 and c[0] >= c[1] >= c[2]
+
+
+def light_split(path):
+    """(ışık dışı pikseller, ışık oranı)."""
     px = opaque_pixels(path)
+    rest = [c for c in px if not is_light_pixel(c)]
+    return rest, (1 - len(rest) / len(px)) if px else 0.0
+
+
+def conformity(path, palette, cache, px=None):
+    px = opaque_pixels(path) if px is None else px
     if not px:
         return 0.0, 0.0
     near, total_d = 0, 0.0
@@ -126,9 +147,9 @@ def conformity(path, palette, cache):
     return near / len(px), total_d / len(px)
 
 
-def mean_saturation(path):
+def mean_saturation(path, px=None):
     import colorsys
-    px = opaque_pixels(path)
+    px = opaque_pixels(path) if px is None else px
     if not px:
         return 0.0
     return sum(colorsys.rgb_to_hls(r / 255, g / 255, b / 255)[2] for r, g, b in px) / len(px)
@@ -145,9 +166,14 @@ def check(args):
     print("| Dosya | Palete yakın | Ortalama uzaklık | Doygunluk / aile | Sonuç | Bulgu |")
     print("|---|---|---|---|---|---|")
     for p in args.files:
-        ratio, mean = conformity(p, palette, cache)
-        sat = mean_saturation(p) / ref_sat if ref_sat else None
+        px, light = (light_split(p) if args.light else (None, 0.0))
+        ratio, mean = conformity(p, palette, cache, px)
+        sat = mean_saturation(p, px) / ref_sat if ref_sat else None
         notes, level = [], 0
+        if args.light:
+            notes.append(f"ışık pikseli %{light * 100:.0f} denetim dışı")
+            if light > LIGHT_MAX:
+                notes.append(f"ışık payı %{LIGHT_MAX * 100:.0f}'i aşıyor"); level = 2
         if mean > MEAN_FAIL or ratio < NEAR_FAIL:
             if locked:
                 notes.append("palet dışı renkler"); level = 2
@@ -228,6 +254,8 @@ def main():
     c = sub.add_parser("check")
     c.add_argument("files", nargs="+")
     c.add_argument("--family", default="")
+    c.add_argument("--light", action="store_true",
+                   help="ışık kaynağı kuralı: alev ve ışık pikselleri palet ve doygunluk denetiminin dışında (art/TEMPLATE.md)")
     c.set_defaults(fn=check)
     f = sub.add_parser("fit")
     f.add_argument("--family", required=True)
