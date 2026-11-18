@@ -1,7 +1,7 @@
 ---
 id: "418"
 title: Ürün ikonları A: yemek, içecek, turşu, kurutma, tütsü (55)
-status: running
+status: blocked
 claimed_at: 2026-11-18T19:55Z
 approved_by: user        # kullanıcı 18.11.2026: "bu sistemi getir" (ürün ikon sistemi); otomatik akış (art/budget.md)
 priority: 30
@@ -145,6 +145,9 @@ Boyut 32x32, ≤16 renk, `python tools/art/style.py check --family arayuz <dosya
 
 ## Notlar
 - Dosya adı `icon_item_<id>` olduğu sürece kod kendiliğinden bulur; v2 gibi farklı ad gerekirse kod oturumu `IsoArt.IconOverrides`'a ekler.
+
+## Sorular
+- 55 ikon x 1 gen (create_map_object, 401/417'de çağrı başına 1 gen ölçüldü) = ~55 gen; cost_est 20 / cost_max 34 ile çelişiyor (2 katı 40'ı aşar). Hiç çağrı yapılmadı (harcama 0). Öneri: işi ~3 parçaya böl (her biri <=20 ikon) ya da cost_max/cost_est'i 60'a güncelle ve yeniden `pending` yap.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
