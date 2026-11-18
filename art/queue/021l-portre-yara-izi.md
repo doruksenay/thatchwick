@@ -1,7 +1,7 @@
 ---
 id: "021l"
 title: Portre yara izi: yarık
-status: running
+status: review
 claimed_at: 2026-11-18T08:30Z
 approved_by: user
 family: karakter
