@@ -2769,6 +2769,85 @@
         "moodBase": 2
       },
       "requires": "branch.med_b"
+    },
+    {
+      "id": "branch.ath_a",
+      "displayName": "Ulak",
+      "description": "Atletizmde hızlı öğrenir.",
+      "skill": "Athletics",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Athletics",
+            "rate": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.ath_b",
+      "displayName": "Hamal",
+      "description": "Az yorulur.",
+      "skill": "Athletics",
+      "level": 5,
+      "effects": {
+        "energyDecay": 0.94
+      }
+    },
+    {
+      "id": "branch.ath_a1",
+      "displayName": "Tez Ayak",
+      "description": "Arabacılıkta da hızlı öğrenir.",
+      "skill": "Athletics",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Carting",
+            "rate": 1.2
+          }
+        ]
+      },
+      "requires": "branch.ath_a"
+    },
+    {
+      "id": "branch.ath_a2",
+      "displayName": "Pehlivan",
+      "description": "Soğuğa dayanıklı.",
+      "skill": "Athletics",
+      "level": 10,
+      "effects": {
+        "coldResist": 0.1
+      },
+      "requires": "branch.ath_a"
+    },
+    {
+      "id": "branch.ath_b1",
+      "displayName": "Yük Taşıyan",
+      "description": "Daha da az yorulur.",
+      "skill": "Athletics",
+      "level": 10,
+      "effects": {
+        "energyDecay": 0.9
+      },
+      "requires": "branch.ath_b"
+    },
+    {
+      "id": "branch.ath_b2",
+      "displayName": "Güçlü Kol",
+      "description": "Madencilikte de hızlı öğrenir.",
+      "skill": "Athletics",
+      "level": 10,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Mining",
+            "rate": 1.15
+          }
+        ]
+      },
+      "requires": "branch.ath_b"
     }
   ],
   "projects": [

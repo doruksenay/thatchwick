@@ -482,5 +482,30 @@ namespace Thatchwick.Core.Tests
             Assert.Null(u.ParentAssistBlocker(gran, kid));
             Assert.NotNull(u.ParentAssistBlocker(kid, gran));
         }
+            // ---------- atletizm ----------
+
+        [Fact]
+        public void Atletizm_HizYorgunlukSoguk_YurumekXpVerir_OyuncaklarBagli()
+        {
+            var c = Person(1, AdultAge);
+            Assert.Equal(1.0, c.AthleticSpeedFactor, 6);
+            c.Skills.AddXp(SkillType.Athletics, SkillRules.XpForLevel(10), 10);
+            Assert.Equal(1.18, c.AthleticSpeedFactor, 6);
+            Assert.Equal(0.82f, c.AthleticEnergyFactor, 4);
+            Assert.Equal(0.09f, c.AthleticColdResist, 4);
+            Assert.Equal("Atletizm", SkillNames.Name(SkillType.Athletics));
+            foreach (var id in new[] { "item.jump_rope", "item.hoop", "item.toy_sword_wall" })
+                Assert.Equal(SkillType.Athletics, new ToyHabitSystem().Def(id).Skill);
+
+            var db = ContentFilesTests.LoadDb(out _);
+            var map = new GridMap(12, 12);
+            var world = new WorldState(map);
+            var walker = Person(2, AdultAge, 0, 0);
+            var runner = new JobRunner(walker, world);
+            runner.Command(Job.MoveTo(new GridPos(8, 0)));
+            for (int i = 0; i < 400 && !runner.IsIdle; i++) runner.Tick(0.005);
+            Assert.Equal(new GridPos(8, 0), walker.Position);
+            Assert.True(walker.Skills.GetXp(SkillType.Athletics) > 0.3);
+        }
     }
 }

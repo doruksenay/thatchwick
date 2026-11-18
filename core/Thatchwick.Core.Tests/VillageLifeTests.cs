@@ -562,7 +562,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(db.Goals.Count >= 15);
             Assert.All(db.Goals.All, g => Assert.Contains(g.Metric, GoalDef.Metrics));
             Assert.Equal(7, db.Templates.Count);
-            Assert.Equal(204, db.Branches.Count);
+            Assert.Equal(210, db.Branches.Count);   // 35 beceri x 6 (Atletizm 18.11.2026)
         }
 
         // ---------- Kayıt ----------

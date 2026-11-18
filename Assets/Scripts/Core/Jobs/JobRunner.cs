@@ -650,7 +650,9 @@ namespace Thatchwick.Core.Jobs
             ContinueCarriedStep();
             double used = 0;
             // Ata binen daha hızlı gider (merdivende de; basitlik için).
-            double tilesPerDay = TilesPerGameDay * Math.Max(0.1, WalkSpeed?.Invoke() ?? 1.0);
+            // Atletizm: yaya yürüyüşte seviye başına %2 (binekteyken binek hızı belirler).
+            double ride = WalkSpeed?.Invoke() ?? 1.0;
+            double tilesPerDay = TilesPerGameDay * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor : 1.0);
             while (_pathIndex < _path.Count && budget - used > 0)
             {
                 // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.
@@ -673,6 +675,7 @@ namespace Thatchwick.Core.Jobs
                     _pathIndex++;
                     _stepFraction = 0;
                     _world.Map.Trample(_character.Position, HumanTrample);
+                    if (ride <= 1.0 && _character.Stage != AgeStage.Baby) _character.GainSkillXp(SkillType.Athletics, Character.AthleticXpPerTile * span);
                     if (_world.Map.IsOpenWater(_character.Position)) _character.Soak(0.6f);   // suya giren ıslanır
                 }
                 else
