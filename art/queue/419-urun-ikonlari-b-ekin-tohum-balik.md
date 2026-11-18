@@ -1,7 +1,7 @@
 ---
 id: "419"
 title: Ürün ikonları B: ekin, tohum, fidan, meyve, toplanan, balık, et (55)
-status: running
+status: blocked
 claimed_at: 2026-11-18T19:55Z
 approved_by: user        # kullanıcı 18.11.2026: "bu sistemi getir" (ürün ikon sistemi); otomatik akış (art/budget.md)
 priority: 30
@@ -145,6 +145,11 @@ Boyut 32x32, ≤16 renk, `python tools/art/style.py check --family arayuz <dosya
 
 ## Notlar
 - Dosya adı `icon_item_<id>` olduğu sürece kod kendiliğinden bulur; v2 gibi farklı ad gerekirse kod oturumu `IsoArt.IconOverrides`'a ekler.
+
+## Sorular
+- (işçi, 2026-11-18) Hiç PixelLab çağrısı yapılmadı, harcama 0. `create_map_object` 32x32 çağrısı 1 gen (401/417 raporları); tarifteki 55 ikon = 55 gen. Bu, `cost_max: 34` ve `cost_est` 20'nin 2 katını (40) aşıyor, bütçe kuralı gereği durdum.
+- 316 raporuna göre 6'lı sayfa üretimi ızgaraya uymadı; sayfa yöntemi güvenilir değil.
+- Öneri: işi iki iş dosyasına böl (ör. 419a: ekin/tohum 28 ikon; 419b: fidan, toplanan, balık, et 27 ikon), her biri `cost_max <= 34`, ya da `cost_est`/`cost_max` değerlerini 55-60'a çıkar. Bakiye: 4041,7.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
