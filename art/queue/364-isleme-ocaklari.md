@@ -1,7 +1,7 @@
 ---
 id: "364"
 title: İşleme yapıları: kömür yığını, kavurma yığını, çiçek ocağı, kireç ocağı
-status: review
+status: accepted   # kullanıcı 18.11.2026: "hepsi iyi duruyor"
 claimed_at: 2026-11-18T13:46Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 20
