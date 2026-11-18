@@ -1,7 +1,8 @@
 ---
 id: "021p"
 title: Portre dövme: face
-status: pending
+status: running
+claimed_at: 2026-11-18T08:33Z
 approved_by: user
 family: karakter
 style_gate: false
