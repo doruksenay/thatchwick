@@ -1,7 +1,7 @@
 ---
 id: "101"
 title: Hayvanlar 1: tavuk (tuval testi) + horoz
-status: running
+status: blocked
 claimed_at: 2026-11-18T07:55Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
@@ -92,6 +92,9 @@ Hiçbir şeyi silme ya da üzerine yazma. Klasör tarihi üretim günü (`yyyy-m
 - Ölçek hedefleri (kullanıcı, K2 köylüsü 58 px, 2026-11-08): civciv ~13, tavuk ~24, horoz ~28, ördek ~21, kaz ~30, kedi ~21, köpek ~30, koyun ~36, domuz ~36, keçi ~36, inek ~48 (uzunluk ~70), at ~60 (uzunluk ~70). Kabul edilen referans: `iso_animal_sheep_2_cand_*` (pixflux 48 → SE boy 38, doluluk 0,79).
 - Varsayılan tuvaller doluluk oranlarından (pixflux ~0,79, pixen ~0,81) hesaplandı; tahmindir.
 - Onaylananlar sonra `iso_animal_<tür>_<ad>_<yön>.png` adını alır (kullanıcı işi). İmport ve pivot `Assets/Editor/IsoImportPostprocessor.cs` ile otomatik.
+
+## Sorular
+Bulut işçisi PixelLab sonuç PNG'lerini diske indiremedi (curl onay istiyor). 3 tavuk döndürmesi üretildi (kimlikler `art/results/101-hayvan-tavuk-horoz.md`); teslim ve horozlar yerel işçiye kaldı. Yerelde chicken_3/4/5 yeniden üretilmeden sürdürülmeli.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
