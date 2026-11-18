@@ -1,7 +1,7 @@
 ---
 id: "210"
 title: Karakter arayüzü stil pilotu (Durum paneli; parşömen + ahşap)
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:00Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
@@ -97,6 +97,10 @@ Hiçbir şeyi silme, üzerine yazma.
   - kartlar ve yuvalar boş mu.
 - Bilinen bir oyunun arayüzüne, logosuna ya da çerçeve motifine benzerlik var mı?
 - `style.py check --family arayuz`: aile referansı yok. Paletin genel uzaklığını yaz, KALDI uygulanmaz (pilot).
+
+## Sorular
+- (işçi, 2026-11-18) `get_balance`: Tier 2 (Pixel Artisan), 4999/5000 generation, yenilenme 2026-12-18. `art/budget.md` Tier 1 / 2000 / 2026-12-08 yazıyor. İşçi kuralı "plan Tier 1 değilse dur" olduğundan PixelLab çağrılmadı (0 generation). Kullanıcı `art/budget.md` planını güncelleyip işi `pending` yapmalı.
+- Tarif düzeltmeleri (üretim başlarsa): `ui_mockup.py pieces` çıktısında `kind: rect` var; `create_ui_asset` yalnızca rounded_rect/circle/polygon kabul ediyor (rect -> rounded_rect radius 0). Araç sanal tuvali en uzun kenar 512 (416x192 için 512x236); 832 koordinatları 512/832 ile ölçeklenmeli. `art/tmp/pieces.json` bu dönüşümü içerir. Maliyet 10-25 gen/çağrı, 416x192 için kesin değil.
 
 ## Notlar
 - Kullanıcı yön seçerken iş dosyasının altına `yon: parsomen` ya da `yon: ahsap` yazar. 211, 212, 213 ve 315 bu satırı okur. **Satır yoksa varsayılan `parsomen`** (otomatik akış: kuyruk kullanıcı seçimini beklemez). Kullanıcı sonra `ahsap` seçerse, henüz başlamamış işler ahşapla çalışır; bitmiş olanlar için yeniden üretim işi yazılır.
