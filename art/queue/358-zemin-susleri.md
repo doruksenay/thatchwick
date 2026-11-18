@@ -1,7 +1,7 @@
 ---
 id: "358"
 title: Zemin süsleri (çiçek, yonca, çakıl, ot öbeği, eğrelti, yaprak, köstebek tepeciği)
-status: running
+status: review
 claimed_at: 2026-11-18T13:10Z
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: bitki
