@@ -188,6 +188,10 @@ Tarifin makine okunur hâli (`tools/art/batch_worker.py`). Tablodaki değerlerle
 
 - 2026-11-18 (toplu işçi): 2/7 teslim, 10 gen, Claude'suz. Rapor: art/results/357-kaya-cali-kutuk.md
 
+- 2026-11-18 (toplu işçi): başladı
+
+- 2026-11-18 (toplu işçi): 1/5 teslim, 10 gen, Claude'suz. Rapor: art/results/357-kaya-cali-kutuk.md
+
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 - 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.

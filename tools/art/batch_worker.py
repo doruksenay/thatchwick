@@ -330,9 +330,12 @@ def run_job(jid, dry=False, reuse=None):
     attempts = int(p.get("max_attempts", 2))
     cost_max = float(fm.get("cost_max", "0") or 0)
     print(f"\n== {jid} ({len(items)} parça, cost_max {cost_max:g}, aile {family})")
-    for it in items:
-        if os.path.exists(os.path.join(ROOT, it["out"])):
-            sys.exit(f"{jid}: {it['out']} zaten var; üzerine yazılmaz")
+    done_before = [it for it in items if os.path.exists(os.path.join(ROOT, it["out"]))]
+    for it in done_before:
+        print(f"  {it['name']}: zaten teslim edilmiş ({it['out']}), atlanıyor")
+    items = [it for it in items if it not in done_before]
+    if not items:
+        print("  yapılacak parça yok"); return 0.0
     if dry:
         for it in items:
             g = it["guide"]
