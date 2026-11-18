@@ -88,7 +88,8 @@ Tarifin makine okunur hâli (`tools/art/batch_worker.py`); tuval ve yükseklik 3
         "axis": "x",
         "height": 40
       },
-      "description": "simple wooden towel rack on two feet with a hanging undyed linen towel"
+      "description": "simple wooden towel rack on two feet with a hanging undyed linen towel",
+      "fill": false
     }
   ]
 }
