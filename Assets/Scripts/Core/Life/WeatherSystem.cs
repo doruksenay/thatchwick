@@ -49,7 +49,24 @@ namespace Thatchwick.Core.Life
             return WeatherType.Clear;
         }
 
+        // Bugün ve yarın her karede sorulur; her sorguda yeni Random üretmemek için son iki gün önbellekte tutulur.
+        private readonly long[] _cachedDay = { long.MinValue, long.MinValue };
+        private readonly WeatherType[] _cachedWeather = new WeatherType[2];
+        private int _cachedSeed;
+        private int _cacheNext;
+
         public WeatherType WeatherOn(long day)
+        {
+            if (_cachedSeed != Seed) { _cachedSeed = Seed; _cachedDay[0] = _cachedDay[1] = long.MinValue; }
+            for (int i = 0; i < 2; i++) if (_cachedDay[i] == day) return _cachedWeather[i];
+            var w = Compute(day);
+            _cachedDay[_cacheNext] = day;
+            _cachedWeather[_cacheNext] = w;
+            _cacheNext = 1 - _cacheNext;
+            return w;
+        }
+
+        private WeatherType Compute(long day)
         {
             var p = (double[])Table[SeasonIndex(day)].Clone();
             if (day > 0)

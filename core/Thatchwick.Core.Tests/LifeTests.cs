@@ -166,13 +166,13 @@ namespace Thatchwick.Core.Tests
 
             c.GainSkillXp(SkillType.Farming, SkillRules.XpForLevel(5) + 1);
             Assert.True(LifeRules.ChooseBranch(db, c, "farmer.gardener", out _));
-            Assert.Equal(0.2f, c.Modifiers.YieldChance, 3);
+            Assert.Equal(0.2, (double)c.Modifiers.YieldChance, 3);
             Assert.False(LifeRules.ChooseBranch(db, c, "farmer.rancher", out reason));   // aynı kademede ikinci dal
             Assert.False(LifeRules.ChooseBranch(db, c, "farmer.master", out _));          // seviye 10 yok
 
             c.GainSkillXp(SkillType.Farming, SkillRules.XpForLevel(10));
             Assert.True(LifeRules.ChooseBranch(db, c, "farmer.master", out _));
-            Assert.Equal(0.5f, c.Modifiers.YieldChance, 3);
+            Assert.Equal(0.5, (double)c.Modifiers.YieldChance, 3);
             Assert.Equal(SkillType.Farming, LifeRules.DominantBranchSkill(db, new[] { c }));
         }
 
@@ -448,8 +448,8 @@ namespace Thatchwick.Core.Tests
             var chars = loaded.Characters;
             var ata = chars.First(x => x.Id == 1);
             Assert.True(ata.HasTrait("hardy") && ata.HasTrait("cheerful"));
-            Assert.Equal(0.3f, ata.Modifiers.ColdResist, 3);          // etkiler yüklemede yeniden işlendi
-            Assert.Equal(socialBefore, ata.Needs.Get(NeedType.Social), 1);
+            Assert.Equal(0.3, (double)ata.Modifiers.ColdResist, 3);          // etkiler yüklemede yeniden işlendi
+            Assert.Equal((double)socialBefore, (double)ata.Needs.Get(NeedType.Social), 1);
             Assert.True(ata.Mood.Has("mood.test"));
 
             var pop2 = new Population();

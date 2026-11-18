@@ -52,13 +52,14 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
-        public void KadinaSakalVerilemez_ErkegeElbiseVerilemez()
+        public void CinsiyetKilidiYok_KadinSakalErkekElbiseSecebilir()
         {
+            // Karar 17.11.2026: tüm saç, sakal ve kıyafetler herkese açık.
             var a = new Appearance { SkinColor = Catalog.SkinTones[0], FacialHairId = "beard" };
-            Assert.NotEmpty(Catalog.Validate(a, Sex.Female));
+            Assert.Empty(Catalog.Validate(a, Sex.Female));
 
             var b = new Appearance { SkinColor = Catalog.SkinTones[0], OutfitId = "dress" };
-            Assert.NotEmpty(Catalog.Validate(b, Sex.Male));
+            Assert.Empty(Catalog.Validate(b, Sex.Male));
         }
 
         [Fact]
@@ -67,8 +68,10 @@ namespace Thatchwick.Core.Tests
             var a = new Appearance { SkinColor = Catalog.SkinTones[0], HairStyleId = "mohawk" };
             Assert.Contains(Catalog.Validate(a, Sex.Male), e => e.Contains("mohawk"));
 
+            // Boy kaldırıldı (karar 17.11.2026): eski değer yok sayılır, Normalize 100 yapar.
             var tall = new Appearance { SkinColor = Catalog.SkinTones[0], HeightPercent = 150 };
-            Assert.NotEmpty(Catalog.Validate(tall, Sex.Male));
+            Catalog.Normalize(tall, Sex.Male);
+            Assert.Equal(100, tall.HeightPercent);
 
             var blue = new Appearance { SkinColor = new Rgb(0, 0, 255) };
             Assert.NotEmpty(Catalog.Validate(blue, Sex.Male));
@@ -88,14 +91,15 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
-        public void CinsiyetDegisince_UygunsuzSecenekler_Duzelir()
+        public void CinsiyetDegisince_Secimler_Korunur()
         {
+            // Karar 17.11.2026: cinsiyet hiçbir görünüm seçeneğini kilitlemez.
             var d = new CharacterDraft { Name = "Aldric" };
             d.SetSex(Sex.Male, Catalog);
             d.Appearance.FacialHairId = "beard";
             d.Appearance.OutfitId = "tunic";
             d.SetSex(Sex.Female, Catalog);
-            Assert.Equal(Appearance.None, d.Appearance.FacialHairId);
+            Assert.Equal("beard", d.Appearance.BeardId);
             Assert.Empty(d.Validate(Catalog));
         }
 

@@ -15,12 +15,12 @@ namespace Thatchwick.Core.Content
         {
             ("seating", "Oturma"), ("sleep", "Uyku"), ("surfaces", "Masa"), ("heat_light", "Isı ve ışık"),
             ("kitchen", "Mutfak"), ("storage", "Depo"), ("work", "İş"), ("hygiene", "Hijyen"),
-            ("decor", "Süs (masa)"), ("decor_wall", "Süs (yer, duvar)"), ("garden", "Bahçe"), ("kids", "Çocuk"), ("structure", "Merdiven ve yapı")
+            ("decor", "Süs (masa)"), ("decor_wall", "Süs (yer, duvar)"), ("rug", "Halı"), ("garden", "Bahçe"), ("barn", "Ahır ve kümes"), ("farm", "Tarım düzenekleri"), ("kids", "Çocuk"), ("structure", "Merdiven ve yapı")
         };
 
         public static readonly (string id, string name)[] Rooms =
         {
-            ("bedroom", "Yatak odası"), ("kitchen", "Mutfak"), ("living", "Oturma"), ("outdoor", "Dış"), ("kids", "Çocuk")
+            ("bedroom", "Yatak odası"), ("kitchen", "Mutfak"), ("living", "Oturma"), ("outdoor", "Dış"), ("kids", "Çocuk"), ("barn", "Ahır")
         };
 
         /// <summary>Stil setleri, kalite sırasıyla.</summary>
@@ -50,7 +50,7 @@ namespace Thatchwick.Core.Content
             var list = new List<ItemDef>();
             foreach (var d in content.Items.All)
             {
-                if (d.Price <= 0 || d.Placement == ItemPlacement.Resource || d.IsPlant) continue;
+                if (d.Price <= 0 || d.Placement == ItemPlacement.Resource || d.IsPlant || d.HasTag("craftonly")) continue;   // düzenekler yalnızca yapılır
                 if (d.Category != category) continue;
                 if (room != null && !d.Rooms.Contains(room)) continue;
                 if (set != null && d.StyleSet != set) continue;
@@ -81,6 +81,27 @@ namespace Thatchwick.Core.Content
             if (def.HasTag("light")) parts.Add("Işık");
             if (def.SurfaceSlots.Count > 0) parts.Add($"{def.SurfaceSlots.Count} yuva");
             if (def.IsHousing) parts.Add($"Barınak ({def.HousingCapacity})");
+            if (def.RequiresIndoor) parts.Add("Kapalı odaya konur");
+            if (def.IsTrough) parts.Add("Yemlik: odadaki hayvanlar yer");
+            switch (def.AnimalRole)
+            {
+                case AnimalRoles.Water: parts.Add("Su (hayvan konforu)"); break;
+                case AnimalRoles.Bedding: parts.Add("Altlık (hayvan konforu)"); break;
+                case AnimalRoles.Collector: parts.Add("Her sabah ürünü depoya toplar"); break;
+                case AnimalRoles.Feeder: parts.Add("Her sabah yemlikleri envanterden doldurur"); break;
+                case AnimalRoles.Bell: parts.Add("Dokun: hayvanları içeri çağır / salıver"); break;
+            }
+            if (def.AnimalComfort > 0) parts.Add($"Hayvan konforu +{def.AnimalComfort}");
+            if (def.WaterSource) parts.Add("Su kaynağı (kanal bağlanır)");
+            if (def.WaterRadius > 0) parts.Add(def.NeedsWaterSource ? $"Sular ({def.WaterRadius} karo, kaynağa bağlıyken)" : $"Sular ({def.WaterRadius} karo)");
+            if (def.PowerSource) parts.Add($"Güç: kaynağa bağlı kanala değince {Work.FarmAutomation.PowerReach}+ karo (mühendislikle artar) yakındaki makineleri çevirir");
+            if (def.AutoProcess != null) parts.Add("Güç alınca her gün kendiliğinden işler");
+            if (def.WindPower) parts.Add("Rüzgârla güç verir (kanal gerekmez)");
+            if (def.WaterGate) parts.Add("Dokun: suyu aç / kes");
+            if (def.HarvestRadius > 0) parts.Add($"Güç alınca her sabah {def.HarvestRadius} karo çevresindeki olgun ekini biçer");
+            if (def.SeedRadius > 0) parts.Add($"Güç alınca her sabah {def.SeedRadius} karo çevresindeki boş toprağa tohum eker");
+            if (def.IceCollect > 0) parts.Add($"Donlu sabahlar {def.IceCollect} buz toplar");
+            if (def.HasTag("craftonly")) parts.Add("Yalnızca yapılır (tarif)");
             if (def.Placement == ItemPlacement.Wall) parts.Add("Duvara asılır");
             if (def.Placement == ItemPlacement.Surface) parts.Add("Masa/raf üstüne");
             return string.Join(" · ", parts);
@@ -92,6 +113,7 @@ namespace Thatchwick.Core.Content
             foreach (var d in content.Items.All) if (d.HousingKind == a.Housing) { house = d.DisplayName; break; }
             string prod = a.Produces != null && content.Items.TryGet(a.Produces, out var p)
                 ? $"{p.DisplayName} / {a.ProduceEveryDays:0.#} gün" : (a.IsPet ? "Evcil: keyif" : "");
+            if (a.Rideable) prod = $"Binek (x{a.RideSpeed:0.#} hız, {a.MatureDays:0} günde büyür, eyer gerekir)";
             return $"{house} · yem {a.FeedPerDay:0.#}/gün · {prod}";
         }
     }

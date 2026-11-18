@@ -38,6 +38,10 @@ namespace Thatchwick.Game
             public SpriteRenderer Renderer;
             public int Direction = IsoArt.DefaultDirection;
             public Sprite LastSprite;
+            // Kırlaşma, kırışıklık, sargı: günde bir hesaplanır (AgingLook).
+            public LookState Look;
+            public int LookDay = -1;
+            public string LookInjury;
         }
 
         private WorldState _world;
@@ -53,7 +57,13 @@ namespace Thatchwick.Game
         private float _messageUntil;
         private string _message = "";
         private GUIStyle _labelStyle;
-        private readonly System.Random _rng = new System.Random(11);
+        // Rastgelelik: her oyunun ana tohumu kayıtta saklanır; alt sistemler bundan türetir (bkz. Core.Seeds).
+        private System.Random _rng;
+        private int _seed;
+        private int _rngEpoch;
+        // Dünya/harita değişince görünümler aynı karede en çok bir kez yeniden kurulur (LateUpdate).
+        private bool _itemsDirty;
+        private bool _floorsDirty;
         private Population _population;
         private AppearanceCatalog _appearanceCatalog;
         private CharacterCreator _creator;
@@ -67,6 +77,7 @@ namespace Thatchwick.Game
         private Market _market;
         private AccountProgress _account;
         private MarketPanel _marketPanel;
+        private StoragePanel _storagePanel;
         private FamilyService _family;
         private FamilyPanel _familyPanel;
         private Dynasty _dynasty = new Dynasty();
@@ -82,7 +93,14 @@ namespace Thatchwick.Game
         private readonly Dictionary<int, AnimalView> _animalViews = new Dictionary<int, AnimalView>();
 
         // Etkileşim menüsü (Sims'teki pasta menüsü gibi): eşyaya dokununca seçenekler listelenir.
-        private struct MenuOption { public ItemInstance Item; public InteractionDef Interaction; public string Blocked; }
+        // Eşya etkileşimi ya da özel seçenek (hayvan işi, çapalama, çan): Label/Run doluysa özel seçenektir.
+        private struct MenuOption { public ItemInstance Item; public InteractionDef Interaction; public string Blocked; public string Label; public System.Action Run; }
+        private AnimalCare _animalCare;
+        private FarmWork _farmWork;
+        private FarmAutomation _automation;
+        private DutyPlanner _duties;
+        private double HourOfDay => _clock.DayFraction * 24.0;
+        private bool _hoeMode;      // çapa kipi: boş çime dokununca çapalar
         private readonly List<MenuOption> _menuOptions = new List<MenuOption>();
         private bool _menuOpen;
         private Rect _menuRect;
@@ -115,13 +133,17 @@ namespace Thatchwick.Game
         public static SaveData PendingLoad;
         private long _lastSavedDay = -1;
         private static string SavePath => System.IO.Path.Combine(Application.persistentDataPath, "thatchwick_save.json");
-        public static bool HasSave => System.IO.File.Exists(SavePath);
+        // Menüde "devam et"/"Yükle" yalnızca okunabilir bir kayıt varken görünür; Awake'te ve her başarılı kayıttan sonra güncellenir.
+        private bool _hasSave;
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
         private Rect HudRect => new Rect(8f, 8f, 340f, Mathf.Min(560f, Screen.height / HudScale - 16f));
 
         private void Awake()
         {
+            // Kare hızı açıkça sabit: mobilde 30 (pil), masaüstünde 60. Oyun hızı kareden bağımsızdır (Time.deltaTime).
+            Application.targetFrameRate = Application.isMobilePlatform ? 30 : 60;
+            WaitPendingWrite();   // önceki sahnenin arka plan kaydı bitmeden kayıt okunmasın
             IsoArt.Reset();
             _content = ContentLoader.Load(out var contentErrors);
             foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");
@@ -131,9 +153,22 @@ namespace Thatchwick.Game
             if (PendingLoad != null)
             {
                 try { loaded = SaveGame.Load(PendingLoad, _content); }
-                catch (System.Exception ex) { Debug.LogError($"Kayıt yüklenemedi: {ex.Message}"); }
+                catch (System.Exception ex)
+                {
+                    // Yeni oyun başlar; ama bozuk kayıt ilk otomatik kayıtla silinmesin diye kenara kopyalanır.
+                    Debug.LogError($"Kayıt yüklenemedi: {ex.Message}");
+                    string kept = SaveFiles.Quarantine(SavePath);
+                    ShowMessage(kept != null ? "Kayıt açılamadı. Dosya .corrupt olarak saklandı; yeni oyun başladı." : "Kayıt açılamadı; yeni oyun başladı.", 8f);
+                }
                 PendingLoad = null;
             }
+            _hasSave = SaveFiles.TryRead(SavePath, IsReadableSave, out _, out _);
+
+            // Eski kayıtta tohum yoktur (0): yeni bir ana tohum verilir, o oturumda pazar eski sabit tohumuyla kalır.
+            bool legacySeed = loaded != null && loaded.Seed == 0;
+            _seed = loaded != null && loaded.Seed != 0 ? loaded.Seed : Thatchwick.Core.Seeds.NewMaster();
+            _rngEpoch = loaded != null ? loaded.RngEpoch + 1 : 0;
+            _rng = new System.Random(Thatchwick.Core.Seeds.Derive(_seed, 1, _rngEpoch));
 
             GridMap map;
             if (loaded != null)
@@ -157,16 +192,18 @@ namespace Thatchwick.Game
             var viewGo = new GameObject("WorldView");
             viewGo.transform.SetParent(transform, false);
             _view = viewGo.AddComponent<WorldView>();
+            _view.Content = _content;
             _view.Build(map);
 
             RebuildItemViews();
-            _world.Changed += RebuildItemViews;
-            _view.LevelChanged += RebuildItemViews;   // görünen kat değişince eşyalar yeniden kurulur
+            _world.Changed += () => _itemsDirty = true;
+            _view.LevelChanged += () => _itemsDirty = true;   // görünen kat değişince eşyalar yeniden kurulur
 
             foreach (var item in _world.Items)
                 foreach (var tile in item.OccupiedTiles()) _view.ClearTerrainBlock(tile);
             _view.RefreshFloors();
-            map.Changed += _view.RefreshFloors;
+            map.Changed += () => _floorsDirty = true;
+            map.RoadsChanged += () => _floorsDirty = true;
             map.Changed += () =>
             {
                 if (_account == null || _account.HasFirst("first:room")) return;
@@ -175,7 +212,7 @@ namespace Thatchwick.Game
             var wallsGo = new GameObject("WallView");
             wallsGo.transform.SetParent(transform, false);
             _walls = wallsGo.AddComponent<WallView>();
-            _walls.Init(map, _view);
+            _walls.Init(map, _view, _content);
 
             var cam = Camera.main;
             if (cam == null)
@@ -207,10 +244,17 @@ namespace Thatchwick.Game
                 _household.AddItem("item.salt", 4);
             }
             _storage = new StorageService(_world, _household, _content);
-            _effects = new InteractionEffects(_world, _household, _content, seed: 9) { Storage = _storage };
-            _effects.Applied += (c, i, summary) => { ShowMessage($"{c.Name}: {summary}"); _account.Record(i.Id, _clock.DayIndex); };
-            _plants = new PlantSystem(_world);
-            _animals = new AnimalSystem(_world, _content, seed: 23);
+            _effects = new InteractionEffects(_world, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 2, _rngEpoch)) { Storage = _storage };
+            _effects.Applied += (c, i, summary) =>
+            {
+                if (c.IsVillager) return;
+                // Yemek, uyku, yıkanma gibi ihtiyaç işleri (çoğu otonom) hesap XP'si vermez; yalnızca sayaç (rozet) ilerler.
+                bool work = !i.RestoresNeed || i.Skill.HasValue;
+                if (work) { ShowMessage($"{c.Name}: {summary}"); _account.Record(i.Id, _clock.DayIndex); }
+                else _account.Count("act:" + i.Id);
+            };
+            _plants = new PlantSystem(_world, Thatchwick.Core.Seeds.Derive(_seed, 7, _rngEpoch));
+            _animals = new AnimalSystem(_world, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 3, _rngEpoch));
             if (loaded != null)
             {
                 SaveGame.RestoreAnimals(loaded, _animals, _content);
@@ -222,7 +266,8 @@ namespace Thatchwick.Game
             if (loaded != null) SaveGame.RestoreSoil(loaded, _plants);
             _animals.Died += OnAnimalDied;
             _roomMood = new RoomMoodSystem(_world);
-            _market = new Market(_content, _household, _storage, null, seed: 17);
+            // Pazar teklifleri gün ve tohumdan yeniden üretilir: yüklemeden sonra aynı kalsın diye epoch'suz türetilir.
+            _market = new Market(_content, _household, _storage, null, seed: legacySeed ? 17 : Thatchwick.Core.Seeds.Derive(_seed, 4));
             if (loaded != null) _market.RestoreState(loaded.MarketDemand, _clock.TotalDays, _clock.Season, loaded.MarketTakenOffers);
             else _market.Tick(0, _clock.TotalDays, _clock.Season);
             _market.OfferAccepted += o => _account.Record(o.IsContract ? "contract" : "barter", _clock.DayIndex);
@@ -238,25 +283,45 @@ namespace Thatchwick.Game
                 if (why == PlantLoss.Crows) ShowMessage($"Kuzgunlar {def.DisplayName} yedi (korkuluk dikmeyi düşün)");
                 else if (why == PlantLoss.Storm) ShowMessage($"Fırtına {def.DisplayName} ekinini yıprattı");
             };
-            _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays);
+            _heat = new HeatSystem(_world, _clock.Config, null, _clock.TotalDays)
+            {
+                // Malzeme yalıtımı: taş duvar az, kalas çok kaçırır; çatı stili üst katın çatı kaybını değiştirir.
+                EdgeLossFactor = e => _buildService?.EdgePart(_world.Map.GetEdge(e), _world.Map.GetEdgeStyle(e))?.HeatLoss ?? 1f,
+                RoofLossFactor = t => BuildParts.Resolve(_content, BuildPartKind.Roof, _world.Map.GetRoofStyle(t) == GridMap.NoRoof ? null : _world.Map.GetRoofStyle(t))?.HeatLoss ?? 1f
+            };
             if (loaded != null) _heat.RestoreTemperatures(loaded.Temperatures);
             _buildService = new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level, HousingResidents = _animals.Residents, Plants = _plants };
             _buildMode = new BuildMode(_world, _household, _buildService, _content, _view, _input, transform, _walls, _animals);
             _buildMode.Activity += a => _account.Record(a, _clock.DayIndex);
 
-            _population = new Population(firstFreeId: 1, seed: 21);
-            _population.NameGenerator = sex => (sex == Sex.Female ? GirlNames : BoyNames)[_nameCounter++ % (sex == Sex.Female ? GirlNames.Length : BoyNames.Length)];
+            _population = new Population(firstFreeId: 1, seed: Thatchwick.Core.Seeds.Derive(_seed, 5, _rngEpoch));
+            // Yerleştirme denetimi karakterleri bilsin: kimsenin üstüne eşya, ekin ya da mezar konmaz.
+            _world.CharacterPositions = LivingPositions;
+            _population.NameGenerator = NextName;
             _population.BabyBorn += OnBabyBorn;
-            _family = new FamilyService(_population, _household, _content, seed: 31);
+            _family = new FamilyService(_population, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 6, _rngEpoch));
             _family.Happened += OnFamilyEvent;
             _family.JoinedHousehold += OnJoinedHousehold;
 
-            _life = new LifeSystems(_content, _world, _household, _population, _clock) { AccountLevel = () => _account.Level };
+            _life = new LifeSystems(_content, _world, _household, _population, _clock, Thatchwick.Core.Seeds.Derive(_seed, 8, _rngEpoch))
+            {
+                AccountLevel = () => _account.Level,
+                AccountXp = () => _account.Xp
+            };
             _life.Attach(_family);
             _life.Attach(_plants);
             _life.Attach(_heat);
             _life.Attach(_market);
             _life.Attach(_buildService);
+            // Miras: kurucu (köydeki soy), yadigâr envantere girmez, satılınca geçmişi silinir, komşu haneye giden köylü olur.
+            _life.FounderId = () => _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
+            _buildService.StoreBlocker = _life.Legacy.StoreBlocker;
+            _buildService.PlacedItemSold += _life.Legacy.OnItemSold;
+            _life.Legacy.MarriedOutHappened += OnMarriedOut;
+            _buildMode.Legacy = _life.Legacy;
+            _buildMode.Maker = () => _player?.Character;
+            _buildMode.Today = () => _clock.TotalDays;
+            SetupFarm();
             _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
             _life.Suitors.SpawnPosition = () => NearestWalkable(Places["square"], 8);
             _life.Suitors.Arrived += c => CreateActorFor(c);
@@ -264,12 +329,20 @@ namespace Thatchwick.Game
             _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
 
             _familyPanel = new FamilyPanel(_population, _family, _dynasty, () => Commander?.Character,
-                c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner);
+                c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner)
+            { Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays };
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
             _life.Suitors.AppearanceCatalog = _appearanceCatalog;
+            // Ölen adlı köylünün (demirci ...) halefi mevsim başında gelir: görünüm ve sahne nesnesi burada verilir.
+            _life.Villagers.PlaceResolver = key => ResolvePlace(key);
+            _life.Villagers.SuccessorArrived += (c, def) =>
+            {
+                GiveRandomLook(c);
+                CreateActorFor(c);
+            };
 
             if (loaded != null)
             {
@@ -293,11 +366,8 @@ namespace Thatchwick.Game
             }
 
             // Maud (NPC) rastgele görünümle hemen oluşur; oyuncunun karakteri yaratma ekranından gelir.
-            var maud = new Character(2, "Maud", new GridPos(28, 9), false)
-            {
-                Sex = Sex.Female,
-                Appearance = _appearanceCatalog.Randomize(_rng, Sex.Female)
-            };
+            var maud = new Character(2, "Maud", new GridPos(28, 9), false) { Sex = Sex.Female };
+            GiveRandomLook(maud);
             maud.SetAge(36);
             maud.LifespanDays = maud.AgeConfig.RollLifespan(_rng);
             maud.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));
@@ -311,7 +381,7 @@ namespace Thatchwick.Game
             SpawnNamedVillagers();
             _life.Weather.Seed = _rng.Next(1, int.MaxValue);
 
-            _creator = new CharacterCreator(_appearanceCatalog, seed: 5) { Content = _content };
+            _creator = new CharacterCreator(_appearanceCatalog, seed: 5) { Content = _content, DaysPerSeason = _clock.Config.DaysPerSeason };
             _input.enabled = false;
         }
 
@@ -445,6 +515,17 @@ namespace Thatchwick.Game
                     AddItemSprite(item, pos, color, decorArt != null ? 1f : 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy, level).y, 0, level) + 2, decorArt);
                     continue;
                 }
+                if (item.IsRug)
+                {
+                    // Halı: yere serili düz elmaslar (zeminin hemen üstünde, eşyaların altında).
+                    var rugColor = FinishTint(item, ItemColor(item.Def.Id), 1f);
+                    foreach (var tile in item.OccupiedTiles())
+                    {
+                        var rsr = AddItemSprite(item, _view.TileToWorld(tile), rugColor, 0.92f, -9990 + level * Iso.LevelSortStep, SpriteMaterials.Diamond);
+                        rsr.color = rugColor;
+                    }
+                    continue;
+                }
                 bool flip = false;
                 var art = item.IsPlant ? null : IsoArt.Item(item, out flip);
                 if (art != null)
@@ -452,7 +533,7 @@ namespace Thatchwick.Game
                     // Tek görsel, ayak izinin merkezinde (pivot = taban elmasının merkezi).
                     var center = Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, level);
                     var sr = AddItemSprite(item, center, Color.white, 1f, Iso.SortOrder(center.y, 0, level), art);
-                    sr.color = Color.white;
+                    sr.color = FinishTint(item, Color.white, 0.45f);   // kaplama: gerçek görsel gelene kadar hafif renk
                     sr.flipX = flip;
                     if (item.Def.HeatOutput > 0f) _heatViews.Add((item, sr));
                     continue;
@@ -464,12 +545,21 @@ namespace Thatchwick.Game
                     _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform));
                     continue;
                 }
+                var tinted = FinishTint(item, color, 1f);
                 foreach (var tile in item.OccupiedTiles())
                 {
                     var pos = _view.TileToWorld(tile);
-                    AddItemSprite(item, pos, color, 1f, Iso.SortOrder(pos.y, 0, level));
+                    AddItemSprite(item, pos, tinted, 1f, Iso.SortOrder(pos.y, 0, level));
                 }
             }
+        }
+
+        // Mobilya kaplamasının rengi (amount: 1 = tam kaplama rengi, küçük = beyaza karışık); kaplama yoksa baseColor.
+        private Color FinishTint(ItemInstance item, Color baseColor, float amount)
+        {
+            if (item.FinishId == null || !_content.Parts.TryGet(item.FinishId, out var part)) return baseColor;
+            var c = SpriteMaterials.PartColor(part, baseColor);
+            return amount >= 1f ? c : Color.Lerp(Color.white, c, amount);
         }
 
         // Bitki etiketi: büyüme yüzdesi, ekinde sulu/susuz, meyve ağacında meyve durumu.
@@ -503,17 +593,31 @@ namespace Thatchwick.Game
             return sr;
         }
 
-        /// <summary>İstenen yerin çevresinde boş (eşyasız, geçilebilir) ilk karo.</summary>
+        // En yakın yürünebilir karo; tercihen meydana yürüyerek ulaşılabilen (eşyaların arasına kapanmış bir cep değil).
         private GridPos NearestWalkable(GridPos near, int maxRadius = 4)
         {
+            GridPos? enclosed = null;
             for (int r = 0; r <= maxRadius; r++)
                 for (int dy = -r; dy <= r; dy++)
                     for (int dx = -r; dx <= r; dx++)
                     {
+                        if (System.Math.Max(System.Math.Abs(dx), System.Math.Abs(dy)) != r) continue;
                         var p = new GridPos(near.X + dx, near.Y + dy);
-                        if (_world.Map.IsWalkable(p)) return p;
+                        if (!_world.Map.IsWalkable(p)) continue;
+                        if (ReachesSquare(p)) return p;
+                        if (!enclosed.HasValue) enclosed = p;
                     }
-            return near;
+            return enclosed ?? near;
+        }
+
+        private bool ReachesSquare(GridPos p)
+        {
+            var square = Places["square"];
+            var goals = new List<GridPos>(9);
+            for (int dy = -1; dy <= 1; dy++)
+                for (int dx = -1; dx <= 1; dx++)
+                    goals.Add(new GridPos(square.X + dx, square.Y + dy));
+            return Pathfinder.FindPathToAny(_world.Map, p, goals) != null;
         }
 
         private GridPos ResolvePlace(string key, int jitterSeed = 0)
@@ -528,10 +632,41 @@ namespace Thatchwick.Game
         {
             foreach (var c in _life.Villagers.SpawnMissing(key => ResolvePlace(key)))
             {
-                c.Appearance = _appearanceCatalog.Randomize(_rng, c.Sex);
+                GiveRandomLook(c);
                 c.LifespanDays = c.AgeConfig.RollLifespan(_rng) + LifeRules.LifespanBonus(_content, c.TraitIds);
                 CreateActorFor(c);
             }
+        }
+
+        // Yeni doğan ya da gelen kişinin adı: listeden sıradaki, ama yaşayan biriyle aynı ad verilmez (yüklemeden sonra sayaç
+        // sıfırlansa da). Liste tükenirse aynı ada sıra eki konur ("Edith II").
+        private string NextName(Sex sex)
+        {
+            var names = sex == Sex.Female ? GirlNames : BoyNames;
+            var taken = new HashSet<string>();
+            foreach (var c in _population.Members) if (!c.IsDead) taken.Add(c.Name);
+            for (int i = 0; i < names.Length; i++)
+            {
+                string n = names[_nameCounter++ % names.Length];
+                if (!taken.Contains(n)) return n;
+            }
+            string baseName = names[_nameCounter++ % names.Length];
+            for (int k = 2; ; k++)
+            {
+                string n = $"{baseName} {Roman(k)}";
+                if (!taken.Contains(n)) return n;
+            }
+        }
+
+        private static string Roman(int n) => n switch { 2 => "II", 3 => "III", 4 => "IV", 5 => "V", 6 => "VI", 7 => "VII", 8 => "VIII", 9 => "IX", _ => n.ToString() };
+
+        // Yapı denetimleri için: herkesin durduğu karo ve yürürken adım attığı sonraki karo (eşya ayağının altına konmasın).
+        private IEnumerable<GridPos> LivingPositions()
+        {
+            foreach (var c in _population.Members)
+                if (!c.IsDead) yield return c.Position;
+            foreach (var a in _actors)
+                if (a.Character != null && !a.Character.IsDead && a.Runner?.NextTile is GridPos next) yield return next;
         }
 
         // Köylüler gün saatine, havaya ve şenliğe göre evinden işine, meydana yürür.
@@ -544,7 +679,17 @@ namespace Thatchwick.Game
                 var c = a.Character;
                 if (c.IsDead || !c.IsVillager) continue;
                 var def = _life.Villagers.DefOf(c);
-                if (def == null) continue;
+                if (def == null)
+                {
+                    // Komşu haneye evlenen ya da orada doğan köylü: eşinin (yoksa annesinin) programına uyar.
+                    Character anchor = c.SpouseId.HasValue ? _population.Find(c.SpouseId.Value) : null;
+                    if ((anchor == null || anchor.IsDead || _life.Villagers.DefOf(anchor) == null) && c.BirthMotherId.HasValue)
+                        anchor = _population.Find(c.BirthMotherId.Value);
+                    def = anchor != null && !anchor.IsDead ? _life.Villagers.DefOf(anchor) : null;
+                    if (def == null && anchor != null && !anchor.IsDead && anchor.SpouseId.HasValue)
+                        def = _life.Villagers.DefOf(_population.Find(anchor.SpouseId.Value));
+                    if (def == null) continue;
+                }
                 string where = _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival);
                 if (_villagerLocation.TryGetValue(c.Id, out var last) && last == where) continue;
                 _villagerLocation[c.Id] = where;
@@ -560,6 +705,20 @@ namespace Thatchwick.Game
             c.Needs.SetDecayPerDay(NeedType.Hunger, c.IsVillager ? 0f : 120f);
             c.Needs.SetDecayPerDay(NeedType.Energy, c.IsVillager ? 0f : 90f);
             runner.Autonomous = !c.IsVillager;   // Sims tarzı özgür irade: oyuncu karakteri de kuyruğu boşken ihtiyacını kendisi giderir; komut her zaman önce gelir
+        }
+
+        // Komşu haneye evlenen üye köylü olur: komut almaz, eşinin programına uyar.
+        private void OnMarriedOut(Character member, Character spouse)
+        {
+            var actor = _actors.Find(a => a.Character == member);
+            if (actor != null)
+            {
+                actor.Runner.Cancel();
+                ApplyVillagerRules(member, actor.Runner);
+            }
+            if (_selected != null && _selected.Character == member) _selected = _player;
+            _villagerLocation.Remove(member.Id);
+            ShowMessage($"{member.Name}, {spouse.Name} ile evlenip onun hanesine gitti.", 5f);
         }
 
         private void OnJoinedHousehold(Character c)
@@ -587,6 +746,7 @@ namespace Thatchwick.Game
             var result = _dynasty.OnDeath(c, _population.Members, _clock.TotalDays, _life.TradeOf(c));
             if (result == null) { if (_selected != null && _selected.Character == c) _selected = _player; return; }
             if (result.DynastyEnded) { _dynastyEnded = true; ShowMessage(result.Message, 6f); return; }
+            _life.OnSuccession(_dynasty, result.Heir);
             var heir = _actors.Find(a => a.Character == result.Heir);
             if (heir != null)
             {
@@ -618,7 +778,12 @@ namespace Thatchwick.Game
             var actor = new Actor
             {
                 Character = character,
-                Runner = new JobRunner(character, _world) { Effects = _effects, Social = _family },
+                Runner = new JobRunner(character, _world)
+                {
+                    Effects = _effects, Social = _family, Animals = _animalCare, TileWork = _farmWork,
+                    WalkSpeed = () => _animals.RideSpeed(character.Id), DutyProvider = _duties.Next,
+                    DutySpeed = () => SkillNames.Factor(_life.BestSkill(SkillType.Stewardship), 0.03)
+                },
                 View = go.transform,
                 Renderer = sr
             };
@@ -642,6 +807,7 @@ namespace Thatchwick.Game
             var guiPos = new Vector2(screenPos.x / s, (Screen.height - screenPos.y) / s);
             if (_buildMode != null && _buildMode.Active && _buildMode.PanelRect(s).Contains(guiPos)) return true;
             if (_marketPanel != null && _marketPanel.Active && _marketPanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
@@ -667,13 +833,39 @@ namespace Thatchwick.Game
 
         // ---- kayıt ----
 
-        private void SaveNow(bool quiet)
+        // Arka planda süren dosya yazımı: yazımlar sırayla yapılır, yeni bir yazım ya da yükleme öncekini bekler.
+        private static System.Threading.Tasks.Task _pendingWrite = System.Threading.Tasks.Task.CompletedTask;
+
+        private static void WaitPendingWrite()
+        {
+            try { _pendingWrite.Wait(); }
+            catch (System.Exception ex) { Debug.LogError($"Kaydetme hatası: {ex.Message}"); }
+        }
+
+        /// <param name="background">Günlük otomatik kayıt: durum ana iş parçacığında alınır, dosya arka planda yazılır
+        /// (oyun takılmaz). Elle kayıt, uygulamadan çıkış ve duraklatma beklemeden yazar.</param>
+        private void SaveNow(bool quiet, bool background = false)
         {
             if (_player == null || _creator != null || _dynastyEnded) return;   // oyun başlamadan ya da bittikten sonra kaydetme
             try
             {
-                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _animals, _life, _plants);
-                System.IO.File.WriteAllText(SavePath, JsonUtility.ToJson(data));
+                var data = SaveGame.Capture(_clock, _world, _household, _population.Members, _account, _heat, _market, _family, _dynasty, _animals, _life, _plants, _seed, _rngEpoch);
+                string json = JsonUtility.ToJson(data);
+                string path = SavePath;
+                // Önce geçici dosyaya yazılır, eski kayıt .bak olarak kalır: yazma yarıda kesilse de bir kayıt sağlam kalır.
+                if (background)
+                {
+                    _pendingWrite = _pendingWrite.ContinueWith(_ =>
+                    {
+                        try { SaveFiles.WriteAtomic(path, json); }
+                        catch (System.Exception ex) { Debug.LogError($"Kaydetme hatası: {ex.Message}"); }
+                    }, System.Threading.Tasks.TaskScheduler.Default);
+                    _hasSave = true;
+                    return;
+                }
+                WaitPendingWrite();
+                SaveFiles.WriteAtomic(path, json);
+                _hasSave = true;
                 if (!quiet) ShowMessage("Kaydedildi");
             }
             catch (System.Exception ex)
@@ -685,9 +877,20 @@ namespace Thatchwick.Game
 
         private void LoadSave()
         {
+            WaitPendingWrite();
             try
             {
-                PendingLoad = JsonUtility.FromJson<SaveData>(System.IO.File.ReadAllText(SavePath));
+                // Ana dosya yoksa, okunamıyorsa ya da oyuna yüklenemiyorsa yedeğe düşer. Yükleme burada bir kez denenir:
+                // JSON'u geçerli ama içeriği bozuk dosya yeni sahnede sessizce "yeni oyun"a dönmesin.
+                if (!SaveFiles.TryRead(SavePath, CanLoadSave, out string json, out bool usedFallback))
+                {
+                    Debug.LogError("Kayıt okunamadı: geçerli bir kayıt ya da yedek yok.");
+                    string kept = SaveFiles.Quarantine(SavePath);
+                    ShowMessage(kept != null ? "Kayıt açılamadı; dosya .corrupt olarak saklandı." : "Kayıt okunamadı", 6f);
+                    return;
+                }
+                if (usedFallback) Debug.LogWarning("Ana kayıt okunamadı; yedekten yüklendi.");
+                PendingLoad = JsonUtility.FromJson<SaveData>(json);
             }
             catch (System.Exception ex)
             {
@@ -698,6 +901,35 @@ namespace Thatchwick.Game
             enabled = false;
             new GameObject("GameRoot").AddComponent<GameRoot>();
             Destroy(gameObject);
+        }
+
+        private bool CanLoadSave(string json)
+        {
+            try
+            {
+                var data = JsonUtility.FromJson<SaveData>(json);
+                if (data == null) return false;
+                SaveGame.Load(data, _content);
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"Kayıt yüklenemiyor: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static bool IsReadableSave(string json)
+        {
+            try
+            {
+                var data = JsonUtility.FromJson<SaveData>(json);
+                return data != null && data.map != null && data.map.width > 0 && data.map.height > 0;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
         }
 
         private void OnApplicationQuit() => SaveNow(quiet: true);
@@ -747,9 +979,30 @@ namespace Thatchwick.Game
             _familyPanel.Toggle();
         }
 
+        // Köylü, talip ve NPC: rastgele görünüm ve ona uyan gizli genom (çocuklarına geçer).
+        private void GiveRandomLook(Character c)
+        {
+            c.Appearance = _appearanceCatalog.Randomize(_rng, c.Sex);
+            c.Genome = Genetics.FromAppearance(c.Appearance, _appearanceCatalog, _rng);
+        }
+
+        private LookState LookFor(Actor actor)
+        {
+            int day = (int)_clock.TotalDays;
+            string injury = actor.Character.Injury?.Zone;
+            if (actor.Look == null || actor.LookDay != day || actor.LookInjury != injury)
+            {
+                actor.Look = AgingLook.For(actor.Character, _appearanceCatalog);
+                actor.LookDay = day;
+                actor.LookInjury = injury;
+            }
+            return actor.Look;
+        }
+
         private void FinishCreation()
         {
-            var character = _creator.Draft.CreateCharacter(1, new GridPos(24, 10), true, _appearanceCatalog, _rng);
+            var draft = _creator.Draft;
+            var character = draft.CreateCharacter(1, new GridPos(24, 10), true, _appearanceCatalog, _rng);
             _creator.Release();
             _creator = null;
             if (character.TraitIds.Count == 0) character.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));
@@ -759,7 +1012,8 @@ namespace Thatchwick.Game
             _player = CreateActorFor(character);
             _selected = _player;
             _dynasty.Found(character, _clock.TotalDays);
-            _dynasty.Name = $"{character.Name} hanedanı";
+            _dynasty.Name = draft.EffectiveDynastyName;
+            _life.Injuries.Setting = draft.Accidents;
             _input.enabled = true;
             ShowMessage($"{character.Name} köye geldi");
         }
@@ -776,6 +1030,15 @@ namespace Thatchwick.Game
             if (_menuOpen) { _menuOpen = false; return; }   // menü dışına dokunmak menüyü kapatır
 
             CollectOptions(world);
+            // Çapa kipi: boş çime dokunmak orayı çapalar, yıpranmış yola dokunmak onarır (sıraya eklenir).
+            if (_hoeMode && _menuOptions.Count == 0)
+            {
+                var action = _world.Map.GetRoad(tile) != RoadType.None ? TileAction.Repair : TileAction.Till;
+                string why = _farmWork.CanDo(Commander.Character, tile, action);
+                if (why != null) { ShowMessage(why); return; }
+                if (!Commander.Runner.Queue.TryEnqueue(Job.OnTile(tile, action))) ShowMessage("İş sırası dolu.");
+                return;
+            }
             if (_menuOptions.Count == 0) { Commander.Runner.Command(Job.MoveTo(tile)); return; }
             if (_menuOptions.Count == 1) { RunOption(_menuOptions[0]); return; }
 
@@ -804,17 +1067,40 @@ namespace Thatchwick.Game
                 items.AddRange(_world.GetDecorOn(root.Id));
             }
             var names = new List<string>();
+            var tile = _view.WorldToTile(world);
+            var animal = AnimalAt(tile);
+            if (animal != null)
+            {
+                names.Add($"{animal.Name} ({animal.Species.DisplayName}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")})");
+                AddAnimalOptions(animal);
+            }
             foreach (var item in items)
             {
-                if (item.Def.Interactions.Count > 0 && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
+                if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell || item.Def.WaterGate) && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
                 foreach (var it in item.Def.Interactions)
                     _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
+                if (item.Def.WaterGate)
+                {
+                    var gate = item;
+                    _menuOptions.Add(new MenuOption
+                    {
+                        Label = gate.Toggled ? "Kapağı aç (su geçsin)" : "Kapağı kapat (suyu kes)",
+                        Run = () => { gate.Toggled = !gate.Toggled; ShowMessage(gate.Toggled ? "Su kapağı kapandı" : "Su kapağı açıldı"); }
+                    });
+                }
+                if (item.Def.AnimalRole == AnimalRoles.Bell)
+                    _menuOptions.Add(new MenuOption
+                    {
+                        Label = _animals.Released ? "Çanı çal: hayvanları içeri çağır" : "Çanı çal: hayvanları otlağa salıver",
+                        Run = () => { _animals.Released = !_animals.Released; ShowMessage(_animals.Released ? "Hayvanlar gündüz otlağa çıkar" : "Hayvanlar barınakta kalır"); }
+                    });
             }
             _menuTitle = string.Join(", ", names);
         }
 
         private void RunOption(MenuOption o)
         {
+            if (o.Run != null) { if (o.Blocked == null) o.Run(); else ShowMessage(o.Blocked); return; }
             Commander.Runner.Command(Job.UseItem(o.Item.Id, o.Interaction.Id));
             ShowMessage($"{Commander.Character.Name}: {o.Interaction.DisplayName} ({o.Item.Def.DisplayName})");
         }
@@ -829,13 +1115,151 @@ namespace Thatchwick.Game
             foreach (var o in _menuOptions)
             {
                 GUI.enabled = o.Blocked == null;
-                string label = o.Blocked == null ? o.Interaction.DisplayName : $"{o.Interaction.DisplayName} ({o.Blocked})";
+                string name = o.Label ?? o.Interaction.DisplayName;
+                string label = o.Blocked == null ? name : $"{name} ({o.Blocked})";
                 if (GUILayout.Button(label)) { RunOption(o); _menuOpen = false; }
                 GUI.enabled = true;
             }
             if (GUILayout.Button("Buraya yürü")) { Commander.Runner.Command(Job.MoveTo(_menuTile)); _menuOpen = false; }
             GUILayout.EndScrollView();
             GUILayout.EndArea();
+        }
+
+        // Çiftlik ve hayvancılık: barınak odası konforu, otlak, binek, mekanizmalar, görevli aile üyeleri.
+        private void SetupFarm()
+        {
+            _animals.Temperature = p => _heat.TemperatureAt(p);
+            _animals.CanGoOut = () => HourOfDay >= 6.0 && HourOfDay < 20.0 && _life.CalmToday;   // gündüz ve fırtına yokken otlakta
+            _animals.RiderPosition = id =>
+            {
+                var c = _population.Find(id);
+                return c != null && !c.IsDead ? c.Position : (GridPos?)null;
+            };
+            _animals.FindCharacter = id => _population.Find(id);
+            // Yavrulama ustalığı: hanenin en iyi hayvancısı (dal ustalığı bir seviye sayılır).
+            _animals.HusbandryLevel = () =>
+            {
+                int best = 1;
+                foreach (var c in _population.Members)
+                    if (!c.IsDead && !c.IsVillager) best = System.Math.Max(best, c.Skills.GetLevel(SkillType.AnimalHusbandry) + c.Modifiers.QualityLevels);
+                return best;
+            };
+            _animals.Born += (mother, baby) =>
+            {
+                ShowMessage($"{mother.Species.DisplayName} yavruladı: {baby.Name}");
+                foreach (var c in _population.Members) if (!c.IsVillager && !c.IsDead) c.AddMoodlet(MoodCatalog.NewFoal);
+            };
+            _effects.Season = () => _clock.Season;
+            _effects.Household = () => _population.Members;
+            _market.Trader = () => Commander?.Character;
+            _animals.Dismounted += (a, riderId) => ShowMessage($"{_population.Find(riderId)?.Name} attan indi ({a.Name} kapıda bekliyor)");
+            _animalCare = new AnimalCare(_animals, _household);
+            _animalCare.Done += (c, a, act) =>
+            {
+                switch (act)
+                {
+                    case AnimalAction.Mount: ShowMessage($"{c.Name} {a.Name} sırtında (hız x{_animals.RideSpeed(c.Id):0.#})"); _account.Record("ride", _clock.DayIndex); break;
+                    case AnimalAction.Saddle: ShowMessage($"{a.Name} eyerlendi"); break;
+                    case AnimalAction.Unsaddle: ShowMessage($"{a.Name}: eyer çıkarıldı"); break;
+                    case AnimalAction.Brush: ShowMessage($"{c.Name} {a.Name} tımar etti (dostluk {a.Friendship:0})"); _account.Record("brush", _clock.DayIndex); break;
+                    default: ShowMessage($"{c.Name} {a.Name} sevdi (dostluk {a.Friendship:0})"); _account.Record("pet_animal", _clock.DayIndex); break;
+                }
+                if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
+            };
+            _storagePanel = new StoragePanel(_life.Spoilage, _household, _content);
+            _farmWork = new FarmWork(_world) { HoeSpeed = c => _life.Tools.SpeedFor("hoe"), House = _household };
+            _farmWork.Tilled += (c, t) => _account.Count("act:till");
+            _farmWork.Repaired += (c, t) => { ShowMessage($"{c.Name} yolu onardı"); _account.Count("act:repair_road"); };
+            _effects.TemperatureAt = p => _heat.TemperatureAt(p);   // buz kesmek için don
+            _automation = new FarmAutomation(_world, _household)
+            {
+                Storage = _storage, Plants = _plants, Build = _buildService, Content = _content, TemperatureAt = p => _heat.TemperatureAt(p)
+            };
+            _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
+            {
+                WorkHours = () => HourOfDay >= 7.0 && HourOfDay < 19.0,
+                Now = () => _clock.TotalDays,
+                TileWork = _farmWork
+            };
+            _world.Map.WearMultiplier = RoadWear();
+            _life.NewDay += day =>
+            {
+                _world.Map.OnNewDayRoads();                                   // kullanılmayan patika çimlenir
+                _world.Map.WearMultiplier = RoadWear();                        // çamurlu günde çok, taş ustası varken az aşınır
+                _plants.Config.FallowRecovery = (float)(0.02 * SkillNames.Factor(_life.BestSkill(SkillType.SoilCare), 0.1));   // toprak bakımı
+                var r = _animals.OnNewDay(_clock.Season, _household, _storage);
+                if (r.Collected > 0) ShowMessage($"Toplama sandığı: +{r.Collected} ürün depoya alındı");
+                if (r.FeedAdded > 0) ShowMessage($"Yem oluğu yemliklere {r.FeedAdded} yem doldurdu");
+                var made = _automation.OnNewDay(_clock.Season);
+                if (made.Count > 0)
+                {
+                    var parts = new List<string>();
+                    foreach (var kv in made)
+                        parts.Add(kv.Key.StartsWith("ekim:") ? $"{kv.Value} tohum ekildi" : $"+{kv.Value} {(_content.Items.TryGet(kv.Key, out var d) ? d.DisplayName : kv.Key)}");
+                    ShowMessage("Düzenekler: " + string.Join(", ", parts));
+                }
+            };
+            SetupSkills();
+        }
+
+        // İkinci dalga beceriler (çiftlik sistemleri kurulduktan sonra bağlanır).
+        private void SetupSkills()
+        {
+            // İkinci dalga beceriler: hanenin en iyisi düzeneklere, depoya, söküme ve yollara etki eder.
+            _automation.EngineeringLevel = () => _life.BestSkill(SkillType.Engineering);
+            _storage.CartingLevel = () => _life.BestSkill(SkillType.Carting);
+            _buildService.SalvageLevel = () => _life.BestSkill(SkillType.Salvage);
+            _buildService.Salvaged += list =>
+            {
+                int units = 0;
+                var parts = new List<string>();
+                foreach (var kv in list) { units += kv.Value; parts.Add($"+{kv.Value} {(_content.Items.TryGet(kv.Key, out var d) ? d.DisplayName : kv.Key)}"); }
+                Commander?.Character.GainSkillXp(SkillType.Salvage, 3 * units);
+                ShowMessage("Geri kazanım: " + string.Join(", ", parts));
+            };
+            _buildService.Furnished += item => Commander?.Character.GainSkillXp(SkillType.Decorating, 2);
+            _duties.Issued += (c, job) => _player?.Character.GainSkillXp(SkillType.Stewardship, 1);   // hane reisi görevleri yönetir
+        }
+
+        // Yol aşınması: yağmurda x1,5; taş ustalığı seviye başına %4 azaltır.
+        private float RoadWear() => (float)((_life.RainyToday ? 1.5 : 1.0) / SkillNames.Factor(_life.BestSkill(SkillType.Masonry), 0.04));
+
+        // Dokunulan karodaki hayvan (yakın olanı); yoksa null.
+        private Animal AnimalAt(GridPos tile)
+        {
+            Animal best = null;
+            foreach (var a in _animals.Animals)
+            {
+                if (a.IsDead || a.Position.Z != tile.Z) continue;
+                if (Mathf.Abs(a.Position.X - tile.X) + Mathf.Abs(a.Position.Y - tile.Y) > 1) continue;
+                if (best == null || a.Position == tile) best = a;
+            }
+            return best;
+        }
+
+        // Hayvan seçenekleri: sev / tımar, eyerle, eyeri çıkar, bin.
+        private void AddAnimalOptions(Animal a)
+        {
+            var c = Commander;
+            void Opt(AnimalAction act, string label)
+            {
+                string why = _animalCare.CanDo(c.Character, a.Id, act);
+                _menuOptions.Add(new MenuOption
+                {
+                    Label = $"{label} ({a.Name})", Blocked = why,
+                    Run = () => c.Runner.Command(Job.WithAnimal(a.Id, act))
+                });
+            }
+            Opt(a.Species.Rideable ? AnimalAction.Brush : AnimalAction.Pet, a.Species.Rideable ? "Tımar et" : "Sev");
+            if (a.Species.Rideable)
+            {
+                if (a.Saddle == null) Opt(AnimalAction.Saddle, "Eyerle");
+                else
+                {
+                    Opt(AnimalAction.Mount, "Bin");
+                    Opt(AnimalAction.Unsaddle, "Eyeri çıkar");
+                }
+            }
         }
 
         private void OnAnimalDied(Animal a)
@@ -853,6 +1277,7 @@ namespace Thatchwick.Game
                 case "animal.goat": return new Color(0.75f, 0.68f, 0.55f);
                 case "animal.sheep": return new Color(0.92f, 0.9f, 0.86f);
                 case "animal.cow": return new Color(0.55f, 0.4f, 0.3f);
+                case "animal.horse": return new Color(0.45f, 0.3f, 0.2f);
                 case "animal.dog": return new Color(0.6f, 0.45f, 0.3f);
                 case "animal.cat": return new Color(0.85f, 0.55f, 0.25f);
                 default: return new Color(0.95f, 0.8f, 0.2f);
@@ -867,6 +1292,7 @@ namespace Thatchwick.Game
                 case "animal.cat": return 0.26f;
                 case "animal.dog": return 0.3f;
                 case "animal.cow": return 0.5f;
+                case "animal.horse": return 0.55f;
                 default: return 0.4f;
             }
         }
@@ -887,7 +1313,9 @@ namespace Thatchwick.Game
                     _animalViews[a.Id] = v;
                 }
                 Vector3 pos = _view.TileToWorld(a.Position);
-                if (a.NextTile.HasValue)
+                var rider = a.RiderId != 0 ? _actors.Find(x => x.Character.Id == a.RiderId) : null;
+                if (rider != null && rider.View != null) pos = rider.View.position - new Vector3(0f, 0.02f, 0f);   // binicinin altında, onunla birlikte
+                else if (a.NextTile.HasValue)
                 {
                     var to = _view.TileToWorld(a.NextTile.Value);
                     v.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
@@ -933,6 +1361,8 @@ namespace Thatchwick.Game
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
+            if (kb != null && kb.kKey.wasPressedThisFrame) _storagePanel.Toggle();
+            if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
 
@@ -943,8 +1373,17 @@ namespace Thatchwick.Game
 
             // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
             double gameDays = _clock.Advance(dt);
-            if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true); }
+            if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true, background: true); }
             Simulate(gameDays);
+        }
+
+        // Aynı karede kaç eşya ya da duvar değişirse değişsin (kışın donan ekinler, oda kurma, sabah çıkan yabani bitkiler)
+        // zemin ve eşya görünümleri bir kez yeniden kurulur.
+        private void LateUpdate()
+        {
+            if (_view == null || _world == null) return;
+            if (_floorsDirty) { _floorsDirty = false; _view.RefreshFloors(); }
+            if (_itemsDirty) { _itemsDirty = false; RebuildItemViews(); }
         }
 
         /// <summary>Editörde oyun testi için zamanı ileri sarar (küçük adımlarla gerçek simülasyon).</summary>
@@ -1013,6 +1452,7 @@ namespace Thatchwick.Game
                 actor.Direction = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
                 pos = Vector3.Lerp(pos, to, actor.Runner.StepProgress);
             }
+            if (_animals != null && _animals.MountOf(actor.Character.Id) != null) pos += new Vector3(0f, 0.35f, 0f);   // at sırtında
             actor.View.position = pos;
             // Merdivende yarıdan sonra hedef katın bandına geçer; iki kattan biri görünürse karakter görünür.
             int fromLevel = actor.Character.Position.Z;
@@ -1021,7 +1461,7 @@ namespace Thatchwick.Game
             actor.Renderer.enabled = _view.IsLevelVisible(fromLevel) || _view.IsLevelVisible(toLevel);
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
             var real = IsoArt.Character(actor.Character, actor.Direction);
-            var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance);
+            var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
             actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1, level);
@@ -1031,7 +1471,6 @@ namespace Thatchwick.Game
             else
             {
                 scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : 1f);
-                if (actor.Character.Stage != AgeStage.Baby && actor.Character.Stage != AgeStage.Child) scale *= actor.Character.Appearance.HeightPercent / 100f;
             }
             actor.View.localScale = new Vector3(scale, scale, 1f);
         }
@@ -1053,16 +1492,7 @@ namespace Thatchwick.Game
             }
         }
 
-        private static string SkillName(SkillType s)
-        {
-            switch (s)
-            {
-                case SkillType.Farming: return "Çiftçilik";
-                case SkillType.Woodcutting: return "Odunculuk";
-                case SkillType.Cooking: return "Yemek";
-                default: return "Marangozluk";
-            }
-        }
+        private static string SkillName(SkillType s) => SkillNames.Name(s);
 
         private static string SkillsText(Character c)
         {
@@ -1112,7 +1542,14 @@ namespace Thatchwick.Game
             if (_creator != null)
             {
                 _creator.OnGUI();
-                if (HasSave)
+                if (Time.unscaledTime < _messageUntil)
+                {
+                    float ms = HudScale;
+                    GUI.matrix = Matrix4x4.Scale(new Vector3(ms, ms, 1f));
+                    GUI.Label(new Rect(8f, Screen.height / ms - 96f, Screen.width / ms - 260f, 40f), _message);
+                    GUI.matrix = Matrix4x4.identity;
+                }
+                if (_hasSave)
                 {
                     float cs = HudScale;
                     GUI.matrix = Matrix4x4.Scale(new Vector3(cs, cs, 1f));
@@ -1127,6 +1564,7 @@ namespace Thatchwick.Game
             DrawItemLabels(s);
             _buildMode.OnGUI(s);
             _marketPanel.OnGUI(s);
+            _storagePanel.OnGUI(s);
             _familyPanel.OnGUI(s);
             _villagePanel.OnGUI(s);
             DrawBalloons(s);
@@ -1159,7 +1597,7 @@ namespace Thatchwick.Game
                 if (skills.Length > 0) GUILayout.Label($"   Beceri: {skills}");
             }
 
-            if (_maud != null && _player != null && !_maud.Character.IsDead && GUILayout.Button("Test: Maud hamile (2 günde doğurur)"))
+            if (Application.isEditor && _maud != null && _player != null && !_maud.Character.IsDead && GUILayout.Button("Test: Maud hamile (2 günde doğurur)"))
             {
                 _maud.Character.PregnancyDays = 2;
                 if (!_maud.Character.TryStartPregnancy(_player.Character.Id)) ShowMessage("Maud şu an hamile kalamaz");
@@ -1168,20 +1606,35 @@ namespace Thatchwick.Game
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(_buildMode.Active ? "Yapı modundan çık (B)" : "Yapı modu (B)")) ToggleBuild();
             if (GUILayout.Button(_marketPanel.Active ? "Pazarı kapat (P)" : "Pazar (P)")) ToggleMarket();
+            if (GUILayout.Button(_storagePanel.Active ? "Kileri kapat (K)" : "Kiler (K)")) _storagePanel.Toggle();
             if (GUILayout.Button(_familyPanel.Active ? "Aileyi kapat (F)" : "Aile (F)")) ToggleFamily();
             if (GUILayout.Button(_villagePanel.Active ? "Köyü kapat (V)" : "Köy (V)")) ToggleVillage();
             if (GUILayout.Button(IsoArt.Enabled ? "Görsel: gerçek (G)" : "Görsel: yer tutucu (G)")) ToggleArt();
+            GUILayout.EndHorizontal();
+            // Çiftlik: çapa kipi, binek, hayvan çanı.
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(_hoeMode ? "Çapa kipi: açık (H) · çim çapala, yol onar" : "Çapa kipi (H)")) _hoeMode = !_hoeMode;
+            var mount = Commander != null ? _animals.MountOf(Commander.Character.Id) : null;
+            if (mount != null && GUILayout.Button($"{mount.Name} sırtından in")) { _animals.Dismount(Commander.Character.Id); ShowMessage($"{Commander.Character.Name} attan indi"); }
+            if (GUILayout.Button(_animals.Released ? "Hayvanlar: gündüz otlakta" : "Hayvanlar: barınakta")) _animals.Released = !_animals.Released;
             GUILayout.EndHorizontal();
             GUILayout.Label($"{_dynasty.Name} · {_dynasty.CurrentGeneration}. nesil · Baş: {_player?.Character.Name} · Komut alan: {Commander?.Character.Name}");
             GUILayout.Label($"Akçe: {_household.Akce}");
             GUILayout.BeginHorizontal();
             if (Application.isEditor && GUILayout.Button("Test: +5 gün")) FastForward(5);
             if (GUILayout.Button("Kaydet")) SaveNow(quiet: false);
-            GUI.enabled = HasSave;
+            GUI.enabled = _hasSave;
             if (GUILayout.Button("Yükle")) { LoadSave(); return; }
             GUI.enabled = true;
             GUILayout.EndHorizontal();
-            if (GUILayout.Button("Yeni oyun (kayıt ilk gün dolunca üzerine yazılır)"))
+            // Kaza ayarı (karar 17.11.2026): yaratmada seçilir, burada değiştirilebilir. Eski kayıtta "Seyrek" sayılır.
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Kazalar", GUILayout.Width(60f));
+            int acc = _life.Injuries.Setting == AccidentSetting.NotSet ? 1 : (int)_life.Injuries.Setting - 1;
+            int newAcc = GUILayout.Toolbar(acc, new[] { "Kapalı", "Seyrek", "Normal" });
+            if (newAcc != acc || _life.Injuries.Setting == AccidentSetting.NotSet) _life.Injuries.Setting = (AccidentSetting)(newAcc + 1);
+            GUILayout.EndHorizontal();
+            if (GUILayout.Button("Yeni oyun (yeni karakter yaratılınca eski kaydın üzerine yazılır)"))
             {
                 enabled = false;
                 new GameObject("GameRoot").AddComponent<GameRoot>();
@@ -1191,6 +1644,11 @@ namespace Thatchwick.Game
             int next = AccountProgress.XpForLevel(_account.Level + 1);
             GUILayout.Label($"Hesap Sv {_account.Level} · XP {_account.Xp}/{next} · bugünkü iş XP {_account.WorkXpToday(_clock.DayIndex)}/{AccountProgress.DailyWorkCap}");
             DrawHeatHud();
+            // Hava bilgisi: kaç gün ilerisi görünür.
+            var ahead = _life.WeatherAhead(_life.ForecastDays);
+            var names = new List<string>();
+            foreach (var w in ahead) names.Add(WeatherSystem.Name(w));
+            GUILayout.Label($"Hava ({ahead.Count} gün): {string.Join(" · ", names)}");
             GUILayout.Label($"Eşya tanımı: {_content.Items.Count}");
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
             GUILayout.EndScrollView();
@@ -1248,6 +1706,10 @@ namespace Thatchwick.Game
                 };
             }
 
+            HashSet<int> net = null;     // sulama ağı bu karede bir kez hesaplanır
+            HashSet<int> Net() => net ?? (net = WaterNetwork.Connected(_world));
+            List<ItemInstance> wheels = null;
+            string Comfort(ItemInstance home) { var r = _animals.ComfortOf(home); return $"konfor {r.Total:0}: {r.Hint()}"; }
             foreach (var item in _world.Items)
             {
                 if (item.IsDecor || item.IsWallMounted || !_view.IsLevelVisible(item.Position.Z)) continue;
@@ -1257,7 +1719,12 @@ namespace Thatchwick.Game
                 float y = (Screen.height - sp.y) / guiScale;
                 string label = item.Def.HeatOutput > 0f ? $"{item.Def.DisplayName} ({(item.IsLit ? "yanıyor" : "sönük")})"
                     : item.IsPlant ? PlantLabel(item)
-                    : item.Def.IsHousing ? $"{item.Def.DisplayName} ({_animals.Residents(item.Id)}/{item.Def.HousingCapacity}, yem {item.FeedStock:0.#}{(item.StockTotal > 0 ? $", ürün {item.StockTotal}" : "")})"
+                    : item.Def.IsHousing ? $"{item.Def.DisplayName} ({_animals.Residents(item.Id)}/{item.Def.HousingCapacity}, yem {item.FeedStock:0.#}{(item.StockTotal > 0 ? $", ürün {item.StockTotal}" : "")}, {Comfort(item)})"
+                    : item.Def.IsTrough ? $"{item.Def.DisplayName} (yem {item.FeedStock:0.#}, günlük {_animals.DailyFeedNeed(item):0.#})"
+                    : item.Def.WaterGate ? $"{item.Def.DisplayName} ({(item.Toggled ? "kapalı" : "açık")})"
+                    : item.Def.NeedsPower ? $"{item.Def.DisplayName} ({(_automation.IsPowered(item, wheels ?? (wheels = _automation.TurningWheels(Net()))) ? "dönüyor" : "güç yok: su çarkı ya da yel değirmeni gerekli")})"
+                    : item.Def.PowerSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "dönüyor" : "kuru: kaynağa bağlı kanala değmeli")})"
+                    : item.Def.NeedsWaterSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "su akıyor" : "kuru: kuyuya bağla")})"
                     : item.Def.DisplayName;
                 GUI.Label(new Rect(x - 70f, y - 10f, 140f, 20f), label, _labelStyle);
             }

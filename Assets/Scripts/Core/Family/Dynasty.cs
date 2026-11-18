@@ -27,7 +27,7 @@ namespace Thatchwick.Core.Family
 
     /// <summary>
     /// Hanedan ve miras (Adım 17, T8): baş karakter (oyuncu kontrollü) ölünce sıradaki baş karakter seçilir:
-    /// 1) yaşayan çocuklarından genç/yetişkin olan en büyük, 2) çocuk evresindeki en büyük çocuğu,
+    /// 1) yaşayan çocuklarından genç/yetişkin/yaşlı olan en büyük, 2) çocuk evresindeki en büyük çocuğu,
     /// 3) eşi, 4) hanenin bebek olmayan en yaşlı üyesi. Kimse yoksa hanedan sona erer.
     /// Miras: hane (ev, eşya, akçe, envanter) zaten ortaktır; ayrıca ölenin her becerisindeki XP'nin
     /// %10'u varise "aile bilgisi" olarak geçer (varisin yaş tavanı uygulanır).
@@ -78,7 +78,7 @@ namespace Thatchwick.Core.Family
             }
 
             bool IsChild(Character c) => c.BirthMotherId == dead.Id || c.BirthFatherId == dead.Id;
-            return Oldest(c => IsChild(c) && FamilyService.IsAdultAge(c))
+            return Oldest(c => IsChild(c) && c.Stage >= AgeStage.Youth)   // genç, yetişkin ya da yaşlı çocuk
                 ?? Oldest(c => IsChild(c) && c.Stage == AgeStage.Child)
                 ?? Oldest(c => dead.SpouseId == c.Id)
                 ?? Oldest(c => c.Stage != AgeStage.Baby);

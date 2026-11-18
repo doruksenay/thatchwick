@@ -20,7 +20,8 @@
       "rooms": [
         "bedroom"
       ],
-      "comfort": 2
+      "comfort": 2,
+      "finishGroup": "cloth"
     },
     {
       "id": "item.hearth_stone",
@@ -511,7 +512,9 @@
           "need": "Hunger",
           "restore": 55,
           "durationDays": 0.15,
-          "consume": "item.salted_meat"
+          "consume": "item.salted_meat",
+          "skill": "Cooking",
+          "skillXp": 6
         },
         {
           "id": "eat_salted_poultry",
@@ -519,7 +522,9 @@
           "need": "Hunger",
           "restore": 45,
           "durationDays": 0.15,
-          "consume": "item.salted_poultry"
+          "consume": "item.salted_poultry",
+          "skill": "Cooking",
+          "skillXp": 6
         },
         {
           "id": "eat_pastirma",
@@ -782,6 +787,764 @@
           "restore": 20,
           "durationDays": 0.15,
           "consume": "item.cress"
+        },
+        {
+          "id": "cook_fish_crayfish",
+          "displayName": "Kerevit pişir ve ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.15,
+          "consume": "item.fish_crayfish",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0
+        },
+        {
+          "id": "cook_fish_carp",
+          "displayName": "Sazan pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.15,
+          "consume": "item.fish_carp",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0
+        },
+        {
+          "id": "cook_fish_trout",
+          "displayName": "Alabalık pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.15,
+          "consume": "item.fish_trout",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0
+        },
+        {
+          "id": "cook_fish_pike",
+          "displayName": "Turna pişir ve ye",
+          "need": "Hunger",
+          "restore": 65,
+          "durationDays": 0.15,
+          "consume": "item.fish_pike",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0
+        },
+        {
+          "id": "cook_fish_eel",
+          "displayName": "Yılan balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.15,
+          "consume": "item.fish_eel",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_salted_fish",
+          "displayName": "Tuzlu balığı haşla ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.15,
+          "consume": "item.salted_fish",
+          "skill": "Cooking",
+          "skillXp": 4
+        },
+        {
+          "id": "eat_smoked_fish",
+          "displayName": "Füme balık ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.12,
+          "consume": "item.smoked_fish",
+          "moodId": "mood.meal",
+          "moodText": "Füme lezzeti",
+          "moodValue": 5,
+          "moodDays": 1.0
+        },
+        {
+          "id": "drink_ale",
+          "displayName": "Arpa birası iç",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.05,
+          "consume": "item.ale",
+          "extraRestore": [
+            {
+              "need": "Hunger",
+              "amount": 10
+            }
+          ],
+          "moodId": "mood.drink",
+          "moodText": "Neşeli",
+          "moodValue": 4,
+          "moodDays": 0.5
+        },
+        {
+          "id": "drink_cider",
+          "displayName": "Elma şarabı iç",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.05,
+          "consume": "item.cider",
+          "extraRestore": [
+            {
+              "need": "Hunger",
+              "amount": 8
+            }
+          ],
+          "moodId": "mood.drink",
+          "moodText": "Neşeli",
+          "moodValue": 4,
+          "moodDays": 0.5
+        },
+        {
+          "id": "drink_mead",
+          "displayName": "Bal şarabı iç",
+          "need": "Fun",
+          "restore": 40,
+          "durationDays": 0.05,
+          "consume": "item.mead",
+          "extraRestore": [
+            {
+              "need": "Hunger",
+              "amount": 8
+            }
+          ],
+          "moodId": "mood.drink",
+          "moodText": "Neşeli",
+          "moodValue": 4,
+          "moodDays": 0.5
+        },
+        {
+          "id": "eat_bread",
+          "displayName": "Ekmek ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.1,
+          "consume": "item.bread"
+        },
+        {
+          "id": "roast_game",
+          "displayName": "Av eti kızart ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.2,
+          "consume": "item.game_meat",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0
+        },
+        {
+          "id": "drink_ayran",
+          "displayName": "Ayran iç",
+          "need": "Hunger",
+          "restore": 15,
+          "durationDays": 0.03,
+          "consume": "item.ayran",
+          "moodlet": "eff_refresh"
+        },
+        {
+          "id": "drink_boza",
+          "displayName": "Boza iç",
+          "need": "Fun",
+          "restore": 20,
+          "durationDays": 0.05,
+          "consume": "item.boza",
+          "extraRestore": [
+            {
+              "need": "Hunger",
+              "amount": 20
+            }
+          ],
+          "moodlet": "eff_boza"
+        },
+        {
+          "id": "drink_serbet",
+          "displayName": "Şerbet iç",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.03,
+          "consume": "item.serbet",
+          "moodlet": "eff_sweet"
+        },
+        {
+          "id": "cook_tarhana",
+          "displayName": "Tarhana çorbası pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.15,
+          "consume": "item.tarhana",
+          "skill": "Cooking",
+          "skillXp": 8,
+          "moodlet": "eff_warm_soup"
+        },
+        {
+          "id": "make_soup_bean",
+          "displayName": "Bakla çorbası yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "materials": [
+            {
+              "item": "item.broad_bean",
+              "count": 2
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_bean",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "eat_soup_bean",
+          "displayName": "Bakla çorbası ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.12,
+          "consume": "item.soup_bean",
+          "moodlet": "eff_full"
+        },
+        {
+          "id": "make_soup_fish",
+          "displayName": "Balık çorbası yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 16,
+          "materials": [
+            {
+              "item": "item.fish_carp",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.carrot",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_fish",
+              "count": 2
+            }
+          ],
+          "minLevel": 1
+        },
+        {
+          "id": "eat_soup_fish",
+          "displayName": "Balık çorbası ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.12,
+          "consume": "item.soup_fish",
+          "moodlet": "eff_fisher"
+        },
+        {
+          "id": "make_stew_meat",
+          "displayName": "Etli güveç yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "materials": [
+            {
+              "item": "item.meat",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.carrot",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stew_meat",
+              "count": 2
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "eat_stew_meat",
+          "displayName": "Etli güveç ye",
+          "need": "Hunger",
+          "restore": 80,
+          "durationDays": 0.12,
+          "consume": "item.stew_meat",
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "make_soup_chicken",
+          "displayName": "Tavuk suyu yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "materials": [
+            {
+              "item": "item.poultry",
+              "count": 1
+            },
+            {
+              "item": "item.garlic",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_chicken",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "eat_soup_chicken",
+          "displayName": "Tavuk suyu ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.12,
+          "consume": "item.soup_chicken",
+          "moodlet": "eff_broth",
+          "heal": 0.5
+        },
+        {
+          "id": "make_saute_mushroom",
+          "displayName": "Mantar sote yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.mushroom",
+              "count": 2
+            },
+            {
+              "item": "item.butter",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.saute_mushroom",
+              "count": 2
+            }
+          ],
+          "minLevel": 1
+        },
+        {
+          "id": "eat_saute_mushroom",
+          "displayName": "Mantar sote ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.12,
+          "consume": "item.saute_mushroom",
+          "moodlet": "eff_forager"
+        },
+        {
+          "id": "make_kaygana",
+          "displayName": "Kaygana yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.egg",
+              "count": 2
+            },
+            {
+              "item": "item.flour",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.kaygana",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "eat_kaygana",
+          "displayName": "Kaygana ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.12,
+          "consume": "item.kaygana",
+          "moodId": "mood.meal",
+          "moodText": "Kaygana",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "extraRestore": [
+            {
+              "need": "Energy",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "make_breakfast",
+          "displayName": "Kahvaltı tabağı yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.bread",
+              "count": 1
+            },
+            {
+              "item": "item.cheese",
+              "count": 1
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.breakfast",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "eat_breakfast",
+          "displayName": "Kahvaltı tabağı ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.12,
+          "consume": "item.breakfast",
+          "moodlet": "eff_breakfast"
+        },
+        {
+          "id": "make_pilaf",
+          "displayName": "Bulgur pilavı yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.barley",
+              "count": 2
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pilaf",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "eat_pilaf",
+          "displayName": "Bulgur pilavı ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.12,
+          "consume": "item.pilaf",
+          "moodId": "mood.meal",
+          "moodText": "Bulgur pilavı",
+          "moodValue": 2,
+          "moodDays": 1.0
+        },
+        {
+          "id": "make_sarma",
+          "displayName": "Lahana sarması yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 30,
+          "materials": [
+            {
+              "item": "item.cabbage",
+              "count": 1
+            },
+            {
+              "item": "item.barley",
+              "count": 1
+            },
+            {
+              "item": "item.meat",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.sarma",
+              "count": 3
+            }
+          ],
+          "minLevel": 4
+        },
+        {
+          "id": "eat_sarma",
+          "displayName": "Lahana sarması ye",
+          "need": "Hunger",
+          "restore": 75,
+          "durationDays": 0.12,
+          "consume": "item.sarma",
+          "moodlet": "eff_feast"
+        },
+        {
+          "id": "make_hosaf",
+          "displayName": "Hoşaf yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.dried_apple",
+              "count": 2
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.hosaf",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "eat_hosaf",
+          "displayName": "Hoşaf ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.12,
+          "consume": "item.hosaf",
+          "moodlet": "eff_sweet",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 15
+            }
+          ]
+        },
+        {
+          "id": "make_helva",
+          "displayName": "Helva yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 16,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 1
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            },
+            {
+              "item": "item.butter",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.helva",
+              "count": 3
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "eat_helva",
+          "displayName": "Helva ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.12,
+          "consume": "item.helva",
+          "moodlet": "eff_solace"
+        },
+        {
+          "id": "make_pekmez",
+          "displayName": "Pekmez yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.apple",
+              "count": 4
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pekmez",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "eat_pekmez",
+          "displayName": "Pekmez ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.12,
+          "consume": "item.pekmez",
+          "moodId": "mood.meal",
+          "moodText": "Pekmez",
+          "moodValue": 3,
+          "moodDays": 1.0
+        },
+        {
+          "id": "make_stew_game",
+          "displayName": "Av yahnisi yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "materials": [
+            {
+              "item": "item.game_meat",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.mushroom",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stew_game",
+              "count": 2
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "eat_stew_game",
+          "displayName": "Av yahnisi ye",
+          "need": "Hunger",
+          "restore": 80,
+          "durationDays": 0.12,
+          "consume": "item.stew_game",
+          "moodlet": "eff_hunter"
+        },
+        {
+          "id": "make_wrap_fish",
+          "displayName": "Füme balık dürüm yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.bread",
+              "count": 1
+            },
+            {
+              "item": "item.smoked_fish",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.wrap_fish",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "eat_wrap_fish",
+          "displayName": "Füme balık dürüm ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.12,
+          "consume": "item.wrap_fish",
+          "moodlet": "eff_travel"
+        },
+        {
+          "id": "eat_borek_leek",
+          "displayName": "Pırasalı börek ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.12,
+          "consume": "item.borek_leek",
+          "moodId": "mood.meal",
+          "moodText": "Pırasalı börek",
+          "moodValue": 5,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_kete_meat",
+          "displayName": "Etli kete ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.12,
+          "consume": "item.kete_meat",
+          "moodlet": "eff_full_long"
+        },
+        {
+          "id": "eat_tart_apple",
+          "displayName": "Elmalı tart ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.12,
+          "consume": "item.tart_apple",
+          "moodlet": "eff_host"
+        },
+        {
+          "id": "eat_simit",
+          "displayName": "Simit ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.12,
+          "consume": "item.simit",
+          "moodId": "mood.meal",
+          "moodText": "Simit",
+          "moodValue": 2,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_rusk",
+          "displayName": "Peksimet ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.12,
+          "consume": "item.rusk"
         }
       ],
       "price": 25,
@@ -790,7 +1553,8 @@
       "rooms": [
         "kitchen"
       ],
-      "comfort": 2
+      "comfort": 2,
+      "finishGroup": "metal"
     },
     {
       "id": "item.stool_wood",
@@ -811,7 +1575,8 @@
         "kitchen",
         "living"
       ],
-      "comfort": 1
+      "comfort": 1,
+      "finishGroup": "wood"
     },
     {
       "id": "item.table_wood",
@@ -844,7 +1609,8 @@
         "kitchen",
         "living"
       ],
-      "comfort": 3
+      "comfort": 3,
+      "finishGroup": "wood"
     },
     {
       "id": "item.chair_wood",
@@ -871,7 +1637,8 @@
       "comfort": 2,
       "variants": [
         "item.chair_carved"
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.chest_wood",
@@ -887,7 +1654,8 @@
         "bedroom",
         "living"
       ],
-      "comfort": 1
+      "comfort": 1,
+      "finishGroup": "wood"
     },
     {
       "id": "item.shelf_wood",
@@ -916,7 +1684,8 @@
         "living"
       ],
       "storage": 20,
-      "comfort": 2
+      "comfort": 2,
+      "finishGroup": "wood"
     },
     {
       "id": "item.candle",
@@ -940,7 +1709,8 @@
       "price": 6,
       "category": "decor",
       "level": 5,
-      "comfort": 4
+      "comfort": 4,
+      "finishGroup": "clay"
     },
     {
       "id": "item.clay_cup",
@@ -951,7 +1721,8 @@
       "category": "decor",
       "level": 5,
       "styleSet": "Köylü",
-      "comfort": 2
+      "comfort": 2,
+      "finishGroup": "clay"
     },
     {
       "id": "item.firewood",
@@ -1127,7 +1898,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -1135,6 +1906,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ]
     },
@@ -1166,7 +1946,8 @@
       "comfort": 5,
       "variants": [
         "item.chair_wood"
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.plank",
@@ -1258,7 +2039,8 @@
           "restore": 6,
           "durationDays": 0.05
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.armchair_cushion",
@@ -1285,7 +2067,8 @@
           "restore": 15,
           "durationDays": 0.08
         }
-      ]
+      ],
+      "finishGroup": "cloth"
     },
     {
       "id": "item.chair_painted",
@@ -1306,7 +2089,8 @@
           "restore": 10,
           "durationDays": 0.05
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.mattress_straw",
@@ -1326,7 +2110,8 @@
           "restore": 45,
           "durationDays": 0.3
         }
-      ]
+      ],
+      "finishGroup": "cloth"
     },
     {
       "id": "item.bed_frame",
@@ -1348,7 +2133,8 @@
           "durationDays": 0.3,
           "moodlet": "rested"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.cradle",
@@ -1367,9 +2153,12 @@
           "displayName": "Beşiği salla",
           "need": "Fun",
           "restore": 10,
-          "durationDays": 0.05
+          "durationDays": 0.05,
+          "skill": "Parenting",
+          "skillXp": 3
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.child_bed",
@@ -1391,7 +2180,8 @@
           "durationDays": 0.3,
           "moodlet": "rested"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.stump_table",
@@ -1435,7 +2225,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.dining_table_long",
@@ -1476,7 +2267,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.table_painted",
@@ -1507,7 +2299,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.brazier",
@@ -1531,7 +2324,8 @@
           "restore": 25,
           "durationDays": 0.08
         }
-      ]
+      ],
+      "finishGroup": "metal"
     },
     {
       "id": "item.fireplace_large",
@@ -1572,7 +2366,8 @@
       "tags": [
         "light"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "metal"
     },
     {
       "id": "item.torch_wall",
@@ -1608,7 +2403,8 @@
       "tags": [
         "light"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "metal"
     },
     {
       "id": "item.sconce_brass",
@@ -1625,7 +2421,8 @@
       "tags": [
         "light"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "metal"
     },
     {
       "id": "item.stone_oven",
@@ -1658,6 +2455,179 @@
             }
           ],
           "moodlet": "good_meal"
+        },
+        {
+          "id": "bake_bread",
+          "displayName": "Ekmek pişir (2 un, 1 odun)",
+          "durationDays": 0.2,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.bread",
+              "count": 3
+            }
+          ],
+          "skill": "Baking",
+          "skillXp": 14
+        },
+        {
+          "id": "make_borek_leek",
+          "displayName": "Pırasalı börek pişir (fırın)",
+          "durationDays": 0.25,
+          "skill": "Baking",
+          "skillXp": 18,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 2
+            },
+            {
+              "item": "item.leek",
+              "count": 1
+            },
+            {
+              "item": "item.egg",
+              "count": 1
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.borek_leek",
+              "count": 3
+            }
+          ],
+          "minLevel": 1
+        },
+        {
+          "id": "make_kete_meat",
+          "displayName": "Etli kete pişir (fırın)",
+          "durationDays": 0.25,
+          "skill": "Baking",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 2
+            },
+            {
+              "item": "item.meat",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.kete_meat",
+              "count": 3
+            }
+          ],
+          "minLevel": 2
+        },
+        {
+          "id": "make_tart_apple",
+          "displayName": "Elmalı tart pişir (fırın)",
+          "durationDays": 0.25,
+          "skill": "Baking",
+          "skillXp": 28,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 1
+            },
+            {
+              "item": "item.apple",
+              "count": 2
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            },
+            {
+              "item": "item.butter",
+              "count": 1
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.tart_apple",
+              "count": 4
+            }
+          ],
+          "minLevel": 3
+        },
+        {
+          "id": "make_simit",
+          "displayName": "Simit pişir (fırın)",
+          "durationDays": 0.25,
+          "skill": "Baking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 2
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.simit",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "make_rusk",
+          "displayName": "Peksimet pişir (fırın)",
+          "durationDays": 0.25,
+          "skill": "Baking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.bread",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.rusk",
+              "count": 2
+            }
+          ]
         }
       ]
     },
@@ -1827,7 +2797,8 @@
           "minLevel": 3
         }
       ],
-      "width": 2
+      "width": 2,
+      "finishGroup": "wood"
     },
     {
       "id": "item.pantry_shelf",
@@ -1853,7 +2824,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.copper_pots",
@@ -1903,7 +2875,8 @@
         "outdoor"
       ],
       "storage": 25,
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.chest_iron",
@@ -1918,7 +2891,8 @@
         "living"
       ],
       "storage": 90,
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "metal"
     },
     {
       "id": "item.wall_shelf",
@@ -1944,7 +2918,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.wall_shelf_oak",
@@ -1976,7 +2951,8 @@
           "v": 0.5
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.workbench",
@@ -1990,7 +2966,8 @@
         "outdoor",
         "living"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.seed_crate",
@@ -2002,7 +2979,8 @@
         "outdoor"
       ],
       "storage": 20,
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.tool_rack_wall",
@@ -2016,7 +2994,8 @@
         "outdoor",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "wood"
     },
     {
       "id": "item.whetstone",
@@ -2096,8 +3075,18 @@
           "restore": 100,
           "durationDays": 0.15,
           "moodlet": "clean"
+        },
+        {
+          "id": "soap_bath",
+          "displayName": "Sabunla yıkan",
+          "need": "Hygiene",
+          "restore": 95,
+          "durationDays": 0.08,
+          "consume": "item.soap",
+          "moodlet": "clean"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.wooden_tub",
@@ -2126,8 +3115,18 @@
           "restore": 40,
           "durationDays": 0.15,
           "moodlet": "clean"
+        },
+        {
+          "id": "soap_bath",
+          "displayName": "Sabunla yıkan",
+          "need": "Hygiene",
+          "restore": 95,
+          "durationDays": 0.08,
+          "consume": "item.soap",
+          "moodlet": "clean"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.bread_bowl",
@@ -2136,7 +3135,8 @@
       "price": 3,
       "placement": "Surface",
       "styleSet": "Köylü",
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "clay"
     },
     {
       "id": "item.jug",
@@ -2145,7 +3145,8 @@
       "price": 4,
       "placement": "Surface",
       "styleSet": "Köylü",
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "clay"
     },
     {
       "id": "item.morris_board",
@@ -2180,7 +3181,9 @@
           "need": "Fun",
           "restore": 30,
           "durationDays": 0.1,
-          "moodlet": "inspired"
+          "moodlet": "inspired",
+          "skill": "Literacy",
+          "skillXp": 4
         }
       ]
     },
@@ -2208,7 +3211,8 @@
         "living",
         "bedroom"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "clay"
     },
     {
       "id": "item.herb_bundle_wall",
@@ -2234,7 +3238,8 @@
         "living",
         "bedroom"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "cloth"
     },
     {
       "id": "item.shield_crest",
@@ -2248,6 +3253,105 @@
         "living"
       ],
       "interactions": []
+    },
+    {
+      "id": "item.rug_rush",
+      "displayName": "Hasır kilim",
+      "width": 1,
+      "height": 1,
+      "placement": "Rug",
+      "price": 8,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "comfort": 1
+    },
+    {
+      "id": "item.rug_wool_small",
+      "displayName": "Küçük yün halı",
+      "width": 2,
+      "height": 1,
+      "placement": "Rug",
+      "price": 20,
+      "category": "rug",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 2,
+      "finishGroup": "cloth"
+    },
+    {
+      "id": "item.rug_runner",
+      "displayName": "Yolluk",
+      "width": 3,
+      "height": 1,
+      "placement": "Rug",
+      "price": 30,
+      "category": "rug",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 2,
+      "level": 3,
+      "finishGroup": "cloth"
+    },
+    {
+      "id": "item.rug_hide",
+      "displayName": "Post",
+      "width": 1,
+      "height": 2,
+      "placement": "Rug",
+      "price": 25,
+      "category": "rug",
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 2,
+      "level": 3
+    },
+    {
+      "id": "item.rug_wool",
+      "displayName": "Yün halı",
+      "width": 2,
+      "height": 2,
+      "placement": "Rug",
+      "price": 40,
+      "category": "rug",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 3,
+      "level": 2,
+      "finishGroup": "cloth"
+    },
+    {
+      "id": "item.rug_woven_large",
+      "displayName": "Desenli dokuma halı",
+      "width": 3,
+      "height": 2,
+      "placement": "Rug",
+      "price": 90,
+      "category": "rug",
+      "styleSet": "Tüccar",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "comfort": 5,
+      "level": 6,
+      "finishGroup": "cloth"
     },
     {
       "id": "item.well",
@@ -2265,8 +3369,21 @@
           "need": "Hygiene",
           "restore": 35,
           "durationDays": 0.06
+        },
+        {
+          "id": "cut_ice",
+          "displayName": "Buz kes (donda)",
+          "durationDays": 0.06,
+          "requiresFrost": true,
+          "produce": [
+            {
+              "item": "item.ice",
+              "count": 2
+            }
+          ]
         }
-      ]
+      ],
+      "waterSource": true
     },
     {
       "id": "item.scarecrow",
@@ -2306,7 +3423,8 @@
           "restore": 6,
           "durationDays": 0.05
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.coop",
@@ -2333,14 +3451,16 @@
               "count": 3
             }
           ],
-          "addFeed": 3
+          "addFeed": 3,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
         },
         {
           "id": "collect",
           "displayName": "Yumurta topla",
           "durationDays": 0.05,
           "collect": true,
-          "skill": "Farming",
+          "skill": "AnimalHusbandry",
           "skillXp": 4,
           "moodlet": "good_harvest"
         },
@@ -2350,7 +3470,7 @@
           "durationDays": 0.04,
           "petAnimals": true,
           "requiresAnimal": true,
-          "skill": "Farming",
+          "skill": "AnimalHusbandry",
           "skillXp": 3,
           "moodlet": "pet_love"
         },
@@ -2360,9 +3480,25 @@
           "durationDays": 0.1,
           "slaughter": true,
           "requiresAnimal": true,
-          "skill": "Farming",
+          "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "slaughtered"
+        },
+        {
+          "id": "salve",
+          "displayName": "Hayvan merhemi sür",
+          "durationDays": 0.04,
+          "requiresAnimal": true,
+          "materials": [
+            {
+              "item": "item.animal_salve",
+              "count": 1
+            }
+          ],
+          "befriendAnimals": 12,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "pet_love"
         }
       ]
     },
@@ -2391,14 +3527,16 @@
               "count": 6
             }
           ],
-          "addFeed": 6
+          "addFeed": 6,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
         },
         {
           "id": "collect",
           "displayName": "Sağ ve kırk",
           "durationDays": 0.1,
           "collect": true,
-          "skill": "Farming",
+          "skill": "AnimalHusbandry",
           "skillXp": 8,
           "moodlet": "good_harvest"
         },
@@ -2408,7 +3546,7 @@
           "durationDays": 0.04,
           "petAnimals": true,
           "requiresAnimal": true,
-          "skill": "Farming",
+          "skill": "AnimalHusbandry",
           "skillXp": 3,
           "moodlet": "pet_love"
         },
@@ -2418,9 +3556,25 @@
           "durationDays": 0.1,
           "slaughter": true,
           "requiresAnimal": true,
-          "skill": "Farming",
+          "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "slaughtered"
+        },
+        {
+          "id": "salve",
+          "displayName": "Hayvan merhemi sür",
+          "durationDays": 0.04,
+          "requiresAnimal": true,
+          "materials": [
+            {
+              "item": "item.animal_salve",
+              "count": 1
+            }
+          ],
+          "befriendAnimals": 12,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "pet_love"
         }
       ]
     },
@@ -2456,9 +3610,28 @@
               "count": 2
             }
           ],
-          "addFeed": 2
+          "addFeed": 2,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
+        },
+        {
+          "id": "salve",
+          "displayName": "Hayvan merhemi sür",
+          "durationDays": 0.04,
+          "requiresAnimal": true,
+          "materials": [
+            {
+              "item": "item.animal_salve",
+              "count": 1
+            }
+          ],
+          "befriendAnimals": 12,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "pet_love"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.cat_basket",
@@ -2492,7 +3665,9 @@
               "count": 2
             }
           ],
-          "addFeed": 2
+          "addFeed": 2,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
         }
       ]
     },
@@ -2514,7 +3689,7 @@
           "displayName": "Bal topla",
           "durationDays": 0.08,
           "collect": true,
-          "skill": "Farming",
+          "skill": "AnimalHusbandry",
           "skillXp": 10,
           "moodlet": "good_harvest"
         }
@@ -2540,7 +3715,8 @@
           "durationDays": 0.1,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.child_chair",
@@ -2559,7 +3735,8 @@
           "restore": 6,
           "durationDays": 0.05
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.toy_sword_wall",
@@ -2581,7 +3758,8 @@
           "durationDays": 0.1,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.story_book",
@@ -2598,7 +3776,9 @@
           "need": "Fun",
           "restore": 30,
           "durationDays": 0.08,
-          "moodlet": "had_fun"
+          "moodlet": "had_fun",
+          "skill": "Literacy",
+          "skillXp": 3
         }
       ]
     },
@@ -2649,6 +3829,15 @@
           "restore": 60,
           "durationDays": 0.15,
           "moodlet": "clean"
+        },
+        {
+          "id": "soap_bath",
+          "displayName": "Sabunla yıkan",
+          "need": "Hygiene",
+          "restore": 95,
+          "durationDays": 0.08,
+          "consume": "item.soap",
+          "moodlet": "clean"
         }
       ]
     },
@@ -2690,7 +3879,8 @@
           "durationDays": 0.1,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.grave",
@@ -2721,7 +3911,8 @@
             }
           ]
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.game_table",
@@ -2750,7 +3941,8 @@
           "moodValue": 4,
           "moodDays": 0.7
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.toy_wooden",
@@ -2766,7 +3958,8 @@
           "restore": 35,
           "durationDays": 0.1
         }
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.seed_cabbage",
@@ -2838,7 +4031,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -2846,6 +4039,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ]
     },
@@ -2919,7 +4121,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -2927,6 +4129,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ]
     },
@@ -2999,7 +4210,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -3007,6 +4218,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "nitrogen": true
@@ -3081,7 +4301,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -3089,6 +4309,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ]
     },
@@ -3262,7 +4491,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -3292,7 +4521,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -3320,7 +4549,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -3346,7 +4575,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -3371,7 +4600,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.1,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 10,
           "removeItem": true,
           "produce": [
@@ -3396,7 +4625,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 4,
           "removeItem": true,
           "produce": [
@@ -3629,6 +4858,98 @@
             }
           ],
           "minLevel": 3
+        },
+        {
+          "id": "salt_fish_carp",
+          "displayName": "Sazan tuzla (2 balık, 1 tuz)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.fish_carp",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "salt_fish_trout",
+          "displayName": "Alabalık tuzla (2 balık, 1 tuz)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.fish_trout",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "salt_fish_pike",
+          "displayName": "Turna tuzla (2 balık, 1 tuz)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.fish_pike",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "pickle_vinegar",
+          "displayName": "Sirkeli turşu kur (3 lahana, 1 sirke)",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.cabbage",
+              "count": 3
+            },
+            {
+              "item": "item.vinegar",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pickled_cabbage",
+              "count": 3
+            }
+          ]
         }
       ]
     },
@@ -3676,7 +4997,8 @@
       ],
       "styleSet": "Köylü",
       "variants": [
-        "item.stairs_down_stone"
+        "item.stairs_down_stone",
+        "item.cellar_hatch"
       ]
     },
     {
@@ -3731,7 +5053,29 @@
         "living"
       ],
       "variants": [
-        "item.stairs_down"
+        "item.stairs_down",
+        "item.cellar_hatch"
+      ]
+    },
+    {
+      "id": "item.cellar_hatch",
+      "displayName": "Kiler kapağı (dış)",
+      "width": 1,
+      "height": 2,
+      "price": 28,
+      "category": "structure",
+      "styleSet": "Köylü",
+      "level": 2,
+      "stairs": -1,
+      "levels": [
+        0
+      ],
+      "rooms": [
+        "outdoor"
+      ],
+      "variants": [
+        "item.stairs_down",
+        "item.stairs_down_stone"
       ]
     },
     {
@@ -3759,7 +5103,7 @@
           "id": "make_compost",
           "displayName": "Kompost yap (3 ot)",
           "durationDays": 0.08,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 5,
           "materials": [
             {
@@ -3843,7 +5187,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -3851,6 +5195,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -3925,7 +5278,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -3933,6 +5286,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ]
     },
@@ -4003,7 +5365,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -4011,6 +5373,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -4085,7 +5456,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -4093,6 +5464,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -4167,7 +5547,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -4175,6 +5555,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -4249,7 +5638,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -4257,6 +5646,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -4332,7 +5730,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -4340,6 +5738,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -4414,7 +5821,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -4422,6 +5829,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -4496,7 +5912,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -4504,6 +5920,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -4578,7 +6003,7 @@
           "displayName": "Kompost ser",
           "durationDays": 0.03,
           "fertilize": 0.3,
-          "skill": "Farming",
+          "skill": "SoilCare",
           "skillXp": 3,
           "materials": [
             {
@@ -4586,6 +6011,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
         }
       ],
       "growSeasons": [
@@ -4627,7 +6061,7 @@
           "id": "pick",
           "displayName": "Meyve topla",
           "durationDays": 0.07,
-          "skill": "Farming",
+          "skill": "Horticulture",
           "skillXp": 10,
           "requiresGrown": true,
           "requiresFruit": true,
@@ -4701,7 +6135,7 @@
           "id": "pick",
           "displayName": "Meyve topla",
           "durationDays": 0.07,
-          "skill": "Farming",
+          "skill": "Horticulture",
           "skillXp": 10,
           "requiresGrown": true,
           "requiresFruit": true,
@@ -4775,7 +6209,7 @@
           "id": "pick",
           "displayName": "Meyve topla",
           "durationDays": 0.07,
-          "skill": "Farming",
+          "skill": "Horticulture",
           "skillXp": 10,
           "requiresGrown": true,
           "requiresFruit": true,
@@ -4850,7 +6284,7 @@
           "id": "pick",
           "displayName": "Meyve topla",
           "durationDays": 0.07,
-          "skill": "Farming",
+          "skill": "Horticulture",
           "skillXp": 10,
           "requiresGrown": true,
           "requiresFruit": true,
@@ -4907,7 +6341,7 @@
     {
       "id": "item.irrigation_ditch",
       "displayName": "Sulama hendeği",
-      "category": "garden",
+      "category": "farm",
       "price": 14,
       "level": 3,
       "styleSet": "Köylü",
@@ -4920,7 +6354,7 @@
     {
       "id": "item.bucket_pulley",
       "displayName": "Kova ve makara",
-      "category": "garden",
+      "category": "farm",
       "price": 48,
       "level": 6,
       "styleSet": "Zanaatkâr",
@@ -4928,12 +6362,13 @@
         "outdoor"
       ],
       "waterRadius": 2,
-      "interactions": []
+      "interactions": [],
+      "waterSource": true
     },
     {
       "id": "item.water_channel",
       "displayName": "Su oluğu",
-      "category": "garden",
+      "category": "farm",
       "price": 110,
       "width": 2,
       "level": 9,
@@ -4968,7 +6403,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -5003,7 +6438,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -5043,7 +6478,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -5079,7 +6514,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -5115,7 +6550,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -5151,7 +6586,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -5186,7 +6621,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 4,
           "removeItem": true,
           "produce": [
@@ -5226,7 +6661,7 @@
           "id": "gather",
           "displayName": "Topla",
           "durationDays": 0.05,
-          "skill": "Farming",
+          "skill": "Foraging",
           "skillXp": 6,
           "removeItem": true,
           "produce": [
@@ -5745,6 +7180,30 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "smoke_fish",
+          "displayName": "Balığı tüttür (2 tuzlu balık, 1 odun)",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 20,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.smoked_fish",
+              "count": 2
+            }
+          ]
         }
       ]
     },
@@ -5778,6 +7237,1996 @@
             }
           ]
         }
+      ]
+    },
+    {
+      "id": "item.nest_box",
+      "displayName": "Folluk",
+      "category": "barn",
+      "price": 12,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "housing": "coop",
+      "capacity": 2,
+      "requiresIndoor": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (2)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 2
+            }
+          ],
+          "addFeed": 2,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
+        },
+        {
+          "id": "collect",
+          "displayName": "Yumurta topla",
+          "durationDays": 0.06,
+          "collect": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 3,
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Tavukları sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 3,
+          "moodlet": "pet_love"
+        },
+        {
+          "id": "slaughter",
+          "displayName": "Kümes hayvanı kes (dost olmayan yetişkin)",
+          "durationDays": 0.1,
+          "slaughter": true,
+          "requiresAnimal": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "slaughtered"
+        },
+        {
+          "id": "salve",
+          "displayName": "Hayvan merhemi sür",
+          "durationDays": 0.04,
+          "requiresAnimal": true,
+          "materials": [
+            {
+              "item": "item.animal_salve",
+              "count": 1
+            }
+          ],
+          "befriendAnimals": 12,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "pet_love"
+        }
+      ]
+    },
+    {
+      "id": "item.stall",
+      "displayName": "Ahır bölmesi",
+      "category": "barn",
+      "price": 30,
+      "height": 2,
+      "level": 5,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "housing": "barn",
+      "capacity": 1,
+      "requiresIndoor": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (3)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 3
+            }
+          ],
+          "addFeed": 3,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
+        },
+        {
+          "id": "collect",
+          "displayName": "Sağ ve kırk",
+          "durationDays": 0.06,
+          "collect": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Hayvanı sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 3,
+          "moodlet": "pet_love"
+        },
+        {
+          "id": "slaughter",
+          "displayName": "Hayvan kes (dost olmayan yetişkin)",
+          "durationDays": 0.1,
+          "slaughter": true,
+          "requiresAnimal": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "slaughtered"
+        },
+        {
+          "id": "salve",
+          "displayName": "Hayvan merhemi sür",
+          "durationDays": 0.04,
+          "requiresAnimal": true,
+          "materials": [
+            {
+              "item": "item.animal_salve",
+              "count": 1
+            }
+          ],
+          "befriendAnimals": 12,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "pet_love"
+        }
+      ]
+    },
+    {
+      "id": "item.horse_stall",
+      "displayName": "At bölmesi",
+      "category": "barn",
+      "price": 45,
+      "height": 2,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "barn"
+      ],
+      "housing": "stable",
+      "capacity": 1,
+      "requiresIndoor": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (3)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 3
+            }
+          ],
+          "addFeed": 3,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
+        },
+        {
+          "id": "pet_animals",
+          "displayName": "Atı sev",
+          "durationDays": 0.04,
+          "petAnimals": true,
+          "requiresAnimal": true,
+          "skill": "AnimalHusbandry",
+          "skillXp": 3,
+          "moodlet": "pet_love"
+        },
+        {
+          "id": "salve",
+          "displayName": "Hayvan merhemi sür",
+          "durationDays": 0.04,
+          "requiresAnimal": true,
+          "materials": [
+            {
+              "item": "item.animal_salve",
+              "count": 1
+            }
+          ],
+          "befriendAnimals": 12,
+          "skill": "AnimalHusbandry",
+          "skillXp": 6,
+          "moodlet": "pet_love"
+        }
+      ]
+    },
+    {
+      "id": "item.feed_trough",
+      "displayName": "Yemlik",
+      "category": "barn",
+      "price": 10,
+      "width": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "trough": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Yem koy (6)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 6
+            }
+          ],
+          "addFeed": 6,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
+        }
+      ]
+    },
+    {
+      "id": "item.water_trough",
+      "displayName": "Su yalağı",
+      "category": "barn",
+      "price": 12,
+      "width": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "animalRole": "water",
+      "interactions": [
+        {
+          "id": "cut_ice",
+          "displayName": "Buz kes (donda)",
+          "durationDays": 0.06,
+          "requiresFrost": true,
+          "produce": [
+            {
+              "item": "item.ice",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.hay_bale",
+      "displayName": "Saman balyası",
+      "category": "barn",
+      "price": 4,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "animalRole": "bedding",
+      "animalComfort": 3,
+      "interactions": []
+    },
+    {
+      "id": "item.salt_lick",
+      "displayName": "Tuz yalağı",
+      "category": "barn",
+      "price": 8,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn"
+      ],
+      "animalComfort": 4,
+      "interactions": []
+    },
+    {
+      "id": "item.barn_lantern",
+      "displayName": "Ahır feneri",
+      "category": "barn",
+      "price": 9,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "tags": [
+        "light"
+      ],
+      "animalComfort": 2,
+      "interactions": []
+    },
+    {
+      "id": "item.saddle_rack",
+      "displayName": "Eyer sehpası",
+      "category": "barn",
+      "price": 18,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "barn"
+      ],
+      "animalComfort": 3,
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.animal_bell",
+      "displayName": "Hayvan çanı",
+      "category": "barn",
+      "price": 15,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "barn",
+        "outdoor"
+      ],
+      "animalRole": "bell",
+      "interactions": []
+    },
+    {
+      "id": "item.collection_box",
+      "displayName": "Toplama sandığı",
+      "category": "barn",
+      "price": 60,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "barn"
+      ],
+      "animalRole": "collector",
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.feed_chute",
+      "displayName": "Yem oluğu",
+      "category": "barn",
+      "price": 70,
+      "width": 2,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "barn"
+      ],
+      "animalRole": "feeder",
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.canal",
+      "displayName": "Kanal",
+      "category": "farm",
+      "price": 6,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "waterRadius": 2,
+      "needsSource": true,
+      "interactions": []
+    },
+    {
+      "id": "item.water_wheel",
+      "displayName": "Su çarkı",
+      "category": "farm",
+      "price": 120,
+      "width": 2,
+      "height": 2,
+      "level": 7,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "powerSource": true,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "maintain",
+          "displayName": "Bakım yap (1 tahta)",
+          "durationDays": 0.06,
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 1
+            }
+          ],
+          "skill": "Engineering",
+          "skillXp": 10
+        }
+      ]
+    },
+    {
+      "id": "item.millstone",
+      "displayName": "Değirmen taşı",
+      "category": "farm",
+      "price": 90,
+      "width": 2,
+      "height": 2,
+      "level": 6,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "autoProcess": {
+        "item": "item.barley",
+        "count": 1,
+        "produces": "item.feed",
+        "producesCount": 3
+      },
+      "interactions": [
+        {
+          "id": "grind",
+          "displayName": "Arpa öğüt (yem)",
+          "durationDays": 0.04,
+          "materials": [
+            {
+              "item": "item.barley",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.feed",
+              "count": 3
+            }
+          ],
+          "skill": "Farming",
+          "skillXp": 2
+        },
+        {
+          "id": "maintain",
+          "displayName": "Bakım yap (1 tahta)",
+          "durationDays": 0.06,
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 1
+            }
+          ],
+          "skill": "Engineering",
+          "skillXp": 10
+        },
+        {
+          "id": "grind_flour",
+          "displayName": "Un öğüt (2 arpa)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.barley",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.flour",
+              "count": 2
+            }
+          ],
+          "skill": "Baking",
+          "skillXp": 4
+        }
+      ]
+    },
+    {
+      "id": "item.tanning_rack",
+      "displayName": "Tabak germesi",
+      "category": "work",
+      "price": 35,
+      "width": 2,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.saddler_bench",
+      "displayName": "Saraç tezgâhı",
+      "category": "work",
+      "price": 70,
+      "width": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor",
+        "living"
+      ],
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.hide",
+      "displayName": "Ham deri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "hide"
+      ]
+    },
+    {
+      "id": "item.leather",
+      "displayName": "Deri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "leather"
+      ]
+    },
+    {
+      "id": "item.saddle",
+      "displayName": "Eyer",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 60,
+      "tags": [
+        "saddle"
+      ]
+    },
+    {
+      "id": "item.saddle_fine",
+      "displayName": "İşlemeli eyer",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 160,
+      "tags": [
+        "saddle",
+        "fine",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.stone",
+      "displayName": "Taş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "stone"
+      ]
+    },
+    {
+      "id": "item.granary",
+      "displayName": "Ambar (serender)",
+      "category": "storage",
+      "price": 140,
+      "width": 3,
+      "height": 2,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "storage": 150,
+      "preserves": 0.85,
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.ice_box",
+      "displayName": "Buzluk",
+      "category": "storage",
+      "price": 45,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "outdoor"
+      ],
+      "iceBox": true,
+      "foodCapacity": 40,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "add_ice",
+          "displayName": "Buz koy",
+          "durationDays": 0.02,
+          "materials": [
+            {
+              "item": "item.ice",
+              "count": 1
+            }
+          ],
+          "addIce": 4
+        }
+      ]
+    },
+    {
+      "id": "item.ice_house",
+      "displayName": "Buzhane",
+      "category": "storage",
+      "price": 120,
+      "width": 2,
+      "height": 2,
+      "level": 5,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "iceBox": true,
+      "foodCapacity": 120,
+      "interactions": [
+        {
+          "id": "add_ice",
+          "displayName": "Buz koy (3)",
+          "durationDays": 0.04,
+          "materials": [
+            {
+              "item": "item.ice",
+              "count": 3
+            }
+          ],
+          "addIce": 12
+        }
+      ]
+    },
+    {
+      "id": "item.ice",
+      "displayName": "Buz",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "spoilDays": 4,
+      "tags": [
+        "ice"
+      ]
+    },
+    {
+      "id": "item.leather_bag",
+      "displayName": "Deri çanta",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 45,
+      "tags": [
+        "leather",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.halter",
+      "displayName": "Yular",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 18,
+      "tags": [
+        "leather"
+      ]
+    },
+    {
+      "id": "item.spinning_wheel",
+      "displayName": "Çıkrık",
+      "category": "work",
+      "price": 40,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "outdoor"
+      ],
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.loom",
+      "displayName": "Dokuma tezgâhı",
+      "category": "work",
+      "price": 85,
+      "width": 2,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "outdoor"
+      ],
+      "finishGroup": "wood",
+      "interactions": []
+    },
+    {
+      "id": "item.yarn",
+      "displayName": "Yün ipliği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "cloth"
+      ]
+    },
+    {
+      "id": "item.cloth",
+      "displayName": "Yün kumaş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "cloth"
+      ]
+    },
+    {
+      "id": "item.blanket",
+      "displayName": "Yün battaniye",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 55,
+      "tags": [
+        "cloth",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.basket",
+      "displayName": "Söğüt sepeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.fish_crayfish",
+      "displayName": "Kerevit",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "spoilDays": 2,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ]
+    },
+    {
+      "id": "item.fish_carp",
+      "displayName": "Sazan",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "spoilDays": 3,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ]
+    },
+    {
+      "id": "item.fish_trout",
+      "displayName": "Alabalık",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "spoilDays": 3,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ]
+    },
+    {
+      "id": "item.fish_pike",
+      "displayName": "Turna",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "spoilDays": 3,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ]
+    },
+    {
+      "id": "item.fish_eel",
+      "displayName": "Yılan balığı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "spoilDays": 3,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ]
+    },
+    {
+      "id": "item.salted_fish",
+      "displayName": "Tuzlu balık",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "spoilDays": 40,
+      "tags": [
+        "food",
+        "salted"
+      ]
+    },
+    {
+      "id": "item.smoked_fish",
+      "displayName": "Füme balık",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 16,
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.pond",
+      "displayName": "Gölet",
+      "category": "farm",
+      "price": 60,
+      "width": 3,
+      "height": 2,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "waterSource": true,
+      "interactions": [
+        {
+          "id": "fish",
+          "displayName": "Balık tut",
+          "durationDays": 0.12,
+          "skill": "Fishing",
+          "skillXp": 10,
+          "tool": "rod",
+          "produce": [
+            {
+              "item": "item.fish_crayfish",
+              "count": 1,
+              "chance": 0.35
+            },
+            {
+              "item": "item.fish_carp",
+              "count": 1,
+              "chance": 0.55,
+              "seasons": [
+                "Spring",
+                "Summer",
+                "Autumn"
+              ]
+            },
+            {
+              "item": "item.fish_trout",
+              "count": 1,
+              "chance": 0.45,
+              "seasons": [
+                "Autumn",
+                "Winter",
+                "Spring"
+              ],
+              "minLevel": 2
+            },
+            {
+              "item": "item.fish_pike",
+              "count": 1,
+              "chance": 0.25,
+              "minLevel": 4
+            },
+            {
+              "item": "item.fish_eel",
+              "count": 1,
+              "chance": 0.2,
+              "seasons": [
+                "Summer"
+              ],
+              "minLevel": 6
+            }
+          ]
+        },
+        {
+          "id": "cut_ice",
+          "displayName": "Buz kes (donda)",
+          "durationDays": 0.06,
+          "requiresFrost": true,
+          "produce": [
+            {
+              "item": "item.ice",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.fish_trap",
+      "displayName": "Balık sepeti (tuzak)",
+      "category": "farm",
+      "price": 25,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "fishTrap": true,
+      "interactions": []
+    },
+    {
+      "id": "item.alembic",
+      "displayName": "İmbik (iksir tezgâhı)",
+      "category": "work",
+      "price": 70,
+      "width": 2,
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen",
+        "living",
+        "outdoor"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.potion_energy",
+      "displayName": "Dinçlik iksiri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "potion"
+      ]
+    },
+    {
+      "id": "item.potion_warmth",
+      "displayName": "Isıtan tentür",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "potion"
+      ]
+    },
+    {
+      "id": "item.potion_calm",
+      "displayName": "Huzur şerbeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "potion"
+      ]
+    },
+    {
+      "id": "item.potion_focus",
+      "displayName": "Zihin iksiri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "potion",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.potion_growth",
+      "displayName": "Bereket iksiri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "potion",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.animal_salve",
+      "displayName": "Hayvan merhemi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 16,
+      "tags": [
+        "potion"
+      ]
+    },
+    {
+      "id": "item.potion_shelf",
+      "displayName": "İksir rafı",
+      "category": "kitchen",
+      "price": 25,
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen",
+        "living",
+        "bedroom"
+      ],
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "drink_energy",
+          "displayName": "Dinçlik iksiri iç",
+          "need": "Energy",
+          "restore": 50,
+          "durationDays": 0.02,
+          "consume": "item.potion_energy",
+          "moodlet": "potion_vigor"
+        },
+        {
+          "id": "drink_warmth",
+          "displayName": "Isıtan tentür iç",
+          "need": "Warmth",
+          "restore": 60,
+          "durationDays": 0.02,
+          "consume": "item.potion_warmth"
+        },
+        {
+          "id": "drink_calm",
+          "displayName": "Huzur şerbeti iç",
+          "need": "Fun",
+          "restore": 40,
+          "durationDays": 0.02,
+          "consume": "item.potion_calm",
+          "moodlet": "potion_calm"
+        },
+        {
+          "id": "drink_focus",
+          "displayName": "Zihin iksiri iç",
+          "durationDays": 0.02,
+          "consume": "item.potion_focus",
+          "moodlet": "potion_focus"
+        },
+        {
+          "id": "use_remedy",
+          "displayName": "Şifa merhemi sür",
+          "need": "Warmth",
+          "restore": 15,
+          "durationDays": 0.03,
+          "consume": "item.remedy",
+          "heal": 1.0
+        }
+      ]
+    },
+    {
+      "id": "item.clay",
+      "displayName": "Kil",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2
+    },
+    {
+      "id": "item.iron_ore",
+      "displayName": "Demir cevheri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5
+    },
+    {
+      "id": "item.iron_bar",
+      "displayName": "Demir külçe",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "metal"
+      ]
+    },
+    {
+      "id": "item.horseshoe",
+      "displayName": "Nal",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "metal"
+      ]
+    },
+    {
+      "id": "item.gear",
+      "displayName": "Dişli takımı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 25,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.flour",
+      "displayName": "Un",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "grain"
+      ]
+    },
+    {
+      "id": "item.bread",
+      "displayName": "Ekmek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.ale",
+      "displayName": "Arpa birası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "drink"
+      ]
+    },
+    {
+      "id": "item.cider",
+      "displayName": "Elma şarabı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "drink"
+      ]
+    },
+    {
+      "id": "item.mead",
+      "displayName": "Bal şarabı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 18,
+      "tags": [
+        "drink",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.beeswax",
+      "displayName": "Balmumu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.game_meat",
+      "displayName": "Av eti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.pelt",
+      "displayName": "Post (av)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "hide"
+      ]
+    },
+    {
+      "id": "item.fur",
+      "displayName": "İşlenmiş kürk",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "leather"
+      ]
+    },
+    {
+      "id": "item.remedy",
+      "displayName": "Şifa merhemi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "potion"
+      ]
+    },
+    {
+      "id": "item.quarry",
+      "displayName": "Taş ocağı",
+      "category": "farm",
+      "price": 50,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "mine",
+          "displayName": "Taş kır",
+          "durationDays": 0.15,
+          "skill": "Mining",
+          "skillXp": 8,
+          "tool": "pickaxe",
+          "produce": [
+            {
+              "item": "item.stone",
+              "count": 2
+            },
+            {
+              "item": "item.clay",
+              "count": 1,
+              "chance": 0.4
+            },
+            {
+              "item": "item.iron_ore",
+              "count": 1,
+              "chance": 0.3,
+              "minLevel": 2
+            }
+          ]
+        }
+      ],
+      "width": 2,
+      "height": 2
+    },
+    {
+      "id": "item.forge",
+      "displayName": "Demir ocağı ve örs",
+      "category": "work",
+      "price": 120,
+      "level": 4,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [],
+      "width": 2,
+      "height": 2
+    },
+    {
+      "id": "item.pottery_wheel",
+      "displayName": "Çömlekçi çarkı",
+      "category": "work",
+      "price": 45,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor",
+        "living"
+      ],
+      "interactions": [],
+      "finishGroup": "wood"
+    },
+    {
+      "id": "item.storage_jar",
+      "displayName": "Küp",
+      "category": "storage",
+      "price": 30,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "outdoor"
+      ],
+      "storage": 20,
+      "preserves": 0.85,
+      "interactions": []
+    },
+    {
+      "id": "item.brew_barrel",
+      "displayName": "Mayalama fıçısı",
+      "category": "work",
+      "price": 50,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "outdoor"
+      ],
+      "interactions": [],
+      "finishGroup": "wood"
+    },
+    {
+      "id": "item.chandler_table",
+      "displayName": "Mum tezgâhı",
+      "category": "work",
+      "price": 35,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "living",
+        "outdoor"
+      ],
+      "interactions": [],
+      "finishGroup": "wood"
+    },
+    {
+      "id": "item.hunting_blind",
+      "displayName": "Av pususu",
+      "category": "farm",
+      "price": 30,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "hunt",
+          "displayName": "Avlan",
+          "durationDays": 0.2,
+          "skill": "Hunting",
+          "skillXp": 10,
+          "produce": [
+            {
+              "item": "item.game_meat",
+              "count": 1,
+              "chance": 0.55
+            },
+            {
+              "item": "item.pelt",
+              "count": 1,
+              "chance": 0.35
+            },
+            {
+              "item": "item.game_meat",
+              "count": 2,
+              "chance": 0.25,
+              "minLevel": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.weather_vane",
+      "displayName": "Rüzgâr fırıldağı",
+      "category": "farm",
+      "price": 15,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "read_sky",
+          "displayName": "Havayı oku",
+          "durationDays": 0.03,
+          "skill": "WeatherLore",
+          "skillXp": 6
+        }
+      ]
+    },
+    {
+      "id": "item.slate",
+      "displayName": "Yazı tahtası",
+      "category": "kids",
+      "price": 20,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kids",
+        "living"
+      ],
+      "interactions": [
+        {
+          "id": "teach",
+          "displayName": "Çocuklara ders ver",
+          "durationDays": 0.1,
+          "teach": true,
+          "skill": "Teaching",
+          "skillXp": 12
+        }
+      ],
+      "finishGroup": "wood"
+    },
+    {
+      "id": "item.lute",
+      "displayName": "Kopuz",
+      "category": "decor_wall",
+      "price": 35,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom",
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "play_music",
+          "displayName": "Kopuz çal",
+          "need": "Fun",
+          "restore": 35,
+          "durationDays": 0.1,
+          "skill": "Music",
+          "skillXp": 6,
+          "moodlet": "had_fun"
+        }
+      ],
+      "finishGroup": "wood"
+    },
+    {
+      "id": "item.churn",
+      "displayName": "Yayık",
+      "category": "work",
+      "price": 30,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "outdoor"
+      ],
+      "interactions": [],
+      "finishGroup": "wood"
+    },
+    {
+      "id": "item.yogurt",
+      "displayName": "Yoğurt",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 5
+    },
+    {
+      "id": "item.butter",
+      "displayName": "Tereyağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 8
+    },
+    {
+      "id": "item.ayran",
+      "displayName": "Ayran",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food",
+        "drink"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.boza",
+      "displayName": "Boza",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "drink"
+      ]
+    },
+    {
+      "id": "item.serbet",
+      "displayName": "Şerbet",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "drink"
+      ]
+    },
+    {
+      "id": "item.vinegar",
+      "displayName": "Sirke",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.tarhana",
+      "displayName": "Tarhana (kurutulmuş)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.soup_bean",
+      "displayName": "Bakla çorbası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.soup_fish",
+      "displayName": "Balık çorbası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.stew_meat",
+      "displayName": "Etli güveç",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.soup_chicken",
+      "displayName": "Tavuk suyu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.saute_mushroom",
+      "displayName": "Mantar sote",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.kaygana",
+      "displayName": "Kaygana",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.breakfast",
+      "displayName": "Kahvaltı tabağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.pilaf",
+      "displayName": "Bulgur pilavı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.sarma",
+      "displayName": "Lahana sarması",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.hosaf",
+      "displayName": "Hoşaf",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.helva",
+      "displayName": "Helva",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 10
+    },
+    {
+      "id": "item.pekmez",
+      "displayName": "Pekmez",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.stew_game",
+      "displayName": "Av yahnisi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.wrap_fish",
+      "displayName": "Füme balık dürüm",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.borek_leek",
+      "displayName": "Pırasalı börek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.kete_meat",
+      "displayName": "Etli kete",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 5
+    },
+    {
+      "id": "item.tart_apple",
+      "displayName": "Elmalı tart",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.simit",
+      "displayName": "Simit",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.rusk",
+      "displayName": "Peksimet",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.stonecutter",
+      "displayName": "Taş yontma tezgâhı",
+      "category": "work",
+      "price": 60,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [],
+      "width": 2
+    },
+    {
+      "id": "item.windmill",
+      "displayName": "Yel değirmeni",
+      "category": "farm",
+      "price": 180,
+      "level": 1,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "interactions": [],
+      "width": 2,
+      "height": 2,
+      "windPower": true,
+      "finishGroup": "wood"
+    },
+    {
+      "id": "item.water_gate",
+      "displayName": "Su kapağı",
+      "category": "farm",
+      "price": 30,
+      "level": 1,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "interactions": [],
+      "waterGate": true
+    },
+    {
+      "id": "item.noria",
+      "displayName": "Sulama dolabı",
+      "category": "farm",
+      "price": 90,
+      "level": 1,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "interactions": [],
+      "width": 2,
+      "height": 2,
+      "waterSource": true,
+      "waterRadius": 2,
+      "finishGroup": "wood"
+    },
+    {
+      "id": "item.feed_mixer",
+      "displayName": "Yem karıştırıcı",
+      "category": "farm",
+      "price": 60,
+      "level": 1,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "interactions": [],
+      "autoProcess": {
+        "item": "item.barley",
+        "count": 1,
+        "produces": "item.feed",
+        "producesCount": 4
+      }
+    },
+    {
+      "id": "item.harvest_rake",
+      "displayName": "Hasat tırmığı",
+      "category": "farm",
+      "price": 110,
+      "level": 1,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "interactions": [],
+      "harvestRadius": 2
+    },
+    {
+      "id": "item.seeder",
+      "displayName": "Ekim makinesi",
+      "category": "farm",
+      "price": 120,
+      "level": 1,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "interactions": [],
+      "seedRadius": 2
+    },
+    {
+      "id": "item.ice_well",
+      "displayName": "Buz kuyusu",
+      "category": "farm",
+      "price": 70,
+      "level": 1,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "interactions": [],
+      "width": 2,
+      "height": 2,
+      "iceCollect": 2
+    },
+    {
+      "id": "item.kiln",
+      "displayName": "Tuğla fırını",
+      "category": "work",
+      "price": 80,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [],
+      "width": 2,
+      "height": 2
+    },
+    {
+      "id": "item.dye_vat",
+      "displayName": "Boya kazanı",
+      "category": "work",
+      "price": 40,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor",
+        "kitchen"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.brick",
+      "displayName": "Tuğla",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.roof_tiles",
+      "displayName": "Kiremit",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.cut_stone",
+      "displayName": "Yontma taş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "stone"
+      ]
+    },
+    {
+      "id": "item.dye_red",
+      "displayName": "Kökboya (kırmızı)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_yellow",
+      "displayName": "Cehri (sarı)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_blue",
+      "displayName": "Çivit (mavi)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.soap",
+      "displayName": "Sabun",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.felt",
+      "displayName": "Keçe",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "cloth"
       ]
     }
   ],
@@ -5996,7 +9445,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Şalgam"
     },
@@ -6012,7 +9461,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Lahana"
     },
@@ -6028,7 +9477,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Pırasa"
     },
@@ -6044,7 +9493,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Bezelye"
     },
@@ -6060,7 +9509,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Kabak"
     },
@@ -6076,7 +9525,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Yaban havucu"
     },
@@ -6092,7 +9541,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Havuç"
     },
@@ -6108,7 +9557,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Soğan"
     },
@@ -6124,7 +9573,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Sarımsak"
     },
@@ -6140,7 +9589,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Pancar"
     },
@@ -6156,7 +9605,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Turp"
     },
@@ -6172,7 +9621,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Marul"
     },
@@ -6188,7 +9637,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Bakla"
     },
@@ -6204,7 +9653,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Arpa"
     },
@@ -6220,7 +9669,7 @@
         }
       ],
       "durationDays": 0.05,
-      "skill": "Farming",
+      "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Ispanak"
     },
@@ -6239,6 +9688,1036 @@
       "skill": "Farming",
       "skillXp": 4,
       "displayName": "Arpadan yem karıştır"
+    },
+    {
+      "id": "leather",
+      "station": "item.tanning_rack",
+      "produces": "item.leather",
+      "materials": [
+        {
+          "item": "item.hide",
+          "count": 1
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skillXp": 10,
+      "displayName": "Deri tabakla",
+      "skill": "Leatherwork"
+    },
+    {
+      "id": "saddle_basic",
+      "station": "item.saddler_bench",
+      "produces": "item.saddle",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 2
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skillXp": 20,
+      "displayName": "Eyer dik",
+      "skill": "Leatherwork"
+    },
+    {
+      "id": "saddle_fine",
+      "station": "item.saddler_bench",
+      "produces": "item.saddle_fine",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 4
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        },
+        {
+          "item": "item.wool",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skillXp": 40,
+      "displayName": "İşlemeli eyer dik",
+      "skill": "Leatherwork",
+      "minLevel": 4
+    },
+    {
+      "id": "halter",
+      "station": "item.saddler_bench",
+      "produces": "item.halter",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Leatherwork",
+      "skillXp": 8,
+      "displayName": "Yular ör"
+    },
+    {
+      "id": "leather_bag",
+      "station": "item.saddler_bench",
+      "produces": "item.leather_bag",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 2
+        },
+        {
+          "item": "item.wool",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Leatherwork",
+      "skillXp": 18,
+      "minLevel": 2,
+      "displayName": "Deri çanta dik"
+    },
+    {
+      "id": "rug_hide",
+      "station": "item.saddler_bench",
+      "produces": "item.rug_hide",
+      "materials": [
+        {
+          "item": "item.hide",
+          "count": 2
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Leatherwork",
+      "skillXp": 12,
+      "displayName": "Post sermesi yap"
+    },
+    {
+      "id": "yarn",
+      "station": "item.spinning_wheel",
+      "produces": "item.yarn",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.wool",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Weaving",
+      "skillXp": 6,
+      "displayName": "Yün eğir"
+    },
+    {
+      "id": "cloth",
+      "station": "item.loom",
+      "produces": "item.cloth",
+      "materials": [
+        {
+          "item": "item.yarn",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Weaving",
+      "skillXp": 14,
+      "displayName": "Kumaş doku"
+    },
+    {
+      "id": "blanket",
+      "station": "item.loom",
+      "produces": "item.blanket",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Weaving",
+      "skillXp": 24,
+      "minLevel": 3,
+      "displayName": "Battaniye doku"
+    },
+    {
+      "id": "rug_rush",
+      "station": "item.loom",
+      "produces": "item.rug_rush",
+      "materials": [
+        {
+          "item": "item.withy",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Hasır kilim ör"
+    },
+    {
+      "id": "rug_wool_small",
+      "station": "item.loom",
+      "produces": "item.rug_wool_small",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Weaving",
+      "skillXp": 16,
+      "minLevel": 2,
+      "displayName": "Küçük yün halı doku"
+    },
+    {
+      "id": "rug_runner",
+      "station": "item.loom",
+      "produces": "item.rug_runner",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Weaving",
+      "skillXp": 20,
+      "minLevel": 4,
+      "displayName": "Yolluk doku"
+    },
+    {
+      "id": "rug_woven_large",
+      "station": "item.loom",
+      "produces": "item.rug_woven_large",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 4
+        },
+        {
+          "item": "item.yarn",
+          "count": 4
+        }
+      ],
+      "durationDays": 0.4,
+      "skill": "Weaving",
+      "skillXp": 45,
+      "minLevel": 6,
+      "displayName": "Desenli büyük halı doku"
+    },
+    {
+      "id": "basket",
+      "station": "item.workbench",
+      "produces": "item.basket",
+      "materials": [
+        {
+          "item": "item.withy",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Weaving",
+      "skillXp": 5,
+      "displayName": "Söğüt sepeti ör"
+    },
+    {
+      "id": "potion_energy",
+      "station": "item.alembic",
+      "produces": "item.potion_energy",
+      "materials": [
+        {
+          "item": "item.herb",
+          "count": 2
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Herbalism",
+      "skillXp": 12,
+      "displayName": "Dinçlik iksiri damıt"
+    },
+    {
+      "id": "potion_warmth",
+      "station": "item.alembic",
+      "produces": "item.potion_warmth",
+      "materials": [
+        {
+          "item": "item.nettle",
+          "count": 2
+        },
+        {
+          "item": "item.wild_garlic",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Herbalism",
+      "skillXp": 12,
+      "displayName": "Isıtan tentür yap"
+    },
+    {
+      "id": "potion_calm",
+      "station": "item.alembic",
+      "produces": "item.potion_calm",
+      "materials": [
+        {
+          "item": "item.elderflower",
+          "count": 2
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Herbalism",
+      "skillXp": 12,
+      "minLevel": 1,
+      "displayName": "Huzur şerbeti kaynat"
+    },
+    {
+      "id": "animal_salve",
+      "station": "item.alembic",
+      "produces": "item.animal_salve",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.herb",
+          "count": 2
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Herbalism",
+      "skillXp": 14,
+      "minLevel": 2,
+      "displayName": "Hayvan merhemi karıştır"
+    },
+    {
+      "id": "potion_growth",
+      "station": "item.alembic",
+      "produces": "item.potion_growth",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.nettle",
+          "count": 2
+        },
+        {
+          "item": "item.compost",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Herbalism",
+      "skillXp": 18,
+      "minLevel": 3,
+      "displayName": "Bereket iksiri hazırla"
+    },
+    {
+      "id": "potion_focus",
+      "station": "item.alembic",
+      "produces": "item.potion_focus",
+      "materials": [
+        {
+          "item": "item.rosehip",
+          "count": 2
+        },
+        {
+          "item": "item.herb",
+          "count": 1
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Herbalism",
+      "skillXp": 30,
+      "minLevel": 5,
+      "displayName": "Zihin iksiri damıt"
+    },
+    {
+      "id": "iron_bar",
+      "station": "item.forge",
+      "produces": "item.iron_bar",
+      "materials": [
+        {
+          "item": "item.iron_ore",
+          "count": 2
+        },
+        {
+          "item": "item.firewood",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 10,
+      "displayName": "Demir dök"
+    },
+    {
+      "id": "nails_forge",
+      "station": "item.forge",
+      "produces": "item.nails",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Smithing",
+      "skillXp": 6,
+      "displayName": "Çivi döv",
+      "count": 4
+    },
+    {
+      "id": "horseshoe",
+      "station": "item.forge",
+      "produces": "item.horseshoe",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Smithing",
+      "skillXp": 8,
+      "displayName": "Nal döv",
+      "minLevel": 2
+    },
+    {
+      "id": "gear",
+      "station": "item.workbench",
+      "produces": "item.gear",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        },
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Engineering",
+      "skillXp": 15,
+      "displayName": "Dişli takımı yap"
+    },
+    {
+      "id": "storage_jar",
+      "station": "item.pottery_wheel",
+      "produces": "item.storage_jar",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Pottery",
+      "skillXp": 14,
+      "displayName": "Küp yap"
+    },
+    {
+      "id": "jug",
+      "station": "item.pottery_wheel",
+      "produces": "item.jug",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Pottery",
+      "skillXp": 5,
+      "displayName": "Testi yap"
+    },
+    {
+      "id": "ale",
+      "station": "item.brew_barrel",
+      "produces": "item.ale",
+      "materials": [
+        {
+          "item": "item.barley",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Brewing",
+      "skillXp": 12,
+      "displayName": "Arpa birası mayala",
+      "count": 2
+    },
+    {
+      "id": "cider",
+      "station": "item.brew_barrel",
+      "produces": "item.cider",
+      "materials": [
+        {
+          "item": "item.apple",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Brewing",
+      "skillXp": 12,
+      "displayName": "Elma şarabı yap",
+      "count": 2
+    },
+    {
+      "id": "mead",
+      "station": "item.brew_barrel",
+      "produces": "item.mead",
+      "materials": [
+        {
+          "item": "item.honey",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.4,
+      "skill": "Brewing",
+      "skillXp": 20,
+      "displayName": "Bal şarabı yap",
+      "minLevel": 3
+    },
+    {
+      "id": "beeswax",
+      "station": "item.chandler_table",
+      "produces": "item.beeswax",
+      "materials": [
+        {
+          "item": "item.honey",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Chandlery",
+      "skillXp": 6,
+      "displayName": "Balmumu ayır"
+    },
+    {
+      "id": "candle",
+      "station": "item.chandler_table",
+      "produces": "item.candle",
+      "materials": [
+        {
+          "item": "item.beeswax",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Chandlery",
+      "skillXp": 8,
+      "displayName": "Mum dök",
+      "count": 2
+    },
+    {
+      "id": "fur",
+      "station": "item.tanning_rack",
+      "produces": "item.fur",
+      "materials": [
+        {
+          "item": "item.pelt",
+          "count": 2
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Leatherwork",
+      "skillXp": 12,
+      "displayName": "Kürk tabakla",
+      "minLevel": 2
+    },
+    {
+      "id": "remedy",
+      "station": "item.alembic",
+      "produces": "item.remedy",
+      "materials": [
+        {
+          "item": "item.herb",
+          "count": 1
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Medicine",
+      "skillXp": 12,
+      "displayName": "Şifa merhemi hazırla"
+    },
+    {
+      "id": "yogurt",
+      "station": "item.churn",
+      "produces": "item.yogurt",
+      "materials": [
+        {
+          "item": "item.milk",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Cooking",
+      "skillXp": 8,
+      "displayName": "Yoğurt mayala",
+      "count": 2
+    },
+    {
+      "id": "butter",
+      "station": "item.churn",
+      "produces": "item.butter",
+      "materials": [
+        {
+          "item": "item.milk",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Cooking",
+      "skillXp": 10,
+      "displayName": "Tereyağı yay"
+    },
+    {
+      "id": "ayran",
+      "station": "item.churn",
+      "produces": "item.ayran",
+      "materials": [
+        {
+          "item": "item.yogurt",
+          "count": 1
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Cooking",
+      "skillXp": 4,
+      "displayName": "Ayran çal",
+      "count": 3
+    },
+    {
+      "id": "boza",
+      "station": "item.brew_barrel",
+      "produces": "item.boza",
+      "materials": [
+        {
+          "item": "item.barley",
+          "count": 2
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Brewing",
+      "skillXp": 12,
+      "displayName": "Boza yap",
+      "count": 2
+    },
+    {
+      "id": "serbet",
+      "station": "item.brew_barrel",
+      "produces": "item.serbet",
+      "materials": [
+        {
+          "item": "item.elderflower",
+          "count": 2
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Brewing",
+      "skillXp": 8,
+      "displayName": "Şerbet yap",
+      "count": 2
+    },
+    {
+      "id": "vinegar",
+      "station": "item.brew_barrel",
+      "produces": "item.vinegar",
+      "materials": [
+        {
+          "item": "item.cider",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.4,
+      "skill": "Brewing",
+      "skillXp": 10,
+      "displayName": "Sirke beklet",
+      "count": 2,
+      "minLevel": 2
+    },
+    {
+      "id": "tarhana",
+      "station": "item.drying_rack",
+      "produces": "item.tarhana",
+      "materials": [
+        {
+          "item": "item.flour",
+          "count": 1
+        },
+        {
+          "item": "item.yogurt",
+          "count": 1
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Tarhana kurut",
+      "count": 3
+    },
+    {
+      "id": "windmill",
+      "station": "item.workbench",
+      "produces": "item.windmill",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 10
+        },
+        {
+          "item": "item.gear",
+          "count": 2
+        },
+        {
+          "item": "item.cloth",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Engineering",
+      "skillXp": 40,
+      "displayName": "Yel değirmeni yap",
+      "minLevel": 4
+    },
+    {
+      "id": "water_gate",
+      "station": "item.workbench",
+      "produces": "item.water_gate",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 3
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Engineering",
+      "skillXp": 10,
+      "displayName": "Su kapağı yap",
+      "minLevel": 1
+    },
+    {
+      "id": "noria",
+      "station": "item.workbench",
+      "produces": "item.noria",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 6
+        },
+        {
+          "item": "item.gear",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Engineering",
+      "skillXp": 20,
+      "displayName": "Sulama dolabı yap",
+      "minLevel": 2
+    },
+    {
+      "id": "feed_mixer",
+      "station": "item.workbench",
+      "produces": "item.feed_mixer",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.gear",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Engineering",
+      "skillXp": 15,
+      "displayName": "Yem karıştırıcı yap",
+      "minLevel": 1
+    },
+    {
+      "id": "harvest_rake",
+      "station": "item.workbench",
+      "produces": "item.harvest_rake",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 2
+        },
+        {
+          "item": "item.gear",
+          "count": 1
+        },
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Engineering",
+      "skillXp": 25,
+      "displayName": "Hasat tırmığı yap",
+      "minLevel": 3
+    },
+    {
+      "id": "seeder",
+      "station": "item.workbench",
+      "produces": "item.seeder",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        },
+        {
+          "item": "item.gear",
+          "count": 2
+        },
+        {
+          "item": "item.plank",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Engineering",
+      "skillXp": 25,
+      "displayName": "Ekim makinesi yap",
+      "minLevel": 5
+    },
+    {
+      "id": "ice_well",
+      "station": "item.stonecutter",
+      "produces": "item.ice_well",
+      "materials": [
+        {
+          "item": "item.stone",
+          "count": 8
+        },
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Masonry",
+      "skillXp": 20,
+      "displayName": "Buz kuyusu yap",
+      "minLevel": 2
+    },
+    {
+      "id": "brick",
+      "station": "item.kiln",
+      "produces": "item.brick",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 2
+        },
+        {
+          "item": "item.firewood",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Pottery",
+      "skillXp": 10,
+      "displayName": "Tuğla pişir",
+      "count": 4
+    },
+    {
+      "id": "roof_tiles",
+      "station": "item.kiln",
+      "produces": "item.roof_tiles",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 2
+        },
+        {
+          "item": "item.firewood",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Pottery",
+      "skillXp": 10,
+      "displayName": "Kiremit pişir",
+      "count": 4
+    },
+    {
+      "id": "cut_stone",
+      "station": "item.stonecutter",
+      "produces": "item.cut_stone",
+      "materials": [
+        {
+          "item": "item.stone",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Masonry",
+      "skillXp": 8,
+      "displayName": "Taş yont"
+    },
+    {
+      "id": "dye_red",
+      "station": "item.dye_vat",
+      "produces": "item.dye_red",
+      "materials": [
+        {
+          "item": "item.beet",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 6,
+      "displayName": "Kökboya kaynat",
+      "count": 2
+    },
+    {
+      "id": "dye_yellow",
+      "station": "item.dye_vat",
+      "produces": "item.dye_yellow",
+      "materials": [
+        {
+          "item": "item.onion",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 6,
+      "displayName": "Cehri kaynat",
+      "count": 2
+    },
+    {
+      "id": "dye_blue",
+      "station": "item.dye_vat",
+      "produces": "item.dye_blue",
+      "materials": [
+        {
+          "item": "item.plum",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Çivit kaynat",
+      "count": 2,
+      "minLevel": 2
+    },
+    {
+      "id": "soap",
+      "station": "item.chandler_table",
+      "produces": "item.soap",
+      "materials": [
+        {
+          "item": "item.beeswax",
+          "count": 1
+        },
+        {
+          "item": "item.herb",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Chandlery",
+      "skillXp": 8,
+      "displayName": "Sabun kaynat",
+      "count": 2
+    },
+    {
+      "id": "felt",
+      "station": "item.loom",
+      "produces": "item.felt",
+      "materials": [
+        {
+          "item": "item.wool",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Weaving",
+      "skillXp": 12,
+      "displayName": "Keçe döv"
     }
   ],
   "animals": [
@@ -6282,7 +10761,10 @@
       "matureDays": 6,
       "level": 5,
       "meat": "item.meat",
-      "meatCount": 2
+      "meatCount": 2,
+      "hide": "item.hide",
+      "hideCount": 1,
+      "trample": 1
     },
     {
       "id": "animal.sheep",
@@ -6296,7 +10778,10 @@
       "matureDays": 6,
       "level": 5,
       "meat": "item.meat",
-      "meatCount": 2
+      "meatCount": 2,
+      "hide": "item.hide",
+      "hideCount": 1,
+      "trample": 1
     },
     {
       "id": "animal.cow",
@@ -6310,7 +10795,10 @@
       "matureDays": 8,
       "level": 6,
       "meat": "item.meat",
-      "meatCount": 4
+      "meatCount": 4,
+      "hide": "item.hide",
+      "hideCount": 2,
+      "trample": 3
     },
     {
       "id": "animal.dog",
@@ -6344,6 +10832,814 @@
       "lifespanDays": 200,
       "matureDays": 2,
       "level": 6
+    },
+    {
+      "id": "animal.horse",
+      "displayName": "At",
+      "price": 110,
+      "housing": "stable",
+      "feedPerDay": 1.5,
+      "lifespanDays": 180,
+      "matureDays": 12,
+      "level": 4,
+      "rideable": true,
+      "rideSpeed": 2.2,
+      "trample": 3
+    }
+  ],
+  "buildParts": [
+    {
+      "id": "wall_wattle",
+      "displayName": "Dal örgü sıva",
+      "kind": "wallMaterial",
+      "price": 3,
+      "color": "#C9B48A",
+      "isDefault": true
+    },
+    {
+      "id": "wall_plank",
+      "displayName": "Kalas",
+      "kind": "wallMaterial",
+      "price": 4,
+      "color": "#9C7448",
+      "heatLoss": 1.15
+    },
+    {
+      "id": "wall_cob",
+      "displayName": "Kerpiç",
+      "kind": "wallMaterial",
+      "price": 4,
+      "color": "#B89870",
+      "level": 2,
+      "heatLoss": 0.85
+    },
+    {
+      "id": "wall_timber",
+      "displayName": "Ahşap çatkı",
+      "kind": "wallMaterial",
+      "price": 5,
+      "color": "#B8945E",
+      "level": 2,
+      "heatLoss": 0.9
+    },
+    {
+      "id": "wall_stone",
+      "displayName": "Taş",
+      "kind": "wallMaterial",
+      "price": 8,
+      "color": "#9A968C",
+      "level": 4,
+      "heatLoss": 0.7,
+      "material": "item.stone",
+      "materialCount": 1
+    },
+    {
+      "id": "wall_ashlar",
+      "displayName": "Kesme taş",
+      "kind": "wallMaterial",
+      "price": 12,
+      "color": "#B5AFA2",
+      "level": 7,
+      "heatLoss": 0.6,
+      "material": "item.cut_stone",
+      "materialCount": 1
+    },
+    {
+      "id": "finish_whitewash",
+      "displayName": "Badana",
+      "kind": "wallFinish",
+      "price": 1,
+      "color": "#EDE8DA",
+      "comfort": 1
+    },
+    {
+      "id": "finish_ochre",
+      "displayName": "Aşı boyası",
+      "kind": "wallFinish",
+      "price": 2,
+      "color": "#C98A4B",
+      "comfort": 1
+    },
+    {
+      "id": "finish_plaster",
+      "displayName": "İnce sıva",
+      "kind": "wallFinish",
+      "price": 2,
+      "color": "#DCCDB0",
+      "level": 2,
+      "comfort": 1
+    },
+    {
+      "id": "finish_panel",
+      "displayName": "Ahşap lambri",
+      "kind": "wallFinish",
+      "price": 4,
+      "color": "#8C5E36",
+      "level": 3,
+      "comfort": 2
+    },
+    {
+      "id": "finish_painted",
+      "displayName": "Desenli boya",
+      "kind": "wallFinish",
+      "price": 5,
+      "color": "#6E8C9C",
+      "level": 5,
+      "comfort": 2
+    },
+    {
+      "id": "finish_tapestry",
+      "displayName": "Duvar dokuması",
+      "kind": "wallFinish",
+      "price": 8,
+      "color": "#8E3B3B",
+      "level": 8,
+      "comfort": 3
+    },
+    {
+      "id": "door_plank",
+      "displayName": "Kalas kapı",
+      "kind": "door",
+      "price": 8,
+      "color": "#8A6238",
+      "isDefault": true
+    },
+    {
+      "id": "door_ledged",
+      "displayName": "Çaprazlı kapı",
+      "kind": "door",
+      "price": 10,
+      "color": "#7A5530",
+      "level": 2,
+      "heatLoss": 0.9
+    },
+    {
+      "id": "door_dutch",
+      "displayName": "Yarım kapı",
+      "kind": "door",
+      "price": 12,
+      "color": "#96703F",
+      "level": 3,
+      "heatLoss": 1.1
+    },
+    {
+      "id": "door_iron",
+      "displayName": "Demir kuşaklı kapı",
+      "kind": "door",
+      "price": 16,
+      "color": "#5C4A3A",
+      "level": 5,
+      "heatLoss": 0.8
+    },
+    {
+      "id": "door_arched",
+      "displayName": "Kemerli kapı",
+      "kind": "door",
+      "price": 20,
+      "color": "#6E4A2C",
+      "level": 8,
+      "heatLoss": 0.85
+    },
+    {
+      "id": "window_shutter",
+      "displayName": "Kepenkli pencere",
+      "kind": "window",
+      "price": 6,
+      "color": "#B9CFE0",
+      "levels": [
+        0,
+        1
+      ],
+      "isDefault": true
+    },
+    {
+      "id": "window_slit",
+      "displayName": "Mazgal pencere",
+      "kind": "window",
+      "price": 4,
+      "color": "#A8BCCB",
+      "levels": [
+        0,
+        1
+      ],
+      "heatLoss": 0.6
+    },
+    {
+      "id": "window_lattice",
+      "displayName": "Kafesli pencere",
+      "kind": "window",
+      "price": 9,
+      "color": "#C7D9E6",
+      "level": 3,
+      "levels": [
+        0,
+        1
+      ],
+      "heatLoss": 1.1
+    },
+    {
+      "id": "window_wide",
+      "displayName": "Geniş pencere",
+      "kind": "window",
+      "price": 12,
+      "color": "#D2E3EE",
+      "level": 5,
+      "levels": [
+        0,
+        1
+      ],
+      "heatLoss": 1.3
+    },
+    {
+      "id": "window_leaded",
+      "displayName": "Kurşun çerçeveli cam",
+      "kind": "window",
+      "price": 20,
+      "color": "#DDEBF3",
+      "level": 9,
+      "levels": [
+        0,
+        1
+      ],
+      "heatLoss": 0.9
+    },
+    {
+      "id": "window_cellar",
+      "displayName": "Bodrum penceresi",
+      "kind": "window",
+      "price": 5,
+      "color": "#8FA3B1",
+      "levels": [
+        -1
+      ],
+      "heatLoss": 0.7
+    },
+    {
+      "id": "fence_wattle",
+      "displayName": "Örgü çit",
+      "kind": "fence",
+      "price": 2,
+      "color": "#9B7B4E",
+      "isDefault": true
+    },
+    {
+      "id": "fence_picket",
+      "displayName": "Çıtalı çit",
+      "kind": "fence",
+      "price": 3,
+      "color": "#B89A6A",
+      "level": 2
+    },
+    {
+      "id": "fence_hedge",
+      "displayName": "Budanmış çit bitkisi",
+      "kind": "fence",
+      "price": 4,
+      "color": "#4F7A3A",
+      "level": 3
+    },
+    {
+      "id": "fence_stone",
+      "displayName": "Alçak taş duvar",
+      "kind": "fence",
+      "price": 5,
+      "color": "#8F8B80",
+      "level": 4,
+      "material": "item.stone",
+      "materialCount": 1
+    },
+    {
+      "id": "gate_wood",
+      "displayName": "Bahçe kapısı",
+      "kind": "gate",
+      "price": 6,
+      "color": "#8A6A40",
+      "isDefault": true
+    },
+    {
+      "id": "gate_wicket",
+      "displayName": "Küçük çit kapısı",
+      "kind": "gate",
+      "price": 4,
+      "color": "#9B7B4E"
+    },
+    {
+      "id": "railing_wood",
+      "displayName": "Ahşap korkuluk",
+      "kind": "railing",
+      "price": 3,
+      "color": "#8A6238",
+      "isDefault": true
+    },
+    {
+      "id": "railing_turned",
+      "displayName": "Torna korkuluk",
+      "kind": "railing",
+      "price": 6,
+      "color": "#7A5530",
+      "level": 4
+    },
+    {
+      "id": "railing_iron",
+      "displayName": "Dövme demir korkuluk",
+      "kind": "railing",
+      "price": 10,
+      "color": "#4E4A46",
+      "level": 8
+    },
+    {
+      "id": "floor_earth",
+      "displayName": "Sıkıştırılmış toprak",
+      "kind": "floor",
+      "price": 1,
+      "color": "#8B6E50",
+      "floorBase": "Dirt",
+      "isDefault": true
+    },
+    {
+      "id": "floor_straw",
+      "displayName": "Saman serili",
+      "kind": "floor",
+      "price": 1,
+      "color": "#C6AE6A",
+      "floorBase": "Dirt"
+    },
+    {
+      "id": "floor_rush",
+      "displayName": "Saz serili toprak",
+      "kind": "floor",
+      "price": 2,
+      "color": "#A08A55",
+      "floorBase": "Dirt",
+      "comfort": 1
+    },
+    {
+      "id": "floor_pine",
+      "displayName": "Çam tahta",
+      "kind": "floor",
+      "price": 2,
+      "color": "#A87C4C",
+      "floorBase": "Wood",
+      "isDefault": true,
+      "comfort": 1
+    },
+    {
+      "id": "floor_oak",
+      "displayName": "Meşe tahta",
+      "kind": "floor",
+      "price": 4,
+      "color": "#8A5E34",
+      "level": 3,
+      "floorBase": "Wood",
+      "comfort": 2
+    },
+    {
+      "id": "floor_herringbone",
+      "displayName": "Balıksırtı parke",
+      "kind": "floor",
+      "price": 6,
+      "color": "#9C6B3E",
+      "level": 7,
+      "floorBase": "Wood",
+      "comfort": 3
+    },
+    {
+      "id": "floor_flag",
+      "displayName": "Yassı taş",
+      "kind": "floor",
+      "price": 3,
+      "color": "#8C8C94",
+      "floorBase": "Stone",
+      "isDefault": true,
+      "comfort": 1,
+      "material": "item.cut_stone",
+      "materialCount": 1
+    },
+    {
+      "id": "floor_cobble",
+      "displayName": "Arnavut kaldırımı",
+      "kind": "floor",
+      "price": 2,
+      "color": "#7E7A74",
+      "floorBase": "Stone",
+      "material": "item.stone",
+      "materialCount": 1
+    },
+    {
+      "id": "floor_brick",
+      "displayName": "Tuğla",
+      "kind": "floor",
+      "price": 4,
+      "color": "#A0583C",
+      "level": 3,
+      "floorBase": "Stone",
+      "comfort": 1,
+      "material": "item.brick",
+      "materialCount": 1
+    },
+    {
+      "id": "floor_tile",
+      "displayName": "Sırlı çini",
+      "kind": "floor",
+      "price": 7,
+      "color": "#3E6E7A",
+      "level": 9,
+      "floorBase": "Stone",
+      "comfort": 3,
+      "material": "item.brick",
+      "materialCount": 1
+    },
+    {
+      "id": "roof_thatch",
+      "displayName": "Saz çatı",
+      "kind": "roof",
+      "price": 0,
+      "color": "#B79A57",
+      "isDefault": true
+    },
+    {
+      "id": "roof_shingle",
+      "displayName": "Ahşap şindıl",
+      "kind": "roof",
+      "price": 1,
+      "color": "#7E5C3A",
+      "level": 3,
+      "heatLoss": 0.85
+    },
+    {
+      "id": "roof_tile",
+      "displayName": "Kiremit",
+      "kind": "roof",
+      "price": 2,
+      "color": "#A5523A",
+      "level": 5,
+      "heatLoss": 0.75,
+      "material": "item.roof_tiles",
+      "materialCount": 1
+    },
+    {
+      "id": "roof_slate",
+      "displayName": "Arduvaz",
+      "kind": "roof",
+      "price": 2,
+      "color": "#55606A",
+      "level": 6,
+      "heatLoss": 0.7,
+      "material": "item.cut_stone",
+      "materialCount": 1
+    },
+    {
+      "id": "wood_natural",
+      "displayName": "Doğal ağaç",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#B08A5A",
+      "group": "wood",
+      "priceFactor": 1.0,
+      "isDefault": true
+    },
+    {
+      "id": "wood_dark",
+      "displayName": "Koyu meşe",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#6B4A2E",
+      "group": "wood",
+      "priceFactor": 1.15
+    },
+    {
+      "id": "wood_red",
+      "displayName": "Kırmızı boyalı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#9A3B2E",
+      "level": 2,
+      "group": "wood",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "wood_green",
+      "displayName": "Yeşil boyalı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#4E7046",
+      "level": 2,
+      "group": "wood",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "wood_blue",
+      "displayName": "Mavi boyalı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#3E5E86",
+      "level": 3,
+      "group": "wood",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "wood_walnut",
+      "displayName": "Ceviz",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#5A3B26",
+      "level": 4,
+      "group": "wood",
+      "priceFactor": 1.3
+    },
+    {
+      "id": "cloth_undyed",
+      "displayName": "Ham bez",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#D8CDB4",
+      "group": "cloth",
+      "priceFactor": 1.0,
+      "isDefault": true
+    },
+    {
+      "id": "cloth_madder",
+      "displayName": "Kök boya kırmızısı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#A2392F",
+      "group": "cloth",
+      "priceFactor": 1.2,
+      "material": "item.dye_red",
+      "materialCount": 1
+    },
+    {
+      "id": "cloth_weld",
+      "displayName": "Cehri sarısı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#C9A83C",
+      "group": "cloth",
+      "priceFactor": 1.2,
+      "material": "item.dye_yellow",
+      "materialCount": 1
+    },
+    {
+      "id": "cloth_woad",
+      "displayName": "Çivit mavisi",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#3B5C8C",
+      "level": 2,
+      "group": "cloth",
+      "priceFactor": 1.25,
+      "material": "item.dye_blue",
+      "materialCount": 1
+    },
+    {
+      "id": "cloth_green",
+      "displayName": "Yeşil yün",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#5B7A43",
+      "level": 3,
+      "group": "cloth",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "cloth_purple",
+      "displayName": "Mor",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#6A3A72",
+      "level": 8,
+      "group": "cloth",
+      "priceFactor": 1.6
+    },
+    {
+      "id": "metal_iron",
+      "displayName": "Dövme demir",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#4A4744",
+      "group": "metal",
+      "priceFactor": 1.0,
+      "isDefault": true
+    },
+    {
+      "id": "metal_copper",
+      "displayName": "Bakır",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#B06A3E",
+      "level": 3,
+      "group": "metal",
+      "priceFactor": 1.25
+    },
+    {
+      "id": "metal_brass",
+      "displayName": "Pirinç",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#B08D3F",
+      "level": 4,
+      "group": "metal",
+      "priceFactor": 1.3
+    },
+    {
+      "id": "clay_plain",
+      "displayName": "Sırsız",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#B5734A",
+      "group": "clay",
+      "priceFactor": 1.0,
+      "isDefault": true
+    },
+    {
+      "id": "clay_brown",
+      "displayName": "Kahve sırlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#6E4A2E",
+      "group": "clay",
+      "priceFactor": 1.15
+    },
+    {
+      "id": "clay_green",
+      "displayName": "Yeşil sırlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#5E7F55",
+      "level": 2,
+      "group": "clay",
+      "priceFactor": 1.2
+    },
+    {
+      "id": "clay_white",
+      "displayName": "Beyaz astarlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "color": "#E2DCCB",
+      "level": 5,
+      "group": "clay",
+      "priceFactor": 1.3
+    }
+  ],
+  "effects": [
+    {
+      "id": "eff_warm_soup",
+      "displayName": "Sıcak çorba",
+      "description": "İçi ısındı: soğuktan %20 az etkilenir.",
+      "value": 3,
+      "days": 1.0,
+      "coldResist": 0.2
+    },
+    {
+      "id": "eff_full",
+      "displayName": "Tok tutan",
+      "description": "%10 geç acıkır.",
+      "value": 2,
+      "days": 0.5,
+      "hungerDecay": 0.9
+    },
+    {
+      "id": "eff_full_long",
+      "displayName": "Uzun tokluk",
+      "description": "%15 geç acıkır.",
+      "value": 3,
+      "days": 1.0,
+      "hungerDecay": 0.85
+    },
+    {
+      "id": "eff_fisher",
+      "displayName": "Balıkçı sofrası",
+      "description": "Balıkçılıkta %15 fazla XP.",
+      "value": 3,
+      "days": 1.0,
+      "skillXp": [
+        {
+          "skill": "Fishing",
+          "rate": 0.15
+        }
+      ]
+    },
+    {
+      "id": "eff_hearty",
+      "displayName": "Etli güç",
+      "description": "Odun, maden ve taş işinde %10 hızlı.",
+      "value": 4,
+      "days": 1.0,
+      "skillSpeed": [
+        {
+          "skill": "Woodcutting",
+          "rate": 0.1
+        },
+        {
+          "skill": "Mining",
+          "rate": 0.1
+        },
+        {
+          "skill": "Masonry",
+          "rate": 0.1
+        }
+      ]
+    },
+    {
+      "id": "eff_broth",
+      "displayName": "Şifalı çorba",
+      "description": "Soğuktan %10 az etkilenir; yaralar iyileşir.",
+      "value": 3,
+      "days": 1.0,
+      "coldResist": 0.1
+    },
+    {
+      "id": "eff_forager",
+      "displayName": "Orman sofrası",
+      "description": "Toplayıcılıkta %15 fazla XP.",
+      "value": 3,
+      "days": 1.0,
+      "skillXp": [
+        {
+          "skill": "Foraging",
+          "rate": 0.15
+        }
+      ]
+    },
+    {
+      "id": "eff_breakfast",
+      "displayName": "Güne dinç başladı",
+      "description": "Bütün işler %5 hızlı.",
+      "value": 4,
+      "days": 1.0,
+      "allSpeed": 0.05
+    },
+    {
+      "id": "eff_refresh",
+      "displayName": "Serinledi",
+      "description": "%10 geç yorulur.",
+      "value": 2,
+      "days": 0.5,
+      "energyDecay": 0.9
+    },
+    {
+      "id": "eff_sweet",
+      "displayName": "Tatlı keyfi",
+      "description": "Tatlı bir şey yedi.",
+      "value": 4,
+      "days": 0.5
+    },
+    {
+      "id": "eff_host",
+      "displayName": "Misafir ikramı",
+      "description": "Gönül kazanmada %20 fazla XP.",
+      "value": 10,
+      "days": 1.0,
+      "skillXp": [
+        {
+          "skill": "Charm",
+          "rate": 0.2
+        }
+      ]
+    },
+    {
+      "id": "eff_solace",
+      "displayName": "Teselli",
+      "description": "Helva yasın acısını hafifletir.",
+      "value": 8,
+      "days": 1.0
+    },
+    {
+      "id": "eff_hunter",
+      "displayName": "Av sofrası",
+      "description": "Avcılıkta %15 fazla XP, soğuktan %10 az etkilenir.",
+      "value": 4,
+      "days": 1.0,
+      "coldResist": 0.1,
+      "skillXp": [
+        {
+          "skill": "Hunting",
+          "rate": 0.15
+        }
+      ]
+    },
+    {
+      "id": "eff_travel",
+      "displayName": "Azık",
+      "description": "Yolda %15 geç yorulur.",
+      "value": 2,
+      "days": 1.0,
+      "energyDecay": 0.85
+    },
+    {
+      "id": "eff_boza",
+      "displayName": "Boza sıcaklığı",
+      "description": "Soğuktan %15 az etkilenir.",
+      "value": 3,
+      "days": 0.5,
+      "coldResist": 0.15
+    },
+    {
+      "id": "eff_feast",
+      "displayName": "Usta sofrası",
+      "description": "Ustaca pişmiş bir yemek.",
+      "value": 8,
+      "days": 1.0
     }
   ]
 }

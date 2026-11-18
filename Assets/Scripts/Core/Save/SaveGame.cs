@@ -37,18 +37,26 @@ namespace Thatchwick.Core.Save
         public List<AnimalSave> Animals = new List<AnimalSave>();
         /// <summary>Toprak verimi; PlantSystem kurulunca SaveGame.RestoreSoil ile geri konur.</summary>
         public List<SoilSave> Soil = new List<SoilSave>();
+        /// <summary>Yenmiş otlak ve hayvan çanı; SaveGame.RestoreAnimals ile geri konur.</summary>
+        public List<GrassSave> Pasture = new List<GrassSave>();
+        public bool AnimalsHeld;
         /// <summary>Yüklenemeyen parçalar (ör. içerikten kaldırılmış eşya). Oyun yine açılır.</summary>
         public List<string> Warnings = new List<string>();
+        /// <summary>Ana rastgelelik tohumu (eski kayıtta 0) ve kayıttaki yükleme sayacı.</summary>
+        public int Seed;
+        public int RngEpoch;
     }
 
     /// <summary>Oyun durumunu SaveData'ya çevirir ve geri kurar (T16: sürümlü, geriye uyumlu).</summary>
     public static class SaveGame
     {
         public const int CurrentVersion = 2;
+        /// <summary>Kayıttan kabul edilen en büyük harita kenarı (oyun haritası 48x32).</summary>
+        public const int MaxMapSide = 256;
 
         public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
             AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null,
-            AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null)
+            AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null, int seed = 0, int rngEpoch = 0)
         {
             var map = world.Map;
             var data = new SaveData
@@ -56,7 +64,9 @@ namespace Thatchwick.Core.Save
                 version = CurrentVersion,
                 savedAtUtc = DateTime.UtcNow.ToString("o"),
                 totalDays = clock.TotalDays,
-                speed = clock.RequestedSpeed
+                speed = clock.RequestedSpeed,
+                seed = seed,
+                rngEpoch = rngEpoch
             };
 
             // Harita: eşyaların kapattığı karolar arazi engeli sayılmaz (yüklenince eşyalar yeniden kapatır).
@@ -79,16 +89,36 @@ namespace Thatchwick.Core.Save
                     m.zone[i] = (int)map.GetZone(p);
                 }
             var edges = new List<EdgeSave>();
-            foreach (var kv in map.Edges) edges.Add(new EdgeSave { x = kv.Key.X, y = kv.Key.Y, z = kv.Key.Z, axis = (int)kv.Key.Axis, kind = (int)kv.Value });
+            foreach (var kv in map.Edges)
+            {
+                var look = map.GetLook(kv.Key);
+                edges.Add(new EdgeSave
+                {
+                    x = kv.Key.X, y = kv.Key.Y, z = kv.Key.Z, axis = (int)kv.Key.Axis, kind = (int)kv.Value,
+                    style = look?.Style, finishA = look?.FinishA, finishB = look?.FinishB
+                });
+            }
             edges.Sort((a, b) => a.z != b.z ? a.z.CompareTo(b.z) : a.y != b.y ? a.y.CompareTo(b.y) : a.x != b.x ? a.x.CompareTo(b.x) : a.axis.CompareTo(b.axis));
             m.edges = edges.ToArray();
             var levelTiles = new List<LevelTileSave>();
             for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
             {
                 if (z == 0) continue;
-                foreach (var t in map.TilesOnLevel(z)) levelTiles.Add(new LevelTileSave { x = t.X, y = t.Y, z = z, floor = (int)map.GetFloor(t) });
+                foreach (var t in map.TilesOnLevel(z)) levelTiles.Add(new LevelTileSave { x = t.X, y = t.Y, z = z, floor = (int)map.GetFloor(t), zone = (int)map.GetZone(t) });
             }
             m.levelTiles = levelTiles.ToArray();
+            var styles = new List<TileStyleSave>();
+            for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
+                foreach (var t in map.TilesOnLevel(z))
+                {
+                    string fs = map.GetFloorStyle(t), rs = map.GetRoofStyle(t);
+                    if (fs != null || rs != null) styles.Add(new TileStyleSave { x = t.X, y = t.Y, z = z, floor = fs, roof = rs });
+                }
+            m.styles = styles.ToArray();
+            var roads = new List<RoadSave>();
+            foreach (var r in map.RoadTiles())
+                roads.Add(new RoadSave { x = r.pos.X, y = r.pos.Y, type = (int)r.type, cond = r.cond, natural = r.natural, trample = r.trample });
+            m.roads = roads.ToArray();
             data.map = m;
 
             // Eşyalar: önce yer eşyaları, sonra dekorlar (yüklerken üstündeki eşya hazır olsun).
@@ -109,7 +139,7 @@ namespace Thatchwick.Core.Save
                     {
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, z = it.Position.Z, rotation = it.Rotation,
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
-                        feedStock = it.FeedStock, stock = stock,
+                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId, toggled = it.Toggled,
                         watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays
                     });
                 }
@@ -177,10 +207,16 @@ namespace Thatchwick.Core.Save
                     list.Add(new AnimalSave
                     {
                         id = a.Id, species = a.Species.Id, x = a.Position.X, y = a.Position.Y, home = a.HomeItemId,
-                        fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays, friendship = a.Friendship
+                        fullness = a.Fullness, age = a.AgeDays, produce = a.ProduceProgress, hungryDays = a.HungryDays, friendship = a.Friendship,
+                        petCooldown = a.PetCooldownDays, saddle = a.Saddle, comfort = a.Comfort
                     });
                 }
                 data.animals = list.ToArray();
+                var grass = new List<GrassSave>();
+                foreach (var kv in animals.ExportGrass()) grass.Add(new GrassSave { x = kv.Key.X, y = kv.Key.Y, grass = kv.Value });
+                grass.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+                data.pasture = grass.ToArray();
+                data.animalsHeld = !animals.Released;
             }
             data.life = life?.Export();
             return data;
@@ -204,7 +240,7 @@ namespace Thatchwick.Core.Save
                 social = c.Needs.Get(NeedType.Social),
                 traits = new List<string>(c.TraitIds).ToArray(), branches = new List<string>(c.BranchIds).ToArray(),
                 extraMoodlets = moodlets.ToArray(),
-                id = c.Id, name = c.Name, isPlayer = c.IsPlayerControlled, sex = (int)c.Sex,
+                id = c.Id, name = c.Name, isPlayer = c.IsPlayerControlled, sex = (int)c.Sex, duty = (int)c.Duty,
                 x = c.Position.X, y = c.Position.Y, z = c.Position.Z,
                 ageDays = c.AgeDays, lifespanDays = c.LifespanDays,
                 dead = c.IsDead, deathCause = (int)c.CauseOfDeath,
@@ -220,15 +256,41 @@ namespace Thatchwick.Core.Save
                 birthFatherId = c.BirthFatherId ?? 0,
                 generation = c.Generation,
                 isVillager = c.IsVillager,
-                appearance = new AppearanceSave
+                appearance = CaptureAppearance(a, c.Genome),
+                birthSeason = c.BirthSeason, birthDay = c.BirthDayOfSeason,
+                likedFood = c.LikedFood, likedColor = c.LikedColor, likedHobby = c.LikedHobby, dislikedFood = c.DislikedFood,
+                freeMirror = c.FreeMirrorAvailable,
+                lastAccidentDay = c.LastAccidentDay,
+                injury = c.Injury == null ? null : new InjurySave
                 {
-                    build = (int)a.Build, heightPercent = a.HeightPercent,
-                    skin = a.SkinColor.ToHex(), eye = a.EyeColor.ToHex(),
-                    hairStyle = a.HairStyleId, hair = a.HairColor.ToHex(),
-                    facialHairStyle = a.FacialHairId, facialHair = a.FacialHairColor.ToHex(),
-                    faceMark = a.FaceMarkId, outfit = a.OutfitId, outfitColor = a.OutfitColor.ToHex(), trim = a.TrimColor.ToHex(),
-                    hat = a.HatId, hatColor = a.HatColor.ToHex()
+                    kind = c.Injury.Kind, zone = c.Injury.Zone, pattern = c.Injury.Pattern, reason = c.Injury.Reason,
+                    startDay = c.Injury.StartDay, healDay = c.Injury.HealDay, deep = c.Injury.Deep, treated = c.Injury.Treated
                 }
+            };
+        }
+
+        private static AppearanceSave CaptureAppearance(Appearance a, Genome genome)
+        {
+            var marks = new List<MarkSave>();
+            foreach (var m in a.Marks)
+                marks.Add(new MarkSave { kind = (int)m.Kind, id = m.Id, zone = m.Zone, color = m.Color.ToHex(), fade = m.Fade, source = (int)m.Source, day = m.Day, reason = m.Reason, hidden = m.Hidden });
+            return new AppearanceSave
+            {
+                build = (int)a.Build, heightPercent = 100,
+                skin = a.SkinColor.ToHex(), eye = a.EyeColor.ToHex(),
+                hairStyle = a.HairStyleId, hair = a.HairColor.ToHex(),
+                facialHairStyle = a.FacialHairId, facialHair = a.FacialHairColor.ToHex(),
+                faceMark = a.FaceMarkId, outfit = a.OutfitId, outfitColor = a.OutfitColor.ToHex(), trim = a.TrimColor.ToHex(),
+                hat = a.HatId, hatColor = a.HatColor.ToHex(),
+                frame = (int)a.Frame, faceShape = a.FaceShapeId, eyeShape = a.EyeShapeId,
+                eyeRight = a.EyeColorRight.HasValue ? a.EyeColorRight.Value.ToHex() : "",
+                brow = a.BrowId, browColor = a.BrowColor.ToHex(), browOwn = a.BrowFollowsHair ? 0 : 1,
+                nose = a.NoseId, mouth = a.MouthId, ears = a.EarsId,
+                bangs = a.BangsId, mustache = a.MustacheId, beard = a.BeardId,
+                pattern = a.PatternId, bottom = a.BottomId, shoes = a.ShoesId, outer = a.OuterId, outerColor = a.OuterColor.ToHex(),
+                voice = (int)a.Voice, voicePitch = a.VoicePitch, laugh = a.LaughId,
+                marks = marks.ToArray(),
+                genome = genome?.Export()
             };
         }
 
@@ -255,16 +317,27 @@ namespace Thatchwick.Core.Save
                 if (!content.Animals.TryGet(s.species, out var species)) { loaded.Warnings.Add($"Hayvan türü yok, atlandı: {s.species}"); continue; }
                 var home = loaded.World.GetItem(s.home);
                 if (home == null || home.Def.HousingKind != species.Housing) { loaded.Warnings.Add($"Hayvanın barınağı yok, atlandı: {s.species}"); continue; }
-                system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship);
+                system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship, s.petCooldown,
+                    s.saddle, s.comfort >= 0f ? s.comfort : 50f);
             }
+            var grass = new List<KeyValuePair<GridPos, float>>();
+            foreach (var g in loaded.Pasture) if (g != null) grass.Add(new KeyValuePair<GridPos, float>(new GridPos(g.x, g.y), g.grass));
+            system.RestoreGrass(grass);
+            system.Released = !loaded.AnimalsHeld;
         }
 
         /// <summary>Kaydı geri kurar. Sürüm yeniyse ya da harita yoksa InvalidOperationException.</summary>
+        private static string PartOrNull(ContentDatabase content, string id) =>
+            !string.IsNullOrEmpty(id) && content.Parts.Contains(id) ? id : null;
+
         public static LoadedGame Load(SaveData data, ContentDatabase content, TimeConfig timeConfig = null)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             SaveMigrator.Upgrade(data);
             if (data.map == null || data.map.width <= 0 || data.map.height <= 0) throw new InvalidOperationException("Kayıtta harita yok.");
+            // Bozuk ya da elle oynanmış dosya devasa bir dizi ayırtmasın.
+            if (data.map.width > MaxMapSide || data.map.height > MaxMapSide)
+                throw new InvalidOperationException($"Kayıttaki harita boyutu geçersiz: {data.map.width}x{data.map.height}.");
 
             var result = new LoadedGame();
             result.Clock = new GameClock(timeConfig);
@@ -291,31 +364,78 @@ namespace Thatchwick.Core.Save
                     if (!map.InBounds(p)) continue;
                     map.SetTile(p, true);
                     if (Enum.IsDefined(typeof(FloorType), lt.floor)) map.SetFloor(p, (FloorType)lt.floor);
+                    if (Enum.IsDefined(typeof(ZoneType), lt.zone)) map.SetZone(p, (ZoneType)lt.zone);
                 }
             if (m.edges != null)
                 foreach (var e in m.edges)
                 {
+                    if (e == null || !Enum.IsDefined(typeof(EdgeAxis), e.axis)) continue;
                     var edge = new Edge(e.x, e.y, (EdgeAxis)e.axis, e.z);
-                    if (map.EdgeInBounds(edge) && Enum.IsDefined(typeof(EdgeKind), e.kind)) map.SetEdge(edge, (EdgeKind)e.kind);
+                    if (!map.EdgeInBounds(edge) || !Enum.IsDefined(typeof(EdgeKind), e.kind) || e.kind == (int)EdgeKind.None) continue;
+                    map.SetEdge(edge, (EdgeKind)e.kind);
+                    // Bilinmeyen parça kimliği (içerikten kaldırılmış) varsayılana düşer.
+                    string style = PartOrNull(content, e.style), fa = PartOrNull(content, e.finishA), fb = PartOrNull(content, e.finishB);
+                    if (style != null || fa != null || fb != null)
+                        map.RestoreLook(edge, new EdgeLook { Style = style, FinishA = EdgeKinds.IsRoomBoundary((EdgeKind)e.kind) ? fa : null, FinishB = EdgeKinds.IsRoomBoundary((EdgeKind)e.kind) ? fb : null });
+                }
+            if (m.roads != null)
+                foreach (var r in m.roads)
+                {
+                    if (r == null || r.x < 0 || r.y < 0 || r.x >= map.Width || r.y >= map.Height) continue;
+                    var p = new GridPos(r.x, r.y);
+                    if (r.type > 0 && Enum.IsDefined(typeof(RoadType), (byte)r.type)) map.SetRoad(p, (RoadType)r.type, r.cond, r.natural);
+                    else map.SetTrample(p, r.trample);
+                }
+            if (m.styles != null)
+                foreach (var st in m.styles)
+                {
+                    if (st == null) continue;
+                    var p = new GridPos(st.x, st.y, st.z);
+                    if (!map.HasTile(p)) continue;
+                    var floor = map.GetFloor(p);
+                    if (st.floor != null && content.Parts.TryGet(st.floor, out var fp) && fp.Kind == BuildPartKind.Floor && fp.Base == floor)
+                        map.SetFloor(p, floor, st.floor);
+                    if (st.roof == GridMap.NoRoof || st.roof != null && content.Parts.TryGet(st.roof, out var rp) && rp.Kind == BuildPartKind.Roof)
+                        map.SetRoofStyle(p, st.roof);
                 }
 
             var world = new WorldState(map);
             result.World = world;
+            result.Seed = data.seed;
+            result.RngEpoch = Math.Max(0, data.rngEpoch);
+            // Yerine konamayan eşya kaybolmaz: envantere döner (bitki, yabani ve anıt hariç; onlar envanterde durmaz).
+            var returned = new List<ItemDef>();
             if (data.items != null)
                 foreach (var s in data.items)
                 {
                     if (s == null) continue;
                     if (!content.Items.TryGet(s.def, out var def)) { result.Warnings.Add($"Eşya tanımı yok, atlandı: {s.def}"); continue; }
                     int? parent = s.parentId >= 0 ? s.parentId : (int?)null;
-                    if (parent.HasValue && world.GetItem(parent.Value) == null) { result.Warnings.Add($"Dekorun yüzeyi yok, atlandı: {s.def}"); continue; }
+                    if (parent.HasValue && world.GetItem(parent.Value) == null)
+                    {
+                        result.Warnings.Add($"Dekorun yüzeyi yok, {(KeepsInInventory(def) ? "envantere alındı" : "atlandı")}: {s.def}");
+                        if (KeepsInInventory(def)) returned.Add(def);
+                        continue;
+                    }
                     var pos = new GridPos(s.x, s.y, s.z);
                     if (!parent.HasValue)
                     {
-                        var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation) : world.CanPlaceFloor(def, pos, s.rotation);
-                        if (!fits.Ok) { result.Warnings.Add($"Eşya yerine sığmadı, atlandı: {s.def} {pos}"); continue; }
+                        // Yükleme modu: yalnızca yapısal denetim. Oyun sırasında geçerli oluşmuş durumlar eşyayı düşürmez.
+                        var fits = def.Placement == ItemPlacement.Wall ? world.CanPlaceOnWall(def, pos, s.rotation)
+                            : def.IsRug ? world.CanPlaceRug(def, pos, s.rotation)
+                            : world.CanPlaceFloor(def, pos, s.rotation, null, false, restoring: true);
+                        if (!fits.Ok)
+                        {
+                            result.Warnings.Add($"Eşya yerine sığmadı, {(KeepsInInventory(def) ? "envantere alındı" : "atlandı")}: {s.def} {pos}");
+                            if (KeepsInInventory(def)) returned.Add(def);
+                            continue;
+                        }
                     }
                     var restored = world.RestoreItem(def, s.id, pos, s.rotation, parent, s.slotId, Math.Max(0, s.fuelDays), Math.Max(0, s.growthDays));
                     restored.FeedStock = Math.Max(0, s.feedStock);
+                    if (!string.IsNullOrEmpty(s.finish) && content.Parts.TryGet(s.finish, out var fin) && fin.Kind == BuildPartKind.ItemFinish && fin.Group == def.FinishGroup)
+                        restored.FinishId = s.finish;
+                        restored.Toggled = s.toggled;
                     restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));
                     if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(kv.key)) restored.SetStock(kv.key, kv.value);
                 }
@@ -329,6 +449,7 @@ namespace Thatchwick.Core.Save
                     if (!content.Items.Contains(kv.key)) { result.Warnings.Add($"Envanterde bilinmeyen eşya, atlandı: {kv.key}"); continue; }
                     house.AddItem(kv.key, kv.value);
                 }
+            foreach (var def in returned) house.AddItem(def.Id);
             result.Household = house;
 
             if (data.characters != null)
@@ -339,6 +460,8 @@ namespace Thatchwick.Core.Save
                         LifeRules.Recompute(loaded, content);
                         result.Characters.Add(loaded);
                     }
+
+            ReleaseWidowed(result.Characters);
 
             result.Account = new AccountProgress();
             if (data.account != null)
@@ -366,14 +489,32 @@ namespace Thatchwick.Core.Save
             }
             if (data.animals != null) result.Animals.AddRange(data.animals);
             if (data.soil != null) result.Soil.AddRange(data.soil);
+            if (data.pasture != null) result.Pasture.AddRange(data.pasture);
+            result.AnimalsHeld = data.animalsHeld;
             return result;
+        }
+
+        private static bool KeepsInInventory(ItemDef def) =>
+            def.Placement != ItemPlacement.Resource && !def.IsPlant && !def.IsForage && def.Category != "memorial";
+
+        // Eski kayıtları onarır: eşi ölmüş (ya da kayıtta olmayan) yaşayanın evlilik bağı çözülür, yeniden evlenebilir.
+        private static void ReleaseWidowed(List<Character> characters)
+        {
+            var byId = new Dictionary<int, Character>();
+            foreach (var c in characters) byId[c.Id] = c;
+            foreach (var c in characters)
+            {
+                if (c.IsDead || !c.SpouseId.HasValue) continue;
+                if (!byId.TryGetValue(c.SpouseId.Value, out var spouse) || spouse.IsDead) c.SpouseId = null;
+            }
         }
 
         private static Character LoadCharacter(CharacterSave s)
         {
             var c = new Character(s.id, string.IsNullOrWhiteSpace(s.name) ? "İsimsiz" : s.name, new GridPos(s.x, s.y, s.z), s.isPlayer)
             {
-                Sex = Enum.IsDefined(typeof(Sex), s.sex) ? (Sex)s.sex : Sex.Female
+                Sex = Enum.IsDefined(typeof(Sex), s.sex) ? (Sex)s.sex : Sex.Female,
+                Duty = Enum.IsDefined(typeof(DutyKind), s.duty) ? (DutyKind)s.duty : DutyKind.None
             };
             c.RestoreBiology(Math.Max(0, s.ageDays), s.lifespanDays > 0 ? s.lifespanDays : c.LifespanDays, s.dead,
                 Enum.IsDefined(typeof(DeathCause), s.deathCause) ? (DeathCause)s.deathCause : DeathCause.None,
@@ -399,7 +540,22 @@ namespace Thatchwick.Core.Save
             if (s.skills != null)
                 foreach (var kv in s.skills)
                     if (kv != null && Enum.TryParse(kv.key, out SkillType skill)) c.Skills.RestoreXp(skill, kv.value);
-            if (s.appearance != null) c.Appearance = LoadAppearance(s.appearance);
+            if (s.appearance != null)
+            {
+                c.Appearance = LoadAppearance(s.appearance);
+                c.Genome = Genome.Import(s.appearance.genome);   // eski kayıtta null: ilk doğumda görünüşten kurulur
+            }
+            c.BirthSeason = s.birthSeason;
+            c.BirthDayOfSeason = s.birthDay;
+            c.LikedFood = s.likedFood ?? ""; c.LikedColor = s.likedColor ?? ""; c.LikedHobby = s.likedHobby ?? ""; c.DislikedFood = s.dislikedFood ?? "";
+            c.FreeMirrorAvailable = s.freeMirror;
+            c.LastAccidentDay = s.lastAccidentDay;
+            if (s.injury != null && !string.IsNullOrEmpty(s.injury.kind))
+                c.Injury = new ActiveInjury
+                {
+                    Kind = s.injury.kind, Zone = s.injury.zone, Pattern = s.injury.pattern, Reason = s.injury.reason,
+                    StartDay = s.injury.startDay, HealDay = s.injury.healDay, Deep = s.injury.deep, Treated = s.injury.treated
+                };
             if (s.spouseId > 0) c.SpouseId = s.spouseId;
             if (s.motherId > 0) c.BirthMotherId = s.motherId;
             if (s.birthFatherId > 0) c.BirthFatherId = s.birthFatherId;
@@ -426,6 +582,50 @@ namespace Thatchwick.Core.Save
             if (Rgb.TryParseHex(s.trim, out c)) a.TrimColor = c;
             if (!string.IsNullOrEmpty(s.hat)) a.HatId = s.hat;
             if (Rgb.TryParseHex(s.hatColor, out c)) a.HatColor = c;
+            a.HeightPercent = 100;   // boy kaldırıldı (17.11.2026)
+
+            // Karakter yaratma 2.0 alanları; eski kayıtta yoktur.
+            if (Enum.IsDefined(typeof(BodyFrame), s.frame)) a.Frame = (BodyFrame)s.frame;
+            if (!string.IsNullOrEmpty(s.faceShape)) a.FaceShapeId = s.faceShape;
+            if (!string.IsNullOrEmpty(s.eyeShape)) a.EyeShapeId = s.eyeShape;
+            if (Rgb.TryParseHex(s.eyeRight, out c)) a.EyeColorRight = c;
+            if (!string.IsNullOrEmpty(s.brow)) a.BrowId = s.brow;
+            if (Rgb.TryParseHex(s.browColor, out c)) a.BrowColor = c;
+            a.BrowFollowsHair = s.browOwn == 0;
+            if (!string.IsNullOrEmpty(s.nose)) a.NoseId = s.nose;
+            if (!string.IsNullOrEmpty(s.mouth)) a.MouthId = s.mouth;
+            if (!string.IsNullOrEmpty(s.ears)) a.EarsId = s.ears;
+            if (!string.IsNullOrEmpty(s.bangs)) a.BangsId = s.bangs;
+            if (s.mustache != null || s.beard != null)
+            {
+                a.MustacheId = string.IsNullOrEmpty(s.mustache) ? Appearance.None : s.mustache;
+                a.BeardId = string.IsNullOrEmpty(s.beard) ? Appearance.None : s.beard;
+            }
+            if (!string.IsNullOrEmpty(s.pattern)) a.PatternId = s.pattern;
+            if (!string.IsNullOrEmpty(s.bottom)) a.BottomId = s.bottom;
+            if (!string.IsNullOrEmpty(s.shoes)) a.ShoesId = s.shoes;
+            if (!string.IsNullOrEmpty(s.outer)) a.OuterId = s.outer;
+            if (Rgb.TryParseHex(s.outerColor, out c)) a.OuterColor = c;
+            if (Enum.IsDefined(typeof(VoiceTimbre), s.voice)) a.Voice = (VoiceTimbre)s.voice;
+            a.VoicePitch = Math.Max(Appearance.MinPitch, Math.Min(Appearance.MaxPitch, s.voicePitch));
+            if (!string.IsNullOrEmpty(s.laugh)) a.LaughId = s.laugh;
+            if (s.marks != null)
+            {
+                // Yeni kayıt: işaretler dizisi doğrudan; eski tek yuvalı faceMark'ın yerine geçer.
+                a.Marks.Clear();
+                foreach (var m in s.marks)
+                {
+                    if (m == null || string.IsNullOrEmpty(m.id) || !Enum.IsDefined(typeof(MarkKind), m.kind)) continue;
+                    var mark = new Mark
+                    {
+                        Kind = (MarkKind)m.kind, Id = m.id, Zone = m.zone, Fade = Math.Max(0, Math.Min(2, m.fade)),
+                        Source = Enum.IsDefined(typeof(MarkSource), m.source) ? (MarkSource)m.source : MarkSource.Chosen,
+                        Day = m.day, Reason = m.reason, Hidden = m.hidden
+                    };
+                    if (Rgb.TryParseHex(m.color, out c)) mark.Color = c;
+                    a.Marks.Add(mark);
+                }
+            }
             return a;
         }
     }

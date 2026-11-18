@@ -13,8 +13,10 @@ namespace Thatchwick.Core.Life
         public int Score;
         public string StyleSet;      // uyumlu oda veren set; yoksa null
         public int StyleBonus;
-        /// <summary>Konfor puanı (eşya konforu). Stil seti uyumu ayrı moodlet'tir (RoomMoodSystem: Uyumlu ev).</summary>
-        public int Total => Score;
+        /// <summary>Yapının katkısı: zemin ve duvar kaplamalarının ortalama konforu (en çok 6).</summary>
+        public int Structure;
+        /// <summary>Konfor puanı (eşya konforu + yapı). Stil seti uyumu ayrı moodlet'tir (RoomMoodSystem: Uyumlu ev).</summary>
+        public int Total => Score + Structure;
     }
 
     /// <summary>
@@ -35,7 +37,13 @@ namespace Thatchwick.Core.Life
 
         public MoodService(WorldState world) { _world = world ?? throw new ArgumentNullException(nameof(world)); }
 
+        /// <summary>Yapı parçası kataloğu (zemin ve kaplama konforu için); null ise yapı katkısı yok.</summary>
+        public ContentDatabase Content { get; set; }
+
         /// <summary>İç mekân odasının konforu: eşya konfor toplamı + stil seti bonusu (aynı setten 4+ eşya).</summary>
+        /// <summary>Eşyanın odaya ek konforu (yadigâr). Null ise yok.</summary>
+        public Func<ItemInstance, int> ExtraComfort { get; set; }
+
         public RoomComfort ComfortOf(Room room)
         {
             var result = new RoomComfort();
@@ -45,13 +53,45 @@ namespace Thatchwick.Core.Life
             foreach (var item in _world.Items)
             {
                 if (!tiles.Contains(item.Position)) continue;
-                result.Score += item.Def.Comfort;
+                result.Score += item.Def.Comfort + (ExtraComfort != null ? ExtraComfort(item) : 0);
                 if (!string.IsNullOrEmpty(item.Def.StyleSet))
                     styleCount[item.Def.StyleSet] = (styleCount.TryGetValue(item.Def.StyleSet, out var n) ? n : 0) + 1;
             }
             foreach (var kv in styleCount)
                 if (kv.Value >= StyleSetMinItems) { result.StyleSet = kv.Key; result.StyleBonus = StyleSetBonus; break; }
+            result.Structure = StructureComfort(room);
             return result;
+        }
+
+        private static readonly GridPos[] Dirs = { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) };
+
+        // Zemin konforu (karoların ortalaması) + iç duvar yüzü kaplamalarının ortalaması; ikisi de 0-3.
+        private int StructureComfort(Room room)
+        {
+            if (Content == null || room.Tiles.Count == 0) return 0;
+            var map = _world.Map;
+            double floor = 0;
+            foreach (var t in room.Tiles)
+            {
+                var f = map.GetFloor(t);
+                if (f == FloorType.Grass) continue;
+                var style = map.GetFloorStyle(t);
+                var part = style != null && Content.Parts.TryGet(style, out var p) ? p : BuildParts.DefaultFloor(Content, f);
+                if (part != null) floor += part.Comfort;
+            }
+            floor /= room.Tiles.Count;
+            double walls = 0; int faces = 0;
+            foreach (var t in room.Tiles)
+                foreach (var d in Dirs)
+                {
+                    var e = GridMap.EdgeBetween(t, t + d);
+                    if (!map.EdgeInBounds(e) || map.GetEdge(e) != EdgeKind.Wall) continue;
+                    faces++;
+                    var fin = map.GetFinish(e, e.SideB == t);
+                    if (fin != null && Content.Parts.TryGet(fin, out var fp)) walls += fp.Comfort;
+                }
+            if (faces > 0) walls /= faces;
+            return Math.Min(6, (int)Math.Round(floor + walls));
         }
 
         public static void ComfortMood(int total, out int value, out string text)

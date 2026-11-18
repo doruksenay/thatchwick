@@ -228,7 +228,7 @@ namespace Thatchwick.Core.Tests
             var pickles = barrel.Interactions.Where(i => i.Id.StartsWith("pickle_")).ToList();
             Assert.True(pickles.Count >= 6);
             foreach (var p in barrel.Interactions)
-                Assert.Contains(p.AllConsumed(), c => c.ItemId == "item.salt");   // fıçıdaki her iş tuz harcar
+                Assert.Contains(p.AllConsumed(), c => c.ItemId == "item.salt" || c.ItemId == "item.vinegar");   // fıçıdaki her iş tuz ya da sirke harcar
             Assert.True(db.Items.Get("item.drying_rack").Interactions.Count(i => i.Id.StartsWith("dry_")) >= 6);
             Assert.True(db.Items.Get("item.smokehouse").Interactions.Count >= 3);
         }

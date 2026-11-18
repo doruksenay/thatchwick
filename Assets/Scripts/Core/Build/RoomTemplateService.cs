@@ -143,6 +143,8 @@ namespace Thatchwick.Core.Build
                 if (!_content.Items.TryGet(ti.ItemId, out var def)) { q.Problem = $"Eşya '{ti.ItemId}' bulunamadı."; return q; }
                 var pos = new GridPos(origin.X + ti.X, origin.Y + ti.Y);
                 var check = _world.CanPlaceFloor(def, pos, ti.Rotation);
+                // Şablon odayı kendisi kapatır: kapalı oda isteyen eşya (folluk, ahır bölmesi) kurulunca içeride kalır.
+                if (!check.Ok && def.RequiresIndoor && check.Reason == WorldState.IndoorOnly) check = PlacementCheck.Success;
                 if (!check.Ok) { q.Problem = $"{def.DisplayName}: {check.Reason}"; return q; }
                 var (fw, fh) = Footprint.Dimensions(def.Width, def.Height, ti.Rotation);
                 for (int dy = 0; dy < fh; dy++)

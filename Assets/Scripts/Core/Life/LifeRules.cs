@@ -101,7 +101,7 @@ namespace Thatchwick.Core.Life
             reason = null;
             if (c.IsDead) { reason = "Ölü karakter dal seçemez."; return false; }
             if (c.HasBranch(b.Id)) { reason = "Bu dal zaten seçildi."; return false; }
-            if (c.Skills.GetLevel(b.Skill) < b.Level) { reason = $"{b.Skill} seviye {b.Level} gerekir."; return false; }
+            if (c.Skills.GetLevel(b.Skill) < b.Level) { reason = $"{Thatchwick.Core.Jobs.JobRunner.SkillName(b.Skill)} seviye {b.Level} gerekir."; return false; }
             if (b.Requires != null && !c.HasBranch(b.Requires)) { reason = "Önce ilk kademe dal seçilmeli."; return false; }
             foreach (var id in c.BranchIds)
                 if (db.Branches.TryGet(id, out var taken) && taken.Skill == b.Skill && taken.Level == b.Level)
@@ -119,16 +119,7 @@ namespace Thatchwick.Core.Life
             return true;
         }
 
-        public static string TradeName(SkillType skill)
-        {
-            switch (skill)
-            {
-                case SkillType.Farming: return "Çiftçi";
-                case SkillType.Woodcutting: return "Oduncu";
-                case SkillType.Cooking: return "Aşçı";
-                default: return "Marangoz";
-            }
-        }
+        public static string TradeName(SkillType skill) => SkillNames.TradeName(skill);
 
         /// <summary>Tek karakterin mesleği: en yüksek kademeli dalın becerisi; dal yoksa null.</summary>
         public static string TradeOf(ContentDatabase db, Character c)

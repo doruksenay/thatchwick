@@ -89,12 +89,16 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
-        public void KapaliBaslangicVeyaHedef_YolYok()
+        public void KapaliHedef_YolYok_KapaliBaslangictanCikilir()
         {
             var map = new GridMap(5, 5);
             map.SetBlocked(new GridPos(4, 4), true);
             Assert.Null(Pathfinder.FindPath(map, new GridPos(0, 0), new GridPos(4, 4)));
-            Assert.Null(Pathfinder.FindPath(map, new GridPos(4, 4), new GridPos(0, 0)));
+            // Kapalı karoda duran (üstüne eşya konmuş) karakter dışarı yürüyebilir; yoksa kalıcı olarak hapsolurdu.
+            var escape = Pathfinder.FindPath(map, new GridPos(4, 4), new GridPos(0, 0));
+            Assert.NotNull(escape);
+            Assert.Equal(new GridPos(0, 0), escape![escape.Count - 1]);
+            Assert.NotNull(Pathfinder.FindPathToAny(map, new GridPos(4, 4), new List<GridPos> { new GridPos(0, 0) }));
             Assert.Null(Pathfinder.FindPath(map, new GridPos(0, 0), new GridPos(9, 9)));
         }
 

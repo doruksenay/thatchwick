@@ -151,6 +151,20 @@ namespace Thatchwick.Game
             {
                 int tier = _life.Tools.Tier(tool.Id);
                 GUILayout.Label($"{tool.DisplayName}: {_life.Tools.NameOf(tool.Id)} · hız x{_life.Tools.SpeedFor(tool.Id):0.0#} ({tier}/{tool.Tiers.Count})");
+                var heir = _life.Legacy.ToolHeirloom(tool.Id);
+                if (heir != null)
+                    GUILayout.Label($"   ✦ {heir.DisplayName}: hız ve XP +%{Legacy.BonusOf(heir) * 100:0} ({heir.Level}. basamak)");
+                else
+                {
+                    string hw = _life.Legacy.CanMakeToolHeirloom(tool.Id, _life.Tools.NameOf(tool.Id));
+                    GUI.enabled = hw == null;
+                    if (GUILayout.Button(new GUIContent($"Yadigâr yap ({Legacy.ToolHeirloomCost} mühür)", hw ?? "Hız ve XP +%5; her nesil +%5, en çok %25"), GUILayout.Width(170f)))
+                    {
+                        _life.Legacy.MakeToolHeirloom(tool.Id, _life.Tools.NameOf(tool.Id), _commander(), _life.Clock.TotalDays, out var hm);
+                        _status = hm;
+                    }
+                    GUI.enabled = true;
+                }
                 var next = _life.Tools.Next(tool.Id);
                 if (next == null) continue;
                 string why = _life.Tools.CanUpgrade(tool.Id);
@@ -213,6 +227,21 @@ namespace Thatchwick.Game
             GUILayout.Label("— Baş karakterler —");
             foreach (var h in _dynasty.History)
                 GUILayout.Label($"{h.Generation}. nesil {h.Name}{(string.IsNullOrEmpty(h.Trade) ? "" : $" ({h.Trade})")} · gün {h.StartDay:0}{(h.EndDay >= 0 ? $"–{h.EndDay:0}" : "–")}");
+            var lg = _life.Legacy;
+            int? founder = _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
+            GUILayout.Label($"— Soy Mührü: {lg.Seals} —");
+            for (int i = Math.Max(0, lg.Ledger.Count - 6); i < lg.Ledger.Count; i++)
+            {
+                var e = lg.Ledger[i];
+                GUILayout.Label($"  {(e.Amount > 0 ? "+" : "")}{e.Amount} · gün {e.Day:0} · {e.Note}");
+            }
+            GUILayout.Label("— Yadigârlar —");
+            if (lg.Heirlooms.Count == 0) GUILayout.Label("Henüz yok. Yapı modunda bir eşyayı ya da demircide bir aleti yadigâr yap.");
+            foreach (var h in lg.Heirlooms)
+                GUILayout.Label($"  ✦ {h.DisplayName} · {h.Level}. basamak · +%{Legacy.BonusOf(h) * 100:0}{(h.Kind == HeirloomKind.Item ? $", konfor +{Legacy.ComfortOf(h)}" : "")}");
+            GUILayout.Label($"— Köydeki soy: {(founder.HasValue ? lg.LivingDescendantsOutside(founder.Value) : 0)} kişi —");
+            foreach (var m in lg.MarriedOut)
+                GUILayout.Label($"  {m.Name} → {m.SpouseName} hanesi (gün {m.Day:0})");
             GUILayout.Label("— Mezarlık —");
             if (_life.Graves.Graves.Count == 0) GUILayout.Label("Henüz kimse yok.");
             foreach (var g in _life.Graves.Graves)

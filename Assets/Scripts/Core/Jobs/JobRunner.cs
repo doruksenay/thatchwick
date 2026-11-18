@@ -15,6 +15,10 @@ namespace Thatchwick.Core.Jobs
     {
         /// <summary>Yürüme hızı: oyun günü başına karo (3 karo/sn gerçek zaman, 1x hızda).</summary>
         public const double TilesPerGameDay = 1080.0;
+        /// <summary>Otonomi puanında her etkileşime eklenen sabit süre (karar, yanaşma): küçük ama sık dolduranı cezalandırır.</summary>
+        public const double AutonomyOverheadDays = 0.03;
+        /// <summary>İnsanın bir adımda çime/yola bıraktığı iz (inek 3, koyun 1).</summary>
+        public const float HumanTrample = 0.2f;
 
         /// <summary>Otonom karakter, ihtiyacı bu değerin altına düşünce kendiliğinden iş arar.</summary>
         public const float AutonomyThreshold = 30f;
@@ -39,6 +43,11 @@ namespace Thatchwick.Core.Jobs
         private double _useProgress;
         private double _elapsedDays;
         private readonly Dictionary<int, double> _unreachableUntil = new Dictionary<int, double>();
+        // Ulaşılamayan kişi (bebek, sohbet arkadaşı) için de aynı bekleme: otonomi her karede yeniden denemesin.
+        private readonly Dictionary<int, double> _unreachablePersonUntil = new Dictionary<int, double>();
+        private static readonly NeedType[] AllNeeds = (NeedType[])Enum.GetValues(typeof(NeedType));
+        /// <summary>Otonomi eşya seçerken başka kattaki eşyaya eklenen uzaklık (karo): önce kendi katındaki seçilsin.</summary>
+        public const int OtherLevelDistance = 12;
         private readonly List<NeedType> _needOrder = new List<NeedType>();
 
         public JobQueue Queue { get; } = new JobQueue();
@@ -60,6 +69,37 @@ namespace Thatchwick.Core.Jobs
         /// Özellik, dal ve ruh hali çarpanları karakterden okunur.
         /// </summary>
         public Func<Character, InteractionDef, double> SpeedProvider { get; set; }
+
+        /// <summary>Eşyanın ya da aletin işe kattığı çarpan (yadigâr): hız, XP ve ihtiyaç doldurma. Null ise etkisiz.</summary>
+        public Func<ItemInstance, InteractionDef, ItemBonus> ItemBonus { get; set; }
+
+        private ItemBonus BonusOf(ItemInstance item, InteractionDef interaction) =>
+            ItemBonus != null ? ItemBonus(item, interaction) : Jobs.ItemBonus.None;
+
+        /// <summary>Hayvan işleri (sev, tımar, eyer, bin). Yoksa bu işler başlamaz.</summary>
+        public IAnimalEffects Animals { get; set; }
+
+        /// <summary>Karo işleri (çapala). Yoksa bu işler başlamaz.</summary>
+        public ITileWork TileWork { get; set; }
+
+        /// <summary>Bir etkileşim başarıyla bitince (kaza sistemi, istatistik). Etkiler uygulandıktan sonra çağrılır.</summary>
+        public event Action<Character, InteractionDef> InteractionCompleted;
+
+        /// <summary>Yürüme hızı çarpanı (ata binince ~2); yoksa 1.</summary>
+        public Func<double> WalkSpeed { get; set; }
+
+        /// <summary>
+        /// Görev işi: ihtiyaçlar iyiyken karakterin görevine (tarla, hayvanlar) göre yapılacak iş; yoksa null.
+        /// Yalnızca otonom karakterde, kuyruk boşken sorulur.
+        /// </summary>
+        public Func<Character, Job> DutyProvider { get; set; }
+
+        /// <summary>Görev işlerinin hız çarpanı (kâhyalık); null ise 1.</summary>
+        public Func<double> DutySpeed { get; set; }
+
+        /// <summary>Görev işi bulunamayınca (ya da başarısız olunca) bu kadar oyun günü yeniden sorulmaz.</summary>
+        public const double DutyIdleDays = 0.03;
+        private double _dutyIdleUntil;
 
         /// <summary>Şu an yürütülen işin nedeni (otonom ihtiyaç); oyuncu komutunda ya da boştayken null.</summary>
         public NeedType? CurrentReason => Queue.Current?.Reason;
@@ -142,6 +182,8 @@ namespace Thatchwick.Core.Jobs
                 case JobKind.MoveTo: return AdvanceMove(job, budget);
                 case JobKind.UseItem: return AdvanceUse(job, budget);
                 case JobKind.Social: return AdvanceSocial(job, budget);
+                case JobKind.Animal: return AdvanceAnimal(job, budget);
+                case JobKind.Tile: return AdvanceTile(job, budget);
                 default:
                     Fail($"Bilinmeyen iş türü: {job.Kind}");
                     return 0;
@@ -182,7 +224,12 @@ namespace Thatchwick.Core.Jobs
                     var goals = new HashSet<GridPos> { target.Position };
                     foreach (var o in AdjacentOffsets) goals.Add(target.Position + o);
                     _path = Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
-                    if (_path == null) { Fail($"{target.Name} yanına gidilemiyor."); return 0; }
+                    if (_path == null)
+                    {
+                        _unreachablePersonUntil[target.Id] = _elapsedDays + UnreachableCooldownDays;
+                        Fail($"{target.Name} yanına gidilemiyor.");
+                        return 0;
+                    }
                     _pathIndex = 1;
                     _stepFraction = 0;
                 }
@@ -204,6 +251,96 @@ namespace Thatchwick.Core.Jobs
             {
                 Finish();
                 Social.Apply(_character, target, job.Action);
+                return used + remaining;
+            }
+            _useProgress += available;
+            return used + available;
+        }
+
+        private double AdvanceAnimal(Job job, double budget)
+        {
+            if (Animals == null) { Fail("Bu iş şu an yapılamaz."); return 0; }
+            var pos = Animals.PositionOf(job.AnimalId);
+            if (pos == null) { Fail("Hayvan bulunamadı."); return 0; }
+            var target = pos.Value;
+
+            if (!_using)
+            {
+                string blocked = Animals.CanDo(_character, job.AnimalId, job.AnimalAction);
+                if (blocked != null) { Fail(blocked); return 0; }
+                // Hayvan dolaşır: hedef yer değiştirdiyse yol yenilenir (sohbetteki gibi).
+                if (_path != null && _path.Count > 0 && !IsNear(_path[_path.Count - 1], target)) _path = null;
+                if (_path == null)
+                {
+                    var goals = new HashSet<GridPos> { target };
+                    foreach (var o in AdjacentOffsets) goals.Add(target + o);
+                    _path = Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
+                    if (_path == null) { Fail("Hayvanın yanına gidilemiyor."); return 0; }
+                    _pathIndex = 1;
+                    _stepFraction = 0;
+                }
+            }
+
+            double used = 0;
+            if (!_using)
+            {
+                used = Walk(budget);
+                if (_path == null) return used;
+                if (_pathIndex < _path.Count) return used;
+                if (!IsNear(_character.Position, target)) { _path = null; return used; }
+                _using = true;
+            }
+
+            double remaining = Animals.Duration(job.AnimalAction) - _useProgress;
+            double available = budget - used;
+            if (available >= remaining)
+            {
+                string gone = Animals.CanDo(_character, job.AnimalId, job.AnimalAction);
+                if (gone != null) { Fail(gone); return used + remaining; }
+                Finish();
+                Animals.Apply(_character, job.AnimalId, job.AnimalAction);
+                return used + remaining;
+            }
+            _useProgress += available;
+            return used + available;
+        }
+
+        private double AdvanceTile(Job job, double budget)
+        {
+            if (TileWork == null) { Fail("Bu iş şu an yapılamaz."); return 0; }
+            if (!_using)
+            {
+                string blocked = TileWork.CanDo(_character, job.Target, job.TileAction);
+                if (blocked != null) { Fail(blocked); return 0; }
+                if (_path == null)
+                {
+                    var goals = new HashSet<GridPos>();
+                    if (_world.Map.IsWalkable(job.Target)) goals.Add(job.Target);
+                    foreach (var o in AdjacentOffsets) if (_world.Map.IsWalkable(job.Target + o)) goals.Add(job.Target + o);
+                    _path = goals.Count == 0 ? null : Pathfinder.FindPathToAny(_world.Map, _character.Position, goals);
+                    if (_path == null) { Fail("Oraya ulaşılamıyor."); return 0; }
+                    _pathIndex = 1;
+                    _stepFraction = 0;
+                }
+            }
+
+            double used = 0;
+            if (!_using)
+            {
+                used = Walk(budget);
+                if (_path == null) return used;
+                if (_pathIndex < _path.Count) return used;
+                _using = true;
+            }
+
+            double remaining = TileWork.Duration(_character, job.TileAction) - _useProgress;
+            double available = budget - used;
+            if (available >= remaining)
+            {
+                string gone = TileWork.CanDo(_character, job.Target, job.TileAction);
+                if (gone != null) { Fail(gone); return used + remaining; }
+                Finish();
+                TileWork.Apply(_character, job.Target, job.TileAction);
                 return used + remaining;
             }
             _useProgress += available;
@@ -247,20 +384,35 @@ namespace Thatchwick.Core.Jobs
                 _using = true;
             }
 
-            double remaining = EffectiveDuration(interaction) - _useProgress;
+            double remaining = EffectiveDuration(interaction, item) - _useProgress;
             double available = budget - used;
             if (available >= remaining)
             {
-                if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, interaction.Restore);
+                // Rezervasyon yok: malzeme bu arada başkasınca harcanmış olabilir. Koşul bozulduysa iş boşa gider;
+                // karşılıksız doyma, XP ya da moodlet verilmez.
+                if (interaction.HasEffects)
+                {
+                    string gone = Effects == null ? "Bu iş şu an yapılamaz." : Effects.CanStart(_character, item, interaction);
+                    if (gone != null) { Fail(gone); return used + remaining; }
+                }
+                // Müzik: çalgı çalmak seviye başına %5 daha çok keyif verir.
+                float restore = interaction.Skill == SkillType.Music
+                    ? (float)(interaction.Restore * SkillNames.Factor(_character.Skills.GetLevel(SkillType.Music), 0.05)) : interaction.Restore;
+                var bonus = BonusOf(item, interaction);
+                if (bonus.Restore != 1.0) restore = (float)(restore * bonus.Restore);
+                if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, restore);
                 foreach (var extra in interaction.ExtraRestore) _character.Needs.Restore(extra.Need, extra.Amount);
+                // Öğün: açlık doyuran ve yiyecek harcayan iş sofra çeşidine sayılır.
+                if (interaction.Need == NeedType.Hunger && interaction.RestoresNeed && interaction.ConsumeItem != null) _character.RecordMeal(interaction.ConsumeItem);
                 if (interaction.GivesMood)
                     _character.AddMoodlet(interaction.MoodId, interaction.MoodText ?? interaction.DisplayName, interaction.MoodValue, interaction.MoodDays);
                 if (interaction.Skill.HasValue && interaction.SkillXp > 0f)
-                    _character.GainSkillXp(interaction.Skill.Value, interaction.SkillXp);
+                    _character.GainSkillXp(interaction.Skill.Value, interaction.SkillXp * bonus.Xp);
                 if (interaction.Moodlet != null) _character.AddMoodlet(interaction.Moodlet);
                 Finish();
                 // Etkiler en sonda: eşyayı kaldırabilir (kesilen ağaç) ve dünyayı değiştirir.
                 if (interaction.HasEffects) Effects?.Apply(_character, item, interaction);
+                InteractionCompleted?.Invoke(_character, interaction);
                 return used + remaining;
             }
 
@@ -272,6 +424,8 @@ namespace Thatchwick.Core.Jobs
         private double Walk(double budget)
         {
             double used = 0;
+            // Ata binen daha hızlı gider (merdivende de; basitlik için).
+            double tilesPerDay = TilesPerGameDay * Math.Max(0.1, WalkSpeed?.Invoke() ?? 1.0);
             while (_pathIndex < _path.Count && budget - used > 0)
             {
                 // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.
@@ -283,7 +437,9 @@ namespace Thatchwick.Core.Jobs
                 }
                 // Merdiven adımı daha uzundur (yatay mesafe + 1 karo).
                 int span = GridMap.StepSpan(_character.Position, _path[_pathIndex]);
-                double needed = (1.0 - _stepFraction) * span / TilesPerGameDay;
+                // Yol hızlandırır (çim 1, patika 1,6, kaldırım 2): adımın iki ucunun ortalaması.
+                double stepTiles = tilesPerDay * _world.Map.StepSpeed(_character.Position, _path[_pathIndex]);
+                double needed = (1.0 - _stepFraction) * span / stepTiles;
                 double available = budget - used;
                 if (available >= needed)
                 {
@@ -291,10 +447,11 @@ namespace Thatchwick.Core.Jobs
                     _character.Position = _path[_pathIndex];
                     _pathIndex++;
                     _stepFraction = 0;
+                    _world.Map.Trample(_character.Position, HumanTrample);
                 }
                 else
                 {
-                    _stepFraction += available * TilesPerGameDay / span;
+                    _stepFraction += available * stepTiles / span;
                     used += available;
                 }
             }
@@ -330,19 +487,21 @@ namespace Thatchwick.Core.Jobs
         }
 
         /// <summary>İş etkileşimi mi (beceri, ürün ya da eşya kaldırma)? İhtiyaç etkileşimleri hız çarpanından etkilenmez.</summary>
-        public static bool IsWork(InteractionDef i) => i.Skill.HasValue || i.Produce.Count > 0 || i.RemovesItem;
+        public static bool IsWork(InteractionDef i) => (i.Skill.HasValue && i.Skill != SkillType.Music) || i.Produce.Count > 0 || i.RemovesItem;
 
         /// <summary>İş hızı: özellik/dal × ruh hali × (alet, hava...). İhtiyaç etkileşiminde 1.</summary>
-        public double SpeedFactor(InteractionDef interaction)
+        public double SpeedFactor(InteractionDef interaction, ItemInstance item = null)
         {
             if (!IsWork(interaction)) return 1.0;
             double f = _character.Modifiers.WorkSpeed * (interaction.Skill.HasValue ? _character.WorkSpeed(interaction.Skill.Value) : 1.0);
             if (SpeedProvider != null) f *= SpeedProvider(_character, interaction);
+            f *= BonusOf(item, interaction).Speed;
+            if (DutySpeed != null && Queue.Current != null && Queue.Current.IsDuty) f *= DutySpeed();
             return f < 0.1 ? 0.1 : f;
         }
 
         /// <summary>Beceri seviyesi işi hızlandırır: seviye başına %5, en çok yarı süre. Hız çarpanı bölünür.</summary>
-        public double EffectiveDuration(InteractionDef interaction)
+        public double EffectiveDuration(InteractionDef interaction, ItemInstance item = null)
         {
             double duration = interaction.DurationDays;
             if (interaction.Skill.HasValue)
@@ -350,7 +509,7 @@ namespace Thatchwick.Core.Jobs
                 int level = _character.Skills.GetLevel(interaction.Skill.Value);
                 duration *= Math.Max(0.5, 1.0 - 0.05 * (level - 1));
             }
-            return duration / SpeedFactor(interaction);
+            return duration / SpeedFactor(interaction, item);
         }
 
         /// <summary>Etkileşime şu an başlanamıyorsa nedeni (etkileşim menüsünde gri seçenek); başlanabiliyorsa null.</summary>
@@ -373,16 +532,7 @@ namespace Thatchwick.Core.Jobs
             return null;
         }
 
-        public static string SkillName(SkillType skill)
-        {
-            switch (skill)
-            {
-                case SkillType.Farming: return "Çiftçilik";
-                case SkillType.Woodcutting: return "Odunculuk";
-                case SkillType.Cooking: return "Yemek";
-                default: return "Marangozluk";
-            }
-        }
+        public static string SkillName(SkillType skill) => SkillNames.Name(skill);
 
         private static bool IsUnlitHeatSource(ItemInstance item, InteractionDef interaction) =>
             interaction.Need == NeedType.Warmth && item.Def.HeatOutput > 0f && !item.IsLit;
@@ -402,7 +552,7 @@ namespace Thatchwick.Core.Jobs
             if (Social != null && !_character.Needs.AnyCritical())
             {
                 var dependent = Social.DependentNeedingCare(_character);
-                if (dependent != null && Social.CanDo(_character, dependent, SocialAction.Feed) == null)
+                if (dependent != null && !PersonOnCooldown(dependent.Id) && Social.CanDo(_character, dependent, SocialAction.Feed) == null)
                 {
                     ResetJobState();
                     return Queue.TryEnqueue(Job.Social(dependent.Id, SocialAction.Feed).WithReason(NeedType.Hunger));
@@ -410,9 +560,9 @@ namespace Thatchwick.Core.Jobs
             }
 
             _needOrder.Clear();
-            foreach (NeedType need in Enum.GetValues(typeof(NeedType)))
+            foreach (var need in AllNeeds)
                 if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
-            if (_needOrder.Count == 0) return false;
+            if (_needOrder.Count == 0) return TryStartDuty();
             _needOrder.Sort((a, b) =>
             {
                 int ka = NeedKinds.IsSurvival(a) ? 0 : 1, kb = NeedKinds.IsSurvival(b) ? 0 : 1;
@@ -428,16 +578,29 @@ namespace Thatchwick.Core.Jobs
             return false;
         }
 
+        // Görev: ihtiyaçları eşiğin üstündeyken görevine göre (tarla, hayvanlar) bir iş alır. Bulamazsa bir süre sormaz.
+        private bool TryStartDuty()
+        {
+            if (DutyProvider == null || _character.Duty == DutyKind.None || _elapsedDays < _dutyIdleUntil) return false;
+            var job = DutyProvider(_character);
+            if (job == null) { _dutyIdleUntil = _elapsedDays + DutyIdleDays; return false; }
+            ResetJobState();
+            return Queue.TryEnqueue(job.AsDuty());
+        }
+
         private bool TryStartChat()
         {
             if (Social == null) return false;
             var friend = Social.FriendFor(_character);
-            if (friend == null || Social.CanDo(_character, friend, SocialAction.Chat) != null) return false;
+            if (friend == null || PersonOnCooldown(friend.Id) || Social.CanDo(_character, friend, SocialAction.Chat) != null) return false;
             ResetJobState();
             return Queue.TryEnqueue(Job.Social(friend.Id, SocialAction.Chat).WithReason(NeedType.Social));
         }
 
-        // İhtiyacı en iyi doyuracak eşyayı seçer: önce en çok doyuran, sonra en yakın.
+        private bool PersonOnCooldown(int characterId) =>
+            _unreachablePersonUntil.TryGetValue(characterId, out var until) && until > _elapsedDays;
+
+        // İhtiyacı en iyi doyuracak eşyayı seçer: birim zamanda en çok dolduran (yürüme ve iş süresi dahil).
         private bool TryStartNeedItem(NeedType need)
         {
             FindBestFor(need, out var bestItem, out var bestInteraction);
@@ -451,8 +614,9 @@ namespace Thatchwick.Core.Jobs
         {
             bestItem = null;
             bestInteraction = null;
-            float bestRestore = 0f;
+            double bestScore = double.MinValue;
             int bestDistance = int.MaxValue;
+            float missing = Math.Max(1f, 100f - _character.Needs.Get(need));
             foreach (var item in _world.Items)
             {
                 foreach (var interaction in item.Def.Interactions)
@@ -471,16 +635,20 @@ namespace Thatchwick.Core.Jobs
 
                     int distance = Math.Max(
                         Math.Abs(item.Position.X - _character.Position.X),
-                        Math.Abs(item.Position.Y - _character.Position.Y));
+                        Math.Abs(item.Position.Y - _character.Position.Y))
+                        + Math.Abs(item.Position.Z - _character.Position.Z) * OtherLevelDistance;
 
+                    // Eksik olandan fazlası boşa gider; yürüme ve iş süresine ek sabit bir hazırlık payı, sık sık küçük
+                    // dolduran eşyayı (tabure) uzun dolduranın (yatak) önüne geçirmez.
+                    double score = Math.Min(restore, missing) / (EffectiveDuration(interaction, item) + distance / TilesPerGameDay + AutonomyOverheadDays);
                     bool better = bestInteraction == null
-                        || restore > bestRestore
-                        || (restore == bestRestore && distance < bestDistance);
+                        || score > bestScore + 1e-9
+                        || (Math.Abs(score - bestScore) <= 1e-9 && distance < bestDistance);
                     if (better)
                     {
                         bestItem = item;
                         bestInteraction = interaction;
-                        bestRestore = restore;
+                        bestScore = score;
                         bestDistance = distance;
                     }
                 }
@@ -496,6 +664,8 @@ namespace Thatchwick.Core.Jobs
 
         private void Fail(string reason)
         {
+            // Başarısız görev işi hemen yeniden seçilip döngüye girmesin.
+            if (Queue.Current != null && Queue.Current.IsDuty) _dutyIdleUntil = _elapsedDays + DutyIdleDays;
             LastFailure = reason;
             Queue.RemoveCurrent();
             ResetJobState();

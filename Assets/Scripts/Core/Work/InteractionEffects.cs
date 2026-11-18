@@ -30,6 +30,18 @@ namespace Thatchwick.Core.Work
         /// <summary>Hayvan sistemi (barınakta hayvan var mı); null ise hayvan gerektiren işler başlamaz.</summary>
         public AnimalSystem Animals { get; set; }
 
+        /// <summary>Karo sıcaklığı (buz kesmek için don); null ise don yok sayılır.</summary>
+        public Func<GridPos, float> TemperatureAt { get; set; }
+
+        /// <summary>Hane üyeleri (ders vermek için); null ise ders verilemez.</summary>
+        public Func<IEnumerable<Character>> Household { get; set; }
+
+        /// <summary>Şu anki mevsim (balık türleri); null ise her mevsimin ürünü çıkabilir.</summary>
+        public Func<Time.Season> Season { get; set; }
+
+        /// <summary>Buzluk en çok bu kadar günlük buz alır.</summary>
+        public const float MaxIceDays = 30f;
+
         /// <summary>Çiftçilik sistemi (toprak verimi, kalite); null ise hasat kalitesiz ve toprak yorulmaz.</summary>
         public PlantSystem Plants { get; set; }
 
@@ -59,6 +71,9 @@ namespace Thatchwick.Core.Work
             }
             if (interaction.RequiresAnimal && (Animals == null || Animals.Residents(item.Id) == 0)) return "Burada hayvan yok.";
             if (interaction.Collect && item.StockTotal == 0) return "Toplanacak ürün yok.";
+            if (interaction.Teach && Pupils(character).Count == 0) return "Ders verilecek çocuk ya da genç yok.";
+            if (interaction.RequiresFrost && (TemperatureAt == null || TemperatureAt(item.Position) > 0f)) return "Buz yok: don olunca (kışın) kesilir.";
+            if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return "Buzluk dolu.";
             if (interaction.Water)
             {
                 if (!item.IsPlant || !item.Def.IsCrop) return "Bu sulanacak bir ekin değil.";
@@ -92,20 +107,39 @@ namespace Thatchwick.Core.Work
                 for (int k = 0; k < c.Count; k++) _house.TryTakeItem(c.ItemId);
 
             if (interaction.AddFeed > 0) AnimalSystem.AddFeed(item, interaction.AddFeed);
+            if (interaction.AddIce > 0f) item.FuelDays = Math.Min(MaxIceDays, item.FuelDays + interaction.AddIce);
 
             var farmNotes = new List<string>();
+            int husbandry = character.Skills.GetLevel(SkillType.AnimalHusbandry);
+            if (interaction.BefriendAnimals > 0f && Animals != null)
+            {
+                int n = Animals.Befriend(item.Id, interaction.BefriendAnimals * AnimalSystem.HusbandryFactor(husbandry));
+                if (n > 0) farmNotes.Add($"{n} hayvan merhemlendi");
+            }
             if (interaction.PetsAnimals && Animals != null)
             {
-                int petted = Animals.PetResidents(item.Id);
+                int petted = Animals.PetResidents(item.Id, husbandry);
                 if (petted > 0) farmNotes.Add($"{petted} hayvan sevildi");
             }
             string slaughterId = null; int slaughterCount = 0;
+            string hideId = null; int hideCount = 0;
             if (interaction.Slaughter && Animals != null && Animals.Slaughter(item.Id, out var killed, out slaughterId, out slaughterCount))
+            {
                 farmNotes.Add($"{killed.Species.DisplayName} kesildi");
+                hideId = killed.Species.Hide;            // büyükbaş ve küçükbaş deri de verir (tabakhane → saraç)
+                hideCount = hideId != null ? Math.Max(1, killed.Species.HideCount) : 0;
+            }
             if (interaction.Water) { PlantSystem.Water(item); farmNotes.Add("sulandı"); }
+            if (interaction.Teach)
+            {
+                int taught = Teach(character);
+                if (taught > 0) farmNotes.Add($"{taught} öğrenci ders aldı");
+            }
+            if (interaction.Heal > 0f && character.Treat(interaction.Heal)) farmNotes.Add("yaraları iyileşti");
             if (interaction.Fertilize > 0f && Plants != null)
             {
-                Plants.Fertilize(item.Position, interaction.Fertilize);
+                // Toprak bakımı: gübre seviye başına %5 daha etkili.
+                Plants.Fertilize(item.Position, (float)(interaction.Fertilize * SkillNames.Factor(character.Skills.GetLevel(SkillType.SoilCare), 0.05)));
                 farmNotes.Add($"toprak verimi %{Plants.FertilityAt(item.Position) * 100f:0}");
             }
 
@@ -126,11 +160,18 @@ namespace Thatchwick.Core.Work
             {
                 if (p.MinLevel > 0 && level < p.MinLevel) continue;
                 if (p.MaxLevel > 0 && level > p.MaxLevel) continue;
+                if (p.Seasons != null && Season != null && !p.Seasons.Contains(Season())) continue;   // mevsimi değil
                 if (p.Chance < 1f && _rng.NextDouble() >= p.Chance) continue;
                 int count = p.Count;
                 // Yeşil parmak / usta eller gibi: hasat ve kesimde ilk üründen bir tane daha çıkabilir.
-                if (firstRow && character.Modifiers.YieldChance > 0f && (interaction.RequiresGrown || interaction.RemovesItem)
+                if (firstRow && character.Modifiers.YieldChance > 0f && (interaction.RequiresGrown || interaction.RemovesItem || interaction.Skill == SkillType.Fishing)
                     && _rng.NextDouble() < character.Modifiers.YieldChance) count += 1;
+                // Toplayıcılık, maden, av, bahçe, fırın…: ilk üründen seviye başına şansla bir fazlası.
+                if (firstRow && interaction.Skill.HasValue)
+                {
+                    double per = SkillNames.ExtraYieldPerLevel(interaction.Skill.Value);
+                    if (per > 0 && _rng.NextDouble() < per * Math.Max(0, character.Skills.GetLevel(interaction.Skill.Value) - 1)) count += 1;
+                }
                 firstRow = false;
                 if (yieldMult > 1f && _content.Items.TryGet(p.ItemId, out var rowDef) && rowDef.PlantsAs == null)
                 {
@@ -144,20 +185,26 @@ namespace Thatchwick.Core.Work
                 if (!totals.ContainsKey(p.ItemId)) { totals[p.ItemId] = 0; order.Add(p.ItemId); }
                 totals[p.ItemId] += added;
             }
-            if (slaughterId != null)
+            foreach (var (gotId, gotCount) in new[] { (slaughterId, slaughterCount), (hideId, hideCount) })
             {
-                int added = Storage != null ? Storage.AddUpTo(slaughterId, slaughterCount) : AddAll(slaughterId, slaughterCount);
-                lost += slaughterCount - added;
+                if (gotId == null || gotCount <= 0) continue;
+                int added = Storage != null ? Storage.AddUpTo(gotId, gotCount) : AddAll(gotId, gotCount);
+                lost += gotCount - added;
                 if (added > 0)
                 {
-                    if (!totals.ContainsKey(slaughterId)) { totals[slaughterId] = 0; order.Add(slaughterId); }
-                    totals[slaughterId] += added;
+                    if (!totals.ContainsKey(gotId)) { totals[gotId] = 0; order.Add(gotId); }
+                    totals[gotId] += added;
                 }
             }
             if (interaction.Collect)
             {
-                foreach (var kv in AnimalSystem.TakeStock(item))
+                // Hayvancılık: toplanan her üründen seviye başına %3 (ve dal şansıyla) bir fazlası.
+                double extraChance = 0.03 * Math.Max(0, husbandry - 1) + character.Modifiers.YieldChance;
+                foreach (var kv0 in AnimalSystem.TakeStock(item))
                 {
+                    int bonus = 0;
+                    if (extraChance > 0) for (int u = 0; u < kv0.Value; u++) if (_rng.NextDouble() < extraChance) bonus++;
+                    var kv = new KeyValuePair<string, int>(kv0.Key, kv0.Value + bonus);
                     int added = Storage != null ? Storage.AddUpTo(kv.Key, kv.Value) : AddAll(kv.Key, kv.Value);
                     AnimalSystem.PutStock(item, kv.Key, kv.Value - added);   // sığmayan barınakta kalır
                     if (added <= 0) continue;
@@ -170,9 +217,11 @@ namespace Thatchwick.Core.Work
             var parts = new List<string>();
             foreach (var id in order) parts.Add($"+{totals[id]} {Name(id)}");
             if (interaction.AddFeed > 0) parts.Add($"yem +{interaction.AddFeed} (stok {item.FeedStock:0.#})");
+            if (interaction.AddIce > 0f) parts.Add($"buz {item.FuelDays:0.#} gün");
             if (parts0 != null) parts.Add(parts0);
             if (lost > 0) parts.Add($"depo dolu, {lost} adet kayboldu");
 
+            if (interaction.Skill == SkillType.Fishing && order.Count == 0) parts.Add("bu sefer bir şey çıkmadı");
             if (interaction.TakesFruit) { item.FruitReady = false; item.FruitDays = 0; }
             if (cropHarvest && interaction.RemovesItem) Plants?.OnHarvest(item);
             if (tier > 0) parts.Add($"kalite: {PlantSystem.QualityName(tier)}");
@@ -182,6 +231,40 @@ namespace Thatchwick.Core.Work
                 _world.RemoveItem(item.Id);
 
             Applied?.Invoke(character, interaction, parts.Count > 0 ? string.Join(", ", parts) : interaction.DisplayName);
+        }
+
+        // ---- öğretmenlik ----
+
+        private List<Character> Pupils(Character teacher)
+        {
+            var list = new List<Character>();
+            if (Household == null) return list;
+            foreach (var c in Household())
+                if (c != teacher && !c.IsDead && !c.IsVillager && (c.Stage == AgeStage.Child || c.Stage == AgeStage.Youth)) list.Add(c);
+            return list;
+        }
+
+        /// <summary>
+        /// Ders: her öğrenci okuryazarlık ve öğretmenin en iyi becerisinden XP alır (öğretmenlik seviyesiyle artar).
+        /// Öğretmenlik ve okuryazarlık "en iyi beceri" sayılmaz.
+        /// </summary>
+        private int Teach(Character teacher)
+        {
+            int level = teacher.Skills.GetLevel(SkillType.Teaching);
+            SkillType best = SkillType.Farming; double bestXp = -1;
+            foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
+            {
+                if (s == SkillType.Teaching || s == SkillType.Literacy) continue;
+                double xp = teacher.Skills.GetXp(s);
+                if (xp > bestXp) { bestXp = xp; best = s; }
+            }
+            var pupils = Pupils(teacher);
+            foreach (var p in pupils)
+            {
+                p.GainSkillXp(SkillType.Literacy, 8 + 2 * level);
+                p.GainSkillXp(best, 5 + 2 * level);
+            }
+            return pupils.Count;
         }
     }
 }

@@ -111,7 +111,7 @@ namespace Thatchwick.Core.Tests
             float baseline = heat.OutdoorTemperature;
             heat.OutdoorOffset = () => WeatherSystem.TemperatureOffset(WeatherType.Snow);
             heat.Tick(0.1, 15);
-            Assert.Equal(baseline - 3f, heat.OutdoorTemperature, 3);
+            Assert.Equal((double)(baseline - 3f), (double)heat.OutdoorTemperature, 3);
 
             var db = Real();
             var w2 = new WorldState(new GridMap(10, 10));
@@ -394,7 +394,7 @@ namespace Thatchwick.Core.Tests
             clock.Restore(4.5, 1);
             Assert.Equal(1, fest.Tick(all));      // bebek katılmaz
             Assert.Equal(0, fest.Tick(all));      // aynı gün ikinci kez olmaz
-            Assert.Equal(50f, villager.Needs.Get(NeedType.Fun), 3);
+            Assert.Equal(50.0, (double)villager.Needs.Get(NeedType.Fun), 3);
             Assert.True(villager.Mood.Has("mood.festival"));
             Assert.Equal(1, celebrations);
 

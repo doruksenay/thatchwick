@@ -6,6 +6,16 @@ using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Characters
 {
+    /// <summary>Aile üyesine verilen kalıcı görev (otomasyonun işçi tarafı).</summary>
+    public enum DutyKind
+    {
+        None = 0,
+        /// <summary>Tarla: susuz ekini sula, olgun ekini ve meyveyi topla.</summary>
+        Farm = 1,
+        /// <summary>Hayvanlar: yemliği doldur, ürünü topla, sev.</summary>
+        Animals = 2
+    }
+
     /// <summary>
     /// Oyuncu karakteri ve NPC aynı varlık tipidir; fark yalnızca
     /// "oyuncu kontrolünde" bayrağıdır.
@@ -15,11 +25,41 @@ namespace Thatchwick.Core.Characters
         public int Id { get; }
         public string Name { get; set; }
         public bool IsPlayerControlled { get; set; }
+        /// <summary>Hanede verilen görev: ihtiyaçları iyiyken iş saatinde kendiliğinden yapar (tarla, hayvanlar).</summary>
+        public DutyKind Duty { get; set; }
         public GridPos Position { get; set; }
         public NeedSet Needs { get; } = new NeedSet();
         public SkillSet Skills { get; } = new SkillSet();
         public Sex Sex { get; set; } = Sex.Female;
         public Appearance Appearance { get; set; } = new Appearance();
+        /// <summary>Gizli kalıtım verisi (oyuncuya gösterilmez). Null ise doğumda görünümden kurulur.</summary>
+        public Genome Genome { get; set; }
+
+        // --- Karakter yaratma 2.0 (doküman 14) ---
+        /// <summary>Doğum günü: mevsim (0-3) ve mevsim günü (0'dan). -1 = belirsiz (eski kayıt).</summary>
+        public int BirthSeason { get; set; } = -1;
+        public int BirthDayOfSeason { get; set; } = -1;
+        /// <summary>Sevdikleri ve sevmedikleri (hediye tepkisi, küçük moodlet). Boş = belirsiz.</summary>
+        public string LikedFood { get; set; } = "";
+        public string LikedColor { get; set; } = "";
+        public string LikedHobby { get; set; } = "";
+        public string DislikedFood { get; set; } = "";
+        /// <summary>Çocuk Genç evresine geçince bir kez açılan ücretsiz Ayna hakkı (karar 17.11.2026).</summary>
+        public bool FreeMirrorAvailable { get; set; }
+        /// <summary>İyileşmekte olan yara (kaza); yoksa null.</summary>
+        public ActiveInjury Injury { get; set; }
+        /// <summary>Son kaza günü (mevsimde en çok bir kaza); -1 = hiç.</summary>
+        public double LastAccidentDay { get; set; } = -1;
+        /// <summary>Kazadan kalmış iz sayısı (görünmeyenler dahil).</summary>
+        public int EventScarCount
+        {
+            get
+            {
+                int n = 0;
+                foreach (var m in Appearance.Marks) if (m.Kind == MarkKind.Scar && m.Source == MarkSource.Event) n++;
+                return n;
+            }
+        }
 
         // --- Ruh hali (keyif, hijyen, moodlet) ---
         public MoodState Mood { get; } = new MoodState();
@@ -236,7 +276,35 @@ namespace Thatchwick.Core.Characters
         {
             if (IsDead) return 0;
             if (MoodEnabled) xp *= Mood.XpMultiplier(skill);
+            // Okuryazarlık: bütün becerilerde seviye başına %2 fazla XP (kendisi hariç).
+            if (skill != SkillType.Literacy) xp *= SkillNames.Factor(Skills.GetLevel(SkillType.Literacy), 0.02);
             return Skills.AddXp(skill, xp * Modifiers.SkillRate(skill), SkillRules.LevelCap(Stage));
+        }
+
+        // Son üç öğün (çeşit ödülü); kayda girmez, oturum içinde tutulur.
+        private readonly List<string> _meals = new List<string>(4);
+        public IReadOnlyList<string> RecentMeals => _meals;
+
+        /// <summary>
+        /// Bir öğün yedi: üst üste üç kez aynı yemek "Hep aynı yemek" (-3), son üç öğün üçü de farklıysa "Zengin sofra" (+4).
+        /// </summary>
+        public void RecordMeal(string foodId)
+        {
+            if (string.IsNullOrEmpty(foodId)) return;
+            _meals.Add(foodId);
+            if (_meals.Count > 3) _meals.RemoveAt(0);
+            if (!MoodEnabled || _meals.Count < 3) return;
+            if (_meals[0] == foodId && _meals[1] == foodId) AddMoodlet(MoodCatalog.SameMeal);
+            else if (_meals[0] != _meals[1] && _meals[1] != _meals[2] && _meals[0] != _meals[2]) AddMoodlet(MoodCatalog.VariedTable);
+        }
+
+        /// <summary>Hekimlik: soğuk ve açlık yarasını (ölüme sayan günleri) bu kadar gün azaltır. Bir şey iyileştiyse true.</summary>
+        public bool Treat(double days)
+        {
+            if (IsDead || days <= 0 || (FreezeDays <= 0 && StarveDays <= 0)) return false;
+            FreezeDays = Math.Max(0.0, FreezeDays - days);
+            StarveDays = Math.Max(0.0, StarveDays - days);
+            return true;
         }
 
         /// <summary>Karakteri belirli bir yaşta başlatır (başlangıç karakteri, test).</summary>
@@ -263,7 +331,9 @@ namespace Thatchwick.Core.Characters
             float cold = ComfortTemperature - AmbientTemperature;
             if (cold > 0f)
             {
-                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - Modifiers.ColdResist));
+                // Sıcak çorba gibi yemek etkileri de soğuğa dayanıklılık verir (toplam en çok %90).
+                float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f));
+                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - resist));
             }
             else
             {
@@ -272,8 +342,8 @@ namespace Thatchwick.Core.Characters
             }
 
             // Özellik ve dallardan gelen ihtiyaç azalma çarpanları.
-            Needs.SetDecayMultiplier(NeedType.Hunger, Modifiers.HungerDecay);
-            Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay);
+            Needs.SetDecayMultiplier(NeedType.Hunger, Modifiers.HungerDecay * (MoodEnabled ? Mood.HungerDecayFactor() : 1f));
+            Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f));
             Needs.SetDecayMultiplier(NeedType.Social, Modifiers.SocialDecay);
             Needs.SetDecayMultiplier(NeedType.Fun, Modifiers.FunDecay);
 
@@ -312,7 +382,12 @@ namespace Thatchwick.Core.Characters
             var before = Stage;
             AgeDays += gameDays;
             var after = Stage;
-            if (after != before) StageChanged?.Invoke(this, before, after);
+            if (after != before)
+            {
+                // Çocuk Genç'e geçerken bir kez ücretsiz Ayna (karar 17.11.2026).
+                if (before == AgeStage.Child && after == AgeStage.Youth) FreeMirrorAvailable = true;
+                StageChanged?.Invoke(this, before, after);
+            }
 
             if (AgeDays >= LifespanDays)
             {

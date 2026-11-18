@@ -42,6 +42,8 @@ namespace Thatchwick.Core.Save
     {
         public GraveSave[] graves;
         public int weatherSeed;
+        /// <summary>Günlük işlerin (OnNewDay) yapıldığı son gün; eski kayıtta -1.</summary>
+        public long lastProcessedDay = -1;
         public long festivalCelebratedDay = -1;
         public SpoilBatchSave[] spoilage;
         // Adım 38-43
@@ -50,5 +52,10 @@ namespace Thatchwick.Core.Save
         public string[] goalsDone;
         public VillagerSave[] villagers;
         public int marriages, festivalsCelebrated;
+        // Karakter yaratma 2.0 (17.11.2026): eski kayıtta 0 = belirsiz (Seyrek sayılır), -1 yerine 0 gelir.
+        public int accidentSetting;
+        public double lastHouseholdAccidentDay = -1;
+        // Miras (17.11.2026): Soy Mührü, yadigârlar, komşu haneye evlendirilenler. Eski kayıtta null: boş başlar.
+        public Thatchwick.Core.Family.LegacySave legacy;
     }
 }

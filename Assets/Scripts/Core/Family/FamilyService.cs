@@ -16,6 +16,10 @@ namespace Thatchwick.Core.Family
     public sealed class FamilyService : ISocialEffects
     {
         public const float BabyCareThreshold = 45f;
+        /// <summary>Açlığı bu değerin üstündeki bebek tok sayılır: ikinci bir bakıcı aynı bebeğe boşuna yiyecek harcamaz.</summary>
+        public const float BabyFullThreshold = 70f;
+        /// <summary>Başka kattaki kişi sohbet için bu kadar karo daha uzak sayılır.</summary>
+        public const int OtherLevelDistance = 12;
         public const float FeedRestore = 60f;
         public const int ChatAffection = 20;
         /// <summary>Sohbetin iki tarafa verdiği keyif.</summary>
@@ -94,6 +98,7 @@ namespace Thatchwick.Core.Family
                 case SocialAction.Feed:
                     if (target.Stage != AgeStage.Baby) return "Yalnızca bebek beslenir; büyükler kendisi yer.";
                     if (actor.Stage == AgeStage.Child) return "Çocuk bebeği besleyemez.";
+                    if (target.Needs.Get(NeedType.Hunger) >= BabyFullThreshold) return $"{target.Name} tok.";
                     if (FirstFood() == null) return "Yiyecek yok.";
                     return null;
                 case SocialAction.Chat:
@@ -140,12 +145,18 @@ namespace Thatchwick.Core.Family
                 case SocialAction.Feed:
                     var food = FirstFood();
                     _house.TryTakeItem(food);
-                    target.Needs.Restore(NeedType.Hunger, FeedRestore);
+                    // Ebeveynlik: seviye başına %5 daha doyurucu besleme.
+                    target.Needs.Restore(NeedType.Hunger, (float)(FeedRestore * SkillNames.Factor(actor.Skills.GetLevel(SkillType.Parenting), 0.05)));
+                    actor.GainSkillXp(SkillType.Parenting, 5);
                     msg = $"{actor.Name}, {target.Name} bebeği besledi";
                     break;
                 case SocialAction.Chat:
                     // Kirli (hijyeni düşük) biriyle sohbet yakınlığı yarı artırır.
                     int gain = actor.Mood.Has(MoodCatalog.Dirty) || target.Mood.Has(MoodCatalog.Dirty) ? ChatAffection / 2 : ChatAffection;
+                    // Gönül kazanma: seviye başına %5 daha çok yakınlık.
+                    gain = (int)Math.Round(gain * SkillNames.Factor(actor.Skills.GetLevel(SkillType.Charm), 0.05));
+                    actor.GainSkillXp(SkillType.Charm, 4);
+                    target.GainSkillXp(SkillType.Charm, 2);
                     int now = Math.Min(100, Affection(actor.Id, target.Id) + gain);
                     actor.Needs.Restore(NeedType.Fun, ChatFun);
                     target.Needs.Restore(NeedType.Fun, ChatFun);
@@ -169,6 +180,8 @@ namespace Thatchwick.Core.Family
                     foreach (var c in new[] { actor, target })
                     {
                         if (!c.IsVillager) continue;
+                        // Evlenerek gelen, eşinin neslinden sayılır (soy ağacında "1. nesil" görünmesin).
+                        c.Generation = Math.Max(c.Generation, (c == actor ? target : actor).Generation);
                         c.IsVillager = false;
                         c.CanStarve = true;
                         JoinedHousehold?.Invoke(c);
@@ -197,7 +210,8 @@ namespace Thatchwick.Core.Family
             foreach (var c in _population.Members)
             {
                 if (c == character || c.IsDead || c.Stage == AgeStage.Baby) continue;
-                int dist = Math.Abs(c.Position.X - character.Position.X) + Math.Abs(c.Position.Y - character.Position.Y);
+                int dist = Math.Abs(c.Position.X - character.Position.X) + Math.Abs(c.Position.Y - character.Position.Y)
+                    + Math.Abs(c.Position.Z - character.Position.Z) * OtherLevelDistance;
                 if (dist > FriendSearchRadius) continue;
                 int aff = Affection(character.Id, c.Id);
                 if (dist < bestDist || (dist == bestDist && aff > bestAff)) { best = c; bestDist = dist; bestAff = aff; }

@@ -30,6 +30,22 @@ namespace Thatchwick.Core.Customization
         public Appearance Appearance { get; set; } = new Appearance();
         public SkillType? SkillFocus { get; set; }
 
+        // --- Karakter yaratma 2.0 (doküman 14) ---
+        public const int MaxDynastyLength = 20;
+        /// <summary>Hanedan adı (yeni oyunda bir kez). Boşsa "&lt;isim&gt; hanedanı".</summary>
+        public string DynastyName { get; set; } = "";
+        /// <summary>Doğum günü: mevsim (0-3) ve mevsim günü.</summary>
+        public int BirthSeason { get; set; }
+        public int BirthDayOfSeason { get; set; }
+        public string LikedFood { get; set; } = "";
+        public string LikedColor { get; set; } = "";
+        public string LikedHobby { get; set; } = "";
+        public string DislikedFood { get; set; } = "";
+        /// <summary>Kaza ayarı: oyuncu yeni oyunda kendisi seçer (karar 17.11.2026); seçilmeden başlanmaz.</summary>
+        public AccidentSetting Accidents { get; set; } = AccidentSetting.NotSet;
+
+        public string EffectiveDynastyName => string.IsNullOrWhiteSpace(DynastyName) ? $"{(Name ?? "").Trim()} hanedanı" : DynastyName.Trim();
+
         /// <summary>Seçilen özellikler (en çok Character.MaxTraits, çakışmayan). Boşsa oyun başlarken rastgele verilir.</summary>
         public List<string> TraitIds { get; } = new List<string>();
 
@@ -72,6 +88,10 @@ namespace Thatchwick.Core.Customization
             d.Sex = rng.Next(2) == 0 ? Sex.Female : Sex.Male;
             d.StartStage = rng.Next(2) == 0 ? AgeStage.Youth : AgeStage.Adult;
             d.Appearance = catalog.Randomize(rng, d.Sex);
+            d.BirthSeason = rng.Next(4);
+            d.BirthDayOfSeason = rng.Next(10);
+            d.LikedColor = Likes.Colors[rng.Next(Likes.Colors.Length)];
+            d.LikedHobby = Likes.Hobbies[rng.Next(Likes.Hobbies.Length)];
             return d;
         }
 
@@ -87,7 +107,21 @@ namespace Thatchwick.Core.Customization
             if (StartStage != AgeStage.Youth && StartStage != AgeStage.Adult)
                 errors.Add("Başlangıç evresi Genç ya da Yetişkin olmalı.");
 
+            string dyn = DynastyName == null ? "" : DynastyName.Trim();
+            if (dyn.Length > 0 && (dyn.Length < MinNameLength || dyn.Length > MaxDynastyLength || !NamePattern.IsMatch(dyn)))
+                errors.Add($"Hanedan adı {MinNameLength}-{MaxDynastyLength} harf olmalı (boş bırakılabilir).");
+            if (BirthSeason < 0 || BirthSeason > 3) errors.Add("Doğum mevsimi geçersiz.");
+            if (BirthDayOfSeason < 0) errors.Add("Doğum günü geçersiz.");
+
             errors.AddRange(catalog.Validate(Appearance, Sex));
+            return errors;
+        }
+
+        /// <summary>Yeni oyunun kurucusu için ek denetim: kaza ayarı seçilmiş olmalı (karar 17.11.2026).</summary>
+        public List<string> ValidateNewGame(AppearanceCatalog catalog)
+        {
+            var errors = Validate(catalog);
+            if (Accidents == AccidentSetting.NotSet) errors.Add("Kaza ayarını seç: Kapalı, Seyrek ya da Normal.");
             return errors;
         }
 
@@ -102,8 +136,14 @@ namespace Thatchwick.Core.Customization
             var c = new Character(id, Name.Trim(), position, playerControlled)
             {
                 Sex = Sex,
-                Appearance = Appearance.Clone()
+                Appearance = Appearance.Clone(),
+                BirthSeason = BirthSeason,
+                BirthDayOfSeason = BirthDayOfSeason,
+                LikedFood = LikedFood ?? "", LikedColor = LikedColor ?? "", LikedHobby = LikedHobby ?? "", DislikedFood = DislikedFood ?? ""
             };
+            c.Appearance.HeightPercent = 100;
+            // Gizli genom: görünen hâl + rastgele çekinik taşıyıcılar (oyuncu görmez).
+            c.Genome = Genetics.ForFounder(c.Appearance, catalog, rng);
             c.SetAge(StartAge);
             c.LifespanDays = c.AgeConfig.RollLifespan(rng);
             if (SkillFocus.HasValue) c.GainSkillXp(SkillFocus.Value, FocusXp);

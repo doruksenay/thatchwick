@@ -14,6 +14,12 @@ namespace Thatchwick.Game
     /// </summary>
     public sealed class BuildMode
     {
+        /// <summary>Miras: seçili eşyayı yadigâr yapmak (Soy Mührü). Null ise düğme yok.</summary>
+        public Thatchwick.Core.Family.Legacy Legacy { get; set; }
+        /// <summary>Yadigârı yapan kişi (baş karakter) ve bugünün günü.</summary>
+        public System.Func<Thatchwick.Core.Characters.Character> Maker { get; set; }
+        public System.Func<double> Today { get; set; }
+
         private const float FocusZoom = 3.6f;
 
         private readonly WorldState _world;
@@ -24,9 +30,24 @@ namespace Thatchwick.Game
         private readonly WorldInput _input;
         private readonly Transform _overlay;
 
-        private enum Tool { Items, Wall, Door, Window, EraseEdge, Room, FloorWood, FloorStone, FloorDirt, FloorErase, Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove }
+        private enum Tool
+        {
+            Items, Room, Wall, HalfWall, Door, Window, EraseEdge, Fence, Gate, Railing,
+            Finish, FinishRoom, Floor, FloorRoom, FloorErase, Roof,
+            PushWall, MoveRoom, CopyRoom, Eyedropper, Demolish,
+            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture, RoadPath, RoadGravel, RoadPaved, RoadErase
+        }
         private Tool _tool = Tool.Items;
         private GridPos? _roomCorner;
+        // Araç başına seçili parça (malzeme, kapı/pencere stili, zemin, çatı, kaplama); null = varsayılan / çıplak.
+        private readonly Dictionary<BuildPartKind, string> _style = new Dictionary<BuildPartKind, string>();
+        private GridPos? _lineStart;          // çizgi aracının ilk köşesi (x, y = köşe noktası)
+        private GridPos? _roomPick;           // taşınacak/kopyalanacak odanın bir karosu
+        private Edge? _pushEdge;              // itilecek duvar
+        private string _pendingFinish;        // damlalıkla alınan eşyanın kaplaması (yerleşince uygulanır)
+        private Vector2 _partScroll;
+        private int _houseValue = -1;         // ev değeri önbelleği (harita ya da eşya değişince yeniden)
+        private const string NoRoofChoice = GridMap.NoRoof;
         private Tool? _pendingTool;
         private int? _pendingLevel;
         private bool _showRooms;
@@ -64,7 +85,8 @@ namespace Thatchwick.Game
             _world = world; _house = house; _svc = svc; _content = content; _view = view; _input = input;
             _overlay = new GameObject("BuildOverlay").transform;
             _overlay.SetParent(parent, false);
-            _world.Map.Changed += () => { if (Active) RefreshOverlay(); };
+            _world.Map.Changed += () => { _houseValue = -1; if (Active) RefreshOverlay(); };
+            _world.Changed += () => _houseValue = -1;
         }
 
         /// <summary>GUI koordinatlarında (ölçeklenmiş) panel dikdörtgeni.</summary>
@@ -93,7 +115,7 @@ namespace Thatchwick.Game
 
         private void ClearSelection()
         {
-            _roomCorner = null;
+            _roomCorner = null; _lineStart = null; _roomPick = null; _pushEdge = null;
             _placeId = null; _plantId = null; _selectedId = 0; _surfaceId = 0; _moving = false; _rot = 0;
             if (_focused) { _input.RestoreView(); _focused = false; }
             RefreshOverlay();
@@ -115,7 +137,8 @@ namespace Thatchwick.Game
             var wall = PickWallItem(_world, world, _view);
             if (wall != null) return wall;
             var raised = _view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f));
-            return _world.GetItemAt(raised) ?? _world.GetItemAt(_view.WorldToTile(world));
+            var tile = _view.WorldToTile(world);
+            return _world.GetItemAt(raised) ?? _world.GetItemAt(tile) ?? _world.GetRugAt(tile);
         }
 
         /// <summary>Dokunulan noktaya yakın (çizildiği yerde) duvar eşyası; yoksa null.</summary>
@@ -238,28 +261,205 @@ namespace Thatchwick.Game
             return new Edge(x, y + 1, EdgeAxis.Horizontal, z);
         }
 
+        // Dokunulan noktaya en yakın karo köşesi (çizgi araçları köşeden köşeye çizer).
+        private GridPos NearestVertex(Vector3 world)
+        {
+            int z = _view.ViewLevel;
+            var g = Iso.WorldToGrid(new Vector2(world.x, world.y), z);
+            return new GridPos(Mathf.RoundToInt(g.x), Mathf.RoundToInt(g.y), z);
+        }
+
+        private string Style(BuildPartKind kind) => _style.TryGetValue(kind, out var s) ? s : null;
+
         private void OnToolTap(Vector3 world, GridPos tile)
         {
             PlacementCheck r;
             switch (_tool)
             {
-                case Tool.Wall: r = _svc.SetEdge(NearestEdge(world), EdgeKind.Wall); break;
-                case Tool.Door: r = _svc.SetEdge(NearestEdge(world), EdgeKind.Door); break;
-                case Tool.Window: r = _svc.SetEdge(NearestEdge(world), EdgeKind.Window); break;
+                case Tool.Wall: LineTap(world, EdgeKind.Wall); return;
+                case Tool.HalfWall: LineTap(world, EdgeKind.HalfWall); return;
+                case Tool.Fence: LineTap(world, EdgeKind.Fence); return;
+                case Tool.Railing: LineTap(world, EdgeKind.Railing); return;
+                case Tool.Door: r = _svc.SetEdge(NearestEdge(world), EdgeKind.Door, Style(BuildPartKind.Door)); break;
+                case Tool.Window: r = _svc.SetEdge(NearestEdge(world), EdgeKind.Window, Style(BuildPartKind.Window)); break;
+                case Tool.Gate: r = _svc.SetEdge(NearestEdge(world), EdgeKind.Gate, Style(BuildPartKind.Gate)); break;
                 case Tool.EraseEdge: r = _svc.SetEdge(NearestEdge(world), EdgeKind.None); break;
-                case Tool.FloorWood: r = _svc.PaintFloor(tile, FloorType.Wood); break;
-                case Tool.FloorStone: r = _svc.PaintFloor(tile, FloorType.Stone); break;
-                case Tool.FloorDirt: r = _svc.PaintFloor(tile, FloorType.Dirt); break;
+                case Tool.Finish:
+                {
+                    // Dokunulan karoya bakan duvar yüzü boyanır.
+                    var e = NearestEdge(world);
+                    r = _svc.PaintWallSide(e, e.SideB == tile, Style(BuildPartKind.WallFinish));
+                    break;
+                }
+                case Tool.FinishRoom:
+                    r = _svc.PaintRoomWalls(_world.Map.Rooms.RoomAt(tile), Style(BuildPartKind.WallFinish), out int faces);
+                    if (r.Ok) { _status = $"{faces} duvar yüzü kaplandı."; return; }
+                    break;
+                case Tool.Floor:
+                    r = Style(BuildPartKind.Floor) != null ? _svc.PaintFloorPart(tile, Style(BuildPartKind.Floor))
+                        : _svc.PaintFloor(tile, tile.Z < 0 ? FloorType.Dirt : FloorType.Wood);
+                    break;
+                case Tool.FloorRoom:
+                {
+                    var part = Style(BuildPartKind.Floor) ?? BuildParts.DefaultFloor(_content, tile.Z < 0 ? FloorType.Dirt : FloorType.Wood)?.Id;
+                    r = _svc.PaintRoomFloor(_world.Map.Rooms.RoomAt(tile), part, out int tiles);
+                    if (r.Ok) { _status = $"{tiles} karo döşendi."; return; }
+                    break;
+                }
                 case Tool.FloorErase: r = _svc.PaintFloor(tile, FloorType.Grass); break;
+                case Tool.Roof:
+                    r = _svc.SetRoofStyle(tile, Style(BuildPartKind.Roof) ?? BuildParts.Default(_content, BuildPartKind.Roof)?.Id);
+                    break;
+                case Tool.PushWall:
+                {
+                    var e = NearestEdge(world);
+                    if (!EdgeKinds.IsRoomBoundary(_world.Map.GetEdge(e))) { _status = "Bir odanın duvarına dokun."; return; }
+                    _pushEdge = e;
+                    _status = "Oklarla duvarı it ya da çek.";
+                    RefreshOverlay();
+                    return;
+                }
+                case Tool.MoveRoom:
+                case Tool.CopyRoom: RoomPickTap(tile); return;
+                case Tool.Eyedropper: EyedropperTap(world, tile); return;
+                case Tool.Demolish: DemolishTap(tile); return;
                 case Tool.Plot: r = _svc.BuyChunk(tile); break;
                 case Tool.LevelBuild: r = _svc.BuildLevelTile(tile); break;
                 case Tool.LevelRemove: r = _svc.RemoveLevelTile(tile); break;
                 case Tool.ZoneStorage: r = _svc.SetZone(tile, ZoneType.Storage); break;
                 case Tool.ZoneErase: r = _svc.SetZone(tile, ZoneType.None); break;
+                case Tool.ZonePasture: r = _svc.SetZone(tile, ZoneType.Pasture); break;
+                case Tool.RoadPath: r = _svc.PaintRoad(tile, RoadType.Path); break;
+                case Tool.RoadGravel: r = _svc.PaintRoad(tile, RoadType.Gravel); break;
+                case Tool.RoadPaved: r = _svc.PaintRoad(tile, RoadType.Paved); break;
+                case Tool.RoadErase: r = _svc.PaintRoad(tile, RoadType.None); break;
                 case Tool.Room: BuildRoomTap(tile); return;
                 default: return;
             }
             _status = r.Ok ? "Tamam." : r.Reason;
+        }
+
+        // Çizgi araçları: iki köşeye dokun; arası düz hat olarak kurulur (aynı köşeye iki kez dokunmak vazgeçer).
+        private void LineTap(Vector3 world, EdgeKind kind)
+        {
+            var v = NearestVertex(world);
+            if (!_lineStart.HasValue)
+            {
+                _lineStart = v;
+                _status = "Hattın öbür ucundaki köşeye dokun.";
+                RefreshOverlay();
+                return;
+            }
+            var a = _lineStart.Value;
+            _lineStart = null;
+            if (a.X == v.X && a.Y == v.Y) { _status = "Vazgeçildi."; RefreshOverlay(); return; }
+            string style = kind == EdgeKind.Fence ? Style(BuildPartKind.Fence)
+                : kind == EdgeKind.Railing ? Style(BuildPartKind.Railing)
+                : Style(BuildPartKind.WallMaterial);
+            var r = _svc.SetEdgeLine(a.X, a.Y, v.X, v.Y, v.Z, kind, style, out int built);
+            _status = r.Ok ? $"{built} parça kuruldu." : r.Reason;
+            RefreshOverlay();
+        }
+
+        // Oda taşı/kopyala: önce odaya, sonra odanın sol-üst köşesinin gideceği karoya dokun.
+        private void RoomPickTap(GridPos tile)
+        {
+            if (!_roomPick.HasValue)
+            {
+                var room = _world.Map.Rooms.RoomAt(tile);
+                if (room == null || !room.IsIndoor) { _status = "Bir odanın içine dokun."; return; }
+                _roomPick = tile;
+                _status = "Odanın sol-üst köşesinin gideceği karoya dokun.";
+                RefreshOverlay();
+                return;
+            }
+            var src = _world.Map.Rooms.RoomAt(_roomPick.Value);
+            _roomPick = null;
+            if (src == null || !src.IsIndoor) { _status = "Oda artık yok."; RefreshOverlay(); return; }
+            var anchor = RoomAnchor(src);
+            int dx = tile.X - anchor.X, dy = tile.Y - anchor.Y;
+            if (_tool == Tool.MoveRoom)
+            {
+                var r = _svc.MoveRoom(src, dx, dy);
+                _status = r.Ok ? "Oda taşındı." : r.Reason;
+            }
+            else
+            {
+                var r = _svc.CopyRoom(src, dx, dy, out int skipped);
+                _status = r.Ok ? (skipped > 0 ? $"Oda kopyalandı ({skipped} eşya kopyalanmadı: bitki, merdiven, barınak)." : "Oda kopyalandı.") : r.Reason;
+            }
+            RefreshOverlay();
+        }
+
+        private static GridPos RoomAnchor(Room room)
+        {
+            int x = int.MaxValue, y = int.MaxValue;
+            foreach (var t in room.Tiles) { if (t.X < x) x = t.X; if (t.Y < y) y = t.Y; }
+            return new GridPos(x, y, room.Level);
+        }
+
+        // Balyoz: dikdörtgenin iki köşe karosu.
+        private void DemolishTap(GridPos tile)
+        {
+            if (!_roomCorner.HasValue)
+            {
+                _roomCorner = tile;
+                _status = "Yıkılacak alanın karşı köşesine dokun.";
+                RefreshOverlay();
+                return;
+            }
+            var a = _roomCorner.Value;
+            _roomCorner = null;
+            var r = _svc.Demolish(a.X, a.Y, tile.X, tile.Y, tile.Z, out int removed, out int skipped);
+            _status = r.Ok ? $"Yıkıldı: {removed} parça{(skipped > 0 ? $", {skipped} kaldırılamadı" : "")}. Geri al ile döner." : r.Reason;
+            RefreshOverlay();
+        }
+
+        // Damlalık: dokunulan duvarın, eşyanın ya da zeminin aracını ve stilini seçer (Sims gibi).
+        private void EyedropperTap(Vector3 world, GridPos tile)
+        {
+            var map = _world.Map;
+            var item = PickItem(world);
+            if (item != null && !item.IsPlant && !BuildService.IsLocked(item) && item.Def.Price > 0)
+            {
+                var def = item.Def;
+                string finish = item.FinishId;
+                if (_house.Count(def.Id) <= 0)
+                {
+                    var buy = _svc.Buy(def.Id);
+                    if (!buy.Ok) { _status = buy.Reason; return; }
+                }
+                _tool = Tool.Items;
+                StartPlacing(def.Id);
+                _pendingFinish = finish;
+                _status = $"{def.DisplayName}: aynısını koy{(finish != null ? " (aynı kaplamayla)" : "")}.";
+                return;
+            }
+            var e = NearestEdge(world);
+            var kind = map.EdgeInBounds(e) ? map.GetEdge(e) : EdgeKind.None;
+            if (kind != EdgeKind.None)
+            {
+                var look = map.GetLook(e);
+                var pk = BuildService.PartKindFor(kind);
+                if (pk.HasValue) _style[pk.Value] = look?.Style;
+                string finish = look?.FinishB != null && e.SideB == tile ? look.FinishB : look?.FinishA;
+                if (finish != null) _style[BuildPartKind.WallFinish] = finish;
+                _tool = kind == EdgeKind.Door ? Tool.Door : kind == EdgeKind.Window ? Tool.Window : kind == EdgeKind.HalfWall ? Tool.HalfWall
+                    : kind == EdgeKind.Fence ? Tool.Fence : kind == EdgeKind.Gate ? Tool.Gate : kind == EdgeKind.Railing ? Tool.Railing : Tool.Wall;
+                ClearSelection();
+                _status = "Stil alındı.";
+                return;
+            }
+            var floor = map.GetFloor(tile);
+            if (floor != FloorType.Grass)
+            {
+                _style[BuildPartKind.Floor] = map.GetFloorStyle(tile) ?? BuildParts.DefaultFloor(_content, floor)?.Id;
+                _tool = Tool.Floor;
+                ClearSelection();
+                _status = "Zemin alındı.";
+                return;
+            }
+            _status = "Alınacak bir şey yok: duvara, eşyaya ya da döşeli zemine dokun.";
         }
 
         // Oda aracı: iki köşe karosuna dokun; çevresine duvar, içine tahta zemin.
@@ -278,26 +478,40 @@ namespace Thatchwick.Game
             int x0 = Mathf.Min(a.X, tile.X), x1 = Mathf.Max(a.X, tile.X);
             int y0 = Mathf.Min(a.Y, tile.Y), y1 = Mathf.Max(a.Y, tile.Y);
             string fail = null; int built = 0;
-            for (int x = x0; x <= x1 && fail == null; x++)
+            // Seçili zemin stili (yoksa katın varsayılanı) ve seçili duvar malzemesi kullanılır.
+            var floorPart = Style(BuildPartKind.Floor) != null && _content.Parts.TryGet(Style(BuildPartKind.Floor), out var fp) ? fp : null;
+            var wanted = floorPart != null ? floorPart.Base : z < 0 ? FloorType.Dirt : FloorType.Wood;
+            string wantedStyle = floorPart?.Id;
+            _svc.BeginGroup("Oda");     // bütün oda tek geri alma adımı
+            try
+            {
+                for (int x = x0; x <= x1 && fail == null; x++)
+                    for (int y = y0; y <= y1 && fail == null; y++)
+                    {
+                        var p = new GridPos(x, y, z);
+                        // Üst katta ve bodrumda önce döşeme/kazı gerekir (zemin katta tile her zaman vardır).
+                        if (z != 0 && !_world.Map.HasTile(p))
+                        {
+                            var lr = _svc.BuildLevelTile(p);
+                            if (!lr.Ok) { fail = lr.Reason; break; }
+                        }
+                        if (_world.Map.GetFloor(p) == wanted && (wantedStyle == null || _world.Map.GetFloorStyle(p) == wantedStyle
+                            || floorPart.IsDefault && _world.Map.GetFloorStyle(p) == null)) continue;     // zaten döşeli
+                        var r = _svc.PaintFloor(p, wanted, wantedStyle);
+                        if (!r.Ok) fail = r.Reason;
+                    }
+                for (int x = x0; x <= x1 && fail == null; x++)
+                {
+                    fail = TryWall(new Edge(x, y0, EdgeAxis.Horizontal, z), ref built) ?? TryWall(new Edge(x, y1 + 1, EdgeAxis.Horizontal, z), ref built);
+                }
                 for (int y = y0; y <= y1 && fail == null; y++)
                 {
-                    var p = new GridPos(x, y, z);
-                    // Üst katta ve bodrumda önce döşeme/kazı gerekir (zemin katta tile her zaman vardır).
-                    if (z != 0 && !_world.Map.HasTile(p))
-                    {
-                        var lr = _svc.BuildLevelTile(p);
-                        if (!lr.Ok) { fail = lr.Reason; break; }
-                    }
-                    var r = _svc.PaintFloor(p, z < 0 ? FloorType.Dirt : FloorType.Wood);
-                    if (!r.Ok && r.Reason != "Orası zaten öyle.") fail = r.Reason;
+                    fail = TryWall(new Edge(x0, y, EdgeAxis.Vertical, z), ref built) ?? TryWall(new Edge(x1 + 1, y, EdgeAxis.Vertical, z), ref built);
                 }
-            for (int x = x0; x <= x1 && fail == null; x++)
-            {
-                fail = TryWall(new Edge(x, y0, EdgeAxis.Horizontal, z), ref built) ?? TryWall(new Edge(x, y1 + 1, EdgeAxis.Horizontal, z), ref built);
             }
-            for (int y = y0; y <= y1 && fail == null; y++)
+            finally
             {
-                fail = TryWall(new Edge(x0, y, EdgeAxis.Vertical, z), ref built) ?? TryWall(new Edge(x1 + 1, y, EdgeAxis.Vertical, z), ref built);
+                _svc.EndGroup();
             }
             _status = fail != null ? $"Oda yarım kaldı: {fail}" : $"Oda kuruldu ({built} duvar). Kapı için Kapı aracını duvara kullan.";
             RefreshOverlay();
@@ -306,7 +520,7 @@ namespace Thatchwick.Game
         private string TryWall(Edge e, ref int built)
         {
             if (_world.Map.GetEdge(e) != EdgeKind.None) return null;
-            var r = _svc.SetEdge(e, EdgeKind.Wall);
+            var r = _svc.SetEdge(e, EdgeKind.Wall, Style(BuildPartKind.WallMaterial));
             if (r.Ok) built++;
             return r.Ok ? null : r.Reason;
         }
@@ -376,6 +590,19 @@ namespace Thatchwick.Game
                 }
             }
             if (_roomCorner.HasValue) Diamond(_roomCorner.Value, new Color(0.3f, 0.7f, 1f, 0.7f), 6000, 1f);
+            if (_lineStart.HasValue)
+                DiamondAt(Iso.GridToWorld(_lineStart.Value.X, _lineStart.Value.Y, _lineStart.Value.Z), new Color(0.3f, 0.7f, 1f, 0.9f), 6001, 0.35f);
+            if (_roomPick.HasValue)
+            {
+                var picked = _world.Map.Rooms.RoomAt(_roomPick.Value);
+                if (picked != null) foreach (var t in picked.Tiles) Diamond(t, new Color(0.4f, 0.8f, 1f, 0.35f), 6000, 1f);
+            }
+            if (_pushEdge.HasValue)
+            {
+                var pe = _pushEdge.Value;
+                var mid = Iso.GridToWorld(pe.X + (pe.Axis == EdgeAxis.Horizontal ? 0.5f : 0f), pe.Y + (pe.Axis == EdgeAxis.Vertical ? 0.5f : 0f), pe.Z);
+                DiamondAt(mid, new Color(1f, 0.6f, 0.2f, 0.9f), 6001, 0.4f);
+            }
 
             // Seçili eşya vurgusu
             var sel = _selectedId != 0 ? _world.GetItem(_selectedId) : null;
@@ -393,7 +620,9 @@ namespace Thatchwick.Game
             else if (_moving && sel != null && !sel.IsWallMounted) { ghostDef = sel.Def; ignore = sel.Id; }
             if (ghostDef != null)
             {
-                var check = ignore.HasValue ? _world.CanPlaceFloor(ghostDef, _ghostPos, _rot, ignore) : _svc.CanPlaceFromInventory(ghostDef.Id, _ghostPos, _rot);
+                var check = !ignore.HasValue ? _svc.CanPlaceFromInventory(ghostDef.Id, _ghostPos, _rot)
+                    : ghostDef.IsRug ? _world.CanPlaceRug(ghostDef, _ghostPos, _rot, ignore)
+                    : _world.CanPlaceFloor(ghostDef, _ghostPos, _rot, ignore);
                 var col = check.Ok ? new Color(0.3f, 1f, 0.4f, 0.6f) : new Color(1f, 0.3f, 0.3f, 0.6f);
                 var (w, h) = Footprint.Dimensions(ghostDef.Width, ghostDef.Height, _rot);
                 for (int dy = 0; dy < h; dy++)
@@ -478,12 +707,12 @@ namespace Thatchwick.Game
             GUILayout.Label($"YAPI MODU · Akçe: {_house.Akce}");
             if (GUILayout.Button("Kapat", GUILayout.Width(60f))) { Exit(); GUILayout.EndHorizontal(); GUILayout.EndArea(); return; }
             GUILayout.EndHorizontal();
-            if (_status.Length > 0) GUILayout.Label(_status);
+            if (_status.Length > 0) GUILayout.Label(_status, _wrap);
             if (Application.isEditor) // yalnızca geliştirirken: girdinin nerede takıldığını gösterir
                 GUILayout.Label($"Girdi: basma {_input.PressCount}, arayüzde {_input.BlockedCount}, dokunma {_input.TapCount}");
 
             DrawTools();
-            if (_tool != Tool.Items) { GUILayout.EndArea(); return; }
+            if (_tool != Tool.Items) { DrawToolContext(); GUILayout.EndArea(); return; }
 
             DrawContext();
 
@@ -511,35 +740,169 @@ namespace Thatchwick.Game
                 if (GUILayout.Toggle(_walls.Mode == WallMode.Up, "Yukarı", GUI.skin.button)) _walls.Mode = WallMode.Up;
                 if (GUILayout.Toggle(_walls.Mode == WallMode.Cutaway, "Kesit", GUI.skin.button)) _walls.Mode = WallMode.Cutaway;
                 if (GUILayout.Toggle(_walls.Mode == WallMode.Down, "Aşağı", GUI.skin.button)) _walls.Mode = WallMode.Down;
+                if (GUILayout.Toggle(_walls.ShowRoof, "Çatı", GUI.skin.button) != _walls.ShowRoof) _walls.ShowRoof = !_walls.ShowRoof;
             }
             GUILayout.EndHorizontal();
+            if (_houseValue < 0) _houseValue = _svc.HouseValue();
+            GUILayout.Label($"Ev değeri: {_houseValue} akçe", _wrap);
 
+            ToolRow(("Eşya", Tool.Items), ("Oda", Tool.Room), ("Duvar", Tool.Wall), ("Yarım duvar", Tool.HalfWall));
+            ToolRow(("Kapı", Tool.Door), ("Pencere", Tool.Window), ("Kaldır", Tool.EraseEdge));
+            ToolRow(("Çit", Tool.Fence), ("Çit kapısı", Tool.Gate), ("Korkuluk", Tool.Railing), ("Çatı", Tool.Roof));
+            ToolRow(("Kaplama", Tool.Finish), ("Oda kapl.", Tool.FinishRoom), ("Zemin", Tool.Floor), ("Oda zem.", Tool.FloorRoom));
+            ToolRow(("Duvar it", Tool.PushWall), ("Oda taşı", Tool.MoveRoom), ("Oda kopyala", Tool.CopyRoom));
+            ToolRow(("Damlalık", Tool.Eyedropper), ("Balyoz", Tool.Demolish), ("Çim", Tool.FloorErase));
+            ToolRow(("Patika", Tool.RoadPath), ("Çakıl yol", Tool.RoadGravel), ("Kaldırım", Tool.RoadPaved), ("Yol sil", Tool.RoadErase));
+            ToolRow((_view.ViewLevel < 0 ? "Kaz" : "Döşeme", Tool.LevelBuild), (_view.ViewLevel < 0 ? "Doldur" : "Döşeme sök", Tool.LevelRemove), ("Arsa", Tool.Plot));
             GUILayout.BeginHorizontal();
-            ToolButton("Eşya", Tool.Items); ToolButton("Oda", Tool.Room); ToolButton("Duvar", Tool.Wall);
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            ToolButton("Kapı", Tool.Door); ToolButton("Pencere", Tool.Window); ToolButton("Kaldır", Tool.EraseEdge);
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            ToolButton("Arsa", Tool.Plot);
+            ToolButton("Depo", Tool.ZoneStorage); ToolButton("Otlak", Tool.ZonePasture); ToolButton("Bölge sil", Tool.ZoneErase);
             if (GUILayout.Toggle(_showRooms, "Odalar", GUI.skin.button) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
+            // Düğme her karede çizilir (koşullu denetim IMGUI yerleşimini bozar); boş yığında pasif.
+            GUI.enabled = _svc.CanUndo;
+            if (GUILayout.Button(_svc.CanUndo ? $"Geri al: {_svc.UndoLabel}" : "Geri al")) _deferred = () => { var u = _svc.Undo(); _status = u.Ok ? "Geri alındı." : u.Reason; RefreshOverlay(); };
+            GUI.enabled = true;
             GUILayout.EndHorizontal();
+            if (_tool != Tool.Items) GUILayout.Label(ToolHelp(), _wrap);
+        }
+
+        private void ToolRow(params (string label, Tool tool)[] tools)
+        {
             GUILayout.BeginHorizontal();
-            ToolButton("Depo", Tool.ZoneStorage); ToolButton("Depo sil", Tool.ZoneErase);
+            foreach (var t in tools) ToolButton(t.label, t.tool);
             GUILayout.EndHorizontal();
+        }
+
+        private string ToolHelp()
+        {
+            switch (_tool)
+            {
+                case Tool.Room: return "İki köşe karosuna dokun: seçili malzemeyle duvar, seçili zeminle döşeme.";
+                case Tool.Wall:
+                case Tool.HalfWall:
+                case Tool.Fence:
+                case Tool.Railing: return "Bir köşeye, sonra hattın öbür ucuna dokun (sürükler gibi). Yarım duvar, çit ve korkuluk odayı bölmez ama geçilmez.";
+                case Tool.Door:
+                case Tool.Window: return "Bir duvara dokun: duvar seçili stille kapı/pencereye döner.";
+                case Tool.Gate: return "Çit hattına ya da boş bir kenara dokun.";
+                case Tool.EraseEdge: return "Kaldırılacak duvar, kapı, pencere ya da çite dokun (yarısı iade).";
+                case Tool.Finish: return "Duvarın boyanacak yüzünün önündeki karoya, duvara yakın dokun.";
+                case Tool.FinishRoom: return "Bir odanın içine dokun: bütün iç yüzler kaplanır.";
+                case Tool.Floor: return "Karoya dokun: seçili zemin döşenir.";
+                case Tool.FloorRoom: return "Bir odanın içine dokun: bütün zemini döşenir.";
+                case Tool.FloorErase: return "Karonun döşemesini kaldırır (çim; yarısı iade).";
+                case Tool.Roof: return "Çatı, üstü açık iç odalara kendiliğinden kurulur. Bir evin içine dokun: çatı stili ya da çatısız. Görmek için Duvar: Yukarı ve Çatı açık.";
+                case Tool.PushWall: return "Bir odanın duvarına dokun, sonra oklarla it/çek: oda büyür ya da küçülür.";
+                case Tool.MoveRoom: return "Odaya, sonra odanın sol-üst köşesinin gideceği karoya dokun. Eşyalarıyla taşınır; ücretsiz.";
+                case Tool.CopyRoom: return "Odaya, sonra kopyanın sol-üst köşesine dokun. Duvar, zemin, kaplama ve eşyalar yeniden alınır.";
+                case Tool.Eyedropper: return "Bir duvara, eşyaya ya da zemine dokun: aynısını koymak için aracı ve stili seçer.";
+                case Tool.Demolish: return "Yıkılacak alanın iki köşesine dokun: eşyalar satılır, duvar ve zemin kalkar. Geri al ile döner.";
+                case Tool.Plot: return $"Bitişik 4x4 parçaya dokun: {BuildService.ChunkPrice} akçe.";
+                case Tool.LevelBuild: return _view.ViewLevel > 0 ? $"Üst kat döşemesi: karo başına {BuildService.SlabPrice} akçe; altında duvarlı oda ya da duvar gerekir (bir karo çıkma: balkon). Merdiven üstüne döşeme olmaz."
+                    : _view.ViewLevel < 0 ? $"Bodrum kazısı: karo başına {BuildService.DigPrice} akçe; mevcut bodrumun yanını kaz (ilk karo merdivenle açılır)."
+                    : "Zemin kat zaten var; Kat: Üst kat ya da Bodrum seç.";
+                case Tool.LevelRemove: return "Döşemeyi sök / bodrum karosunu doldur: üstünde eşya, çevresinde duvar ya da merdiven olmamalı. Yarısı iade.";
+                case Tool.RoadPath:
+                case Tool.RoadGravel:
+                case Tool.RoadPaved:
+                case Tool.RoadErase:
+                    return $"Yol (arsanda, açık havada): patika x{GridMap.PathSpeed:0.#} hız {BuildService.RoadPrice(RoadType.Path)} akçe, çakıl x{GridMap.GravelSpeed:0.#} {BuildService.RoadPrice(RoadType.Gravel)} akçe, kaldırım x{GridMap.PavedSpeed:0.#} {BuildService.RoadPrice(RoadType.Paved)} akçe. Üstünden geçildikçe aşınır (inek, at çok); aynı yolu yeniden döşemek yarı fiyatına onarır. Hayvanlar barınaktan otlağa yoldan gider.";
+                case Tool.ZonePasture: return "Otlak: hayvanlar gündüz çimde otlar (yem yerine ot, kışın ot büyümez). Çitle çevir; barınağın kapısı otlağa açılsın. Çan ile içeri çağrılır.";
+                case Tool.ZoneStorage:
+                case Tool.ZoneErase: return $"Depo bölgesi: karo başına +{StorageService.UnitsPerZoneTile} kaynak kapasitesi (ücretsiz). Sandık +40.";
+                default: return "";
+            }
+        }
+
+        // Araca göre seçilebilen parça türü (yoksa null).
+        private static BuildPartKind? KindFor(Tool tool)
+        {
+            switch (tool)
+            {
+                case Tool.Room:
+                case Tool.Wall:
+                case Tool.HalfWall: return BuildPartKind.WallMaterial;
+                case Tool.Door: return BuildPartKind.Door;
+                case Tool.Window: return BuildPartKind.Window;
+                case Tool.Fence: return BuildPartKind.Fence;
+                case Tool.Gate: return BuildPartKind.Gate;
+                case Tool.Railing: return BuildPartKind.Railing;
+                case Tool.Finish:
+                case Tool.FinishRoom: return BuildPartKind.WallFinish;
+                case Tool.Floor:
+                case Tool.FloorRoom: return BuildPartKind.Floor;
+                case Tool.Roof: return BuildPartKind.Roof;
+                default: return null;
+            }
+        }
+
+        // Yapı araçlarının bağlam paneli: stil/malzeme seçici, duvar itme okları.
+        private void DrawToolContext()
+        {
+            if (_tool == Tool.PushWall && _pushEdge.HasValue)
+            {
+                var e = _pushEdge.Value;
+                bool horiz = e.Axis == EdgeAxis.Horizontal;
+                GUILayout.BeginHorizontal();
+                // Ekranda +x sağ-yukarı (↗), +y sol-yukarı (↖).
+                if (GUILayout.Button(horiz ? "↖ it" : "↗ it")) Push(+1);
+                if (GUILayout.Button(horiz ? "↘ it" : "↙ it")) Push(-1);
+                if (GUILayout.Button("Bitir")) { _pushEdge = null; RefreshOverlay(); }
+                GUILayout.EndHorizontal();
+            }
+            if ((_tool == Tool.MoveRoom || _tool == Tool.CopyRoom || _tool == Tool.Demolish) && (_roomPick.HasValue || _roomCorner.HasValue))
+                if (GUILayout.Button("Vazgeç")) { _roomPick = null; _roomCorner = null; RefreshOverlay(); }
+            if (_lineStart.HasValue && GUILayout.Button("Çizgiden vazgeç")) { _lineStart = null; RefreshOverlay(); }
+
+            var kind = KindFor(_tool);
+            if (!kind.HasValue) return;
+            int level = _view.ViewLevel;
+            var parts = BuildParts.OfKind(_content, kind.Value, kind.Value == BuildPartKind.Window ? level : int.MinValue);
+            if (kind.Value == BuildPartKind.Floor) parts.Sort((a, b) => a.Base != b.Base ? a.Base.CompareTo(b.Base) : a.Price.CompareTo(b.Price));
+            string current = Style(kind.Value);
+            if (current == null || current != NoRoofChoice && !_content.Parts.Contains(current)) current = null;
+            _partScroll = GUILayout.BeginScrollView(_partScroll);
+            if (kind.Value == BuildPartKind.WallFinish && PartToggle(current == null, "Çıplak (kaplamayı kaldır)", null)) _style[kind.Value] = null;
+            int accountLevel = _svc.AccountLevel != null ? _svc.AccountLevel() : int.MaxValue;
+            foreach (var p in parts)
+            {
+                bool selected = current == p.Id || current == null && p.IsDefault && kind.Value != BuildPartKind.WallFinish;
+                bool locked = accountLevel < p.UnlockLevel;
+                string price = kind.Value == BuildPartKind.Roof ? (p.Price > 0 ? $"{p.Price}/karo" : "ücretsiz")
+                    : kind.Value == BuildPartKind.Floor ? $"{p.Price}/karo · {FloorBaseName(p.Base)}"
+                    : _tool == Tool.HalfWall ? $"{System.Math.Max(1, (p.Price + 1) / 2)}"
+                    : $"{p.Price}";
+                string label = locked ? $"{p.DisplayName} · Sv {p.UnlockLevel} gerekli" : $"{p.DisplayName} · {price}{(p.Comfort > 0 ? $" · konfor +{p.Comfort}" : "")}";
+                GUI.enabled = !locked;
+                if (PartToggle(selected, label, p)) _style[kind.Value] = p.Id;
+                GUI.enabled = true;
+            }
+            if (kind.Value == BuildPartKind.Roof && PartToggle(current == NoRoofChoice, "Çatısız (avlu, çardak)", null)) _style[kind.Value] = NoRoofChoice;
+            GUILayout.EndScrollView();
+        }
+
+        private static string FloorBaseName(FloorType f) => f == FloorType.Wood ? "ahşap" : f == FloorType.Stone ? "taş" : "toprak";
+
+        // Renk örnekli seçim satırı; tıklanınca true.
+        private bool PartToggle(bool selected, string label, BuildPartDef part)
+        {
             GUILayout.BeginHorizontal();
-            ToolButton(_view.ViewLevel < 0 ? "Kaz" : "Döşeme", Tool.LevelBuild); ToolButton(_view.ViewLevel < 0 ? "Doldur" : "Döşeme sök", Tool.LevelRemove);
+            var old = GUI.color;
+            GUI.color = SpriteMaterials.PartColor(part, Color.white);
+            GUILayout.Box("", GUILayout.Width(16f), GUILayout.Height(16f));
+            GUI.color = old;
+            bool clicked = GUILayout.Toggle(selected, label, GUI.skin.button) && !selected;
             GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            ToolButton("Tahta", Tool.FloorWood); ToolButton("Taş", Tool.FloorStone); ToolButton("Toprak", Tool.FloorDirt); ToolButton("Çim", Tool.FloorErase);
-            GUILayout.EndHorizontal();
-            if (_tool != Tool.Items)
-                GUILayout.Label(_tool == Tool.Room ? "İki köşe karosuna dokun."
-                    : _tool == Tool.Plot ? $"Bitişik 4x4 parçaya dokun: {BuildService.ChunkPrice} akçe."
-                    : _tool == Tool.LevelBuild ? (_view.ViewLevel > 0 ? $"Üst kat döşemesi: karo başına {BuildService.SlabPrice} akçe; altında duvarlı oda ya da duvar gerekir." : _view.ViewLevel < 0 ? $"Bodrum kazısı: karo başına {BuildService.DigPrice} akçe; mevcut bodrumun yanını kaz (ilk karo merdivenle açılır)." : "Zemin kat zaten var; Kat: Üst kat ya da Bodrum seç.")
-                    : _tool == Tool.LevelRemove ? "Döşemeyi sök / bodrum karosunu doldur: üstünde eşya, çevresinde duvar ya da merdiven olmamalı. Yarısı iade."
-                    : _tool == Tool.ZoneStorage || _tool == Tool.ZoneErase ? $"Depo bölgesi: karo başına +{StorageService.UnitsPerZoneTile} kaynak kapasitesi (ücretsiz). Sandık +40."
-                    : "Haritaya dokun. Fiyatlar: duvar 3, kapı 8, pencere 6, zemin 1-3. Kaldırınca yarısı iade.");
+            return clicked;
+        }
+
+        private void Push(int delta)
+        {
+            if (!_pushEdge.HasValue) return;
+            var e = _pushEdge.Value;
+            var r = _svc.PushWall(e, delta);
+            _status = r.Ok ? "Duvar itildi." : r.Reason;
+            if (r.Ok) _pushEdge = e.Axis == EdgeAxis.Horizontal ? new Edge(e.X, e.Y + delta, e.Axis, e.Z) : new Edge(e.X + delta, e.Y, e.Axis, e.Z);
+            RefreshOverlay();
         }
 
         private void LevelButton(string label, int level)
@@ -642,19 +1005,74 @@ namespace Thatchwick.Game
             }
 
             GUILayout.Label(ItemCatalog.Describe(sel.Def), _wrap);
+            var finishes = BuildParts.FinishesFor(_content, sel.Def);
+            if (finishes.Count > 0)
+            {
+                GUILayout.Label("Renk / malzeme:");
+                int lv = _svc.AccountLevel != null ? _svc.AccountLevel() : int.MaxValue;
+                float cur = _svc.FinishFactor(sel);
+                foreach (var f in finishes)
+                {
+                    bool selected = sel.FinishId == f.Id || sel.FinishId == null && f.IsDefault;
+                    int diff = (int)System.Math.Round(sel.Def.Price * (f.PriceFactor - cur));
+                    string label = lv < f.UnlockLevel ? $"{f.DisplayName} · Sv {f.UnlockLevel}" : diff > 0 ? $"{f.DisplayName} (+{diff})" : f.DisplayName;
+                    GUI.enabled = lv >= f.UnlockLevel;
+                    if (PartToggle(selected, label, f))
+                    {
+                        var id = sel.Id; var fid = f.Id;
+                        _deferred = () => { var r = _svc.SetItemFinish(id, fid); _status = r.Ok ? "Kaplama değişti." : r.Reason; };
+                    }
+                    GUI.enabled = true;
+                }
+            }
+            if (Legacy != null) DrawHeirloom(sel);
             if (sel.Def.IsHousing && _animals != null)
                 GUILayout.Label($"Hayvan {_animals.Residents(sel.Id)}/{sel.Def.HousingCapacity} · yem {sel.FeedStock:0.#} · ürün {sel.StockTotal}");
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Taşı")) { _moving = true; _ghostPos = sel.Position; _rot = sel.Rotation; RefreshOverlay(); }
             if (GUILayout.Button("Envantere al")) { var r = _svc.StoreToInventory(sel.Id); _status = r.Ok ? "Envantere alındı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
             GUILayout.EndHorizontal();
-            if (GUILayout.Button($"Sat (+{_svc.SellValue(sel.Def)} akçe, dekorlar dahil)")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Satıldı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
+            if (sel.IsPlant && sel.Def.IsCrop)
+            {
+                // Ekin satılmaz ama sökülebilir (yanlış yere ekilen ya da ortada kalan ekin tarlayı kilitlemesin).
+                if (GUILayout.Button("Ekini sök")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Ekin söküldü." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
+            }
+            else if (GUILayout.Button(Legacy != null && Legacy.HeirloomOf(sel.Id) != null
+                ? $"Sat (+{_svc.SellValue(sel.Def)} akçe; yadigârın geçmişi silinir)"
+                : $"Sat (+{_svc.SellValue(sel.Def)} akçe, dekorlar dahil)")) { var r = _svc.SellPlaced(sel.Id); _status = r.Ok ? "Satıldı." : r.Reason; if (r.Ok) ClearSelectionKeepStatus(); }
+        }
+
+        // Yadigâr: Soy Mührü harcanarak eşya hanedanın yadigârı olur; her nesil hız, XP, ihtiyaç doldurma ve konfor bonusu büyür.
+        private void DrawHeirloom(ItemInstance sel)
+        {
+            var h = Legacy.HeirloomOf(sel.Id);
+            if (h != null)
+            {
+                GUILayout.Label($"✦ {h.DisplayName}");
+                GUILayout.Label($"   {h.Level}. basamak: iş ve dinlenme +%{Thatchwick.Core.Family.Legacy.BonusOf(h) * 100:0}, oda konforu +{Thatchwick.Core.Family.Legacy.ComfortOf(h)}");
+                return;
+            }
+            if (!Thatchwick.Core.Family.Legacy.IsEligible(sel.Def)) return;
+            string why = Legacy.CanMakeHeirloom(sel);
+            int cost = Thatchwick.Core.Family.Legacy.CostFor(sel.Def);
+            GUI.enabled = why == null;
+            if (GUILayout.Button(new GUIContent($"Yadigâr yap ({cost} mühür, sende {Legacy.Seals})", why ?? "Bu eşyada iş ve dinlenme +%5, konfor +2; her nesil artar")))
+            {
+                Legacy.MakeHeirloom(sel, Maker != null ? Maker() : null, Today != null ? Today() : 0, out var msg);
+                _status = msg;
+            }
+            GUI.enabled = true;
         }
 
         private void PlaceFloor()
         {
-            var r = _svc.PlaceFromInventory(_placeId, _ghostPos, _rot, out _);
+            var r = _svc.PlaceFromInventory(_placeId, _ghostPos, _rot, out var placed);
             _status = r.Ok ? "Yerleştirildi." : r.Reason;
+            if (r.Ok && _pendingFinish != null && placed != null)
+            {
+                var fr = _svc.SetItemFinish(placed.Id, _pendingFinish);
+                if (!fr.Ok) _status = $"Yerleştirildi; kaplama: {fr.Reason}";
+            }
             if (r.Ok && _house.Count(_placeId) <= 0) ClearSelectionKeepStatus();
             RefreshOverlay();
         }
@@ -683,6 +1101,7 @@ namespace Thatchwick.Game
         private void StartPlacing(string itemId)
         {
             ClearSelection();
+            _pendingFinish = null;
             _placeId = itemId;
             _ghostPos = new GridPos(24, 12, _view.ViewLevel);
             var def = _content.Items.Get(itemId);

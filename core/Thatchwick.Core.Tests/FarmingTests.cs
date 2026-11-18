@@ -237,11 +237,11 @@ namespace Thatchwick.Core.Tests
             c.House.AddItem("compost", 5);
             Assert.Equal(0.5f, c.Plants.FertilityAt(crop.Position));
             Do(c, crop, "compost");
-            Assert.Equal(0.8f, c.Plants.FertilityAt(crop.Position), 2);
+            Assert.Equal(0.8, (double)c.Plants.FertilityAt(crop.Position), 2);
             Assert.Equal(4, c.House.Count("compost"));
             Do(c, crop, "compost");
             Do(c, crop, "compost");
-            Assert.Equal(1f, c.Plants.FertilityAt(crop.Position), 2);
+            Assert.Equal(1.0, (double)c.Plants.FertilityAt(crop.Position), 2);
             Assert.Equal("Toprak zaten çok verimli.", c.Effects.CanStart(Farmer(), crop, crop.Def.Interactions[1]));
         }
 
@@ -253,18 +253,18 @@ namespace Thatchwick.Core.Tests
             var a = Sow(c, "seed_turnip", 5, 5);
             PlantSystem.SetGrown(a);
             Do(c, a, "harvest");
-            Assert.Equal(0.38f, c.Plants.FertilityAt(pos), 2);                 // 0.5 - 0.12
+            Assert.Equal(0.38, (double)c.Plants.FertilityAt(pos), 2);                 // 0.5 - 0.12
             Assert.Equal("crop_turnip", c.Plants.LastCropAt(pos));
 
             var b = Sow(c, "seed_turnip", 5, 5);                                 // aynı ekin: ek ceza
             PlantSystem.SetGrown(b);
             Do(c, b, "harvest");
-            Assert.Equal(0.20f, c.Plants.FertilityAt(pos), 2);                 // 0.38 - 0.12 - 0.06
+            Assert.Equal(0.20, (double)c.Plants.FertilityAt(pos), 2);                 // 0.38 - 0.12 - 0.06
 
             var p = Sow(c, "seed_pea", 5, 5);                                    // baklagil: azot + nöbetleşe ekim
             PlantSystem.SetGrown(p);
             Do(c, p, "harvest");
-            Assert.Equal(0.36f, c.Plants.FertilityAt(pos), 2);                 // 0.20 - 0.12 + 0.20 + 0.08
+            Assert.Equal(0.36, (double)c.Plants.FertilityAt(pos), 2);                 // 0.20 - 0.12 + 0.20 + 0.08
         }
 
         [Fact]
@@ -274,10 +274,10 @@ namespace Thatchwick.Core.Tests
             c.Plants.SetSoil(new GridPos(3, 3), 0.1f, "x");
             c.Plants.SetSoil(new GridPos(4, 3), 0.95f, "x");
             for (int i = 0; i < 10; i++) c.Plants.OnNewDay(false);
-            Assert.Equal(0.3f, c.Plants.FertilityAt(new GridPos(3, 3)), 2);
-            Assert.Equal(0.75f, c.Plants.FertilityAt(new GridPos(4, 3)), 2);
+            Assert.Equal(0.3, (double)(c.Plants.FertilityAt(new GridPos(3, 3))), 2);
+            Assert.Equal(0.75, (double)(c.Plants.FertilityAt(new GridPos(4, 3))), 2);
             for (int i = 0; i < 30; i++) c.Plants.OnNewDay(false);
-            Assert.Equal(0.5f, c.Plants.FertilityAt(new GridPos(3, 3)), 2);
+            Assert.Equal(0.5, (double)(c.Plants.FertilityAt(new GridPos(3, 3))), 2);
         }
 
         // ---------- kalite ----------
@@ -566,7 +566,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(crop.AgeDays, crop2.AgeDays, 3);
             Assert.Equal(crop.WetDays, crop2.WetDays, 3);
             Assert.True(tree2.FruitReady);
-            Assert.Equal(0.83f, plants2.FertilityAt(new GridPos(4, 4)), 2);
+            Assert.Equal(0.83, (double)(plants2.FertilityAt(new GridPos(4, 4))), 2);
             Assert.Equal("crop_turnip", plants2.LastCropAt(new GridPos(4, 4)));
         }
     }

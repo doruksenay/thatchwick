@@ -10,7 +10,9 @@ namespace Thatchwick.Core.Content
         /// <summary>Yerleştirilmez; yalnızca envanterde sayılan kaynak (odun gibi).</summary>
         Resource = 2,
         /// <summary>Duvarın iç yüzüne asılır (meşale, duvar rafı, goblen); karo kaplamaz.</summary>
-        Wall = 3
+        Wall = 3,
+        /// <summary>Halı: yere serilir, yolu kapatmaz, üstüne mobilya konur; karo başına bir halı.</summary>
+        Rug = 4
     }
 
     /// <summary>Bir eşyanın yüzeyindeki dekor yuvası. U,V: kapladığı alanın içinde 0-1 arası yerel konum.</summary>
@@ -22,6 +24,21 @@ namespace Thatchwick.Core.Content
     }
 
     /// <summary>Yerleştirilebilir/kullanılabilir eşya tanımı. İçerik sonradan paketlerle genişler.</summary>
+    /// <summary>Güçlü makinenin günlük işi: envanterden girdi alır, ürün koyar.</summary>
+    public sealed class AutoProcessDef
+    {
+        public string Item { get; set; }
+        public int Count { get; set; } = 1;
+        public string Produces { get; set; }
+        public int ProducesCount { get; set; } = 1;
+    }
+
+    /// <summary>Barınak odası eşyalarının rolleri.</summary>
+    public static class AnimalRoles
+    {
+        public const string Water = "water", Bedding = "bedding", Collector = "collector", Feeder = "feeder", Bell = "bell";
+    }
+
     public sealed class ItemDef : IContentDef
     {
         public const int MaxSize = 6;
@@ -84,6 +101,44 @@ namespace Thatchwick.Core.Content
         /// <summary>Kiler eşyası: yiyecek bozulmasını bu çarpanla yavaşlatır (0 = kiler değil).</summary>
         public float Preserves { get; set; }
         public List<string> Variants { get; set; } = new List<string>();
+        /// <summary>Mobilya kaplama grubu (wood, cloth, metal, clay); boşsa renk/malzeme seçeneği yok.</summary>
+        public string FinishGroup { get; set; }
+        public bool IsRug => Placement == ItemPlacement.Rug;
+
+        // ---- hayvancılık ve otomasyon ----
+        /// <summary>Buzluk: içinde buz varken (FuelDays = kalan buz günü) yiyeceği çok soğuk tutar.</summary>
+        public bool IsIceBox { get; set; }
+        /// <summary>Balık sepeti: bir gölete değerken her sabah mevsimine göre bir balık.</summary>
+        public bool IsFishTrap { get; set; }
+        /// <summary>Yel değirmeni: kanal gerekmeden güç verir.</summary>
+        public bool WindPower { get; set; }
+        /// <summary>Su kapağı: açıkken sulama ağında suyu geçirir, kapalıyken keser (dokununca aç/kapa).</summary>
+        public bool WaterGate { get; set; }
+        /// <summary>Hasat tırmığı ve ekim makinesi yarıçapı (güç ister).</summary>
+        public int HarvestRadius { get; set; }
+        public int SeedRadius { get; set; }
+        /// <summary>Buz kuyusu: donlu her sabah toplanan buz.</summary>
+        public int IceCollect { get; set; }
+        /// <summary>Güç alınca çalışan düzenek mi (değirmen taşı, yem karıştırıcı, hasat tırmığı, ekim makinesi)?</summary>
+        public bool NeedsPower => AutoProcess != null || HarvestRadius > 0 || SeedRadius > 0;
+        /// <summary>Yiyecek yerleşimindeki kapasite (0 = depo kapasitesi, o da yoksa kiler/buzluk için 60).</summary>
+        public int FoodCapacity { get; set; }
+        /// <summary>Yalnızca kapalı bir odaya konur (folluk, ahır bölmesi, at bölmesi): barınak odası.</summary>
+        public bool RequiresIndoor { get; set; }
+        /// <summary>Yemlik: aynı odadaki hayvanlar buradaki yemden yer.</summary>
+        public bool IsTrough { get; set; }
+        /// <summary>Hayvan konforuna süs katkısı.</summary>
+        public int AnimalComfort { get; set; }
+        /// <summary>Barınak odasındaki rolü: water, bedding, collector, feeder, bell (AnimalRoles).</summary>
+        public string AnimalRole { get; set; }
+        /// <summary>Sulama ağının kaynağı (kuyu, kova-makara).</summary>
+        public bool WaterSource { get; set; }
+        /// <summary>Yalnızca bir kaynağa bağlı sulama ağındayken sular (kanal).</summary>
+        public bool NeedsWaterSource { get; set; }
+        /// <summary>Su çarkı: kaynağa bağlı bir kanala değince yanındaki makinelere güç verir.</summary>
+        public bool PowerSource { get; set; }
+        /// <summary>Güç alınca her gün kendiliğinden yaptığı iş (değirmen taşı: arpa → yem).</summary>
+        public AutoProcessDef AutoProcess { get; set; }
         /// <summary>Yabani toplanabilir: görüneceği mevsimler ve haritada en çok kaç tane.</summary>
         public List<Time.Season> ForageSeasons { get; set; } = new List<Time.Season>();
         public int ForageMax { get; set; }

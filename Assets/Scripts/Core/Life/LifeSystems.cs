@@ -49,6 +49,14 @@ namespace Thatchwick.Core.Life
         public ToolService Tools { get; }
         public ProjectService Projects { get; }
         public GoalService Goals { get; }
+
+        /// <summary>Miras: Soy Mührü, yadigârlar, komşu hanelere evlendirme, köydeki soy.</summary>
+        public Legacy Legacy { get; }
+
+        /// <summary>Hanedan kurucusunun kimliği (köydeki soy sayımı); oyun katmanı bağlar. Null ise sayım yapılmaz.</summary>
+        public Func<int?> FounderId { get; set; }
+        /// <summary>Kazalar ve kazanılmış izler (doküman 14, 3F).</summary>
+        public InjurySystem Injuries { get; }
         /// <summary>Evlilik ve kutlanan şenlik sayıları (hedef ölçütleri için).</summary>
         public int Marriages { get; private set; }
         public int FestivalsCelebrated { get; private set; }
@@ -63,7 +71,11 @@ namespace Thatchwick.Core.Life
         private int _lastSeasonIndex = -1;
         public const double MoodUpdateStepDays = 0.02;
 
-        public LifeSystems(ContentDatabase content, WorldState world, Household house, Population population, GameClock clock)
+        /// <summary>Hesap XP'si sağlayıcı (gün özeti kartındaki XP farkı için); null ise 0.</summary>
+        public Func<int> AccountXp { get; set; }
+
+        /// <param name="seed">Rastgelelik tohumu (toplama noktaları, talipler, halefler). 0 ise sabit varsayılanlar (testler).</param>
+        public LifeSystems(ContentDatabase content, WorldState world, Household house, Population population, GameClock clock, int seed = 0)
         {
             Content = content ?? throw new ArgumentNullException(nameof(content));
             World = world ?? throw new ArgumentNullException(nameof(world));
@@ -71,25 +83,52 @@ namespace Thatchwick.Core.Life
             Population = population ?? throw new ArgumentNullException(nameof(population));
             Clock = clock ?? throw new ArgumentNullException(nameof(clock));
 
-            Mood = new MoodService(world);
+            Mood = new MoodService(world) { Content = content };
             Graves = new GraveService(world, content);
-            Ledger = new DayLedger(house);
+            Ledger = new DayLedger(house, () => AccountXp != null ? AccountXp() : 0);
             Forecast = new WinterForecast(content, house, world, population, clock.Config);
-            Suitors = new SuitorPool(content, population);
+            Suitors = seed != 0 ? new SuitorPool(content, population, Seeds.Derive(seed, 1)) : new SuitorPool(content, population);
             Weather = new WeatherSystem(clock.Config, seed: 1);
             Festivals = new FestivalService(content, clock) { Village = Village };
             Spoilage = new SpoilageService(content, house, world) { ExtraReduction = SpoilReduction };
-            Forage = new ForageSystem(world, content);
-            Villagers = new VillagerService(content, population, house, clock);
+            Forage = seed != 0 ? new ForageSystem(world, content, Seeds.Derive(seed, 2)) : new ForageSystem(world, content);
+            Villagers = seed != 0 ? new VillagerService(content, population, house, clock, Seeds.Derive(seed, 3)) : new VillagerService(content, population, house, clock);
             Tools = new ToolService(content, house)
             {
                 AccountLevel = () => AccountLevel != null ? AccountLevel() : int.MaxValue,
+                // Hanede 5. seviye demirci varsa köy demircisi gerekmez.
                 SmithAvailable = () => !HasVillagerRole(RoleSmithDefined) || Villagers.HasRole(VillagerService.RoleBlacksmith)
+                    || BestSkill(SkillType.Smithing) >= SmithSelfLevel
             };
             Projects = new ProjectService(content, house, Village);
             Goals = new GoalService(content) { Metric = MetricValue };
+            Legacy = new Legacy(population, seed != 0 ? Seeds.Derive(seed, 5) : 61) { DaysPerYear = clock.Config.DaysPerYear };
+            Mood.ExtraComfort = Legacy.ComfortBonus;
+            Legacy.SealsChanged += e =>
+            {
+                if (e.Amount > 0) Say($"Soy Mührü +{e.Amount}: {e.Note}.", NoticeLevel.Info);
+            };
+            Legacy.HeirloomLost += (h, msg) => Say(msg, NoticeLevel.Warning);
+            // Doğum günü: mevsim ve gün (karakter panelinde gösterilir).
+            population.BabyBorn += (baby, mother, father) => { baby.BirthSeason = (int)Clock.Season; baby.BirthDayOfSeason = Clock.DayOfSeason; };
+            Injuries = new InjurySystem(population, seed != 0 ? Seeds.Derive(seed, 4) : 0)
+            {
+                MinDaysBetween = clock.Config.DaysPerSeason,
+                Today = () => Clock.TotalDays,
+                IsOutdoors = c => { var room = World.Map.Rooms.RoomAt(c.Position); return room == null || !room.IsIndoor; },
+                WeatherFactor = () =>
+                {
+                    var w = Weather.Today(Clock.TotalDays);
+                    return w == WeatherType.Storm ? 2.0 : w == WeatherType.Snow ? 1.5 : 1.0;
+                },
+                ToolSpeed = id => Tools.SpeedFor(id),
+                Notify = (text, id) => Say(text, NoticeLevel.Warning, id)
+            };
             Spoilage.Spoiled += (id, n) =>
-                Say($"{n} {(content.Items.TryGet(id, out var d) ? d.DisplayName : id)} bozuldu.", NoticeLevel.Warning);
+            {
+                bool ice = content.Items.TryGet(id, out var d) && d.HasTag("ice");
+                Say(ice ? $"{n} buz eridi (buzluğa koy)." : $"{n} {(d != null ? d.DisplayName : id)} bozuldu.", ice ? NoticeLevel.Info : NoticeLevel.Warning);
+            };
             Festivals.Announced += f => Say($"Bugün {f.DisplayName}!", NoticeLevel.Info);
             Festivals.Celebrated += (f, n) =>
             {
@@ -104,12 +143,14 @@ namespace Thatchwick.Core.Life
                 Population.RecomputeAll();
                 Say($"Köy projesi tamamlandı: {p.DisplayName}.", NoticeLevel.Info);
                 Ledger.Note(p.DisplayName);
+                Legacy.OnProjectCompleted(p.DisplayName, Clock.TotalDays);
                 Goals.Update();
             };
             Goals.Completed += OnGoalCompleted;
             Villagers.EventTriggered += (v, e) => Say($"{v.Name}: {e.Text}", NoticeLevel.Info, v.Id);
+            Villagers.SuccessorArrived += (v, def) => Say($"{v.Name} köye yerleşti ({def.RoleName}).", NoticeLevel.Info, v.Id);
             Villagers.GiftGiven += (v, item, taste, msg) => Say(msg, taste == GiftTaste.Dislike ? NoticeLevel.Warning : NoticeLevel.Info, v.Id);
-            Watcher.Raised += (level, text, id) => Say(text, level, id);
+            Watcher.Raised += (level, text, id) => Say(text, level, id, transient: true);
             population.BabyBorn += (baby, mother, father) =>
             {
                 Ledger.OnBorn(baby);
@@ -193,6 +234,7 @@ namespace Thatchwick.Core.Life
             }
             Say($"Hedef tamamlandı: {goal.DisplayName}.", NoticeLevel.Info);
             Ledger.Note(goal.DisplayName);
+            Legacy.OnGoalCompleted(goal.DisplayName, Clock.TotalDays);
         }
 
         /// <summary>Soy mesleği: haneden dal almış karakterlerin en çok seçtiği beceri; yoksa null.</summary>
@@ -206,15 +248,24 @@ namespace Thatchwick.Core.Life
 
         public string TradeOf(Character c) => LifeRules.TradeOf(Content, c);
 
-        /// <summary>Bildirim akışına ve düz metin olayına yazar. Dış sistemler (aile, pazar) bunu çağırabilir.</summary>
-        public void Say(string message, NoticeLevel level = NoticeLevel.Info, int characterId = 0)
+        /// <summary>Hanedan başı değişti (Dynasty.OnDeath sonrası): yadigârlar bir nesil yaşlanır, nesil ve soy mesleği mührü.</summary>
+        public void OnSuccession(Dynasty dynasty, Character heir)
         {
-            Log.Add(Clock.TotalDays, level, message, characterId);
+            Legacy.OnSuccession(dynasty, heir, Clock.TotalDays);
+            foreach (var h in Legacy.Heirlooms)
+                if (h.Level > 1) { Say($"Yadigârlar bir nesil daha hanede: bonuslar güçlendi.", NoticeLevel.Info); break; }
+        }
+
+        /// <summary>Bildirim akışına ve düz metin olayına yazar. Dış sistemler (aile, pazar) bunu çağırabilir.</summary>
+        public void Say(string message, NoticeLevel level = NoticeLevel.Info, int characterId = 0, bool transient = false)
+        {
+            Log.Add(Clock.TotalDays, level, message, characterId, transient);
             Notice?.Invoke(message);
         }
 
         private void OnMemberDied(Character dead)
         {
+            if (!dead.IsVillager) Legacy.OnHouseholdDeath(Clock.Season);
             Ledger.OnDied(dead);
             Graves.Bury(dead, Clock.TotalDays);
             int mourners = Mood.Mourn(dead, Population.Members);
@@ -240,7 +291,56 @@ namespace Thatchwick.Core.Life
 
         public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction);
         public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell);
-        public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount));
+        // Ev düzenleme: hanenin en iyi süslemecisi seviye başına %2 indirim (10. seviyede %18) dallarla toplanır.
+        public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount) + 0.02f * Math.Max(0, BestSkill(SkillType.Decorating) - 1));
+
+        /// <summary>Alet yükseltmesini köy demircisi olmadan yapabilmek için hanedeki demircinin seviyesi.</summary>
+        public const int SmithSelfLevel = 5;
+
+        /// <summary>Hanenin (köylü olmayan, yaşayan) üyeleri arasında bir becerinin en yüksek seviyesi; kimse yoksa 1.</summary>
+        public int BestSkill(SkillType skill)
+        {
+            int best = 1;
+            foreach (var c in Population.Members)
+                if (!c.IsDead && !c.IsVillager) best = Math.Max(best, c.Skills.GetLevel(skill));
+            return best;
+        }
+
+        /// <summary>Bir beceride hanenin en iyisi (eşitse ilk); kimse yoksa null.</summary>
+        public Character BestAt(SkillType skill)
+        {
+            Character best = null;
+            foreach (var c in Population.Members)
+                if (!c.IsDead && !c.IsVillager && (best == null || c.Skills.GetXp(skill) > best.Skills.GetXp(skill))) best = c;
+            return best;
+        }
+
+        /// <summary>Hava bilgisi: kaç gün ilerisi görülür (1. seviye yarın, 4. seviye 2 gün, 7. seviye 3 gün, 10. seviye 4 gün).</summary>
+        public int ForecastDays => 1 + (BestSkill(SkillType.WeatherLore) - 1) / 3;
+
+        /// <summary>Önümüzdeki günlerin havası (hava bilgisi seviyesine göre).</summary>
+        public List<WeatherType> WeatherAhead(int days)
+        {
+            var list = new List<WeatherType>();
+            for (int d = 1; d <= days; d++) list.Add(Weather.Today(Clock.TotalDays + d));
+            return list;
+        }
+
+        /// <summary>
+        /// Hekimlik (gün başında): hanenin hekimi soğuk ve açlık yarası olan herkesi seviye başına 0,1 gün iyileştirir,
+        /// iyileştirdiği kişi başına XP alır. Kimse yaralı değilse bir şey olmaz.
+        /// </summary>
+        public int DailyHealing()
+        {
+            var healer = BestAt(SkillType.Medicine);
+            if (healer == null) return 0;
+            double days = 0.1 * healer.Skills.GetLevel(SkillType.Medicine);
+            int n = 0;
+            foreach (var c in Population.Members)
+                if (!c.IsDead && !c.IsVillager && c.Treat(days)) n++;
+            if (n > 0) healer.GainSkillXp(SkillType.Medicine, 6 * n);
+            return n;
+        }
 
         /// <summary>Ekin büyüme çarpanı: hava x (1 + köy) x en iyi yeşil parmak.</summary>
         public float GrowthMultiplier() =>
@@ -272,7 +372,12 @@ namespace Thatchwick.Core.Life
             };
         }
 
-        public void Attach(JobRunner runner) { runner.SpeedProvider = WorkSpeedFor; }
+        public void Attach(JobRunner runner)
+        {
+            runner.SpeedProvider = WorkSpeedFor;
+            runner.ItemBonus = Legacy.BonusFor;
+            runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
+        }
         public void Attach(PlantSystem plants)
         {
             _plants = plants;
@@ -299,7 +404,7 @@ namespace Thatchwick.Core.Life
             {
                 _moodAccumulator = 0;
                 Mood.Update(Population.Members);
-                Watcher.Update(Population.Members);
+                Watcher.Update(Population.Members, day: Clock.TotalDays);
             }
 
             Spoilage.Tick(gameDays);
@@ -329,8 +434,10 @@ namespace Thatchwick.Core.Life
             int season = (int)((day / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
             if (_lastSeasonIndex >= 0 && season != _lastSeasonIndex)
             {
+                Legacy.OnSeasonChanged((Season)_lastSeasonIndex, (Season)season, day, Clock.TotalDays);
                 var guest = Suitors.OnNewSeason();
                 if (guest != null) Say($"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
+                Villagers.ReplaceDeparted();   // ölen adlı köylünün (demirci ...) yerine halefi mevsim başında gelir
             }
             _lastSeasonIndex = season;
             int arrivals = Suitors.Ensure();
@@ -339,7 +446,24 @@ namespace Thatchwick.Core.Life
             var report = Forecast.Report(Clock.TotalDays);
             if (report.Warnings.Count > 0)
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
+            DailyHealing();
+            Injuries.DailyUpdate();
+            // Miras: dünyadan kalkmış yadigârlar düşer; komşu hanelerde soy sürer; köydeki soy eşikleri.
+            Legacy.Validate(World.GetItem);
+            foreach (var w in Legacy.NeighborFamiliesDaily()) Say($"{w.Name} çocuk bekliyor.", NoticeLevel.Info, w.Id);
+            var founder = FounderId != null ? FounderId() : null;
+            if (founder.HasValue) Legacy.CheckDescendants(founder.Value, Clock.TotalDays);
+            NewDay?.Invoke(day);
         }
+
+        /// <summary>Yeni gün işlendikten sonra (ekin, hava, köy) tetiklenir: çiftlik otomasyonu, otlak, hayvan konforu buraya bağlanır.</summary>
+        public event Action<long> NewDay;
+
+        /// <summary>Bugün dışarısı hayvanlar için uygun mu (fırtına yok)?</summary>
+        public bool CalmToday => Weather.Today(Clock.TotalDays) != WeatherType.Storm;
+
+        /// <summary>Bugün yağmur ya da fırtına var mı (yol çamurlanır, daha çok aşınır)?</summary>
+        public bool RainyToday => Weather.Today(Clock.TotalDays) == WeatherType.Rain || Weather.Today(Clock.TotalDays) == WeatherType.Storm;
 
         // ---- kayıt ----
 
@@ -348,6 +472,7 @@ namespace Thatchwick.Core.Life
             var data = new LifeSaveData
             {
                 weatherSeed = Weather.Seed,
+                lastProcessedDay = _lastDay,
                 festivalCelebratedDay = Festivals.CelebratedDay,
                 spoilage = Spoilage.Export().ToArray(),
                 tools = Tools.Export().ToArray(),
@@ -355,7 +480,10 @@ namespace Thatchwick.Core.Life
                 goalsDone = new List<string>(Goals.Done).ToArray(),
                 villagers = Villagers.Export().ToArray(),
                 marriages = Marriages,
-                festivalsCelebrated = FestivalsCelebrated
+                festivalsCelebrated = FestivalsCelebrated,
+                accidentSetting = (int)Injuries.Setting,
+                legacy = Legacy.Export(),
+                lastHouseholdAccidentDay = Injuries.LastHouseholdAccidentDay
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -378,7 +506,22 @@ namespace Thatchwick.Core.Life
             Projects.Restore(data.projectsDone);
             Goals.Restore(data.goalsDone);
             Villagers.Restore(data.villagers);
+            Legacy.Restore(data.legacy);
             Marriages = Math.Max(0, data.marriages);
+            if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;
+            Injuries.LastHouseholdAccidentDay = data.lastHouseholdAccidentDay;
+            // Günlük işler (sulama sıfırlama, kuzgun, fırtına, toplama noktaları) kayıttaki gün için yapılmışsa yeniden yapılmaz.
+            // Eski kayıtta alan yoktur (-1): eskisi gibi yüklemeden sonraki ilk turda bir kez çalışır.
+            if (data.lastProcessedDay >= 0 && data.lastProcessedDay <= Clock.DayIndex)
+            {
+                _lastDay = data.lastProcessedDay;
+                _lastSeasonIndex = (int)((_lastDay / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
+                if (_lastDay == Clock.DayIndex)
+                {
+                    Festivals.AnnouncedDay = _lastDay;
+                    Ledger.Tick(_lastDay);       // gün özeti yüklenen günden saymaya başlar
+                }
+            }
             FestivalsCelebrated = Math.Max(0, data.festivalsCelebrated);
             var graves = new List<GraveRecord>();
             if (data.graves != null)

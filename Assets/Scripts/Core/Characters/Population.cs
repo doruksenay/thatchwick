@@ -66,7 +66,18 @@ namespace Thatchwick.Core.Characters
             foreach (var c in snapshot) c.Tick(gameDays);
         }
 
-        private void OnMemberDied(Character c) => MemberDied?.Invoke(c);
+        private void OnMemberDied(Character c)
+        {
+            ReleaseSpouseOf(c);
+            MemberDied?.Invoke(c);
+        }
+
+        // Dul kalan yeniden evlenebilsin: yaşayan eşin bağı çözülür. Ölenin SpouseId'si kalır (yas, miras ve soy ağacı için).
+        private void ReleaseSpouseOf(Character dead)
+        {
+            foreach (var m in _members)
+                if (m != dead && !m.IsDead && m.SpouseId == dead.Id) m.SpouseId = null;
+        }
 
         /// <summary>Tüm üyelerin özellik/dal etkilerini yeniden hesaplar (köy projesi bitince, yüklemeden sonra).</summary>
         public void RecomputeAll()
@@ -101,10 +112,21 @@ namespace Thatchwick.Core.Characters
             }
             if (AppearanceCatalog != null)
             {
+                var cat = AppearanceCatalog;
                 var father = fatherId.HasValue ? Find(fatherId.Value) : null;
-                baby.Appearance = father != null
-                    ? AppearanceCatalog.Inherit(mother.Appearance, father.Appearance, _rng, sex)
-                    : AppearanceCatalog.Randomize(_rng, sex);
+                // Gizli genetik: genomu olmayan ebeveynin (eski kayıt, köylü) genomu görünüşünden kurulur.
+                if (mother.Genome == null) mother.Genome = Genetics.FromAppearance(mother.Appearance, cat, _rng);
+                if (father != null && father.Genome == null) father.Genome = Genetics.FromAppearance(father.Appearance, cat, _rng);
+                if (father != null)
+                {
+                    baby.Genome = Genetics.Inherit(mother.Genome, father.Genome, _rng, cat);
+                    baby.Appearance = cat.FromGenome(baby.Genome, _rng, sex);
+                }
+                else
+                {
+                    baby.Appearance = cat.Randomize(_rng, sex);
+                    baby.Genome = Genetics.FromAppearance(baby.Appearance, cat, _rng);
+                }
             }
             Add(baby);
             BabyBorn?.Invoke(baby, mother, fatherId);

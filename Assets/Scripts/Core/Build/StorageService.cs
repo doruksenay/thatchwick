@@ -1,4 +1,5 @@
 using System;
+using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.World;
 
@@ -22,6 +23,9 @@ namespace Thatchwick.Core.Build
 
         public int BaseCapacity { get; }
 
+        /// <summary>Hanenin en iyi arabacısının seviyesi; null ise etkisiz.</summary>
+        public Func<int> CartingLevel { get; set; }
+
         public StorageService(WorldState world, Household house, ContentDatabase content, int baseCapacity = DefaultBaseCapacity)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -41,6 +45,8 @@ namespace Thatchwick.Core.Build
                 int cap = BaseCapacity + _world.Map.CountZone(ZoneType.Storage) * UnitsPerZoneTile;
                 foreach (var item in _world.Items)
                     if (!item.IsDecor) cap += item.Def.Storage;
+                // Arabacılık: düzenli istif ve taşıma, seviye başına %3 fazla yer.
+                if (CartingLevel != null) cap = (int)(cap * SkillNames.Factor(CartingLevel(), 0.03));
                 return cap;
             }
         }
