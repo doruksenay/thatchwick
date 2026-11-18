@@ -1,7 +1,7 @@
 ---
 id: "105"
 title: Hayvanlar 5: domuz + keçi
-status: running
+status: review
 claimed_at: 2026-11-18T08:03Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
