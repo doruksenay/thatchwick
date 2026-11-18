@@ -1,7 +1,8 @@
 ---
 id: "400"
 title: "Cam eşyalar, aynalar, kutu yatak ve cam ürün ikonları (8 eşya + 7 ikon)"
-status: pending
+status: running
+claimed_at: 2026-11-18T18:40Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 27 §18 (18.11.2026)
 priority: 20
 family: esya
