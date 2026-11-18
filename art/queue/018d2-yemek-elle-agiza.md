@@ -1,7 +1,7 @@
 ---
 id: "018d2"
 title: Yemek animasyonu yeniden: eliyle ağzına götürür (erkek ve kadın, 4 yön)
-status: running
+status: review
 claimed_at: 2026-11-18T19:22Z
 approved_by: user        # kullanıcı 18.11.2026 (sohbet)
 priority: 10
