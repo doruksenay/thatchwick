@@ -1,7 +1,7 @@
 ---
 id: "102"
 title: Hayvanlar 2: civciv + ördek
-status: running
+status: blocked
 claimed_at: 2026-11-18T12:32Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
@@ -23,6 +23,10 @@ outputs:
 created: 2026-11-08
 ---
 # 102 Hayvanlar 2: civciv + ördek
+
+## Sorular
+- v3 döndürme (`create_character`, `reference_image_url`) referansı **en az 32x32** ister (hata: "v3 reference output size must be 32-256px per side, got 16x16 / 24x24"). Kural T tuvalleri civciv 16, ördek 24 çıktı; 8 tek kare üretildi (8 gen) ama döndürme yapılamadı. Tek deneme kuralı gereği yeniden denemedim, Assets'e bir şey konmadı.
+- Seçenekler: (a) tek kareleri 32x32 saydam tuvale ortalayıp (yeniden örnekleme yok, yalnızca dolgu) v3'e vermek; (b) tuvalleri 32'ye çıkarıp yeniden üretmek. Hangisi? Tek kare job id'leri `art/results/102-hayvan-civciv-ordek.md` içinde.
 
 ## Amaç
 Öncelik 1 kuşları. Tuvaller 101'de ölçülen pixen doluluk oranıyla seçilir; bu yüzden 101 kabul edilmeden başlamaz. Her tür 4 aday; hepsi aynı çizim stili ve kamera. Kullanıcı Unity'de bakıp seçecek.
