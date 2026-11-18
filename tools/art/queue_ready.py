@@ -160,18 +160,20 @@ def load_jobs():
             "depends_on": parse_list(fm.get("depends_on", "")),
             "style_gate": fm.get("style_gate", "").lower() == "true",
             "family": fm.get("family", ""),
-            "worker": fm.get("worker", "").split("#")[0].strip(),
+            "worker": fm.get("worker", "").split("#")[0].strip().lower(),   # "" = her işçi; "yerel" = yalnızca bilgisayardaki işçi; "batch" = toplu işçi
         }
     return jobs
 
 
-def evaluate(jobs, spent_today, balance, strict=False, limit=DAILY_LIMIT):
+def evaluate(jobs, spent_today, balance, strict=False, limit=DAILY_LIMIT, worker=""):
     remaining_today = max(0.0, limit - spent_today)
     ready, waiting = [], []
     for j in jobs.values():
         why = []
         if j["status"] != "pending" and not j["stale_claim"]:
             continue
+        if worker and j["worker"] not in ("", "batch") and j["worker"] != worker:
+            why.append(f"yalnızca {j['worker']} işçi (bu işçi: {worker})")
         if j["approved_by"] == "auto" and strict:
             if j["cost_max"] > AUTO_LIMIT:
                 why.append(f"auto ama cost_max {j['cost_max']:g} > {AUTO_LIMIT:g} (approved_by: user gerekir)")
@@ -231,12 +233,14 @@ def main():
     ap.add_argument("--strict", action="store_true", help="eski kural: yalnızca accepted bağımlılık, auto için cost_max <= 25")
     ap.add_argument("--allow-review-deps", action="store_true", help="artık varsayılan; geriye uyumluluk için kabul edilir")
     ap.add_argument("--claim", action="store_true", help="ilk uygun işi running yap; kimliğini ve dosyasını yaz")
+    ap.add_argument("--worker", default="", choices=["", "bulut", "yerel"],
+                    help="işçi türü; iş dosyasında 'worker:' başka bir türü yazıyorsa iş uygun sayılmaz (bulut işçisi --worker bulut verir)")
     a = ap.parse_args()
 
     jobs = load_jobs()
     spent, balance = read_budget(a.today)
     limit = daily_limit(a.today)
-    ready, waiting, remaining = evaluate(jobs, spent, balance, a.strict, limit)
+    ready, waiting, remaining = evaluate(jobs, spent, balance, a.strict, limit, a.worker)
 
     if a.claim:
         if not ready:

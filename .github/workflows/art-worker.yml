@@ -66,7 +66,7 @@ jobs:
           HAS_PIXELLAB: ${{ secrets.PIXELLAB_API_TOKEN != '' }}
         run: |
           set +e
-          python tools/art/queue_ready.py --all
+          python tools/art/queue_ready.py --all --worker bulut
           code=$?
           set -e
           if [ "$code" != "0" ]; then
@@ -91,7 +91,7 @@ jobs:
           claimed=""
           for attempt in 1 2 3 4 5; do
             git pull --ff-only --quiet "$remote" main    # tetikten sonra main ilerlediyse en uca gel
-            if ! out=$(python tools/art/queue_ready.py --claim); then
+            if ! out=$(python tools/art/queue_ready.py --claim --worker bulut); then
               echo "Uygun iş kalmadı."; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
             fi
             read -r job file <<< "$out"
