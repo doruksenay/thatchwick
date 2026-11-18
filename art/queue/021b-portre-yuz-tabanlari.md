@@ -1,7 +1,7 @@
 ---
 id: "021b"
 title: Portre yüz tabanları: long, heart
-status: running
+status: review
 claimed_at: 2026-11-18T08:11Z
 approved_by: user
 family: karakter
