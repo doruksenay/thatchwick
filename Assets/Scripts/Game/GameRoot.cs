@@ -464,6 +464,7 @@ namespace Thatchwick.Game
             _life.Attach(_plants);
             _life.Attach(_heat);
             _life.Attach(_market);
+            _marketPanel.Merchant = _life.Merchant; _marketPanel.DayIndex = () => _clock.DayIndex;   // gezgin tüccar (belge 34-D5)
             _life.Attach(_buildService);
             _life.Attach(_effects);
             _life.Attach(_animals);   // attan düşen binici yaralanır, at ürkünce bildirim (Project belgesi 29)

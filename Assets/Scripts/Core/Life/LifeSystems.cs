@@ -39,6 +39,8 @@ namespace Thatchwick.Core.Life
         public DayLedger Ledger { get; }
         public WinterForecast Forecast { get; }
         public SuitorPool Suitors { get; }
+        /// <summary>Gezgin tüccar ve panayır (belge 34-D5).</summary>
+        public TravelingMerchant Merchant { get; }
 
         // Dünya sistemleri (Adım 33-36, 42)
         public WeatherSystem Weather { get; }
@@ -115,6 +117,7 @@ namespace Thatchwick.Core.Life
             Ledger = new DayLedger(house, () => AccountXp != null ? AccountXp() : 0);
             Forecast = new WinterForecast(content, house, world, population, clock.Config);
             Suitors = seed != 0 ? new SuitorPool(content, population, Seeds.Derive(seed, 1)) : new SuitorPool(content, population);
+            Merchant = new TravelingMerchant(content, house, seed != 0 ? Seeds.Derive(seed, 16) : 23);
             Weather = new WeatherSystem(clock.Config, seed: 1);
             Festivals = new FestivalService(content, clock) { Village = Village };
             Spoilage = new SpoilageService(content, house, world) { ExtraReduction = SpoilReduction };
@@ -192,6 +195,7 @@ namespace Thatchwick.Core.Life
             Upbringing.AttachHouse(house);
             Upbringing.Weddings.DowryFill = Keepsakes.BestDowryFill;
             Suitors.QualityChance = Upbringing.Weddings.SuitorQuality;
+            Merchant.AddReputation = (n, why) => Upbringing.Reputation.Add(n, why);
             Thatchwick.Core.Upbringing.ToyNames.Lookup = id => content.Items.TryGet(id, out var td) ? td.DisplayName : null;
             Breakdowns.Started += (c, kind) => { if (!c.IsVillager) Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Breakdown, "bunalım"); };
             Spoilage.Spoiled += (id, n) =>
@@ -540,7 +544,11 @@ namespace Thatchwick.Core.Life
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
         }
         /// <summary>Hayvanlar: can yoldaşı bağı (yakınlık, bakım, ölüm), kalite ve binicilik bonusu.</summary>
-        public void Attach(Thatchwick.Core.Animals.AnimalSystem animals, Thatchwick.Core.Animals.AnimalCare care) => Upbringing.Attach(animals, care);
+        public void Attach(Thatchwick.Core.Animals.AnimalSystem animals, Thatchwick.Core.Animals.AnimalCare care)
+        {
+            Upbringing.Attach(animals, care);
+            Merchant.Animals = animals;
+        }
 
         public void Attach(PlantSystem plants)
         {
@@ -623,7 +631,7 @@ namespace Thatchwick.Core.Life
         public ContestBook Contests { get; } = new ContestBook();
         private static Animal FindAnimal(AnimalSystem animals, int id) { foreach (var a in animals.Animals) if (a.Id == id) return a; return null; }
 
-        public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; }
+        public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; Merchant.BuyFactor = () => market.TradeBuyFactor; }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
         /// <summary>Doldurulan dekora giren yiyecek envanterdeki en eski partinin yaşını taşır.</summary>
         public void Attach(Thatchwick.Core.Work.InteractionEffects effects)
@@ -686,8 +694,19 @@ namespace Thatchwick.Core.Life
         {
             bool here = Festivals.IsMarketDayToday;
             bool arrived = here && !House.MerchantInVillage;
+            bool left = !here && House.MerchantInVillage;
             House.MerchantInVillage = here;
-            if (announce && arrived) Say("Gezgin tüccar köyde: pirinç ibrik, çini, kervan halısı bugün satılıyor (yapı kataloğu, Kervan Odası).", NoticeLevel.Info);
+            // Belge 34-D5: mevsimin ilk pazar günü panayır. Kayıt yüklenirken (announce=false) mallar kayıttan gelir.
+            bool fair = Clock.DayOfSeason < FestivalService.MarketDayInterval;
+            if (arrived && (announce || !Merchant.Here)) Merchant.Arrive(Clock.DayIndex, fair);
+            if (left) Merchant.Leave();
+            if (announce && arrived)
+            {
+                string order = Merchant.Order != null && Content.Items.TryGet(Merchant.Order.ItemId, out var od)
+                    ? $" Siparişi: {Merchant.Order.Count} {od.DisplayName.ToLowerInvariant()}." : "";
+                Say(fair ? $"Panayır kuruldu! Gezgin tüccar köyde: uzak diyar malları ve damızlık (pazar paneli).{order}"
+                         : $"Gezgin tüccar köyde: uzak diyar malları (pazar paneli) ve Kervan Odası eşyaları (yapı kataloğu).{order}", NoticeLevel.Info);
+            }
         }
 
         /// <summary>Köye camcılık geldi: cam ocağı kurulunca çömlekçi cam şişe, kavanoz ve bardak satar (27 §18.3).</summary>
@@ -838,6 +857,7 @@ namespace Thatchwick.Core.Life
                 houses = Houses.Export(),
                 lastHouseholdAccidentDay = Injuries.LastHouseholdAccidentDay,
                 upbringing = Upbringing.Export(),
+                merchant = Merchant.Export(),
                 natureJournal = Journal.Export(),
                 adoptedWild = Adoptions.Export(),
                 contests = Contests.Export(),
@@ -862,6 +882,7 @@ namespace Thatchwick.Core.Life
             Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
             Festivals.CelebratedDay = data.festivalCelebratedDay;
             Upbringing.Import(data.upbringing);
+            Merchant.Import(data.merchant);
             Journal.Import(data.natureJournal);
             Adoptions.Import(data.adoptedWild);
             Contests.Import(data.contests);
