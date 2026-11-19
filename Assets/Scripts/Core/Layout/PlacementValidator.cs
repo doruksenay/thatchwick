@@ -89,6 +89,10 @@ namespace Thatchwick.Core.Layout
         private readonly List<Violation> _out = new List<Violation>();
         private Dictionary<GridPos, ItemInstance> _occ;
 
+        /// <summary>Etkileşim kuralının ulaşılabilirlik kümesi (verilmezse bütün yollardan ve kapılardan hesaplanır). Oda döşeyici
+        /// odanın girişlerinden hesaplananı verir (hızlı, yerel).</summary>
+        public Func<HashSet<GridPos>> ReachProvider { get; set; }
+
         /// <summary>Oyuncunun elle yaptığı yerleşimde uyarıya düşen kurallar (açık karar: uyarı ve kırmızı vurgu, engel değil).</summary>
         public bool PlayerMode { get; set; }
 

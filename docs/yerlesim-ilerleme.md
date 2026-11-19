@@ -218,6 +218,53 @@ EMİN DEĞİL: item.debris: oda türü yok (rooms boş), kural dışı kalır
 ### PixelLab iş dosyaları (approved_by: pending)
 - `art/queue/431-yerlesim-dukkan-esyalari.md` (30), `432-yerlesim-dis-mekan.md` (13), `433-oturma-arka-gorunum.md` (12, arkası dönük).
 
+## Aşama C: Oda şablonları, dükkân katları ve iç mekân (tamam)
+
+### Süreç (`Core/Layout/RoomFurnisher.cs`)
+oda geometrisi → kapı, merdiven uçları, başlangıç noktaları (boş kalır) → her adım: ana eşya (duvara sırt / arka duvar / köşe /
+orta / kapı yanı / uzak / tezgâh) → ilişkili eşya (`seatsAround`: oturak masaya bakar; `bedside`; `nearHearth`; `nearItem`) →
+süs yalnızca kalan geçerli yerlere (yüzey yuvası, arka duvarın kameraya bakan yüzü, tavan, halı) → doğrulayıcı. Her eşya konmadan
+önce dolaşım denetlenir (girişler, merdiven girişleri, bütün ön karolar ve "en az bir yanı" istekleri kapıdan ulaşılır kalmalı).
+Doğrulayıcıdan geçmeyen isteğe bağlı eşya çıkarılır; zorunlu eşya geçmezse başka tohumla yeniden denenir (6 deneme).
+Sabit tohum: oda tohumu = Seeds.Derive(oyun tohumu, bina:kat:oda); aynı tohum aynı odayı verir (testli).
+
+### Veri (`Assets/Resources/Content/layouts.json`, kod içinde koordinat yok)
+25 oda şablonu (köylü evi, üst kat ev, küçük ev, han odası, çiftlik evinin üç katı, 12 dükkân zemini, 6 bodrum) ve 14 bina şablonu
+(Ek tablosu kat planı). Zorunlu meslek eşyaları zorunlu adım; şablon onlarsız geçmez (test: `Sehir_DukkanZemini_EkTablosundakiZorunluEsyalar`).
+
+### Dükkân evleri (`Core/Layout/TownBuilder.cs`)
+- Plan (bina dikdörtgeni, kapı) `Regions.TownBuildings` tablosuna alındı (belge 40 planı değişmedi); iç döşeme satırları silindi.
+- Üst kat ve bodrum bina şablonundan: üst katta zemin kattaki kapı/pencere hizasında pencere, bodrumda düz duvar ve taş zemin;
+  merdivenler ön duvarlara (batı/kuzey) dayalı, girişi ve inişi bina içinde, kapıdan uzak; üst kat merdiven boşluğu açık.
+- Han üst katı: inişin sırası koridor, iki yanında dört oda (3 kiralık han odası + Şerife'nin odası), her odanın koridora kapısı.
+- Tek katlı kalanlar: demirci, taşçı (Ek tablosu). Hayvan pazarı ağıl olarak kaldı (kulübe eklenmedi, bkz. kalanlar).
+- Sahiplerin evi üst katta: `Regions.Places(map)`; Kerem, Hatice, Zeynep ve Ayşe'nin `home` anahtarı life.json'da dükkânın
+  üst katına alındı. Üst katı olmayan eski haritada eski evine düşer (test). NPC yol bulma merdivenle (test: meydandan her
+  sahibin üst kattaki evine yol var). `NearestWalkable` artık katı koruyor.
+- Bina içinden geçen yol temizlendi (eski planda kuzey yolu meyhanenin içinden geçiyordu).
+
+### Çiftlik evi
+Belge 38'deki iki katlı ev aynı (yapı ve merdivenler), içi şablondan: zemin mutfak-yemek-oturma, üst kat üç yataklı yatak odası,
+bodrum kiler ve atölye. Oyuncu ve Maud'un başlangıç karoları, kapı içi ve merdiven uçları boş (test). Oyuncunun evi yalnızca yeni
+oyunda döşenir; eski kayıtların yerleşimine dokunulmaz (dünya yalnızca yeni oyunda kuruluyor).
+
+### Sonuç (tohum 1; 20 farklı tohumda da 40/40)
+```
+Şablon: 40 oda, kusursuz 40, eksik zorunlu 0, doğrulayıcının çıkardığı isteğe bağlı 0
+Eşya: 1375, yerleştirilemeyen: 2, ihlal: 4 (hata 4)
+  sınır                                 1
+  kapı önü kapalı                       1
+  ilişki                                1
+  iç/dış mekân                          1
+Yere göre:
+  Balıkçı                               1   kapı önü kapalı 1
+  Marangoz / mobilyacı                  1   ilişki 1
+  Saraç ve tabakhane                    1   iç/dış mekân 1
+  Şehir                                 1   sınır 1
+Görselsiz (kutu) eşya / toplam, yere göre (bitki hariç):
+```
+Kalan 4 ihlal dış mekân (Aşama D). Önce/sonra kat planları: `docs/yerlesim-kat-planlari.md` (ekran görüntüsü yerine ASCII).
+
 ### Görsel envanteri (IsoArt eşlemesi)
 Yönler dosya adındaki ekten: se = N, sw = W (kameraya dönük), ne = E, nw = S (arkası dönük). Hiçbir eşyanın arkası dönük
 görseli yok. Ayna yalnızca sol↔sağ (se↔sw); duvar eşyasında öbür duvar için kullanılıyor.

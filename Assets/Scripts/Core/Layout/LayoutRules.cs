@@ -33,6 +33,7 @@ namespace Thatchwick.Core.Layout
             HashSet<GridPos> Reachable()
             {
                 if (reach != null) return reach;
+                if (v.ReachProvider != null) return reach = v.ReachProvider();
                 // Kapıdan ulaşılabilirlik: bütün yol karolarından (kapılar yola bağlıdır, Aşama D) çok kaynaklı arama.
                 reach = new HashSet<GridPos>();
                 var seeds = new List<GridPos>();

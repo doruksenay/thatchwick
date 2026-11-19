@@ -263,13 +263,13 @@ namespace Thatchwick.Core.Tests
         public void KoyluProgrami_SaateHavayaVeSenlige_Gore()
         {
             var r = NewRig();
-            var def = r.Db.Villagers.Get("villager.hatice");
+            var def = r.Db.Villagers.Get("villager.hatice");   // Hatice değirmenin üst katında oturur (belge 44 C)
             var v = r.Life.Villagers;
-            Assert.Equal("home:2", v.LocationFor(def, 0.1, WeatherType.Clear, false));
+            Assert.Equal("home:mill", v.LocationFor(def, 0.1, WeatherType.Clear, false));
             Assert.Equal("work:mill", v.LocationFor(def, 0.4, WeatherType.Clear, false));
             Assert.Equal("square", v.LocationFor(def, 0.8, WeatherType.Clear, false));
-            Assert.Equal("home:2", v.LocationFor(def, 0.8, WeatherType.Rain, false));    // yağmurda meydana çıkmaz
-            Assert.Equal("home:2", v.LocationFor(def, 0.4, WeatherType.Storm, false));   // fırtınada evde
+            Assert.Equal("home:mill", v.LocationFor(def, 0.8, WeatherType.Rain, false));    // yağmurda meydana çıkmaz
+            Assert.Equal("home:mill", v.LocationFor(def, 0.4, WeatherType.Storm, false));   // fırtınada evde
             Assert.Equal("square", v.LocationFor(def, 0.5, WeatherType.Clear, true));    // şenlik günü meydan
         }
 

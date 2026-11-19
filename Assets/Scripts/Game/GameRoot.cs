@@ -192,7 +192,8 @@ namespace Thatchwick.Game
         private bool _dynastyEnded;
         private int _stallId;
         private PlacementDebugOverlay _placementDebug;
-        private Thatchwick.Core.Layout.LayoutPlan _layoutPlan;   // şehir planı (arsalar, oda türleri); Aşama C'de kurulur   // F3, yalnızca editör ve geliştirme derlemesi (yerleşim sistemi, Aşama A)
+        private Thatchwick.Core.Layout.LayoutPlan _layoutPlan;   // şehir planı (arsalar, oda türleri): doğrulayıcı ve debug katmanı
+        private Thatchwick.Core.Layout.LayoutCatalog _layouts;   // layouts.json   // F3, yalnızca editör ve geliştirme derlemesi (yerleşim sistemi, Aşama A)
         private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
         private readonly List<(ItemInstance item, SpriteRenderer view)> _heatViews = new List<(ItemInstance, SpriteRenderer)>();
         private Vector2 _hudScroll;
@@ -274,6 +275,8 @@ namespace Thatchwick.Game
             WaitPendingWrite();   // önceki sahnenin arka plan kaydı bitmeden kayıt okunmasın
             IsoArt.Reset();
             _content = ContentLoader.Load(out var contentErrors);
+            _layouts = ContentLoader.LoadLayouts(_content, out var layoutErrors);   // oda/bina şablonları (belge 44)
+            foreach (var e in layoutErrors) Debug.LogWarning($"Yerleşim şablonu: {e}");
             foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");
             Debug.Log($"İçerik yüklendi: {_content.Items.Count} eşya tanımı.");
 
@@ -305,7 +308,7 @@ namespace Thatchwick.Game
                 _world = loaded.World;
                 map = _world.Map;
                 Places = map.Width <= LegacyMapWidth ? LegacyPlaces : Places;   // eski kayıt: eski küçük harita
-                if (Thatchwick.Core.World.Regions.IsRegional(map)) { Thatchwick.Core.World.Regions.ApplyPortals(map); Places = Thatchwick.Core.World.Regions.Places(); }
+                if (Thatchwick.Core.World.Regions.IsRegional(map)) { Thatchwick.Core.World.Regions.ApplyPortals(map); Places = Thatchwick.Core.World.Regions.Places(map); _layoutPlan = Thatchwick.Core.Layout.TownBuilder.Plan(map, _layouts); }
                 ClearLegacyObstacles(map);
                 _clock = loaded.Clock;
                 _lastSavedDay = _clock.DayIndex;
@@ -314,7 +317,7 @@ namespace Thatchwick.Game
             else
             {
                 map = BuildDemoMap();
-                Places = Thatchwick.Core.World.Regions.Places();
+                Places = Thatchwick.Core.World.Regions.Places(map);   // dükkân sahipleri üst katta (belge 44 C)
                 _world = new WorldState(map);
                 _clock = new GameClock();
                 PlaceDemoItems();
@@ -576,11 +579,15 @@ namespace Thatchwick.Game
 
         // Yeni oyunun haritası ve başlangıç eşyaları Core'da (Thatchwick.Core.Layout.StarterWorld): yerleşim doğrulayıcısı ve
         // testler aynı dünyayı Unity'siz kurar (yerleşim sistemi, Aşama A).
-        private static GridMap BuildDemoMap() => Thatchwick.Core.Layout.StarterWorld.BuildMap();
+        private GridMap BuildDemoMap() => Thatchwick.Core.Layout.StarterWorld.BuildMap(_layouts);
 
         private void PlaceDemoItems()
         {
-            _stallId = Thatchwick.Core.Layout.StarterWorld.PlaceItems(_world, _content, msg => Debug.LogWarning(msg));
+            var res = Thatchwick.Core.Layout.StarterWorld.Place(_world, _content, _layouts, _seed, msg => Debug.LogWarning(msg));
+            _stallId = res.StallId;
+            _layoutPlan = res.Plan;
+            int bad = 0; foreach (var r in res.Reports) if (!r.Ok) bad++;
+            Debug.Log($"Yerleşim: {res.Reports.Count} oda şablondan döşendi, doğrulayıcıdan geçmeyen {bad}.");
         }
 
         private const float RegionFadeSeconds = 0.7f;
@@ -1035,7 +1042,7 @@ namespace Thatchwick.Game
                     for (int dx = -r; dx <= r; dx++)
                     {
                         if (System.Math.Max(System.Math.Abs(dx), System.Math.Abs(dy)) != r) continue;
-                        var p = new GridPos(near.X + dx, near.Y + dy);
+                        var p = new GridPos(near.X + dx, near.Y + dy, near.Z);   // üst kattaki ev (belge 44 C): kat korunur
                         if (!_world.Map.IsWalkable(p)) continue;
                         if (ReachesSquare(p)) return p;
                         if (!enclosed.HasValue) enclosed = p;
@@ -1056,7 +1063,7 @@ namespace Thatchwick.Game
         private GridPos ResolvePlace(string key, int jitterSeed = 0)
         {
             if (string.IsNullOrEmpty(key) || !Places.TryGetValue(key, out var basePos)) basePos = Places["square"];
-            if (jitterSeed != 0) basePos = new GridPos(basePos.X + (jitterSeed % 5) - 2, basePos.Y + (jitterSeed / 5 % 3) - 1);
+            if (jitterSeed != 0) basePos = new GridPos(basePos.X + (jitterSeed % 5) - 2, basePos.Y + (jitterSeed / 5 % 3) - 1, basePos.Z);
             return NearestWalkable(basePos);
         }
 

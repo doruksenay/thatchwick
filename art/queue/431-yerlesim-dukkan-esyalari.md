@@ -54,7 +54,7 @@ Kabul edilmiş 301 eşya yöntemi (`create_map_object`, stil eşleme, ayak izi k
 
 | # | Dosya | Ayak izi | Açıklama |
 |---|---|---|---|
-| 1 | `iso_item_shop_counter_2x1_se.png` | 2x1 | `long wooden shop counter with a plank top and front panel, a few goods on top` |
+| 1 | `iso_item_shop_counter_2x1_se.png` | 2x1 | `long wooden shop counter with a plank top and plain plank panels on both long sides (customer and shopkeeper side look the same), a few goods on top` |
 | 2 | `iso_item_anvil_se.png` | 1x1 | `black iron blacksmith anvil on a squat oak stump` |
 | 3 | `iso_item_bellows_se.png` | 1x1 | `large leather forge bellows on a wooden frame with a lever handle` |
 | 4 | `iso_item_quench_tub_se.png` | 1x1 | `wooden quenching tub half full of dark water, iron hoops` |

@@ -33,12 +33,41 @@ internal static class Program
         var errors = ContentMapper.Apply(file, db);
         foreach (var e in errors) Console.Error.WriteLine("İÇERİK: " + e);
         LayoutHooks.Load(root, db);
+        bool legacy = args.Contains("legacy");
+        var layErr = new List<string>();
+        LayoutCatalog layouts = null;
+        var layPath = Path.Combine(content, "layouts.json");
+        if (!legacy && File.Exists(layPath))
+            layouts = LayoutCatalog.Map(JsonSerializer.Deserialize<LayoutFileDto>(File.ReadAllText(layPath), Json), db, layErr);
+        foreach (var e in layErr) Console.Error.WriteLine("ŞABLON: " + e);
+        int seed = 1;
+        foreach (var a in args) if (a.StartsWith("seed=")) seed = int.Parse(a.Substring(5));
 
-        var map = StarterWorld.BuildMap();
+        var map = StarterWorld.BuildMap(layouts);
         var world = new WorldState(map);
         var log = new List<string>();
-        StarterWorld.PlaceItems(world, db, log.Add);
-        var plan = LayoutHooks.Plan(world);
+        var res = StarterWorld.Place(world, db, layouts, seed, log.Add);
+        var plan = layouts != null ? res.Plan : LayoutHooks.Plan(world);
+        int missing = res.Reports.Sum(r => r.Missing.Count), dropped = res.Reports.Sum(r => r.Dropped.Count);
+        Console.WriteLine($"Şablon: {res.Reports.Count} oda, kusursuz {res.Reports.Count(r => r.Ok)}, eksik zorunlu {missing}, doğrulayıcının çıkardığı isteğe bağlı {dropped}");
+        var dumps = args.Where(a => a.StartsWith("dump=")).Select(a => a.Substring(5)).ToList();
+        if (dumps.Contains("all")) { dumps = new List<string> { "farmhouse" }; dumps.AddRange(Regions.TownBuildings.Select(b => b.Id)); }
+        foreach (var id in dumps)
+        {
+            var b = Regions.TownBuildingById(id);
+            RectI r = b != null ? b.Rect : new RectI(StarterWorld.HouseX0, StarterWorld.HouseY0, 9, 7);
+            for (int z = 1; z >= -1; z--)
+            {
+                if (!Enumerable.Range(r.X, r.W).Any(x => world.Map.HasTile(new GridPos(x, r.Y, z)))) continue;
+                var legend = new Dictionary<string, string>();
+                Console.WriteLine($"== {(b != null ? b.Name : "Çiftlik evi")} kat {z} ==");
+                Console.Write(Dump.Building(world, r, z, legend));
+                Console.WriteLine("   " + string.Join(", ", legend.OrderBy(k => k.Key).Select(k => $"{k.Key}={k.Value}")));
+            }
+        }
+        if (args.Contains("rooms"))
+            foreach (var r in res.Reports)
+                Console.WriteLine($"  {r.Room}: {r.Placed.Count} eşya, deneme {r.Attempt + 1}" + (r.Missing.Count > 0 ? $", EKSİK {string.Join(",", r.Missing)}" : "") + (r.Violations.Count > 0 ? $", İHLAL {string.Join(" | ", r.Violations)}" : "") + (r.Dropped.Count > 0 ? $", çıkarılan: {string.Join(" | ", r.Dropped)}" : ""));
 
         var violations = LayoutHooks.Validate(world, plan, db);
         var sb = new StringBuilder();

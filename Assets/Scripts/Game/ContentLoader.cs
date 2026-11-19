@@ -52,6 +52,22 @@ namespace Thatchwick.Game
             return db;
         }
 
+        private const string LayoutsPath = "Content/layouts";
+
+        /// <summary>Yerleşim şablonlarını (layouts.json: oda, bina, bahçe; belge 44) okur. Dosya yoksa null (iç mekânlar boş kalır).</summary>
+        public static Thatchwick.Core.Layout.LayoutCatalog LoadLayouts(ContentDatabase content, out List<string> errors)
+        {
+            errors = new List<string>();
+            var asset = Resources.Load<TextAsset>(LayoutsPath);
+            if (asset == null) { errors.Add($"Resources/{LayoutsPath}.json bulunamadı."); return null; }
+            try
+            {
+                var file = JsonUtility.FromJson<Thatchwick.Core.Layout.LayoutFileDto>(asset.text);
+                return Thatchwick.Core.Layout.LayoutCatalog.Map(file, content, errors);
+            }
+            catch (ArgumentException ex) { errors.Add($"layouts.json çözümlenemedi: {ex.Message}"); return null; }
+        }
+
         /// <summary>
         /// Karakter görünüm kataloğunu (appearance.json) okur. Dosya yoksa ya da hatalıysa
         /// yerleşik varsayılan katalog kullanılır ve hatalar döndürülür.

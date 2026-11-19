@@ -82,7 +82,7 @@ FRONT = {
     "open": "chest_wood chest_iron carved_chest dowry_chest bed_end_chest treasure_chest toy_chest spice_chest shelf_wood pantry_shelf "
             "potion_shelf aumbry clothes_press yukluk ice_box scroll_rack cloth_bolt_shelf bread_rack scroll_chest bedside_stand",
     "work": "hearth_stone stone_oven fireplace_large forge workbench saddler_bench stonecutter loom spinning_wheel pottery_wheel glass_bench "
-            "glass_furnace chandler_table prep_counter alembic kiln writing_lectern cutting_table shop_counter anvil kneading_trough "
+            "glass_furnace chandler_table prep_counter alembic kiln writing_lectern cutting_table anvil kneading_trough "
             "market_stall seed_maker bloomery",
     "stand": "basin_ewer outhouse bath_hut flush_privy kitchen_spout",
 }
@@ -100,7 +100,7 @@ OUTDOOR_IDS = set(f"item.{n}" for n in (
     "charcoal_clamp roasting_heap quarry pond fish_trap hunting_blind weather_vane glass_furnace rain_barrel cistern fountain "
     "water_tower underground_cistern noria windmill fulling_mill trip_hammer drain_pit olive_crusher olive_press grape_tub "
     "wash_tub clothes_line hitching_post cloth_drying_line net_drying_rack pottery_display smith_display flower_clump shrub "
-    "reeds grass_tuft shop_sign signpost notice_post pot_drying_rack").split())
+    "reeds grass_tuft shop_sign signpost notice_post").split())
 INDOOR_IN_OUTCAT = {"item.cat_basket", "item.mushroom_bed"}
 ANY_IDS = set(f"item.{n}" for n in (
     "forge bloomery workbench whetstone stonecutter loom spinning_wheel pottery_wheel dye_vat saddler_bench seed_maker alembic "
@@ -108,7 +108,7 @@ ANY_IDS = set(f"item.{n}" for n in (
     "water_trough hay_bale barn_lantern animal_bell milking_stool saddle_rack stump_table bench_wood stool_wood barrel_table lute "
     "rope_coil ice_box salting_barrel quern millstone harvest_heap stairs_up stairs_down stairs_up_stone stairs_down_stone ladder "
     "towel_rack brazier firewood_basket anvil bellows quench_tub iron_pile lumber_pile unfinished_furniture clay_trough "
-    "hide_rack stone_blocks wicker_basket grain_sack flour_sack fish_basket beehive root_cellar collection_box feed_chute "
+    "hide_rack stone_blocks wicker_basket grain_sack flour_sack fish_basket beehive root_cellar collection_box feed_chute pot_drying_rack "
     "nest_box stall pig_pen horse_stall salt_lick feed_mixer water_gate canal irrigation_ditch bucket_pulley water_channel "
     "coop barn pigsty kennel granary").split()) - OUTDOOR_IDS
 WALL_ANY = set(f"item.{n}" for n in "notice_board door_wreath name_plaque horseshoe_display torch_wall oil_lamp_wall spring_garland winter_greenery".split())

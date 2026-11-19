@@ -89,6 +89,8 @@ namespace Thatchwick.Core.World
                     _m.SetEdge(new Edge(_ox + x1 + 1, _oy + y, EdgeAxis.Vertical), door == 'E' && y == at ? EdgeKind.Door : winE ? EdgeKind.Window : EdgeKind.Wall);
                 }
                 Floor(x0, y0, x1, y1, floor);
+                // Bina içinden yol geçmez (eski planda kuzey yolu meyhanenin içinden geçiyordu, belge 44 D).
+                for (int y = y0; y <= y1; y++) for (int x = x0; x <= x1; x++) if (_m.GetRoad(P(x, y)) != RoadType.None) _m.SetRoad(P(x, y), RoadType.None);
             }
             // Kapının dış karosu
             (int x, int y) outside = door == 'N' ? (at, y0 - 1) : door == 'S' ? (at, y1 + 1) : door == 'W' ? (x0 - 1, at) : (x1 + 1, at);
@@ -323,113 +325,26 @@ namespace Thatchwick.Core.World
             p.Path(2, (12, 21), (12, 44));
             p.Path(1, (34, 44), (47, 44), (47, 45), (56, 45));     // güney köprüsüne patika
 
-            // ---- Meydanın çevresi ----
-            // Meyhane / han (meydanın kuzeybatısında, en büyük yapı)
-            p.Building(20, 12, 10, 7, 'S', 25, FloorType.Wood, (25, 21));
-            p.I("item.hearth_stone", 20, 12); p.I("item.copper_pots", 21, 12); p.I("item.prep_counter", 22, 12);
-            p.I("item.brew_barrel", 27, 12); p.I("item.brew_barrel", 28, 12); p.I("item.brew_barrel", 29, 12);
-            p.I("item.barrel", 29, 13); p.I("item.barrel", 29, 14);
-            p.Wall("item.tankard_rack", 23, 12, 0); p.Wall("item.plate_rack", 20, 14, 3);
-            p.I("item.trestle_table", 21, 15); p.I("item.bench_long", 21, 14); p.I("item.bench_long", 21, 16);
-            p.I("item.trestle_table", 25, 15); p.I("item.bench_long", 25, 14); p.I("item.bench_long", 25, 16);
-            p.On("item.tankard", 21, 15, "a"); p.On("item.tankard", 25, 15, "a"); p.On("item.bread_basket", 21, 15, "b");
-            p.I("item.singer_stand", 29, 17); p.I("item.candlestick", 20, 18); p.I("item.firewood_basket", 20, 13);
+            // ---- Binalar (plan: belge 40; iç döşeme şablonlardan, Core.Layout.TownBuilder, belge 44 C) ----
+            foreach (var b in TownBuildings) p.Building(b.X, b.Y, b.W, b.H, b.Door, b.DoorAt, b.Floor, b.PathTo);
 
-            // Pazar / genel dükkân (Kerem): meydanın kuzeydoğusu
-            p.Building(33, 14, 8, 6, 'S', 36, FloorType.Wood, (36, 22));
-            p.I("item.pantry_shelf", 33, 14); p.I("item.pantry_shelf", 38, 14); p.I("item.storage_jar", 35, 14); p.I("item.storage_jar", 36, 14);
-            p.I("item.seed_crate", 40, 14); p.I("item.barrel", 40, 16); p.I("item.barrel", 40, 17); p.I("item.firewood_basket", 33, 18);
-            p.I("item.prep_counter", 35, 17);
-            p.On("item.fruit_basket", 35, 17, "a"); p.On("item.bread_basket", 35, 17, "b");
-            p.On("item.honey_pot", 33, 14, "a"); p.On("item.storage_pot_small", 38, 14, "a");
-
-            // Kâtip ve ulak: meydanın batısı, kapı doğuya
-            p.Building(14, 28, 6, 5, 'E', 30, FloorType.Wood, (24, 30));
-            p.I("item.shelf_wood", 14, 28); p.I("item.shelf_wood", 16, 28);
-            p.On("item.book", 14, 28, "a"); p.On("item.book", 16, 28, "b"); p.On("item.book", 14, 28, "b");
-            p.I("item.rug_runner", 14, 30); p.I("item.table_painted", 16, 30); p.I("item.chair_carved", 16, 31);
-            p.On("item.hourglass", 16, 30, "a"); p.On("item.candle", 16, 30, "c");
-            p.I("item.chest_wood", 14, 32); p.I("item.candlestick", 19, 28);
-
-            // Terzi ve dokumacı: meydanın güneydoğusu
-            p.Building(36, 32, 7, 6, 'N', 38, FloorType.Wood, (36, 31));
-            p.I("item.loom", 36, 34); p.I("item.spinning_wheel", 36, 36); p.I("item.dye_vat", 42, 36);
-            p.I("item.clothes_press", 40, 37); p.I("item.table_wood", 40, 33); p.I("item.chest_wood", 42, 33);
-            p.On("item.sewing_basket", 40, 33, "a"); p.On("item.yarn_spindle", 40, 33, "c");
-            p.I("item.stool_wood", 38, 36); p.I("item.felt_rug", 38, 34);
-
-            // ---- Batı (giriş) ----
-            // Otacı ve ebe: sessiz kuzeybatı, önünde çitli ot bahçesi
-            p.Building(6, 6, 7, 6, 'S', 9, FloorType.Wood, (9, TownEntryY));
-            p.I("item.potion_shelf", 6, 6); p.I("item.potion_shelf", 7, 6); p.I("item.potion_shelf", 8, 6);
-            p.I("item.drying_rack", 10, 6); p.I("item.table_wood", 6, 9); p.I("item.bed_straw", 11, 9);
-            p.On("item.mortar_pestle", 6, 9, "a"); p.On("item.herb_pot_thyme", 6, 9, "c");
-            p.Wall("item.herb_bundle_wall", 6, 8, 3); p.I("item.ceiling_herbs", 9, 8); p.I("item.basin_ewer", 12, 11);
+            // ---- Dış donatı (Aşama D'de kurallı yerleşime geçecek) ----
+            // Otacının çitli ot bahçesi ve arı kovanı
             p.Fence(11, 13, 15, 16, 'W', 14, false);
             p.Path(1, (10, 14), (10, 14));
             foreach (var (x, y) in new[] { (12, 14), (14, 14), (12, 16), (14, 16) }) p.I("item.forage_herbs", x, y);
             p.I("item.beehive", 15, 13);
-
-            // Demirci: girişin hemen güneyi (yangın riski: meydandan uzak, açık alanda)
-            p.Building(3, 22, 7, 6, 'N', 6, FloorType.Stone, (6, 20));
-            p.I("item.forge", 3, 22); p.I("item.trip_hammer", 3, 26); p.I("item.whetstone", 7, 26);
-            p.I("item.water_barrel", 9, 26); p.I("item.firewood_basket", 9, 22); p.I("item.bloomery", 8, 24);
-            p.Wall("item.tool_rack_wall", 3, 25, 3);
-
-            // Marangoz / mobilyacı: demircinin güneyi, batı ara sokağına bakar; dışarıda kereste avlusu
-            p.Building(3, 31, 8, 6, 'E', 33, FloorType.Wood, (12, 33));
-            p.I("item.workbench", 3, 31); p.I("item.workbench", 6, 31); p.Wall("item.tool_rack_wall", 5, 31, 0);
-            p.I("item.chair_carved", 9, 35); p.I("item.chair_painted", 8, 35); p.I("item.table_painted", 5, 35);
-            p.I("item.chest_bench", 3, 35); p.I("item.firewood_basket", 8, 31);
+            // Marangozun kereste avlusu, değirmenin su çarkı, saracın tabak çerçeveleri, taşçının kireç ocağı
             p.I("item.sawmill", 4, 38); p.I("item.firewood_basket", 7, 38);
-
-            // ---- Irmak kıyısı ----
-            // Değirmen ve fırın: ırmağın kuzeyinde, dışında su çarkı
-            p.Building(40, 4, 7, 6, 'S', 43, FloorType.Wood, (43, 11), (31, 11));
-            p.I("item.millstone", 40, 4); p.I("item.quern", 44, 4); p.I("item.seed_crate", 46, 4); p.I("item.stone_oven", 45, 7);
-            p.I("item.table_wood", 41, 8); p.On("item.bread_basket", 41, 8, "a"); p.I("item.barrel", 46, 5);
             p.I("item.water_wheel", 47, 5);
-
-            // Çömlekçi: güneyde ırmak kıyısı (kil)
-            p.Building(39, 40, 6, 6, 'N', 41, FloorType.Dirt, (41, 39), (32, 39));
-            p.I("item.pottery_wheel", 39, 42); p.I("item.kiln", 43, 44); p.I("item.storage_jar", 39, 45); p.I("item.storage_jar", 40, 45);
-            p.I("item.shelf_wood", 42, 40); p.On("item.clay_cup", 42, 40, "a"); p.On("item.clay_cup", 42, 40, "b");
-            p.I("item.barrel_tub", 39, 40);
-
-            // ---- Irmağın ötesi (doğu) ----
-            // Balıkçı: doğu kıyısında, kapı ırmağa (batı)
-            p.Building(54, 18, 6, 5, 'W', 20, FloorType.Wood, (53, 26));
-            p.I("item.fish_trap", 55, 22); p.I("item.barrel", 59, 18); p.I("item.salting_barrel", 59, 19);
-            p.I("item.shelf_wood", 56, 18); p.On("item.fish_basket_decor", 56, 18, "a");
-            p.Wall("item.oar_rack", 54, 18, 3); p.Wall("item.dried_fish_string", 55, 18, 0); p.Wall("item.net_curtain", 58, 18, 0);
-            p.I("item.table_wood", 57, 21);
-
-            // Saraç ve tabakhane: akış aşağıda, kasabanın kenarında (koku)
-            p.Building(54, 34, 7, 6, 'N', 57, FloorType.Dirt, (57, 28));
-            p.I("item.saddler_bench", 54, 34); p.I("item.saddle_rack", 59, 34); p.I("item.saddle_rack", 60, 34);
-            p.Wall("item.saddle_peg", 54, 37, 3); p.I("item.table_wood", 58, 38); p.I("item.barrel", 60, 39);
             p.I("item.tanning_rack", 55, 41); p.I("item.tanning_rack", 58, 41); p.I("item.barrel_tub", 61, 41);
-
+            p.I("item.lime_kiln", 16, 47);
             // Hayvan pazarı (Murat): ırmağın ötesinde, kuzeydoğuda çitli ağıl
             p.Fence(55, 4, 62, 12, 'S', 58, true);
             p.Path(1, (58, 13), (58, 26));
             p.I("item.feed_trough", 56, 5); p.I("item.water_trough", 60, 5); p.I("item.hay_bale", 56, 10); p.I("item.hay_bale", 57, 10);
             p.I("item.milking_stool", 61, 10); p.I("item.saddle_rack", 62, 8); p.I("item.barn_lantern", 55, 12);
-
-            // ---- Güney ----
-            // Taşçı: güney çıkışına yakın (taş ocağı yolu), dışarıda kireç ocağı
-            p.Building(20, 42, 7, 6, 'E', 44, FloorType.Stone, (33, 44));
-            p.I("item.stonecutter", 20, 42); p.I("item.workbench", 23, 42); p.I("item.table_wood", 20, 46); p.I("item.barrel", 26, 47);
-            p.I("item.lime_kiln", 16, 47);
-
-            // ---- Köylü evleri: dağınık, kendi bahçeleriyle ----
-            p.Building(14, 4, 4, 3, 'S', 15, FloorType.Wood, (15, 9), (29, 9));                // ev 1
-            p.Building(34, 4, 4, 3, 'S', 35, FloorType.Wood, (35, 8), (31, 8));                // ev 2
-            p.Building(14, 36, 4, 3, 'N', 15, FloorType.Wood, (13, 35));                       // ev 3
-            p.Building(22, 35, 4, 3, 'N', 23, FloorType.Wood, (23, 33), (30, 33));             // ev 4
-            p.Building(56, 44, 4, 3, 'N', 57, FloorType.Wood, (62, 43), (62, 28));             // ev 5
-            p.Building(4, 44, 4, 3, 'N', 5, FloorType.Wood, (5, 42), (12, 42));                // ev 6
-            foreach (var (hx, hy) in Homes) { p.I("item.bed_straw", hx + 2, hy + 2); p.I("item.chest_wood", hx, hy + 2); p.I("item.stool_wood", hx, hy); }
+            // Köylü evlerinin bahçeleri
             p.I("item.garden_bench", 18, 8); p.G("item.tree_apple", 13, 8); p.G("item.tree_pear", 38, 6); p.G("item.tree_plum", 19, 38);
             p.G("item.tree_cherry", 27, 37); p.G("item.tree_apple", 61, 47); p.I("item.forage_berry_bush", 8, 46); p.I("item.rain_barrel", 8, 44);
 
@@ -450,9 +365,72 @@ namespace Thatchwick.Core.World
             }
         }
 
-        private static readonly (int x, int y)[] Homes = { (14, 4), (34, 4), (14, 36), (22, 35), (56, 44), (4, 44) };
+        /// <summary>
+        /// Şehrin binaları (yerel koordinat, plan belge 40). Template: layouts.json bina şablonu (meslek ya da "cottage"); katlar ve
+        /// iç döşeme oradan. Owner: sahibinin adlandırılmış evi (üst kat varsa orada yaşar).
+        /// </summary>
+        public static readonly TownBuilding[] TownBuildings =
+        {
+            // Meydanın çevresi
+            new TownBuilding("tavern", "Meyhane / han", "inn", 20, 12, 10, 7, 'S', 25, FloorType.Wood, "home:tavern", (25, 21)),
+            new TownBuilding("general", "Pazar (Kerem)", "shop", 33, 14, 8, 6, 'S', 36, FloorType.Wood, "home:general", (36, 22)),
+            new TownBuilding("scribe", "Kâtip ve ulak", "shop", 14, 28, 6, 5, 'E', 30, FloorType.Wood, "home:scribe", (24, 30)),
+            new TownBuilding("tailor", "Terzi ve dokumacı", "shop", 36, 32, 7, 6, 'N', 38, FloorType.Wood, "home:tailor", (36, 31)),
+            // Batı (giriş)
+            new TownBuilding("herb", "Otacı ve ebe", "shop", 6, 6, 7, 6, 'S', 9, FloorType.Wood, "home:herb", (9, TownEntryY)),
+            new TownBuilding("smithy", "Demirci (Orhan)", "shop", 3, 22, 7, 6, 'N', 6, FloorType.Stone, null, (6, 20)),
+            new TownBuilding("carpenter", "Marangoz / mobilyacı", "shop", 3, 31, 8, 6, 'E', 33, FloorType.Wood, "home:carpenter", (12, 33)),
+            // Irmak kıyısı
+            new TownBuilding("mill", "Değirmen ve fırın (Hatice)", "shop", 40, 4, 7, 6, 'S', 43, FloorType.Wood, "home:mill", (43, 11), (31, 11)),
+            new TownBuilding("potter", "Çömlekçi (Ayşe)", "shop", 39, 40, 6, 6, 'N', 41, FloorType.Dirt, "home:potter", (41, 39), (32, 39)),
+            // Irmağın ötesi
+            new TownBuilding("fisher", "Balıkçı", "shop", 54, 18, 6, 5, 'W', 20, FloorType.Wood, "home:fisher", (53, 26)),
+            new TownBuilding("saddler", "Saraç ve tabakhane", "shop", 54, 34, 7, 6, 'N', 57, FloorType.Dirt, "home:saddler", (57, 28)),
+            // Güney
+            new TownBuilding("mason", "Taşçı", "shop", 20, 42, 7, 6, 'E', 44, FloorType.Stone, "home:mason", (33, 44)),
+            // Köylü evleri: dağınık, kendi bahçeleriyle
+            new TownBuilding("home:1", "Köylü evi 1", "house", 14, 4, 4, 3, 'S', 15, FloorType.Wood, "home:1", (15, 9), (29, 9)) { Template = "cottage" },
+            new TownBuilding("home:2", "Köylü evi 2", "house", 34, 4, 4, 3, 'S', 35, FloorType.Wood, "home:2", (35, 8), (31, 8)) { Template = "cottage" },
+            new TownBuilding("home:3", "Köylü evi 3", "house", 14, 36, 4, 3, 'N', 15, FloorType.Wood, "home:3", (13, 35)) { Template = "cottage" },
+            new TownBuilding("home:4", "Köylü evi 4", "house", 22, 35, 4, 3, 'N', 23, FloorType.Wood, "home:4", (23, 33), (30, 33)) { Template = "cottage" },
+            new TownBuilding("home:5", "Köylü evi 5", "house", 56, 44, 4, 3, 'N', 57, FloorType.Wood, "home:5", (62, 43), (62, 28)) { Template = "cottage" },
+            new TownBuilding("home:6", "Köylü evi 6", "house", 4, 44, 4, 3, 'N', 5, FloorType.Wood, "home:6", (5, 42), (12, 42)) { Template = "cottage" },
+        };
+
+        public static TownBuilding TownBuildingById(string id)
+        {
+            foreach (var b in TownBuildings) if (b.Id == id) return b;
+            return null;
+        }
 
         private static GridPos T(int x, int y) => new GridPos(Town.X + x, Town.Y + y);
+
+        /// <summary>
+        /// Köylülerin evleri ve iş yerleri; map verilirse dükkân sahiplerinin evi üst kattadır (belge 44 C, Ek tablosu). Üst katı
+        /// olmayan eski haritada (eski kayıt) eski yerine düşer.
+        /// </summary>
+        public static Dictionary<string, GridPos> Places(GridMap map)
+        {
+            var places = Places();
+            if (map == null) return places;
+            foreach (var kv in UpperHomes)
+            {
+                var b = TownBuildingById(kv.Key);
+                if (b == null) continue;
+                var p = Layout.TownBuilder.HomeSpot(map, b);
+                if (p.HasValue) places[b.Owner] = p.Value;
+                else if (kv.Value != null && places.TryGetValue(kv.Value, out var legacy)) places[b.Owner] = legacy;
+            }
+            return places;
+        }
+
+        /// <summary>Üst katta yaşayan dükkân sahipleri: bina → eski kayıtta düşeceği yer (önceden oturduğu ev).</summary>
+        private static readonly Dictionary<string, string> UpperHomes = new Dictionary<string, string>
+        {
+            { "tavern", "home:tavern" }, { "general", "home:5" }, { "scribe", "home:scribe" }, { "tailor", "home:tailor" },
+            { "herb", "home:3" }, { "carpenter", "home:carpenter" }, { "mill", "home:2" }, { "potter", "home:6" },
+            { "fisher", "home:fisher" }, { "saddler", "home:saddler" },
+        };
 
         /// <summary>Köylülerin evleri ve iş yerleri şehirde (dünya koordinatı).</summary>
         public static Dictionary<string, GridPos> Places() => new Dictionary<string, GridPos>

@@ -20,7 +20,7 @@ namespace Thatchwick.Core.Layout
         /// <summary>Başlangıç evi (iki katlı, iç 28-36 x 26-32): kapı güney duvarında x=32.</summary>
         public const int HouseX0 = 28, HouseX1 = 36, HouseY0 = 26, HouseY1 = 32, HouseDoorX = 32;
 
-        public static GridMap BuildMap()
+        public static GridMap BuildMap(LayoutCatalog layouts = null)
         {
             var map = new GridMap(MapWidth, MapHeight);
             // Test haritası: kaynaklı doğal gölet (hep dolu; böcekli, içinde sazan, kerevit ve alabalık).
@@ -42,6 +42,7 @@ namespace Thatchwick.Core.Layout
             for (int x = 73; x <= 95; x++) map.SetRoad(new GridPos(x, 40), RoadType.Path);
             map.SetRoad(new GridPos(94, 41), RoadType.Path); map.SetRoad(new GridPos(95, 41), RoadType.Path);
             Regions.BuildTerrain(map);
+            TownBuilder.BuildFloors(map, layouts);   // dükkânların üst katı, bodrumu, han odaları (belge 44 C)
             Regions.Naturalize(map);
             Regions.Apply(map);
             return map;
@@ -86,13 +87,31 @@ namespace Thatchwick.Core.Layout
         }
 
         /// <summary>Başlangıç eşyalarını koyar. Dönen değer pazar tezgâhının kimliği (yoksa 0).</summary>
-        public static int PlaceItems(WorldState world, ContentDatabase content, Action<string> log = null)
+        public static int PlaceItems(WorldState world, ContentDatabase content, Action<string> log = null) =>
+            Place(world, content, null, 1, log).StallId;
+
+        /// <summary>Yeni oyunun eşyaları ve şablon raporları.</summary>
+        public sealed class Result
         {
+            public int StallId;
+            public LayoutPlan Plan;
+            public readonly List<FurnishReport> Reports = new List<FurnishReport>();
+        }
+
+        /// <summary>
+        /// Başlangıç eşyaları: evlerin ve dükkânların içi oda şablonlarından (layouts.json, sabit tohumla), dış mekân ve
+        /// bitki örtüsü kurallarla. layouts null ise iç mekânlar boş kalır (yalnızca yapısal merdivenler).
+        /// </summary>
+        public static Result Place(WorldState world, ContentDatabase content, LayoutCatalog layouts, int seed, Action<string> log = null)
+        {
+            var res = new Result { Plan = TownBuilder.Plan(world.Map, layouts) };
             var s = new Seeder(world, content, log);
-            s.PlaceFarm();
+            s.PlaceFarm(layouts, res, seed);
             s.PlaceRegions();
+            res.Reports.AddRange(TownBuilder.Furnish(world, content, layouts, res.Plan, seed, log));
             s.PlaceWildOaks();
-            return s.StallId;
+            res.StallId = s.StallId;
+            return res;
         }
 
         /// <summary>Yerleştirme yardımcıları (konamayan eşya günlüğe yazılır, oyun durmaz).</summary>
@@ -142,54 +161,12 @@ namespace Thatchwick.Core.Layout
 
             // Başlangıç evi (BuildStarterHouse): iç 28-36 x 26-32; zemin kat mutfak ve oturma, üst kat yatak odaları, bodrum kiler.
             // Oyuncu (31,31), Maud (33,31), kapı içi (32,32) ve merdiven uçları boş kalır.
-            public void PlaceFarm()
+            public void PlaceFarm(LayoutCatalog layouts, Result res, int seed)
             {
-                // --- zemin kat: merdivenler, mutfak, yemek ve oturma ---
+                // --- yapısal: merdivenler (merdiven boşluğu BuildStarterHouse'ta) ---
                 Put("item.stairs_down", 29, 27);              // bodruma (giriş 29,26; iniş 29,29 kat -1)
                 Put("item.stairs_up", 35, 27);                // üst kata (giriş 35,26; iniş 35,29 kat 1)
-                Put("item.pantry_shelf", 30, 26);
-                Put("item.hearth_stone", 32, 26);
-                Put("item.cooking_pot", 33, 26);
-                Put("item.water_barrel", 36, 26);
-                Put("item.rug_wool", 31, 30);
-                Put("item.table_wood", 31, 29);
-                Put("item.chair_wood", 30, 29);
-                Put("item.chair_wood", 33, 29);
-                Put("item.basin_ewer", 28, 30);
-                Put("item.candlestick", 28, 32);
-                Put("item.armchair_cushion", 36, 31);
-                Put("item.chest_wood", 36, 32);
-                Put("item.stool_wood", 34, 32);
-                PutOn("item.candle", 31, 29, 0, "a");
-                PutOn("item.flower_pot", 31, 29, 0, "c");
-                PutOn("item.clay_cup", 31, 29, 0, "b");
-
-                // --- üst kat: üç yatak, sandıklar, kilimler, okuma köşesi ---
-                Put("item.bed_straw", 28, 26, 1);
-                Put("item.chest_wood", 30, 26, 1);
-                Put("item.rug_wool_small", 28, 27, 1);
-                Put("item.bed_straw", 32, 26, 1);
-                Put("item.chest_wood", 34, 26, 1);
-                Put("item.bed_straw", 28, 32, 1);
-                Put("item.rug_woven_large", 30, 29, 1);
-                Put("item.shelf_wood", 31, 32, 1);
-                Put("item.armchair_cushion", 36, 30, 1);
-                Put("item.candlestick", 36, 32, 1);
-                Put("item.stool_wood", 33, 32, 1);
-                PutOn("item.clay_cup", 31, 32, 1, "a");
-
-                // --- bodrum: kiler ve atölye ---
-                Put("item.barrel", 28, 26, -1);
-                Put("item.barrel", 28, 27, -1);
-                Put("item.salting_barrel", 31, 26, -1);
-                Put("item.pantry_shelf", 32, 26, -1);
-                Put("item.barrel", 35, 26, -1);
-                Put("item.seed_crate", 36, 26, -1);
-                Put("item.brew_barrel", 36, 28, -1);
-                Put("item.barrel_tub", 36, 30, -1);
-                Put("item.workbench", 28, 32, -1);
-                Put("item.shelf_wood", 33, 32, -1);
-                Put("item.barn_lantern", 32, 30, -1);
+                FurnishFarmhouse(layouts, res, seed);
 
                 // --- avlu ---
                 Put("item.well", 25, 30);
@@ -223,6 +200,41 @@ namespace Thatchwick.Core.Layout
                     if (_world.Map.GetRoad(new GridPos(ex, ey)) != RoadType.None) continue;
                     PutGrown(edgeRng.Next(3) == 0 ? "item.tree_pine" : "item.tree_birch", ex, ey, quiet: true);
                 }
+            }
+
+            /// <summary>
+            /// Çiftlik evi (belge 38: iki katlı, merdiven, bodrum) şablonlardan: zemin kat mutfak-yemek-oturma, üst kat yatak odası,
+            /// bodrum kiler ve atölye. Oyuncu (31,31), Maud (33,31), kapı içi ve merdiven uçları boş kalır. Oyuncunun evi yeni oyunda
+            /// bir kez döşenir, sonra tamamen oyuncunundur.
+            /// </summary>
+            private void FurnishFarmhouse(LayoutCatalog layouts, Result res, int seed)
+            {
+                var t = layouts?.Building("farmhouse");
+                if (t == null) return;
+                var f = new RoomFurnisher(_world, _content, res.Plan);
+                var site = res.Plan.Get("farmhouse");
+                var ground = new RoomSpec { Name = "Çiftlik evi (zemin)", Level = 0, DoorDir = Dir4.S, Zone = site?.ZoneAt(new GridPos(HouseX0, HouseY0, 0)) };
+                var upper = new RoomSpec { Name = "Çiftlik evi (üst kat)", Level = 1, Zone = site?.ZoneAt(new GridPos(HouseX0, HouseY0, 1)) };
+                var cellar = new RoomSpec { Name = "Çiftlik evi (bodrum)", Level = -1, Zone = site?.ZoneAt(new GridPos(HouseX0, HouseY0, -1)) };
+                for (int y = HouseY0; y <= HouseY1; y++)
+                    for (int x = HouseX0; x <= HouseX1; x++)
+                    {
+                        ground.Tiles.Add(new GridPos(x, y));
+                        if (_world.Map.HasTile(new GridPos(x, y, 1))) upper.Tiles.Add(new GridPos(x, y, 1));
+                        cellar.Tiles.Add(new GridPos(x, y, -1));
+                    }
+                var door = new GridPos(HouseDoorX, HouseY1);
+                ground.Entrances.Add(door);
+                ground.Entrances.Add(new GridPos(29, 26)); ground.Entrances.Add(new GridPos(35, 26));   // merdiven girişleri ulaşılabilir kalır
+                foreach (var k in new[] { door, new GridPos(HouseDoorX, HouseY1 - 1), new GridPos(31, 31), new GridPos(33, 31), new GridPos(29, 26), new GridPos(35, 26) })
+                    ground.Keep.Add(k);
+                upper.Entrances.Add(new GridPos(35, 29, 1)); upper.Keep.Add(new GridPos(35, 29, 1));
+                cellar.Entrances.Add(new GridPos(29, 29, -1)); cellar.Keep.Add(new GridPos(29, 29, -1));
+                var reports = new List<FurnishReport>();
+                TownBuilder.Run(f, layouts, t.Ground, ground, seed, "farmhouse:0", reports, _log);
+                TownBuilder.Run(f, layouts, t.Upper, upper, seed, "farmhouse:1", reports, _log);
+                TownBuilder.Run(f, layouts, t.Cellar, cellar, seed, "farmhouse:-1", reports, _log);
+                res.Reports.AddRange(reports);
             }
 
             /// <summary>Köy yolu ve şehir: dükkân içleri (meslek eşyaları, duvar ve yüzey dekoru), meydan, evler, ağaçlar.</summary>

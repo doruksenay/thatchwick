@@ -14,5 +14,6 @@
     <Compile Include="../../Assets/Scripts/Core/**/*.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Hooks.cs" />
+    <Compile Include="Dump.cs" />
   </ItemGroup>
 </Project>

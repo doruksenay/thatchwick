@@ -1932,7 +1932,7 @@
       "dislikes": [
         "item.log"
       ],
-      "home": "home:2",
+      "home": "home:mill",
       "work": "work:mill",
       "events": [
         {
@@ -1978,7 +1978,7 @@
       "dislikes": [
         "item.log"
       ],
-      "home": "home:3",
+      "home": "home:herb",
       "work": "work:herb",
       "events": [
         {
@@ -2071,7 +2071,7 @@
       "dislikes": [
         "item.firewood"
       ],
-      "home": "home:5",
+      "home": "home:general",
       "work": "work:market",
       "events": [
         {
@@ -2116,7 +2116,7 @@
       "dislikes": [
         "item.mushroom"
       ],
-      "home": "home:6",
+      "home": "home:potter",
       "work": "work:pottery",
       "events": [
         {

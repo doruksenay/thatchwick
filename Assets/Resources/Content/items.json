@@ -21621,7 +21621,6 @@
         }
       ],
       "maxLoad": 16,
-      "front": "work",
       "site": "indoor",
       "belongs": [
         "living",
@@ -22046,7 +22045,7 @@
       ],
       "level": 3,
       "styleSet": "Köylü",
-      "site": "outdoor",
+      "site": "any",
       "belongs": [
         "outdoor",
         "workshop"

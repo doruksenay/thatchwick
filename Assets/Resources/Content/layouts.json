@@ -1,0 +1,1203 @@
+{
+  "rooms": [
+    {
+      "id": "cottage",
+      "type": "living|bedroom|kitchen|dining",
+      "steps": [
+        {
+          "any": [
+            "item.bed_straw",
+            "item.bed_frame"
+          ],
+          "anchor": "wall"
+        },
+        {
+          "item": "item.hearth_stone",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.cooking_pot",
+          "optional": true,
+          "with": "nearHearth"
+        },
+        {
+          "item": "item.chest_wood",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.stool_wood",
+          "optional": true,
+          "anchor": "any"
+        },
+        {
+          "any": [
+            "item.peg_rail",
+            "item.herb_bundle_wall",
+            "item.wall_shelf"
+          ],
+          "optional": true,
+          "with": "wall"
+        },
+        {
+          "item": "item.rug_rush",
+          "optional": true,
+          "chance": 0.6,
+          "with": "rug"
+        }
+      ]
+    },
+    {
+      "id": "home_upper",
+      "type": "bedroom|living",
+      "steps": [
+        {
+          "any": [
+            "item.bed_straw",
+            "item.bed_frame"
+          ],
+          "anchor": "wall"
+        },
+        {
+          "item": "item.bedside_stand",
+          "with": "bedside"
+        },
+        {
+          "any": [
+            "item.chest_wood",
+            "item.dowry_chest"
+          ],
+          "anchor": "backWall"
+        },
+        {
+          "any": [
+            "item.sini_table",
+            "item.stump_table"
+          ],
+          "anchor": "any"
+        },
+        {
+          "any": [
+            "item.chair_wood",
+            "item.chair_carved",
+            "item.stool_wood"
+          ],
+          "with": "seatsAround"
+        },
+        {
+          "item": "item.basin_ewer",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.candlestick",
+          "optional": true,
+          "anchor": "corner"
+        },
+        {
+          "any": [
+            "item.rug_wool_small",
+            "item.felt_rug",
+            "item.rush_mat"
+          ],
+          "optional": true,
+          "with": "rug"
+        },
+        {
+          "any": [
+            "item.tapestry",
+            "item.peg_rail",
+            "item.embroidery_panel"
+          ],
+          "optional": true,
+          "with": "wall"
+        },
+        {
+          "any": [
+            "item.candle",
+            "item.clay_cup",
+            "item.flower_pot"
+          ],
+          "optional": true,
+          "with": "onSurface",
+          "on": "surfaces"
+        }
+      ]
+    },
+    {
+      "id": "home_small",
+      "type": "bedroom|living",
+      "steps": [
+        {
+          "item": "item.bed_straw",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.chest_wood",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.stool_wood",
+          "optional": true,
+          "anchor": "any"
+        },
+        {
+          "item": "item.peg_rail",
+          "optional": true,
+          "with": "wall"
+        }
+      ]
+    },
+    {
+      "id": "inn_room",
+      "type": "inn_room",
+      "steps": [
+        {
+          "item": "item.bed_straw",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.chest_wood",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.basin_ewer",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.bedside_stand",
+          "optional": true,
+          "with": "bedside"
+        },
+        {
+          "item": "item.rug_rush",
+          "optional": true,
+          "chance": 0.7,
+          "with": "rug"
+        },
+        {
+          "item": "item.peg_rail",
+          "optional": true,
+          "with": "wall"
+        }
+      ]
+    },
+    {
+      "id": "farm_hall",
+      "type": "kitchen|dining|living",
+      "steps": [
+        {
+          "item": "item.hearth_stone",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.cooking_pot",
+          "with": "nearHearth"
+        },
+        {
+          "item": "item.firewood_basket",
+          "optional": true,
+          "with": "nearHearth"
+        },
+        {
+          "item": "item.pantry_shelf",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.water_barrel",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.table_wood",
+          "anchor": "center"
+        },
+        {
+          "item": "item.chair_wood",
+          "count": 2,
+          "with": "seatsAround"
+        },
+        {
+          "item": "item.stool_wood",
+          "optional": true,
+          "with": "seatsAround"
+        },
+        {
+          "item": "item.chest_wood",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.basin_ewer",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.candlestick",
+          "optional": true,
+          "anchor": "corner"
+        },
+        {
+          "item": "item.rug_wool",
+          "optional": true,
+          "with": "rug"
+        },
+        {
+          "item": "item.candle",
+          "optional": true,
+          "with": "onSurface",
+          "on": "item.table_wood"
+        },
+        {
+          "item": "item.flower_pot",
+          "optional": true,
+          "with": "onSurface",
+          "on": "item.table_wood"
+        },
+        {
+          "item": "item.clay_cup",
+          "optional": true,
+          "with": "onSurface",
+          "on": "item.table_wood"
+        },
+        {
+          "any": [
+            "item.plate_rack",
+            "item.spoon_rack"
+          ],
+          "optional": true,
+          "with": "wall"
+        },
+        {
+          "item": "item.ceiling_herbs",
+          "optional": true,
+          "with": "ceiling"
+        }
+      ]
+    },
+    {
+      "id": "farm_bedrooms",
+      "type": "bedroom|living",
+      "steps": [
+        {
+          "item": "item.bed_straw",
+          "count": 3,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.bedside_stand",
+          "optional": true,
+          "with": "bedside"
+        },
+        {
+          "item": "item.chest_wood",
+          "count": 2,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.shelf_wood",
+          "optional": true,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.stool_wood",
+          "optional": true,
+          "anchor": "any"
+        },
+        {
+          "item": "item.candlestick",
+          "optional": true,
+          "anchor": "corner"
+        },
+        {
+          "item": "item.rug_woven_large",
+          "optional": true,
+          "with": "rug"
+        },
+        {
+          "item": "item.clay_cup",
+          "optional": true,
+          "with": "onSurface",
+          "on": "shelves"
+        }
+      ]
+    },
+    {
+      "id": "farm_cellar",
+      "type": "cellar|pantry|workshop|storehouse",
+      "steps": [
+        {
+          "item": "item.pantry_shelf",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.barrel",
+          "count": 3,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.salting_barrel",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.seed_crate",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.brew_barrel",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.workbench",
+          "optional": true,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.barn_lantern",
+          "optional": true,
+          "anchor": "any"
+        }
+      ]
+    },
+    {
+      "id": "shop_tavern",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.hearth_stone",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.copper_pots",
+          "with": "nearHearth"
+        },
+        {
+          "item": "item.prep_counter",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.brew_barrel",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.barrel",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "any": [
+            "item.trestle_table",
+            "item.han_table"
+          ],
+          "anchor": "center"
+        },
+        {
+          "any": [
+            "item.bench_long",
+            "item.han_bench"
+          ],
+          "with": "seatsAround"
+        },
+        {
+          "any": [
+            "item.trestle_table",
+            "item.han_table"
+          ],
+          "anchor": "center"
+        },
+        {
+          "any": [
+            "item.bench_long",
+            "item.han_bench"
+          ],
+          "with": "seatsAround"
+        },
+        {
+          "item": "item.stool_wood",
+          "count": 2,
+          "optional": true,
+          "with": "seatsAround"
+        },
+        {
+          "item": "item.tankard_rack",
+          "with": "wall"
+        },
+        {
+          "item": "item.singer_stand",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.firewood_basket",
+          "optional": true,
+          "with": "nearHearth"
+        },
+        {
+          "item": "item.plate_rack",
+          "optional": true,
+          "with": "wall"
+        },
+        {
+          "item": "item.tankard",
+          "count": 2,
+          "optional": true,
+          "with": "onSurface",
+          "on": "surfaces"
+        },
+        {
+          "item": "item.bread_basket",
+          "optional": true,
+          "with": "onSurface",
+          "on": "surfaces"
+        },
+        {
+          "item": "item.candlestick",
+          "optional": true,
+          "anchor": "corner"
+        }
+      ]
+    },
+    {
+      "id": "shop_general",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.shop_counter",
+          "anchor": "counter"
+        },
+        {
+          "item": "item.pantry_shelf",
+          "count": 1,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.pantry_shelf",
+          "anchor": "wall",
+          "optional": true
+        },
+        {
+          "item": "item.storage_jar",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.seed_crate",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.barrel",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.wicker_basket",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.fruit_basket",
+          "optional": true,
+          "with": "onSurface",
+          "on": "item.shop_counter"
+        },
+        {
+          "item": "item.bread_basket",
+          "optional": true,
+          "with": "onSurface",
+          "on": "item.shop_counter"
+        },
+        {
+          "any": [
+            "item.honey_pot",
+            "item.storage_pot_small"
+          ],
+          "optional": true,
+          "with": "onSurface",
+          "on": "shelves"
+        },
+        {
+          "item": "item.candlestick",
+          "optional": true,
+          "anchor": "corner"
+        }
+      ]
+    },
+    {
+      "id": "shop_scribe",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.writing_lectern",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.scroll_rack",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.shelf_wood",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.chest_wood",
+          "anchor": "wall"
+        },
+        {
+          "any": [
+            "item.table_painted",
+            "item.table_wood"
+          ],
+          "anchor": "any"
+        },
+        {
+          "item": "item.chair_carved",
+          "optional": true,
+          "with": "seatsAround"
+        },
+        {
+          "item": "item.ink_quill",
+          "with": "onSurface",
+          "on": "surfaces"
+        },
+        {
+          "item": "item.wax_seal",
+          "with": "onSurface",
+          "on": "surfaces"
+        },
+        {
+          "item": "item.letter_box",
+          "with": "onSurface",
+          "on": "surfaces"
+        },
+        {
+          "item": "item.book",
+          "count": 2,
+          "optional": true,
+          "with": "onSurface",
+          "on": "item.shelf_wood"
+        },
+        {
+          "item": "item.candle",
+          "optional": true,
+          "with": "onSurface",
+          "on": "surfaces"
+        },
+        {
+          "item": "item.rug_runner",
+          "optional": true,
+          "with": "rug"
+        }
+      ]
+    },
+    {
+      "id": "shop_herb",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.potion_shelf",
+          "count": 2,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.table_wood",
+          "anchor": "any"
+        },
+        {
+          "item": "item.mortar_pestle",
+          "with": "onSurface",
+          "on": "item.table_wood"
+        },
+        {
+          "item": "item.drying_rack",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.ceiling_herbs",
+          "count": 2,
+          "with": "ceiling"
+        },
+        {
+          "item": "item.bed_straw",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.glass_bottle",
+          "count": 2,
+          "with": "onSurface",
+          "on": "surfaces"
+        },
+        {
+          "item": "item.herb_pot_thyme",
+          "optional": true,
+          "with": "onSurface",
+          "on": "surfaces"
+        },
+        {
+          "item": "item.stool_wood",
+          "optional": true,
+          "with": "seatsAround"
+        },
+        {
+          "item": "item.basin_ewer",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.herb_bundle_wall",
+          "optional": true,
+          "with": "wall"
+        }
+      ]
+    },
+    {
+      "id": "shop_smithy",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.forge",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.anvil",
+          "with": "nearItem",
+          "on": "item.forge"
+        },
+        {
+          "item": "item.bellows",
+          "with": "nearItem",
+          "on": "item.forge"
+        },
+        {
+          "item": "item.quench_tub",
+          "with": "nearItem",
+          "on": "item.forge"
+        },
+        {
+          "item": "item.whetstone",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.tool_rack_wall",
+          "with": "wall"
+        },
+        {
+          "item": "item.iron_pile",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.firewood_basket",
+          "optional": true,
+          "with": "nearHearth"
+        },
+        {
+          "item": "item.horseshoe_display",
+          "optional": true,
+          "with": "wall"
+        }
+      ]
+    },
+    {
+      "id": "shop_carpenter",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.workbench",
+          "count": 2,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.tool_rack_wall",
+          "with": "wall"
+        },
+        {
+          "item": "item.lumber_pile",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.unfinished_furniture",
+          "anchor": "any"
+        },
+        {
+          "item": "item.table_painted",
+          "anchor": "any"
+        },
+        {
+          "any": [
+            "item.chair_carved",
+            "item.chair_wood"
+          ],
+          "count": 2,
+          "with": "seatsAround",
+          "on": "item.table_painted"
+        },
+        {
+          "item": "item.chest_wood",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.peg_rail",
+          "optional": true,
+          "with": "wall"
+        }
+      ]
+    },
+    {
+      "id": "shop_mill",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.millstone",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.quern",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.stone_oven",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.kneading_trough",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.flour_sack",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.bread_rack",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.seed_crate",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.firewood_basket",
+          "optional": true,
+          "with": "nearHearth"
+        }
+      ]
+    },
+    {
+      "id": "shop_tailor",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.loom",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.cutting_table",
+          "anchor": "any"
+        },
+        {
+          "item": "item.shears_chalk",
+          "with": "onSurface",
+          "on": "item.cutting_table"
+        },
+        {
+          "item": "item.cloth_bolt_shelf",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.spinning_wheel",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.yarn_basket",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.garment_stand",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.clothes_press",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.sewing_basket",
+          "optional": true,
+          "with": "onSurface",
+          "on": "item.cutting_table"
+        },
+        {
+          "item": "item.stool_wood",
+          "optional": true,
+          "with": "seatsAround",
+          "on": "item.cutting_table"
+        }
+      ]
+    },
+    {
+      "id": "shop_potter",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.pottery_wheel",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.clay_trough",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.pot_drying_rack",
+          "count": 2,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.storage_jar",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.stool_wood",
+          "optional": true,
+          "anchor": "any"
+        },
+        {
+          "item": "item.wall_shelf",
+          "optional": true,
+          "with": "wall"
+        },
+        {
+          "item": "item.clay_cup",
+          "optional": true,
+          "with": "onSurface",
+          "on": "shelves"
+        }
+      ]
+    },
+    {
+      "id": "shop_fisher",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.fish_basket",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.salting_barrel",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.net_curtain",
+          "with": "wall"
+        },
+        {
+          "item": "item.oar_rack",
+          "with": "wall"
+        },
+        {
+          "item": "item.dried_fish_string",
+          "with": "wall"
+        },
+        {
+          "item": "item.table_wood",
+          "optional": true,
+          "anchor": "any"
+        },
+        {
+          "item": "item.fish_basket_decor",
+          "optional": true,
+          "with": "onSurface",
+          "on": "surfaces"
+        },
+        {
+          "item": "item.barrel",
+          "optional": true,
+          "anchor": "wall"
+        }
+      ]
+    },
+    {
+      "id": "shop_saddler",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.saddler_bench",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.saddle_rack",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.hide_rack",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.tool_rack_wall",
+          "with": "wall"
+        },
+        {
+          "item": "item.saddle_peg",
+          "optional": true,
+          "with": "wall"
+        },
+        {
+          "item": "item.table_wood",
+          "optional": true,
+          "anchor": "any"
+        },
+        {
+          "item": "item.barrel_tub",
+          "optional": true,
+          "anchor": "wall"
+        }
+      ]
+    },
+    {
+      "id": "shop_mason",
+      "type": "shop",
+      "steps": [
+        {
+          "item": "item.stonecutter",
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.stone_blocks",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.chisel_rack",
+          "with": "wall"
+        },
+        {
+          "item": "item.workbench",
+          "optional": true,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.whetstone",
+          "optional": true,
+          "anchor": "wall"
+        }
+      ]
+    },
+    {
+      "id": "cellar_wine",
+      "type": "cellar|pantry",
+      "steps": [
+        {
+          "any": [
+            "item.brew_barrel",
+            "item.barrel"
+          ],
+          "count": 4,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.storage_jar",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.pantry_shelf",
+          "anchor": "backWall"
+        }
+      ]
+    },
+    {
+      "id": "storehouse",
+      "type": "storehouse",
+      "steps": [
+        {
+          "item": "item.grain_sack",
+          "count": 3,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.flour_sack",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.chest_wood",
+          "count": 2,
+          "anchor": "wall"
+        }
+      ]
+    },
+    {
+      "id": "archive",
+      "type": "storehouse",
+      "steps": [
+        {
+          "item": "item.scroll_chest",
+          "count": 3,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.shelf_wood",
+          "optional": true,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.book",
+          "optional": true,
+          "with": "onSurface",
+          "on": "item.shelf_wood"
+        }
+      ]
+    },
+    {
+      "id": "cool_cellar",
+      "type": "cellar|pantry",
+      "steps": [
+        {
+          "item": "item.pantry_shelf",
+          "count": 2,
+          "anchor": "backWall"
+        },
+        {
+          "item": "item.storage_jar",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.glass_bottle",
+          "count": 2,
+          "optional": true,
+          "with": "onSurface",
+          "on": "shelves"
+        }
+      ]
+    },
+    {
+      "id": "flour_store",
+      "type": "storehouse|pantry",
+      "steps": [
+        {
+          "item": "item.flour_sack",
+          "count": 4,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.grain_sack",
+          "count": 2,
+          "anchor": "wall"
+        }
+      ]
+    },
+    {
+      "id": "salting_cellar",
+      "type": "cellar|pantry",
+      "steps": [
+        {
+          "item": "item.salting_barrel",
+          "count": 3,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.barrel",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.brine_crock",
+          "optional": true,
+          "anchor": "wall"
+        }
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": "tavern",
+      "ground": "shop_tavern",
+      "upperKind": "inn",
+      "innRooms": [
+        "inn_room",
+        "inn_room",
+        "inn_room",
+        "home_small"
+      ],
+      "cellar": "cellar_wine",
+      "cellarType": "cellar|pantry"
+    },
+    {
+      "id": "general",
+      "ground": "shop_general",
+      "upper": "home_upper",
+      "cellar": "storehouse",
+      "cellarType": "storehouse"
+    },
+    {
+      "id": "scribe",
+      "ground": "shop_scribe",
+      "upper": "home_upper",
+      "cellar": "archive",
+      "cellarType": "storehouse"
+    },
+    {
+      "id": "herb",
+      "ground": "shop_herb",
+      "upper": "home_upper",
+      "cellar": "cool_cellar",
+      "cellarType": "cellar|pantry"
+    },
+    {
+      "id": "smithy",
+      "ground": "shop_smithy"
+    },
+    {
+      "id": "carpenter",
+      "ground": "shop_carpenter",
+      "upper": "home_upper"
+    },
+    {
+      "id": "mill",
+      "ground": "shop_mill",
+      "upper": "home_upper",
+      "cellar": "flour_store",
+      "cellarType": "storehouse|pantry"
+    },
+    {
+      "id": "tailor",
+      "ground": "shop_tailor",
+      "upper": "home_upper"
+    },
+    {
+      "id": "potter",
+      "ground": "shop_potter",
+      "upper": "home_upper"
+    },
+    {
+      "id": "fisher",
+      "ground": "shop_fisher",
+      "upper": "home_upper",
+      "cellar": "salting_cellar",
+      "cellarType": "cellar|pantry"
+    },
+    {
+      "id": "saddler",
+      "ground": "shop_saddler",
+      "upper": "home_upper"
+    },
+    {
+      "id": "mason",
+      "ground": "shop_mason"
+    },
+    {
+      "id": "cottage",
+      "ground": "cottage"
+    },
+    {
+      "id": "farmhouse",
+      "ground": "farm_hall",
+      "upper": "farm_bedrooms",
+      "cellar": "farm_cellar",
+      "cellarType": "cellar|pantry|workshop|storehouse"
+    }
+  ],
+  "gardens": []
+}
