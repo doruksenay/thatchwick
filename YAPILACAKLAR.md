@@ -1,47 +1,36 @@
 # Yapılacaklar
 
-Son güncelleme: 2026-11-18
+Son güncelleme: 2026-11-19
 
-## 1. Yemekte elde tutulan yiyecek (dal: `feat/yemek-elde`, commit edilmedi)
+## Kod
+- [ ] 018d4 (boş elle yeme, kalan 4 yön) gelince `art/results/018d4-hand-anchors.txt` satırlarını `Assets/Resources/Content/hand_anchors.txt` sonuna ekle.
+- [ ] Madencilik işlerini ayır, böylece her biri kendi animasyonunu oynatsın: kazma (`mine_dig`), kova taşıma (`mine_bucket`), destek kurma (`mine_support`). Şu an hepsi kazma oynatıyor.
+- [ ] 018c (tarla, odun) kabul edilince animasyonlarını `GameRoot.ActionKeys`'e bağla.
+- [ ] 018b4 kabul edilince yürümede eski `walk` setine düşen yön kalmadığını kontrol et.
+- [ ] Unity'de dene:
+  - [ ] Elde yiyecek: elma, yumurta, sepetten armut ve erik.
+  - [ ] Zıplamasız yürüme (walk2).
+  - [ ] Sohbet, bakım, sevgi, keyif ve balık animasyonları.
+  - [ ] Kazma animasyonu.
+  - [ ] Yıkanma ve tuvalette keyif animasyonunun oynamadığını kontrol et.
+- [ ] (Öneri, karar bekliyor) Elde tutulan aletleri de el konumu yöntemiyle göster (balta, çapa, kazma…).
 
-Amaç: Yeme animasyonunda karakterin elinde ne yiyorsa o görünsün (elma → elma, armut → armut).
+## Sanat (bulut işçisi üretir, sonra kullanıcı karar verir)
+- [ ] 018c: tarla ve odun animasyonları (üretimde)
+- [ ] 018b4: yürüme, son 5 yön (erkek sw; kadın n, ne, se, sw)
+- [ ] 018d4: boş elle yeme, kalan 4 yön + el konumu (erkek sw; kadın se, ne, sw)
+- [ ] 395e: kömür yığını (395d aday 2'nin renk düzeltmesi)
+- [ ] Hâlâ eksik kalan yönler olursa yeni tur iş dosyası yaz.
 
-Kod tarafı yazıldı:
-- `Core/Life/HeldFood.cs`
-- `DecorSystem.NextToEat`
-- `Game/HandAnchors.cs`
-- `IsoArt.HeldItem`
-- `GameRoot` içindeki Held sprite'ı
-- `UnityStubs` düzeltmeleri
-
-Kalanlar:
-- [x] `HeldFoodTests` meyve sepeti testini düzelt. Sepet yere konamıyor, bir masanın üstüne konmalı (`PlaceOnSurface`). Düzeltme yarıda kesildi; dosyanın son halini kontrol et.
-- [x] Çekirdek testlerini çalıştır. Hepsinin geçtiğini doğrula (önceki çalıştırma: 871 geçti, 1 kaldı).
-- [x] GameCheck derlemesini tekrar doğrula.
-- [x] Commit at, dalı push et, PR aç.
-- [x] Sanat işi `art/queue/018d3` yaz. İçeriği:
-  - `eat3`: boş elle yeme. Erkek ve kadın, 4 yön (se, sw, nw, ne). Hareket 018d2 ile aynı.
-  - Her kare için el konumu (`prefix kare x y [b]`): x soldan, y alttan; "b" el gövdenin arkasındaysa. Çıktı `art/results` altına.
-- [ ] İş dosyasını `main`'e al ve `pixellab-artist` işçisini başlat.
-- [x] 018d3 teslim edilince el konumlarını `Assets/Resources/Content/hand_anchors.txt` dosyasına kopyala. İstenirse bunun için bir `tools/art` betiği yaz.
-- [ ] Unity'de dene: elma, yumurta, sepetten armut ve erik.
-
-- [ ] 018d4 (kalan 4 yön) gelince `art/results/018d4-hand-anchors.txt` satırlarını `hand_anchors.txt` sonuna ekle.
-
-## 2. İzlenecek sanat işleri
-
-Her biri teslim edilince kullanıcıya gösterilecek, kabul ya da ret kullanıcıda.
-
-- [ ] 018b2: yürüme seti (d yöntemi ve serbest ayak hizası)
-- [ ] 018c: tarla ve odun animasyonları
-- [ ] 018e: sosyal ve bakım animasyonları
-- [ ] 368: madencilik animasyonu
-- [ ] 395c: 4. tur (çatkı, kandil, kömür yığını; kireç ocağı referansıyla)
-
-## 3. Açık öneriler (kullanıcı kararı bekliyor)
-
-- [ ] Aynı el konumu yöntemiyle elde tutulan aletleri de göster (balta, çapa, kazma…).
-
-## 4. Test ortamı notu
-
-- [ ] Yerel test düzeneği (`/home/claude/harness`) yalnızca `items.json` ve `life.json` kopyalıyor. "bilinmeyen beceri 'Athletics'" hataları eski derleme çıktısından geliyordu; temiz derlemede sorun çıkmadı.
+## Biten (19.11.2026)
+- [x] Yemekte elde yenen yiyecek: kod (#60), el konumları oyunda (#73)
+- [x] Kabul edildi:
+  - [x] 018b2 (4 yön), 018b3 (7 yön)
+  - [x] 018d3 (4 yön)
+  - [x] 018e
+  - [x] 368, 368b
+  - [x] 395d (çatkı, kandil)
+- [x] Oyuna bağlandı:
+  - [x] walk2 yürüme
+  - [x] 018e sosyal ve bakım animasyonları
+  - [x] 368 kazma
