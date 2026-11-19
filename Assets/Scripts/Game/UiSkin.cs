@@ -16,6 +16,25 @@ namespace Thatchwick.Game
         private static GUISkin _skin;
         private static GUIStyle _cell, _cellSel, _cellLock, _badgeNew;
 
+        /// <summary>
+        /// Satır kaydıran etiket. Piksel yazı tipinde IMGUI'nin CalcHeight'ı çok satırlı metni
+        /// kısa ölçüyor, ikinci satır alttaki satırın altında kalıyordu; yükseklik satır sayısından da hesaplanır.
+        /// </summary>
+        /// <summary>Kaydırma alanlı panellerde metin genişliği (panel - kenar boşluğu - kaydırma çubuğu).</summary>
+        public const float FamilyTextW = 290f, MarketTextW = 320f;
+
+        public static void Wrap(string text, float width) => Wrap(new GUIContent(text), width);
+
+        public static void Wrap(GUIContent c, float width)
+        {
+            var st = new GUIStyle(GUI.skin.label) { wordWrap = true };
+            float one = Mathf.Max(st.lineHeight, st.CalcSize(new GUIContent("Ag")).y - st.padding.top - st.padding.bottom);
+            float inner = Mathf.Max(20f, width - st.padding.left - st.padding.right);
+            int lines = Mathf.Max(1, Mathf.CeilToInt(st.CalcSize(c).x / inner * 1.1f));
+            float h = Mathf.Max(st.CalcHeight(c, width), lines * (one + 2f) + st.padding.top + st.padding.bottom);
+            GUILayout.Label(c, st, GUILayout.Width(width), GUILayout.Height(h));
+        }
+
         public static GUISkin Skin { get { Build(); return _skin; } }
         public static GUIStyle Cell { get { Build(); return _cell; } }
         public static GUIStyle CellSelected { get { Build(); return _cellSel; } }

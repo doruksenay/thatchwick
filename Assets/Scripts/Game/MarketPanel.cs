@@ -46,7 +46,7 @@ namespace Thatchwick.Game
         public void Close() { Active = false; }
 
         public Rect PanelRect(float guiScale) =>
-            new Rect(Screen.width / guiScale - 318f, 8f, 310f, Screen.height / guiScale - 16f);
+            new Rect(Screen.width / guiScale - 368f, 8f, 360f, Screen.height / guiScale - 16f);
 
         private ItemInstance Stall => _world.GetItem(_stallId);
 
@@ -83,26 +83,26 @@ namespace Thatchwick.Game
             if (!Active) return;
             GUILayout.BeginArea(PanelRect(guiScale), GUI.skin.box);
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"PAZAR · Akçe {_house.Akce} · Depo {_storage.Used}/{_storage.Capacity}");
+            UiSkin.Wrap($"PAZAR · Akçe {_house.Akce} · Depo {_storage.Used}/{_storage.Capacity}", 344f);
             if (GUILayout.Button("Kapat", GUILayout.Width(56f))) Active = false;
             GUILayout.EndHorizontal();
-            if (_status.Length > 0) GUILayout.Label(_status);
+            if (_status.Length > 0) UiSkin.Wrap(_status, 344f);
 
             bool near = PlayerIsNear();
             if (!near)
             {
-                GUILayout.Label("Alışveriş için tezgâhın yanında olmalısın (köyün doğusu, çit geçidinden çık).");
+                UiSkin.Wrap("Alışveriş için tezgâhın yanında olmalısın (köyün doğusu, çit geçidinden çık).", 344f);
                 if (GUILayout.Button("Pazara yürü")) WalkToStall();
             }
 
             _scroll = GUILayout.BeginScrollView(_scroll);
             GUI.enabled = near;
 
-            GUILayout.Label("— Bugünün teklifleri —");
+            UiSkin.Wrap("— Bugünün teklifleri —", UiSkin.MarketTextW);
             foreach (var o in _market.Offers)
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(_market.Describe(o), new GUIStyle(GUI.skin.label) { wordWrap = true }, GUILayout.Width(205f));   // sabit genişlik: Kabul düğmesi panelden taşmasın
+                UiSkin.Wrap(_market.Describe(o), 205f);   // sabit genişlik: Kabul düğmesi panelden taşmasın
                 if (o.Taken) GUILayout.Label("alındı", GUILayout.Width(48f));
                 else if (GUILayout.Button("Kabul", GUILayout.Width(52f)))
                 {
@@ -113,8 +113,8 @@ namespace Thatchwick.Game
             }
 
             DrawMerchant();
-            GUILayout.Label(_market.Season == Thatchwick.Core.Time.Season.Winter ? "— Mallar (kış: yakıt ve yiyecek pahalı) —" : "— Mallar —");
-            GUILayout.Label($"Pazarlık (ticaret becerisi): satış x{_market.TradeSellFactor:0.00} · alış x{_market.TradeBuyFactor:0.00}");
+            UiSkin.Wrap(_market.Season == Thatchwick.Core.Time.Season.Winter ? "— Mallar (kış: yakıt ve yiyecek pahalı) —" : "— Mallar —", UiSkin.MarketTextW);
+            UiSkin.Wrap($"Pazarlık (ticaret becerisi): satış x{_market.TradeSellFactor:0.00} · alış x{_market.TradeBuyFactor:0.00}", UiSkin.MarketTextW);
             foreach (var g in _market.Goods())
             {
                 GUILayout.BeginHorizontal();
@@ -141,10 +141,10 @@ namespace Thatchwick.Game
         {
             var m = Merchant;
             if (m == null || (!m.Here && m.Order == null)) return;
-            GUILayout.Label(m.Here ? (m.IsFair ? "— Panayır: gezgin tüccar —" : "— Gezgin tüccar —") : "— Tüccarın siparişi (pazar günü gelir) —");
+            UiSkin.Wrap(m.Here ? (m.IsFair ? "— Panayır: gezgin tüccar —" : "— Gezgin tüccar —") : "— Tüccarın siparişi (pazar günü gelir) —", UiSkin.MarketTextW);
             if (m.Here)
             {
-                if (m.Offers.Count == 0) GUILayout.Label("Tüccarın malı tükendi.");
+                if (m.Offers.Count == 0) UiSkin.Wrap("Tüccarın malı tükendi.", UiSkin.MarketTextW);
                 foreach (var o in new List<MerchantOffer>(m.Offers))
                 {
                     GUILayout.BeginHorizontal();
@@ -175,7 +175,7 @@ namespace Thatchwick.Game
                 string bonus = od.BonusItemId != null && _content.Items.TryGet(od.BonusItemId, out var bd) ? $" + {bd.DisplayName}" : "";
                 GUILayout.BeginHorizontal();
                 IsoArt.IconCell(od.ItemId);
-                GUILayout.Label($"Sipariş: {item} {_house.Count(od.ItemId)}/{od.Count} → {od.RewardAkce} akçe, itibar +{od.RewardReputation * (m.IsFair ? 2 : 1)}{bonus}", GUILayout.Width(200f));
+                UiSkin.Wrap($"Sipariş: {item} {_house.Count(od.ItemId)}/{od.Count} → {od.RewardAkce} akçe, itibar +{od.RewardReputation * (m.IsFair ? 2 : 1)}{bonus}", 200f);
                 string why = m.DeliverBlocker();
                 GUI.enabled = why == null;
                 if (GUILayout.Button(new GUIContent("Teslim et", why ?? ""), GUILayout.Width(70f)))

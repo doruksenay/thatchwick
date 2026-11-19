@@ -67,26 +67,26 @@ namespace Thatchwick.Game
             GUILayout.EndHorizontal();
             var actor = _selected();
             if (Upbringing != null)
-                GUILayout.Label(new GUIContent($"İtibar: {Upbringing.Reputation.TierName} ({Upbringing.Reputation.Points}) · satış {Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%",
-                    string.Join("\n", Upbringing.Reputation.RecentLog)));
+                UiSkin.Wrap(new GUIContent($"İtibar: {Upbringing.Reputation.TierName} ({Upbringing.Reputation.Points}) · satış {Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%",
+                    string.Join("\n", Upbringing.Reputation.RecentLog)), UiSkin.FamilyTextW);
             DrawWeddingPrep();
-            GUILayout.Label(actor != null ? $"Komut alan: {actor.Name} (haritaya dokununca o gider)" : "Komut alacak kişiyi seç.");
-            if (_status.Length > 0) GUILayout.Label(_status);
+            UiSkin.Wrap(actor != null ? $"Komut alan: {actor.Name} (haritaya dokununca o gider)" : "Komut alacak kişiyi seç.", UiSkin.FamilyTextW);
+            if (_status.Length > 0) UiSkin.Wrap(_status, UiSkin.FamilyTextW);
             if (actor != null && actor.MoodEnabled)
             {
-                GUILayout.Label($"Ruh hali: {Thatchwick.Core.Mood.MoodRules.Name(actor.Mood.Status)} ({actor.Mood.Total})");
+                UiSkin.Wrap($"Ruh hali: {Thatchwick.Core.Mood.MoodRules.Name(actor.Mood.Status)} ({actor.Mood.Total})", UiSkin.FamilyTextW);
                 foreach (var m in actor.Mood.Active)
                 {
                     string left = m.Def.IsCondition ? "" : $", {m.RemainingDays:0.0} gün";
-                    GUILayout.Label($"  {(m.Def.Value > 0 ? "+" : "")}{m.Def.Value} {m.Def.DisplayName}{left}: {m.Def.Description}");
+                    UiSkin.Wrap($"  {(m.Def.Value > 0 ? "+" : "")}{m.Def.Value} {m.Def.DisplayName}{left}: {m.Def.Description}", UiSkin.FamilyTextW);
                 }
             }
 
             _scroll = GUILayout.BeginScrollView(_scroll);
-            GUILayout.Label("— Hane —");
+            UiSkin.Wrap("— Hane —", UiSkin.FamilyTextW);
             foreach (var c in _population.Members) if (!c.IsVillager) DrawRow(c, actor);
             DrawRecipes(actor);
-            GUILayout.Label("— Köylüler (pazar çevresi) —");
+            UiSkin.Wrap("— Köylüler (pazar çevresi) —", UiSkin.FamilyTextW);
             foreach (var c in _population.Members) if (c.IsVillager) DrawRow(c, actor);
             GUILayout.EndScrollView();
             GUILayout.EndArea();
@@ -99,11 +99,11 @@ namespace Thatchwick.Game
             string mood = c.MoodEnabled ? $", {Thatchwick.Core.Mood.MoodRules.Name(c.Mood.Status)}" : "";
             string state = c.IsDead ? "öldü" : $"{StageName(c.Stage)} {c.AgeDays:0}g, Açlık {c.Needs.Get(NeedType.Hunger):0}{mood}{(c.IsPregnant ? ", hamile" : "")}";
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"{c.Name}{head} ({state}{spouse})");
+            UiSkin.Wrap($"{c.Name}{head} ({state}{spouse})", UiSkin.FamilyTextW);
             if (CanTakeCommands(c) && c != actor && GUILayout.Button("Seç", GUILayout.Width(40f))) { _select(c); _status = $"{c.Name} seçildi."; }
             GUILayout.EndHorizontal();
             // Hanedan geçmişi: kişinin hayat notları ("Neşeli bir soydan geldi ama zor bir çocukluk geçirdi.").
-            if (!c.IsVillager) foreach (var note in c.Chronicle) GUILayout.Label("    · " + note);
+            if (!c.IsVillager) foreach (var note in c.Chronicle) UiSkin.Wrap("    · " + note, UiSkin.FamilyTextW);
 
             // Görev (otomasyonun işçi tarafı): ihtiyaçları iyiyken gündüz kendiliğinden tarlaya ya da hayvanlara bakar.
             if (!c.IsVillager && DutyPlanner.CanTakeDuty(c))
@@ -163,7 +163,7 @@ namespace Thatchwick.Game
             if (ap != null) info.Add($"çırak: {SkillNames.Name(ap.Skill)}, ustası {_population.Find(ap.MasterId)?.Name}");
             var ms = u.Apprentices.OfMaster(c.Id);
             if (ms != null) info.Add($"çırağı: {_population.Find(ms.ApprenticeId)?.Name} ({SkillNames.Name(ms.Skill)})");
-            if (info.Count > 0) GUILayout.Label("    ◦ " + string.Join(" · ", info));
+            if (info.Count > 0) UiSkin.Wrap("    ◦ " + string.Join(" · ", info), UiSkin.FamilyTextW);
 
             GUILayout.BeginHorizontal();
             GUILayout.Space(12f);
@@ -219,10 +219,10 @@ namespace Thatchwick.Game
             var (filled, max) = w.DowryFill != null ? w.DowryFill() : (0, 0);
             bool full = max > 0 && filled >= max;
             string dowry = max > 0 ? $" · çeyiz {filled}/{max}" : " · çeyiz sandığı yok";
-            GUILayout.Label(new GUIContent($"Düğün hazırlığı: {string.Join(" · ", parts)}{dowry} → {WeddingSystem.ScaleName(w.ExpectedScale(full))}",
+            UiSkin.Wrap(new GUIContent($"Düğün hazırlığı: {string.Join(" · ", parts)}{dowry} → {WeddingSystem.ScaleName(w.ExpectedScale(full))}",
                 $"Ekmek {WeddingSystem.BreadNeed}, içki {WeddingSystem.DrinkNeed}, mum {WeddingSystem.LightNeed} ve çalgıcı (Müzik {WeddingSystem.MusicLevel}+ ya da kavalda usta).\n" +
                 "Hazır kalemler düğünde harcanır. 4 kalem görkemli, 2-3 güzel; dolu çeyiz sandığı bir basamak artırır.\n" +
-                $"Talip niteliği şansı: %{w.SuitorQuality() * 100:0}"));
+                $"Talip niteliği şansı: %{w.SuitorQuality() * 100:0}"), UiSkin.FamilyTextW);
         }
 
         // Aile sırları: bilenler, öğret (seçili kişi bilir ve hedef hane üyesi bilmez), deftere yaz.
@@ -230,13 +230,13 @@ namespace Thatchwick.Game
         {
             var u = Upbringing;
             if (u == null || u.Recipes.Recipes.Count == 0) return;
-            GUILayout.Label("— Aile sırları —");
+            UiSkin.Wrap("— Aile sırları —", UiSkin.FamilyTextW);
             foreach (var r in u.Recipes.Recipes)
             {
                 var names = new List<string>();
                 foreach (var id in r.Knowers) { var k = _population.Find(id); if (k != null && !k.IsDead) names.Add(k.Name); }
                 string state = r.Lost ? "kayboldu" : r.Written ? "yazılı" : names.Count == 1 ? "tek bilen!" : "sözlü";
-                GUILayout.Label($"{r.Name} ({state}, {r.Generations}. kuşak): {(names.Count > 0 ? string.Join(", ", names) : "bilen yok")}");
+                UiSkin.Wrap($"{r.Name} ({state}, {r.Generations}. kuşak): {(names.Count > 0 ? string.Join(", ", names) : "bilen yok")}", UiSkin.FamilyTextW);
                 if (r.Lost) continue;
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(12f);
@@ -262,7 +262,7 @@ namespace Thatchwick.Game
                         if (GUILayout.Button(new GUIContent("Deftere yaz", why ?? "Boş defter harcanır; tarif kaybolmaz"), GUILayout.Width(90f)))
                             _status = u.WriteRecipe(actor, r, House) ?? $"{r.Name} deftere yazıldı.";
                         GUI.enabled = true;
-                        if (why != null) GUILayout.Label(why);
+                        if (why != null) UiSkin.Wrap(why, UiSkin.FamilyTextW);
                     }
                 }
                 else if (actor != null && r.Written && u.Recipes.TeachBlocker(null, actor, r) == null
@@ -312,7 +312,7 @@ namespace Thatchwick.Game
                 _status = $"{actor.Name} → {target.Name}: {label}";
             }
             GUI.enabled = true;
-            if (reason != null && action != SocialAction.Chat) GUILayout.Label(reason);
+            if (reason != null && action != SocialAction.Chat) UiSkin.Wrap(reason, UiSkin.FamilyTextW);
         }
     }
 }
