@@ -50,3 +50,4 @@ Miras sistemi (PR #11, Project belgesi 19) için arayüz ikonları ve dünyada y
 ## Notlar
 - Kod tarafı bu dosya adlarını henüz okumuyor; ikonlar teslim edilince arayüz bağlantısı ayrı bir kod işidir (UI Toolkit geçişi, Adım 27, ile birlikte).
 - Parıltı `iso_fx_*` adıyla dünya katmanındadır, eşya sprite'ı değildir.
+- 2026-11-19 (kod oturumu, kullanıcı kararı "önerdiklerini yap"): yeniden deneme işi 350b yazıldı.

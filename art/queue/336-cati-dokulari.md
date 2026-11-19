@@ -41,3 +41,4 @@ Elle çatı çizimi ve kalkan duvarı (gable) sonraki aşama; bu dokular onlarda
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-19 (kod oturumu, kullanıcı kararı "önerdiklerini yap"): yeniden deneme işi 336b yazıldı.
