@@ -2395,7 +2395,7 @@ namespace Thatchwick.Game
                 if (heatView == null || !heatItem.IsLit) continue;
                 var top = heatView.transform.position + new Vector3(0f, 0.55f, 0f);
                 int order = heatView.sortingOrder + 2;
-                float smokeRate = weather == WeatherType.Rain || weather == WeatherType.Storm ? 1.6f : 1.0f;
+                float smokeRate = weather == WeatherType.Rain || weather == WeatherType.Storm ? 3.2f : 2.2f;
                 if (Random01() < dt * smokeRate) _juice.Emit(Juice.Kind.Smoke, top + new Vector3(0f, 0.15f, 0f), 1, order);
                 if (Random01() < dt * 1.4f) _juice.Emit(Juice.Kind.Spark, top - new Vector3(0f, 0.25f, 0f), 1, order);
             }

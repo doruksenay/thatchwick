@@ -59,8 +59,9 @@ namespace Thatchwick.Game
                 {
                     case Kind.Smoke:
                         p.Vel = new Vector3(Rand(-0.04f, 0.04f), Rand(0.22f, 0.34f), 0f);
-                        p.Life = Rand(2.2f, 3.4f); p.Size = Rand(2f, 3f); p.Drift = Rand(0.05f, 0.12f);
-                        float g = Rand(0.55f, 0.72f); p.Color = new Color(g, g, g * 1.02f, 0.55f);
+                        p.Life = Rand(2.2f, 3.4f); p.Size = Rand(3f, 4f); p.Drift = Rand(0.05f, 0.12f);
+                        // Unity'de denendi (19.11): 0,55 alfa ve 2-3 px gündüz neredeyse görünmüyordu.
+                        float g = Rand(0.62f, 0.8f); p.Color = new Color(g, g, g * 1.02f, 0.75f);
                         break;
                     case Kind.Steam:
                         p.Vel = new Vector3(Rand(-0.03f, 0.03f), Rand(0.18f, 0.26f), 0f);
@@ -168,7 +169,7 @@ namespace Thatchwick.Game
                 p.R.transform.position = draw;
 
                 // White sprite 4 px: piksel boyu = Size / 4 ölçek. Duman büyüyerek dağılır.
-                float size = p.Kind == Kind.Smoke ? Mathf.Round(p.Size + k * 3f) : p.Size;
+                float size = p.Kind == Kind.Smoke ? Mathf.Round(p.Size + k * 4f) : p.Size;
                 float s = size / 4f;
                 p.R.transform.localScale = new Vector3(s, s, 1f);
                 var c = p.Color;
