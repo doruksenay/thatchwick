@@ -1,7 +1,8 @@
 ---
 id: "423b"
 title: Yaşlı erkek SE yönünde kalan küreği sil (423 devamı)
-status: pending
+status: running
+claimed_at: 2026-11-19T12:24Z
 approved_by: user        # kullanıcı 19.11.2026: "kabul ediyorum" (423 önerisi)
 priority: 60
 family: karakter
