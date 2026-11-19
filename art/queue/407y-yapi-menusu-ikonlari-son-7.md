@@ -1,7 +1,7 @@
 ---
 id: "407y"
 title: Yapı menüsü ikonları, son 7 (zayıf 5 + eksik 2)
-status: running
+status: review
 claimed_at: 2026-11-19T03:24Z
 approved_by: user
 priority: 15
