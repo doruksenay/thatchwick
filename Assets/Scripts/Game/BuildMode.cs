@@ -1670,7 +1670,14 @@ namespace Thatchwick.Game
                     }
                     else
                     {
-                        DrawSprite(pic, IsoArt.ItemPreview(def.Id), !unlocked);
+                        var preview = IsoArt.ItemPreview(def.Id);
+                        if (preview != null) DrawSprite(pic, preview, !unlocked);
+                        else
+                        {
+                            // Görseli henüz yok: kategori ikonu yarı saydam yer tutucu (hücre boş kalmasın).
+                            var ci = _shopCat >= 0 && _shopCat < ItemCatalog.Categories.Length ? UiSkin.Icon("cat_" + ItemCatalog.Categories[_shopCat].id) : null;
+                            if (ci != null) { var oc = GUI.color; GUI.color = new Color(1f, 1f, 1f, unlocked ? 0.55f : 0.25f); GUI.DrawTexture(new Rect(r.center.x - 16f, r.y + 12f, 32f, 32f), ci, ScaleMode.ScaleToFit); GUI.color = oc; }
+                        }
                         GUI.Label(new Rect(r.x + 3f, r.y + 50f, r.width - 6f, 20f), def.DisplayName, _cellName);
                         GUI.Label(new Rect(r.x + 3f, r.y + 60f, r.width - 6f, 18f), unlocked ? $"{def.Price}" : $"Sv {def.UnlockLevel}", _cellPrice);
                         if (unlocked && _seen != null && !_seen.Contains(def.Id))
@@ -1721,21 +1728,20 @@ namespace Thatchwick.Game
                 GUILayout.Label("YENİ");
             }
             GUILayout.BeginHorizontal();
-            GUI.enabled = unlocked;
-            if (GUILayout.Button(unlocked ? $"Al {def.Price}" : _svc.LockText(def)))
+            // Katalog sipariş verir, marangoz ertesi sabah getirir; üst setler yalnızca şehir dükkânlarında (belge 18, 42).
+            bool shopOnly = BuildService.ShopOnly(def);
+            GUI.enabled = unlocked && !shopOnly;
+            if (shopOnly) GUILayout.Label($"{def.StyleSet} takımı: yalnızca şehirdeki dükkânda.", _wrap);
+            else if (GUILayout.Button(unlocked ? $"Sipariş ver {def.Price}" : _svc.LockText(def)))
                 _deferred = () =>
                 {
-                    var r = _svc.Buy(def.Id);
-                    _status = r.Ok ? $"{def.DisplayName} alındı (envanterde)." : r.Reason;
-                };
-            if (unlocked && GUILayout.Button("Al ve koy"))
-                _deferred = () =>
-                {
-                    var r = _svc.Buy(def.Id);
-                    if (r.Ok) StartPlacing(def.Id); else _status = r.Reason;
+                    var r = _svc.Order(def.Id);
+                    _status = r.Ok ? $"{def.DisplayName} sipariş edildi: marangoz yarın sabah getirir." : r.Reason;
                 };
             GUI.enabled = true;
             if (have > 0) GUILayout.Label($"Envanterde {have}", GUILayout.Width(80f));
+            int ordered = _house.OrderedCount(def.Id);
+            if (ordered > 0) GUILayout.Label($"Yolda {ordered}", GUILayout.Width(60f));
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
         }

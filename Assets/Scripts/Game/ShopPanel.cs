@@ -35,6 +35,9 @@ namespace Thatchwick.Game
         private List<ItemDef> _goods, _wares;
 
         public bool Active { get; private set; }
+        /// <summary>Hayvan pazarında hayvan satışı için (barınak ve kilit kuralları AnimalSystem.Buy'da).</summary>
+        public Thatchwick.Core.Animals.AnimalSystem Animals { get; set; }
+        public Func<int> AccountLevel { get; set; }
         public ShopDef Shop => _shop;
 
         public ShopPanel(Market market, BuildService build, Household house, ContentDatabase content, WorldState world,
@@ -138,11 +141,29 @@ namespace Thatchwick.Game
             GUILayout.BeginHorizontal();
             if (GUILayout.Toggle(_tab == 0, "Mallar", GUI.skin.button)) _tab = 0;
             if (Wares().Count > 0 && GUILayout.Toggle(_tab == 1, $"Eşyalar ({Wares().Count})", GUI.skin.button)) _tab = 1;
+            bool animalShop = _shop.Id == "animals" && Animals != null;
+            if (animalShop && GUILayout.Toggle(_tab == 2, "Hayvanlar", GUI.skin.button)) _tab = 2;
             GUILayout.EndHorizontal();
 
             _scroll = GUILayout.BeginScrollView(_scroll);
             GUI.enabled = canTrade;
-            if (_tab == 0 || Wares().Count == 0)
+            if (_tab == 2 && animalShop)
+            {
+                GUILayout.Label("Hayvan, uygun barınağına (kümes, ahır, ağıl) yerleşir; barınak yoksa önce onu kur.");
+                foreach (var sp in _content.Animals.All)
+                {
+                    if (sp.Price <= 0) continue;
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(sp.DisplayName, GUILayout.Width(150f));
+                    if (GUILayout.Button($"Al {sp.Price}", GUILayout.Width(64f)))
+                    {
+                        var r = Animals.Buy(sp.Id, _house, out var a, AccountLevel != null ? AccountLevel() : int.MaxValue);
+                        _status = r.Ok ? $"{sp.DisplayName} alındı: {a?.Name}." : r.Reason;
+                    }
+                    GUILayout.EndHorizontal();
+                }
+            }
+            else if (_tab == 0 || Wares().Count == 0)
             {
                 GUILayout.Label($"Pazarlık (ticaret): satış x{_market.TradeSellFactor:0.00} · alış x{_market.TradeBuyFactor:0.00}");
                 if (Goods().Count == 0) GUILayout.Label("Bu dükkân mal satmıyor.");

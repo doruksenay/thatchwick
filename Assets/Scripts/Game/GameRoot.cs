@@ -2771,7 +2771,7 @@ namespace Thatchwick.Game
 
             if (_creator != null)
             {
-                if (_namingSettlement) DrawSettlementNaming(); else _creator.OnGUI();
+                { var prevCreatorSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { if (_namingSettlement) DrawSettlementNaming(); else _creator.OnGUI(); } finally { GUI.skin = prevCreatorSkin; } }   // 391 tema (belge 33)
                 if (Time.unscaledTime < _messageUntil)
                 {
                     float ms = HudScale;
@@ -2803,7 +2803,7 @@ namespace Thatchwick.Game
             _villagePanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }
             DrawBalloons(s);
             _statusHud.LeftInset = HudRect.xMax;
-            _statusHud.OnGUI(s);
+            { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
             DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
 

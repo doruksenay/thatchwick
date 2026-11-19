@@ -29,6 +29,28 @@ namespace Thatchwick.Core.Build
 
         public int Akce { get; private set; }
 
+        // Katalog siparişleri (belge 18 karar 1, belge 42): parası ödenmiş, marangozun ertesi sabah getireceği eşyalar.
+        private readonly Dictionary<string, int> _orders = new Dictionary<string, int>();
+
+        public IEnumerable<KeyValuePair<string, int>> Orders => _orders;
+        public int OrderedCount(string itemId) => itemId != null && _orders.TryGetValue(itemId, out int n) ? n : 0;
+
+        public void AddOrder(string itemId, int count = 1)
+        {
+            if (string.IsNullOrEmpty(itemId) || count <= 0) return;
+            _orders[itemId] = OrderedCount(itemId) + count;
+            Changed?.Invoke();
+        }
+
+        /// <summary>Bekleyen siparişleri envantere koyar (yeni günün sabahı); teslim edilenleri döndürür.</summary>
+        public List<KeyValuePair<string, int>> DeliverOrders()
+        {
+            var done = new List<KeyValuePair<string, int>>(_orders);
+            _orders.Clear();
+            foreach (var kv in done) AddItem(kv.Key, kv.Value);
+            return done;
+        }
+
         public event Action Changed;
 
         public Household(int startingAkce = 0)

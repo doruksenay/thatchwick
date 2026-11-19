@@ -287,6 +287,24 @@ namespace Thatchwick.Core.Build
             return PlacementCheck.Success;
         }
 
+        /// <summary>Üst setler (Tüccar, Asil) katalogdan sipariş edilmez, yalnızca şehir dükkânlarında satılır (belge 18).</summary>
+        public static bool ShopOnly(ItemDef def) => def != null && (def.StyleSet == "Tüccar" || def.StyleSet == "Asil");
+
+        /// <summary>
+        /// Katalog siparişi: parası şimdi ödenir, eşya ertesi sabah marangozla gelir (Household.DeliverOrders).
+        /// Depo yeri teslimde aranmaz; sipariş geri alınamaz.
+        /// </summary>
+        public PlacementCheck Order(string itemId)
+        {
+            if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
+            if (def.Price <= 0) return PlacementCheck.Fail("Bu eşya satılmıyor.");
+            if (ShopOnly(def)) return PlacementCheck.Fail($"{def.StyleSet} takımı yalnızca şehirdeki dükkânlarda satılır.");
+            if (!IsUnlocked(def)) return PlacementCheck.Fail(LockText(def));
+            if (!_house.TrySpend(PriceFor(def))) return PlacementCheck.Fail("Akçe yetmiyor.");
+            _house.AddOrder(itemId);
+            return PlacementCheck.Success;
+        }
+
         /// <summary>Envanterdeki bir eşyayı satar (önce sağlam olanı).</summary>
         public const string KeepsakeNoSell = "Hatıra satılmaz; yerinde bırak ya da envantere al.";
 

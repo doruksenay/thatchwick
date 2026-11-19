@@ -32,6 +32,8 @@ namespace Thatchwick.Core.Life
     {
         public const int MaxRomance = 100;
         public const string RoleBlacksmith = "blacksmith";
+        public const string RoleInnkeeper = "innkeeper";
+        public const double InnOpens = 0.48, InnCloses = 0.995;
 
         private readonly ContentDatabase _content;
         private readonly Population _population;
@@ -297,6 +299,9 @@ namespace Thatchwick.Core.Life
         {
             if (festivalToday && dayFraction >= 0.4 && dayFraction < SquareUntil + 0.05) return "square";
             if (weather == WeatherType.Storm) return def.Home;
+            // Hancı akşam çalışır (meyhane 12:00-24:00, belge 42): öğlene kadar evde, sonra gece yarısına kadar meyhanede.
+            if (def.Role == RoleInnkeeper)
+                return dayFraction >= InnOpens && dayFraction < InnCloses && !string.IsNullOrEmpty(def.Work) ? def.Work : def.Home;
             if (dayFraction < HomeUntil) return def.Home;
             if (dayFraction < WorkUntil) return string.IsNullOrEmpty(def.Work) ? def.Home : def.Work;
             if (dayFraction < SquareUntil && weather != WeatherType.Snow && weather != WeatherType.Rain) return "square";

@@ -214,6 +214,9 @@ namespace Thatchwick.Core.Save
             foreach (var kv in house.BoughtList()) bought.Add(new KeyInt { key = kv.Key, value = kv.Value });
             data.household = new HouseholdSave { akce = house.Akce, inventory = inv.ToArray(), damaged = dmg.ToArray(), repaired = rep.ToArray(), bought = bought.ToArray(),
                 shopUnlocks = new List<string>(house.ShopUnlocks).ToArray() };
+            var orders = new List<KeyInt>();
+            foreach (var kv in house.Orders) orders.Add(new KeyInt { key = kv.Key, value = kv.Value });
+            data.household.orders = orders.ToArray();
 
             var chars = new List<CharacterSave>();
             foreach (var c in characters) chars.Add(CaptureCharacter(c));
@@ -578,6 +581,7 @@ namespace Thatchwick.Core.Save
             if (hs.repaired != null) foreach (var kv in hs.repaired) if (kv != null && content.Items.Contains(kv.key)) house.RestoreCondition(kv.key, kv.value, ItemCondition.Repaired);
             if (hs.bought != null) foreach (var kv in hs.bought) if (kv != null && content.Items.Contains(kv.key)) house.MarkBought(kv.key, kv.value);
             if (hs.shopUnlocks != null) foreach (var k in hs.shopUnlocks) house.UnlockShop(k);
+            if (hs.orders != null) foreach (var kv in hs.orders) if (kv != null && content.Items.Contains(kv.key)) house.AddOrder(kv.key, kv.value);
             result.Household = house;
 
             if (data.characters != null)
