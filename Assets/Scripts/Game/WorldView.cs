@@ -86,6 +86,12 @@ namespace Thatchwick.Game
         private RectInt _area;
         private readonly System.Collections.Generic.List<GameObject> _spawned = new System.Collections.Generic.List<GameObject>();
 
+        /// <summary>
+        /// Nokta etkin bölgede mi (kenar dahil: bölgenin doğu/kuzey sınırındaki duvar kenarı x = xMax'ta durur).
+        /// Duvar ve çatı görünümü yalnızca etkin bölgeyi çizer (komşu bölgenin binaları kenarda görünmesin).
+        /// </summary>
+        public bool InArea(int x, int y) => x >= _area.xMin && y >= _area.yMin && x <= _area.xMax && y <= _area.yMax;
+
         public void Build(GridMap map) => Build(map, new RectInt(0, 0, map.Width, map.Height));
 
         public void Build(GridMap map, RectInt area)
@@ -209,7 +215,7 @@ namespace Thatchwick.Game
 
         private void RefreshLevel(int z)
         {
-            if (z == 0) RebuildPathFringe(IsLevelVisible(0));
+            if (z == 0) { _pathWang = IsoArt.PathWangReady; RebuildPathFringe(IsLevelVisible(0)); RebuildPathLayer(IsLevelVisible(0)); }
             bool visible = IsLevelVisible(z);
             for (int y = _area.yMin; y < _area.yMax; y++)
             {
@@ -254,10 +260,18 @@ namespace Thatchwick.Game
                         int band = GridMap.ConditionBand(roadCond);
                         bool natural = Map.IsNaturalRoad(p);
                         // Yol karosu (340). Kendiliğinden oluşan patika silikken çim kalır, belirginleşince patika karosuna döner.
-                        var roadArt = natural && roadCond < 0.5f ? null
+                        // Wang seti varsa toprak patika ayrı katmanda (dual-grid) çizilir; bu karo çimen kalır.
+                        bool wang = _pathWang && road == RoadType.Path && !(natural && roadCond < 0.5f);
+                        var roadArt = wang || natural && roadCond < 0.5f ? null
                             : road == RoadType.Path ? PathArt(p) ?? IsoArt.Road(road, band, x, y)
                             : IsoArt.Road(road, band, x, y);
-                        if (roadArt != null)
+                        if (wang)
+                        {
+                            var grassArt = IsoArt.Ground(FloorType.Grass, x, y);
+                            sr.sprite = grassArt != null ? grassArt : SpriteMaterials.Diamond;
+                            sr.color = grassArt != null ? Color.white : (((x + y) & 1) == 0 ? GrassA : GrassB);
+                        }
+                        else if (roadArt != null)
                         {
                             sr.sprite = roadArt;
                             float k = band == 0 ? 1f : band == 1 ? 0.9f : 0.8f;
@@ -348,6 +362,60 @@ namespace Thatchwick.Game
                 && Connects(p, new GridPos(p.X + 1, p.Y - 1, p.Z)) && Connects(p, new GridPos(p.X - 1, p.Y - 1, p.Z))
                 && Connects(p, new GridPos(p.X + 1, p.Y + 1, p.Z)) && Connects(p, new GridPos(p.X - 1, p.Y + 1, p.Z));
             return IsoArt.PathTile(mask, full, p.X, p.Y);
+        }
+
+        // ---------------- toprak yol katmanı (dual-grid, art/queue/004e) ----------------
+        // Her köşe noktasında (dört ızgara karosunun buluştuğu yer) bir geçiş karosu durur. Karonun dört köşesi o noktaya
+        // değen dört karodan gelir: üst = (x+1, y+1), sağ = (x+1, y), alt = (x, y), sol = (x, y+1) (Iso.GridToWorld).
+        // Yol karosu toprak sayılır; meydan taşı, köprü ve kapı döşemesi yalnızca bir yola değiyorsa toprak sayılır
+        // (yol oraya bağlanır, ama meydanın içi boyanmaz). Çeşit (a/b/c) köşe noktasının konumundan sabit gürültüyle
+        // seçilir: uzun yolda aynı kenar tekrar etmez, iki kenar birbirinden bağımsızdır.
+        private bool _pathWang;
+        private readonly System.Collections.Generic.List<GameObject> _pathObjects = new System.Collections.Generic.List<GameObject>();
+
+        private bool IsDirtPath(int x, int y)
+        {
+            var q = new GridPos(x, y);
+            if (!Map.InBounds(q) || !_area.Contains(new Vector2Int(x, y))) return false;
+            if (Map.GetRoad(q) != RoadType.Path) return false;
+            return !(Map.IsNaturalRoad(q) && Map.GetRoadCondition(q) < 0.5f);
+        }
+
+        private bool IsPathJoin(int x, int y)
+        {
+            var q = new GridPos(x, y);
+            if (!Map.InBounds(q) || !_area.Contains(new Vector2Int(x, y))) return false;
+            var f = Map.GetFloor(q);
+            return f == FloorType.Stone || f == FloorType.Wood;
+        }
+
+        private void RebuildPathLayer(bool visible)
+        {
+            foreach (var go in _pathObjects) if (go != null) Destroy(go);
+            _pathObjects.Clear();
+            if (!_pathWang || !visible || Map == null) return;
+            for (int vy = _area.yMin - 1; vy < _area.yMax; vy++)
+                for (int vx = _area.xMin - 1; vx < _area.xMax; vx++)
+                {
+                    // Köşe noktası (vx+1, vy+1): dört karo (vx, vy), (vx+1, vy), (vx, vy+1), (vx+1, vy+1).
+                    bool top = IsDirtPath(vx + 1, vy + 1), right = IsDirtPath(vx + 1, vy), bottom = IsDirtPath(vx, vy), left = IsDirtPath(vx, vy + 1);
+                    if (!top && !right && !bottom && !left) continue;
+                    // Yola bağlanan taş/ahşap döşeme köşesi toprak sayılır (geçiş oraya doğru açılır).
+                    top |= IsPathJoin(vx + 1, vy + 1); right |= IsPathJoin(vx + 1, vy);
+                    bottom |= IsPathJoin(vx, vy); left |= IsPathJoin(vx, vy + 1);
+                    int mask = (top ? 1 : 0) | (right ? 2 : 0) | (bottom ? 4 : 0) | (left ? 8 : 0);
+                    int variant = (int)(Noise(vx, vy, 404) * IsoArt.PathWangVariants) % IsoArt.PathWangVariants;
+                    var sprite = IsoArt.PathWang(mask, variant);
+                    if (sprite == null) continue;
+                    var go = new GameObject("PathWang");
+                    go.transform.SetParent(transform, false);
+                    go.transform.position = Iso.GridToWorld(vx + 1f, vy + 1f, 0);
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    sr.sprite = sprite;
+                    sr.sharedMaterial = SpriteMaterials.Unlit;
+                    sr.sortingOrder = GroundSortOrder + 1;
+                    _pathObjects.Add(go);
+                }
         }
 
         // ---------------- doğal yol kenarı ----------------

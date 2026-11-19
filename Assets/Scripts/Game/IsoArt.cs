@@ -305,6 +305,43 @@ namespace Thatchwick.Game
             return GetCentered($"iso_ground_path_dirt_{idx:00}");
         }
 
+        // ---------------- toprak yol, köşe tabanlı Wang seti (art/queue/004e) ----------------
+        // Dosya: iso_path_dirt_wang_<NN>_<v>.png; NN = köşe maskesi (bit 0 üst, 1 sağ, 2 alt, 3 sol; 1 = toprak),
+        // v = a/b/c (aynı maskenin bağımsız çizilmiş üç çeşidi). Tam toprak (15): iso_path_dirt_fill_v2_<v>.
+        // Karolar dual-grid ile çizilir (WorldView.RebuildPathLayer): her karo bir köşe noktasında durur, dört köşesi
+        // o noktaya değen dört ızgara karosundan gelir.
+        public const int PathWangVariants = 3;
+        private static readonly string[] VariantLetters = { "a", "b", "c" };
+
+        /// <summary>Wang seti yüklü mü (en az düz kenar karosunun bir çeşidi). Yoksa yollar eski düz toprakla çizilir.</summary>
+        public static bool PathWangReady
+        {
+            get
+            {
+                if (!Enabled) return false;
+                EnsureLoaded();
+                for (int v = 0; v < PathWangVariants; v++)
+                    if (_textures.ContainsKey($"iso_path_dirt_wang_03_{VariantLetters[v]}")) return true;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Köşe maskesine göre geçiş karosu; istenen çeşit yoksa diğer çeşitlere bakar. Maske 15 tam toprak dolgudur.
+        /// Hiç yoksa null (çağıran o köşe noktasını boş bırakır).
+        /// </summary>
+        public static Sprite PathWang(int mask, int variant)
+        {
+            if (!Enabled || mask <= 0) return null;
+            for (int i = 0; i < PathWangVariants; i++)
+            {
+                string v = VariantLetters[(variant + i) % PathWangVariants];
+                var s = mask >= 15 ? GetCentered($"iso_path_dirt_fill_v2_{v}") : GetCentered($"iso_path_dirt_wang_{mask:00}_{v}");
+                if (s != null) return s;
+            }
+            return mask >= 15 ? GetCentered("iso_path_dirt_fill_a") ?? Ground(FloorType.Dirt, 0, 0) : null;
+        }
+
         public static Sprite Road(RoadType road, int band, int x, int y)
         {
             if (!Enabled) return null;

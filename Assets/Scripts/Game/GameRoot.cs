@@ -823,6 +823,7 @@ namespace Thatchwick.Game
             if (r == null || r == _region) return;
             _region = r;
             _view.SetArea(new RectInt(r.X, r.Y, r.W, r.H));
+            _walls?.Rebuild();   // duvar ve çatılar yalnızca etkin bölgede çizilir
             _input.SetBounds(Iso.RectBounds(r.X, r.Y, r.W, r.H));
             if (a.View != null) _input.JumpTo(a.View.position);
             _itemsDirty = true;

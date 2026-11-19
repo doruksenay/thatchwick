@@ -91,6 +91,7 @@ namespace Thatchwick.Game
                 var e = kv.Key;
                 var kind = kv.Value;
                 if (_view != null && !_view.IsLevelVisible(e.Z)) continue;
+                if (_view != null && !_view.InArea(e.X, e.Y)) continue;   // yalnızca etkin bölge (harita geçişi)
                 bool fullHeight = EdgeKinds.IsRoomBoundary(kind) || kind == EdgeKind.HalfWall;
                 bool low = fullHeight && (_mode == WallMode.Down || (_mode == WallMode.Cutaway && IsFrontWall(e)));
                 var go = new GameObject($"Wall {e}");
@@ -177,6 +178,7 @@ namespace Thatchwick.Game
                 foreach (var t in region.Tiles)
                 {
                     if (_map.GetRoofStyle(t.Pos) == GridMap.NoRoof) continue;
+                    if (_view != null && !_view.InArea(t.Pos.X, t.Pos.Y)) continue;
                     var ground = Iso.GridToWorld(t.Pos.X + 0.5f, t.Pos.Y + 0.5f, t.Pos.Z);
                     var go = new GameObject($"Roof {t.Pos}");
                     go.transform.SetParent(transform, false);
