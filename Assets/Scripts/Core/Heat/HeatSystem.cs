@@ -134,6 +134,9 @@ namespace Thatchwick.Core.Heat
 
         /// <summary>Ocağa atılan odunun külü (null = kül yok). Her LogsPerAsh odunda envantere bir kül.</summary>
         public string AshItemId { get; set; }
+        /// <summary>Zeytin posası (pirina): odun yoksa yakılır, odunun yarısı kadar yanar.</summary>
+        public const string PomaceId = "item.pomace";
+        public const float PomaceBurnFactor = 0.5f;
         public const int LogsPerAsh = 4;
         private readonly System.Collections.Generic.Dictionary<int, int> _ashLogs = new System.Collections.Generic.Dictionary<int, int>();
 
@@ -143,8 +146,9 @@ namespace Thatchwick.Core.Heat
             var item = _world.GetItem(itemId);
             if (item == null || item.Def.HeatOutput <= 0f) return false;
             if (item.FuelDays + _cfg.BurnDaysPerLog > _cfg.MaxFuelDays + 1e-9) return false;
-            if (!house.TryTakeItem(_cfg.FirewoodId)) return false;
-            item.FuelDays += _cfg.BurnDaysPerLog;
+            if (house.TryTakeItem(_cfg.FirewoodId)) item.FuelDays += _cfg.BurnDaysPerLog;
+            else if (house.TryTakeItem(PomaceId)) { item.FuelDays += _cfg.BurnDaysPerLog * PomaceBurnFactor; return true; }   // odun yoksa pirina (32-7), külü sayılmaz
+            else return false;
             if (AshItemId != null)
             {
                 // Her LogsPerAsh odunda bir kül (cam ocağının eriticisi, 27 §18.3). Sayaç kayda girmez.

@@ -90,6 +90,8 @@ namespace Thatchwick.Core.World
         /// <summary>Isı kaynağının kalan yanma süresi (oyun günü). 0 = sönük.</summary>
         public double FuelDays { get; internal set; }
         public bool IsLit => FuelDays > 0;
+        /// <summary>Işık veriyor mu: ışık eşyası ve (yağ isteyense) yağı var.</summary>
+        public bool GivesLight => Def.HasTag("light") && (!Def.NeedsOil || FuelDays > 0);
 
         // ---- çiftçilik durumu (PlantSystem yönetir) ----
         /// <summary>Ekin bugün sulandı (her yeni gün sıfırlanır; yağmur ve hendek de sular).</summary>

@@ -23,6 +23,8 @@ namespace Thatchwick.Core.Work
 
         /// <summary>İş bitince (karakter, etkileşim, özet metin: "+3 Kütük, +1 Meşe fidanı").</summary>
         public event Action<Character, InteractionDef, string> Applied;
+        /// <summary>Etkileşim uygulandı (eşyasıyla birlikte).</summary>
+        public event Action<Character, ItemInstance, InteractionDef> AppliedOn;
         /// <summary>Ekin hasat edildi (karakter, ekin, kalite basamağı 0-2): hasat kurdelesi (D3b).</summary>
         public event Action<Character, ItemInstance, int> CropHarvested;
         /// <summary>Balık tutuldu (karakter, balık eşyası): ilk balık hatırası (D3b).</summary>
@@ -354,6 +356,7 @@ namespace Thatchwick.Core.Work
             if (interaction.RemovesItem && _world.GetItem(item.Id) != null)
                 _world.RemoveItem(item.Id);
 
+            AppliedOn?.Invoke(character, item, interaction);
             Applied?.Invoke(character, interaction, parts.Count > 0 ? string.Join(", ", parts) : interaction.DisplayName);
         }
 

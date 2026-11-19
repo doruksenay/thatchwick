@@ -171,7 +171,7 @@ namespace Thatchwick.Core.Animals
             {
                 if (it.Def.AnimalRole == AnimalRoles.Water || it.Def.WaterSource) r.Water = 10f;
                 if (it.Def.AnimalRole == AnimalRoles.Bedding) r.Bedding = 10f;
-                if (room != null && it.Def.HasTag("light")) r.Light = 5f;
+                if (room != null && it.GivesLight) r.Light = 5f;
                 decor += it.Def.AnimalComfort;
             }
             if (room != null)

@@ -41,6 +41,7 @@ namespace Thatchwick.Core.Content
                     DiesInWinter = dto.diesInWinter,
                     WarmOnly = dto.warmOnly,
                     SouthOnly = dto.southOnly,
+                    NeedsOil = dto.needsOil,
                     Comfort = dto.comfort,
                     SpoilDays = dto.spoilDays,
                     Preserves = dto.preserves,
