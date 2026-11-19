@@ -1,7 +1,7 @@
 ---
 id: "368"
 title: Animasyon: kazma sallama, kova taşıma, destek kurma (4 yön)
-status: review
+status: accepted   # kullanıcı 19.11.2026: önerileri uygula; kadın support ne 368b
 claimed_at: 2026-11-18T20:03Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 28 (18.11.2026, "tek seferde yapalım")
 priority: 50
