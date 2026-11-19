@@ -189,7 +189,7 @@ namespace Thatchwick.Game
             ["item.table_wood"] = new ItemArt { AlongY = "iso_item_table_wood_2x1_se_nw", PivotX = 56, PivotY = 32 },
             ["item.shelf_wood"] = new ItemArt { AlongY = "iso_item_shelf_wood_2x1_se_nw_v2", PivotX = 56, PivotY = 32 },   // 301 kabul (v2)
             ["item.chair_wood"] = new ItemArt { AlongX = "iso_item_chair_wood_sw", PivotX = 40, PivotY = 24 },
-            ["item.cooking_pot"] = new ItemArt { AlongX = "iso_item_cooking_pot_se_v2", PivotX = 40, PivotY = 24 },     // 301b (v2)
+            // item.cooking_pot: 301b v2 reddedildi (kullanıcı 18.11.2026); yenisi 301c v3 gelince eşlenir.
             ["item.candle"] = new ItemArt { AlongX = "iso_item_candle_se", PivotX = 16, PivotY = 7 },
             ["item.flower_pot"] = new ItemArt { AlongX = "iso_item_flower_pot_se", PivotX = 16, PivotY = 7 },
 
@@ -198,8 +198,7 @@ namespace Thatchwick.Game
             ["item.chair_carved"] = new ItemArt { AlongX = "iso_item_chair_carved_se", PivotX = 40, PivotY = 24 },          // 301
             ["item.chest_wood"] = new ItemArt { AlongX = "iso_item_chest_wood_se", PivotX = 40, PivotY = 24 },              // 301
             ["item.chopping_block"] = new ItemArt { AlongX = "iso_item_chopping_block_se", PivotX = 40, PivotY = 24 },      // 301
-            ["item.market_stall"] = new ItemArt { AlongY = "iso_item_market_stall_2x1_se_nw_v2", PivotX = 56, PivotY = 32 }, // 301b
-            ["item.clay_cup"] = new ItemArt { AlongX = "iso_item_clay_cup_se", PivotX = 16, PivotY = 7 },                    // 301b
+            // item.market_stall ve item.clay_cup: 301b reddedildi; yenileri 301c (v3, v2).
             ["item.bench_long"] = new ItemArt { AlongY = "iso_item_bench_long_2x1_se_nw", PivotX = 56, PivotY = 32 },        // 302
             ["item.mattress_straw"] = new ItemArt { AlongX = "iso_item_mattress_straw_se", PivotX = 40, PivotY = 24 },       // 302
             ["item.child_bed"] = new ItemArt { AlongX = "iso_item_child_bed_se", PivotX = 40, PivotY = 24 },                 // 302
@@ -207,7 +206,7 @@ namespace Thatchwick.Game
             ["item.prep_counter"] = new ItemArt { AlongY = "iso_item_prep_counter_2x1_se_nw", PivotX = 56, PivotY = 32 },    // 302
             ["item.armchair_cushion"] = new ItemArt { AlongX = "iso_item_armchair_cushion_se", PivotX = 40, PivotY = 24 },   // 302
             ["item.brazier"] = new ItemArt { AlongX = "iso_item_brazier_se", PivotX = 40, PivotY = 24 },                     // 303
-            ["item.stone_oven"] = new ItemArt { AlongY = "iso_item_stone_oven_2x1_se_nw", PivotX = 56, PivotY = 32 },        // 303
+            // item.stone_oven: 303'teki reddedildi (çömlekçi fırını gibi); yenisi 303b v2.
             ["item.barrel"] = new ItemArt { AlongX = "iso_item_barrel_se", PivotX = 40, PivotY = 24 },                       // 303
             ["item.woodshed"] = new ItemArt { AlongY = "iso_item_woodshed_2x1_se_nw", PivotX = 56, PivotY = 32 },            // 303
             ["item.seed_crate"] = new ItemArt { AlongX = "iso_item_seed_crate_se", PivotX = 40, PivotY = 24 },               // 303
@@ -217,7 +216,7 @@ namespace Thatchwick.Game
             ["item.barrel_tub"] = new ItemArt { AlongX = "iso_item_barrel_tub_se", PivotX = 40, PivotY = 24 },               // 304
             ["item.outhouse"] = new ItemArt { AlongX = "iso_item_outhouse_se", PivotX = 40, PivotY = 24 },                   // 304
             ["item.well"] = new ItemArt { AlongX = "iso_item_well_se", PivotX = 40, PivotY = 24 },                           // 304
-            ["item.scarecrow"] = new ItemArt { AlongX = "iso_item_scarecrow_se", PivotX = 40, PivotY = 24 },                 // 304
+            // item.scarecrow: 304'teki reddedildi; yenisi 304b v2 (review) aşağıda.
             ["item.garden_bench"] = new ItemArt { AlongY = "iso_item_garden_bench_2x1_se_nw", PivotX = 56, PivotY = 32 },    // 304
             ["item.child_chair"] = new ItemArt { AlongX = "iso_item_child_chair_se", PivotX = 40, PivotY = 24 },             // 304
             ["item.toy_chest"] = new ItemArt { AlongX = "iso_item_toy_chest_se", PivotX = 40, PivotY = 24 },                 // 304
@@ -264,17 +263,101 @@ namespace Thatchwick.Game
             ["item.harvest_wreath"] = new ItemArt { AlongX = "iso_wall_item_harvest_wreath_sw_ne", PivotX = 20, PivotY = 20 }, // 387
             ["item.kilim_hanging"] = new ItemArt { AlongX = "iso_wall_item_kilim_hanging_2w_sw_ne", PivotX = 48, PivotY = 32 }, // 381 (2 kenar)
             ["item.large_mirror"] = new ItemArt { AlongX = "iso_wall_item_large_mirror_2w_sw_ne", PivotX = 48, PivotY = 32 },   // 400 (2 kenar)
+            // ---- Görsel parti 3 (19.11.2026): kabul edilen ve review'daki görseller ----
+            ["item.scarecrow"] = new ItemArt { AlongX = "iso_item_scarecrow_se_v2", PivotX = 40, PivotY = 24 },              // 304b (review)
+            ["item.market_stall"] = new ItemArt { AlongY = "iso_item_market_stall_2x1_se_nw_v3", PivotX = 56, PivotY = 32 }, // 301c (review)
+            ["item.cooking_pot"] = new ItemArt { AlongX = "iso_item_cooking_pot_se_v3", PivotX = 40, PivotY = 24 },          // 301c (review)
+            ["item.clay_cup"] = new ItemArt { AlongX = "iso_item_clay_cup_se_v2", PivotX = 16, PivotY = 4 },                 // 301c (review)
+            ["item.grave"] = new ItemArt { AlongX = "iso_item_grave_se", PivotX = 32, PivotY = 24 },                         // 371 (313 kurtarma)
+            ["item.hanging_lantern"] = new ItemArt { AlongX = "iso_deco_lantern_se", PivotX = 32, PivotY = 24 },             // 371 (direkte fener)
+            // Toplama düğümleri (80x72, pivot 40,24): 371 kurtarma ve 373 kabul. Böğürtlen ve kestane reddedildi (378 v2 gelecek).
+            ["item.forage_dry_branch"] = new ItemArt { AlongX = "iso_forage_dry_branch_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_hive"] = new ItemArt { AlongX = "iso_forage_hive_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_mushroom"] = new ItemArt { AlongX = "iso_forage_mushroom_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_wild_garlic"] = new ItemArt { AlongX = "iso_forage_wild_garlic_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_cress"] = new ItemArt { AlongX = "iso_forage_cress_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_herbs"] = new ItemArt { AlongX = "iso_forage_herbs_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_elderflower"] = new ItemArt { AlongX = "iso_forage_elderflower_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_strawberry"] = new ItemArt { AlongX = "iso_forage_strawberry_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_rosehip"] = new ItemArt { AlongX = "iso_forage_rosehip_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_nettle"] = new ItemArt { AlongX = "iso_forage_nettle_se", PivotX = 40, PivotY = 24 },
+            ["item.forage_hazel"] = new ItemArt { AlongX = "iso_forage_hazel_se", PivotX = 40, PivotY = 24 },                // 378 (review; dosya yoksa küp)
+            ["item.forage_berry_bush"] = new ItemArt { AlongX = "iso_forage_berry_bush_v2_se", PivotX = 40, PivotY = 24 },   // 378 (review)
+            ["item.forage_chestnut"] = new ItemArt { AlongX = "iso_forage_chestnut_v2_se", PivotX = 40, PivotY = 24 },       // 378 (review)
+            // Duvar eşyaları (306 kabul; pivot = görselin merkezi, alttan)
+            ["item.torch_wall"] = new ItemArt { AlongX = "iso_wall_item_torch_wall_sw_ne", PivotX = 24, PivotY = 32 },
+            ["item.oil_lamp_wall"] = new ItemArt { AlongX = "iso_wall_item_oil_lamp_wall_sw_ne", PivotX = 24, PivotY = 32 },
+            ["item.wall_shelf"] = new ItemArt { AlongX = "iso_wall_item_wall_shelf_sw_ne", PivotX = 32, PivotY = 24 },
+            ["item.herb_bundle_wall"] = new ItemArt { AlongX = "iso_wall_item_herb_bundle_wall_sw_ne", PivotX = 20, PivotY = 28 },
+            ["item.tool_rack_wall"] = new ItemArt { AlongX = "iso_wall_item_tool_rack_wall_sw_ne", PivotX = 32, PivotY = 32 },
             // Bilinçli olarak eşlenmeyen: item.drying_rack (tanım 2x1, görsel 1x1 üretilmiş; yeniden iş gerekir).
         };
 
-        /// <summary>Bitkinin olgun görseli (ağaçlar). Fidan ve genç evreler ölçekle küçültülür. Yoksa null.</summary>
-        private static readonly Dictionary<string, string> Plants = new Dictionary<string, string>
+        /// <summary>
+        /// Ağaç türleri: görsel öneki (96x112, pivot 40,24). Evreler: "_young_se" (büyürken), "_grown_se" (olgun),
+        /// "_fruit_se" (meyve hazır). 319, 371, 372, 377. Evrenin görseli yoksa en yakın evreye düşer.
+        /// </summary>
+        private static readonly Dictionary<string, string> Trees = new Dictionary<string, string>
         {
-            ["item.tree_plum"] = "iso_tree_plum_grown_se",   // 319, 96x112
+            ["item.tree_oak"] = "iso_tree_oak",
+            ["item.tree_apple"] = "iso_tree_apple",
+            ["item.tree_pear"] = "iso_tree_pear",
+            ["item.tree_cherry"] = "iso_tree_cherry",
+            ["item.tree_plum"] = "iso_tree_plum",
+            ["item.tree_birch"] = "iso_tree_birch",
+            ["item.tree_pine"] = "iso_tree_pine",
+            ["item.tree_willow"] = "iso_tree_willow",
         };
 
-        public static Sprite Plant(ItemInstance item) =>
-            Enabled && Plants.TryGetValue(item.Def.Id, out var name) ? Get(name, 40f, 24f) : null;
+        /// <summary>Ekinler: evre görselleri "_1_se", "_2_se", "_3_se" (80x72, pivot 40,24). 310 kurtarma (371) ve 374.</summary>
+        private static readonly Dictionary<string, string> Crops = new Dictionary<string, string>
+        {
+            ["item.crop_cabbage"] = "iso_crop_cabbage",
+            ["item.crop_leek"] = "iso_crop_leek",
+            ["item.crop_pea"] = "iso_crop_pea",
+            ["item.crop_pumpkin"] = "iso_crop_pumpkin",
+            ["item.crop_turnip"] = "iso_crop_turnip",
+        };
+
+        /// <summary>Ekin evresi (1-3) büyüme oranından.</summary>
+        public static int CropStage(float growth) => growth < 0.34f ? 1 : growth < 0.67f ? 2 : 3;
+
+        /// <summary>
+        /// Bitkinin görseli. staged: görsel bitkinin şimdiki evresine ait (genç ağaç, ekin evresi); çağıran onu ölçekle
+        /// küçültmez. false ise olgun görsel döndü, çağıran büyüme oranıyla küçültür. Görsel yoksa null.
+        /// </summary>
+        public static Sprite Plant(ItemInstance item, out bool staged)
+        {
+            staged = false;
+            if (!Enabled || item == null) return null;
+            string id = item.Def.Id;
+            if (Crops.TryGetValue(id, out var crop))
+            {
+                int st = CropStage(item.GrowthFraction);
+                for (int k = st; k >= 1; k--)
+                {
+                    var s = Get($"{crop}_{k}_se", 40f, 24f);
+                    if (s != null) { staged = true; return s; }
+                }
+                return null;
+            }
+            if (!Trees.TryGetValue(id, out var tree)) return null;
+            if (!item.IsGrown)
+            {
+                var young = Get(tree + "_young_se", 40f, 24f);
+                if (young != null) { staged = true; return young; }
+                return Get(tree + "_grown_se", 40f, 24f);
+            }
+            staged = true;
+            if (item.FruitReady)
+            {
+                var fruit = Get(tree + "_fruit_se", 40f, 24f);
+                if (fruit != null) return fruit;
+            }
+            return Get(tree + "_grown_se", 40f, 24f) ?? Get(tree + "_young_se", 40f, 24f);
+        }
+
+        public static Sprite Plant(ItemInstance item) => Plant(item, out _);
 
         // ---------------- yollar ----------------
 
@@ -349,9 +432,17 @@ namespace Thatchwick.Game
             if (h < 0) h = -h;
             switch (road)
             {
-                case RoadType.Path: return GetCentered(h % 2 == 0 ? "iso_road_path_a" : "iso_road_path_b") ?? GetCentered("iso_road_path_a");
-                case RoadType.Gravel: return GetCentered("iso_road_gravel_a");
-                case RoadType.Paved: return GetCentered(band >= 2 ? "iso_road_paved_broken" : "iso_road_paved_worn");
+                // 376 kabul: patika b v2 (kenarında çim yok), yıpranmış çakıl; 376b: çakıl a v2, sağlam ve bozuk kaldırım v2.
+                case RoadType.Path:
+                    return GetCentered(h % 2 == 0 ? "iso_road_path_a" : "iso_road_path_b_v2") ?? GetCentered("iso_road_path_a");
+                case RoadType.Gravel:
+                    return band >= 1
+                        ? GetCentered("iso_road_gravel_worn") ?? GetCentered("iso_road_gravel_a_v2") ?? GetCentered("iso_road_gravel_a")
+                        : GetCentered("iso_road_gravel_a_v2") ?? GetCentered("iso_road_gravel_a");
+                case RoadType.Paved:
+                    return band >= 2
+                        ? GetCentered("iso_road_paved_broken_v2") ?? GetCentered("iso_road_paved_broken")
+                        : band == 0 ? GetCentered("iso_road_paved_a") ?? GetCentered("iso_road_paved_worn") : GetCentered("iso_road_paved_worn");
                 default: return null;
             }
         }
@@ -434,6 +525,8 @@ namespace Thatchwick.Game
         {
             ["animal.sheep"] = ("iso_animal_sheep_1_cand", 26f, 14f),   // 56x56, ayaklar alttan 14 px
             ["animal.ox"] = ("iso_animal_ox_cand", 28f, 12f),          // iş 411; dosya yoksa yer tutucu
+            ["animal.cat"] = ("iso_animal_cat_1_cand", 15f, 2f),       // 375 kabul, 32x32, ayak bandı alttan 2 px
+            ["animal.dog"] = ("iso_animal_dog_1_cand", 19f, 4f),       // 379 (review), 40x40; dosya yoksa yer tutucu
             // Yaban hayvanları (iş 408-410): dosya yoksa yer tutucu küp.
             ["wild.rabbit"] = ("iso_wild_rabbit_cand", 24f, 10f),
             ["wild.squirrel"] = ("iso_wild_squirrel_cand", 24f, 10f),
@@ -461,8 +554,8 @@ namespace Thatchwick.Game
 
         /// <summary>
         /// 84 px gerçekçi oranlı yetişkin taban (012b kabul, 018 kararı 18.11.2026): genç yetişkin ve yetişkin
-        /// erkek/kadın. Durma görseli "_cand_<yön>", yürüme kareleri anim/ altında "_walk_<yön>_NN".
-        /// Görseli henüz olmayan yön ya da evre eski 56'lık sete düşer.
+        /// erkek/kadın. Durma görseli "_idle_<yön>" (ilk aday "_cand_se"), yürüme kareleri anim/ altında
+        /// "_walk2_<yön>_NN" (018b2). Görseli olmayan yön 84'lük SE'ye düşer; reddedilen 56'lık K2 seti yalnızca son çare.
         /// </summary>
         private static string AdultR84(Character c)
         {
@@ -504,14 +597,17 @@ namespace Thatchwick.Game
                 var s84 = Get(idle + "_v3", R84PivotX, R84PivotY)
                           ?? Get(idle + "_v2", R84PivotX, R84PivotY)
                           ?? Get(idle, R84PivotX, R84PivotY)
-                          ?? Get(r84 + "_cand_" + Directions[direction], R84PivotX, R84PivotY);
+                          ?? Get(r84 + "_cand_" + Directions[direction], R84PivotX, R84PivotY)
+                          // 012 seti reddedildi (19.11.2026): yönün 84'lüğü yoksa 56'lık değil 84'lük SE.
+                          ?? Get(r84 + "_idle_se_v3", R84PivotX, R84PivotY)
+                          ?? Get(r84 + "_idle_se_v2", R84PivotX, R84PivotY)
+                          ?? Get(r84 + "_idle_se", R84PivotX, R84PivotY)
+                          ?? Get(r84 + "_cand_se", R84PivotX, R84PivotY);
                 if (s84 != null) return s84;
             }
+            // Son çare: eski 56'lık K2 seti (012, reddedildi). Yalnızca 84/64 görseli hiç yüklenmemişse.
             string set = CharacterSet(c, out float px, out float py);
-            var own = Get(set + "_" + Directions[direction], px, py);
-            if (own != null) return own;
-            // Bu yönün 56'lık görseli de yoksa: 84'lük SE, o da yoksa 56'lık SE.
-            return (r84 != null ? Get(r84 + "_cand_se", R84PivotX, R84PivotY) : null) ?? Get(set + "_se", px, py);
+            return Get(set + "_" + Directions[direction], px, py) ?? Get(set + "_se", px, py);
         }
 
         // (set|yön) → kare sayısı; 0 = kare animasyonu yok.
@@ -524,13 +620,18 @@ namespace Thatchwick.Game
         /// </summary>
         public static Sprite CharacterWalk(Character c, int direction, float cycle)
         {
-            string r84 = AdultR84(c);
-            if (r84 == null || !Enabled) return null;
-            string prefix = r84 + "_walk_" + Directions[direction] + "_";
+            if (!Enabled) return null;
+            // Kabul edilen yürüme "walk2" (018b2/018b3; yaşlı 015a, çocuk 015c). Eski "walk" (018b) reddedildi:
+            // zıplıyor; ona düşülmez. Bu yönün walk2 karesi yoksa null: durma görseli + kod sallantısı.
+            string r64 = ChildR64(c);
+            string set = r64 ?? AdultR84(c);
+            if (set == null) return null;
+            float px = r64 != null ? R64PivotX : R84PivotX, py = r64 != null ? R64PivotY : R84PivotY;
+            string prefix = set + "_walk2_" + Directions[direction] + "_";
             int n = WalkFrameCount(prefix);
             if (n <= 0) return null;
             int frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;
-            return Get(prefix + frame.ToString("00"), R84PivotX, R84PivotY);
+            return Get(prefix + frame.ToString("00"), px, py);
         }
 
         /// <summary>

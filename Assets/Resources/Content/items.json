@@ -4351,6 +4351,9 @@
         "outdoor"
       ],
       "housing": "barn",
+      "tags": [
+        "retired"
+      ],
       "capacity": 4,
       "interactions": [
         {

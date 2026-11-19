@@ -161,6 +161,7 @@ namespace Thatchwick.Core.Build
                 q.FromInventory += have;
                 if (buy > 0)
                 {
+                    if (def.IsRetired) { q.Problem = ItemCatalog.RetiredText(def); return q; }
                     if (def.Price <= 0) { q.Problem = $"{def.DisplayName} satılmıyor ve envanterde yok."; return q; }
                     q.Akce += _build.PriceFor(def) * buy;
                 }

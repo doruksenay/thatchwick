@@ -177,6 +177,13 @@ namespace Thatchwick.Core.Content
         /// <summary>Pazar etiketleri (fuel, food ...): mevsimlik talep çarpanları bunlara göre.</summary>
         public List<string> Tags { get; set; } = new List<string>();
         public bool HasTag(string tag) => Tags.Contains(tag);
+
+        /// <summary>
+        /// "retired": artık satılmayan eşya (katalogda, dükkânda, oda şablonunda yok). Eski kayıtlardaki yerleşik
+        /// örnekleri çalışmayı sürdürür ve satılabilir. İlk örnek: hazır ahır (kullanıcı kararı 19.11.2026).
+        /// </summary>
+        public bool IsRetired => HasTag(RetiredTag);
+        public const string RetiredTag = "retired";
         /// <summary>Dükkânda görünmesi için gereken hesap seviyesi (T10). 0/1 = baştan açık.</summary>
         public int UnlockLevel { get; set; } = 1;
         /// <summary>Ekin: yalnızca toprak (sürülmüş) zemine dikilir.</summary>

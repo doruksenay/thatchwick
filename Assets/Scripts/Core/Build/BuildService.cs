@@ -273,6 +273,7 @@ namespace Thatchwick.Core.Build
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.Price <= 0) return PlacementCheck.Fail("Bu eşya satılmıyor.");
+            if (def.IsRetired) return PlacementCheck.Fail(ItemCatalog.RetiredText(def));
             if (!IsUnlocked(def)) return PlacementCheck.Fail(LockText(def));
             if (Storage != null && !Storage.HasRoomFor(itemId)) return PlacementCheck.Fail("Depo dolu: depo bölgesi çiz ya da sandık koy.");
             int paid = PriceFor(def);
@@ -298,6 +299,7 @@ namespace Thatchwick.Core.Build
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.Price <= 0) return PlacementCheck.Fail("Bu eşya satılmıyor.");
+            if (def.IsRetired) return PlacementCheck.Fail(ItemCatalog.RetiredText(def));
             if (ShopOnly(def)) return PlacementCheck.Fail($"{def.StyleSet} takımı yalnızca şehirdeki dükkânlarda satılır.");
             if (!IsUnlocked(def)) return PlacementCheck.Fail(LockText(def));
             if (!_house.TrySpend(PriceFor(def))) return PlacementCheck.Fail("Akçe yetmiyor.");
@@ -976,7 +978,7 @@ namespace Thatchwick.Core.Build
         {
             var list = new List<ItemDef>();
             // Kaynaklar (odun, şalgam...) mağazada değil pazarda alınıp satılır.
-            foreach (var d in _content.Items.All) if (d.Price > 0 && d.Placement != ItemPlacement.Resource) list.Add(d);
+            foreach (var d in _content.Items.All) if (d.Price > 0 && !d.IsRetired && d.Placement != ItemPlacement.Resource) list.Add(d);
             list.Sort((a, b) =>
             {
                 int c = string.CompareOrdinal(a.Category, b.Category);

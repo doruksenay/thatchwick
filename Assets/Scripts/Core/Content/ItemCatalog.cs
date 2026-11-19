@@ -27,6 +27,12 @@ namespace Thatchwick.Core.Content
         /// <summary>Stil setleri, kalite sırasıyla.</summary>
         public static readonly string[] StyleSets = { "Köylü", "Zanaatkâr", "Tüccar", "Asil" };
 
+        /// <summary>Satılmayan (retired) eşyanın neden alınamadığı; büyük hayvan barınağı için ahır odasını gösterir.</summary>
+        public static string RetiredText(ItemDef d) =>
+            d != null && d.HousingKind == "barn"
+                ? "Hazır ahır artık satılmıyor: duvarlarla bir oda kur, içine Ahır bölmesi koy (oda şablonu: Ahır odası)."
+                : "Bu eşya artık satılmıyor.";
+
         public static string CategoryName(string id)
         {
             foreach (var c in Categories) if (c.id == id) return c.name;
@@ -69,6 +75,7 @@ namespace Thatchwick.Core.Content
             foreach (var d in content.Items.All)
             {
                 if (d.Price <= 0 || d.Placement == ItemPlacement.Resource || d.IsPlant || IsCraftOnly(d, house)) continue;   // düzenekler yalnızca yapılır
+                if (d.IsRetired) continue;   // artık satılmıyor (hazır ahır)
                 if (MerchantAway(d, house)) continue;   // Kervan eşyası: yalnızca pazar günü
                 if (d.Category != category) continue;
                 if (room != null && !d.Rooms.Contains(room)) continue;
@@ -96,7 +103,7 @@ namespace Thatchwick.Core.Content
             var defs = new List<ItemDef>();
             if (content == null || decor == null) return new List<string>();
             foreach (var d in content.Items.All)
-                if (d.Price > 0 && !d.HasTag("craftonly") && SurfaceAccepts(d, decor)) defs.Add(d);
+                if (d.Price > 0 && !d.IsRetired && !d.HasTag("craftonly") && SurfaceAccepts(d, decor)) defs.Add(d);
             defs.Sort((a, b) => a.Price.CompareTo(b.Price));
             var names = new List<string>();
             foreach (var d in defs) { if (names.Count >= max) break; names.Add(d.DisplayName); }
