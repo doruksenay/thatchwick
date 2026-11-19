@@ -1,7 +1,7 @@
 ---
 id: "004c"
 title: Toprak yol - çim geçiş seti (Stardew tarzı, organik kenar)
-status: review
+status: rejected
 claimed_at: 2026-11-19T07:23Z
 approved_by: user        # kullanıcı: "Stardew'da nasıl ona bak, gerekirse yeni asset çizdir" (18.11.2026)
 family: zemin
@@ -57,3 +57,6 @@ dikdörtgen çerçeve yok; yan yana gelen karolarda dikiş görünmüyor.
   çoğunluğu), karo başına 4 köşeden Wang indeksi; tam toprak karolarda dolgu varyantı (konuma göre).
 - Süsler: yol kenarı çim karolarına sabit gürültüyle seyrek (karo başına en çok 1) yerleştirilir.
 - `IsoArt.PathSetSeamless` / `WorldView.ProceduralPathFringe` geçici bayrakları kaldırılır.
+
+## Kullanıcı kararı (19.11.2026 11:07)
+Reddedildi: "Simetrik durmamalı uzun yollar." Önizlemede (dual-grid, 2 karoluk düz yol, L, 2x2) yolun iki kenarı aynı karonun aynası, her karede aynı kenar tekrar ediyor; uzun yol ritmik ve yapay görünüyor. Devamı: 004e (bağımsız çizilmiş 16 karo x 3 çeşit, aynalama yok).

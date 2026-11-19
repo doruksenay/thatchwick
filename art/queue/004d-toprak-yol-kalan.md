@@ -1,7 +1,7 @@
 ---
 id: "004d"
 title: Toprak yol - çim geçiş seti, kalan karolar ve süsler
-status: pending
+status: superseded   # 004c reddedildi; yerine 004e
 approved_by: pending     # 004c pilotu kullanıcı tarafından accepted olunca "user" yapılır
 family: zemin
 style_gate: false
