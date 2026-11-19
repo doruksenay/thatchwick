@@ -1,7 +1,8 @@
 ---
 id: "301c"
 title: Pazar tezgâhı, kazan ve toprak bardak (301b reddedildi)
-status: pending
+status: running
+claimed_at: 2026-11-19T07:28Z
 priority: 10            # üçü de başlangıç haritasında
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 2: 301b ret, yeniden üretim)
 family: esya
