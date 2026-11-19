@@ -462,7 +462,11 @@ namespace Thatchwick.Game
             if (r84 != null)
             {
                 // 018b: 8 yönün durma karesi anim/ altında "_idle_<yön>"; ilk aday yalnızca "_cand_se".
-                var s84 = Get(r84 + "_idle_" + Directions[direction], R84PivotX, R84PivotY)
+                // Düzeltilmiş sürümler önce (423: küreksiz _v2, 423b: se _v3).
+                string idle = r84 + "_idle_" + Directions[direction];
+                var s84 = Get(idle + "_v3", R84PivotX, R84PivotY)
+                          ?? Get(idle + "_v2", R84PivotX, R84PivotY)
+                          ?? Get(idle, R84PivotX, R84PivotY)
                           ?? Get(r84 + "_cand_" + Directions[direction], R84PivotX, R84PivotY);
                 if (s84 != null) return s84;
             }
