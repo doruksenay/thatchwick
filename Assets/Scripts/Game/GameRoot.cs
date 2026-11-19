@@ -191,6 +191,8 @@ namespace Thatchwick.Game
         private Actor _selected;          // haritaya dokununca komut alan kişi (aile içi iş verme)
         private bool _dynastyEnded;
         private int _stallId;
+        private PlacementDebugOverlay _placementDebug;
+        private Thatchwick.Core.Layout.LayoutPlan _layoutPlan;   // şehir planı (arsalar, oda türleri); Aşama C'de kurulur   // F3, yalnızca editör ve geliştirme derlemesi (yerleşim sistemi, Aşama A)
         private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
         private readonly List<(ItemInstance item, SpriteRenderer view)> _heatViews = new List<(ItemInstance, SpriteRenderer)>();
         private Vector2 _hudScroll;
@@ -572,217 +574,13 @@ namespace Thatchwick.Game
             if (cleared > 0) Debug.Log($"Kayıt: {cleared} eski test engeli kaldırıldı.");
         }
 
-        // Test haritası: kaynaklı doğal gölet (hep dolu; böcekli, içinde sazan, kerevit ve alabalık).
-        private static GridMap BuildDemoMap()
-        {
-            var map = new GridMap(MapWidth, MapHeight);
-            for (int x = 8; x < 20; x++)
-                for (int y = 44; y < 52; y++)
-                    map.SetFloor(new GridPos(x, y), FloorType.Water);
-            var natural = new GridPos(8, 44);
-            map.SetSpring(natural);
-            map.RestorePond(natural, 1f, spring: true, insects: true, filledDays: 30, new[]
-            {
-                new KeyValuePair<string, int>("item.fish_carp", 8),
-                new KeyValuePair<string, int>("item.fish_crayfish", 10),
-                new KeyValuePair<string, int>("item.fish_trout", 6),
-                new KeyValuePair<string, int>("item.fish_pike", 2)
-            });
+        // Yeni oyunun haritası ve başlangıç eşyaları Core'da (Thatchwick.Core.Layout.StarterWorld): yerleşim doğrulayıcısı ve
+        // testler aynı dünyayı Unity'siz kurar (yerleşim sistemi, Aşama A).
+        private static GridMap BuildDemoMap() => Thatchwick.Core.Layout.StarterWorld.BuildMap();
 
-            BuildStarterHouse(map);
-            // Çiftlik yolu doğu kenarına, şehir geçidine kadar uzar; şehir haritası kurulur (belge 39).
-            for (int x = 73; x <= 95; x++) map.SetRoad(new GridPos(x, 40), RoadType.Path);
-            map.SetRoad(new GridPos(94, 41), RoadType.Path); map.SetRoad(new GridPos(95, 41), RoadType.Path);
-            Thatchwick.Core.World.Regions.BuildTerrain(map);
-            Thatchwick.Core.World.Regions.Naturalize(map);
-            Thatchwick.Core.World.Regions.Apply(map);
-
-            // Yol bulma testinden kalan çit hattı (x=32) ve 60 rastgele engel kaldırıldı (görsel analiz, 18.11.2026):
-            // dünyada karşılıkları yoktu, haritada koyu lekeler olarak görünüyordu. Kaya ve çalı görselleri gelince
-            // (art/queue/357) engeller eşya olarak dönecek.
-            return map;
-        }
-
-        // Başlangıç eşyalarını yerleştirir.
-        // Başlangıç evi (BuildStarterHouse): iç 28-36 x 26-32; zemin kat mutfak ve oturma, üst kat yatak odaları, bodrum kiler.
-        // Oyuncu (31,31), Maud (33,31), kapı içi (32,32) ve merdiven uçları boş kalır.
         private void PlaceDemoItems()
         {
-            // --- zemin kat: merdivenler, mutfak, yemek ve oturma ---
-            Put("item.stairs_down", 29, 27);              // bodruma (giriş 29,26; iniş 29,29 kat -1)
-            Put("item.stairs_up", 35, 27);                // üst kata (giriş 35,26; iniş 35,29 kat 1)
-            Put("item.pantry_shelf", 30, 26);
-            Put("item.hearth_stone", 32, 26);
-            Put("item.cooking_pot", 33, 26);
-            Put("item.water_barrel", 36, 26);
-            Put("item.rug_wool", 31, 30);
-            Put("item.table_wood", 31, 29);
-            Put("item.chair_wood", 30, 29);
-            Put("item.chair_wood", 33, 29);
-            Put("item.basin_ewer", 28, 30);
-            Put("item.candlestick", 28, 32);
-            Put("item.armchair_cushion", 36, 31);
-            Put("item.chest_wood", 36, 32);
-            Put("item.stool_wood", 34, 32);
-            PutOn("item.candle", 31, 29, 0, "a");
-            PutOn("item.flower_pot", 31, 29, 0, "c");
-            PutOn("item.clay_cup", 31, 29, 0, "b");
-
-            // --- üst kat: üç yatak, sandıklar, kilimler, okuma köşesi ---
-            Put("item.bed_straw", 28, 26, 1);
-            Put("item.chest_wood", 30, 26, 1);
-            Put("item.rug_wool_small", 28, 27, 1);
-            Put("item.bed_straw", 32, 26, 1);
-            Put("item.chest_wood", 34, 26, 1);
-            Put("item.bed_straw", 28, 32, 1);
-            Put("item.rug_woven_large", 30, 29, 1);
-            Put("item.shelf_wood", 31, 32, 1);
-            Put("item.armchair_cushion", 36, 30, 1);
-            Put("item.candlestick", 36, 32, 1);
-            Put("item.stool_wood", 33, 32, 1);
-            PutOn("item.clay_cup", 31, 32, 1, "a");
-
-            // --- bodrum: kiler ve atölye ---
-            Put("item.barrel", 28, 26, -1);
-            Put("item.barrel", 28, 27, -1);
-            Put("item.salting_barrel", 31, 26, -1);
-            Put("item.pantry_shelf", 32, 26, -1);
-            Put("item.barrel", 35, 26, -1);
-            Put("item.seed_crate", 36, 26, -1);
-            Put("item.brew_barrel", 36, 28, -1);
-            Put("item.barrel_tub", 36, 30, -1);
-            Put("item.workbench", 28, 32, -1);
-            Put("item.shelf_wood", 33, 32, -1);
-            Put("item.barn_lantern", 32, 30, -1);
-
-            // --- avlu ---
-            Put("item.well", 25, 30);
-            Put("item.chopping_block", 24, 27);
-            Put("item.rain_barrel", 38, 26);
-            Put("item.hay_bale", 24, 34);
-            Put("item.garden_bench", 29, 35);
-            Put("item.stool_wood", 34, 35);
-            Put("item.stump_table", 35, 35);
-            var stump = _world.GetItemAt(new GridPos(35, 35));
-            if (stump != null && _content.Items.TryGet("item.morris_board", out var board)) _world.PlaceOnSurface(board, stump.Id, "a");
-            Put("item.scarecrow", 48, 32);                // tarla alanı: 42-56 x 26-38
-            StartingKit.TillBed(_world, new GridPos(43, 27), ditch: _content.Items.TryGet("item.irrigation_ditch", out var ditch) ? ditch : null);   // başlangıç bostanı: 2 sıra toprak + ortada sulama hendeği (belge 41)
-
-            // --- ağaçlar: meyve bahçesi (kuzeybatı), gölet söğütleri, arsa kenarı ---
-            string[] fruit = { "item.tree_apple", "item.tree_pear", "item.tree_cherry", "item.tree_plum" };
-            int k = 0;
-            for (int y = 10; y <= 19; y += 3)
-                for (int x = 9; x <= 21; x += 4) PutGrown(fruit[k++ % fruit.Length], x, y);
-            PutGrown("item.forage_berry_bush", 24, 10);
-            PutGrown("item.forage_berry_bush", 26, 12);
-            PutGrown("item.tree_willow", 7, 42);
-            PutGrown("item.tree_willow", 21, 50);
-            PutGrown("item.tree_willow", 13, 54);
-            var edgeRng = new System.Random(64);
-            for (int i = 0; i < 40; i++)
-            {
-                int side = edgeRng.Next(4), t = 6 + edgeRng.Next(58);
-                int ex = side == 0 ? 5 + edgeRng.Next(2) : side == 1 ? 65 + edgeRng.Next(2) : t;
-                int ey = side == 2 ? 5 + edgeRng.Next(2) : side == 3 ? 65 + edgeRng.Next(2) : t;
-                if (_world.Map.GetRoad(new GridPos(ex, ey)) != RoadType.None) continue;
-                PutGrown(edgeRng.Next(3) == 0 ? "item.tree_pine" : "item.tree_birch", ex, ey, quiet: true);
-            }
-
-            // Köy yolu ve şehir: dükkân içleri (meslek eşyaları, duvar ve yüzey dekoru), meydan, evler, ağaçlar.
-            foreach (var ti in Thatchwick.Core.World.Regions.Items())
-            {
-                var at = new GridPos(ti.X, ti.Y);
-                if (ti.Grown)
-                {
-                    // Ağaç ve çalı yalnızca açık toprağa: yol, meydan taşı, su, köprü ve bina içi atlanır.
-                    if (_world.Map.GetRoad(at) != RoadType.None || _world.Map.GetFloor(at) != FloorType.Grass) continue;
-                    PutGrown(ti.Id, ti.X, ti.Y, quiet: true);
-                    continue;
-                }
-                if (ti.Slot != null) { PutOn(ti.Id, ti.X, ti.Y, 0, ti.Slot); continue; }
-                if (ti.WallSide >= 0) { PutWall(ti.Id, at, ti.WallSide); continue; }
-                Put(ti.Id, ti.X, ti.Y);
-                if (ti.Id == "item.market_stall") { var st = _world.GetItemAt(at); if (st != null) _stallId = st.Id; }
-            }
-
-            // Arsanın dışındaki yabani meşeler (olgun): herkes kesebilir, fidanlarıyla arsaya ağaç dikilir.
-            var rng = new System.Random(13);
-            int placed = 0;
-            for (int i = 0; i < 400 && placed < 24; i++)
-            {
-                var p = new GridPos(rng.Next(70, 94), rng.Next(36, 70));
-                if (_world.Map.IsBlocked(p) || _world.Map.GetRoad(p) != RoadType.None || !_content.Items.TryGet("item.tree_oak", out var oak)) continue;
-                PlantSystem.SetGrown(_world.PlaceItem(oak, p));
-                placed++;
-            }
-        }
-
-        // Başlangıç evi: iki katlı 9x7 ev (iç 28-36 x 26-32), ahşap zemin; altında taş döşeli bodrum.
-        // Güneyde kapı (32), her katta pencereler; çatı en üst katın duvarlarından otomatik. Merdiven boşluğu üst katta açık.
-        private static void BuildStarterHouse(GridMap map)
-        {
-            const int x0 = 28, x1 = 36, y0 = 26, y1 = 32;
-            for (int z = -1; z <= 1; z++)
-            {
-                for (int x = x0; x <= x1; x++)
-                    for (int y = y0; y <= y1; y++)
-                    {
-                        var p = new GridPos(x, y, z);
-                        if (z != 0) map.SetTile(p, true);
-                        map.SetFloor(p, z < 0 ? FloorType.Stone : FloorType.Wood);
-                    }
-                bool cellar = z < 0;
-                for (int x = x0; x <= x1; x++)
-                {
-                    bool win = !cellar && (x == 30 || x == 34);
-                    map.SetEdge(new Edge(x, y0, EdgeAxis.Horizontal, z), win ? EdgeKind.Window : EdgeKind.Wall);
-                    var south = z == 0 && x == 32 ? EdgeKind.Door : win ? EdgeKind.Window : EdgeKind.Wall;
-                    map.SetEdge(new Edge(x, y1 + 1, EdgeAxis.Horizontal, z), south);
-                }
-                for (int y = y0; y <= y1; y++)
-                {
-                    bool win = !cellar && y == 29;
-                    map.SetEdge(new Edge(x0, y, EdgeAxis.Vertical, z), win ? EdgeKind.Window : EdgeKind.Wall);
-                    map.SetEdge(new Edge(x1 + 1, y, EdgeAxis.Vertical, z), win ? EdgeKind.Window : EdgeKind.Wall);
-                }
-            }
-            // Merdiven boşluğu: üst kata çıkan merdivenin (35,27-28) üstü açık.
-            map.SetTile(new GridPos(35, 27, 1), false);
-            map.SetTile(new GridPos(35, 28, 1), false);
-
-            // Kapıdan güneye patika, sonra doğuya köye giden yol.
-            for (int y = 33; y <= 40; y++) map.SetRoad(new GridPos(32, y), RoadType.Path);
-            for (int x = 33; x <= 72; x++) map.SetRoad(new GridPos(x, 40), RoadType.Path);
-        }
-
-        private void Put(string id, int x, int y, int z = 0, int rotation = 0)
-        {
-            if (!_content.Items.TryGet(id, out var def)) { Debug.LogError($"Eşya tanımı yok: {id}"); return; }
-            try { _world.PlaceItem(def, new GridPos(x, y, z), rotation); }
-            catch (System.Exception ex) { Debug.LogWarning($"Başlangıç eşyası konamadı {id} ({x},{y},{z}): {ex.Message}"); }
-        }
-
-        private void PutGrown(string id, int x, int y, bool quiet = false)
-        {
-            if (!_content.Items.TryGet(id, out var def)) return;
-            var check = _world.CanPlaceFloor(def, new GridPos(x, y), 0);
-            if (!check.Ok) { if (!quiet) Debug.LogWarning($"Başlangıç ağacı konamadı {id} ({x},{y}): {check.Reason}"); return; }
-            PlantSystem.SetGrown(_world.PlaceItem(def, new GridPos(x, y)));
-        }
-
-        private void PutWall(string id, GridPos tile, int side)
-        {
-            if (!_content.Items.TryGet(id, out var def)) { Debug.LogError($"Eşya tanımı yok: {id}"); return; }
-            try { _world.PlaceOnWall(def, tile, side); }
-            catch (System.Exception ex) { Debug.LogWarning($"Başlangıç duvar eşyası konamadı {id} {tile}: {ex.Message}"); }
-        }
-
-        private void PutOn(string id, int x, int y, int z, string slot)
-        {
-            var surface = _world.GetItemAt(new GridPos(x, y, z));
-            if (surface == null || !_content.Items.TryGet(id, out var def)) return;
-            try { _world.PlaceOnSurface(def, surface.Id, slot); }
-            catch (System.Exception ex) { Debug.LogWarning($"Başlangıç dekoru konamadı {id}: {ex.Message}"); }
+            _stallId = Thatchwick.Core.Layout.StarterWorld.PlaceItems(_world, _content, msg => Debug.LogWarning(msg));
         }
 
         private const float RegionFadeSeconds = 0.7f;
@@ -2376,6 +2174,11 @@ namespace Thatchwick.Game
 
             var kb = UnityEngine.InputSystem.Keyboard.current;
             if (kb != null && kb.bKey.wasPressedThisFrame) ToggleBuild();
+            if (kb != null && kb.f3Key.wasPressedThisFrame && PlacementDebugOverlay.Allowed)
+            {
+                if (_placementDebug == null) _placementDebug = new PlacementDebugOverlay(transform);
+                _placementDebug.Toggle();
+            }
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
@@ -2406,7 +2209,10 @@ namespace Thatchwick.Game
             if (_view == null || _world == null) return;
             if (_regional) UpdateRegion();
             if (_floorsDirty) { _floorsDirty = false; _view.RefreshFloors(); }
-            if (_itemsDirty) { _itemsDirty = false; RebuildItemViews(); if (_regional) HideOtherRegions(); }
+            if (_itemsDirty) { _itemsDirty = false; RebuildItemViews(); if (_regional) HideOtherRegions(); if (_placementDebug != null) _placementDebug.Dirty = true; }
+            if (_placementDebug != null && _placementDebug.Visible && _placementDebug.Dirty)
+                _placementDebug.Rebuild(_world, _layoutPlan, _region != null ? new RectInt(_region.X, _region.Y, _region.W, _region.H) : (RectInt?)null,
+                    _view.ViewLevel, (_selected ?? _player)?.Character?.Position);
             if (_regional) HideOtherRegionActors();
             if (_creator == null) UpdateAmbience();
             UpdateJuice();
@@ -2819,6 +2625,7 @@ namespace Thatchwick.Game
         private void OnGUI()
         {
             if (_clock == null) return;
+            _placementDebug?.OnGUI(HudScale);
             if (Time.unscaledTime < _fadeUntil)
             {
                 // Harita geçişi: kısa kararma (Stardew gibi).

@@ -76,3 +76,7 @@ Assets/Screenshots/
 # Asset işçisi geçici dosyaları (kılavuz, maske, ham indirme, yardımcı betik)
 art/tmp/
 art/tmp*/
+
+# Yerleşim raporu aracı derleme çıktısı
+tools/layout-report/bin/
+tools/layout-report/obj/
