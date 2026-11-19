@@ -476,7 +476,8 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Ekin büyüme çarpanı: hava x (1 + köy) x en iyi yeşil parmak.</summary>
         public float GrowthMultiplier() =>
-            WeatherSystem.GrowthMultiplier(Weather.Today(Clock.TotalDays)) * (1f + Village.CropGrowth) * BestOf(m => m.GrowthSpeed);
+            WeatherSystem.GrowthMultiplier(Weather.Today(Clock.TotalDays)) * (1f + Village.CropGrowth) * BestOf(m => m.GrowthSpeed)
+            * (1f + (float)(Adoptions.PestReduction * 0.5));   // kirpi zararlıyı azaltır (belge 31-2)
 
         /// <summary>İş hızı çarpanı (JobRunner.SpeedProvider): dışarıda hava durumu.</summary>
         public double WorkSpeedFor(Character c, InteractionDef interaction)
@@ -552,6 +553,8 @@ namespace Thatchwick.Core.Life
         /// <summary>Hayvanlar: attan düşen binici yaralanır (ölümcül değil), at ürkünce bildirim.</summary>
         /// <summary>Haritada dolaşan yaban hayvanları (kayda yazılmaz, gelip giderler).</summary>
         public WildRoamers Roamers { get; private set; }
+        /// <summary>Tilki, yaban domuzu ve karga etkileri (Attach(AnimalSystem) ile kurulur).</summary>
+        public WildMischief Mischief { get; private set; }
 
         public void AttachWild(Thatchwick.Core.World.GridMap map)
         {
@@ -577,6 +580,7 @@ namespace Thatchwick.Core.Life
                     return n;
                 }
             };
+            Mischief = new WildMischief(animals, World, Adoptions, _wolfSeed + 1);
             Wolves.Warning += text => Say(text, NoticeLevel.Warning);
             Contests.Finished += (r, a, h) => Say($"{h.Name}: {r.Summary}" + (r.PrizeAkce > 0 ? $" Ödül {r.PrizeAkce} akçe." : ""), r.Won ? NoticeLevel.Info : NoticeLevel.Info, h.Id);
             // Yarışmalar şenlik günü koşar (29-4.1).
@@ -736,6 +740,18 @@ namespace Thatchwick.Core.Life
             Wolves?.OnNewDay(Clock.Season, (int)(day % Clock.Config.DaysPerSeason), Clock.Config.DaysPerSeason);
             var orphan = Adoptions.OnNewDay(Clock.Season);
             if (orphan != null) Say($"Tarlanın kenarında öksüz bir {orphan.Name.ToLowerInvariant()} yavrusu bulundu. Sahiplenmek ister misin?", NoticeLevel.Info);
+            var grow = Adoptions.OnGrowUp((int)Clock.TotalDays, Clock.Season);
+            if (grow == "returned") Say("Büyüttüğün karaca artık yetişkin; bir sabah ormana döndü.", NoticeLevel.Info);
+            else if (grow == "visit") { Say("Büyüttüğün karaca bahçenin kenarına uğradı.", NoticeLevel.Info); Roamers?.Arrive(WildCatalog.Get("wild.roe_deer"), Clock.TotalDays); }
+            if (Mischief != null)
+            {
+                Mischief.FoxNight(Clock.Season, out var foxMsg);
+                if (foxMsg != null) Say(foxMsg, foxMsg.Contains("kaptı") ? NoticeLevel.Warning : NoticeLevel.Info);
+                Mischief.BoarVisit(Clock.Season, out var boarMsg);
+                if (boarMsg != null) Say(boarMsg, boarMsg.Contains("çiğnendi") ? NoticeLevel.Warning : NoticeLevel.Info);
+                var gift = Mischief.CrowGift(House);
+                if (gift != null) Say(gift, NoticeLevel.Info);
+            }
             if (Roamers != null)
             {
                 Roamers.TryBearSighting(Clock.Season);
