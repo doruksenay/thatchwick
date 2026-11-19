@@ -1,7 +1,8 @@
 ---
 id: "424k"
 title: "Zeytin ağacı, pres yeri, süzgeç, küp ve çay öbekleri (iso)"
-status: pending
+status: running
+claimed_at: 2026-11-19T07:54Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 32
 family: esya
 style_gate: false
