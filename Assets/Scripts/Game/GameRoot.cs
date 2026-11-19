@@ -77,9 +77,22 @@ namespace Thatchwick.Game
             ["cook"] = new[] { "cook" },
             ["craft"] = new[] { "craft_hammer", "craft_hand" },
             ["chop"] = new[] { "chop" },
+            ["sow"] = new[] { "sow", "hoe" },     // 018c
+            ["water"] = new[] { "water" },
             ["farm"] = new[] { "hoe", "sow" },
             ["work"] = new[] { "work" },
         };
+
+        /// <summary>
+        /// Eşyasız eylem yerinde mi yapılıyor: sosyal, hayvan ve karo işleri (sohbet, besleme, tımar, kazı, balık, ekim) eşya
+        /// kullanmaz; karakter hedefe varıp durduğunda eylem karesi oynar. Yürürken yürüme karesi kalır.
+        /// </summary>
+        private static bool IsPerformingInPlace(Actor actor)
+        {
+            var job = actor.Runner.Queue.Current;
+            if (job == null) return false;
+            return job.Kind == JobKind.Social || job.Kind == JobKind.Animal || job.Kind == JobKind.Tile;
+        }
 
         /// <summary>
         /// Yemek: yenen yiyeceğin ikonu varsa ve boş elli kareler (eat3) ile el konumları (HandAnchors) yazılmışsa boş elli kareyi
@@ -2688,7 +2701,7 @@ namespace Thatchwick.Game
                         _juice.Emit(Juice.Kind.Dust, pos + new Vector3(0f, 0.02f, 0f), 1, sortOrder - 1);
                 }
             }
-            else if (actor.Runner.IsUsingItem && actor.Character.Stage != AgeStage.Baby)
+            else if ((actor.Runner.IsUsingItem || IsPerformingInPlace(actor)) && actor.Character.Stage != AgeStage.Baby)
             {
                 var job = actor.Runner.Queue.Current;
                 if (!ReferenceEquals(job, actor.WorkJob))
@@ -2749,7 +2762,7 @@ namespace Thatchwick.Game
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
             // Kare animasyonu (018a/018b) varsa yürürken onu oynat: tam döngü = iki adım (WalkPhase iki π).
             var walkFrame = moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
-            var real = walkFrame ?? (actor.Runner.IsUsingItem && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
+            var real = walkFrame ?? ((actor.Runner.IsUsingItem || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
