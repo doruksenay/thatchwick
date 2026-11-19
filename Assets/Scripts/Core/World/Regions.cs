@@ -142,25 +142,43 @@ namespace Thatchwick.Core.World
     /// bölgede hayat sürer. Görünüm yalnızca etkin bölgeyi çizer, geçişte kısa kararma olur.
     /// Çiftlik — Köy yolu — Şehir. Orman (kuzey), ırmak ve göl (güney), tepe (doğu) çıkışları şehirde hazır.
     /// </summary>
-    public static class Regions
+    public static partial class Regions
     {
-        public const int WorldWidth = 208, WorldHeight = 72;
+        public const int WorldWidth = 428, WorldHeight = 72;
+        /// <summary>Yalnızca çiftlik, köy yolu ve şehri olan eski bölgeli kayıtların genişliği (yeni haritalar onlarda yok).</summary>
+        public const int LegacyWorldWidth = 208;
 
         public static readonly Region Farm = new Region { Id = "farm", Name = "Çiftlik", X = 0, Y = 0, W = 96, H = 72 };
         public static readonly Region Road = new Region { Id = "road", Name = "Köy yolu", X = 100, Y = 20, W = 40, H = 24 };
         public static readonly Region Town = new Region { Id = "town", Name = "Şehir", X = 144, Y = 10, W = 64, H = 52 };
-        public static readonly Region[] All = { Farm, Road, Town };
+        public static readonly Region Forest = new Region { Id = "forest", Name = "Orman", X = 212, Y = 0, W = 48, H = 48 };
+        public static readonly Region Lake = new Region { Id = "lake", Name = "Irmak ve göl", X = 264, Y = 0, W = 48, H = 32 };
+        public static readonly Region Marsh = new Region { Id = "marsh", Name = "Sazlık", X = 316, Y = 0, W = 32, H = 24 };
+        public static readonly Region Hill = new Region { Id = "hill", Name = "Tepe ve taş ocağı", X = 352, Y = 0, W = 40, H = 40 };
+        public static readonly Region Slopes = new Region { Id = "slopes", Name = "Güney Yamaçları", X = 396, Y = 0, W = 32, H = 24 };
+
+        public static readonly Region[] All = { Farm, Road, Town, Forest, Lake, Marsh, Hill, Slopes };
 
         // Geçitler (a, b): çiftliğin doğu yolu -> köy yolunun batı ucu; köy yolunun doğu ucu -> şehrin batı girişi.
         private static readonly int[][] PortalPairs =
         {
             new[] { 95, 40, 100, 40 }, new[] { 95, 41, 100, 41 },
             new[] { 139, 28, 144, 28 }, new[] { 139, 29, 144, 29 },
+            // Şehrin kuzey çıkışı -> orman; güney çıkışı -> göl; doğu köprüsü -> tepe (belge 38 bağlantı şeması)
+            new[] { 172, 10, 236, 47 }, new[] { 173, 10, 237, 47 },
+            new[] { 177, 61, 288, 0 }, new[] { 178, 61, 289, 0 },
+            new[] { 207, 36, 352, 20 }, new[] { 207, 37, 352, 21 },
+            // Gölün doğu kıyısı -> sazlık; köy yolunun güney patikası -> Güney Yamaçları
+            new[] { 311, 16, 316, 12 }, new[] { 311, 17, 316, 13 },
+            new[] { 107, 20, 412, 23 },
         };
 
-        public static bool IsRegional(GridMap map) => map != null && map.Width == WorldWidth && map.Height == WorldHeight;
+        public static bool IsRegional(GridMap map) => map != null && map.Height == WorldHeight && (map.Width == WorldWidth || map.Width == LegacyWorldWidth);
 
         public static Region At(GridPos p) { foreach (var r in All) if (r.Contains(p)) return r; return null; }
+
+        /// <summary>Bölge bu haritada var mı (eski 208 genişlikli kayıtta yeni haritalar yok).</summary>
+        public static bool Exists(GridMap map, Region r) => map != null && r.X + r.W <= map.Width && r.Y + r.H <= map.Height;
 
         /// <summary>Bölge dışı boşlukları kapatır ve geçitleri kurar (yeni oyunda).</summary>
         public static void Apply(GridMap map)
@@ -178,7 +196,11 @@ namespace Thatchwick.Core.World
         public static void ApplyPortals(GridMap map)
         {
             map.ClearPortals();
-            foreach (var q in PortalPairs) map.AddPortal(new GridPos(q[0], q[1]), new GridPos(q[2], q[3]));
+            foreach (var q in PortalPairs)
+            {
+                var a = new GridPos(q[0], q[1]); var b = new GridPos(q[2], q[3]);
+                if (map.InBounds(a) && map.InBounds(b)) map.AddPortal(a, b);   // eski kayıtta yeni haritaların geçidi yok
+            }
         }
 
         private static KeyValuePair<string, int> F(string id, int n) => new KeyValuePair<string, int>(id, n);
@@ -188,6 +210,7 @@ namespace Thatchwick.Core.World
         {
             RoadMap(new Painter(m, Road.X, Road.Y));
             TownMap(new Painter(m, Town.X, Town.Y));
+            WildTerrain(m);
         }
 
         /// <summary>
@@ -233,6 +256,7 @@ namespace Thatchwick.Core.World
             var a = new Painter(null, Road.X, Road.Y); RoadMap(a);
             var b = new Painter(null, Town.X, Town.Y); TownMap(b);
             a.Items.AddRange(b.Items);
+            a.Items.AddRange(WildItems());
             return a.Items;
         }
 
@@ -249,6 +273,7 @@ namespace Thatchwick.Core.World
             p.PondAt(StreamX(0), 0, F("item.fish_trout", 5), F("item.fish_crayfish", 5));
             p.PondAt(StreamX(23), 23, F("item.fish_trout", 3), F("item.fish_crayfish", 4));
             p.Path(2, (0, 20), (7, 20), (7, 16), (14, 16), (14, 12), (27, 12), (27, 8), (39, 8));
+            p.Path(1, (7, 16), (7, 0));   // güneye ayrılan patika: Güney Yamaçları
 
             // Gezgin tüccar durağı ve yol kenarı
             p.I("item.garden_bench", 30, 6); p.I("item.barrel", 33, 6); p.I("item.seed_crate", 34, 6);
@@ -444,7 +469,10 @@ namespace Thatchwick.Core.World
             { "work:tailor", T(39, 35) }, { "home:tailor", T(41, 35) },
             { "work:saddler", T(57, 36) }, { "home:saddler", T(56, 38) },
             { "work:fisher", T(56, 20) }, { "home:fisher", T(58, 19) },
-            { "work:mason", T(23, 44) }, { "home:mason", T(24, 46) }
+            { "work:mason", T(23, 44) }, { "home:mason", T(24, 46) },
+            // Yaban haritalarının buluşma yerleri (köylü programları ve gezinti için)
+            { "forest", W(Forest, 24, 24) }, { "lake", W(Lake, 24, 8) }, { "marsh", W(Marsh, 6, 12) },
+            { "hill", W(Hill, 8, 20) }, { "mine", W(Hill, MineMouthX, MineMouthY - 1) }, { "slopes", W(Slopes, 16, 20) },
         };
 
         /// <summary>Dükkânların iç alanı (dünya koordinatı); dükkân kimliği Core.Economy.Shops ile aynı.</summary>
