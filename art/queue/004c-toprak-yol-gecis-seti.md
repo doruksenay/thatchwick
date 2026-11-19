@@ -1,23 +1,32 @@
 ---
 id: "004c"
 title: Toprak yol - çim geçiş seti (Stardew tarzı, organik kenar)
-status: queued
+status: pending
 approved_by: user        # kullanıcı: "Stardew'da nasıl ona bak, gerekirse yeni asset çizdir" (18.11.2026)
 family: zemin
-style_gate: true         # ilk 4 karo yan yana sayfasında kullanıcıya gösterilir, onaydan sonra kalanı
-cost_est: 40
-cost_max: 70
+style_gate: true         # stil pilotu: yalnızca 4 karo; kalanı 004d (kullanıcı onayından sonra)
+cost_est: 12
+cost_max: 25
 depends_on: []
 supersedes: ["004b"]
 max_attempts: 3
 pixellab: true
 outputs:
-  - Assets/Art/Iso/iso_path_dirt_fill_a.png, _b.png, _c.png      (dikişsiz tam toprak, 3 varyant)
-  - Assets/Art/Iso/iso_path_dirt_wang_00.png ... _15.png         (köşe tabanlı Wang, 16 karo)
-  - Assets/Art/Iso/iso_path_decor_*.png                          (yol kenarı süsleri)
+  - Assets/Art/Iso/iso_path_dirt_fill_a.png                      (dikişsiz tam toprak)
+  - Assets/Art/Iso/iso_path_dirt_wang_03.png                     (iki toprak köşe: düz yol kenarı)
+  - Assets/Art/Iso/iso_path_dirt_wang_01.png                     (tek toprak köşe: dış köşe)
+  - Assets/Art/Iso/iso_path_dirt_wang_07.png                     (üç toprak köşe: iç köşe)
+  - art/results/004c-yanyana.png                                 (dikiş sayfası, aşağıda)
 created: 2026-11-18
 ---
-# 004c Toprak yol – çim geçiş seti
+# 004c Toprak yol – çim geçiş seti (STİL PİLOTU, 4 karo)
+
+> **Pilot:** bu iş yalnızca dolgu + 3 Wang karosunu üretir. Kullanıcı yan yana sayfasına bakıp `status: accepted` yazınca kalan 13 Wang karosu, 2 dolgu varyantı ve süsler 004d ile üretilir. Tarif tüm set için yazıldı; pilotta aynı tarifle yalnızca listelenen dosyalar.
+
+## Pilot dikiş sayfası (art/results/004c-yanyana.png)
+Dört karoyla döşenmiş 3 örnek, 2x büyütülmüş: (a) 2 karo genişliğinde düz yol, 6 karo uzunluğunda; (b) L dönüş; (c) çimen ortasında 2x2 toprak alan. Yanına Stardew'un kasaba yolundan bir ekran görüntüsü konmaz (telif); karşılaştırma sözlü.
+
+# (Tam set tarifi)
 
 ## Neden
 004 setinde (create_path_tiles, outline varsayılan) her karonun çevresinde koyu dış çizgi var ve yol kenarı düz.
