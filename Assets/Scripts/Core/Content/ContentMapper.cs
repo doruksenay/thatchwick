@@ -250,6 +250,7 @@ namespace Thatchwick.Core.Content
                             Fertilize = i.fertilize,
                             RequiresFruit = i.requiresFruit,
                             AdultOnly = i.adultOnly,
+                            AdultPack = i.adultPack,
                             TakesFruit = i.takesFruit,
                             PetsAnimals = i.petAnimals,
                             Slaughter = i.slaughter,
@@ -387,7 +388,8 @@ namespace Thatchwick.Core.Content
                     MinSkillLevel = r.minLevel,
                     IsCraft = true,
                     Moodlet = string.IsNullOrWhiteSpace(r.moodlet) ? Mood.MoodCatalog.Proud : r.moodlet,
-                    RequiresBranch = string.IsNullOrWhiteSpace(r.requiresBranch) ? null : r.requiresBranch.Trim()
+                    RequiresBranch = string.IsNullOrWhiteSpace(r.requiresBranch) ? null : r.requiresBranch.Trim(),
+                    AdultPack = r.adultPack
                 };
                 interaction.Produce.Add(new ProduceDef { ItemId = r.produces, Count = r.count <= 0 ? 1 : r.count, Chance = 1f });
                 AddMaterials(interaction, r.materials);

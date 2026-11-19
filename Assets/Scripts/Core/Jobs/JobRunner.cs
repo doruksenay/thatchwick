@@ -796,6 +796,8 @@ namespace Thatchwick.Core.Jobs
         private string StartBlocker(ItemInstance item, InteractionDef interaction)
         {
             if (IsUnlitHeatSource(item, interaction) && !CanStoke) return "Ocak sönük, önce odun at.";
+            if (interaction.Hidden) return "+18 paketi kapalı.";
+            if (interaction.AdultPack && !AgeStages.IsAdultContentAge(_character.Stage)) return "Genç yetişkin ve üstü.";
             if (interaction.AdultOnly && (_character.Stage == AgeStage.Baby || _character.Stage == AgeStage.Child || _character.Stage == AgeStage.Teen)) return "Çocuklar kahve içmez.";
             if (interaction.RequiresGrown && !item.IsGrown) return $"{item.Def.DisplayName} henüz büyümedi.";
             if (interaction.MinSkillLevel > 0 && interaction.Skill.HasValue

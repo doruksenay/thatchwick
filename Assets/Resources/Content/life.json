@@ -166,6 +166,17 @@
       "extraOffers": 3
     },
     {
+      "id": "festival.vintage",
+      "displayName": "Bağbozumu",
+      "description": "Sonbaharın başında bağlar bozulur: ortak hasat, teknede ayakla üzüm ezme, kopuz, ilk şıra ikramı.",
+      "season": "Autumn",
+      "day": 2,
+      "funRestore": 45,
+      "socialRestore": 40,
+      "moodValue": 8,
+      "extraOffers": 1
+    },
+    {
       "id": "festival.harvest",
       "displayName": "Hasat Şenliği",
       "description": "Ambarlar dolu; hep birlikte yenir, içilir.",
