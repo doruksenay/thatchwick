@@ -1,7 +1,7 @@
 ---
 id: "004c"
 title: Toprak yol - çim geçiş seti (Stardew tarzı, organik kenar)
-status: running
+status: review
 claimed_at: 2026-11-19T07:23Z
 approved_by: user        # kullanıcı: "Stardew'da nasıl ona bak, gerekirse yeni asset çizdir" (18.11.2026)
 family: zemin
