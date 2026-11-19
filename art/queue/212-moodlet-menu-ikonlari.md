@@ -1,8 +1,8 @@
 ---
 id: "212"
 title: Moodlet, menü ve panel ikonları (16x16)
-status: pending
-claimed_at: 2026-11-18T12:45Z
+status: running
+claimed_at: 2026-11-19T12:02Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: false
