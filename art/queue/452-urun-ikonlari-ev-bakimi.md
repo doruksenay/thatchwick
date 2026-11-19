@@ -2,7 +2,7 @@
 id: "452"
 title: "Ürün ikonları: tüy, kabuk, çakıl (4)"
 status: running
-claimed_at: 2026-11-19T15:22Z
+claimed_at: 2026-11-19T21:27Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 19.11.2026 ("bunların hepsini yapalım", varyant çeşitliliği), Project belgesi 45
 priority: 50
 family: arayuz
