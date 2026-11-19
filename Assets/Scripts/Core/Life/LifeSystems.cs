@@ -141,6 +141,12 @@ namespace Thatchwick.Core.Life
             };
             Mood.BeautyBonus = it => Keepsakes.BeautyBonus(it) + Thatchwick.Core.Build.DecorSystem.SeasonalBeauty(it, Clock.Season);
             UpdateMerchant(false);
+            // Düğün önce: çeyiz sandığı gelinle gitmeden doluluğu okunur (belge 34-D2).
+            Legacy.MarriedOutHappened += (member, villager) =>
+            {
+                var (filled, max) = Keepsakes.BestDowryFill();
+                Upbringing?.Weddings?.Celebrate(member, villager, member.Sex == Sex.Female && max > 0 && filled >= max);
+            };
             Legacy.MarriedOutHappened += (member, villager) => Keepsakes.OnMarriedOut(member, villager, _family, Legacy, Household());
             population.BabyBorn += (baby, mother, father) => Keepsakes.OnBirth(baby);
             Houses = new NeighborHouseService(population, Villagers, content, seed != 0 ? Seeds.Derive(seed, 9) : 71) { Today = () => Clock.TotalDays };
@@ -183,6 +189,9 @@ namespace Thatchwick.Core.Life
                 Notify = (text, id) => Say(text, NoticeLevel.Info, id),
                 Chronicle = text => Ledger.Note(text)
             };
+            Upbringing.AttachHouse(house);
+            Upbringing.Weddings.DowryFill = Keepsakes.BestDowryFill;
+            Suitors.QualityChance = Upbringing.Weddings.SuitorQuality;
             Thatchwick.Core.Upbringing.ToyNames.Lookup = id => content.Items.TryGet(id, out var td) ? td.DisplayName : null;
             Breakdowns.Started += (c, kind) => { if (!c.IsVillager) Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Breakdown, "bunalım"); };
             Spoilage.Spoiled += (id, n) =>
@@ -515,7 +524,7 @@ namespace Thatchwick.Core.Life
             {
                 if (action != SocialAction.Propose) return;
                 Marriages++;
-                Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Wedding, "düğün");
+                Upbringing.Weddings.Celebrate(actor, target, false);   // itibar düğün ölçeğinden (belge 34-D2)
                 Goals.Update();
             };
         }
@@ -754,7 +763,7 @@ namespace Thatchwick.Core.Life
                 Legacy.OnSeasonChanged((Season)_lastSeasonIndex, (Season)season, day, Clock.TotalDays);
                 Decor.OnSeasonChanged((Season)season);
                 var guest = Suitors.OnNewSeason();
-                if (guest != null) Say($"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
+                if (guest != null) Say(Suitors.LastWasNotable ? $"{guest.Name} köye geldi; ailenin itibarını ve çeyizini duymuş, becerili biri." : $"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
                 Villagers.ReplaceDeparted();   // ölen adlı köylünün (demirci ...) yerine halefi mevsim başında gelir
             }
             _lastSeasonIndex = season;

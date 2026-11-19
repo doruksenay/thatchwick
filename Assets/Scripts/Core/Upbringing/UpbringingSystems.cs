@@ -23,6 +23,19 @@ namespace Thatchwick.Core.Upbringing
         public ApprenticeshipSystem Apprentices { get; }
         public FamilyRecipeBook Recipes { get; }
         public ReputationSystem Reputation { get; } = new ReputationSystem();
+        /// <summary>Düğün ve talip niteliği (belge 34-D2); AttachHouse ile kurulur.</summary>
+        public WeddingSystem Weddings { get; private set; }
+
+        public void AttachHouse(Thatchwick.Core.Build.Household house)
+        {
+            Weddings = new WeddingSystem(house, Population)
+            {
+                Reputation = Reputation,
+                IsPerformer = id => Toys.IsMastered(id, "item.wooden_whistle") || Toys.IsMastered(id, "item.juggling_balls"),
+                Notify = (t, id) => Say(t, id),
+                Chronicle = t => Chronicle?.Invoke(t)
+            };
+        }
 
         public Func<double> Today { get; set; } = () => 0;
         /// <summary>Bildirim (metin, karakter kimliği; 0 = genel).</summary>
@@ -325,7 +338,7 @@ namespace Thatchwick.Core.Upbringing
         public UpbringingSave Export() => new UpbringingSave
         {
             toys = Toys.Export(), companions = Companions.Export(), apprentices = Apprentices.Export(),
-            recipes = Recipes.Export(), reputation = Reputation.Export()
+            recipes = Recipes.Export(), reputation = Reputation.Export(), weddings = Weddings?.Export()
         };
 
         public void Import(UpbringingSave s)
@@ -335,6 +348,7 @@ namespace Thatchwick.Core.Upbringing
             Apprentices.Import(s?.apprentices);
             Recipes.Import(s?.recipes);
             Reputation.Import(s?.reputation);
+            Weddings?.Import(s?.weddings);
         }
     }
 
@@ -346,5 +360,6 @@ namespace Thatchwick.Core.Upbringing
         public ApprenticeshipSave[] apprentices;
         public FamilyRecipeSave[] recipes;
         public ReputationSave reputation;
+        public WeddingSave weddings;
     }
 }

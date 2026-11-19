@@ -272,6 +272,15 @@ namespace Thatchwick.Core.Life
 
         // ---------------- çeyiz sandığı ----------------
 
+        /// <summary>Evdeki en dolu (kurulu) çeyiz sandığının doluluğu; sandık yoksa (0, 0).</summary>
+        public (int filled, int max) BestDowryFill()
+        {
+            ItemInstance chest = null;
+            foreach (var it in _world.Items)
+                if (it.Def.Id == DowryChest && !it.IsDecor && (chest == null || it.Contents.Count > chest.Contents.Count)) chest = it;
+            return chest == null ? (0, 0) : (chest.Contents.Count, chest.Def.FillCount);
+        }
+
         /// <summary>
         /// Hane kızı komşu haneye gelin gitti: evdeki en dolu çeyiz sandığı onunla gider (yoksa envanterdeki boş sandık).
         /// Tam doluysa Soy Mührü +1, hanenin eşe yakınlığı +10 ve gelinde "Çeyizim tam". Bildirim metni ya da null.

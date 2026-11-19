@@ -28,6 +28,11 @@ namespace Thatchwick.Core.Life
         public Func<GridPos> SpawnPosition { get; set; } = () => new GridPos(0, 0);
         public event Action<Character> Arrived;
 
+        /// <summary>Nitelikli talip şansı (0-1): itibar ve çeyizden (belge 34-D2). Tutarsa ek yatkınlık ve bir beceride 3-5. seviye.</summary>
+        public Func<double> QualityChance { get; set; }
+        /// <summary>Son gelen talip nitelikli miydi (bildirim için).</summary>
+        public bool LastWasNotable { get; private set; }
+
         public SuitorPool(ContentDatabase content, Population population, int seed = 101)
         {
             _content = content ?? throw new ArgumentNullException(nameof(content));
@@ -106,6 +111,14 @@ namespace Thatchwick.Core.Life
                 LifeRules.RollAptitudes(_rng, c, 1 + _rng.Next(2));
                 c.LifespanDays += LifeRules.LifespanBonus(_content, c.TraitIds);
                 LifeRules.Recompute(c, _content, _population.Village);
+            }
+            LastWasNotable = QualityChance != null && _rng.NextDouble() < QualityChance();
+            if (LastWasNotable)
+            {
+                LifeRules.RollAptitudes(_rng, c, 1);
+                var skills = (SkillType[])Enum.GetValues(typeof(SkillType));
+                var s = skills[_rng.Next(skills.Length)];
+                c.Skills.AddXp(s, SkillRules.XpForLevel(3 + _rng.Next(3)), 10);
             }
             _population.Add(c);
             Arrived?.Invoke(c);

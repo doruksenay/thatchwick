@@ -69,6 +69,7 @@ namespace Thatchwick.Game
             if (Upbringing != null)
                 GUILayout.Label(new GUIContent($"İtibar: {Upbringing.Reputation.TierName} ({Upbringing.Reputation.Points}) · satış {Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%",
                     string.Join("\n", Upbringing.Reputation.RecentLog)));
+            DrawWeddingPrep();
             GUILayout.Label(actor != null ? $"Komut alan: {actor.Name} (haritaya dokununca o gider)" : "Komut alacak kişiyi seç.");
             if (_status.Length > 0) GUILayout.Label(_status);
             if (actor != null && actor.MoodEnabled)
@@ -201,6 +202,27 @@ namespace Thatchwick.Game
                 }
             }
             GUILayout.EndHorizontal();
+        }
+
+        // Düğün hazırlığı (belge 34-D2): bekâr yetişkin varsa ekmek, içki, mum, çalgıcı ve beklenen ölçek.
+        private void DrawWeddingPrep()
+        {
+            var w = Upbringing?.Weddings;
+            if (w == null) return;
+            bool single = false;
+            foreach (var m in _population.Members)
+                if (!m.IsVillager && !m.IsDead && FamilyService.IsAdultAge(m) && !m.SpouseId.HasValue) single = true;
+            if (!single) return;
+            var parts = new List<string>();
+            foreach (var sup in w.Prep())
+                parts.Add(sup.ItemIds.Length == 0 ? $"{sup.Name} {(sup.Ok ? "✓" : "✗")}" : $"{sup.Name} {Math.Min(sup.Have, sup.Need)}/{sup.Need}{(sup.Ok ? " ✓" : "")}");
+            var (filled, max) = w.DowryFill != null ? w.DowryFill() : (0, 0);
+            bool full = max > 0 && filled >= max;
+            string dowry = max > 0 ? $" · çeyiz {filled}/{max}" : " · çeyiz sandığı yok";
+            GUILayout.Label(new GUIContent($"Düğün hazırlığı: {string.Join(" · ", parts)}{dowry} → {WeddingSystem.ScaleName(w.ExpectedScale(full))}",
+                $"Ekmek {WeddingSystem.BreadNeed}, içki {WeddingSystem.DrinkNeed}, mum {WeddingSystem.LightNeed} ve çalgıcı (Müzik {WeddingSystem.MusicLevel}+ ya da kavalda usta).\n" +
+                "Hazır kalemler düğünde harcanır. 4 kalem görkemli, 2-3 güzel; dolu çeyiz sandığı bir basamak artırır.\n" +
+                $"Talip niteliği şansı: %{w.SuitorQuality() * 100:0}"));
         }
 
         // Aile sırları: bilenler, öğret (seçili kişi bilir ve hedef hane üyesi bilmez), deftere yaz.

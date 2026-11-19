@@ -535,5 +535,73 @@ namespace Thatchwick.Core.Tests
             Assert.Contains(gall.Produce, p => p.ItemId == "item.oak_gall");
             Assert.NotNull(typeof(Thatchwick.Core.Work.InteractionEffects).GetProperty("FamilyYieldChance"));
         }
+            // ---------- çeyiz ve düğün ----------
+
+        [Fact]
+        public void Dugun_HazirlikOlcegi_Harcar_ItibarVeRuhHali()
+        {
+            var pop = new Population();
+            var house = new Household(100);
+            var u = new UpbringingSystems(pop);
+            u.AttachHouse(house);
+            var a = Person(1, AdultAge); var b = Person(2, AdultAge);
+            pop.Add(a);
+            Assert.Equal(WeddingScale.Plain, u.Weddings.ExpectedScale(false));
+            Assert.Equal(WeddingScale.Fine, u.Weddings.ExpectedScale(true));   // dolu çeyiz bir basamak
+            house.AddItem("item.bread", 4); house.AddItem("item.ale", 4);
+            Assert.Equal(WeddingScale.Fine, u.Weddings.ExpectedScale(false));
+            house.AddItem("item.candle", 3);
+            for (int i = 0; i < 100; i++) u.Toys.OnPlayed(a, "item.wooden_whistle", 0);   // kavalda usta = çalgıcı
+            Assert.NotNull(u.Weddings.Musician());
+            var r = u.Weddings.Celebrate(a, b, false);
+            Assert.Equal(WeddingScale.Grand, r.Scale);
+            Assert.Equal(WeddingSystem.ReputationGrand, u.Reputation.Points);
+            Assert.Equal(0, house.Count("item.bread"));
+            Assert.Equal(0, house.Count("item.ale"));
+            Assert.Equal(0, house.Count("item.candle"));
+            Assert.Equal(1, u.Weddings.GrandWeddings);
+            Assert.Contains("Görkemli", r.Text);
+            // İkinci düğün malzemesiz: sade.
+            Assert.Equal(WeddingScale.Plain, u.Weddings.Celebrate(a, b, false).Scale);
+        }
+
+        [Fact]
+        public void Dugun_TalipNiteligi_ItibarVeCeyizden()
+        {
+            var pop = new Population();
+            var u = new UpbringingSystems(pop);
+            u.AttachHouse(new Household());
+            Assert.Equal(0, u.Weddings.SuitorQuality(), 6);
+            u.Reputation.Add(600, "test");
+            Assert.Equal(0.4, u.Weddings.SuitorQuality(), 6);
+            u.Weddings.DowryFill = () => (6, 6);
+            Assert.Equal(0.6, u.Weddings.SuitorQuality(), 6);
+
+            var db = ContentFilesTests.LoadDb(out _);
+            var pool = new SuitorPool(db, new Population(), 5) { QualityChance = () => 1.0 };
+            var v = pool.SpawnVillager(Sex.Female);
+            Assert.True(pool.LastWasNotable);
+            int best = 0;
+            foreach (SkillType sk in System.Enum.GetValues(typeof(SkillType))) best = System.Math.Max(best, v.Skills.GetLevel(sk));
+            Assert.True(best >= 3);
+        }
+
+        [Fact]
+        public void Dugun_HayataBagli_EvlenmeDugunuKayit()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var pop = new Population();
+            var house = new Household();
+            var life = new LifeSystems(db, new WorldState(new GridMap(12, 12)), house, pop, new GameClock());
+            Assert.NotNull(life.Upbringing.Weddings);
+            Assert.NotNull(life.Suitors.QualityChance);
+            house.AddItem("item.bread", 4); house.AddItem("item.mead", 4);
+            life.Upbringing.Weddings.Celebrate(Person(1, AdultAge), Person(2, AdultAge), false);
+            var json = JsonSerializer.Serialize(life.Export(), Json);
+            var life2 = new LifeSystems(db, new WorldState(new GridMap(12, 12)), new Household(), new Population(), new GameClock());
+            life2.Restore(JsonSerializer.Deserialize<Thatchwick.Core.Save.LifeSaveData>(json, Json));
+            Assert.Equal(1, life2.Upbringing.Weddings.Weddings);
+            Assert.Equal(WeddingSystem.ReputationFine, life2.Upbringing.Reputation.Points);
+        }
     }
 }
