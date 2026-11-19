@@ -288,6 +288,26 @@ namespace Thatchwick.Core.Build
         }
 
         /// <summary>İçindekilerden bir tane yer: önce en bayatı (çürük yenmez). Yenen ürünün kimliği ya da null.</summary>
+        /// <summary>Bir sonraki yenecek olan (en eski, çürük olmayan) içerik; yoksa null. İçerikten çıkarmaz.</summary>
+        public static string NextToEat(ItemInstance item, ContentDatabase content)
+        {
+            int i = NextToEatIndex(item, content);
+            return i < 0 ? null : item.Contents[i].ItemId;
+        }
+
+        private static int NextToEatIndex(ItemInstance item, ContentDatabase content)
+        {
+            int best = -1; double bestAge = -1;
+            for (int i = 0; i < item.Contents.Count; i++)
+            {
+                var c = item.Contents[i];
+                content.Items.TryGet(c.ItemId, out var food);
+                if (Decor.Freshness(food, c.Age) == Decor.Rotten) continue;
+                if (c.Age > bestAge) { best = i; bestAge = c.Age; }
+            }
+            return best;
+        }
+
         public static string EatOne(ItemInstance item, ContentDatabase content)
         {
             int best = -1; double bestAge = -1;

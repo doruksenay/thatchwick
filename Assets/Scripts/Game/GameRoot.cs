@@ -58,7 +58,14 @@ namespace Thatchwick.Game
             public object WorkJob;
             public string WorkIcon;
             public Sprite ActionFrame;
+            // Elde tutulan yiyecek (yemek animasyonu): neyi yiyorsa onun ikonu elin üstünde.
+            public SpriteRenderer Held;
+            public string HeldItem;
+            public bool HeldBehind;
         }
+
+        /// <summary>Elde tutulan nesnenin ikona göre boyu: 32 px ikon yaklaşık 11 px görünür (84 px karakterde).</summary>
+        private const float HeldScale = 0.35f;
 
         /// <summary>Etkileşim karesi döngüsü: 8 kare yaklaşık 0,9 saniyede (kişiye göre evre).</summary>
         private static float ActionCycle(int seed) => Mathf.Repeat(Time.time / 0.9f + seed * 0.17f, 1f);
@@ -66,13 +73,46 @@ namespace Thatchwick.Game
         /// <summary>Eylem simgesi (ActivityDescriber) → 018c-e kare anahtarları, sırayla denenir.</summary>
         private static readonly Dictionary<string, string[]> ActionKeys = new Dictionary<string, string[]>
         {
-            ["eat"] = new[] { "eat2", "eat" },
+            ["eat"] = new[] { "eat2", "eat" },     // yiyecek elde çizilebiliyorsa önce eat3 (boş el) denenir: UpdateHeld
             ["cook"] = new[] { "cook" },
             ["craft"] = new[] { "craft_hammer", "craft_hand" },
             ["chop"] = new[] { "chop" },
             ["farm"] = new[] { "hoe", "sow" },
             ["work"] = new[] { "work" },
         };
+
+        /// <summary>
+        /// Yemek: yenen yiyeceğin ikonu varsa ve boş elli kareler (eat3) ile el konumları (HandAnchors) yazılmışsa boş elli kareyi
+        /// döndürür ve yiyeceği o karedeki elin üstüne çizer. Olmazsa null (eski, ekmeği çizili kareler oynar).
+        /// </summary>
+        private Sprite UpdateHeld(Actor actor, string icon, int seed)
+        {
+            Sprite frame = null;
+            Sprite held = icon == "eat" ? IsoArt.HeldItem(actor.HeldItem) : null;
+            if (held != null)
+            {
+                var f = IsoArt.CharacterAction(actor.Character, "eat3", actor.Direction, ActionCycle(seed), out string prefix, out int index);
+                if (f != null && HandAnchors.TryGet(prefix, index, out var a))
+                {
+                    frame = f;
+                    if (actor.Held == null)
+                    {
+                        var go = new GameObject("Held");
+                        go.transform.SetParent(actor.View, false);
+                        actor.Held = go.AddComponent<SpriteRenderer>();
+                    }
+                    var pivot = IsoArt.R84Pivot;
+                    float ppu = IsoArt.PixelsPerUnit;
+                    actor.Held.sprite = held;
+                    actor.Held.transform.localPosition = new Vector3((a.X - pivot.x) / ppu, (a.Y - pivot.y) / ppu, 0f);
+                    actor.Held.transform.localScale = new Vector3(HeldScale, HeldScale, 1f);
+                    actor.HeldBehind = a.Behind;
+                    actor.Held.enabled = actor.Renderer.enabled;
+                }
+            }
+            if (frame == null && actor.Held != null) actor.Held.enabled = false;
+            return frame;
+        }
 
         private Sprite ActionFrameFor(Actor actor, string icon, int seed)
         {
@@ -2512,11 +2552,12 @@ namespace Thatchwick.Game
                 {
                     actor.WorkJob = job;
                     actor.WorkIcon = job != null ? ActivityDescriber.DescribeJob(job, _world).Icon : null;
+                    actor.HeldItem = actor.WorkIcon == "eat" ? HeldFood.Of(job, _world, _content) : null;
                 }
                 string icon = actor.WorkIcon;
                 bool beats = icon == "chop" || icon == "farm" || icon == "craft" || icon == "cook" || icon == "work";
                 // Gerçek etkileşim kareleri (018c-e) varsa onlar oynar; yoksa kodla vuruş.
-                actor.ActionFrame = ActionFrameFor(actor, icon, seed);
+                actor.ActionFrame = UpdateHeld(actor, icon, seed) ?? ActionFrameFor(actor, icon, seed);
                 if (actor.ActionFrame != null && _juice != null)
                 {
                     float cyc = ActionCycle(seed);
@@ -2555,6 +2596,7 @@ namespace Thatchwick.Game
                 // Nefes: göğüs 1 px kabarır (dikey esneme); herkes kendi evresinde.
                 if (Juice.BreathOffset(seed) > 0f) squash = -0.018f;
             }
+            if (!(actor.Runner.IsUsingItem && !moving) && actor.Held != null) actor.Held.enabled = false;
             actor.View.position = pos + new Vector3(0f, bob, 0f);
             // Merdivende yarıdan sonra hedef katın bandına geçer; iki kattan biri görünürse karakter görünür.
             int fromLevel = actor.Character.Position.Z;
@@ -2569,6 +2611,7 @@ namespace Thatchwick.Game
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
             actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1, level);
+            if (actor.Held != null && actor.Held.enabled) actor.Held.sortingOrder = actor.Renderer.sortingOrder + (actor.HeldBehind ? -1 : 1);
             if (actor.Shadow != null)
             {
                 actor.Shadow.enabled = actor.Renderer.enabled;
