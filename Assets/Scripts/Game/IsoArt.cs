@@ -40,6 +40,7 @@ namespace Thatchwick.Game
             Sprites.Clear();
             IconCache.Clear();
             IconMissing.Clear();
+            HeldSprites.Clear();
             FrameCounts.Clear();
         }
 
@@ -493,21 +494,45 @@ namespace Thatchwick.Game
         /// w → nw, s → sw), o da yoksa se. Etkileşim karelerinin 9.'su kapanış değil, hepsi oynar.
         /// Kare yoksa null: çağıran kodla iş vuruşuna düşer.
         /// </summary>
-        public static Sprite CharacterAction(Character c, string key, int direction, float cycle)
+        public static Sprite CharacterAction(Character c, string key, int direction, float cycle) =>
+            CharacterAction(c, key, direction, cycle, out _, out _);
+
+        /// <summary>Etkileşim karesi; kare adının öneki ve kare numarası da döner (el konumu için).</summary>
+        public static Sprite CharacterAction(Character c, string key, int direction, float cycle, out string prefix, out int frame)
         {
+            prefix = null; frame = 0;
             string r84 = AdultR84(c);
             if (r84 == null || !Enabled || string.IsNullOrEmpty(key)) return null;
             int diag = direction % 2 == 1 ? direction : (direction + 7) % 8;   // e(0)→se(7), n(2)→ne(1), w(4)→nw(3), s(6)→sw(5)
-            string prefix = r84 + "_" + key + "_" + Directions[diag] + "_";
+            prefix = r84 + "_" + key + "_" + Directions[diag] + "_";
             int n = FrameCount(prefix, closingFrame: false);
             if (n <= 0)
             {
                 prefix = r84 + "_" + key + "_se_";
                 n = FrameCount(prefix, closingFrame: false);
-                if (n <= 0) return null;
+                if (n <= 0) { prefix = null; return null; }
             }
-            int frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;
+            frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;
             return Get(prefix + frame.ToString("00"), R84PivotX, R84PivotY);
+        }
+
+        /// <summary>Animasyon karesinin pivotu (piksel): elde tutulan nesneyi kareye göre yerleştirmek için.</summary>
+        public static Vector2 R84Pivot => new Vector2(R84PivotX, R84PivotY);
+        public static float PixelsPerUnit => Ppu;
+
+        private static readonly Dictionary<string, Sprite> HeldSprites = new Dictionary<string, Sprite>();
+
+        /// <summary>Elde tutulan nesnenin sprite'ı: ürün ikonu, ortadan pivotlu (ikon yoksa null).</summary>
+        public static Sprite HeldItem(string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId)) return null;
+            if (HeldSprites.TryGetValue(itemId, out var s) && s != null) return s;
+            var tex = ItemIcon(itemId);
+            if (tex == null) return null;
+            s = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), Ppu);
+            s.name = "held_" + itemId;
+            HeldSprites[itemId] = s;
+            return s;
         }
 
         private static int WalkFrameCount(string prefix) => FrameCount(prefix, closingFrame: true);

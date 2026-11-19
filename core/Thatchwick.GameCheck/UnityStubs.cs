@@ -4,15 +4,7 @@
 using System;
 using System.Collections.Generic;
 namespace UnityEngine {
-    public static class PlayerPrefs{static readonly System.Collections.Generic.Dictionary<string,object> d=new System.Collections.Generic.Dictionary<string,object>();
-        public static int GetInt(string k,int def=0)=>d.TryGetValue(k,out var v)&&v is int i?i:def; public static void SetInt(string k,int v)=>d[k]=v;
-        public static float GetFloat(string k,float def=0)=>d.TryGetValue(k,out var v)&&v is float f?f:def; public static void SetFloat(string k,float v)=>d[k]=v;
-        public static string GetString(string k,string def="")=>d.TryGetValue(k,out var v)&&v is string s?s:def; public static void SetString(string k,string v)=>d[k]=v;
-        public static bool HasKey(string k)=>d.ContainsKey(k); public static void DeleteKey(string k)=>d.Remove(k); public static void Save(){} }
-    public struct RectInt{public int x,y,width,height;public RectInt(int x,int y,int w,int h){this.x=x;this.y=y;width=w;height=h;}
-        public int xMin=>x; public int yMin=>y; public int xMax=>x+width; public int yMax=>y+height;
-        public Vector2Int position=>new Vector2Int(x,y); public Vector2Int size=>new Vector2Int(width,height);
-        public bool Contains(Vector2Int p)=>p.x>=x&&p.y>=y&&p.x<xMax&&p.y<yMax;}
+    
 
  public struct Vector2{public float x,y;public static Vector2 zero=>default;public static Vector2 one=>new Vector2(1,1);public Vector2(float a,float b){x=a;y=b;} public static float Distance(Vector2 a,Vector2 b)=>0; public float magnitude=>0; public float sqrMagnitude=>0; public Vector2 normalized=>this;
   public static Vector2 operator+(Vector2 a,Vector2 b)=>a; public static Vector2 operator-(Vector2 a,Vector2 b)=>a; public static Vector2 operator-(Vector2 a)=>a; public static Vector2 operator*(Vector2 a,float f)=>a; public static Vector2 operator*(float f,Vector2 a)=>a; public static Vector2 operator/(Vector2 a,float f)=>a; public static implicit operator Vector3(Vector2 v)=>new Vector3(v.x,v.y,0); public static Vector2 Lerp(Vector2 a,Vector2 b,float t)=>a;}
@@ -66,7 +58,6 @@ namespace UnityEngine {
  public class Texture2D:Texture{public static Texture2D whiteTexture,blackTexture; public Texture2D(int w,int h){} public Texture2D(int w,int h,TextureFormat f,bool m){} public void SetPixel(int x,int y,Color c){} public void SetPixels(Color[] c){} public void SetPixels32(Color32[] c){} public Color GetPixel(int x,int y)=>default; public Color[] GetPixels()=>null; public Color32[] GetPixels32()=>null; public void Apply(bool a=true,bool b=false){}}
  public class Sprite:Object{public Texture2D texture; public Rect rect,textureRect; public Vector2 pivot; public float pixelsPerUnit; public Bounds bounds;
   public static Sprite Create(Texture2D t,Rect r,Vector2 p)=>null; public static Sprite Create(Texture2D t,Rect r,Vector2 p,float ppu)=>null; public static Sprite Create(Texture2D t,Rect r,Vector2 p,float ppu,uint e)=>null; public static Sprite Create(Texture2D t,Rect r,Vector2 p,float ppu,uint e,SpriteMeshType m)=>null;}
- public struct RectInt{public int x,y,width,height; public RectInt(int x,int y,int w,int h){this.x=x;this.y=y;width=w;height=h;} public int xMin=>x; public int yMin=>y; public int xMax=>x+width; public int yMax=>y+height; public bool Contains(Vector2Int p)=>false;}
  public struct Bounds{public Vector3 center,size,extents,min,max;}
  public class TextAsset:Object{public string text; public byte[] bytes;}
  public class Shader:Object{public static Shader Find(string n)=>null; public static void SetGlobalFloat(string n,float f){}}
@@ -78,7 +69,7 @@ namespace UnityEngine {
  public class GUIContent{public static GUIContent none=new GUIContent(""); public string text,tooltip; public Texture image; public GUIContent(){} public GUIContent(string s){} public GUIContent(string s,string t){} public GUIContent(Texture t){} public GUIContent(string s,Texture t){} public GUIContent(string s,Texture t,string tip){}}
  public class GUIStyleState{public Color textColor; public Texture2D background;}
  public class RectOffset{public int left,right,top,bottom; public RectOffset(){} public RectOffset(int l,int r,int t,int b){}}
- public class GUIStyle{public static GUIStyle none=new GUIStyle(); public GUIStyle(){}public GUIStyle(GUIStyle o){} public int fontSize;public TextAnchor alignment;public bool wordWrap,richText,stretchWidth,stretchHeight; public TextClipping clipping;public FontStyle fontStyle;public GUIStyleState normal=new GUIStyleState(),hover=new GUIStyleState(),active=new GUIStyleState(),onNormal=new GUIStyleState(),focused=new GUIStyleState(),onHover=new GUIStyleState(),onActive=new GUIStyleState(),onFocused=new GUIStyleState(); public RectOffset padding=new RectOffset(),margin=new RectOffset(),border=new RectOffset(); public float fixedWidth,fixedHeight; public Vector2 CalcSize(GUIContent c)=>default; public float CalcHeight(GUIContent c,float w)=>0;}
+ public class GUIStyle{public static GUIStyle none=new GUIStyle(); public void Draw(Rect r,bool a,bool b,bool c,bool d){} public void Draw(Rect r,GUIContent g,bool a,bool b,bool c,bool d){} public GUIStyle(){}public GUIStyle(GUIStyle o){} public int fontSize;public TextAnchor alignment;public bool wordWrap,richText,stretchWidth,stretchHeight; public TextClipping clipping;public FontStyle fontStyle;public GUIStyleState normal=new GUIStyleState(),hover=new GUIStyleState(),active=new GUIStyleState(),onNormal=new GUIStyleState(),focused=new GUIStyleState(),onHover=new GUIStyleState(),onActive=new GUIStyleState(),onFocused=new GUIStyleState(); public RectOffset padding=new RectOffset(),margin=new RectOffset(),border=new RectOffset(); public float fixedWidth,fixedHeight; public Vector2 CalcSize(GUIContent c)=>default; public float CalcHeight(GUIContent c,float w)=>0;}
  public enum TextClipping{Overflow,Clip}
  public class GUISkin:ScriptableObject{public GUIStyle label,button,box,window,toggle,textField,textArea,horizontalSlider,horizontalSliderThumb,verticalScrollbar,verticalScrollbarThumb,scrollView; public GUIStyle FindStyle(string n)=>null;}
  public class GUILayoutOption{}
