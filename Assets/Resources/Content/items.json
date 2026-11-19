@@ -1816,6 +1816,121 @@
           "moodlet": "eff_coffee",
           "adultOnly": true,
           "bladder": 12
+        },
+        {
+          "id": "eat_olives",
+          "displayName": "Salamura zeytin ye",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.08,
+          "consume": "item.olives_brined",
+          "moodId": "mood.meal",
+          "moodText": "Zeytin",
+          "moodValue": 2,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "make_leek_olive_oil",
+          "displayName": "Zeytinyağlı pırasa yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "minLevel": 2,
+          "materials": [
+            {
+              "item": "item.leek",
+              "count": 2
+            },
+            {
+              "item": "item.olive_oil",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.leek_olive_oil",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "eat_leek_olive_oil",
+          "displayName": "Zeytinyağlı pırasa ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.12,
+          "consume": "item.leek_olive_oil",
+          "moodlet": "eff_olive_oil",
+          "bladder": 4
+        },
+        {
+          "id": "eat_honey_strained",
+          "displayName": "Süzme bal ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.1,
+          "consume": "item.honey_strained",
+          "moodlet": "eff_sweet",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 10
+            }
+          ],
+          "bladder": 4
+        },
+        {
+          "id": "tea_chamomile",
+          "displayName": "Papatya çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.06,
+          "consume": "item.tea_chamomile",
+          "moodlet": "eff_tea_chamomile",
+          "bladder": 15
+        },
+        {
+          "id": "tea_linden",
+          "displayName": "Ihlamur demle ve iç",
+          "need": "Warmth",
+          "restore": 20,
+          "durationDays": 0.06,
+          "consume": "item.tea_linden",
+          "moodlet": "eff_tea_linden",
+          "bladder": 15
+        },
+        {
+          "id": "tea_sage",
+          "displayName": "Adaçayı demle ve iç",
+          "need": "Fun",
+          "restore": 10,
+          "durationDays": 0.06,
+          "consume": "item.tea_sage",
+          "heal": 0.2,
+          "moodlet": "eff_tea_sage",
+          "bladder": 15
+        },
+        {
+          "id": "tea_mint",
+          "displayName": "Nane çayı demle ve iç",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.06,
+          "consume": "item.tea_mint",
+          "moodlet": "eff_tea_mint",
+          "bladder": 15
+        },
+        {
+          "id": "tea_rosehip",
+          "displayName": "Kuşburnu çayı demle ve iç",
+          "need": "Fun",
+          "restore": 10,
+          "durationDays": 0.06,
+          "consume": "item.tea_rosehip",
+          "heal": 0.3,
+          "moodlet": "eff_tea_rosehip",
+          "bladder": 15
         }
       ],
       "price": 25,
@@ -17027,6 +17142,407 @@
           "bladder": 10
         }
       ]
+    },
+    {
+      "id": "item.sapling_olive",
+      "displayName": "Zeytin fidanı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 50,
+      "level": 6,
+      "plantsAs": "item.tree_olive"
+    },
+    {
+      "id": "item.tree_olive",
+      "displayName": "Zeytin ağacı",
+      "category": "plant",
+      "growDays": 8,
+      "southOnly": true,
+      "fruitSeasons": [
+        "Autumn"
+      ],
+      "fruitDays": 5,
+      "interactions": [
+        {
+          "id": "pick",
+          "displayName": "Bez ser, sırıkla silkele",
+          "durationDays": 0.08,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.olive",
+              "count": 5
+            },
+            {
+              "item": "item.olive",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "pick_hand",
+          "displayName": "Elle topla (özenli, yavaş)",
+          "durationDays": 0.16,
+          "skill": "Horticulture",
+          "skillXp": 16,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.olive_fine",
+              "count": 4
+            }
+          ],
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "prune",
+          "displayName": "Buda",
+          "durationDays": 0.08,
+          "skill": "Farming",
+          "skillXp": 8,
+          "requiresGrown": true,
+          "produce": [
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.olive",
+      "displayName": "Zeytin",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "spoilDays": 8,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.olive_fine",
+      "displayName": "Elle toplanmış zeytin",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "spoilDays": 8,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.olives_brined",
+      "displayName": "Salamura zeytin",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.olive_paste",
+      "displayName": "Zeytin hamuru",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "spoilDays": 1,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.olive_oil",
+      "displayName": "Zeytinyağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14
+    },
+    {
+      "id": "item.olive_oil_virgin",
+      "displayName": "Sızma zeytinyağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 22
+    },
+    {
+      "id": "item.pomace",
+      "displayName": "Pirina",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1
+    },
+    {
+      "id": "item.leek_olive_oil",
+      "displayName": "Zeytinyağlı pırasa",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "spoilDays": 3,
+      "tags": [
+        "food",
+        "cooked"
+      ]
+    },
+    {
+      "id": "item.soap_olive",
+      "displayName": "Zeytinyağı sabunu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12
+    },
+    {
+      "id": "item.brine_crock",
+      "displayName": "Salamura küpü",
+      "category": "kitchen",
+      "price": 12,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "pantry"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.olive_crusher",
+      "displayName": "Taş ezme yalağı",
+      "category": "work",
+      "price": 60,
+      "level": 6,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.olive_press",
+      "displayName": "Zeytin baskısı",
+      "category": "work",
+      "price": 80,
+      "level": 7,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.honey_strainer",
+      "displayName": "Bal süzgeci",
+      "category": "kitchen",
+      "price": 14,
+      "level": 5,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "pantry"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.honey_strained",
+      "displayName": "Süzme bal",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.chamomile",
+      "displayName": "Papatya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "spoilDays": 3,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.linden",
+      "displayName": "Ihlamur çiçeği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "spoilDays": 3,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.sage",
+      "displayName": "Adaçayı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "spoilDays": 4,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.mint",
+      "displayName": "Nane",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "spoilDays": 3,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.tea_chamomile",
+      "displayName": "Kuru papatya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4
+    },
+    {
+      "id": "item.tea_linden",
+      "displayName": "Kuru ıhlamur",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5
+    },
+    {
+      "id": "item.tea_sage",
+      "displayName": "Kuru adaçayı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4
+    },
+    {
+      "id": "item.tea_mint",
+      "displayName": "Kuru nane",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4
+    },
+    {
+      "id": "item.tea_rosehip",
+      "displayName": "Kuru kuşburnu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5
+    },
+    {
+      "id": "item.forage_chamomile",
+      "displayName": "Papatya öbeği",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "forageMax": 3,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.04,
+          "skill": "Foraging",
+          "skillXp": 5,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.chamomile",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.forage_linden",
+      "displayName": "Ihlamur dalı",
+      "category": "forage",
+      "forageSeasons": [
+        "Summer"
+      ],
+      "forageMax": 2,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Çiçek topla",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.linden",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.forage_sage",
+      "displayName": "Adaçayı öbeği",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring",
+        "Summer",
+        "Autumn"
+      ],
+      "forageMax": 2,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.04,
+          "skill": "Foraging",
+          "skillXp": 5,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.sage",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.forage_mint",
+      "displayName": "Yabani nane",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "forageMax": 3,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.04,
+          "skill": "Foraging",
+          "skillXp": 5,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.mint",
+              "count": 3
+            }
+          ]
+        }
+      ]
     }
   ],
   "recipes": [
@@ -20086,6 +20602,220 @@
       "skill": "Smithing",
       "skillXp": 10,
       "displayName": "Cezve döv"
+    },
+    {
+      "id": "brine_olives",
+      "station": "item.brine_crock",
+      "produces": "item.olives_brined",
+      "materials": [
+        {
+          "item": "item.olive",
+          "count": 4
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Cooking",
+      "skillXp": 8,
+      "displayName": "Zeytini çiz, salamuraya yatır",
+      "count": 4
+    },
+    {
+      "id": "crush_olives",
+      "station": "item.olive_crusher",
+      "produces": "item.olive_paste",
+      "materials": [
+        {
+          "item": "item.olive",
+          "count": 5
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Engineering",
+      "skillXp": 8,
+      "displayName": "Zeytin ez (hamur)",
+      "count": 2
+    },
+    {
+      "id": "crush_olives_fine",
+      "station": "item.olive_crusher",
+      "produces": "item.olive_paste",
+      "materials": [
+        {
+          "item": "item.olive_fine",
+          "count": 4
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Engineering",
+      "skillXp": 8,
+      "displayName": "Elle toplanmış zeytini ez",
+      "count": 2
+    },
+    {
+      "id": "press_virgin",
+      "station": "item.olive_press",
+      "produces": "item.olive_oil_virgin",
+      "materials": [
+        {
+          "item": "item.olive_paste",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Engineering",
+      "skillXp": 12,
+      "displayName": "İlk sıkım (sızma yağ)"
+    },
+    {
+      "id": "press_common",
+      "station": "item.olive_press",
+      "produces": "item.olive_oil",
+      "materials": [
+        {
+          "item": "item.olive_paste",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Engineering",
+      "skillXp": 8,
+      "displayName": "Sıcak suyla ikinci sıkım"
+    },
+    {
+      "id": "pomace",
+      "station": "item.olive_press",
+      "produces": "item.pomace",
+      "materials": [
+        {
+          "item": "item.olive_paste",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Engineering",
+      "skillXp": 2,
+      "displayName": "Posayı pirina diye kurut",
+      "count": 3
+    },
+    {
+      "id": "soap_olive",
+      "station": "item.chandler_table",
+      "produces": "item.soap_olive",
+      "materials": [
+        {
+          "item": "item.olive_oil",
+          "count": 1
+        },
+        {
+          "item": "item.herb",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Chandlery",
+      "skillXp": 10,
+      "displayName": "Zeytinyağı sabunu kaynat",
+      "count": 2
+    },
+    {
+      "id": "strain_honey",
+      "station": "item.honey_strainer",
+      "produces": "item.honey_strained",
+      "materials": [
+        {
+          "item": "item.honey",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "AnimalHusbandry",
+      "skillXp": 6,
+      "displayName": "Bal süz (bez torbada)",
+      "count": 2
+    },
+    {
+      "id": "dry_chamomile",
+      "station": "item.drying_rack",
+      "produces": "item.tea_chamomile",
+      "materials": [
+        {
+          "item": "item.chamomile",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Herbalism",
+      "skillXp": 4,
+      "displayName": "Papatya kurut",
+      "count": 3
+    },
+    {
+      "id": "dry_linden",
+      "station": "item.drying_rack",
+      "produces": "item.tea_linden",
+      "materials": [
+        {
+          "item": "item.linden",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Herbalism",
+      "skillXp": 4,
+      "displayName": "Ihlamur kurut",
+      "count": 3
+    },
+    {
+      "id": "dry_sage",
+      "station": "item.drying_rack",
+      "produces": "item.tea_sage",
+      "materials": [
+        {
+          "item": "item.sage",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Herbalism",
+      "skillXp": 4,
+      "displayName": "Adaçayı kurut",
+      "count": 3
+    },
+    {
+      "id": "dry_mint",
+      "station": "item.drying_rack",
+      "produces": "item.tea_mint",
+      "materials": [
+        {
+          "item": "item.mint",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Herbalism",
+      "skillXp": 4,
+      "displayName": "Nane kurut",
+      "count": 3
+    },
+    {
+      "id": "dry_rosehip",
+      "station": "item.drying_rack",
+      "produces": "item.tea_rosehip",
+      "materials": [
+        {
+          "item": "item.rosehip",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Herbalism",
+      "skillXp": 4,
+      "displayName": "Kuşburnu kurut",
+      "count": 3
     }
   ],
   "animals": [
@@ -21182,6 +21912,52 @@
       "description": "Fincanda güzel şeyler göründü.",
       "value": 3,
       "days": 0.5
+    },
+    {
+      "id": "eff_olive_oil",
+      "displayName": "Zeytinyağlı sofra",
+      "description": "Hafif ve doyurucu: %10 geç acıkır.",
+      "value": 4,
+      "days": 1.0,
+      "hungerDecay": 0.9
+    },
+    {
+      "id": "eff_tea_chamomile",
+      "displayName": "Papatya çayı",
+      "description": "Gevşedi: %10 geç yorulur.",
+      "value": 3,
+      "days": 0.5,
+      "energyDecay": 0.9
+    },
+    {
+      "id": "eff_tea_linden",
+      "displayName": "Ihlamur sıcaklığı",
+      "description": "Soğuktan %15 az etkilenir.",
+      "value": 3,
+      "days": 0.5,
+      "coldResist": 0.15
+    },
+    {
+      "id": "eff_tea_sage",
+      "displayName": "Adaçayı",
+      "description": "Boğazı yumuşadı, yaraları biraz iyileşti.",
+      "value": 2,
+      "days": 0.5
+    },
+    {
+      "id": "eff_tea_mint",
+      "displayName": "Nane ferahlığı",
+      "description": "Ferahladı.",
+      "value": 4,
+      "days": 0.5
+    },
+    {
+      "id": "eff_tea_rosehip",
+      "displayName": "Kuşburnu",
+      "description": "Kışın yaraya iyi gelir; soğuktan %5 az etkilenir.",
+      "value": 3,
+      "days": 1.0,
+      "coldResist": 0.05
     }
   ]
 }

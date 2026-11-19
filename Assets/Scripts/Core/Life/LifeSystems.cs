@@ -665,6 +665,27 @@ namespace Thatchwick.Core.Life
                 if (Content.Items.TryGet(con.ItemId, out var d) && d.HasTag(CoffeeHabits.Tag)) { coffee = true; break; }
             if (coffee) Coffee.OnCoffee(c, Clock.TotalDays);
             if (interaction.Id == FortuneInteraction) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
+            if (IsHoneyHarvest(interaction)) TrySting(c);
+        }
+
+        /// <summary>Bal toplarken arı sokması (32-8.2): Hayvancılık 3'ün altındaysa %25, küçük yara; ölümcül değil.</summary>
+        public const int BeeSafeLevel = 3;
+        public const double BeeStingChance = 0.25;
+        private readonly Random _beeRng = new Random(733);
+        private InteractionDef _honeyCollect;
+
+        private bool IsHoneyHarvest(InteractionDef interaction)
+        {
+            if (_honeyCollect == null && Content.Items.TryGet("item.beehive", out var hive))
+                foreach (var i in hive.Interactions) if (i.Collect) { _honeyCollect = i; break; }
+            return _honeyCollect != null && ReferenceEquals(interaction, _honeyCollect);
+        }
+
+        public bool TrySting(Character c, double? roll = null)
+        {
+            if (c == null || c.IsDead || c.Skills.GetLevel(SkillType.AnimalHusbandry) >= BeeSafeLevel) return false;
+            if ((roll ?? _beeRng.NextDouble()) >= BeeStingChance) return false;
+            return Injuries.InjureById(c, "bee_sting") != null;
         }
         /// <summary>Kıyıdan balık: ilk balık hatırası.</summary>
         public void Attach(Thatchwick.Core.Work.FarmWork farm) { farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish); }
