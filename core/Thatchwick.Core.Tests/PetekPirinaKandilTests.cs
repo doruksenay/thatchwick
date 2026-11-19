@@ -57,7 +57,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(heat.TryStoke(a.Id, x.House));
             x.House.AddItem("item.firewood", 1);
             Assert.True(heat.TryStoke(b.Id, x.House));
-            Assert.Equal((float)b.FuelDays, (float)a.FuelDays * 2, 3);
+            Assert.Equal(a.FuelDays * 2, b.FuelDays, 3);
             Assert.Contains(x.Db.Items.Get("item.barn").Interactions, i => i.Id == "feed_pomace" && i.AddFeed > 0);
         }
 
