@@ -51,6 +51,9 @@ namespace Thatchwick.Game
             var baseSkin = GUI.skin;
             _skin = Object.Instantiate(baseSkin);
             _skin.name = "ThatchwickSkin";
+            // Piksel font (Pixelify Sans, SIL OFL; belge 33 C). Yoksa varsayılan font kalır.
+            var pixelFont = Resources.Load<Font>("UI/PixelifySans-Regular");
+            if (pixelFont != null) _skin.font = pixelFont;
 
             var box = _skin.box;
             box.normal.background = Tex("panel");
