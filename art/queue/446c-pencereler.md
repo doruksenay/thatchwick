@@ -1,7 +1,8 @@
 ---
 id: "446c"
 title: "Pencere varyantları (4)"
-status: pending
+status: running
+claimed_at: 2026-11-19T13:49Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 19.11.2026 ("bunların hepsini yapalım", varyant çeşitliliği), Project belgesi 45
 priority: 20
 family: yapi
