@@ -1,7 +1,7 @@
 ---
 id: "449"
 title: "Çatı varyantları (3)"
-status: running
+status: review
 claimed_at: 2026-11-19T21:26Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 19.11.2026 ("bunların hepsini yapalım", varyant çeşitliliği), Project belgesi 45
 priority: 20
