@@ -1,7 +1,8 @@
 ---
 id: "420b"
 title: Ürün ikonları C: malzeme, alet, kumaş, iksir, inşaat parça 2/4 (15)
-status: pending
+status: running
+claimed_at: 2026-11-19T07:09Z
 approved_by: user        # kullanıcı 18.11.2026: "bu sistemi getir" (ürün ikon sistemi); otomatik akış (art/budget.md)
 priority: 30
 family: arayuz
