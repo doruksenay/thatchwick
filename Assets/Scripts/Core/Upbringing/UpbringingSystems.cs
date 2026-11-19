@@ -213,8 +213,48 @@ namespace Thatchwick.Core.Upbringing
 
         public void Tick(double gameDays) => Companions.Tick(gameDays);
 
+        /// <summary>Çocuk başına günlük "oyuncağını ister misin" olayı olasılığı ve ödünç verme olasılığı.</summary>
+        public const double BorrowAskChance = 0.25, BorrowLendChance = 0.7;
+
+        /// <summary>
+        /// Ödünç isteme: kendi o oyuncakta ustalaşmamış bir çocuk, başka bir çocuğun sağlam kişisel oyuncağını ister.
+        /// lend null ise sahibi kendi karar verir (%70 verir). Sonuç metni döner, olay yoksa null.
+        /// </summary>
+        public string Borrow(Character owner, Character asker, string itemId, bool? lend = null)
+        {
+            if (owner == null || asker == null || owner == asker) return null;
+            var p = Toys.Personal(owner.Id, itemId);
+            if (p == null || p.IsBroken) return null;
+            bool give = lend ?? _rng.NextDouble() < BorrowLendChance;
+            Toys.AskToBorrow(owner, asker, itemId, give, Today());
+            string text = give ? $"{owner.Name}, {ToyNames.Name(itemId)}ını {asker.Name}'e ödünç verdi."
+                               : $"{owner.Name}, {ToyNames.Name(itemId)}ını {asker.Name}'e vermedi; {asker.Name} kıskandı.";
+            Say(text, asker.Id);
+            return text;
+        }
+
+        private void AutonomousBorrowing()
+        {
+            var kids = new List<Character>();
+            foreach (var m in Population.Members)
+                if (!m.IsDead && !m.IsVillager && (m.Stage == AgeStage.Child || m.Stage == AgeStage.Teen)) kids.Add(m);
+            foreach (var asker in kids)
+            {
+                if (_rng.NextDouble() >= BorrowAskChance) continue;
+                var offers = new List<PersonalToy>();
+                foreach (var owner in kids)
+                    if (owner != asker)
+                        foreach (var p in Toys.PersonalOf(owner.Id))
+                            if (!p.IsBroken && Toys.Personal(asker.Id, p.ItemId) == null) offers.Add(p);
+                if (offers.Count == 0) continue;
+                var pick = offers[_rng.Next(offers.Count)];
+                Borrow(Population.Find(pick.OwnerId), asker, pick.ItemId);
+            }
+        }
+
         public void OnNewDay()
         {
+            AutonomousBorrowing();
             Toys.DailyUpdate(Today());
             Apprentices.DailyUpdate();
             foreach (var w in Recipes.AtRiskWarnings()) Say(w, 0);

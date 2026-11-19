@@ -173,6 +173,14 @@ namespace Thatchwick.Game
                     _status = u.RepairToy(c, p.ItemId, House) ?? $"{c.Name}'in {ToyNames.Name(p.ItemId)}ı onarıldı.";
             }
             if (ap != null && GUILayout.Button("Çıraklığı bitir", GUILayout.Width(100f))) { u.Apprentices.End(c.Id); _status = $"{c.Name} çıraklığı bıraktı."; }
+            // Seçili kişi kendi oyuncağını bu çocuğa ödünç verir.
+            if (actor != null && actor != c && c.Stage >= AgeStage.Child && c.Stage <= AgeStage.Teen)
+                foreach (var p in u.Toys.PersonalOf(actor.Id))
+                {
+                    if (p.IsBroken || u.Toys.Personal(c.Id, p.ItemId) != null) continue;
+                    if (GUILayout.Button(new GUIContent($"Ödünç ver: {ToyNames.Name(p.ItemId)}", $"{actor.Name} oyuncağını {c.Name}'e verir; ikisi de sevinir"), GUILayout.Width(150f)))
+                        _status = u.Borrow(actor, c, p.ItemId, lend: true);
+                }
             if (actor != null && actor != c)
             {
                 var skill = u.TeachableSkill(actor, c);

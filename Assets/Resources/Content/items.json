@@ -2035,6 +2035,27 @@
       "growDays": 12,
       "interactions": [
         {
+          "id": "gall",
+          "displayName": "Mazı topla",
+          "durationDays": 0.06,
+          "skill": "Foraging",
+          "skillXp": 8,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.oak_gall",
+              "count": 2
+            },
+            {
+              "item": "item.oak_gall",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        },
+        {
           "id": "chop",
           "displayName": "Kes",
           "durationDays": 0.15,
@@ -2067,7 +2088,11 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "fruitSeasons": [
+        "Autumn"
+      ],
+      "fruitDays": 4
     },
     {
       "id": "item.chopping_block",

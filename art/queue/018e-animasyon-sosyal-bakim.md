@@ -1,7 +1,7 @@
 ---
 id: "018e"
 title: Etkileşim animasyonları: sohbet, eğlence, bakım, sevgi, balık
-status: running
+status: review
 claimed_at: 2026-11-18T19:41Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50

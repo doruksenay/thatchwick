@@ -507,5 +507,33 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(new GridPos(8, 0), walker.Position);
             Assert.True(walker.Skills.GetXp(SkillType.Athletics) > 0.3);
         }
+            [Fact]
+        public void OduncVerme_ArayuzVeKendiliginden()
+        {
+            var pop = new Population();
+            var u = new UpbringingSystems(pop, seed: 7);
+            var a = Person(1, ChildAge); var b = Person(2, ChildAge);
+            pop.Add(a); pop.Add(b);
+            for (int i = 0; i < 25; i++) u.Toys.OnPlayed(a, "item.kite", 0);
+            Assert.Null(u.Borrow(a, b, "item.marbles", true));   // sahibi olmadığı oyuncak
+            Assert.Contains("ödünç verdi", u.Borrow(a, b, "item.kite", true));
+            Assert.Equal(4, u.Toys.HabitOf(2, "item.kite"), 6);
+            Assert.Contains("kıskandı", u.Borrow(a, b, "item.kite", false));
+            int before = (int)u.Toys.HabitOf(2, "item.kite");
+            for (int d = 0; d < 40; d++) u.OnNewDay();
+            Assert.True(u.Toys.HabitOf(2, "item.kite") > before);   // günlük olaylarla ara sıra ödünç
+        }
+
+        [Fact]
+        public void AileTarifi_EkUrunSansiIsEtkilerineBagli_MeseMaziVerir()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var oak = db.Items.Get("item.tree_oak");
+            var gall = oak.Interactions.Find(i => i.Id == "gall");
+            Assert.NotNull(gall);
+            Assert.True(gall.RequiresFruit);
+            Assert.Contains(gall.Produce, p => p.ItemId == "item.oak_gall");
+            Assert.NotNull(typeof(Thatchwick.Core.Work.InteractionEffects).GetProperty("FamilyYieldChance"));
+        }
     }
 }

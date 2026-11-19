@@ -266,7 +266,10 @@ namespace Thatchwick.Game
             foreach (var kv in d.ItemDeltas)
             {
                 string name = _content.Items.TryGet(kv.Key, out var def) ? def.DisplayName : kv.Key;
-                GUILayout.Label($"   {name} {Signed(kv.Value)}", _small);
+                GUILayout.BeginHorizontal();
+                IsoArt.IconCell(kv.Key, 16f);
+                GUILayout.Label($"{name} {Signed(kv.Value)}", _small);
+                GUILayout.EndHorizontal();
             }
             foreach (var n in d.Notes) GUILayout.Label("• " + n, _small);
             GUILayout.FlexibleSpace();
