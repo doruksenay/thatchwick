@@ -191,7 +191,7 @@ namespace Thatchwick.Game
         private Actor _selected;          // haritaya dokununca komut alan kişi (aile içi iş verme)
         private bool _dynastyEnded;
         private int _stallId;
-        private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
+        private readonly List<(ItemInstance item, Transform view, SpriteRenderer sr)> _plantViews = new List<(ItemInstance, Transform, SpriteRenderer)>();
         private readonly List<(ItemInstance item, SpriteRenderer view)> _heatViews = new List<(ItemInstance, SpriteRenderer)>();
         private Vector2 _hudScroll;
         private AnimalSystem _animals;
@@ -1046,13 +1046,13 @@ namespace Thatchwick.Game
                 if (item.IsPlant)
                 {
                     var pos = _view.TileToWorld(item.Position);
-                    var plantArt = IsoArt.Plant(item);
-                    var psr = AddItemSprite(item, pos, plantArt != null ? Color.white : color, PlantScale(item), Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
+                    var plantArt = IsoArt.Plant(item, out bool staged);
+                    var psr = AddItemSprite(item, pos, plantArt != null ? Color.white : color, ViewScale(item, staged), Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
                     var sway = SpriteMaterials.Sway;   // rüzgârda sallanma (vertex shader; yoksa düz)
                     if (sway != null) psr.sharedMaterial = sway;
                     // Ağaç gölgesi: ışık sol üstten, gölge taç boyunca sağ alta uzanır; büyüdükçe büyür.
                     AddShadowObject(pos + new Vector3(0.18f, -0.06f, 0f) * PlantScale(item), 0.95f * PlantScale(item), level);
-                    _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform));
+                    _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform, psr));
                     continue;
                 }
                 var tinted = FinishTint(item, color, 1f);
@@ -1131,6 +1131,17 @@ namespace Thatchwick.Game
         }
 
         private static float PlantScale(ItemInstance item) => 0.3f + 0.7f * item.GrowthFraction;
+
+        /// <summary>
+        /// Görünüm ölçeği: evre görseli varsa (genç ağaç, ekin evresi) küçültme yalnızca evre içinde hafif;
+        /// olgun görsel tek başınaysa büyüme oranıyla küçülür.
+        /// </summary>
+        private static float ViewScale(ItemInstance item, bool staged)
+        {
+            if (!staged) return PlantScale(item);
+            if (item.Def.IsCrop || item.IsGrown) return 1f;
+            return 0.75f + 0.25f * item.GrowthFraction;   // genç ağaç görseli fidandan ağaca büyür
+        }
 
         // ---------------- gölgeler (görsel analiz, 18.11.2026) ----------------
 
@@ -2448,7 +2459,7 @@ namespace Thatchwick.Game
                 _juice.LeafColor = _clock.Season == Season.Autumn
                     ? (Random01() < 0.5f ? new Color(0.84f, 0.5f, 0.18f, 1f) : new Color(0.72f, 0.32f, 0.14f, 1f))
                     : new Color(0.42f, 0.6f, 0.26f, 1f);
-                foreach (var (plant, view) in _plantViews)
+                foreach (var (plant, view, _) in _plantViews)
                 {
                     if (view == null || plant.Def.IsCrop) continue;
                     float s = PlantScale(plant);
@@ -2512,8 +2523,15 @@ namespace Thatchwick.Game
             _roomMood.Tick(gameDays, _population.Members);
             UpdateAnimalViews();
             UpdateWildViews();
-            foreach (var (plant, view) in _plantViews)
-                if (view != null) { float s = PlantScale(plant); view.localScale = new Vector3(s, s, 1f); }
+            foreach (var (plant, view, psr) in _plantViews)
+            {
+                if (view == null) continue;
+                // Evre değişince (ekin evresi, genç → olgun, meyve) görsel değişir.
+                var art = IsoArt.Plant(plant, out bool staged);
+                if (art != null && psr != null && psr.sprite != art) psr.sprite = art;
+                float s = ViewScale(plant, art != null && staged);
+                view.localScale = new Vector3(s, s, 1f);
+            }
             foreach (var (heatItem, heatView) in _heatViews)
                 if (heatView != null) { var lit = IsoArt.Item(heatItem, out _); if (lit != null && heatView.sprite != lit) heatView.sprite = lit; }
             foreach (var a in _actors)

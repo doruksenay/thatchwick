@@ -1,7 +1,7 @@
 ---
 id: "014"
 title: Yürüme animasyonu farmer_a2_56 (8 yön, pixminimax)
-status: blocked
+status: blocked   # yerini 018b2/018b3 aldı (84 px yetişkin walk2); çalıştırılmaz. Kapatmak kullanıcının işi.
 claimed_at: 2026-11-18T12:21Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter

@@ -109,7 +109,7 @@ namespace Thatchwick.Game
             foreach (var d in _content.Items.All)
             {
                 if (d.Placement == ItemPlacement.Resource || d.Price <= 0) continue;
-                if (d.HasTag("craftonly")) continue;
+                if (d.HasTag("craftonly") || d.IsRetired) continue;
                 if (_shop.Wares(d)) _wares.Add(d);
             }
             _wares.Sort((a, b) => a.Price.CompareTo(b.Price));
