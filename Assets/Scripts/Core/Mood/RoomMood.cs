@@ -88,7 +88,7 @@ namespace Thatchwick.Core.Mood
         public static bool HasLight(Room room, WorldState world)
         {
             foreach (var item in ItemsIn(room, world))
-                if (item.Def.HasTag("light")) return true;
+                if (item.GivesLight) return true;
             return false;
         }
     }

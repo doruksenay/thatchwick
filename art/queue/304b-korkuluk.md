@@ -1,7 +1,8 @@
 ---
 id: "304b"
 title: Korkuluk yeniden (klasik saman korkuluk)
-status: pending
+status: review
+claimed_at: 2026-11-19T07:44Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 2: korkuluk beğenilmedi)
 family: esya
 style_gate: false

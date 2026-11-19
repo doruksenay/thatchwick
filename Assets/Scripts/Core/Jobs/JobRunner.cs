@@ -880,6 +880,10 @@ namespace Thatchwick.Core.Jobs
                 if (ka != kb) return ka.CompareTo(kb);
                 return _character.Needs.Get(a).CompareTo(_character.Needs.Get(b));
             });
+            // Görevli, yalnızca rahatlık ihtiyaçları (keyif, hijyen, sosyal) eşiğin altındayken ve hiçbiri ComfortDeferFloor'a
+            // inmemişse önce görevine bakar (Denge 41: rahatlık ihtiyaçları hemen her an eşiğin altında olduğu için
+            // tarla görevlisi biçtiği ekini günlerce yeniden ekmiyordu). İş yoksa ihtiyaç işine geçer.
+            if (Rank(_needOrder[0]) == 2 && ComfortCanWait() && TryStartDuty()) return true;
 
             foreach (var need in _needOrder)
             {
@@ -897,6 +901,16 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Yatmadan önce tuvalet bunun altındaysa önce tuvalete gider.</summary>
         public const float PreSleepBladder = 55f;
         private double _toiletCheckUntil;
+
+        /// <summary>Görevli rahatlık ihtiyaçlarını bu değere inene dek görev uğruna erteler.</summary>
+        public const float ComfortDeferFloor = 15f;
+
+        private bool ComfortCanWait()
+        {
+            foreach (var need in _needOrder)
+                if (_character.Needs.Get(need) < ComfortDeferFloor) return false;
+            return true;
+        }
 
         // Otonomi sırası: kritik açlık/uyku/soğuk önce; sonra tuvalet ve öbür hayatta kalma; en son keyif ihtiyaçları.
         private int Rank(NeedType need)

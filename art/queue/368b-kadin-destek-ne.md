@@ -1,7 +1,8 @@
 ---
 id: "368b"
 title: Madencilik: kadın destek kurma, kuzeydoğu yönü
-status: pending
+status: review
+claimed_at: 2026-11-19T07:40Z
 approved_by: user        # kullanıcı 19.11.2026: "önerilerini yap"
 priority: 20
 family: karakter

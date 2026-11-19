@@ -1594,7 +1594,9 @@ namespace Thatchwick.Game
         // Hesap düzeyinde tutulur (AccountProgress gibi): tüm kayıtlar ortak. PlayerPrefs; SaveData'ya dokunmaz.
         private const string SeenKey = "tw.menu.seen";
         private const string OwnedKey = "tw.menu.owned";
-        public const int DefterLevel = 5;   // Zanaatkâr defteri açılma seviyesi (varsayılan; belge 33)
+        public const int DefterLevel = 5;
+        public const int DefterDiscountPercent = 20;
+        public static int DefterPrice(int price) => System.Math.Max(1, price * (100 - DefterDiscountPercent) / 100);   // Zanaatkâr defteri açılma seviyesi (varsayılan; belge 33)
         private HashSet<string> _owned;
         private bool _defter;
 
@@ -1738,6 +1740,20 @@ namespace Thatchwick.Game
                     var r = _svc.Order(def.Id);
                     _status = r.Ok ? $"{def.DisplayName} sipariş edildi: marangoz yarın sabah getirir." : r.Reason;
                 };
+            // Zanaatkâr defteri ödülü (kullanıcı kararı 19.11.2026): bir kez edinilmiş eşya defterden
+            // hemen (sipariş beklemeden) ve %20 indirimle alınır. Üst setler yine yalnızca dükkânda.
+            if (_defter && unlocked && !shopOnly && _owned != null && _owned.Contains(def.Id))
+            {
+                int disc = DefterPrice(def.Price);
+                GUI.enabled = _house.Akce >= def.Price;   // Buy tam fiyatı önce düşer, fark hemen iade edilir
+                if (GUILayout.Button(new GUIContent($"Defterden al {disc}", "Hemen gelir, %20 indirimli")))
+                    _deferred = () =>
+                    {
+                        var r = _svc.Buy(def.Id);
+                        if (r.Ok) _house.AddAkce(def.Price - disc);
+                        _status = r.Ok ? $"{def.DisplayName} defterden alındı ({disc} akçe, envanterde)." : r.Reason;
+                    };
+            }
             GUI.enabled = true;
             if (have > 0) GUILayout.Label($"Envanterde {have}", GUILayout.Width(80f));
             int ordered = _house.OrderedCount(def.Id);

@@ -107,6 +107,9 @@ namespace Thatchwick.Core.Life
                 // Attan düşme (29): iş zarıyla gelmez; başarısız atlamada AnimalSystem.RiderFell ile verilir. Ölümcül değildir.
                 D("horse_fall", "split", 0, 2, MoodCatalog.InjuredFall, "attan düşüp {0} yardı",
                     null, ("brow", 30), ("forehead", 25), ("larm", 25), ("rarm", 20)),
+                // Arı sokması (32-8.2): iş zarıyla gelmez; bal toplarken Hayvancılık düşükse LifeSystems verir. Küçük, ölümcül değil.
+                D("bee_sting", "scratch", 0, 1, MoodCatalog.InjuredAnimal, "arı {0} soktu",
+                    null, ("hand", 50), ("cheek", 30), ("neck", 20)),
                 // Göçük: iş zarıyla gelmez (şans 0); kazı motoru çöken karodaki karaktere doğrudan verir.
                 D("cave_in", "split", 0, 4, MoodCatalog.InjuredCaveIn, "göçükte {0} yardı",
                     null, ("forehead", 30), ("larm", 25), ("rarm", 25), ("brow", 20))

@@ -78,6 +78,9 @@ namespace Thatchwick.Core.Work
 
         /// <summary>Hava ve köy projelerinden gelen büyüme çarpanı (yağmur +, kuyu +); yoksa 1.</summary>
         public Func<float> GrowthMultiplier { get; set; }
+        /// <summary>Karo Güney Yamaçları'nda mı (bölge haritası gelince bağlanır; yoksa hiçbir yer güney değildir).</summary>
+        public Func<GridPos, bool> IsSouth { get; set; }
+        private bool InSouth(GridPos p) => IsSouth != null && IsSouth(p);
 
         /// <summary>Bu kovanda yaşayan koloni var mı (oyun katmanı hayvan sistemine bağlar); null ise kovan her zaman çalışır sayılır.</summary>
         public Func<ItemInstance, bool> HiveActive { get; set; }
@@ -374,7 +377,8 @@ namespace Thatchwick.Core.Work
                 bool indoor = room != null && room.IsIndoor;
                 bool greenhouse = indoor && IsGreenhouse(room);
                 if (indoor && !greenhouse) continue;   // içeride (seradan başka) büyümez
-                if (item.Def.WarmOnly && !greenhouse) continue;   // kahve: yalnızca ılık serada (Güney Yamaçları gelince orada da)
+                if (item.Def.WarmOnly && !greenhouse && !InSouth(item.Position)) continue;   // kahve: ılık serada ya da Güney Yamaçları'nda
+                if (item.Def.SouthOnly && !InSouth(item.Position)) continue;                  // zeytin: yalnızca Güney Yamaçları'nda
 
                 if (item.IsGrown)
                 {

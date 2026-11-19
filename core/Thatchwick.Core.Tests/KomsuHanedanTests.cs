@@ -60,8 +60,12 @@ namespace Thatchwick.Core.Tests
             Assert.Equal("Demirci hanesi", h.Name);
             Assert.Equal("villager.orhan", h.DefId);
             Assert.Equal(orhan.Id, h.HeadId);
+<<<<<<< HEAD
             // Her adlı köylü kendi hanesinde başlar; sayı içerikle büyüdüğü için sabit değil (6 → 13, şehir haritası).
             Assert.Equal(x.Life.Villagers.States.Count(), x.Houses.Houses.Count(hh => hh.DefId != null));
+=======
+            Assert.Equal(x.Db.Villagers.All.Count(), x.Houses.Houses.Count(hh => hh.DefId != null));   // her adlı köylünün (dükkân sahipleri dahil) kendi hanesi
+>>>>>>> origin/main
         }
 
         [Fact]

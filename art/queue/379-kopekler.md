@@ -1,7 +1,8 @@
 ---
 id: "379"
 title: Köpekler (375'in devamı, zemin lekesiz)
-status: pending
+status: review
+claimed_at: 2026-11-19T07:45Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 1: eksikler için iş)
 family: hayvan
 style_gate: false

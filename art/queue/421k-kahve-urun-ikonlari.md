@@ -1,7 +1,8 @@
 ---
 id: "421k"
 title: "Kahve zinciri ürün ikonları (10)"
-status: pending
+status: running
+claimed_at: 2026-11-19T07:49Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 32 (kullanıcı 18.11.2026 kahve mekaniği)
 family: arayuz
 style_gate: false

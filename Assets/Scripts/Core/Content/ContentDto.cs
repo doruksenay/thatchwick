@@ -138,6 +138,8 @@ namespace Thatchwick.Core.Content
         public int level;            // dükkânda açılma seviyesi; 0 = 1
         public bool diesInWinter;    // ekin: kışın donar
         public bool warmOnly;        // yalnızca ılık serada büyür ve meyve verir (kahve, belge 32)
+        public bool needsOil;        // ışığı yalnızca yağı varken verir (zeytinyağı kandili)
+        public bool southOnly;       // yalnızca Güney Yamaçları'nda büyür (zeytin, belge 32-7)
         public string styleSet;      // Köylü / Zanaatkâr / Tüccar / Asil
         public string[] rooms;       // menü oda filtresi
         public string housing;       // hayvan barınağı türü (coop, barn, kennel)

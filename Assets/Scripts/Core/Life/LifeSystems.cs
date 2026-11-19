@@ -650,6 +650,7 @@ namespace Thatchwick.Core.Life
             effects.CropHarvested += (c, crop, tier) => Keepsakes.OnCropHarvested(c, crop, tier);
             effects.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish);
             effects.Applied += (c, interaction, _) => OnInteractionApplied(c, interaction);
+            effects.AppliedOn += OnInteractionAppliedOn;
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
         }
 
@@ -665,6 +666,68 @@ namespace Thatchwick.Core.Life
                 if (Content.Items.TryGet(con.ItemId, out var d) && d.HasTag(CoffeeHabits.Tag)) { coffee = true; break; }
             if (coffee) Coffee.OnCoffee(c, Clock.TotalDays);
             if (interaction.Id == FortuneInteraction) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
+            if (IsHoneyHarvest(interaction)) TrySting(c);   // petek kesmede sokma OnInteractionAppliedOn'da
+        }
+
+        // ---- petekli bal, zeytinyağı kandili, yadigâr zeytin (belge 32-7, 8.2) ----
+        public OliveHeritage Olives { get; } = new OliveHeritage();
+        public const string CombInteraction = "cut_comb";
+        public const string LampFillInteraction = "fill_oil";
+        /// <summary>Bir dolum (bir zeytinyağı) kandili kaç gün yakar.</summary>
+        public const double LampOilDays = 3.0;
+        public const double LampMaxDays = 6.0;
+
+        public void OnInteractionAppliedOn(Character c, ItemInstance item, InteractionDef interaction)
+        {
+            if (item == null || interaction == null) return;
+            if (interaction.Id == CombInteraction && item.Def.Id == "item.beehive")
+            {
+                if (Honeycomb.Cut(item, House)) Say($"{c?.Name} dumanla arıları yatıştırıp bir petek kesti.", NoticeLevel.Info);
+                else Say("Kovanda kesilecek kadar bal birikmemiş.", NoticeLevel.Info);
+                TrySting(c);
+            }
+            else if (interaction.Id == LampFillInteraction && item.Def.NeedsOil)
+                item.FuelDays = Math.Min(LampMaxDays, item.FuelDays + LampOilDays);
+            else if (item.Def.Id == OliveHeritage.TreeId && interaction.TakesFruit)
+            {
+                int extra = Olives.BonusOlives(item.Id, (int)Clock.TotalDays);
+                if (extra > 0) { House.AddItem(interaction.Id == "pick_hand" ? "item.olive_fine" : "item.olive", extra); Say($"Yadigâr zeytin {extra} zeytin fazla verdi.", NoticeLevel.Info); }
+            }
+        }
+
+        /// <summary>Yağlı kandiller yanarken yağ azalır.</summary>
+        private void BurnLamps(double gameDays)
+        {
+            foreach (var it in World.Items)
+                if (it.Def.NeedsOil && it.FuelDays > 0) it.FuelDays = Math.Max(0, it.FuelDays - gameDays);
+        }
+
+        private string HeadName()
+        {
+            Character best = null;
+            foreach (var m in Population.Members)
+                if (!m.IsDead && !m.IsVillager && m.Stage != AgeStage.Baby && m.Stage != AgeStage.Child && (best == null || m.AgeDays > best.AgeDays)) best = m;
+            return best?.Name;
+        }
+
+        /// <summary>Bal toplarken arı sokması (32-8.2): Hayvancılık 3'ün altındaysa %25, küçük yara; ölümcül değil.</summary>
+        public const int BeeSafeLevel = 3;
+        public const double BeeStingChance = 0.25;
+        private readonly Random _beeRng = new Random(733);
+        private InteractionDef _honeyCollect;
+
+        private bool IsHoneyHarvest(InteractionDef interaction)
+        {
+            if (_honeyCollect == null && Content.Items.TryGet("item.beehive", out var hive))
+                foreach (var i in hive.Interactions) if (i.Collect) { _honeyCollect = i; break; }
+            return _honeyCollect != null && ReferenceEquals(interaction, _honeyCollect);
+        }
+
+        public bool TrySting(Character c, double? roll = null)
+        {
+            if (c == null || c.IsDead || c.Skills.GetLevel(SkillType.AnimalHusbandry) >= BeeSafeLevel) return false;
+            if ((roll ?? _beeRng.NextDouble()) >= BeeStingChance) return false;
+            return Injuries.InjureById(c, "bee_sting") != null;
         }
         /// <summary>Kıyıdan balık: ilk balık hatırası.</summary>
         public void Attach(Thatchwick.Core.Work.FarmWork farm) { farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish); }
@@ -772,6 +835,7 @@ namespace Thatchwick.Core.Life
             Upbringing.Tick(gameDays);
             Roamers?.Tick(gameDays, Clock.TotalDays, Clock.Season, Clock.DayFraction);
             Coffee.Tick(Clock.TotalDays, Population.Members);
+            BurnLamps(gameDays);
 
             long day = Clock.DayIndex;
             if (day != _lastDay)
@@ -796,6 +860,11 @@ namespace Thatchwick.Core.Life
             var orphan = Adoptions.OnNewDay(Clock.Season);
             if (orphan != null) Say($"Tarlanın kenarında öksüz bir {orphan.Name.ToLowerInvariant()} yavrusu bulundu. Sahiplenmek ister misin?", NoticeLevel.Info);
             Coffee.OnNewDay((int)Clock.TotalDays, Population.Find);
+            foreach (var note in Olives.OnNewDay((int)Clock.TotalDays, World, HeadName()))
+            {
+                Say(note, NoticeLevel.Info);
+                foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddChronicle(note);
+            }
             var grow = Adoptions.OnGrowUp((int)Clock.TotalDays, Clock.Season);
             if (grow == "returned") Say("Büyüttüğün karaca artık yetişkin; bir sabah ormana döndü.", NoticeLevel.Info);
             else if (grow == "visit") { Say("Büyüttüğün karaca bahçenin kenarına uğradı.", NoticeLevel.Info); Roamers?.Arrive(WildCatalog.Get("wild.roe_deer"), Clock.TotalDays); }
@@ -889,6 +958,7 @@ namespace Thatchwick.Core.Life
                 natureJournal = Journal.Export(),
                 adoptedWild = Adoptions.Export(),
                 coffeeHabits = Coffee.Export(),
+                olives = Olives.Export(),
                 contests = Contests.Export(),
                 wolfRaidIn = Wolves != null ? Wolves.RaidInDays : -1,
                 wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0,
@@ -915,6 +985,7 @@ namespace Thatchwick.Core.Life
             Journal.Import(data.natureJournal);
             Adoptions.Import(data.adoptedWild);
             Coffee.Import(data.coffeeHabits);
+            Olives.Import(data.olives);
             Contests.Import(data.contests);
             Wolves?.Restore(data.wolfRaidIn, data.wolfHunted);
             Spoilage.Restore(data.spoilage);
