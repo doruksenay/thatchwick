@@ -1329,8 +1329,8 @@ namespace Thatchwick.Game
         {
             c.CanStarve = !c.IsVillager;
             c.MoodEnabled = !c.IsVillager;   // keyif, hijyen ve ruh hali hane üyelerinde
-            c.Needs.SetDecayPerDay(NeedType.Hunger, c.IsVillager ? 0f : 120f);
-            c.Needs.SetDecayPerDay(NeedType.Energy, c.IsVillager ? 0f : 90f);
+            c.Needs.SetDecayPerDay(NeedType.Hunger, c.IsVillager ? 0f : NeedSet.DefaultDecayPerDay[(int)NeedType.Hunger]);   // denge 41
+            c.Needs.SetDecayPerDay(NeedType.Energy, c.IsVillager ? 0f : NeedSet.DefaultDecayPerDay[(int)NeedType.Energy]);
             runner.Autonomous = !c.IsVillager;   // Sims tarzı özgür irade: oyuncu karakteri de kuyruğu boşken ihtiyacını kendisi giderir; komut her zaman önce gelir
         }
 

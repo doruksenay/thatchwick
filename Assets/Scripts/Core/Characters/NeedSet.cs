@@ -16,7 +16,10 @@ namespace Thatchwick.Core.Characters
 
         // Oyun günü başına varsayılan azalma. Denge adımında (28) ayarlanır.
         // Tuvalet: dolu mesaneden ~10 saatte sıkışır (içecekler hızlandırır).
-        private static readonly float[] DefaultDecayPerDay = { 120f, 90f, 0f, 50f, 35f, 30f, 100f };
+        // Denge 41 (ihtiyaç zaman bütçesi): eskiden (açlık 120, enerji 90, keyif 50) uyku, yemek ve keyif günün
+        // ~%100'ünü yiyordu, iş yapılamıyordu. Şimdi uyku ~%33, yemek ~%12 (yeme süreleri de kısaldı), keyif ~%9:
+        // günün ~%30-40'ı işe kalır.
+        public static readonly float[] DefaultDecayPerDay = { 100f, 65f, 0f, 35f, 35f, 30f, 100f };
 
         private readonly float[] _values = new float[NeedCount];
         private readonly float[] _decayPerDay = new float[NeedCount];

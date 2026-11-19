@@ -46,6 +46,8 @@ namespace Thatchwick.Core.Work
         public const int LowFirewood = 6;
         public const string FirewoodId = "item.firewood";
         public const string LogId = "item.log";
+        /// <summary>Meyve toplama etkileşimi: bunu taşıyan ağaç odun için kesilmez.</summary>
+        public const string PickId = "pick";
 
         private bool FirewoodLow => FirewoodStock != null && FirewoodStock() < LowFirewood;
 

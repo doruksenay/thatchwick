@@ -73,7 +73,7 @@ namespace Thatchwick.Game
             b.border = new RectOffset(12, 12, 12, 12);
             b.padding = new RectOffset(2, 2, 4, 4);   // dar paneller (Pazar "Sat 1") eski skin genişliklerine göre
             b.margin = new RectOffset(1, 1, 1, 1);
-            b.fixedHeight = 24f;
+            b.fixedHeight = 28f;   // ikonlar ~20 px görünsün (önce 24 px düğmede ~16 px)
             b.fontSize = 11;
             b.clipping = TextClipping.Clip;
             b.normal.textColor = b.hover.textColor = b.active.textColor = b.focused.textColor = Linen;

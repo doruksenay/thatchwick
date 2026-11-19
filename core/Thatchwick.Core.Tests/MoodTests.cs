@@ -30,7 +30,7 @@ namespace Thatchwick.Core.Tests
             var on = Adult();
             on.Needs.SetDecayPerDay(NeedType.Bladder, 0f);      // tek günlük adımda tuvalet kazası hijyeni sıfırlamasın
             on.Tick(1.0);
-            Assert.Equal(50.0, (double)on.Needs.Get(NeedType.Fun), 3);
+            Assert.Equal(100.0 - NeedSet.DefaultDecayPerDay[(int)NeedType.Fun], (double)on.Needs.Get(NeedType.Fun), 3);
             Assert.Equal(65.0, (double)on.Needs.Get(NeedType.Hygiene), 3);
 
             var baby = new Character(3, "Bebek", new GridPos(0, 0)) { MoodEnabled = true };

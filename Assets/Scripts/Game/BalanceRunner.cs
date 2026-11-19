@@ -147,7 +147,10 @@ namespace Thatchwick.Game
             {
                 if (!runners.TryGetValue(c.Id, out var r)) return "";
                 var job = r.Queue.Current;
-                return job == null ? "boşta" : ActivityDescriber.DescribeJob(job, world).Text;
+                if (job != null) return ActivityDescriber.DescribeJob(job, world).Text;
+                // Boştaysa nedeni: bunalım, uyku ya da son başarısız işin gerekçesi.
+                if (c.InBreakdown) return "bunalım: " + c.Breakdown;
+                return string.IsNullOrEmpty(r.LastFailure) ? "boşta" : "boşta (" + r.LastFailure + ")";
             }
             _report.Add(clock.TotalDays, clock.Season.ToString(), Climate.OutdoorTemperature(clock.Config, clock.TotalDays), house,
                 life.Forecast.FoodStock(), house.Count("item.firewood"), pop.Members, Activity);

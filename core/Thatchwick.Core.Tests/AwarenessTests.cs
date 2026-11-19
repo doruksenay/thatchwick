@@ -194,7 +194,8 @@ namespace Thatchwick.Core.Tests
             house.AddItem("item.turnip", 100);
             var forecast = new WinterForecast(db, house, world, pop, clock.Config);
             double predicted = forecast.Report(0).FoodDays;
-            Assert.InRange(predicted, 13, 15);   // 100 x 50 / (3 x 120)
+            double expected = 100 * 50 / (3 * NeedSet.DefaultDecayPerDay[(int)NeedType.Hunger]);   // 100 x 50 / (3 x açlık/gün)
+            Assert.InRange(predicted, expected * 0.93, expected * 1.07);
 
             double t = 0;
             const double step = 0.01;
