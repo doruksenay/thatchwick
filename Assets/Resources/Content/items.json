@@ -1786,6 +1786,36 @@
           "consume": "item.salgam",
           "moodlet": "eff_refresh",
           "bladder": 15
+        },
+        {
+          "id": "brew_coffee_cloth",
+          "displayName": "Kahve demle, bezle süz (1 toz → 2 fincan)",
+          "durationDays": 0.08,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.coffee_ground",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.coffee",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "drink_coffee",
+          "displayName": "Kahve iç",
+          "need": "Energy",
+          "restore": 25,
+          "durationDays": 0.03,
+          "consume": "item.coffee",
+          "moodlet": "eff_coffee",
+          "adultOnly": true,
+          "bladder": 12
         }
       ],
       "price": 25,
@@ -16800,6 +16830,203 @@
         "masa",
         "raf"
       ]
+    },
+    {
+      "id": "item.sapling_coffee",
+      "displayName": "Kahve fidanı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 60,
+      "level": 5,
+      "plantsAs": "item.bush_coffee"
+    },
+    {
+      "id": "item.bush_coffee",
+      "displayName": "Kahve çalısı",
+      "category": "plant",
+      "growDays": 7,
+      "warmOnly": true,
+      "diesInWinter": true,
+      "fruitSeasons": [
+        "Summer",
+        "Autumn"
+      ],
+      "fruitDays": 4,
+      "interactions": [
+        {
+          "id": "pick",
+          "displayName": "Kahve kirazı topla",
+          "durationDays": 0.07,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.coffee_cherry",
+              "count": 3
+            },
+            {
+              "item": "item.coffee_cherry",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "cutting",
+          "displayName": "Çelik al (fidan)",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 6,
+          "requiresGrown": true,
+          "produce": [
+            {
+              "item": "item.sapling_coffee",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.coffee_cherry",
+      "displayName": "Kahve kirazı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "spoilDays": 6,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.coffee_dried",
+      "displayName": "Kuru kahve kirazı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5
+    },
+    {
+      "id": "item.coffee_green",
+      "displayName": "Yeşil kahve çekirdeği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9
+    },
+    {
+      "id": "item.coffee_roasted",
+      "displayName": "Kavrulmuş kahve",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 13
+    },
+    {
+      "id": "item.coffee_roasted_fine",
+      "displayName": "Usta kavrumu kahve",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 18
+    },
+    {
+      "id": "item.coffee_ground",
+      "displayName": "Kahve tozu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "spoilDays": 2,
+      "tags": [
+        "coffee",
+        "food"
+      ]
+    },
+    {
+      "id": "item.coffee_ground_fine",
+      "displayName": "Has kahve tozu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "spoilDays": 2,
+      "tags": [
+        "coffee",
+        "food"
+      ]
+    },
+    {
+      "id": "item.coffee",
+      "displayName": "Süzme kahve",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "spoilDays": 0.5,
+      "tags": [
+        "drink",
+        "coffee",
+        "food"
+      ]
+    },
+    {
+      "id": "item.cezve",
+      "displayName": "Cezve",
+      "category": "kitchen",
+      "price": 20,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "finishGroup": "metal",
+      "interactions": [
+        {
+          "id": "cezve_brew",
+          "displayName": "Cezvede kahve pişir ve iç",
+          "need": "Energy",
+          "restore": 30,
+          "durationDays": 0.06,
+          "consume": "item.coffee_ground",
+          "skill": "Cooking",
+          "skillXp": 6,
+          "moodlet": "eff_coffee_fine",
+          "adultOnly": true,
+          "bladder": 10
+        },
+        {
+          "id": "cezve_brew_fine",
+          "displayName": "Has kahveyi cezvede pişir ve iç",
+          "need": "Energy",
+          "restore": 35,
+          "durationDays": 0.06,
+          "consume": "item.coffee_ground_fine",
+          "skill": "Cooking",
+          "skillXp": 8,
+          "moodlet": "eff_coffee_fine",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 10
+            }
+          ],
+          "adultOnly": true,
+          "bladder": 10
+        },
+        {
+          "id": "cezve_fal",
+          "displayName": "Kahve iç, fala bak",
+          "need": "Social",
+          "restore": 20,
+          "durationDays": 0.1,
+          "consume": "item.coffee_ground",
+          "skill": "Charm",
+          "skillXp": 8,
+          "moodlet": "eff_fal",
+          "adultOnly": true,
+          "bladder": 10
+        }
+      ]
     }
   ],
   "recipes": [
@@ -19747,6 +19974,118 @@
       "skill": "Cooking",
       "skillXp": 12,
       "displayName": "Biberli pastırma"
+    },
+    {
+      "id": "dry_coffee",
+      "station": "item.drying_rack",
+      "produces": "item.coffee_dried",
+      "materials": [
+        {
+          "item": "item.coffee_cherry",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.8,
+      "skill": "Cooking",
+      "skillXp": 6,
+      "displayName": "Kahve kirazı kurut",
+      "count": 3
+    },
+    {
+      "id": "hull_coffee",
+      "station": "item.mortar_pestle",
+      "produces": "item.coffee_green",
+      "materials": [
+        {
+          "item": "item.coffee_dried",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Cooking",
+      "skillXp": 6,
+      "displayName": "Kabuğunu ayır (yeşil çekirdek)",
+      "count": 2
+    },
+    {
+      "id": "roast_coffee",
+      "station": "item.cooking_pot",
+      "produces": "item.coffee_roasted",
+      "materials": [
+        {
+          "item": "item.coffee_green",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Cooking",
+      "skillXp": 10,
+      "displayName": "Kahve kavur (tavada çevirerek)",
+      "count": 2
+    },
+    {
+      "id": "roast_coffee_fine",
+      "station": "item.cooking_pot",
+      "produces": "item.coffee_roasted_fine",
+      "materials": [
+        {
+          "item": "item.coffee_green",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "minLevel": 5,
+      "displayName": "Kahveyi tam kıvamında kavur",
+      "count": 2
+    },
+    {
+      "id": "grind_coffee",
+      "station": "item.mortar_pestle",
+      "produces": "item.coffee_ground",
+      "materials": [
+        {
+          "item": "item.coffee_roasted",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Cooking",
+      "skillXp": 5,
+      "displayName": "Kahve döv",
+      "count": 2
+    },
+    {
+      "id": "grind_coffee_fine",
+      "station": "item.mortar_pestle",
+      "produces": "item.coffee_ground_fine",
+      "materials": [
+        {
+          "item": "item.coffee_roasted_fine",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Cooking",
+      "skillXp": 6,
+      "displayName": "Has kahveyi döv",
+      "count": 2
+    },
+    {
+      "id": "cezve",
+      "station": "item.forge",
+      "produces": "item.cezve",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Smithing",
+      "skillXp": 10,
+      "displayName": "Cezve döv"
     }
   ],
   "animals": [
@@ -20796,6 +21135,53 @@
       "description": "Ustaca pişmiş bir yemek.",
       "value": 8,
       "days": 1.0
+    },
+    {
+      "id": "eff_coffee",
+      "displayName": "Uyanık",
+      "description": "Kahve içti: bütün işler %10 hızlı.",
+      "value": 6,
+      "days": 0.5,
+      "allSpeed": 0.1
+    },
+    {
+      "id": "eff_coffee_fine",
+      "displayName": "Cezve keyfi",
+      "description": "Köpüklü kahve: bütün işler %10 hızlı.",
+      "value": 8,
+      "days": 0.5,
+      "allSpeed": 0.1
+    },
+    {
+      "id": "eff_mahmur",
+      "displayName": "Mahmur",
+      "description": "Sabah kahvesini içmedi: işler %10 yavaş.",
+      "value": -5,
+      "days": 0.125,
+      "allSpeed": -0.1
+    },
+    {
+      "id": "eff_headache",
+      "displayName": "Baş ağrısı",
+      "description": "Bütün gün kahvesiz kaldı: işler %5 yavaş.",
+      "value": -6,
+      "days": 1.0,
+      "allSpeed": -0.05
+    },
+    {
+      "id": "eff_coffee_late",
+      "displayName": "Uykusu kaçtı",
+      "description": "Akşam kahvesi: bu gece daha çabuk yorulur.",
+      "value": -2,
+      "days": 0.4,
+      "energyDecay": 1.2
+    },
+    {
+      "id": "eff_fal",
+      "displayName": "Fala baktırdı",
+      "description": "Fincanda güzel şeyler göründü.",
+      "value": 3,
+      "days": 0.5
     }
   ]
 }

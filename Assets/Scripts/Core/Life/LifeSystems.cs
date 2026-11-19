@@ -649,6 +649,22 @@ namespace Thatchwick.Core.Life
             effects.FoodAge = Spoilage.OldestAge;
             effects.CropHarvested += (c, crop, tier) => Keepsakes.OnCropHarvested(c, crop, tier);
             effects.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish);
+            effects.Applied += (c, interaction, _) => OnInteractionApplied(c, interaction);
+            Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
+        }
+
+        /// <summary>Kahve alışkanlığı ve falı (belge 32-5, 32-6).</summary>
+        public CoffeeHabits Coffee { get; } = new CoffeeHabits();
+        public const string FortuneInteraction = "cezve_fal";
+
+        public void OnInteractionApplied(Character c, InteractionDef interaction)
+        {
+            if (c == null || interaction == null) return;
+            bool coffee = false;
+            foreach (var con in interaction.AllConsumed())
+                if (Content.Items.TryGet(con.ItemId, out var d) && d.HasTag(CoffeeHabits.Tag)) { coffee = true; break; }
+            if (coffee) Coffee.OnCoffee(c, Clock.TotalDays);
+            if (interaction.Id == FortuneInteraction) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
         }
         /// <summary>Kıyıdan balık: ilk balık hatırası.</summary>
         public void Attach(Thatchwick.Core.Work.FarmWork farm) { farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish); }
@@ -755,6 +771,7 @@ namespace Thatchwick.Core.Life
             Decor.Tick(gameDays);
             Upbringing.Tick(gameDays);
             Roamers?.Tick(gameDays, Clock.TotalDays, Clock.Season, Clock.DayFraction);
+            Coffee.Tick(Clock.TotalDays, Population.Members);
 
             long day = Clock.DayIndex;
             if (day != _lastDay)
@@ -778,6 +795,7 @@ namespace Thatchwick.Core.Life
             Wolves?.OnNewDay(Clock.Season, (int)(day % Clock.Config.DaysPerSeason), Clock.Config.DaysPerSeason);
             var orphan = Adoptions.OnNewDay(Clock.Season);
             if (orphan != null) Say($"Tarlanın kenarında öksüz bir {orphan.Name.ToLowerInvariant()} yavrusu bulundu. Sahiplenmek ister misin?", NoticeLevel.Info);
+            Coffee.OnNewDay((int)Clock.TotalDays, Population.Find);
             var grow = Adoptions.OnGrowUp((int)Clock.TotalDays, Clock.Season);
             if (grow == "returned") Say("Büyüttüğün karaca artık yetişkin; bir sabah ormana döndü.", NoticeLevel.Info);
             else if (grow == "visit") { Say("Büyüttüğün karaca bahçenin kenarına uğradı.", NoticeLevel.Info); Roamers?.Arrive(WildCatalog.Get("wild.roe_deer"), Clock.TotalDays); }
@@ -870,6 +888,7 @@ namespace Thatchwick.Core.Life
                 merchant = Merchant.Export(),
                 natureJournal = Journal.Export(),
                 adoptedWild = Adoptions.Export(),
+                coffeeHabits = Coffee.Export(),
                 contests = Contests.Export(),
                 wolfRaidIn = Wolves != null ? Wolves.RaidInDays : -1,
                 wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0,
@@ -895,6 +914,7 @@ namespace Thatchwick.Core.Life
             Merchant.Import(data.merchant);
             Journal.Import(data.natureJournal);
             Adoptions.Import(data.adoptedWild);
+            Coffee.Import(data.coffeeHabits);
             Contests.Import(data.contests);
             Wolves?.Restore(data.wolfRaidIn, data.wolfHunted);
             Spoilage.Restore(data.spoilage);
