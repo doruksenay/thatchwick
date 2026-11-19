@@ -2,7 +2,7 @@
 id: "410"
 title: "Yaban hayvanları: karaca, tilki, kurt, yaban domuzu, ayı (5)"
 status: running
-claimed_at: 2026-11-19T12:22Z
+claimed_at: 2026-11-19T18:29Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 31, 29 (kullanıcı 18.11.2026 "önerdiklerinin tamamını yap")
 family: hayvan
 style_gate: false
