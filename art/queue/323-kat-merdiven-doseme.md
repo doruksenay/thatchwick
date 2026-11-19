@@ -1,7 +1,7 @@
 ---
 id: "323"
 title: Katlar: merdivenler ve kat zemin parçaları (el merdiveni, 2 merdiven, 2 taş merdiven, üst kat döşemesi, bodrum zemini)
-status: blocked
+status: pending
 claimed_at: 2026-11-18T12:25Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -33,14 +33,16 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 
 | # | Dosya | Ayak izi | Tuval | Kılavuz | Yükseklik | Açıklama (+ ortak ek) |
 |---|---|---|---|---|---|---|
-| 1 | `iso_item_ladder_se.png` | 1x2 | 56x96 | `--n 1`+yükseklik | 64 | `wooden wall ladder with two rails and rungs leaning up through a floor hatch opening, no person` |
-| 2 | `iso_item_stairs_up_2x1_se.png` | 1x2 | 96x96 | `--n 2` | 44 | `short straight wooden staircase with plank steps and a side handrail rising toward the back` |
-| 3 | `iso_item_stairs_down_2x1_se.png` | 1x2 | 96x72 | `--n 2` | 24 | `wooden stairs descending into a dark rectangular floor opening, side handrail, top step flush with floor` |
-| 4 | `iso_item_stairs_up_stone_2x1_se.png` | 1x2 | 96x96 | `--n 2` | 44 | `short straight grey stone staircase with chunky steps and a rough wall side` |
-| 5 | `iso_item_stairs_down_stone_2x1_se.png` | 1x2 | 96x72 | `--n 2` | 24 | `grey stone steps descending into a dark floor opening, rough stone rim` |
+| 1 | `iso_item_ladder_se.png` | 1x2 | 80x112 | `--n 1`+yükseklik | 64 | `wooden wall ladder with two rails and rungs leaning up through a floor hatch opening, no person` |
+| 2 | `iso_item_stairs_up_2x1_se.png` | 1x2 | 112x104 | `--n 2` | 44 | `short straight wooden staircase with plank steps and a side handrail rising toward the back` |
+| 3 | `iso_item_stairs_down_2x1_se.png` | 1x2 | 112x80 | `--n 2` | 24 | `wooden stairs descending into a dark rectangular floor opening, side handrail, top step flush with floor` |
+| 4 | `iso_item_stairs_up_stone_2x1_se.png` | 1x2 | 112x104 | `--n 2` | 44 | `short straight grey stone staircase with chunky steps and a rough wall side` |
+| 5 | `iso_item_stairs_down_stone_2x1_se.png` | 1x2 | 112x80 | `--n 2` | 24 | `grey stone steps descending into a dark floor opening, rough stone rim` |
 | 6-7 | `iso_floor_upper_plank_{a,b}.png` | 1x1 zemin | 64x32 | elmas | 0 | `top-down pixel floor tile, warm light-brown wooden planks, seamless, no shading` (iki varyasyon) |
 | 8 | `iso_floor_cellar_dirt_a.png` | 1x1 zemin | 64x32 | elmas | 0 | `top-down pixel floor tile, dark packed earth with small stones, seamless, cool grey-brown` |
 
+- **Tuvaller (kullanıcı kararı 2026-11-19, işçinin önerisi):** `footprint_guide.py` ile uyumlu olacak biçimde 301'deki gibi genişletildi: 1x1 80 px geniş (merdiven 80x112), 2x1 112 px geniş (çıkan merdiven 112x104, inen 112x80). Pivotlar 301 tablosundaki gibi (1x1 40,24; 2x1 56,32).
+- **Zeminler (6-8)** `create_map_object` ile değil, zemin yöntemiyle üretilir: **335 ile aynı** (`create_tiles_pro`, stil modu, `style_images` = kabul edilmiş zemin karoları, 64x32 elmas, gölgesiz, dikişsiz). Doğrulama `validate_iso.py --kind ground` ve döşeme testi.
 - Merdivenin tırmanış yönü +x (SE sprite); diğer yönler ayna ile (301 ayna notu), merdiven bir yönde aynalanabilir ama basamak ışığı sol-üstten kalır.
 - Maliyet 8 × 1 gen. İkinci deneme payı 8 → `cost_max` 16.
 
