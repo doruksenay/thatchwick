@@ -10,6 +10,14 @@ namespace Thatchwick.Core.World
         public bool Contains(GridPos p) => p.X >= X && p.Y >= Y && p.X < X + W && p.Y < Y + H;
     }
 
+    /// <summary>Tamsayı dikdörtgen (Unity'den bağımsız çekirdek için).</summary>
+    public readonly struct RectI
+    {
+        public readonly int X, Y, W, H;
+        public RectI(int x, int y, int w, int h) { X = x; Y = y; W = w; H = h; }
+        public bool Contains(GridPos p) => p.X >= X && p.Y >= Y && p.X < X + W && p.Y < Y + H;
+    }
+
     /// <summary>Başlangıçta haritaya konacak eşya (dünya koordinatı). WallSide &gt;= 0: duvara asılır (0 kuzey, 3 batı);
     /// Slot != null: (X,Y)'deki yüzeyin yuvasına konur; Grown: olgun bitki/ağaç (yol ve taş zemine konmaz).</summary>
     public struct RegionItem
@@ -428,7 +436,27 @@ namespace Thatchwick.Core.World
             { "home:4", T(23, 36) }, { "home:5", T(57, 45) }, { "home:6", T(5, 45) },
             { "work:smithy", T(6, 24) }, { "work:mill", T(42, 6) }, { "work:herb", T(9, 8) },
             { "work:pasture", T(58, 8) }, { "work:market", T(37, 18) }, { "work:pottery", T(41, 42) },
-            { "square", T(30, 28) }
+            { "square", T(30, 28) },
+            // Yeni dükkân sahipleri (belge 41): dükkânın içinde çalışır ve yaşar (ortaçağda usta dükkânının arkasında otururdu).
+            { "work:carpenter", T(7, 33) }, { "home:carpenter", T(9, 34) },
+            { "work:tavern", T(24, 13) }, { "home:tavern", T(28, 17) },
+            { "work:scribe", T(18, 31) }, { "home:scribe", T(15, 31) },
+            { "work:tailor", T(39, 35) }, { "home:tailor", T(41, 35) },
+            { "work:saddler", T(57, 36) }, { "home:saddler", T(56, 38) },
+            { "work:fisher", T(56, 20) }, { "home:fisher", T(58, 19) },
+            { "work:mason", T(23, 44) }, { "home:mason", T(24, 46) }
         };
+
+        /// <summary>Dükkânların iç alanı (dünya koordinatı); dükkân kimliği Core.Economy.Shops ile aynı.</summary>
+        public static Dictionary<string, RectI> ShopAreas() => new Dictionary<string, RectI>
+        {
+            { "general", R(33, 14, 8, 6) }, { "smithy", R(3, 22, 7, 6) }, { "carpenter", R(3, 31, 8, 6) },
+            { "tavern", R(20, 12, 10, 7) }, { "mill", R(40, 4, 7, 6) }, { "scribe", R(14, 28, 6, 5) },
+            { "herb", R(6, 6, 7, 6) }, { "potter", R(39, 40, 6, 6) }, { "tailor", R(36, 32, 7, 6) },
+            { "saddler", R(54, 34, 7, 6) }, { "fisher", R(54, 18, 6, 5) }, { "mason", R(20, 42, 7, 6) },
+            { "animals", R(55, 4, 8, 9) },
+        };
+
+        private static RectI R(int x, int y, int w, int h) => new RectI(Town.X + x, Town.Y + y, w, h);
     }
 }

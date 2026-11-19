@@ -138,6 +138,7 @@ namespace Thatchwick.Game
         private Market _market;
         private AccountProgress _account;
         private MarketPanel _marketPanel;
+        private ShopPanel _shopPanel;   // şehir dükkânları (belge 41)
         private StoragePanel _storagePanel;
         private MinePanel _minePanel;
         private KeepsakePanel _keepsakePanel;
@@ -394,6 +395,9 @@ namespace Thatchwick.Game
             };
             if (loaded != null) _heat.RestoreTemperatures(loaded.Temperatures);
             _buildService = new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level, HousingResidents = _animals.Residents, Plants = _plants };
+            _shopPanel = new ShopPanel(_market, _buildService, _household, _content, _world, () => _player?.Character, () => _player?.Runner,
+                () => HourOfDay, () => _clock.DayIndex, ShopOwner,
+                Thatchwick.Core.World.Regions.IsRegional(_world.Map) ? Thatchwick.Core.World.Regions.ShopAreas() : null);
             _buildMode = new BuildMode(_world, _household, _buildService, _content, _view, _input, transform, _walls, _animals);
             _buildMode.Activity += a => _account.Record(a, _clock.DayIndex);
 
@@ -1399,6 +1403,7 @@ namespace Thatchwick.Game
             var guiPos = new Vector2(screenPos.x / s, (Screen.height - screenPos.y) / s);
             if (_buildMode != null && _buildMode.Active && _buildMode.PanelRect(s).Contains(guiPos)) return true;
             if (_marketPanel != null && _marketPanel.Active && _marketPanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_shopPanel != null && _shopPanel.Active && _shopPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
@@ -1538,6 +1543,19 @@ namespace Thatchwick.Game
             _buildMode.Toggle();
         }
 
+        /// <summary>Dükkânın sahibi: life.json'da iş yeri bu dükkân olan, yaşayan adlı köylü (halef de olabilir).</summary>
+        private Character ShopOwner(Thatchwick.Core.Economy.ShopDef shop)
+        {
+            if (_life == null || shop == null) return null;
+            foreach (var v in _content.Villagers.All)
+            {
+                if (v.Work != shop.WorkKey) continue;
+                var c = _life.Villagers.CharacterOf(v.Id);
+                if (c != null && !c.IsDead) return c;
+            }
+            return null;
+        }
+
         private void ToggleMarket()
         {
             if (_buildMode.Active) _buildMode.Toggle();
@@ -1655,6 +1673,8 @@ namespace Thatchwick.Game
             if (_menuOpen) { _menuOpen = false; return; }   // menü dışına dokunmak menüyü kapatır
 
             CollectOptions(world);
+            // Şehirde bir dükkânın içine dokunmak dükkân panelini açar (yürüme ve eşya menüsü yine çalışır).
+            if (_shopPanel != null) { var shopHere = _shopPanel.ShopAt(tile); if (shopHere != null) _shopPanel.Open(shopHere); }
             // Çapa kipi: boş çime dokunmak orayı çapalar, yıpranmış yola dokunmak onarır (sıraya eklenir).
             if (_hoeMode && _menuOptions.Count == 0)
             {
@@ -2712,6 +2732,7 @@ namespace Thatchwick.Game
             { var prevSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _buildMode.OnGUI(s); } finally { GUI.skin = prevSkin; } }   // 391 arayüz kiti
             var prevPanelSkin = GUI.skin; GUI.skin = UiSkin.Skin;   // 391 tema tüm panellere (belge 33)
             try { _marketPanel.OnGUI(s);
+            _shopPanel?.OnGUI(s);
             _storagePanel.OnGUI(s);
             _minePanel.OnGUI(s);
             _keepsakePanel?.OnGUI(s);

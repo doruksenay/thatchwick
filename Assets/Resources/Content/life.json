@@ -2127,6 +2127,317 @@
           "rewardAkce": 45
         }
       ]
+    },
+    {
+      "id": "villager.hasan",
+      "name": "Hasan",
+      "sex": "Male",
+      "age": 44,
+      "role": "carpenter",
+      "roleName": "Marangoz",
+      "traits": [
+        "trait.handy",
+        "trait.placid"
+      ],
+      "loves": [
+        "item.honey",
+        "item.plank"
+      ],
+      "likes": [
+        "tag:fuel",
+        "item.apple"
+      ],
+      "dislikes": [
+        "item.fish_eel"
+      ],
+      "home": "home:carpenter",
+      "work": "work:carpenter",
+      "events": [
+        {
+          "id": "hasan_1",
+          "minAffection": 30,
+          "text": "Hasan sana ağacın damarına göre nasıl rende çekildiğini gösterdi.",
+          "rewardAkce": 10
+        },
+        {
+          "id": "hasan_2",
+          "minAffection": 60,
+          "text": "Hasan eski bir oyma sandalyenin hikâyesini anlattı.",
+          "rewardAkce": 15
+        },
+        {
+          "id": "hasan_3",
+          "minAffection": 100,
+          "text": "Hasan seni atölyesinin kapısını her zaman açık bulacağın biri saydı.",
+          "rewardAkce": 40
+        }
+      ]
+    },
+    {
+      "id": "villager.serife",
+      "name": "Şerife",
+      "sex": "Female",
+      "age": 47,
+      "role": "innkeeper",
+      "roleName": "Hancı",
+      "traits": [
+        "trait.sociable",
+        "trait.generous"
+      ],
+      "loves": [
+        "item.honey",
+        "item.stew_fine"
+      ],
+      "likes": [
+        "tag:drink",
+        "tag:cooked"
+      ],
+      "dislikes": [
+        "item.nettle"
+      ],
+      "home": "home:tavern",
+      "work": "work:tavern",
+      "events": [
+        {
+          "id": "serife_1",
+          "minAffection": 30,
+          "text": "Şerife sana handa konaklayan yolcuların dedikodularını anlattı.",
+          "rewardAkce": 10
+        },
+        {
+          "id": "serife_2",
+          "minAffection": 60,
+          "text": "Şerife sana annesinden kalma bir çorba tarifini fısıldadı.",
+          "rewardAkce": 15
+        },
+        {
+          "id": "serife_3",
+          "minAffection": 100,
+          "text": "Şerife seni hanın onur misafiri ilan etti.",
+          "rewardAkce": 40
+        }
+      ]
+    },
+    {
+      "id": "villager.selim",
+      "name": "Selim",
+      "sex": "Male",
+      "age": 61,
+      "role": "scribe",
+      "roleName": "Kâtip",
+      "traits": [
+        "trait.introvert",
+        "trait.diligent"
+      ],
+      "loves": [
+        "item.honey"
+      ],
+      "likes": [
+        "tag:writing",
+        "item.apple"
+      ],
+      "dislikes": [
+        "item.fish_carp"
+      ],
+      "home": "home:scribe",
+      "work": "work:scribe",
+      "events": [
+        {
+          "id": "selim_1",
+          "minAffection": 30,
+          "text": "Selim köyün eski kayıtlarından ailenle ilgili bir satır buldu.",
+          "rewardAkce": 10
+        },
+        {
+          "id": "selim_2",
+          "minAffection": 60,
+          "text": "Selim sana güzel yazının inceliklerini öğretti.",
+          "rewardAkce": 15
+        },
+        {
+          "id": "selim_3",
+          "minAffection": 100,
+          "text": "Selim soy kütüğüne adını kendi eliyle süsleyerek yazdı.",
+          "rewardAkce": 40
+        }
+      ]
+    },
+    {
+      "id": "villager.elif",
+      "name": "Elif",
+      "sex": "Female",
+      "age": 33,
+      "role": "tailor",
+      "roleName": "Terzi",
+      "traits": [
+        "trait.cheerful",
+        "trait.handy"
+      ],
+      "loves": [
+        "item.wool",
+        "item.honey"
+      ],
+      "likes": [
+        "tag:dye",
+        "tag:cloth"
+      ],
+      "dislikes": [
+        "item.fish_eel"
+      ],
+      "home": "home:tailor",
+      "work": "work:tailor",
+      "events": [
+        {
+          "id": "elif_1",
+          "minAffection": 30,
+          "text": "Elif sana bir düğüm işlemesinin nasıl atıldığını gösterdi.",
+          "rewardAkce": 10
+        },
+        {
+          "id": "elif_2",
+          "minAffection": 60,
+          "text": "Elif kök boyayla renk tutturmanın sırrını anlattı.",
+          "rewardAkce": 15
+        },
+        {
+          "id": "elif_3",
+          "minAffection": 100,
+          "text": "Elif senin için bir mendil işledi ve armağan etti.",
+          "rewardAkce": 40
+        }
+      ]
+    },
+    {
+      "id": "villager.riza",
+      "name": "Rıza",
+      "sex": "Male",
+      "age": 50,
+      "role": "saddler",
+      "roleName": "Saraç",
+      "traits": [
+        "trait.hardy",
+        "trait.introvert"
+      ],
+      "loves": [
+        "item.stew_fine"
+      ],
+      "likes": [
+        "tag:leather",
+        "tag:hide"
+      ],
+      "dislikes": [
+        "item.herb"
+      ],
+      "home": "home:saddler",
+      "work": "work:saddler",
+      "events": [
+        {
+          "id": "riza_1",
+          "minAffection": 30,
+          "text": "Rıza sana iyi bir eyerin atın sırtını nasıl koruduğunu anlattı.",
+          "rewardAkce": 10
+        },
+        {
+          "id": "riza_2",
+          "minAffection": 60,
+          "text": "Rıza tabaklamanın kokusuna nasıl alıştığını gülerek anlattı.",
+          "rewardAkce": 15
+        },
+        {
+          "id": "riza_3",
+          "minAffection": 100,
+          "text": "Rıza seni atına iyi bakan biri olarak tanıdığını söyledi.",
+          "rewardAkce": 40
+        }
+      ]
+    },
+    {
+      "id": "villager.kemal",
+      "name": "Kemal",
+      "sex": "Male",
+      "age": 38,
+      "role": "fisher",
+      "roleName": "Balıkçı",
+      "traits": [
+        "trait.placid",
+        "trait.sociable"
+      ],
+      "loves": [
+        "item.honey"
+      ],
+      "likes": [
+        "tag:fish",
+        "tag:fuel"
+      ],
+      "dislikes": [
+        "item.nettle"
+      ],
+      "home": "home:fisher",
+      "work": "work:fisher",
+      "events": [
+        {
+          "id": "kemal_1",
+          "minAffection": 30,
+          "text": "Kemal sana ırmağın hangi kıvrımında turnanın beklediğini söyledi.",
+          "rewardAkce": 10
+        },
+        {
+          "id": "kemal_2",
+          "minAffection": 60,
+          "text": "Kemal şafakta ağ atmanın püf noktalarını gösterdi.",
+          "rewardAkce": 15
+        },
+        {
+          "id": "kemal_3",
+          "minAffection": 100,
+          "text": "Kemal en iyi balık yerini yalnızca sana gösterdi.",
+          "rewardAkce": 40
+        }
+      ]
+    },
+    {
+      "id": "villager.mustafa",
+      "name": "Mustafa",
+      "sex": "Male",
+      "age": 45,
+      "role": "mason",
+      "roleName": "Taşçı",
+      "traits": [
+        "trait.sturdy",
+        "trait.diligent"
+      ],
+      "loves": [
+        "item.stew_fine"
+      ],
+      "likes": [
+        "tag:stone",
+        "tag:fuel"
+      ],
+      "dislikes": [
+        "item.flower_pot"
+      ],
+      "home": "home:mason",
+      "work": "work:mason",
+      "events": [
+        {
+          "id": "mustafa_1",
+          "minAffection": 30,
+          "text": "Mustafa sana taşın sesinden çatlağını nasıl anladığını gösterdi.",
+          "rewardAkce": 10
+        },
+        {
+          "id": "mustafa_2",
+          "minAffection": 60,
+          "text": "Mustafa köyün eski köprüsünü babasıyla nasıl ördüklerini anlattı.",
+          "rewardAkce": 15
+        },
+        {
+          "id": "mustafa_3",
+          "minAffection": 100,
+          "text": "Mustafa evinin ocağı için sana yontulmuş bir taş armağan etti.",
+          "rewardAkce": 40
+        }
+      ]
     }
   ],
   "goals": [
