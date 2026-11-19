@@ -1,7 +1,7 @@
 ---
 id: "415"
 title: Yaşlı karakter 84 px gerçekçi oran, erkek ve kadın, 8 yön durma
-status: review
+status: accepted   # kullanıcı 19.11.2026: "bence okay böyle" (boy farkı kodda ölçekle)
 claimed_at: 2026-11-18T19:35Z
 approved_by: user        # kullanıcı 18.11.2026 (sohbet): "yaşlı geçsin"
 priority: 50

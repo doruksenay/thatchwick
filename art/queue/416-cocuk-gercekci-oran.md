@@ -1,7 +1,7 @@
 ---
 id: "416"
 title: Çocuk karakter gerçekçi oran, küçük boy (64 px tuval), erkek ve kız, 8 yön durma
-status: review
+status: accepted   # kullanıcı 19.11.2026: "bence okay böyle" (boy farkı kodda ölçekle)
 claimed_at: 2026-11-18T20:03Z
 approved_by: user        # kullanıcı 18.11.2026 (sohbet): çocuk küçük kalsın; 84 setle aynı tarzda
 priority: 50
