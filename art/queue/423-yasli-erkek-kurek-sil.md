@@ -1,7 +1,7 @@
 ---
 id: "423"
 title: Yaşlı erkek 84 (415) elindeki küreği sil, 8 yön
-status: running
+status: review
 claimed_at: 2026-11-19T08:05Z
 approved_by: user        # kullanıcı 19.11.2026 (sohbet): "bunu yap"
 priority: 60
