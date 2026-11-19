@@ -172,6 +172,25 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void TarlaGorevlisi_SonbahardaKisOdunuBiriktirir()
+        {
+            var db = Db();
+            var (w, house, d, c) = DutySetup(db);
+            w.PlaceItem(db.Items.Get("item.chopping_block"), new GridPos(5, 5));
+            house.AddItem("item.log", 2);
+            house.AddItem("item.firewood", 10);
+            var season = Season.Summer;
+            d.Season = () => season;
+            Assert.Null(d.Next(c));                                        // yazın 10 odun yeter
+            season = Season.Autumn;
+            Assert.Equal(DutyPlanner.WinterFirewood, d.FirewoodTarget());
+            Assert.NotNull(d.Next(c));                                     // sonbaharda kış stoğu
+            d.Season = null;
+            d.Now = () => 25.0;                                            // takvimden: 25. gün sonbahar
+            Assert.Equal(DutyPlanner.WinterFirewood, d.FirewoodTarget());
+        }
+
+        [Fact]
         public void TarlaGorevlisi_KutukYoksaArsadakiAgaciKeser_MeyveAgaciniKesmez()
         {
             var db = Db();

@@ -44,12 +44,30 @@ namespace Thatchwick.Core.Work
         /// </summary>
         public Func<int> FirewoodStock { get; set; }
         public const int LowFirewood = 6;
+        /// <summary>Sonbahar ve kışta tutulan odun (kış ~2 kütük/gün; Denge 41'de kış stoğu yapılmadığı için hane donuyordu).</summary>
+        public const int WinterFirewood = 24;
+        /// <summary>Mevsim (odun hedefi için); null ise Now ve varsayılan takvimden hesaplanır.</summary>
+        public Func<Thatchwick.Core.Time.Season> Season { get; set; }
+
+        /// <summary>Bu mevsim tutulacak odun: ilkbahar ve yaz LowFirewood, sonbahar ve kış WinterFirewood.</summary>
+        public int FirewoodTarget()
+        {
+            Thatchwick.Core.Time.Season season;
+            if (Season != null) season = Season();
+            else
+            {
+                var cfg = Thatchwick.Core.Time.TimeConfig.Default;
+                long day = (long)Math.Floor(Now?.Invoke() ?? 0);
+                season = (Thatchwick.Core.Time.Season)((day / cfg.DaysPerSeason) % Thatchwick.Core.Time.TimeConfig.SeasonsPerYear);
+            }
+            return season == Thatchwick.Core.Time.Season.Autumn || season == Thatchwick.Core.Time.Season.Winter ? WinterFirewood : LowFirewood;
+        }
         public const string FirewoodId = "item.firewood";
         public const string LogId = "item.log";
         /// <summary>Meyve toplama etkileşimi: bunu taşıyan ağaç odun için kesilmez.</summary>
         public const string PickId = "pick";
 
-        private bool FirewoodLow => FirewoodStock != null && FirewoodStock() < LowFirewood;
+        private bool FirewoodLow => FirewoodStock != null && FirewoodStock() < FirewoodTarget();
 
         /// <summary>
         /// Ev görevinin işleri (belge 45): bakım isteyen eşya ve etkileşimi (mum, sepet, döküntü, ayna, saksı, ot serpme,
@@ -404,7 +422,7 @@ namespace Thatchwick.Core.Work
             InteractionDef fell = null;
             foreach (var i in it.Def.Interactions)
             {
-                if (i.RequiresFruit && i.Id == "pick") return null;   // meyve ağacı kesilmez (meşenin mazısı meyve sayılmaz)
+                if (i.RequiresFruit && i.Id == PickId) return null;   // meyve ağacı kesilmez (mazılı meşe kesilebilir)
                 if (i.RequiresGrown && i.RemovesItem && (Produces(i, LogId) || Produces(i, FirewoodId))) fell = i;
             }
             return fell;
