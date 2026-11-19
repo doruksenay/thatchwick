@@ -1,7 +1,8 @@
 ---
 id: "418a"
 title: Ürün ikonları A: yemek, içecek, turşu, kurutma, tütsü parça 1/3 (19)
-status: pending
+status: running
+claimed_at: 2026-11-19T06:57Z
 approved_by: user        # kullanıcı 18.11.2026: "bu sistemi getir" (ürün ikon sistemi); otomatik akış (art/budget.md)
 priority: 30
 family: arayuz
