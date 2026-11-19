@@ -1,7 +1,7 @@
 ---
 id: "373"
 title: Toplama düğümleri yeniden (böğürtlen, fındık, otlar, mürver, çilek, kestane, kuşburnu, ısırgan)
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:40Z
 priority: 10            # başlangıç haritasında görünenler önce (görsel analiz)
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
@@ -75,3 +75,4 @@ Yöntem **311 ile aynı**: tuval 80x72, 1x1 kılavuz + maske, pivot 40,24. Farkl
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 kullanıcı kararı (sohbet, onay grubu 1): kabul: otlar, mürver, çilek, kuşburnu, ısırgan. **Ret:** `iso_forage_berry_bush_se` (eğrelti gibi) ve `iso_forage_chestnut_se` (mor); oyuna bağlanmaz. Fındık, böğürtlen, kestane 378 ile.

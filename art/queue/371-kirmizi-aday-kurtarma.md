@@ -1,7 +1,7 @@
 ---
 id: "371"
 title: Reddedilen adayları doygunluk eşlemesiyle kurtarma (ağaç, düğüm, ekin, mezar, şenlik)
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:04Z
 priority: 10            # başlangıç haritasında görünenler önce (görsel analiz)
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 ("yap bunu": yeniden deneme işleri)
@@ -93,3 +93,4 @@ Her satır için:
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-18 kullanıcı kararı (sohbet, onay grubu 1): kabul (kullanıcı "sen karar ver" dedi; Claude 31 görselin hepsini kabul etti).
