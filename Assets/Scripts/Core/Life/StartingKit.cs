@@ -1,4 +1,5 @@
 using Thatchwick.Core.Build;
+using Thatchwick.Core.Content;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Life
@@ -6,7 +7,8 @@ namespace Thatchwick.Core.Life
     /// <summary>
     /// Yeni oyunun başlangıç erzakı ve çapalanmış bostanı (belge 41, denge).
     /// Ölçü: iki yetişkin günde ~240 açlık puanı yer (kişi başı 120). Erzak ilk şalgam hasadına (6 gün) ve biraz
-    /// ötesine yetsin diye ~7 günlük; bostan, tarla görevlisinin ya da oyuncunun ilk gün ekebileceği 18 karo toprak.
+    /// ötesine yetsin diye ~7 günlük; bostan, tarla görevlisinin ya da oyuncunun ilk gün ekebileceği 12 karo toprak,
+    /// ortasında kendiliğinden sulayan sulama hendeği (elle sulama günde 12 karoya ~0,3 gün sürüyordu, ekin kuruyordu).
     /// Odun ilkbahar başının soğuk günlerine (~1 kütük/gün) yeter.
     /// Eski erzak: 12 şalgam, 6 şalgam tohumu, 10 odun, çapalanmış toprak yok; boş bırakılan hane 7. gün açlıktan ölüyordu.
     /// </summary>
@@ -37,18 +39,21 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>
-        /// Başlangıç bostanı: origin köşesinden w x h karo çimi toprağa çevirir. Arsa dışı, çim olmayan ya da üstünde
-        /// eşya olan karo atlanır. Çapalanan karo sayısını döndürür.
+        /// Başlangıç bostanı: origin köşesinden w x h karo çimi toprağa çevirir. Hendek verilirse orta sıraya hendek
+        /// döşenir (komşu iki sırayı her gün sular), o sıra çapalanmaz. Arsa dışı, çim olmayan ya da üstünde eşya olan
+        /// karo atlanır. Çapalanan karo sayısını döndürür.
         /// </summary>
-        public static int TillBed(WorldState world, GridPos origin, int w = BedWidth, int h = BedHeight)
+        public static int TillBed(WorldState world, GridPos origin, int w = BedWidth, int h = BedHeight, ItemDef ditch = null)
         {
             var map = world.Map;
+            int ditchRow = ditch != null ? origin.Y + h / 2 : int.MinValue;
             int n = 0;
             for (int y = origin.Y; y < origin.Y + h; y++)
                 for (int x = origin.X; x < origin.X + w; x++)
                 {
                     var p = new GridPos(x, y);
                     if (!map.InBounds(p) || !map.IsOwned(p) || map.GetFloor(p) != FloorType.Grass || world.GetItemAt(p) != null) continue;
+                    if (y == ditchRow) { world.PlaceItem(ditch, p); continue; }
                     map.SetFloor(p, FloorType.Dirt);
                     n++;
                 }

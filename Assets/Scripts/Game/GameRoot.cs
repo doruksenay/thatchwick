@@ -661,7 +661,7 @@ namespace Thatchwick.Game
             var stump = _world.GetItemAt(new GridPos(35, 35));
             if (stump != null && _content.Items.TryGet("item.morris_board", out var board)) _world.PlaceOnSurface(board, stump.Id, "a");
             Put("item.scarecrow", 48, 32);                // tarla alanı: 42-56 x 26-38
-            StartingKit.TillBed(_world, new GridPos(43, 27));   // çapalanmış başlangıç bostanı 6x3 (belge 41)
+            StartingKit.TillBed(_world, new GridPos(43, 27), ditch: _content.Items.TryGet("item.irrigation_ditch", out var ditch) ? ditch : null);   // başlangıç bostanı: 2 sıra toprak + ortada sulama hendeği (belge 41)
 
             // --- ağaçlar: meyve bahçesi (kuzeybatı), gölet söğütleri, arsa kenarı ---
             string[] fruit = { "item.tree_apple", "item.tree_pear", "item.tree_cherry", "item.tree_plum" };

@@ -214,6 +214,25 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void Gorevli_RahatlikIhtiyaciniGorevUgrunaErteler_CokDusunceErtelemez()
+        {
+            var db = Db();
+            string First(float fun)
+            {
+                var world = new WorldState(new GridMap(12, 12));
+                world.PlaceItem(db.Items.Get("item.garden_bench"), new GridPos(6, 6));
+                var c = Adult(at: new GridPos(2, 2));
+                c.Duty = DutyKind.Farm;
+                c.Needs.Set(NeedType.Fun, fun);
+                var r = new JobRunner(c, world) { Autonomous = true, DutyProvider = ch => Job.MoveTo(new GridPos(9, 9)) };
+                r.Tick(0.001);
+                return r.Queue.Current == null ? "-" : r.Queue.Current.IsDuty ? "görev" : r.Queue.Current.InteractionId;
+            }
+            Assert.Equal("görev", First(25f));                                   // eşiğin (30) altında ama bekleyebilir
+            Assert.Equal("rest", First(JobRunner.ComfortDeferFloor - 5f));      // çok düştü: önce dinlenir
+        }
+
+        [Fact]
         public void BaslangicErzagi_IkiKisiyiIlkHasadaKadarDoyurur()
         {
             var db = Db();
@@ -249,6 +268,23 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(FloorType.Dirt, map.GetFloor(new GridPos(4, 3)));
             Assert.Equal(FloorType.Grass, map.GetFloor(new GridPos(5, 4)));
             Assert.Equal(0, StartingKit.TillBed(world, new GridPos(8, 3)));     // 8,9 zaten toprak; 10-13 arsa dışı
+        }
+
+        [Fact]
+        public void BaslangicBostani_HendekOrtaSirayaDoseniyor_IkiSirayiHerGunSular()
+        {
+            var db = Db();
+            var map = new GridMap(20, 12);
+            var world = new WorldState(map);
+            var ditch = db.Items.Get("item.irrigation_ditch");
+            int n = StartingKit.TillBed(world, new GridPos(4, 3), ditch: ditch);
+            Assert.Equal(StartingKit.BedWidth * (StartingKit.BedHeight - 1), n);
+            Assert.Equal(ditch.Id, world.GetItemAt(new GridPos(4, 4))?.Def.Id);
+            Assert.Equal(FloorType.Dirt, map.GetFloor(new GridPos(9, 5)));
+            var crop = world.PlaceItem(db.Items.Get("item.crop_turnip"), new GridPos(9, 5));
+            var plants = new PlantSystem(world, 1);
+            plants.OnNewDay(rained: false);
+            Assert.True(crop.Watered, "hendek yanındaki ekin sulanmalı");
         }
     }
 }
