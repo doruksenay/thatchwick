@@ -1,7 +1,8 @@
 ---
 id: "303b"
 title: Taş fırın yeniden (303'teki çömlekçi fırınına benziyordu)
-status: pending
+status: running
+claimed_at: 2026-11-19T07:41Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 2: "Kabul, fırın yeniden")
 family: esya
 style_gate: false
