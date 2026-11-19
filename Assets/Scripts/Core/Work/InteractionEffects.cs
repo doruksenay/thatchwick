@@ -65,6 +65,9 @@ namespace Thatchwick.Core.Work
         /// <summary>Aile tarifinden gelen ek ürün şansı (beceri → oran; belge 34-D1). Null: yok.</summary>
         public Func<SkillType, double> FamilyYieldChance { get; set; }
 
+        /// <summary>Ek başlama engeli (ev bakımı, belge 45: Life.HomeLife.CanStart); null ise yok.</summary>
+        public Func<Character, ItemInstance, InteractionDef, string> ExtraBlocker { get; set; }
+
         public InteractionEffects(WorldState world, Household house, ContentDatabase content, int seed = 1)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -127,6 +130,7 @@ namespace Thatchwick.Core.Work
             if (interaction.FillDecor) { var why = DecorSystem.FillBlocker(item, _house, _content); if (why != null) return why; }
             if (interaction.EatContents && DecorSystem.EdibleCount(item, _content) == 0)
                 return item.HasContents ? "İçindekiler çürümüş; önce boşalt." : $"{item.Def.DisplayName} boş.";
+            if (ExtraBlocker != null) return ExtraBlocker(character, item, interaction);
             return null;
         }
 

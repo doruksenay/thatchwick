@@ -19,7 +19,7 @@ namespace UnityEngine {
  public struct Vector3{public float x,y,z;public Vector3(float a,float b,float c){x=a;y=b;z=c;} public Vector3(float a,float b){x=a;y=b;z=0;} public static Vector3 zero=>default; public static Vector3 one=>new Vector3(1,1,1);
   public static Vector3 operator+(Vector3 a,Vector3 b)=>a; public static Vector3 operator-(Vector3 a,Vector3 b)=>a; public static Vector3 operator*(Vector3 a,float f)=>a; public static Vector3 operator*(float f,Vector3 a)=>a; public static Vector3 operator/(Vector3 a,float f)=>a; public static implicit operator Vector2(Vector3 v)=>new Vector2(v.x,v.y); public static Vector3 Lerp(Vector3 a,Vector3 b,float t)=>a; public static float Distance(Vector3 a,Vector3 b)=>0; public static Vector3 MoveTowards(Vector3 a,Vector3 b,float d)=>a;}
  public struct Vector2Int{public int x,y;public Vector2Int(int a,int b){x=a;y=b;}}
- public struct Quaternion{public static Quaternion identity=>default;}
+ public struct Quaternion{public static Quaternion identity=>default; public static Quaternion Euler(float x,float y,float z)=>default;}
  public struct Matrix4x4{public static Matrix4x4 identity=>default; public static Matrix4x4 TRS(Vector3 p,Quaternion q,Vector3 s)=>default; public static Matrix4x4 Scale(Vector3 s)=>default;}
  public struct Color{public float r,g,b,a;public Color(float r,float g,float b,float a){this.r=r;this.g=g;this.b=b;this.a=a;}public Color(float r,float g,float b){this.r=r;this.g=g;this.b=b;a=1;}
   public static Color HSVToRGB(float h,float s,float v)=>default; public static Color Lerp(Color a,Color b,float t)=>a; public static Color operator*(Color a,float f)=>a; public static Color operator*(Color a,Color b)=>a;

@@ -120,6 +120,7 @@ namespace Thatchwick.Core.Content
             foreach (var i in def.Interactions)
             {
                 if (i.IsCraft) { crafts++; continue; }
+                if (i.HomeAction == "upgrade" || i.HomeAction == "stow") continue;   // yükseltmeler ayrı satırda (belge 45)
                 var s = new StringBuilder();
                 if (i.RestoresNeed) s.Append($"{NeedName(i.Need)} +{i.Restore:0}");
                 else s.Append(i.DisplayName);
@@ -127,6 +128,19 @@ namespace Thatchwick.Core.Content
                 parts.Add(s.ToString());
             }
             if (crafts > 0) parts.Add($"{crafts} tarif");
+            if (def.Upgrades.Count > 0)
+            {
+                var names = new List<string>();
+                foreach (var u in def.Upgrades) names.Add(u.DisplayName.ToLowerInvariant());
+                parts.Add("Yükseltilir: " + string.Join(", ", names));
+            }
+            if (def.Burns) parts.Add($"Mum: {def.BurnDays / 0.21:0} akşam yanar");
+            if (def.IsLivePot) parts.Add("Canlı saksı: sula, güneşte büyür, ot verir");
+            if (def.IsNiche) parts.Add("Gömme: kerpiç ya da taş duvara oyulur");
+            if (def.HasTag("strewable")) parts.Add("Ot serpilir (Ferah oda)");
+            if (def.HasTag("patternable")) parts.Add(def.HasTag("heraldic") ? "Desen ve arma işlenir" : "Desen işlenir");
+            if (def.HasTag("display")) parts.Add("Sergi: koleksiyon tamamlanır");
+            if (def.HasTag("dovecote")) parts.Add("Her sabah gübre");
             if (def.HeatOutput > 0f) parts.Add($"Isı {def.HeatOutput:0}");
             if (def.Storage > 0) parts.Add($"Depo +{def.Storage}");
             if (def.HasTag("light")) parts.Add("Işık");

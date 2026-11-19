@@ -63,6 +63,8 @@ namespace Thatchwick.Core.Content
                     HousingCapacity = dto.capacity,
                     StairsDelta = dto.stairs,
                     FinishGroup = string.IsNullOrWhiteSpace(dto.finishGroup) ? null : dto.finishGroup,
+                    AccentGroup = string.IsNullOrWhiteSpace(dto.accentGroup) ? null : dto.accentGroup,
+                    AccentLabel = string.IsNullOrWhiteSpace(dto.accentLabel) ? null : dto.accentLabel,
                     RequiresIndoor = dto.requiresIndoor,
                     IsIceBox = dto.iceBox,
                     IsFishTrap = dto.fishTrap,
@@ -130,6 +132,12 @@ namespace Thatchwick.Core.Content
                 item.RequiresNearby = string.IsNullOrEmpty(dto.requiresNear) ? null : dto.requiresNear;
                 item.NearbyRadius = dto.nearRadius > 0 ? dto.nearRadius : 4;
                 item.ShopUnlock = string.IsNullOrEmpty(dto.shopUnlock) ? null : dto.shopUnlock;
+                // Ev bakımı (belge 45): mum, ışık gücü, canlı saksı, yükseltmeler.
+                item.BurnDays = Math.Max(0f, dto.burnDays);
+                if (dto.burnRefill != null) foreach (var f in dto.burnRefill) if (!string.IsNullOrWhiteSpace(f)) item.BurnRefill.Add(f.Trim());
+                item.LightPower = Math.Max(0, dto.lightPower);
+                item.PotHerb = string.IsNullOrWhiteSpace(dto.potHerb) ? null : dto.potHerb.Trim();
+                item.PotGrowDays = dto.potGrowDays > 0f ? dto.potGrowDays : 3f;
                 if (dto.fitsOn != null) foreach (var f in dto.fitsOn) if (!string.IsNullOrWhiteSpace(f)) item.FitsOn.Add(f.Trim());
                 if (dto.wallBands != null)
                     foreach (var b in dto.wallBands)
@@ -189,7 +197,7 @@ namespace Thatchwick.Core.Content
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
                             || i.addIce > 0f || i.requiresFrost || i.piped || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter
-                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents || i.fillDecor || i.eatContents;
+                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents || i.fillDecor || i.eatContents || !string.IsNullOrWhiteSpace(i.homeAction);
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -258,7 +266,9 @@ namespace Thatchwick.Core.Content
                             Polish = i.polish,
                             CollectContents = i.collectContents,
                             FillDecor = i.fillDecor,
-                            EatContents = i.eatContents
+                            EatContents = i.eatContents,
+                            HomeAction = string.IsNullOrWhiteSpace(i.homeAction) ? null : i.homeAction.Trim(),
+                            UpgradeId = string.IsNullOrWhiteSpace(i.upgrade) ? null : i.upgrade.Trim()
                         };
                         AddMaterials(interaction, i.materials);
                         bool badExtra = false;
@@ -289,6 +299,11 @@ namespace Thatchwick.Core.Content
                         item.Interactions.Add(interaction);
                     }
                 }
+
+                ApplyUpgrades(item, dto.upgrades, errors);
+                // Mevsim süsü: mevsimi geçince ev görevlisi kaldırır (belge 45).
+                if (item.IsSeasonal)
+                    item.Interactions.Add(new InteractionDef { Id = "stow_wilted", DisplayName = "Kaldır (mevsimi geçti)", DurationDays = 0.02, HomeAction = "stow" });
 
                 try
                 {
@@ -331,6 +346,7 @@ namespace Thatchwick.Core.Content
                     Color = string.IsNullOrWhiteSpace(dto.color) ? "#C8B490" : dto.color,
                     HeatLoss = dto.heatLoss <= 0f ? 1f : dto.heatLoss,
                     Comfort = dto.comfort,
+                    Beauty = dto.beauty,
                     Group = string.IsNullOrWhiteSpace(dto.group) ? null : dto.group,
                     PriceFactor = dto.priceFactor <= 0f ? 1f : dto.priceFactor,
                     Levels = dto.levels != null ? new List<int>(dto.levels) : new List<int>(),
@@ -338,6 +354,11 @@ namespace Thatchwick.Core.Content
                     MaterialItem = string.IsNullOrWhiteSpace(dto.material) ? null : dto.material,
                     MaterialCount = dto.materialCount <= 0 ? 1 : dto.materialCount
                 };
+                if (!string.IsNullOrWhiteSpace(dto.skill))
+                {
+                    if (Enum.TryParse(dto.skill, true, out SkillType ps) && Enum.IsDefined(typeof(SkillType), ps)) def.Skill = ps;
+                    else errors.Add($"{dto.id}: bilinmeyen beceri '{dto.skill}'.");
+                }
                 if (kind == BuildPartKind.Floor)
                 {
                     if (string.IsNullOrWhiteSpace(dto.floorBase) || !Enum.TryParse(dto.floorBase, true, out World.FloorType fb)
@@ -350,6 +371,50 @@ namespace Thatchwick.Core.Content
                 }
                 try { db.Parts.Register(def); }
                 catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }
+            }
+        }
+
+        /// <summary>
+        /// Eşya yükseltmeleri (belge 45 §6): her biri eşyaya "upgrade:&lt;id&gt;" kimlikli bir iş etkileşimi olarak eklenir
+        /// (malzeme harcar, beceri ister). Etkisi Life.HomeLife'ta eşya örneğine yazılır.
+        /// </summary>
+        private static void ApplyUpgrades(ItemDef item, UpgradeDto[] upgrades, List<string> errors)
+        {
+            if (upgrades == null) return;
+            foreach (var u in upgrades)
+            {
+                if (u == null || string.IsNullOrWhiteSpace(u.id)) { errors.Add($"{item.Id}: yükseltmenin kimliği boş."); continue; }
+                SkillType skill = SkillType.Carpentry;
+                if (!string.IsNullOrWhiteSpace(u.skill) && (!Enum.TryParse(u.skill, true, out skill) || !Enum.IsDefined(typeof(SkillType), skill)))
+                {
+                    errors.Add($"{item.Id}/{u.id}: bilinmeyen beceri '{u.skill}'.");
+                    continue;
+                }
+                var def = new UpgradeDef
+                {
+                    Id = u.id.Trim(),
+                    DisplayName = string.IsNullOrWhiteSpace(u.displayName) ? u.id : u.displayName,
+                    Requires = string.IsNullOrWhiteSpace(u.requires) ? null : u.requires.Trim(),
+                    Replaces = string.IsNullOrWhiteSpace(u.replaces) ? null : u.replaces.Trim(),
+                    Comfort = u.comfort, Beauty = u.beauty, Storage = Math.Max(0, u.storage),
+                    Restore = Math.Max(0f, u.restore), Collapse = Math.Max(0f, u.collapse), Chimney = u.chimney
+                };
+                item.Upgrades.Add(def);
+                var interaction = new InteractionDef
+                {
+                    Id = "upgrade:" + def.Id,
+                    DisplayName = "Yükselt: " + def.DisplayName,
+                    DurationDays = u.durationDays > 0 ? u.durationDays : 0.1,
+                    Skill = skill,
+                    SkillXp = 6f,
+                    MinSkillLevel = Math.Max(0, u.minLevel),
+                    Moodlet = Mood.MoodCatalog.Proud,
+                    HomeAction = "upgrade",
+                    UpgradeId = def.Id
+                };
+                AddMaterials(interaction, u.materials);
+                if (interaction.Consume.Count == 0) errors.Add($"{item.Id}/{u.id}: yükseltmenin malzemesi yok.");
+                item.Interactions.Add(interaction);
             }
         }
 

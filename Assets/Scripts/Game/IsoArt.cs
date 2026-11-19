@@ -229,6 +229,29 @@ namespace Thatchwick.Game
             ["item.cheese_press"] = new ItemArt { AlongX = "iso_item_cheese_press_se", PivotX = 40, PivotY = 24 },           // 324 (72 px tuval)
             ["item.forage_pinecone"] = new ItemArt { AlongX = "iso_forage_pinecone_se", PivotX = 40, PivotY = 24 },          // 322
             // ---- Ev dekorasyonu adayları (387-390, 400; onay bekliyor, oyunda denensin diye bağlı). Tek "_se" görsel uzun ekseni "\\" (AlongY). ----
+            // ---- Ev bakımı ve otomasyon (belge 45; görsel işleri 440-445, gelene kadar yer tutucu) ----
+            ["item.wall_niche"] = new ItemArt { AlongX = "iso_wall_item_wall_niche_sw_ne", PivotX = 24, PivotY = 32 },            // 440
+            ["item.wall_niche_lamp"] = new ItemArt { AlongX = "iso_wall_item_wall_niche_lamp_sw_ne", PivotX = 24, PivotY = 32 },  // 440
+            ["item.window_seat"] = new ItemArt { AlongX = "iso_wall_item_window_seat_sw_ne", PivotX = 24, PivotY = 24 },          // 440
+            ["item.ceiling_painted_beam"] = new ItemArt { AlongX = "iso_ceiling_item_painted_beam_se", PivotX = 32, PivotY = 16 }, // 440
+            ["item.embroidery_frame"] = new ItemArt { AlongX = "iso_item_embroidery_frame_se", PivotX = 40, PivotY = 24 },        // 440
+            ["item.display_shelf"] = new ItemArt { AlongX = "iso_wall_item_display_shelf_2w_sw_ne", PivotX = 48, PivotY = 32 },   // 441 (2 kenar)
+            ["item.display_cabinet"] = new ItemArt { AlongX = "iso_item_display_cabinet_se", PivotX = 40, PivotY = 24 },          // 441
+            ["item.clothes_perch"] = new ItemArt { AlongX = "iso_wall_item_clothes_perch_2w_sw_ne", PivotX = 48, PivotY = 32 },   // 441 (2 kenar)
+            ["item.home_ribbon"] = new ItemArt { AlongX = "iso_wall_item_home_ribbon_sw_ne", PivotX = 20, PivotY = 20 },          // 441
+            ["item.turf_seat"] = new ItemArt { AlongY = "iso_item_turf_seat_2x1_se", PivotX = 56, PivotY = 32 },                  // 442
+            ["item.sundial"] = new ItemArt { AlongX = "iso_item_sundial_se", PivotX = 40, PivotY = 24 },                          // 442
+            ["item.dovecote"] = new ItemArt { AlongX = "iso_item_dovecote_2x2_se", PivotX = 72, PivotY = 40 },                    // 442
+            ["item.dovecote_village"] = new ItemArt { AlongX = "iso_item_dovecote_village_se", PivotX = 40, PivotY = 24 },        // 442
+            ["item.courtyard_pool"] = new ItemArt { AlongX = "iso_item_courtyard_pool_2x2_se", PivotX = 72, PivotY = 40 },        // 443
+            ["item.joke_fountain"] = new ItemArt { AlongX = "iso_item_joke_fountain_se", PivotX = 40, PivotY = 24 },              // 443
+            ["item.jazari_peacock"] = new ItemArt { AlongX = "iso_item_jazari_peacock_se", PivotX = 40, PivotY = 24 },            // 443
+            ["item.water_clock"] = new ItemArt { AlongX = "iso_item_water_clock_se", PivotX = 40, PivotY = 24 },                  // 443
+            ["item.stairs_up"] = new ItemArt { AlongY = "iso_item_stairs_up_wood_1x2_se", PivotX = 56, PivotY = 32 },             // 450 (+ _accent korkuluk)
+            ["item.stairs_down"] = new ItemArt { AlongY = "iso_item_stairs_down_wood_1x2_se", PivotX = 56, PivotY = 32 },         // 450
+            ["item.stairs_up_stone"] = new ItemArt { AlongY = "iso_item_stairs_up_stone_1x2_se", PivotX = 56, PivotY = 32 },      // 450
+            ["item.stairs_down_stone"] = new ItemArt { AlongY = "iso_item_stairs_down_stone_1x2_se", PivotX = 56, PivotY = 32 },  // 450
+            ["item.turning_eagle_lectern"] = new ItemArt { AlongX = "iso_item_eagle_lectern_se", PivotX = 40, PivotY = 24 },      // 443
             ["item.sedir"] = new ItemArt { AlongY = "iso_item_sedir_2x1_se", PivotX = 56, PivotY = 32 },                    // 390
             ["item.sedir_long"] = new ItemArt { AlongY = "iso_item_sedir_long_3x1_se", PivotX = 72, PivotY = 40 },          // 390 (144 px)
             ["item.sedir_bed"] = new ItemArt { AlongY = "iso_item_sedir_bed_2x1_se", PivotX = 56, PivotY = 32 },            // 390
@@ -456,6 +479,18 @@ namespace Thatchwick.Game
         {
             if (itemId == null || !Items.TryGetValue(itemId, out var art)) return null;
             return Get(art.AlongX ?? art.AlongY, art.PivotX, art.PivotY);
+        }
+
+        /// <summary>
+        /// İkinci renk maskesi (belge 45 §10): eşya görselinin "_accent" eki (korkuluk, minder, kulp; beyaz, saydam zemin).
+        /// Yoksa null: ikinci renk yalnızca kartta görünür.
+        /// </summary>
+        public static Sprite ItemAccent(ItemInstance item)
+        {
+            if (!Items.TryGetValue(item.Def.Id, out var art)) return null;
+            bool square = item.Def.Width == item.Def.Height;
+            string name = square ? (art.AlongX ?? art.AlongY) : item.Rotation % 2 == 0 ? (art.AlongX ?? art.AlongY) : (art.AlongY ?? art.AlongX);
+            return name == null ? null : Get(name + "_accent", art.PivotX, art.PivotY);
         }
 
         public static Sprite Item(ItemInstance item, out bool flipX)

@@ -437,11 +437,66 @@ namespace Thatchwick.Core.Build
             return p.PriceFactor;
         }
 
+        /// <summary>İkinci kaplama (korkuluk, minder, kulp) eşya fiyatının bu kadarına sayılır.</summary>
+        public const float AccentShare = 0.35f;
+
+        /// <summary>İkinci kaplamanın fiyat çarpanı (yoksa 1).</summary>
+        public float AccentFactor(ItemInstance item)
+        {
+            if (item?.AccentId == null || !_content.Parts.TryGet(item.AccentId, out var p)) return 1f;
+            return p.PriceFactor;
+        }
+
         // Kaplama farkının satış oranı (satışta ve envantere alırken iade edilir).
         private int FinishSellBonus(ItemInstance item)
         {
-            float extra = FinishFactor(item) - 1f;
+            float extra = Math.Max(0f, FinishFactor(item) - 1f) + Math.Max(0f, AccentFactor(item) - 1f) * AccentShare;
             return extra <= 0f ? 0 : (int)Math.Floor(item.Def.Price * extra * SellRatio);
+        }
+
+        /// <summary>
+        /// İkinci kaplamayı değiştirir (belge 45 §10): taş merdivenin demir korkuluğu kırmızı, sandalyenin minderi çivit.
+        /// Fark eşya fiyatının AccentShare kadarı üzerinden ödenir; açılış beceriye (grubun becerisi) bağlıdır.
+        /// </summary>
+        public PlacementCheck SetItemAccent(int itemId, string finishId)
+        {
+            var item = _world.GetItem(itemId);
+            if (item == null) return PlacementCheck.Fail("Eşya bulunamadı.");
+            if (IsLocked(item) || item.IsPlant) return PlacementCheck.Fail("Bu eşyanın kaplaması değişmez.");
+            if (string.IsNullOrEmpty(item.Def.AccentGroup)) return PlacementCheck.Fail("Bu eşyanın ikinci rengi yok.");
+            BuildPartDef part = null;
+            if (finishId != null)
+            {
+                if (!_content.Parts.TryGet(finishId, out part) || part.Kind != BuildPartKind.ItemFinish || part.Group != item.Def.AccentGroup)
+                    return PlacementCheck.Fail("Bu eşyaya uymayan kaplama.");
+                if (!IsUnlocked(part)) return PlacementCheck.Fail(LockText(part));
+                if (part.IsDefault) finishId = null;
+            }
+            var old = item.AccentId;
+            if (old == finishId) return PlacementCheck.Fail("Zaten öyle.");
+            float oldF = AccentFactor(item), newF = part != null ? part.PriceFactor : 1f;
+            int diff = (int)Math.Round(item.Def.Price * AccentShare * (newF - oldF));
+            var mat = PlanMaterial(part, 1, diff > 0 ? diff : 0);
+            int cost = mat.Cost;
+            int refund = diff < 0 ? (int)Math.Floor(-diff * SellRatio) : 0;
+            if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            mat.Take(_house);
+            if (refund > 0) _house.AddAkce(refund);
+            item.AccentId = finishId;
+            _world.NotifyChanged();
+            int net = refund - cost;
+            Record("İkinci renk", () =>
+            {
+                var cur = _world.GetItem(itemId);
+                if (cur == null) return PlacementCheck.Fail("Eşya artık yok.");
+                if (net > 0) { if (!_house.TrySpend(net)) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz."); }
+                else if (net < 0) _house.AddAkce(-net);
+                mat.GiveBack(_house);
+                cur.AccentId = old;
+                _world.NotifyChanged();
+                return PlacementCheck.Success;
+            });
+            return PlacementCheck.Success;
         }
 
         /// <summary>Yerleştirilmiş mobilyanın kaplamasını değiştirir (null = varsayılan). Pahalı kaplama farkı ödenir, ucuzunda yarısı iade.</summary>
@@ -965,6 +1020,7 @@ namespace Thatchwick.Core.Build
                         if (!r.Ok) { fail = r; break; }
                         newIds[it.Id] = made.Id;
                         if (it.FinishId != null) { var fr = SetItemFinish(made.Id, it.FinishId); if (!fr.Ok) { fail = fr; break; } }
+                        if (it.AccentId != null) { var ar = SetItemAccent(made.Id, it.AccentId); if (!ar.Ok) { fail = ar; break; } }
                         foreach (var decor in _world.GetDecorOn(it.Id))
                         {
                             var db = Buy(decor.Def.Id);

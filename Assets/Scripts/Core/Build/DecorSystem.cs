@@ -54,6 +54,8 @@ namespace Thatchwick.Core.Build
         public Action<string, int> Notify { get; set; }
         /// <summary>Bir raf çöktü.</summary>
         public event Action<CollapseReport> Collapsed;
+        /// <summary>Çökme şansı çarpanı (yükseltme; belge 45); null ise 1.</summary>
+        public Func<ItemInstance, double> CollapseFactor { get; set; }
         /// <summary>Karo sıcaklığı (içerik bozulma hızı); null ise normal hız.</summary>
         public Func<GridPos, float> TemperatureAt { get; set; }
 
@@ -99,6 +101,7 @@ namespace Thatchwick.Core.Build
             {
                 if (_world.GetItem(s.Id) == null) continue;
                 double chance = CollapseChance(_world.LoadOf(s.Id), s.Def.MaxLoad);
+                if (CollapseFactor != null) chance *= CollapseFactor(s);   // cilalı, demir destekli raf (belge 45)
                 if (NextRoll() < chance) Collapse(s);
             }
         }
@@ -279,12 +282,19 @@ namespace Thatchwick.Core.Build
                 foreach (var f in def.FillWith)
                     while (item.Contents.Count < def.FillCount && (pass == 0 ? house.OwnCount(f) > 0 : house.Count(f) > 0))
                     {
+                        if (def.HasTag(Decor.DistinctTag) && HasContent(item, f)) break;   // sergi rafı: her eşyadan bir tane (belge 45)
                         double age = ageOf != null ? Math.Max(0, ageOf(f)) : 0;
                         if (!house.TryTakePreferOwn(f, out bool own)) break;
                         item.Contents.Add(new StoredItem(f, age, own));
                         added++;
                     }
             return added;
+        }
+
+        private static bool HasContent(ItemInstance item, string id)
+        {
+            foreach (var c in item.Contents) if (c.ItemId == id) return true;
+            return false;
         }
 
         /// <summary>İçindekilerden bir tane yer: önce en bayatı (çürük yenmez). Yenen ürünün kimliği ya da null.</summary>

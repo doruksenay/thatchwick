@@ -111,6 +111,13 @@ namespace Thatchwick.Core.Content
         public const string SealedTag = "sealed";
         public const double SealedAgeFactor = 0.25;
         public const int OwnWorkBonus = 2;
+        // ---- belge 45 ----
+        /// <summary>Gömme eşya: yalnızca bu duvar malzemelerine oyulur.</summary>
+        public const string NicheTag = "niche";
+        public static readonly string[] ThickWalls = { "wall_cob", "wall_stone", "wall_ashlar", "wall_rubble_lime", "wall_brick", "wall_black_stone", "wall_red_ashlar", "wall_marble" };
+        /// <summary>Sergi rafı: aynı eşyadan ikincisini almaz (koleksiyon).</summary>
+        public const string DistinctTag = "distinct";
+
         /// <summary>Çürük içerikli dekorun güzelliği (sinek).</summary>
         public const int RottenBeauty = -4;
     }
@@ -143,6 +150,26 @@ namespace Thatchwick.Core.Content
     public static class AnimalRoles
     {
         public const string Water = "water", Bedding = "bedding", Collector = "collector", Feeder = "feeder", Bell = "bell";
+    }
+
+    /// <summary>Eşya yükseltmesi (belge 45 §6): yatak şiltesi, sandığa demir kuşak, masaya cila, ocağa baca.</summary>
+    public sealed class UpgradeDef
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+        /// <summary>Önce yapılmış olması gereken yükseltme (kademe zinciri); null = yok.</summary>
+        public string Requires { get; set; }
+        /// <summary>Yapılınca kaldırılan yükseltme (yün şilte saman şiltenin yerine geçer); null = yok.</summary>
+        public string Replaces { get; set; }
+        public int Comfort { get; set; }
+        public int Beauty { get; set; }
+        public int Storage { get; set; }
+        /// <summary>İhtiyaç doldurma eki (0,1 = %10 daha çok doyurur).</summary>
+        public float Restore { get; set; }
+        /// <summary>Çökme şansı çarpanı (0,5 = yarısı); 0 = etkisiz.</summary>
+        public float Collapse { get; set; }
+        /// <summary>Ocağa baca: is çok azalır.</summary>
+        public bool Chimney { get; set; }
     }
 
     public sealed class ItemDef : IContentDef
@@ -228,6 +255,10 @@ namespace Thatchwick.Core.Content
         public List<string> Variants { get; set; } = new List<string>();
         /// <summary>Mobilya kaplama grubu (wood, cloth, metal, clay); boşsa renk/malzeme seçeneği yok.</summary>
         public string FinishGroup { get; set; }
+        /// <summary>İkinci kaplama grubu (merdivende korkuluk, sandalyede minder, sandıkta kulp); boşsa yok (belge 45 §10).</summary>
+        public string AccentGroup { get; set; }
+        /// <summary>İkinci kaplamanın görünen adı ("Korkuluk").</summary>
+        public string AccentLabel { get; set; }
         public bool IsRug => Placement == ItemPlacement.Rug;
         public bool IsCeiling => Placement == ItemPlacement.Ceiling;
 
@@ -289,6 +320,25 @@ namespace Thatchwick.Core.Content
         public bool InSeason(Time.Season s) => DecorSeasons.Count == 0 || DecorSeasons.Contains(s);
         /// <summary>Kazanılan hatıra (şenlik kupası, ilk ayakkabı): satın alınmaz, satılmaz; yazısı hatıra defterinden gelir.</summary>
         public bool IsKeepsake => HasTag("keepsake");
+
+        // ---- ev bakımı ve otomasyon (belge 45) ----
+        /// <summary>Mum: akşam saatlerinde yanar, bu kadar günde biter ("Mum değiştir"). 0 = bitmez.</summary>
+        public float BurnDays { get; set; }
+        public bool Burns => BurnDays > 0f;
+        /// <summary>Mum değiştirirken harcanan mumlar (sırayla). Boşsa kendisi, sonra item.candle.</summary>
+        public List<string> BurnRefill { get; set; } = new List<string>();
+        /// <summary>Işık gücü (mum 1, fener 2, avize 4). 0 ise ışık eşyasında 1.</summary>
+        public int LightPower { get; set; }
+        public int EffectiveLightPower => !HasTag("light") ? 0 : LightPower > 0 ? LightPower : 1;
+        /// <summary>Canlı saksı: sulandıkça büyür, olgunlaşınca bu otu verir.</summary>
+        public string PotHerb { get; set; }
+        public float PotGrowDays { get; set; } = 3f;
+        public bool IsLivePot => PotHerb != null;
+        /// <summary>Yükseltmeler (her biri "upgrade:&lt;id&gt;" etkileşimiyle yapılır).</summary>
+        public List<UpgradeDef> Upgrades { get; set; } = new List<UpgradeDef>();
+        public UpgradeDef FindUpgrade(string id) { foreach (var u in Upgrades) if (u.Id == id) return u; return null; }
+        /// <summary>Gömme eşya (duvar nişi): yalnızca kalın duvara (kerpiç, taş, kesme taş) oyulur.</summary>
+        public bool IsNiche => HasTag(Decor.NicheTag);
 
         /// <summary>Dekorun konabildiği yuva türleri (varsayılan dahil).</summary>
         public IReadOnlyList<string> EffectiveFits => FitsOn.Count > 0 ? (IReadOnlyList<string>)FitsOn : Decor.DefaultFits;

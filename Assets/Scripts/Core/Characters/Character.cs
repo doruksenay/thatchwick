@@ -17,7 +17,9 @@ namespace Thatchwick.Core.Characters
         /// <summary>Maden: işaretli karoları kaz, çatırdayana destek kur, suyu boşalt (arsa kazısı; ocakta sabah vardiyası).</summary>
         Mine = 3,
         /// <summary>Kâhya: her sabah öbür aile üyelerine bekleyen işe göre görev dağıtır (kendisi tarlaya inmez).</summary>
-        Steward = 4
+        Steward = 4,
+        /// <summary>Ev: mum değiştirir, sepeti tazeler, döküntüyü toplar, aynayı cilalar, saksıyı sular, ot serper, badana yapar (belge 45).</summary>
+        House = 5
     }
 
     /// <summary>

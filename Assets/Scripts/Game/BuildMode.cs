@@ -23,6 +23,29 @@ namespace Thatchwick.Game
         public System.Func<Thatchwick.Core.Characters.Character> Maker { get; set; }
         public System.Func<double> Today { get; set; }
         /// <summary>Hatıra ve soy ağacı yazıları (D3b); null ise yazı yok.</summary>
+        /// <summary>Ev bakımı (belge 45): yükseltme, desen, saksı, mum durumu kartta görünür.</summary>
+        public Thatchwick.Core.Life.HomeLife Home { get; set; }
+
+        // Ev bakımı satırları: yükseltmeler, desen, mum, saksı, hasır, oda türü.
+        private void DrawHomeInfo(ItemInstance sel)
+        {
+            if (sel.Def.Upgrades.Count > 0)
+            {
+                var names = new System.Collections.Generic.List<string>();
+                foreach (var u in sel.Def.Upgrades) names.Add((Home.HasUpgrade(sel.Id, u.Id) ? "✓ " : "") + u.DisplayName);
+                GUILayout.Label("Yükseltmeler (canlı modda eşyaya dokun): " + string.Join(", ", names), _wrap);
+            }
+            var pat = Home.PatternOn(sel);
+            if (pat != null) GUILayout.Label($"Desen: {pat.Name}");
+            else if (sel.Def.HasTag(Thatchwick.Core.Life.HomeLife.PatternableTag)) GUILayout.Label("Desen işlenebilir (Ev paneli, E).");
+            if (sel.Def.Burns) GUILayout.Label(sel.BurntOut ? "Mum bitti: \"Mum değiştir\"" : $"Mum: {sel.FuelDays / 0.21f:0} akşam daha yanar");
+            var pot = Home.PotLabel(sel);
+            if (pot != null) GUILayout.Label("Saksı: " + pot);
+            if (Home.IsStrewable(sel)) GUILayout.Label(Home.IsStrewnFresh(sel) ? "Otlar taze (Ferah oda)" : "Ot serpilebilir");
+            var room = _world.Map.Rooms.RoomAt(sel.Position);
+            if (room != null && room.IsIndoor) GUILayout.Label("Oda: " + Home.RoomSummary(room));
+        }
+
         public Thatchwick.Core.Life.KeepsakeService Keepsakes { get; set; }
         /// <summary>Şu anki mevsim (solmuş mevsim süsü); null ise solma gösterilmez.</summary>
         public System.Func<Thatchwick.Core.Time.Season> Season { get; set; }
@@ -1270,6 +1293,26 @@ namespace Thatchwick.Game
                     GUI.enabled = true;
                 }
             }
+            var accents = BuildParts.AccentsFor(_content, sel.Def);
+            if (accents.Count > 0)
+            {
+                GUILayout.Label($"{sel.Def.AccentLabel ?? "İkinci renk"} ({BuildParts.GroupName(sel.Def.AccentGroup)}):");
+                float curA = _svc.AccentFactor(sel);
+                foreach (var f in accents)
+                {
+                    bool selected = sel.AccentId == f.Id || sel.AccentId == null && f.IsDefault;
+                    int diff = (int)System.Math.Round(sel.Def.Price * BuildService.AccentShare * (f.PriceFactor - curA));
+                    string label = !_svc.IsUnlocked(f) ? $"{f.DisplayName} · {_svc.LockText(f)}" : diff > 0 ? $"{f.DisplayName} (+{diff})" : f.DisplayName;
+                    GUI.enabled = _svc.IsUnlocked(f);
+                    if (PartToggle(selected, label, f))
+                    {
+                        var id = sel.Id; var fid = f.Id;
+                        _deferred = () => { var r = _svc.SetItemAccent(id, fid); _status = r.Ok ? "İkinci renk değişti." : r.Reason; };
+                    }
+                    GUI.enabled = true;
+                }
+            }
+            if (Home != null) DrawHomeInfo(sel);
             DrawDecorControls(sel);
             if (Legacy != null) DrawHeirloom(sel);
             if (sel.Def.IsHousing && _animals != null)

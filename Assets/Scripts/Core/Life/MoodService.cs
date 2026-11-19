@@ -47,15 +47,17 @@ namespace Thatchwick.Core.Life
         /// <summary>Üst kademe (Tüccar, Asil) eşya sayısı: "Göz alıcı" için en az 2.</summary>
         public int FineItems;
         public int Area;
-        /// <summary>Ham toplam (eşya + çeşitlilik - eksi).</summary>
-        public int Raw => Items + Variety - Penalty;
+        /// <summary>Evin bakımından gelen artı (duvar kaplaması, ak badana, ferah ot serpmesi; belge 45).</summary>
+        public int Home;
+        /// <summary>Ham toplam (eşya + çeşitlilik + ev - eksi).</summary>
+        public int Raw => Items + Variety + Home - Penalty;
         /// <summary>Alana göre ölçekli puan: 3x3 odada ham toplam; büyük oda aynı eşyayla daha düşük.</summary>
         public int Score => (int)Math.Round(Raw * 3.0 / Math.Sqrt(Math.Max(9, Area)));
         public int Tier => MoodService.BeautyTier(Score, FineItems);
 
         public string Breakdown()
         {
-            return $"Eşya {Items} · Çeşitlilik +{Variety}" + (Penalty > 0 ? $" · Eksi -{Penalty}" : "") + $" · Alan {Area} karo → {Score}";
+            return $"Eşya {Items} · Çeşitlilik +{Variety}" + (Home > 0 ? $" · Duvar ve bakım +{Home}" : "") + (Penalty > 0 ? $" · Eksi -{Penalty}" : "") + $" · Alan {Area} karo → {Score}";
         }
     }
 
@@ -85,6 +87,8 @@ namespace Thatchwick.Core.Life
         public Func<ItemInstance, int> ExtraComfort { get; set; }
         /// <summary>Eşyanın güzelliğine ek (hatıra eskidikçe, soy ağacı nesille, solmuş mevsim süsü eksi); null ise yok (D3b).</summary>
         public Func<ItemInstance, double> BeautyBonus { get; set; }
+        /// <summary>Odanın bakımından gelen artı ve eksi (duvar kaplaması, badana, is, ot serpmesi; belge 45); null ise yok.</summary>
+        public Func<Room, (int plus, int minus)> RoomBeautyExtra { get; set; }
 
         public RoomComfort ComfortOf(Room room)
         {
@@ -241,6 +245,12 @@ namespace Thatchwick.Core.Life
             int kinds = (rug ? 1 : 0) + (wall ? 1 : 0) + (surface ? 1 : 0) + (ceiling ? 1 : 0) + (light ? 1 : 0);
             result.Variety = kinds >= 2 ? 2 * (kinds - 1) : 0;
             result.Penalty = (int)Math.Round(penalty);
+            if (RoomBeautyExtra != null)
+            {
+                var (plus, minus) = RoomBeautyExtra(room);
+                result.Home = Math.Max(0, plus);
+                result.Penalty += Math.Max(0, minus);
+            }
             return result;
         }
 

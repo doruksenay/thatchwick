@@ -226,13 +226,14 @@ namespace Thatchwick.Core.Build
             public string SlotId;
             public bool Wall;
             public string Finish;
+            public string Accent;
             public int Band = -1;
             public ItemCondition Condition;
         }
 
         private static Spot SpotOf(ItemInstance it, ItemDef def = null) =>
             new Spot { Def = def ?? it.Def, Pos = it.Position, Rot = it.Rotation, ParentId = it.ParentId, SlotId = it.SlotId, Wall = it.IsWallMounted,
-                Finish = def == null || def == it.Def ? it.FinishId : null, Band = it.IsWallMounted ? it.WallBand : -1, Condition = it.Condition };
+                Finish = def == null || def == it.Def ? it.FinishId : null, Accent = def == null || def == it.Def ? it.AccentId : null, Band = it.IsWallMounted ? it.WallBand : -1, Condition = it.Condition };
 
         private PlacementCheck CanPutBack(Spot s, int? ignoreItemId = null) =>
             s.ParentId.HasValue ? _world.CanPlaceOnSurface(s.Def, s.ParentId.Value, s.SlotId, ignoreItemId)
@@ -247,6 +248,7 @@ namespace Thatchwick.Core.Build
                 : s.Wall ? _world.PlaceOnWall(s.Def, s.Pos, s.Rot, s.Band)
                 : _world.PlaceItem(s.Def, s.Pos, s.Rot);
             it.FinishId = s.Finish;
+            it.AccentId = s.Accent;
             it.Condition = s.Condition;
             return it;
         }

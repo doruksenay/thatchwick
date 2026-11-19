@@ -37,6 +37,16 @@ namespace Thatchwick.Core.Progress
         public static SkillType SkillFor(BuildPartDef p)
         {
             if (p == null) return SkillType.Masonry;
+            if (p.Skill.HasValue) return p.Skill.Value;
+            if (p.Kind == BuildPartKind.ItemFinish)
+                switch (p.Group)
+                {
+                    case "wood": return SkillType.Carpentry;
+                    case "cloth": return SkillType.Weaving;
+                    case "metal": return SkillType.Smithing;
+                    case "clay": return SkillType.Pottery;
+                    default: return SkillType.Masonry;   // taş
+                }
             switch (p.Kind)
             {
                 case BuildPartKind.Door: case BuildPartKind.Window: case BuildPartKind.Fence: return SkillType.Carpentry;
