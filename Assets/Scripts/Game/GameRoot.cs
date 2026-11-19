@@ -262,10 +262,13 @@ namespace Thatchwick.Game
             ? Mathf.Min(560f, Screen.height / HudScale - 16f)
             : (_clock != null && Time.unscaledTime < _messageUntil ? 112f : 88f));
 
+        private const string AdultPackPref = "pack_adult";
+
         private void Awake()
         {
             // Kare hızı açıkça sabit: mobilde 30 (pil), masaüstünde 60. Oyun hızı kareden bağımsızdır (Time.deltaTime).
             Application.targetFrameRate = Application.isMobilePlatform ? 30 : 60;
+            Thatchwick.Core.Content.ContentPacks.Adult = PlayerPrefs.GetInt(AdultPackPref, 0) == 1;   // +18 paketi (şarap, bahis)
             WaitPendingWrite();   // önceki sahnenin arka plan kaydı bitmeden kayıt okunmasın
             IsoArt.Reset();
             _content = ContentLoader.Load(out var contentErrors);
@@ -1764,7 +1767,7 @@ namespace Thatchwick.Game
             {
                 if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell || item.Def.WaterGate) && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
                 foreach (var it in item.Def.Interactions)
-                    _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
+                    if (!it.Hidden) _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
                 if (item.Def.WaterGate)
                 {
                     var gate = item;
@@ -2861,6 +2864,13 @@ namespace Thatchwick.Game
             GUILayout.Label(new GUIContent($"İtibar: {_life.Upbringing.Reputation.TierName}", $"{_life.Upbringing.Reputation.Points} puan · satış {_life.Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%"), GUILayout.Width(110f));
             if (HudToggle("Etiketler (L)", _labelsAll)) _labelsAll = !_labelsAll;
             if (GUILayout.Button("Kaydet")) SaveNow(quiet: false);
+            bool adult = Thatchwick.Core.Content.ContentPacks.Adult;
+            if (GUILayout.Toggle(adult, " +18 paketi (şarap)") != adult)
+            {
+                Thatchwick.Core.Content.ContentPacks.Adult = !adult;
+                PlayerPrefs.SetInt(AdultPackPref, adult ? 0 : 1);
+                PlayerPrefs.Save();
+            }
             if (HudToggle(_hudExpanded ? "Ayrıntı ▴" : "Ayrıntı ▾", _hudExpanded)) _hudExpanded = !_hudExpanded;
             GUILayout.EndHorizontal();
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);

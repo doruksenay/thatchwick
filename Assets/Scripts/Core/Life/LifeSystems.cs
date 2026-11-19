@@ -213,6 +213,7 @@ namespace Thatchwick.Core.Life
                     Say(g.HouseholdWon ? $"{g.Game}: {g.Winner.Name} kazandı! +{Thatchwick.Core.Upbringing.FestivalGames.PrizeAkce} akçe, itibar."
                                        : $"{g.Game}: {g.Winner.Name} kazandı ({g.Entrants} yarışçı).", NoticeLevel.Info, g.Winner.Id);
                 Keepsakes.OnFestival(f.DisplayName, n);
+                if (f.Id == VintageFestival) foreach (var note in Vintage()) Say(note, NoticeLevel.Info);
                 Ledger.Note(f.DisplayName);
                 Goals.Update();
             };
@@ -667,6 +668,46 @@ namespace Thatchwick.Core.Life
             if (coffee) Coffee.OnCoffee(c, Clock.TotalDays);
             if (interaction.Id == FortuneInteraction) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
             if (IsHoneyHarvest(interaction)) TrySting(c);   // petek kesmede sokma OnInteractionAppliedOn'da
+        }
+
+        // ---- Bağbozumu (belge 32-8.3) ----
+        public const string VintageFestival = "festival.vintage";
+        public const int VintageGrapesPerTread = 4;
+        public const int VintageMaxTreads = 2;
+        public const int VintagePrize = 15;
+        public const double VintageWinBase = 0.15;
+        private readonly Random _vintageRng = new Random(887);
+
+        /// <summary>
+        /// Bağbozumu şenliği: herkese "Bağbozumu" moodlet'i; hanede üzüm varsa teknede ayakla ezilir (4 üzüm → 2 şıra, en çok 2 tekne);
+        /// en iyi üzüm yarışması simüle edilir (Bahçıvanlık başına +%4, kazanırsa akçe ve kronik).
+        /// </summary>
+        public List<string> Vintage(double? roll = null)
+        {
+            var notes = new List<string>();
+            foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddMoodlet("eff_vintage");
+            int treads = 0;
+            while (treads < VintageMaxTreads && House.Count("item.grape") >= VintageGrapesPerTread)
+            {
+                for (int i = 0; i < VintageGrapesPerTread; i++) House.TryTakeItem("item.grape");
+                House.AddItem("item.must", 2);
+                treads++;
+            }
+            if (treads > 0) notes.Add($"Bağbozumunda teknede ayakla {treads * VintageGrapesPerTread} üzüm ezildi; {treads * 2} şıra çıktı.");
+            var grower = BestAt(SkillType.Horticulture);
+            if (grower != null && treads > 0)
+            {
+                double chance = Math.Min(0.6, VintageWinBase + 0.04 * grower.Skills.GetLevel(SkillType.Horticulture));
+                if ((roll ?? _vintageRng.NextDouble()) < chance)
+                {
+                    House.AddAkce(VintagePrize);
+                    string text = $"En iyi üzüm yarışmasını {grower.Name} kazandı! +{VintagePrize} akçe.";
+                    grower.AddChronicle(text);
+                    notes.Add(text);
+                }
+                else notes.Add("En iyi üzüm yarışmasında bu yıl komşunun salkımı seçildi.");
+            }
+            return notes;
         }
 
         // ---- petekli bal, zeytinyağı kandili, yadigâr zeytin (belge 32-7, 8.2) ----

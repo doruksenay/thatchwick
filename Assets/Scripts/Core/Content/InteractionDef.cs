@@ -143,6 +143,9 @@ namespace Thatchwick.Core.Content
         public bool RequiresFruit { get; set; }
         /// <summary>Çocuk ve ergen yapamaz (kahve).</summary>
         public bool AdultOnly { get; set; }
+        /// <summary>+18 paketine ait (şarap): paket kapalıysa görünmez, açıkken Genç yetişkin ve üstü.</summary>
+        public bool AdultPack { get; set; }
+        public bool Hidden => AdultPack && !ContentPacks.Adult;
         /// <summary>Meyveyi toplar: ağaç yerinde kalır, meyve yeniden olgunlaşmaya başlar.</summary>
         public bool TakesFruit { get; set; }
 

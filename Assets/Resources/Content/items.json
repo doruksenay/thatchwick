@@ -1947,6 +1947,69 @@
             }
           ],
           "bladder": 4
+        },
+        {
+          "id": "make_pekmez_grape",
+          "displayName": "Şırayı kaynat, köpüğünü al (pekmez)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "materials": [
+            {
+              "item": "item.must",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pekmez",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "drink_must",
+          "displayName": "Taze şıra iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.04,
+          "consume": "item.must",
+          "extraRestore": [
+            {
+              "need": "Hunger",
+              "amount": 8
+            }
+          ],
+          "moodlet": "eff_must",
+          "bladder": 15
+        },
+        {
+          "id": "drink_wine",
+          "displayName": "Yeni şarap iç",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.05,
+          "consume": "item.wine_new",
+          "moodId": "mood.drink",
+          "moodText": "Neşeli",
+          "moodValue": 5,
+          "moodDays": 0.5,
+          "bladder": 15,
+          "adultPack": true
+        },
+        {
+          "id": "drink_wine_aged",
+          "displayName": "Eski şarap iç",
+          "need": "Fun",
+          "restore": 40,
+          "durationDays": 0.06,
+          "consume": "item.wine_aged",
+          "moodId": "mood.drink",
+          "moodText": "Keyifli",
+          "moodValue": 7,
+          "moodDays": 0.5,
+          "bladder": 15,
+          "adultPack": true
         }
       ],
       "price": 25,
@@ -17632,6 +17695,122 @@
           "consume": "item.olive_oil"
         }
       ]
+    },
+    {
+      "id": "item.sapling_grape",
+      "displayName": "Asma çeliği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "level": 3,
+      "plantsAs": "item.vine_grape"
+    },
+    {
+      "id": "item.vine_grape",
+      "displayName": "Üzüm asması",
+      "category": "plant",
+      "growDays": 6,
+      "fruitSeasons": [
+        "Autumn"
+      ],
+      "fruitDays": 4,
+      "interactions": [
+        {
+          "id": "pick",
+          "displayName": "Üzüm kes",
+          "durationDays": 0.07,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "requiresGrown": true,
+          "requiresFruit": true,
+          "takesFruit": true,
+          "produce": [
+            {
+              "item": "item.grape",
+              "count": 4
+            },
+            {
+              "item": "item.grape",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "prune",
+          "displayName": "Buda (çelik alınır)",
+          "durationDays": 0.06,
+          "skill": "Farming",
+          "skillXp": 8,
+          "requiresGrown": true,
+          "produce": [
+            {
+              "item": "item.sapling_grape",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.grape",
+      "displayName": "Üzüm",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "spoilDays": 5,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.must",
+      "displayName": "Şıra",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "spoilDays": 1.5,
+      "tags": [
+        "food",
+        "drink"
+      ]
+    },
+    {
+      "id": "item.wine_new",
+      "displayName": "Yeni şarap",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "drink",
+        "adult18"
+      ]
+    },
+    {
+      "id": "item.wine_aged",
+      "displayName": "Eski şarap",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "drink",
+        "adult18"
+      ]
+    },
+    {
+      "id": "item.grape_tub",
+      "displayName": "Üzüm teknesi",
+      "category": "work",
+      "price": 30,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "finishGroup": "wood",
+      "interactions": []
     }
   ],
   "recipes": [
@@ -20905,6 +21084,73 @@
       "skillXp": 4,
       "displayName": "Kuşburnu kurut",
       "count": 3
+    },
+    {
+      "id": "tread_grapes",
+      "station": "item.grape_tub",
+      "produces": "item.must",
+      "materials": [
+        {
+          "item": "item.grape",
+          "count": 4
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Cooking",
+      "skillXp": 6,
+      "displayName": "Ayakla üzüm ez (şıra)",
+      "count": 2,
+      "moodlet": "eff_treading"
+    },
+    {
+      "id": "vinegar_grape",
+      "station": "item.brew_barrel",
+      "produces": "item.vinegar",
+      "materials": [
+        {
+          "item": "item.must",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Brewing",
+      "skillXp": 6,
+      "displayName": "Şırayı ekşimeye bırak (sirke)",
+      "count": 2
+    },
+    {
+      "id": "wine",
+      "station": "item.brew_barrel",
+      "produces": "item.wine_new",
+      "materials": [
+        {
+          "item": "item.must",
+          "count": 3
+        }
+      ],
+      "durationDays": 1.0,
+      "skill": "Brewing",
+      "skillXp": 14,
+      "displayName": "Şırayı fıçıda mayala (şarap)",
+      "count": 2,
+      "adultPack": true
+    },
+    {
+      "id": "wine_age",
+      "station": "item.brew_barrel",
+      "produces": "item.wine_aged",
+      "materials": [
+        {
+          "item": "item.wine_new",
+          "count": 2
+        }
+      ],
+      "durationDays": 2.0,
+      "skill": "Brewing",
+      "skillXp": 18,
+      "minLevel": 4,
+      "displayName": "Şarabı beklet (eski şarap)",
+      "adultPack": true
     }
   ],
   "animals": [
@@ -22047,6 +22293,27 @@
       "value": 3,
       "days": 1.0,
       "coldResist": 0.05
+    },
+    {
+      "id": "eff_treading",
+      "displayName": "Üzüm ezdi",
+      "description": "Teknede ayakla üzüm ezmek eğlenceliydi.",
+      "value": 5,
+      "days": 0.5
+    },
+    {
+      "id": "eff_must",
+      "displayName": "Taze şıra",
+      "description": "Tatlı ve serin.",
+      "value": 3,
+      "days": 0.5
+    },
+    {
+      "id": "eff_vintage",
+      "displayName": "Bağbozumu",
+      "description": "Bağda herkes birlikte; kopuz çaldı, şıra içildi.",
+      "value": 8,
+      "days": 1.0
     }
   ]
 }

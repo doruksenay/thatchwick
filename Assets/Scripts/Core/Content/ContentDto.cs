@@ -68,6 +68,7 @@ namespace Thatchwick.Core.Content
         public float skillXp;
         public string moodlet;          // boş = "proud"
         public string requiresBranch;   // yalnızca bu dalı seçmiş karakter yapar (D3: Camcı)
+        public bool adultPack;          // +18 paketi (şarap): paket kapalıysa görünmez
     }
 
     [Serializable]
@@ -305,6 +306,7 @@ namespace Thatchwick.Core.Content
         public float fertilize;             // toprak verimine eklenen (0-1)
         public bool requiresFruit;          // meyvesi olgun ağaç gerekir
         public bool adultOnly;              // çocuk ve ergen yapamaz (kahve, belge 32-6)
+        public bool adultPack;              // +18 paketi (şarap içmek): paket kapalıysa görünmez
         public bool takesFruit;             // meyveyi toplar (ağaç kalır)
         public bool petAnimals;             // barınaktaki hayvanları sever
         public bool slaughter;              // barınaktan bir yetişkin hayvanı keser (et verir)
