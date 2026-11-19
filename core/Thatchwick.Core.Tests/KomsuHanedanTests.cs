@@ -60,7 +60,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal("Demirci hanesi", h.Name);
             Assert.Equal("villager.orhan", h.DefId);
             Assert.Equal(orhan.Id, h.HeadId);
-            Assert.Equal(6, x.Houses.Houses.Count(hh => hh.DefId != null));
+            Assert.Equal(x.Db.Villagers.All.Count(), x.Houses.Houses.Count(hh => hh.DefId != null));   // her adlı köylünün (dükkân sahipleri dahil) kendi hanesi
         }
 
         [Fact]
