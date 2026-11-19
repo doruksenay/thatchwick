@@ -137,6 +137,7 @@ namespace Thatchwick.Core.Content
         public string[] tags;        // pazar etiketleri: fuel, food
         public int level;            // dükkânda açılma seviyesi; 0 = 1
         public bool diesInWinter;    // ekin: kışın donar
+        public bool warmOnly;        // yalnızca ılık serada büyür ve meyve verir (kahve, belge 32)
         public string styleSet;      // Köylü / Zanaatkâr / Tüccar / Asil
         public string[] rooms;       // menü oda filtresi
         public string housing;       // hayvan barınağı türü (coop, barn, kennel)
@@ -301,6 +302,7 @@ namespace Thatchwick.Core.Content
         public bool water;                  // ekini sular
         public float fertilize;             // toprak verimine eklenen (0-1)
         public bool requiresFruit;          // meyvesi olgun ağaç gerekir
+        public bool adultOnly;              // çocuk ve ergen yapamaz (kahve, belge 32-6)
         public bool takesFruit;             // meyveyi toplar (ağaç kalır)
         public bool petAnimals;             // barınaktaki hayvanları sever
         public bool slaughter;              // barınaktan bir yetişkin hayvanı keser (et verir)

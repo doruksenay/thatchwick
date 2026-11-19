@@ -141,6 +141,8 @@ namespace Thatchwick.Core.Content
         public string RequiresBranchName { get; set; }
         /// <summary>Yalnızca meyvesi olgun ağaçta yapılabilir.</summary>
         public bool RequiresFruit { get; set; }
+        /// <summary>Çocuk ve ergen yapamaz (kahve).</summary>
+        public bool AdultOnly { get; set; }
         /// <summary>Meyveyi toplar: ağaç yerinde kalır, meyve yeniden olgunlaşmaya başlar.</summary>
         public bool TakesFruit { get; set; }
 

@@ -374,6 +374,7 @@ namespace Thatchwick.Core.Work
                 bool indoor = room != null && room.IsIndoor;
                 bool greenhouse = indoor && IsGreenhouse(room);
                 if (indoor && !greenhouse) continue;   // içeride (seradan başka) büyümez
+                if (item.Def.WarmOnly && !greenhouse) continue;   // kahve: yalnızca ılık serada (Güney Yamaçları gelince orada da)
 
                 if (item.IsGrown)
                 {
