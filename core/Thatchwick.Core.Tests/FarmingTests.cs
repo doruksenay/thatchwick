@@ -493,7 +493,7 @@ namespace Thatchwick.Core.Tests
         public void GercekIcerik_MeyveAgaclari_TohumYapici_Hendek()
         {
             var db = Real();
-            var trees = db.Items.All.Where(i => i.IsFruitTree && i.AllowedLevels.Count == 0).ToList();   // mantar yatağı bodrumdadır
+            var trees = db.Items.All.Where(i => i.IsFruitTree && i.AllowedLevels.Count == 0 && i.Interactions.Any(x => x.Id == "pick")).ToList();   // mantar yatağı bodrumdadır; meşe mazı verir (meyve değil)
             Assert.Equal(4, trees.Count);
             foreach (var t in trees)
             {
