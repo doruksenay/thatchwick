@@ -19475,6 +19475,56 @@
       "skillXp": 8,
       "displayName": "Midye kabuğu kâsesi yap",
       "minLevel": 2
+    },
+    {
+      "id": "hunting_bow",
+      "station": "item.workbench",
+      "produces": "item.hunting_bow",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Carpentry",
+      "skillXp": 10,
+      "displayName": "Av yayı yap"
+    },
+    {
+      "id": "snare",
+      "station": "item.workbench",
+      "produces": "item.snare",
+      "materials": [
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.03,
+      "skill": "Hunting",
+      "skillXp": 4,
+      "displayName": "Kement tuzağı bağla",
+      "count": 2
+    },
+    {
+      "id": "wattle_hurdle",
+      "station": "item.workbench",
+      "produces": "item.wattle_hurdle",
+      "materials": [
+        {
+          "item": "item.log",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Carpentry",
+      "skillXp": 5,
+      "displayName": "Örme çit ör"
     }
   ],
   "animals": [

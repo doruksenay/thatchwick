@@ -236,6 +236,94 @@ namespace Thatchwick.Core.Animals
         }
     }
 
+    /// <summary>
+    /// Yaban hayvanlarının çiftliğe etkisi (belge 31): tilki kümesten tavuk kapar (tilki yavrusu ya da köpek önler),
+    /// yaban domuzu yaz sonu ve sonbaharda ekin çiğner (ağıl ve köpek önler), sahiplenilen karga arada parlak hediye getirir.
+    /// </summary>
+    public sealed class WildMischief
+    {
+        public const double FoxChance = 0.04;
+        public const double BoarChance = 0.05;
+        public const int BoarCropsMax = 2;
+
+        private readonly AnimalSystem _animals;
+        private readonly WorldState _world;
+        private readonly WildAdoptions _adoptions;
+        private readonly Random _rng;
+
+        public WildMischief(AnimalSystem animals, WorldState world, WildAdoptions adoptions, int seed = 307)
+        {
+            _animals = animals; _world = world; _adoptions = adoptions; _rng = new Random(seed);
+        }
+
+        /// <summary>Dışarıda, uyanık yetişkin köpek var mı (dinlenen sayılmaz).</summary>
+        public bool ActiveDog()
+        {
+            if (_animals == null) return false;
+            foreach (var a in _animals.Animals)
+                if (!a.IsDead && a.Species.Id == "animal.dog" && a.IsMature && a.ShyDays <= 0) return true;
+            return false;
+        }
+
+        public List<Animal> ExposedPoultry()
+        {
+            var list = new List<Animal>();
+            if (_animals == null || !_animals.Released) return list;
+            foreach (var a in _animals.Animals)
+                if (!a.IsDead && a.Species.Housing == "coop") list.Add(a);
+            return list;
+        }
+
+        /// <summary>Tilki gecesi: kapılan hayvanı döner (önlenirse ya da olmazsa null). message: oyuncuya not.</summary>
+        public Animal FoxNight(Season season, out string message, bool force = false)
+        {
+            message = null;
+            if (season == Season.Winter && !force) return null;
+            var poultry = ExposedPoultry();
+            if (poultry.Count == 0) return null;
+            if (!force && _rng.NextDouble() >= FoxChance) return null;
+            if (_adoptions != null && _adoptions.FoxGuard) { message = "Gece bir tilki kümese yaklaştı; büyüttüğün tilki onu kovaladı."; return null; }
+            if (ActiveDog()) { message = "Köpek gece kümese yaklaşan tilkiyi kovaladı."; return null; }
+            poultry.Sort((x, y) => x.AgeDays.CompareTo(y.AgeDays));   // önce civciv
+            var prey = poultry[0];
+            _animals.KillByPredator(prey);
+            message = $"Gece tilki kümesten {prey.Name} adlı {prey.Species.DisplayName.ToLowerInvariant()}ı kaptı.";
+            return prey;
+        }
+
+        /// <summary>Yaban domuzu: yaz sonu ve sonbaharda ekin çiğner. Çiğnenen ekin sayısı.</summary>
+        public int BoarVisit(Season season, out string message, bool force = false)
+        {
+            message = null;
+            if (season != Season.Summer && season != Season.Autumn && !force) return 0;
+            if (!force && _rng.NextDouble() >= BoarChance) return 0;
+            var crops = new List<ItemInstance>();
+            foreach (var item in _world.Items) if (item.IsPlant && item.Def.IsCrop) crops.Add(item);
+            if (crops.Count == 0) return 0;
+            if (WildWorld.HasPen(_world.Map) && ActiveDog()) { message = "Gece yaban domuzları geldi; çit ve köpek tarlaya sokmadı."; return 0; }
+            int n = Math.Min(BoarCropsMax, crops.Count);
+            for (int i = 0; i < n; i++)
+            {
+                int k = _rng.Next(crops.Count);
+                _world.RemoveItem(crops[k].Id);
+                crops.RemoveAt(k);
+            }
+            message = $"Gece yaban domuzları tarlaya girdi, {n} ekin çiğnendi.";
+            return n;
+        }
+
+        /// <summary>Karga hediyesi: 1-3 akçe ya da midye kabuğu.</summary>
+        public string CrowGift(Household house, bool force = false)
+        {
+            if (_adoptions == null || house == null) return null;
+            if (!force && !_adoptions.CrowGiftToday()) return null;
+            if (force && !_adoptions.Has("wild.crow")) return null;
+            if (_rng.NextDouble() < 0.6) { int n = 1 + _rng.Next(3); house.AddAkce(n); return $"Karga pencereye {n} parlak akçe bıraktı."; }
+            house.AddItem("item.mussel_shell", 1);
+            return "Karga pencereye parlak bir kabuk bıraktı.";
+        }
+    }
+
     /// <summary>Kurt savunmasının dünyadan okunan parçaları: çitli ağıl ve açık havada yanan ateş (31-4).</summary>
     public static class WildWorld
     {

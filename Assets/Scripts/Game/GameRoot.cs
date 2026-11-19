@@ -2667,6 +2667,7 @@ namespace Thatchwick.Game
         private static string StageName(AgeStage s) => AgeStages.Name(s);
 
         // Kurt riski, öksüz yavru, Doğa Defteri ve yarışma kaydı (belge 29, 31). Basit IMGUI; asıl arayüz PixelLab ekranlarıyla gelecek.
+        private bool _journalOpen;
         private void DrawNatureAndContests(Character handler)
         {
             if (_life == null) return;
@@ -2682,11 +2683,27 @@ namespace Thatchwick.Game
                 var sp = WildCatalog.Get(pending);
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"   Öksüz {sp?.Name.ToLowerInvariant()} yavrusu:");
-                if (GUILayout.Button("Sahiplen")) { _life.Adoptions.Decide(true, _life.Journal); ShowMessage($"{sp?.Name} yavrusu bahçeye yerleşti."); }
+                if (GUILayout.Button("Sahiplen")) { _life.Adoptions.Decide(true, _life.Journal, (int)_clock.TotalDays); ShowMessage($"{sp?.Name} yavrusu bahçeye yerleşti."); }
                 if (GUILayout.Button("Doğaya bırak")) { _life.Adoptions.Decide(false, _life.Journal); ShowMessage("Yavru ormana döndü."); }
                 GUILayout.EndHorizontal();
             }
-            GUILayout.Label($"   Doğa Defteri: {_life.Journal.SeenCount}/{NatureJournal.Total} tür");
+            if (GUILayout.Button($"   Doğa Defteri: {_life.Journal.SeenCount}/{NatureJournal.Total} tür {(_journalOpen ? "▲" : "▼")}")) _journalOpen = !_journalOpen;
+            if (_journalOpen)
+            {
+                // Tür tür sayfa (belge 31-6): görülmeyen tür "?" olarak kalır.
+                foreach (var sp in WildCatalog.All)
+                {
+                    var m = _life.Journal.Get(sp.Id);
+                    if ((m & JournalMark.Seen) == 0) { GUILayout.Label($"      ? ({sp.Habitat})"); continue; }
+                    var tags = new List<string>();
+                    if ((m & JournalMark.Petted) != 0) tags.Add("sevildi");
+                    if ((m & JournalMark.Hunted) != 0) tags.Add("avlandı");
+                    if ((m & JournalMark.YoungSeen) != 0) tags.Add("yavru görüldü");
+                    if ((m & JournalMark.Adopted) != 0) tags.Add("sahiplenildi");
+                    if (_life.Adoptions.HasReturned(sp.Id)) tags.Add("doğaya döndü");
+                    GUILayout.Label($"      {sp.Name} · {sp.Habitat}{(sp.Night ? " · gece" : "")}{(tags.Count > 0 ? " — " + string.Join(", ", tags) : "")}");
+                }
+            }
             foreach (var a in _animals.Animals)
             {
                 ContestKind kind;

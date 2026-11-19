@@ -340,8 +340,19 @@ namespace Thatchwick.Core.Animals
         private static readonly string[] Candidates = { "wild.hedgehog", "wild.crow", "wild.fox", "wild.roe_deer" };
         private readonly Random _rng;
         private readonly List<string> _adopted = new List<string>();
+        private readonly Dictionary<string, int> _adoptedDay = new Dictionary<string, int>();
+        private readonly List<string> _returned = new List<string>();
+
+        /// <summary>Karaca bu kadar gün (≈ 2 yıl) sonra doğaya döner (belge 31-2).</summary>
+        public const int RoeReturnDays = 4;
+        /// <summary>Doğaya dönen karaca her ilkbahar bu şansla uğrar.</summary>
+        public const double RoeVisitChance = 0.15;
 
         public WildAdoptions(int seed = 131) { _rng = new Random(seed); }
+
+        /// <summary>Büyüyüp doğaya dönmüş yavrular (yalnızca karaca).</summary>
+        public IReadOnlyList<string> Returned => _returned;
+        public bool HasReturned(string speciesId) => _returned.Contains(speciesId);
 
         /// <summary>Bulunan ve karar bekleyen yavru (tür kimliği); yoksa null.</summary>
         public string Pending { get; private set; }
@@ -366,11 +377,11 @@ namespace Thatchwick.Core.Animals
         }
 
         /// <summary>Bekleyen yavruyu sahiplen (true) ya da doğaya bırak (false).</summary>
-        public bool Decide(bool adopt, NatureJournal journal)
+        public bool Decide(bool adopt, NatureJournal journal, int day = 0)
         {
             if (Pending == null) return false;
             journal?.Mark(Pending, JournalMark.Seen | JournalMark.YoungSeen | (adopt ? JournalMark.Adopted : JournalMark.None));
-            if (adopt) _adopted.Add(Pending);
+            if (adopt) { _adopted.Add(Pending); _adoptedDay[Pending] = day; }
             Pending = null;
             return true;
         }
@@ -378,17 +389,42 @@ namespace Thatchwick.Core.Animals
         /// <summary>Karganın getirdiği parlak hediye (günde %10); yoksa false.</summary>
         public bool CrowGiftToday() => Has("wild.crow") && _rng.NextDouble() < CrowGiftChance;
 
-        public string[] Export() { var l = new List<string>(_adopted); if (Pending != null) l.Add("?" + Pending); return l.ToArray(); }
+        /// <summary>Günlük: büyüyen karaca doğaya döner ("returned" döner); dönmüş karaca ilkbaharda uğrayabilir ("visit").</summary>
+        public string OnGrowUp(int day, Season season)
+        {
+            const string roe = "wild.roe_deer";
+            if (Has(roe) && _adoptedDay.TryGetValue(roe, out int since) && day - since >= RoeReturnDays)
+            {
+                _adopted.Remove(roe); _adoptedDay.Remove(roe);
+                if (!_returned.Contains(roe)) _returned.Add(roe);
+                return "returned";
+            }
+            if (_returned.Contains(roe) && season == Season.Spring && _rng.NextDouble() < RoeVisitChance) return "visit";
+            return null;
+        }
+
+        public string[] Export()
+        {
+            var l = new List<string>();
+            foreach (var a in _adopted) l.Add(_adoptedDay.TryGetValue(a, out int d) ? a + "@" + d : a);
+            foreach (var r in _returned) l.Add("^" + r);
+            if (Pending != null) l.Add("?" + Pending);
+            return l.ToArray();
+        }
 
         public void Import(string[] data)
         {
-            _adopted.Clear(); Pending = null;
+            _adopted.Clear(); _adoptedDay.Clear(); _returned.Clear(); Pending = null;
             if (data == null) return;
-            foreach (var e in data)
+            foreach (var raw in data)
             {
-                if (string.IsNullOrEmpty(e)) continue;
-                if (e[0] == '?') { if (WildCatalog.Get(e.Substring(1)) != null) Pending = e.Substring(1); }
-                else if (WildCatalog.Get(e) != null && !_adopted.Contains(e)) _adopted.Add(e);
+                if (string.IsNullOrEmpty(raw)) continue;
+                if (raw[0] == '?') { if (WildCatalog.Get(raw.Substring(1)) != null) Pending = raw.Substring(1); continue; }
+                if (raw[0] == '^') { var r = raw.Substring(1); if (WildCatalog.Get(r) != null && !_returned.Contains(r)) _returned.Add(r); continue; }
+                string e = raw; int day = 0;
+                int at = raw.IndexOf('@');
+                if (at > 0) { e = raw.Substring(0, at); int.TryParse(raw.Substring(at + 1), out day); }
+                if (WildCatalog.Get(e) != null && !_adopted.Contains(e)) { _adopted.Add(e); _adoptedDay[e] = day; }
             }
         }
     }
