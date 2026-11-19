@@ -171,110 +171,59 @@ namespace Thatchwick.Game
         }
 
         // ---------------- eşyalar ----------------
+        // Görseller ve pivotlar items.json'da (ItemDef.Art, yerleşim sistemi belge 44 B); yön ile görsel arasındaki bağ
+        // Core.Layout.ItemFacing'te tek yerde. Eski el tablosu (Items) oraya taşındı.
 
-        private sealed class ItemArt
+        /// <summary>Pivot: veride yoksa ayak izine göre varsayılan (1x1 80 px tuval (40, 24); 2x1 (56, 32); dekor (16, 7)).</summary>
+        private static Vector2 PivotOf(Thatchwick.Core.Content.ItemDef def)
         {
-            public string AlongX;     // uzun ekseni ekranda "/" (dönüş 0/2)
-            public string AlongY;     // uzun ekseni "\" (dönüş 1/3)
-            public float PivotX, PivotY;
-            public string Lit;        // ısı kaynağı yanarken
+            var a = def.Art;
+            if (a != null && (a.PivotX > 0f || a.PivotY > 0f)) return new Vector2(a.PivotX, a.PivotY);
+            if (def.Placement == Thatchwick.Core.Content.ItemPlacement.Surface) return new Vector2(16f, 7f);
+            int big = Mathf.Max(def.Width, def.Height);
+            return big <= 1 ? new Vector2(40f, 24f) : def.Width * def.Height == 2 ? new Vector2(56f, 32f) : new Vector2(72f, 40f);
         }
 
-        // 1x1 eşya (80 px tuval) pivotu (40, 24); 2x1 eşya (112 px) (56, 32); dekor (32 px) (16, 7).
-        private static readonly Dictionary<string, ItemArt> Items = new Dictionary<string, ItemArt>
+        /// <summary>Katalog önizlemesi (yapı menüsü eşya ızgarası, belge 33): eşyanın varsayılan yöndeki görseli; yoksa null.</summary>
+        public static Sprite ItemPreview(Thatchwick.Core.Content.ItemDef def)
         {
-            ["item.bed_straw"] = new ItemArt { AlongX = "iso_item_bed_straw_2x1_sw_ne", AlongY = "iso_item_bed_straw_2x1_se_nw", PivotX = 56, PivotY = 32 },
-            ["item.hearth_stone"] = new ItemArt { AlongX = "iso_item_hearth_stone_unlit_se", Lit = "iso_item_hearth_stone_lit_se", PivotX = 40, PivotY = 24 },
-            ["item.stool_wood"] = new ItemArt { AlongX = "iso_item_stool_se", PivotX = 40, PivotY = 24 },
-            ["item.table_wood"] = new ItemArt { AlongY = "iso_item_table_wood_2x1_se_nw", PivotX = 56, PivotY = 32 },
-            ["item.shelf_wood"] = new ItemArt { AlongY = "iso_item_shelf_wood_2x1_se_nw_v2", PivotX = 56, PivotY = 32 },   // 301 kabul (v2)
-            ["item.chair_wood"] = new ItemArt { AlongX = "iso_item_chair_wood_sw", PivotX = 40, PivotY = 24 },
-            ["item.cooking_pot"] = new ItemArt { AlongX = "iso_item_cooking_pot_se_v2", PivotX = 40, PivotY = 24 },     // 301b (v2)
-            ["item.candle"] = new ItemArt { AlongX = "iso_item_candle_se", PivotX = 16, PivotY = 7 },
-            ["item.flower_pot"] = new ItemArt { AlongX = "iso_item_flower_pot_se", PivotX = 16, PivotY = 7 },
+            if (def?.Art == null) return null;
+            int rot = Thatchwick.Core.Layout.ItemFacing.Snap(def, 0);
+            if (!Thatchwick.Core.Layout.ItemFacing.TryView(def, rot, false, out var name, out _)) name = def.Art.Grown;
+            var p = PivotOf(def);
+            return Get(name, p.x, p.y);
+        }
 
-            // Görsel parti 2 (18.11.2026): kuyruktan gelen adaylar (_aday). Review bağımlılık için yeterli (CLAUDE.md);
-            // kabul edilince dosya Assets/Art/Iso'ya aynı adla taşınır, eşleme değişmez. Pivotlar art/results tablolarından.
-            ["item.chair_carved"] = new ItemArt { AlongX = "iso_item_chair_carved_se", PivotX = 40, PivotY = 24 },          // 301
-            ["item.chest_wood"] = new ItemArt { AlongX = "iso_item_chest_wood_se", PivotX = 40, PivotY = 24 },              // 301
-            ["item.chopping_block"] = new ItemArt { AlongX = "iso_item_chopping_block_se", PivotX = 40, PivotY = 24 },      // 301
-            ["item.market_stall"] = new ItemArt { AlongY = "iso_item_market_stall_2x1_se_nw_v2", PivotX = 56, PivotY = 32 }, // 301b
-            ["item.clay_cup"] = new ItemArt { AlongX = "iso_item_clay_cup_se", PivotX = 16, PivotY = 7 },                    // 301b
-            ["item.bench_long"] = new ItemArt { AlongY = "iso_item_bench_long_2x1_se_nw", PivotX = 56, PivotY = 32 },        // 302
-            ["item.mattress_straw"] = new ItemArt { AlongX = "iso_item_mattress_straw_se", PivotX = 40, PivotY = 24 },       // 302
-            ["item.child_bed"] = new ItemArt { AlongX = "iso_item_child_bed_se", PivotX = 40, PivotY = 24 },                 // 302
-            ["item.stump_table"] = new ItemArt { AlongX = "iso_item_stump_table_se", PivotX = 40, PivotY = 24 },             // 302
-            ["item.prep_counter"] = new ItemArt { AlongY = "iso_item_prep_counter_2x1_se_nw", PivotX = 56, PivotY = 32 },    // 302
-            ["item.armchair_cushion"] = new ItemArt { AlongX = "iso_item_armchair_cushion_se", PivotX = 40, PivotY = 24 },   // 302
-            ["item.brazier"] = new ItemArt { AlongX = "iso_item_brazier_se", PivotX = 40, PivotY = 24 },                     // 303
-            ["item.stone_oven"] = new ItemArt { AlongY = "iso_item_stone_oven_2x1_se_nw", PivotX = 56, PivotY = 32 },        // 303
-            ["item.barrel"] = new ItemArt { AlongX = "iso_item_barrel_se", PivotX = 40, PivotY = 24 },                       // 303
-            ["item.woodshed"] = new ItemArt { AlongY = "iso_item_woodshed_2x1_se_nw", PivotX = 56, PivotY = 32 },            // 303
-            ["item.seed_crate"] = new ItemArt { AlongX = "iso_item_seed_crate_se", PivotX = 40, PivotY = 24 },               // 303
-            ["item.whetstone"] = new ItemArt { AlongX = "iso_item_whetstone_se", PivotX = 40, PivotY = 24 },                 // 303
-            ["item.basin_ewer"] = new ItemArt { AlongX = "iso_item_basin_ewer_se", PivotX = 40, PivotY = 24 },               // 304
-            ["item.water_bucket"] = new ItemArt { AlongX = "iso_item_water_bucket_se", PivotX = 40, PivotY = 24 },           // 304
-            ["item.barrel_tub"] = new ItemArt { AlongX = "iso_item_barrel_tub_se", PivotX = 40, PivotY = 24 },               // 304
-            ["item.outhouse"] = new ItemArt { AlongX = "iso_item_outhouse_se", PivotX = 40, PivotY = 24 },                   // 304
-            ["item.well"] = new ItemArt { AlongX = "iso_item_well_se", PivotX = 40, PivotY = 24 },                           // 304
-            ["item.scarecrow"] = new ItemArt { AlongX = "iso_item_scarecrow_se", PivotX = 40, PivotY = 24 },                 // 304
-            ["item.garden_bench"] = new ItemArt { AlongY = "iso_item_garden_bench_2x1_se_nw", PivotX = 56, PivotY = 32 },    // 304
-            ["item.child_chair"] = new ItemArt { AlongX = "iso_item_child_chair_se", PivotX = 40, PivotY = 24 },             // 304
-            ["item.toy_chest"] = new ItemArt { AlongX = "iso_item_toy_chest_se", PivotX = 40, PivotY = 24 },                 // 304
-            ["item.jug"] = new ItemArt { AlongX = "iso_item_jug_se", PivotX = 16, PivotY = 7 },                              // 304
-            ["item.salting_barrel"] = new ItemArt { AlongX = "iso_item_salting_barrel_se", PivotX = 40, PivotY = 24 },       // 312
-            ["item.compost_heap"] = new ItemArt { AlongX = "iso_item_compost_heap_se", PivotX = 40, PivotY = 24 },           // 321
-            ["item.seed_maker"] = new ItemArt { AlongY = "iso_item_seed_maker_2x1_se", PivotX = 56, PivotY = 32 },           // 321
-            ["item.bucket_pulley"] = new ItemArt { AlongX = "iso_item_bucket_pulley_se", PivotX = 40, PivotY = 24 },         // 321 (72 px tuval)
-            ["item.smokehouse"] = new ItemArt { AlongY = "iso_item_smokehouse_2x1_se", PivotX = 56, PivotY = 32 },           // 324
-            ["item.cheese_press"] = new ItemArt { AlongX = "iso_item_cheese_press_se", PivotX = 40, PivotY = 24 },           // 324 (72 px tuval)
-            ["item.forage_pinecone"] = new ItemArt { AlongX = "iso_forage_pinecone_se", PivotX = 40, PivotY = 24 },          // 322
-            // ---- Ev dekorasyonu adayları (387-390, 400; onay bekliyor, oyunda denensin diye bağlı). Tek "_se" görsel uzun ekseni "\\" (AlongY). ----
-            ["item.sedir"] = new ItemArt { AlongY = "iso_item_sedir_2x1_se", PivotX = 56, PivotY = 32 },                    // 390
-            ["item.sedir_long"] = new ItemArt { AlongY = "iso_item_sedir_long_3x1_se", PivotX = 72, PivotY = 40 },          // 390 (144 px)
-            ["item.sedir_bed"] = new ItemArt { AlongY = "iso_item_sedir_bed_2x1_se", PivotX = 56, PivotY = 32 },            // 390
-            ["item.floor_bed"] = new ItemArt { AlongY = "iso_item_floor_bed_2x1_se", PivotX = 56, PivotY = 32 },            // 390
-            ["item.yukluk"] = new ItemArt { AlongY = "iso_item_yukluk_2x1_se", PivotX = 56, PivotY = 32 },                  // 390 (136 px boy)
-            ["item.floor_cushion"] = new ItemArt { AlongX = "iso_item_floor_cushion_se", PivotX = 40, PivotY = 24 },        // 390
-            ["item.box_bed"] = new ItemArt { AlongY = "iso_item_box_bed_2x1_se", PivotX = 56, PivotY = 32 },                // 400
-            ["item.kilim_small"] = new ItemArt { AlongY = "iso_item_kilim_small_2x1_se", PivotX = 56, PivotY = 32 },        // 390 (halı)
-            ["item.kilim_large"] = new ItemArt { AlongY = "iso_item_kilim_large_3x2_se", PivotX = 88, PivotY = 48 },        // 390 (halı, 176 px)
-            ["item.cicim"] = new ItemArt { AlongX = "iso_item_cicim_2x2_se", PivotX = 72, PivotY = 40 },                    // 390 (halı, 144 px)
-            // Çocukluk oyuncakları (399, 401, 406, 417 kabul; belge 30). Yuva oyuncakları 32 px, pivot taban elması.
-            ["item.slingshot"] = new ItemArt { AlongX = "iso_item_slingshot_se", PivotX = 16, PivotY = 7 },                 // 399
-            ["item.jump_rope"] = new ItemArt { AlongX = "iso_item_jump_rope_se", PivotX = 16, PivotY = 7 },                 // 399
-            ["item.kite"] = new ItemArt { AlongX = "iso_item_kite_se", PivotX = 16, PivotY = 10 },                          // 399 (32x40, dış)
-            ["item.hoop"] = new ItemArt { AlongX = "iso_item_hoop_se_v3", PivotX = 16, PivotY = 10 },                       // 406 (dış)
-            ["item.marbles"] = new ItemArt { AlongX = "iso_item_marbles_se_v4", PivotX = 16, PivotY = 4 },                  // 417
-            ["item.whittling_knife"] = new ItemArt { AlongX = "iso_item_whittling_knife_se", PivotX = 16, PivotY = 7 },     // 401
-            ["item.juggling_balls"] = new ItemArt { AlongX = "iso_item_juggling_balls_se", PivotX = 16, PivotY = 7 },       // 401
-            ["item.book_almanac"] = new ItemArt { AlongX = "iso_item_book_almanac_se", PivotX = 16, PivotY = 7 },   // 421 (gelince)
-            ["item.book_herbal"] = new ItemArt { AlongX = "iso_item_book_herbal_se", PivotX = 16, PivotY = 7 },   // 421 (gelince)
-            ["item.book_husbandry"] = new ItemArt { AlongX = "iso_item_book_husbandry_se", PivotX = 16, PivotY = 7 },   // 421 (gelince)
-            ["item.book_smithing"] = new ItemArt { AlongX = "iso_item_book_smithing_se", PivotX = 16, PivotY = 7 },   // 421 (gelince)
-            // Masa ve raf üstü (32 px tuval; pivot = nesnenin tabanı)
-            ["item.bread_basket"] = new ItemArt { AlongX = "iso_item_bread_basket_se", PivotX = 16, PivotY = 2 },           // 387
-            ["item.fruit_basket"] = new ItemArt { AlongX = "iso_item_fruit_basket_se", PivotX = 16, PivotY = 2 },           // 387
-            ["item.cheese_board"] = new ItemArt { AlongX = "iso_item_cheese_board_se", PivotX = 16, PivotY = 5 },           // 387
-            ["item.glass_jar"] = new ItemArt { AlongX = "iso_item_glass_jar_se", PivotX = 16, PivotY = 5 },                 // 400
-            ["item.hourglass"] = new ItemArt { AlongX = "iso_item_hourglass_se", PivotX = 16, PivotY = 3 },                 // 400
-            ["item.copper_hand_mirror"] = new ItemArt { AlongX = "iso_item_copper_hand_mirror_se", PivotX = 16, PivotY = 4 }, // 384 (32x40)
-            // Duvar eşyaları (pivot = görselin ortası, duvardaki bant noktasına oturur; diğer duvarda ayna görüntüsü)
-            ["item.flower_wreath"] = new ItemArt { AlongX = "iso_wall_item_flower_wreath_sw_ne", PivotX = 20, PivotY = 20 },   // 381
-            ["item.harvest_wreath"] = new ItemArt { AlongX = "iso_wall_item_harvest_wreath_sw_ne", PivotX = 20, PivotY = 20 }, // 387
-            ["item.kilim_hanging"] = new ItemArt { AlongX = "iso_wall_item_kilim_hanging_2w_sw_ne", PivotX = 48, PivotY = 32 }, // 381 (2 kenar)
-            ["item.large_mirror"] = new ItemArt { AlongX = "iso_wall_item_large_mirror_2w_sw_ne", PivotX = 48, PivotY = 32 },   // 400 (2 kenar)
-            // Bilinçli olarak eşlenmeyen: item.drying_rack (tanım 2x1, görsel 1x1 üretilmiş; yeniden iş gerekir).
-        };
-
-        /// <summary>Bitkinin olgun görseli (ağaçlar). Fidan ve genç evreler ölçekle küçültülür. Yoksa null.</summary>
-        private static readonly Dictionary<string, string> Plants = new Dictionary<string, string>
+        /// <summary>
+        /// Eşyanın görseli. flipX: görsel yatay aynayla kullanıldıysa (yalnızca sol/sağ simetrik eşyada). Yön görseli yoksa
+        /// (arkası dönük) ya da dosya henüz gelmediyse null: çağıran yer tutucu çizer, başka yönün görselini koymaz.
+        /// </summary>
+        public static Sprite Item(ItemInstance item, out bool flipX)
         {
-            ["item.tree_plum"] = "iso_tree_plum_grown_se",   // 319, 96x112
-        };
+            flipX = false;
+            if (!Thatchwick.Core.Layout.ItemFacing.TryView(item.Def, item.Rotation, item.IsLit, out var name, out var flip)) return null;
+            var p = PivotOf(item.Def);
+            var s = Get(name, p.x, p.y);
+            if (s != null) flipX = flip;
+            return s;
+        }
 
-        public static Sprite Plant(ItemInstance item) =>
-            Enabled && Plants.TryGetValue(item.Def.Id, out var name) ? Get(name, 40f, 24f) : null;
+        /// <summary>Bitkinin görseli: meyvesi hazırsa meyveli, büyümediyse genç (varsa), yoksa olgun. young: genç evre görseli.</summary>
+        public static Sprite Plant(ItemInstance item, out bool young)
+        {
+            young = false;
+            var a = item.Def.Art;
+            if (!Enabled || a == null) return null;
+            string name = null;
+            if (item.FruitReady && a.Fruit != null) name = a.Fruit;
+            else if (!item.IsGrown && a.Young != null) { name = a.Young; young = true; }
+            else name = a.Grown;
+            var s = name != null ? Get(name, 40f, 24f) : null;
+            if (s == null && young) { young = false; s = a.Grown != null ? Get(a.Grown, 40f, 24f) : null; }
+            return s;
+        }
+
+        public static Sprite Plant(ItemInstance item) => Plant(item, out _);
 
         // ---------------- yollar ----------------
 
@@ -354,37 +303,6 @@ namespace Thatchwick.Game
                 case RoadType.Paved: return GetCentered(band >= 2 ? "iso_road_paved_broken" : "iso_road_paved_worn");
                 default: return null;
             }
-        }
-
-        /// <summary>
-        /// Eşyanın görseli. flipX: yalnızca diğer eksen için çizilmiş görselin ayna görüntüsü kullanıldıysa
-        /// (ışık yönü ters olur; doğru görsel gelince kendiliğinden düzelir). Görsel yoksa null.
-        /// </summary>
-        /// <summary>Katalog önizlemesi (yapı menüsü eşya ızgarası, belge 33): eşyanın varsayılan yöndeki görseli; yoksa null.</summary>
-        public static Sprite ItemPreview(string itemId)
-        {
-            if (itemId == null || !Items.TryGetValue(itemId, out var art)) return null;
-            return Get(art.AlongX ?? art.AlongY, art.PivotX, art.PivotY);
-        }
-
-        public static Sprite Item(ItemInstance item, out bool flipX)
-        {
-            flipX = false;
-            if (!Items.TryGetValue(item.Def.Id, out var art)) return null;
-            bool square = item.Def.Width == item.Def.Height;
-            bool alongX = item.Rotation % 2 == 0;
-            string name;
-            if (square)
-            {
-                // Kare eşyada tek yön çizildi: tek dönüşlerde ayna görüntüsü (yapı modunda döndürme görünür olsun).
-                name = art.Lit != null && item.IsLit ? art.Lit : (art.AlongX ?? art.AlongY);
-                flipX = item.Rotation % 2 == 1;
-            }
-            else if (alongX) { name = art.AlongX; if (name == null) { name = art.AlongY; flipX = true; } }
-            else { name = art.AlongY; if (name == null) { name = art.AlongX; flipX = true; } }
-            var s = Get(name, art.PivotX, art.PivotY);
-            if (s == null) flipX = false;
-            return s;
         }
 
         // ---------------- karakterler ----------------

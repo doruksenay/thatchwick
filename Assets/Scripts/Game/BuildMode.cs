@@ -90,6 +90,7 @@ namespace Thatchwick.Game
         private bool _moving;
         private GridPos _ghostPos;
         private int _rot;
+        private string _warnText;   // hayaletin yerleşim uyarıları (belge 44)
         private int _band = -1;              // duvar eşyası bandı (-1: kendiliğinden ilk boş bant; 27-ev-dekorasyonu)
         private string _confirmSlot;         // aşırı yük onayı bekleyen yuva (raf çökebilir)
         private string _status = "";
@@ -688,12 +689,21 @@ namespace Thatchwick.Game
             ItemDef ghostDef = null; int? ignore = null;
             if (_placeId != null && !IsSurfaceDef(_placeId) && !IsWallDef(_placeId)) ghostDef = _content.Items.Get(_placeId);
             else if (_moving && sel != null && !sel.IsWallMounted) { ghostDef = sel.Def; ignore = sel.Id; }
+            _warnText = null;
             if (ghostDef != null)
             {
+                _rot = Thatchwick.Core.Layout.ItemFacing.Snap(ghostDef, _rot);   // yalnızca görseli olan yönler
                 var check = !ignore.HasValue ? _svc.CanPlaceFromInventory(ghostDef.Id, _ghostPos, _rot)
                     : ghostDef.IsRug ? _world.CanPlaceRug(ghostDef, _ghostPos, _rot, ignore)
                     : _world.CanPlaceFloor(ghostDef, _ghostPos, _rot, ignore);
-                var col = check.Ok ? new Color(0.3f, 1f, 0.4f, 0.6f) : new Color(1f, 0.3f, 0.3f, 0.6f);
+                // Yerleşim uyarıları (kapı önü, etkileşim, yön): kırmızı vurgu ve not, yerleştirme engellenmez (belge 44 açık karar).
+                var warns = check.Ok ? Thatchwick.Core.Layout.LayoutRules.Preview(_world, ghostDef, _ghostPos, _rot, ignore) : null;
+                if (warns != null && warns.Count > 0)
+                {
+                    _warnText = "Uyarı: " + string.Join(" ", warns.ConvertAll(x => x.Reason));
+                    foreach (var wv in warns) Diamond(wv.At, new Color(1f, 0.15f, 0.1f, 0.75f), 6002, 0.7f);
+                }
+                var col = !check.Ok ? new Color(1f, 0.3f, 0.3f, 0.6f) : _warnText != null ? new Color(1f, 0.55f, 0.25f, 0.6f) : new Color(0.3f, 1f, 0.4f, 0.6f);
                 var (w, h) = Footprint.Dimensions(ghostDef.Width, ghostDef.Height, _rot);
                 for (int dy = 0; dy < h; dy++)
                     for (int dx = 0; dx < w; dx++)
@@ -1209,8 +1219,9 @@ namespace Thatchwick.Game
                 else
                 {
                     GUILayout.Label("Haritaya dokunarak konumu seç.");
+                    if (_warnText != null) GUILayout.Label(_warnText, _wrap);
                     GUILayout.BeginHorizontal();
-                    if (GUILayout.Button("Döndür")) { _rot = (_rot + 1) % 4; RefreshOverlay(); }
+                    if (GUILayout.Button("Döndür")) { _rot = Thatchwick.Core.Layout.ItemFacing.NextRotation(def, _rot); RefreshOverlay(); }
                     if (GUILayout.Button("Koy")) PlaceFloor();
                     GUILayout.EndHorizontal();
                 }
@@ -1235,8 +1246,9 @@ namespace Thatchwick.Game
             if (_moving)
             {
                 GUILayout.Label("Yeni konuma dokun, sonra Koy.");
+                if (_warnText != null) GUILayout.Label(_warnText, _wrap);
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Döndür")) { _rot = (_rot + 1) % 4; RefreshOverlay(); }
+                if (GUILayout.Button("Döndür")) { _rot = Thatchwick.Core.Layout.ItemFacing.NextRotation(sel.Def, _rot); RefreshOverlay(); }
                 if (GUILayout.Button("Koy"))
                 {
                     var r = _svc.Move(sel.Id, _ghostPos, _rot);
@@ -1372,8 +1384,9 @@ namespace Thatchwick.Game
 
         private void PlaceFloor()
         {
+            if (_content.Items.TryGet(_placeId, out var pdef)) _rot = Thatchwick.Core.Layout.ItemFacing.Snap(pdef, _rot);
             var r = _svc.PlaceFromInventory(_placeId, _ghostPos, _rot, out var placed);
-            _status = r.Ok ? "Yerleştirildi." : r.Reason;
+            _status = r.Ok ? (_warnText != null ? $"Yerleştirildi. {_warnText}" : "Yerleştirildi.") : r.Reason;
             if (r.Ok && _pendingFinish != null && placed != null)
             {
                 var fr = _svc.SetItemFinish(placed.Id, _pendingFinish);
@@ -1672,7 +1685,7 @@ namespace Thatchwick.Game
                     }
                     else
                     {
-                        var preview = IsoArt.ItemPreview(def.Id);
+                        var preview = IsoArt.ItemPreview(def);
                         if (preview != null) DrawSprite(pic, preview, !unlocked);
                         else
                         {

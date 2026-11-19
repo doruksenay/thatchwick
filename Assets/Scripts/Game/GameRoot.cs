@@ -845,8 +845,10 @@ namespace Thatchwick.Game
                 if (item.IsPlant)
                 {
                     var pos = _view.TileToWorld(item.Position);
-                    var plantArt = IsoArt.Plant(item);
-                    var psr = AddItemSprite(item, pos, plantArt != null ? Color.white : color, PlantScale(item), Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
+                    var plantArt = IsoArt.Plant(item, out bool youngArt);
+                    // Genç evrenin kendi görseli varsa daha az küçültülür (görsel zaten küçük ağaç).
+                    float pscale = youngArt ? 0.7f + 0.3f * item.GrowthFraction : PlantScale(item);
+                    var psr = AddItemSprite(item, pos, plantArt != null ? Color.white : color, pscale, Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
                     var sway = SpriteMaterials.Sway;   // rüzgârda sallanma (vertex shader; yoksa düz)
                     if (sway != null) psr.sharedMaterial = sway;
                     // Ağaç gölgesi: ışık sol üstten, gölge taç boyunca sağ alta uzanır; büyüdükçe büyür.

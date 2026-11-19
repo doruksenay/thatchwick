@@ -125,6 +125,7 @@ namespace Thatchwick.Core.Content
                 item.StyleTheme = string.IsNullOrWhiteSpace(dto.styleTheme) ? null : dto.styleTheme.Trim();
                 if (dto.fillWith != null) foreach (var f in dto.fillWith) if (!string.IsNullOrWhiteSpace(f)) item.FillWith.Add(f.Trim());
                 item.FillCount = Math.Max(0, dto.fillCount);
+                MapPlacement(dto, item, errors);
                 item.WindowMount = dto.window;
                 item.Insulation = Math.Max(0f, dto.insulation);
                 item.RequiresNearby = string.IsNullOrEmpty(dto.requiresNear) ? null : dto.requiresNear;
@@ -486,6 +487,60 @@ namespace Thatchwick.Core.Content
         }
 
         /// <summary>S/M/L, K/O/B ya da small/medium/large.</summary>
+        // ---- yerleşim sistemi (belge 44, Aşama B) ----
+        private static void MapPlacement(ItemDto dto, ItemDef item, List<string> errors)
+        {
+            if (!string.IsNullOrWhiteSpace(dto.front))
+            {
+                var f = dto.front.Trim();
+                if (Array.IndexOf(Placements.FrontUses, f) < 0) errors.Add($"{dto.id}: bilinmeyen ön yüz '{dto.front}'.");
+                else item.FrontUse = f;
+            }
+            item.FrontDepth = dto.frontDepth <= 0 ? 1 : dto.frontDepth;
+            if (!string.IsNullOrWhiteSpace(dto.site))
+            {
+                if (Enum.TryParse(dto.site.Trim(), true, out ItemSite site) && Enum.IsDefined(typeof(ItemSite), site)) item.Site = site;
+                else errors.Add($"{dto.id}: bilinmeyen yer '{dto.site}' (indoor, outdoor, any).");
+            }
+            if (dto.belongs != null)
+                foreach (var b in dto.belongs)
+                {
+                    if (string.IsNullOrWhiteSpace(b)) continue;
+                    if (Array.IndexOf(Placements.RoomTypes, b.Trim()) < 0) errors.Add($"{dto.id}: bilinmeyen oda türü '{b}'.");
+                    else if (!item.Belongs.Contains(b.Trim())) item.Belongs.Add(b.Trim());
+                }
+            if (dto.trades != null)
+                foreach (var t in dto.trades)
+                {
+                    if (string.IsNullOrWhiteSpace(t)) continue;
+                    if (Array.IndexOf(Placements.Trades, t.Trim()) < 0) errors.Add($"{dto.id}: bilinmeyen meslek '{t}'.");
+                    else if (!item.Trades.Contains(t.Trim())) item.Trades.Add(t.Trim());
+                }
+            item.Anywhere = dto.anywhere;
+            if (!string.IsNullOrWhiteSpace(dto.relation))
+            {
+                var r = dto.relation.Trim();
+                if (Array.IndexOf(Placements.Relations, r) < 0) errors.Add($"{dto.id}: bilinmeyen ilişki '{dto.relation}'.");
+                else item.Relation = r;
+            }
+            if (dto.art != null)
+            {
+                var a = dto.art;
+                var art = new ItemArtDef
+                {
+                    AlongX = Blank(a.alongX), AlongY = Blank(a.alongY), Lit = Blank(a.lit), Mirror = a.mirror,
+                    PivotX = a.pivotX, PivotY = a.pivotY, PxW = a.pxW, PxH = a.pxH,
+                    Young = Blank(a.young), Grown = Blank(a.grown), Fruit = Blank(a.fruit),
+                };
+                art.Faces[0] = Blank(a.n); art.Faces[1] = Blank(a.e); art.Faces[2] = Blank(a.s); art.Faces[3] = Blank(a.w);
+                if (a.rotations != null) foreach (var r in a.rotations) if (r >= 0 && r <= 3 && !art.Rotations.Contains(r)) art.Rotations.Add(r);
+                if (art.HasAny || art.Lit != null) item.Art = art;
+                if (art.HasFaces && item.FrontUse == null) errors.Add($"{dto.id}: yön görseli var ama ön yüzü (front) yok.");
+            }
+        }
+
+        private static string Blank(string s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+
         public static bool TryParseDecorSize(string text, out DecorSize size)
         {
             size = DecorSize.Small;

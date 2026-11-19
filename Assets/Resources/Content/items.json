@@ -21,7 +21,22 @@
         "bedroom"
       ],
       "comfort": 2,
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "art": {
+        "alongX": "iso_item_bed_straw_2x1_sw_ne",
+        "alongY": "iso_item_bed_straw_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "herb"
+      ]
     },
     {
       "id": "item.hearth_stone",
@@ -62,9 +77,6 @@
         "living",
         "kitchen"
       ],
-      "tags": [
-        "light"
-      ],
       "comfort": 6,
       "surfaceSlots": [
         {
@@ -82,7 +94,27 @@
           "size": "M"
         }
       ],
-      "maxLoad": 8
+      "maxLoad": 8,
+      "tags": [
+        "light",
+        "hearth"
+      ],
+      "art": {
+        "lit": "iso_item_hearth_stone_lit_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "n": "iso_item_hearth_stone_unlit_se"
+      },
+      "front": "work",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.cooking_pot",
@@ -2019,7 +2051,23 @@
         "kitchen"
       ],
       "comfort": 2,
-      "finishGroup": "metal"
+      "finishGroup": "metal",
+      "art": {
+        "alongX": "iso_item_cooking_pot_se_v2",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 68,
+        "mirror": true
+      },
+      "relation": "nearHearth",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.stool_wood",
@@ -2041,7 +2089,31 @@
         "living"
       ],
       "comfort": 1,
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "alongX": "iso_item_stool_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining",
+        "inn_room"
+      ],
+      "trades": [
+        "tavern",
+        "general",
+        "scribe",
+        "herb",
+        "carpenter",
+        "tailor",
+        "potter",
+        "fisher",
+        "saddler"
+      ]
     },
     {
       "id": "item.table_wood",
@@ -2086,7 +2158,28 @@
       ],
       "comfort": 3,
       "finishGroup": "wood",
-      "maxLoad": 20
+      "maxLoad": 20,
+      "art": {
+        "alongY": "iso_item_table_wood_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "scribe",
+        "herb",
+        "carpenter",
+        "mill",
+        "fisher",
+        "saddler",
+        "mason"
+      ]
     },
     {
       "id": "item.chair_wood",
@@ -2114,7 +2207,27 @@
       "variants": [
         "item.chair_carved"
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "w": "iso_item_chair_wood_sw"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining",
+        "inn_room"
+      ],
+      "trades": [
+        "tavern",
+        "scribe",
+        "carpenter"
+      ]
     },
     {
       "id": "item.chest_wood",
@@ -2131,7 +2244,32 @@
         "living"
       ],
       "comfort": 1,
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "n": "iso_item_chest_wood_se"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ],
+      "trades": [
+        "general",
+        "scribe",
+        "herb",
+        "carpenter",
+        "tailor"
+      ]
     },
     {
       "id": "item.shelf_wood",
@@ -2167,7 +2305,29 @@
       "comfort": 2,
       "finishGroup": "wood",
       "tall": true,
-      "maxLoad": 16
+      "maxLoad": 16,
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true,
+        "w": "iso_item_shelf_wood_2x1_se_nw_v2"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living"
+      ],
+      "trades": [
+        "general",
+        "scribe",
+        "herb",
+        "carpenter",
+        "potter",
+        "fisher"
+      ]
     },
     {
       "id": "item.candle",
@@ -2178,13 +2338,19 @@
       "category": "decor",
       "level": 3,
       "styleSet": "Köylü",
-      "tags": [
-        "light"
-      ],
       "beauty": 3,
       "decorSize": "S",
       "weight": 1,
-      "material": "wood"
+      "material": "wood",
+      "tags": [
+        "light"
+      ],
+      "art": {
+        "alongX": "iso_item_candle_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.flower_pot",
@@ -2204,7 +2370,13 @@
         "raf",
         "ocak",
         "pencere"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_flower_pot_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.clay_cup",
@@ -2219,7 +2391,15 @@
       "beauty": 2,
       "decorSize": "S",
       "weight": 1,
-      "material": "clay"
+      "material": "clay",
+      "art": {
+        "alongX": "iso_item_clay_cup_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.firewood",
@@ -2316,7 +2496,13 @@
       "fruitSeasons": [
         "Autumn"
       ],
-      "fruitDays": 4
+      "fruitDays": 4,
+      "art": {
+        "grown": "iso_tree_oak_grown_se",
+        "young": "iso_tree_oak_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.chopping_block",
@@ -2357,6 +2543,19 @@
       "styleSet": "Köylü",
       "rooms": [
         "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_chopping_block_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor",
+        "workshop"
       ]
     },
     {
@@ -2456,7 +2655,8 @@
           "skillXp": 3
         }
       ],
-      "cropFamily": "kok"
+      "cropFamily": "kok",
+      "site": "outdoor"
     },
     {
       "id": "item.market_stall",
@@ -2465,7 +2665,23 @@
       "width": 2,
       "height": 1,
       "price": 0,
-      "category": "village"
+      "category": "village",
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 136,
+        "mirror": true,
+        "w": "iso_item_market_stall_2x1_se_nw_v2"
+      },
+      "front": "work",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "trades": [
+        "general"
+      ]
     },
     {
       "id": "item.chair_carved",
@@ -2488,7 +2704,27 @@
         "item.chair_wood"
       ],
       "finishGroup": "wood",
-      "beauty": 4
+      "beauty": 4,
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true,
+        "n": "iso_item_chair_carved_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "scribe",
+        "carpenter"
+      ]
     },
     {
       "id": "item.plank",
@@ -2588,7 +2824,26 @@
           "durationDays": 0.05
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "w": "iso_item_bench_long_2x1_se_nw"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.armchair_cushion",
@@ -2617,7 +2872,22 @@
         }
       ],
       "finishGroup": "cloth",
-      "beauty": 3
+      "beauty": 3,
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true,
+        "n": "iso_item_armchair_cushion_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "dining"
+      ]
     },
     {
       "id": "item.chair_painted",
@@ -2640,7 +2910,18 @@
         }
       ],
       "finishGroup": "wood",
-      "beauty": 3
+      "beauty": 3,
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "carpenter"
+      ]
     },
     {
       "id": "item.mattress_straw",
@@ -2661,7 +2942,21 @@
           "durationDays": 0.3
         }
       ],
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "art": {
+        "alongX": "iso_item_mattress_straw_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "kids"
+      ]
     },
     {
       "id": "item.bed_frame",
@@ -2685,7 +2980,12 @@
         }
       ],
       "finishGroup": "wood",
-      "beauty": 2
+      "beauty": 2,
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.cradle",
@@ -2709,7 +3009,13 @@
           "skillXp": 3
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "kids"
+      ]
     },
     {
       "id": "item.child_bed",
@@ -2732,7 +3038,21 @@
           "moodlet": "rested"
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "alongX": "iso_item_child_bed_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kids",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.stump_table",
@@ -2759,7 +3079,21 @@
         }
       ],
       "interactions": [],
-      "maxLoad": 6
+      "maxLoad": 6,
+      "art": {
+        "alongX": "iso_item_stump_table_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "living",
+        "outdoor",
+        "dining"
+      ]
     },
     {
       "id": "item.prep_counter",
@@ -2788,7 +3122,25 @@
       ],
       "interactions": [],
       "finishGroup": "wood",
-      "maxLoad": 16
+      "maxLoad": 16,
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 88,
+        "mirror": true,
+        "w": "iso_item_prep_counter_2x1_se_nw"
+      },
+      "front": "work",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "dining"
+      ],
+      "trades": [
+        "tavern",
+        "mill"
+      ]
     },
     {
       "id": "item.dining_table_long",
@@ -2844,7 +3196,13 @@
       "interactions": [],
       "finishGroup": "wood",
       "maxLoad": 30,
-      "beauty": 2
+      "beauty": 2,
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ]
     },
     {
       "id": "item.table_painted",
@@ -2888,7 +3246,17 @@
       "interactions": [],
       "finishGroup": "wood",
       "maxLoad": 22,
-      "beauty": 4
+      "beauty": 4,
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "scribe",
+        "carpenter"
+      ]
     },
     {
       "id": "item.brazier",
@@ -2901,9 +3269,6 @@
         "living",
         "bedroom"
       ],
-      "tags": [
-        "light"
-      ],
       "interactions": [
         {
           "id": "warm",
@@ -2914,7 +3279,20 @@
           "dries": true
         }
       ],
-      "finishGroup": "metal"
+      "finishGroup": "metal",
+      "tags": [
+        "light"
+      ],
+      "art": {
+        "alongX": "iso_item_brazier_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "any",
+      "anywhere": true
     },
     {
       "id": "item.fireplace_large",
@@ -2927,9 +3305,6 @@
       "styleSet": "Zanaatkâr",
       "rooms": [
         "living"
-      ],
-      "tags": [
-        "light"
       ],
       "interactions": [
         {
@@ -2966,6 +3341,15 @@
           "kind": "ocak",
           "size": "M"
         }
+      ],
+      "tags": [
+        "light",
+        "hearth"
+      ],
+      "front": "work",
+      "site": "indoor",
+      "belongs": [
+        "living"
       ]
     },
     {
@@ -2979,12 +3363,14 @@
         "living",
         "bedroom"
       ],
+      "interactions": [],
+      "finishGroup": "metal",
+      "beauty": 3,
       "tags": [
         "light"
       ],
-      "interactions": [],
-      "finishGroup": "metal",
-      "beauty": 3
+      "site": "indoor",
+      "anywhere": true
     },
     {
       "id": "item.torch_wall",
@@ -2999,14 +3385,24 @@
         "kitchen",
         "outdoor"
       ],
-      "tags": [
-        "light"
-      ],
       "interactions": [],
       "wallBands": [
         "üst"
       ],
-      "beauty": 1
+      "beauty": 1,
+      "tags": [
+        "light"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_torch_wall_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 32.0,
+        "pxW": 48,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "any",
+      "anywhere": true
     },
     {
       "id": "item.oil_lamp_wall",
@@ -3021,9 +3417,6 @@
         "bedroom",
         "kitchen"
       ],
-      "tags": [
-        "light"
-      ],
       "interactions": [],
       "finishGroup": "metal",
       "wallBands": [
@@ -3031,7 +3424,20 @@
         "orta"
       ],
       "beauty": 2,
-      "material": "clay"
+      "material": "clay",
+      "tags": [
+        "light"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_oil_lamp_wall_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 32.0,
+        "pxW": 48,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "any",
+      "anywhere": true
     },
     {
       "id": "item.sconce_brass",
@@ -3045,16 +3451,18 @@
         "living",
         "bedroom"
       ],
-      "tags": [
-        "light"
-      ],
       "interactions": [],
       "finishGroup": "metal",
       "wallBands": [
         "üst",
         "orta"
       ],
-      "beauty": 4
+      "beauty": 4,
+      "tags": [
+        "light"
+      ],
+      "site": "indoor",
+      "anywhere": true
     },
     {
       "id": "item.stone_oven",
@@ -3311,6 +3719,25 @@
           "skill": "Baking",
           "skillXp": 14
         }
+      ],
+      "tags": [
+        "hearth"
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 104,
+        "mirror": true,
+        "w": "iso_item_stone_oven_2x1_se_nw"
+      },
+      "front": "work",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "mill"
       ]
     },
     {
@@ -3331,6 +3758,14 @@
           "restore": 25,
           "durationDays": 0.04
         }
+      ],
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "outdoor"
+      ],
+      "trades": [
+        "smithy"
       ]
     },
     {
@@ -3480,7 +3915,14 @@
         }
       ],
       "width": 2,
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "herb"
+      ]
     },
     {
       "id": "item.pantry_shelf",
@@ -3513,7 +3955,19 @@
       "interactions": [],
       "finishGroup": "wood",
       "tall": true,
-      "maxLoad": 30
+      "maxLoad": 30,
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ],
+      "trades": [
+        "tavern",
+        "general"
+      ]
     },
     {
       "id": "item.copper_pots",
@@ -3539,7 +3993,15 @@
           "bladder": 4
         }
       ],
-      "beauty": 3
+      "beauty": 3,
+      "relation": "nearHearth",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.woodshed",
@@ -3552,7 +4014,19 @@
         "outdoor"
       ],
       "storage": 60,
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_woodshed_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 104,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.barrel",
@@ -3566,7 +4040,32 @@
       ],
       "storage": 25,
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "alongX": "iso_item_barrel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "outdoor",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ],
+      "trades": [
+        "tavern",
+        "general",
+        "smithy",
+        "mill",
+        "fisher",
+        "saddler",
+        "mason"
+      ]
     },
     {
       "id": "item.chest_iron",
@@ -3583,7 +4082,17 @@
       "storage": 90,
       "interactions": [],
       "finishGroup": "metal",
-      "beauty": 2
+      "beauty": 2,
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ]
     },
     {
       "id": "item.treasure_chest",
@@ -3595,15 +4104,28 @@
       "rooms": [
         "living"
       ],
-      "tags": [
-        "treasure_chest"
-      ],
       "levels": [
         -2
       ],
       "storage": 20,
       "interactions": [],
-      "material": "metal"
+      "material": "metal",
+      "tags": [
+        "treasure_chest"
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "n": "iso_item_treasure_chest_se"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
     },
     {
       "id": "item.wall_shelf",
@@ -3638,7 +4160,29 @@
         "alt"
       ],
       "maxLoad": 4,
-      "beauty": 1
+      "beauty": 1,
+      "art": {
+        "alongX": "iso_wall_item_wall_shelf_sw_ne",
+        "pivotX": 32.0,
+        "pivotY": 24.0,
+        "pxW": 64,
+        "pxH": 48,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "general",
+        "scribe",
+        "herb",
+        "tailor",
+        "potter"
+      ]
     },
     {
       "id": "item.wall_shelf_oak",
@@ -3680,7 +4224,18 @@
         "alt"
       ],
       "maxLoad": 9,
-      "beauty": 2
+      "beauty": 2,
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "general",
+        "scribe"
+      ]
     },
     {
       "id": "item.workbench",
@@ -3714,7 +4269,18 @@
           "repair": "wood"
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "living",
+        "workshop"
+      ],
+      "trades": [
+        "carpenter",
+        "mason"
+      ]
     },
     {
       "id": "item.seed_crate",
@@ -3727,7 +4293,27 @@
       ],
       "storage": 20,
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "alongX": "iso_item_seed_crate_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "pantry",
+        "cellar",
+        "storehouse",
+        "workshop"
+      ],
+      "trades": [
+        "general",
+        "mill"
+      ]
     },
     {
       "id": "item.tool_rack_wall",
@@ -3746,6 +4332,25 @@
       "wallBands": [
         "orta",
         "alt"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_tool_rack_wall_sw_ne",
+        "pivotX": 32.0,
+        "pivotY": 32.0,
+        "pxW": 64,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "outdoor",
+        "kitchen",
+        "workshop"
+      ],
+      "trades": [
+        "smithy",
+        "carpenter",
+        "saddler"
       ]
     },
     {
@@ -3767,6 +4372,23 @@
           "skillXp": 5,
           "moodlet": "sharp_tools"
         }
+      ],
+      "art": {
+        "alongX": "iso_item_whetstone_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "smithy",
+        "mason"
       ]
     },
     {
@@ -3790,7 +4412,25 @@
           "bath": true
         }
       ],
-      "waterUse": 1
+      "waterUse": 1,
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "n": "iso_item_basin_ewer_se"
+      },
+      "front": "stand",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ],
+      "trades": [
+        "herb"
+      ]
     },
     {
       "id": "item.outhouse",
@@ -3822,7 +4462,20 @@
       ],
       "fillCapacity": 40,
       "fillProduct": "item.manure",
-      "fillPerProduct": 4
+      "fillPerProduct": 4,
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 120,
+        "mirror": true,
+        "n": "iso_item_outhouse_se"
+      },
+      "front": "stand",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.barrel_tub",
@@ -3858,7 +4511,24 @@
         }
       ],
       "finishGroup": "wood",
-      "waterUse": 2
+      "waterUse": 2,
+      "art": {
+        "alongX": "iso_item_barrel_tub_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "potter",
+        "saddler"
+      ]
     },
     {
       "id": "item.wooden_tub",
@@ -3905,7 +4575,12 @@
         }
       ],
       "finishGroup": "wood",
-      "waterUse": 2
+      "waterUse": 2,
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.bread_bowl",
@@ -3939,7 +4614,15 @@
         "raf",
         "ocak",
         "kiler"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_jug_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.morris_board",
@@ -4006,7 +4689,20 @@
       ],
       "storage": 10,
       "interactions": [],
-      "beauty": 1
+      "beauty": 1,
+      "relation": "nearHearth",
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen"
+      ],
+      "trades": [
+        "tavern",
+        "general",
+        "smithy",
+        "carpenter",
+        "mill"
+      ]
     },
     {
       "id": "item.plant_large",
@@ -4021,7 +4717,13 @@
       ],
       "interactions": [],
       "finishGroup": "clay",
-      "beauty": 5
+      "beauty": 5,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.herb_bundle_wall",
@@ -4039,7 +4741,22 @@
         "orta"
       ],
       "beauty": 2,
-      "material": "cloth"
+      "material": "cloth",
+      "art": {
+        "alongX": "iso_wall_item_herb_bundle_wall_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 28.0,
+        "pxW": 40,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "herb"
+      ]
     },
     {
       "id": "item.tapestry",
@@ -4060,7 +4777,13 @@
       ],
       "beauty": 6,
       "material": "cloth",
-      "insulation": 0.85
+      "insulation": 0.85,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.shield_crest",
@@ -4079,7 +4802,11 @@
         "üst"
       ],
       "beauty": 6,
-      "material": "metal"
+      "material": "metal",
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
     },
     {
       "id": "item.rug_rush",
@@ -4096,7 +4823,14 @@
         "kitchen"
       ],
       "comfort": 1,
-      "beauty": 1
+      "beauty": 1,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.rug_wool_small",
@@ -4113,7 +4847,13 @@
       ],
       "comfort": 2,
       "finishGroup": "cloth",
-      "beauty": 2
+      "beauty": 2,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.rug_runner",
@@ -4131,7 +4871,24 @@
       "comfort": 2,
       "level": 3,
       "finishGroup": "cloth",
-      "beauty": 3
+      "beauty": 3,
+      "art": {
+        "alongY": "iso_item_rug_runner_3x1_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "scribe"
+      ]
     },
     {
       "id": "item.rug_hide",
@@ -4148,7 +4905,13 @@
       ],
       "comfort": 2,
       "level": 3,
-      "beauty": 2
+      "beauty": 2,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.rug_wool",
@@ -4166,7 +4929,13 @@
       "comfort": 3,
       "level": 2,
       "finishGroup": "cloth",
-      "beauty": 4
+      "beauty": 4,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.rug_woven_large",
@@ -4184,7 +4953,21 @@
       "comfort": 5,
       "level": 6,
       "finishGroup": "cloth",
-      "beauty": 7
+      "beauty": 7,
+      "art": {
+        "alongY": "iso_item_rug_woven_large_3x2_se",
+        "pivotX": 88.0,
+        "pivotY": 48.0,
+        "pxW": 176,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.well",
@@ -4219,7 +5002,22 @@
         }
       ],
       "waterSource": true,
-      "waterFlow": -1
+      "waterFlow": -1,
+      "tags": [
+        "focus"
+      ],
+      "art": {
+        "alongX": "iso_item_well_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.scarecrow",
@@ -4231,7 +5029,19 @@
         "outdoor"
       ],
       "interactions": [],
-      "protectRadius": 4
+      "protectRadius": 4,
+      "art": {
+        "alongX": "iso_item_scarecrow_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.garden_bench",
@@ -4260,7 +5070,21 @@
           "durationDays": 0.05
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 88,
+        "mirror": true,
+        "w": "iso_item_garden_bench_2x1_se_nw"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.coop",
@@ -4336,6 +5160,18 @@
           "skillXp": 6,
           "moodlet": "pet_love"
         }
+      ],
+      "art": {
+        "alongX": "iso_item_coop_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 120,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -4426,6 +5262,18 @@
           "skill": "AnimalHusbandry",
           "skillXp": 2
         }
+      ],
+      "art": {
+        "alongY": "iso_item_barn_3x2_se_nw",
+        "pivotX": 88.0,
+        "pivotY": 48.0,
+        "pxW": 176,
+        "pxH": 152,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -4516,6 +5364,18 @@
           "skill": "AnimalHusbandry",
           "skillXp": 2
         }
+      ],
+      "art": {
+        "alongX": "iso_item_pigsty_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -4571,7 +5431,19 @@
           "moodlet": "pet_love"
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "alongX": "iso_item_kennel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.cat_basket",
@@ -4609,6 +5481,19 @@
           "skill": "AnimalHusbandry",
           "skillXp": 2
         }
+      ],
+      "art": {
+        "alongX": "iso_item_cat_basket_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen"
       ]
     },
     {
@@ -4641,7 +5526,19 @@
           "skillXp": 12
         }
       ],
-      "pollinate": 6
+      "pollinate": 6,
+      "art": {
+        "alongX": "iso_item_beehive_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.toy_horse",
@@ -4663,7 +5560,11 @@
           "moodlet": "had_fun"
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "site": "indoor",
+      "belongs": [
+        "kids"
+      ]
     },
     {
       "id": "item.child_chair",
@@ -4683,7 +5584,21 @@
           "durationDays": 0.05
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "n": "iso_item_child_chair_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "kids"
+      ]
     },
     {
       "id": "item.toy_sword_wall",
@@ -4711,7 +5626,11 @@
         "alt",
         "orta"
       ],
-      "beauty": 1
+      "beauty": 1,
+      "site": "indoor",
+      "belongs": [
+        "kids"
+      ]
     },
     {
       "id": "item.water_bucket",
@@ -4734,6 +5653,19 @@
           "bath": true,
           "wets": 0.6
         }
+      ],
+      "art": {
+        "alongX": "iso_item_water_bucket_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "outdoor"
       ]
     },
     {
@@ -4781,7 +5713,12 @@
         }
       ],
       "waterUse": 3,
-      "beauty": 5
+      "beauty": 5,
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.spinning_top",
@@ -4829,14 +5766,34 @@
           "moodlet": "had_fun"
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "n": "iso_item_toy_chest_se"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "kids"
+      ]
     },
     {
       "id": "item.grave",
       "displayName": "Mezar",
       "category": "memorial",
       "price": 0,
-      "comfort": 0
+      "comfort": 0,
+      "art": {
+        "alongX": "iso_item_grave_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "indoor"
     },
     {
       "id": "item.bench_wood",
@@ -4861,7 +5818,19 @@
           ]
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "any",
+      "belongs": [
+        "living",
+        "outdoor",
+        "dining"
+      ],
+      "trades": [
+        "tavern",
+        "carpenter"
+      ]
     },
     {
       "id": "item.game_table",
@@ -4891,7 +5860,12 @@
           "moodDays": 0.7
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "dining"
+      ]
     },
     {
       "id": "item.toy_wooden",
@@ -4908,7 +5882,12 @@
           "durationDays": 0.1
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "site": "indoor",
+      "belongs": [
+        "kids",
+        "living"
+      ]
     },
     {
       "id": "item.seed_cabbage",
@@ -5008,7 +5987,8 @@
           "skillXp": 3
         }
       ],
-      "cropFamily": "yaprak"
+      "cropFamily": "yaprak",
+      "site": "outdoor"
     },
     {
       "id": "item.seed_leek",
@@ -5108,7 +6088,8 @@
           "skillXp": 3
         }
       ],
-      "cropFamily": "sogan"
+      "cropFamily": "sogan",
+      "site": "outdoor"
     },
     {
       "id": "item.seed_pea",
@@ -5208,7 +6189,8 @@
         }
       ],
       "nitrogen": true,
-      "cropFamily": "baklagil"
+      "cropFamily": "baklagil",
+      "site": "outdoor"
     },
     {
       "id": "item.seed_pumpkin",
@@ -5308,7 +6290,8 @@
           "skillXp": 3
         }
       ],
-      "cropFamily": "kabak"
+      "cropFamily": "kabak",
+      "site": "outdoor"
     },
     {
       "id": "item.pickled_cabbage",
@@ -5503,7 +6486,16 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_berry_bush_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_mushroom",
@@ -5531,7 +6523,14 @@
       ],
       "tags": [
         "rain_loving"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_mushroom_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_hazel",
@@ -5564,7 +6563,8 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "site": "outdoor"
     },
     {
       "id": "item.forage_herbs",
@@ -5590,7 +6590,16 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_herbs_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_hive",
@@ -5615,7 +6624,14 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_hive_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_dry_branch",
@@ -5640,7 +6656,14 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_dry_branch_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.salting_barrel",
@@ -5956,6 +6979,23 @@
             }
           ]
         }
+      ],
+      "art": {
+        "alongX": "iso_item_salting_barrel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "pantry",
+        "cellar",
+        "storehouse"
+      ],
+      "trades": [
+        "fisher"
       ]
     },
     {
@@ -5966,7 +7006,14 @@
       "price": 60,
       "category": "utility",
       "level": 3,
-      "preserves": 0.4
+      "preserves": 0.4,
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ]
     },
     {
       "id": "item.stairs_up",
@@ -5985,7 +7032,21 @@
       "variants": [
         "item.ladder",
         "item.stairs_up_stone"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_stairs_up_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 104,
+        "mirror": true,
+        "rotations": [
+          0,
+          1
+        ]
+      },
+      "site": "any",
+      "anywhere": true
     },
     {
       "id": "item.stairs_down",
@@ -6004,7 +7065,21 @@
       "variants": [
         "item.stairs_down_stone",
         "item.cellar_hatch"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_stairs_down_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "rotations": [
+          0,
+          1
+        ]
+      },
+      "site": "any",
+      "anywhere": true
     },
     {
       "id": "item.ladder",
@@ -6022,7 +7097,9 @@
       "variants": [
         "item.stairs_up",
         "item.stairs_up_stone"
-      ]
+      ],
+      "site": "any",
+      "anywhere": true
     },
     {
       "id": "item.stairs_up_stone",
@@ -6041,7 +7118,21 @@
       "variants": [
         "item.ladder",
         "item.stairs_up"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_stairs_up_stone_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 104,
+        "mirror": true,
+        "rotations": [
+          0,
+          1
+        ]
+      },
+      "site": "any",
+      "anywhere": true
     },
     {
       "id": "item.stairs_down_stone",
@@ -6060,7 +7151,21 @@
       "variants": [
         "item.stairs_down",
         "item.cellar_hatch"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_stairs_down_stone_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "rotations": [
+          0,
+          1
+        ]
+      },
+      "site": "any",
+      "anywhere": true
     },
     {
       "id": "item.cellar_hatch",
@@ -6081,6 +7186,22 @@
       "variants": [
         "item.stairs_down",
         "item.stairs_down_stone"
+      ],
+      "art": {
+        "alongX": "iso_item_cellar_hatch_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "rotations": [
+          0,
+          1
+        ]
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -6123,6 +7244,16 @@
             }
           ]
         }
+      ],
+      "art": {
+        "alongX": "iso_item_compost_heap_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -6224,7 +7355,8 @@
         "Spring",
         "Autumn"
       ],
-      "cropFamily": "kok"
+      "cropFamily": "kok",
+      "site": "outdoor"
     },
     {
       "id": "item.carrot",
@@ -6321,7 +7453,8 @@
           "skillXp": 3
         }
       ],
-      "cropFamily": "kok"
+      "cropFamily": "kok",
+      "site": "outdoor"
     },
     {
       "id": "item.onion",
@@ -6422,7 +7555,8 @@
         "Spring",
         "Summer"
       ],
-      "cropFamily": "sogan"
+      "cropFamily": "sogan",
+      "site": "outdoor"
     },
     {
       "id": "item.garlic",
@@ -6523,7 +7657,8 @@
         "Autumn",
         "Spring"
       ],
-      "cropFamily": "sogan"
+      "cropFamily": "sogan",
+      "site": "outdoor"
     },
     {
       "id": "item.beet",
@@ -6624,7 +7759,8 @@
         "Summer",
         "Autumn"
       ],
-      "cropFamily": "kok"
+      "cropFamily": "kok",
+      "site": "outdoor"
     },
     {
       "id": "item.radish",
@@ -6726,7 +7862,8 @@
         "Summer",
         "Autumn"
       ],
-      "cropFamily": "kok"
+      "cropFamily": "kok",
+      "site": "outdoor"
     },
     {
       "id": "item.lettuce",
@@ -6827,7 +7964,8 @@
         "Spring",
         "Autumn"
       ],
-      "cropFamily": "yaprak"
+      "cropFamily": "yaprak",
+      "site": "outdoor"
     },
     {
       "id": "item.broad_bean",
@@ -6929,7 +8067,8 @@
         "Summer"
       ],
       "nitrogen": true,
-      "cropFamily": "baklagil"
+      "cropFamily": "baklagil",
+      "site": "outdoor"
     },
     {
       "id": "item.barley",
@@ -7040,7 +8179,8 @@
         "Spring",
         "Summer"
       ],
-      "cropFamily": "tahil"
+      "cropFamily": "tahil",
+      "site": "outdoor"
     },
     {
       "id": "item.spinach",
@@ -7141,7 +8281,8 @@
         "Spring",
         "Autumn"
       ],
-      "cropFamily": "yaprak"
+      "cropFamily": "yaprak",
+      "site": "outdoor"
     },
     {
       "id": "item.apple",
@@ -7223,7 +8364,14 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "art": {
+        "fruit": "iso_tree_apple_fruit_se",
+        "grown": "iso_tree_apple_grown_se",
+        "young": "iso_tree_apple_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.pear",
@@ -7305,7 +8453,14 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "art": {
+        "fruit": "iso_tree_pear_fruit_se",
+        "grown": "iso_tree_pear_grown_se",
+        "young": "iso_tree_pear_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.cherry",
@@ -7387,7 +8542,14 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "art": {
+        "fruit": "iso_tree_cherry_fruit_se",
+        "grown": "iso_tree_cherry_grown_se",
+        "young": "iso_tree_cherry_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.plum",
@@ -7470,7 +8632,14 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "art": {
+        "grown": "iso_tree_plum_grown_se",
+        "fruit": "iso_tree_plum_fruit_se",
+        "young": "iso_tree_plum_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.seed_maker",
@@ -7484,7 +8653,20 @@
         "outdoor",
         "living"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "w": "iso_item_seed_maker_2x1_se"
+      },
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "living",
+        "workshop"
+      ]
     },
     {
       "id": "item.irrigation_ditch",
@@ -7497,7 +8679,11 @@
         "outdoor"
       ],
       "waterRadius": 1,
-      "interactions": []
+      "interactions": [],
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.bucket_pulley",
@@ -7512,7 +8698,17 @@
       "waterRadius": 2,
       "interactions": [],
       "waterSource": true,
-      "waterFlow": 2
+      "waterFlow": 2,
+      "art": {
+        "alongX": "iso_item_bucket_pulley_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.water_channel",
@@ -7526,7 +8722,11 @@
         "outdoor"
       ],
       "waterRadius": 3,
-      "interactions": []
+      "interactions": [],
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.wild_garlic",
@@ -7565,7 +8765,14 @@
       ],
       "tags": [
         "rain_loving"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_wild_garlic_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.nettle",
@@ -7600,7 +8807,16 @@
       ],
       "tags": [
         "rain_loving"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_nettle_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.elderflower",
@@ -7637,7 +8853,16 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_elderflower_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.wild_strawberry",
@@ -7673,7 +8898,16 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_strawberry_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.chestnut",
@@ -7709,7 +8943,16 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_chestnut_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.rosehip",
@@ -7745,7 +8988,16 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_rosehip_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.pinecone",
@@ -7784,7 +9036,14 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_pinecone_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.cress",
@@ -7820,7 +9079,14 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_cress_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.resin",
@@ -7888,7 +9154,13 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "art": {
+        "grown": "iso_tree_birch_grown_se",
+        "young": "iso_tree_birch_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.sapling_pine",
@@ -7942,7 +9214,13 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "art": {
+        "grown": "iso_tree_pine_grown_se",
+        "young": "iso_tree_pine_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.sapling_willow",
@@ -7996,7 +9274,13 @@
           "durationDays": 0.05,
           "moodlet": "ashamed"
         }
-      ]
+      ],
+      "art": {
+        "grown": "iso_tree_willow_grown_se",
+        "young": "iso_tree_willow_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.mushroom_bed",
@@ -8037,6 +9321,16 @@
           ],
           "moodlet": "good_harvest"
         }
+      ],
+      "art": {
+        "alongX": "iso_item_mushroom_bed_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "cellar"
       ]
     },
     {
@@ -8378,6 +9672,18 @@
             }
           ]
         }
+      ],
+      "art": {
+        "alongY": "iso_item_smokehouse_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -8410,6 +9716,18 @@
             }
           ]
         }
+      ],
+      "art": {
+        "alongX": "iso_item_cheese_press_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 72,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
       ]
     },
     {
@@ -8486,6 +9804,18 @@
           "skillXp": 6,
           "moodlet": "pet_love"
         }
+      ],
+      "art": {
+        "alongX": "iso_item_nest_box_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
       ]
     },
     {
@@ -8563,6 +9893,18 @@
           "skillXp": 6,
           "moodlet": "pet_love"
         }
+      ],
+      "art": {
+        "alongX": "iso_item_stall_1x2_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
       ]
     },
     {
@@ -8640,6 +9982,18 @@
           "skillXp": 6,
           "moodlet": "pet_love"
         }
+      ],
+      "art": {
+        "alongX": "iso_item_pig_pen_1x2_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
       ]
     },
     {
@@ -8698,6 +10052,18 @@
           "skillXp": 6,
           "moodlet": "pet_love"
         }
+      ],
+      "art": {
+        "alongX": "iso_item_horse_stall_1x2_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
       ]
     },
     {
@@ -8729,6 +10095,22 @@
           "skill": "AnimalHusbandry",
           "skillXp": 2
         }
+      ],
+      "art": {
+        "alongY": "iso_item_feed_trough_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn",
+        "outdoor"
+      ],
+      "trades": [
+        "animals"
       ]
     },
     {
@@ -8757,6 +10139,14 @@
             }
           ]
         }
+      ],
+      "site": "any",
+      "belongs": [
+        "barn",
+        "outdoor"
+      ],
+      "trades": [
+        "animals"
       ]
     },
     {
@@ -8772,7 +10162,23 @@
       ],
       "animalRole": "bedding",
       "animalComfort": 3,
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_hay_bale_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn",
+        "outdoor"
+      ],
+      "trades": [
+        "animals"
+      ]
     },
     {
       "id": "item.salt_lick",
@@ -8785,7 +10191,22 @@
         "barn"
       ],
       "animalComfort": 4,
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_salt_lick_se",
+        "pivotX": 32.0,
+        "pivotY": 24.0,
+        "pxW": 64,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
+      ],
+      "trades": [
+        "animals"
+      ]
     },
     {
       "id": "item.barn_lantern",
@@ -8798,11 +10219,24 @@
         "barn",
         "outdoor"
       ],
+      "animalComfort": 2,
+      "interactions": [],
       "tags": [
         "light"
       ],
-      "animalComfort": 2,
-      "interactions": []
+      "art": {
+        "alongX": "iso_item_barn_lantern_se",
+        "pivotX": 32.0,
+        "pivotY": 24.0,
+        "pxW": 64,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "any",
+      "trades": [
+        "animals"
+      ],
+      "anywhere": true
     },
     {
       "id": "item.saddle_rack",
@@ -8816,7 +10250,23 @@
       ],
       "animalComfort": 3,
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_saddle_rack_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
+      ],
+      "trades": [
+        "saddler",
+        "animals"
+      ]
     },
     {
       "id": "item.animal_bell",
@@ -8830,7 +10280,23 @@
         "outdoor"
       ],
       "animalRole": "bell",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_animal_bell_se",
+        "pivotX": 32.0,
+        "pivotY": 24.0,
+        "pxW": 64,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn",
+        "outdoor"
+      ],
+      "trades": [
+        "animals"
+      ]
     },
     {
       "id": "item.collection_box",
@@ -8844,7 +10310,19 @@
       ],
       "animalRole": "collector",
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_collection_box_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
+      ]
     },
     {
       "id": "item.feed_chute",
@@ -8859,7 +10337,19 @@
       ],
       "animalRole": "feeder",
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_feed_chute_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
+      ]
     },
     {
       "id": "item.canal",
@@ -8873,7 +10363,11 @@
       ],
       "waterRadius": 2,
       "needsSource": true,
-      "interactions": []
+      "interactions": [],
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.water_wheel",
@@ -8903,6 +10397,21 @@
           "skill": "Engineering",
           "skillXp": 10
         }
+      ],
+      "art": {
+        "alongX": "iso_item_water_wheel_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 128,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "trades": [
+        "mill"
       ]
     },
     {
@@ -9013,6 +10522,21 @@
           "skill": "Baking",
           "skillXp": 4
         }
+      ],
+      "art": {
+        "alongX": "iso_item_millstone_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 128,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ],
+      "trades": [
+        "mill"
       ]
     },
     {
@@ -9027,7 +10551,23 @@
         "outdoor"
       ],
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_tanning_rack_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 104,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "saddler"
+      ]
     },
     {
       "id": "item.saddler_bench",
@@ -9042,7 +10582,25 @@
         "living"
       ],
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 104,
+        "mirror": true,
+        "w": "iso_item_saddler_bench_2x1_se"
+      },
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "living",
+        "workshop"
+      ],
+      "trades": [
+        "saddler"
+      ]
     },
     {
       "id": "item.hide",
@@ -9122,7 +10680,19 @@
       "storage": 150,
       "preserves": 0.85,
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_granary_3x2_se",
+        "pivotX": 88.0,
+        "pivotY": 48.0,
+        "pxW": 176,
+        "pxH": 144,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.ice_box",
@@ -9151,6 +10721,23 @@
           ],
           "addIce": 4
         }
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "n": "iso_item_ice_box_se"
+      },
+      "front": "open",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "outdoor",
+        "pantry",
+        "cellar",
+        "storehouse"
       ]
     },
     {
@@ -9180,6 +10767,10 @@
           ],
           "addIce": 12
         }
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -9226,7 +10817,17 @@
         "outdoor"
       ],
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "living",
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "tailor"
+      ]
     },
     {
       "id": "item.loom",
@@ -9256,6 +10857,16 @@
           ],
           "repair": "cloth"
         }
+      ],
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "living",
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "tailor"
       ]
     },
     {
@@ -9467,7 +11078,11 @@
           ]
         }
       ],
-      "waterFlow": 6
+      "waterFlow": 6,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.fish_trap",
@@ -9480,7 +11095,14 @@
         "outdoor"
       ],
       "fishTrap": true,
-      "interactions": []
+      "interactions": [],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "trades": [
+        "fisher"
+      ]
     },
     {
       "id": "item.alembic",
@@ -9495,7 +11117,18 @@
         "living",
         "outdoor"
       ],
-      "interactions": []
+      "interactions": [],
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "living",
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "herb"
+      ]
     },
     {
       "id": "item.potion_energy",
@@ -9620,7 +11253,18 @@
           "heal": 1.0
         }
       ],
-      "tall": true
+      "tall": true,
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "herb"
+      ]
     },
     {
       "id": "item.clay",
@@ -9754,15 +11398,15 @@
       "placement": "Surface",
       "category": "decor",
       "price": 8,
-      "tags": [
-        "relic",
-        "craftonly"
-      ],
       "beauty": 3,
       "decorSize": "M",
       "weight": 3,
       "material": "stone",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "relic",
+        "craftonly"
+      ]
     },
     {
       "id": "item.relic_buried_jar",
@@ -9770,15 +11414,15 @@
       "placement": "Surface",
       "category": "decor",
       "price": 12,
-      "tags": [
-        "relic",
-        "craftonly"
-      ],
       "beauty": 3,
       "decorSize": "S",
       "weight": 1,
       "material": "stone",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "relic",
+        "craftonly"
+      ]
     },
     {
       "id": "item.relic_horseshoe",
@@ -9786,15 +11430,15 @@
       "placement": "Surface",
       "category": "decor",
       "price": 5,
-      "tags": [
-        "relic",
-        "craftonly"
-      ],
       "beauty": 3,
       "decorSize": "S",
       "weight": 1,
       "material": "stone",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "relic",
+        "craftonly"
+      ]
     },
     {
       "id": "item.relic_fossil",
@@ -9802,15 +11446,15 @@
       "placement": "Surface",
       "category": "decor",
       "price": 15,
-      "tags": [
-        "relic",
-        "craftonly"
-      ],
       "beauty": 3,
       "decorSize": "S",
       "weight": 1,
       "material": "stone",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "relic",
+        "craftonly"
+      ]
     },
     {
       "id": "item.relic_miner_lamp",
@@ -9818,15 +11462,15 @@
       "placement": "Surface",
       "category": "decor",
       "price": 14,
-      "tags": [
-        "relic",
-        "craftonly"
-      ],
       "beauty": 3,
       "decorSize": "S",
       "weight": 1,
       "material": "stone",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "relic",
+        "craftonly"
+      ]
     },
     {
       "id": "item.relic_pick_head",
@@ -9834,15 +11478,15 @@
       "placement": "Surface",
       "category": "decor",
       "price": 9,
-      "tags": [
-        "relic",
-        "craftonly"
-      ],
       "beauty": 3,
       "decorSize": "S",
       "weight": 1,
       "material": "stone",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "relic",
+        "craftonly"
+      ]
     },
     {
       "id": "item.relic_coin",
@@ -9850,15 +11494,15 @@
       "placement": "Surface",
       "category": "decor",
       "price": 20,
-      "tags": [
-        "relic",
-        "craftonly"
-      ],
       "beauty": 3,
       "decorSize": "S",
       "weight": 1,
       "material": "stone",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "relic",
+        "craftonly"
+      ]
     },
     {
       "id": "item.relic_bone_comb",
@@ -9866,15 +11510,15 @@
       "placement": "Surface",
       "category": "decor",
       "price": 12,
-      "tags": [
-        "relic",
-        "craftonly"
-      ],
       "beauty": 3,
       "decorSize": "S",
       "weight": 1,
       "material": "stone",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "relic",
+        "craftonly"
+      ]
     },
     {
       "id": "item.relic_crystal",
@@ -9882,15 +11526,15 @@
       "placement": "Surface",
       "category": "decor",
       "price": 25,
-      "tags": [
-        "relic",
-        "craftonly"
-      ],
       "beauty": 3,
       "decorSize": "S",
       "weight": 1,
       "material": "stone",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "relic",
+        "craftonly"
+      ]
     },
     {
       "id": "item.slate_stone",
@@ -10119,7 +11763,11 @@
         }
       ],
       "width": 2,
-      "height": 2
+      "height": 2,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.forge",
@@ -10148,7 +11796,19 @@
         }
       ],
       "width": 2,
-      "height": 2
+      "height": 2,
+      "tags": [
+        "hearth"
+      ],
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "smithy"
+      ]
     },
     {
       "id": "item.pottery_wheel",
@@ -10162,7 +11822,17 @@
         "living"
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "living",
+        "workshop"
+      ],
+      "trades": [
+        "potter"
+      ]
     },
     {
       "id": "item.storage_jar",
@@ -10177,7 +11847,21 @@
       ],
       "storage": 20,
       "preserves": 0.85,
-      "interactions": []
+      "interactions": [],
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "outdoor",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ],
+      "trades": [
+        "tavern",
+        "general",
+        "herb",
+        "potter"
+      ]
     },
     {
       "id": "item.brew_barrel",
@@ -10191,7 +11875,19 @@
         "outdoor"
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "outdoor",
+        "pantry",
+        "cellar",
+        "storehouse",
+        "workshop"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.chandler_table",
@@ -10206,7 +11902,15 @@
         "outdoor"
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "living",
+        "outdoor",
+        "workshop"
+      ]
     },
     {
       "id": "item.hunting_blind",
@@ -10244,6 +11948,10 @@
             }
           ]
         }
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -10264,6 +11972,10 @@
           "skill": "WeatherLore",
           "skillXp": 6
         }
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -10287,7 +11999,12 @@
           "skillXp": 12
         }
       ],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "site": "indoor",
+      "belongs": [
+        "kids",
+        "living"
+      ]
     },
     {
       "id": "item.lute",
@@ -10314,7 +12031,14 @@
         }
       ],
       "finishGroup": "wood",
-      "beauty": 3
+      "beauty": 3,
+      "site": "any",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "outdoor"
+      ]
     },
     {
       "id": "item.churn",
@@ -10328,7 +12052,13 @@
         "outdoor"
       ],
       "interactions": [],
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "outdoor",
+        "workshop"
+      ]
     },
     {
       "id": "item.yogurt",
@@ -10642,7 +12372,16 @@
         "outdoor"
       ],
       "interactions": [],
-      "width": 2
+      "width": 2,
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "mason"
+      ]
     },
     {
       "id": "item.windmill",
@@ -10654,14 +12393,18 @@
       "rooms": [
         "outdoor"
       ],
-      "tags": [
-        "craftonly"
-      ],
       "interactions": [],
       "width": 2,
       "height": 2,
       "windPower": true,
-      "finishGroup": "wood"
+      "finishGroup": "wood",
+      "tags": [
+        "craftonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.water_gate",
@@ -10673,11 +12416,15 @@
       "rooms": [
         "outdoor"
       ],
+      "interactions": [],
+      "waterGate": true,
       "tags": [
         "craftonly"
       ],
-      "interactions": [],
-      "waterGate": true
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.noria",
@@ -10689,16 +12436,20 @@
       "rooms": [
         "outdoor"
       ],
-      "tags": [
-        "craftonly"
-      ],
       "interactions": [],
       "width": 2,
       "height": 2,
       "waterSource": true,
       "waterRadius": 2,
       "finishGroup": "wood",
-      "waterFlow": 8
+      "waterFlow": 8,
+      "tags": [
+        "craftonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.feed_mixer",
@@ -10710,16 +12461,20 @@
       "rooms": [
         "outdoor"
       ],
-      "tags": [
-        "craftonly"
-      ],
       "interactions": [],
       "autoProcess": {
         "item": "item.barley",
         "count": 1,
         "produces": "item.feed",
         "producesCount": 4
-      }
+      },
+      "tags": [
+        "craftonly"
+      ],
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.charcoal_clamp",
@@ -10734,15 +12489,19 @@
         "outdoor"
       ],
       "interactions": [],
-      "tags": [
-        "passive"
-      ],
       "autoProcess": {
         "item": "item.firewood",
         "count": 6,
         "produces": "item.charcoal",
         "producesCount": 4
-      }
+      },
+      "tags": [
+        "passive"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.roasting_heap",
@@ -10757,15 +12516,19 @@
         "outdoor"
       ],
       "interactions": [],
-      "tags": [
-        "passive"
-      ],
       "autoProcess": {
         "item": "item.iron_ore",
         "count": 4,
         "produces": "item.roasted_ore",
         "producesCount": 4
-      }
+      },
+      "tags": [
+        "passive"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.bloomery",
@@ -10834,6 +12597,26 @@
           "skill": "Smithing",
           "skillXp": 10
         }
+      ],
+      "tags": [
+        "hearth"
+      ],
+      "art": {
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 112,
+        "mirror": true,
+        "n": "iso_item_bloomery_2x2_se"
+      },
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "smithy"
       ]
     },
     {
@@ -10915,15 +12698,30 @@
           "skillXp": 5
         }
       ],
-      "tags": [
-        "passive"
-      ],
       "autoProcess": {
         "item": "item.limestone",
         "count": 4,
         "produces": "item.quicklime",
         "producesCount": 3
-      }
+      },
+      "tags": [
+        "passive"
+      ],
+      "art": {
+        "alongX": "iso_item_lime_kiln_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "trades": [
+        "mason"
+      ]
     },
     {
       "id": "item.ox_cart",
@@ -10937,7 +12735,19 @@
       "rooms": [
         "outdoor"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_ox_cart_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 128,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.drain_pit",
@@ -10949,13 +12759,23 @@
       "rooms": [
         "outdoor"
       ],
-      "tags": [
-        "drain"
-      ],
       "levels": [
         -2
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "drain"
+      ],
+      "art": {
+        "alongX": "iso_item_drain_pit_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.underground_cistern",
@@ -10973,7 +12793,19 @@
         -2
       ],
       "cistern": 60,
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_underground_cistern_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.threshing_floor",
@@ -10986,9 +12818,6 @@
       "styleSet": "Köylü",
       "rooms": [
         "outdoor"
-      ],
-      "tags": [
-        "threshing_floor"
       ],
       "interactions": [
         {
@@ -11083,6 +12912,21 @@
           "skill": "Farming",
           "skillXp": 4
         }
+      ],
+      "tags": [
+        "threshing_floor"
+      ],
+      "art": {
+        "alongX": "iso_item_threshing_floor_3x3_se",
+        "pivotX": 104.0,
+        "pivotY": 56.0,
+        "pxW": 208,
+        "pxH": 120,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -11097,11 +12941,23 @@
       "rooms": [
         "outdoor"
       ],
+      "threshPerDay": 8,
+      "interactions": [],
       "tags": [
         "craftonly"
       ],
-      "threshPerDay": 8,
-      "interactions": []
+      "art": {
+        "alongY": "iso_item_threshing_sledge_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.harvest_rake",
@@ -11113,12 +12969,16 @@
       "rooms": [
         "outdoor"
       ],
+      "interactions": [],
+      "harvestRadius": 2,
       "tags": [
         "craftonly",
         "legacy"
       ],
-      "interactions": [],
-      "harvestRadius": 2
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.seeder",
@@ -11130,12 +12990,16 @@
       "rooms": [
         "outdoor"
       ],
+      "interactions": [],
+      "seedRadius": 2,
       "tags": [
         "craftonly",
         "legacy"
       ],
-      "interactions": [],
-      "seedRadius": 2
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.ice_well",
@@ -11147,13 +13011,17 @@
       "rooms": [
         "outdoor"
       ],
-      "tags": [
-        "craftonly"
-      ],
       "interactions": [],
       "width": 2,
       "height": 2,
-      "iceCollect": 2
+      "iceCollect": 2,
+      "tags": [
+        "craftonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.kiln",
@@ -11167,7 +13035,16 @@
       ],
       "interactions": [],
       "width": 2,
-      "height": 2
+      "height": 2,
+      "front": "work",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "potter"
+      ]
     },
     {
       "id": "item.dye_vat",
@@ -11180,7 +13057,16 @@
         "outdoor",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "kitchen",
+        "workshop"
+      ],
+      "trades": [
+        "tailor"
+      ]
     },
     {
       "id": "item.brick",
@@ -11294,6 +13180,18 @@
           "durationDays": 0.04,
           "emptyFill": true
         }
+      ],
+      "art": {
+        "alongX": "iso_item_chamber_pot_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "kids"
       ]
     },
     {
@@ -11330,7 +13228,18 @@
           "bath": true
         }
       ],
-      "waterUse": 2
+      "waterUse": 2,
+      "art": {
+        "pivotX": 56,
+        "pivotY": 32,
+        "mirror": true,
+        "w": "iso_item_bath_hut_1x2_se"
+      },
+      "front": "stand",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.towel_rack",
@@ -11352,6 +13261,19 @@
           "durationDays": 0.02,
           "dries": true
         }
+      ],
+      "art": {
+        "alongX": "iso_item_towel_rack_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "kitchen",
+        "outdoor"
       ]
     },
     {
@@ -11473,7 +13395,8 @@
         "Autumn",
         "Spring"
       ],
-      "cropFamily": "tahil"
+      "cropFamily": "tahil",
+      "site": "outdoor"
     },
     {
       "id": "item.rye",
@@ -11584,7 +13507,8 @@
         "Autumn",
         "Spring"
       ],
-      "cropFamily": "tahil"
+      "cropFamily": "tahil",
+      "site": "outdoor"
     },
     {
       "id": "item.oats",
@@ -11695,7 +13619,8 @@
         "Spring",
         "Summer"
       ],
-      "cropFamily": "tahil"
+      "cropFamily": "tahil",
+      "site": "outdoor"
     },
     {
       "id": "item.flax",
@@ -11795,7 +13720,8 @@
         "Spring",
         "Summer"
       ],
-      "cropFamily": "lif"
+      "cropFamily": "lif",
+      "site": "outdoor"
     },
     {
       "id": "item.rye_flour",
@@ -11877,6 +13803,15 @@
           "skill": "Baking",
           "skillXp": 3
         }
+      ],
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "living",
+        "outdoor"
+      ],
+      "trades": [
+        "mill"
       ]
     },
     {
@@ -12052,6 +13987,21 @@
           "piped": true,
           "moodlet": "eff_refresh"
         }
+      ],
+      "tags": [
+        "focus"
+      ],
+      "art": {
+        "alongY": "iso_item_fountain_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -12076,6 +14026,19 @@
           "durationDays": 0.03,
           "piped": true
         }
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "n": "iso_item_kitchen_spout_se"
+      },
+      "front": "stand",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
       ]
     },
     {
@@ -12113,6 +14076,21 @@
           "skill": "SoilCare",
           "skillXp": 3
         }
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true,
+        "n": "iso_item_flush_privy_se"
+      },
+      "front": "stand",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living"
       ]
     },
     {
@@ -12130,7 +14108,11 @@
       "cistern": 40,
       "cisternRain": 12,
       "cisternFlow": 4,
-      "interactions": []
+      "interactions": [],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.rain_barrel",
@@ -12146,7 +14128,19 @@
       "cisternRain": 5,
       "cisternFlow": 2,
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_rain_barrel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.water_tower",
@@ -12159,7 +14153,19 @@
         "outdoor"
       ],
       "waterHead": true,
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_water_tower_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 136,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.sawmill",
@@ -12173,9 +14179,6 @@
       "rooms": [
         "outdoor"
       ],
-      "tags": [
-        "craftonly"
-      ],
       "finishGroup": "wood",
       "autoProcess": {
         "item": "item.log",
@@ -12183,7 +14186,25 @@
         "produces": "item.plank",
         "producesCount": 3
       },
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "art": {
+        "alongX": "iso_item_sawmill_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 128,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "trades": [
+        "carpenter"
+      ]
     },
     {
       "id": "item.fulling_mill",
@@ -12196,9 +14217,6 @@
       "rooms": [
         "outdoor"
       ],
-      "tags": [
-        "craftonly"
-      ],
       "finishGroup": "wood",
       "autoProcess": {
         "item": "item.wool",
@@ -12206,7 +14224,14 @@
         "produces": "item.felt",
         "producesCount": 1
       },
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.trip_hammer",
@@ -12219,16 +14244,23 @@
       "rooms": [
         "outdoor"
       ],
-      "tags": [
-        "craftonly"
-      ],
       "autoProcess": {
         "item": "item.iron_bloom",
         "count": 2,
         "produces": "item.iron_bar",
         "producesCount": 2
       },
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "trades": [
+        "smithy"
+      ]
     },
     {
       "id": "item.peg_rail",
@@ -12273,7 +14305,28 @@
           "size": "M"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_peg_rail_sw_ne",
+        "pivotX": 32.0,
+        "pivotY": 20.0,
+        "pxW": 64,
+        "pxH": 40,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "tavern",
+        "general",
+        "carpenter",
+        "tailor"
+      ]
     },
     {
       "id": "item.plate_rack",
@@ -12324,7 +14377,22 @@
           "size": "S"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_plate_rack_2w_sw_ne",
+        "pivotX": 48.0,
+        "pivotY": 28.0,
+        "pxW": 96,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.long_shelf_iron",
@@ -12372,7 +14440,23 @@
           "size": "M"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_long_shelf_iron_2w_sw_ne",
+        "pivotX": 48.0,
+        "pivotY": 24.0,
+        "pxW": 96,
+        "pxH": 48,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living"
+      ],
+      "trades": [
+        "general"
+      ]
     },
     {
       "id": "item.spoon_rack",
@@ -12391,7 +14475,14 @@
       ],
       "beauty": 2,
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.painted_cloth",
@@ -12414,7 +14505,21 @@
       "material": "cloth",
       "finishGroup": "cloth",
       "interactions": [],
-      "insulation": 0.9
+      "insulation": 0.9,
+      "art": {
+        "alongX": "iso_wall_item_painted_cloth_2w_sw_ne",
+        "pivotX": 48.0,
+        "pivotY": 32.0,
+        "pxW": 96,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.applique_hanging",
@@ -12436,7 +14541,13 @@
       "material": "cloth",
       "finishGroup": "cloth",
       "interactions": [],
-      "insulation": 0.88
+      "insulation": 0.88,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.kilim_hanging",
@@ -12459,7 +14570,21 @@
       "material": "cloth",
       "finishGroup": "cloth",
       "interactions": [],
-      "insulation": 0.85
+      "insulation": 0.85,
+      "art": {
+        "alongX": "iso_wall_item_kilim_hanging_2w_sw_ne",
+        "pivotX": 48.0,
+        "pivotY": 32.0,
+        "pxW": 96,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.flower_wreath",
@@ -12479,7 +14604,22 @@
       ],
       "beauty": 3,
       "material": "cloth",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_flower_wreath_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 20.0,
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.nazar_charm",
@@ -12499,7 +14639,22 @@
       ],
       "beauty": 2,
       "material": "glass",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_nazar_charm_sw_ne",
+        "pivotX": 12.0,
+        "pivotY": 20.0,
+        "pxW": 24,
+        "pxH": 40,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.bronze_mirror_wall",
@@ -12527,6 +14682,12 @@
           "durationDays": 0.02,
           "polish": true
         }
+      ],
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living"
       ]
     },
     {
@@ -12553,7 +14714,15 @@
           "durationDays": 0.02,
           "polish": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_copper_hand_mirror_se",
+        "pivotX": 16.0,
+        "pivotY": 4.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.wooden_plate",
@@ -12573,7 +14742,15 @@
         "tabak",
         "ocak"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_wooden_plate_se",
+        "pivotX": 16.0,
+        "pivotY": 9.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.clay_plate",
@@ -12592,7 +14769,15 @@
         "tabak",
         "ocak"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_clay_plate_se",
+        "pivotX": 16.0,
+        "pivotY": 9.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.tin_plate",
@@ -12612,7 +14797,15 @@
         "tabak",
         "ocak"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_tin_plate_se",
+        "pivotX": 16.0,
+        "pivotY": 9.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.serving_tray",
@@ -12632,7 +14825,15 @@
         "raf",
         "tabak"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_serving_tray_se",
+        "pivotX": 20.0,
+        "pivotY": 11.0,
+        "pxW": 40,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.wooden_bowl",
@@ -12650,7 +14851,15 @@
         "raf",
         "kiler"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_wooden_bowl_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.ladle",
@@ -12666,7 +14875,15 @@
       "fitsOn": [
         "kanca"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_ladle_se",
+        "pivotX": 16.0,
+        "pivotY": 6.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.mortar_pestle",
@@ -12685,7 +14902,15 @@
         "raf",
         "kiler"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_mortar_pestle_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 36,
+        "mirror": true
+      }
     },
     {
       "id": "item.oil_jug",
@@ -12723,7 +14948,15 @@
         "raf",
         "masa"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_copper_pot_se",
+        "pivotX": 20.0,
+        "pivotY": 10.0,
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.storage_pot_small",
@@ -12742,7 +14975,15 @@
         "raf",
         "masa"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_storage_pot_small_se",
+        "pivotX": 20.0,
+        "pivotY": 11.0,
+        "pxW": 40,
+        "pxH": 48,
+        "mirror": true
+      }
     },
     {
       "id": "item.tallow_candle",
@@ -12751,14 +14992,14 @@
       "price": 2,
       "placement": "Surface",
       "styleSet": "Köylü",
-      "tags": [
-        "light"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 1,
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "light"
+      ]
     },
     {
       "id": "item.beeswax_candle",
@@ -12768,14 +15009,14 @@
       "level": 9,
       "placement": "Surface",
       "styleSet": "Tüccar",
-      "tags": [
-        "light"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 3,
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "light"
+      ]
     },
     {
       "id": "item.pricket_candlestick",
@@ -12785,14 +15026,22 @@
       "level": 2,
       "placement": "Surface",
       "styleSet": "Köylü",
-      "tags": [
-        "light"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 2,
       "material": "metal",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "light"
+      ],
+      "art": {
+        "alongX": "iso_item_pricket_candlestick_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.folding_candlestick",
@@ -12802,14 +15051,22 @@
       "level": 4,
       "placement": "Surface",
       "styleSet": "Zanaatkâr",
-      "tags": [
-        "light"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 3,
       "material": "metal",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "light"
+      ],
+      "art": {
+        "alongX": "iso_item_folding_candlestick_se",
+        "pivotX": 16.0,
+        "pivotY": 9.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.clay_lamp",
@@ -12819,14 +15076,22 @@
       "placement": "Surface",
       "styleSet": "Köylü",
       "styleTheme": "Yörük",
-      "tags": [
-        "light"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 2,
       "material": "clay",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "light"
+      ],
+      "art": {
+        "alongX": "iso_item_clay_lamp_se",
+        "pivotX": 16.0,
+        "pivotY": 9.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.horn_lantern",
@@ -12836,9 +15101,6 @@
       "level": 4,
       "placement": "Surface",
       "styleSet": "Zanaatkâr",
-      "tags": [
-        "light"
-      ],
       "decorSize": "M",
       "weight": 2,
       "beauty": 3,
@@ -12849,7 +15111,18 @@
         "kanca",
         "ocak"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "light"
+      ],
+      "art": {
+        "alongX": "iso_item_horn_lantern_se",
+        "pivotX": 16.0,
+        "pivotY": 9.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.herb_pot_basil",
@@ -12875,7 +15148,15 @@
       "weight": 2,
       "beauty": 3,
       "material": "clay",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_herb_pot_rosemary_se",
+        "pivotX": 16.0,
+        "pivotY": 9.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.herb_pot_thyme",
@@ -12888,7 +15169,15 @@
       "weight": 2,
       "beauty": 3,
       "material": "clay",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_herb_pot_thyme_se",
+        "pivotX": 16.0,
+        "pivotY": 9.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.yarn_spindle",
@@ -12905,7 +15194,15 @@
         "masa",
         "raf"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_yarn_spindle_se",
+        "pivotX": 16.0,
+        "pivotY": 9.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.sewing_basket",
@@ -12922,7 +15219,15 @@
       "fitsOn": [
         "masa"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_sewing_basket_se",
+        "pivotX": 20.0,
+        "pivotY": 11.0,
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.hanging_basket",
@@ -12938,7 +15243,15 @@
       "fitsOn": [
         "kanca"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_hanging_basket_se",
+        "pivotX": 16.0,
+        "pivotY": 10.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.wood_carving",
@@ -12958,7 +15271,15 @@
         "ocak",
         "pencere"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_wood_carving_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 44,
+        "mirror": true
+      }
     },
     {
       "id": "item.carved_bird",
@@ -12971,7 +15292,15 @@
       "weight": 1,
       "beauty": 3,
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_carved_bird_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 44,
+        "mirror": true
+      }
     },
     {
       "id": "item.lockbox",
@@ -12989,7 +15318,15 @@
         "masa",
         "raf"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_lockbox_se",
+        "pivotX": 20.0,
+        "pivotY": 10.0,
+        "pxW": 40,
+        "pxH": 36,
+        "mirror": true
+      }
     },
     {
       "id": "item.tally_stick",
@@ -13006,7 +15343,15 @@
         "masa",
         "raf"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_tally_stick_se",
+        "pivotX": 20.0,
+        "pivotY": 10.0,
+        "pxW": 40,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.dice_knucklebones",
@@ -13032,7 +15377,15 @@
           "durationDays": 0.06,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_dice_knucklebones_se",
+        "pivotX": 18.0,
+        "pivotY": 9.0,
+        "pxW": 36,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.chess_set",
@@ -13058,7 +15411,15 @@
           "durationDays": 0.12,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_chess_set_se",
+        "pivotX": 24.0,
+        "pivotY": 12.0,
+        "pxW": 48,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.backgammon",
@@ -13085,7 +15446,15 @@
           "durationDays": 0.1,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_backgammon_se",
+        "pivotX": 24.0,
+        "pivotY": 12.0,
+        "pxW": 48,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.rag_doll",
@@ -13113,7 +15482,15 @@
           "skillXp": 1,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_rag_doll_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.wooden_whistle",
@@ -13141,7 +15518,15 @@
           "skillXp": 3,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_wooden_whistle_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.beam_hook",
@@ -13166,7 +15551,18 @@
           "size": "M"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "tavern",
+        "herb"
+      ]
     },
     {
       "id": "item.hanging_lantern",
@@ -13176,9 +15572,6 @@
       "level": 4,
       "placement": "Ceiling",
       "styleSet": "Zanaatkâr",
-      "tags": [
-        "light"
-      ],
       "rooms": [
         "kitchen",
         "living",
@@ -13186,7 +15579,12 @@
       ],
       "beauty": 3,
       "material": "metal",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "light"
+      ],
+      "site": "indoor",
+      "anywhere": true
     },
     {
       "id": "item.iron_chandelier",
@@ -13196,15 +15594,17 @@
       "level": 10,
       "placement": "Ceiling",
       "styleSet": "Asil",
-      "tags": [
-        "light"
-      ],
       "rooms": [
         "living"
       ],
       "beauty": 8,
       "material": "metal",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "light"
+      ],
+      "site": "indoor",
+      "anywhere": true
     },
     {
       "id": "item.ceiling_herbs",
@@ -13219,7 +15619,15 @@
       ],
       "beauty": 2,
       "material": "cloth",
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "tavern",
+        "herb"
+      ]
     },
     {
       "id": "item.ceiling_garland",
@@ -13235,7 +15643,13 @@
       ],
       "beauty": 3,
       "material": "cloth",
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.ceiling_tassels",
@@ -13252,7 +15666,13 @@
       ],
       "beauty": 3,
       "material": "cloth",
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.rush_mat",
@@ -13270,7 +15690,22 @@
         "kitchen"
       ],
       "comfort": 1,
-      "beauty": 1
+      "beauty": 1,
+      "art": {
+        "alongY": "iso_item_rush_mat_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.rush_mat_large",
@@ -13288,7 +15723,22 @@
         "kitchen"
       ],
       "comfort": 1,
-      "beauty": 2
+      "beauty": 2,
+      "art": {
+        "alongX": "iso_item_rush_mat_large_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.rush_mat_hall",
@@ -13305,7 +15755,19 @@
         "living"
       ],
       "comfort": 2,
-      "beauty": 2
+      "beauty": 2,
+      "art": {
+        "alongY": "iso_item_rush_mat_hall_3x2_se",
+        "pivotX": 88.0,
+        "pivotY": 48.0,
+        "pxW": 176,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
     },
     {
       "id": "item.felt_rug_small",
@@ -13321,7 +15783,16 @@
       ],
       "comfort": 1,
       "beauty": 1,
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "tailor"
+      ]
     },
     {
       "id": "item.felt_rug",
@@ -13339,7 +15810,24 @@
       ],
       "comfort": 2,
       "beauty": 2,
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "art": {
+        "alongY": "iso_item_felt_rug_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "tailor"
+      ]
     },
     {
       "id": "item.felt_rug_large",
@@ -13358,7 +15846,24 @@
       ],
       "comfort": 3,
       "beauty": 3,
-      "finishGroup": "cloth"
+      "finishGroup": "cloth",
+      "art": {
+        "alongX": "iso_item_felt_rug_large_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "tailor"
+      ]
     },
     {
       "id": "item.goat_hide",
@@ -13374,7 +15879,21 @@
         "bedroom"
       ],
       "comfort": 2,
-      "beauty": 2
+      "beauty": 2,
+      "art": {
+        "alongX": "iso_item_goat_hide_1x2_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.debris",
@@ -13390,7 +15909,8 @@
           "collectContents": true,
           "removeItem": true
         }
-      ]
+      ],
+      "site": "indoor"
     },
     {
       "id": "item.broken_pottery",
@@ -13464,7 +15984,15 @@
           "durationDays": 0.02,
           "collectContents": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_fruit_basket_se",
+        "pivotX": 16.0,
+        "pivotY": 2.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.bread_basket",
@@ -13513,7 +16041,15 @@
           "durationDays": 0.02,
           "collectContents": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_bread_basket_se",
+        "pivotX": 16.0,
+        "pivotY": 2.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.cheese_board",
@@ -13563,7 +16099,15 @@
           "durationDays": 0.02,
           "collectContents": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_cheese_board_se",
+        "pivotX": 16.0,
+        "pivotY": 5.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.honey_pot",
@@ -13610,7 +16154,15 @@
           "durationDays": 0.02,
           "collectContents": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_honey_pot_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.salt_cellar",
@@ -13647,7 +16199,15 @@
           "durationDays": 0.02,
           "collectContents": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_salt_cellar_se",
+        "pivotX": 16.0,
+        "pivotY": 6.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.onion_braid",
@@ -13858,7 +16418,15 @@
           "durationDays": 0.02,
           "collectContents": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_elderflower_jug_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.nut_bowl",
@@ -13907,7 +16475,15 @@
           "durationDays": 0.02,
           "collectContents": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_nut_bowl_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.vegetable_crate",
@@ -13988,7 +16564,22 @@
           "size": "S"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_window_sill_board_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 12.0,
+        "pxW": 48,
+        "pxH": 24,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.linen_curtain",
@@ -14011,7 +16602,22 @@
       "beauty": 2,
       "material": "cloth",
       "finishGroup": "cloth",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_linen_curtain_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 28.0,
+        "pxW": 48,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.wool_curtain",
@@ -14034,7 +16640,21 @@
       "beauty": 3,
       "material": "cloth",
       "finishGroup": "cloth",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_wool_curtain_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 28.0,
+        "pxW": 48,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.kilim_curtain",
@@ -14056,7 +16676,13 @@
       "insulation": 0.65,
       "beauty": 4,
       "material": "cloth",
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.tablecloth_linen",
@@ -14077,7 +16703,15 @@
         "ortu"
       ],
       "styleTheme": "Çatkı",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_tablecloth_linen_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 64,
+        "mirror": true
+      }
     },
     {
       "id": "item.tablecloth_embroidered",
@@ -14099,7 +16733,15 @@
       ],
       "styleTheme": "Çatkı",
       "level": 4,
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_tablecloth_embroidered_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 64,
+        "mirror": true
+      }
     },
     {
       "id": "item.table_carpet",
@@ -14121,7 +16763,15 @@
       ],
       "styleTheme": "Yörük",
       "level": 9,
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_table_carpet_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 64,
+        "mirror": true
+      }
     },
     {
       "id": "item.sedir_cover_kilim",
@@ -14175,6 +16825,26 @@
             }
           ]
         }
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 104,
+        "mirror": true,
+        "w": "iso_item_settle_bench_2x1_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen",
+        "dining"
+      ],
+      "trades": [
+        "tavern",
+        "carpenter"
       ]
     },
     {
@@ -14201,6 +16871,27 @@
           "restore": 6,
           "durationDays": 0.05
         }
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "w": "iso_item_chest_bench_2x1_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen",
+        "bedroom",
+        "inn_room",
+        "dining"
+      ],
+      "trades": [
+        "carpenter"
       ]
     },
     {
@@ -14258,7 +16949,24 @@
           "size": "L"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_trestle_table_3x1_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 104,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.aumbry",
@@ -14287,7 +16995,20 @@
           "size": "M"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 104,
+        "mirror": true,
+        "n": "iso_item_aumbry_se"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ]
     },
     {
       "id": "item.milking_stool",
@@ -14311,6 +17032,24 @@
           "restore": 5,
           "durationDays": 0.05
         }
+      ],
+      "art": {
+        "alongX": "iso_item_milking_stool_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "living",
+        "barn",
+        "dining"
+      ],
+      "trades": [
+        "animals"
       ]
     },
     {
@@ -14335,6 +17074,24 @@
           "restore": 10,
           "durationDays": 0.05
         }
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true,
+        "n": "iso_item_x_chair_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "carpenter"
       ]
     },
     {
@@ -14393,7 +17150,21 @@
           "size": "L"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_walnut_table_3x1_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 104,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ]
     },
     {
       "id": "item.clothes_press",
@@ -14411,7 +17182,24 @@
       "storage": 60,
       "beauty": 3,
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 120,
+        "mirror": true,
+        "w": "iso_item_clothes_press_2x1_se"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "tailor"
+      ]
     },
     {
       "id": "item.bed_end_chest",
@@ -14428,7 +17216,24 @@
       "storage": 35,
       "beauty": 1,
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 88,
+        "mirror": true,
+        "w": "iso_item_bed_end_chest_2x1_se"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "carpenter"
+      ]
     },
     {
       "id": "item.harvest_wreath",
@@ -14448,7 +17253,20 @@
       ],
       "beauty": 3,
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_harvest_wreath_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 20.0,
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living"
+      ]
     },
     {
       "id": "item.sedir",
@@ -14503,6 +17321,21 @@
             }
           ]
         }
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 88,
+        "mirror": true,
+        "w": "iso_item_sedir_2x1_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "dining"
       ]
     },
     {
@@ -14565,6 +17398,21 @@
             }
           ]
         }
+      ],
+      "art": {
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 96,
+        "mirror": true,
+        "w": "iso_item_sedir_long_3x1_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "dining"
       ]
     },
     {
@@ -14589,6 +17437,21 @@
           "restore": 6,
           "durationDays": 0.05
         }
+      ],
+      "art": {
+        "alongX": "iso_item_floor_cushion_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "dining"
       ]
     },
     {
@@ -14639,7 +17502,13 @@
           "size": "M"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen",
+        "dining"
+      ]
     },
     {
       "id": "item.yukluk",
@@ -14658,7 +17527,22 @@
       "storage": 70,
       "beauty": 2,
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 136,
+        "mirror": true,
+        "w": "iso_item_yukluk_2x1_se"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living"
+      ]
     },
     {
       "id": "item.floor_bed",
@@ -14681,6 +17565,19 @@
           "restore": 55,
           "durationDays": 0.3
         }
+      ],
+      "art": {
+        "alongY": "iso_item_floor_bed_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
       ]
     },
     {
@@ -14715,6 +17612,20 @@
           "restore": 8,
           "durationDays": 0.05
         }
+      ],
+      "art": {
+        "alongY": "iso_item_sedir_bed_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 88,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living"
       ]
     },
     {
@@ -14736,7 +17647,15 @@
       "fitsOn": [
         "kanca"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_heybe_se",
+        "pivotX": 12.0,
+        "pivotY": 4.0,
+        "pxW": 24,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.copper_ewer",
@@ -14760,7 +17679,15 @@
         "raf",
         "ocak"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_copper_ewer_se",
+        "pivotX": 10.0,
+        "pivotY": 3.0,
+        "pxW": 20,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.embroidery_panel",
@@ -14780,7 +17707,21 @@
       ],
       "beauty": 4,
       "material": "cloth",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_embroidery_panel_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 24.0,
+        "pxW": 40,
+        "pxH": 48,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.kilim_small",
@@ -14800,7 +17741,21 @@
       "comfort": 2,
       "beauty": 3,
       "finishGroup": "cloth",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_kilim_small_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.kilim_large",
@@ -14820,7 +17775,21 @@
       "comfort": 3,
       "beauty": 5,
       "finishGroup": "cloth",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_kilim_large_3x2_se",
+        "pivotX": 88.0,
+        "pivotY": 48.0,
+        "pxW": 176,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.cicim",
@@ -14840,7 +17809,21 @@
       "comfort": 3,
       "beauty": 4,
       "finishGroup": "cloth",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_cicim_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 88,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.herb_rush_mat",
@@ -14859,7 +17842,14 @@
       ],
       "comfort": 1,
       "beauty": 2,
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.slingshot",
@@ -14887,7 +17877,13 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_slingshot_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.jump_rope",
@@ -14913,7 +17909,13 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_jump_rope_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.hoop",
@@ -14935,7 +17937,19 @@
         }
       ],
       "finishGroup": "wood",
-      "beauty": 1
+      "beauty": 1,
+      "art": {
+        "alongX": "iso_item_hoop_se_v3",
+        "pivotX": 16.0,
+        "pivotY": 10.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.whittling_knife",
@@ -14963,7 +17977,15 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_whittling_knife_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.marbles",
@@ -14989,7 +18011,15 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_marbles_se_v4",
+        "pivotX": 16.0,
+        "pivotY": 4.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.kite",
@@ -15013,7 +18043,17 @@
         }
       ],
       "finishGroup": "wood",
-      "beauty": 1
+      "beauty": 1,
+      "art": {
+        "alongX": "iso_item_kite_se",
+        "pivotX": 16.0,
+        "pivotY": 10.0,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.juggling_balls",
@@ -15041,7 +18081,15 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_juggling_balls_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.tallow",
@@ -15189,9 +18237,6 @@
       "id": "item.forage_sand",
       "displayName": "Kumsal",
       "category": "forage",
-      "tags": [
-        "shore"
-      ],
       "forageSeasons": [
         "Spring",
         "Summer",
@@ -15223,7 +18268,11 @@
             }
           ]
         }
-      ]
+      ],
+      "tags": [
+        "shore"
+      ],
+      "site": "outdoor"
     },
     {
       "id": "item.sieve",
@@ -15237,7 +18286,13 @@
         "kitchen"
       ],
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "kitchen",
+        "workshop"
+      ]
     },
     {
       "id": "item.glass_furnace",
@@ -15251,7 +18306,13 @@
       "rooms": [
         "outdoor"
       ],
-      "interactions": []
+      "interactions": [],
+      "front": "work",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ]
     },
     {
       "id": "item.glass_bench",
@@ -15268,7 +18329,14 @@
       "finishGroup": "wood",
       "interactions": [],
       "requiresNear": "item.glass_furnace",
-      "nearRadius": 4
+      "nearRadius": 4,
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "living",
+        "workshop"
+      ]
     },
     {
       "id": "item.glass_bottle",
@@ -15277,10 +18345,6 @@
       "price": 8,
       "placement": "Surface",
       "styleSet": "Zanaatkâr",
-      "tags": [
-        "glass",
-        "craftonly"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 2,
@@ -15293,7 +18357,11 @@
         "kiler"
       ],
       "interactions": [],
-      "shopUnlock": "glassworks"
+      "shopUnlock": "glassworks",
+      "tags": [
+        "glass",
+        "craftonly"
+      ]
     },
     {
       "id": "item.glass_cup",
@@ -15302,10 +18370,6 @@
       "price": 8,
       "placement": "Surface",
       "styleSet": "Zanaatkâr",
-      "tags": [
-        "glass",
-        "craftonly"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 2,
@@ -15316,7 +18380,11 @@
         "pencere"
       ],
       "interactions": [],
-      "shopUnlock": "glassworks"
+      "shopUnlock": "glassworks",
+      "tags": [
+        "glass",
+        "craftonly"
+      ]
     },
     {
       "id": "item.glass_jar",
@@ -15325,11 +18393,6 @@
       "price": 12,
       "placement": "Surface",
       "styleSet": "Zanaatkâr",
-      "tags": [
-        "glass",
-        "craftonly",
-        "sealed"
-      ],
       "decorSize": "S",
       "weight": 2,
       "beauty": 3,
@@ -15376,7 +18439,20 @@
           "collectContents": true
         }
       ],
-      "shopUnlock": "glassworks"
+      "shopUnlock": "glassworks",
+      "tags": [
+        "glass",
+        "craftonly",
+        "sealed"
+      ],
+      "art": {
+        "alongX": "iso_item_glass_jar_se",
+        "pivotX": 16.0,
+        "pivotY": 5.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.glass_goblet",
@@ -15385,10 +18461,6 @@
       "price": 30,
       "placement": "Surface",
       "styleSet": "Tüccar",
-      "tags": [
-        "glass",
-        "craftonly"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 4,
@@ -15398,7 +18470,11 @@
         "raf",
         "ocak"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "glass",
+        "craftonly"
+      ]
     },
     {
       "id": "item.hourglass",
@@ -15407,10 +18483,6 @@
       "price": 40,
       "placement": "Surface",
       "styleSet": "Tüccar",
-      "tags": [
-        "glass",
-        "craftonly"
-      ],
       "decorSize": "S",
       "weight": 2,
       "beauty": 4,
@@ -15420,7 +18492,19 @@
         "raf",
         "ocak"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "art": {
+        "alongX": "iso_item_hourglass_se",
+        "pivotX": 16.0,
+        "pivotY": 3.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.convex_mirror",
@@ -15430,10 +18514,6 @@
       "level": 8,
       "placement": "Wall",
       "styleSet": "Tüccar",
-      "tags": [
-        "glass",
-        "craftonly"
-      ],
       "rooms": [
         "bedroom",
         "living"
@@ -15444,7 +18524,17 @@
       "beauty": 5,
       "material": "glass",
       "mirror": true,
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living"
+      ]
     },
     {
       "id": "item.large_mirror",
@@ -15454,10 +18544,6 @@
       "level": 12,
       "placement": "Wall",
       "styleSet": "Asil",
-      "tags": [
-        "glass",
-        "craftonly"
-      ],
       "rooms": [
         "bedroom",
         "living"
@@ -15469,7 +18555,25 @@
       "beauty": 9,
       "material": "glass",
       "mirror": true,
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "glass",
+        "craftonly"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_large_mirror_2w_sw_ne",
+        "pivotX": 48.0,
+        "pivotY": 32.0,
+        "pxW": 96,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living"
+      ]
     },
     {
       "id": "item.box_bed",
@@ -15480,9 +18584,6 @@
       "level": 5,
       "styleSet": "Zanaatkâr",
       "styleTheme": "Çatkı",
-      "tags": [
-        "craftonly"
-      ],
       "rooms": [
         "bedroom"
       ],
@@ -15505,6 +18606,22 @@
             }
           ]
         }
+      ],
+      "tags": [
+        "craftonly"
+      ],
+      "art": {
+        "alongY": "iso_item_box_bed_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
       ]
     },
     {
@@ -15513,9 +18630,6 @@
       "category": "decor",
       "price": 0,
       "placement": "Surface",
-      "tags": [
-        "keepsake"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 3,
@@ -15530,7 +18644,18 @@
         "bedroom",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "keepsake"
+      ],
+      "art": {
+        "alongX": "iso_item_festival_cup_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.harvest_ribbon",
@@ -15538,9 +18663,6 @@
       "category": "decor",
       "price": 0,
       "placement": "Surface",
-      "tags": [
-        "keepsake"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 3,
@@ -15554,7 +18676,10 @@
         "bedroom",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "keepsake"
+      ]
     },
     {
       "id": "item.baby_first_shoes",
@@ -15562,9 +18687,6 @@
       "category": "decor",
       "price": 0,
       "placement": "Surface",
-      "tags": [
-        "keepsake"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 3,
@@ -15579,7 +18701,18 @@
         "bedroom",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "keepsake"
+      ],
+      "art": {
+        "alongX": "iso_item_baby_first_shoes_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.elder_tin_cup",
@@ -15587,9 +18720,6 @@
       "category": "decor",
       "price": 0,
       "placement": "Surface",
-      "tags": [
-        "keepsake"
-      ],
       "decorSize": "S",
       "weight": 1,
       "beauty": 3,
@@ -15604,7 +18734,18 @@
         "bedroom",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "keepsake"
+      ],
+      "art": {
+        "alongX": "iso_item_elder_tin_cup_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.first_fish_scale",
@@ -15612,9 +18753,6 @@
       "category": "decor_wall",
       "price": 0,
       "placement": "Wall",
-      "tags": [
-        "keepsake"
-      ],
       "rooms": [
         "living",
         "kitchen"
@@ -15625,7 +18763,26 @@
       ],
       "beauty": 3,
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "keepsake"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_first_fish_scale_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 24.0,
+        "pxW": 40,
+        "pxH": 48,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen"
+      ],
+      "trades": [
+        "fisher"
+      ]
     },
     {
       "id": "item.family_tree_embroidery",
@@ -15635,9 +18792,6 @@
       "level": 5,
       "placement": "Wall",
       "styleSet": "Zanaatkâr",
-      "tags": [
-        "craftonly"
-      ],
       "rooms": [
         "living",
         "bedroom"
@@ -15649,7 +18803,16 @@
       "beauty": 6,
       "material": "cloth",
       "insulation": 0.85,
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.dowry_chest",
@@ -15689,6 +18852,24 @@
           "durationDays": 0.02,
           "collectContents": true
         }
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "w": "iso_item_dowry_chest_2x1_se"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living"
+      ],
+      "trades": [
+        "carpenter"
       ]
     },
     {
@@ -15709,7 +18890,11 @@
       "material": "cloth",
       "wallWidth": 3,
       "insulation": 0.75,
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
     },
     {
       "id": "item.tapestry_garden",
@@ -15730,7 +18915,13 @@
       "material": "cloth",
       "wallWidth": 3,
       "insulation": 0.75,
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.dynasty_banner",
@@ -15748,7 +18939,11 @@
       ],
       "beauty": 5,
       "material": "cloth",
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
     },
     {
       "id": "item.rug_knotted",
@@ -15767,7 +18962,13 @@
       "level": 9,
       "finishGroup": "cloth",
       "beauty": 9,
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.rug_kufic",
@@ -15786,7 +18987,21 @@
       "level": 13,
       "finishGroup": "cloth",
       "beauty": 13,
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_rug_kufic_4x3_se",
+        "pivotX": 120.0,
+        "pivotY": 64.0,
+        "pxW": 240,
+        "pxH": 128,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.rug_crest",
@@ -15805,10 +19020,24 @@
       "level": 12,
       "finishGroup": "cloth",
       "beauty": 12,
+      "interactions": [],
       "tags": [
         "craftonly"
       ],
-      "interactions": []
+      "art": {
+        "alongX": "iso_item_rug_crest_3x3_se",
+        "pivotX": 104.0,
+        "pivotY": 56.0,
+        "pxW": 208,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.canopy_bed",
@@ -15835,6 +19064,19 @@
           "durationDays": 0.3,
           "moodlet": "rested"
         }
+      ],
+      "art": {
+        "alongX": "iso_item_canopy_bed_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 144,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
       ]
     },
     {
@@ -15868,6 +19110,11 @@
             }
           ]
         }
+      ],
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
       ]
     },
     {
@@ -15891,6 +19138,13 @@
           "restore": 14,
           "durationDays": 0.05
         }
+      ],
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "dining"
       ]
     },
     {
@@ -15909,7 +19163,25 @@
       "comfort": 1,
       "beauty": 5,
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "w": "iso_item_carved_chest_2x1_se"
+      },
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room",
+        "living"
+      ],
+      "trades": [
+        "carpenter"
+      ]
     },
     {
       "id": "item.spring_branch",
@@ -15917,9 +19189,6 @@
       "category": "decor",
       "price": 6,
       "styleSet": "Köylü",
-      "tags": [
-        "craftonly"
-      ],
       "seasonal": [
         "Spring"
       ],
@@ -15939,7 +19208,18 @@
         "kitchen",
         "bedroom"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "art": {
+        "alongX": "iso_item_spring_branch_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.spring_garland",
@@ -15947,9 +19227,6 @@
       "category": "decor_wall",
       "price": 6,
       "styleSet": "Köylü",
-      "tags": [
-        "craftonly"
-      ],
       "seasonal": [
         "Spring",
         "Summer"
@@ -15966,7 +19243,25 @@
         "kitchen",
         "bedroom"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_spring_garland_sw_ne",
+        "pivotX": 32.0,
+        "pivotY": 24.0,
+        "pxW": 64,
+        "pxH": 48,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.harvest_heap",
@@ -15974,9 +19269,6 @@
       "category": "garden",
       "price": 6,
       "styleSet": "Köylü",
-      "tags": [
-        "craftonly"
-      ],
       "seasonal": [
         "Autumn"
       ],
@@ -15986,7 +19278,16 @@
         "living",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "living",
+        "kitchen"
+      ]
     },
     {
       "id": "item.winter_greenery",
@@ -15994,9 +19295,6 @@
       "category": "decor_wall",
       "price": 6,
       "styleSet": "Köylü",
-      "tags": [
-        "craftonly"
-      ],
       "seasonal": [
         "Winter"
       ],
@@ -16011,7 +19309,17 @@
         "kitchen",
         "bedroom"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.door_wreath",
@@ -16019,9 +19327,6 @@
       "category": "decor_wall",
       "price": 6,
       "styleSet": "Köylü",
-      "tags": [
-        "craftonly"
-      ],
       "seasonal": [
         "Autumn",
         "Winter"
@@ -16036,7 +19341,23 @@
         "living",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_door_wreath_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 32.0,
+        "pxW": 48,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen"
+      ]
     },
     {
       "id": "item.name_plaque",
@@ -16055,7 +19376,19 @@
       "animalComfort": 2,
       "beauty": 1,
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_name_plaque_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 24.0,
+        "pxW": 48,
+        "pxH": 48,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
+      ]
     },
     {
       "id": "item.horseshoe_display",
@@ -16075,10 +19408,25 @@
       "animalComfort": 2,
       "beauty": 2,
       "material": "metal",
+      "interactions": [],
       "tags": [
         "craftonly"
       ],
-      "interactions": []
+      "art": {
+        "alongX": "iso_wall_item_horseshoe_display_sw_ne",
+        "pivotX": 32.0,
+        "pivotY": 24.0,
+        "pxW": 64,
+        "pxH": 48,
+        "mirror": true
+      },
+      "site": "any",
+      "belongs": [
+        "barn"
+      ],
+      "trades": [
+        "smithy"
+      ]
     },
     {
       "id": "item.saddle_peg",
@@ -16097,7 +19445,22 @@
       "animalComfort": 2,
       "beauty": 1,
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_saddle_peg_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 32.0,
+        "pxW": 48,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "barn"
+      ],
+      "trades": [
+        "saddler"
+      ]
     },
     {
       "id": "item.straw_ornament",
@@ -16116,7 +19479,11 @@
       "animalComfort": 1,
       "beauty": 2,
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "barn"
+      ]
     },
     {
       "id": "item.coop_curtain",
@@ -16136,7 +19503,19 @@
       "animalComfort": 3,
       "beauty": 1,
       "material": "cloth",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_coop_curtain_sw_ne",
+        "pivotX": 32.0,
+        "pivotY": 32.0,
+        "pxW": 64,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "barn"
+      ]
     },
     {
       "id": "item.hunting_bow",
@@ -16170,7 +19549,11 @@
       "rooms": [
         "outdoor"
       ],
-      "interactions": []
+      "interactions": [],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     },
     {
       "id": "item.bonfire",
@@ -16183,9 +19566,6 @@
       "rooms": [
         "outdoor"
       ],
-      "tags": [
-        "light"
-      ],
       "interactions": [
         {
           "id": "warm",
@@ -16194,6 +19574,23 @@
           "restore": 15,
           "durationDays": 0.06
         }
+      ],
+      "tags": [
+        "light",
+        "focus"
+      ],
+      "art": {
+        "lit": "iso_item_bonfire_lit_se",
+        "alongX": "iso_item_bonfire_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -16226,7 +19623,23 @@
       ],
       "wallWidth": 2,
       "material": "cloth",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_net_curtain_2w_sw_ne",
+        "pivotX": 36.0,
+        "pivotY": 36.0,
+        "pxW": 72,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen"
+      ],
+      "trades": [
+        "fisher"
+      ]
     },
     {
       "id": "item.oar_rack",
@@ -16248,7 +19661,24 @@
         "üst"
       ],
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_oar_rack_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 28.0,
+        "pxW": 40,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen",
+        "outdoor"
+      ],
+      "trades": [
+        "fisher"
+      ]
     },
     {
       "id": "item.fish_basket_decor",
@@ -16272,7 +19702,15 @@
         "kitchen",
         "living"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_fish_basket_decor_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.dried_fish_string",
@@ -16319,6 +19757,21 @@
           "durationDays": 0.02,
           "collectContents": true
         }
+      ],
+      "art": {
+        "alongX": "iso_wall_item_dried_fish_string_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 30.0,
+        "pxW": 40,
+        "pxH": 60,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "fisher"
       ]
     },
     {
@@ -16330,9 +19783,6 @@
       "styleSet": "Köylü",
       "styleTheme": "Kıyı",
       "beauty": 3,
-      "tags": [
-        "craftonly"
-      ],
       "placement": "Surface",
       "decorSize": "S",
       "weight": 1,
@@ -16348,7 +19798,18 @@
         "bedroom",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "art": {
+        "alongX": "iso_item_shell_bowl_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.bleached_bench",
@@ -16375,6 +19836,23 @@
           "restore": 6,
           "durationDays": 0.05
         }
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "w": "iso_item_bleached_bench_2x1_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen",
+        "outdoor",
+        "dining"
       ]
     },
     {
@@ -16419,7 +19897,23 @@
           "kind": "raf"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_green_bottle_shelf_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 20.0,
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.rope_coil",
@@ -16436,7 +19930,13 @@
         "outdoor"
       ],
       "finishGroup": "cloth",
-      "interactions": []
+      "interactions": [],
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen",
+        "outdoor"
+      ]
     },
     {
       "id": "item.han_table",
@@ -16488,7 +19988,24 @@
           "size": "L"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongY": "iso_item_han_table_3x1_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.barrel_table",
@@ -16513,7 +20030,16 @@
           "size": "M"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.han_bench",
@@ -16539,6 +20065,25 @@
           "restore": 7,
           "durationDays": 0.05
         }
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "w": "iso_item_han_bench_2x1_se"
+      },
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "tavern"
       ]
     },
     {
@@ -16591,7 +20136,23 @@
           "kind": "tabak"
         }
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_tankard_rack_2w_sw_ne",
+        "pivotX": 48.0,
+        "pivotY": 32.0,
+        "pxW": 96,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living"
+      ],
+      "trades": [
+        "tavern"
+      ]
     },
     {
       "id": "item.tankard",
@@ -16615,7 +20176,13 @@
         "kitchen",
         "living"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_tankard_se",
+        "pivotX": 16,
+        "pivotY": 7,
+        "mirror": true
+      }
     },
     {
       "id": "item.pewter_jug",
@@ -16640,7 +20207,13 @@
         "kitchen",
         "living"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_pewter_jug_se",
+        "pivotX": 16,
+        "pivotY": 7,
+        "mirror": true
+      }
     },
     {
       "id": "item.notice_board",
@@ -16661,7 +20234,20 @@
         "orta"
       ],
       "material": "wood",
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_wall_item_notice_board_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 28.0,
+        "pxW": 48,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "any",
+      "trades": [
+        "scribe"
+      ],
+      "anywhere": true
     },
     {
       "id": "item.singer_stand",
@@ -16693,6 +20279,24 @@
           ],
           "moodlet": "had_fun"
         }
+      ],
+      "tags": [
+        "focus"
+      ],
+      "art": {
+        "alongX": "iso_item_singer_stand_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ],
+      "trades": [
+        "tavern"
       ]
     },
     {
@@ -16704,9 +20308,6 @@
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
       "beauty": 4,
-      "tags": [
-        "merchant"
-      ],
       "placement": "Surface",
       "decorSize": "S",
       "weight": 2,
@@ -16720,7 +20321,18 @@
         "living",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "merchant"
+      ],
+      "art": {
+        "alongX": "iso_item_brass_ewer_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.tile_bowl",
@@ -16731,9 +20343,6 @@
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
       "beauty": 4,
-      "tags": [
-        "merchant"
-      ],
       "placement": "Surface",
       "decorSize": "S",
       "weight": 1,
@@ -16748,7 +20357,10 @@
         "living",
         "kitchen"
       ],
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "merchant"
+      ]
     },
     {
       "id": "item.lattice_screen",
@@ -16759,9 +20371,6 @@
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
       "beauty": 5,
-      "tags": [
-        "merchant"
-      ],
       "width": 2,
       "rooms": [
         "living",
@@ -16769,7 +20378,16 @@
       ],
       "finishGroup": "wood",
       "tall": true,
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "merchant"
+      ],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.brass_lantern",
@@ -16780,10 +20398,6 @@
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
       "beauty": 5,
-      "tags": [
-        "merchant",
-        "light"
-      ],
       "placement": "Ceiling",
       "rooms": [
         "living",
@@ -16791,7 +20405,21 @@
         "bedroom"
       ],
       "material": "metal",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "merchant",
+        "light"
+      ],
+      "art": {
+        "alongX": "iso_item_brass_lantern_se",
+        "pivotX": 16.0,
+        "pivotY": 20.0,
+        "pxW": 32,
+        "pxH": 40,
+        "mirror": true
+      },
+      "site": "indoor",
+      "anywhere": true
     },
     {
       "id": "item.cushioned_divan",
@@ -16802,9 +20430,6 @@
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
       "beauty": 5,
-      "tags": [
-        "merchant"
-      ],
       "width": 3,
       "rooms": [
         "living"
@@ -16819,6 +20444,16 @@
           "restore": 12,
           "durationDays": 0.05
         }
+      ],
+      "tags": [
+        "merchant"
+      ],
+      "front": "sit",
+      "relation": "faceTable",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "dining"
       ]
     },
     {
@@ -16830,9 +20465,6 @@
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
       "beauty": 9,
-      "tags": [
-        "merchant"
-      ],
       "width": 3,
       "height": 2,
       "placement": "Rug",
@@ -16842,7 +20474,16 @@
       ],
       "comfort": 5,
       "finishGroup": "cloth",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "merchant"
+      ],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
     },
     {
       "id": "item.tile_panel",
@@ -16853,9 +20494,6 @@
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
       "beauty": 5,
-      "tags": [
-        "merchant"
-      ],
       "placement": "Wall",
       "rooms": [
         "living",
@@ -16865,7 +20503,15 @@
         "orta"
       ],
       "material": "clay",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "merchant"
+      ],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen"
+      ]
     },
     {
       "id": "item.spice_chest",
@@ -16876,15 +20522,20 @@
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
       "beauty": 3,
-      "tags": [
-        "merchant"
-      ],
       "rooms": [
         "kitchen"
       ],
       "storage": 20,
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "merchant"
+      ],
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ]
     },
     {
       "id": "item.mussel_shell",
@@ -16937,9 +20588,6 @@
       "level": 3,
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
-      "tags": [
-        "merchant"
-      ],
       "interactions": [
         {
           "id": "read",
@@ -16959,6 +20607,9 @@
       "fitsOn": [
         "masa",
         "raf"
+      ],
+      "tags": [
+        "merchant"
       ]
     },
     {
@@ -16970,9 +20621,6 @@
       "level": 3,
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
-      "tags": [
-        "merchant"
-      ],
       "interactions": [
         {
           "id": "read",
@@ -16992,7 +20640,18 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "tags": [
+        "merchant"
+      ],
+      "art": {
+        "alongX": "iso_item_book_herbal_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.book_husbandry",
@@ -17003,9 +20662,6 @@
       "level": 3,
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
-      "tags": [
-        "merchant"
-      ],
       "interactions": [
         {
           "id": "read",
@@ -17025,7 +20681,18 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "tags": [
+        "merchant"
+      ],
+      "art": {
+        "alongX": "iso_item_book_husbandry_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.book_smithing",
@@ -17036,9 +20703,6 @@
       "level": 3,
       "styleSet": "Tüccar",
       "styleTheme": "Kervan",
-      "tags": [
-        "merchant"
-      ],
       "interactions": [
         {
           "id": "read",
@@ -17058,7 +20722,18 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "tags": [
+        "merchant"
+      ],
+      "art": {
+        "alongX": "iso_item_book_smithing_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.sapling_coffee",
@@ -17119,7 +20794,14 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "fruit": "iso_plant_coffee_fruit_se",
+        "grown": "iso_plant_coffee_grown_se",
+        "young": "iso_plant_coffee_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.coffee_cherry",
@@ -17255,6 +20937,12 @@
           "adultOnly": true,
           "bladder": 10
         }
+      ],
+      "relation": "nearHearth",
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "living"
       ]
     },
     {
@@ -17330,7 +21018,14 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "fruit": "iso_plant_olive_fruit_se",
+        "grown": "iso_plant_olive_grown_se",
+        "young": "iso_plant_olive_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.olive",
@@ -17429,7 +21124,14 @@
         "kitchen",
         "pantry"
       ],
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ]
     },
     {
       "id": "item.olive_crusher",
@@ -17441,7 +21143,20 @@
       "rooms": [
         "outdoor"
       ],
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_olive_crusher_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ]
     },
     {
       "id": "item.olive_press",
@@ -17453,7 +21168,12 @@
       "rooms": [
         "outdoor"
       ],
-      "interactions": []
+      "interactions": [],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ]
     },
     {
       "id": "item.honey_strainer",
@@ -17466,7 +21186,14 @@
         "kitchen",
         "pantry"
       ],
-      "interactions": []
+      "interactions": [],
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ]
     },
     {
       "id": "item.honey_strained",
@@ -17581,7 +21308,16 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_chamomile_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_linden",
@@ -17606,7 +21342,16 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_linden_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_sage",
@@ -17633,7 +21378,16 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_sage_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_mint",
@@ -17659,7 +21413,16 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_mint_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.honeycomb",
@@ -17679,9 +21442,6 @@
       "level": 4,
       "placement": "Surface",
       "styleSet": "Köylü",
-      "tags": [
-        "light"
-      ],
       "needsOil": true,
       "decorSize": "S",
       "weight": 1,
@@ -17694,7 +21454,17 @@
           "durationDays": 0.02,
           "consume": "item.olive_oil"
         }
-      ]
+      ],
+      "tags": [
+        "light"
+      ],
+      "art": {
+        "lit": "iso_item_olive_lamp_lit_se",
+        "alongX": "iso_item_olive_lamp_se",
+        "pivotX": 16,
+        "pivotY": 7,
+        "mirror": true
+      }
     },
     {
       "id": "item.sapling_grape",
@@ -17752,7 +21522,14 @@
             }
           ]
         }
-      ]
+      ],
+      "art": {
+        "fruit": "iso_plant_grape_fruit_se",
+        "grown": "iso_plant_grape_grown_se",
+        "young": "iso_plant_grape_young_se",
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.grape",
@@ -17810,7 +21587,911 @@
         "outdoor"
       ],
       "finishGroup": "wood",
-      "interactions": []
+      "interactions": [],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ]
+    },
+    {
+      "id": "item.shop_counter",
+      "displayName": "Satış tezgâhı",
+      "width": 2,
+      "height": 1,
+      "price": 30,
+      "category": "surfaces",
+      "rooms": [
+        "living"
+      ],
+      "level": 3,
+      "styleSet": "Tüccar",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.3,
+          "v": 0.5,
+          "size": "M"
+        },
+        {
+          "id": "b",
+          "u": 0.7,
+          "v": 0.5,
+          "size": "M"
+        }
+      ],
+      "maxLoad": 16,
+      "front": "work",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "general"
+      ]
+    },
+    {
+      "id": "item.anvil",
+      "displayName": "Örs",
+      "width": 1,
+      "height": 1,
+      "price": 60,
+      "category": "work",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "front": "work",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "smithy"
+      ]
+    },
+    {
+      "id": "item.bellows",
+      "displayName": "Körük",
+      "width": 1,
+      "height": 1,
+      "price": 25,
+      "category": "work",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "smithy"
+      ]
+    },
+    {
+      "id": "item.quench_tub",
+      "displayName": "Su teknesi (demirci)",
+      "width": 1,
+      "height": 1,
+      "price": 12,
+      "category": "work",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "smithy"
+      ]
+    },
+    {
+      "id": "item.iron_pile",
+      "displayName": "Nal ve demir yığını",
+      "width": 1,
+      "height": 1,
+      "price": 10,
+      "category": "work",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "smithy"
+      ]
+    },
+    {
+      "id": "item.lumber_pile",
+      "displayName": "Kereste yığını",
+      "width": 2,
+      "height": 1,
+      "price": 14,
+      "category": "storage",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ],
+      "trades": [
+        "carpenter"
+      ]
+    },
+    {
+      "id": "item.unfinished_furniture",
+      "displayName": "Yarım kalmış dolap",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "work",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "tags": [
+        "townonly"
+      ],
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "carpenter"
+      ]
+    },
+    {
+      "id": "item.kneading_trough",
+      "displayName": "Hamur teknesi",
+      "width": 2,
+      "height": 1,
+      "price": 22,
+      "category": "kitchen",
+      "rooms": [
+        "kitchen"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "front": "work",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "mill"
+      ]
+    },
+    {
+      "id": "item.flour_sack",
+      "displayName": "Un çuvalı",
+      "width": 1,
+      "height": 1,
+      "price": 6,
+      "category": "storage",
+      "rooms": [
+        "kitchen"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ],
+      "trades": [
+        "general",
+        "mill"
+      ]
+    },
+    {
+      "id": "item.grain_sack",
+      "displayName": "Tahıl çuvalı",
+      "width": 1,
+      "height": 1,
+      "price": 6,
+      "category": "storage",
+      "rooms": [
+        "kitchen"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ],
+      "trades": [
+        "general",
+        "mill"
+      ]
+    },
+    {
+      "id": "item.bread_rack",
+      "displayName": "Ekmek rafı",
+      "width": 1,
+      "height": 1,
+      "price": 18,
+      "category": "kitchen",
+      "rooms": [
+        "kitchen"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "trades": [
+        "mill"
+      ]
+    },
+    {
+      "id": "item.writing_lectern",
+      "displayName": "Yazı kürsüsü (rahle)",
+      "width": 1,
+      "height": 1,
+      "price": 30,
+      "category": "work",
+      "rooms": [
+        "living"
+      ],
+      "level": 3,
+      "styleSet": "Tüccar",
+      "front": "work",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "workshop"
+      ],
+      "trades": [
+        "scribe"
+      ]
+    },
+    {
+      "id": "item.scroll_rack",
+      "displayName": "Rulo rafı",
+      "width": 1,
+      "height": 1,
+      "price": 24,
+      "category": "storage",
+      "rooms": [
+        "living"
+      ],
+      "level": 3,
+      "styleSet": "Tüccar",
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ],
+      "trades": [
+        "scribe"
+      ]
+    },
+    {
+      "id": "item.scroll_chest",
+      "displayName": "Rulo sandığı",
+      "width": 1,
+      "height": 1,
+      "price": 20,
+      "category": "storage",
+      "rooms": [
+        "living"
+      ],
+      "level": 3,
+      "styleSet": "Tüccar",
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ],
+      "trades": [
+        "scribe"
+      ]
+    },
+    {
+      "id": "item.cutting_table",
+      "displayName": "Kesim masası",
+      "width": 2,
+      "height": 1,
+      "price": 26,
+      "category": "surfaces",
+      "rooms": [
+        "living"
+      ],
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.3,
+          "v": 0.5,
+          "size": "M"
+        },
+        {
+          "id": "b",
+          "u": 0.7,
+          "v": 0.5,
+          "size": "M"
+        }
+      ],
+      "maxLoad": 16,
+      "front": "work",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "dining"
+      ],
+      "trades": [
+        "tailor"
+      ]
+    },
+    {
+      "id": "item.cloth_bolt_shelf",
+      "displayName": "Kumaş topları rafı",
+      "width": 2,
+      "height": 1,
+      "price": 28,
+      "category": "storage",
+      "rooms": [
+        "living"
+      ],
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "front": "open",
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ],
+      "trades": [
+        "tailor"
+      ]
+    },
+    {
+      "id": "item.garment_stand",
+      "displayName": "Elbise askısı",
+      "width": 1,
+      "height": 1,
+      "price": 12,
+      "category": "storage",
+      "rooms": [
+        "bedroom"
+      ],
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ],
+      "trades": [
+        "tailor"
+      ]
+    },
+    {
+      "id": "item.yarn_basket",
+      "displayName": "İplik ve yumak sepeti",
+      "width": 1,
+      "height": 1,
+      "price": 6,
+      "category": "decor",
+      "rooms": [
+        "living"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ],
+      "trades": [
+        "tailor"
+      ]
+    },
+    {
+      "id": "item.clay_trough",
+      "displayName": "Kil teknesi",
+      "width": 1,
+      "height": 1,
+      "price": 10,
+      "category": "work",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "potter"
+      ]
+    },
+    {
+      "id": "item.pot_drying_rack",
+      "displayName": "Kuruyan çömlek rafı",
+      "width": 2,
+      "height": 1,
+      "price": 16,
+      "category": "work",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "potter"
+      ]
+    },
+    {
+      "id": "item.fish_basket",
+      "displayName": "Balık sepeti",
+      "width": 1,
+      "height": 1,
+      "price": 6,
+      "category": "storage",
+      "rooms": [
+        "kitchen"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ],
+      "trades": [
+        "fisher"
+      ]
+    },
+    {
+      "id": "item.hide_rack",
+      "displayName": "Deri askısı",
+      "width": 1,
+      "height": 1,
+      "price": 14,
+      "category": "work",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Zanaatkâr",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "saddler"
+      ]
+    },
+    {
+      "id": "item.stone_blocks",
+      "displayName": "Taş blokları",
+      "width": 1,
+      "height": 1,
+      "price": 8,
+      "category": "work",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "workshop"
+      ],
+      "trades": [
+        "mason"
+      ]
+    },
+    {
+      "id": "item.wicker_basket",
+      "displayName": "Hasır sepet",
+      "width": 1,
+      "height": 1,
+      "price": 5,
+      "category": "storage",
+      "rooms": [
+        "kitchen"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "pantry",
+        "cellar",
+        "storehouse"
+      ],
+      "trades": [
+        "general"
+      ]
+    },
+    {
+      "id": "item.bedside_stand",
+      "displayName": "Başucu sehpası",
+      "width": 1,
+      "height": 1,
+      "price": 12,
+      "category": "storage",
+      "rooms": [
+        "bedroom"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "front": "open",
+      "relation": "bedside",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ]
+    },
+    {
+      "id": "item.wash_tub",
+      "displayName": "Çamaşır leğeni",
+      "width": 1,
+      "height": 1,
+      "price": 8,
+      "category": "hygiene",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.shop_sign",
+      "displayName": "Dükkân tabelası",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.signpost",
+      "displayName": "Yol tabelası",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.notice_post",
+      "displayName": "İlan tahtası",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.clothes_line",
+      "displayName": "Çamaşır ipi",
+      "width": 2,
+      "height": 1,
+      "price": 8,
+      "category": "garden",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.hitching_post",
+      "displayName": "At bağlama direği",
+      "width": 1,
+      "height": 1,
+      "price": 10,
+      "category": "garden",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.cloth_drying_line",
+      "displayName": "Kurumaya asılmış boyalı kumaşlar",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "garden",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.net_drying_rack",
+      "displayName": "Ağ kurutma askısı",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "garden",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.pottery_display",
+      "displayName": "Çömlek sergisi",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.smith_display",
+      "displayName": "Nal ve alet sergisi",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.flower_clump",
+      "displayName": "Çiçek öbeği",
+      "width": 1,
+      "height": 1,
+      "price": 4,
+      "category": "garden",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "styleSet": "Köylü",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.shrub",
+      "displayName": "Çalı",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "garden",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.reeds",
+      "displayName": "Saz öbeği",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "garden",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.grass_tuft",
+      "displayName": "Çim öbeği",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "garden",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "placement": "Rug",
+      "tags": [
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.ink_quill",
+      "displayName": "Mürekkep hokkası ve tüy kalem",
+      "placement": "Surface",
+      "price": 6,
+      "category": "decor",
+      "decorSize": "S",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "beauty": 1,
+      "level": 3
+    },
+    {
+      "id": "item.wax_seal",
+      "displayName": "Mühür ve mum",
+      "placement": "Surface",
+      "price": 5,
+      "category": "decor",
+      "decorSize": "S",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "beauty": 1,
+      "level": 3
+    },
+    {
+      "id": "item.letter_box",
+      "displayName": "Mektup kutusu",
+      "placement": "Surface",
+      "price": 8,
+      "category": "decor",
+      "decorSize": "S",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "beauty": 1,
+      "level": 3
+    },
+    {
+      "id": "item.shears_chalk",
+      "displayName": "Makas, ölçü ipi ve tebeşir",
+      "placement": "Surface",
+      "price": 6,
+      "category": "decor",
+      "decorSize": "S",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ],
+      "beauty": 1,
+      "level": 3
+    },
+    {
+      "id": "item.chisel_rack",
+      "displayName": "Keski askısı",
+      "placement": "Wall",
+      "price": 14,
+      "category": "work",
+      "level": 3,
+      "site": "indoor",
+      "belongs": [
+        "workshop"
+      ],
+      "trades": [
+        "mason"
+      ]
     }
   ],
   "recipes": [

@@ -139,6 +139,43 @@ namespace Thatchwick.Core.Content
         public int ProducesCount { get; set; } = 1;
     }
 
+    /// <summary>Eşyanın durabildiği yer: kapalı oda, açık hava ya da ikisi.</summary>
+    public enum ItemSite { Any = 0, Indoor = 1, Outdoor = 2 }
+
+    /// <summary>Yerleşim sözlüğü (belge 44): ön yüz kullanımları, ilişki kuralları ve oda türleri.</summary>
+    public static class Placements
+    {
+        public const string Sit = "sit", Open = "open", Work = "work", Stand = "stand";
+        public static readonly string[] FrontUses = { Sit, Open, Work, Stand };
+        public const string FaceTable = "faceTable", Bedside = "bedside", NearHearth = "nearHearth";
+        public static readonly string[] Relations = { FaceTable, Bedside, NearHearth };
+        public const string Bedroom = "bedroom", Kitchen = "kitchen", Dining = "dining", Living = "living", Pantry = "pantry",
+            Cellar = "cellar", Storehouse = "storehouse", Workshop = "workshop", Shop = "shop", InnRoom = "inn_room",
+            Barn = "barn", Outdoor = "outdoor", Kids = "kids";
+        public static readonly string[] RoomTypes = { Bedroom, Kitchen, Dining, Living, Pantry, Cellar, Storehouse, Workshop, Shop, InnRoom, Barn, Outdoor, Kids };
+        /// <summary>Meslek etiketleri (Economy.Shops kimlikleriyle aynı; hayvan pazarı "animals").</summary>
+        public static readonly string[] Trades = { "tavern", "general", "scribe", "herb", "smithy", "carpenter", "mill", "tailor", "potter", "fisher", "saddler", "mason", "animals" };
+    }
+
+    /// <summary>
+    /// Eşyanın görselleri (yerleşim sistemi). Yön görselleri Faces[Dir4] (0 N=ekranda se, 1 E=ne, 2 S=nw, 3 W=sw);
+    /// eksen görselleri AlongX (çift dönüş) ve AlongY (tek dönüş). Mirror: sol/sağ simetrik, yatay ayna geçerli.
+    /// Görsel boyutu ve pivot ayak izinden ayrı tutulur.
+    /// </summary>
+    public sealed class ItemArtDef
+    {
+        public string AlongX, AlongY, Lit;
+        public readonly string[] Faces = new string[4];
+        public bool Mirror;
+        public float PivotX, PivotY;
+        public int PxW, PxH;
+        public string Young, Grown, Fruit;
+        /// <summary>Yalnızca bu dönüşler geçerli (merdiven görseli tek yöne çıkar); boş = görsele göre.</summary>
+        public readonly System.Collections.Generic.List<int> Rotations = new System.Collections.Generic.List<int>();
+        public bool HasFaces => Faces[0] != null || Faces[1] != null || Faces[2] != null || Faces[3] != null;
+        public bool HasAny => HasFaces || AlongX != null || AlongY != null || Grown != null;
+    }
+
     /// <summary>Barınak odası eşyalarının rolleri.</summary>
     public static class AnimalRoles
     {
@@ -387,6 +424,29 @@ namespace Thatchwick.Core.Content
             if (IsPlant || IsHousing || IsForage || PlantsAs != null) return level == 0;
             return true;
         }
+
+        // ---- yerleşim sistemi (belge 44, Aşama B) ----
+        /// <summary>Görseller ve pivot (ayak izinden ayrı); null = görsel yok, yer tutucu çizilir.</summary>
+        public ItemArtDef Art { get; set; }
+        /// <summary>Ön yüzü olan eşyanın kullanımı: sit (oturma), open (açılır: sandık, dolap), work (çalışma: ocak, tezgâh),
+        /// stand (önünde durulur: leğen). null = ön yüz yok (her yönden kullanılır, yön kavramı yok).</summary>
+        public string FrontUse { get; set; }
+        public bool HasFront => FrontUse != null;
+        public bool IsSeat => FrontUse == Placements.Sit;
+        /// <summary>Ön yüzde boş kalacak derinlik (karo).</summary>
+        public int FrontDepth { get; set; } = 1;
+        /// <summary>İç mekân, dış mekân ya da ikisi (bilinçli istisna).</summary>
+        public ItemSite Site { get; set; } = ItemSite.Any;
+        /// <summary>Ait olduğu oda türleri (Placements.Bedroom ...). Boş ve Anywhere değilse oda türü denetlenmez (bitki, kaynak).</summary>
+        public List<string> Belongs { get; set; } = new List<string>();
+        /// <summary>Meslek etiketleri: dükkânda ancak etiketi tutan eşya durur (demirci, terzi ...).</summary>
+        public List<string> Trades { get; set; } = new List<string>();
+        /// <summary>Bilinçli "her yer": oda türü denetiminden muaf.</summary>
+        public bool Anywhere { get; set; }
+        /// <summary>İlişki kuralı: faceTable, bedside, nearHearth.</summary>
+        public string Relation { get; set; }
+        public bool BelongsTo(string roomType) => Anywhere || Belongs.Contains(roomType);
+        public bool HasTrade(string trade) => trade != null && Trades.Contains(trade);
 
         public SurfaceSlotDef FindSlot(string slotId)
         {

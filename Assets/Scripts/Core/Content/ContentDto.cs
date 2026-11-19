@@ -213,6 +213,32 @@ namespace Thatchwick.Core.Content
         public int cisternRain;              // yağmurlu gün dolan su
         public int cisternFlow;              // günde en çok verdiği su (0 = 4)
         public bool tap;                     // çeşme/lüle: su gelirken kova buradan doldurulur
+        // Yerleşim sistemi (belge 44, Aşama B): görsel, ön yüz, yer ve ilişki
+        public ItemArtDto art;               // görseller (yön/eksen başına), pivot ve görsel boyutu; ayak izinden ayrı
+        public string front;                 // ön yüzü olan eşyanın kullanımı: sit, open, work, stand (boş = ön yüz yok)
+        public int frontDepth;               // ön yüzde boş kalacak derinlik (0 = 1)
+        public string site;                  // indoor, outdoor, any (boş = any)
+        public string[] belongs;             // ait olduğu oda türleri (bedroom, kitchen, dining, living, pantry, cellar, storehouse, workshop, shop, inn_room, barn, outdoor, kids)
+        public string[] trades;              // meslek etiketleri (smithy, tailor, potter ...)
+        public bool anywhere;                // bilinçli "her yer" (oda türü denetimi yapılmaz)
+        public string relation;              // faceTable, bedside, nearHearth (uzun eşya duvar kuralı tall'dan gelir)
+    }
+
+    /// <summary>
+    /// Eşyanın görselleri (belge 44 B). Yön görselleri: n/e/s/w (Core.Layout.Dir4; n = ekranda se, w = sw, e = ne, s = nw).
+    /// Eksen görselleri: alongX çift dönüşte (0/2), alongY tek dönüşte (1/3). mirror: sol/sağ simetrik, yatay ayna geçerli
+    /// (se ↔ sw); arkası dönük görünüm aynayla elde edilmez. Pivot piksel, alttan; 0 ise ayak izine göre varsayılan.
+    /// </summary>
+    [Serializable]
+    public sealed class ItemArtDto
+    {
+        public string alongX, alongY, lit;
+        public string n, e, s, w;
+        public bool mirror;
+        public float pivotX, pivotY;
+        public int pxW, pxH;
+        public string young, grown, fruit;   // bitki evreleri
+        public int[] rotations;              // yalnızca bu dönüşler (merdiven: görsel tek yöne çıkar); boş = görsele göre
     }
 
     /// <summary>Yemek/içki etkisi: süreli ruh hali etkisi (moodlet) olarak kaydedilir.</summary>

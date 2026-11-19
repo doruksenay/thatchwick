@@ -6,7 +6,9 @@ namespace Thatchwick.Core.Layout
     /// <summary>Bir binanın tek katındaki oda bölgesi: türü (yatak odası, mutfak, dükkân ...) ve dikdörtgeni.</summary>
     public sealed class RoomZone
     {
-        public string Type;
+        /// <summary>Oda türleri: tek odalı köylü evinde birden çok (yatak, mutfak, oturma). İlki asıl türdür.</summary>
+        public readonly List<string> Types = new List<string>();
+        public string Type { get => Types.Count > 0 ? Types[0] : null; set { Types.Clear(); if (value != null) Types.AddRange(value.Split('|')); } }
         public int Level;
         public RectI Rect;
         /// <summary>Oda bir dükkân ya da atölyeyse meslek etiketi (demirci, terzi ...).</summary>

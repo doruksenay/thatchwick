@@ -28,3 +28,24 @@ Yönler: se, sw, nw, ne. Çok karolu nesne: `_2x1` eki.
 - Eski 3/4 testlerini `Assets/Art/Test_34/` altına taşı; silme.
 - `Assets/Scripts` altına dokunma.
 - İş bitince her dosyanın piksel boyutunu ve pivot (px) değerini listele.
+
+## Yön kuralı (yerleşim sistemi, belge 44)
+Tek tanım: `Assets/Scripts/Core/Layout/Facing.cs` (testli). Izgaraya göre dört mantıksal yön:
+
+| Yön | Izgara | Ekranda | Dosya eki | Kamera |
+|---|---|---|---|---|
+| N | -y | sağ-aşağı | `_se` | ön yüz görünür |
+| E | +x | sağ-yukarı | `_ne` | arkası dönük |
+| S | +y | sol-yukarı | `_nw` | arkası dönük |
+| W | -x | sol-aşağı | `_sw` | ön yüz görünür |
+
+- Bir yön ancak o yönün görseli (`items.json` → `art.n/e/s/w`) ya da sol/sağ simetrik eşyada (`art.mirror`) aynasının görseli
+  varsa geçerlidir. Ayna yalnızca se ↔ sw (N ↔ W) ve ne ↔ nw (E ↔ S) çevirir; **arkası dönük görünüm aynayla elde edilmez**,
+  ayrı görsel ister. Görseli olmayan yön seçilemez (yapı modunda Döndür yalnızca geçerli yönler arasında döner).
+- Ön yüzü olan eşyada (oturma, sandık/dolap, ocak/tezgâh) dönüş 0'ın yönü: çok karoluda ayak izinden (yatay eşya N, dikey eşya W),
+  tek karoda kendi görselinin yönü. Her dönüş saat yönünde bir adım (N → E → S → W).
+- Ön yüzü olmayan eşya eksen görselleriyle çizilir (`art.alongX` çift dönüş, `art.alongY` tek dönüş).
+- Görsel boyutu (`art.pxW/pxH`) ve pivot (`art.pivotX/pivotY`, alttan) ayak izinden (`width/height`) ayrı tutulur. Görsel adındaki ölçü
+  ayak iziyle uyuşmuyorsa görsel eşlenmez (örn. 1x1 üretilmiş kurutma askısı, 2x1 tanım).
+- Kameraya dönük yönler N ve W olduğundan oturma eşyası ve dolaplar odanın arka duvarlarına (doğu +x ve güney +y) sırt verir;
+  ön duvarlar (kuzey ve batı) kesitte saydamlaşır.

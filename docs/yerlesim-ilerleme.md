@@ -162,6 +162,62 @@ Yerleştirilemeyenler:
   Başlangıç eşyası konamadı item.fish_basket_decor (288,15,0): (288,15): Bu eşya yere konamaz, bir yüzeye konur.
 
 
+## Aşama B: Eşya metadata'sı, yön ve yerleşim kuralları (tamam)
+
+### Yön
+- `Core/Layout/Facing.cs`: N/E/S/W ve ekran eşlemesi tek yerde (`docs/gorsel-yonerge.md` "Yön kuralı"). N ve W kameraya dönük.
+- `Core/Layout/ItemFacing.cs`: dönüş ↔ yön, geçerli yön (görsel ya da sol/sağ ayna; arkası dönük aynayla yok), çizilecek görsel,
+  ön karolar. IsoArt artık yalnızca bunu çağırır; eski el tablosu (`IsoArt.Items`, `IsoArt.Plants`) `items.json`'a taşındı.
+- Eski kayıtlar: tek karolu eşyada dönüş 0 kendi görselinin yönüdür (görünüş değişmez); 2-3 dönüşleri artık "görsel yok"
+  sayılır ve yer tutucu çizilir (başka yönün görseli konmaz). Kayıt biçimi değişmedi, migration gerekmedi.
+
+### ItemDef (var olan alanlar korundu, eklenenler)
+`Art` (eksen/yön görselleri, lit, bitki evreleri, pivot, görsel boyutu `pxW/pxH`, ayna, izinli dönüşler), `FrontUse`
+(sit/open/work/stand) ve `FrontDepth`, `Site` (indoor/outdoor/any), `Belongs` (oda türleri), `Trades` (meslek etiketleri),
+`Anywhere` (bilinçli her yer: ışıklar, merdivenler), `Relation` (faceTable, bedside, nearHearth; uzun eşya kuralı `tall`'dan).
+Veri `tools/layout/item_meta.py` ile dolduruldu (kategori varsayılanı + açık listeler; tekrar çalıştırılabilir, `--check`).
+
+- 205 eşlenmemiş görsel bağlandı (bütün ağaçlar ve bitki evreleri, merdivenler, halılar, banklar, duvar eşyaları, toplama
+  düğümleri); reddedilen işlerin çıktıları ve ayak iziyle uyuşmayan görseller (kurutma askısı 1x1/2x1, el merdiveni) alınmadı.
+- 44 yeni eşya (Ek tablosu meslek eşyaları, komodin, sepet/çuval, dış mekân ve bitki örtüsü). Görselleri iş dosyalarında.
+
+### Doğrulayıcı kuralları (`Core/Layout/LayoutRules.cs`)
+çakışma, sınır (A) · kapı önü (A) · etkileşim (ön karo boş, duvar değil, kapıdan ulaşılabilir; ön yüzsüz eşyada en az bir yan) ·
+oturma yönü (masaya ya da 3 karo içinde odağa bakar, duvara bakmaz) · ilişki (komodin yatak başında, ocak eşyası ocağın 2 karo
+yanında, uzun eşya duvara sırt) · oda türü/meslek · iç/dış · görsel yönü (+ duvar eşyası ön duvarın iç yüzünde: uyarı).
+
+### Yapı modu
+Döndür yalnızca geçerli yönler arasında döner. Kapı önü, etkileşim ve yön ihlali: turuncu hayalet, ihlal karoları kırmızı,
+panelde neden; yerleştirme yine yapılır. Çakışma ve sınır kesin engel (değişmedi).
+
+### Başlangıç ihlalleri (eski yerleşim, bütün kurallar)
+```
+Eşya: 1188, yerleştirilemeyen: 2, ihlal: 64 (hata 55)
+  etkileşim noktası kapalı             24
+  ilişki                               14
+  yön görseli yok                       9
+  yanlış yön                            8
+  yanlış yer                            4
+  iç/dış mekân                          4
+  kapı önü kapalı                       1
+Yere göre:
+```
+
+### Emin olunamayanlar (veri)
+```
+EMİN DEĞİL: item.drying_rack: görsel iso_item_drying_rack_se 1x1, ayak izi 2x1: eşlenmedi (görsel boyutu ile ayak izi uyuşmuyor)
+EMİN DEĞİL: item.ladder: görsel iso_item_ladder_se 1x1, ayak izi 1x2: eşlenmedi (görsel boyutu ile ayak izi uyuşmuyor)
+EMİN DEĞİL: item.grave: oda türü yok (rooms boş), kural dışı kalır
+EMİN DEĞİL: item.debris: oda türü yok (rooms boş), kural dışı kalır
+```
+- Pivotu raporda olmayan, varsayılan pivotla bağlanan görseller (ekranda kayma olabilir, bakılmalı): toplama düğümleri teresi,
+  kuru dal, yabani kovan, mantar, yabani sarımsak; hamam kulübesi, lazımlık, süzgeç çukuru, mezar, mantar yatağı, zeytinyağı
+  kandili, kalay testi, maşrapa, havluluk.
+- Ayna bütün eşyalarda açık (hepsi sol/sağ simetrik varsayıldı); simetrik olmadığı görülen eşya `NO_MIRROR` listesine eklenmeli.
+
+### PixelLab iş dosyaları (approved_by: pending)
+- `art/queue/431-yerlesim-dukkan-esyalari.md` (30), `432-yerlesim-dis-mekan.md` (13), `433-oturma-arka-gorunum.md` (12, arkası dönük).
+
 ### Görsel envanteri (IsoArt eşlemesi)
 Yönler dosya adındaki ekten: se = N, sw = W (kameraya dönük), ne = E, nw = S (arkası dönük). Hiçbir eşyanın arkası dönük
 görseli yok. Ayna yalnızca sol↔sağ (se↔sw); duvar eşyasında öbür duvar için kullanılıyor.
