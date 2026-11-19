@@ -1,7 +1,8 @@
 ---
 id: "018d3"
 title: Yemek animasyonu boş elle + her karede el konumu (erkek ve kadın, 4 yön)
-status: pending
+status: running
+claimed_at: 2026-11-19T07:08Z
 approved_by: user        # kullanıcı 18.11.2026: "bunları yap"
 priority: 10
 family: karakter
