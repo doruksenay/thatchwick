@@ -1,7 +1,8 @@
 ---
 id: "336b"
 title: Çatı dokuları yeniden (saz, şindıl, kiremit, arduvaz; düz eğim ve sırt)
-status: pending
+status: running
+claimed_at: 2026-11-19T12:16Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-19 ("önerdiklerini yap": 336 için yeniden deneme)
 family: yapi
 style_gate: false
