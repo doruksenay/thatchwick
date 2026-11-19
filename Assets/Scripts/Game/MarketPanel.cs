@@ -102,7 +102,7 @@ namespace Thatchwick.Game
             foreach (var o in _market.Offers)
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(_market.Describe(o));
+                GUILayout.Label(_market.Describe(o), new GUIStyle(GUI.skin.label) { wordWrap = true }, GUILayout.Width(205f));   // sabit genişlik: Kabul düğmesi panelden taşmasın
                 if (o.Taken) GUILayout.Label("alındı", GUILayout.Width(48f));
                 else if (GUILayout.Button("Kabul", GUILayout.Width(52f)))
                 {
