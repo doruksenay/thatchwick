@@ -1,0 +1,32 @@
+iso_char_man_r84_eat3_se 0 59 33
+iso_char_man_r84_eat3_se 1 60 37
+iso_char_man_r84_eat3_se 2 57 46
+iso_char_man_r84_eat3_se 3 52 52
+iso_char_man_r84_eat3_se 4 48 54
+iso_char_man_r84_eat3_se 5 52 53
+iso_char_man_r84_eat3_se 6 58 47
+iso_char_man_r84_eat3_se 7 60 36
+iso_char_man_r84_eat3_nw 0 26 24
+iso_char_man_r84_eat3_nw 1 21 44
+iso_char_man_r84_eat3_nw 2 24 52
+iso_char_man_r84_eat3_nw 3 26 53 b
+iso_char_man_r84_eat3_nw 4 26 55 b
+iso_char_man_r84_eat3_nw 5 24 51 b
+iso_char_man_r84_eat3_nw 6 23 44
+iso_char_man_r84_eat3_nw 7 23 29
+iso_char_man_r84_eat3_ne 0 58 23
+iso_char_man_r84_eat3_ne 1 55 23
+iso_char_man_r84_eat3_ne 2 57 47
+iso_char_man_r84_eat3_ne 3 59 52
+iso_char_man_r84_eat3_ne 4 58 52
+iso_char_man_r84_eat3_ne 5 55 52
+iso_char_man_r84_eat3_ne 6 54 45
+iso_char_man_r84_eat3_ne 7 55 23
+iso_char_woman_r84_eat3_nw 0 28 26
+iso_char_woman_r84_eat3_nw 1 24 31
+iso_char_woman_r84_eat3_nw 2 23 46
+iso_char_woman_r84_eat3_nw 3 26 55 b
+iso_char_woman_r84_eat3_nw 4 29 58 b
+iso_char_woman_r84_eat3_nw 5 28 57 b
+iso_char_woman_r84_eat3_nw 6 27 55
+iso_char_woman_r84_eat3_nw 7 23 46
