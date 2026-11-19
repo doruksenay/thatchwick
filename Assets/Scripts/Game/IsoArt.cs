@@ -485,8 +485,10 @@ namespace Thatchwick.Game
         {
             string r84 = AdultR84(c);
             if (r84 == null || !Enabled) return null;
-            string prefix = r84 + "_walk_" + Directions[direction] + "_";
+            // Sekmesiz yürüme (018b2-b4, walk2) bu yönde varsa o; yoksa eski (zıplayan) 018b seti.
+            string prefix = r84 + "_walk2_" + Directions[direction] + "_";
             int n = WalkFrameCount(prefix);
+            if (n <= 0) { prefix = r84 + "_walk_" + Directions[direction] + "_"; n = WalkFrameCount(prefix); }
             if (n <= 0) return null;
             int frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;
             return Get(prefix + frame.ToString("00"), R84PivotX, R84PivotY);

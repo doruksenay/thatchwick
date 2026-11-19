@@ -79,6 +79,12 @@ namespace Thatchwick.Game
             ["chop"] = new[] { "chop" },
             ["farm"] = new[] { "hoe", "sow" },
             ["work"] = new[] { "work" },
+            ["social"] = new[] { "social" },     // 018e
+            ["care"] = new[] { "care" },
+            ["love"] = new[] { "love" },
+            ["fun"] = new[] { "fun" },
+            ["fish"] = new[] { "fish" },
+            ["mine"] = new[] { "mine_dig" },     // 368
         };
 
         /// <summary>
@@ -2571,7 +2577,7 @@ namespace Thatchwick.Game
                     actor.HeldItem = actor.WorkIcon == "eat" ? HeldFood.Of(job, _world, _content) : null;
                 }
                 string icon = actor.WorkIcon;
-                bool beats = icon == "chop" || icon == "farm" || icon == "craft" || icon == "cook" || icon == "work";
+                bool beats = icon == "chop" || icon == "farm" || icon == "craft" || icon == "cook" || icon == "work" || icon == "mine";
                 // Gerçek etkileşim kareleri (018c-e) varsa onlar oynar; yoksa kodla vuruş.
                 actor.ActionFrame = UpdateHeld(actor, icon, seed) ?? ActionFrameFor(actor, icon, seed);
                 if (actor.ActionFrame != null && _juice != null)

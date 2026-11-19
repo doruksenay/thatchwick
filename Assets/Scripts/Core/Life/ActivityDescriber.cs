@@ -44,6 +44,8 @@ namespace Thatchwick.Core.Life
                 case NeedType.Hunger: return "eat";
                 case NeedType.Warmth: return "warm";
                 case NeedType.Social: return "social";
+                case NeedType.Hygiene: return "wash";
+                case NeedType.Bladder: return "toilet";
                 default: return "fun";
             }
         }
@@ -60,6 +62,7 @@ namespace Thatchwick.Core.Life
                 case SkillType.Weaving: return "craft";
                 case SkillType.AnimalHusbandry: return "farm";
                 case SkillType.Herbalism: return "cook";
+                case SkillType.Mining: return "mine";
                 default: return "work";
             }
         }
@@ -124,8 +127,8 @@ namespace Thatchwick.Core.Life
                     switch (job.TileAction)
                     {
                         case TileAction.Repair: info.Text = "Yolu onarıyor"; break;
-                        case TileAction.Bathe: info.Icon = "fun"; info.Text = "Suda yıkanıyor"; break;
-                        case TileAction.Fish: info.Text = "Kıyıda balık tutuyor"; break;
+                        case TileAction.Bathe: info.Icon = "wash"; info.Text = "Suda yıkanıyor"; break;
+                        case TileAction.Fish: info.Icon = "fish"; info.Text = "Kıyıda balık tutuyor"; break;
                         case TileAction.CutIce: info.Text = "Buz kesiyor"; break;
                         default: info.Text = "Çapalıyor"; break;
                     }
