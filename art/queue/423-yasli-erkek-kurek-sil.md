@@ -1,14 +1,14 @@
 ---
 id: "423"
 title: Yaşlı erkek 84 (415) elindeki küreği sil, 8 yön
-status: blocked
+status: pending
 claimed_at: 2026-11-19T07:55Z
 approved_by: user        # kullanıcı 19.11.2026 (sohbet): "bunu yap"
 priority: 60
 family: karakter
 style_gate: false
-cost_est: 8
-cost_max: 16
+cost_est: 40
+cost_max: 48   # 19.11: işçi tahmini 40 gen (8 yön inpaint), kullanıcı onayı "bunu yap"
 depends_on: ["415"]
 max_attempts: 1
 pixellab: true
