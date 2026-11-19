@@ -92,7 +92,9 @@ namespace Thatchwick.Game
             if (held != null)
             {
                 var f = IsoArt.CharacterAction(actor.Character, "eat3", actor.Direction, ActionCycle(seed), out string prefix, out int index);
-                if (f != null && HandAnchors.TryGet(prefix, index, out var a))
+                // Bu yönün boş el karesi yoksa CharacterAction se'ye düşer; elde yiyecek ters yöne bakmasın diye o durumda eat2'ye dön.
+                bool ownDirection = prefix != null && prefix.EndsWith("_" + IsoArt.ActionDirection(actor.Direction) + "_");
+                if (f != null && ownDirection && HandAnchors.TryGet(prefix, index, out var a))
                 {
                     frame = f;
                     if (actor.Held == null)

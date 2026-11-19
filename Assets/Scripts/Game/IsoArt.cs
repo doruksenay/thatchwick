@@ -506,6 +506,9 @@ namespace Thatchwick.Game
             CharacterAction(c, key, direction, cycle, out _, out _);
 
         /// <summary>Etkileşim karesi; kare adının öneki ve kare numarası da döner (el konumu için).</summary>
+        /// <summary>Etkileşim karelerinin çizildiği çapraz yön adı (se, sw, nw, ne).</summary>
+        public static string ActionDirection(int direction) => Directions[direction % 2 == 1 ? direction : (direction + 7) % 8];
+
         public static Sprite CharacterAction(Character c, string key, int direction, float cycle, out string prefix, out int frame)
         {
             prefix = null; frame = 0;
