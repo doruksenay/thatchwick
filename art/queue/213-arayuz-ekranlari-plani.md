@@ -2,7 +2,7 @@
 id: "213"
 title: Arayüz ekranları planı (kalan ekranlar için yerleşim + iş dosyası yazar)
 status: running
-claimed_at: 2026-11-19T03:24Z
+claimed_at: 2026-11-19T12:03Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: false
