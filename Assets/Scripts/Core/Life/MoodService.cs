@@ -232,7 +232,7 @@ namespace Thatchwick.Core.Life
                 else if (item.IsWallMounted) wall = true;
                 else if (item.IsDecor) surface = true;
                 else if (item.IsCeiling) ceiling = true;
-                if (item.Def.HasTag("light")) light = true;
+                if (item.GivesLight) light = true;
                 if (item.Def.StyleSet == "Tüccar" || item.Def.StyleSet == "Asil") result.FineItems++;
             }
             double sum = 0;

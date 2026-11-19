@@ -1931,6 +1931,22 @@
           "heal": 0.3,
           "moodlet": "eff_tea_rosehip",
           "bladder": 15
+        },
+        {
+          "id": "eat_honeycomb",
+          "displayName": "Petekli bal ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.1,
+          "consume": "item.honeycomb",
+          "moodlet": "eff_sweet",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 20
+            }
+          ],
+          "bladder": 4
         }
       ],
       "price": 25,
@@ -4332,6 +4348,20 @@
           "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "feed_pomace",
+          "displayName": "Pirina kat (2 pirina → 4 yem)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.pomace",
+              "count": 2
+            }
+          ],
+          "addFeed": 4,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
         }
       ]
     },
@@ -4408,6 +4438,20 @@
           "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "feed_pomace",
+          "displayName": "Pirina kat (2 pirina → 4 yem)",
+          "durationDays": 0.05,
+          "materials": [
+            {
+              "item": "item.pomace",
+              "count": 2
+            }
+          ],
+          "addFeed": 4,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
         }
       ]
     },
@@ -4525,6 +4569,13 @@
           "skill": "AnimalHusbandry",
           "skillXp": 10,
           "moodlet": "good_harvest"
+        },
+        {
+          "id": "cut_comb",
+          "displayName": "Dumanla petek kes (2 bal → petekli bal)",
+          "durationDays": 0.1,
+          "skill": "AnimalHusbandry",
+          "skillXp": 12
         }
       ],
       "pollinate": 6
@@ -17280,7 +17331,10 @@
       "displayName": "Pirina",
       "placement": "Resource",
       "category": "resource",
-      "price": 1
+      "price": 1,
+      "tags": [
+        "fuel"
+      ]
     },
     {
       "id": "item.leek_olive_oil",
@@ -17541,6 +17595,41 @@
               "count": 3
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "item.honeycomb",
+      "displayName": "Petekli bal",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 16,
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "id": "item.olive_lamp",
+      "displayName": "Zeytinyağı kandili",
+      "category": "heat_light",
+      "price": 10,
+      "level": 4,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "tags": [
+        "light"
+      ],
+      "needsOil": true,
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 3,
+      "material": "clay",
+      "interactions": [
+        {
+          "id": "fill_oil",
+          "displayName": "Zeytinyağı koy (3 gün yanar)",
+          "durationDays": 0.02,
+          "consume": "item.olive_oil"
         }
       ]
     }

@@ -68,7 +68,8 @@ namespace Thatchwick.Core.Save
         // Yaban hayvanları (18.11.2026, belge 31). Eski kayıtta null / 0: defter boş, tehdit yok.
         public string[] natureJournal;
         public string[] adoptedWild;
-        public string[] coffeeHabits;   // kahve alışkanlığı (belge 32-6): "id:sonGün:seri:alışkanlık"
+        public string[] coffeeHabits;
+        public string[] olives;         // zeytin ağaçları (32-7): "itemId:dikimGünü:yadigâr:diken"   // kahve alışkanlığı (belge 32-6): "id:sonGün:seri:alışkanlık"
         public string[] contests;
         public int wolfRaidIn = -1;
         public int wolfHunted;
