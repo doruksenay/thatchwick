@@ -1,7 +1,7 @@
 ---
 id: "395e"
 title: Kömür yığını, altıncı deneme (395d aday 2 temel)
-status: running
+status: review
 claimed_at: 2026-11-19T12:10Z
 approved_by: user        # kullanıcı 19.11.2026: "uygula dediklerini"
 priority: 20
