@@ -360,6 +360,7 @@ namespace Thatchwick.Game
             _ambience.Init(cam);
             _weatherFx = gameObject.AddComponent<WeatherFx>();
             _weatherFx.Init(cam);
+            _weatherFx.IsSheltered = IsShelteredAt;
             _juice = gameObject.AddComponent<Juice>();
 
             _input = gameObject.AddComponent<WorldInput>();
@@ -2428,6 +2429,16 @@ namespace Thatchwick.Game
                 _akceShown = Mathf.MoveTowards(_akceShown, real, step);
             }
             else _akceShown = real;
+        }
+
+        /// <summary>Yağmur ve kar için: dünya noktasının altındaki zemin karosu kapalı bir odada mı.</summary>
+        private bool IsShelteredAt(Vector3 world)
+        {
+            if (_world == null) return false;
+            var g = Iso.WorldToGrid(new Vector2(world.x, world.y));
+            var tile = new GridPos(Mathf.FloorToInt(g.x), Mathf.FloorToInt(g.y), 0);
+            var room = _world.Map.Rooms.RoomAt(tile);
+            return room != null && room.IsIndoor;
         }
 
         private readonly System.Random _fxRng = new System.Random(7);
