@@ -1,7 +1,7 @@
 ---
 id: "395c"
 title: Dördüncü tur: ahşap çatkı rötuşu, kandil ve kömür yığını (referans görselle)
-status: review
+status: rejected   # kullanıcı 19.11.2026: üçü de tarife uymadı (çatkı çapraz kafesli, kandil ateş çanağı, kömür yığını davul); 395d
 claimed_at: 2026-11-18T19:40Z
 approved_by: user        # kullanıcı 18.11.2026: "bir tur daha deneyelim"
 priority: 20
