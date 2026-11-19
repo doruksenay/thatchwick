@@ -1,7 +1,7 @@
 ---
 id: "426k"
 title: "Üzüm asması evreleri, üzüm teknesi ve bağ ürünleri ikonları"
-status: running
+status: review
 claimed_at: 2026-11-19T12:23Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 32-8.3 (kullanıcı 18.11.2026)
 family: esya
