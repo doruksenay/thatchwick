@@ -40,6 +40,7 @@ namespace Thatchwick.Core.Content
                     Tags = dto.tags != null ? new List<string>(dto.tags) : new List<string>(),
                     DiesInWinter = dto.diesInWinter,
                     WarmOnly = dto.warmOnly,
+                    SouthOnly = dto.southOnly,
                     Comfort = dto.comfort,
                     SpoilDays = dto.spoilDays,
                     Preserves = dto.preserves,

@@ -185,6 +185,8 @@ namespace Thatchwick.Core.Content
         public bool DiesInWinter { get; set; }
         /// <summary>Yalnızca ılık serada büyür ve meyve verir (kahve çalısı, belge 32).</summary>
         public bool WarmOnly { get; set; }
+        /// <summary>Yalnızca Güney Yamaçları'nda büyür ve meyve verir (zeytin, belge 32-7); seraya konmaz.</summary>
+        public bool SouthOnly { get; set; }
         /// <summary>Ekinin büyüyebildiği mevsimler; boşsa kış dışı hepsi.</summary>
         public List<Time.Season> GrowSeasons { get; set; } = new List<Time.Season>();
         /// <summary>Ekin (tarla bitkisi): toprağa ekilen, sulanması ve verimli toprağı gereken bitki. Ağaçlar ekin değildir.</summary>

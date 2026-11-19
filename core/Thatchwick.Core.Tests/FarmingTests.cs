@@ -494,7 +494,7 @@ namespace Thatchwick.Core.Tests
         {
             var db = Real();
             var trees = db.Items.All.Where(i => i.IsFruitTree && i.AllowedLevels.Count == 0 && i.Interactions.Any(x => x.Id == "pick")).ToList();   // mantar yatağı bodrumdadır; meşe mazı verir (meyve değil)
-            Assert.Equal(5, trees.Count);   // elma, armut, kiraz, erik + kahve çalısı (belge 32)
+            Assert.Equal(6, trees.Count);   // elma, armut, kiraz, erik + kahve çalısı, zeytin (belge 32)
             foreach (var t in trees)
             {
                 Assert.False(t.IsCrop);
