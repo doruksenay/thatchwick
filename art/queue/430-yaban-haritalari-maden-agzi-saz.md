@@ -1,7 +1,8 @@
 ---
 id: "430"
 title: "Yaban haritaları: maden ağzı ve saz kümesi (2)"
-status: pending
+status: running
+claimed_at: 2026-11-19T12:28Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 19.11.2026 "diğer mapleri de üretmeye başla"
 priority: 20
 family: esya
