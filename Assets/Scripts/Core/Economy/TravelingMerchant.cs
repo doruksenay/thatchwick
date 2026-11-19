@@ -213,7 +213,7 @@ namespace Thatchwick.Core.Economy
             OrdersDelivered = s?.delivered ?? 0;
             if (s?.offers != null)
                 foreach (var o in s.offers) if (o != null) _offers.Add(new MerchantOffer { Kind = (MerchantOfferKind)o.kind, Id = o.id, Count = o.count, Price = o.price });
-            Order = s?.order == null ? null : new MerchantOrder
+            Order = s?.order == null || string.IsNullOrEmpty(s.order.item) ? null : new MerchantOrder
             {
                 ItemId = s.order.item, Count = s.order.count, RewardAkce = s.order.akce, RewardReputation = s.order.rep, BonusItemId = s.order.bonus, PlacedDay = s.order.day
             };
