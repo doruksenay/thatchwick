@@ -77,7 +77,8 @@ namespace UnityEngine {
  public class RectOffset{public int left,right,top,bottom; public RectOffset(){} public RectOffset(int l,int r,int t,int b){}}
  public class GUIStyle{public static GUIStyle none=new GUIStyle(); public GUIStyle(){} public void Draw(Rect r,bool a,bool b,bool c,bool d){} public void Draw(Rect r,GUIContent g,bool a,bool b,bool c,bool d){}public GUIStyle(GUIStyle o){} public int fontSize;public TextAnchor alignment;public bool wordWrap,richText,stretchWidth,stretchHeight; public TextClipping clipping;public FontStyle fontStyle;public GUIStyleState normal=new GUIStyleState(),hover=new GUIStyleState(),active=new GUIStyleState(),onNormal=new GUIStyleState(),focused=new GUIStyleState(),onHover=new GUIStyleState(),onActive=new GUIStyleState(),onFocused=new GUIStyleState(); public RectOffset padding=new RectOffset(),margin=new RectOffset(),border=new RectOffset(); public float fixedWidth,fixedHeight; public Vector2 CalcSize(GUIContent c)=>default; public float CalcHeight(GUIContent c,float w)=>0;}
  public enum TextClipping{Overflow,Clip}
- public class GUISkin:ScriptableObject{public GUIStyle label,button,box,window,toggle,textField,textArea,horizontalSlider,horizontalSliderThumb,verticalScrollbar,verticalScrollbarThumb,scrollView; public GUIStyle FindStyle(string n)=>null;}
+ public class Font:Object{}
+ public class GUISkin:ScriptableObject{public Font font; public GUIStyle label,button,box,window,toggle,textField,textArea,horizontalSlider,horizontalSliderThumb,verticalScrollbar,verticalScrollbarThumb,scrollView; public GUIStyle FindStyle(string n)=>null;}
  public class GUILayoutOption{}
  public class Event{public static Event current;public Vector2 mousePosition,delta;public EventType type; public KeyCode keyCode; public int button,clickCount; public void Use(){} public bool isMouse,isKey;}
  public enum KeyCode{None,Escape,Return,Space,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
