@@ -66,6 +66,17 @@ namespace Thatchwick.Core.Jobs
         public ISocialEffects Social { get; set; }
 
         /// <summary>
+        /// Isı kaynağına envanterden bir kütük atar (HeatSystem.TryStoke); attıysa true. Null ise otonomi sönük ocağı yakamaz.
+        /// (Denge 41: soğukta üşüyen, odun varsa ocağı kendisi yakar; eskiden yalnızca oyuncu düğmeyle yakabiliyordu.)
+        /// </summary>
+        public Func<ItemInstance, bool> Stoke { get; set; }
+        /// <summary>Hanede odun var mı (sönük ocak otonomide ancak o zaman seçilir).</summary>
+        public Func<bool> HasFirewood { get; set; }
+        /// <summary>Isınırken ocakta bu kadar günlük yakıt yoksa odun eklenir (en çok StokeMaxLogs kütük).</summary>
+        public const double StokeTargetDays = 1.0;
+        public const int StokeMaxLogs = 2;
+
+        /// <summary>
         /// Ek hız çarpanı (alet kademesi, hava durumu...). Yalnızca iş etkileşimlerine uygulanır; yoksa 1.
         /// Özellik, dal ve ruh hali çarpanları karakterden okunur.
         /// </summary>
@@ -601,6 +612,12 @@ namespace Thatchwick.Core.Jobs
                 if (_path == null) return used;  // yol kapandı: yeniden hesaplanır
                 if (_pathIndex < _path.Count) return used;
                 _using = true;
+                // Isınmaya gelen sönük ya da azalan ocağa odun atar; odun bu arada bittiyse iş boşa gider.
+                if (interaction.Need == NeedType.Warmth && item.Def.HeatOutput > 0f)
+                {
+                    TopUpFire(item);
+                    if (!item.IsLit) { Fail("Ocak sönük, odun kalmadı."); return used; }
+                }
             }
             _character.Asleep = interaction.Need == NeedType.Energy && interaction.RestoresNeed;
 
@@ -778,7 +795,7 @@ namespace Thatchwick.Core.Jobs
         // Etkileşime başlanamıyorsa nedeni (arayüzde gösterilir); başlanabiliyorsa null.
         private string StartBlocker(ItemInstance item, InteractionDef interaction)
         {
-            if (IsUnlitHeatSource(item, interaction)) return "Ocak sönük, önce odun at.";
+            if (IsUnlitHeatSource(item, interaction) && !CanStoke) return "Ocak sönük, önce odun at.";
             if (interaction.RequiresGrown && !item.IsGrown) return $"{item.Def.DisplayName} henüz büyümedi.";
             if (interaction.MinSkillLevel > 0 && interaction.Skill.HasValue
                 && _character.Skills.GetLevel(interaction.Skill.Value) < interaction.MinSkillLevel)
@@ -803,6 +820,32 @@ namespace Thatchwick.Core.Jobs
 
         private static bool IsUnlitHeatSource(ItemInstance item, InteractionDef interaction) =>
             interaction.Need == NeedType.Warmth && item.Def.HeatOutput > 0f && !item.IsLit;
+
+        private bool CanStoke => Stoke != null && HasFirewood != null && HasFirewood();
+
+        // Isınmaya gelen ocağı besler: yakıt StokeTargetDays altındaysa en çok StokeMaxLogs kütük atar.
+        private void TopUpFire(ItemInstance item)
+        {
+            if (Stoke == null || item.Def.HeatOutput <= 0f) return;
+            for (int i = 0; i < StokeMaxLogs && item.FuelDays < StokeTargetDays; i++)
+                if (!Stoke(item)) break;
+        }
+
+        /// <summary>
+        /// İhtiyaç için kullanılabilir mi (otonomi): hanenin arsasındaki her eşya; arsa dışında yalnızca aynı bölgedeki
+        /// açık havadaki eşya (meydan bankı, kuyu). Başkasının evindeki yatak, fırın, küvet ve öbür bölgedeki eşya seçilmez.
+        /// (Denge 41: bölgeli haritada aç karakter şehirdeki hanın fırınına 150 karo yürüyüp açlıktan ölüyordu.)
+        /// </summary>
+        public static bool MayUseForNeeds(WorldState world, Character character, ItemInstance item)
+        {
+            var map = world.Map;
+            var at = item.IsDecor && item.ParentId.HasValue ? (world.GetItem(item.ParentId.Value)?.Position ?? item.Position) : item.Position;
+            if (map.IsOwned(at)) return true;
+            var room = map.Rooms.RoomAt(at);
+            if (room != null && room.IsIndoor) return false;
+            if (!Regions.IsRegional(map)) return true;
+            return Regions.At(at) == Regions.At(character.Position);
+        }
 
         private static InteractionDef FindInteraction(ItemDef def, string interactionId)
         {
@@ -943,7 +986,8 @@ namespace Thatchwick.Core.Jobs
                     if (interaction.HasEffects && (Effects == null || Effects.CanStart(_character, item, interaction) != null)) continue;
                     if (interaction.MinSkillLevel > 0) continue;
                     if (interaction.RequiresLit && !item.IsLit) continue;
-                    if (IsUnlitHeatSource(item, interaction)) continue;   // sönük ocağa ısınmaya gidilmez
+                    if (IsUnlitHeatSource(item, interaction) && !CanStoke) continue;   // sönük ocağa ancak odun varsa gidilir (yakar)
+                    if (!MayUseForNeeds(_world, _character, item)) continue;
                     if (_unreachableUntil.TryGetValue(item.Id, out var until) && until > _elapsedDays) continue;
 
                     int distance = Math.Max(

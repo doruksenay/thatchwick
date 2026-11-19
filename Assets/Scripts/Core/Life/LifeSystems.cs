@@ -507,6 +507,8 @@ namespace Thatchwick.Core.Life
         /// <summary>Çömlekçilik altındaki Camcı dalı: "glass" etiketli ürün veren işler bu kadar hızlı.</summary>
         public const string GlassBranchId = "branch.pot_b";   // "Camcı" (eski adı Çarkçı Çömlekçi; kayıtlar korunur)
         public const string AshId = "item.ash";
+        /// <summary>Ocağa atılan yakıt (HeatConfig.FirewoodId ile aynı).</summary>
+        public const string FirewoodId = "item.firewood";
         public const double GlassBranchSpeed = 1.25;
 
         private bool ProducesGlass(InteractionDef interaction)
@@ -542,6 +544,9 @@ namespace Thatchwick.Core.Life
             runner.ItemBonus = Legacy.BonusFor;
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
+            // Üşüyen ocağı kendisi yakar (Denge 41): ısı sistemi bağlıysa envanterden kütük atar.
+            runner.Stoke = item => _heat != null && _heat.TryStoke(item.Id, House);
+            runner.HasFirewood = () => _heat != null && House.Count(FirewoodId) > 0;
         }
         /// <summary>Hayvanlar: can yoldaşı bağı (yakınlık, bakım, ölüm), kalite ve binicilik bonusu.</summary>
         public void Attach(Thatchwick.Core.Animals.AnimalSystem animals, Thatchwick.Core.Animals.AnimalCare care)

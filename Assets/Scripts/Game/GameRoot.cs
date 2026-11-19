@@ -373,14 +373,7 @@ namespace Thatchwick.Game
             _account.BadgeEarned += b => ShowMessage($"Rozet kazanıldı: {b.DisplayName} (+{b.RewardXp} XP)");
             if (loaded == null)
             {
-                _household.AddItem("item.firewood", 10);
-                _household.AddItem("item.sapling_oak", 2);
-                _household.AddItem("item.turnip", 12);
-                _household.AddItem("item.seed_turnip", 6);
-                _household.AddItem("item.plank", 6);
-                _household.AddItem("item.nails", 4);
-                _household.AddItem("item.compost", 3);
-                _household.AddItem("item.salt", 4);
+                StartingKit.Apply(_household);   // başlangıç erzakı (belge 41, denge)
             }
             _storage = new StorageService(_world, _household, _content);
             _effects = new InteractionEffects(_world, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 2, _rngEpoch)) { Storage = _storage, FamilyYieldChance = s => _life.Upbringing.Recipes.ExtraYield(s) };
@@ -437,7 +430,8 @@ namespace Thatchwick.Game
             _buildService = new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level, HousingResidents = _animals.Residents, Plants = _plants };
             _shopPanel = new ShopPanel(_market, _buildService, _household, _content, _world, () => _player?.Character, () => _player?.Runner,
                 () => HourOfDay, () => _clock.DayIndex, ShopOwner,
-                Thatchwick.Core.World.Regions.IsRegional(_world.Map) ? Thatchwick.Core.World.Regions.ShopAreas() : null);
+                Thatchwick.Core.World.Regions.IsRegional(_world.Map) ? Thatchwick.Core.World.Regions.ShopAreas() : null)
+            { Animals = _animals, AccountLevel = () => _account.Level };
             _buildMode = new BuildMode(_world, _household, _buildService, _content, _view, _input, transform, _walls, _animals);
             _buildMode.Activity += a => _account.Record(a, _clock.DayIndex);
 
@@ -665,7 +659,8 @@ namespace Thatchwick.Game
             Put("item.stump_table", 35, 35);
             var stump = _world.GetItemAt(new GridPos(35, 35));
             if (stump != null && _content.Items.TryGet("item.morris_board", out var board)) _world.PlaceOnSurface(board, stump.Id, "a");
-            Put("item.scarecrow", 48, 32);                // tarla alanı: 42-56 x 26-38 (boş bırakıldı)
+            Put("item.scarecrow", 48, 32);                // tarla alanı: 42-56 x 26-38
+            StartingKit.TillBed(_world, new GridPos(43, 27));   // çapalanmış başlangıç bostanı 6x3 (belge 41)
 
             // --- ağaçlar: meyve bahçesi (kuzeybatı), gölet söğütleri, arsa kenarı ---
             string[] fruit = { "item.tree_apple", "item.tree_pear", "item.tree_cherry", "item.tree_plum" };
@@ -1969,7 +1964,14 @@ namespace Thatchwick.Game
                 _world.Map.OnNewDayRoads();                                   // kullanılmayan patika çimlenir
                 _world.Map.WearMultiplier = RoadWear();                        // çamurlu günde çok, taş ustası varken az aşınır
                 _plants.Config.FallowRecovery = (float)(0.02 * SkillNames.Factor(_life.BestSkill(SkillType.SoilCare), 0.1));   // toprak bakımı
-                var r = _animals.OnNewDay(_clock.Season, _household, _storage);
+                // Katalog siparişleri sabah gelir (marangoz getirir).
+            var delivered = _household.DeliverOrders();
+            if (delivered.Count > 0)
+            {
+                int n = 0; foreach (var kv in delivered) n += kv.Value;
+                ShowMessage($"Marangoz siparişleri getirdi: {n} eşya envanterde.", 4f);
+            }
+            var r = _animals.OnNewDay(_clock.Season, _household, _storage);
                 if (r.Collected > 0) ShowMessage($"Toplama sandığı: +{r.Collected} ürün depoya alındı");
                 if (r.Births > 0) ShowMessage(r.Births == 1 ? "Ahırda bir yavru doğdu" : $"Ahırda {r.Births} yavru doğdu");
                 // Kâhya: görevleri bekleyen işe göre dağıtır.

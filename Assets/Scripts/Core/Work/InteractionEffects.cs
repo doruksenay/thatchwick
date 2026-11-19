@@ -41,6 +41,8 @@ namespace Thatchwick.Core.Work
 
         /// <summary>Hane üyeleri (ders vermek için); null ise ders verilemez.</summary>
         public Func<IEnumerable<Character>> Household { get; set; }
+        /// <summary>Etkilerin işlediği hane envanteri (görev planlayıcı odun sayısını buradan okur).</summary>
+        public Household House => _house;
 
         /// <summary>Şu anki mevsim (balık türleri); null ise her mevsimin ürünü çıkabilir.</summary>
         public Func<Time.Season> Season { get; set; }

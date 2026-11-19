@@ -38,6 +38,17 @@ namespace Thatchwick.Core.Work
         /// <summary>Karo işleri (yol onarımı); null ise tarla görevlisi yol onarmaz.</summary>
         public ITileWork TileWork { get; set; }
 
+        /// <summary>
+        /// Hanedeki odun sayısı; null ise tarla görevlisi odun işine bakmaz. Odun LowFirewood altına inince tarla görevlisi
+        /// kütük yarar, kütük yoksa arsadaki olgun (meyvesiz) ağacı keser (Denge 41: kimse odun kesmediği için hane donuyordu).
+        /// </summary>
+        public Func<int> FirewoodStock { get; set; }
+        public const int LowFirewood = 6;
+        public const string FirewoodId = "item.firewood";
+        public const string LogId = "item.log";
+
+        private bool FirewoodLow => FirewoodStock != null && FirewoodStock() < LowFirewood;
+
         /// <summary>Şu an iş saati mi (gündüz); null ise hep.</summary>
         public Func<bool> WorkHours { get; set; }
         /// <summary>Geçen toplam oyun günü (tutma süresi için); null ise iş tutulmaz (tek görevli).</summary>
@@ -49,6 +60,7 @@ namespace Thatchwick.Core.Work
             _animals = animals;
             _effects = effects;
             _care = care;
+            if (effects is InteractionEffects ie && ie.House != null) FirewoodStock = () => ie.House.Count(FirewoodId);
         }
 
         /// <summary>Bu yaşta görev alabilir mi (bebek ve çocuk alamaz)?</summary>
@@ -72,7 +84,10 @@ namespace Thatchwick.Core.Work
         {
             int n = 0;
             if (duty == DutyKind.Farm)
+            {
                 foreach (var it in _world.Items) { if (FarmInteraction(it) != null || EmptyInteraction(it) != null) n++; }
+                if (FirewoodLow) n++;   // odun azaldı
+            }
             // (Ekilecek boş toprak "bekleyen iş" sayılmaz: tohum varsa görevli kendiliğinden eker.)
             else if (duty == DutyKind.Animals)
             {
@@ -134,6 +149,26 @@ namespace Thatchwick.Core.Work
                         Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
                         break;
                     }
+                }
+                // Odun: hane odunu azaldıysa önce kütük yarılır, kütük yoksa arsadaki olgun meyvesiz ağaç kesilir.
+                if (best == null && FirewoodLow && _effects != null)
+                {
+                    foreach (var it in _world.Items)
+                    {
+                        if (it.IsDecor) continue;
+                        var i = SplitInteraction(it);
+                        if (i == null || _effects.CanStart(c, it, i) != null) continue;
+                        var item = it; var inter = i;
+                        Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
+                    }
+                    if (best == null)
+                        foreach (var it in _world.Items)
+                        {
+                            var i = FellInteraction(it);
+                            if (i == null || !_world.Map.IsOwned(it.Position) || _effects.CanStart(c, it, i) != null) continue;
+                            var item = it; var inter = i;
+                            Consider(item.Id, item.Position, () => Job.UseItem(item.Id, inter.Id));
+                        }
                 }
                 // Tohum serpen tarlacı: hasat ve sulama yoksa boş toprağa mevsime ve nöbete uyan tohumu eker.
                 if (best == null && TileWork != null)
@@ -280,6 +315,33 @@ namespace Thatchwick.Core.Work
             if (it.Def.IsCrop && !it.IsGrown && !it.Watered)
                 foreach (var i in it.Def.Interactions) if (i.Water) return i;
             return null;
+        }
+
+        // Odun yarma: kütük harcayıp odun veren (yarma kütüğü).
+        private static InteractionDef SplitInteraction(ItemInstance it)
+        {
+            foreach (var i in it.Def.Interactions)
+                if (!i.RemovesItem && i.ConsumeItem == LogId && Produces(i, FirewoodId)) return i;
+            return null;
+        }
+
+        // Ağaç kesme: olgun, meyve vermeyen ağaç; kütük ya da odun verir.
+        private static InteractionDef FellInteraction(ItemInstance it)
+        {
+            if (it.IsDecor || !it.IsPlant || it.Def.IsCrop || !it.IsGrown) return null;
+            InteractionDef fell = null;
+            foreach (var i in it.Def.Interactions)
+            {
+                if (i.RequiresFruit) return null;                  // meyve ağacı kesilmez
+                if (i.RequiresGrown && i.RemovesItem && (Produces(i, LogId) || Produces(i, FirewoodId))) fell = i;
+            }
+            return fell;
+        }
+
+        private static bool Produces(InteractionDef i, string itemId)
+        {
+            foreach (var p in i.Produce) if (p.ItemId == itemId) return true;
+            return false;
         }
 
         // Yem koyma: yemlik ya da barınak, bir günlük ihtiyacın altına inmişse.
