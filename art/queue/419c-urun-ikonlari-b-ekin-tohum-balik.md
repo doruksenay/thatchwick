@@ -1,7 +1,7 @@
 ---
 id: "419c"
 title: Ürün ikonları B: ekin, tohum, fidan, meyve, toplanan, balık, et parça 3/3 (17)
-status: running
+status: review
 claimed_at: 2026-11-19T07:03Z
 approved_by: user        # kullanıcı 18.11.2026: "bu sistemi getir" (ürün ikon sistemi); otomatik akış (art/budget.md)
 priority: 30
