@@ -265,6 +265,98 @@ Görselsiz (kutu) eşya / toplam, yere göre (bitki hariç):
 ```
 Kalan 4 ihlal dış mekân (Aşama D). Önce/sonra kat planları: `docs/yerlesim-kat-planlari.md` (ekran görüntüsü yerine ASCII).
 
+## Aşama D: Dış mekân, bahçeler, bitki örtüsü ve yollar (tamam)
+
+### Kurallar (`Core/Layout/OutdoorRules.cs`, doğrulayıcıya eklendi)
+kapıdan yola patika ve yol ağı (meydan taşı ve köprü yürüyüş yolu sayılır; kopuk parça yok) · yol ve patika üstünde eşya yok ·
+kuyu meydanın ortasında ya da yol kesişiminin 3 karo içinde · bank yola ya da meydana bakar, sırtı duvar/çit/alçak duvara ·
+yağmur fıçısı bina köşesinde duvar dibinde · odun yığını yan ya da arka duvarda (kapı duvarında değil) · ağaç binaya en az 1 karo
+boşluk, kameraya bakan cephenin (batı ve kuzey) 2 karo önüne konmaz · meslek dış eşyası kendi dükkânının 5 karo içinde ·
+tabela kapının 1-2 karo yanında, yola değen yerde.
+
+### Yerleşim (`Core/Layout/OutdoorBuilder.cs`, `Vegetation.cs`, layouts.json `gardens`)
+- Plan korundu (belge 40); Regions'tan şehir ve köy yolunun bütün elle donatısı silindi. Her binanın kapı yönü plandan okunur.
+- Ayrılan karolar: kapı önü (3 karo) ve iki yanı, bölge geçitleri, yol; bahçe bölgesi = binaya 1-4 karo, en yakın bina bu olan açık karo.
+- Meydan: kuyu ortada (yanında kova ve çamaşır leğeni), banklar meydana bakar ve arkalarına alçak taş duvar, ilan tahtası, bekçi
+  ateşi, Kerem'in tezgâhı meydan kenarında.
+- Tabelalar önce (kapı yanını komşu bahçe kapmasın), sonra her binanın avlu/bahçe şablonu: köylü evlerinde çitli sebze tarhı (bahçe
+  kapısı yola açılır), meyve ağacı, yağmur fıçısı, odun yığını, çamaşır ipi, bank, çiçek; meslek avluları (demirci sergisi, marangoz
+  hızarı ve kereste, değirmen su çarkı ırmak kıyısında, çömlekçi fırını ve sergisi, terzinin boyalı kumaşları, balıkçının ağ askısı
+  ve sepeti su kıyısında, saracın tabak çerçeveleri arkada, taşçının kireç ocağı, otacının çitli ot tarhı ve arı kovanı, hanın at
+  bağlama direği, fıçıları ve avlu masası), hayvan pazarının ağıl içi.
+- Yol kesişimlerinde yol tabelası; köy yolunda tüccar durağı (yola bakan bank, arkasında çit, fıçı ve tohum sandığı) ve toplama
+  düğümleri (ıslak sevenler dere boyunda).
+- Çiftlik girişi: kapı patikasından kuyuya kısa bir patika (T kavşak), kuyu kavşağın yanında; kütük yan duvarda, yağmur fıçısı
+  köşede, saman arkada, avlu masası ve dokuz taş.
+- Bitki örtüsü: 2x2 hücreli seyrek aday ızgarası, türe göre en az uzaklık (ağaç 3, çalı/saz 2, çiçek/çim 1), %45-60 kümelenme, yoğunluk
+  haritası (kenar +, su +, meydan −, ana yol −), türler yere göre (su kıyısı söğüt ve saz, kenar meşe/huş/çam, duvar dibi çalı/çiçek,
+  yol kenarı çim öbeği), %30 genç ağaç (farklı boy). Görseli henüz olmayan çalı, çiçek ve çim öbeği konmaz (görünmez engel olmasın);
+  432 gelince yeni oyunda kendiliğinden çıkar.
+- Yaban haritalarının elle konmuş eşyaları da aynı kurallardan geçer: yol üstündeki kütük, sarımsak ve orman bankı konmadı.
+
+### Yollar
+- Plan düzeltmeleri (yalnızca kural ihlali olanlar): kuzey yolu meyhanenin içinden geçiyordu, doğusundan ve kuzeyinden dolanır; köylü
+  evi 2'nin patikası ana yola bağlandı; balıkçı bir karo doğuya (kapı önü suydu).
+- Mantıksal yol ağı GridMap yol katmanında (görselden ayrı); bağlantı testi: her dış kapı ana ağa bağlı (test: `YolAgi_*`, `Sehir_*`).
+- Görsel: 004e karoları depoda (review), dual-grid Wang çizimi (WorldView.RebuildPathLayer) zaten etkin; yol değişince katman yeniden
+  kurulur. Geçici bayraklar kaldırıldı: `IsoArt.PathSetSeamless`, 4-bit `PathTile`/`PathTileByMask`, `WorldView.ProceduralPathFringe`,
+  `PathFringe`, `RebuildPathFringe`. Wang seti yüklenmemişse yol dikişsiz toprak karoyla çizilir.
+
+### Sonuç (tohum 1; 10 tohumda da 0 ihlal, 77/77 şablon)
+```
+Şablon: 77 oda, kusursuz 77, eksik zorunlu 0, doğrulayıcının çıkardığı isteğe bağlı 1
+Eşya: 1461, yerleştirilemeyen: 4, ihlal: 0 (hata 0)
+Yere göre:
+Görselsiz (kutu) eşya / toplam, yere göre (bitki hariç):
+```
+- Şehirde ağaç 62 → 83, hepsi gerçek görselle (önce erik dışındakiler kodla çizilen yer tutucuydu).
+- Kutu çizilen eşya: 213'ün 109'u (%51) → 490'ın 197'si (%40). Kalan kutuların çoğu yeni eklenen eşyalar (431, 432 bekliyor).
+
+## Final: hata envanterinin kapanışı (Aşama A satırları)
+| Yer | Konum | Eşya | Sorun | Durum |
+|---|---|---|---|---|
+| Balıkçı | (55,22) | Balık sepeti (tuzak) | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Balıkçı | (54,18) | Kürek askısı | yanlış yer | kapandı: duvar eşyası yalnızca kameraya bakan arka duvar yüzüne (kenar 1-2); oda türü/meslek kuralı |
+| Balıkçı | (55,18) | Kurutulmuş balık dizisi | yanlış yer | kapandı: duvar eşyası yalnızca kameraya bakan arka duvar yüzüne (kenar 1-2); oda türü/meslek kuralı |
+| Balıkçı | (58,18) | Ağ perde | yanlış yer | kapandı: duvar eşyası yalnızca kameraya bakan arka duvar yüzüne (kenar 1-2); oda türü/meslek kuralı |
+| Çiftlik | (34,35) | Tahta tabure | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Çiftlik evi | (30,29) | Tahta sandalye | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Çiftlik evi | (36,31) | Minderli koltuk | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Çiftlik evi (bodrum) | (36,26,kat -1) | Tohum kasası | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Çiftlik evi (üst kat) | (36,30,kat 1) | Minderli koltuk | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Çömlekçi | (43,44) | Tuğla fırını | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Değirmen ve fırın | (40,4) | Değirmen taşı | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Değirmen ve fırın | (46,4) | Tohum kasası | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Demirci | (3,22) | Demir ocağı ve örs | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Demirci | (3,26) | Su çekici | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Demirci | (7,26) | Bileği taşı | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Demirci | (8,24) | Çiçek ocağı | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Demirci | (3,25) | Alet askısı | yanlış yer | kapandı: duvar eşyası yalnızca kameraya bakan arka duvar yüzüne (kenar 1-2); oda türü/meslek kuralı |
+| Marangoz | (5,31) | Alet askısı | yanlış yer | kapandı: duvar eşyası yalnızca kameraya bakan arka duvar yüzüne (kenar 1-2); oda türü/meslek kuralı |
+| Marangoz | (9,35) | Oymalı sandalye | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Marangoz | (8,35) | Boyalı sandalye | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Marangoz | (3,35) | Sandık-bank | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Meyhane | (20,12) | Taş ocak | etkileşim noktası kapalı | kapandı: ön karolar dolaşım denetimiyle boş ve kapıdan ulaşılır |
+| Meyhane | (29,12) | Mayalama fıçısı | etkileşim noktası kapalı | kapandı: ön karolar dolaşım denetimiyle boş ve kapıdan ulaşılır |
+| Meyhane | (23,12) | Maşrapa rafı | yanlış yer | kapandı: duvar eşyası yalnızca kameraya bakan arka duvar yüzüne (kenar 1-2); oda türü/meslek kuralı |
+| Meyhane | (20,14) | Tabak rafı | yanlış yer | kapandı: duvar eşyası yalnızca kameraya bakan arka duvar yüzüne (kenar 1-2); oda türü/meslek kuralı |
+| Meyhane | (21,14) | Uzun bank | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Meyhane | (21,16) | Uzun bank | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Meyhane | (25,14) | Uzun bank | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Meyhane | (25,16) | Uzun bank | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Orman | (28,34) | Ahşap bank | yanlış yön | kapandı: oturma eşyası şablonda seatsAround ile masaya bakarak, yalnızca görseli olan (kameraya dönük) yönde |
+| Otacı | (10,6) | Kurutma askısı | gorsel-iz | kapanmadı (bilinçli): kurutma askısının görseli 1x1, tanım 2x1; görsel eşlenmedi, yeni görsel 2x1 üretilmeli |
+| Otacı | (6,8) | Kuru ot demeti | yanlış yer | kapandı: duvar eşyası yalnızca kameraya bakan arka duvar yüzüne (kenar 1-2); oda türü/meslek kuralı |
+| Pazar (Kerem) | (40,14) | Tohum kasası | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Saraç | (54,37) | Eyer askısı (duvar) | yanlış yer | kapandı: duvar eşyası yalnızca kameraya bakan arka duvar yüzüne (kenar 1-2); oda türü/meslek kuralı |
+| Şehir | (7,38) | Odun sepeti | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Şehir | (61,41) | Fıçı küvet | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+| Şehir | (52,20) | - | kapı önü kapalı | kapandı: balıkçı binası bir karo doğuya alındı, kapı önü 2 karo kuru |
+| Taşçı | (20,42) | Taş yontma tezgâhı | iç/dış mekân | kapandı: eşyaya site (indoor/outdoor/any) verildi; atölye eşyaları bilinçli 'any'; dükkân içi şablondan, dış eşya avluda |
+
+Aşama B'nin bütün kurallarıyla eski yerleşimde ölçülen 55 hata + 9 uyarı da kapandı: yeni dünyada doğrulayıcı 0 hata veriyor
+(iç mekân 40 oda, dış mekân 37 bölüm; 20 tohumda iç mekân, 10 tohumda bütün dünya denendi).
+
 ### Görsel envanteri (IsoArt eşlemesi)
 Yönler dosya adındaki ekten: se = N, sw = W (kameraya dönük), ne = E, nw = S (arkası dönük). Hiçbir eşyanın arkası dönük
 görseli yok. Ayna yalnızca sol↔sağ (se↔sw); duvar eşyasında öbür duvar için kullanılıyor.

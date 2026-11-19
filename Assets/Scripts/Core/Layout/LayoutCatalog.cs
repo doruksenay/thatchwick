@@ -74,10 +74,12 @@ namespace Thatchwick.Core.Layout
     {
         public const string Wall = "wall", BackWall = "backWall", Corner = "corner", Center = "center", Any = "any",
             NearDoor = "nearDoor", Far = "far", Counter = "counter";
-        public static readonly string[] All = { Wall, BackWall, Corner, Center, Any, NearDoor, Far, Counter };
+        // Dış mekân (bahçe/avlu) çapaları: kapı yanı, binanın arkası, yanı, duvar dibi, köşe, su kıyısı, açık alan, ön, ağıl içi, yol kesişimi.
+        public const string Back = "back", Side = "side", WallBase = "wallBase", Water = "water", OpenArea = "open", Front = "front", Pen = "pen", Junction = "junction";
+        public static readonly string[] All = { Wall, BackWall, Corner, Center, Any, NearDoor, Far, Counter, Back, Side, WallBase, Water, OpenArea, Front, Pen, Junction };
         public const string SeatsAround = "seatsAround", Bedside = "bedside", NearHearth = "nearHearth", NearItem = "nearItem",
-            OnSurface = "onSurface", OnWall = "wall", Ceiling = "ceiling", Rug = "rug";
-        public static readonly string[] Withs = { SeatsAround, Bedside, NearHearth, NearItem, OnSurface, OnWall, Ceiling, Rug };
+            OnSurface = "onSurface", OnWall = "wall", Ceiling = "ceiling", Rug = "rug", Bed = "bed";
+        public static readonly string[] Withs = { SeatsAround, Bedside, NearHearth, NearItem, OnSurface, OnWall, Ceiling, Rug, Bed };
     }
 
     public sealed class RoomTemplate

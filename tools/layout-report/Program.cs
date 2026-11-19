@@ -54,8 +54,17 @@ internal static class Program
         if (dumps.Contains("all")) { dumps = new List<string> { "farmhouse" }; dumps.AddRange(Regions.TownBuildings.Select(b => b.Id)); }
         foreach (var id in dumps)
         {
+            var reg = Regions.All.FirstOrDefault(x => x.Id == id);
+            if (reg != null)
+            {
+                var leg = new Dictionary<string, string>();
+                Console.WriteLine($"== {reg.Name} (bölge) ==");
+                Console.Write(Dump.Building(world, new RectI(reg.X, reg.Y, reg.W, reg.H), 0, leg));
+                Console.WriteLine("   " + string.Join(", ", leg.OrderBy(k => k.Key).Select(k => $"{k.Key}={k.Value}")));
+                continue;
+            }
             var b = Regions.TownBuildingById(id);
-            RectI r = b != null ? b.Rect : new RectI(StarterWorld.HouseX0, StarterWorld.HouseY0, 9, 7);
+            RectI r = b != null ? TownBuilder.Grow(b.Rect, args.Contains("wide") ? 4 : 0) : new RectI(StarterWorld.HouseX0 - (args.Contains("wide") ? 6 : 0), StarterWorld.HouseY0 - (args.Contains("wide") ? 6 : 0), 9 + (args.Contains("wide") ? 12 : 0), 7 + (args.Contains("wide") ? 14 : 0));
             for (int z = 1; z >= -1; z--)
             {
                 if (!Enumerable.Range(r.X, r.W).Any(x => world.Map.HasTile(new GridPos(x, r.Y, z)))) continue;

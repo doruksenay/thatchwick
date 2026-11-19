@@ -231,29 +231,6 @@ namespace Thatchwick.Game
         /// Yol karosu (340): patika a/b, çakıl a, kaldırım yıpranmış ve bozuk. Sağlam kaldırım ve yıpranmış çakıl teslim
         /// edilmedi: kaldırımın sağlam hali de "worn" karosunu kullanır. Yoksa null (renkli elmasa düşer).
         /// </summary>
-        // Toprak yol otomatik karo seti (art/results/004): maske bitleri N=1 E=2 S=4 W=8 (PixelLab), dosya = tile_N.
-        // Izgarada: N = x+1, E = y-1, S = x-1, W = y+1 (Iso.GridToWorld). 0 (tek başına) ve tam iç: tamamı toprak (17).
-        /// <summary>Otomatik karo seti dış çizgisiz yeniden üretildiğinde true yapılır.</summary>
-        public static bool PathSetSeamless = false;
-
-        private static readonly int[] PathTileByMask = { 17, 2, 3, 10, 4, 7, 8, 15, 5, 11, 6, 14, 9, 13, 12, 16 };
-
-        /// <summary>Patika karosu komşu maskesine göre (düz, köşe, T, kavşak, yol sonu); fullInterior: dört komşu ve köşeler de yol.</summary>
-        public static Sprite PathTile(int mask, bool fullInterior, int x, int y)
-        {
-            if (!Enabled) return null;
-            // 004 seti "outline" moduyla üretilmiş: her karonun çevresinde koyu çizgi var (kenar parlaklığı 0,31, iç 0,47),
-            // yol ızgara gibi görünüyor. Set dış çizgisiz yeniden üretilene kadar (art/queue) dikişsiz toprak zemin karosu çizilir.
-            if (!PathSetSeamless) return Ground(FloorType.Dirt, x, y);
-            // Set 1 karoluk patika için çizilmiş: kenar payı ve köşe çentikleri 2 karoluk yolda zincir gibi görünüyor.
-            // Bu yüzden yalnızca yol sonu (tek komşu) kendi karosunu alır; geri kalan her yol karosu kenarsız tam topraktır,
-            // yan yana gelince kesintisiz bir şerit olur.
-            int m = mask & 15;
-            bool end = m == 1 || m == 2 || m == 4 || m == 8;
-            int idx = end && !fullInterior ? PathTileByMask[m] : 17;
-            return GetCentered($"iso_ground_path_dirt_{idx:00}");
-        }
-
         // ---------------- toprak yol, köşe tabanlı Wang seti (art/queue/004e) ----------------
         // Dosya: iso_path_dirt_wang_<NN>_<v>.png; NN = köşe maskesi (bit 0 üst, 1 sağ, 2 alt, 3 sol; 1 = toprak),
         // v = a/b/c (aynı maskenin bağımsız çizilmiş üç çeşidi). Tam toprak (15): iso_path_dirt_fill_v2_<v>.

@@ -277,19 +277,7 @@ namespace Thatchwick.Core.World
             p.Path(2, (0, 20), (7, 20), (7, 16), (14, 16), (14, 12), (27, 12), (27, 8), (39, 8));
             p.Path(1, (7, 16), (7, 0));   // güneye ayrılan patika: Güney Yamaçları
 
-            // Gezgin tüccar durağı ve yol kenarı
-            p.I("item.garden_bench", 30, 6); p.I("item.barrel", 33, 6); p.I("item.seed_crate", 34, 6);
-            p.I("item.forage_berry_bush", 5, 18); p.I("item.forage_strawberry", 11, 18); p.I("item.forage_dry_branch", 17, 9);
-            p.I("item.forage_elderflower", 24, 15); p.I("item.forage_mushroom", 35, 14); p.I("item.forage_wild_garlic", 3, 10);
-            p.I("item.forage_nettle", 31, 18);
-            foreach (var (x, y) in new[] { (17, 3), (24, 5), (16, 19), (24, 21), (23, 1) }) p.G("item.tree_willow", x, y);
-            var rng = new Random(40);
-            for (int i = 0; i < 120; i++)
-            {
-                int x = rng.Next(0, 40), y = rng.Next(0, 24);
-                if (Math.Abs(x - StreamX(y)) <= 2) continue;
-                p.G(rng.Next(3) == 0 ? "item.tree_birch" : "item.tree_oak", x, y);
-            }
+            // Donatı (gezgin tüccar durağı, toplama düğümleri, ağaçlar) kurallarla: Core.Layout.OutdoorBuilder (belge 44 D).
         }
 
         // ================= Şehir (64x52) =================
@@ -319,7 +307,7 @@ namespace Thatchwick.Core.World
 
             // Yollar (2 karo): batı girişi -> meydan; kuzey (orman), güney (göl), doğu (köprü, tepe); batı ara sokağı
             p.Path(2, (0, TownEntryY), (9, TownEntryY), (9, 21), (16, 21), (16, 25), (24, 25));
-            p.Path(2, (30, 22), (30, 13), (28, 13), (28, 0));
+            p.Path(2, (30, 22), (30, 10), (28, 10), (28, 0));   // meyhanenin doğusundan ve kuzeyinden dolanır (eskiden içinden geçiyordu)
             p.Path(2, (30, 30), (30, 38), (33, 38), (33, 51));
             p.Path(2, (36, 26), (63, 26));
             p.Path(2, (12, 21), (12, 44));
@@ -328,42 +316,23 @@ namespace Thatchwick.Core.World
             // ---- Binalar (plan: belge 40; iç döşeme şablonlardan, Core.Layout.TownBuilder, belge 44 C) ----
             foreach (var b in TownBuildings) p.Building(b.X, b.Y, b.W, b.H, b.Door, b.DoorAt, b.Floor, b.PathTo);
 
-            // ---- Dış donatı (Aşama D'de kurallı yerleşime geçecek) ----
-            // Otacının çitli ot bahçesi ve arı kovanı
-            p.Fence(11, 13, 15, 16, 'W', 14, false);
-            p.Path(1, (10, 14), (10, 14));
-            foreach (var (x, y) in new[] { (12, 14), (14, 14), (12, 16), (14, 16) }) p.I("item.forage_herbs", x, y);
-            p.I("item.beehive", 15, 13);
-            // Marangozun kereste avlusu, değirmenin su çarkı, saracın tabak çerçeveleri, taşçının kireç ocağı
-            p.I("item.sawmill", 4, 38); p.I("item.firewood_basket", 7, 38);
-            p.I("item.water_wheel", 47, 5);
-            p.I("item.tanning_rack", 55, 41); p.I("item.tanning_rack", 58, 41); p.I("item.barrel_tub", 61, 41);
-            p.I("item.lime_kiln", 16, 47);
-            // Hayvan pazarı (Murat): ırmağın ötesinde, kuzeydoğuda çitli ağıl
-            p.Fence(55, 4, 62, 12, 'S', 58, true);
+            // ---- Hayvan pazarı (Murat): ırmağın ötesinde, kuzeydoğuda çitli ağıl (plan); içi kurallarla ----
+            p.Fence(PenX0, PenY0, PenX1, PenY1, 'S', 58, true);
             p.Path(1, (58, 13), (58, 26));
-            p.I("item.feed_trough", 56, 5); p.I("item.water_trough", 60, 5); p.I("item.hay_bale", 56, 10); p.I("item.hay_bale", 57, 10);
-            p.I("item.milking_stool", 61, 10); p.I("item.saddle_rack", 62, 8); p.I("item.barn_lantern", 55, 12);
-            // Köylü evlerinin bahçeleri
-            p.I("item.garden_bench", 18, 8); p.G("item.tree_apple", 13, 8); p.G("item.tree_pear", 38, 6); p.G("item.tree_plum", 19, 38);
-            p.G("item.tree_cherry", 27, 37); p.G("item.tree_apple", 61, 47); p.I("item.forage_berry_bush", 8, 46); p.I("item.rain_barrel", 8, 44);
-
-            // Meydan: Kerem'in tezgâhı, ortada kuyu, banklar, bekçi ateşi, köşelerde ağaç
-            p.I("item.market_stall", 25, 22); p.I("item.well", 30, 26);
-            p.I("item.garden_bench", 26, 29); p.I("item.garden_bench", 33, 22); p.I("item.bonfire", 34, 29);
-            p.G("item.tree_oak", 23, 24); p.G("item.tree_oak", 37, 28);
-
-            // Ağaç kümeleri: ırmak kıyısında söğüt, köşelerde meşe ve huş (yol ve binaya konmayanlar atlanır)
-            foreach (var (x, y) in new[] { (47, 14), (53, 10), (46, 30), (53, 31), (52, 49), (46, 48), (49, 21) }) p.G("item.tree_willow", x, y);
-            var rng = new Random(52);
-            for (int i = 0; i < 90; i++)
-            {
-                int x = rng.Next(0, 64), y = rng.Next(0, 52);
-                bool corner = (x < 18 && y < 5) || (x > 44 && y > 47) || (x < 10 && y > 47) || (y < 3) || (x > 61) || (x < 2 && y > 22);
-                if (!corner || Math.Abs(x - RiverX(y)) <= 2) continue;
-                p.G(rng.Next(3) == 0 ? "item.tree_birch" : "item.tree_oak", x, y);
-            }
+            // Dış donatı (meydan, tabelalar, avlular, bahçeler, ağaçlar) kurallarla: Core.Layout.OutdoorBuilder (belge 44 D).
         }
+
+        /// <summary>Hayvan pazarının ağılı (yerel).</summary>
+        public const int PenX0 = 55, PenY0 = 4, PenX1 = 62, PenY1 = 12;
+        /// <summary>Meydanın ortası (yerel) ve sekizgen alanı.</summary>
+        public const int PlazaCX = 30, PlazaCY = 26;
+        public static bool InPlazaLocal(int x, int y) => InPlaza(x, y);
+        /// <summary>Meydanı kapsayan dikdörtgen (dünya).</summary>
+        public static RectI PlazaRect => new RectI(Town.X + PlazaCX - 7, Town.Y + PlazaCY - 5, 15, 11);
+        public static RectI PenRect => new RectI(Town.X + PenX0, Town.Y + PenY0, PenX1 - PenX0 + 1, PenY1 - PenY0 + 1);
+        public static int RiverAt(int localY) => RiverX(localY);
+        /// <summary>Köy yolundaki derenin orta sütunu (yerel).</summary>
+        public static int StreamAt(int localY) => StreamX(localY);
 
         /// <summary>
         /// Şehrin binaları (yerel koordinat, plan belge 40). Template: layouts.json bina şablonu (meslek ya da "cottage"); katlar ve
@@ -384,13 +353,13 @@ namespace Thatchwick.Core.World
             new TownBuilding("mill", "Değirmen ve fırın (Hatice)", "shop", 40, 4, 7, 6, 'S', 43, FloorType.Wood, "home:mill", (43, 11), (31, 11)),
             new TownBuilding("potter", "Çömlekçi (Ayşe)", "shop", 39, 40, 6, 6, 'N', 41, FloorType.Dirt, "home:potter", (41, 39), (32, 39)),
             // Irmağın ötesi
-            new TownBuilding("fisher", "Balıkçı", "shop", 54, 18, 6, 5, 'W', 20, FloorType.Wood, "home:fisher", (53, 26)),
+            new TownBuilding("fisher", "Balıkçı", "shop", 55, 18, 6, 5, 'W', 20, FloorType.Wood, "home:fisher", (53, 20), (53, 26)),   // bir karo doğuya: kapı önü 2 karo kuru (belge 44 D)
             new TownBuilding("saddler", "Saraç ve tabakhane", "shop", 54, 34, 7, 6, 'N', 57, FloorType.Dirt, "home:saddler", (57, 28)),
             // Güney
             new TownBuilding("mason", "Taşçı", "shop", 20, 42, 7, 6, 'E', 44, FloorType.Stone, "home:mason", (33, 44)),
             // Köylü evleri: dağınık, kendi bahçeleriyle
             new TownBuilding("home:1", "Köylü evi 1", "house", 14, 4, 4, 3, 'S', 15, FloorType.Wood, "home:1", (15, 9), (29, 9)) { Template = "cottage" },
-            new TownBuilding("home:2", "Köylü evi 2", "house", 34, 4, 4, 3, 'S', 35, FloorType.Wood, "home:2", (35, 8), (31, 8)) { Template = "cottage" },
+            new TownBuilding("home:2", "Köylü evi 2", "house", 34, 4, 4, 3, 'S', 35, FloorType.Wood, "home:2", (35, 8), (31, 8), (31, 10)) { Template = "cottage" },   // patika yola bağlanır
             new TownBuilding("home:3", "Köylü evi 3", "house", 14, 36, 4, 3, 'N', 15, FloorType.Wood, "home:3", (13, 35)) { Template = "cottage" },
             new TownBuilding("home:4", "Köylü evi 4", "house", 22, 35, 4, 3, 'N', 23, FloorType.Wood, "home:4", (23, 33), (30, 33)) { Template = "cottage" },
             new TownBuilding("home:5", "Köylü evi 5", "house", 56, 44, 4, 3, 'N', 57, FloorType.Wood, "home:5", (62, 43), (62, 28)) { Template = "cottage" },
@@ -446,7 +415,7 @@ namespace Thatchwick.Core.World
             { "work:scribe", T(18, 31) }, { "home:scribe", T(15, 31) },
             { "work:tailor", T(39, 35) }, { "home:tailor", T(41, 35) },
             { "work:saddler", T(57, 36) }, { "home:saddler", T(56, 38) },
-            { "work:fisher", T(56, 20) }, { "home:fisher", T(58, 19) },
+            { "work:fisher", T(57, 20) }, { "home:fisher", T(59, 19) },
             { "work:mason", T(23, 44) }, { "home:mason", T(24, 46) },
             // Yaban haritalarının buluşma yerleri (köylü programları ve gezinti için)
             { "forest", W(Forest, 24, 24) }, { "lake", W(Lake, 24, 8) }, { "marsh", W(Marsh, 6, 12) },
@@ -459,7 +428,7 @@ namespace Thatchwick.Core.World
             { "general", R(33, 14, 8, 6) }, { "smithy", R(3, 22, 7, 6) }, { "carpenter", R(3, 31, 8, 6) },
             { "tavern", R(20, 12, 10, 7) }, { "mill", R(40, 4, 7, 6) }, { "scribe", R(14, 28, 6, 5) },
             { "herb", R(6, 6, 7, 6) }, { "potter", R(39, 40, 6, 6) }, { "tailor", R(36, 32, 7, 6) },
-            { "saddler", R(54, 34, 7, 6) }, { "fisher", R(54, 18, 6, 5) }, { "mason", R(20, 42, 7, 6) },
+            { "saddler", R(54, 34, 7, 6) }, { "fisher", R(55, 18, 6, 5) }, { "mason", R(20, 42, 7, 6) },
             { "animals", R(55, 4, 8, 9) },
         };
 

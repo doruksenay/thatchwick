@@ -2678,9 +2678,6 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ],
-      "trades": [
-        "general"
       ]
     },
     {
@@ -11099,9 +11096,6 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ],
-      "trades": [
-        "fisher"
       ]
     },
     {
@@ -22287,6 +22281,9 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "trades": [
+        "tailor"
       ]
     },
     {
@@ -22306,6 +22303,9 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "trades": [
+        "fisher"
       ]
     },
     {
@@ -22325,6 +22325,9 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "trades": [
+        "potter"
       ]
     },
     {
@@ -22344,6 +22347,9 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "trades": [
+        "smithy"
       ]
     },
     {
@@ -22358,6 +22364,10 @@
       ],
       "level": 3,
       "styleSet": "Köylü",
+      "placement": "Rug",
+      "tags": [
+        "veg"
+      ],
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -22375,7 +22385,8 @@
       ],
       "level": 3,
       "tags": [
-        "townonly"
+        "townonly",
+        "veg"
       ],
       "site": "outdoor",
       "belongs": [
@@ -22394,8 +22405,17 @@
       ],
       "level": 3,
       "tags": [
-        "townonly"
+        "townonly",
+        "veg"
       ],
+      "art": {
+        "alongX": "iso_item_forage_reed_se",
+        "pivotX": 40,
+        "pivotY": 24,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -22414,7 +22434,8 @@
       "level": 3,
       "placement": "Rug",
       "tags": [
-        "townonly"
+        "townonly",
+        "veg"
       ],
       "site": "outdoor",
       "belongs": [

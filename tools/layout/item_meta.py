@@ -64,7 +64,11 @@ NEW_ITEMS = [
     ("item.grass_tuft", "Çim öbeği", 1, 1, "garden", 0, ["outdoor"], None),
 ]
 # Çim öbeği ve çakıl yolu kapatmasın: halı gibi serilir (yürünebilir).
-NEW_RUG_LIKE = {"item.grass_tuft"}
+NEW_RUG_LIKE = {"item.grass_tuft", "item.flower_clump"}
+# Bitki örtüsü: görseli gelmeden konmaz (OutdoorBuilder/Vegetation "veg" etiketine bakar).
+VEG = {"item.grass_tuft", "item.flower_clump", "item.shrub", "item.reeds"}
+# Elle bağlanan görseller (adı eşya kimliğine uymayan, kabul ya da inceleme bekleyen işlerin çıktıları).
+EXTRA_ART = {"item.reeds": {"alongX": "iso_item_forage_reed_se", "pivotX": 40, "pivotY": 24}}
 NEW_SURFACE = [
     ("item.ink_quill", "Mürekkep hokkası ve tüy kalem", "decor", 6),
     ("item.wax_seal", "Mühür ve mum", "decor", 5),
@@ -124,23 +128,23 @@ TRADES = {
               "plate_rack singer_stand cooking_pot firewood_basket barrel_table storage_jar pantry_shelf bench_wood spoon_rack "
               "settle_bench chair_wood stool_wood green_bottle_shelf peg_rail ceiling_herbs beam_hook",
     "general": "shop_counter pantry_shelf storage_jar seed_crate barrel wicker_basket grain_sack flour_sack chest_wood shelf_wood "
-               "firewood_basket market_stall stool_wood wall_shelf wall_shelf_oak long_shelf_iron peg_rail",
+               "firewood_basket stool_wood wall_shelf wall_shelf_oak long_shelf_iron peg_rail",
     "scribe": "writing_lectern shelf_wood scroll_rack scroll_chest chest_wood table_painted table_wood chair_carved chair_wood "
               "stool_wood rug_runner wall_shelf wall_shelf_oak notice_board",
     "herb": "potion_shelf drying_rack table_wood bed_straw basin_ewer alembic shelf_wood ceiling_herbs herb_bundle_wall stool_wood "
             "chest_wood beam_hook wall_shelf storage_jar",
     "smithy": "forge bloomery anvil bellows quench_tub whetstone iron_pile trip_hammer tool_rack_wall water_barrel firewood_basket "
-              "barrel horseshoe_display",
+              "barrel horseshoe_display smith_display",
     "carpenter": "workbench lumber_pile unfinished_furniture tool_rack_wall chair_wood chair_carved chair_painted table_wood "
                  "table_painted chest_bench chest_wood settle_bench bench_wood stool_wood x_chair firewood_basket sawmill "
                  "dowry_chest carved_chest bed_end_chest shelf_wood peg_rail",
     "mill": "millstone quern stone_oven kneading_trough flour_sack grain_sack bread_rack seed_crate barrel table_wood "
             "prep_counter firewood_basket water_wheel",
     "tailor": "loom spinning_wheel dye_vat clothes_press cutting_table cloth_bolt_shelf garment_stand yarn_basket chest_wood "
-              "stool_wood felt_rug felt_rug_small felt_rug_large peg_rail wall_shelf",
-    "potter": "pottery_wheel kiln clay_trough pot_drying_rack storage_jar shelf_wood barrel_tub stool_wood wall_shelf",
-    "fisher": "fish_basket salting_barrel barrel oar_rack net_curtain dried_fish_string table_wood shelf_wood fish_trap stool_wood "
-              "first_fish_scale",
+              "stool_wood felt_rug felt_rug_small felt_rug_large peg_rail wall_shelf cloth_drying_line",
+    "potter": "pottery_wheel kiln clay_trough pot_drying_rack storage_jar shelf_wood barrel_tub stool_wood wall_shelf pottery_display",
+    "fisher": "fish_basket salting_barrel barrel oar_rack net_curtain dried_fish_string table_wood shelf_wood stool_wood "
+              "first_fish_scale net_drying_rack",
     "saddler": "saddler_bench saddle_rack saddle_peg hide_rack tool_rack_wall table_wood barrel barrel_tub tanning_rack stool_wood",
     "mason": "stonecutter stone_blocks chisel_rack workbench whetstone table_wood barrel lime_kiln",
     "animals": "feed_trough water_trough hay_bale milking_stool saddle_rack barn_lantern animal_bell salt_lick",
@@ -263,8 +267,11 @@ def main():
         d = {"id": iid, "displayName": name, "width": w, "height": h, "price": price, "category": cat, "rooms": rooms, "level": 3}
         if style:
             d["styleSet"] = style
-        if price == 0:
-            d["tags"] = ["townonly"]
+        tags0 = ["townonly"] if price == 0 else []
+        if iid in VEG:
+            tags0.append("veg")
+        if tags0:
+            d["tags"] = tags0
         if iid in NEW_RUG_LIKE:
             d["placement"] = "Rug"
         if cat == "surfaces":
@@ -296,6 +303,10 @@ def main():
     for iid, name in plants.items():
         art.setdefault(iid, {})["grown"] = name
         used.add(name)
+    for iid, a in EXTRA_ART.items():
+        if iid in by_id and not by_id[iid].get("art") and a["alongX"] in sprites:
+            art[iid] = dict(a)
+            used.add(a["alongX"])
     cands = {}
     for s in sorted(sprites - used):
         m = re.match(r"^iso_(item|wall_item)_(.+?)(?:_(\d)x(\d))?(?:_(\d)w)?(_lit)?_(se_nw|sw_ne|se|sw)(?:_v(\d+))?$", s)

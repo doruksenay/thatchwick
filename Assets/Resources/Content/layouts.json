@@ -1122,74 +1122,87 @@
         "home_small"
       ],
       "cellar": "cellar_wine",
-      "cellarType": "cellar|pantry"
+      "cellarType": "cellar|pantry",
+      "garden": "yard_tavern"
     },
     {
       "id": "general",
       "ground": "shop_general",
       "upper": "home_upper",
       "cellar": "storehouse",
-      "cellarType": "storehouse"
+      "cellarType": "storehouse",
+      "garden": "garden_shop"
     },
     {
       "id": "scribe",
       "ground": "shop_scribe",
       "upper": "home_upper",
       "cellar": "archive",
-      "cellarType": "storehouse"
+      "cellarType": "storehouse",
+      "garden": "garden_shop"
     },
     {
       "id": "herb",
       "ground": "shop_herb",
       "upper": "home_upper",
       "cellar": "cool_cellar",
-      "cellarType": "cellar|pantry"
+      "cellarType": "cellar|pantry",
+      "garden": "yard_herb"
     },
     {
       "id": "smithy",
-      "ground": "shop_smithy"
+      "ground": "shop_smithy",
+      "garden": "yard_smithy"
     },
     {
       "id": "carpenter",
       "ground": "shop_carpenter",
-      "upper": "home_upper"
+      "upper": "home_upper",
+      "garden": "yard_carpenter"
     },
     {
       "id": "mill",
       "ground": "shop_mill",
       "upper": "home_upper",
       "cellar": "flour_store",
-      "cellarType": "storehouse|pantry"
+      "cellarType": "storehouse|pantry",
+      "garden": "yard_mill"
     },
     {
       "id": "tailor",
       "ground": "shop_tailor",
-      "upper": "home_upper"
+      "upper": "home_upper",
+      "garden": "yard_tailor"
     },
     {
       "id": "potter",
       "ground": "shop_potter",
-      "upper": "home_upper"
+      "upper": "home_upper",
+      "garden": "yard_potter"
     },
     {
       "id": "fisher",
       "ground": "shop_fisher",
       "upper": "home_upper",
       "cellar": "salting_cellar",
-      "cellarType": "cellar|pantry"
+      "cellarType": "cellar|pantry",
+      "garden": "yard_fisher"
     },
     {
       "id": "saddler",
       "ground": "shop_saddler",
-      "upper": "home_upper"
+      "upper": "home_upper",
+      "garden": "yard_saddler"
     },
     {
       "id": "mason",
-      "ground": "shop_mason"
+      "ground": "shop_mason",
+      "garden": "yard_mason"
     },
     {
       "id": "cottage",
-      "ground": "cottage"
+      "ground": "cottage",
+      "garden": "garden_house"
     },
     {
       "id": "farmhouse",
@@ -1199,5 +1212,411 @@
       "cellarType": "cellar|pantry|workshop|storehouse"
     }
   ],
-  "gardens": []
+  "gardens": [
+    {
+      "id": "garden_house",
+      "enclosure": "fence",
+      "steps": [
+        {
+          "any": [
+            "item.crop_cabbage",
+            "item.crop_leek",
+            "item.crop_onion",
+            "item.crop_garlic",
+            "item.crop_carrot"
+          ],
+          "optional": true,
+          "chance": 0.7,
+          "with": "bed"
+        },
+        {
+          "any": [
+            "item.tree_apple",
+            "item.tree_pear",
+            "item.tree_plum",
+            "item.tree_cherry"
+          ],
+          "optional": true,
+          "chance": 0.8,
+          "anchor": "open"
+        },
+        {
+          "item": "item.rain_barrel",
+          "optional": true,
+          "chance": 0.6,
+          "anchor": "corner"
+        },
+        {
+          "item": "item.woodshed",
+          "optional": true,
+          "chance": 0.5,
+          "anchor": "side"
+        },
+        {
+          "item": "item.clothes_line",
+          "optional": true,
+          "chance": 0.5,
+          "anchor": "back"
+        },
+        {
+          "item": "item.garden_bench",
+          "optional": true,
+          "chance": 0.6,
+          "anchor": "wallBase"
+        },
+        {
+          "item": "item.flower_clump",
+          "count": 2,
+          "optional": true,
+          "anchor": "wallBase"
+        }
+      ]
+    },
+    {
+      "id": "garden_shop",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.rain_barrel",
+          "optional": true,
+          "chance": 0.6,
+          "anchor": "corner"
+        },
+        {
+          "item": "item.woodshed",
+          "optional": true,
+          "chance": 0.5,
+          "anchor": "side"
+        },
+        {
+          "any": [
+            "item.tree_apple",
+            "item.tree_pear",
+            "item.tree_plum",
+            "item.tree_cherry"
+          ],
+          "optional": true,
+          "chance": 0.6,
+          "anchor": "open"
+        },
+        {
+          "item": "item.garden_bench",
+          "optional": true,
+          "chance": 0.5,
+          "anchor": "wallBase"
+        },
+        {
+          "item": "item.flower_clump",
+          "count": 2,
+          "optional": true,
+          "anchor": "wallBase"
+        }
+      ]
+    },
+    {
+      "id": "yard_tavern",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.hitching_post",
+          "anchor": "front"
+        },
+        {
+          "item": "item.barrel",
+          "count": 2,
+          "anchor": "wallBase"
+        },
+        {
+          "any": [
+            "item.stump_table",
+            "item.barrel_table"
+          ],
+          "anchor": "open"
+        },
+        {
+          "item": "item.stool_wood",
+          "count": 2,
+          "optional": true,
+          "with": "nearItem",
+          "on": "item.stump_table"
+        },
+        {
+          "item": "item.garden_bench",
+          "optional": true,
+          "anchor": "wallBase"
+        },
+        {
+          "item": "item.woodshed",
+          "optional": true,
+          "anchor": "side"
+        },
+        {
+          "item": "item.flower_clump",
+          "optional": true,
+          "anchor": "wallBase"
+        }
+      ]
+    },
+    {
+      "id": "yard_herb",
+      "enclosure": "fence",
+      "steps": [
+        {
+          "item": "item.forage_herbs",
+          "with": "bed"
+        },
+        {
+          "item": "item.beehive",
+          "anchor": "open"
+        },
+        {
+          "item": "item.flower_clump",
+          "count": 2,
+          "optional": true,
+          "anchor": "wallBase"
+        },
+        {
+          "item": "item.rain_barrel",
+          "optional": true,
+          "anchor": "corner"
+        }
+      ]
+    },
+    {
+      "id": "yard_smithy",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.smith_display",
+          "anchor": "front"
+        },
+        {
+          "item": "item.woodshed",
+          "anchor": "side"
+        },
+        {
+          "item": "item.water_barrel",
+          "optional": true,
+          "anchor": "wallBase"
+        }
+      ]
+    },
+    {
+      "id": "yard_carpenter",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.sawmill",
+          "anchor": "back"
+        },
+        {
+          "item": "item.lumber_pile",
+          "anchor": "back"
+        },
+        {
+          "item": "item.woodshed",
+          "optional": true,
+          "anchor": "side"
+        }
+      ]
+    },
+    {
+      "id": "yard_mill",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.water_wheel",
+          "anchor": "water"
+        },
+        {
+          "item": "item.woodshed",
+          "anchor": "side"
+        },
+        {
+          "item": "item.grain_sack",
+          "optional": true,
+          "anchor": "wallBase"
+        }
+      ]
+    },
+    {
+      "id": "yard_tailor",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.cloth_drying_line",
+          "anchor": "back"
+        },
+        {
+          "item": "item.flower_clump",
+          "count": 2,
+          "optional": true,
+          "anchor": "wallBase"
+        },
+        {
+          "any": [
+            "item.tree_apple",
+            "item.tree_pear",
+            "item.tree_plum",
+            "item.tree_cherry"
+          ],
+          "optional": true,
+          "chance": 0.5,
+          "anchor": "open"
+        }
+      ]
+    },
+    {
+      "id": "yard_potter",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.kiln",
+          "anchor": "back"
+        },
+        {
+          "item": "item.pot_drying_rack",
+          "anchor": "side"
+        },
+        {
+          "item": "item.pottery_display",
+          "anchor": "front"
+        },
+        {
+          "item": "item.clay_trough",
+          "optional": true,
+          "anchor": "wallBase"
+        }
+      ]
+    },
+    {
+      "id": "yard_fisher",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.net_drying_rack",
+          "anchor": "water"
+        },
+        {
+          "item": "item.fish_trap",
+          "optional": true,
+          "anchor": "water"
+        },
+        {
+          "item": "item.barrel",
+          "optional": true,
+          "anchor": "wallBase"
+        }
+      ]
+    },
+    {
+      "id": "yard_saddler",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.tanning_rack",
+          "count": 2,
+          "anchor": "back"
+        },
+        {
+          "item": "item.barrel",
+          "optional": true,
+          "anchor": "back"
+        }
+      ]
+    },
+    {
+      "id": "yard_mason",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.lime_kiln",
+          "anchor": "side"
+        },
+        {
+          "item": "item.stone_blocks",
+          "count": 2,
+          "anchor": "front"
+        }
+      ]
+    },
+    {
+      "id": "yard_animals",
+      "enclosure": "fence",
+      "steps": [
+        {
+          "item": "item.feed_trough",
+          "anchor": "pen"
+        },
+        {
+          "item": "item.water_trough",
+          "anchor": "pen"
+        },
+        {
+          "item": "item.hay_bale",
+          "count": 2,
+          "anchor": "pen"
+        },
+        {
+          "item": "item.milking_stool",
+          "anchor": "pen"
+        },
+        {
+          "item": "item.saddle_rack",
+          "optional": true,
+          "anchor": "pen"
+        },
+        {
+          "item": "item.barn_lantern",
+          "optional": true,
+          "anchor": "pen"
+        }
+      ]
+    },
+    {
+      "id": "garden_farm",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.well",
+          "anchor": "junction"
+        },
+        {
+          "item": "item.chopping_block",
+          "anchor": "side"
+        },
+        {
+          "item": "item.rain_barrel",
+          "anchor": "corner"
+        },
+        {
+          "item": "item.hay_bale",
+          "optional": true,
+          "anchor": "back"
+        },
+        {
+          "item": "item.stump_table",
+          "optional": true,
+          "anchor": "open"
+        },
+        {
+          "item": "item.stool_wood",
+          "optional": true,
+          "with": "nearItem",
+          "on": "item.stump_table"
+        },
+        {
+          "item": "item.garden_bench",
+          "optional": true,
+          "anchor": "wallBase"
+        },
+        {
+          "item": "item.flower_clump",
+          "count": 2,
+          "optional": true,
+          "anchor": "wallBase"
+        }
+      ]
+    }
+  ]
 }
