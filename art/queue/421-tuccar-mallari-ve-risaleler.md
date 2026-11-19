@@ -1,7 +1,7 @@
 ---
 id: "421"
 title: Tüccar malları (3 ikon) ve risaleler (4 kitap eşyası)
-status: running
+status: review
 claimed_at: 2026-11-19T07:23Z
 approved_by: user        # kullanıcı 19.11.2026: "hem eşyaları ekle"; otomatik akış (art/budget.md)
 priority: 25
