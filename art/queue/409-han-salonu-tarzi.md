@@ -1,7 +1,7 @@
 ---
 id: "409"
 title: "Han Salonu tarzı (8 eşya)"
-status: pending
+status: review
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 18.11.2026 ("hepsini"), Project belgesi 27 §6.1 ve 27e
 priority: 30
 family: esya
