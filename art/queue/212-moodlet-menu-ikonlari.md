@@ -1,7 +1,7 @@
 ---
 id: "212"
 title: Moodlet, menü ve panel ikonları (16x16)
-status: running
+status: review
 claimed_at: 2026-11-19T12:02Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
