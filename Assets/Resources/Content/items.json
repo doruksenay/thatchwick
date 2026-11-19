@@ -16634,6 +16634,172 @@
       "category": "resource",
       "price": 1,
       "interactions": []
+    },
+    {
+      "id": "item.indigo",
+      "displayName": "Çivit kalıbı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "merchantonly",
+        "dye"
+      ]
+    },
+    {
+      "id": "item.saffron",
+      "displayName": "Safran",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 25,
+      "tags": [
+        "merchantonly",
+        "dye",
+        "spice"
+      ]
+    },
+    {
+      "id": "item.black_pepper",
+      "displayName": "Karabiber",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "merchantonly",
+        "spice"
+      ]
+    },
+    {
+      "id": "item.book_almanac",
+      "displayName": "Takvim ve hava risalesi",
+      "category": "decor",
+      "price": 45,
+      "placement": "Surface",
+      "level": 3,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "tags": [
+        "merchant"
+      ],
+      "interactions": [
+        {
+          "id": "read",
+          "displayName": "Oku",
+          "need": "Fun",
+          "restore": 20,
+          "durationDays": 0.1,
+          "moodlet": "inspired",
+          "skill": "WeatherLore",
+          "skillXp": 10
+        }
+      ],
+      "beauty": 3,
+      "decorSize": "M",
+      "weight": 2,
+      "material": "cloth",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.book_herbal",
+      "displayName": "Otacılık risalesi",
+      "category": "decor",
+      "price": 45,
+      "placement": "Surface",
+      "level": 3,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "tags": [
+        "merchant"
+      ],
+      "interactions": [
+        {
+          "id": "read",
+          "displayName": "Oku",
+          "need": "Fun",
+          "restore": 20,
+          "durationDays": 0.1,
+          "moodlet": "inspired",
+          "skill": "Herbalism",
+          "skillXp": 10
+        }
+      ],
+      "beauty": 3,
+      "decorSize": "M",
+      "weight": 2,
+      "material": "cloth",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.book_husbandry",
+      "displayName": "Hayvancılık risalesi",
+      "category": "decor",
+      "price": 45,
+      "placement": "Surface",
+      "level": 3,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "tags": [
+        "merchant"
+      ],
+      "interactions": [
+        {
+          "id": "read",
+          "displayName": "Oku",
+          "need": "Fun",
+          "restore": 20,
+          "durationDays": 0.1,
+          "moodlet": "inspired",
+          "skill": "AnimalHusbandry",
+          "skillXp": 10
+        }
+      ],
+      "beauty": 3,
+      "decorSize": "M",
+      "weight": 2,
+      "material": "cloth",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.book_smithing",
+      "displayName": "Demircilik risalesi",
+      "category": "decor",
+      "price": 50,
+      "placement": "Surface",
+      "level": 3,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "tags": [
+        "merchant"
+      ],
+      "interactions": [
+        {
+          "id": "read",
+          "displayName": "Oku",
+          "need": "Fun",
+          "restore": 20,
+          "durationDays": 0.1,
+          "moodlet": "inspired",
+          "skill": "Smithing",
+          "skillXp": 10
+        }
+      ],
+      "beauty": 3,
+      "decorSize": "M",
+      "weight": 2,
+      "material": "cloth",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
     }
   ],
   "recipes": [
@@ -19525,6 +19691,62 @@
       "skill": "Carpentry",
       "skillXp": 5,
       "displayName": "Örme çit ör"
+    },
+    {
+      "id": "dye_blue_indigo",
+      "station": "item.dye_vat",
+      "produces": "item.dye_blue",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.indigo",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Çivitle mavi boya"
+    },
+    {
+      "id": "dye_yellow_saffron",
+      "station": "item.dye_vat",
+      "produces": "item.dye_yellow",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.saffron",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Safranla sarı boya"
+    },
+    {
+      "id": "pastirma_pepper",
+      "station": "item.cooking_pot",
+      "produces": "item.pastirma",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.meat",
+          "count": 2
+        },
+        {
+          "item": "item.black_pepper",
+          "count": 1
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Biberli pastırma"
     }
   ],
   "animals": [

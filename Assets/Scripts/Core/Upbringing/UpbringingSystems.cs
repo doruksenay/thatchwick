@@ -23,6 +23,8 @@ namespace Thatchwick.Core.Upbringing
         public ApprenticeshipSystem Apprentices { get; }
         public FamilyRecipeBook Recipes { get; }
         public ReputationSystem Reputation { get; } = new ReputationSystem();
+        /// <summary>Yaşlı rolleri: masal, torun bakımı, hafif iş hızı (belge 34-D4).</summary>
+        public ElderRoles Elders { get; }
         /// <summary>Düğün ve talip niteliği (belge 34-D2); AttachHouse ile kurulur.</summary>
         public WeddingSystem Weddings { get; private set; }
 
@@ -50,6 +52,7 @@ namespace Thatchwick.Core.Upbringing
             Population = population ?? throw new ArgumentNullException(nameof(population));
             Apprentices = new ApprenticeshipSystem(population);
             Recipes = new FamilyRecipeBook(population);
+            Elders = new ElderRoles(population);
             Companions = new CompanionBondSystem(population, null) { Today = () => Today() };
             _rng = new Random(seed != 0 ? seed : 113);
 
@@ -268,6 +271,7 @@ namespace Thatchwick.Core.Upbringing
         public void OnNewDay()
         {
             AutonomousBorrowing();
+            Elders.OnNewDay();
             Toys.DailyUpdate(Today());
             Apprentices.DailyUpdate();
             foreach (var w in Recipes.AtRiskWarnings()) Say(w, 0);
@@ -338,7 +342,7 @@ namespace Thatchwick.Core.Upbringing
         public UpbringingSave Export() => new UpbringingSave
         {
             toys = Toys.Export(), companions = Companions.Export(), apprentices = Apprentices.Export(),
-            recipes = Recipes.Export(), reputation = Reputation.Export(), weddings = Weddings?.Export()
+            recipes = Recipes.Export(), reputation = Reputation.Export(), weddings = Weddings?.Export(), elderStories = Elders.Export()
         };
 
         public void Import(UpbringingSave s)
@@ -349,6 +353,7 @@ namespace Thatchwick.Core.Upbringing
             Recipes.Import(s?.recipes);
             Reputation.Import(s?.reputation);
             Weddings?.Import(s?.weddings);
+            Elders.Import(s?.elderStories ?? 0);
         }
     }
 
@@ -361,5 +366,6 @@ namespace Thatchwick.Core.Upbringing
         public FamilyRecipeSave[] recipes;
         public ReputationSave reputation;
         public WeddingSave weddings;
+        public int elderStories;
     }
 }

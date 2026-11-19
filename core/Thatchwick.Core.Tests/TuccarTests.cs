@@ -22,7 +22,7 @@ namespace Thatchwick.Core.Tests
             var house = new Household(1000);
             var m = new TravelingMerchant(db, house, 3);
             Assert.NotEmpty(m.ExoticGoods());
-            Assert.All(m.ExoticGoods(), d => Assert.True(d.HasTag("craftonly")));
+            Assert.All(m.ExoticGoods(), d => Assert.True(d.HasTag("craftonly") || d.HasTag("merchantonly")));
             m.Arrive(4, fair: false);
             Assert.True(m.Here);
             Assert.True(m.Offers.Count(o => o.Kind == MerchantOfferKind.Goods) <= TravelingMerchant.GoodsPerVisit);

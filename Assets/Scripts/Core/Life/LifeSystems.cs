@@ -498,6 +498,7 @@ namespace Thatchwick.Core.Life
             double f = 1.0;
             if (!string.IsNullOrEmpty(interaction.Tool)) f *= Tools.SpeedFor(interaction.Tool);
             if (c.HasBranch(GlassBranchId) && ProducesGlass(interaction)) f *= GlassBranchSpeed;   // Camcı dalı (27 §18.3)
+            f *= Thatchwick.Core.Upbringing.ElderRoles.WorkSpeed(c, interaction.Skill);   // yaşlı hafif işlerde hızlı (34-D4)
             var room = World.Map.Rooms.RoomAt(c.Position);
             bool outdoors = room == null || !room.IsIndoor;
             if (outdoors) f *= WeatherSystem.OutdoorWorkSpeed(Weather.Today(Clock.TotalDays));

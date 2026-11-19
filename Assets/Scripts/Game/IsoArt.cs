@@ -248,6 +248,10 @@ namespace Thatchwick.Game
             ["item.marbles"] = new ItemArt { AlongX = "iso_item_marbles_se_v4", PivotX = 16, PivotY = 4 },                  // 417
             ["item.whittling_knife"] = new ItemArt { AlongX = "iso_item_whittling_knife_se", PivotX = 16, PivotY = 7 },     // 401
             ["item.juggling_balls"] = new ItemArt { AlongX = "iso_item_juggling_balls_se", PivotX = 16, PivotY = 7 },       // 401
+            ["item.book_almanac"] = new ItemArt { AlongX = "iso_item_book_almanac_se", PivotX = 16, PivotY = 7 },   // 421 (gelince)
+            ["item.book_herbal"] = new ItemArt { AlongX = "iso_item_book_herbal_se", PivotX = 16, PivotY = 7 },   // 421 (gelince)
+            ["item.book_husbandry"] = new ItemArt { AlongX = "iso_item_book_husbandry_se", PivotX = 16, PivotY = 7 },   // 421 (gelince)
+            ["item.book_smithing"] = new ItemArt { AlongX = "iso_item_book_smithing_se", PivotX = 16, PivotY = 7 },   // 421 (gelince)
             // Masa ve raf üstü (32 px tuval; pivot = nesnenin tabanı)
             ["item.bread_basket"] = new ItemArt { AlongX = "iso_item_bread_basket_se", PivotX = 16, PivotY = 2 },           // 387
             ["item.fruit_basket"] = new ItemArt { AlongX = "iso_item_fruit_basket_se", PivotX = 16, PivotY = 2 },           // 387

@@ -75,12 +75,12 @@ namespace Thatchwick.Core.Economy
         public MerchantOrder Order { get; private set; }
         public int OrdersDelivered { get; private set; }
 
-        /// <summary>Uzak diyar malları: pazarda alınmayan (yalnızca yapılır) ve fiyatı olan hammadde/ürünler.</summary>
+        /// <summary>Uzak diyar malları: pazarda alınmayan hammadde/ürünler (yalnızca yapılır ya da yalnızca tüccarda: çivit, safran, karabiber). Risaleler Kervan Odası kataloğunda.</summary>
         public List<ItemDef> ExoticGoods()
         {
             var list = new List<ItemDef>();
             foreach (var d in _content.Items.All)
-                if (d.Placement == ItemPlacement.Resource && d.Price > 0 && d.HasTag("craftonly")) list.Add(d);
+                if (d.Placement == ItemPlacement.Resource && d.Price > 0 && (d.HasTag("craftonly") || d.HasTag("merchantonly"))) list.Add(d);
             return list;
         }
 

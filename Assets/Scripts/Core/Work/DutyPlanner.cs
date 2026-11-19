@@ -332,7 +332,7 @@ namespace Thatchwick.Core.Work
             InteractionDef fell = null;
             foreach (var i in it.Def.Interactions)
             {
-                if (i.RequiresFruit) return null;                  // meyve ağacı kesilmez
+                if (i.RequiresFruit && i.Id == "pick") return null;   // meyve ağacı kesilmez (meşenin mazısı meyve sayılmaz)
                 if (i.RequiresGrown && i.RemovesItem && (Produces(i, LogId) || Produces(i, FirewoodId))) fell = i;
             }
             return fell;

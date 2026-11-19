@@ -603,5 +603,48 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(1, life2.Upbringing.Weddings.Weddings);
             Assert.Equal(WeddingSystem.ReputationFine, life2.Upbringing.Reputation.Points);
         }
+            // ---------- yaşlı rolleri ve tüccar malları ----------
+
+        [Fact]
+        public void Yasli_MasalAnlatir_TorunaBakar_HafifIsteHizli()
+        {
+            var pop = new Population();
+            var er = new ElderRoles(pop);
+            var gran = Person(1, ElderAge); var kid = Person(2, ChildAge); var baby = Person(3, 2); var mom = Person(4, AdultAge);
+            baby.BirthMotherId = 4;
+            foreach (var c in new[] { gran, kid, baby, mom }) pop.Add(c);
+            kid.Needs.Set(NeedType.Fun, 10); baby.Needs.Set(NeedType.Fun, 10);
+            Assert.Equal(1, er.TellEveningStories());
+            Assert.True(kid.Needs.Get(NeedType.Fun) > 10);
+            Assert.True(kid.Skills.GetXp(SkillType.Literacy) > 0);
+            Assert.True(gran.Skills.GetXp(SkillType.Charm) > 0);
+            Assert.Equal(1, er.MindGrandchildren());
+            Assert.True(baby.Needs.Get(NeedType.Fun) > 10);
+            Assert.True(gran.Skills.GetXp(SkillType.Parenting) > 0);
+            Assert.Equal(1.25, ElderRoles.WorkSpeed(gran, SkillType.Weaving), 6);
+            Assert.Equal(1.0, ElderRoles.WorkSpeed(gran, SkillType.Mining), 6);
+            Assert.Equal(1.0, ElderRoles.WorkSpeed(mom, SkillType.Weaving), 6);
+            var pop2 = new Population(); pop2.Add(Person(5, ChildAge));
+            Assert.Equal(0, new ElderRoles(pop2).TellEveningStories());   // yaşlı yoksa masal yok
+        }
+
+        [Fact]
+        public void TuccarMallari_PazardaAlinmaz_TariflereGirer_RisalelerKervanda()
+        {
+            var db = ContentFilesTests.LoadDb(out var errors);
+            Assert.True(errors.Count == 0, string.Join("\n", errors));
+            var market = new Thatchwick.Core.Economy.Market(db, new Household(500));
+            foreach (var id in new[] { "item.indigo", "item.saffron", "item.black_pepper" })
+            {
+                Assert.True(db.Items.Get(id).HasTag("merchantonly"));
+                Assert.False(market.IsBuyable(id), id);
+            }
+            var m = new Thatchwick.Core.Economy.TravelingMerchant(db, new Household());
+            Assert.Contains(m.ExoticGoods(), d => d.Id == "item.indigo");
+            var vat = db.Items.Get("item.dye_vat");
+            Assert.Contains(vat.Interactions, i => i.Id == "craft:dye_blue_indigo");
+            foreach (var id in new[] { "item.book_almanac", "item.book_herbal", "item.book_husbandry", "item.book_smithing" })
+                Assert.True(db.Items.Get(id).HasTag("merchant"), id);
+        }
     }
 }

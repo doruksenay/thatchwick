@@ -240,7 +240,7 @@ namespace Thatchwick.Core.Economy
             : $"Tüccar: {o.GiveCount} {Name(o.GiveItem)} ver → {o.GetCount} {Name(o.GetItem)} al";
 
         /// <summary>Pazardan alınabilir mi? "craftonly" etiketli mal (işlenmiş eyer) yalnızca yapılır, satılabilir ama alınmaz.</summary>
-        public bool IsBuyable(string id) => IsGood(id) && _content.Items.TryGet(id, out var d) && !d.HasTag("craftonly");
+        public bool IsBuyable(string id) => IsGood(id) && _content.Items.TryGet(id, out var d) && !d.HasTag("craftonly") && !d.HasTag("merchantonly");   // tüccar malı pazarda alınmaz
 
         private bool IsGood(string id) => _content.Items.TryGet(id, out var d) && d.Placement == ItemPlacement.Resource && d.Price > 0;
         private string Name(string id) => _content.Items.TryGet(id, out var d) ? d.DisplayName : id;
