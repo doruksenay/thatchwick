@@ -1,7 +1,7 @@
 ---
 id: "423"
 title: Yaşlı erkek 84 (415) elindeki küreği sil, 8 yön
-status: running
+status: blocked
 claimed_at: 2026-11-19T07:55Z
 approved_by: user        # kullanıcı 19.11.2026 (sohbet): "bunu yap"
 priority: 60
@@ -33,6 +33,11 @@ created: 2026-11-19
 - `validate_iso`, `style.py check --family karakter`.
 - Önce/sonra sayfası (`423-oncesonra.png`): 8 yön, üst satır 415, alt satır v2, 4 kat.
 - Maske dışında piksel değişimi 0 olmalı (fark tablosu yön başına).
+
+## Sorular
+- (işçi, 2026-11-19) `inpaint_image_pro_flash` maliyeti kaynak tuvalin uzun kenarına göre: 96 px'e kadar çağrı başına 5 gen. Yön başına 1 çağrı x 8 yön = 40 gen. Bu, `cost_est: 8` ve `cost_max: 16` değerlerinin 5 katı; kurala göre çağrı yapılmadı, harcama 0.
+- Seçenekler: (a) `cost_max`'ı 40'a çıkar (60 çalışma tavanının altında, 008b ile aynı yöntem); (b) birkaç yönü tek tuvalde birleştirip çağrı sayısını düşür (kopya/maske betiği gerekir). Önerim (a).
+- Not: küreğin gri metali saçla aynı renk ailesinde, maske bel altıyla sınırlanmalı; sap kahverengi olduğundan renkle ayrılamaz, kol/el çevresine kutu maske gerekir.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
