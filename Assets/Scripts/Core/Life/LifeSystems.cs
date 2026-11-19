@@ -209,6 +209,9 @@ namespace Thatchwick.Core.Life
                 FestivalsCelebrated++;
                 Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Festival, f.DisplayName);
                 Say($"{f.DisplayName}: {n} kişi şenliğe katıldı.", NoticeLevel.Info);
+                foreach (var g in Upbringing.Games.Run(Population.Members))   // şenlik yarışları (atletizm)
+                    Say(g.HouseholdWon ? $"{g.Game}: {g.Winner.Name} kazandı! +{Thatchwick.Core.Upbringing.FestivalGames.PrizeAkce} akçe, itibar."
+                                       : $"{g.Game}: {g.Winner.Name} kazandı ({g.Entrants} yarışçı).", NoticeLevel.Info, g.Winner.Id);
                 Keepsakes.OnFestival(f.DisplayName, n);
                 Ledger.Note(f.DisplayName);
                 Goals.Update();
@@ -526,6 +529,7 @@ namespace Thatchwick.Core.Life
         {
             _family = family;
             family.JoinedHousehold += c => Keepsakes.OnJoined(c);
+            family.JoinedHousehold += c => Upbringing.Weddings?.OnGroomJoined(c, id => Content.Items.Contains(id));   // damat tarafı (34-D2)
             Villagers.Family = family;
             family.ExtraProposalCheck = Villagers.ProposalCheck;
             family.Happened += (actor, target, action, msg) =>

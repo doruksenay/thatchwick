@@ -130,9 +130,15 @@ namespace Thatchwick.Game
                 GUILayout.Label($"{p.DisplayName}{(done ? " ✓" : "")}");
                 GUILayout.Label($"   {p.Description}");
                 if (done) continue;
-                var cost = new System.Text.StringBuilder($"   {p.Akce} akçe");
-                foreach (var c in p.Costs) cost.Append($" · {ItemName(c.ItemId)} {_house.Count(c.ItemId)}/{c.Count}");
-                GUILayout.Label(cost.ToString());
+                GUILayout.Label($"   {p.Akce} akçe");
+                foreach (var c in p.Costs)   // malzemeler ikonlu satır satır
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(12f);
+                    IsoArt.IconCell(c.ItemId, 18f);
+                    GUILayout.Label($"{ItemName(c.ItemId)} {_house.Count(c.ItemId)}/{c.Count}{(_house.Count(c.ItemId) >= c.Count ? " ✓" : "")}");
+                    GUILayout.EndHorizontal();
+                }
                 string why = _life.Projects.CanBuild(p.Id);
                 GUI.enabled = why == null;
                 if (GUILayout.Button("Yap", GUILayout.Width(80f)))

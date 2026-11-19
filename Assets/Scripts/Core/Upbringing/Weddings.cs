@@ -142,6 +142,27 @@ namespace Thatchwick.Core.Upbringing
             return r;
         }
 
+        /// <summary>Damadın getirdikleri: alet ve yapı malzemesi, biraz akçe (gelinin çeyiz sandığının karşılığı).</summary>
+        public static readonly (string id, int count)[] GroomGifts = { ("item.plank", 6), ("item.iron_bar", 2), ("item.leather", 2) };
+        public const int GroomAkce = 20;
+
+        /// <summary>Haneye damat geldi: alet malzemesi ve akçe getirir (belge 34-D2, damat tarafı). Bildirim metni ya da null.</summary>
+        public string OnGroomJoined(Character groom, Func<string, bool> itemExists = null)
+        {
+            if (groom == null || groom.Sex != Sex.Male || _house == null) return null;
+            var parts = new List<string>();
+            foreach (var (id, count) in GroomGifts)
+            {
+                if (itemExists != null && !itemExists(id)) continue;
+                _house.AddItem(id, count);
+                parts.Add($"{count} {id.Replace("item.", "")}");
+            }
+            _house.AddAkce(GroomAkce);
+            string msg = $"{groom.Name} damat olarak geldi; yanında alet malzemesi ve {GroomAkce} akçe getirdi.";
+            Notify?.Invoke(msg, groom.Id);
+            return msg;
+        }
+
         /// <summary>
         /// Talip niteliği şansı (0-0,6): itibar (en çok 0,4) ve evdeki dolu çeyiz sandığı (+0,2).
         /// Köye gelen talip bu şansla ek yatkınlık ve becerili gelir.

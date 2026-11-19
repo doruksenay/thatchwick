@@ -646,5 +646,37 @@ namespace Thatchwick.Core.Tests
             foreach (var id in new[] { "item.book_almanac", "item.book_herbal", "item.book_husbandry", "item.book_smithing" })
                 Assert.True(db.Items.Get(id).HasTag("merchant"), id);
         }
+            [Fact]
+        public void SenlikYarislari_AtletizmKazanir_OdulVeXp()
+        {
+            var pop = new Population();
+            var house = new Household(0);
+            var rep = new ReputationSystem();
+            var games = new FestivalGames(1) { House = house, Reputation = rep };
+            var kid = Person(1, ChildAge); var rival = Person(2, ChildAge); rival.IsVillager = true;
+            var man = Person(3, AdultAge); var v = Person(4, AdultAge); v.IsVillager = true;
+            kid.Skills.AddXp(SkillType.Athletics, SkillRules.XpForLevel(8), 10);
+            man.Skills.AddXp(SkillType.Athletics, SkillRules.XpForLevel(8), 10);
+            var res = games.Run(new[] { kid, rival, man, v });
+            Assert.Equal(3, res.Count);
+            Assert.Contains(res, r => r.Game == "Çocuk koşusu" && r.Winner == kid);
+            Assert.Contains(res, r => r.Game == "Güreş" && r.Winner == man);
+            Assert.True(house.Akce >= FestivalGames.PrizeAkce * 2);
+            Assert.True(rep.Points > 0);
+            Assert.Empty(games.Run(new[] { rival, v }));   // hanede yarışan yoksa yarış yok
+        }
+
+        [Fact]
+        public void Damat_MalzemeVeAkceGetirir()
+        {
+            var house = new Household(0);
+            var w = new WeddingSystem(house, new Population());
+            var groom = Person(1, AdultAge); groom.Sex = Sex.Male;
+            Assert.NotNull(w.OnGroomJoined(groom));
+            Assert.Equal(WeddingSystem.GroomAkce, house.Akce);
+            Assert.Equal(6, house.Count("item.plank"));
+            var bride = Person(2, AdultAge); bride.Sex = Sex.Female;
+            Assert.Null(w.OnGroomJoined(bride));
+        }
     }
 }

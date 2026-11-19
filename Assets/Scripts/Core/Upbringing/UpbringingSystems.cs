@@ -25,11 +25,14 @@ namespace Thatchwick.Core.Upbringing
         public ReputationSystem Reputation { get; } = new ReputationSystem();
         /// <summary>Yaşlı rolleri: masal, torun bakımı, hafif iş hızı (belge 34-D4).</summary>
         public ElderRoles Elders { get; }
+        /// <summary>Şenlik yarışları (atletizm).</summary>
+        public FestivalGames Games { get; private set; } = new FestivalGames();
         /// <summary>Düğün ve talip niteliği (belge 34-D2); AttachHouse ile kurulur.</summary>
         public WeddingSystem Weddings { get; private set; }
 
         public void AttachHouse(Thatchwick.Core.Build.Household house)
         {
+            Games = new FestivalGames(_rng.Next()) { House = house, Reputation = Reputation };
             Weddings = new WeddingSystem(house, Population)
             {
                 Reputation = Reputation,
