@@ -1,7 +1,7 @@
 ---
 id: "376b"
 title: Yol karoları devam (çakıl a v2, sağlam kaldırım, bozuk kaldırım v2)
-status: running
+status: review
 claimed_at: 2026-11-19T07:45Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 1: eksikler için iş)
 family: zemin
