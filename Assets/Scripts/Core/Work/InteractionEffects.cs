@@ -58,6 +58,9 @@ namespace Thatchwick.Core.Work
         /// <summary>Çiftçilik sistemi (toprak verimi, kalite); null ise hasat kalitesiz ve toprak yorulmaz.</summary>
         public PlantSystem Plants { get; set; }
 
+        /// <summary>Aile tarifinden gelen ek ürün şansı (beceri → oran; belge 34-D1). Null: yok.</summary>
+        public Func<SkillType, double> FamilyYieldChance { get; set; }
+
         public InteractionEffects(WorldState world, Household house, ContentDatabase content, int seed = 1)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -272,6 +275,8 @@ namespace Thatchwick.Core.Work
                 {
                     double per = SkillNames.ExtraYieldPerLevel(interaction.Skill.Value);
                     if (per > 0 && _rng.NextDouble() < per * Math.Max(0, character.Skills.GetLevel(interaction.Skill.Value) - 1)) count += 1;
+                    double fam = FamilyYieldChance?.Invoke(interaction.Skill.Value) ?? 0;
+                    if (fam > 0 && _rng.NextDouble() < fam) count += 1;   // aile tarifi
                 }
                 firstRow = false;
                 if (yieldMult > 1f && _content.Items.TryGet(p.ItemId, out var rowDef) && rowDef.PlantsAs == null)

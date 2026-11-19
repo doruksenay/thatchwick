@@ -342,7 +342,7 @@ namespace Thatchwick.Game
                 _household.AddItem("item.salt", 4);
             }
             _storage = new StorageService(_world, _household, _content);
-            _effects = new InteractionEffects(_world, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 2, _rngEpoch)) { Storage = _storage };
+            _effects = new InteractionEffects(_world, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 2, _rngEpoch)) { Storage = _storage, FamilyYieldChance = s => _life.Upbringing.Recipes.ExtraYield(s) };
             _effects.Applied += (c, i, summary) =>
             {
                 if (c.IsVillager) return;
@@ -1076,7 +1076,7 @@ namespace Thatchwick.Game
             string name = item.Def.DisplayName;
             if (item.IsGrown)
             {
-                if (item.Def.IsFruitTree) return item.FruitReady ? $"{name} (meyve hazır)" : $"{name} (olgun)";
+                if (item.Def.IsFruitTree) return item.FruitReady ? (item.Def.Id == "item.tree_oak" ? $"{name} (mazı hazır)" : $"{name} (meyve hazır)") : $"{name} (olgun)";
                 return $"{name} (olgun)";
             }
             string extra = PlantSystem.CanGrowIn(_clock.Season) || item.Position.Z < 0 ? "" : ", kışın büyümez";
