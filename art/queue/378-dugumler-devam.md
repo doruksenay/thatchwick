@@ -1,7 +1,7 @@
 ---
 id: "378"
 title: Toplama düğümleri devam (fındık, böğürtlen, kestane)
-status: running
+status: review
 claimed_at: 2026-11-19T07:32Z
 priority: 10
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 1: "Kabul, 3'ü yeniden")
