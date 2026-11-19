@@ -1,7 +1,7 @@
 ---
 id: "015a"
 title: Yürüme seti, yaşlı erkek ve kadın (84 px, walk2, 8 yön)
-status: running
+status: review
 claimed_at: 2026-11-19T12:54Z
 approved_by: user        # kullanıcı 19.11.2026: "Kodu yaz" (görsel parti 3; 014/015 yeni karaktere göre yeniden yazıldı)
 priority: 20
