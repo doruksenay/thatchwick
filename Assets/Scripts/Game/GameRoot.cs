@@ -2633,7 +2633,16 @@ namespace Thatchwick.Game
             }
             float scale;
             if (real != null)   // gerçek setler zaten çocuk/yetişkin boyunda çizildi; bebek çocuk setinin küçüğü
-                scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Teen ? 0.94f : 1f);   // ergen yetişkin setinin biraz küçüğü
+            {
+                // Gerçekçi setler (415/416 kabul, 19.11.2026): çocuk 64 setin 0,85'i (yetişkinin ~%67'si), bebek 0,55'i;
+                // ergen yetişkin setinin biraz küçüğü; yaşlı erkek 84 sette yetişkinle aynı boyda çıktı, %96.
+                var st = actor.Character.Stage;
+                scale = st == AgeStage.Baby ? 0.55f
+                      : st == AgeStage.Child ? 0.85f
+                      : st == AgeStage.Teen ? 0.94f
+                      : st == AgeStage.Elder ? 0.96f
+                      : 1f;
+            }
             else
             {
                 scale = actor.Character.Stage == AgeStage.Baby ? 0.6f : (actor.Character.Stage == AgeStage.Child ? 0.8f : (actor.Character.Stage == AgeStage.Teen ? 0.92f : 1f));
