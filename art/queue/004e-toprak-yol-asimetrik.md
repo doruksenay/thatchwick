@@ -1,7 +1,8 @@
 ---
 id: "004e"
 title: Toprak yol - çim geçiş seti, asimetrik ve çeşitli (004c yerine)
-status: pending
+status: running
+claimed_at: 2026-11-19T12:15Z
 approved_by: user        # kullanıcı: "gerekirse yeni asset çizdir" (18.11); 004c "simetrik durmamalı" diye reddedildi (19.11)
 family: zemin
 style_gate: true         # sonuç kullanıcıya önizlemeyle gösterilir; kabul edilmeden kod bağlanmaz
