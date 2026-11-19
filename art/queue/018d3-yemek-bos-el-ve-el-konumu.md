@@ -1,7 +1,7 @@
 ---
 id: "018d3"
 title: Yemek animasyonu boş elle + her karede el konumu (erkek ve kadın, 4 yön)
-status: review
+status: accepted   # kullanıcı 19.11.2026: teslim edilen 4 yön kabul; kalan 4 yön 018d4
 claimed_at: 2026-11-19T07:08Z
 approved_by: user        # kullanıcı 18.11.2026: "bunları yap"
 priority: 10

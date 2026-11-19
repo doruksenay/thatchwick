@@ -23,8 +23,10 @@ Kalanlar:
   - `eat3`: boş elle yeme. Erkek ve kadın, 4 yön (se, sw, nw, ne). Hareket 018d2 ile aynı.
   - Her kare için el konumu (`prefix kare x y [b]`): x soldan, y alttan; "b" el gövdenin arkasındaysa. Çıktı `art/results` altına.
 - [ ] İş dosyasını `main`'e al ve `pixellab-artist` işçisini başlat.
-- [ ] 018d3 teslim edilince el konumlarını `Assets/Resources/Content/hand_anchors.txt` dosyasına kopyala. İstenirse bunun için bir `tools/art` betiği yaz.
+- [x] 018d3 teslim edilince el konumlarını `Assets/Resources/Content/hand_anchors.txt` dosyasına kopyala. İstenirse bunun için bir `tools/art` betiği yaz.
 - [ ] Unity'de dene: elma, yumurta, sepetten armut ve erik.
+
+- [ ] 018d4 (kalan 4 yön) gelince `art/results/018d4-hand-anchors.txt` satırlarını `hand_anchors.txt` sonuna ekle.
 
 ## 2. İzlenecek sanat işleri
 
