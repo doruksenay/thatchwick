@@ -1,7 +1,8 @@
 ---
 id: "423k"
 title: "Zeytin, bal, çay ürün ikonları (19)"
-status: pending
+status: running
+claimed_at: 2026-11-19T07:50Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 32
 family: arayuz
 style_gate: false
