@@ -1,7 +1,7 @@
 ---
 id: "303b"
 title: Taş fırın yeniden (303'teki çömlekçi fırınına benziyordu)
-status: running
+status: failed
 claimed_at: 2026-11-19T07:41Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 2: "Kabul, fırın yeniden")
 family: esya
@@ -29,6 +29,9 @@ Açıklama metni: `medieval village bread oven: rectangular base of rough fields
 
 ## Doğrulama
 303 doğrulaması. Yan yana sayfası: 303'teki eski fırın ve hazırlık tezgâhı (302) ile. Ekmek fırını olarak okunuyor mu.
+
+## Sorular
+- Fırın ekmek fırını olarak tanınıyor ama 57 renk (>48). Renk sınırı gevşetilsin mi (ya da reduce_colors izni), yoksa ikinci deneme mi? Görsel: art/results/303b-red/.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
