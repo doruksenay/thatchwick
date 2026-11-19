@@ -1,7 +1,7 @@
 ---
 id: "444b"
 title: "Yeni duvar kaplamaları B (5)"
-status: running
+status: review
 claimed_at: 2026-11-19T13:38Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 19.11.2026 ("bunların hepsini yapalım", varyant çeşitliliği), Project belgesi 45
 priority: 20
