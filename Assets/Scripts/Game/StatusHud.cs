@@ -120,9 +120,10 @@ namespace Thatchwick.Game
                 _forecastUntil = Time.unscaledTime + 0.5f;
             }
             var rep = _forecast;
+            string D(double d) => double.IsInfinity(d) || double.IsNaN(d) ? "?" : Math.Max(0, d).ToString("0");
             string line3 = rep.InWinter
-                ? $"Kış: {rep.WinterDaysLeft:0} gün kaldı · yiyecek {rep.FoodDays:0} gün · odun {rep.FirewoodDays:0} gün"
-                : $"Kışa {rep.DaysToWinter:0} gün · yiyecek {rep.FoodDays:0} gün · odun {rep.FirewoodDays:0} gün yeter";
+                ? $"Kış: {D(rep.WinterDaysLeft)} gün kaldı · yiyecek {D(rep.FoodDays)} gün · odun {D(rep.FirewoodDays)} gün"
+                : $"Kışa {D(rep.DaysToWinter)} gün · yiyecek {D(rep.FoodDays)} gün · odun {D(rep.FirewoodDays)} gün yeter";
 
             var farm = _farm != null ? _farm() : default;
             string line4 = farm.Any

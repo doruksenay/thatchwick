@@ -5,6 +5,7 @@ using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Economy;
+using Thatchwick.Core.Family;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Life;
 using Thatchwick.Core.Time;
@@ -678,5 +679,74 @@ namespace Thatchwick.Core.Tests
             var bride = Person(2, AdultAge); bride.Sex = Sex.Female;
             Assert.Null(w.OnGroomJoined(bride));
         }
-    }
+    
+        [Fact]
+        public void Damat_NitelikliTalip_IkiKatGetirir()
+        {
+            var house = new Household(0);
+            var w = new WeddingSystem(house, new Population()) { GiftScale = () => 2 };
+            var groom = Person(1, AdultAge); groom.Sex = Sex.Male;
+            Assert.Contains("bolca", w.OnGroomJoined(groom));
+            Assert.Equal(WeddingSystem.GroomAkce * 2, house.Akce);
+            Assert.Equal(12, house.Count("item.plank"));
+        }
+
+        [Fact]
+        public void Atletizm_IyilesmeyiKisaltir()
+        {
+            var c = Person(1, AdultAge);
+            Assert.Equal(1.0, InjurySystem.AthleticHealFactor(c), 3);
+            c.GainSkillXp(SkillType.Athletics, 1e7);
+            Assert.Equal(1.0 - InjurySystem.AthleticHealMax, InjurySystem.AthleticHealFactor(c), 3);
+        }
+
+        [Fact]
+        public void CirakBasvurusu_ItibarlaGelir_KabuldeBaslar_KoyluCirakXpKazanir()
+        {
+            var pop = new Population();
+            double today = 0;
+            var u = new UpbringingSystems(pop, seed: 3) { Today = () => today };
+            var master = Person(1, AdultAge); master.GainSkillXp(SkillType.Carpentry, 1e6);
+            var kid = Person(2, TeenAge); kid.IsVillager = true;
+            pop.Add(master); pop.Add(kid);
+
+            u.CheckApprenticeApplication(force: true);
+            Assert.Null(u.Application);                       // itibar düşük: başvuru yok
+            u.Reputation.Add(150, "test");
+            u.CheckApprenticeApplication(force: true);
+            Assert.NotNull(u.Application);
+            Assert.Equal(kid.Id, u.Application.ApplicantId);
+            Assert.Contains("çırağı", u.AnswerApplication(true));
+            Assert.Null(u.Application);
+            Assert.NotNull(u.Apprentices.OfApprentice(kid.Id));
+            double before = kid.Skills.GetXp(u.Apprentices.OfApprentice(kid.Id).Skill);
+            u.Apprentices.DailyUpdate();
+            Assert.True(kid.Skills.GetXp(u.Apprentices.OfApprentice(kid.Id).Skill) > before);
+
+            // yanıtlanmayan başvuru 3 günde düşer
+            var kid2 = Person(3, ChildAge); kid2.IsVillager = true; pop.Add(kid2);
+            var master2 = Person(4, AdultAge); master2.GainSkillXp(SkillType.Cooking, 1e6); pop.Add(master2);
+            u.CheckApprenticeApplication(force: true);
+            Assert.NotNull(u.Application);
+            today = UpbringingSystems.ApplicationDays;
+            u.CheckApprenticeApplication();
+            Assert.Null(u.Application);
+        }
+
+        [Fact]
+        public void Kovalamaca_IkiCocukAtletizmKazanir()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var pop = new Population();
+            var family = new FamilyService(pop, new Household(), db);
+            var a = Person(1, ChildAge); var b = Person(2, TeenAge);
+            pop.Add(a); pop.Add(b);
+            Assert.True(FamilyService.IsPlaymates(a, b));
+            Assert.Null(family.CanDo(a, b, SocialAction.Chat));
+            family.Apply(a, b, SocialAction.Chat);
+            Assert.True(a.Skills.GetXp(SkillType.Athletics) > 0);
+            Assert.True(b.Skills.GetXp(SkillType.Athletics) > 0);
+            Assert.False(FamilyService.IsPlaymates(a, Person(3, AdultAge)));
+        }
+}
 }

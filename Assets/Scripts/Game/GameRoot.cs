@@ -1861,6 +1861,37 @@ namespace Thatchwick.Game
             ShowMessage($"{Commander.Character.Name}: {o.Interaction.DisplayName} ({o.Item.Def.DisplayName})");
         }
 
+        /// <summary>Tarif satırı: harcanan malzemeler → çıkan ürünler, ikon ve sayıyla (hanedeki sayı yetmiyorsa soluk).</summary>
+        private void DrawRecipeIcons(InteractionDef inter)
+        {
+            var ins = new List<(string id, int n)>();
+            if (!string.IsNullOrEmpty(inter.ConsumeItem)) ins.Add((inter.ConsumeItem, 1));
+            foreach (var c in inter.Consume) if (!string.IsNullOrEmpty(c.ItemId)) ins.Add((c.ItemId, c.Count));
+            if (ins.Count == 0 && inter.Produce.Count == 0) return;
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(8f);
+            foreach (var (id, n) in ins)
+            {
+                var prev = GUI.color;
+                if (_household.Count(id) < n) GUI.color = new Color(1f, 1f, 1f, 0.45f);
+                IsoArt.IconCell(id, 18f);
+                GUILayout.Label(n > 1 ? $"x{n}" : "", GUILayout.Width(n > 1 ? 22f : 2f));
+                GUI.color = prev;
+            }
+            if (inter.Produce.Count > 0)
+            {
+                if (ins.Count > 0) GUILayout.Label("→", GUILayout.Width(14f));
+                foreach (var p in inter.Produce)
+                {
+                    if (string.IsNullOrEmpty(p.ItemId)) continue;
+                    IsoArt.IconCell(p.ItemId, 18f);
+                    if (p.Count > 1) GUILayout.Label($"x{p.Count}", GUILayout.Width(22f));
+                }
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+
         private void DrawInteractionMenu()
         {
             if (!_menuOpen) return;
@@ -1875,6 +1906,7 @@ namespace Thatchwick.Game
                 string label = o.Blocked == null ? name : $"{name} ({o.Blocked})";
                 if (GUILayout.Button(label)) { RunOption(o); _menuOpen = false; }
                 GUI.enabled = true;
+                if (o.Interaction != null) DrawRecipeIcons(o.Interaction);
             }
             if (GUILayout.Button("Buraya yürü")) { Commander.Runner.Command(Job.MoveTo(_menuTile)); _menuOpen = false; }
             GUILayout.EndScrollView();

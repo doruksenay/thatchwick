@@ -70,6 +70,7 @@ namespace Thatchwick.Game
                 UiSkin.Wrap(new GUIContent($"İtibar: {Upbringing.Reputation.TierName} ({Upbringing.Reputation.Points}) · satış {Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%",
                     string.Join("\n", Upbringing.Reputation.RecentLog)), UiSkin.FamilyTextW);
             DrawWeddingPrep();
+            DrawApprenticeApplication();
             UiSkin.Wrap(actor != null ? $"Komut alan: {actor.Name} (haritaya dokununca o gider)" : "Komut alacak kişiyi seç.", UiSkin.FamilyTextW);
             if (_status.Length > 0) UiSkin.Wrap(_status, UiSkin.FamilyTextW);
             if (actor != null && actor.MoodEnabled)
@@ -205,6 +206,20 @@ namespace Thatchwick.Game
         }
 
         // Düğün hazırlığı (belge 34-D2): bekâr yetişkin varsa ekmek, içki, mum, çalgıcı ve beklenen ölçek.
+        private void DrawApprenticeApplication()
+        {
+            var a = Upbringing?.Application;
+            if (a == null) return;
+            var ap = _population.Find(a.ApplicantId);
+            var ms = _population.Find(a.MasterId);
+            if (ap == null || ms == null) return;
+            UiSkin.Wrap($"Çırak başvurusu: {ap.Name}, {ms.Name}'in yanında {Thatchwick.Core.Characters.SkillNames.Name(a.Skill)} öğrenmek istiyor.", UiSkin.FamilyTextW);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Kabul et", GUILayout.Width(90f))) _status = Upbringing.AnswerApplication(true);
+            if (GUILayout.Button("Geri çevir", GUILayout.Width(90f))) _status = Upbringing.AnswerApplication(false);
+            GUILayout.EndHorizontal();
+        }
+
         private void DrawWeddingPrep()
         {
             var w = Upbringing?.Weddings;

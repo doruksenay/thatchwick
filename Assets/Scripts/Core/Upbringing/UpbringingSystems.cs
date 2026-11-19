@@ -278,7 +278,74 @@ namespace Thatchwick.Core.Upbringing
             Toys.DailyUpdate(Today());
             Apprentices.DailyUpdate();
             foreach (var w in Recipes.AtRiskWarnings()) Say(w, 0);
+            CheckApprenticeApplication();
         }
+
+        // ---------------- çırak başvurusu (34-D3: itibar etkisi) ----------------
+
+        public const int ApplicationMinReputation = 100;
+        public const double ApplicationBaseChance = 0.03, ApplicationMaxChance = 0.10, ApplicationDays = 3;
+
+        /// <summary>Köylü bir gencin hanedeki bir ustaya çırak olma isteği; yanıtlanmazsa 3 günde düşer.</summary>
+        public ApprenticeApplication Application { get; private set; }
+
+        /// <summary>İtibar en az "Saygın" ise günde %3 (itibarla %10'a dek): köylü bir çocuk/ergen hanedeki boş ustaya başvurur.</summary>
+        public void CheckApprenticeApplication(bool force = false)
+        {
+            double today = Today();
+            if (Application != null)
+            {
+                var ap = Population.Find(Application.ApplicantId);
+                var ms = Population.Find(Application.MasterId);
+                if (today - Application.Day >= ApplicationDays || ap == null || ms == null || ap.IsDead || ms.IsDead)
+                    Application = null;
+                return;
+            }
+            if (Reputation.Points < ApplicationMinReputation) return;
+            double chance = Math.Min(ApplicationMaxChance, ApplicationBaseChance * Reputation.Points / (double)ApplicationMinReputation);
+            if (!force && _rng.NextDouble() >= chance) return;
+
+            var masters = new List<(Character m, SkillType skill)>();
+            foreach (var m in Population.Members)
+            {
+                if (m.IsDead || m.IsVillager || m.Stage < AgeStage.YoungAdult || Apprentices.OfMaster(m.Id) != null) continue;
+                SkillType best = default; int bestLevel = 0;
+                foreach (SkillType sk in Enum.GetValues(typeof(SkillType)))
+                {
+                    int lv = m.Skills.GetLevel(sk);
+                    if (lv > bestLevel) { bestLevel = lv; best = sk; }
+                }
+                if (bestLevel >= ApprenticeshipSystem.MasterLevel) masters.Add((m, best));
+            }
+            var applicants = new List<Character>();
+            foreach (var c in Population.Members)
+                if (!c.IsDead && c.IsVillager && (c.Stage == AgeStage.Child || c.Stage == AgeStage.Teen) && Apprentices.OfApprentice(c.Id) == null) applicants.Add(c);
+            if (masters.Count == 0 || applicants.Count == 0) return;
+
+            var (master, skill) = masters[_rng.Next(masters.Count)];
+            var who = applicants[_rng.Next(applicants.Count)];
+            if (Apprentices.Blocker(master, who, skill) != null) return;
+            Application = new ApprenticeApplication { ApplicantId = who.Id, MasterId = master.Id, Skill = skill, Day = today };
+            Say($"{who.Name}, {master.Name}'in yanında {SkillNames.Name(skill)} çırağı olmak istiyor (hanenin adı duyulmuş). Aile panelinden yanıtla.", master.Id);
+        }
+
+        /// <summary>Başvuruyu yanıtla. Kabulde çıraklık başlar ve itibar +2.</summary>
+        public string AnswerApplication(bool accept)
+        {
+            var a = Application;
+            if (a == null) return "Bekleyen başvuru yok.";
+            Application = null;
+            var ap = Population.Find(a.ApplicantId);
+            var ms = Population.Find(a.MasterId);
+            if (!accept) return ap != null ? $"{ap.Name}'in başvurusu geri çevrildi." : "Başvuru geri çevrildi.";
+            string why = Apprentices.Blocker(ms, ap, a.Skill);
+            if (why != null) return why;
+            Apprentices.Take(ms, ap, a.Skill, Today());
+            Reputation.Add(ApplicationAcceptReputation, "köylü çırak alındı");
+            return $"{ap.Name} artık {ms.Name}'in {SkillNames.Name(a.Skill)} çırağı.";
+        }
+
+        public const int ApplicationAcceptReputation = 2;
 
         /// <summary>Hane başına yeni biri geçti (D3: itibarın yarısı kalır).</summary>
         public void OnSuccession() => Reputation.OnSuccession();
@@ -358,6 +425,13 @@ namespace Thatchwick.Core.Upbringing
             Weddings?.Import(s?.weddings);
             Elders.Import(s?.elderStories ?? 0);
         }
+    }
+
+    public sealed class ApprenticeApplication
+    {
+        public int ApplicantId, MasterId;
+        public SkillType Skill;
+        public double Day;
     }
 
     [Serializable]

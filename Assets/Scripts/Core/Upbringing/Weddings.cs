@@ -147,18 +147,22 @@ namespace Thatchwick.Core.Upbringing
         public const int GroomAkce = 20;
 
         /// <summary>Haneye damat geldi: alet malzemesi ve akçe getirir (belge 34-D2, damat tarafı). Bildirim metni ya da null.</summary>
+        /// <summary>Damadın ailesinin hâli: 1 sıradan, 2 nitelikli talip. Getirdikleri bu katla gelir.</summary>
+        public Func<int> GiftScale { get; set; }
+
         public string OnGroomJoined(Character groom, Func<string, bool> itemExists = null)
         {
             if (groom == null || groom.Sex != Sex.Male || _house == null) return null;
+            int k = Math.Max(1, GiftScale != null ? GiftScale() : 1);
             var parts = new List<string>();
             foreach (var (id, count) in GroomGifts)
             {
                 if (itemExists != null && !itemExists(id)) continue;
-                _house.AddItem(id, count);
-                parts.Add($"{count} {id.Replace("item.", "")}");
+                _house.AddItem(id, count * k);
+                parts.Add($"{count * k} {id.Replace("item.", "")}");
             }
-            _house.AddAkce(GroomAkce);
-            string msg = $"{groom.Name} damat olarak geldi; yanında alet malzemesi ve {GroomAkce} akçe getirdi.";
+            _house.AddAkce(GroomAkce * k);
+            string msg = $"{groom.Name} damat olarak geldi; yanında {(k > 1 ? "bolca " : "")}alet malzemesi ve {GroomAkce * k} akçe getirdi.";
             Notify?.Invoke(msg, groom.Id);
             return msg;
         }

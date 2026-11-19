@@ -46,6 +46,11 @@ namespace Thatchwick.Core.Life
         public const double AccidentPerScar = 0.8;
         public const double TreatedFactor = 1.0 / 3.0;
         public const double DeepChance = 0.10;
+        public const double AthleticHealPerLevel = 0.04, AthleticHealMax = 0.30;
+
+        /// <summary>İyileşme süresi çarpanı: Atletizm 1'de 1,0; her seviye %4 kısaltır, en çok %30.</summary>
+        public static double AthleticHealFactor(Character c) =>
+            1.0 - Math.Min(AthleticHealMax, AthleticHealPerLevel * Math.Max(0, c.Skills.GetLevel(SkillType.Athletics) - 1));
         public const int HealerLevel = 3;
         public const double HealerHealFactor = 0.7;
 
@@ -237,6 +242,8 @@ namespace Thatchwick.Core.Life
                 inj.Treated = true;
                 inj.HealDay = today + def.HealDays * HealerHealFactor;
             }
+            // Atletizm: sağlam beden çabuk toparlanır (seviye başına %4, en çok %30 kısa).
+            inj.HealDay = today + (inj.HealDay - today) * AthleticHealFactor(c);
             c.Injury = inj;
             c.LastAccidentDay = today;
             _lastHouseholdAccidentDay = today;

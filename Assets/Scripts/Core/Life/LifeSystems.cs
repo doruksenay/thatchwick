@@ -195,6 +195,9 @@ namespace Thatchwick.Core.Life
             Upbringing.AttachHouse(house);
             Upbringing.Weddings.DowryFill = Keepsakes.BestDowryFill;
             Suitors.QualityChance = Upbringing.Weddings.SuitorQuality;
+            // Nitelikli talibin ailesi de itibarlıdır: çeyiz ya da damat hediyesi iki kat (34-D2).
+            Keepsakes.DowryScale = () => Suitors.LastWasNotable ? 2 : 1;
+            Upbringing.Weddings.GiftScale = () => Suitors.LastWasNotable ? 2 : 1;
             Merchant.AddReputation = (n, why) => Upbringing.Reputation.Add(n, why);
             Thatchwick.Core.Upbringing.ToyNames.Lookup = id => content.Items.TryGet(id, out var td) ? td.DisplayName : null;
             Breakdowns.Started += (c, kind) => { if (!c.IsVillager) Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Breakdown, "bunalım"); };

@@ -22,6 +22,7 @@ namespace Thatchwick.Core.Upbringing
         public const double BaseFactor = 1.5, ElderOrTeacherBonus = 0.5;
         public const int TeacherLevel = 5;
         public const double MasterDailyTeachingXp = 3;
+        public const double VillagerDailyXp = 8;
 
         private readonly Population _population;
         private readonly List<Apprenticeship> _list = new List<Apprenticeship>();
@@ -90,6 +91,8 @@ namespace Thatchwick.Core.Upbringing
                 var ap = _population.Find(a.ApprenticeId);
                 if (m == null || ap == null || m.IsDead || ap.IsDead) { _list.RemoveAt(i); continue; }
                 m.GainSkillXp(SkillType.Teaching, MasterDailyTeachingXp);
+                // Köylü çırak hanede iş yapmaz; ustanın yanında geçen gün doğrudan XP verir.
+                if (ap.IsVillager) ap.GainSkillXp(a.Skill, VillagerDailyXp * XpFactor(ap.Id, a.Skill));
                 if (ap.Skills.GetLevel(a.Skill) >= MasterLevel)
                 {
                     _list.RemoveAt(i);

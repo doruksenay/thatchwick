@@ -24,6 +24,12 @@ namespace Thatchwick.Core.Family
         public const int ChatAffection = 20;
         /// <summary>Sohbetin iki tarafa verdiği keyif.</summary>
         public const float ChatFun = 25f;
+        /// <summary>İki çocuk ya da ergenin "sohbeti" kovalamacadır: ek keyif ve Atletizm XP.</summary>
+        public const float ChaseFun = 10f;
+        public const int ChaseXp = 6;
+
+        public static bool IsPlaymates(Character a, Character b) =>
+            a != null && b != null && (a.Stage == AgeStage.Child || a.Stage == AgeStage.Teen) && (b.Stage == AgeStage.Child || b.Stage == AgeStage.Teen);
         /// <summary>Masal: çocuğa keyif ve sosyal.</summary>
         public const float StoryFun = 40f, StorySocial = 30f;
         public const int MarriageAffection = 100;
@@ -176,6 +182,17 @@ namespace Thatchwick.Core.Family
                         c.Needs.Restore(NeedType.Social, ChatSocialRestore * c.Modifiers.SocialGain);
                     }
                     Chatted?.Invoke(actor, target);
+                    if (IsPlaymates(actor, target))
+                    {
+                        // İki çocuk/ergen sohbet yerine kovalamaca oynar: koşarlar, Atletizm büyür.
+                        foreach (var c in new[] { actor, target })
+                        {
+                            c.GainSkillXp(SkillType.Athletics, ChaseXp);
+                            c.Needs.Restore(NeedType.Fun, ChaseFun);
+                        }
+                        msg = $"{actor.Name} ve {target.Name} kovalamaca oynadı (yakınlık {now})";
+                        break;
+                    }
                     msg = now >= MarriageAffection && !actor.SpouseId.HasValue && !target.SpouseId.HasValue && IsAdultAge(actor) && IsAdultAge(target)
                         ? $"{actor.Name} ve {target.Name} çok yakınlaştı; evlenme teklif edilebilir"
                         : $"{actor.Name} ve {target.Name} sohbet etti (yakınlık {now})";
