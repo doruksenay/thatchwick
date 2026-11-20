@@ -21,6 +21,11 @@ namespace UnityEngine {
  public struct Vector2Int{public int x,y;public Vector2Int(int a,int b){x=a;y=b;}}
  public struct Quaternion{public static Quaternion identity=>default; public static Quaternion Euler(float x,float y,float z)=>default;}
  public struct Matrix4x4{public static Matrix4x4 identity=>default; public static Matrix4x4 TRS(Vector3 p,Quaternion q,Vector3 s)=>default; public static Matrix4x4 Scale(Vector3 s)=>default;}
+    public static class ColorUtility
+    {
+        public static bool TryParseHtmlString(string htmlString, out Color color) { color = default; return htmlString != null && htmlString.StartsWith("#"); }
+    }
+
  public struct Color{public float r,g,b,a;public Color(float r,float g,float b,float a){this.r=r;this.g=g;this.b=b;this.a=a;}public Color(float r,float g,float b){this.r=r;this.g=g;this.b=b;a=1;}
   public static Color HSVToRGB(float h,float s,float v)=>default; public static Color Lerp(Color a,Color b,float t)=>a; public static Color operator*(Color a,float f)=>a; public static Color operator*(Color a,Color b)=>a;
   public static Color white,black,gray,grey,red,green,blue,yellow,cyan,magenta,clear;}

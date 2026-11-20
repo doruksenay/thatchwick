@@ -15,6 +15,19 @@ namespace Thatchwick.Game
         private static string T(string key) => GameLocalization.T(key);
         private static string T(string key, params (string name, object value)[] args) => GameLocalization.T(key, args);
 
+        // Görünüş her karede yeniden hesaplanmasın: hayvan başına, yaş gününe göre önbellek (kır at yaşla ağarır).
+        private readonly Dictionary<int, (int day, Phenotype look)> _lookCache = new Dictionary<int, (int, Phenotype)>();
+
+        private Phenotype LookOf(Animal a)
+        {
+            if (a?.Genome == null) return null;
+            int day = (int)a.AgeDays;
+            if (_lookCache.TryGetValue(a.Id, out var c) && c.day == day && c.look != null) return c.look;
+            var look = a.Look;
+            _lookCache[a.Id] = (day, look);
+            return look;
+        }
+
         private int _namingAnimalId;
         private string _animalNameDraft;
         private bool _herdOpen, _bookOpen;
