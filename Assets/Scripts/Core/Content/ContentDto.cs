@@ -134,6 +134,7 @@ namespace Thatchwick.Core.Content
         public string category;      // boş = furniture
         public float heat;           // ısı gücü; 0 = ısı kaynağı değil
         public float growDays;       // bitki: olgunlaşma süresi (gün); 0 = bitki değil
+        public string lockSkill;     // kilit becerisi (belge 45): tarif ve kategori yerine bu beceri
         public string plantsAs;      // fidan: dikilince oluşan bitki kimliği
         public bool tilled;          // ekin: yalnızca toprak zemine
         public int storage;          // depo kapasitesi (sandık); 0 = depo değil
@@ -379,6 +380,7 @@ namespace Thatchwick.Core.Content
         public bool collectContents;        // döküntü yığınındakileri envantere alır (doldurulan dekorda: boşalt)
         public bool fillDecor;              // doldurulan dekoru envanterdeki gerçek ürünle doldurur
         public bool eatContents;            // doldurulan dekordan bir tane yer (açlık)
+        public string skillWork;   // beceri işi (belge 45): LifeSystems.OnSkillWorkApplied
         public string homeAction;           // ev bakımı (belge 45): candle, strew, whitewash, waterPot, harvestPot, upgrade
         public string upgrade;              // homeAction upgrade: yükseltme kimliği
     }

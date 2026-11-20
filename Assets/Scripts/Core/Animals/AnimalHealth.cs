@@ -67,6 +67,9 @@ namespace Thatchwick.Core.Animals
         public static double HusbandryRiskFactor(int level) => Math.Max(0.55, 1.0 - 0.05 * Math.Max(0, level - 1));
 
         /// <summary>Bu hayvanın bugünkü hastalanma şansı (sağlıklıysa).</summary>
+        /// <summary>Ek hastalık çarpanı (belge 45: Hekimlik 8 "salgın önleme" ×0,5); null ise 1.</summary>
+        public Func<double> ExtraRiskFactor { get; set; }
+
         public double SickChance(Animal a, int sickNeighbours, int husbandryLevel)
         {
             double p = SickBaseChance;
@@ -80,7 +83,7 @@ namespace Thatchwick.Core.Animals
                 if (r.IsRoom && r.Space < 10f) p += SickCrowdedRisk;
             }
             p += SickContagionRisk * sickNeighbours;
-            return Math.Min(0.6, p * HusbandryRiskFactor(husbandryLevel));
+            return Math.Min(0.6, p * HusbandryRiskFactor(husbandryLevel) * (ExtraRiskFactor != null ? ExtraRiskFactor() : 1.0));
         }
 
         /// <summary>Hastalığı başlatır (test ve olaylar için de).</summary>

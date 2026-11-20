@@ -10,6 +10,24 @@
           "need": "Energy",
           "restore": 60,
           "durationDays": 0.3
+        },
+        {
+          "id": "tidy",
+          "displayName": "Odayı toparla",
+          "durationDays": 0.05,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "skillWork": "tidy",
+          "minLevel": 3
+        },
+        {
+          "id": "guest_room",
+          "displayName": "Misafir odası hazırla",
+          "durationDays": 0.1,
+          "skill": "Decorating",
+          "skillXp": 3,
+          "skillWork": "guest_room",
+          "minLevel": 8
         }
       ],
       "width": 2,
@@ -2129,6 +2147,236 @@
           "moodDays": 0.5,
           "bladder": 15,
           "adultPack": true
+        },
+        {
+          "id": "feast",
+          "displayName": "Ziyafet sofrası kur (4 çeşit)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 20,
+          "skillWork": "feast",
+          "minLevel": 5
+        },
+        {
+          "id": "taste",
+          "displayName": "Tadına bak",
+          "durationDays": 0.02,
+          "skill": "Cooking",
+          "skillXp": 3,
+          "skillWork": "taste",
+          "minLevel": 7
+        },
+        {
+          "id": "brew_linden",
+          "displayName": "Ihlamur çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_linden",
+          "bladder": 12
+        },
+        {
+          "id": "brew_sage",
+          "displayName": "Adaçayı çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_sage",
+          "bladder": 12
+        },
+        {
+          "id": "brew_chamomile",
+          "displayName": "Papatya çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_chamomile",
+          "bladder": 12
+        },
+        {
+          "id": "brew_mint",
+          "displayName": "Nane çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_mint",
+          "bladder": 12
+        },
+        {
+          "id": "brew_rosehip",
+          "displayName": "Kuşburnu çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_rosehip",
+          "bladder": 12
+        },
+        {
+          "id": "eat_truffle",
+          "displayName": "Yer mantarı ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.05,
+          "consume": "item.truffle",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Yer mantarı",
+          "moodValue": 1,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_aged_cheese",
+          "displayName": "Olgun peynir ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.05,
+          "consume": "item.aged_cheese",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Olgun peynir",
+          "moodValue": 1,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_tulum_cheese",
+          "displayName": "Tulum peyniri ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.05,
+          "consume": "item.tulum_cheese",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Tulum peyniri",
+          "moodValue": 1,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_herb_cheese",
+          "displayName": "Otlu peynir ye",
+          "need": "Hunger",
+          "restore": 38,
+          "durationDays": 0.05,
+          "consume": "item.herb_cheese",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Otlu peynir",
+          "moodValue": 1,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_wedding_dish",
+          "displayName": "Keşkek ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.05,
+          "consume": "item.wedding_dish",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Keşkek",
+          "moodValue": 2,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_bazlama",
+          "displayName": "Bazlama ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.05,
+          "consume": "item.bazlama",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Bazlama",
+          "moodValue": 1,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_yufka",
+          "displayName": "Yufka ye",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.05,
+          "consume": "item.yufka",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Yufka",
+          "moodValue": 1,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_bread_sourdough",
+          "displayName": "Ekşi mayalı ekmek ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.05,
+          "consume": "item.bread_sourdough",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Ekşi mayalı ekmek",
+          "moodValue": 2,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_wedding_bread",
+          "displayName": "Düğün ekmeği ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "consume": "item.wedding_bread",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Düğün ekmeği",
+          "moodValue": 2,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_pomegranate",
+          "displayName": "Nar ye",
+          "need": "Hunger",
+          "restore": 20,
+          "durationDays": 0.05,
+          "consume": "item.pomegranate",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Nar",
+          "moodValue": 1,
+          "moodDays": 1.0
+        },
+        {
+          "id": "eat_legend_fish",
+          "displayName": "Efsane balık ye",
+          "need": "Hunger",
+          "restore": 90,
+          "durationDays": 0.05,
+          "consume": "item.legend_fish",
+          "bladder": 4,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık",
+          "moodValue": 2,
+          "moodDays": 1.0
+        },
+        {
+          "id": "drink_pomegranate_sherbet",
+          "displayName": "Nar şerbeti iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.03,
+          "consume": "item.pomegranate_sherbet",
+          "bladder": 12
         }
       ],
       "price": 25,
@@ -2384,7 +2632,7 @@
             }
           ],
           "skill": "Carpentry",
-          "minLevel": 3,
+          "minLevel": 6,
           "beauty": 2
         }
       ],
@@ -2541,7 +2789,7 @@
       "placement": "Surface",
       "price": 6,
       "category": "decor",
-      "level": 5,
+      "level": 3,
       "finishGroup": "clay",
       "beauty": 4,
       "decorSize": "S",
@@ -2564,7 +2812,8 @@
         "Spring",
         "Summer"
       ],
-      "potGrowDays": 3
+      "potGrowDays": 3,
+      "lockSkill": "Pottery"
     },
     {
       "id": "item.clay_cup",
@@ -2679,6 +2928,53 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "prune_tree",
+          "displayName": "Buda (meyve çabuk olgunlaşır)",
+          "durationDays": 0.06,
+          "skill": "Horticulture",
+          "skillXp": 8,
+          "skillWork": "prune",
+          "minLevel": 3,
+          "requiresGrown": true
+        },
+        {
+          "id": "graft",
+          "displayName": "Aşıla (envanterdeki fidanla)",
+          "durationDays": 0.08,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "skillWork": "graft",
+          "minLevel": 5,
+          "requiresGrown": true
+        },
+        {
+          "id": "heritage",
+          "displayName": "Yadigâr ağaç ilan et",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 7,
+          "skillWork": "heritage",
+          "minLevel": 9,
+          "requiresGrown": true
+        },
+        {
+          "id": "branch",
+          "displayName": "Dal buda (kuru dal)",
+          "durationDays": 0.05,
+          "skill": "Woodcutting",
+          "skillXp": 5,
+          "skillWork": "branch",
+          "minLevel": 2,
+          "requiresGrown": true,
+          "tool": "axe",
+          "produce": [
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ]
         }
       ],
       "fruitSeasons": [
@@ -2836,7 +3132,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.turnip",
+              "count": 2
+            },
+            {
+              "item": "item.seed_turnip",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "cropFamily": "kok",
@@ -3127,6 +3538,24 @@
           "need": "Energy",
           "restore": 45,
           "durationDays": 0.3
+        },
+        {
+          "id": "tidy",
+          "displayName": "Odayı toparla",
+          "durationDays": 0.05,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "skillWork": "tidy",
+          "minLevel": 3
+        },
+        {
+          "id": "guest_room",
+          "displayName": "Misafir odası hazırla",
+          "durationDays": 0.1,
+          "skill": "Decorating",
+          "skillXp": 3,
+          "skillWork": "guest_room",
+          "minLevel": 8
         }
       ],
       "finishGroup": "cloth",
@@ -3164,6 +3593,24 @@
           "restore": 70,
           "durationDays": 0.3,
           "moodlet": "rested"
+        },
+        {
+          "id": "tidy",
+          "displayName": "Odayı toparla",
+          "durationDays": 0.05,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "skillWork": "tidy",
+          "minLevel": 3
+        },
+        {
+          "id": "guest_room",
+          "displayName": "Misafir odası hazırla",
+          "durationDays": 0.1,
+          "skill": "Decorating",
+          "skillXp": 3,
+          "skillWork": "guest_room",
+          "minLevel": 8
         }
       ],
       "finishGroup": "wood",
@@ -3268,6 +3715,24 @@
           "restore": 65,
           "durationDays": 0.3,
           "moodlet": "rested"
+        },
+        {
+          "id": "tidy",
+          "displayName": "Odayı toparla",
+          "durationDays": 0.05,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "skillWork": "tidy",
+          "minLevel": 3
+        },
+        {
+          "id": "guest_room",
+          "displayName": "Misafir odası hazırla",
+          "durationDays": 0.1,
+          "skill": "Decorating",
+          "skillXp": 3,
+          "skillWork": "guest_room",
+          "minLevel": 8
         }
       ],
       "finishGroup": "wood",
@@ -4127,6 +4592,154 @@
           ],
           "skill": "Baking",
           "skillXp": 14
+        },
+        {
+          "id": "make_bazlama",
+          "displayName": "Bazlama yap (1 un)",
+          "durationDays": 0.08,
+          "skill": "Baking",
+          "skillXp": 8,
+          "minLevel": 2,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.bazlama",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "make_yufka",
+          "displayName": "Yufka aç (1 un)",
+          "durationDays": 0.08,
+          "skill": "Baking",
+          "skillXp": 8,
+          "minLevel": 2,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.yufka",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "id": "start_sourdough",
+          "displayName": "Ekşi maya başlat (1 un)",
+          "durationDays": 0.05,
+          "skill": "Baking",
+          "skillXp": 5,
+          "minLevel": 4,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.sourdough",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "bake_sourdough",
+          "displayName": "Ekşi mayalı ekmek pişir",
+          "durationDays": 0.22,
+          "skill": "Baking",
+          "skillXp": 16,
+          "minLevel": 6,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 2
+            },
+            {
+              "item": "item.sourdough",
+              "count": 1
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.bread_sourdough",
+              "count": 3
+            },
+            {
+              "item": "item.sourdough",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "bake_wedding_bread",
+          "displayName": "Düğün ekmeği pişir",
+          "durationDays": 0.25,
+          "skill": "Baking",
+          "skillXp": 20,
+          "minLevel": 7,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 3
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            },
+            {
+              "item": "item.egg",
+              "count": 1
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.wedding_bread",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "bake_village",
+          "displayName": "Köy fırını: toplu ekmek (6 un)",
+          "durationDays": 0.35,
+          "skill": "Baking",
+          "skillXp": 30,
+          "minLevel": 9,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 6
+            },
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.bread",
+              "count": 11
+            }
+          ]
         }
       ],
       "finishGroup": "wood",
@@ -4402,7 +5015,7 @@
       "displayName": "Bakır kazan seti",
       "category": "kitchen",
       "price": 70,
-      "level": 9,
+      "level": 4,
       "styleSet": "Tüccar",
       "rooms": [
         "kitchen"
@@ -4430,7 +5043,8 @@
       ],
       "trades": [
         "tavern"
-      ]
+      ],
+      "lockSkill": "Smithing"
     },
     {
       "id": "item.woodshed",
@@ -4732,7 +5346,8 @@
               "count": 2
             }
           ],
-          "repair": "wood"
+          "repair": "wood",
+          "minLevel": 3
         }
       ],
       "finishGroup": "wood",
@@ -5653,6 +6268,16 @@
           "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "play_animals",
+          "displayName": "Hayvanlara çal",
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "minLevel": 8,
+          "requiresAnimal": true,
+          "befriendAnimals": 4
         }
       ],
       "art": {
@@ -5755,6 +6380,16 @@
           "addFeed": 4,
           "skill": "AnimalHusbandry",
           "skillXp": 2
+        },
+        {
+          "id": "play_animals",
+          "displayName": "Hayvanlara çal",
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "minLevel": 8,
+          "requiresAnimal": true,
+          "befriendAnimals": 4
         }
       ],
       "tags": [
@@ -5860,6 +6495,16 @@
           "addFeed": 4,
           "skill": "AnimalHusbandry",
           "skillXp": 2
+        },
+        {
+          "id": "play_animals",
+          "displayName": "Hayvanlara çal",
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "minLevel": 8,
+          "requiresAnimal": true,
+          "befriendAnimals": 4
         }
       ],
       "art": {
@@ -5926,6 +6571,16 @@
           "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "play_animals",
+          "displayName": "Hayvanlara çal",
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "minLevel": 8,
+          "requiresAnimal": true,
+          "befriendAnimals": 4
         }
       ],
       "finishGroup": "wood",
@@ -5977,6 +6632,16 @@
           "addFeed": 2,
           "skill": "AnimalHusbandry",
           "skillXp": 2
+        },
+        {
+          "id": "play_animals",
+          "displayName": "Hayvanlara çal",
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "minLevel": 8,
+          "requiresAnimal": true,
+          "befriendAnimals": 4
         }
       ],
       "art": {
@@ -5998,7 +6663,7 @@
       "displayName": "Arı kovanı",
       "category": "garden",
       "price": 35,
-      "level": 6,
+      "level": 4,
       "styleSet": "Zanaatkâr",
       "rooms": [
         "outdoor"
@@ -6020,7 +6685,8 @@
           "displayName": "Dumanla petek kes (2 bal → petekli bal)",
           "durationDays": 0.1,
           "skill": "AnimalHusbandry",
-          "skillXp": 12
+          "skillXp": 12,
+          "minLevel": 4
         }
       ],
       "pollinate": 6,
@@ -6035,7 +6701,8 @@
       "site": "any",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "lockSkill": "AnimalHusbandry"
     },
     {
       "id": "item.toy_horse",
@@ -6296,7 +6963,7 @@
             }
           ],
           "skill": "Carpentry",
-          "minLevel": 3,
+          "minLevel": 6,
           "beauty": 2
         }
       ],
@@ -6521,7 +7188,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.cabbage",
+              "count": 1
+            },
+            {
+              "item": "item.seed_cabbage",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "cropFamily": "yaprak",
@@ -6622,7 +7404,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.leek",
+              "count": 2
+            },
+            {
+              "item": "item.seed_leek",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "cropFamily": "sogan",
@@ -6634,7 +7531,8 @@
       "placement": "Resource",
       "price": 2,
       "category": "resource",
-      "plantsAs": "item.crop_pea"
+      "plantsAs": "item.crop_pea",
+      "level": 2
     },
     {
       "id": "item.pea",
@@ -6722,7 +7620,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.pea",
+              "count": 3
+            },
+            {
+              "item": "item.seed_pea",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "nitrogen": true,
@@ -6824,7 +7837,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.pumpkin",
+              "count": 1
+            },
+            {
+              "item": "item.seed_pumpkin",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "cropFamily": "kabak",
@@ -7022,6 +8150,24 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -7055,6 +8201,24 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "tags": [
@@ -7098,6 +8262,24 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -7130,8 +8312,31 @@
             {
               "item": "item.herb",
               "count": 2
+            },
+            {
+              "item": "item.thyme",
+              "count": 1,
+              "minLevel": 6
             }
           ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -7165,7 +8370,26 @@
               "item": "item.honey",
               "count": 1
             }
-          ]
+          ],
+          "minLevel": 4
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -7198,6 +8422,24 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -7656,7 +8898,7 @@
       "height": 2,
       "price": 54,
       "category": "structure",
-      "level": 4,
+      "level": 9,
       "stairs": 1,
       "styleSet": "Zanaatkâr",
       "comfort": 1,
@@ -7682,7 +8924,8 @@
         ]
       },
       "site": "any",
-      "anywhere": true
+      "anywhere": true,
+      "lockSkill": "Masonry"
     },
     {
       "id": "item.stairs_down_stone",
@@ -7691,7 +8934,7 @@
       "height": 2,
       "price": 58,
       "category": "structure",
-      "level": 4,
+      "level": 9,
       "stairs": -1,
       "styleSet": "Zanaatkâr",
       "comfort": 1,
@@ -7717,7 +8960,8 @@
         ]
       },
       "site": "any",
-      "anywhere": true
+      "anywhere": true,
+      "lockSkill": "Masonry"
     },
     {
       "id": "item.cellar_hatch",
@@ -7900,7 +9144,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.parsnip",
+              "count": 2
+            },
+            {
+              "item": "item.seed_parsnip",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -8002,7 +9361,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.carrot",
+              "count": 2
+            },
+            {
+              "item": "item.seed_carrot",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "cropFamily": "kok",
@@ -8025,7 +9499,7 @@
       "placement": "Resource",
       "price": 3,
       "category": "resource",
-      "level": 3,
+      "level": 2,
       "plantsAs": "item.crop_onion"
     },
     {
@@ -8100,7 +9574,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.onion",
+              "count": 2
+            },
+            {
+              "item": "item.seed_onion",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -8202,7 +9791,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.garlic",
+              "count": 1
+            },
+            {
+              "item": "item.seed_garlic",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -8304,7 +10008,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.beet",
+              "count": 2
+            },
+            {
+              "item": "item.seed_beet",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -8406,7 +10225,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.radish",
+              "count": 1
+            },
+            {
+              "item": "item.seed_radish",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -8509,7 +10443,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.lettuce",
+              "count": 1
+            },
+            {
+              "item": "item.seed_lettuce",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -8536,7 +10585,7 @@
       "placement": "Resource",
       "price": 3,
       "category": "resource",
-      "level": 3,
+      "level": 2,
       "plantsAs": "item.crop_broad_bean"
     },
     {
@@ -8611,7 +10660,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.broad_bean",
+              "count": 3
+            },
+            {
+              "item": "item.seed_broad_bean",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -8649,7 +10813,7 @@
       "placement": "Resource",
       "price": 4,
       "category": "resource",
-      "level": 4,
+      "level": 3,
       "plantsAs": "item.crop_barley"
     },
     {
@@ -8724,7 +10888,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.sheaf_barley",
+              "count": 4
+            },
+            {
+              "item": "item.seed_barley",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -8826,7 +11105,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.spinach",
+              "count": 1
+            },
+            {
+              "item": "item.seed_spinach",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -8915,6 +11309,36 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "prune_tree",
+          "displayName": "Buda (meyve çabuk olgunlaşır)",
+          "durationDays": 0.06,
+          "skill": "Horticulture",
+          "skillXp": 8,
+          "skillWork": "prune",
+          "minLevel": 3,
+          "requiresGrown": true
+        },
+        {
+          "id": "graft",
+          "displayName": "Aşıla (envanterdeki fidanla)",
+          "durationDays": 0.08,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "skillWork": "graft",
+          "minLevel": 5,
+          "requiresGrown": true
+        },
+        {
+          "id": "heritage",
+          "displayName": "Yadigâr ağaç ilan et",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 7,
+          "skillWork": "heritage",
+          "minLevel": 9,
+          "requiresGrown": true
         }
       ],
       "site": "outdoor"
@@ -8998,6 +11422,36 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "prune_tree",
+          "displayName": "Buda (meyve çabuk olgunlaşır)",
+          "durationDays": 0.06,
+          "skill": "Horticulture",
+          "skillXp": 8,
+          "skillWork": "prune",
+          "minLevel": 3,
+          "requiresGrown": true
+        },
+        {
+          "id": "graft",
+          "displayName": "Aşıla (envanterdeki fidanla)",
+          "durationDays": 0.08,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "skillWork": "graft",
+          "minLevel": 5,
+          "requiresGrown": true
+        },
+        {
+          "id": "heritage",
+          "displayName": "Yadigâr ağaç ilan et",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 7,
+          "skillWork": "heritage",
+          "minLevel": 9,
+          "requiresGrown": true
         }
       ],
       "site": "outdoor"
@@ -9081,6 +11535,36 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "prune_tree",
+          "displayName": "Buda (meyve çabuk olgunlaşır)",
+          "durationDays": 0.06,
+          "skill": "Horticulture",
+          "skillXp": 8,
+          "skillWork": "prune",
+          "minLevel": 3,
+          "requiresGrown": true
+        },
+        {
+          "id": "graft",
+          "displayName": "Aşıla (envanterdeki fidanla)",
+          "durationDays": 0.08,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "skillWork": "graft",
+          "minLevel": 5,
+          "requiresGrown": true
+        },
+        {
+          "id": "heritage",
+          "displayName": "Yadigâr ağaç ilan et",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 7,
+          "skillWork": "heritage",
+          "minLevel": 9,
+          "requiresGrown": true
         }
       ],
       "site": "outdoor"
@@ -9165,6 +11649,36 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "prune_tree",
+          "displayName": "Buda (meyve çabuk olgunlaşır)",
+          "durationDays": 0.06,
+          "skill": "Horticulture",
+          "skillXp": 8,
+          "skillWork": "prune",
+          "minLevel": 3,
+          "requiresGrown": true
+        },
+        {
+          "id": "graft",
+          "displayName": "Aşıla (envanterdeki fidanla)",
+          "durationDays": 0.08,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "skillWork": "graft",
+          "minLevel": 5,
+          "requiresGrown": true
+        },
+        {
+          "id": "heritage",
+          "displayName": "Yadigâr ağaç ilan et",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 7,
+          "skillWork": "heritage",
+          "minLevel": 9,
+          "requiresGrown": true
         }
       ],
       "site": "outdoor"
@@ -9290,6 +11804,24 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "tags": [
@@ -9332,6 +11864,24 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "tags": [
@@ -9381,6 +11931,24 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -9426,6 +11994,24 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -9471,6 +12057,24 @@
               "count": 3
             }
           ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -9515,7 +12119,26 @@
               "item": "item.rosehip",
               "count": 2
             }
-          ]
+          ],
+          "minLevel": 3
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -9563,7 +12186,26 @@
               "item": "item.firewood",
               "count": 1
             }
-          ]
+          ],
+          "minLevel": 6
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -9607,6 +12249,24 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -9682,6 +12342,23 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "branch",
+          "displayName": "Dal buda (kuru dal)",
+          "durationDays": 0.05,
+          "skill": "Woodcutting",
+          "skillXp": 5,
+          "skillWork": "branch",
+          "minLevel": 2,
+          "requiresGrown": true,
+          "tool": "axe",
+          "produce": [
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ]
         }
       ],
       "site": "outdoor"
@@ -9737,6 +12414,39 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "branch",
+          "displayName": "Dal buda (kuru dal)",
+          "durationDays": 0.05,
+          "skill": "Woodcutting",
+          "skillXp": 5,
+          "skillWork": "branch",
+          "minLevel": 2,
+          "requiresGrown": true,
+          "tool": "axe",
+          "produce": [
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "resin",
+          "displayName": "Reçine topla",
+          "durationDays": 0.06,
+          "skill": "Woodcutting",
+          "skillXp": 8,
+          "skillWork": "resin",
+          "minLevel": 6,
+          "requiresGrown": true,
+          "produce": [
+            {
+              "item": "item.resin",
+              "count": 1
+            }
+          ]
         }
       ],
       "site": "outdoor"
@@ -9792,6 +12502,23 @@
           "restore": 70,
           "durationDays": 0.05,
           "moodlet": "ashamed"
+        },
+        {
+          "id": "branch",
+          "displayName": "Dal buda (kuru dal)",
+          "durationDays": 0.05,
+          "skill": "Woodcutting",
+          "skillXp": 5,
+          "skillWork": "branch",
+          "minLevel": 2,
+          "requiresGrown": true,
+          "tool": "axe",
+          "produce": [
+            {
+              "item": "item.firewood",
+              "count": 1
+            }
+          ]
         }
       ],
       "site": "outdoor"
@@ -10229,6 +12956,54 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "make_tulum_cheese",
+          "displayName": "Tulum peyniri bas (2 peynir, 1 tulum)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 15,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.cheese",
+              "count": 2
+            },
+            {
+              "item": "item.tulum",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.tulum_cheese",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "make_herb_cheese",
+          "displayName": "Otlu peynir yap (3 süt, 1 ot)",
+          "durationDays": 0.25,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "minLevel": 7,
+          "materials": [
+            {
+              "item": "item.milk",
+              "count": 3
+            },
+            {
+              "item": "item.herb",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.herb_cheese",
+              "count": 2
+            }
+          ]
         }
       ],
       "finishGroup": "wood",
@@ -10318,6 +13093,16 @@
           "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "play_animals",
+          "displayName": "Hayvanlara çal",
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "minLevel": 8,
+          "requiresAnimal": true,
+          "befriendAnimals": 4
         }
       ],
       "art": {
@@ -10407,6 +13192,16 @@
           "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "play_animals",
+          "displayName": "Hayvanlara çal",
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "minLevel": 8,
+          "requiresAnimal": true,
+          "befriendAnimals": 4
         }
       ],
       "art": {
@@ -10496,6 +13291,16 @@
           "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "play_animals",
+          "displayName": "Hayvanlara çal",
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "minLevel": 8,
+          "requiresAnimal": true,
+          "befriendAnimals": 4
         }
       ],
       "art": {
@@ -10566,6 +13371,16 @@
           "skill": "AnimalHusbandry",
           "skillXp": 6,
           "moodlet": "pet_love"
+        },
+        {
+          "id": "play_animals",
+          "displayName": "Hayvanlara çal",
+          "durationDays": 0.06,
+          "skill": "Music",
+          "skillXp": 3,
+          "minLevel": 8,
+          "requiresAnimal": true,
+          "befriendAnimals": 4
         }
       ],
       "art": {
@@ -11597,6 +14412,60 @@
               "count": 3
             }
           ]
+        },
+        {
+          "id": "ice_fish",
+          "displayName": "Buz deliği aç, balık tut",
+          "durationDays": 0.15,
+          "skill": "Fishing",
+          "skillXp": 11,
+          "minLevel": 7,
+          "requiresFrost": true,
+          "tool": "rod",
+          "produce": [
+            {
+              "item": "item.fish_pike",
+              "count": 1,
+              "chance": 0.5
+            },
+            {
+              "item": "item.fish_trout",
+              "count": 1,
+              "chance": 0.6
+            }
+          ]
+        },
+        {
+          "id": "stock_pond",
+          "displayName": "Göleti stokla (2 sazan)",
+          "durationDays": 0.08,
+          "skill": "Fishing",
+          "skillXp": 6,
+          "skillWork": "stock_pond",
+          "minLevel": 8,
+          "materials": [
+            {
+              "item": "item.fish_carp",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "swim",
+          "displayName": "Yüz",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.08,
+          "skill": "Athletics",
+          "skillXp": 8,
+          "minLevel": 6,
+          "wets": 1.0,
+          "extraRestore": [
+            {
+              "need": "Hygiene",
+              "amount": 15
+            }
+          ]
         }
       ],
       "waterFlow": 6,
@@ -11610,7 +14479,7 @@
       "displayName": "Balık sepeti (tuzak)",
       "category": "farm",
       "price": 25,
-      "level": 4,
+      "level": 3,
       "styleSet": "Köylü",
       "rooms": [
         "outdoor"
@@ -11620,7 +14489,8 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "lockSkill": "Fishing"
     },
     {
       "id": "item.alembic",
@@ -11635,7 +14505,34 @@
         "living",
         "outdoor"
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "drink_cough_syrup",
+          "displayName": "Öksürük şurubu iç",
+          "need": "Energy",
+          "restore": 10,
+          "durationDays": 0.02,
+          "consume": "item.cough_syrup",
+          "heal": 1.0
+        },
+        {
+          "id": "drink_sleep_syrup",
+          "displayName": "Uyku şurubu iç",
+          "need": "Energy",
+          "restore": 30,
+          "durationDays": 0.02,
+          "consume": "item.sleep_syrup"
+        },
+        {
+          "id": "drink_saffron_remedy",
+          "displayName": "Safranlı ilaç iç",
+          "need": "Fun",
+          "restore": 20,
+          "durationDays": 0.02,
+          "consume": "item.saffron_remedy",
+          "heal": 2.0
+        }
+      ],
       "finishGroup": "wood",
       "front": "work",
       "site": "any",
@@ -12311,7 +15208,8 @@
               "count": 1
             }
           ],
-          "repair": "metal"
+          "repair": "metal",
+          "minLevel": 3
         }
       ],
       "width": 2,
@@ -12468,6 +15366,24 @@
               "minLevel": 4
             }
           ]
+        },
+        {
+          "id": "hunt_track",
+          "displayName": "İz oku",
+          "durationDays": 0.04,
+          "skill": "Hunting",
+          "skillXp": 4,
+          "skillWork": "hunt_track",
+          "minLevel": 2
+        },
+        {
+          "id": "watch_wild",
+          "displayName": "Gözle (Doğa Defteri)",
+          "durationDays": 0.15,
+          "skill": "Hunting",
+          "skillXp": 12,
+          "skillWork": "watch_wild",
+          "minLevel": 9
         }
       ],
       "site": "outdoor",
@@ -12492,6 +15408,15 @@
           "durationDays": 0.03,
           "skill": "WeatherLore",
           "skillXp": 6
+        },
+        {
+          "id": "sky_look",
+          "displayName": "Gökyüzüne bak",
+          "durationDays": 0.02,
+          "skill": "WeatherLore",
+          "skillXp": 3,
+          "skillWork": "sky_look",
+          "minLevel": 2
         }
       ],
       "site": "outdoor",
@@ -12532,7 +15457,7 @@
       "displayName": "Kopuz",
       "category": "decor_wall",
       "price": 35,
-      "level": 2,
+      "level": 3,
       "styleSet": "Köylü",
       "rooms": [
         "living",
@@ -12559,14 +15484,15 @@
         "bedroom",
         "inn_room",
         "outdoor"
-      ]
+      ],
+      "lockSkill": "Music"
     },
     {
       "id": "item.churn",
       "displayName": "Yayık",
       "category": "work",
       "price": 30,
-      "level": 2,
+      "level": 3,
       "styleSet": "Köylü",
       "rooms": [
         "kitchen",
@@ -12579,7 +15505,8 @@
         "kitchen",
         "outdoor",
         "workshop"
-      ]
+      ],
+      "lockSkill": "AnimalHusbandry"
     },
     {
       "id": "item.yogurt",
@@ -13059,7 +15986,7 @@
       "price": 40,
       "width": 2,
       "height": 2,
-      "level": 3,
+      "level": 4,
       "styleSet": "Köylü",
       "rooms": [
         "outdoor"
@@ -13140,7 +16067,8 @@
       ],
       "trades": [
         "smithy"
-      ]
+      ],
+      "lockSkill": "Smithing"
     },
     {
       "id": "item.lime_kiln",
@@ -13149,7 +16077,7 @@
       "price": 50,
       "width": 2,
       "height": 2,
-      "level": 3,
+      "level": 6,
       "styleSet": "Köylü",
       "rooms": [
         "outdoor"
@@ -13244,7 +16172,8 @@
       ],
       "trades": [
         "mason"
-      ]
+      ],
+      "lockSkill": "Masonry"
     },
     {
       "id": "item.ox_cart",
@@ -13575,7 +16504,7 @@
       "displayName": "Boya kazanı",
       "category": "work",
       "price": 40,
-      "level": 3,
+      "level": 4,
       "styleSet": "Köylü",
       "rooms": [
         "outdoor",
@@ -13591,7 +16520,8 @@
       ],
       "trades": [
         "tailor"
-      ]
+      ],
+      "lockSkill": "Weaving"
     },
     {
       "id": "item.brick",
@@ -13838,7 +16768,7 @@
       "placement": "Resource",
       "price": 5,
       "category": "resource",
-      "level": 2,
+      "level": 3,
       "plantsAs": "item.crop_wheat"
     },
     {
@@ -13913,7 +16843,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.sheaf_wheat",
+              "count": 4
+            },
+            {
+              "item": "item.seed_wheat",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -14025,7 +17070,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.sheaf_rye",
+              "count": 4
+            },
+            {
+              "item": "item.seed_rye",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -14062,7 +17222,7 @@
       "placement": "Resource",
       "price": 3,
       "category": "resource",
-      "level": 2,
+      "level": 3,
       "plantsAs": "item.crop_oats"
     },
     {
@@ -14137,7 +17297,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.sheaf_oats",
+              "count": 5
+            },
+            {
+              "item": "item.seed_oats",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -14238,7 +17513,122 @@
           "consume": "item.manure",
           "fertilize": 0.45,
           "skill": "SoilCare",
-          "skillXp": 3
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.flax",
+              "count": 3
+            },
+            {
+              "item": "item.seed_flax",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
         }
       ],
       "growSeasons": [
@@ -14626,7 +18016,7 @@
       "price": 90,
       "width": 2,
       "height": 2,
-      "level": 4,
+      "level": 7,
       "styleSet": "Köylü",
       "rooms": [
         "outdoor"
@@ -14638,7 +18028,8 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "lockSkill": "Masonry"
     },
     {
       "id": "item.rain_barrel",
@@ -17682,7 +21073,7 @@
             }
           ],
           "skill": "Carpentry",
-          "minLevel": 3,
+          "minLevel": 6,
           "beauty": 2
         }
       ],
@@ -18123,7 +21514,7 @@
             }
           ],
           "skill": "Carpentry",
-          "minLevel": 3,
+          "minLevel": 6,
           "beauty": 2
         }
       ],
@@ -18497,6 +21888,24 @@
           "need": "Energy",
           "restore": 55,
           "durationDays": 0.3
+        },
+        {
+          "id": "tidy",
+          "displayName": "Odayı toparla",
+          "durationDays": 0.05,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "skillWork": "tidy",
+          "minLevel": 3
+        },
+        {
+          "id": "guest_room",
+          "displayName": "Misafir odası hazırla",
+          "durationDays": 0.1,
+          "skill": "Decorating",
+          "skillXp": 3,
+          "skillWork": "guest_room",
+          "minLevel": 8
         }
       ],
       "upgrades": [
@@ -18585,6 +21994,24 @@
           "need": "Energy",
           "restore": 8,
           "durationDays": 0.05
+        },
+        {
+          "id": "tidy",
+          "displayName": "Odayı toparla",
+          "durationDays": 0.05,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "skillWork": "tidy",
+          "minLevel": 3
+        },
+        {
+          "id": "guest_room",
+          "displayName": "Misafir odası hazırla",
+          "durationDays": 0.1,
+          "skill": "Decorating",
+          "skillXp": 3,
+          "skillWork": "guest_room",
+          "minLevel": 8
         }
       ],
       "upgrades": [
@@ -19657,6 +23084,24 @@
               "amount": 15
             }
           ]
+        },
+        {
+          "id": "tidy",
+          "displayName": "Odayı toparla",
+          "durationDays": 0.05,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "skillWork": "tidy",
+          "minLevel": 3
+        },
+        {
+          "id": "guest_room",
+          "displayName": "Misafir odası hazırla",
+          "durationDays": 0.1,
+          "skill": "Decorating",
+          "skillXp": 3,
+          "skillWork": "guest_room",
+          "minLevel": 8
         }
       ],
       "upgrades": [
@@ -20169,6 +23614,24 @@
           "restore": 75,
           "durationDays": 0.3,
           "moodlet": "rested"
+        },
+        {
+          "id": "tidy",
+          "displayName": "Odayı toparla",
+          "durationDays": 0.05,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "skillWork": "tidy",
+          "minLevel": 3
+        },
+        {
+          "id": "guest_room",
+          "displayName": "Misafir odası hazırla",
+          "durationDays": 0.1,
+          "skill": "Decorating",
+          "skillXp": 3,
+          "skillWork": "guest_room",
+          "minLevel": 8
         }
       ],
       "upgrades": [
@@ -20258,6 +23721,24 @@
               "amount": 20
             }
           ]
+        },
+        {
+          "id": "tidy",
+          "displayName": "Odayı toparla",
+          "durationDays": 0.05,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "skillWork": "tidy",
+          "minLevel": 3
+        },
+        {
+          "id": "guest_room",
+          "displayName": "Misafir odası hazırla",
+          "durationDays": 0.1,
+          "skill": "Decorating",
+          "skillXp": 3,
+          "skillWork": "guest_room",
+          "minLevel": 8
         }
       ],
       "upgrades": [
@@ -21832,7 +25313,7 @@
             }
           ],
           "skill": "Carpentry",
-          "minLevel": 3,
+          "minLevel": 6,
           "beauty": 2
         }
       ],
@@ -22058,8 +25539,9 @@
       "placement": "Resource",
       "category": "resource",
       "price": 60,
-      "level": 5,
-      "plantsAs": "item.bush_coffee"
+      "level": 7,
+      "plantsAs": "item.bush_coffee",
+      "lockSkill": "Horticulture"
     },
     {
       "id": "item.bush_coffee",
@@ -22214,7 +25696,13 @@
           "skillXp": 6,
           "moodlet": "eff_coffee_fine",
           "adultOnly": true,
-          "bladder": 10
+          "bladder": 10,
+          "produce": [
+            {
+              "item": "item.coffee_spent",
+              "count": 1
+            }
+          ]
         },
         {
           "id": "cezve_brew_fine",
@@ -22233,7 +25721,13 @@
             }
           ],
           "adultOnly": true,
-          "bladder": 10
+          "bladder": 10,
+          "produce": [
+            {
+              "item": "item.coffee_spent",
+              "count": 1
+            }
+          ]
         },
         {
           "id": "cezve_fal",
@@ -22262,8 +25756,9 @@
       "placement": "Resource",
       "category": "resource",
       "price": 50,
-      "level": 6,
-      "plantsAs": "item.tree_olive"
+      "level": 7,
+      "plantsAs": "item.tree_olive",
+      "lockSkill": "Horticulture"
     },
     {
       "id": "item.tree_olive",
@@ -22328,6 +25823,36 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "prune_tree",
+          "displayName": "Buda (meyve çabuk olgunlaşır)",
+          "durationDays": 0.06,
+          "skill": "Horticulture",
+          "skillXp": 8,
+          "skillWork": "prune",
+          "minLevel": 3,
+          "requiresGrown": true
+        },
+        {
+          "id": "graft",
+          "displayName": "Aşıla (envanterdeki fidanla)",
+          "durationDays": 0.08,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "skillWork": "graft",
+          "minLevel": 5,
+          "requiresGrown": true
+        },
+        {
+          "id": "heritage",
+          "displayName": "Yadigâr ağaç ilan et",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 7,
+          "skillWork": "heritage",
+          "minLevel": 9,
+          "requiresGrown": true
         }
       ],
       "site": "outdoor"
@@ -22615,7 +26140,26 @@
               "item": "item.chamomile",
               "count": 3
             }
-          ]
+          ],
+          "minLevel": 3
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -22649,7 +26193,26 @@
               "item": "item.linden",
               "count": 3
             }
-          ]
+          ],
+          "minLevel": 3
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -22685,7 +26248,26 @@
               "item": "item.sage",
               "count": 3
             }
-          ]
+          ],
+          "minLevel": 3
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -22720,7 +26302,26 @@
               "item": "item.mint",
               "count": 3
             }
-          ]
+          ],
+          "minLevel": 3
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
         }
       ],
       "art": {
@@ -22782,8 +26383,9 @@
       "placement": "Resource",
       "category": "resource",
       "price": 20,
-      "level": 3,
-      "plantsAs": "item.vine_grape"
+      "level": 4,
+      "plantsAs": "item.vine_grape",
+      "lockSkill": "Horticulture"
     },
     {
       "id": "item.vine_grape",
@@ -22831,6 +26433,36 @@
               "chance": 0.5
             }
           ]
+        },
+        {
+          "id": "prune_tree",
+          "displayName": "Buda (meyve çabuk olgunlaşır)",
+          "durationDays": 0.06,
+          "skill": "Horticulture",
+          "skillXp": 8,
+          "skillWork": "prune",
+          "minLevel": 3,
+          "requiresGrown": true
+        },
+        {
+          "id": "graft",
+          "displayName": "Aşıla (envanterdeki fidanla)",
+          "durationDays": 0.08,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "skillWork": "graft",
+          "minLevel": 5,
+          "requiresGrown": true
+        },
+        {
+          "id": "heritage",
+          "displayName": "Yadigâr ağaç ilan et",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 7,
+          "skillWork": "heritage",
+          "minLevel": 9,
+          "requiresGrown": true
         }
       ],
       "site": "outdoor"
@@ -23294,7 +26926,7 @@
       ],
       "beauty": 5,
       "material": "wood",
-      "level": 5,
+      "level": 8,
       "fillWith": [
         "item.relic_foundation_stone",
         "item.relic_buried_jar",
@@ -23795,7 +27427,7 @@
       "rooms": [
         "living"
       ],
-      "level": 3,
+      "level": 8,
       "styleSet": "Tüccar",
       "surfaceSlots": [
         {
@@ -23853,7 +27485,7 @@
       "rooms": [
         "outdoor"
       ],
-      "level": 3,
+      "level": 8,
       "styleSet": "Zanaatkâr",
       "site": "any",
       "belongs": [
@@ -23862,7 +27494,8 @@
       ],
       "trades": [
         "smithy"
-      ]
+      ],
+      "lockSkill": "Engineering"
     },
     {
       "id": "item.quench_tub",
@@ -24060,6 +27693,54 @@
       ],
       "trades": [
         "scribe"
+      ],
+      "interactions": [
+        {
+          "id": "chronicle",
+          "displayName": "Kroniği yaz",
+          "durationDays": 0.15,
+          "skill": "Literacy",
+          "skillXp": 13,
+          "skillWork": "chronicle",
+          "minLevel": 6,
+          "consume": "item.parchment"
+        },
+        {
+          "id": "contract",
+          "displayName": "Sözleşme yaz (köy işi ödülü +%15)",
+          "durationDays": 0.1,
+          "skill": "Literacy",
+          "skillXp": 9,
+          "skillWork": "contract",
+          "minLevel": 7
+        },
+        {
+          "id": "ledger",
+          "displayName": "Hesap defterine bak",
+          "durationDays": 0.05,
+          "skill": "Literacy",
+          "skillXp": 4,
+          "skillWork": "ledger",
+          "minLevel": 9
+        },
+        {
+          "id": "weekly_plan",
+          "displayName": "Haftalık plan çıkar",
+          "durationDays": 0.05,
+          "skill": "Stewardship",
+          "skillXp": 1,
+          "skillWork": "weekly_plan",
+          "minLevel": 4
+        },
+        {
+          "id": "imece_steward",
+          "displayName": "İmece düzenle",
+          "durationDays": 0.05,
+          "skill": "Stewardship",
+          "skillXp": 1,
+          "skillWork": "imece",
+          "minLevel": 7
+        }
       ]
     },
     {
@@ -24072,7 +27753,7 @@
       "rooms": [
         "living"
       ],
-      "level": 3,
+      "level": 8,
       "styleSet": "Tüccar",
       "front": "open",
       "site": "indoor",
@@ -24093,7 +27774,7 @@
       "rooms": [
         "living"
       ],
-      "level": 3,
+      "level": 8,
       "styleSet": "Tüccar",
       "front": "open",
       "site": "indoor",
@@ -25416,6 +29097,1410 @@
           "moodDays": 0.5
         }
       ]
+    },
+    {
+      "id": "item.dill",
+      "displayName": "Dereotu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "herb"
+      ]
+    },
+    {
+      "id": "item.fenugreek",
+      "displayName": "Çemen",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "herb",
+        "spice"
+      ]
+    },
+    {
+      "id": "item.lavender",
+      "displayName": "Lavanta",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "herb"
+      ]
+    },
+    {
+      "id": "item.crop_herb_bed",
+      "displayName": "Mutfak otu yatağı",
+      "category": "plant",
+      "price": 0,
+      "level": 1,
+      "growDays": 6,
+      "tilled": true,
+      "diesInWinter": true,
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "cropFamily": "ot",
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Ot kes",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 7,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.herb",
+              "count": 2
+            },
+            {
+              "item": "item.dill",
+              "count": 1
+            },
+            {
+              "item": "item.fenugreek",
+              "count": 1
+            },
+            {
+              "item": "item.lavender",
+              "count": 1
+            },
+            {
+              "item": "item.seed_herb_bed",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Horticulture",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.seed_herb_bed",
+      "displayName": "Mutfak otu tohumu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "plantsAs": "item.crop_herb_bed",
+      "level": 2,
+      "lockSkill": "Horticulture"
+    },
+    {
+      "id": "item.crop_saffron",
+      "displayName": "Safran çiğdemi",
+      "category": "plant",
+      "price": 0,
+      "level": 1,
+      "growDays": 10,
+      "tilled": true,
+      "diesInWinter": true,
+      "growSeasons": [
+        "Autumn"
+      ],
+      "cropFamily": "cigdem",
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Safran topla (sabah)",
+          "durationDays": 0.08,
+          "skill": "Horticulture",
+          "skillXp": 12,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.saffron",
+              "count": 1
+            },
+            {
+              "item": "item.saffron_corm",
+              "count": 1
+            },
+            {
+              "item": "item.saffron_corm",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Horticulture",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.saffron_corm",
+      "displayName": "Safran soğanı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "plantsAs": "item.crop_saffron",
+      "level": 4,
+      "lockSkill": "Horticulture"
+    },
+    {
+      "id": "item.flower_bed",
+      "displayName": "Çiçek tarhı",
+      "category": "garden",
+      "price": 20,
+      "level": 6,
+      "lockSkill": "Horticulture",
+      "width": 2,
+      "height": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "beauty": 5,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "stroll",
+          "displayName": "Bahçede gezin",
+          "need": "Fun",
+          "restore": 20,
+          "durationDays": 0.06,
+          "skill": "Horticulture",
+          "skillXp": 4,
+          "skillWork": "stroll",
+          "minLevel": 6
+        }
+      ]
+    },
+    {
+      "id": "item.bone",
+      "displayName": "Kemik",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.bone_meal",
+      "displayName": "Kemik unu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.coffee_spent",
+      "displayName": "Kahve telvesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.crop_vetch",
+      "displayName": "Fiğ (yeşil gübre)",
+      "category": "plant",
+      "price": 0,
+      "level": 1,
+      "growDays": 5,
+      "tilled": true,
+      "diesInWinter": true,
+      "growSeasons": [
+        "Spring",
+        "Summer",
+        "Autumn"
+      ],
+      "cropFamily": "fig",
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "green_manure",
+          "displayName": "Toprağa göm (verim +)",
+          "durationDays": 0.05,
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "skillWork": "green_manure",
+          "produce": [
+            {
+              "item": "item.seed_vetch",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "SoilCare",
+          "skillXp": 1,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "harvest",
+          "displayName": "Ot olarak biç",
+          "durationDays": 0.05,
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.feed",
+              "count": 2
+            },
+            {
+              "item": "item.seed_vetch",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.seed_vetch",
+      "displayName": "Fiğ tohumu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "plantsAs": "item.crop_vetch",
+      "level": 7,
+      "lockSkill": "SoilCare"
+    },
+    {
+      "id": "item.fish_meal",
+      "displayName": "Balık unu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.thyme",
+      "displayName": "Kekik",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "herb",
+        "spice"
+      ]
+    },
+    {
+      "id": "item.truffle",
+      "displayName": "Yer mantarı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.forage_truffle",
+      "displayName": "Yer mantarı izi",
+      "category": "forage",
+      "price": 0,
+      "level": 1,
+      "forageSeasons": [
+        "Autumn"
+      ],
+      "forageMax": 1,
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Kazıp çıkar",
+          "durationDays": 0.08,
+          "skill": "Foraging",
+          "skillXp": 9,
+          "minLevel": 8,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.truffle",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "track",
+          "displayName": "İz sür (nadir düğüm)",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "skillWork": "track",
+          "minLevel": 7
+        },
+        {
+          "id": "forage_regrow",
+          "displayName": "Ne zaman yeniden çıkar?",
+          "durationDays": 0.02,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "skillWork": "forage_regrow",
+          "minLevel": 9
+        }
+      ]
+    },
+    {
+      "id": "item.tar",
+      "displayName": "Katran",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.fine_lumber",
+      "displayName": "Kaliteli kereste",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.folk_almanac",
+      "displayName": "Halk takvimi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 40,
+      "tags": [
+        "book"
+      ]
+    },
+    {
+      "id": "item.storm_bell",
+      "displayName": "Fırtına çanı",
+      "category": "farm",
+      "price": 45,
+      "level": 8,
+      "lockSkill": "WeatherLore",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.aged_cheese",
+      "displayName": "Olgun peynir",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 18,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 80
+    },
+    {
+      "id": "item.cheese_rack",
+      "displayName": "Peynir olgunlaştırma rafı",
+      "category": "kitchen",
+      "price": 30,
+      "level": 6,
+      "lockSkill": "AnimalHusbandry",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "cellar"
+      ],
+      "autoProcess": {
+        "item": "item.cheese",
+        "count": 2,
+        "produces": "item.aged_cheese",
+        "producesCount": 1
+      },
+      "tags": [
+        "passive"
+      ],
+      "site": "indoor",
+      "belongs": [
+        "kitchen",
+        "cellar"
+      ]
+    },
+    {
+      "id": "item.brood_basket",
+      "displayName": "Kuluçka sepeti",
+      "category": "barn",
+      "price": 12,
+      "level": 6,
+      "lockSkill": "AnimalHusbandry",
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor",
+        "barn"
+      ],
+      "site": "any",
+      "belongs": [
+        "outdoor",
+        "barn"
+      ]
+    },
+    {
+      "id": "item.mulberry_leaf",
+      "displayName": "Dut yaprağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.cocoon",
+      "displayName": "İpek kozası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.silk_thread",
+      "displayName": "İpek ipliği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.silk",
+      "displayName": "İpek kumaş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 45,
+      "tags": [
+        "cloth"
+      ]
+    },
+    {
+      "id": "item.silkworm_rack",
+      "displayName": "İpek böceği rafı",
+      "category": "barn",
+      "price": 40,
+      "level": 8,
+      "lockSkill": "AnimalHusbandry",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "barn",
+        "workshop"
+      ],
+      "autoProcess": {
+        "item": "item.mulberry_leaf",
+        "count": 4,
+        "produces": "item.cocoon",
+        "producesCount": 1
+      },
+      "tags": [
+        "passive"
+      ],
+      "site": "indoor",
+      "belongs": [
+        "barn",
+        "workshop"
+      ]
+    },
+    {
+      "id": "item.bait",
+      "displayName": "Balık yemi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1
+    },
+    {
+      "id": "item.fishing_net",
+      "displayName": "Büyük ağ",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 25,
+      "tags": [
+        "tool"
+      ]
+    },
+    {
+      "id": "item.crayfish_trap",
+      "displayName": "Kerevit tuzağı",
+      "category": "farm",
+      "price": 20,
+      "level": 5,
+      "lockSkill": "Fishing",
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "fishTrap": true,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.fish_oil",
+      "displayName": "Balık yağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "fuel",
+        "light"
+      ]
+    },
+    {
+      "id": "item.legend_fish",
+      "displayName": "Göllerin efsane balığı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 120,
+      "tags": [
+        "food",
+        "trophy"
+      ]
+    },
+    {
+      "id": "item.cart_wheel",
+      "displayName": "Araba tekerleği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.catki_table",
+      "displayName": "Çatkı masası",
+      "category": "surfaces",
+      "price": 0,
+      "level": 5,
+      "lockSkill": "Carpentry",
+      "styleSet": "Çatkı",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "finishGroup": "wood",
+      "beauty": 5,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom"
+      ],
+      "width": 2,
+      "height": 1
+    },
+    {
+      "id": "item.catki_chair",
+      "displayName": "Çatkı sandalyesi",
+      "category": "seating",
+      "price": 0,
+      "level": 5,
+      "lockSkill": "Carpentry",
+      "styleSet": "Çatkı",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "finishGroup": "wood",
+      "beauty": 4,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom"
+      ],
+      "width": 1,
+      "height": 1,
+      "comfort": 3
+    },
+    {
+      "id": "item.catki_chest",
+      "displayName": "Çatkı sandığı",
+      "category": "storage",
+      "price": 0,
+      "level": 5,
+      "lockSkill": "Carpentry",
+      "styleSet": "Çatkı",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "finishGroup": "wood",
+      "beauty": 4,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom"
+      ],
+      "width": 1,
+      "height": 1,
+      "storage": 20
+    },
+    {
+      "id": "item.yoruk_table",
+      "displayName": "Yörük sofrası",
+      "category": "surfaces",
+      "price": 0,
+      "level": 6,
+      "lockSkill": "Carpentry",
+      "styleSet": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "finishGroup": "cloth",
+      "beauty": 4,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom"
+      ],
+      "width": 2,
+      "height": 1
+    },
+    {
+      "id": "item.yoruk_chair",
+      "displayName": "Yörük minderi",
+      "category": "seating",
+      "price": 0,
+      "level": 6,
+      "lockSkill": "Carpentry",
+      "styleSet": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "finishGroup": "cloth",
+      "beauty": 5,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom"
+      ],
+      "width": 1,
+      "height": 1,
+      "comfort": 3
+    },
+    {
+      "id": "item.yoruk_chest",
+      "displayName": "Yörük yüklüğü",
+      "category": "storage",
+      "price": 0,
+      "level": 6,
+      "lockSkill": "Carpentry",
+      "styleSet": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "finishGroup": "cloth",
+      "beauty": 5,
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom"
+      ],
+      "width": 1,
+      "height": 1,
+      "storage": 20
+    },
+    {
+      "id": "item.hinge",
+      "displayName": "Menteşe",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.tin_brooch",
+      "displayName": "Cam taşlı kalay broş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 60,
+      "tags": [
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.tunic",
+      "displayName": "Yün cepken",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.linen_shirt",
+      "displayName": "Keten gömlek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 25,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.quilt",
+      "displayName": "Yorgan",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 40,
+      "tags": [
+        "bedding"
+      ]
+    },
+    {
+      "id": "item.dowry_linen",
+      "displayName": "İşlemeli çeyiz örtüsü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 50,
+      "tags": [
+        "dowry"
+      ]
+    },
+    {
+      "id": "item.tulum",
+      "displayName": "Tulum (keçi derisi)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.tulum_cheese",
+      "displayName": "Tulum peyniri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 22,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 90
+    },
+    {
+      "id": "item.boots",
+      "displayName": "Çizme",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.leather_vest",
+      "displayName": "Deri yelek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.harness",
+      "displayName": "Koşum takımı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 35,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.race_saddle",
+      "displayName": "Yarış eyeri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 90,
+      "tags": [
+        "saddle"
+      ]
+    },
+    {
+      "id": "item.glass_pane",
+      "displayName": "Pencere camı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.glazed_tile",
+      "displayName": "Sırlı çini",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.scented_candle",
+      "displayName": "Lavantalı mum",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "light"
+      ]
+    },
+    {
+      "id": "item.bay_leaf",
+      "displayName": "Defne yaprağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "herb"
+      ]
+    },
+    {
+      "id": "item.bay_soap",
+      "displayName": "Defne sabunu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "soap"
+      ]
+    },
+    {
+      "id": "item.mine_candle",
+      "displayName": "Uzun yanan maden mumu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "light"
+      ]
+    },
+    {
+      "id": "item.festival_candle",
+      "displayName": "Şenlik mumu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "light"
+      ]
+    },
+    {
+      "id": "item.sealing_wax",
+      "displayName": "Mühür mumu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.marble",
+      "displayName": "Mermer",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "stone"
+      ]
+    },
+    {
+      "id": "item.gravestone",
+      "displayName": "Yazıtlı mezar taşı",
+      "category": "garden",
+      "price": 0,
+      "level": 8,
+      "lockSkill": "Masonry",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "beauty": 2,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "remember",
+          "displayName": "Anmak için dur",
+          "need": "Fun",
+          "restore": 5,
+          "durationDays": 0.04
+        }
+      ]
+    },
+    {
+      "id": "item.master_lantern",
+      "displayName": "Usta madencinin feneri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 50,
+      "tags": [
+        "light",
+        "tool"
+      ]
+    },
+    {
+      "id": "item.hund_rail",
+      "displayName": "Hund rayı (maden arabası)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "tool"
+      ]
+    },
+    {
+      "id": "item.windlass",
+      "displayName": "Bocurgat ve kova dolabı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "tool"
+      ]
+    },
+    {
+      "id": "item.patch_quilt",
+      "displayName": "Yamalı yorgan",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 25,
+      "tags": [
+        "bedding"
+      ]
+    },
+    {
+      "id": "item.old_keepsake",
+      "displayName": "Eski hatıra",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "memento"
+      ]
+    },
+    {
+      "id": "item.herb_cheese",
+      "displayName": "Otlu peynir",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 40
+    },
+    {
+      "id": "item.wedding_dish",
+      "displayName": "Düğün yemeği (keşkek)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.bazlama",
+      "displayName": "Bazlama",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.yufka",
+      "displayName": "Yufka",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.bread_sourdough",
+      "displayName": "Ekşi mayalı ekmek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.wedding_bread",
+      "displayName": "Düğün ekmeği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.sourdough",
+      "displayName": "Ekşi maya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.pomegranate",
+      "displayName": "Nar",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "merchantonly"
+      ]
+    },
+    {
+      "id": "item.pomegranate_sherbet",
+      "displayName": "Nar şerbeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "drink"
+      ]
+    },
+    {
+      "id": "item.aged_vinegar",
+      "displayName": "Eski sirke",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "spice"
+      ]
+    },
+    {
+      "id": "item.cough_syrup",
+      "displayName": "Öksürük şurubu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "remedy"
+      ]
+    },
+    {
+      "id": "item.insect_repellent",
+      "displayName": "Böcek kovucu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "remedy"
+      ]
+    },
+    {
+      "id": "item.sleep_syrup",
+      "displayName": "Uyku şurubu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "remedy"
+      ]
+    },
+    {
+      "id": "item.saffron_remedy",
+      "displayName": "Safranlı ilaç",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "remedy"
+      ]
+    },
+    {
+      "id": "item.dynasty_chronicle",
+      "displayName": "Hanedan kroniği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 100,
+      "tags": [
+        "book"
+      ]
+    },
+    {
+      "id": "item.drum",
+      "displayName": "Davul",
+      "category": "decor",
+      "price": 0,
+      "level": 6,
+      "lockSkill": "Music",
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "outdoor"
+      ],
+      "beauty": 2,
+      "site": "any",
+      "belongs": [
+        "living",
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "play_music",
+          "displayName": "Davul çal",
+          "need": "Fun",
+          "restore": 30,
+          "durationDays": 0.08,
+          "skill": "Music",
+          "skillXp": 4,
+          "moodlet": "had_fun"
+        }
+      ]
+    },
+    {
+      "id": "item.wheelbarrow",
+      "displayName": "El arabası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "tool"
+      ]
+    },
+    {
+      "id": "item.horse_cart",
+      "displayName": "Hafif at arabası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 60,
+      "tags": [
+        "tool"
+      ]
+    },
+    {
+      "id": "item.sled",
+      "displayName": "Kış kızağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 25,
+      "tags": [
+        "tool"
+      ]
+    },
+    {
+      "id": "item.covered_cart",
+      "displayName": "Üstü örtülü araba",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 90,
+      "tags": [
+        "tool"
+      ]
     }
   ],
   "recipes": [
@@ -25447,7 +30532,8 @@
         }
       ],
       "durationDays": 0.08,
-      "skillXp": 15
+      "skillXp": 15,
+      "minLevel": 2
     },
     {
       "id": "chair",
@@ -26458,7 +31544,7 @@
       "skill": "Leatherwork",
       "skillXp": 12,
       "displayName": "Kürk tabakla",
-      "minLevel": 2
+      "minLevel": 6
     },
     {
       "id": "remedy",
@@ -26737,7 +31823,8 @@
       "skill": "Pottery",
       "skillXp": 10,
       "displayName": "Tuğla pişir",
-      "count": 4
+      "count": 4,
+      "minLevel": 4
     },
     {
       "id": "roof_tiles",
@@ -26757,7 +31844,8 @@
       "skill": "Pottery",
       "skillXp": 10,
       "displayName": "Kiremit pişir",
-      "count": 4
+      "count": 4,
+      "minLevel": 4
     },
     {
       "id": "cut_stone",
@@ -26772,7 +31860,8 @@
       "durationDays": 0.1,
       "skill": "Masonry",
       "skillXp": 8,
-      "displayName": "Taş yont"
+      "displayName": "Taş yont",
+      "minLevel": 2
     },
     {
       "id": "dye_red",
@@ -26856,7 +31945,8 @@
       "durationDays": 0.15,
       "skill": "Weaving",
       "skillXp": 12,
-      "displayName": "Keçe döv"
+      "displayName": "Keçe döv",
+      "minLevel": 4
     },
     {
       "id": "seed_wheat",
@@ -27180,7 +32270,7 @@
       "skill": "Masonry",
       "skillXp": 24,
       "displayName": "Sarnıç ör",
-      "minLevel": 2
+      "minLevel": 7
     },
     {
       "id": "water_tower",
@@ -27463,7 +32553,8 @@
       "durationDays": 0.08,
       "skill": "Pottery",
       "skillXp": 6,
-      "displayName": "Kil bilye pişir"
+      "displayName": "Kil bilye pişir",
+      "minLevel": 3
     },
     {
       "id": "kite",
@@ -28478,7 +33569,8 @@
       "durationDays": 0.1,
       "skill": "Smithing",
       "skillXp": 10,
-      "displayName": "Cezve döv"
+      "displayName": "Cezve döv",
+      "minLevel": 4
     },
     {
       "id": "brine_olives",
@@ -28709,7 +33801,8 @@
       "skillXp": 6,
       "displayName": "Ayakla üzüm ez (şıra)",
       "count": 2,
-      "moodlet": "eff_treading"
+      "moodlet": "eff_treading",
+      "minLevel": 6
     },
     {
       "id": "vinegar_grape",
@@ -29111,6 +34204,1188 @@
       "minLevel": 6,
       "durationDays": 0.5,
       "skillXp": 35
+    },
+    {
+      "id": "seed_herb_bed",
+      "station": "item.seed_maker",
+      "produces": "item.seed_herb_bed",
+      "materials": [
+        {
+          "item": "item.herb",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 7,
+      "displayName": "Ot tohumu ayır",
+      "count": 2,
+      "minLevel": 2
+    },
+    {
+      "id": "seed_saffron",
+      "station": "item.seed_maker",
+      "produces": "item.saffron_corm",
+      "materials": [
+        {
+          "item": "item.saffron",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 7,
+      "displayName": "Safran soğanı ayır",
+      "minLevel": 4
+    },
+    {
+      "id": "bone_meal",
+      "station": "item.mortar_pestle",
+      "produces": "item.bone_meal",
+      "materials": [
+        {
+          "item": "item.bone",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "SoilCare",
+      "skillXp": 10,
+      "displayName": "Kemik unu döv",
+      "count": 2,
+      "minLevel": 4
+    },
+    {
+      "id": "tar",
+      "station": "item.kiln",
+      "produces": "item.tar",
+      "materials": [
+        {
+          "item": "item.log",
+          "count": 2
+        },
+        {
+          "item": "item.resin",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Woodcutting",
+      "skillXp": 20,
+      "displayName": "Katran kaynat",
+      "count": 2,
+      "minLevel": 6
+    },
+    {
+      "id": "fine_lumber",
+      "station": "item.workbench",
+      "produces": "item.fine_lumber",
+      "materials": [
+        {
+          "item": "item.log",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Woodcutting",
+      "skillXp": 21,
+      "displayName": "Kaliteli kereste biç",
+      "minLevel": 8
+    },
+    {
+      "id": "folk_almanac",
+      "station": "item.writing_lectern",
+      "produces": "item.folk_almanac",
+      "materials": [
+        {
+          "item": "item.parchment",
+          "count": 2
+        },
+        {
+          "item": "item.ink",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "WeatherLore",
+      "skillXp": 28,
+      "displayName": "Halk takvimi yaz",
+      "minLevel": 10
+    },
+    {
+      "id": "storm_bell",
+      "station": "item.forge",
+      "produces": "item.storm_bell",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 3
+        },
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.25,
+      "skill": "WeatherLore",
+      "skillXp": 24,
+      "displayName": "Fırtına çanı dök",
+      "minLevel": 8
+    },
+    {
+      "id": "bait",
+      "station": "item.cooking_pot",
+      "produces": "item.bait",
+      "materials": [
+        {
+          "item": "item.bread",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Fishing",
+      "skillXp": 3,
+      "displayName": "Yem yoğur",
+      "count": 4,
+      "minLevel": 2
+    },
+    {
+      "id": "fishing_net",
+      "station": "item.loom",
+      "produces": "item.fishing_net",
+      "materials": [
+        {
+          "item": "item.yarn",
+          "count": 4
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Fishing",
+      "skillXp": 15,
+      "displayName": "Ağ ör",
+      "minLevel": 4
+    },
+    {
+      "id": "fish_oil",
+      "station": "item.cooking_pot",
+      "produces": "item.fish_oil",
+      "materials": [
+        {
+          "item": "item.fish_carp",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Fishing",
+      "skillXp": 9,
+      "displayName": "Balık yağı kaynat",
+      "minLevel": 6
+    },
+    {
+      "id": "seed_vetch",
+      "station": "item.seed_maker",
+      "produces": "item.seed_vetch",
+      "materials": [
+        {
+          "item": "item.feed",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "SoilCare",
+      "skillXp": 4,
+      "displayName": "Fiğ tohumu ayır",
+      "count": 2,
+      "minLevel": 7
+    },
+    {
+      "id": "fish_meal",
+      "station": "item.mortar_pestle",
+      "produces": "item.fish_meal",
+      "materials": [
+        {
+          "item": "item.fish_carp",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Fishing",
+      "skillXp": 7,
+      "displayName": "Balık unu döv",
+      "count": 3,
+      "minLevel": 9
+    },
+    {
+      "id": "cart_wheel",
+      "station": "item.workbench",
+      "produces": "item.cart_wheel",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 3
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Carpentry",
+      "skillXp": 22,
+      "displayName": "Araba tekerleği yap",
+      "minLevel": 7
+    },
+    {
+      "id": "catki_table",
+      "station": "item.workbench",
+      "produces": "item.catki_table",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Carpentry",
+      "skillXp": 18,
+      "displayName": "Çatkı masası yap",
+      "minLevel": 5
+    },
+    {
+      "id": "catki_chair",
+      "station": "item.workbench",
+      "produces": "item.catki_chair",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 3
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Carpentry",
+      "skillXp": 18,
+      "displayName": "Çatkı sandalyesi yap",
+      "minLevel": 5
+    },
+    {
+      "id": "catki_chest",
+      "station": "item.workbench",
+      "produces": "item.catki_chest",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Carpentry",
+      "skillXp": 18,
+      "displayName": "Çatkı sandığı yap",
+      "minLevel": 5
+    },
+    {
+      "id": "yoruk_table",
+      "station": "item.workbench",
+      "produces": "item.yoruk_table",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 3
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Carpentry",
+      "skillXp": 20,
+      "displayName": "Yörük sofrası yap",
+      "minLevel": 6
+    },
+    {
+      "id": "yoruk_chair",
+      "station": "item.workbench",
+      "produces": "item.yoruk_chair",
+      "materials": [
+        {
+          "item": "item.felt",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Carpentry",
+      "skillXp": 20,
+      "displayName": "Yörük minderi yap",
+      "minLevel": 6
+    },
+    {
+      "id": "yoruk_chest",
+      "station": "item.workbench",
+      "produces": "item.yoruk_chest",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 5
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Carpentry",
+      "skillXp": 20,
+      "displayName": "Yörük yüklüğü yap",
+      "minLevel": 6
+    },
+    {
+      "id": "hinge",
+      "station": "item.forge",
+      "produces": "item.hinge",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Smithing",
+      "skillXp": 9,
+      "displayName": "Menteşe döv",
+      "count": 3,
+      "minLevel": 2
+    },
+    {
+      "id": "tin_brooch",
+      "station": "item.forge",
+      "produces": "item.tin_brooch",
+      "materials": [
+        {
+          "item": "item.tin",
+          "count": 1
+        },
+        {
+          "item": "item.glass",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 24,
+      "displayName": "Taşlı takı işle",
+      "minLevel": 9
+    },
+    {
+      "id": "tunic",
+      "station": "item.loom",
+      "produces": "item.tunic",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Weaving",
+      "skillXp": 16,
+      "displayName": "Cepken dik",
+      "minLevel": 5
+    },
+    {
+      "id": "linen_shirt",
+      "station": "item.loom",
+      "produces": "item.linen_shirt",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 2
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Weaving",
+      "skillXp": 16,
+      "displayName": "Keten gömlek dik",
+      "minLevel": 6
+    },
+    {
+      "id": "silk_thread",
+      "station": "item.spinning_wheel",
+      "produces": "item.silk_thread",
+      "materials": [
+        {
+          "item": "item.cocoon",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Weaving",
+      "skillXp": 12,
+      "displayName": "İpek çek",
+      "minLevel": 7
+    },
+    {
+      "id": "silk",
+      "station": "item.loom",
+      "produces": "item.silk",
+      "materials": [
+        {
+          "item": "item.silk_thread",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.25,
+      "skill": "Weaving",
+      "skillXp": 22,
+      "displayName": "İpek dokuma",
+      "minLevel": 7
+    },
+    {
+      "id": "quilt",
+      "station": "item.loom",
+      "produces": "item.quilt",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.wool",
+          "count": 4
+        }
+      ],
+      "durationDays": 0.25,
+      "skill": "Weaving",
+      "skillXp": 26,
+      "displayName": "Yorgan dik",
+      "minLevel": 9
+    },
+    {
+      "id": "dowry_linen",
+      "station": "item.loom",
+      "produces": "item.dowry_linen",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 3
+        },
+        {
+          "item": "item.dye_red",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Weaving",
+      "skillXp": 26,
+      "displayName": "Çeyiz örtüsü işle",
+      "minLevel": 9
+    },
+    {
+      "id": "tulum",
+      "station": "item.saddler_bench",
+      "produces": "item.tulum",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Leatherwork",
+      "skillXp": 18,
+      "displayName": "Tulum dik",
+      "minLevel": 5
+    },
+    {
+      "id": "boots",
+      "station": "item.saddler_bench",
+      "produces": "item.boots",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 2
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Leatherwork",
+      "skillXp": 20,
+      "displayName": "Çizme dik",
+      "minLevel": 6
+    },
+    {
+      "id": "leather_vest",
+      "station": "item.saddler_bench",
+      "produces": "item.leather_vest",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Leatherwork",
+      "skillXp": 20,
+      "displayName": "Deri yelek dik",
+      "minLevel": 7
+    },
+    {
+      "id": "harness",
+      "station": "item.saddler_bench",
+      "produces": "item.harness",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 3
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Leatherwork",
+      "skillXp": 24,
+      "displayName": "Koşum takımı dik",
+      "minLevel": 8
+    },
+    {
+      "id": "race_saddle",
+      "station": "item.saddler_bench",
+      "produces": "item.race_saddle",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 3
+        },
+        {
+          "item": "item.fur",
+          "count": 1
+        },
+        {
+          "item": "item.fine_lumber",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.25,
+      "skill": "Leatherwork",
+      "skillXp": 26,
+      "displayName": "Yarış eyeri dik",
+      "minLevel": 9
+    },
+    {
+      "id": "glass_pane",
+      "station": "item.glass_bench",
+      "produces": "item.glass_pane",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Pottery",
+      "skillXp": 15,
+      "displayName": "Pencere camı kes",
+      "count": 2,
+      "minLevel": 7
+    },
+    {
+      "id": "glazed_tile",
+      "station": "item.kiln",
+      "produces": "item.glazed_tile",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 2
+        },
+        {
+          "item": "item.dye_blue",
+          "count": 1
+        },
+        {
+          "item": "item.firewood",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.25,
+      "skill": "Pottery",
+      "skillXp": 26,
+      "displayName": "Çini sırla",
+      "count": 4,
+      "minLevel": 9
+    },
+    {
+      "id": "torch",
+      "station": "item.chandler_table",
+      "produces": "item.torch",
+      "materials": [
+        {
+          "item": "item.tallow",
+          "count": 1
+        },
+        {
+          "item": "item.firewood",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Chandlery",
+      "skillXp": 9,
+      "displayName": "Meşale sar",
+      "count": 3,
+      "minLevel": 3
+    },
+    {
+      "id": "scented_candle",
+      "station": "item.chandler_table",
+      "produces": "item.scented_candle",
+      "materials": [
+        {
+          "item": "item.beeswax",
+          "count": 2
+        },
+        {
+          "item": "item.lavender",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Chandlery",
+      "skillXp": 15,
+      "displayName": "Kokulu mum dök",
+      "minLevel": 6
+    },
+    {
+      "id": "bay_soap",
+      "station": "item.chandler_table",
+      "produces": "item.bay_soap",
+      "materials": [
+        {
+          "item": "item.olive_oil",
+          "count": 1
+        },
+        {
+          "item": "item.bay_leaf",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Chandlery",
+      "skillXp": 18,
+      "displayName": "Defne sabunu kaynat",
+      "minLevel": 6
+    },
+    {
+      "id": "mine_candle",
+      "station": "item.chandler_table",
+      "produces": "item.mine_candle",
+      "materials": [
+        {
+          "item": "item.tallow",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Chandlery",
+      "skillXp": 15,
+      "displayName": "Maden mumu dök",
+      "minLevel": 7
+    },
+    {
+      "id": "festival_candle",
+      "station": "item.chandler_table",
+      "produces": "item.festival_candle",
+      "materials": [
+        {
+          "item": "item.beeswax",
+          "count": 3
+        },
+        {
+          "item": "item.dye_red",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Chandlery",
+      "skillXp": 18,
+      "displayName": "Şenlik mumu dök",
+      "minLevel": 8
+    },
+    {
+      "id": "sealing_wax",
+      "station": "item.chandler_table",
+      "produces": "item.sealing_wax",
+      "materials": [
+        {
+          "item": "item.beeswax",
+          "count": 1
+        },
+        {
+          "item": "item.resin",
+          "count": 1
+        },
+        {
+          "item": "item.dye_red",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Chandlery",
+      "skillXp": 12,
+      "displayName": "Mühür mumu kaynat",
+      "count": 2,
+      "minLevel": 9
+    },
+    {
+      "id": "gravestone",
+      "station": "item.stonecutter",
+      "produces": "item.gravestone",
+      "materials": [
+        {
+          "item": "item.marble",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Masonry",
+      "skillXp": 24,
+      "displayName": "Mezar taşı yontup yaz",
+      "minLevel": 8
+    },
+    {
+      "id": "master_lantern",
+      "station": "item.forge",
+      "produces": "item.master_lantern",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 2
+        },
+        {
+          "item": "item.glass",
+          "count": 1
+        },
+        {
+          "item": "item.mine_candle",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Mining",
+      "skillXp": 15,
+      "displayName": "Usta fenerini yap",
+      "minLevel": 10
+    },
+    {
+      "id": "hund_rail",
+      "station": "item.workbench",
+      "produces": "item.hund_rail",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Engineering",
+      "skillXp": 20,
+      "displayName": "Hund rayı kur",
+      "minLevel": 6
+    },
+    {
+      "id": "windlass",
+      "station": "item.workbench",
+      "produces": "item.windlass",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Engineering",
+      "skillXp": 22,
+      "displayName": "Bocurgat kur",
+      "minLevel": 7
+    },
+    {
+      "id": "patch_quilt",
+      "station": "item.loom",
+      "produces": "item.patch_quilt",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Salvage",
+      "skillXp": 3,
+      "displayName": "Yamalı yorgan dik",
+      "minLevel": 8
+    },
+    {
+      "id": "wedding_dish",
+      "station": "item.cooking_pot",
+      "produces": "item.wedding_dish",
+      "materials": [
+        {
+          "item": "item.meat",
+          "count": 2
+        },
+        {
+          "item": "item.flour",
+          "count": 2
+        },
+        {
+          "item": "item.butter",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Cooking",
+      "skillXp": 26,
+      "displayName": "Keşkek döv",
+      "count": 2,
+      "minLevel": 9
+    },
+    {
+      "id": "pomegranate_sherbet",
+      "station": "item.cooking_pot",
+      "produces": "item.pomegranate_sherbet",
+      "materials": [
+        {
+          "item": "item.pomegranate",
+          "count": 3
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Brewing",
+      "skillXp": 9,
+      "displayName": "Nar şerbeti yap",
+      "count": 2,
+      "minLevel": 4
+    },
+    {
+      "id": "aged_vinegar",
+      "station": "item.brew_barrel",
+      "produces": "item.aged_vinegar",
+      "materials": [
+        {
+          "item": "item.vinegar",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Brewing",
+      "skillXp": 26,
+      "displayName": "Sirkeyi yıllandır",
+      "minLevel": 9
+    },
+    {
+      "id": "cough_syrup",
+      "station": "item.alembic",
+      "produces": "item.cough_syrup",
+      "materials": [
+        {
+          "item": "item.honey",
+          "count": 1
+        },
+        {
+          "item": "item.linden",
+          "count": 2
+        },
+        {
+          "item": "item.herb",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Herbalism",
+      "skillXp": 16,
+      "displayName": "Öksürük şurubu kaynat",
+      "count": 2,
+      "minLevel": 5
+    },
+    {
+      "id": "insect_repellent",
+      "station": "item.alembic",
+      "produces": "item.insect_repellent",
+      "materials": [
+        {
+          "item": "item.herb",
+          "count": 2
+        },
+        {
+          "item": "item.resin",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Herbalism",
+      "skillXp": 13,
+      "displayName": "Böcek kovucu damıt",
+      "count": 2,
+      "minLevel": 6
+    },
+    {
+      "id": "sleep_syrup",
+      "station": "item.alembic",
+      "produces": "item.sleep_syrup",
+      "materials": [
+        {
+          "item": "item.tea_chamomile",
+          "count": 2
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        },
+        {
+          "item": "item.lavender",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Herbalism",
+      "skillXp": 20,
+      "displayName": "Uyku şurubu kaynat",
+      "minLevel": 9
+    },
+    {
+      "id": "saffron_remedy",
+      "station": "item.alembic",
+      "produces": "item.saffron_remedy",
+      "materials": [
+        {
+          "item": "item.saffron",
+          "count": 1
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        },
+        {
+          "item": "item.herb",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Herbalism",
+      "skillXp": 20,
+      "displayName": "Safranlı ilaç hazırla",
+      "minLevel": 9
+    },
+    {
+      "id": "manuscript",
+      "station": "item.writing_lectern",
+      "produces": "item.book",
+      "materials": [
+        {
+          "item": "item.parchment",
+          "count": 3
+        },
+        {
+          "item": "item.ink",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.4,
+      "skill": "Literacy",
+      "skillXp": 24,
+      "displayName": "El yazması kopyala",
+      "minLevel": 8
+    },
+    {
+      "id": "dynasty_chronicle",
+      "station": "item.writing_lectern",
+      "produces": "item.dynasty_chronicle",
+      "materials": [
+        {
+          "item": "item.parchment",
+          "count": 4
+        },
+        {
+          "item": "item.ink",
+          "count": 2
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.5,
+      "skill": "Literacy",
+      "skillXp": 28,
+      "displayName": "Hanedan kroniğini yaz",
+      "minLevel": 10
+    },
+    {
+      "id": "drum",
+      "station": "item.workbench",
+      "produces": "item.drum",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        },
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Music",
+      "skillXp": 8,
+      "displayName": "Davul ger",
+      "minLevel": 6
+    },
+    {
+      "id": "wheelbarrow",
+      "station": "item.workbench",
+      "produces": "item.wheelbarrow",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 3
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Carting",
+      "skillXp": 1,
+      "displayName": "El arabası yap"
+    },
+    {
+      "id": "horse_cart",
+      "station": "item.workbench",
+      "produces": "item.horse_cart",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 6
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.25,
+      "skill": "Carting",
+      "skillXp": 3,
+      "displayName": "At arabası yap",
+      "minLevel": 3
+    },
+    {
+      "id": "sled",
+      "station": "item.workbench",
+      "produces": "item.sled",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Carting",
+      "skillXp": 2,
+      "displayName": "Kızak yap",
+      "minLevel": 7
+    },
+    {
+      "id": "covered_cart",
+      "station": "item.workbench",
+      "produces": "item.covered_cart",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 6
+        },
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.cart_wheel",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Carting",
+      "skillXp": 4,
+      "displayName": "Örtülü araba yap",
+      "minLevel": 9
     }
   ],
   "animals": [
@@ -29497,7 +35772,7 @@
       "kind": "door",
       "price": 10,
       "color": "#7A5530",
-      "level": 2,
+      "level": 4,
       "heatLoss": 0.9
     },
     {
@@ -29506,7 +35781,7 @@
       "kind": "door",
       "price": 12,
       "color": "#96703F",
-      "level": 3,
+      "level": 4,
       "heatLoss": 1.1
     },
     {
@@ -29557,7 +35832,7 @@
       "kind": "window",
       "price": 9,
       "color": "#C7D9E6",
-      "level": 3,
+      "level": 4,
       "levels": [
         0,
         1
@@ -29753,7 +36028,8 @@
       "color": "#7E7A74",
       "floorBase": "Stone",
       "material": "item.stone",
-      "materialCount": 1
+      "materialCount": 1,
+      "level": 2
     },
     {
       "id": "floor_brick",
@@ -30493,7 +36769,7 @@
       "kind": "door",
       "price": 11,
       "color": "#8E3027",
-      "level": 2
+      "level": 4
     },
     {
       "id": "door_blue",
@@ -30501,7 +36777,7 @@
       "kind": "door",
       "price": 11,
       "color": "#3A5A84",
-      "level": 3
+      "level": 4
     },
     {
       "id": "door_green",
@@ -30509,7 +36785,7 @@
       "kind": "door",
       "price": 11,
       "color": "#4C6B41",
-      "level": 3
+      "level": 4
     },
     {
       "id": "door_black",
@@ -30542,7 +36818,7 @@
       "kind": "window",
       "price": 8,
       "color": "#C9A3A0",
-      "level": 2
+      "level": 4
     },
     {
       "id": "window_shutter_blue",
@@ -30550,7 +36826,7 @@
       "kind": "window",
       "price": 8,
       "color": "#A8BBD6",
-      "level": 2
+      "level": 4
     },
     {
       "id": "window_shutter_green",
@@ -30558,7 +36834,7 @@
       "kind": "window",
       "price": 8,
       "color": "#B2C4A6",
-      "level": 3
+      "level": 4
     },
     {
       "id": "window_grille",

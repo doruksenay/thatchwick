@@ -63,7 +63,8 @@ namespace Thatchwick.Core.Progress
             foreach (var d in db.Items.All)
                 foreach (var i in d.Interactions)
                 {
-                    if (i.Skill != s || i.SkillXp <= 0 || i.DurationDays <= 0 || i.Hidden) continue;
+                    // Beceri işleri (skillWork: imece, misafir odası, aşı...) seyrek ya da bekleme süreli; tekrar kaynağı sayılmaz.
+                    if (i.Skill != s || i.SkillXp <= 0 || i.DurationDays <= 0 || i.Hidden || i.SkillWork != null) continue;
                     double r = i.SkillXp / i.DurationDays;
                     if (r > rate) { rate = r; best = $"{d.Id}.{i.Id}"; }
                 }

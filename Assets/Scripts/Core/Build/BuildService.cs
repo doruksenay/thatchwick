@@ -372,11 +372,25 @@ namespace Thatchwick.Core.Build
                 removed.Add(it.Def); total += SellValue(it);
                 if (it.Def.IsFillDecor) DecorSystem.EmptyInto(it, _house, _content);   // içindekiler satılmaz, envantere döner
             }
+            int salvageLevel = SalvageLevel?.Invoke() ?? 0;
+            if (salvageLevel >= SalvageAkceLevel && total > 0) total = (int)Math.Round(total * SalvageAkceFactor, MidpointRounding.AwayFromZero);   // söküm akçesi (belge 45)
             if (total > 0) _house.AddAkce(total);
             // Geri kazanım: sökülen eşyadan malzemenin bir kısmı geri döner (akçeye ek).
             var salvage = new List<KeyValuePair<string, int>>();
-            int salvageLevel = SalvageLevel?.Invoke() ?? 0;
-            if (salvageLevel > 0) foreach (var def in removed) salvage.AddRange(SalvageOf(def, salvageLevel));
+            if (salvageLevel > 0)
+                foreach (var it in removedItems)
+                {
+                    if (it.Def.IsKeepsake) continue;
+                    var part = SalvageOf(it.Def, salvageLevel);
+                    // Yıkık eşyadan malzeme (Geri kazanım 7): hasarlı eşya da tam pay verir (önce yarısı).
+                    if (it.Condition == ItemCondition.Damaged && salvageLevel < SalvageBrokenLevel)
+                        for (int k = 0; k < part.Count; k++) part[k] = new KeyValuePair<string, int>(part[k].Key, part[k].Value / 2);
+                    part.RemoveAll(kv => kv.Value <= 0);
+                    salvage.AddRange(part);
+                    // Hatıra (Geri kazanım 9): eski eşyanın içinden bir hatıra çıkabilir.
+                    if (salvageLevel >= SalvageMementoLevel && MementoRoll != null && MementoRoll() && _content.Items.Contains(MementoId))
+                        salvage.Add(new KeyValuePair<string, int>(MementoId, 1));
+                }
             foreach (var kv in salvage) _house.AddItem(kv.Key, kv.Value);
             if (salvage.Count > 0) Salvaged?.Invoke(salvage);
             Record("Eşya satışı", () =>
@@ -404,6 +418,13 @@ namespace Thatchwick.Core.Build
         /// <summary>Geri kazanım oranı: 1. seviye %10, seviye başına +%5 (10. seviyede %55).</summary>
         public static double SalvageFraction(int level) => level <= 0 ? 0 : 0.10 + 0.05 * (level - 1);
 
+        // Geri kazanım basamakları (belge 45).
+        public const int SalvageAkceLevel = 2, SalvageSortLevel = 3, SalvageNailLevel = 4, SalvageBrokenLevel = 7, SalvageMementoLevel = 9;
+        public const double SalvageAkceFactor = 1.10, MementoChance = 0.05;
+        public const string MementoId = "item.old_keepsake";
+        /// <summary>Hatıra zarı (tohumlu rastgele); null ise hatıra çıkmaz.</summary>
+        public Func<bool> MementoRoll { get; set; }
+
         /// <summary>
         /// Bir eşyanın sökülünce verdiği malzeme: tarifle yapılan eşyada tarifin malzemesinden, satın alınan ahşap/metal/
         /// kumaş/kil eşyada fiyatına göre tahta/çivi/iplik/kil. Oran geri kazanım seviyesiyle artar.
@@ -425,16 +446,29 @@ namespace Thatchwick.Core.Build
                 foreach (var c in recipe.AllConsumed())
                 {
                     int n = (int)Math.Round(c.Count * f, MidpointRounding.AwayFromZero);
+                    if (level >= SalvageSortLevel && c.Count > 1) n++;   // ayıklama: her malzemeden bir fazla
+                    n = Math.Min(n, c.Count);
                     if (n > 0) result.Add(new KeyValuePair<string, int>(c.ItemId, n));
                 }
+                AddNails(def, level, result);
                 return result;
             }
             string material = def.FinishGroup == "wood" ? "item.plank" : def.FinishGroup == "metal" ? "item.nails"
                 : def.FinishGroup == "cloth" ? "item.yarn" : def.FinishGroup == "clay" ? "item.clay" : null;
             if (material == null || !_content.Items.Contains(material)) return result;
             int units = (int)Math.Round(Math.Max(1, def.Price / 10) * f, MidpointRounding.AwayFromZero);
+            if (level >= SalvageSortLevel && units > 0) units++;
             if (units > 0) result.Add(new KeyValuePair<string, int>(material, units));
+            AddNails(def, level, result);
             return result;
+        }
+
+        /// <summary>Çivi ve menteşe (Geri kazanım 4): ahşap ve metal eşyadan bir çivi, kapılı dolaptan menteşe.</summary>
+        private void AddNails(ItemDef def, int level, List<KeyValuePair<string, int>> result)
+        {
+            if (level < SalvageNailLevel || (def.FinishGroup != "wood" && def.FinishGroup != "metal")) return;
+            if (_content.Items.Contains("item.nails") && !result.Exists(kv => kv.Key == "item.nails")) result.Add(new KeyValuePair<string, int>("item.nails", 1));
+            if (def.Storage > 0 && _content.Items.Contains("item.hinge")) result.Add(new KeyValuePair<string, int>("item.hinge", 1));
         }
 
         private PlacementCheck CheckOwned(ItemDef def, GridPos position, int rotation)
@@ -828,6 +862,11 @@ namespace Thatchwick.Core.Build
         /// Envanterdeki fidanı/tohumu dikiyor: kendi arsanda, dış mekânda (oda içinde değil), çim ya da
         /// toprak zeminli, boş karoya. Bitki büyümeye 0'dan başlar.
         /// </summary>
+        /// <summary>Sera ekimi için gereken Çiftçilik (belge 45).</summary>
+        public const int GreenhouseLevel = 6;
+        /// <summary>Hanenin en iyi Çiftçilik seviyesi; null ise sera sınırı yok.</summary>
+        public Func<int> GreenhouseSkill { get; set; }
+
         public PlacementCheck Plant(string seedId, GridPos tile, out ItemInstance planted)
         {
             planted = null;
@@ -839,6 +878,8 @@ namespace Thatchwick.Core.Build
             var room = map.Rooms.RoomAt(tile);
             if (room != null && room.IsIndoor && !(Plants != null && Plants.IsGreenhouse(room)))
                 return PlacementCheck.Fail("Ev içine dikilmez, dışarıda bir yer seç (ya da odaya pencere aç: sera).");
+            if (room != null && room.IsIndoor && GreenhouseSkill != null && GreenhouseSkill() < GreenhouseLevel)
+                return PlacementCheck.Fail($"Sera ekimi için Çiftçilik {GreenhouseLevel} gerekli.");
             var floor = map.GetFloor(tile);
             var plantDef = _content.Items.Get(seed.PlantsAs);
             if (plantDef.NeedsTilledSoil && floor != FloorType.Dirt) return PlacementCheck.Fail("Ekin yalnızca toprağa ekilir (yapı modu > Toprak).");

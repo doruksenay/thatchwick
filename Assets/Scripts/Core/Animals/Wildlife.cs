@@ -290,13 +290,30 @@ namespace Thatchwick.Core.Animals
 
     public static class Hunting
     {
+        /// <summary>Tür başına en düşük Avcılık seviyesi (belge 45: karaca 4, yaban domuzu 6, kurt 7).</summary>
+        public static int MinLevel(string speciesId) =>
+            speciesId == "wild.roe_deer" ? 4 : speciesId == "wild.boar" ? 6 : speciesId == "wild.wolf" ? 7 : 1;
+
+        /// <summary>Tazı ustalığı: Avcılık 8'de tazının katkısı +%10 daha.</summary>
+        public const int HoundMasterLevel = 8;
+        /// <summary>Gözcülük: Avcılık 9'da avcı kurt saldırısına karşı nöbet tutar.</summary>
+        public const int WatchLevel = 9;
+
+        /// <summary>İz okuma (Avcılık 2): türün izini anlatan kısa metin.</summary>
+        public static string TrackText(string speciesId)
+        {
+            var s = WildCatalog.Get(speciesId);
+            if (s == null) return null;
+            return $"{s.Name} izi: {s.Habitat}" + (s.Night ? ", gece dolaşır" : ", gündüz görülür") + (s.Huntable ? $"; Avcılık {MinLevel(speciesId)} ile avlanır." : "; avlanmaz.");
+        }
+
         /// <summary>Başarı şansı: yay %35 + Avcılık seviye başına %6 − ürkeklik x %20 (tazı +%15); tuzak %25 + %4/sv.</summary>
         public static double Chance(WildSpecies s, HuntMethod m, int huntingLevel, bool houndHelps)
         {
             if (s == null || !s.Huntable) return 0;
             if (m == HuntMethod.Trap && !s.Trappable) return 0;
             double c = m == HuntMethod.Bow
-                ? 0.35 + 0.06 * (huntingLevel - 1) - 0.20 * s.Shyness + (houndHelps ? 0.15 : 0)
+                ? 0.35 + 0.06 * (huntingLevel - 1) - 0.20 * s.Shyness + (houndHelps ? (huntingLevel >= HoundMasterLevel ? 0.25 : 0.15) : 0)
                 : 0.25 + 0.04 * (huntingLevel - 1);
             return Math.Max(0.05, Math.Min(0.95, c));
         }
@@ -307,6 +324,7 @@ namespace Thatchwick.Core.Animals
             var r = new HuntResult { SpeciesId = speciesId };
             if (s == null || !s.Huntable) { r.Message = s != null && s.Id == "wild.bear" ? "Ayı avlanmaz; uzak dur." : "Bu avlanmaz."; return r; }
             int level = hunter != null ? hunter.Skills.GetLevel(SkillType.Hunting) : 1;
+            if (level < MinLevel(speciesId)) { r.Message = $"{s.Name} avı için Avcılık {MinLevel(speciesId)} gerekli."; return r; }
             double chance = Chance(s, m, level, houndHelps);
             if (chance <= 0) { r.Message = "Bu yöntemle olmaz."; return r; }
             hunter?.GainSkillXp(SkillType.Hunting, 4);

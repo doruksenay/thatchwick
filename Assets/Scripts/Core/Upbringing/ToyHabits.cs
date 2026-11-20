@@ -143,11 +143,14 @@ namespace Thatchwick.Core.Upbringing
         /// Bir oynayış bitti. teacher: yanında öğreten usta (o oyuncakta ustalaşmış yetişkin ya da yaşlı).
         /// Ustalık bu oynayışla açıldıysa true.
         /// </summary>
+        /// <summary>Alışkanlık kazanç çarpanı (belge 45: Ebeveynlik 8 "çocukluk izi şansı" ×1,25); null ise 1.</summary>
+        public Func<double> GainFactor { get; set; }
+
         public bool OnPlayed(Character c, string itemId, double today, Character teacher = null)
         {
             var def = Def(itemId);
             if (c == null || def == null || c.IsDead) return false;
-            double gain = def.HabitPerPlay * AgeFactor(c.Stage);
+            double gain = def.HabitPerPlay * AgeFactor(c.Stage) * (GainFactor != null ? GainFactor() : 1.0);
             if (gain <= 0) return false;
             if (teacher != null && teacher.Id != c.Id && !teacher.IsDead && IsMastered(teacher.Id, itemId))
             {

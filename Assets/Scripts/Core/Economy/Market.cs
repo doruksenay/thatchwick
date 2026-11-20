@@ -238,7 +238,7 @@ namespace Thatchwick.Core.Economy
                 return PlacementCheck.Fail("Depo dolu.");
 
             for (int i = 0; i < offer.GiveCount; i++) _house.TryTakeItem(offer.GiveItem);
-            if (offer.IsContract) _house.AddAkce(offer.RewardAkce);
+            if (offer.IsContract) _house.AddAkce((int)Math.Round(offer.RewardAkce * (ContractFactor != null ? ContractFactor() : 1.0)));
             else { _house.AddItem(offer.GetItem, offer.GetCount); _house.MarkBought(offer.GetItem, offer.GetCount); }
             offer.Taken = true;
             TradeXp(10 + 1.5 * Math.Sqrt(Math.Max(0, offer.RewardAkce)));
@@ -299,5 +299,8 @@ namespace Thatchwick.Core.Economy
 
         /// <summary>Günün özel siparişleri (usta siparişi); null ise yok.</summary>
         public Func<long, IEnumerable<(string item, int count, int reward, string label, int reputation)>> SpecialContracts { get; set; }
+
+        /// <summary>Köy işi ödül çarpanı (Okuryazarlık 7 "Sözleşme yaz"); null ise 1.</summary>
+        public Func<double> ContractFactor { get; set; }
     }
 }

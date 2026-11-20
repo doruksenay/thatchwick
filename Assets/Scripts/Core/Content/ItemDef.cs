@@ -257,6 +257,8 @@ namespace Thatchwick.Core.Content
         /// Tarifi olmayan eşyada null; kilit kategoriden gelir.
         /// </summary>
         public Characters.SkillType? CraftSkill { get; set; }
+        /// <summary>İçerikte açıkça verilen kilit becerisi ("lockSkill"); tarif ve bitki kuralından önce gelir.</summary>
+        public Characters.SkillType? LockSkill { get; set; }
         /// <summary>Ekin: yalnızca toprak (sürülmüş) zemine dikilir.</summary>
         public bool NeedsTilledSoil { get; set; }
         /// <summary>Kış gelince donar ve kaybolur (hasat edilmemiş ekin).</summary>

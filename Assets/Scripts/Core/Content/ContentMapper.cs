@@ -56,6 +56,7 @@ namespace Thatchwick.Core.Content
                     ProtectRadius = dto.protectRadius,
                     PollinateRadius = dto.pollinate,
                     PlantsAs = string.IsNullOrWhiteSpace(dto.plantsAs) ? null : dto.plantsAs,
+                    LockSkill = !string.IsNullOrWhiteSpace(dto.lockSkill) && Enum.TryParse(dto.lockSkill, true, out SkillType lockSkill) && Enum.IsDefined(typeof(SkillType), lockSkill) ? lockSkill : (SkillType?)null,
                     Category = string.IsNullOrWhiteSpace(dto.category) ? "furniture" : dto.category,
                     StyleSet = string.IsNullOrWhiteSpace(dto.styleSet) ? null : dto.styleSet,
                     Rooms = dto.rooms != null ? new List<string>(dto.rooms) : new List<string>(),
@@ -207,7 +208,7 @@ namespace Thatchwick.Core.Content
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
                             || i.addIce > 0f || i.requiresFrost || i.piped || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter
-                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents || i.fillDecor || i.eatContents || !string.IsNullOrWhiteSpace(i.homeAction);
+                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents || i.fillDecor || i.eatContents || !string.IsNullOrWhiteSpace(i.homeAction) || !string.IsNullOrWhiteSpace(i.skillWork);
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -278,6 +279,7 @@ namespace Thatchwick.Core.Content
                             FillDecor = i.fillDecor,
                             EatContents = i.eatContents,
                             HomeAction = string.IsNullOrWhiteSpace(i.homeAction) ? null : i.homeAction.Trim(),
+                            SkillWork = string.IsNullOrWhiteSpace(i.skillWork) ? null : i.skillWork.Trim(),
                             UpgradeId = string.IsNullOrWhiteSpace(i.upgrade) ? null : i.upgrade.Trim()
                         };
                         AddMaterials(interaction, i.materials);
@@ -326,6 +328,7 @@ namespace Thatchwick.Core.Content
             }
 
             ApplyRecipes(file.recipes, db, errors);
+            ApplyPlantSkills(db);
             ApplyAnimals(file.animals, db, errors);
             ApplyBuildParts(file.buildParts, db, errors);
             ApplyEffects(file.effects, db, errors);
@@ -333,6 +336,25 @@ namespace Thatchwick.Core.Content
             LifeContentMapper.Apply(file, db, errors);
             errors.AddRange(db.Validate());
             return errors;
+        }
+
+        /// <summary>
+        /// Bitkinin kilit becerisi hasat/toplama etkileşiminin becerisidir (ekin Çiftçilik, meyve ağacı Bahçıvanlık);
+        /// tohum ve fidan bitkisininkini alır (belge 45: "plant" kategorisi Marangozluk'a düşmesin).
+        /// </summary>
+        private static void ApplyPlantSkills(ContentDatabase db)
+        {
+            foreach (var d in db.Items.All) if (d.LockSkill.HasValue) d.CraftSkill = d.LockSkill;
+            foreach (var d in db.Items.All)
+            {
+                if (d.CraftSkill.HasValue || d.Category != "plant") continue;
+                foreach (var i in d.Interactions)
+                    if (i.Skill.HasValue && (i.Id == "harvest" || i.Id == "pick" || i.TakesFruit)) { d.CraftSkill = i.Skill; break; }
+                if (!d.CraftSkill.HasValue) foreach (var i in d.Interactions) if (i.Skill.HasValue && i.Id == "chop") { d.CraftSkill = i.Skill; break; }
+            }
+            // Tohum ve fidan bitkisinin becerisini alır (tohum yapıcı tarifi Bahçıvanlık olsa da ekin tohumu Çiftçilik kilidindedir).
+            foreach (var d in db.Items.All)
+                if (!d.LockSkill.HasValue && d.PlantsAs != null && db.Items.TryGet(d.PlantsAs, out var plant) && plant.CraftSkill.HasValue) d.CraftSkill = plant.CraftSkill;
         }
 
         private static void ApplyBuildParts(BuildPartDto[] parts, ContentDatabase db, List<string> errors)

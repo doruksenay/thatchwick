@@ -124,12 +124,15 @@ namespace Thatchwick.Core.Work
             _rng = new Random(seed);
         }
 
+        public const string CrayfishTrapId = "item.crayfish_trap", CrayfishId = "item.fish_crayfish";
+
         // Balık sepeti: değdiği göletin balık tutma ürünlerinden, mevsimine uyan ve ustalık istemeyen birini seçer.
         private string TrapCatch(ItemInstance trap, Time.Season? season)
         {
             foreach (var pond in _world.Items)
             {
                 if (pond.IsDecor || pond == trap || !WaterNetwork.Touches(trap, pond)) continue;
+                if (trap.Def.Id == CrayfishTrapId) return pond.Def.Interactions.Exists(i => i.Produce.Exists(p => p.ItemId == CrayfishId)) ? CrayfishId : null;   // kerevit tuzağı (belge 45)
                 var pool = new List<ProduceDef>();
                 foreach (var i in pond.Def.Interactions)
                 {

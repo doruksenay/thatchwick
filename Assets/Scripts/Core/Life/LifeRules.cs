@@ -12,6 +12,9 @@ namespace Thatchwick.Core.Life
     /// </summary>
     public static class LifeRules
     {
+        /// <summary>Ebeveynlik ustalığı: çocuk büyürken ikinci huyunu usta ebeveynden alır (belge 45, 10. seviye).</summary>
+        public const int ParentingMasterLevel = 10;
+
         public const int BranchLevelFirst = 5;
         public const int BranchLevelSecond = 10;
 
@@ -122,8 +125,11 @@ namespace Thatchwick.Core.Life
             else
             {
                 if (traits.Count >= Character.MaxTraits) return null;
-                // Ebeveyn huyu: önce henüz huyunu vermemiş ebeveynden.
+                // Ebeveyn huyu: önce henüz huyunu vermemiş ebeveynden. Usta ebeveyn (Ebeveynlik 10) kendi huyunu aktarır (belge 45).
                 string pick = null;
+                foreach (var parent in new[] { mother, father })
+                    if (pick == null && parent != null && parent.Skills.GetLevel(SkillType.Parenting) >= ParentingMasterLevel)
+                        pick = PickParentTrait(db, rng, parent, traits);
                 foreach (var parent in new[] { mother, father })
                 {
                     if (parent == null) continue;

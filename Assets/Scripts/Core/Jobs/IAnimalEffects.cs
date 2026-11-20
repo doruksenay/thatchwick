@@ -15,7 +15,15 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Eyeri çıkar (envantere döner).</summary>
         Unsaddle = 3,
         /// <summary>Bin.</summary>
-        Mount = 4
+        Mount = 4,
+        /// <summary>Eğit (Hayvancılık 5; köpekte Avcılık 8 "av köpeği"): hayvana komut, hayvan XP'si ve dostluk; günde bir.</summary>
+        Train = 5,
+        /// <summary>Ata numara öğret (Binicilik 7): at XP'si, dostluk, binicinin eğlencesi; günde bir.</summary>
+        Trick = 6,
+        /// <summary>Hasta hayvana bak (Hekimlik 4): iyileşme şansı seviyeyle artar.</summary>
+        Treat = 7,
+        /// <summary>Yarışa hazırla (Hayvancılık 9): ilk yarışmada puan +8.</summary>
+        PrepContest = 8
     }
 
     /// <summary>Hayvan işlerinin kuralları ve etkileri (Core.Animals.AnimalCare uygular).</summary>
