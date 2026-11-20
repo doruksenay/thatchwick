@@ -4,7 +4,7 @@ title: Yıkanırken su
 kind: sfx
 family: foley
 freq: B
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
@@ -31,5 +31,11 @@ candidates: 8
 passed: 8
 credits_spent: 866
 generated_at: '2026-11-20T17:29:00Z'
+pick:
+- c1
+- c2
+- c5
+- c7
+karar_zamani: '2026-11-20'
 ---
 Bathing: water poured from a small bowl and running back into a tub, with a gentle splash.

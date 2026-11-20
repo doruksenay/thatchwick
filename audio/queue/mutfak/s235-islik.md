@@ -4,32 +4,30 @@ title: Çalışırken ıslık
 kind: sfx
 family: voice
 freq: B
-status: review
+status: ready
 approved_by: user
 depends_on:
 - s140
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
 key: whistle.tune
-generate: 16
-keep: 10
+generate: 8
+keep: 4
 duration_s: 3.0
-cost_max: 2150
+cost_max: 1100
 axes:
   tune:
-  - slow lilting folk phrase
-  - cheerful skipping phrase
-  - short rising and falling phrase
-  - absent-minded wandering phrase
+  - slow lilting lullaby-like phrase
+  - cheerful little skipping phrase
   whistler:
-  - soft airy whistle
-  - clear bright whistle
+  - soft breathy whistle
+  - gentle mellow whistle
 cost_max_eski: 900
 not_cost_max: '20.11.2026: kullanıcı onayıyla tahmine göre yükseltildi'
-claimed_by: runnervm0hi8g
-claimed_at: '2026-11-20T17:28:15Z'
-candidates: 16
-passed: 16
-credits_spent: 0
-generated_at: '2026-11-20T17:28:42Z'
+inceleme_notlari:
+- tarih: '2026-11-20'
+  karar: yeniden
+  not: beğenmedim cozy değil
+yeniden_sayisi: 1
+prompt_influence: 0.7
 ---
-A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments.
+A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments.

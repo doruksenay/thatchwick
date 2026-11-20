@@ -4,7 +4,7 @@ title: Kazanda karıştırma
 kind: sfx
 family: foley
 freq: A
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
@@ -31,5 +31,11 @@ candidates: 12
 passed: 12
 credits_spent: 165
 generated_at: '2026-11-20T17:27:39Z'
+pick:
+- c2
+- c8
+- c10
+- c11
+karar_zamani: '2026-11-20'
 ---
 A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath.

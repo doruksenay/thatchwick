@@ -4,7 +4,7 @@ title: Kompost yığınını çevirme
 kind: sfx
 family: tools
 freq: B
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 key: yard.compost_turn
@@ -24,5 +24,11 @@ candidates: 8
 passed: 8
 credits_spent: 0
 generated_at: '2026-11-20T17:29:45Z'
+pick:
+- c4
+- c5
+- c6
+- c7
+karar_zamani: '2026-11-20'
 ---
 A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall.
