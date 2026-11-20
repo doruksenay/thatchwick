@@ -341,6 +341,11 @@ def run_job(job: Job, api, mock: bool, use_git: bool) -> None:
         job.meta["error"] = f"tahmin {est} kredi > cost_max {cost_max}"
         job.save()
         print(f"[{job.id}] durdu: {job.meta['error']}")
+        if use_git:
+            try:
+                git_commit_push([str(job.path.relative_to(ROOT))], f"ses: {job.id} durdu (cost_max)")
+            except Exception as e:
+                print(f"[{job.id}] git hatası: {e}", file=sys.stderr)
         return
     try:
         before = api.credits_left()

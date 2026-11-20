@@ -213,7 +213,7 @@ def git_commit_push(paths: list[str], message: str) -> bool:
         return False
     git("commit", "-m", message)
     branch = git("rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
-    r = git("pull", "--rebase", "origin", branch, check=False)
+    r = git("pull", "--rebase", "--autostash", "origin", branch, check=False)
     if r.returncode != 0:
         print(r.stdout + r.stderr, file=sys.stderr)
         git("rebase", "--abort", check=False)
