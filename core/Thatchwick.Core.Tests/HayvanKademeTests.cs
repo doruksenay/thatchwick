@@ -232,6 +232,39 @@ namespace Thatchwick.Core.Tests
             Assert.NotNull(AnimalContests.Blocker(ContestKind.HorseRace, ok, teen));
         }
 
+        /// <summary>Yarış bahsi: hanenin kayıtlı atı da kartta; kazandıysa bahsin sonucu atın gerçek yarış sonucudur.</summary>
+        [Fact]
+        public void YarisBahsi_HaneninAtiKarttadir()
+        {
+            bool pack = ContentPacks.Adult;
+            try
+            {
+                ContentPacks.Adult = true;
+                var x = Make();
+                var r = Rider(1, 10);
+                var star = Horse(x, 50, (int)AnimalLineage.Noble, 10000, 100f);
+                var bets = new RaceBets(3);
+                var card = bets.Card("festival.fair", 20, 0, new[] { (star, r) }, null);
+                Assert.Equal(AnimalContests.Rivals + 1, card.Runners.Count);
+                Assert.True(card.Runners[0].Mine);
+                Assert.Equal(star.Name, card.Runners[0].Name);
+                Assert.Equal(1.0, card.Runners.Sum(k => k.Chance), 6);
+                Assert.InRange(card.Runners[0].Chance, 0.25, AnimalContests.MaxWinChance + 0.08);   // "Bahisçiler" tahminine yakın
+
+                var purse = new Thatchwick.Core.Build.Household(25);
+                Assert.True(bets.Place(card, 0, 25, purse).IsEmpty);
+                Assert.Equal(star.Name, bets.Resolve(card, star.Id, purse));         // at kazandı
+                Assert.Equal(AnimalContests.BetPayout(25, card.Runners[0].Chance), purse.Akce);
+
+                var lost = new RaceBets(4); var purse2 = new Thatchwick.Core.Build.Household(25);
+                var card2 = lost.Card("festival.fair", 21, 0, new[] { (star, r) }, null);
+                Assert.True(lost.Place(card2, 0, 25, purse2).IsEmpty);
+                Assert.Contains(lost.Resolve(card2, 0, purse2), RaceBets.RivalHorses);  // at kazanamadı: kazanan rakiplerden
+                Assert.Equal(0, purse2.Akce);
+            }
+            finally { ContentPacks.Adult = pack; }
+        }
+
         [Fact]
         public void Yaris_SansEnCok70VeDeterministik()
         {

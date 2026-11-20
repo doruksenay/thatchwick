@@ -9,7 +9,8 @@ namespace Thatchwick.Core.Life
     // Easter egg sahneleri (Project belgesi 55, kullanıcı 20.11.2026): haritada görünen ziyaretçiler, hayvan pozları,
     // karakter gösterileri ve kedinin yere düşürdüğü eşya. Kurallar ve durum burada; çizim oyun katmanında.
 
-    public enum OddWalkerKind { JohanWick = 0, HorselessKnight = 1 }
+    /// <summary>Crier: tellal (karar 20.11.2026); easter egg değil, her sabah yeni ilan varsa panonun yanında durur.</summary>
+    public enum OddWalkerKind { JohanWick = 0, HorselessKnight = 1, Crier = 2 }
 
     /// <summary>
     /// Haritada yürüyen easter egg ziyaretçisi. Nüfusa girmez (evlenmez, yaşlanmaz, hane sayılmaz); yaban ziyaretçileri gibi
