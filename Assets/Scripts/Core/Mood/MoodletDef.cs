@@ -30,6 +30,9 @@ namespace Thatchwick.Core.Mood
         public float HungerDecay { get; set; } = 1f;
         public float EnergyDecay { get; set; } = 1f;
 
+        /// <summary>İç sesin hâli (68a §3). Boşsa <see cref="HalRules.DefaultFor"/> eşlemesi kullanılır.</summary>
+        public Hal? Hal { get; set; }
+
         public bool IsCondition => DurationDays <= 0.0;
         public bool IsPositive => Value > 0;
 

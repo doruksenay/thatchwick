@@ -210,7 +210,7 @@ namespace Thatchwick.Game
                 else if (place == VillagerFreeWill.Tavern && c.Skills.GetLevel(SkillType.Music) >= 1) { pose = "play_music"; fallback = "fun"; }
             }
             if (pose == null) return null;
-            float cyc = ActionCycle(seed);
+            float cyc = CycleOf(actor, seed);
             var f = IsoArt.CharacterAction(c, pose, actor.Direction, cyc);
             if (f == null && fallback != null) f = IsoArt.CharacterAction(c, fallback, actor.Direction, cyc);
             if (f == null && StepPoseStandIns.TryGetValue(pose, out var standIn) && standIn != "idle")

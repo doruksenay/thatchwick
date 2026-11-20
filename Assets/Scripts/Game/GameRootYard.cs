@@ -42,6 +42,8 @@ namespace Thatchwick.Game
         private float _yardScanAt;
         private readonly Dictionary<int, float> _sneezeAt = new Dictionary<int, float>();
         private static readonly Color WetSkin = new Color(0.78f, 0.83f, 0.93f, 1f);
+        private static readonly Color DustySkin = new Color(0.93f, 0.88f, 0.8f, 1f);
+        private static readonly Color PaleSkin = new Color(0.86f, 0.86f, 0.84f, 1f);
         private static readonly Color WetGround = new Color(0.8f, 0.84f, 0.92f, 1f);
 
         private void InitYard()
@@ -303,7 +305,15 @@ namespace Thatchwick.Game
                 var c = actor.Character;
                 if (c == null || actor.Renderer == null || actor.View == null) continue;
                 float wet = c.IsDead || c.Away ? 0f : c.Wetness;
-                if (wet > 0.05f) { actor.Renderer.color = Color.Lerp(Color.white, WetSkin, wet); _wetTinted.Add(c.Id); }
+                // Durum örtüsü (belge 69 K7): ıslak soğuk ton; tozlu toprak tonu; çok aç ya da bitkin soluk.
+                bool tinted = wet > 0.05f;
+                var tint = tinted ? Color.Lerp(Color.white, WetSkin, wet) : Color.white;
+                if (!c.IsDead && !c.Away)
+                {
+                    if (c.Mood != null && c.Mood.Has(MoodCatalog.Dusty)) { tint *= DustySkin; tinted = true; }
+                    if (c.Needs.Get(NeedType.Hunger) < 10f || c.Needs.Get(NeedType.Energy) < 8f) { tint = Color.Lerp(tint, PaleSkin, 0.35f); tinted = true; }
+                }
+                if (tinted) { actor.Renderer.color = tint; _wetTinted.Add(c.Id); }
                 else if (_wetTinted.Remove(c.Id)) actor.Renderer.color = Color.white;
                 if (scale <= 0f || c.IsDead || c.Away) continue;
 

@@ -13,7 +13,7 @@ namespace Thatchwick.Game
     {
         public const float Px = 1f / 32f;
 
-        public enum Kind { Smoke, Spark, Dust, Chip, Leaf, Steam, Soil, Pop, Fly, Moth, Firefly, Butterfly, Bee, Stink, Drip, Splash, Glint, Breath, Dragonfly }
+        public enum Kind { Smoke, Spark, Dust, Chip, Leaf, Steam, Soil, Pop, Fly, Moth, Firefly, Butterfly, Bee, Stink, Drip, Splash, Glint, Breath, Dragonfly, Sweat, Note, Huff }
 
         private struct Particle
         {
@@ -153,6 +153,25 @@ namespace Thatchwick.Game
                         p.Life = Rand(0.5f, 0.9f); p.Size = _rng.NextDouble() < 0.3 ? 2f : 1f;
                         p.Color = new Color(0.86f, 0.94f, 1f, 0.85f);
                         break;
+                    case Kind.Sweat:
+                        // Ter damlası (belge 69 K6): alından yana sıçrayıp düşen açık mavi tek piksel.
+                        p.Vel = new Vector3(Rand(-0.25f, 0.25f), Rand(0.25f, 0.4f), 0f);
+                        p.Life = Rand(0.45f, 0.6f); p.Size = 1f;
+                        p.Color = new Color(0.78f, 0.9f, 1f, 0.95f);
+                        break;
+                    case Kind.Note:
+                        // Islık ve mırıldanma notası: yükselip salınan 2 px nokta, sıcak renk.
+                        p.Pos += new Vector3(Rand(0.05f, 0.15f), 0f, 0f);
+                        p.Vel = new Vector3(Rand(0.02f, 0.06f), Rand(0.2f, 0.28f), 0f);
+                        p.Life = Rand(1.0f, 1.4f); p.Size = 2f; p.Drift = 0.05f;
+                        p.Color = _rng.NextDouble() < 0.5 ? new Color(0.96f, 0.86f, 0.5f, 1f) : new Color(0.9f, 0.72f, 0.42f, 1f);
+                        break;
+                    case Kind.Huff:
+                        // Hırçın soluk: başın yanından kısa, koyu kırmızımsı püf.
+                        p.Vel = new Vector3(Rand(-0.15f, 0.15f), Rand(0.12f, 0.2f), 0f);
+                        p.Life = Rand(0.5f, 0.7f); p.Size = 2f;
+                        p.Color = new Color(0.66f, 0.29f, 0.24f, 0.7f);
+                        break;
                     case Kind.Breath:
                         p.Vel = new Vector3(Rand(-0.02f, 0.04f), Rand(0.08f, 0.14f), 0f);
                         p.Life = Rand(0.7f, 1f); p.Size = 2f; p.Drift = 0.03f;
@@ -239,7 +258,11 @@ namespace Thatchwick.Game
                         p.Vel = new Vector3(Mathf.Sin(t * 1.3f + p.Phase) * 0.22f, Mathf.Sin(t * 6f + p.Phase) * 0.18f + 0.01f, 0f);
                         break;
                     case Kind.Splash:
+                    case Kind.Sweat:
                         p.Vel.y -= 2.6f * dt;
+                        break;
+                    case Kind.Huff:
+                        p.Vel *= 1f - Mathf.Min(1f, 3f * dt);
                         break;
                     case Kind.Smoke:
                     case Kind.Steam:
@@ -261,7 +284,7 @@ namespace Thatchwick.Game
                 float s = size / 4f;
                 p.R.transform.localScale = new Vector3(s, s, 1f);
                 var c = p.Color;
-                c.a *= p.Kind == Kind.Smoke || p.Kind == Kind.Steam || p.Kind == Kind.Breath || p.Kind == Kind.Stink ? (1f - k) * Mathf.Min(1f, k * 6f)
+                c.a *= p.Kind == Kind.Smoke || p.Kind == Kind.Steam || p.Kind == Kind.Breath || p.Kind == Kind.Stink || p.Kind == Kind.Huff ? (1f - k) * Mathf.Min(1f, k * 6f)
                     : p.Kind == Kind.Firefly || p.Kind == Kind.Glint ? Mathf.Sin(k * 3.14159f) * (p.Kind == Kind.Firefly ? 0.5f + 0.5f * Mathf.Sin(t * 5f + p.Phase) : 1f)
                     : 1f - k * k;
                 p.R.color = c;

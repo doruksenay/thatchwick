@@ -110,7 +110,7 @@ namespace Thatchwick.Core.Life
             Relations.Flee = (c, danger) =>
             {
                 var spot = FleeSpot(c.Position, danger);
-                if (spot.HasValue && _runnersById.TryGetValue(c.Id, out var r)) { r.Command(Job.MoveTo(spot.Value)); r.Hold(0.02); }
+                if (spot.HasValue && _runnersById.TryGetValue(c.Id, out var r)) { r.Command(Job.MoveTo(spot.Value).AsHurry()); r.Hold(0.02); }
             };
             Relations.SendToBirthHouse = c =>
             {
