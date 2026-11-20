@@ -4,7 +4,7 @@ title: Hece bankası, Kalın-alçak (pilot, 40 hece)
 kind: voice_syllables
 family: voice
 pilot: true
-status: ready
+status: claimed
 approved_by: auto
 depends_on:
 - s143
@@ -19,6 +19,8 @@ inceleme_notlari:
   karar: yeniden
   not: 'ses değişti (s143): hece bankası yeni sesle yeniden'
 yeniden_sayisi: 1
+claimed_by: runnervmccnms
+claimed_at: '2026-11-20T18:54:57Z'
 ---
 45a bölüm 2.5: konuşmayı oyunda hecelerden birleştirme pilotu. Heceler 8'li gruplar halinde okunur, sessizliklerden bölünür.
 Kabulde hece başına kapıdan geçen ilk kayıt alınır (pick boş bırakılabilir).
