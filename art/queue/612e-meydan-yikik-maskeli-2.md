@@ -1,7 +1,7 @@
 ---
 id: "612e"
 title: "Köy meydanı: değirmen çarkı, köprü, ortak ocağın yıkık hâli (maskeli)"
-status: running
+status: blocked
 claimed_at: 2026-11-20T18:57Z
 approved_by: user        # kullanıcı kararı 2026-11-20: yıkık hâller maskeli düzenlemeyle (Project belgesi 64c §3)
 priority: 15
@@ -37,6 +37,9 @@ Dönem: ortaçağ; yangın, kan, insan yok. Işık sol üstten.
 
 ## Doğrulama
 `validate_iso --kind object --max-colors 48`, `style.py check --family yapi`. Maske dışı fark 0 (sayıyla raporla). Yan yana sayfası `art/results/612e-yanyana.png`: her satırda onarılmış | yıkık | maske.
+
+## Sorular
+Kısmi: köprü yıkık teslim edildi. Çark ve ocak: kaynakları 612c'de reddedildi/teslim edilmedi (`art/results/612c-red/`); kabul edilmiş yeni kaynak gelene kadar yapılamaz. Ayrıntı `art/results/612e-meydan-yikik-maskeli-2.md`.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
