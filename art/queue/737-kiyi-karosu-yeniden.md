@@ -1,7 +1,8 @@
 ---
 id: "737"
 title: "Kıyı karosu yeniden: elmasa oturan su-kara kenarı (346 kıyı karosunun ara düzeltmesi)"
-status: pending
+status: running
+claimed_at: 2026-11-20T23:21Z
 approved_by: user        # kullanıcı 21.11 00:51 "bunları yap" (maliyet 10 gen/çağrı kabul); ilk onay 2026-11-20 (sohbet: "kıyı karosu ve çim tonu için PixelLab işi hazırla"; belge 65b B1)
 priority: 10
 family: zemin
