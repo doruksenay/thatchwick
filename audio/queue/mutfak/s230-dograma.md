@@ -4,7 +4,7 @@ title: Bıçakla doğrama
 kind: sfx
 family: tools
 freq: A
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
@@ -30,5 +30,13 @@ candidates: 12
 passed: 12
 credits_spent: 131
 generated_at: '2026-11-20T14:19:51Z'
+pick:
+- c5
+- c6
+- c7
+- c9
+- c10
+- c11
+karar_zamani: '2026-11-20'
 ---
 A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices.

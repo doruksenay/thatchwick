@@ -1,7 +1,7 @@
 ---
 id: "565"
 title: "Tarım animasyonları 1/2: orak, tırpan, meyve toplama, eğilip toplama, harman (40)"
-status: running
+status: review
 claimed_at: 2026-11-20T15:56Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 40

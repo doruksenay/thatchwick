@@ -76,7 +76,6 @@ TEXT = {
     # ---- engeller ----
     "cook.block.no_serving": ("Sofrada yemek yok.", "There is no food on the table."),
     "cook.block.nothing_to_clear": ("Toplanacak bir şey yok.", "There is nothing to clear."),
-    "cook.block.no_dishes": ("Yıkanacak bulaşık yok.", "There are no dishes to wash."),
     "cook.block.unknown_recipe": ("{name} bu tarifi bilmiyor.", "{name} doesn't know this recipe."),
     "cook.block.spice_slots": ("Bu beceriyle en çok {n} ek baharat konur.", "At this skill, at most {n} extra spices can go in."),
     "cook.block.no_spice": ("{item} yok.", "There is no {item}."),

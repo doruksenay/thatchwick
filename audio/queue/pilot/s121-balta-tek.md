@@ -5,7 +5,7 @@ kind: sfx
 family: tools
 freq: A
 pilot: true
-status: review
+status: accepted
 approved_by: auto
 key: work.chop
 note: '45a bölüm 6: s120 (katmanlı) ile karşılaştırma. Yalnız biri kabul edilir.'
@@ -28,5 +28,8 @@ candidates: 8
 passed: 8
 credits_spent: 0
 generated_at: '2026-11-20T09:54:08Z'
+pick:
+- c6
+karar_zamani: '2026-11-20'
 ---
 One single axe strike into a log on a chopping block, wood chips falling, one strike only.

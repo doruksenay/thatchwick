@@ -4,7 +4,7 @@ title: Balık sudan çıkar (tutuldu)
 kind: sfx
 family: foley
 freq: B
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 key: fish.catch
@@ -21,5 +21,10 @@ candidates: 8
 passed: 8
 credits_spent: 278
 generated_at: '2026-11-20T14:20:57Z'
+pick:
+- c1
+- c7
+- c8
+karar_zamani: '2026-11-20'
 ---
 A small fish pulled out of the water with a splash and dripping water, then a wet flap.

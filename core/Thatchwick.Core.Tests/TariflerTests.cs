@@ -87,8 +87,9 @@ namespace Thatchwick.Core.Tests
                 Assert.True(db.Items.Contains(id), id);
                 // Bir yerde yapılır ...
                 Assert.True(db.Items.All.Any(s => s.Interactions.Any(i => i.Produce.Any(p => p.ItemId == id) && (i.Skill == SkillType.Cooking || i.Skill == SkillType.Baking || i.Skill == SkillType.Brewing))), $"{id} yapılmıyor");   // pekmez İçecekçilik (belge 45)
-                // ... ve tencerede yenince doyurur.
-                var eat = pot.Interactions.FirstOrDefault(i => i.ConsumeItem == id && i.Need == NeedType.Hunger);
+                // ... ve kazanda ya da (pişirerek) ocakta yenince doyurur (63a).
+                var eat = pot.Interactions.FirstOrDefault(i => i.ConsumeItem == id && i.Need == NeedType.Hunger)
+                    ?? db.Items.Get("item.hearth_stone").Interactions.FirstOrDefault(i => i.ConsumeItem == id && i.Need == NeedType.Hunger);
                 Assert.True(eat != null && eat.Restore > 0, $"{id} yenmiyor");
                 if (eat.Moodlet != null || eat.GivesMood) withEffect++;
             }
@@ -105,7 +106,7 @@ namespace Thatchwick.Core.Tests
             var c = Cook();
             var churn = w.PlaceItem(db.Items.Get("item.churn"), new GridPos(2, 4));
             var rack = w.PlaceItem(db.Items.Get("item.drying_rack"), new GridPos(5, 4));
-            var pot = w.PlaceItem(db.Items.Get("item.cooking_pot"), new GridPos(8, 4));
+            var pot = w.PlaceItem(db.Items.Get("item.hearth_stone"), new GridPos(8, 4));   // pişirme ocakta (63a)
             h.AddItem("item.milk", 2); h.AddItem("item.flour", 1); h.AddItem("item.onion", 1);
             var yogurt = churn.Def.Interactions.Single(i => i.Produce.Any(p => p.ItemId == "item.yogurt"));
             fx.Apply(c, churn, yogurt);

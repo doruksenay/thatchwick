@@ -26,5 +26,6 @@ candidates: 4
 passed: 4
 credits_spent: 958
 generated_at: '2026-11-20T14:24:40Z'
+inceleme_notu: '20.11.2026: kullanıcı "yeniden" dedi ama sesleri tek tek beğendi; sorun inceleme sayfasının 5 sn ezgileri üst üste çalmasıydı. Sayfa düzeltildi, yeniden dinlenecek.'
 ---
 A warm, joyful little folk sting for a village communal feast at dusk under a great tree, rising and welcoming.

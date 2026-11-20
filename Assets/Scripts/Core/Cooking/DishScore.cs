@@ -9,9 +9,11 @@ namespace Thatchwick.Core.Cooking
     {
         public int Ingredients, Skill, Mastery, Equipment, Kitchen, Cook, Spice;
         public bool Burnt;
+        /// <summary>Kabın izin verdiği en iyi basamak (belge 63a §5.4: kil tencerede en çok Seçme); kap istemeyen işte sınırsız.</summary>
+        public int MaxQuality = ItemQuality.Max;
         public int Total => Ingredients + Skill + Mastery + Equipment + Kitchen + Cook + Spice;
-        /// <summary>53'teki kalite basamağı (Sıradan / Seçme / Has); yanık yemek bir basamak düşer.</summary>
-        public int Quality => Math.Max(ItemQuality.Common, DishScore.TierOf(Total) - (Burnt ? 1 : 0));
+        /// <summary>53'teki kalite basamağı (Sıradan / Seçme / Has); yanık yemek bir basamak düşer, kabın tavanı keser.</summary>
+        public int Quality => Math.Min(MaxQuality, Math.Max(ItemQuality.Common, DishScore.TierOf(Total) - (Burnt ? 1 : 0)));
     }
 
     /// <summary>
@@ -72,7 +74,10 @@ namespace Thatchwick.Core.Cooking
             return Math.Max(0, Math.Min(MaxCook, pts));
         }
 
-        /// <summary>Ekipman: istasyonun kalitesi ve durumu (hasarlı, kararmış).</summary>
+        /// <summary>
+        /// Ekipman, kap istemeyen işte (çiğ, köz, tepsisiz fırın) ya da mutfak aletleri kapalıyken: istasyonun kalitesi ve
+        /// durumu (hasarlı, kararmış). Kap isteyen işte bileşen mutfak aletlerinden gelir (KitchenSystem.EquipmentPointsFor).
+        /// </summary>
         public static int EquipmentPoints(World.ItemInstance station)
         {
             if (station == null) return 5;

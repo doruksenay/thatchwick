@@ -55,8 +55,14 @@ namespace Thatchwick.Core.Life
             Meals = new MealService(World, House, Content, Recipes, seed != 0 ? Seeds.Derive(seed, 59) : 59)
             {
                 Now = now, Text = text, Find = Population.Find, KitchenPoints = KitchenPointsFor, Members = Household,
-                HasFamilyRecipe = (c, skill) => Legacy != null && FamilyRecipeOf(c, skill)
+                HasFamilyRecipe = (c, skill) => Legacy != null && FamilyRecipeOf(c, skill),
+                // Bulaşık tek sistemde (belge 63a §4): sofranın tabakları mutfak aletlerinin bulaşığına girer.
+                // Kalite (63a §5): ekipman puanı sofra puanının ekipman bileşenidir; kabın tavanı basamağı keser.
+                EquipmentPoints = KitchenTools.EquipmentPointsFor, QualityCap = KitchenTools.QualityCapFor,
+                PlateUsed = KitchenTools.OnTablePlate, PlatesCleared = KitchenTools.AddDirtyTableware,
+                DirtyPile = () => KitchenTools.Enforce ? KitchenTools.DirtyPieces : 0, WashChores = KitchenTools.WashChores
             };
+            KitchenTools.PlatesOnTables = () => Meals.PlatesOnTables;
             Butchery = new Slaughterhouse(null, House, Content, seed != 0 ? Seeds.Derive(seed, 60) : 60)
             {
                 Now = now, Text = text,

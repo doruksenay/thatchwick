@@ -4,7 +4,7 @@ title: Aşevinde yemek (tahta kaşık, toprak kâse)
 kind: sfx
 family: foley
 freq: B
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 note: 'Belge 52: Çınar Aşevi, ücretli yemek ve hayır sofrası.'
@@ -26,5 +26,11 @@ candidates: 8
 passed: 8
 credits_spent: 0
 generated_at: '2026-11-20T14:22:32Z'
+pick:
+- c5
+- c6
+- c7
+- c8
+karar_zamani: '2026-11-20'
 ---
 A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices.

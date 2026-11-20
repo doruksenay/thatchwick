@@ -4,7 +4,7 @@ title: Ağaç ev yapımı, tahtaya çivi çakma
 kind: sfx
 family: tools
 freq: B
-status: review
+status: ready
 approved_by: user
 depends_on: []
 note: 'Project belgesi 52: ulu ağaçta ağaç ev kurma, yapıma devam ve onarım.'
@@ -16,18 +16,18 @@ cost_max: 600
 axes:
   hammer:
   - small iron hammer
-  - wooden mallet on a peg
+  - heavier iron hammer
   height:
-  - up in a tree, slightly hollow plank
-  - on a plank platform with leaves rustling
+  - plank on a tree platform
+  - plank resting on a branch
 pilot_onayi_bekliyordu:
 - s120
 not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
-claimed_by: runnervm0hi8g
-claimed_at: '2026-11-20T14:21:43Z'
-candidates: 8
-passed: 8
-credits_spent: 372
-generated_at: '2026-11-20T14:21:57Z'
+inceleme_notlari:
+- tarih: '2026-11-20'
+  karar: yeniden
+  not: hiçbiri çekiç sesi değil, arada sürekli sesler var; öyle çivi çakılmaz
+yeniden_sayisi: 1
+prompt_influence: 0.7
 ---
-Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak.
+Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling.

@@ -46,12 +46,13 @@ namespace Thatchwick.Core.Cooking
     public sealed class MealService
     {
         public const string TableTag = "diningtable";
-        public const string EatServing = "eatServing", ClearTable = "clearTable", WashDishes = "washDishes", FeedScrap = "feedScrap";
+        public const string EatServing = "eatServing", ClearTable = "clearTable", FeedScrap = "feedScrap";
         public const string EatInteractionId = "eat_serving";
         /// <summary>Açıkta kalan yemek bu kadar günde bayatlar, şu kadar günde bozulur.</summary>
         public const double StaleAfter = 0.35, SpoilAfter = 1.0;
         /// <summary>Aynı sofrada bu süre içinde yiyenler birlikte yemiş sayılır.</summary>
         public const double TogetherWindow = 0.1;
+        /// <summary>Yıkanmayı bekleyen bulaşık bu sayıyı geçince mutfak puanı 2 düşer.</summary>
         public const int SinkLimit = 8;
         public const float CallBelowHunger = 75f;
 
@@ -75,14 +76,33 @@ namespace Thatchwick.Core.Cooking
         public Func<int, Character> Find { get; set; }
         /// <summary>Mutfak odasının puanı (0-10): düzen, ışık, baharat rafı, tezgâh.</summary>
         public Func<ItemInstance, int> KitchenPoints { get; set; }
+        /// <summary>
+        /// Ekipman bileşeni (0-10; belge 63a §5.2): kabın kademesi ve kalitesi, yardımcı aletler, kirli kap, kör bıçak.
+        /// Null dönerse (kap istemeyen iş, köylü) bileşen ocağın durumundan hesaplanır.
+        /// </summary>
+        public Func<Character, ItemInstance, InteractionDef, int?> EquipmentPoints { get; set; }
+        /// <summary>Kabın kalite tavanı (63a §5.4); null ise tavan yok.</summary>
+        public Func<Character, ItemInstance, InteractionDef, int?> QualityCap { get; set; }
         /// <summary>Aşçının aile tarifi var mı (beceriye göre).</summary>
         public Func<Character, SkillType, bool> HasFamilyRecipe { get; set; }
         public Func<IEnumerable<Character>> Members { get; set; }
 
         /// <summary>Emirsiz pişen yemek de (masa varsa) sofraya gitsin mi. Oyunda açık; testlerde ve köylüde kapalı.</summary>
         public bool AutoServe { get; set; }
-        /// <summary>Yıkanmayı bekleyen kirli tabak.</summary>
-        public int Sink { get; private set; }
+        // ---- bulaşık (belge 63a §4): tek sistem mutfak aletlerindedir (KitchenSystem); LifeSystems bağlar ----
+        /// <summary>Sofrada bir porsiyon yendi: bir tabak kullanıldı (temiz tabak kalmadıysa "Kirli tabak").</summary>
+        public Action<Character> PlateUsed { get; set; }
+        /// <summary>Sofra toplandı: bu kadar kirli tabak bulaşığa gitti.</summary>
+        public Action<int> PlatesCleared { get; set; }
+        /// <summary>Yıkanmayı bekleyen parça (kap, alet, tabak); çok birikince mutfak puanı düşer.</summary>
+        public Func<int> DirtyPile { get; set; }
+        /// <summary>Bulaşık yıkanmalıysa hanenin yıkama yerleri (Ev ve Mutfak görevi).</summary>
+        public Func<IEnumerable<(ItemInstance item, InteractionDef interaction)>> WashChores { get; set; }
+        /// <summary>Masalarda duran, henüz toplanmamış kirli tabak.</summary>
+        public int PlatesOnTables { get { int n = 0; foreach (var kv in _dirty) n += kv.Value; return n; } }
+        private int _legacySink;
+        /// <summary>Eski kaydın (basit sayaçlı) bekleyen bulaşığı; yüklemeden sonra bir kez alınır ve bulaşığa eklenir.</summary>
+        public int TakeLegacySink() { int n = _legacySink; _legacySink = 0; return n; }
         public IReadOnlyDictionary<int, Serving> Servings => _servings;
         public int DirtyAt(int tableId) => _dirty.TryGetValue(tableId, out int n) ? n : 0;
         public Serving ServingAt(int tableId) => _servings.TryGetValue(tableId, out var s) ? s : null;
@@ -148,8 +168,9 @@ namespace Thatchwick.Core.Cooking
                 Ingredients = DishScore.IngredientPoints(taken, _content),
                 Skill = DishScore.SkillPoints(level, i.MinSkillLevel),
                 Mastery = DishScore.MasteryPoints(_book.TimesCooked(c, dish.Id), HasFamilyRecipe != null && HasFamilyRecipe(c, i.Skill ?? dish.Skill), trait),
-                Equipment = DishScore.EquipmentPoints(station),
-                Kitchen = Math.Max(0, Math.Min(DishScore.MaxKitchen, (KitchenPoints?.Invoke(station) ?? 4) - (Sink > SinkLimit ? 2 : 0))),
+                Equipment = EquipmentPoints?.Invoke(c, station, i) ?? DishScore.EquipmentPoints(station),
+                MaxQuality = QualityCap?.Invoke(c, station, i) ?? ItemQuality.Max,
+                Kitchen = Math.Max(0, Math.Min(DishScore.MaxKitchen, (KitchenPoints?.Invoke(station) ?? 4) - ((DirtyPile?.Invoke() ?? 0) > SinkLimit ? 2 : 0))),
                 Cook = DishScore.CookPoints(c),
                 Spice = DishScore.SpicePoints(spices, dish.Class)
             };
@@ -181,8 +202,6 @@ namespace Thatchwick.Core.Cooking
                     return ServingAt(item.Id) == null ? Text(LocText.Of("cook.block.no_serving")) : null;
                 case ClearTable:
                     return ServingAt(item.Id) == null && DirtyAt(item.Id) == 0 ? Text(LocText.Of("cook.block.nothing_to_clear")) : null;
-                case WashDishes:
-                    return Sink <= 0 ? Text(LocText.Of("cook.block.no_dishes")) : null;
             }
             if (i.Dish == null || c.IsVillager) return null;
             if (!_book.Knows(c, i.Dish)) return Text(LocText.Of("cook.block.unknown_recipe", ("name", c.Name)));
@@ -209,7 +228,6 @@ namespace Thatchwick.Core.Cooking
             {
                 case EatServing: EatPortion(c, item); return;
                 case ClearTable: Clear(c, item); return;
-                case WashDishes: Sink = 0; return;
             }
             if (i.Dish == null || c.IsVillager) return;
             var dish = i.Dish;
@@ -327,6 +345,7 @@ namespace Thatchwick.Core.Cooking
                         && m.AddMoodlet("cook.family_care", Text(LocText.Of("cook.mood.family_care")), 4, 1.0))
                         _book.OnFamilyMeal(m);
                 }
+            PlateUsed?.Invoke(c);
             _dirty.TryGetValue(table.Id, out int d);
             _dirty[table.Id] = d + 1;
             Ate?.Invoke(c, s, dish);
@@ -377,7 +396,7 @@ namespace Thatchwick.Core.Cooking
                 if (s.Portions > 0) _house.AddItem(s.DishId, s.Portions, q);
                 _servings.Remove(table.Id);
             }
-            if (_dirty.TryGetValue(table.Id, out int d)) { Sink += d; _dirty.Remove(table.Id); }
+            if (_dirty.TryGetValue(table.Id, out int d)) { PlatesCleared?.Invoke(d); _dirty.Remove(table.Id); }
             _world.NotifyChanged();
         }
 
@@ -421,17 +440,13 @@ namespace Thatchwick.Core.Cooking
                 var i = it.Def.Interactions.FirstOrDefault(x => x.MealAction == ClearTable);
                 if (i != null) yield return (it, i);
             }
-            if (Sink > 0)
-                foreach (var it in _world.Items)
-                {
-                    var i = it.Def.Interactions.FirstOrDefault(x => x.MealAction == WashDishes);
-                    if (i != null) { yield return (it, i); break; }
-                }
+            if (WashChores != null)
+                foreach (var w in WashChores()) yield return w;
         }
 
         public bool AnyServing => _servings.Count > 0;
 
-        // ---- kayıt: s:<masa>:<yemek>:<kalite>:<kalan>:<toplam>:<an>:<aşçı>:<yanık>:<baharat,…> | d:<masa>=<n> | k:<n> ----
+        // ---- kayıt: s:<masa>:<yemek>:<kalite>:<kalan>:<toplam>:<an>:<aşçı>:<yanık>:<baharat,…> | d:<masa>=<n> ---- (eski kayıttaki k:<n> bulaşık sayacı yüklemede bulaşığa aktarılır)
 
         public string[] Export()
         {
@@ -441,13 +456,12 @@ namespace Thatchwick.Core.Cooking
                 l.Add(string.Join(":", "s", I(s.TableId), s.DishId, I(s.Quality), I(s.Portions), I(s.Total),
                     s.CookedAt.ToString("R", CultureInfo.InvariantCulture), I(s.CookId), s.Burnt ? "1" : "0", string.Join(",", s.Spices)));
             foreach (var kv in _dirty) if (kv.Value > 0) l.Add("d:" + I(kv.Key) + "=" + I(kv.Value));
-            if (Sink > 0) l.Add("k:" + I(Sink));
             return l.ToArray();
         }
 
         public void Import(string[] data)
         {
-            _servings.Clear(); _dirty.Clear(); _orders.Clear(); Sink = 0;
+            _servings.Clear(); _dirty.Clear(); _orders.Clear(); _legacySink = 0;
             if (data == null) return;
             foreach (var line in data)
             {
@@ -464,7 +478,7 @@ namespace Thatchwick.Core.Cooking
                     var e = p[1].Split('=');
                     if (e.Length == 2 && int.TryParse(e[0], out int t) && int.TryParse(e[1], out int n)) _dirty[t] = n;
                 }
-                else if (p[0] == "k" && p.Length == 2 && int.TryParse(p[1], out int sink)) Sink = sink;
+                else if (p[0] == "k" && p.Length == 2 && int.TryParse(p[1], out int sink)) _legacySink = Math.Max(0, sink);   // eski kayıt: basit bulaşık sayacı
             }
         }
     }

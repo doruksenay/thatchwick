@@ -235,11 +235,12 @@ namespace Thatchwick.Core.Tests
 
         // ---------- Tarif ve kalite (37) ----------
 
-        private static (WorldState world, Household house, ItemInstance pot, InteractionEffects effects) Kitchen(ContentDatabase db)
+        // Pişirme ocakta, hazır yemek kazanda yenir (63a): eat true ise kazan döner.
+        private static (WorldState world, Household house, ItemInstance pot, InteractionEffects effects) Kitchen(ContentDatabase db, bool eat = false)
         {
             var world = new WorldState(new GridMap(12, 12));
             var house = new Household();
-            var pot = world.PlaceItem(db.Items.Get("item.cooking_pot"), new GridPos(5, 5));
+            var pot = world.PlaceItem(db.Items.Get(eat ? "item.cooking_pot" : "item.hearth_stone"), new GridPos(5, 5));
             return (world, house, pot, new InteractionEffects(world, house, db, seed: 3));
         }
 
@@ -291,7 +292,7 @@ namespace Thatchwick.Core.Tests
         public void KaliteliYemek_DahaCokDoyurur_RuhHaliVerir()
         {
             var db = Real();
-            var (world, house, pot, effects) = Kitchen(db);
+            var (world, house, pot, effects) = Kitchen(db, eat: true);
             Character last = null;
             float Eat(int quality)
             {
@@ -318,7 +319,7 @@ namespace Thatchwick.Core.Tests
         public void Otonomi_EnIyiYemegiSecer()
         {
             var db = Real();
-            var (world, house, pot, effects) = Kitchen(db);
+            var (world, house, pot, effects) = Kitchen(db, eat: true);
             house.AddItem("item.turnip", 2); house.AddItem("item.stew_plain", 2, ItemQuality.Superior);
             var npc = Cook(1, new GridPos(5, 6), 1);
             npc.Needs.Set(NeedType.Hunger, 10);
