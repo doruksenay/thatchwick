@@ -560,7 +560,7 @@ namespace Thatchwick.Game
                 }
                 return new Rect(8f, 8f, HudWidth, _hudExpanded
                     ? Mathf.Min(560f, Screen.height / HudScale - 16f)
-                    : 116f + (_clock != null && Time.unscaledTime < _messageUntil ? 24f : 0f) + (_clock != null && _clock.Paused ? 22f : 0f));   // düğmeler ayrı satırda (66)
+                    : 116f + (AdultPackAvailable ? 24f : 0f) + (_clock != null && Time.unscaledTime < _messageUntil ? 24f : 0f) + (_clock != null && _clock.Paused ? 22f : 0f));   // düğmeler ayrı satırda (66)
             }
         }
 
@@ -1735,6 +1735,13 @@ namespace Thatchwick.Game
             ShowMessage($"{mother.Name} doğurdu: {baby.Name}");
         }
 
+        /// <summary>Sağdaki büyük panellerden biri ya da yapı modu açık mı (açıkken üst şerit, ihtiyaç çubuğu ve rehber çizilmez).</summary>
+        private bool SidePanelOpen =>
+            (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
+            || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
+            || (_kitchenPanel != null && _kitchenPanel.Active) || (_homePanel != null && _homePanel.Active) || (_familyPanel != null && _familyPanel.Active)
+            || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
+
         private bool IsOverHud(Vector2 screenPos)
         {
             float s = HudScale;
@@ -1752,7 +1759,7 @@ namespace Thatchwick.Game
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_requestPanel != null && _requestPanel.Active && _requestPanel.PanelRect(s).Contains(guiPos)) return true;
-            if (_statusHud != null && !(_buildMode != null && _buildMode.Active) && _statusHud.IsOver(guiPos)) return true;   // yapı modunda HUD çizilmez
+            if (_statusHud != null && !SidePanelOpen && _statusHud.IsOver(guiPos)) return true;   // panel açıkken HUD çizilmez
             if (_dynastyEnded) return true;
             if (_menuOpen && _menuRect.Contains(guiPos)) return true;
             if (AchievementsVisible || UiWindowOpen) return true;   // tam ekran pencere: dünyaya dokunma geçmez
@@ -3711,7 +3718,8 @@ namespace Thatchwick.Game
             _statusHud.LeftInset = 8f + HudWidth;
             // Yapı modunda üst bilgi şeridi, ihtiyaç çubuğu ve ilk gün rehberi çekilir: Yapı panelinin üst sekmelerini ve eşya
             // listesini örtüyorlardı (tester raporu 65 A4, 66 §1.6). The Sims'te de yapı modunda HUD gizlenir.
-            bool buildOpen = _buildMode != null && _buildMode.Active;
+            bool buildOpen = SidePanelOpen;   // yapı modu ve sağdaki bütün paneller (Pazar, dükkân, kiler...): üst şerit ve ihtiyaç
+                                              // çubuğu panelin üstünü ve altını örtüyordu (Unity incelemesi 21.11)
             if (!buildOpen) { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
             DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
@@ -3872,12 +3880,15 @@ namespace Thatchwick.Game
             if (HudToggle(T("ui.hud.labels"), _labelsAll)) _labelsAll = !_labelsAll;
             if (GUILayout.Button(T("ui.hud.save"))) SaveNow(quiet: false);
             if (GUILayout.Button(T("ui.hud.fx." + _fxLevel))) CycleFx();   // efekt yoğunluğu (belge 57)
+            if (HudToggle(T(_hudExpanded ? "ui.hud.detail_open" : "ui.hud.detail_closed"), _hudExpanded)) _hudExpanded = !_hudExpanded;
             if (AdultPackAvailable)
             {
+                // Ayrı satırda: uzun yazı 340 px şeritte kesiliyordu ("+18 paketi (şarap").
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
                 bool adult = Thatchwick.Core.Content.ContentPacks.Adult;
                 if (GUILayout.Toggle(adult, " " + T("ui.hud.adult_pack")) != adult) ToggleAdultPack();
             }
-            if (HudToggle(T(_hudExpanded ? "ui.hud.detail_open" : "ui.hud.detail_closed"), _hudExpanded)) _hudExpanded = !_hudExpanded;
             GUILayout.EndHorizontal();
             if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
         }
