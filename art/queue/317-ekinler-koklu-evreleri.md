@@ -1,7 +1,7 @@
 ---
 id: "317"
 title: Kök ekinleri evreleri (yaban havucu, havuç, soğan, sarımsak, pancar; 3 evre)
-status: review
+status: accepted
 claimed_at: 2026-11-20T09:56Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -45,3 +45,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 ## Notlar
 - Dosya adındaki `crop_<ad>` pivot tablosu önek eşleşmesini kullanır (310 ile aynı).
 - Tohum ve ürün ikonları 316'nın kapsamındadır; bu işte yok.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
