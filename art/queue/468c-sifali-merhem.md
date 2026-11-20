@@ -1,7 +1,8 @@
 ---
 id: "468c"
 title: "Şifalı merhem: ikon ve dünya görseli"
-status: pending
+status: running
+claimed_at: 2026-11-20T11:29Z
 approved_by: user
 family: esya
 style_gate: false
