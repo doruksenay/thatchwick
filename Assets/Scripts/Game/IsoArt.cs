@@ -97,6 +97,14 @@ namespace Thatchwick.Game
         {
             ["item.blank_book"] = "icon_blank_book_v2",   // 401
             ["item.oak_gall"] = "icon_oak_gall_v3",       // 417
+            ["item.turnip"] = "icon_item_turnip_v2",      // 418t: yüzsüz
+            ["item.cabbage"] = "icon_item_cabbage_v2",    // 418t: yüzsüz
+            ["item.pumpkin"] = "icon_item_pumpkin_v2",    // 418t: su kabağı (dönem kuralı)
+            ["item.cloth"] = "icon_item_cloth_v2",        // 418p: palet uyumu
+            ["item.game_meat"] = "icon_item_game_meat_v2",
+            ["item.jam_berry"] = "icon_item_jam_berry_v2",
+            ["item.meat"] = "icon_item_meat_v2",
+            ["item.serbet"] = "icon_item_serbet_v2",
         };
 
         private static readonly Dictionary<string, Texture2D> IconCache = new Dictionary<string, Texture2D>();

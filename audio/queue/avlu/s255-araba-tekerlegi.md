@@ -4,7 +4,7 @@ title: Araba yola çıkıyor (tekerlek ve koşum)
 kind: sfx
 family: foley
 freq: B
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 key: yard.cart_out
@@ -29,5 +29,6 @@ pick:
 - c3
 - c7
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T18:31:29Z'
 ---
 A wooden cart setting off on a dirt track: creaking axle, iron-rimmed wheels on packed earth, harness jingling, rolling away.

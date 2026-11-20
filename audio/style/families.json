@@ -1,5 +1,5 @@
 {
-  "_belge": "Project 45 ve 45a. Aile ön ekleri her prompt'un başına eklenir. Sayılar oyunda da kullanılır (soundbank'e kopyalanır).",
+  "_belge": "Project 45 ve 45a. Aile ön ekleri her prompt'un başına eklenir. Sayılar oyunda da kullanılır (soundbank'e kopyalanır). Cozy yönü (kullanıcı kararı 20.11.2026): bütün ses ailelerinin prefix'i yumuşak, sıcak, hoş ve sert olmayan tonu ister; yeni aile eklerken de bu yön korunur.",
   "api": {
     "sfx_model": "eleven_text_to_sound_v3",
     "sfx_loop_model": "eleven_text_to_sound_v2",
@@ -53,42 +53,42 @@
     "foley": {
       "pitch_var": 0.04, "vol_var_db": 1.5, "timing_jitter_ms": 15, "cooldown_ms": 30, "max_voices": 4,
       "duration_range": [0.05, 3], "preview_interval_ms": 380,
-      "prefix": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice."
+      "prefix": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice."
     },
     "tools": {
       "pitch_var": 0.05, "vol_var_db": 2.0, "cooldown_ms": 80,
       "duration_range": [0.1, 4], "preview_interval_ms": 900,
-      "prefix": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice."
+      "prefix": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice."
     },
     "craft": {
       "pitch_var": 0.04, "vol_var_db": 1.5, "cooldown_ms": 120,
       "duration_range": [0.2, 8],
-      "prefix": "Medieval craft workshop sound, dry recording, no music, no voice."
+      "prefix": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice."
     },
     "animals": {
       "pitch_var": 0.08, "vol_var_db": 2.0, "cooldown_ms": 400, "max_voices": 2,
       "duration_range": [0.2, 6], "preview_interval_ms": 1600,
-      "prefix": "Real farm animal sound recorded outdoors at close distance, natural, no music, no human voice."
+      "prefix": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice."
     },
     "ambience": {
       "group": "Ambience", "mono": false, "lufs": -26, "trim": false, "pitch_var": 0.0, "vol_var_db": 0.0,
       "duration_range": [10, 30], "max_voices": 2, "outlier_threshold": 0.8,
-      "prefix": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes)."
+      "prefix": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes)."
     },
     "spots": {
       "group": "Ambience", "lufs": -24, "pitch_var": 0.06, "vol_var_db": 3.0, "cooldown_ms": 1500, "max_voices": 2,
       "duration_range": [0.2, 6], "preview_interval_ms": 2500,
-      "prefix": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice."
+      "prefix": "Cozy medieval village life game, single isolated nature sound event: gentle and pleasant, natural outdoor recording, nothing else audible, no music, no voice."
     },
     "weather": {
       "group": "Ambience", "mono": false, "lufs": -24, "trim": false, "pitch_var": 0.0, "vol_var_db": 0.0,
       "duration_range": [10, 30], "max_voices": 2,
-      "prefix": "Weather ambience, continuous, no music, no voices, no modern sounds."
+      "prefix": "Cozy medieval village life game, weather ambience: soft and soothing, as if heard safely from a warm cottage, continuous, never harsh. No music, no voices, no modern sounds."
     },
     "voice": {
       "group": "Voice", "lufs": -20, "pitch_var": 0.0, "vol_var_db": 1.0, "cooldown_ms": 0, "max_voices": 6,
       "duration_range": [0.05, 6], "dup_threshold": 0.02,
-      "prefix": ""
+      "prefix": "Cozy medieval village life game, human vocal sound: gentle, warm and friendly, never harsh, shrill or aggressive. No words in any real language, no music."
     },
     "music": {
       "group": "Music", "mono": false, "lufs": -20, "trim": false, "pitch_var": 0.0, "vol_var_db": 0.0,

@@ -493,7 +493,7 @@ namespace Thatchwick.Game
         {
             var p = new GridPos(x, y, 0);
             var map = _world.Map;
-            if (_plants != null && _plants.IsWeedy(p)) return IsoArt.Decal((TileHash(x, y) & 1) == 0 ? "iso_decal_weeds_a" : "iso_decal_weeds_b");
+            if (_plants != null && _plants.IsWeedy(p)) return IsoArt.Decal("iso_decal_weeds_a");   // b reddedildi (710); çeşitlilik çıkartma katmanının aynalamasından gelir
             var floor = map.GetFloor(p);
             if (floor == FloorType.Water)
             {

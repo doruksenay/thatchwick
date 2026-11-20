@@ -1,7 +1,7 @@
 ---
 id: "418p"
 title: "İkon palet uyumu: 6 ikonun donmuş arayüz paletiyle yeniden üretimi"
-status: review
+status: accepted
 claimed_at: 2026-11-20T17:51Z
 approved_by: user        # kullanıcı kararı 2026-11-20: palet karşılaştırmasında "yalnızca belirgin değişenleri yeniden üretelim" (Project belgesi 64c §0.1)
 priority: 20
@@ -46,3 +46,5 @@ Her ikon kendi kaynak işinin tarifini (tuval 32x32, kenar, ışık yönü) kull
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+kullanıcı kararı (2026-11-20): cloth, game_meat, jam_berry, meat, serbet v2 kabul. salted_meat v2 red: düz kahverengi blok gibi, tuz taneleri görünmüyor; yeniden üretim 418p2.

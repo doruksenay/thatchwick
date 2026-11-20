@@ -4,7 +4,7 @@ title: Ahır temizleme (altlık kazıma)
 kind: sfx
 family: tools
 freq: B
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 key: yard.muck_out
@@ -29,5 +29,6 @@ pick:
 - c7
 - c8
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T18:31:29Z'
 ---
 Mucking out a byre: a fork scraping wet straw across the floor, one heavy toss onto a heap.

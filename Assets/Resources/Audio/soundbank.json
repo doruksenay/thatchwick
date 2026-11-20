@@ -72,6 +72,80 @@
       "syllables": []
     },
     {
+      "key": "bath.splash",
+      "group": "Sfx",
+      "family": "foley",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/foley/bath_splash_1",
+        "Audio/Sfx/foley/bath_splash_2",
+        "Audio/Sfx/foley/bath_splash_3",
+        "Audio/Sfx/foley/bath_splash_4"
+      ],
+      "layers": [],
+      "pitchVar": 0.04,
+      "volVarDb": 1.5,
+      "timingJitterMs": 15.0,
+      "cooldownMs": 30.0,
+      "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
+      "key": "fire.kindle",
+      "group": "Sfx",
+      "family": "foley",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/foley/fire_kindle_1",
+        "Audio/Sfx/foley/fire_kindle_2",
+        "Audio/Sfx/foley/fire_kindle_3",
+        "Audio/Sfx/foley/fire_kindle_4"
+      ],
+      "layers": [],
+      "pitchVar": 0.04,
+      "volVarDb": 1.5,
+      "timingJitterMs": 15.0,
+      "cooldownMs": 30.0,
+      "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
       "key": "fish.bite",
       "group": "Sfx",
       "family": "foley",
@@ -411,6 +485,43 @@
         "Audio/Sfx/foley/kitchen_knead_2",
         "Audio/Sfx/foley/kitchen_knead_3",
         "Audio/Sfx/foley/kitchen_knead_4"
+      ],
+      "layers": [],
+      "pitchVar": 0.04,
+      "volVarDb": 1.5,
+      "timingJitterMs": 15.0,
+      "cooldownMs": 30.0,
+      "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
+      "key": "kitchen.stir",
+      "group": "Sfx",
+      "family": "foley",
+      "freq": "A",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/foley/kitchen_stir_1",
+        "Audio/Sfx/foley/kitchen_stir_2",
+        "Audio/Sfx/foley/kitchen_stir_3",
+        "Audio/Sfx/foley/kitchen_stir_4"
       ],
       "layers": [],
       "pitchVar": 0.04,
@@ -874,6 +985,41 @@
       "syllables": []
     },
     {
+      "key": "village.crier",
+      "group": "Voice",
+      "family": "voice",
+      "freq": "C",
+      "loop": false,
+      "clips": [
+        "Audio/Voice/voice/village_crier_1",
+        "Audio/Voice/voice/village_crier_2"
+      ],
+      "layers": [],
+      "pitchVar": 0.0,
+      "volVarDb": 1.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 0.0,
+      "maxVoices": 6,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
       "key": "voice.kalin_alcak.syl",
       "group": "Voice",
       "family": "voice",
@@ -1022,6 +1168,42 @@
       "syllables": []
     },
     {
+      "key": "yard.cart_out",
+      "group": "Sfx",
+      "family": "foley",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/foley/yard_cart_out_1",
+        "Audio/Sfx/foley/yard_cart_out_2",
+        "Audio/Sfx/foley/yard_cart_out_3"
+      ],
+      "layers": [],
+      "pitchVar": 0.04,
+      "volVarDb": 1.5,
+      "timingJitterMs": 15.0,
+      "cooldownMs": 30.0,
+      "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
       "key": "yard.cat_dig",
       "group": "Sfx",
       "family": "foley",
@@ -1036,6 +1218,79 @@
       "timingJitterMs": 15.0,
       "cooldownMs": 30.0,
       "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
+      "key": "yard.compost_turn",
+      "group": "Sfx",
+      "family": "tools",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/tools/yard_compost_turn_1",
+        "Audio/Sfx/tools/yard_compost_turn_2",
+        "Audio/Sfx/tools/yard_compost_turn_3",
+        "Audio/Sfx/tools/yard_compost_turn_4"
+      ],
+      "layers": [],
+      "pitchVar": 0.05,
+      "volVarDb": 2.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 80.0,
+      "maxVoices": 3,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
+      "key": "yard.muck_out",
+      "group": "Sfx",
+      "family": "tools",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/tools/yard_muck_out_1",
+        "Audio/Sfx/tools/yard_muck_out_2",
+        "Audio/Sfx/tools/yard_muck_out_3"
+      ],
+      "layers": [],
+      "pitchVar": 0.05,
+      "volVarDb": 2.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 80.0,
+      "maxVoices": 3,
       "volumeDb": 0.0,
       "context": "",
       "spotOf": "",
@@ -1128,5 +1383,5 @@
       "syllables": []
     }
   ],
-  "updated": "2026-11-20T17:27:12Z"
+  "updated": "2026-11-20T18:31:29Z"
 }

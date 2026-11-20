@@ -1,7 +1,7 @@
 ---
 id: "710"
 title: Yabani ot çıkartması (iki değişke)
-status: review
+status: accepted
 claimed_at: 2026-11-20T18:13Z
 approved_by: user
 family: zemin
@@ -32,3 +32,5 @@ Karo ortasına oturur (`IsoArt.Decal`, `GetCentered`). 709 ile aynı katman.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+Kullanıcı kararı (20.11.2026): `iso_decal_weeds_a` kabul, `iso_decal_weeds_b` ret (ekini kapatacak kadar uzun karahindiba; kenarlar bulanık, stile uymuyor). Kod yalnızca `a`'yı kullanır.
