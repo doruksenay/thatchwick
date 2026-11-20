@@ -14,4 +14,9 @@
     <Compile Include="..\..\Assets\Scripts\Core\**\*.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Testler internal yardımcıları (PlacementValidator.Occupies, OutdoorBuilder.Dist) kullanır. Unity derlemesini etkilemez. -->
+    <InternalsVisibleTo Include="Thatchwick.Core.Tests" />
+  </ItemGroup>
+
 </Project>
