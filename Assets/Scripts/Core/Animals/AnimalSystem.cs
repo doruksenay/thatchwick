@@ -1,3 +1,4 @@
+using Thatchwick.Core.Animals.Genetics;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
@@ -148,6 +149,10 @@ namespace Thatchwick.Core.Animals
         /// <summary>Hayvan satıldı ya da kesildi (anası yavrusunu arar; belge 55 §3.2).</summary>
         public event Action<Animal> TakenAway;
 
+        /// <summary>Satış bedeli: tür fiyatının yarısı, soy ve seviyeyle katlanır (AnimalProgress.ValueFactor).</summary>
+        public static int SellValue(Animal a) =>
+            a == null ? 0 : (int)Math.Floor(a.Species.Price * SellRatio * AnimalProgress.ValueFactor(a.Lineage, a.Level));
+
         public PlacementCheck Sell(int animalId, Household house)
         {
             var a = Get(animalId);
@@ -156,7 +161,7 @@ namespace Thatchwick.Core.Animals
             if (a.Saddle != null) house.AddItem(a.Saddle);    // eyer hayvanla gitmez
             _animals.Remove(a);
             TakenAway?.Invoke(a);
-            house.AddAkce((int)Math.Floor(a.Species.Price * SellRatio));
+            house.AddAkce(SellValue(a));
             return PlacementCheck.Success;
         }
 
@@ -361,7 +366,7 @@ namespace Thatchwick.Core.Animals
                 if (!ridden) a.Galloping = false;
 
                 // Beslenme: önce otlaktaki ot, sonra barınağın yemi, sonra aynı odadaki yemlikler.
-                double need = a.Species.FeedPerDay * gameDays * WinterFeedFactor(a);
+                double need = a.Species.FeedPerDay * gameDays * WinterFeedFactor(a) * GeneticsService.FeedFactor(a.Genome);   // "Kötü diş": +%15 yem
                 double eaten = Graze(a, need);
                 if (need - eaten > 0 && home != null)
                 {

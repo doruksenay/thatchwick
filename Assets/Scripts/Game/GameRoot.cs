@@ -2155,7 +2155,7 @@ namespace Thatchwick.Game
                 }
                 if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
             };
-            _storagePanel = new StoragePanel(_life.Spoilage, _household, _content);
+            _storagePanel = new StoragePanel(_life.Spoilage, _household, _content) { Aging = _life.Aging };
             _farmWork = new FarmWork(_world)
             {
                 HoeSpeed = c => _life.Tools.SpeedFor("hoe"), House = _household, Content = _content,

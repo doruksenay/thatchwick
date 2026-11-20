@@ -155,6 +155,9 @@ namespace Thatchwick.Core.Economy
                 int paid = before - _house.Akce;   // pazar fiyatı ödendi; farkı tüccara
                 _house.TrySpend(Math.Max(0, price - paid));   // başta tam fiyat kontrol edildi, fark ödenebilir
                 animal.Generation = Math.Max(animal.Generation, AnimalSpeciesDef.HeritageGeneration);
+                // Soy kademesi (belge 29): tüccarın damızlığı İyi soy, panayırdaki Soylu. Var olan daha yüksek soy düşmez.
+                var lineage = IsFair ? AnimalLineage.Noble : AnimalLineage.Good;
+                if (animal.Lineage < lineage) Animals.SetLineage(animal, lineage);
             }
             else
             {

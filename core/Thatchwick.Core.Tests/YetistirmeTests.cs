@@ -244,6 +244,29 @@ namespace Thatchwick.Core.Tests
             Assert.True(parent.Skills.GetXp(SkillType.Parenting) > 0);
         }
 
+        /// <summary>"Çocuk dostu" yeteneği olan köpekle bağ 1,5 kat hızlı kurulur; "Kötü diş" %15 fazla yem ister (belge 48).</summary>
+        [Fact]
+        public void Genler_BagVeYemEtkisiUygulanir()
+        {
+            var f = MakeFarm();
+            f.World.PlaceItem(f.Db.Items.Get("item.kennel"), new GridPos(12, 12));
+            f.World.PlaceItem(f.Db.Items.Get("item.kennel"), new GridPos(15, 12));
+            var r1 = f.Animals.Buy("animal.dog", f.House, out var plain);
+            var r2 = f.Animals.Buy("animal.dog", f.House, out var gifted);
+            Assert.True(r1.Ok && r2.Ok, r1.Reason + r2.Reason);
+            Assert.NotNull(gifted.Genome);
+            gifted.Genome.Gifts.Add(Thatchwick.Core.Animals.Genetics.Gift.ChildFriend);
+            var s = new CompanionBondSystem(f.Pop, f.Animals) { Today = () => 0 };
+            var kid = Person(1, ChildAge);
+            var a = s.AddContact(kid, plain, 10);
+            var b = s.AddContact(kid, gifted, 10);
+            Assert.Equal(15.0, b.Points - (a.Points - 10), 6);
+
+            Assert.Equal(1.0, Thatchwick.Core.Animals.Genetics.GeneticsService.FeedFactor(plain.Genome), 6);
+            gifted.Genome.Defects.Add(Thatchwick.Core.Animals.Genetics.GeneDefect.BadTeeth);
+            Assert.Equal(1.15, Thatchwick.Core.Animals.Genetics.GeneticsService.FeedFactor(gifted.Genome), 6);
+        }
+
         [Fact]
         public void CanYoldasi_YalnizcaCocukBagKurar_YakinlikOrneklemesi()
         {

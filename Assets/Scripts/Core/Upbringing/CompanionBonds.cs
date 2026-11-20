@@ -1,3 +1,4 @@
+using Thatchwick.Core.Animals.Genetics;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Animals;
@@ -152,7 +153,7 @@ namespace Thatchwick.Core.Upbringing
                 };
                 _bonds.Add(b);
             }
-            b.Points += points;
+            b.Points += points * GeneticsService.BondFactor(animal.Genome);   // "Çocuk dostu" ve "Sessiz adım": bağ ×1,5
             b.LastContactDay = today;
             return b;
         }
