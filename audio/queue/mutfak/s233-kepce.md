@@ -4,7 +4,7 @@ title: Kepçeyle kaba alma
 kind: sfx
 family: foley
 freq: B
-status: claimed
+status: review
 approved_by: user
 depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
@@ -37,5 +37,9 @@ yeniden_sayisi: 3
 prompt_influence: 0.8
 claimed_by: runnervm0hi8g
 claimed_at: '2026-11-20T17:27:42Z'
+candidates: 8
+passed: 8
+credits_spent: 0
+generated_at: '2026-11-20T17:27:55Z'
 ---
 Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds.
