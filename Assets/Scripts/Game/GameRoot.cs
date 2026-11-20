@@ -549,6 +549,8 @@ namespace Thatchwick.Game
                 PlaceDemoItems();
                 _world.Map.RestrictOwnership(4, 4, 67, 67); // başlangıç arsası: 64x64
             }
+            // Ulu ağaçlar (belge 52): arsada bir, dünyada en az dört; eksikse yerlerine konur (eski kayıt da alır).
+            foreach (var gt in Thatchwick.Core.Life.GreatTrees.Ensure(_world, _content)) Debug.Log($"Ulu ağaç kondu: {gt.Def.DisplayName} {gt.Position}");
 
             var viewGo = new GameObject("WorldView");
             viewGo.transform.SetParent(transform, false);
@@ -699,6 +701,10 @@ namespace Thatchwick.Game
             _life.Text = GameLocalization.R;
             _life.AttachEffects(_effects);   // kalite: tezgâh seçimleri, ustalık eseri, aile tarifi (belge 53)
             _life.Home.ServantWalks = true;   // hizmetkâr sabahları eve yürür, işleri kendisi yapar (belge 45)
+            _life.Trees.Attach();   // kasaba çınarının aşevi, köşk merdivenleri (belge 52; kayıtta Restore yeniden kurar)
+            _life.Trees.FeastHeld += r => TreeSfx(Thatchwick.Core.Audio.SoundKeys.StingFeast);
+            _life.Trees.Creaked += () => TreeSfx(Thatchwick.Core.Audio.SoundKeys.TreehouseCreak);
+            _effects.AppliedOn += (c, item, i) => TreeSound(i);
             // Giyim uyumu (belge 48 §12.3): köylünün yorumu başında konuşma balonu olarak çıkar.
             _life.ClothingRemark += (villager, target, key) => Say(villager, GameLocalization.T(key));
             // Yaşlılık (belge 51 §3.3a): dalgınlık işareti ve işi bırakma balonları (ilerleme kaybolmaz).
@@ -1161,6 +1167,7 @@ namespace Thatchwick.Game
                     }
                     continue;
                 }
+                if (Thatchwick.Core.Life.GreatTrees.IsGreatTree(item.Def)) { AddGreatTree(item, level); continue; }   // belge 52
                 bool flip = false;
                 var art = item.IsPlant ? null : IsoArt.Item(item, out flip);
                 if (art != null)
@@ -1744,12 +1751,15 @@ namespace Thatchwick.Game
                 if (_life.Villagers.PlaceAvailable == null)
                     _life.Villagers.PlaceAvailable = k => Places.TryGetValue(k, out var pp) && _world.Map.InBounds(pp) && !_world.Map.IsBlocked(pp);
                 // Adsız köylü (Maud, komşu hane üyesi): kendi hanesinin evi ya da handaki oda; asla oyuncunun arsası değil (belge 47 §8).
-                string where = def != null ? _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival)
-                                           : _life.Homes.LocationFor(c, _clock.DayFraction, weather, festival);
+                // Ağaç evler (belge 52): köy çocukları ikindi ağaç eve, yoksullar öğlen aşevine, herkes mevsim sonu sofraya.
+                string tree = _life.Trees.VillagerPlace(c, _clock.DayFraction, weather);
+                string where = tree ?? (def != null ? _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival)
+                                                    : _life.Homes.LocationFor(c, _clock.DayFraction, weather, festival));
                 if (string.IsNullOrEmpty(where)) continue;
                 if (_villagerLocation.TryGetValue(c.Id, out var last) && last == where) continue;
                 _villagerLocation[c.Id] = where;
-                a.Runner.Command(Job.MoveTo(ResolvePlace(where, where == "square" ? c.Id : 0)));
+                var treeTile = tree != null ? _life.Trees.PlaceTile(tree) : null;
+                a.Runner.Command(Job.MoveTo(treeTile.HasValue ? NearestWalkable(treeTile.Value, tree == "feast" ? 6 : 3) : ResolvePlace(where, where == "square" ? c.Id : 0)));
             }
         }
 
@@ -2244,7 +2254,9 @@ namespace Thatchwick.Game
                 string shown = ItemTitle(item);
                 if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell || item.Def.WaterGate) && !names.Contains(shown)) names.Add(shown);
                 foreach (var it in item.Def.Interactions)
-                    if (!it.Hidden) _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
+                    if (!it.Hidden && (_life == null || _life.Trees.Shows(item, it)))   // ağaç evin durumuna göre (belge 52)
+                        _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
+                if (_life != null && Thatchwick.Core.Life.GreatTrees.IsGreatTree(item.Def)) AddTreehouseOptions(item);   // belge 52
                 AddQualityOptions(item);
                 if (item.Def.WaterGate)
                 {
@@ -3142,7 +3154,7 @@ namespace Thatchwick.Game
             _population.Tick(gameDays);
             _life.Tick(gameDays);
             _scheduleTimer += gameDays;
-            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); }
+            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); GatherForFeast(); }
             foreach (var actor in _actors.ToArray())
             {
                 if (actor.Character.IsDead)
@@ -3274,7 +3286,8 @@ namespace Thatchwick.Game
             int fromLevel = actor.Character.Position.Z;
             int toLevel = next.HasValue ? next.Value.Z : fromLevel;
             int level = toLevel != fromLevel && actor.Runner.StepProgress > 0.5f ? toLevel : fromLevel;
-            actor.Renderer.enabled = _view.IsLevelVisible(fromLevel) || _view.IsLevelVisible(toLevel);
+            actor.Renderer.enabled = (_view.IsLevelVisible(fromLevel) || _view.IsLevelVisible(toLevel)) && !InsideTreehouse(actor)
+                && !(actor.Character.IsVillager && !moving && _life.Trees.VillagerInside(actor.Character, _clock.DayFraction, _life.Weather.Today(_clock.TotalDays)));
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
             // Kare animasyonu (018a/018b) varsa yürürken onu oynat: tam döngü = iki adım (WalkPhase iki π).
             var walkFrame = moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;

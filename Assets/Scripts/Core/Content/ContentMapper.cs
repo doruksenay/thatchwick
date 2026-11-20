@@ -253,7 +253,7 @@ namespace Thatchwick.Core.Content
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
                             || i.addIce > 0f || i.requiresFrost || i.piped || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter
-                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents || i.fillDecor || i.eatContents || !string.IsNullOrWhiteSpace(i.homeAction) || !string.IsNullOrWhiteSpace(i.skillWork);
+                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents || i.fillDecor || i.eatContents || !string.IsNullOrWhiteSpace(i.homeAction) || !string.IsNullOrWhiteSpace(i.skillWork) || !string.IsNullOrWhiteSpace(i.treeAction);
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -325,7 +325,8 @@ namespace Thatchwick.Core.Content
                             EatContents = i.eatContents,
                             HomeAction = string.IsNullOrWhiteSpace(i.homeAction) ? null : i.homeAction.Trim(),
                             SkillWork = string.IsNullOrWhiteSpace(i.skillWork) ? null : i.skillWork.Trim(),
-                            UpgradeId = string.IsNullOrWhiteSpace(i.upgrade) ? null : i.upgrade.Trim()
+                            UpgradeId = string.IsNullOrWhiteSpace(i.upgrade) ? null : i.upgrade.Trim(),
+                            TreeAction = string.IsNullOrWhiteSpace(i.treeAction) ? null : i.treeAction.Trim()
                         };
                         AddMaterials(interaction, i.materials);
                         bool badExtra = false;

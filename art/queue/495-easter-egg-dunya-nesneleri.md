@@ -1,7 +1,7 @@
 ---
 id: "495"
 title: "Easter egg dünya nesneleri ve ürün ikonları (12)"
-status: running
+status: review
 claimed_at: 2026-11-20T11:36Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("hepsi olsun", "yaz bunları ve sen ekle sıraya"), Project belgesi 55
 priority: 50

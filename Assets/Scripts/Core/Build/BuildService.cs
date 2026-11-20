@@ -504,12 +504,25 @@ namespace Thatchwick.Core.Build
             if (def.Storage > 0 && _content.Items.Contains("item.hinge")) result.Add(new KeyValuePair<string, int>("item.hinge", 1));
         }
 
+        /// <summary>
+        /// Arsa dışında eşya konabilen karolar (hanenin kurduğu ağaç köşkünün içi, belge 52); null ise yok. Duvar ve döşeme
+        /// araçları bunu tanımaz: köşkün kabuğu değişmez.
+        /// </summary>
+        public Func<GridPos, bool> ExtraOwned { get; set; }
+        /// <summary>Kabuğu sabit karolar (ağaç köşkü): duvar, döşeme ve kat aracı burada çalışmaz; null ise yok.</summary>
+        public Func<GridPos, bool> Shell { get; set; }
+        public const string ShellLocked = "Köşkün duvarları ve döşemesi sabittir; yalnızca eşya konur.";
+
+        /// <summary>Eşya koymak için sahiplik: arsa ya da ExtraOwned.</summary>
+        private bool OwnsForItems(GridPos p) => _world.Map.IsOwned(p) || (ExtraOwned != null && ExtraOwned(p));
+        private bool IsShell(GridPos p) => Shell != null && Shell(p);
+
         private PlacementCheck CheckOwned(ItemDef def, GridPos position, int rotation)
         {
             var (w, h) = Footprint.Dimensions(def.Width, def.Height, rotation);
             for (int dy = 0; dy < h; dy++)
                 for (int dx = 0; dx < w; dx++)
-                    if (!_world.Map.IsOwned(new GridPos(position.X + dx, position.Y + dy, position.Z)))
+                    if (!OwnsForItems(new GridPos(position.X + dx, position.Y + dy, position.Z)))
                         return PlacementCheck.Fail(NotOwned);
             return PlacementCheck.Success;
         }
@@ -523,7 +536,7 @@ namespace Thatchwick.Core.Build
             if (def.Placement == ItemPlacement.Wall) return PlacementCheck.Fail("Bu eşya duvara asılır.");
             if (def.IsCeiling)
             {
-                if (!_world.Map.IsOwned(position)) return PlacementCheck.Fail(NotOwned);
+                if (!OwnsForItems(position)) return PlacementCheck.Fail(NotOwned);
                 return _world.CanPlaceCeiling(def, position);
             }
             var owned = CheckOwned(def, position, rotation);
@@ -601,7 +614,7 @@ namespace Thatchwick.Core.Build
             if (_house.Count(itemId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
             var def = _content.Items.Get(itemId);
             foreach (var (t, _) in WallSides.Segments(tile, Footprint.Normalize(side), Math.Max(1, def.WallWidth)))
-                if (!_world.Map.IsOwned(t)) return PlacementCheck.Fail(NotOwned);
+                if (!OwnsForItems(t)) return PlacementCheck.Fail(NotOwned);
             return _world.CanPlaceOnWall(def, tile, side, band, null);
         }
 
@@ -655,7 +668,7 @@ namespace Thatchwick.Core.Build
             if (IsLocked(item)) return PlacementCheck.Fail(Locked);
             if (item != null && (item.IsWallMounted || item.IsCeiling))
             {
-                if (!_world.Map.IsOwned(position)) return PlacementCheck.Fail(NotOwned);
+                if (!OwnsForItems(position)) return PlacementCheck.Fail(NotOwned);
             }
             else if (item != null)
             {
@@ -817,6 +830,7 @@ namespace Thatchwick.Core.Build
             if (p.Z == 0) return PlacementCheck.Fail("Zemin kat zaten var.");
             if (!map.InBounds(p)) return PlacementCheck.Fail("Harita dışı.");
             if (!map.IsOwned(p)) return PlacementCheck.Fail(NotOwned);
+            if (IsShell(p)) return PlacementCheck.Fail(ShellLocked);
             if (map.HasTile(p)) return PlacementCheck.Fail("Orası zaten yapılmış.");
             if (p.Z <= -2)
             {
@@ -868,6 +882,7 @@ namespace Thatchwick.Core.Build
             if (p.Z == 0 || !map.HasTile(p)) return PlacementCheck.Fail("Orada kaldırılacak bir şey yok.");
             if (p.Z <= -2) return PlacementCheck.Fail("Kazılan yer doldurulmaz.");
             if (!map.IsOwned(p)) return PlacementCheck.Fail(NotOwned);
+            if (IsShell(p)) return PlacementCheck.Fail(ShellLocked);
             if (_world.GetItemAt(p) != null) return PlacementCheck.Fail("Önce üstündeki eşyayı kaldır.");
             if (_world.IsOccupiedByCharacter(p)) return PlacementCheck.Fail("Üzerinde biri duruyor.");
             if (map.HasLinkAt(p)) return PlacementCheck.Fail("Merdiven buraya bağlı; önce merdiveni kaldır.");

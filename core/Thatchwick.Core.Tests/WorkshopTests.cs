@@ -446,7 +446,7 @@ namespace Thatchwick.Core.Tests
             Assert.StartsWith("Enerji +70 (Dinlenmiş)", ItemCatalog.Describe(db.Items.Get("item.bed_frame")));
             Assert.Contains("Işık", ItemCatalog.Describe(db.Items.Get("item.torch_wall")));
             Assert.Contains("Duvara asılır", ItemCatalog.Describe(db.Items.Get("item.torch_wall")));
-            Assert.Contains("76 tarif", ItemCatalog.Describe(db.Items.Get("item.workbench")));   // + belge 45 beceri tamamlama: kereste, teker, Çatkı ve Yörük takımları, hund, bocurgat, davul, arabalar (15)   // su işleri (boru, fıçı, hela, hızar, dink, çekiç) + havluluk + oyuncak ve defter (belge 30, 34) + D3 (iki ayna, kutu yatak) + D3b (çeyiz sandığı, 5 mevsim süsü, saman süsü) + av yayı, kement, örme çit (31) + belge 45 (pencere oturağı, kiriş, kasnak, sergi rafı ve dolabı, giysi sırığı, güvercinlik, şaka çeşmesi, Cezerî otomatı, su saati, kartal rahle)
+            Assert.Contains("81 tarif", ItemCatalog.Describe(db.Items.Get("item.workbench")));   // + belge 52: beş ağaç ev iskeleti; + belge 45 beceri tamamlama: kereste, teker, Çatkı ve Yörük takımları, hund, bocurgat, davul, arabalar (15)   // su işleri (boru, fıçı, hela, hızar, dink, çekiç) + havluluk + oyuncak ve defter (belge 30, 34) + D3 (iki ayna, kutu yatak) + D3b (çeyiz sandığı, 5 mevsim süsü, saman süsü) + av yayı, kement, örme çit (31) + belge 45 (pencere oturağı, kiriş, kasnak, sergi rafı ve dolabı, giysi sırığı, güvercinlik, şaka çeşmesi, Cezerî otomatı, su saati, kartal rahle)
         }
     }
 }

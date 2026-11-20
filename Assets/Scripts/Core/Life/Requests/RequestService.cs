@@ -228,6 +228,7 @@ namespace Thatchwick.Core.Life.Requests
                         ? L("core.req.obj.deliver_q", ("n", o.Count), ("item", o.ItemId), ("quality", L(ItemQuality.NameKey(o.MinQuality))), ("done", prog), ("have", _house.Count(o.ItemId, o.MinQuality)))
                         : L("core.req.obj.deliver", ("n", o.Count), ("item", o.ItemId), ("done", prog), ("have", _house.Count(o.ItemId)));
                 case ObjectiveKind.Act:
+                    if (o.ActId != null) return L("core.req.obj.act_id." + o.ActId, ("n", o.Count), ("done", prog));   // iş kimliği tutan hedef (belge 52: ağaç ev)
                     return o.Skill.HasValue ? L("core.req.obj.act", ("skill", SkillText(o.Skill.Value)), ("n", o.Count), ("done", prog))
                                             : L("core.req.obj.act_any", ("n", o.Count), ("done", prog));
                 case ObjectiveKind.Visit: return L("core.req.obj.visit", ("region", RegionText(o.Region)));
@@ -496,6 +497,22 @@ namespace Thatchwick.Core.Life.Requests
             r.Objectives.Add(RequestCatalog.Del(item, count));
             int value = _content.Items.Get(item).Price * count;
             r.Reward = new Reward { Akce = Math.Max(3, Math.Min(FavorAkceMax, (int)Math.Round(value * 1.5))), Affinity = FavorAffinity, Memory = HouseMemory.Favor * 2 };
+            return Post(r);
+        }
+
+        /// <summary>
+        /// Sistemik iş ricası (belge 52: "Bize ağaç ev yapar mısın?"): veren köylü, bir işi N kez yapmayı ister (ActId;
+        /// sayım OnWork ile). Aynı veren için açık rica varsa asılmaz. Hedefin metni kayda yazılmaz: iş kimliğinden türeyen
+        /// anahtardan okunur (<c>core.req.obj.act_id.&lt;ActId&gt;</c>, bkz. <see cref="ObjectiveText"/>).
+        /// </summary>
+        public Request PostActFavor(Character giver, string id, LocText title, LocText text, string actId, int count, double days, int akce)
+        {
+            if (giver == null || giver.IsDead || HasOpenTemplate(id + ":" + giver.Id)) return null;
+            var r = NewRequest(RequestKind.Favor, id + ":" + giver.Id, title, text, giver);
+            r.Days = days;
+            r.Deadline = Now() + days;
+            r.Objectives.Add(new Objective { Kind = ObjectiveKind.Act, ActId = actId, Count = Math.Max(1, count) });
+            r.Reward = new Reward { Akce = Math.Max(3, Math.Min(FavorAkceMax, akce)), Affinity = FavorAffinity, Memory = HouseMemory.Favor * 2 };
             return Post(r);
         }
 

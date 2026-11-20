@@ -1,7 +1,8 @@
 ---
 id: "497"
 title: "Easter egg moodlet, başarım ve Tuhaflıklar ikonları (14)"
-status: pending
+status: running
+claimed_at: 2026-11-20T11:42Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("bu moodletler için de asset üretmemiz lazım", "yaz bunları ve sen ekle sıraya"), Project belgeleri 55 ve 55b
 priority: 50
 family: arayuz

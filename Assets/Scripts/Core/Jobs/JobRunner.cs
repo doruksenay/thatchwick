@@ -155,6 +155,10 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Şu an yürütülen işin nedeni (otonom ihtiyaç); oyuncu komutunda ya da boştayken null.</summary>
         public NeedType? CurrentReason => Queue.Current?.Reason;
 
+        /// <summary>Bunalımdaki çocuğun ya da ergenin küseceği yer (en yakın ağaç evin ip merdiveni, belge 52); null ise yok.</summary>
+        public Func<Character, GridPos?> Refuge { get; set; }
+        public const string RefugeNote = "ağaç eve küstü";
+
         /// <summary>Son başarısız işin nedeni (arayüzde gösterilir); yoksa null.</summary>
         public string LastFailure { get; private set; }
 
@@ -334,6 +338,14 @@ namespace Thatchwick.Core.Jobs
             GridPos? target = null;
             int itemId = 0;
             Job meal = null;
+            // Çocuk ve ergen ağlarken ya da kaçarken en yakın ağaç eve küser (belge 52).
+            bool minor = _character.Stage == AgeStage.Child || _character.Stage == AgeStage.Teen;
+            GridPos? refuge = minor && kind != BreakdownKind.Binge && Refuge != null ? Refuge(_character) : null;
+            if (refuge.HasValue)
+            {
+                Queue.InsertFront(Job.BreakdownAt(refuge, 0).WithNote(RefugeNote));
+                return;
+            }
             switch (kind)
             {
                 case BreakdownKind.Withdraw:
