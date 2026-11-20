@@ -4,7 +4,7 @@ title: Giyinme ve soyunma hışırtısı
 kind: sfx
 family: foley
 freq: B
-status: claimed
+status: review
 approved_by: user
 depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
@@ -33,5 +33,9 @@ yeniden_sayisi: 1
 prompt_influence: 0.7
 claimed_by: ip-10-0-138-220
 claimed_at: '2026-11-20T18:32:10Z'
+candidates: 8
+passed: 8
+credits_spent: 0
+generated_at: '2026-11-20T18:32:22Z'
 ---
 Soft, cozy rustle of warm wool and linen clothes being put on: gentle fabric brushing, a quiet soft flump, calm and close. Muffled and pleasant, no harsh crinkles, no snaps, no plastic sound.
