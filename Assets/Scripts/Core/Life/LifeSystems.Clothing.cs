@@ -245,6 +245,131 @@ namespace Thatchwick.Core.Life
             }
         }
 
+        // ================= gardırop ve terzi ekranının işlemleri (belge 48c "Kalanlar: arayüz") =================
+
+        public const string ClothScrapId = "item.cloth_scrap", ThriftyBranch = "branch.tailor_thrifty";
+
+        /// <summary>Giyme engelinin metin anahtarı.</summary>
+        public static string EquipErrorKey(EquipError e)
+        {
+            switch (e)
+            {
+                case EquipError.Age: return "cloth.err.age";
+                case EquipError.AdultCut: return "cloth.err.adult_cut";
+                case EquipError.Torn: return "cloth.err.torn";
+                case EquipError.JewelryLimit: return "cloth.err.jewelry_limit";
+                case EquipError.Outgrown: return "cloth.err.outgrown";
+                case EquipError.BareArmed: return "cloth.err.bare_armed";
+                case EquipError.NotOwned: return "wardrobe.err.not_owned";
+                default: return "wardrobe.err.other";
+            }
+        }
+
+        /// <summary>Sandıktaki ya da karakterin kendi giysisini takıma koyar (sandıktaysa sahibi olur). Engel yoksa boş döner.</summary>
+        public LocText WearClothing(Character c, ClothingInstance it, OutfitKind kind)
+        {
+            if (!HasClothing || c == null || it == null) return LocText.Of("wardrobe.err.other");
+            var err = it.IsJewelry ? Clothing.WearJewelry(c, it) : Clothing.Equip(c, it, kind);
+            return err == EquipError.None ? default : LocText.Of(EquipErrorKey(err));
+        }
+
+        /// <summary>Takımdan çıkarır. Hiçbir takımında kalmayan giysi sandığa döner (başkası giyebilir).</summary>
+        public void TakeOffClothing(Character c, ClothingInstance it, OutfitKind kind)
+        {
+            if (!HasClothing || c == null || it == null) return;
+            if (it.IsJewelry) { Clothing.TakeOffJewelry(c, it); return; }
+            Clothing.Unequip(c, it.Id, kind);
+            foreach (var o in Clothing.WardrobeOf(c).Outfits.Values) if (o.Contains(it.Id)) return;
+            Clothing.Give(it, null);
+        }
+
+        /// <summary>Yama (belge 48 §12.5): Terzilik 1, bir kumaş parçası, dayanıklılık +40. Engel yoksa boş döner.</summary>
+        public LocText PatchClothing(Character tailor, ClothingInstance it)
+        {
+            if (!HasClothing || tailor == null || it == null || it.IsJewelry) return LocText.Of("wardrobe.err.other");
+            if (it.Torn) return LocText.Of("cloth.err.torn");
+            if (it.Durability >= ClothingInstance.MaxDurability) return LocText.Of("wardrobe.err.no_wear");
+            if (House.Count(ClothScrapId) <= 0) return LocText.Of("wardrobe.err.no_scrap");
+            if (!Clothing.Patch(it)) return LocText.Of("wardrobe.err.other");
+            House.TryTakeItem(ClothScrapId);
+            tailor.GainSkillXp(SkillType.Tailoring, 4);
+            return default;
+        }
+
+        /// <summary>Söküm (belge 48 §12.5): giysi kalkar, kumaşın yarısı (Tutumlu makas dalıyla %75'i) kumaş parçası olarak döner. Dönen parça sayısı.</summary>
+        public int UnpickClothing(Character tailor, ClothingInstance it)
+        {
+            if (!HasClothing || it == null || it.IsJewelry || it.Heirloom) return 0;
+            int back = Clothing.Unpick(it.Id, tailor != null && tailor.HasBranch(ThriftyBranch));
+            if (back > 0 && Content.Items.Contains(ClothScrapId)) House.AddItem(ClothScrapId, back);
+            return back;
+        }
+
+        /// <summary>Bu kişi için terziye ısmarlanabilen modeller (yaşına uyan, "order" ile edinilen).</summary>
+        public IEnumerable<ClothingModelDef> OrderableModels(Character customer)
+        {
+            if (!HasClothing || customer == null) yield break;
+            foreach (var m in Clothing.Catalog.Models)
+                if (m.CanAcquire("order") && ClothingAge.CanWear(m, customer.Stage)) yield return m;
+        }
+
+        /// <summary>Ismarlama ücreti (ustanın stoğundan malzemeyle); ulak ayrıca.</summary>
+        public int OrderQuote(ClothingModelDef m, bool courier)
+        {
+            if (m == null) return 0;
+            Content.Items.TryGet(m.ItemId, out var item);
+            double affinity = Villagers.CharacterOf("villager." + TailorOrders.MakerFor(m)) is Character maker ? Villagers.BestAffection(maker) : 0;
+            return Tailor.Quote(m, item != null ? item.Price / 2 : 0, false, affinity, courier);
+        }
+
+        /// <summary>Ismarlama engeli; yoksa boş. Sipariş vermek için biri şehirde olmalı (usta dükkânında ısmarlanır).</summary>
+        public LocText OrderBlocker(Character customer, ClothingModelDef m, bool courier)
+        {
+            if (!HasClothing || customer == null || m == null || !m.CanAcquire("order")) return LocText.Of("wardrobe.err.other");
+            if (!ClothingAge.CanWear(m, customer.Stage)) return LocText.Of("cloth.err.age");
+            if (!TailorOrders.TierAllowed(m.Tier, HouseholdClothingTier)) return LocText.Of("tailor.err.tier");
+            if (!SomeoneInTown()) return LocText.Of("tailor.err.not_in_town");
+            int quote = OrderQuote(m, courier);
+            if (House.Akce < quote) return LocText.Of("tailor.err.akce", ("fee", quote));
+            return default;
+        }
+
+        /// <summary>Ismarlar (boyasız, ustanın malzemesiyle). Engel varsa metni döner, yoksa boş.</summary>
+        public LocText PlaceOrder(Character customer, ClothingModelDef m, bool courier)
+        {
+            var block = OrderBlocker(customer, m, courier);
+            if (!block.IsEmpty) return block;
+            var o = OrderClothing(customer, m.Id, DyePalette.Natural(m.Material), ownMaterials: false, courier: courier);
+            return o != null ? default : LocText.Of("tailor.err.refused");
+        }
+
+        /// <summary>Hazır ısmarlamayı dükkândan alır: biri şehirde olmalı (ulakla ısmarlanan kendiliğinden gelir).</summary>
+        public LocText PickUpOrder(TailorOrder o)
+        {
+            if (!HasClothing || o == null || o.Delivered) return LocText.Of("wardrobe.err.other");
+            if (!o.Ready(Clock.TotalDays)) return LocText.Of("tailor.err.not_ready", ("day", (long)Math.Ceiling(o.DueDay) + 1));
+            if (!SomeoneInTown()) return LocText.Of("tailor.err.not_in_town");
+            var who = Population.Find(o.CustomerId);
+            if (who == null || who.IsDead) who = FirstAdult();
+            return Tailor.Deliver(o, who, Clock.TotalDays, MakerName(o.Maker)) != null ? default : LocText.Of("tailor.err.refused");
+        }
+
+        private Character FirstAdult()
+        {
+            foreach (var c in Household()) if (!c.IsDead && c.Stage >= AgeStage.YoungAdult) return c;
+            foreach (var c in Household()) if (!c.IsDead) return c;
+            return null;
+        }
+
+        /// <summary>Haneden biri (çocuk ve üstü) şehirde mi; bölgesiz haritada (eski kayıt, test) her zaman evet.</summary>
+        public bool SomeoneInTown()
+        {
+            if (!Regions.IsRegional(World.Map)) return true;
+            foreach (var c in Household())
+                if (!c.IsDead && c.Stage >= AgeStage.Child && Regions.Town.Contains(c.Position)) return true;
+            return false;
+        }
+
         private TailorOrders _tailor;
         /// <summary>Terziye ısmarlama, hizmetler, biçki kalıpları, usta alametleri (belge 48 §10-11).</summary>
         public TailorOrders Tailor => _tailor ?? (_tailor = CreateTailor());

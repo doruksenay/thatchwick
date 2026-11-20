@@ -1,0 +1,11 @@
+{
+  "tailor.err.akce": "Akçe yetmiyor; ısmarlama {fee} akçe.",
+  "tailor.err.not_in_town": "Haneden biri şehirde, ustanın dükkânında olmalı.",
+  "tailor.err.not_ready": "Daha hazır değil; {day}. gün gel.",
+  "tailor.err.refused": "Usta bu işi alamıyor.",
+  "tailor.err.tier": "Bu kademeyi ısmarlamak için hanenin itibarı yetmiyor.",
+  "wardrobe.err.no_scrap": "Yama için bir kumaş parçası gerek.",
+  "wardrobe.err.no_wear": "Yıpranmamış; yama gerekmez.",
+  "wardrobe.err.not_owned": "Bu başkasının giysisi.",
+  "wardrobe.err.other": "Bu yapılamaz."
+}

@@ -1,0 +1,11 @@
+{
+  "tailor.err.akce": "Not enough akçe; the order costs {fee}.",
+  "tailor.err.not_in_town": "Someone from the household has to be in town, at the craftsman's shop.",
+  "tailor.err.not_ready": "Not ready yet; come on day {day}.",
+  "tailor.err.refused": "The craftsman cannot take this order.",
+  "tailor.err.tier": "The household's reputation is not enough to order at this tier.",
+  "wardrobe.err.no_scrap": "A patch needs one cloth scrap.",
+  "wardrobe.err.no_wear": "It is not worn; no patch needed.",
+  "wardrobe.err.not_owned": "That belongs to someone else.",
+  "wardrobe.err.other": "That cannot be done."
+}
