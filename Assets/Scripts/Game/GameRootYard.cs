@@ -536,13 +536,15 @@ namespace Thatchwick.Game
             var region = Thatchwick.Core.World.Regions.At(p);
             bool forest = region == Thatchwick.Core.World.Regions.Forest;
             if (season == Season.Autumn && h < (c > 0.55f ? 260 : 60)) return IsoArt.Decal("iso_decal_leaves_autumn_v2");
-            if (c > 0.6f && h < 420)
+            // Öbek içinde de seyrek (her karo dolunca ızgara gibi sıra sıra görünüyordu, Unity 21.11); öbeğin ortası sık, kenarı seyrek.
+            if (c > 0.6f && h < 140 + (int)((c - 0.6f) * 900f))
             {
                 if (forest) return IsoArt.Decal("iso_decal_fern_v2");
                 float k = Mathf.PerlinNoise(p.X * 0.09f + 5.1f, p.Y * 0.09f + 77.7f);   // öbeğin çiçek türü
                 return IsoArt.Decal(k < 0.4f ? "iso_decal_daisies_v2" : k < 0.65f ? "iso_decal_buttercups_v2" : "iso_decal_clover_v2");
             }
-            if (h < 28) return IsoArt.Decal(forest ? "iso_decal_fern_v2" : "iso_decal_grass_tuft_v2");
+            if (h < 22) return IsoArt.Decal(forest ? "iso_decal_fern_v2" : "iso_decal_grass_tuft_v2");
+            if (!forest && h > 1012) return IsoArt.Decal("iso_decal_daisies_v2");   // tek tük başıboş papatya
             return null;
         }
 
