@@ -15,13 +15,40 @@ namespace Thatchwick.Core.Customization
         public string DisplayName { get; set; }
         /// <summary>Rastgele üretimde yalnızca bu cinsiyete verilir (null = ikisi de). Oyuncu seçimini kısıtlamaz.</summary>
         public Sex? OnlyFor { get; set; }
-        /// <summary>Ek bilgi: saç stilinde doku (straight/wavy/curly), takıda bölge, desende bölge listesi.</summary>
+        /// <summary>Ek bilgi: saç stilinde doku (straight/wavy/curly), takıda bölge, desende bölge listesi; göz ve kaşta dünya deseni.</summary>
         public string Tag { get; set; }
+        /// <summary>
+        /// Saç modülleri için uzunluk düzeyi (belge 43b). Kütlede saçın uzunluğu (0 kel, 1 kısa, 2 ense, 3 omuz, 4 sırt, 5 bel);
+        /// ön, eklenti ve süste en az gereken kütle uzunluğu.
+        /// </summary>
+        public int Level { get; set; }
+        /// <summary>Ekrandaki ızgarada alt grup (ör. saçta kısa/orta/uzun/toplu).</summary>
+        public string Group { get; set; }
 
         /// <summary>Rastgele üretimde bu cinsiyete uygun mu.</summary>
         public bool PreferredFor(Sex sex) => !OnlyFor.HasValue || OnlyFor.Value == sex;
         /// <summary>Geriye uyumluluk: artık her seçenek herkese açık.</summary>
         public bool AllowedFor(Sex sex) => true;
+    }
+
+    /// <summary>Hazır saç stili: modüllerden adı olan bir birleşim (belge 43b). Ekranda ilk ızgara bunlardır.</summary>
+    public sealed class HairPreset
+    {
+        public string Id { get; set; }
+        public string DisplayName { get; set; }
+        public string Group { get; set; }
+        public string Mass { get; set; }
+        public string Front { get; set; } = Appearance.None;
+        public string Extra { get; set; } = Appearance.None;
+        public Sex? OnlyFor { get; set; }
+    }
+
+    /// <summary>Eski tam saç stili kimliğinin modüler karşılığı (kayıt ve eski dosya uyumu).</summary>
+    public sealed class LegacyHair
+    {
+        public string Mass { get; set; }
+        public string Front { get; set; } = Appearance.None;
+        public string Extra { get; set; } = Appearance.None;
     }
 
     /// <summary>
@@ -30,11 +57,22 @@ namespace Thatchwick.Core.Customization
     /// </summary>
     public sealed class AppearanceCatalog
     {
-        // Saç ve sakal
+        // Saç ve sakal (modüler, belge 43b)
+        /// <summary>Saç kütlesi (uzunluk ve doku). Level = uzunluk, Tag = doku.</summary>
         public List<OptionDef> HairStyles { get; } = new List<OptionDef>();
+        /// <summary>Saçın önü. Level = gereken en az kütle uzunluğu.</summary>
         public List<OptionDef> Bangs { get; } = new List<OptionDef>();
+        /// <summary>Saç eklentisi (örgü, topuz, at kuyruğu). Level = gereken en az kütle uzunluğu.</summary>
+        public List<OptionDef> HairExtras { get; } = new List<OptionDef>();
+        /// <summary>Saç süsü. Level = gereken en az kütle uzunluğu.</summary>
+        public List<OptionDef> HairOrnaments { get; } = new List<OptionDef>();
         public List<OptionDef> Mustaches { get; } = new List<OptionDef>();
         public List<OptionDef> Beards { get; } = new List<OptionDef>();
+        public List<OptionDef> Sideburns { get; } = new List<OptionDef>();
+        /// <summary>Hazır saç stilleri (modül birleşimleri).</summary>
+        public List<HairPreset> HairPresets { get; } = new List<HairPreset>();
+        /// <summary>Eski tam saç stili kimliği → modüller.</summary>
+        public Dictionary<string, LegacyHair> LegacyHairStyles { get; } = new Dictionary<string, LegacyHair>(StringComparer.Ordinal);
         /// <summary>Eski tek listeli sakal/bıyık (eski appearance.json uyumu). Yeni kod Mustaches ve Beards kullanır.</summary>
         public List<OptionDef> FacialHair { get; } = new List<OptionDef>();
 
@@ -45,6 +83,7 @@ namespace Thatchwick.Core.Customization
         public List<OptionDef> Noses { get; } = new List<OptionDef>();
         public List<OptionDef> Mouths { get; } = new List<OptionDef>();
         public List<OptionDef> Ears { get; } = new List<OptionDef>();
+        public List<OptionDef> Lashes { get; } = new List<OptionDef>();
 
         // İşaretler
         /// <summary>Eski tek yuvalı yüz işareti (eski appearance.json uyumu).</summary>
@@ -104,9 +143,15 @@ namespace Thatchwick.Core.Customization
             if (a.VoicePitch < Appearance.MinPitch || a.VoicePitch > Appearance.MaxPitch) errors.Add($"Ses perdesi {Appearance.MinPitch}..{Appearance.MaxPitch} arasında olmalı.");
 
             CheckOption(errors, HairStyles, a.HairStyleId, "saç stili");
-            CheckOption(errors, Bangs, a.BangsId, "kâkül");
+            CheckOption(errors, Bangs, a.BangsId, "saç önü");
+            CheckOption(errors, HairExtras, a.HairExtraId, "saç eklentisi");
+            CheckOption(errors, HairOrnaments, a.HairOrnamentId, "saç süsü");
             CheckOption(errors, Mustaches, a.MustacheId, "bıyık");
             CheckOption(errors, Beards, a.BeardId, "sakal");
+            CheckOption(errors, Sideburns, a.SideburnsId, "favori");
+            CheckOption(errors, Lashes, a.LashesId, "kirpik");
+            if (a.StubbleLevel < 0 || a.StubbleLevel > Appearance.MaxStubble) errors.Add($"Kirli sakal 0..{Appearance.MaxStubble} arasında olmalı.");
+            errors.AddRange(ValidateHair(a.HairStyleId, a.BangsId, a.HairExtraId, a.HairOrnamentId));
             CheckOption(errors, FaceShapes, a.FaceShapeId, "yüz şekli");
             CheckOption(errors, EyeShapes, a.EyeShapeId, "göz şekli");
             CheckOption(errors, Brows, a.BrowId, "kaş");
@@ -164,10 +209,18 @@ namespace Thatchwick.Core.Customization
         /// <summary>Katalogda olmayan seçimleri ilk seçeneğe çevirir, boyu sabitler. Cinsiyete göre değiştirmez.</summary>
         public void Normalize(Appearance a, Sex sex)
         {
+            MigrateLegacy(a);
             a.HairStyleId = Valid(HairStyles, a.HairStyleId);
             a.BangsId = Valid(Bangs, a.BangsId);
+            a.HairExtraId = Valid(HairExtras, a.HairExtraId);
+            a.HairOrnamentId = Valid(HairOrnaments, a.HairOrnamentId);
+            FitHair(a);
             a.MustacheId = Valid(Mustaches, a.MustacheId);
             a.BeardId = Valid(Beards, a.BeardId);
+            a.SideburnsId = Valid(Sideburns, a.SideburnsId);
+            a.LashesId = Valid(Lashes, a.LashesId);
+            if (a.StubbleLevel < 0) a.StubbleLevel = 0;
+            if (a.StubbleLevel > Appearance.MaxStubble) a.StubbleLevel = Appearance.MaxStubble;
             a.FaceShapeId = Valid(FaceShapes, a.FaceShapeId);
             a.EyeShapeId = Valid(EyeShapes, a.EyeShapeId);
             a.BrowId = Valid(Brows, a.BrowId);
@@ -185,6 +238,107 @@ namespace Thatchwick.Core.Customization
             if (a.VoicePitch < Appearance.MinPitch) a.VoicePitch = Appearance.MinPitch;
             if (a.VoicePitch > Appearance.MaxPitch) a.VoicePitch = Appearance.MaxPitch;
             if (SkinTones.Count > 0 && !SkinTones.Contains(a.SkinColor)) a.SkinColor = Genetics.Nearest(SkinTones, a.SkinColor);
+        }
+
+        // --- Modüler saç (belge 43b) ---
+
+        /// <summary>Kütlenin uzunluk düzeyi (bilinmeyen kimlik: 1).</summary>
+        public int MassLength(string massId)
+        {
+            var m = Find(HairStyles, ResolveMass(massId));
+            return m == null ? 1 : m.Level;
+        }
+
+        /// <summary>Eski tam stil kimliğini kütle kimliğine çevirir; değilse olduğu gibi döner.</summary>
+        public string ResolveMass(string id) =>
+            id != null && Find(HairStyles, id) == null && LegacyHairStyles.TryGetValue(id, out var l) ? l.Mass : id;
+
+        /// <summary>Saç dokusu (genetik için): kütlenin Tag'i; eski kimlik çözülür.</summary>
+        public string HairTextureOf(string massId) => Find(HairStyles, ResolveMass(massId))?.Tag;
+
+        /// <summary>Bu modül (ön, eklenti ya da süs) bu kütleye uyar mı. "none" her zaman uyar.</summary>
+        public bool Fits(List<OptionDef> modules, string moduleId, string massId)
+        {
+            if (string.IsNullOrEmpty(moduleId) || moduleId == Appearance.None) return true;
+            var m = Find(modules, moduleId);
+            if (m == null) return true;   // denetimi Validate yapar
+            return m.Level <= MassLength(massId);
+        }
+
+        /// <summary>Kütleye uyan modüller (ekranda yalnız bunlar gösterilir).</summary>
+        public IEnumerable<OptionDef> FittingModules(List<OptionDef> modules, string massId) =>
+            modules.Where(o => Fits(modules, o.Id, massId));
+
+        /// <summary>Uyumsuz saç birleşimleri için hata metinleri.</summary>
+        public List<string> ValidateHair(string mass, string front, string extra, string ornament)
+        {
+            var errors = new List<string>();
+            if (!Fits(Bangs, front, mass)) errors.Add($"Saç önü '{front}' bu saç boyuna uymuyor.");
+            if (!Fits(HairExtras, extra, mass)) errors.Add($"Saç eklentisi '{extra}' bu saç boyuna uymuyor.");
+            if (!Fits(HairOrnaments, ornament, mass)) errors.Add($"Saç süsü '{ornament}' bu saç boyuna uymuyor.");
+            return errors;
+        }
+
+        /// <summary>Uymayan modülleri kaldırır (kütle kısaltılınca örgü düşer).</summary>
+        public void FitHair(Appearance a)
+        {
+            if (!Fits(Bangs, a.BangsId, a.HairStyleId)) a.BangsId = Appearance.None;
+            if (!Fits(HairExtras, a.HairExtraId, a.HairStyleId)) a.HairExtraId = Appearance.None;
+            if (!Fits(HairOrnaments, a.HairOrnamentId, a.HairStyleId)) a.HairOrnamentId = Appearance.None;
+        }
+
+        /// <summary>
+        /// Eski kayıt ve eski kod uyumu: tam saç stili kimliği kütle + ön + eklentiye, eski "stubble" sakalı
+        /// kirli sakal dokusuna çevrilir. Yeni kimliklere dokunmaz.
+        /// </summary>
+        public void MigrateLegacy(Appearance a)
+        {
+            if (a.HairStyleId != null && Find(HairStyles, a.HairStyleId) == null && LegacyHairStyles.TryGetValue(a.HairStyleId, out var l))
+            {
+                a.HairStyleId = l.Mass;
+                if ((a.BangsId == null || a.BangsId == Appearance.None) && l.Front != Appearance.None) a.BangsId = l.Front;
+                if ((a.HairExtraId == null || a.HairExtraId == Appearance.None) && l.Extra != Appearance.None) a.HairExtraId = l.Extra;
+            }
+            if (a.BeardId == "stubble" && Find(Beards, "stubble") == null)
+            {
+                a.BeardId = Appearance.None;
+                if (a.StubbleLevel == 0) a.StubbleLevel = 2;
+            }
+        }
+
+        /// <summary>Hazır stili uygular (kütle, ön, eklenti); süse dokunmaz, uymuyorsa düşürür.</summary>
+        public void ApplyPreset(Appearance a, HairPreset p)
+        {
+            if (p == null) return;
+            a.HairStyleId = p.Mass;
+            a.BangsId = p.Front ?? Appearance.None;
+            a.HairExtraId = p.Extra ?? Appearance.None;
+            FitHair(a);
+        }
+
+        /// <summary>Görünümün birebir eşleştiği hazır stil (yoksa null): ekranda seçili hücre.</summary>
+        public HairPreset PresetOf(Appearance a) =>
+            HairPresets.FirstOrDefault(p => p.Mass == a.HairStyleId && (p.Front ?? Appearance.None) == a.BangsId && (p.Extra ?? Appearance.None) == a.HairExtraId);
+
+        /// <summary>Hazır stillerin geçerli olduğunu denetler (içerik dosyası testleri için).</summary>
+        public List<string> ValidatePresets()
+        {
+            var errors = new List<string>();
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var p in HairPresets)
+            {
+                if (!seen.Add(p.Id)) errors.Add($"Hazır stil tekrar ediyor: '{p.Id}'.");
+                if (Find(HairStyles, p.Mass) == null) errors.Add($"Hazır stil '{p.Id}': bilinmeyen kütle '{p.Mass}'.");
+                if (Bangs.Count > 0 && Find(Bangs, p.Front ?? Appearance.None) == null) errors.Add($"Hazır stil '{p.Id}': bilinmeyen ön '{p.Front}'.");
+                if (HairExtras.Count > 0 && Find(HairExtras, p.Extra ?? Appearance.None) == null) errors.Add($"Hazır stil '{p.Id}': bilinmeyen eklenti '{p.Extra}'.");
+                foreach (var e in ValidateHair(p.Mass, p.Front, p.Extra, Appearance.None)) errors.Add($"Hazır stil '{p.Id}': {e}");
+            }
+            foreach (var kv in LegacyHairStyles)
+            {
+                if (Find(HairStyles, kv.Value.Mass) == null) errors.Add($"Eski saç '{kv.Key}': bilinmeyen kütle '{kv.Value.Mass}'.");
+                foreach (var e in ValidateHair(kv.Value.Mass, kv.Value.Front, kv.Value.Extra, Appearance.None)) errors.Add($"Eski saç '{kv.Key}': {e}");
+            }
+            return errors;
         }
 
         private static string Valid(List<OptionDef> list, string id)
@@ -206,10 +360,13 @@ namespace Thatchwick.Core.Customization
 
         private Rgb PickColor(List<Rgb> list, Random rng, Rgb fallback) => list.Count > 0 ? Pick(list, rng) : fallback;
 
+        /// <summary>Kel, tepe tıraşı, tepesi açık gibi kütleler: bebek ve çocuğa verilmez.</summary>
+        public const string SpecialGroup = "ozel";
+
         /// <summary>Saç dokusuna uyan rastgele bir stil (kel dahil değil).</summary>
         public string PickHairForTexture(string texture, Sex sex, Random rng)
         {
-            var match = HairStyles.Where(o => o.Id != "bald" && o.PreferredFor(sex) && (string.IsNullOrEmpty(texture) || o.Tag == texture)).ToList();
+            var match = HairStyles.Where(o => o.Id != "bald" && o.Group != SpecialGroup && o.PreferredFor(sex) && (string.IsNullOrEmpty(texture) || o.Tag == texture)).ToList();
             if (match.Count == 0) match = HairStyles.Where(o => o.PreferredFor(sex)).ToList();
             return match.Count == 0 ? "short" : Pick(match, rng).Id;
         }
@@ -229,7 +386,7 @@ namespace Thatchwick.Core.Customization
                 HatColor = PickColor(ClothColors, rng, new Rgb(120, 90, 60)),
                 OuterColor = PickColor(ClothColors, rng, new Rgb(90, 70, 50)),
                 HairStyleId = PickId(HairStyles, sex, rng),
-                BangsId = rng.Next(3) == 0 ? PickId(Bangs, sex, rng) : Appearance.None,
+                BangsId = Appearance.None,
                 FaceShapeId = PickId(FaceShapes, sex, rng, false),
                 EyeShapeId = PickId(EyeShapes, sex, rng, false),
                 BrowId = PickId(Brows, sex, rng, false),
@@ -246,12 +403,15 @@ namespace Thatchwick.Core.Customization
                 VoicePitch = rng.Next(5) - 2,
                 LaughId = PickId(Laughs, sex, rng, false)
             };
+            RandomizeHair(a, rng, sex);
             a.FacialHairColor = a.HairColor;
             if (sex == Sex.Male && rng.Next(2) == 0)
             {
                 if (rng.Next(2) == 0) a.MustacheId = PickId(Mustaches, sex, rng, false);
                 if (rng.Next(3) > 0) a.BeardId = PickId(Beards, sex, rng, false);
+                if (Sideburns.Count > 1 && rng.Next(3) == 0) a.SideburnsId = PickId(Sideburns, sex, rng, false);
             }
+            if (sex == Sex.Male && a.BeardId == Appearance.None && rng.Next(3) == 0) a.StubbleLevel = 1 + rng.Next(Appearance.MaxStubble);
             if (rng.Next(3) == 0 && SkinDetails.Count > 0)
             {
                 var d = Pick(SkinDetails, rng);
@@ -259,6 +419,39 @@ namespace Thatchwick.Core.Customization
             }
             Normalize(a, sex);
             return a;
+        }
+
+        /// <summary>
+        /// Rastgele saç: çoğunlukla hazır stillerden (tutarlı görünüm), bazen modüllerden. Her zaman uyumlu birleşim verir.
+        /// </summary>
+        public void RandomizeHair(Appearance a, Random rng, Sex sex)
+        {
+            var presets = HairPresets.Where(p => !p.OnlyFor.HasValue || p.OnlyFor.Value == sex).ToList();
+            if (presets.Count > 0 && rng.Next(10) < 7)
+            {
+                ApplyPreset(a, presets[rng.Next(presets.Count)]);
+            }
+            else
+            {
+                if (HairStyles.Count > 0) a.HairStyleId = PickId(HairStyles, sex, rng);
+                a.BangsId = Appearance.None;
+                a.HairExtraId = Appearance.None;
+                if (Bangs.Count > 0 && rng.Next(2) == 0) a.BangsId = PickFitting(Bangs, a.HairStyleId, sex, rng);
+                if (HairExtras.Count > 0 && rng.Next(3) == 0) a.HairExtraId = PickFitting(HairExtras, a.HairStyleId, sex, rng);
+            }
+            a.HairOrnamentId = Appearance.None;
+            if (HairOrnaments.Count > 1 && rng.Next(6) == 0)
+            {
+                a.HairOrnamentId = PickFitting(HairOrnaments, a.HairStyleId, sex, rng);
+                a.HairOrnamentColor = PickColor(ClothColors, rng, a.HairOrnamentColor);
+            }
+            FitHair(a);
+        }
+
+        private string PickFitting(List<OptionDef> modules, string massId, Sex sex, Random rng)
+        {
+            var fit = modules.Where(o => o.Id != Appearance.None && o.PreferredFor(sex) && Fits(modules, o.Id, massId)).ToList();
+            return fit.Count == 0 ? Appearance.None : fit[rng.Next(fit.Count)].Id;
         }
 
         private static string FirstZone(string tag, string fallback)
@@ -275,8 +468,7 @@ namespace Thatchwick.Core.Customization
         public Appearance Inherit(Appearance mother, Appearance father, Random rng, Sex childSex)
         {
             var baby = Randomize(rng, childSex);
-            baby.MustacheId = Appearance.None;
-            baby.BeardId = Appearance.None;
+            ClearAdultOnly(baby);
             baby.HatId = Appearance.None;
             baby.OuterId = Appearance.None;
             baby.Marks.Clear();
@@ -297,8 +489,7 @@ namespace Thatchwick.Core.Customization
         public Appearance FromGenome(Genome genome, Random rng, Sex sex)
         {
             var baby = Randomize(rng, sex);
-            baby.MustacheId = Appearance.None;
-            baby.BeardId = Appearance.None;
+            ClearAdultOnly(baby);
             baby.HatId = Appearance.None;
             baby.OuterId = Appearance.None;
             baby.BangsId = Appearance.None;
@@ -306,8 +497,20 @@ namespace Thatchwick.Core.Customization
             Genetics.Express(genome, baby, this);
             string texture = Genetics.Expressed(genome, Genes.HairTexture, this);
             baby.HairStyleId = PickHairForTexture(texture, sex, rng);
+            baby.HairExtraId = Appearance.None;
             Normalize(baby, sex);
             return baby;
+        }
+
+        /// <summary>Bebekte olmayanlar: sakal, bıyık, favori, kirli sakal, saç süsü ve eklentisi.</summary>
+        private static void ClearAdultOnly(Appearance a)
+        {
+            a.MustacheId = Appearance.None;
+            a.BeardId = Appearance.None;
+            a.SideburnsId = Appearance.None;
+            a.StubbleLevel = 0;
+            a.HairExtraId = Appearance.None;
+            a.HairOrnamentId = Appearance.None;
         }
 
         /// <summary>Yerleşik varsayılan katalog (appearance.json okunamazsa kullanılır).</summary>
@@ -317,26 +520,53 @@ namespace Thatchwick.Core.Customization
             void Add(List<OptionDef> l, string id, string name, Sex? only = null, string tag = null) =>
                 l.Add(new OptionDef { Id = id, DisplayName = name, OnlyFor = only, Tag = tag });
 
-            Add(c.HairStyles, "bald", "Kel");
-            Add(c.HairStyles, "crop", "Kırpık", null, "straight");
-            Add(c.HairStyles, "short", "Kısa", null, "straight");
-            Add(c.HairStyles, "shaggy", "Dağınık", null, "wavy");
-            Add(c.HairStyles, "long", "Uzun", null, "straight");
-            Add(c.HairStyles, "ponytail", "At kuyruğu", null, "wavy");
-            Add(c.HairStyles, "braid", "Örgü", null, "straight");
-            Add(c.HairStyles, "bun", "Topuz", null, "curly");
-            Add(c.HairStyles, "curls", "Bukleler", null, "curly");
+            // Modüler saç (belge 43b). Level: kütlede uzunluk, modülde gereken en az uzunluk.
+            void Mod(List<OptionDef> l, string id, string name, int level, string tag = null, string group = null, Sex? only = null) =>
+                l.Add(new OptionDef { Id = id, DisplayName = name, Level = level, Tag = tag, Group = group, OnlyFor = only });
+            Mod(c.HairStyles, "bald", "Kel", 0, null, SpecialGroup);
+            Mod(c.HairStyles, "crop", "Kırpık", 1, "straight", "kisa");
+            Mod(c.HairStyles, "short", "Kısa", 1, "straight", "kisa");
+            Mod(c.HairStyles, "curls", "Kısa bukleler", 1, "curly", "kisa");
+            Mod(c.HairStyles, "nape", "Ense boyu", 2, "wavy", "orta");
+            Mod(c.HairStyles, "shoulder", "Omuz boyu", 3, "wavy", "orta");
+            Mod(c.HairStyles, "long", "Uzun düz", 4, "straight", "uzun");
+            Mod(c.HairStyles, "long_curly", "Uzun kıvırcık", 4, "curly", "uzun");
 
-            Add(c.Bangs, Appearance.None, "Yok");
-            Add(c.Bangs, "straight", "Düz kâkül");
-            Add(c.Bangs, "side", "Yana kâkül");
+            Mod(c.Bangs, Appearance.None, "Alın açık", 0);
+            Mod(c.Bangs, "straight", "Düz kâkül", 1);
+            Mod(c.Bangs, "side", "Yana kâkül", 1);
+            Mod(c.Bangs, "parted", "Ortadan ayrık", 1);
+
+            Mod(c.HairExtras, Appearance.None, "Yok", 0);
+            Mod(c.HairExtras, "ponytail", "At kuyruğu", 2);
+            Mod(c.HairExtras, "braid", "Örgü", 3);
+            Mod(c.HairExtras, "bun", "Topuz", 3);
+
+            Mod(c.HairOrnaments, Appearance.None, "Yok", 0);
+            Mod(c.HairOrnaments, "ribbon", "Kurdele", 2);
+            Mod(c.HairOrnaments, "flower", "Çiçek", 1);
+
+            Mod(c.Sideburns, Appearance.None, "Yok", 0);
+            Mod(c.Sideburns, "short", "Kısa favori", 0, null, null, Sex.Male);
+
+            Mod(c.Lashes, "normal", "Normal", 0);
+            Mod(c.Lashes, "long", "Uzun", 0);
+
+            c.HairPresets.Add(new HairPreset { Id = "p_short", DisplayName = "Kısa", Group = "kisa", Mass = "short" });
+            c.HairPresets.Add(new HairPreset { Id = "p_bangs", DisplayName = "Kâküllü kısa", Group = "kisa", Mass = "short", Front = "straight" });
+            c.HairPresets.Add(new HairPreset { Id = "p_ponytail", DisplayName = "At kuyruğu", Group = "toplu", Mass = "shoulder", Extra = "ponytail" });
+            c.HairPresets.Add(new HairPreset { Id = "p_braid", DisplayName = "Örgü", Group = "toplu", Mass = "long", Front = "parted", Extra = "braid" });
+
+            c.LegacyHairStyles["shaggy"] = new LegacyHair { Mass = "nape" };
+            c.LegacyHairStyles["ponytail"] = new LegacyHair { Mass = "shoulder", Extra = "ponytail" };
+            c.LegacyHairStyles["braid"] = new LegacyHair { Mass = "long", Extra = "braid" };
+            c.LegacyHairStyles["bun"] = new LegacyHair { Mass = "shoulder", Extra = "bun" };
 
             Add(c.Mustaches, Appearance.None, "Yok");
             Add(c.Mustaches, "mustache", "Bıyık", Sex.Male);
             Add(c.Mustaches, "handlebar", "Burma bıyık", Sex.Male);
 
             Add(c.Beards, Appearance.None, "Yok");
-            Add(c.Beards, "stubble", "Kirli sakal", Sex.Male);
             Add(c.Beards, "goatee", "Keçi sakalı", Sex.Male);
             Add(c.Beards, "beard", "Sakal", Sex.Male);
             Add(c.Beards, "full_beard", "Gür sakal", Sex.Male);

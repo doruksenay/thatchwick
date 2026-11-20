@@ -49,3 +49,16 @@ Tek tanım: `Assets/Scripts/Core/Layout/Facing.cs` (testli). Izgaraya göre dör
   ayak iziyle uyuşmuyorsa görsel eşlenmez (örn. 1x1 üretilmiş kurutma askısı, 2x1 tanım).
 - Kameraya dönük yönler N ve W olduğundan oturma eşyası ve dolaplar odanın arka duvarlarına (doğu +x ve güney +y) sırt verir;
   ön duvarlar (kuzey ve batı) kesitte saydamlaşır.
+
+## Katmanlı karakter (belge 43, 43b; 20.11.2026)
+Karakter yaratmadaki seçimler (saç, sakal, başlık, renkler, beden) dünyada katmanlarla çizilir. Bağlayıcı sözleşme:
+
+- **Manken:** her animasyon karesi kel bir taban karakterdir, anahtar renklerde çizilir (`tools/art/ramps.py` KEYS; `LayerTypes.cs` KeyColors). `tools/art/manken.py regions` kareyi bölge haritasına çevirir: `Assets/Art/Iso/katman/lay_body_<gövde>_<anim>_<yön>_<NN>.png`.
+  - Kanallar: kırmızı = bölge kodu, yeşil = ton (0 koyu - 3 açık), mavi = çapa işareti (1 baş, 2 göz), alfa = örtü.
+  - Gövde: `m` / `f` (yetişkin), `cm` / `cf` (çocuk), ardından `_ince`, `_orta`, `_gurbuz`, `_dolgun`. Ergen ve yaşlı yetişkin mankenini kullanır (kullanıcı kararı 19.11.2026).
+  - Ham kaynaklar `Assets/Art/Iso/_ham/katman/lay_src_...` (kütüphaneye girmez).
+- **Baş parçası:** saç kütlesi, saç önü, eklenti, süs, bıyık, sakal, favori, başlık yalnız 5 yönde çizilir (s, se, e, ne, n); batı yönleri aynadır.
+  - Tuval 64x96; çapa (32, 24) = kel kafanın en üst pikseli. Ad: `lay_<yuva>_<kimlik>_<yön>_fr.png` (ön) ve isteğe bağlı `_bk.png` (gövdenin arkasında kalan kısım, ör. sırta dökülen saç).
+  - Saç ve sakal referans kahve rampada, başlık ve süs referans gri rampada çizilir (`ramps.py` REFERENCE); oyun seçilen renge çevirir. Rampaya uymayan pikseller (metal, çiçek) olduğu gibi kalır.
+- **Palet kilidi (kullanıcı kararı 19.11.2026):** ten, saç, göz ve kumaş rampaları `Assets/Resources/Content/character_ramps.json`'da kilitlidir (`ramps.py build` üretir, elle düzenlenmez). Karakter işi teslimden önce `ramps.py check` ile denetlenir; KALDI alan kabul edilmez.
+- `Assets/Art/Iso/katman/` altındaki dokular okunabilir (Read/Write) içe aktarılır; oyun piksel piksel okur.

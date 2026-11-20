@@ -548,6 +548,13 @@ namespace Thatchwick.Game
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
             _life.Suitors.AppearanceCatalog = _appearanceCatalog;
+            LayeredCharacterArt.Catalog = _appearanceCatalog;
+            // Eski kayıt: tam saç stili kimlikleri modüllere (kütle + ön + eklenti), eski kirli sakal dokuya (belge 43b).
+            foreach (var member in _population.Members)
+            {
+                _appearanceCatalog.MigrateLegacy(member.Appearance);
+                _appearanceCatalog.FitHair(member.Appearance);
+            }
             // Ölen adlı köylünün (demirci ...) halefi mevsim başında gelir: görünüm ve sahne nesnesi burada verilir.
             _life.Villagers.PlaceResolver = key => ResolvePlace(key);
             _life.Villagers.SuccessorArrived += (c, def) =>

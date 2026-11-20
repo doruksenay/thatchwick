@@ -26,3 +26,10 @@ jobs:
       # Core'daki bir değişiklik Unity tarafını kırarsa Unity açılmadan burada yakalanır.
       - name: Game katmanı derleme denetimi
         run: dotnet build core/Thatchwick.GameCheck --verbosity minimal
+
+      # Karakter katman araçları (tools/art/ramps.py, manken.py): rampa formülü C# ile aynı mı, bölge
+      # haritası ve çapalar doğru mu. Görsel dosyası gerektirmez (LFS'siz checkout yeter).
+      - name: Sanat araçları testleri
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 -m unittest discover tools/art/tests

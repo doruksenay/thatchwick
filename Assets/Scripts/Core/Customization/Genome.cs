@@ -223,7 +223,7 @@ namespace Thatchwick.Core.Customization
         public static Genome ForFounder(Appearance a, AppearanceCatalog cat, Random rng)
         {
             var g = FromAppearance(a, cat, rng);
-            string tex = cat.HairStyles.FirstOrDefault(o => o.Id == a.HairStyleId)?.Tag;
+            string tex = cat.HairTextureOf(a.HairStyleId);
             if (string.IsNullOrEmpty(tex)) tex = "straight";
             g.Set(Genes.HairTexture, tex, rng.NextDouble() < CarrierChance ? new[] { "straight", "wavy", "curly" }[rng.Next(3)] : tex);
             // Görünen değeri bozmamak için daha baskın aday dokuyu geri al.

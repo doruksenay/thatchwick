@@ -215,6 +215,14 @@ namespace Thatchwick.Game
 
             // Sakal ve bıyık (ayrı katman).
             Color32 fh = C(AgingLook.GrayedHair(a.FacialHairColor, gray));
+            if (a.StubbleLevel > 0)
+                FillRect(buf, 8, 31, 15, 34, Mix(a.SkinColor, a.FacialHairColor, 0.15 * a.StubbleLevel));
+            if (a.SideburnsId != Appearance.None)
+            {
+                int top = a.SideburnsId == "long" || a.SideburnsId == "wide" ? 33 : 36;
+                FillRect(buf, 7, top, a.SideburnsId == "wide" ? 8 : 7, 39, fh);
+                FillRect(buf, a.SideburnsId == "wide" ? 15 : 16, top, 16, 39, fh);
+            }
             switch (a.BeardId)
             {
                 case "stubble":
@@ -237,6 +245,20 @@ namespace Thatchwick.Game
                     Px(buf, 12, 34, skin);
                     if (a.BeardId == "forked") { Px(buf, 11, 28, Clear); Px(buf, 12, 28, Clear); FillRect(buf, 10, 26, 10, 27, fh); FillRect(buf, 13, 26, 13, 27, fh); }
                     break;
+                case "long":
+                case "very_long":
+                case "braided":
+                case "spade":
+                case "bushy":
+                    FillRect(buf, 7, a.BeardId == "very_long" ? 24 : 27, 16, 34, fh);
+                    Px(buf, 11, 34, skin);
+                    Px(buf, 12, 34, skin);
+                    break;
+                case Appearance.None:
+                    break;
+                default:
+                    FillRect(buf, 9, 30, 14, 33, fh);
+                    break;
             }
             switch (a.MustacheId)
             {
@@ -245,6 +267,8 @@ namespace Thatchwick.Game
                 case "handlebar": FillRect(buf, 9, 35, 14, 35, fh); Px(buf, 8, 36, fh); Px(buf, 15, 36, fh); break;
                 case "walrus": FillRect(buf, 8, 33, 15, 35, fh); break;
                 case "drooping": FillRect(buf, 9, 35, 14, 35, fh); FillRect(buf, 9, 32, 9, 34, fh); FillRect(buf, 14, 32, 14, 34, fh); break;
+                case Appearance.None: break;
+                default: FillRect(buf, 9, 34, 14, 35, fh); break;
             }
 
             // Takılar (kulak, burun, boyun).
@@ -261,8 +285,10 @@ namespace Thatchwick.Game
             if (!hood)
             {
                 DrawHair(buf, a.HairStyleId, hair, a.HatId);
+                DrawHairExtra(buf, a.HairExtraId, hair);
                 if (look != null && look.Receding) FillRect(buf, 9, 42, 14, 43, skin);
                 DrawBangs(buf, a.BangsId, hair);
+                DrawHairOrnament(buf, a.HairOrnamentId, C(a.HairOrnamentColor));
             }
             else FillRect(buf, 8, 42, 15, 43, hat);
 
@@ -384,9 +410,18 @@ namespace Thatchwick.Game
                 case "curly": for (int x = 8; x <= 15; x++) Px(buf, x, 40 + (x % 2), hair); break;
                 case "parted": FillRect(buf, 8, 40, 10, 41, hair); FillRect(buf, 13, 40, 15, 41, hair); break;
                 case "long": FillRect(buf, 8, 39, 15, 41, hair); break;
+                case "curtain": FillRect(buf, 8, 39, 10, 41, hair); FillRect(buf, 13, 39, 15, 41, hair); break;
+                case "side_part": FillRect(buf, 8, 41, 15, 42, hair); Px(buf, 10, 42, new Color32(0, 0, 0, 0)); break;
+                case "swept": FillRect(buf, 8, 41, 15, 41, hair); Px(buf, 15, 40, hair); break;
+                case "slicked": FillRect(buf, 8, 42, 15, 42, hair); break;
+                case "strand": FillRect(buf, 8, 36, 8, 41, hair); break;
+                case "short_fringe": FillRect(buf, 9, 41, 14, 41, hair); break;
+                case "braided_front": for (int x = 8; x <= 15; x++) Px(buf, x, 41, (x % 2 == 0) ? hair : new Color32((byte)(hair.r * 0.75f), (byte)(hair.g * 0.75f), (byte)(hair.b * 0.75f), 255)); break;
             }
         }
 
+        // Modüler saç (belge 43b): kütle, eklenti ve süs ayrı çizilir. Bu prosedürel çizim yalnızca katman
+        // görselleri (LayeredCharacterArt) yokken kullanılan yer tutucudur.
         private static void DrawHair(Color32[] buf, string style, Color32 hair, string hatId)
         {
             Color32 dark = new Color32((byte)(hair.r * 0.75f), (byte)(hair.g * 0.75f), (byte)(hair.b * 0.75f), 255);
@@ -397,57 +432,42 @@ namespace Thatchwick.Game
                 case "crop":
                     FillRect(buf, 8, 42, 15, 43, hair);
                     break;
-                case "short":
-                    Ellipse(buf, 12f, 41f, 6f, 3.8f, hair);
-                    FillRect(buf, 7, 38, 7, 40, hair);
-                    FillRect(buf, 16, 38, 16, 40, hair);
+                case "thinning":
+                    FillRect(buf, 7, 38, 8, 42, hair);
+                    FillRect(buf, 15, 38, 16, 42, hair);
+                    FillRect(buf, 9, 43, 14, 43, dark);
                     break;
-                case "shaggy":
+                case "short":
+                case "ear_length":
+                    Ellipse(buf, 12f, 41f, 6f, 3.8f, hair);
+                    FillRect(buf, 7, style == "ear_length" ? 35 : 38, 7, 40, hair);
+                    FillRect(buf, 16, style == "ear_length" ? 35 : 38, 16, 40, hair);
+                    break;
+                case "nape":
                     Ellipse(buf, 12f, 41.5f, 6.5f, 4.2f, hair);
-                    FillRect(buf, 6, 36, 7, 40, hair);
-                    FillRect(buf, 16, 36, 17, 40, hair);
+                    FillRect(buf, 6, 34, 7, 40, hair);
+                    FillRect(buf, 16, 34, 17, 40, hair);
                     Px(buf, 9, 40, dark);
-                    Px(buf, 13, 40, dark);
-                    Px(buf, 15, 41, dark);
-                    Px(buf, 10, 45, hair);
-                    Px(buf, 14, 45, hair);
+                    Px(buf, 14, 40, dark);
                     break;
                 case "long":
+                case "waist":
                     Ellipse(buf, 12f, 41f, 6.2f, 4f, hair);
-                    FillRect(buf, 6, 28, 7, 41, hair);
-                    FillRect(buf, 16, 28, 17, 41, hair);
-                    FillRect(buf, 7, 28, 16, 30, dark);
-                    break;
-                case "ponytail":
-                    Ellipse(buf, 12f, 41f, 6f, 3.8f, hair);
-                    FillRect(buf, 7, 38, 7, 40, hair);
-                    FillRect(buf, 16, 38, 16, 40, hair);
-                    FillRect(buf, 17, 30, 18, 40, hair);
-                    FillRect(buf, 18, 28, 18, 31, dark);
-                    break;
-                case "braid":
-                    Ellipse(buf, 12f, 41f, 6f, 3.8f, hair);
-                    for (int y = 25; y <= 40; y++)
-                    {
-                        var c = (y % 2 == 0) ? hair : dark;
-                        FillRect(buf, 6, y, 7, y, c);
-                        FillRect(buf, 16, y, 17, y, c);
-                    }
-                    break;
-                case "bun":
-                    Ellipse(buf, 12f, 41f, 6f, 3.8f, hair);
-                    FillRect(buf, 7, 38, 7, 40, hair);
-                    FillRect(buf, 16, 38, 16, 40, hair);
-                    Ellipse(buf, 12f, 45.5f, 2.6f, 2.2f, hair);
+                    int low = style == "waist" ? 20 : 28;
+                    FillRect(buf, 6, low, 7, 41, hair);
+                    FillRect(buf, 16, low, 17, 41, hair);
+                    FillRect(buf, 7, low, 16, low + 2, dark);
                     break;
                 case "long_wavy":
                 case "long_curly":
                 case "shoulder":
+                case "shoulder_straight":
+                case "shoulder_curly":
                     Ellipse(buf, 12f, 41f, 6.4f, 4.2f, hair);
-                    int bottom = style == "shoulder" ? 31 : 27;
+                    int bottom = style.StartsWith("shoulder") ? 31 : 27;
                     for (int y = bottom; y <= 41; y++)
                     {
-                        int wob = style == "long_wavy" ? (y / 2) % 2 : style == "long_curly" ? (y % 2) : 0;
+                        int wob = style == "long_wavy" || style == "shoulder" ? (y / 2) % 2 : style.EndsWith("curly") ? (y % 2) : 0;
                         FillRect(buf, 5 + wob, y, 7, y, hair);
                         FillRect(buf, 16, y, 18 - wob, y, hair);
                     }
@@ -457,35 +477,69 @@ namespace Thatchwick.Game
                     Ellipse(buf, 12f, 41.5f, style == "afro" ? 8.5f : 7f, style == "afro" ? 6f : 4.6f, hair);
                     for (int x = 6; x <= 17; x += 3) Px(buf, x, 44, dark);
                     break;
-                case "low_tail":
-                    Ellipse(buf, 12f, 41f, 6f, 3.8f, hair);
-                    FillRect(buf, 16, 26, 17, 38, hair);
-                    break;
-                case "twin_braids":
-                    Ellipse(buf, 12f, 41f, 6f, 3.8f, hair);
-                    for (int y = 25; y <= 38; y++) { var c2 = (y % 2 == 0) ? hair : dark; Px(buf, 6, y, c2); Px(buf, 17, y, c2); }
-                    break;
-                case "crown_braid":
-                    Ellipse(buf, 12f, 41f, 6f, 3.8f, hair);
-                    for (int x = 7; x <= 16; x++) Px(buf, x, 43, (x % 2 == 0) ? hair : dark);
-                    break;
-                case "top_knot":
-                    FillRect(buf, 8, 42, 15, 43, hair);
-                    Ellipse(buf, 12f, 45.5f, 2f, 2f, hair);
-                    break;
                 case "monk":
                     FillRect(buf, 7, 38, 8, 41, hair);
                     FillRect(buf, 15, 38, 16, 41, hair);
                     break;
-                case "side_part":
-                case "tousled":
                 default:
                     Ellipse(buf, 12f, 41f, 6f, 3.8f, hair);
                     FillRect(buf, 7, 38, 7, 40, hair);
                     FillRect(buf, 16, 38, 16, 40, hair);
-                    if (style == "side_part") Px(buf, 10, 44, dark);
-                    if (style == "tousled") { Px(buf, 9, 45, hair); Px(buf, 14, 45, hair); }
                     break;
+            }
+        }
+
+        private static void DrawHairExtra(Color32[] buf, string extra, Color32 hair)
+        {
+            Color32 dark = new Color32((byte)(hair.r * 0.75f), (byte)(hair.g * 0.75f), (byte)(hair.b * 0.75f), 255);
+            switch (extra)
+            {
+                case "ponytail":
+                    FillRect(buf, 17, 30, 18, 40, hair);
+                    FillRect(buf, 18, 28, 18, 31, dark);
+                    break;
+                case "low_tail":
+                    FillRect(buf, 16, 26, 17, 38, hair);
+                    break;
+                case "braid":
+                case "warrior_braid":
+                    for (int y = extra == "braid" ? 25 : 31; y <= 40; y++) FillRect(buf, 16, y, 17, y, (y % 2 == 0) ? hair : dark);
+                    break;
+                case "twin_braids":
+                    for (int y = 25; y <= 38; y++) { var c2 = (y % 2 == 0) ? hair : dark; Px(buf, 6, y, c2); Px(buf, 17, y, c2); }
+                    break;
+                case "crown_braid":
+                    for (int x = 7; x <= 16; x++) Px(buf, x, 43, (x % 2 == 0) ? hair : dark);
+                    break;
+                case "bun":
+                case "braid_bun":
+                    Ellipse(buf, 12f, 45.5f, 2.6f, 2.2f, extra == "bun" ? hair : dark);
+                    break;
+                case "top_knot":
+                    Ellipse(buf, 12f, 45.5f, 2f, 2f, hair);
+                    break;
+                case "side_bun":
+                    Ellipse(buf, 17f, 40f, 2f, 2f, hair);
+                    break;
+                case "twin_buns":
+                    Ellipse(buf, 7.5f, 44f, 1.8f, 1.8f, hair);
+                    Ellipse(buf, 16.5f, 44f, 1.8f, 1.8f, hair);
+                    break;
+                case "half_up":
+                    FillRect(buf, 10, 44, 13, 44, dark);
+                    break;
+            }
+        }
+
+        private static void DrawHairOrnament(Color32[] buf, string ornament, Color32 color)
+        {
+            if (string.IsNullOrEmpty(ornament) || ornament == Appearance.None) return;
+            switch (ornament)
+            {
+                case "headband": FillRect(buf, 7, 42, 16, 42, color); break;
+                case "hairnet": for (int x = 7; x <= 16; x += 2) Px(buf, x, 42 + (x % 4 == 1 ? 1 : 0), color); break;
+                case "flower": Px(buf, 15, 43, color); Px(buf, 16, 44, color); Px(buf, 16, 43, new Color32(250, 230, 120, 255)); break;
+                default: Px(buf, 16, 42, color); Px(buf, 16, 43, color); break;
             }
         }
     }
