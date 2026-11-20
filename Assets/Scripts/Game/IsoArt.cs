@@ -373,7 +373,13 @@ namespace Thatchwick.Game
             flipX = false;
             if (!Thatchwick.Core.Layout.ItemFacing.TryView(item.Def, item.Rotation, item.IsLit, out var name, out var flip)) return null;
             var p = PivotOf(item.Def);
-            var s = Get(name, p.x, p.y);
+            Sprite s = null;
+            if (Enabled) EnsureLoaded();
+            // Korular (772b): stil ve ölçek birliği için yeniden çizilen görsel "_v2" ekiyle gelir; tuval 112x160, pivot (w/2, 24).
+            if (name.StartsWith("iso_edge_trees_", System.StringComparison.Ordinal) && _art != null
+                && _art.TryGetValue(name + "_v2", out var v2) && v2.Tex != null)
+                s = Get(name + "_v2", v2.Rect.width * 0.5f, 24f);
+            if (s == null) s = Get(name, p.x, p.y);
             if (s != null) flipX = flip;
             return s;
         }
