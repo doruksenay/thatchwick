@@ -211,6 +211,58 @@ namespace Thatchwick.Game
         private readonly FishingView _fishingView = new FishingView();   // balık tutma mini oyunu (belge 50)
         private double _fishOrderUntil = -1;   // oyuncunun kendi verdiği balık/kavanoz işi bu güne dek geçerli (mini oyun)
 
+        private Thatchwick.Core.Life.TrespassService _trespass;
+        private float _trespassTick;
+        private readonly Dictionary<int, int> _usingItem = new Dictionary<int, int>();
+
+        /// <summary>
+        /// Başkasının evindeki eşyayı kullanma (kullanıcı 20.11.2026): hane üyesi köylünün yatağında uyurken ya da evindeki
+        /// eşyayı kullanırken ev sahibi içerideyse ya da gelirse söylenir ya da kaldırır (Core.Life.TrespassService).
+        /// Kaldırılan dışarı çıkar. Yarım saniyede bir bakılır.
+        /// </summary>
+        private void UpdateTrespass(float dt)
+        {
+            _trespassTick -= dt;
+            if (_trespassTick > 0f || _life == null || _family == null) return;
+            _trespassTick = 0.5f;
+            if (_trespass == null)
+                _trespass = new Thatchwick.Core.Life.TrespassService(_world.Map)
+                {
+                    HomeOf = c => _life.Homes.HomeOf(c),
+                    Affection = (a, b) => _family.Affection(a, b),
+                    AddAffection = (a, b, d) => _family.SetAffection(a, b, _family.Affection(a, b) + d),
+                };
+            var villagers = new List<Character>();
+            foreach (var a in _actors) if (a.Character.IsVillager && !a.Character.IsDead) villagers.Add(a.Character);
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (c.IsVillager || c.IsDead) continue;
+                var job = a.Runner.Queue.Current;
+                int itemId = job != null && job.Kind == JobKind.UseItem ? job.ItemId : 0;
+                if (_usingItem.TryGetValue(c.Id, out var prev) && prev != itemId) { _trespass.Done(c, prev); _usingItem.Remove(c.Id); }
+                if (itemId == 0) continue;
+                _usingItem[c.Id] = itemId;
+                var item = _world.GetItem(itemId);
+                if (item == null) continue;
+                var inter = item.Def.Interactions.Find(i => i.Id == job.InteractionId);
+                var r = _trespass.Check(c, item, inter, villagers);
+                if (r == null) continue;
+                string line = Thatchwick.Core.Life.VivText.Resolve(GameLocalization.Current, r.Line, id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id);
+                ShowMessage(line, 5f);
+                if (!r.KickedOut) continue;
+                a.Runner.Cancel();
+                var b = _trespass.BuildingAt(item.Position);
+                if (b != null)
+                {
+                    var door = b.DoorInside;
+                    var outside = char.ToUpperInvariant(b.Door) == 'N' ? new GridPos(door.X, door.Y - 1) : char.ToUpperInvariant(b.Door) == 'S' ? new GridPos(door.X, door.Y + 1)
+                                : char.ToUpperInvariant(b.Door) == 'W' ? new GridPos(door.X - 1, door.Y) : new GridPos(door.X + 1, door.Y);
+                    a.Runner.Command(Job.MoveTo(outside));
+                }
+            }
+        }
+
         private float _ambTick;
         private string _ambBed = "-", _ambWeather = "-", _ambMusic = "-";
 
@@ -2709,6 +2761,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.escapeKey.wasPressedThisFrame && _vivView != null && _vivView.Active) _vivView.Close();
             _fishingView.Update(Time.unscaledDeltaTime);
             UpdateAmbience(Time.unscaledDeltaTime);
+            UpdateTrespass(Time.unscaledDeltaTime);
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.iKey.wasPressedThisFrame) ToggleRequests();
