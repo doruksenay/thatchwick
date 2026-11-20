@@ -124,6 +124,15 @@ namespace Thatchwick.Game
             }
         }
 
+        /// <summary>Hayvanın ekrandaki yeri (dile gelen hayvanın balonu için); görünmüyorsa false.</summary>
+        public bool TryGetPosition(int animalId, out Vector3 position)
+        {
+            position = default;
+            if (!_animals.TryGetValue(animalId, out var v) || v.T == null || !v.R.enabled) return false;
+            position = v.T.position;
+            return true;
+        }
+
         private static string WalkerSet(OddWalkerKind kind) =>
             kind == OddWalkerKind.JohanWick ? "iso_char_johan_wick_r84"
             : kind == OddWalkerKind.Crier ? "iso_char_crier_r84"          // tellal (asset işi 592)

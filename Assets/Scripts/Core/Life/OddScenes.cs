@@ -54,6 +54,13 @@ namespace Thatchwick.Core.Life
 
         public OddWalker Find(OddWalkerKind kind) { foreach (var w in _walkers) if (w.Kind == kind && !w.Gone) return w; return null; }
 
+        /// <summary>Bu karoda (ya da adım attığı karoda) duran ziyaretçi; oyuncu dokununca adı görünür.</summary>
+        public OddWalker At(GridPos tile)
+        {
+            foreach (var w in _walkers) if (!w.Gone && (w.Position == tile || w.NextTile == tile)) return w;
+            return null;
+        }
+
         public void Walk(OddWalker w, List<GridPos> path)
         {
             w.Path = path != null && path.Count > 0 ? path : null;
@@ -171,6 +178,7 @@ namespace Thatchwick.Core.Life
 
         // ---- yere düşen süs ----
         public IEnumerable<KnockedItem> Knocked => _knocked.Values;
+        public bool HasKnocked => _knocked.Count > 0;
         public bool IsKnocked(int itemId) => _knocked.ContainsKey(itemId);
         public KnockedItem KnockedOf(int itemId) => _knocked.TryGetValue(itemId, out var k) ? k : null;
 

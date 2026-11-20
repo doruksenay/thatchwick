@@ -28,6 +28,30 @@ namespace Thatchwick.Core.Life
         /// </summary>
         public event Action<LocText, int> OddityLine;
 
+        /// <summary>
+        /// Bir karakterin söylediği tepki (satır, konuşan karakter, ilgili hane üyesi): oyun katmanı konuşanın başında balon
+        /// çizer (kullanıcı 20.11.2026: tepkiler bildirim değil balon). Dinleyen yoksa ya da konuşan haritada görünmüyorsa satır
+        /// <see cref="OddityLine"/> gibi bildirime düşer.
+        /// </summary>
+        public event Action<LocText, int, int> OddityBubble;
+        /// <summary>Dile gelen hayvanın sözü (satır, hayvan, ilgili hane üyesi): balon hayvanın başında çıkar.</summary>
+        public event Action<LocText, int, int> OddityAnimalBubble;
+
+        private void OddSay(LocText line, int speakerId, int who)
+        {
+            if (OddityBubble != null && speakerId != 0) OddityBubble(line, speakerId, who);
+            else OddityLine?.Invoke(line, who);
+        }
+
+        public const string NicknameLineKey = "core.oddity.tell.disbelief_nickname";
+
+        /// <summary>Hayvanın sözü hem başında balon olur hem bildirime yazılır: ömürde bir kez olur ve derdi işe yarar bilgidir.</summary>
+        private void OddAnimalSay(LocText line, int animalId, int who)
+        {
+            if (animalId != 0) OddityAnimalBubble?.Invoke(line, animalId, who);
+            OddityLine?.Invoke(line, who);
+        }
+
         /// <summary>Kahve falının dördüncü duvarı yıkma şansı.</summary>
         public const double FortuneFourthWallChance = 1.0 / 25.0;
         /// <summary>Test ve hata ayıklama: bir sonraki fal dördüncü duvarı yıkar.</summary>
@@ -51,7 +75,7 @@ namespace Thatchwick.Core.Life
                 },
                 NicknameDays = () => Clock.Config.DaysPerSeason
             };
-            AnimalTalk.Tried += (c, a, res) => OddityLine?.Invoke(res.Line, c.Id);
+            AnimalTalk.Tried += (c, a, res) => OddAnimalSay(res.Line, a?.Id ?? 0, c.Id);   // dert hayvanın başında balon olur
             AnimalTalk.Confided += (rec, a) => OddityLine?.Invoke(LocText.Of("core.oddity.talk.confided", ("who", rec.Name), ("animal", a.Name)), rec.CharacterId);
 
             Relics = new FoundRelicService(seed != 0 ? Seeds.Derive(seed, 57) : 57)
@@ -109,7 +133,18 @@ namespace Thatchwick.Core.Life
         {
             family.AnimalTalk = AnimalTalk;
             AnimalTalk.AddAffection = (a, b, d) => family.SetAffection(a, b, family.Affection(a, b) + d);
-            family.ToldAnimalTalk += (teller, listener, res) => OddityLine?.Invoke(res.Line, teller.Id);
+            family.ToldAnimalTalk += (teller, listener, res) =>
+            {
+                // Dinleyenin tepkisi başında balon olur. Lakap takıldığı an anlatım satırıdır: bildirim olarak kalır,
+                // dinleyen yine de inanmadığını söyler.
+                if (res.Line.Key == NicknameLineKey && OddityBubble != null && listener != null)
+                {
+                    OddityBubble(LocText.Of("core.oddity.tell.disbelief", res.Line.Args), listener.Id, teller.Id);
+                    OddityLine?.Invoke(res.Line, teller.Id);
+                    return;
+                }
+                OddSay(res.Line, listener?.Id ?? 0, teller.Id);
+            };
             family.Chatted += OnOddChat;   // isim kardeşi, lakap, aynı kıyafet, dalgın dede, kulaktan kulağa
             // Fazla selam: aynı kişiyle günün üçüncü sohbeti (çocukların kovalamacası sayılmaz).
             family.Chatted += (a, b) =>
@@ -117,7 +152,7 @@ namespace Thatchwick.Core.Life
                 if (a.IsVillager || FamilyService.IsPlaymates(a, b)) return;
                 if (!Hellos.OnChat(a.Id, b.Id, Clock.DayIndex)) return;
                 Oddities.Mark(OddityIds.TooManyHellos);
-                OddityLine?.Invoke(LocText.Of("core.oddity.hello", ("who", b.Name)), a.Id);
+                OddSay(LocText.Of("core.oddity.hello", ("who", b.Name)), b.Id, a.Id);
             };
         }
 
@@ -125,6 +160,7 @@ namespace Thatchwick.Core.Life
         {
             runner.ItemUsed += OnRelicUsed;
             runner.ItemUsed += OnOddItemUsed;   // korkuluk, koyun saymak
+            runner.IdleChore = TidyJobFor;      // boştaki yakın karakter yere düşen süsü kendisi kaldırır
             runner.WorkDone += OnOddWork;       // kulaktan kulağa
             runner.InteractionCompleted += (c, interaction) =>
             {
@@ -144,11 +180,12 @@ namespace Thatchwick.Core.Life
             bool inspect = interaction.Id == FoundRelicService.InspectInteraction;
             if (inspect || (tracked && Relics.Stage == RelicStage.Lying))
             {
-                var line = Relics.Inspect(c, kind, ParentNearby(c), tracked);
+                var parent = NearbyParent(c);
+                var line = Relics.Inspect(c, kind, parent != null, tracked);
                 if (line != null)
                 {
-                    OddityLine?.Invoke(line.Line, c.Id);
-                    if (!line.Reply.IsEmpty) OddityLine?.Invoke(line.Reply, c.Id);
+                    OddSay(line.Line, c.Id, c.Id);
+                    if (!line.Reply.IsEmpty) OddSay(line.Reply, parent?.Id ?? 0, c.Id);
                 }
             }
             if (interaction.Id == FoundRelicService.BuryInteraction)
@@ -167,14 +204,14 @@ namespace Thatchwick.Core.Life
             }
         }
 
-        private bool ParentNearby(Character child)
+        private Character NearbyParent(Character child)
         {
             foreach (var m in Household())
             {
                 if (m == child || m.Stage < AgeStage.Teen || m.Position.Z != child.Position.Z) continue;
-                if (Math.Abs(m.Position.X - child.Position.X) + Math.Abs(m.Position.Y - child.Position.Y) <= 6) return true;
+                if (Math.Abs(m.Position.X - child.Position.X) + Math.Abs(m.Position.Y - child.Position.Y) <= 6) return m;
             }
-            return false;
+            return null;
         }
 
         internal void OdditiesNewDay(long day)
@@ -231,6 +268,10 @@ namespace Thatchwick.Core.Life
             Scenes.ImportKnocked(data?.knocked);
             Walkers.Clear();
             _sceneQueue.Clear();
+            _tidyClaims.Clear();
+            // Şövalye bugün için sıradaysa (kayıt gece yarısı ile geliş saati arasında alındıysa) yeniden sıraya girer.
+            if ((long)OddEvents.Get(KnightFlag) == Clock.DayIndex + 1) QueueKnight();
+            else OddEvents.Clear(KnightFlag);
             // Johan Wick ziyareti sırasında kaydedildiyse ziyaret yüklemede tamamlanır (sikke kaybolmasın).
             if (OddEvents.Has(JohanFlag)) { _johanCount = 0; FinishJohan(null); }
         }

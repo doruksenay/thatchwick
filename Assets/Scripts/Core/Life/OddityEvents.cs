@@ -20,6 +20,30 @@ namespace Thatchwick.Core.Life
             return Thatchwick.Core.Localization.LocText.Of(text.Key + AdultSuffix, text.Args);
         }
 
+        public const string SaySuffix = ".say";
+
+        /// <summary>
+        /// Satırın konuşma balonunda görünecek kısmı (kullanıcı 20.11.2026: tepkiler bildirim değil balon). Önce tablodaki
+        /// "&lt;anahtar&gt;.say" satırı; yoksa çözülmüş satırın ilk tırnak içi sözü. Söz yoksa null: satır bildirim olarak kalır.
+        /// </summary>
+        public static string BubbleText(Thatchwick.Core.Localization.LocText line, string resolved, Func<string, bool> hasKey, Func<Thatchwick.Core.Localization.LocText, string> resolve)
+        {
+            if (line.Key != null && hasKey != null && resolve != null && hasKey(line.Key + SaySuffix))
+                return resolve(Thatchwick.Core.Localization.LocText.Of(line.Key + SaySuffix, line.Args));
+            return Quote(resolved);
+        }
+
+        /// <summary>Metindeki ilk tırnak içi söz (düz ya da kıvrık tırnak); yoksa null.</summary>
+        public static string Quote(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return null;
+            int a = text.IndexOfAny(new[] { '"', '\u201C' });
+            if (a < 0) return null;
+            int b = text.IndexOfAny(new[] { '"', '\u201D' }, a + 1);
+            if (b <= a + 1) return null;
+            return text.Substring(a + 1, b - a - 1).Trim();
+        }
+
         /// <summary>Bugün +18 çeşidi yazılmış satırlar (testler tabloda olduklarını denetler).</summary>
         public static readonly string[] AdultKeys =
         {

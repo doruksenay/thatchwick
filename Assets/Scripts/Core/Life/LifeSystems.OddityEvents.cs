@@ -25,6 +25,8 @@ namespace Thatchwick.Core.Life
             MessageBottleItem = "item.message_bottle", BeehiveItem = "item.beehive", ScarecrowItem = "item.scarecrow",
             PloughshareItem = "item.sword_ploughshare", ScarecrowInteraction = "confide_scarecrow";
         public const int JohanCropsMin = 3, JohanCropsMax = 4;
+        /// <summary>Topaç şovuna tepki verecek seyircinin en çok uzaklığı (karo).</summary>
+        public const int TopShowRadius = 6;
         /// <summary>Kılıçtan Saban hanede durdukça çapa işi bu kadar hızlanır (kullanıcı 20.11.2026: gerçek alet).</summary>
         public const float PloughshareHoeBonus = 1.05f;
         public const int SheepRange = 8;
@@ -44,6 +46,29 @@ namespace Thatchwick.Core.Life
         }
 
         private void Odd(string eventId, params (string name, object value)[] args) => Odd(eventId, null, 0, args);
+
+        /// <summary>Tuhaflığı işaretler; satır <paramref name="speaker"/> karakterinin sözüdür (başında balon olarak çıkar).</summary>
+        private void OddBy(Character speaker, string eventId, string variant, int who, params (string name, object value)[] args)
+        {
+            Oddities.Mark(OddityIds.Of(eventId));
+            OddSay(LocText.Of("core.oddity.ev." + eventId + (variant != null ? "." + variant : ""), args), speaker?.Id ?? 0, who);
+        }
+
+        /// <summary>Gösteriyi izleyebilecek kadar yakındaki karakterler (en yakından uzağa; bebekler ve yoldakiler sayılmaz).</summary>
+        private List<Character> Onlookers(Character performer, int radius, int max)
+        {
+            var list = new List<Character>();
+            foreach (var m in Population.Members)
+            {
+                if (m == performer || m.IsDead || m.Away || m.Stage == AgeStage.Baby || m.Position.Z != performer.Position.Z) continue;
+                if (Math.Max(Math.Abs(m.Position.X - performer.Position.X), Math.Abs(m.Position.Y - performer.Position.Y)) <= radius) list.Add(m);
+            }
+            list.Sort((x, y) => Dist(x, performer).CompareTo(Dist(y, performer)));
+            if (list.Count > max) list.RemoveRange(max, list.Count - max);
+            return list;
+        }
+
+        private static int Dist(Character a, Character b) => Math.Abs(a.Position.X - b.Position.X) + Math.Abs(a.Position.Y - b.Position.Y);
 
         /// <summary>Tuhaflığı işaretler ve satırını yollar: core.oddity.ev.{olay}[.{çeşit}].</summary>
         private void Odd(string eventId, string variant, int who, params (string name, object value)[] args)
@@ -83,11 +108,10 @@ namespace Thatchwick.Core.Life
             JohanWickVisit(day);
 
             if (Regions.IsRegional(World.Map) && ev.Chance(OddityEvents.HorselessKnight, OddityEvents.KnightChance))
-                AtDayTime(KnightArrives, () =>
-                {
-                    StartKnightWalk();   // köy yolunu bir uçtan öbürüne yürür; yol yoksa yalnızca satır
-                    Odd(OddityEvents.HorselessKnight);
-                });
+            {
+                OddEvents.Set(KnightFlag, day + 1);   // kayda yazılır: yüklemede bugünün ziyareti kaybolmaz
+                QueueKnight();
+            }
             if (ev.Chance(OddityEvents.Crier, OddityEvents.CrierChance)) Odd(OddityEvents.Crier, "v" + ev.Pick(3), 0);
 
             var goat = FirstAnimal("goat");
@@ -184,7 +208,7 @@ namespace Thatchwick.Core.Life
             if (string.Equals(a.Name, b.Name, StringComparison.OrdinalIgnoreCase) && !ev.Has("twin:" + a.Id + ":" + b.Id))
             {
                 ev.Set("twin:" + a.Id + ":" + b.Id, 1);
-                Odd(OddityEvents.NameTwin, null, a.Id, ("who", a.Name), ("other", b.Name));
+                OddBy(b, OddityEvents.NameTwin, null, a.Id, ("who", a.Name), ("other", b.Name));
                 return;
             }
             // İsim sürprizi: belirli adlara köylünün tepkisi (karakter başına bir kez).
@@ -192,25 +216,25 @@ namespace Thatchwick.Core.Life
             if (surprise != null && !ev.Has("name:" + a.Id))
             {
                 ev.Set("name:" + a.Id, 1);
-                Odd(OddityEvents.NameSurprise, surprise, a.Id, ("who", a.Name), ("other", b.Name));
+                OddBy(b, OddityEvents.NameSurprise, surprise, a.Id, ("who", a.Name), ("other", b.Name));
                 return;
             }
             if (AnimalTalk.HasNickname(a) && ev.FirstToday("nick:" + a.Id, day) && ev.Chance(OddityEvents.NicknameTalk, OddityEvents.NicknameTalkChance))
             {
-                OddityLine?.Invoke(LocText.Of("core.oddity.ev.nickname_talk", ("who", a.Name), ("other", b.Name)), a.Id);
+                OddSay(LocText.Of("core.oddity.ev.nickname_talk", ("who", a.Name), ("other", b.Name)), b.Id, a.Id);
                 return;
             }
             // Aynı kıyafet: bir mevsimdir üstünü değiştirmeyene köylü söylenir (giyim sistemi açıksa).
             if (_clothing != null && _clothing.HasWardrobe(a) && ev.SameOutfitTooLong(a.Id, Clock.TotalDays, Clock.Config.DaysPerSeason))
             {
-                OddityLine?.Invoke(LocText.Of("core.oddity.ev.same_outfit", ("who", a.Name), ("other", b.Name)), a.Id);
+                OddSay(LocText.Of("core.oddity.ev.same_outfit", ("who", a.Name), ("other", b.Name)), b.Id, a.Id);
                 return;
             }
             // Dalgın dede: yaşlıyla sohbet.
             var elder = a.Stage == AgeStage.Elder ? a : b.Stage == AgeStage.Elder ? b : null;
             if (elder != null && ev.Chance(OddityEvents.AbsentElder, OddityEvents.ElderChance))
             {
-                Odd(OddityEvents.AbsentElder, null, a.Id, ("who", elder.Name));
+                OddBy(elder, OddityEvents.AbsentElder, null, a.Id, ("who", elder.Name));
                 return;
             }
             // Kulaktan kulağa: bugün yaptığı işi köylüye anlatır; yarın abartılmış hâli döner.
@@ -306,7 +330,7 @@ namespace Thatchwick.Core.Life
                 {
                     c.Needs.Restore(NeedType.Fun, 10f);
                     c.GainSkillXp(SkillType.Athletics, 4);
-                    Odd(OddityEvents.ChickenRevenge, null, c.Id, ("who", c.Name));
+                    OddBy(c, OddityEvents.ChickenRevenge, null, c.Id, ("who", c.Name));
                 }
                 else if (n < OddityEvents.ShooLimit)
                     OddityLine?.Invoke(LocText.Of("core.oddity.ev.shoo", ("who", c.Name), ("animal", a.Name)), c.Id);
@@ -389,7 +413,14 @@ namespace Thatchwick.Core.Life
                 return;
             }
             if (show.Watchers > 0 && ev.Chance(OddityEvents.TopShow, OddityEvents.TopShowChance))
-                Odd(OddityEvents.TopShow, "v" + ev.Pick(4), show.Performer.Id, ("who", show.Performer.Name));
+            {
+                // Tepkiyi seyredenler söyler: en yakın iki kişinin başında, birbirinden farklı balon.
+                var watchers = Onlookers(show.Performer, TopShowRadius, 2);
+                int v = ev.Pick(4);
+                if (watchers.Count == 0) { Odd(OddityEvents.TopShow, "v" + v, show.Performer.Id, ("who", show.Performer.Name)); return; }
+                for (int i = 0; i < watchers.Count; i++)
+                    OddBy(watchers[i], OddityEvents.TopShow, "v" + (v + i) % 4, show.Performer.Id, ("who", show.Performer.Name));
+            }
         }
 
         /// <summary>İade hediye: dükkâncıya kendi sattığı mal verilirse bozulur.</summary>
@@ -401,7 +432,7 @@ namespace Thatchwick.Core.Life
             foreach (var shop in Thatchwick.Core.Economy.Shops.All)
             {
                 if (shop.WorkKey != def.Work || shop.Goods == null || !shop.Goods(item)) continue;
-                Odd(OddityEvents.Regift, null, 0, ("who", villager.Name), ("item", item.Id));
+                OddBy(villager, OddityEvents.Regift, null, 0, ("who", villager.Name), ("item", item.Id));
                 return;
             }
         }
