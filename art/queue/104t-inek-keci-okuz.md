@@ -1,7 +1,8 @@
 ---
 id: "104t"
 title: "Büyük çiftlik hayvanları tamamlama: inek, keçi, öküz yeniden (8 yön)"
-status: pending
+status: running
+claimed_at: 2026-11-20T10:33Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette hayvan incelemesi: "önerilerini uygula ama öküz tekrar çizilsin")
 priority: 15
 family: hayvan
