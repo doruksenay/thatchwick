@@ -54,6 +54,8 @@ namespace Thatchwick.Game
             public Vector3 LastPos;
             // Animasyon partisi 1: son adım (toz için), iş vuruşu ve işin simgesi (parçacık türü).
             public int LastStep;
+            public GridPos LastTile;      // adım sesi: kapı eşiği geçişi için önceki karo
+            public bool HasLastTile;
             public float LastBeat;
             public object WorkJob;
             public string WorkIcon;
@@ -803,6 +805,7 @@ namespace Thatchwick.Game
                 _selected = _player;
                 _input.enabled = true;
                 ShowMessage(loaded.Warnings.Count > 0 ? $"Kayıt yüklendi ({loaded.Warnings.Count} uyarı, konsola bak)" : "Kayıt yüklendi");
+                AttachAudio();   // ses bağlantıları (GameRootAudio.cs)
                 return;
             }
 
@@ -828,6 +831,7 @@ namespace Thatchwick.Game
             _namingSettlement = true;                       // önce yerleşimin adı, sonra karakter
             _settlementDraft = Settlement.DefaultName;
             _input.enabled = false;
+            AttachAudio();   // ses bağlantıları (GameRootAudio.cs)
         }
 
         /// <summary>
@@ -1717,6 +1721,7 @@ namespace Thatchwick.Game
         private void OnFamilyEvent(Character actor, Character target, SocialAction action, string message)
         {
             ShowMessage(message);
+            SpeakSocial(actor, target, action, message);
             switch (action)
             {
                 case SocialAction.Feed: _account.Record("feed", _clock.DayIndex); break;
@@ -1731,7 +1736,7 @@ namespace Thatchwick.Game
         {
             ShowMessage(c.CauseOfDeath == DeathCause.Cold ? $"{c.Name} donarak öldü"
                 : c.CauseOfDeath == DeathCause.Starvation ? $"{c.Name} açlıktan öldü" : $"{c.Name} hayatını kaybetti");
-            if (!c.IsVillager) HoldCriticalMoment();
+            if (!c.IsVillager) { HoldCriticalMoment(); Sfx(Thatchwick.Core.Audio.SoundKeys.StingDeath); }
             var result = _dynasty.OnDeath(c, _population.Members, _clock.TotalDays, _life.TradeOf(c));
             if (result == null) { if (_selected != null && _selected.Character == c) _selected = _player; return; }
             if (result.DynastyEnded) { _dynastyEnded = true; ShowMessage(result.Message, 6f); return; }
@@ -1792,7 +1797,7 @@ namespace Thatchwick.Game
         private void OnBabyBorn(Character baby, Character mother, int? fatherId)
         {
             CreateActorFor(baby);
-            if (mother != null && !mother.IsVillager) HoldCriticalMoment();
+            if (mother != null && !mother.IsVillager) { HoldCriticalMoment(); Sfx(Thatchwick.Core.Audio.SoundKeys.StingBirth); }
             MoodEvents.OnBirth(mother, fatherId.HasValue ? _population.Find(fatherId.Value) : null);
             ShowMessage($"{mother.Name} doğurdu: {baby.Name}");
         }
@@ -2876,6 +2881,7 @@ namespace Thatchwick.Game
             UpdateAmbience(Time.unscaledDeltaTime);
             ReleaseCriticalMoment();
             UpdateMirror();
+            UpdateAudio();
             UpdateTrespass(Time.unscaledDeltaTime);
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
@@ -3135,6 +3141,7 @@ namespace Thatchwick.Game
                 if (stepIdx != actor.LastStep)
                 {
                     actor.LastStep = stepIdx;
+                    if (_animals?.MountOf(actor.Character.Id) == null) PlayStep(actor, pos);
                     if (!framed) squash = 0.04f;   // ayak yere basınca kısa ezilme (kare animasyonunda gerekmez)
                     if (_juice != null && Random01() < 0.45f && _animals?.MountOf(actor.Character.Id) == null)
                         _juice.Emit(Juice.Kind.Dust, pos + new Vector3(0f, 0.02f, 0f), 1, sortOrder - 1);
@@ -3159,6 +3166,7 @@ namespace Thatchwick.Game
                     if (beats && cyc < actor.LastBeat)   // döngü başında işe göre parçacık
                     {
                         var at = pos + new Vector3(0f, 0.2f, 0f);
+                        PlayWorkBeat(actor, icon, pos);
                         if (icon == "chop") _juice.Emit(Juice.Kind.Chip, at, 3, sortOrder + 1);
                         else if (icon == "farm") _juice.Emit(Juice.Kind.Soil, pos, 2, sortOrder + 1);
                         else if (icon == "cook") _juice.Emit(Juice.Kind.Steam, pos + new Vector3(0f, 0.6f, 0f), 1, sortOrder + 1);
@@ -3174,6 +3182,7 @@ namespace Thatchwick.Game
                     if (beat < actor.LastBeat && _juice != null)                  // yeni vuruş
                     {
                         var at = pos + new Vector3(0f, 0.2f, 0f);
+                        PlayWorkBeat(actor, icon, pos);
                         switch (icon)
                         {
                             case "chop": _juice.Emit(Juice.Kind.Chip, at, 3, sortOrder + 1); break;
