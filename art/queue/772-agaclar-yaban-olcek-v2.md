@@ -1,7 +1,7 @@
 ---
 id: "772"
 title: "Ağaç stil ve ölçek pilotu: meşe, çam, elma (genç, olgun, meyveli; _v2)"
-status: running
+status: review
 claimed_at: 2026-11-20T23:21Z
 approved_by: user        # kullanıcı 21.11.2026: ölçek ("ağaçları ... yeniden üret", belge 66) ve stil birliği ("ciddi stil tutarsızlığı var ağaçlarda"; seçim: kabarık kümeli taç, hepsi tek seferde)
 priority: 10
