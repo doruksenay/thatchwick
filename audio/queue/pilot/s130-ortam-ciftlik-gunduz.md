@@ -5,7 +5,7 @@ kind: ambience
 family: ambience
 freq: C
 pilot: true
-status: review
+status: ready
 approved_by: auto
 key: amb.farm.day
 generate: 3
@@ -14,14 +14,14 @@ duration_s: 20
 cost_max: 2600
 axes:
   layer:
-  - gentle breeze through grass and distant trees
-  - soft rustling leaves and faint distant birds
-  - calm open meadow air with faint insects
-claimed_by: runnervm0hi8g
-claimed_at: '2026-11-20T09:55:18Z'
-candidates: 3
-passed: 3
-credits_spent: 0
-generated_at: '2026-11-20T09:55:30Z'
+  - soft distant birdsong over still air
+  - faint insect hum and a far-off rooster
+  - quiet open meadow, a few distant birds
+inceleme_notlari:
+- tarih: '2026-11-20'
+  karar: yeniden
+  not: hepsinin arkasında rüzgâr uğultusu var, fırtınalı havaya benziyor; c3 yağmurlu gibi
+yeniden_sayisi: 1
+prompt_influence: 0.7
 ---
-Daytime countryside around a small medieval farm in spring, calm and even, nothing stands out.
+A calm, still, sunny spring day near a small medieval farm. Quiet open-air room tone with soft distant birdsong and a faint insect hum. No wind, no gusts, no rustling, no rain, no hiss, no storm; nothing stands out.

@@ -4,7 +4,7 @@ title: Müzik, ilkbahar gündüz (pilot, 60 sn)
 kind: music
 family: music
 pilot: true
-status: review
+status: accepted
 approved_by: auto
 key: music.spring.day.a
 context: spring.day
@@ -19,5 +19,8 @@ candidates: 2
 passed: 2
 credits_spent: 0
 generated_at: '2026-11-20T09:55:14Z'
+pick:
+- c2
+karar_zamani: '2026-11-20'
 ---
 Gentle, warm spring morning on a small farm. Lute and recorder carry a simple folk melody, soft frame drum, light and hopeful, relaxed tempo around 90 BPM, loops naturally back to the start.

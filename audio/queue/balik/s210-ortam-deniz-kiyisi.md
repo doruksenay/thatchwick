@@ -4,7 +4,7 @@ title: Deniz kıyısı ortam yatağı
 kind: ambience
 family: ambience
 freq: C
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 key: amb.coast
@@ -26,5 +26,10 @@ candidates: 3
 passed: 3
 credits_spent: 0
 generated_at: '2026-11-20T14:24:13Z'
+pick:
+- c1
+- c2
+- c3
+karar_zamani: '2026-11-20'
 ---
 A calm seashore beside a small medieval fishing place, steady and even, nothing stands out.

@@ -4,7 +4,7 @@ title: Hamur yoğurma
 kind: sfx
 family: foley
 freq: B
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
@@ -29,5 +29,11 @@ candidates: 8
 passed: 8
 credits_spent: 0
 generated_at: '2026-11-20T14:23:06Z'
+pick:
+- c2
+- c3
+- c6
+- c7
+karar_zamani: '2026-11-20'
 ---
 Hands kneading bread dough: a soft thud, a push and a fold, with a faint creak of the wooden trough.
