@@ -1,7 +1,7 @@
 ---
 id: "571"
 title: "Zincir pozları, mutfak 2/2: dök, uzan, taşı, tutuştur, fırın küreği (40)"
-status: review
+status: accepted   # kullanıcı 21.11.2026: kabul ('taşı'da elde nesne yok: oyun el çapasına ayrıca çizer)
 claimed_at: 2026-11-20T16:10Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 40

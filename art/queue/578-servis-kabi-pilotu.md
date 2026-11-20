@@ -1,7 +1,7 @@
 ---
 id: "578"
 title: "Servis kabı pilotu: çömlekte güveç, sinide pilav, beş doluluk (stil kapısı) (10)"
-status: review
+status: accepted   # kullanıcı 21.11.2026: güveç çömleği kabul; pilav tepsisi 797'de katmanlı yöntemle
 claimed_at: 2026-11-20T14:55Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 30

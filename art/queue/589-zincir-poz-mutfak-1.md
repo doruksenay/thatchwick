@@ -1,7 +1,7 @@
 ---
 id: "589"
 title: "Zincir pozları, mutfak 1/2: karıştır, doğra, tat, kepçe, yoğur (40)"
-status: review
+status: accepted   # kullanıcı 21.11.2026: kabul; teslim edilmeyen erkek güneybatı yoğurma 796
 claimed_at: 2026-11-20T16:43Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 40
