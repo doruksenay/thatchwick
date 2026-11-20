@@ -10,6 +10,7 @@ Karar (17.11.2026): oyun 5 dilde. **Kaynak dil İngilizce.** 1.0'da İngilizce v
 | `Assets/Scripts/Game/LanguageMenu.cs` | Geçici dil düğmesi (sol alt). Ayarlar ekranı gelince oraya taşınır. |
 | `Assets/Resources/Localization/content.<dil>.json` | Eşya, etkileşim, tarif, yapı parçası, beceri dalı, özellik, hedef, festival, köylü mesleği ve olayları, görünüm seçenekleri |
 | `Assets/Resources/Localization/ui.<dil>.json` | Arayüz metinleri |
+| `Assets/Resources/Localization/ui.<alan>.<dil>.json` | Alan dosyaları (`ui.build.en.json` gibi). **Yeni arayüz metni buraya yazılır**; ana `ui.<dil>.json` yeni anahtar almaz (birleştirme çakışmasını önler). Oyun hepsini yükler; bir anahtar yalnızca bir dosyada olur |
 | `tools/loc/check.py` | Eksik İngilizce çeviriyi, tutmayan sayıları ve Türkçesi sonradan değişmiş (ESKİ) çevirileri listeler. `--todo` eksikleri TODO olarak ekler; `--kaynak` gözden geçirilen çevirileri kaydeder |
 | `tools/loc/en_kaynak.json` | Her İngilizce çevirinin hangi Türkçe metinden yapıldığı (ESKİ denetimi için) |
 | `tools/loc/flip_source.py` | Tek seferlik: içerik JSON'larını İngilizceye çevirir, Türkçeyi `content.tr.json`'a taşır |

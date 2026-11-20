@@ -1,0 +1,10 @@
+{
+  "ui.build.all_sets": "All sets",
+  "ui.build.shop_only": "{set} set: only sold at the shop in town.",
+  "ui.styleset.artisan": "Artisan",
+  "ui.styleset.catki": "Çatkı",
+  "ui.styleset.merchant": "Merchant",
+  "ui.styleset.noble": "Noble",
+  "ui.styleset.villager": "Villager",
+  "ui.styleset.yoruk": "Yörük"
+}

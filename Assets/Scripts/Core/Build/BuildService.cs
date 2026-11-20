@@ -308,7 +308,7 @@ namespace Thatchwick.Core.Build
         }
 
         /// <summary>Üst setler (Tüccar, Asil) katalogdan sipariş edilmez, yalnızca şehir dükkânlarında satılır (belge 18).</summary>
-        public static bool ShopOnly(ItemDef def) => def != null && (def.StyleSet == "Tüccar" || def.StyleSet == "Asil");
+        public static bool ShopOnly(ItemDef def) => def != null && ItemCatalog.IsFineSet(def.StyleSet);
 
         /// <summary>
         /// Katalog siparişi: parası şimdi ödenir, eşya ertesi sabah marangozla gelir (Household.DeliverOrders).

@@ -233,11 +233,41 @@ namespace Thatchwick.Core.Tests
             Assert.True(bad.Count == 0, string.Join("\n", bad));
         }
 
+        /// <summary>Bir dilin bütün arayüz tabloları: ana ui.&lt;dil&gt;.json ve alan dosyaları ui.&lt;alan&gt;.&lt;dil&gt;.json.</summary>
+        private static List<string> UiFiles(string language) =>
+            Directory.GetFiles(LocDir(), "ui*." + language + ".json").Select(Path.GetFileName)
+                .Where(f => f == "ui." + language + ".json" || f.StartsWith("ui.", StringComparison.Ordinal))
+                .OrderBy(f => f, StringComparer.Ordinal).ToList();
+
+        [Fact]
+        public void ArayuzAlanDosyalari_IkiDildeVar_AnahtarTekrariYok()
+        {
+            var enFiles = UiFiles("en");
+            var trFiles = UiFiles("tr");
+            // Her alan dosyasının iki dilde de karşılığı olmalı (ui.build.en.json <-> ui.build.tr.json).
+            Assert.Equal(enFiles.Select(f => f.Replace(".en.json", "")).OrderBy(f => f, StringComparer.Ordinal).ToList(),
+                trFiles.Select(f => f.Replace(".tr.json", "")).OrderBy(f => f, StringComparer.Ordinal).ToList());
+            Assert.Contains("ui.en.json", enFiles);
+            foreach (var files in new[] { enFiles, trFiles })
+            {
+                // Aynı anahtar iki dosyada olmamalı (hangisinin geçerli olduğu yükleme sırasına kalırdı).
+                var owner = new Dictionary<string, string>(StringComparer.Ordinal);
+                foreach (var f in files)
+                    foreach (var key in LoadTable(f).Keys)
+                    {
+                        Assert.True(!owner.ContainsKey(key), $"{key}: hem {(owner.TryGetValue(key, out var o) ? o : "?")} hem {f} içinde");
+                        owner[key] = f;
+                    }
+            }
+        }
+
         [Fact]
         public void ArayuzTablolari_AyniAnahtarlar_AyniYerTutucular()
         {
-            var en = LoadTable("ui.en.json");
-            var tr = LoadTable("ui.tr.json");
+            var en = new LocTable();
+            foreach (var f in UiFiles("en")) en.Merge(LoadTable(f));
+            var tr = new LocTable();
+            foreach (var f in UiFiles("tr")) tr.Merge(LoadTable(f));
             var holes = new Regex(@"(?<!\{)\{([A-Za-z0-9_]+)\}");
             Assert.Empty(en.Keys.Except(tr.Keys));
             Assert.Empty(tr.Keys.Except(en.Keys));

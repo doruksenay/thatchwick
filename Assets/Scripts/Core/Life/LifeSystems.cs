@@ -1337,10 +1337,11 @@ namespace Thatchwick.Core.Life
             else if (grow == "visit") { Say("Büyüttüğün karaca bahçenin kenarına uğradı.", NoticeLevel.Info); Roamers?.Arrive(WildCatalog.Get("wild.roe_deer"), Clock.TotalDays); }
             if (Mischief != null)
             {
-                Mischief.FoxNight(Clock.Season, out var foxMsg);
-                if (foxMsg != null) Say(foxMsg, foxMsg.Contains("kaptı") ? NoticeLevel.Warning : NoticeLevel.Info);
-                Mischief.BoarVisit(Clock.Season, out var boarMsg);
-                if (boarMsg != null) Say(boarMsg, boarMsg.Contains("çiğnendi") ? NoticeLevel.Warning : NoticeLevel.Info);
+                // Uyarı düzeyi sonuçtan gelir (kayıp var mı), mesaj metninden değil: metin çevrilince mantık bozulmasın.
+                var foxPrey = Mischief.FoxNight(Clock.Season, out var foxMsg);
+                if (foxMsg != null) Say(foxMsg, foxPrey != null ? NoticeLevel.Warning : NoticeLevel.Info);
+                int trampled = Mischief.BoarVisit(Clock.Season, out var boarMsg);
+                if (boarMsg != null) Say(boarMsg, trampled > 0 ? NoticeLevel.Warning : NoticeLevel.Info);
                 var gift = Mischief.CrowGift(House);
                 if (gift != null) { Say(gift, NoticeLevel.Info); Oddities.Mark(OddityIds.CrowGift); }
             }
