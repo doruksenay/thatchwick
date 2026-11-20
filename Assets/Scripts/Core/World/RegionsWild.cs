@@ -42,7 +42,12 @@ namespace Thatchwick.Core.World
             {
                 var p = new Painter(null, r.X, r.Y); draw(p);
                 foreach (var it in p.Items) if (!OnDraftWay(r, it)) all.Add(it);
-                DataItems(r, all);   // taslağın simge yapısı (markers.json)
+                // Taslağın simge yapısı ve süs öbekleri (markers.json); kodun sabit düğümüyle çakışan süs atlanır.
+                var taken = new HashSet<(int, int)>();
+                foreach (var it in p.Items) taken.Add((it.X, it.Y));
+                var data = new List<RegionItem>();
+                DataItems(r, data);
+                foreach (var it in data) if (!taken.Contains((it.X, it.Y)) && !taken.Contains((it.X + 1, it.Y))) all.Add(it);
             }
             return all;
         }
@@ -97,6 +102,9 @@ namespace Thatchwick.Core.World
                     if (t == MapTerrain.Path || t == MapTerrain.Bridge)
                         for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) keep.Add((x + dx, y + dy));
                 }
+            if (data.Markers.items != null)   // taslağın eşyaları (süs öbekleri) ve çevresi: ağaç ve düğüm konmaz
+                foreach (var it in data.Markers.items)
+                    for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 2; dx++) keep.Add((it.x + dx, it.y + dy));
             if (data.Markers.keep != null)   // simge yapının çevresi açık kalır (ağaç serpilmez)
                 foreach (var k in data.Markers.keep)
                     for (int y = k.y0; y <= k.y1; y++) for (int x = k.x0; x <= k.x1; x++) keep.Add((x, y));
@@ -420,6 +428,9 @@ namespace Thatchwick.Core.World
                         var a = p.P(x, ty); var b = p.P(x, ty + 1);
                         if (p.Map.GetRoad(a) != RoadType.None || p.Map.GetRoad(b) != RoadType.None) continue;
                         if ((x <= 2 || x >= 29) && Hash(x + 396, ty) < 0.5) continue;
+                        // Setler simetrik dizilmesin: her sette kendi yerinde 1-2 yıkık aralık, uçlar sete göre kayar.
+                        if (Hash(x / 3 + 401, ty) < 0.16) continue;
+                        if (x < 1 + ty % 4 || x > 30 - (ty * 7) % 3) continue;
                         if (Math.Abs(x - 16) <= 1 || Math.Abs(x - 9) <= 1) continue;
                         p.Map.SetEdge(new Edge(a.X, b.Y, EdgeAxis.Horizontal), EdgeKind.HalfWall, "wall_stone");   // kuru taş set
                     }

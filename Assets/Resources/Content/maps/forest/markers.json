@@ -7,6 +7,76 @@
       "y": 19,
       "rot": 0,
       "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 27,
+      "y": 42,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.stump_table",
+      "x": 24,
+      "y": 19,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 27,
+      "y": 21,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.fallen_log",
+      "x": 29,
+      "y": 16,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 17,
+      "y": 43,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 36,
+      "y": 28,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 17,
+      "y": 20,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.fallen_log",
+      "x": 36,
+      "y": 21,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 38,
+      "y": 23,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder",
+      "x": 39,
+      "y": 20,
+      "rot": 0,
+      "grown": false
     }
   ],
   "keep": [

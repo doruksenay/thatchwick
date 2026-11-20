@@ -502,13 +502,48 @@ namespace Thatchwick.Game
                     || !map.IsWater(new GridPos(x - 1, y, 0)) || !map.IsWater(new GridPos(x, y - 1, 0));
                 return shore ? IsoArt.Decal((TileHash(x, y) & 2) == 0 ? "iso_decal_shore_foam_a" : "iso_decal_shore_foam_b") : null;
             }
-            if (_wetGround < 0.3f || _snowGround > 0.5f || _fxLevel <= 0) return null;
+            if (_snowGround > 0.5f) return null;
             var room = map.Rooms.RoomAt(p);
             if ((room != null && room.IsIndoor) || _world.GetItemAt(p) != null) return null;
             int h = TileHash(x, y) & 1023;
-            if (map.GetRoad(p) != RoadType.None || floor == FloorType.Dirt)
-                return h < _wetGround * 150f ? IsoArt.Decal("iso_decal_mud_a") : null;
-            return h < _wetGround * 50f ? IsoArt.Decal((h & 1) == 0 ? "iso_decal_puddle_a" : "iso_decal_puddle_b") : null;
+            if (_wetGround >= 0.3f && _fxLevel > 0)
+            {
+                if (map.GetRoad(p) != RoadType.None || floor == FloorType.Dirt)
+                    return h < _wetGround * 150f ? IsoArt.Decal("iso_decal_mud_a") : null;
+                if (h < _wetGround * 50f) return IsoArt.Decal((h & 1) == 0 ? "iso_decal_puddle_a" : "iso_decal_puddle_b");
+            }
+            return FloraAt(p, floor, h);
+        }
+
+        /// <summary>
+        /// Çim süsü (cozy, 21.11): öbek öbek çiçek (papatya, düğün çiçeği, yonca), ormanda eğrelti, yer yer ot tutamı ve çakıl;
+        /// güzde düşmüş yaprak, kışta yok. Öbekler düşük frekanslı gürültüyle: düzgün serpme değil, patika kenarında ve
+        /// ağaç diplerinde sıklaşır. Görseller 358b.
+        /// </summary>
+        private Sprite FloraAt(GridPos p, FloorType floor, int h)
+        {
+            if (floor != FloorType.Grass) return floor == FloorType.Sand && h < 18 ? IsoArt.Decal("iso_decal_pebbles_v2") : null;
+            var map = _world.Map;
+            if (map.GetRoad(p) != RoadType.None) return null;
+            var season = _clock.Season;
+            if (season == Season.Winter) return null;
+            float c = Mathf.PerlinNoise(p.X * 0.17f + 31.7f, p.Y * 0.17f + 11.3f);
+            bool byPath = false;
+            for (int dy = -1; dy <= 1 && !byPath; dy++)
+                for (int dx = -1; dx <= 1 && !byPath; dx++)
+                    if (map.GetRoad(new GridPos(p.X + dx, p.Y + dy, 0)) != RoadType.None) byPath = true;
+            if (byPath) c += 0.12f;
+            var region = Thatchwick.Core.World.Regions.At(p);
+            bool forest = region == Thatchwick.Core.World.Regions.Forest;
+            if (season == Season.Autumn && h < (c > 0.55f ? 260 : 60)) return IsoArt.Decal("iso_decal_leaves_autumn_v2");
+            if (c > 0.6f && h < 420)
+            {
+                if (forest) return IsoArt.Decal("iso_decal_fern_v2");
+                float k = Mathf.PerlinNoise(p.X * 0.09f + 5.1f, p.Y * 0.09f + 77.7f);   // öbeğin çiçek türü
+                return IsoArt.Decal(k < 0.4f ? "iso_decal_daisies_v2" : k < 0.65f ? "iso_decal_buttercups_v2" : "iso_decal_clover_v2");
+            }
+            if (h < 28) return IsoArt.Decal(forest ? "iso_decal_fern_v2" : "iso_decal_grass_tuft_v2");
+            return null;
         }
 
         /// <summary>Çıkartmalar iki saniyede bir yenilenir (ot, birikinti ve çamur yavaş değişir).</summary>

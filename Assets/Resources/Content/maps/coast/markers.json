@@ -7,6 +7,55 @@
       "y": 10,
       "rot": 0,
       "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 28,
+      "y": 17,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.fallen_log",
+      "x": 24,
+      "y": 17,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder",
+      "x": 22,
+      "y": 15,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.fallen_log",
+      "x": 24,
+      "y": 15,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 20,
+      "y": 4,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder",
+      "x": 23,
+      "y": 7,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.fallen_log",
+      "x": 17,
+      "y": 14,
+      "rot": 0,
+      "grown": false
     }
   ],
   "keep": [

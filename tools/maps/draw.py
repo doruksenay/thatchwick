@@ -519,6 +519,12 @@ def wild(region):
             for x in range(W):
                 if cv.get(x, y) == 'stone':
                     cv.set(x, y, 'grass')
+    if region == 'coast':
+        # Kayalık burun taş döşeme gibi duruyordu: kum zemin, üstünde öbek öbek kaya (EdgeBand iri kaya koyar).
+        for y in range(H):
+            for x in range(W):
+                if cv.get(x, y) == 'stone':
+                    cv.set(x, y, 'rock' if noise(x / 1.8, y / 1.8, 297) > 0.48 else 'sand')
     if region == 'hill':
         # Taş ocağı düzlüğü döşeme gibi duruyordu (Unity 20.11): ocak ve maden ağzı çevresi taş kalır, gerisi çakıllı toprak,
         # aralarda gürültüyle kaya çıkıntıları (EdgeBand iri kaya koyar).
@@ -579,6 +585,7 @@ def wild(region):
     lm = LANDMARKS.get(region)
     if lm:
         place_landmark(cv, roads, markers, *lm)
+    place_props(cv, roads, markers, region, {'forest': 7, 'lake': 6, 'marsh': 5, 'hill': 6, 'slopes': 4, 'coast': 5}[region], o['salt'] + 300)
     # Kaya sırtı patikaya değmez (2x1 devrik kütük yola taşmasın).
     for (x, y) in near(roads, 2):
         if cv.get(x, y) == 'rock':
@@ -596,6 +603,66 @@ LANDMARKS = {
     'slopes': ('item.landmark_vineyard_house_ruin', 2, 2, (4, 2), 'open'),
     'coast': ('item.landmark_beacon_fire_place', 1, 1, (40, 10), 'open'),
 }
+
+
+# Doğal küçük sahneler (cozy, 21.11): patika kenarında ve açıkta öbek öbek; düzgün serpme değil.
+# (eşya, ayak izi genişliği, ağırlık). Yalnızca görseli olan eşyalar.
+PROPS = {
+    'forest': [('item.fallen_log', 2, 3), ('item.boulder_round', 1, 2), ('item.stump_table', 1, 1), ('item.boulder', 1, 1)],
+    'lake': [('item.reeds', 1, 4), ('item.boulder_round', 1, 1), ('item.fallen_log', 2, 1)],
+    'marsh': [('item.reeds', 1, 5), ('item.fallen_log', 2, 1)],
+    'hill': [('item.boulder', 1, 3), ('item.boulder_large', 2, 2), ('item.fallen_log', 2, 1)],
+    'slopes': [('item.hay_bale', 1, 2), ('item.boulder_round', 1, 1), ('item.barrel', 1, 1)],
+    'coast': [('item.boulder_round', 1, 2), ('item.boulder', 1, 2), ('item.fallen_log', 2, 1)],
+    'farm': [('item.hay_bale', 1, 3), ('item.boulder_round', 1, 2), ('item.fallen_log', 2, 2), ('item.stump_table', 1, 1)],
+}
+
+
+def place_props(cv, roads, markers, region, count, salt, avoid=()):
+    """Eşyaları öbekler hâlinde koyar: bir öbek merkezi seçilir (patikaya 2-5 karo), çevresine 1-3 eşya. Öbekler arası
+    en az 7 karo. Su sevenler (sazlık) suya değen karada."""
+    table = PROPS.get(region)
+    if not table:
+        return
+    rnd = random.Random(salt)
+    taken = set(avoid)
+    for k in markers['keep']:
+        taken |= {(x, y) for x in range(k['x0'], k['x1'] + 1) for y in range(k['y0'], k['y1'] + 1)}
+    cands = []
+    for y in range(2, cv.h - 2):
+        for x in range(2, cv.w - 3):
+            if cv.get(x, y) not in ('grass', 'sand') or (x, y) in taken:
+                continue
+            d = min((abs(x - rx) + abs(y - ry) for (rx, ry) in roads), default=99)
+            if 2 <= d <= 5:
+                cands.append((noise(x / 3.1, y / 3.1, salt), x, y))
+    cands.sort(reverse=True)
+    centers = []
+    for _, x, y in cands:
+        if len(centers) >= count:
+            break
+        if any(abs(x - cx) + abs(y - cy) < 7 for cx, cy in centers):
+            continue
+        centers.append((x, y))
+    used = set()
+    ids = [t[0] for t in table]; ws = [t[2] for t in table]
+    for (cx, cy) in centers:
+        for _ in range(rnd.randint(1, 3)):
+            i = rnd.choices(range(len(ids)), weights=ws)[0]
+            iid, w = ids[i], table[i][1]
+            for _try in range(8):
+                x, y = cx + rnd.randint(-2, 2), cy + rnd.randint(-2, 2)
+                cells = [(x + j, y) for j in range(w)]
+                ring = [(a + dx, b + dy) for (a, b) in cells for dx in (-1, 0, 1) for dy in (-1, 0, 1)]
+                if any(cv.get(*c) not in ('grass', 'sand') or c in taken or c in used for c in cells):
+                    continue
+                if any(c in roads for c in ring):
+                    continue
+                if iid == 'item.reeds' and not any(cv.get(*c) == 'water' for c in ring):
+                    continue
+                markers['items'].append({'id': iid, 'x': x, 'y': y, 'rot': 0, 'grown': False})
+                used |= set(ring)
+                break
 
 
 def place_landmark(cv, roads, markers, item_id, w, h, pref, rule):
@@ -675,7 +742,10 @@ def farm():
     blob(78, 62, 5.0, 3.5, 'band', 273)    # güneydoğu korusu
     blob(6, 22, 2.2, 3.2, 'rock', 277)     # batıda kaya çıkıntısı
     blob(52, 60, 2.5, 1.6, 'rock', 279)    # güneyde taşlık
-    return cv, {'ponds': [], 'items': [], 'keep': []}
+    markers = {'ponds': [], 'items': [], 'keep': []}
+    house = {(x, y) for x in range(24, 41) for y in range(22, 38)}   # ev, avlu ve başlangıç tarlası çevresi boş kalır
+    place_props(cv, roads, markers, 'farm', 6, 283, avoid=house | near(water, 1))
+    return cv, markers
 
 
 def despeckle(cv):
