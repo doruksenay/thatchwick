@@ -160,8 +160,10 @@ namespace Thatchwick.Game
                     int d = Mathf.Max(dx, dy);
                     // Halkalar düz görünmesin diye karoya sabit küçük bir sapma.
                     int h = (x * 92837111) ^ (y * 689287499);
-                    float jitter = ((h & 0xFF) / 255f - 0.5f) * 0.12f;
-                    float t = Mathf.Clamp01((d - 0.5f) / FringeDepth + jitter);
+                    // Basamaklı halka görünmesin (65b B8): karo sapması büyük, üstüne kenar boyunca yavaş değişen gürültü.
+                    float jitter = ((h & 0xFF) / 255f - 0.5f) * 0.22f;
+                    float wave = (Noise((x + y) / 5, (x - y) / 5, 77) - 0.5f) * 0.35f;
+                    float t = Mathf.Clamp01((d - 0.5f) / FringeDepth + jitter + wave);
 
                     list.Add(new FringeTile { X = x, Y = y, T = t });
                 }
@@ -183,8 +185,9 @@ namespace Thatchwick.Game
                 var cell = _cell.Reset();
                 cell.sprite = real != null ? real : SpriteMaterials.Diamond;
                 Color baseColor = real != null ? Color.white : (((f.X + f.Y) & 1) == 0 ? GrassA : GrassB);
-                float k = Mathf.Lerp(0.92f, 0.45f, f.T);
-                float a = 1f - f.T * f.T;
+                // Bölge kenarı taslakta koyu orman bandıyla biter: dışı açık çim değil, karanlığa inen koyu çim.
+                float k = Mathf.Lerp(0.62f, 0.22f, f.T);
+                float a = 1f - f.T * f.T * f.T;
                 cell.color = new Color(baseColor.r * k, baseColor.g * k, baseColor.b * k, a);
                 _fringeLayer.Set(f.X, f.Y, cell);
             }

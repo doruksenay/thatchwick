@@ -49188,6 +49188,238 @@
       "belongs": [
         "outdoor"
       ]
+    },
+    {
+      "id": "item.landmark_lightning_oak",
+      "displayName": "Yıldırım çarpmış meşe",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_lightning_oak_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 192,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_hunter_hut_ruin",
+      "displayName": "Yıkık avcı kulübesi",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_hunter_hut_ruin_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 144,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_sunken_boat",
+      "displayName": "Batık kayık",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongY": "iso_item_sunken_boat_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_broken_boardwalk",
+      "displayName": "Çökmüş tahta yol",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongY": "iso_item_broken_boardwalk_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 72,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_watchtower_ruin",
+      "displayName": "Yıkık gözcü kulesi",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_watchtower_ruin_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 224,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_old_quarry_cleft",
+      "displayName": "Eski taş ocağı yarığı",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_old_quarry_cleft_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 128,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_vineyard_house_ruin",
+      "displayName": "Yıkık bağ evi",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_vineyard_house_ruin_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 160,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_beacon_fire_place",
+      "displayName": "Eski işaret ateşi yeri",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_beacon_fire_place_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 96,
+        "mirror": true
+      }
     }
   ],
   "recipes": [
