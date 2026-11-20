@@ -1,7 +1,7 @@
 ---
 id: "340"
 title: Yol karoları: patika, çakıl, kaldırım (sağlam ve yıpranmış)
-status: review
+status: accepted
 claimed_at: 2026-11-18T09:30Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -37,3 +37,4 @@ Yeni yol katmanı (zeminin üstünde, yalnızca açık havada). Patika x1,6, ça
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

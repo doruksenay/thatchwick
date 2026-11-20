@@ -1,7 +1,7 @@
 ---
 id: "346"
 title: Su karoları: gölet suyu (iki değişke), kuru gölet çukuru, buz, kıyı
-status: review
+status: accepted
 claimed_at: 2026-11-20T08:00Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 priority: 10
@@ -38,3 +38,4 @@ Kabulden sonra kod işi: `IsoArt.Ground` su ve buz karolarını döndürsün (ş
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
