@@ -1,7 +1,7 @@
 ---
 id: "492a"
 title: "Ulu meşe, dört mevsim (ulu ağaç stil pilotu)"
-status: running
+status: blocked
 claimed_at: 2026-11-20T10:46Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamasını tek pr'da hallet, gereken assetleri sıraya koy"), Project belgesi 52
 priority: 10
@@ -38,6 +38,10 @@ Belge 52 §2: haritada kesilemeyen, yüzyıllık ulu ağaçlar. Arsadaki kesin u
 
 ## Notlar
 Pilot: 492b ve 492c bunun stilini izler.
+
+## Sorular
+- `create_map_object` stil eşleme modu en çok 36.864 px alan kabul ediyor (`error: 192x256 too large for inpainting (max 192x192 = 36,864px)`); tarifteki 192x256 tuval (49.152 px) bu yöntemle üretilemez. Hiç generation harcanmadı.
+- Seçenekler: (a) basit mod 192x256, ama 40.000 px üstünde düz renk zemin gelir, `remove_background` ek maliyet; (b) stil eşlemede 160x224 (35.840 px) tuval, taç ~150 px; (c) 192x192 tuvalde daha alçak ağaç. Tuval ve pivot kararı kullanıcıda; 492b/492c de aynı sınıra takılır.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
