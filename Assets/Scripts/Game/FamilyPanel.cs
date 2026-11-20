@@ -316,8 +316,7 @@ namespace Thatchwick.Game
             var info = new List<string>();
             foreach (var p in u.Toys.PersonalOf(c.Id))
                 info.Add($"{ToyNames.Name(p.ItemId)}{(p.IsHeirloom ? " (yadigâr)" : "")}{(p.IsBroken ? " kırık" : "")}");
-            foreach (var m in u.Toys.MarksOf(c.Id))
-                foreach (var d in u.Toys.Toys) if (d.MarkId == m) info.Add(d.MarkName);
+            foreach (var m in u.Toys.MarksOf(c.Id)) { var mn = u.Toys.MarkName(m); if (mn != null) info.Add(mn); }
             foreach (var b in u.Companions.Bonds)
                 if (b.ChildId == c.Id && (b.Unlocked || b.Friend))
                     info.Add($"{(b.Unlocked ? CompanionBondSystem.TraitName(CompanionBondSystem.TraitFor(b.SpeciesId)) : "dostu")}: {b.AnimalName}{(b.Memory ? " (anı)" : "")}");

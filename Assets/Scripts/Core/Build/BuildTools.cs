@@ -97,6 +97,7 @@ namespace Thatchwick.Core.Build
             var map = _world.Map;
             if (!map.EdgeInBounds(edge)) return PlacementCheck.Fail("Harita dışı.");
             if (!map.IsOwned(edge.SideA) && !map.IsOwned(edge.SideB)) return PlacementCheck.Fail(NotOwned);
+            if (IsShell(edge.SideA) || IsShell(edge.SideB)) return PlacementCheck.Fail(ShellLocked);
             if (!map.HasTile(edge.SideA) && !map.HasTile(edge.SideB)) return PlacementCheck.Fail(edge.Z > 0 ? "Önce üst kat döşemesi gerekir." : "Önce burayı kazmalısın.");
             var old = map.GetEdge(edge);
             var oldLook = map.GetLook(edge)?.Clone();
@@ -213,7 +214,7 @@ namespace Thatchwick.Core.Build
             if (!map.EdgeInBounds(edge)) return PlacementCheck.Fail("Harita dışı.");
             if (!EdgeKinds.IsRoomBoundary(map.GetEdge(edge))) return PlacementCheck.Fail("Kaplama yalnızca duvara yapılır.");
             var face = sideB ? edge.SideB : edge.SideA;
-            if (!map.IsOwned(face)) return PlacementCheck.Fail(NotOwned);
+            if (!OwnsForItems(face)) return PlacementCheck.Fail(NotOwned);   // köşkün iç yüzü de kaplanır (belge 52)
             BuildPartDef part = null;
             if (finishId != null)
             {
@@ -675,6 +676,7 @@ namespace Thatchwick.Core.Build
                 var e = kv.Key;
                 if (kv.Value.kind == EdgeKind.None) continue;
                 if (!map.IsOwned(e.SideA) && !map.IsOwned(e.SideB)) return PlacementCheck.Fail(NotOwned);
+                if (IsShell(e.SideA) || IsShell(e.SideB)) return PlacementCheck.Fail(ShellLocked);
                 if (!map.HasTile(e.SideA) && !map.HasTile(e.SideB)) return PlacementCheck.Fail("Duvarın yanında zemin yok.");
                 if (map.GetEdge(e) == EdgeKind.None && SplitsItem(e)) return PlacementCheck.Fail("Duvar bir eşyanın içinden geçemez.");
             }

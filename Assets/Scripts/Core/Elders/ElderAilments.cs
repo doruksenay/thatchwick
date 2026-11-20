@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Thatchwick.Core.Characters;
 
-namespace Thatchwick.Core.Aging
+namespace Thatchwick.Core.Elders
 {
     /// <summary>Yaşlılık sıkıntıları (belge 51 §3.3). Kalıcı durumdur, moodlet değildir; hiçbiri ölümcül değildir.</summary>
     public enum AgingCondition
@@ -45,7 +45,7 @@ namespace Thatchwick.Core.Aging
     }
 
     /// <summary>Bir yaşlının sıkıntı durumu.</summary>
-    public sealed class AgingState
+    public sealed class ElderAilmentState
     {
         public int CharacterId;
         public double ElderSince = -1;
@@ -68,7 +68,7 @@ namespace Thatchwick.Core.Aging
     /// çarpanları, ayar (Kapalı / Hafif / Normal), çözüm eşyaları, aile etkileşimleri, Zihin dinçliği ve dalgınlık,
     /// kahve ve çay etkileri (§3.3a). Aynı işte iki sıkıntının cezası en çok −%40. Bunalım ve emir reddi kurallarına dokunmaz.
     /// </summary>
-    public sealed class AgingService
+    public sealed class ElderAilmentService
     {
         public const double MaxPenalty = 0.40;
         public const double MindFromAgeDays = 55, MindShownFromDays = 65;
@@ -78,7 +78,7 @@ namespace Thatchwick.Core.Aging
         public const double HardFoodFullness = 0.30;
 
         public AgingSetting Setting { get; set; } = AgingSetting.Normal;
-        private readonly Dictionary<int, AgingState> _states = new Dictionary<int, AgingState>();
+        private readonly Dictionary<int, ElderAilmentState> _states = new Dictionary<int, ElderAilmentState>();
         private readonly Random _rng;
 
         /// <summary>Sıkıntı belirdi (bildirim ve baş üstü balon).</summary>
@@ -86,10 +86,10 @@ namespace Thatchwick.Core.Aging
         /// <summary>Dalgınlık işareti ("Şu… neydi adı… kepçe!").</summary>
         public event Action<Character> Signal;
 
-        public AgingService(int seed = 911) { _rng = new Random(seed); }
+        public ElderAilmentService(int seed = 911) { _rng = new Random(seed); }
 
-        public AgingState StateOf(Character c) => c != null && _states.TryGetValue(c.Id, out var s) ? s : null;
-        private AgingState Get(Character c) { if (!_states.TryGetValue(c.Id, out var s)) _states[c.Id] = s = new AgingState { CharacterId = c.Id }; return s; }
+        public ElderAilmentState StateOf(Character c) => c != null && _states.TryGetValue(c.Id, out var s) ? s : null;
+        private ElderAilmentState Get(Character c) { if (!_states.TryGetValue(c.Id, out var s)) _states[c.Id] = s = new ElderAilmentState { CharacterId = c.Id }; return s; }
         public bool Has(Character c, AgingCondition cond) => Setting != AgingSetting.Off && StateOf(c)?.Has(cond) == true;
         public IEnumerable<AgingCondition> Conditions(Character c)
         {
@@ -171,7 +171,7 @@ namespace Thatchwick.Core.Aging
         }
 
         /// <summary>3. sıkıntı: yaşlılığın 12. gününde hâlâ yaşayana (Normal ayarda); Ellerim titriyor ve Dalgınlık bu çekilişte.</summary>
-        private void RollThird(Character c, AgingState s, double today)
+        private void RollThird(Character c, ElderAilmentState s, double today)
         {
             s.ThirdRolled = true;
             if (Setting != AgingSetting.Normal) return;
@@ -186,7 +186,7 @@ namespace Thatchwick.Core.Aging
             s.Pending.Add((pick, day));
         }
 
-        private static bool PendingHas(AgingState s, AgingCondition c) { foreach (var p in s.Pending) if (p.cond == c) return true; return false; }
+        private static bool PendingHas(ElderAilmentState s, AgingCondition c) { foreach (var p in s.Pending) if (p.cond == c) return true; return false; }
 
         /// <summary>Gün başı: bekleyen sıkıntılar belirir; dalgınlık önce 2 gün işaret verir; zihin puanı azalır.</summary>
         public void Daily(Character c, double today, bool lonely, bool unhappy, bool grieving)
@@ -467,7 +467,7 @@ namespace Thatchwick.Core.Aging
             {
                 var p = (row ?? "").Split('|');
                 if (p.Length < 10 || !int.TryParse(p[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int id)) continue;
-                var s = new AgingState { CharacterId = id };
+                var s = new ElderAilmentState { CharacterId = id };
                 double.TryParse(p[1], NumberStyles.Float, CultureInfo.InvariantCulture, out s.ElderSince);
                 foreach (var a in p[2].Split(',')) if (int.TryParse(a, out int ai) && Enum.IsDefined(typeof(AgingCondition), ai)) s.Active.Add((AgingCondition)ai);
                 foreach (var e in p[3].Split(','))

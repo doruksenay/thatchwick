@@ -1,7 +1,8 @@
 ---
 id: "496"
 title: "Easter egg NPC'leri: Johan Wick ve atsız şövalye (84 px, 8 yön durma)"
-status: pending
+status: review
+claimed_at: 2026-11-20T11:36Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("hepsi olsun", "yaz bunları ve sen ekle sıraya"), Project belgesi 55 §1
 priority: 50
 family: karakter

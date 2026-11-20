@@ -137,7 +137,7 @@ namespace Thatchwick.Game
             _report = new BalanceReport { Scenario = $"{ScenarioName(_scenario)}, {_days:0} gün, başlangıç günü {clock.TotalDays:0}" };
             if (life0 != null)
             {
-                _report.AgingConditions = c => { int n = 0; foreach (var _ in life0.Aging.Conditions(c)) n++; return n; };
+                _report.AgingConditions = c => { int n = 0; foreach (var _ in life0.Ailments.Conditions(c)) n++; return n; };
                 _report.TailorSpend = () => life0.TailorSpent;
                 _report.ClothUsed = () => life0.ClothUsed;
             }
