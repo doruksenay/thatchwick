@@ -216,6 +216,9 @@ namespace Thatchwick.Core.World
             return true;
         }
 
+        /// <summary>Deniz suyu mu (kıyı bölgesi; tuzludur, donmaz).</summary>
+        public static bool IsSea(GridMap m, GridPos p) => m != null && m.Width == WorldWidth && Coast.Contains(p);
+
         /// <summary>Bir dünya karosu gölden kıyıya inen yeni patikanın üstünde mi (göçte oradaki ağaçlar kaldırılır).</summary>
         public static bool OnLakeToCoastTrail(GridMap m, GridPos p) => Lake.Contains(p) && m.GetRoad(p) != RoadType.None && (p.X - Lake.X == 5 || p.Y - Lake.Y == 7);
 

@@ -648,7 +648,7 @@ namespace Thatchwick.Core.Life
         public string WaterJarBlocker(GridPos tile, bool fill)
         {
             if (!_world.Map.IsWater(tile)) return "Burada su yok.";
-            if (_world.Map.WaterFrozen) return "Su donmuş.";
+            if (_world.Map.FrozenAt(tile)) return "Su donmuş.";
             if (_house.Count(CatchJar) <= 0) return "Envanterde boş cam kavanoz olmalı.";
             if (fill) return null;
             return CatchPool(WaterPools[WaterKindAt(tile)]).Count == 0 ? "Şu an bu suda yakalanacak bir şey yok (mevsim)." : null;

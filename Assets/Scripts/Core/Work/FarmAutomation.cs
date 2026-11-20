@@ -513,11 +513,11 @@ namespace Thatchwick.Core.Work
             switch (action)
             {
                 case TileAction.Bathe:
-                    return map.WaterFrozen ? "Su donmuş: önce buz kes." : null;
+                    return map.FrozenAt(tile) ? "Su donmuş: önce buz kes." : null;
                 case TileAction.Fish:                                   // buz deliğinden de olur
                     return map.PondAt(tile).FishTotal == 0 ? NoFishText : null;
                 case TileAction.CutIce:
-                    return map.WaterFrozen ? null : "Su donmamış (kışın dondurucu soğukta donar).";
+                    return map.FrozenAt(tile) ? null : Regions.IsSea(map, tile) ? "Deniz donmaz." : "Su donmamış (kışın dondurucu soğukta donar).";
                 case TileAction.Stock:
                     if (arg == null || Content == null || !Content.Items.Contains(arg) || !IsFishSpecies(arg)) return "Gölete yalnızca balık atılır.";
                     if (House != null && House.Count(arg) <= 0) return $"Elinde {Content.Items.Get(arg).DisplayName} yok.";

@@ -232,12 +232,24 @@ namespace Thatchwick.Game
                     bool terrainBlocked = _terrainBlocked[y * Map.Width + x];
                     // Gerçek karo varsa (çim, toprak) onu kullan; yoksa yer tutucu elmas + renk.
                     // Gerçek karo yalnızca varsayılan stilde (stil seçilmiş zemin, görseli gelene kadar renkle çizilir).
-                    var real = terrainBlocked || floor == FloorType.Water ? null
-                        : Map.GetFloorStyle(p) != null ? IsoArt.FloorPart(Map.GetFloorStyle(p), x, y)
+                    // Deniz kıyısı (belge 50): deniz suyu ve kumsal kendi karosunu arar; yoksa göl suyu ve toprak tonlanır.
+                    bool sea = Thatchwick.Core.World.Regions.IsSea(Map, p);
+                    bool seaTint = false, beachTint = false;
+                    Sprite real;
+                    if (terrainBlocked) real = null;
+                    else if (floor == FloorType.Water) real = IsoArt.Water(x, y, Map.IsFilled(p), Map.FrozenAt(p), sea, out seaTint);
+                    else if (sea && floor == FloorType.Dirt && Map.GetFloorStyle(p) == null)
+                    {
+                        real = IsoArt.Beach(x, y);
+                        if (real == null) { real = IsoArt.Ground(FloorType.Dirt, x, y); beachTint = real != null; }
+                    }
+                    else real = Map.GetFloorStyle(p) != null ? IsoArt.FloorPart(Map.GetFloorStyle(p), x, y)
                         : IsoArt.Ground(floor, x, y) ?? IsoArt.FloorPart(Content != null ? BuildParts.DefaultFloor(Content, floor)?.Id : null, x, y);
                     sr.sprite = real != null ? real : SpriteMaterials.Diamond;
                     var styled = real == null ? StyleColor(p, floor) : null;
-                    if (real != null) sr.color = Color.white;
+                    if (real != null) sr.color = seaTint ? new Color(0.78f, 0.9f, 1f) : beachTint ? new Color(1.0f, 0.93f, 0.72f) : Color.white;
+                    else if (sea && floor == FloorType.Dirt) sr.color = ((x + y) & 1) == 0 ? new Color32(214, 196, 150, 255) : new Color32(206, 188, 142, 255);
+                    else if (sea && floor == FloorType.Water) sr.color = ((x + y) & 1) == 0 ? new Color32(46, 104, 150, 255) : new Color32(42, 98, 142, 255);
                     else if (styled.HasValue) sr.color = styled.Value;
                     else switch (floor)
                     {
@@ -247,7 +259,7 @@ namespace Thatchwick.Game
                         case FloorType.Water:   // görseli gelene kadar: kuru çukur çamur, mavi su, donunca soluk buz
                             sr.color = !Map.IsFilled(p)
                                 ? (((x + y) & 1) == 0 ? new Color32(104, 84, 62, 255) : new Color32(98, 79, 58, 255))
-                                : Map.WaterFrozen
+                                : Map.FrozenAt(p)
                                 ? (((x + y) & 1) == 0 ? new Color32(206, 224, 236, 255) : new Color32(196, 216, 230, 255))
                                 : (((x + y) & 1) == 0 ? new Color32(64, 120, 176, 255) : new Color32(58, 112, 168, 255));
                             break;

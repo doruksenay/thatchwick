@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Thatchwick.Core.Audio;
 using Thatchwick.Core.Work;
+using Thatchwick.Game.Audio;
 
 namespace Thatchwick.Game
 {
@@ -19,6 +21,9 @@ namespace Thatchwick.Game
             public string Title;
             public string FishName;
             public Action<bool, bool> Done;
+            public bool Jar;
+            public FishingPhase LastPhase;
+            public float ReelTick;
         }
 
         private const float ResultSeconds = 1.4f;
@@ -29,11 +34,38 @@ namespace Thatchwick.Game
 
         public bool Active => _cur != null;
 
-        public void Start(FishingGame game, string title, string fishName, Action<bool, bool> done)
+        public void Start(FishingGame game, string title, string fishName, Action<bool, bool> done, bool jar = false)
         {
-            var s = new Session { Game = game, Title = title, FishName = fishName, Done = done };
-            if (_cur == null) { _cur = s; _resultLeft = ResultSeconds; }
+            var s = new Session { Game = game, Title = title, FishName = fishName, Done = done, Jar = jar, LastPhase = game.Phase };
+            if (_cur == null) Begin(s);
             else _queue.Enqueue(s);
+        }
+
+        private void Begin(Session s)
+        {
+            _cur = s;
+            _resultLeft = ResultSeconds;
+            Sfx(s.Jar ? SoundKeys.JarScoop : SoundKeys.FishCast);
+        }
+
+        private static void Sfx(string key) { var a = AudioService.Instance; if (a != null) a.Play(key); }
+
+        /// <summary>Evre değişince ses: vurdu, tutuldu, kaçtı; çekerken balık çubuktayken ara ara misina sesi.</summary>
+        private void Sounds(Session s, float dt)
+        {
+            var g = s.Game;
+            if (g.Phase != s.LastPhase)
+            {
+                if (g.Phase == FishingPhase.Bite) Sfx(SoundKeys.FishBite);
+                else if (g.Phase == FishingPhase.Caught) Sfx(SoundKeys.FishCatch);
+                else if (g.Phase == FishingPhase.Escaped) Sfx(SoundKeys.FishEscape);
+                s.LastPhase = g.Phase;
+            }
+            if (g.Phase == FishingPhase.Reeling && g.Overlapping)
+            {
+                s.ReelTick -= dt;
+                if (s.ReelTick <= 0f) { Sfx(SoundKeys.FishReel); s.ReelTick = 0.35f; }
+            }
         }
 
         /// <summary>Her karede (GameRoot.Update): girdi ve oyun adımı.</summary>
@@ -49,13 +81,14 @@ namespace Thatchwick.Game
                 bool hold = (mouse != null && mouse.leftButton.isPressed) || (touch != null && touch.primaryTouch.press.isPressed) || (kb != null && kb.spaceKey.isPressed);
                 bool pressed = (mouse != null && mouse.leftButton.wasPressedThisFrame) || (touch != null && touch.primaryTouch.press.wasPressedThisFrame) || (kb != null && kb.spaceKey.wasPressedThisFrame);
                 g.Step(Mathf.Min(dt, 0.05f), hold, pressed);
+                Sounds(_cur, dt);
                 return;
             }
             _resultLeft -= dt;
             if (_resultLeft > 0f) return;
             var done = _cur;
-            _cur = _queue.Count > 0 ? _queue.Dequeue() : null;
-            _resultLeft = ResultSeconds;
+            _cur = null;
+            if (_queue.Count > 0) Begin(_queue.Dequeue());
             done.Done?.Invoke(done.Game.Phase == FishingPhase.Caught, done.Game.Perfect);
         }
 
@@ -122,7 +155,9 @@ namespace Thatchwick.Game
                     // Çubuk (yeşil), balık, tutma çizgisi
                     var bar = new Rect(track.x + 3f, Y(g.BarPos + g.BarSize), track.width - 6f, g.BarSize * track.height);
                     Fill(bar, g.Overlapping ? new Color(0.45f, 0.85f, 0.40f, 0.75f) : new Color(0.40f, 0.70f, 0.35f, 0.55f));
-                    var icon = IsoArt.ItemIcon(g.FishId);
+                    // İkon: icon_* (balıklar), yoksa cam bahçe görseli viv_* (golyan, karides ...), yoksa şekil.
+                    Texture icon = IsoArt.ItemIcon(g.FishId);
+                    if (icon == null) { var vs = IsoArt.Get("viv_" + g.FishId.Replace("item.", "").Replace("viv_", ""), 0f, 0f); if (vs != null) icon = vs.texture; }
                     float fy = Y(g.FishPos);
                     if (icon != null) GUI.DrawTexture(new Rect(track.center.x - 14f, fy - 14f, 28f, 28f), icon);
                     else { Dot(track.center.x, fy, 26f, 12f, new Color(0.85f, 0.75f, 0.55f, 1f)); Dot(track.center.x - 14f, fy, 10f, 9f, new Color(0.75f, 0.65f, 0.45f, 1f)); }

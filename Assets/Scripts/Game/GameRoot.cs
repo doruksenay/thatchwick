@@ -224,7 +224,7 @@ namespace Thatchwick.Game
             int level = c.Skills.GetLevel(SkillType.Fishing);
             float bonus = jar ? 0.08f : 0.02f * (_life?.Tools.Tier("rod") ?? 0);
             var game = new FishingGame(fishId, def?.FishDifficulty ?? 30, FishingGame.ParseBehavior(def?.FishBehavior), level, bonus, _rng.Next(), skipWait: jar);
-            _fishingView.Start(game, GameLocalization.T(jar ? "ui.fishing.jar_title" : "ui.fishing.title"), def?.DisplayName ?? fishId, done);
+            _fishingView.Start(game, GameLocalization.T(jar ? "ui.fishing.jar_title" : "ui.fishing.title"), def?.DisplayName ?? fishId, done, jar);
         }
         private bool _buntingShown;
         private FamilyService _family;
@@ -2026,7 +2026,7 @@ namespace Thatchwick.Game
                 {
                     var fishText = new List<string>();
                     foreach (var f in pond.Fish) fishText.Add($"{f.Value} {(_content.Items.TryGet(f.Key, out var fd) ? fd.DisplayName : f.Key)}");
-                    names.Add($"{(_world.Map.WaterFrozen ? "Donmuş gölet" : "Gölet")}{(pond.Spring ? " (kaynaklı)" : $" (su %{pond.Level * 100f:0})")}"
+                    names.Add($"{(Thatchwick.Core.World.Regions.IsSea(_world.Map, tile) ? "Deniz" : _world.Map.FrozenAt(tile) ? "Donmuş gölet" : "Gölet")}{(pond.Spring ? " (kaynaklı)" : $" (su %{pond.Level * 100f:0})")}"
                         + $"{(pond.Insects ? ", böcekli" : ", böcek yok")}, balık: {(fishText.Count > 0 ? string.Join(", ", fishText) : "yok")}");
                 }
                 var waterTile = tile;
@@ -2045,7 +2045,7 @@ namespace Thatchwick.Game
                 foreach (var (label, act) in new[] { ("Suya gir, yıkan", TileAction.Bathe), ("Kıyıdan balık tut", TileAction.Fish), ("Buz kes", TileAction.CutIce),
                     (GameLocalization.T("ui.water.jar_fill"), TileAction.JarFill), (GameLocalization.T("ui.water.jar_catch"), TileAction.JarCatch) })
                 {
-                    if (act == TileAction.CutIce && !_world.Map.WaterFrozen) continue;
+                    if (act == TileAction.CutIce && !_world.Map.FrozenAt(waterTile)) continue;
                     if ((act == TileAction.JarFill || act == TileAction.JarCatch) && _household.Count(HomeLife.CatchJar) <= 0) continue;   // kavanozu yoksa gösterme
                     var a = act;
                     _menuOptions.Add(new MenuOption

@@ -210,5 +210,23 @@ namespace Thatchwick.Core.Tests
             home.GrantCatch(bite);
             Assert.Equal(1, house.Count(bite));
         }
+
+        [Fact]
+        public void Deniz_Donmaz_GolDonar()
+        {
+            var map = new GridMap(Regions.WorldWidth, Regions.WorldHeight);
+            var sea = new GridPos(Regions.Coast.X + 10, Regions.Coast.Y + 25);
+            var lake = new GridPos(Regions.Lake.X + 26, Regions.Lake.Y + 20);
+            foreach (var p in new[] { sea, lake }) { map.SetFloor(p, FloorType.Water); map.SetSpring(p); map.RestorePond(p, 1f, spring: true, insects: true, filledDays: 30, new KeyValuePair<string, int>[0]); }
+            map.WaterFrozen = true;
+            Assert.True(map.FrozenAt(lake));
+            Assert.False(map.FrozenAt(sea));
+            Assert.True(map.IsOpenWater(sea));
+            var fw = new FarmWork(new WorldState(map));
+            var c = Adult(sea);
+            Assert.Null(fw.CanDo(c, sea, TileAction.Bathe));
+            Assert.NotNull(fw.CanDo(c, sea, TileAction.CutIce));
+            Assert.Null(fw.CanDo(c, lake, TileAction.CutIce));
+        }
     }
 }

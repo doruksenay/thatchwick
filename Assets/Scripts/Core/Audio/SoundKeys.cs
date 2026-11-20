@@ -70,6 +70,17 @@ namespace Thatchwick.Core.Audio
         public const string WeatherStorm = "weather.storm";   // C weather
         public const string WeatherThunder = "weather.thunder"; // C spots
         public const string SpotBirdSong = "spot.bird.song";  // B spots
+        public const string AmbCoast = "amb.coast";           // C ambience (deniz kıyısı, belge 50)
+        public const string SpotGull = "spot.gull";           // B spots
+        public const string SpotWave = "spot.wave";           // B spots
+
+        // Balık tutma mini oyunu ve kavanoz (belge 50)
+        public const string FishCast = "fish.cast";           // B tools
+        public const string FishBite = "fish.bite";           // B foley
+        public const string FishReel = "fish.reel";           // A tools
+        public const string FishCatch = "fish.catch";         // B foley
+        public const string FishEscape = "fish.escape";       // C foley
+        public const string JarScoop = "jar.scoop";           // B foley
 
         // Olay vuruşları
         public const string StingLevelUp = "sting.levelup";   // C stinger
