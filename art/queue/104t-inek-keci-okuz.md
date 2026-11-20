@@ -1,7 +1,7 @@
 ---
 id: "104t"
 title: "Büyük çiftlik hayvanları tamamlama: inek, keçi, öküz yeniden (8 yön)"
-status: running
+status: review
 claimed_at: 2026-11-20T10:33Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette hayvan incelemesi: "önerilerini uygula ama öküz tekrar çizilsin")
 priority: 15
@@ -41,3 +41,4 @@ Hayvan incelemesinde (2026-11-20) ortaya çıktı: oyunda **inek ve keçi için 
 375 doğrulaması. Yan yana sayfası: `art/results/104t-yanyana.png`. Her türün SE yönü; koyun 4, domuz 2, köpek 1 ve 58 px köylü ile aynı satırda; ölçek oranı gerçeğe uygun (öküz > inek > keçi).
 
 ## Notlar
+- 2026-11-20 işçi: goat_5, goat_6, ox_v2, örme çit teslim; cow_5/cow_6 zemin lekesi, ateş v2 alevli çıktı. Ayrıntı `art/results/104t-inek-keci-okuz.md`.

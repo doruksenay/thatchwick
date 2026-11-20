@@ -1760,6 +1760,36 @@
       "effects": {
         "energyDecay": 0.94
       }
+    },
+    {
+      "id": "branch.tailor_embroider",
+      "displayName": "Nakışçı",
+      "description": "İşleme motifleri +4; işlemeli giysisi 1,5 kat değerli.",
+      "skill": "Tailoring",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Tailoring",
+            "rate": 1.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "branch.tailor_thrifty",
+      "displayName": "Tutumlu makas",
+      "description": "Giysi için %25 az kumaş harcar; sökünce kumaşın %75'i geri döner.",
+      "skill": "Tailoring",
+      "level": 5,
+      "effects": {
+        "skillRates": [
+          {
+            "skill": "Weaving",
+            "rate": 1.1
+          }
+        ]
+      }
     }
   ],
   "projects": [
@@ -3107,9 +3137,9 @@
     {"skill": "Weaving", "level": 3, "kind": "feature", "text": "Battaniye"},
     {"skill": "Weaving", "level": 4, "kind": "recipe", "text": "Boya kazanı"},
     {"skill": "Weaving", "level": 4, "kind": "feature", "text": "Keçe"},
-    {"skill": "Weaving", "level": 5, "kind": "interaction", "text": "Giysi dik (cepken)"},
+    {"skill": "Weaving", "level": 5, "kind": "feature", "text": "İki banyolu renkler (yeşil, mor, turuncu, zeytin) ve koyu ton"},
     {"skill": "Weaving", "level": 6, "kind": "feature", "text": "Büyük halılar"},
-    {"skill": "Weaving", "level": 6, "kind": "recipe", "text": "Keten gömlek"},
+    {"skill": "Weaving", "level": 6, "kind": "recipe", "text": "Ak keten (ağartma)"},
     {"skill": "Weaving", "level": 7, "kind": "recipe", "text": "İpek çekme, ipek kumaş"},
     {"skill": "Weaving", "level": 8, "kind": "feature", "text": "Aile tarifi: aile deseni"},
     {"skill": "Weaving", "level": 9, "kind": "recipe", "text": "Yorgan, işlemeli çeyiz"},
@@ -3359,6 +3389,50 @@
     {"skill": "Athletics", "level": 7, "kind": "feature", "text": "Güreş"},
     {"skill": "Athletics", "level": 8, "kind": "interaction", "text": "Ağır yük: kesim, kazı, taş işi %10 hızlı"},
     {"skill": "Athletics", "level": 9, "kind": "interaction", "text": "Sabah koşusu"},
-    {"skill": "Athletics", "level": 10, "kind": "feature", "text": "Unvan Pehlivan"}
+    {"skill": "Athletics", "level": 10, "kind": "feature", "text": "Unvan Pehlivan"},
+    {"skill": "Tailoring", "level": 1, "kind": "interaction", "text": "Yama yap (onarım); Örgü ör (atkı, bere, patik, eldiven)"},
+    {"skill": "Tailoring", "level": 1, "kind": "recipe", "text": "Keten başörtüsü, keten takke, ip kuşak, bez önlük, dolak, bebek takkesi, kundak"},
+    {"skill": "Tailoring", "level": 2, "kind": "recipe", "text": "Keten iç gömlek, kaba tunik, iş tuniği, keten don, keten etek, yemeni, omuz şalı, çocuk pelerini"},
+    {"skill": "Tailoring", "level": 3, "kind": "interaction", "text": "Ölçü al (o kişiye dikilen giyside kalite şansı)"},
+    {"skill": "Tailoring", "level": 3, "kind": "recipe", "text": "Uzun tunik, tozluk, uzun etek, pelerinli kapüşon, kısa pelerin, yağmurluk, kepenek"},
+    {"skill": "Tailoring", "level": 4, "kind": "feature", "text": "Kenar geç (kenar rengi)"},
+    {"skill": "Tailoring", "level": 4, "kind": "recipe", "text": "Entari, keçe yelek, şalvar, aba, uzun pelerin, yolcu şapkası, uzun uçlu kapüşon, gebelik entarisi"},
+    {"skill": "Tailoring", "level": 5, "kind": "feature", "text": "Dal; Çırak al"},
+    {"skill": "Tailoring", "level": 5, "kind": "recipe", "text": "Kaftan, kolsuz üstlük, kapitone ceket, börk"},
+    {"skill": "Tailoring", "level": 6, "kind": "interaction", "text": "İşle (nakış: yer ve motif)"},
+    {"skill": "Tailoring", "level": 6, "kind": "recipe", "text": "Bayram entarisi ve pelerini, üç etek, işlemeli gömlek ve yaka, kürk yakalı pelerin, kürklü yelek, broşlu pelerin"},
+    {"skill": "Tailoring", "level": 7, "kind": "interaction", "text": "Tadilat (kol, kapüşon, boy)"},
+    {"skill": "Tailoring", "level": 7, "kind": "recipe", "text": "İpek gömlek, düğmeli dar ceket, şaperon"},
+    {"skill": "Tailoring", "level": 8, "kind": "feature", "text": "Aile tarifi: aile nakışı"},
+    {"skill": "Tailoring", "level": 8, "kind": "recipe", "text": "Kürk astarlı pelerin"},
+    {"skill": "Tailoring", "level": 9, "kind": "recipe", "text": "Düğün kaftanı, armalı pelerin, sırma işleme"},
+    {"skill": "Tailoring", "level": 10, "kind": "feature", "text": "Unvan Terzi; ustalık eseri: imzalı kaftan ya da pelerin"},
+    {"skill": "Weaving", "level": 1, "kind": "recipe", "text": "Hasır şapka"},
+    {"skill": "Weaving", "level": 4, "kind": "recipe", "text": "Keçe külah, dokuma kuşak"},
+    {"skill": "Leatherwork", "level": 2, "kind": "recipe", "text": "Çarık, düşük ayakkabı, deri kemer, bel kesesi, omuz çantası"},
+    {"skill": "Leatherwork", "level": 3, "kind": "recipe", "text": "Bileği bağlı ayakkabı, deri önlük, demirci başlığı, post omuzluk, tokalı kemer"},
+    {"skill": "Leatherwork", "level": 4, "kind": "recipe", "text": "Deri iş eldiveni"},
+    {"skill": "Leatherwork", "level": 5, "kind": "recipe", "text": "Binici tozluğu"},
+    {"skill": "Leatherwork", "level": 6, "kind": "recipe", "text": "Yarım ve uzun çizme, kürk kalpak, kürk kapüşon, kürk boyunluk"},
+    {"skill": "Leatherwork", "level": 7, "kind": "recipe", "text": "Kürk astarlı çizme, kürk eldiven"},
+    {"skill": "Leatherwork", "level": 8, "kind": "recipe", "text": "Kürk şapka"},
+    {"skill": "Leatherwork", "level": 9, "kind": "recipe", "text": "Yumuşak deri mest"},
+    {"skill": "AnimalHusbandry", "level": 7, "kind": "feature", "text": "Tiftik keçisi"},
+    {"skill": "Foraging", "level": 3, "kind": "feature", "text": "Cehri"},
+    {"skill": "Foraging", "level": 5, "kind": "feature", "text": "Ceviz kabuğu"},
+    {"skill": "Foraging", "level": 6, "kind": "feature", "text": "Taş likeni"},
+    {"skill": "Farming", "level": 3, "kind": "recipe", "text": "Çivit otu, kendir"},
+    {"skill": "Farming", "level": 4, "kind": "recipe", "text": "Sarı boya otu"},
+    {"skill": "Horticulture", "level": 4, "kind": "recipe", "text": "Kökboya"},
+    {"skill": "Horticulture", "level": 6, "kind": "recipe", "text": "Çiçek tacı"},
+    {"skill": "Mining", "level": 3, "kind": "recipe", "text": "Karaboya"},
+    {"skill": "Smithing", "level": 2, "kind": "recipe", "text": "Toka"},
+    {"skill": "Smithing", "level": 3, "kind": "recipe", "text": "Broş"},
+    {"skill": "Smithing", "level": 7, "kind": "recipe", "text": "Küpe, yüzük, bilezik, burun halkası"},
+    {"skill": "Smithing", "level": 9, "kind": "recipe", "text": "Gümüş kemer, sırma, gelin tacı"},
+    {"skill": "Carpentry", "level": 1, "kind": "recipe", "text": "Kemik ve ahşap düğme, dikiş sehpası"},
+    {"skill": "Carpentry", "level": 2, "kind": "recipe", "text": "Tahta takunya"},
+    {"skill": "Pottery", "level": 6, "kind": "recipe", "text": "Cam boncuk, boncuk dizisi"},
+    {"skill": "Pottery", "level": 7, "kind": "recipe", "text": "Nazar boncuğu"}
   ]
 }

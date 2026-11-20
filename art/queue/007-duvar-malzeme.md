@@ -1,7 +1,7 @@
 ---
 id: "007"
 title: Duvar malzeme örneği
-status: review
+status: accepted
 approved_by: auto
 family: yapi
 style_gate: true
@@ -29,3 +29,4 @@ Palet köylü ve zemin paletiyle uyumlu mu (görsel not), düz/az tonlu mu, ış
 
 ## Notlar
 Örneği `art/results/007-duvar-malzeme-ornek.png` olarak kaydet. Kullanıcı kabul ederse 008 başlar.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

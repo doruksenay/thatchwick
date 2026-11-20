@@ -1,7 +1,7 @@
 ---
 id: "402"
 title: Alçak ve yarım duvar varyantları, eksikler (kaplamalar): betikle kırpma
-status: review
+status: accepted
 claimed_at: 2026-11-18T19:12Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 18.11.2026 ("duvarların alçak görseli")
 priority: 10
@@ -46,3 +46,4 @@ Bugün eksik olan yalnızca dokulu kaplamaların alçak ve yarım hâli (lambri,
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

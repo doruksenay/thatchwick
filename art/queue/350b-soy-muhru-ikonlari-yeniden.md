@@ -1,7 +1,7 @@
 ---
 id: "350b"
 title: Soy Mührü ve yadigâr ikonları yeniden (renk azaltma ve iki ikon yeniden)
-status: review
+status: accepted
 claimed_at: 2026-11-19T12:16Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-19 ("önerdiklerini yap": 350 için yeniden deneme)
 family: arayuz
@@ -46,3 +46,4 @@ created: 2026-11-19
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

@@ -41,7 +41,8 @@ namespace Thatchwick.Core.Characters
         Carting = 31,         // Arabacılık / taşımacılık: depo kapasitesi
         Decorating = 32,      // Ev düzenleme: eşya ve yapı indirimi
         Medicine = 33,        // Hekimlik: soğuk ve açlık yarasını iyileştirir
-        Athletics = 34        // Atletizm: yürüme hızı, ağır işte az yorulma, soğuğa dayanma (18.11.2026)
+        Athletics = 34,       // Atletizm: yürüme hızı, ağır işte az yorulma, soğuğa dayanma (18.11.2026)
+        Tailoring = 35        // Terzilik (zanaat): giysi dikme, yama, örgü, nakış, tadilat (belge 48 §8.1, 20.11.2026)
     }
 
     /// <summary>Becerilerin görünen adları (zanaatler alt başlıklarıyla ayrı beceridir).</summary>
@@ -86,13 +87,15 @@ namespace Thatchwick.Core.Characters
                 case SkillType.Decorating: return "Ev düzenleme";
                 case SkillType.Medicine: return "Hekimlik";
                 case SkillType.Athletics: return "Atletizm";
+                case SkillType.Tailoring: return "Terzilik";
                 default: return s.ToString();
             }
         }
 
         /// <summary>Zanaat alt başlığı mı (kasabadaki ustalarla ilişkili)?</summary>
         public static bool IsCraft(SkillType s) => s == SkillType.Carpentry || s == SkillType.Leatherwork || s == SkillType.Weaving
-            || s == SkillType.Smithing || s == SkillType.Pottery || s == SkillType.Chandlery || s == SkillType.Masonry;
+            || s == SkillType.Smithing || s == SkillType.Pottery || s == SkillType.Chandlery || s == SkillType.Masonry
+            || s == SkillType.Tailoring;
 
         /// <summary>
         /// Bu beceriyle yapılan işte ilk üründen seviye başına bir fazlası çıkma şansı (toplayıcılık %4, maden %4, av %3…);
@@ -120,8 +123,8 @@ namespace Thatchwick.Core.Characters
 
         /// <summary>
         /// Dal düzeni (karar 18.11.2026, Project belgesi 28): 14 ana beceride tam dal (5. seviyede 2, 10. seviyede 4),
-        /// 17 becerinin (Atletizm dahil, belge 45 karar 2) yalnızca 5. seviyede 2 dalı, 4 destek becerisi dalsız.
-        /// Toplam 118. life.json bununla uyuşmalıdır.
+        /// 18 becerinin (Atletizm, belge 45 karar 2; Terzilik, belge 48 karar 1) yalnızca 5. seviyede 2 dalı,
+        /// 4 destek becerisi dalsız. Toplam 120. life.json bununla uyuşmalıdır.
         /// </summary>
         public static int BranchCount(SkillType s)
         {
@@ -179,6 +182,7 @@ namespace Thatchwick.Core.Characters
                 case SkillType.Decorating: return "Ev düzenleyici";
                 case SkillType.Medicine: return "Hekim";
                 case SkillType.Athletics: return "Pehlivan";
+                case SkillType.Tailoring: return "Terzi";
                 default: return "Köylü";
             }
         }
@@ -282,6 +286,7 @@ namespace Thatchwick.Core.Characters
             { SkillType.Foraging, 2.9f },
             { SkillType.Hunting, 2.9f },
             { SkillType.Weaving, 3.2f },
+            { SkillType.Tailoring, 3.2f },
             { SkillType.Teaching, 3.2f },
             { SkillType.Medicine, 3.2f },
             { SkillType.Baking, 3.4f },

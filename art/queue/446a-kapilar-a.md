@@ -1,7 +1,7 @@
 ---
 id: "446a"
 title: "Kapı varyantları A (3)"
-status: review
+status: accepted
 claimed_at: 2026-11-19T13:43Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 19.11.2026 ("bunların hepsini yapalım", varyant çeşitliliği), Project belgesi 45
 priority: 20
@@ -41,3 +41,4 @@ Belge 45 §10: boyalı ve oymalı kapılar (Marangozluk ve Demircilikle açılı
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

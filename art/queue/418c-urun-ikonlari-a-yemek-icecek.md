@@ -1,7 +1,7 @@
 ---
 id: "418c"
 title: Ürün ikonları A: yemek, içecek, turşu, kurutma, tütsü parça 3/3 (17)
-status: review
+status: accepted
 claimed_at: 2026-11-19T06:58Z
 approved_by: user        # kullanıcı 18.11.2026: "bu sistemi getir" (ürün ikon sistemi); otomatik akış (art/budget.md)
 priority: 30
@@ -74,3 +74,4 @@ Boyut 32x32, ≤16 renk, `python tools/art/style.py check --family arayuz <dosya
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

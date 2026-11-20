@@ -1,7 +1,7 @@
 ---
 id: "455b"
 title: Beceri ikonları B (17)
-status: review
+status: accepted
 claimed_at: 2026-11-20T07:02Z
 approved_by: user
 priority: 20
@@ -69,3 +69,4 @@ Kabul edilince aynı dosyalar `Assets/Resources/UI/Icons/` altına da kopyalanı
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

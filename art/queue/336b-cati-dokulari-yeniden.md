@@ -1,7 +1,7 @@
 ---
 id: "336b"
 title: Çatı dokuları yeniden (saz, şindıl, kiremit, arduvaz; düz eğim ve sırt)
-status: review
+status: accepted
 claimed_at: 2026-11-19T12:16Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-19 ("önerdiklerini yap": 336 için yeniden deneme)
 family: yapi
@@ -55,3 +55,4 @@ Saz ve kiremidin rengi ve dokusu beğenildi.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

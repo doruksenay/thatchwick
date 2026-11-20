@@ -1,7 +1,8 @@
 ---
 id: "474t"
 title: "Cam bahçe canlıları okunurluk düzeltmesi (4)"
-status: pending
+status: review
+claimed_at: 2026-11-20T10:41Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette hayvan incelemesi)
 priority: 25
 family: hayvan
