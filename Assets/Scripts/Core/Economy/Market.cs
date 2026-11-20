@@ -75,6 +75,8 @@ namespace Thatchwick.Core.Economy
 
         /// <summary>Teklif kabul edildiğinde (hesap XP'si, rozet sayaçları için).</summary>
         public event Action<TradeOffer> OfferAccepted;
+        /// <summary>Mal satıldı (eşya, satılan adet): çeyiz gibi hanenin hatırlı mallarını izleyenler için.</summary>
+        public event Action<string, int> Sold;
         public IReadOnlyList<TradeOffer> Offers => _offers;
         public Season Season => _season;
 
@@ -316,18 +318,20 @@ namespace Thatchwick.Core.Economy
         public int Sell(string itemId, int count, int? quality)
         {
             if (!IsGood(itemId)) return 0;
-            int earned = 0;
+            int earned = 0, sold = 0;
             for (int i = 0; i < count; i++)
             {
                 int q;
                 if (quality.HasValue) { if (!_house.TryTakeQuality(itemId, quality.Value)) break; q = quality.Value; }
                 else { if (!_house.TryTake(itemId, TakePolicy.Lowest, out var key)) break; q = key.Quality; }
                 earned += SellPrice(itemId, q);
+                sold++;
                 _demand[itemId] = Math.Max(_cfg.MinDemand, Demand(itemId) * (1.0 - _cfg.DemandDropPerUnit));
                 if (_content.Items.TryGet(itemId, out var sd) && sd.HasTag("raw")) _rawSold[itemId] = RawSoldThisWeek(itemId) + 1;
             }
             if (earned > 0) _house.AddAkce(earned);
             TradeXp(SaleXp(earned));
+            if (sold > 0) Sold?.Invoke(itemId, sold);
             if (earned > 0) Trader?.Invoke()?.GainSkillXp(SkillType.Carting, 0.5 * count);
             return earned;
         }

@@ -214,6 +214,7 @@
   "rel.n.trigger": "{spouse} kırgın: {who} {what}.",
   "rel.n.village_engaged": "Köyde nişan: {groom} ile {bride}. Düğün {days} gün sonra, davetlisiniz.",
   "rel.n.wedding_gifts": "Düğün takısı: {guests} misafirden {n} akçe.",
+  "rel.n.wedding_jewel": "Düğünde geline bilezik takıldı; çeyizi gibi bilezik de {bride} gelinindir.",
   "rel.n.wedding_today": "Bugün {groom} ile {bride}'nin düğünü!",
   "rel.n.flirt.wink": "{a}, {b}'ye göz kırptı.",
   "rel.n.flirt.romantic_compliment": "{a}, {b}'ye gönül okşayan bir söz söyledi.",

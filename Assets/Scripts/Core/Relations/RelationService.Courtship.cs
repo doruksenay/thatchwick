@@ -26,6 +26,12 @@ namespace Thatchwick.Core.Relations
         public bool Offscreen;
     }
 
+    /// <summary>
+    /// Sahnede yer (oturma düzeni): damat ve gelin karşılıklı, iki tarafın büyükleri kendi yanlarında, davetliler halka olur.
+    /// Kına gecesinde gelin ortadadır.
+    /// </summary>
+    public enum SceneRole { Groom = 0, Bride = 1, GroomSide = 2, BrideSide = 3, Guest = 4, Center = 5 }
+
     /// <summary>Oyuncunun vermesi gereken karar (panelde): kahve, ihanet sonrası, heyet uzlaşması.</summary>
     public enum DecisionKind { Coffee = 0, Separation = 1, Mediation = 2 }
 
@@ -52,8 +58,11 @@ namespace Thatchwick.Core.Relations
         public IReadOnlyList<PendingDecision> Decisions => _decisions;
 
         // ---- kancalar ----
-        /// <summary>Kişiyi bir evin önüne yürüt (karakter, ev sahibi kişi).</summary>
-        public Action<Character, Character> Gather { get; set; }
+        /// <summary>
+        /// Sahne kurulur: ev sahibinin evinin önünde herkese yer verilir, oraya yürür ve yerine varınca karşısına döner
+        /// (ev sahibi, kişiler ve rolleri, sahnenin süresi gün olarak).
+        /// </summary>
+        public Action<Character, IReadOnlyList<(Character who, SceneRole role)>, double> GatherScene { get; set; }
         /// <summary>Kişinin hanesindeki herkes (oyuncu hanesi ya da komşu hane).</summary>
         public Func<Character, IEnumerable<Character>> HouseMembers { get; set; }
         /// <summary>Oyuncu hanesi akçe öder (başarılıysa true).</summary>
@@ -198,8 +207,26 @@ namespace Thatchwick.Core.Relations
                         people.Add(m);
                 if (e.Kind == CourtEventKind.Wedding) Notice?.Invoke(LocText.Of("rel.n.wedding_today", ("groom", groom.Name), ("bride", bride.Name)), groom.Id);
             }
-            foreach (var c in people) if (c != null && c != host) Gather?.Invoke(c, host);
-            foreach (var c in people) if (c != null) { e.Guests.Add(c.Id); Hold?.Invoke(c, StepDays * 8); }
+            var seats = new List<(Character, SceneRole)>();
+            foreach (var c in people) if (c != null) seats.Add((c, RoleIn(e, c, groom, bride, ge, be)));
+            double length = StepDays * 8;
+            GatherScene?.Invoke(host, seats, length);
+            foreach (var c in people) if (c != null) { e.Guests.Add(c.Id); Hold?.Invoke(c, length); }
+        }
+
+        /// <summary>Sahnedeki yeri: kına gecesinde gelin ortada, annesi ve büyükleri yanında; öbür sahnelerde iki taraf karşılıklı.</summary>
+        public static SceneRole RoleIn(CourtEvent e, Character c, Character groom, Character bride, Character groomElder, Character brideElder)
+        {
+            if (e.Kind == CourtEventKind.Henna)
+            {
+                if (c == bride) return SceneRole.Center;
+                return c == brideElder || (bride.BirthMotherId.HasValue && c.Id == bride.BirthMotherId.Value) ? SceneRole.BrideSide : SceneRole.Guest;
+            }
+            if (c == groom) return SceneRole.Groom;
+            if (c == bride) return SceneRole.Bride;
+            if (c == groomElder || FamilyService.AreCloseRelatives(c, groom)) return SceneRole.GroomSide;
+            if (c == brideElder || FamilyService.AreCloseRelatives(c, bride)) return SceneRole.BrideSide;
+            return SceneRole.Guest;
         }
 
         private void Say(Character c, string group) { if (c != null) Bubble?.Invoke(c, Line(group)); }
@@ -416,6 +443,14 @@ namespace Thatchwick.Core.Relations
                     {
                         AddAkce?.Invoke(gift);
                         Notice?.Invoke(LocText.Of("rel.n.wedding_gifts", ("n", gift), ("guests", guests)), groom.Id);
+                    }
+                    // Geline takılan bilezik: haneye gelin geliyorsa evde kalır ve çeyiziyle birlikte onundur (T3).
+                    if (IsHousehold(groom) && !IsHousehold(bride) && GiveItem != null)
+                    {
+                        Pose(Elder(groom, groom) ?? groom, "put_ring");
+                        GiveItem(WeddingJewel, 1);
+                        RecordDowry(bride.Id, WeddingJewel, 1);
+                        Notice?.Invoke(LocText.Of("rel.n.wedding_jewel", ("bride", bride.Name)), bride.Id);
                     }
                     foreach (var id in e.Guests) { var g = _population.Find(id); if (g != null && g != groom && g != bride && _rng.NextDouble() < 0.4) Say(g, "toast"); }
                     break;

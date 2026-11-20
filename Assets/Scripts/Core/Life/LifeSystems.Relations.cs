@@ -22,6 +22,13 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Kısa poz isteği (karakter, poz, gerçek saniye): oyun katmanı oynatır.</summary>
         public event Action<Character, string, float> PoseCue;
+        /// <summary>Kişi bir karoya dönsün (karakter, karo, bu oyun gününe dek): sahnede karşısındakine, muhabbette halkanın ortasına.</summary>
+        public event Action<Character, GridPos, double> FaceCue;
+        /// <summary>
+        /// Oyuncunun eli olan kişi (seçili karakter): satış ve bahis gibi hane işlerini "kim yaptı" sorusunda o sayılır.
+        /// Oyun katmanı kurar; yoksa oyuncu karakteri, o da yoksa hane başı.
+        /// </summary>
+        public Func<Character> ActingMember { get; set; }
         /// <summary>Hanenin evinin önü (sahnelerde oyuncu hanesine toplanma); oyun katmanı kurar.</summary>
         public Func<GridPos?> HouseholdHome { get; set; }
         /// <summary>Meyhane ve sofra gibi ek muhabbet yerleri (oyun katmanı).</summary>
@@ -70,12 +77,25 @@ namespace Thatchwick.Core.Life
                 foreach (var kv in House.InventoryList()) if (kv.Value > 0 && pred(kv.Key)) return true;
                 return false;
             };
-            Relations.Gather = (c, host) =>
+            Relations.GatherScene = (host, people, days) =>
             {
-                if (c == null || host == null || !_runnersById.TryGetValue(c.Id, out var r)) return;
-                var spot = SpotOf(host);
-                if (spot.HasValue) r.Command(Job.MoveTo(spot.Value));
+                var center = SpotOf(host);
+                if (!center.HasValue) return;
+                var roles = new List<SceneRole>();
+                foreach (var (_, role) in people) roles.Add(role);
+                var map = World.Map;
+                var seats = SceneSeats.Layout(center.Value, roles, q => map.InBounds(q) && map.IsWalkable(q));
+                double until = Clock.TotalDays + days;
+                for (int i = 0; i < people.Count; i++)
+                {
+                    var c = people[i].who;
+                    if (c == null) continue;
+                    var (seat, face) = seats[i];
+                    if (seat.HasValue && seat.Value != c.Position && _runnersById.TryGetValue(c.Id, out var r)) r.Command(Job.MoveTo(seat.Value));
+                    FaceCue?.Invoke(c, face, until);
+                }
             };
+            Chats.FaceTo = (c, at) => FaceCue?.Invoke(c, at, Clock.TotalDays + GroupChatService.MaxLength);
             Relations.HouseMembers = HouseMembersOf;
             Relations.PayAkce = n => House.TrySpend(n);
             Relations.AddAkce = n => { if (n > 0) House.AddAkce(n); };
@@ -138,17 +158,25 @@ namespace Thatchwick.Core.Life
                 Relations.OnBorn(baby);
                 if (!baby.IsVillager) Upbringing.Reputation.InheritNam(baby.Id, mother?.Id ?? 0, father ?? 0);
             };
+            // T2 (67c §2): yadigârı satan, oyuncunun o an eli olan kişidir. Eşinin soyundan kalan yadigâr ağır, kendi soyundan
+            // kalan hafif kırar ("Annemin yüzüğünü mü sattın?").
             Legacy.HeirloomSold += h =>
             {
-                var head = HouseholdHead();
-                if (head != null && head.SpouseId.HasValue) Relations.ReportTrigger(SpouseTrigger.SoldHeirloom, head);
+                var seller = Seller();
+                if (seller == null || !seller.SpouseId.HasValue) return;
+                var spouse = Population.Find(seller.SpouseId.Value);
+                Relations.ReportTrigger(SpouseTrigger.SoldHeirloom, seller, scale: HeirloomScale(h, seller, spouse));
             };
+            // Kumar (+18): bahsi yatıran kişi kaybetti; eşin kırgınlığı yatırılan akçeyle büyür.
             Bets.Settled += o =>
             {
-                if (o == null || o.Won) return;
-                var head = HouseholdHead();
-                if (head != null && head.SpouseId.HasValue) Relations.ReportTrigger(SpouseTrigger.Gambling, head);
+                if (o == null || o.Won || o.Bet == null) return;
+                var bettor = o.Bet.BettorId > 0 ? Population.Find(o.Bet.BettorId) : null;
+                if (bettor == null || bettor.IsDead || bettor.IsVillager) bettor = Seller();
+                if (bettor != null && bettor.SpouseId.HasValue) Relations.ReportTrigger(SpouseTrigger.Gambling, bettor, scale: GambleScale(o.Bet.Stake));
             };
+            // T3: çeyiz ve düğün takısı (gelinin getirdikleri) satılırsa gelin, kocasına kırılır.
+            Relations.GiveItem = (id, n) => { if (Content.Items.Contains(id)) House.AddItem(id, n); };
             SteppedInIt += (c, item) =>
             {
                 if (c == null || c.IsVillager || !c.SpouseId.HasValue) return;
@@ -162,6 +190,12 @@ namespace Thatchwick.Core.Life
         private void AttachRelations(FamilyService family)
         {
             family.Relations = Relations;
+            // Gelinin getirdikleri (KeepsakeService.OnJoined çeyizi envantere koyduktan sonra) defterine yazılır.
+            family.JoinedHousehold += c =>
+            {
+                if (c == null || c.Sex != Sex.Female) return;
+                foreach (var (id, n) in Keepsakes.LastDowry) Relations.RecordDowry(c.Id, id, n);
+            };
             Relations.Family = family;
             Relations.Happened += (a, b, action, text) => { if (action == SocialAction.Fight || action == SocialAction.Argue) Goals.Update(); };
             Outings.IsCouple = (a, b) => Relations.IsCouple(a.Id, b.Id);
@@ -224,6 +258,58 @@ namespace Thatchwick.Core.Life
             var h = Houses.HouseOf(c);
             if (h == null) { yield return c; yield break; }
             foreach (var m in Houses.LivingMembers(h)) yield return m;
+        }
+
+        /// <summary>Hane işini (satış, bahis) yapan: oyun katmanının seçili kişisi, oyuncu karakteri ya da hane başı.</summary>
+        public Character Seller()
+        {
+            var c = ActingMember?.Invoke();
+            if (c != null && !c.IsDead && !c.IsVillager) return c;
+            foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager && m.IsPlayerControlled) return m;
+            return HouseholdHead();
+        }
+
+        /// <summary>Yadigârın eşi kırma katı: eşin kendisinin ya da yakınının yaptığıysa 1,5; satanın soyundansa 0,5; değilse 1.</summary>
+        public static double HeirloomScale(Heirloom h, Character seller, Character spouse)
+        {
+            if (h == null || spouse == null) return 1.0;
+            if (h.MakerId == spouse.Id) return 1.5;
+            var maker = h.MakerId;
+            bool KinOf(Character c) => c != null && (c.BirthMotherId == maker || c.BirthFatherId == maker);
+            if (KinOf(spouse)) return 1.5;
+            if (seller != null && (h.MakerId == seller.Id || KinOf(seller))) return 0.5;
+            return 1.0;
+        }
+
+        /// <summary>Kaybedilen bahsin kırgınlık katı: 5 akçe hafif (0,4), 50 akçe ağır (1,4).</summary>
+        public static double GambleScale(int stake) => stake <= 5 ? 0.4 : stake <= 10 ? 0.6 : stake <= 25 ? 1.0 : 1.4;
+
+        /// <summary>Hanenin bir eşyadan kaç tane sahip olduğu: envanter ve kurulu olanlar.</summary>
+        private int OwnedCount(string id)
+        {
+            int n = House.Count(id);
+            foreach (var it in World.Items) if (it.Def != null && it.Def.Id == id && World.Map.IsOwned(it.Position)) n++;
+            return n;
+        }
+
+        /// <summary>Bir mal haneden satışla ya da takasla çıktı: gelinin çeyizinden eksildiyse T3.</summary>
+        /// <summary>Pazar bağlanınca: satış ve takasla haneden çıkan mal çeyiz defterine bakılır (T3).</summary>
+        private void AttachRelations(Economy.Market market)
+        {
+            market.Sold += (id, n) => DowryLeft(id, n);
+            market.OfferAccepted += o => { if (o != null) DowryLeft(o.GiveItem, o.GiveCount); };
+        }
+
+        /// <summary>Kurulu eşya satıldı (oyun katmanı BuildService.PlacedItemSold): çeyiz sandığıysa T3.</summary>
+        public void OnPlacedItemSold(ItemInstance item)
+        {
+            if (item?.Def != null) DowryLeft(item.Def.Id, 1);
+        }
+
+        private void DowryLeft(string id, int count)
+        {
+            if (string.IsNullOrEmpty(id) || count <= 0) return;
+            Relations.OnGoodsLeft(id, count, OwnedCount(id), Seller());
         }
 
         public Character HouseholdHead()

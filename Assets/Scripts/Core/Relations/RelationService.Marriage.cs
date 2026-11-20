@@ -74,15 +74,16 @@ namespace Thatchwick.Core.Relations
 
         /// <summary>
         /// Bir tetik yaşandı (67c §2): eşin sıcaklığı düşer, hissi oluşur, mesele bekler ve eş (oyuncunun seçili karakteri
-        /// değilse) tartışma ya da kavgaya gelir. Aldatma ve flört nişanlıda da geçerlidir.
+        /// değilse) tartışma ya da kavgaya gelir. Aldatma ve flört nişanlıda da geçerlidir. scale: olayın ağırlık katı
+        /// (eşinin soyundan yadigâr 1,5; büyük bahis 1,4; birkaç dokuma 0,7).
         /// </summary>
-        public void ReportTrigger(SpouseTrigger trigger, Character offender, bool known = true)
+        public void ReportTrigger(SpouseTrigger trigger, Character offender, bool known = true, double scale = 1.0)
         {
             if (offender == null || offender.IsDead) return;
             var spouse = offender.SpouseId.HasValue ? _population.Find(offender.SpouseId.Value) : null;
             if (spouse == null && (trigger == SpouseTrigger.Infidelity || trigger == SpouseTrigger.Flirting)) spouse = PartnerOf(offender);
             if (spouse == null || spouse.IsDead || !known) return;
-            int w = Weight(trigger);
+            int w = Math.Max(1, (int)Math.Round(Weight(trigger) * Math.Max(0.1, scale)));
             var p = Pair(offender.Id, spouse.Id);
             bool married = offender.SpouseId == spouse.Id;
             if (married) AddWarmth(offender.Id, spouse.Id, -w);
@@ -91,7 +92,7 @@ namespace Thatchwick.Core.Relations
             AddFeeling(spouse.Id, offender.Id, feeling);
             if (trigger == SpouseTrigger.Infidelity) p.Betrayals++;
             long k = Key(offender.Id, spouse.Id);
-            if (_issues.TryGetValue(k, out var issue) && Today() - issue.Day <= IssueDays) { issue.Count++; issue.Day = Today(); if (w > Weight(issue.Trigger)) issue.Trigger = trigger; }
+            if (_issues.TryGetValue(k, out var issue) && Today() - issue.Day <= IssueDays) { issue.Count++; issue.Day = Today(); if (Weight(trigger) > Weight(issue.Trigger)) issue.Trigger = trigger; }
             else _issues[k] = issue = new SpouseIssue { Trigger = trigger, Offender = offender.Id, Day = Today(), Count = 1 };
             Notice?.Invoke(LocText.Of("rel.n.trigger", ("spouse", spouse.Name), ("who", offender.Name), ("what", RelationRules.TriggerText(trigger))), spouse.Id);
             // Nişanlıda aldatma: NPC nişanı bozabilir.
@@ -238,6 +239,7 @@ namespace Thatchwick.Core.Relations
             // Soy hanesine sonradan gelen gider (oyuncu hanesi), köylü çiftte ihanete uğrayan.
             Character leaver = betrayed;
             if (IsHousehold(betrayed) && IsHousehold(cheater)) leaver = MarriedIn(betrayed) ? betrayed : MarriedIn(cheater) ? cheater : betrayed;
+            ForgetDowry(leaver.Id);   // çeyizi onunla gider (defterden düşer)
             SendToBirthHouse?.Invoke(leaver);
             Reputation?.Invoke(RepFacet.Word, -15, LocText.Of("rel.rep.infidelity"), cheater);
             Knowledge?.Record(FactKind.Separation, cheater, betrayed, RepFacet.Word, -6, null);
