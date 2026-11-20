@@ -4,7 +4,7 @@ title: Kompost yığınını çevirme
 kind: sfx
 family: tools
 freq: B
-status: ready
+status: blocked
 approved_by: user
 depends_on: []
 key: yard.compost_turn
@@ -16,5 +16,6 @@ axes:
   tool:
   - wooden pitchfork
   - iron-tined fork
+error: tahmin 480 kredi > cost_max 400
 ---
 A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall.
