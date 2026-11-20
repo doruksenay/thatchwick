@@ -361,6 +361,60 @@
           "level": 9
         }
       ]
+    },
+    {
+      "id": "sickle",
+      "displayName": "Orak",
+      "tiers": [
+        {
+          "name": "Demir orak",
+          "akce": 45,
+          "firewood": 3,
+          "speed": 1.2,
+          "level": 3
+        },
+        {
+          "name": "Çelik orak",
+          "akce": 120,
+          "firewood": 6,
+          "speed": 1.4,
+          "level": 6
+        },
+        {
+          "name": "Usta orağı",
+          "akce": 260,
+          "firewood": 10,
+          "speed": 1.6,
+          "level": 9
+        }
+      ]
+    },
+    {
+      "id": "scythe",
+      "displayName": "Tırpan",
+      "tiers": [
+        {
+          "name": "Demir tırpan",
+          "akce": 90,
+          "firewood": 5,
+          "speed": 1.0,
+          "level": 4
+        },
+        {
+          "name": "Çelik tırpan",
+          "akce": 180,
+          "firewood": 8,
+          "speed": 1.15,
+          "level": 7
+        },
+        {
+          "name": "Usta tırpanı",
+          "akce": 340,
+          "firewood": 12,
+          "speed": 1.3,
+          "level": 9
+        }
+      ]
     }
   ],
   "branches": [
@@ -3435,5 +3489,52 @@
     {"skill": "Carpentry", "level": 2, "kind": "recipe", "text": "Tahta takunya"},
     {"skill": "Pottery", "level": 6, "kind": "recipe", "text": "Cam boncuk, boncuk dizisi"},
     {"skill": "Pottery", "level": 7, "kind": "recipe", "text": "Nazar boncuğu"}
+  ],
+  "chains": [
+    {"id": "bath", "match": [{"flag": "bath"}], "steps": [{"id": "pour_bath", "pose": "pour", "when": "carriedWater", "sfx": "work.water"}, {"id": "undress", "pose": "undress", "sfx": "cloth.rustle"}, {"id": "wash", "pose": "bathe", "share": 5, "undress": true, "sfx": "bath.splash"}, {"id": "whistle", "pose": "whistle", "when": "moodGood", "sfx": "whistle.tune", "undress": true}, {"id": "dry_off", "pose": "dry_off", "undress": true}, {"id": "day_clothes", "pose": "dress", "sfx": "cloth.rustle"}]},
+    {"id": "sleep", "match": [{"flag": "sleep"}], "steps": [{"id": "night_clothes", "pose": "dress", "sfx": "cloth.rustle"}, {"id": "lie_down", "pose": "lie_sleep", "share": 0.5}, {"id": "sleep", "pose": "lie_sleep", "share": 14}, {"id": "wake_stretch", "pose": "wake_stretch", "share": 0.5}, {"id": "day_clothes", "pose": "dress", "sfx": "cloth.rustle"}]},
+    {"id": "drink_brewed", "match": [{"station": "item.cezve"}, {"station": "item.teapot"}], "steps": [{"id": "kindle", "pose": "kindle", "sfx": "fire.kindle"}, {"id": "brew_cup", "pose": "stir", "share": 3, "sfx": "kitchen.stir"}, {"id": "pour_cup", "pose": "pour"}, {"id": "drink", "pose": "drink", "share": 3, "held": "consume"}]},
+    {"id": "drink", "match": [{"flag": "drink"}], "steps": [{"id": "fill_cup", "pose": "pour"}, {"id": "drink", "pose": "drink", "share": 3, "held": "consume"}]},
+    {"id": "eat_from_bowl", "match": [{"flag": "eatContents"}], "steps": [{"id": "take_food", "pose": "reach"}, {"id": "eat", "pose": "eat", "share": 5}, {"id": "wipe_mouth", "pose": "wipe_mouth", "share": 0.5}]},
+    {"id": "eat", "match": [{"flag": "eat"}], "steps": [{"id": "take_food", "pose": "reach", "held": "consume"}, {"id": "eat", "pose": "eat", "share": 5, "held": "consume"}, {"id": "wipe_mouth", "pose": "wipe_mouth", "share": 0.5}]},
+    {"id": "warm", "match": [{"need": "Warmth", "category": "heat_light"}], "steps": [{"id": "stoke", "pose": "kindle", "when": "fire", "sfx": "fire.kindle"}, {"id": "warm_hands", "pose": "warm_hands", "share": 5}]},
+    {"id": "relieve_outdoors", "match": [{"flag": "toilet", "category": "plant"}, {"flag": "toilet", "category": "forage"}], "steps": [{"id": "look_around", "pose": "look_around"}, {"id": "relieve", "pose": "relieve", "share": 3}, {"id": "step_out", "pose": "step_out"}]},
+    {"id": "toilet", "match": [{"flag": "toilet"}], "steps": [{"id": "step_in", "pose": "step_in"}, {"id": "relieve", "pose": "relieve", "share": 3}, {"id": "step_out", "pose": "step_out"}]},
+    {"id": "wash_hands", "match": [{"need": "Hygiene"}], "steps": [{"id": "splash_face", "pose": "wash", "share": 3, "sfx": "work.water"}, {"id": "shake_hands", "pose": "shake_hands"}]},
+    {"id": "cook_pot", "match": [{"station": "item.cooking_pot", "skill": "Cooking"}, {"station": "item.copper_pots", "skill": "Cooking"}, {"station": "item.cooking_pot", "skill": "Brewing"}], "steps": [{"id": "gather", "pose": "reach", "held": "consume"}, {"id": "chop_food", "pose": "chop_knife", "share": 2, "sfx": "kitchen.chop"}, {"id": "fumble", "pose": "fumble", "share": 0.5, "when": "skillLow"}, {"id": "stir", "pose": "stir", "share": 4, "sfx": "kitchen.stir"}, {"id": "whistle", "pose": "whistle", "when": "moodGood", "sfx": "whistle.tune"}, {"id": "sigh", "pose": "sigh", "share": 0.5, "when": "moodBad"}, {"id": "taste", "pose": "taste"}, {"id": "flourish", "pose": "flourish", "share": 0.5, "when": "skillHigh"}, {"id": "serve_up", "pose": "ladle", "held": "produce", "sfx": "kitchen.ladle"}]},
+    {"id": "bake", "match": [{"station": "item.stone_oven", "skill": "Baking"}], "steps": [{"id": "gather", "pose": "reach", "held": "consume"}, {"id": "knead", "pose": "knead", "share": 3, "sfx": "kitchen.knead"}, {"id": "fumble", "pose": "fumble", "share": 0.5, "when": "skillLow"}, {"id": "shape_dough", "pose": "knead"}, {"id": "kindle", "pose": "kindle", "sfx": "fire.kindle"}, {"id": "load_oven", "pose": "peel"}, {"id": "watch_oven", "pose": "wait", "share": 3}, {"id": "whistle", "pose": "whistle", "when": "moodGood", "sfx": "whistle.tune"}, {"id": "unload_oven", "pose": "peel", "held": "produce"}]},
+    {"id": "mill", "match": [{"station": "item.millstone"}, {"station": "item.quern"}], "steps": [{"id": "pour_grain", "pose": "pour", "held": "consume"}, {"id": "grind", "pose": "pull", "share": 5}, {"id": "bag_flour", "pose": "reach", "held": "produce"}]},
+    {"id": "preserve", "match": [{"station": "item.salting_barrel"}, {"station": "item.brine_crock"}], "steps": [{"id": "slice", "pose": "chop_knife", "share": 2, "sfx": "kitchen.chop"}, {"id": "layer_barrel", "pose": "reach", "share": 2}, {"id": "salt", "pose": "sprinkle"}, {"id": "seal", "pose": "reach"}]},
+    {"id": "smoke", "match": [{"station": "item.smokehouse"}], "steps": [{"id": "hang_up", "pose": "reach", "share": 2, "held": "consume"}, {"id": "kindle", "pose": "kindle", "sfx": "fire.kindle"}, {"id": "smoke", "pose": "wait", "share": 4}, {"id": "gather", "pose": "reach", "held": "produce"}]},
+    {"id": "dry_rack", "match": [{"station": "item.drying_rack"}], "steps": [{"id": "slice", "pose": "chop_knife", "share": 2, "sfx": "kitchen.chop"}, {"id": "string_up", "pose": "craft_hand", "share": 2}, {"id": "hang_up", "pose": "reach", "share": 2}]},
+    {"id": "dairy", "match": [{"station": "item.churn"}, {"station": "item.cheese_press"}], "steps": [{"id": "pour_milk", "pose": "pour", "held": "consume"}, {"id": "churn", "pose": "churn", "share": 5}, {"id": "press_curd", "pose": "knead", "held": "produce"}]},
+    {"id": "grape_tub", "match": [{"station": "item.grape_tub"}], "steps": [{"id": "fill_cask", "pose": "pour", "held": "consume"}, {"id": "tread", "pose": "tread", "share": 5}, {"id": "whistle", "pose": "whistle", "when": "moodGood", "sfx": "whistle.tune"}]},
+    {"id": "brew", "match": [{"station": "item.brew_barrel"}], "steps": [{"id": "fill_cask", "pose": "pour", "share": 2, "held": "consume"}, {"id": "stir", "pose": "stir", "share": 3}, {"id": "seal", "pose": "reach"}]},
+    {"id": "apothecary", "match": [{"station": "item.alembic"}, {"station": "item.mortar_pestle"}], "steps": [{"id": "measure_herb", "pose": "reach", "held": "consume"}, {"id": "pound", "pose": "pound", "share": 3}, {"id": "distil", "pose": "wait", "share": 3}, {"id": "bottle", "pose": "pour", "held": "produce"}]},
+    {"id": "woodcut", "match": [{"station": "item.chopping_block"}], "steps": [{"id": "fetch_wood", "pose": "carry", "held": "consume"}, {"id": "split_log", "pose": "chop", "share": 5, "sfx": "work.chop"}, {"id": "stack", "pose": "reach", "held": "produce"}]},
+    {"id": "carpentry", "match": [{"station": "item.workbench", "flag": "craft"}], "steps": [{"id": "fetch_wood", "pose": "carry"}, {"id": "measure", "pose": "craft_hand"}, {"id": "saw", "pose": "saw", "share": 2}, {"id": "fumble", "pose": "fumble", "share": 0.5, "when": "skillLow"}, {"id": "plane", "pose": "plane", "share": 2}, {"id": "hammer", "pose": "craft_hammer", "share": 2, "sfx": "work.hammer"}, {"id": "whistle", "pose": "whistle", "when": "moodGood", "sfx": "whistle.tune"}, {"id": "sand", "pose": "craft_hand"}, {"id": "flourish", "pose": "flourish", "share": 0.5, "when": "skillHigh"}, {"id": "admire", "pose": "admire", "held": "produce"}]},
+    {"id": "sew", "match": [{"station": "item.sewing_table", "flag": "craft"}], "steps": [{"id": "spread_cloth", "pose": "reach"}, {"id": "measure", "pose": "craft_hand"}, {"id": "cut_cloth", "pose": "craft_hand"}, {"id": "thread_needle", "pose": "sew", "share": 0.5}, {"id": "fumble", "pose": "fumble", "share": 0.5, "when": "skillLow"}, {"id": "stitch", "pose": "sew", "share": 5}, {"id": "whistle", "pose": "whistle", "when": "moodGood", "sfx": "whistle.tune"}, {"id": "try_on", "pose": "admire", "held": "produce"}]},
+    {"id": "spin", "match": [{"station": "item.spinning_wheel"}], "steps": [{"id": "card_wool", "pose": "craft_hand", "share": 2}, {"id": "spin", "pose": "spin", "share": 5}, {"id": "wind", "pose": "craft_hand", "held": "produce"}]},
+    {"id": "weave", "match": [{"station": "item.loom", "flag": "craft"}], "steps": [{"id": "warp", "pose": "craft_hand", "share": 2}, {"id": "weave", "pose": "weave", "share": 6}, {"id": "whistle", "pose": "whistle", "when": "moodGood", "sfx": "whistle.tune"}, {"id": "cut_cloth", "pose": "craft_hand", "held": "produce"}]},
+    {"id": "tan", "match": [{"station": "item.tanning_rack"}], "steps": [{"id": "stretch_hide", "pose": "pull", "share": 2, "held": "consume"}, {"id": "scrape", "pose": "scrape", "share": 5}, {"id": "oil_leather", "pose": "craft_hand"}]},
+    {"id": "leather", "match": [{"station": "item.saddler_bench", "flag": "craft"}], "steps": [{"id": "cut_leather", "pose": "craft_hand", "share": 2}, {"id": "awl", "pose": "craft_hand", "share": 2}, {"id": "stitch", "pose": "sew", "share": 4}, {"id": "oil_leather", "pose": "craft_hand"}, {"id": "admire", "pose": "admire", "held": "produce"}]},
+    {"id": "smith", "match": [{"station": "item.forge"}, {"station": "item.bloomery"}], "steps": [{"id": "add_coal", "pose": "reach"}, {"id": "bellows", "pose": "bellows", "share": 2}, {"id": "heat_iron", "pose": "wait"}, {"id": "forge", "pose": "craft_hammer", "share": 4, "sfx": "work.hammer"}, {"id": "fumble", "pose": "fumble", "share": 0.5, "when": "skillLow"}, {"id": "quench", "pose": "pour"}, {"id": "flourish", "pose": "flourish", "share": 0.5, "when": "skillHigh"}, {"id": "inspect", "pose": "admire", "held": "produce"}]},
+    {"id": "pottery", "match": [{"station": "item.pottery_wheel"}], "steps": [{"id": "wedge_clay", "pose": "knead", "share": 2}, {"id": "throw_pot", "pose": "wheel_throw", "share": 5}, {"id": "fumble", "pose": "fumble", "share": 0.5, "when": "skillLow"}, {"id": "admire", "pose": "admire", "held": "produce"}]},
+    {"id": "kiln", "match": [{"station": "item.kiln"}], "steps": [{"id": "load_kiln", "pose": "reach", "share": 2}, {"id": "fire_kiln", "pose": "kindle"}, {"id": "watch_oven", "pose": "wait", "share": 4}, {"id": "unload_oven", "pose": "reach", "held": "produce"}]},
+    {"id": "glass", "match": [{"station": "item.glass_bench"}, {"station": "item.glass_furnace"}], "steps": [{"id": "bellows", "pose": "bellows"}, {"id": "gather_glass", "pose": "reach"}, {"id": "blow_glass", "pose": "blow_glass", "share": 4}, {"id": "cool_glass", "pose": "wait"}, {"id": "admire", "pose": "admire", "held": "produce"}]},
+    {"id": "stonecut", "match": [{"station": "item.stonecutter"}], "steps": [{"id": "mark_stone", "pose": "craft_hand"}, {"id": "chisel", "pose": "chisel", "share": 5, "sfx": "work.hammer"}, {"id": "blow_dust", "pose": "blow_dust", "share": 0.5}, {"id": "admire", "pose": "admire", "held": "produce"}]},
+    {"id": "chandler", "match": [{"station": "item.chandler_table"}], "steps": [{"id": "melt_tallow", "pose": "stir", "share": 2}, {"id": "dip_wick", "pose": "dip", "share": 4}, {"id": "hang_up", "pose": "reach", "held": "produce"}]},
+    {"id": "dye", "match": [{"station": "item.dye_vat"}], "steps": [{"id": "heat_dye", "pose": "kindle"}, {"id": "dip_cloth", "pose": "dip", "share": 2, "held": "consume"}, {"id": "stir", "pose": "stir", "share": 3}, {"id": "hang_up", "pose": "reach", "held": "produce"}]},
+    {"id": "scribe", "match": [{"station": "item.writing_lectern"}], "steps": [{"id": "cut_quill", "pose": "craft_hand"}, {"id": "write", "pose": "write", "share": 5}, {"id": "blot", "pose": "sprinkle"}]},
+    {"id": "repair", "match": [{"flag": "repair"}], "steps": [{"id": "inspect", "pose": "admire"}, {"id": "mend", "pose": "craft_hammer", "share": 4, "sfx": "work.hammer"}, {"id": "admire", "pose": "admire"}]},
+    {"id": "thresh", "match": [{"station": "item.threshing_floor"}], "steps": [{"id": "spread", "pose": "spread", "held": "consume"}, {"id": "thresh", "pose": "thresh", "share": 4}, {"id": "winnow", "pose": "sieve", "share": 2}, {"id": "bag_flour", "pose": "reach", "held": "produce"}]},
+    {"id": "fell", "match": [{"flag": "harvest", "skill": "Woodcutting"}], "steps": [{"id": "notch", "pose": "chop", "sfx": "work.chop"}, {"id": "chop_tree", "pose": "chop", "share": 5, "sfx": "work.chop"}, {"id": "stand_back", "pose": "stand_back", "share": 0.5}, {"id": "limb", "pose": "chop", "share": 2}]},
+    {"id": "harvest", "match": [{"flag": "harvest", "skill": "Farming"}], "steps": [{"id": "bend_cut", "pose": "reap", "share": 4, "sfx": "work.harvest"}, {"id": "bundle", "pose": "bend"}, {"id": "basket", "pose": "reach", "held": "produce"}]},
+    {"id": "pick_fruit", "match": [{"flag": "harvest", "skill": "Horticulture"}, {"flag": "harvest", "skill": "Foraging"}], "steps": [{"id": "reach_fruit", "pose": "pick", "share": 4, "sfx": "work.harvest"}, {"id": "basket", "pose": "bend", "held": "produce"}]},
+    {"id": "water_crop", "match": [{"flag": "water"}], "steps": [{"id": "fill_bucket", "pose": "bucket_carry", "sfx": "work.water"}, {"id": "pour_water", "pose": "pour", "share": 3, "sfx": "work.water"}]},
+    {"id": "fertilize", "match": [{"flag": "fertilize"}], "steps": [{"id": "scoop", "pose": "bend", "held": "consume"}, {"id": "spread", "pose": "spread", "share": 3}]},
+    {"id": "feed_animals", "match": [{"flag": "feed"}], "steps": [{"id": "carry_feed", "pose": "carry", "held": "consume"}, {"id": "pour_feed", "pose": "pour", "share": 2}]},
+    {"id": "collect_produce", "match": [{"flag": "collect"}], "steps": [{"id": "crouch", "pose": "bend"}, {"id": "collect", "pose": "milk", "share": 4}, {"id": "basket", "pose": "reach"}]},
+    {"id": "pet_animals", "match": [{"flag": "pet"}], "steps": [{"id": "offer_hand", "pose": "reach"}, {"id": "stroke", "pose": "love", "share": 4}]}
   ]
 }

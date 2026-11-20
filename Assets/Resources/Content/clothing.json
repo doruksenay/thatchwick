@@ -3628,6 +3628,82 @@
         "craft",
         "shop:ayse"
       ]
+    },
+    {
+      "id": "ring_gold",
+      "item": "item.jw_ring_gold",
+      "place": "hand",
+      "skill": "Smithing",
+      "level": 9,
+      "acquire": [
+        "craft"
+      ],
+      "kind": "ring",
+      "step": 3
+    },
+    {
+      "id": "ring_gem",
+      "item": "item.jw_ring_gem",
+      "place": "hand",
+      "skill": "Smithing",
+      "level": 9,
+      "acquire": [
+        "craft"
+      ],
+      "kind": "ring",
+      "step": 3,
+      "gem": true
+    },
+    {
+      "id": "earring_gold",
+      "item": "item.jw_earring_gold",
+      "place": "ear",
+      "skill": "Smithing",
+      "level": 9,
+      "acquire": [
+        "craft"
+      ],
+      "kind": "earring",
+      "step": 3
+    },
+    {
+      "id": "earring_gem",
+      "item": "item.jw_earring_gem",
+      "place": "ear",
+      "skill": "Smithing",
+      "level": 9,
+      "acquire": [
+        "craft"
+      ],
+      "kind": "earring",
+      "step": 3,
+      "gem": true
+    },
+    {
+      "id": "necklace_gem",
+      "item": "item.jw_necklace_gem",
+      "place": "neck",
+      "skill": "Smithing",
+      "level": 8,
+      "acquire": [
+        "craft"
+      ],
+      "kind": "gem_necklace",
+      "step": 3,
+      "gem": true
+    },
+    {
+      "id": "evil_eye_gem",
+      "item": "item.jw_evil_eye_gem",
+      "place": "charm",
+      "skill": "Pottery",
+      "level": 8,
+      "acquire": [
+        "craft"
+      ],
+      "kind": "evil_eye",
+      "step": 1,
+      "gem": true
     }
   ]
 }

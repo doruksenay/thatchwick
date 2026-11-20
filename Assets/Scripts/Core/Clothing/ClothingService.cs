@@ -122,7 +122,7 @@ namespace Thatchwick.Core.Clothing
             var m = Catalog.ByItem(itemId);
             if (m != null) return Create(m.Id, null, quality, maker, day, ownLabor);
             var j = Catalog.JewelryByItem(itemId);
-            return j != null ? CreateJewelry(j.Id, 1, false, maker, day) : null;
+            return j != null ? CreateJewelry(j.Id, Math.Max(1, j.BaseStep), j.Gem, maker, day) : null;
         }
 
         public void Give(ClothingInstance it, Character c) { if (it != null) it.OwnerId = c?.Id ?? 0; }
@@ -382,11 +382,13 @@ namespace Thatchwick.Core.Clothing
             int joy = 0;
             foreach (var (j, it) in WornJewelry(c))
             {
-                switch (j.Id)
+                switch (j.Kind)
                 {
                     case "cord_necklace": joy += it.Gem ? 2 : 1; break;
                     case "glass_beads": joy += c.Stage == AgeStage.Child || c.Stage == AgeStage.Teen ? 3 : 2; break;
                     case "nose_ring": joy += 1; break;
+                    case "gem_necklace": joy += 3; break;                          // taşlı gerdanlık
+                    default: if (it.EffectiveStep >= 3) joy += 1; break;           // altın takmanın keyfi
                 }
             }
             return Math.Min(MaxJewelryJoy, joy);
@@ -396,7 +398,7 @@ namespace Thatchwick.Core.Clothing
         public double CourtBonus(Character c)
         {
             double b = 0;
-            foreach (var (j, it) in WornJewelry(c)) if (j.Id == "earring") b += 0.03 * (it.EffectiveStep + 1);
+            foreach (var (j, it) in WornJewelry(c)) if (j.Kind == "earring") b += 0.03 * (it.EffectiveStep + 1);
             return b;
         }
 
@@ -408,11 +410,48 @@ namespace Thatchwick.Core.Clothing
             return b;
         }
 
-        /// <summary>Kaza ve iz olaylarında şans çarpanı (nazar boncuğu −%10).</summary>
+        /// <summary>Kaza ve iz olaylarında şans çarpanı (nazar boncuğu −%10, taşlı nazarlık −%20).</summary>
         public double AccidentFactor(Character c)
         {
-            foreach (var (j, _) in WornJewelry(c)) if (j.Id == "evil_eye") return 0.9;
-            return 1.0;
+            double f = 1.0;
+            foreach (var (j, it) in WornJewelry(c)) if (j.Kind == "evil_eye") f = Math.Min(f, it.Gem ? 0.8 : 0.9);
+            return f;
+        }
+
+        public const string JewelryJoyMood = "eff_jewelry_joy", JewelryFineMood = "eff_jewelry_fine";
+
+        /// <summary>Kimsenin takmadığı takılar (hanenin çekmecesi): tezgâhtan yeni çıkan ya da çıkarılan.</summary>
+        public IEnumerable<ClothingInstance> UnwornJewelry()
+        {
+            foreach (var it in _items.Values) if (it.IsJewelry && !it.Diamond && it.OwnerId == 0) yield return it;
+        }
+
+        /// <summary>Karakterin sahip olduğu takılar.</summary>
+        public IEnumerable<ClothingInstance> JewelryOwnedBy(Character c)
+        {
+            if (c == null) yield break;
+            foreach (var it in _items.Values) if (it.IsJewelry && !it.Diamond && it.OwnerId == c.Id) yield return it;
+        }
+
+        /// <summary>
+        /// Takıyı karaktere takar: bütün takımlara girer (takı günlük, iş ve bayramda aynı kalır). Günlük takıma
+        /// giremiyorsa (yaş, 5 takı ya da iki yüzük sınırı) hiçbirine girmez ve nedeni döner.
+        /// </summary>
+        public EquipError WearJewelry(Character c, ClothingInstance it)
+        {
+            if (it == null || !it.IsJewelry) return EquipError.Missing;
+            var err = CanEquip(c, it, OutfitKind.Daily);
+            if (err != EquipError.None) return err;
+            foreach (OutfitKind k in Enum.GetValues(typeof(OutfitKind))) Equip(c, it, k);
+            return EquipError.None;
+        }
+
+        /// <summary>Takıyı çıkarır ve hanenin çekmecesine koyar (başkası takabilir).</summary>
+        public void TakeOffJewelry(Character c, ClothingInstance it)
+        {
+            if (c == null || it == null || !it.IsJewelry || it.OwnerId != c.Id) return;
+            foreach (var o in WardrobeOf(c).Outfits.Values) o.Remove(it.Id);
+            it.OwnerId = 0;
         }
 
         /// <summary>Mühür yüzüğü takılı mı (mektup ve sözleşmede itibar +2).</summary>
@@ -745,6 +784,9 @@ namespace Thatchwick.Core.Clothing
                 var m = ModelOf(it);
                 if (m != null && m.IsMaternity) { if (m.Slot == ClothingSlot.Body) maternity = true; else band = true; }
             }
+            int jewelJoy = JewelryJoy(c);
+            Condition(c, JewelryJoyMood, jewelJoy > 0 && jewelJoy < 3);
+            Condition(c, JewelryFineMood, jewelJoy >= 3);
             Condition(c, SelfSewn, self);
             Condition(c, OurLabor, labor && !self);
             Condition(c, Ancestors, heir);

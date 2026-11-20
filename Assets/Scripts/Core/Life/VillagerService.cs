@@ -52,6 +52,8 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Adlandırılmış yeri (home:1, work:smithy ...) karoya çeviren oyun katmanı işlevi; halef buna göre yerleşir.</summary>
         public Func<string, GridPos> PlaceResolver { get; set; }
+        /// <summary>Hediye verenin gönül kazanma oranı (küpe: basamak başına %3); yakınlık ve romantik kazanç buna göre artar.</summary>
+        public Func<Character, double> CourtBonus { get; set; }
         /// <summary>
         /// Ölen adlı köylünün dükkânını devralacak varis (komşu hane, Adım 55): varsa dışarıdan halef gelmez.
         /// Null ise ya da null dönerse eski düzen: yeni bir halef köye yerleşir.
@@ -279,9 +281,11 @@ namespace Thatchwick.Core.Life
             s.LastGiftDay = _clock.DayIndex;
             int gain = AffectionFor(taste);
             if (liked) gain = (int)Math.Round(gain * ItemQuality.GiftFactor(LastGiftQuality));
+            double court = liked && CourtBonus != null ? Math.Max(0.0, CourtBonus(giver)) : 0.0;
+            if (court > 0) gain = (int)Math.Ceiling(gain * (1.0 + court));
             int aff = Family.Affection(giver.Id, v.Id) + gain;
             Family.SetAffection(giver.Id, v.Id, aff);
-            if (CanRomance(giver, v)) s.Romance = Math.Min(MaxRomance, s.Romance + RomanceFor(taste));
+            if (CanRomance(giver, v)) s.Romance = Math.Min(MaxRomance, s.Romance + (int)Math.Ceiling(RomanceFor(taste) * (1.0 + court)));
             v.AddMoodlet("mood.gift", "Hediye aldı", taste == GiftTaste.Dislike ? -4 : 5, 0.6);
             v.Needs.Restore(NeedType.Fun, taste == GiftTaste.Love ? 20f : taste == GiftTaste.Like ? 10f : 0f);
 

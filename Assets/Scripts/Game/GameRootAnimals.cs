@@ -193,5 +193,75 @@ namespace Thatchwick.Game
             GUILayout.EndArea();
             GUI.matrix = Matrix4x4.identity;
         }
-    }
+
+        // ---- at yarışı bahsi (+18 paketi; karar 20.11.2026): yalnızca metin, at seçilir ----
+
+        private bool _betOpen;
+        private int _betPick = -1, _betStake = 10;
+        private string _betStatus = "";
+
+        /// <summary>Ayrıntı panelindeki giriş: bahse açık yarış varsa düğme, bahis yatırıldıysa durumu.</summary>
+        private void DrawBetEntry()
+        {
+            var bet = _life.Bets.Current;
+            if (bet != null)
+            {
+                GUILayout.Label("   " + GameLocalization.T("ui.bet.current", ("horse", bet.RunnerName), ("stake", bet.Stake),
+                    ("payout", AnimalContests.BetPayout(bet.Stake, bet.Chance))));
+                return;
+            }
+            if (_life.OpenRaceCard() == null) return;
+            if (GUILayout.Button("   " + T("ui.bet.open"))) { _betOpen = true; _betPick = -1; _betStatus = ""; }
+        }
+
+        private void DrawBetWindow(float s)
+        {
+            var card = _life.OpenRaceCard();
+            var bet = _life.Bets.Current;
+            if (card == null && bet == null) { _betOpen = false; return; }
+            float sw = Screen.width / s, sh = Screen.height / s;
+            const float w = 460f, h = 380f;
+            GUILayout.BeginArea(new Rect((sw - w) / 2f, (sh - h) / 2f, w, h), GUI.skin.box);
+            var wrap = new GUIStyle(GUI.skin.label) { wordWrap = true };
+            GUILayout.BeginHorizontal();
+            string festival = card != null ? _life.Festivals.FestivalOn(card.Day)?.DisplayName ?? "" : "";
+            GUILayout.Label(card == null ? T("ui.bet.title")
+                : GameLocalization.T(card.Day == _clock.DayIndex ? "ui.bet.title_today" : "ui.bet.title_tomorrow", ("festival", festival)));
+            if (GUILayout.Button(T("ui.bet.close"), GUILayout.Width(64f))) _betOpen = false;
+            GUILayout.EndHorizontal();
+            GUILayout.Label(T("ui.bet.rules"), wrap);
+            if (bet != null)
+                GUILayout.Label(GameLocalization.T("ui.bet.current", ("horse", bet.RunnerName), ("stake", bet.Stake),
+                    ("payout", AnimalContests.BetPayout(bet.Stake, bet.Chance))), wrap);
+            if (card != null)
+            {
+                for (int i = 0; i < card.Runners.Count; i++)
+                {
+                    var r = card.Runners[i];
+                    string line = GameLocalization.T(r.Mine ? "ui.bet.runner_mine" : string.IsNullOrEmpty(r.Owner) ? "ui.bet.runner_plain" : "ui.bet.runner",
+                        ("n", i + 1), ("horse", r.Name), ("owner", r.Owner), ("chance", Mathf.RoundToInt((float)(r.Chance * 100))),
+                        ("stake", _betStake), ("payout", RaceBets.PayoutFor(r, _betStake)));
+                    if (bet != null) GUILayout.Label(line, wrap);
+                    else if (GUILayout.Toggle(_betPick == i, line, GUI.skin.button) && _betPick != i) _betPick = i;
+                }
+                if (bet == null)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(GameLocalization.T("ui.bet.stake", ("akce", _household.Akce)));
+                    foreach (int stake in RaceBets.Stakes)
+                        if (GUILayout.Toggle(_betStake == stake, stake.ToString(), GUI.skin.button, GUILayout.Width(44f)) && _betStake != stake) _betStake = stake;
+                    GUILayout.EndHorizontal();
+                    GUI.enabled = _betPick >= 0 && _betPick < card.Runners.Count;
+                    if (GUILayout.Button(T("ui.bet.place"), GUILayout.Height(28f)))
+                    {
+                        var err = _life.Bets.Place(card, _betPick, _betStake, _household);
+                        _betStatus = err.IsEmpty ? "" : GameLocalization.R(err);
+                    }
+                    GUI.enabled = true;
+                }
+            }
+            if (_betStatus.Length > 0) GUILayout.Label(_betStatus, wrap);
+            GUILayout.EndArea();
+        }
+}
 }

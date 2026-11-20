@@ -23,6 +23,7 @@ namespace Thatchwick.Core.Content
         public BuildPartDto[] buildParts;   // yapı modu malzeme ve parça kataloğu (duvar, kapı, pencere, zemin, çatı, kaplama)
         public EffectDto[] effects;         // yemek ve içki etkileri (moodlet olarak kaydedilir; etkileşimin "moodlet" alanından verilir)
         public SkillUnlockDto[] skillUnlocks;   // beceri seviyesi → açılan (belge 45, life.json)
+        public ChainDto[] chains;               // izlenen eylem zincirleri (belge 60, life.json)
 
         /// <summary>Başka bir içerik dosyasının bölümlerini bunun sonuna ekler (items.json + life.json birleşimi).</summary>
         public void Merge(ContentFileDto other)
@@ -42,6 +43,7 @@ namespace Thatchwick.Core.Content
             buildParts = Concat(buildParts, other.buildParts);
             effects = Concat(effects, other.effects);
             skillUnlocks = Concat(skillUnlocks, other.skillUnlocks);
+            chains = Concat(chains, other.chains);
         }
 
         private static T[] Concat<T>(T[] a, T[] b)
@@ -222,6 +224,7 @@ namespace Thatchwick.Core.Content
         public bool powerSource;     // su çarkı: kaynağa bağlı kanala değerse yanındaki makineleri çalıştırır
         public AutoProcessDto autoProcess;   // güç alan makine: her gün kendiliğinden işler (değirmen taşı)
         public bool iceBox;                  // buzluk: içinde buz varken yiyeceği çok soğuk tutar
+        public bool snare;                   // kement tuzağı: haritaya kurulur, av tuzakta bekler
         public bool fishTrap;                // balık sepeti: gölete değerken her sabah balık
         public bool windPower;               // yel değirmeni: suya gerek olmadan güç verir
         public bool waterGate;               // su kapağı: açıkken suyu geçirir, kapalıyken keser
@@ -411,6 +414,8 @@ namespace Thatchwick.Core.Content
         public bool requiresAnimal;      // barınakta hayvan olmalı
         public NeedRestoreDto[] extraRestore; // ana ihtiyaca ek olarak doyurulan ihtiyaçlar
         public string tool;                 // axe/hoe/saw: alet kademesi iş hızını etkiler
+        public int[] bestHours;             // [başlangıç, bitiş] saat: bu aralıkta ilk üründen bestHoursBonus fazla (safran şafakta)
+        public int bestHoursBonus;
         public string moodId;               // etkileşim sonunda verilen ruh hali etkisi
         public string moodText;
         public int moodValue;
@@ -432,6 +437,7 @@ namespace Thatchwick.Core.Content
         public bool fillDecor;              // doldurulan dekoru envanterdeki gerçek ürünle doldurur
         public bool eatContents;            // doldurulan dekordan bir tane yer (açlık)
         public string skillWork;   // beceri işi (belge 45): LifeSystems.OnSkillWorkApplied
+        public string chain;       // eylem zinciri kimliği (belge 60); boşsa zincirlerin eşleme kuralı bağlar
         public string homeAction;           // ev bakımı (belge 45): candle, strew, whitewash, waterPot, harvestPot, upgrade
         public string upgrade;              // homeAction upgrade: yükseltme kimliği
         public string treeAction;           // ulu ağaç ve ağaç ev (belge 52): found, build, repair, play, lookout, siege, sleep, stash, dig, carve, gather, shade, dine, charity, donate, innToggle
@@ -454,5 +460,37 @@ namespace Thatchwick.Core.Content
         public int maxLevel;   // bu seviye ve altı (0 = sınır yok)
         public string[] seasons; // yalnızca bu mevsimlerde (boş = her mevsim): balık türleri
         public int quality;    // en az bu kalite (53): elle toplanan zeytin Seçme; 0 = kurala göre
+    }
+    /// <summary>İzlenen eylem zinciri (belge 60): sıralı adımlar ve hangi etkileşimlere bağlanacağı.</summary>
+    [Serializable]
+    public sealed class ChainDto
+    {
+        public string id;
+        public ChainMatchDto[] match;   // herhangi biri tutarsa bağlanır; boşsa yalnızca "chain" alanıyla
+        public ChainStepDto[] steps;
+    }
+
+    [Serializable]
+    public sealed class ChainMatchDto
+    {
+        public string station;    // eşya kimliği
+        public string category;   // eşya kategorisi
+        public string tag;        // eşya etiketi
+        public string need;       // doldurulan ihtiyaç
+        public string skill;
+        public string flag;       // ChainFlags
+        public string idPrefix;   // etkileşim kimliği öneki
+    }
+
+    [Serializable]
+    public sealed class ChainStepDto
+    {
+        public string id;
+        public string pose;
+        public string sfx;
+        public string held;       // "consume", "produce" ya da eşya kimliği
+        public float share;       // 0 ise 1
+        public string when;       // ChainConditions
+        public bool undress;
     }
 }

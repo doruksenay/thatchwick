@@ -19,6 +19,7 @@ namespace Thatchwick.Game
         private readonly ContentDatabase _content;
         private Vector2 _scroll;
         private string _status;
+        private bool _stoneArch;  // destek türü: taş kemer (çürümez; 3 yontma taş, Taş ustalığı 4)
         private bool _fireMode;   // ateşle kırma kipi: dokunulan sert karoya karşı odun yakılır (belge 23)
 
         /// <summary>Panelden "kendin in" diyen karakter (komut alan); null ise düğme görünmez.</summary>
@@ -112,14 +113,21 @@ namespace Thatchwick.Game
             int creaks = 0;
             foreach (var (_, _, t) in m.All()) if (t.Creaking) creaks++;
             GUILayout.BeginHorizontal();
-            GUI.enabled = creaks > 0 && _house.Count("item.plank") >= MineSystem.WoodSupportPlanks;
+            var supportKind = _stoneArch ? SupportKind.StoneArch : SupportKind.Wood;
+            GUI.enabled = creaks > 0;
             if (GUILayout.Button($"Çatırdayanlara destek ({creaks})"))
             {
-                int n = 0;
+                int n = 0; string why = null;
                 foreach (var (x, y, t) in m.All())
-                    if (t.Creaking && _mines.PlaceSupport(m, x, y, SupportKind.Wood, Actor?.Invoke())) n++;
-                _status = $"{n} destek kuruldu";
+                {
+                    if (!t.Creaking) continue;
+                    if (_mines.PlaceSupport(m, x, y, supportKind, Actor?.Invoke())) n++;
+                    else why = why ?? _mines.CanSupport(m, x, y, supportKind, Actor?.Invoke());
+                }
+                _status = n > 0 ? GameLocalization.T(_stoneArch ? "ui.mine.support.arch_done" : "ui.mine.support.wood_done", ("n", n)) : (why ?? GameLocalization.T("ui.mine.support.none"));
             }
+            GUI.enabled = true;
+            _stoneArch = GUILayout.Toggle(_stoneArch, " " + GameLocalization.T("ui.mine.support.arch", ("stones", MineSystem.StoneArchStones)));
             GUI.enabled = m.Water > 0;
             if (GUILayout.Button("Kovayla su boşalt")) { _mines.Bail(m, Actor?.Invoke()); _status = $"Su: {m.Water:0.#}"; }
             GUI.enabled = true;

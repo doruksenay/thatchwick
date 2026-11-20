@@ -36,7 +36,7 @@ namespace Thatchwick.Game
             };
             _life.CatBuried += cat =>
             {
-                // Kedi eşeler, toprak savrulur (ayrı animasyon karesi gelene kadar; art/queue 506).
+                // Kedi eşeler, toprak savrulur (ayrı animasyon karesi gelene kadar; art/queue 594).
                 var at = Iso.GridToWorld(cat.Position.X + 0.5f, cat.Position.Y + 0.5f, cat.Position.Z);
                 _juice?.Emit(Juice.Kind.Soil, at, 5, Iso.SortOrder(at.y, 2, cat.Position.Z));
             };
@@ -56,7 +56,7 @@ namespace Thatchwick.Game
 
         /// <summary>
         /// Yatmış tahıl (belge 57d §2): fırtınanın yatırdığı ekin yana devrik çizilir. Satır kaydıran shader (`_Lodge`) ve
-        /// yatmış kareler (art/queue 515) gelene kadarki ara görünüm; hasada kadar öyle kalır.
+        /// yatmış kareler (art/queue 595) gelene kadarki ara görünüm; hasada kadar öyle kalır.
         /// </summary>
         private void UpdateLodgedCrops()
         {

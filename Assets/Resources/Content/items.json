@@ -3256,7 +3256,7 @@
             }
           ],
           "moodlet": "good_harvest",
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -3320,7 +3320,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.turnip",
@@ -7540,7 +7540,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -7604,7 +7604,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.cabbage",
@@ -7830,7 +7830,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -7894,7 +7894,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.leek",
@@ -8118,7 +8118,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -8182,7 +8182,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.pea",
@@ -8413,7 +8413,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -8477,7 +8477,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.pumpkin",
@@ -10182,7 +10182,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -10246,7 +10246,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.parsnip",
@@ -10475,7 +10475,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -10539,7 +10539,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.carrot",
@@ -10765,7 +10765,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -10829,7 +10829,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.onion",
@@ -11058,7 +11058,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -11122,7 +11122,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.garlic",
@@ -11350,7 +11350,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -11414,7 +11414,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.beet",
@@ -11640,7 +11640,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -11704,7 +11704,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.radish",
@@ -11934,7 +11934,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -11998,7 +11998,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.lettuce",
@@ -12227,7 +12227,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -12291,7 +12291,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.broad_bean",
@@ -12532,7 +12532,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -12596,7 +12596,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.sheaf_barley",
@@ -12821,7 +12821,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -12885,7 +12885,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.spinach",
@@ -13571,7 +13571,7 @@
     },
     {
       "id": "item.seed_maker",
-      "displayName": "Tohum yapıcı",
+      "displayName": "Tohum kalburu",
       "category": "work",
       "price": 60,
       "width": 2,
@@ -13581,7 +13581,483 @@
         "outdoor",
         "living"
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "sieve_turnip",
+          "displayName": "Tohum ayır: Şalgam (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.turnip",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_turnip",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_cabbage",
+          "displayName": "Tohum ayır: Lahana (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.cabbage",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_cabbage",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_leek",
+          "displayName": "Tohum ayır: Pırasa (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.leek",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_leek",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_pea",
+          "displayName": "Tohum ayır: Bezelye (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.pea",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_pea",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_pumpkin",
+          "displayName": "Tohum ayır: Su kabağı (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.pumpkin",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_pumpkin",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_parsnip",
+          "displayName": "Tohum ayır: Yaban havucu (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.parsnip",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_parsnip",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_carrot",
+          "displayName": "Tohum ayır: Havuç (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.carrot",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_carrot",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_onion",
+          "displayName": "Tohum ayır: Soğan (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.onion",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_onion",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_garlic",
+          "displayName": "Tohum ayır: Sarımsak (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.garlic",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_garlic",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_beet",
+          "displayName": "Tohum ayır: Pancar (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.beet",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_beet",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_radish",
+          "displayName": "Tohum ayır: Turp (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.radish",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_radish",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_lettuce",
+          "displayName": "Tohum ayır: Marul (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.lettuce",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_lettuce",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_broad_bean",
+          "displayName": "Tohum ayır: Bakla (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.broad_bean",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_broad_bean",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_barley",
+          "displayName": "Tohum ayır: Arpa (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.barley",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_barley",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_spinach",
+          "displayName": "Tohum ayır: Ispanak (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.spinach",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_spinach",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_wheat",
+          "displayName": "Tohum ayır: Buğday (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.wheat",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_wheat",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_rye",
+          "displayName": "Tohum ayır: Çavdar (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.rye",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_rye",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_oats",
+          "displayName": "Tohum ayır: Yulaf (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.oats",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_oats",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_flax",
+          "displayName": "Tohum ayır: Keten sapı (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.flax",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_flax",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_herb_bed",
+          "displayName": "Tohum ayır: Ot (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.herb",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_herb_bed",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_saffron",
+          "displayName": "Tohum ayır: Safran (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.saffron",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.saffron_corm",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_hemp",
+          "displayName": "Tohum ayır: Kendir sapı (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.hemp",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_hemp",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_woad",
+          "displayName": "Tohum ayır: Çivit otu yaprağı (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.woad_leaf",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_woad",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_madder",
+          "displayName": "Tohum ayır: Kökboya kökü (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.madder_root",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_madder",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "sieve_weld",
+          "displayName": "Tohum ayır: Cehri tanesi (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.weld_berry",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_weld",
+              "count": 2
+            }
+          ]
+        }
+      ],
       "finishGroup": "wood",
       "art": {
         "pivotX": 56.0,
@@ -19179,7 +19655,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -19243,7 +19719,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.sheaf_wheat",
@@ -19478,7 +19954,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -19542,7 +20018,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.sheaf_rye",
@@ -19783,7 +20259,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -19847,7 +20323,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.sheaf_oats",
@@ -20070,7 +20546,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -20134,7 +20610,7 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
               "item": "item.flax",
@@ -26983,12 +27459,28 @@
     {
       "id": "item.snare",
       "displayName": "Kement tuzağı",
-      "placement": "Resource",
-      "category": "resource",
+      "category": "farm",
       "price": 6,
       "level": 2,
       "tags": [
         "tool"
+      ],
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "snare": true,
+      "interactions": [
+        {
+          "id": "check_snare",
+          "displayName": "Tuzağı topla",
+          "durationDays": 0.03,
+          "collect": true
+        }
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -34517,7 +35009,7 @@
       "interactions": [
         {
           "id": "harvest",
-          "displayName": "Safran topla (sabah)",
+          "displayName": "Safran topla (şafakta bir tel fazla)",
           "durationDays": 0.08,
           "skill": "Horticulture",
           "skillXp": 12,
@@ -34537,7 +35029,12 @@
               "count": 1,
               "chance": 0.5
             }
-          ]
+          ],
+          "bestHours": [
+            5,
+            10
+          ],
+          "bestHoursBonus": 1
         },
         {
           "id": "water",
@@ -36246,7 +36743,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -36310,14 +36807,14 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
-              "item": "item.flax",
+              "item": "item.hemp",
               "count": 3
             },
             {
-              "item": "item.seed_flax",
+              "item": "item.seed_hemp",
               "count": 3
             }
           ]
@@ -36523,7 +37020,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -36587,14 +37084,14 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
-              "item": "item.flax",
-              "count": 3
+              "item": "item.woad_leaf",
+              "count": 2
             },
             {
-              "item": "item.seed_flax",
+              "item": "item.seed_woad",
               "count": 3
             }
           ]
@@ -36806,7 +37303,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -36870,14 +37367,14 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
-              "item": "item.flax",
-              "count": 3
+              "item": "item.madder_root",
+              "count": 2
             },
             {
-              "item": "item.seed_flax",
+              "item": "item.seed_madder",
               "count": 3
             }
           ]
@@ -37086,7 +37583,7 @@
               "chance": 0.5
             }
           ],
-          "tool": "hoe"
+          "tool": "sickle"
         },
         {
           "id": "water",
@@ -37150,14 +37647,14 @@
           "minLevel": 4,
           "requiresGrown": true,
           "removeItem": true,
-          "tool": "hoe",
+          "tool": "sickle",
           "produce": [
             {
-              "item": "item.flax",
-              "count": 3
+              "item": "item.weld_berry",
+              "count": 2
             },
             {
-              "item": "item.seed_flax",
+              "item": "item.seed_weld",
               "count": 3
             }
           ]
@@ -38913,6 +39410,78 @@
         "clothing",
         "jewelry",
         "shop_pottery"
+      ]
+    },
+    {
+      "id": "item.jw_ring_gold",
+      "displayName": "Altın yüzük",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 190,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_ring_gem",
+      "displayName": "Taşlı altın yüzük",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 280,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_earring_gold",
+      "displayName": "Altın küpe",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 190,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_earring_gem",
+      "displayName": "Taşlı altın küpe",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 290,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_necklace_gem",
+      "displayName": "Taşlı gerdanlık",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 260,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_evil_eye_gem",
+      "displayName": "Taşlı nazarlık",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 110,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
       ]
     },
     {
@@ -48878,6 +49447,122 @@
       "minLevel": 7
     },
     {
+      "id": "jw_ring_gold",
+      "station": "item.forge",
+      "produces": "item.jw_ring_gold",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Altın yüzük yap",
+      "minLevel": 9
+    },
+    {
+      "id": "jw_ring_gem",
+      "station": "item.forge",
+      "produces": "item.jw_ring_gem",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 2
+        },
+        {
+          "item": "item.gemstone",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Taşlı yüzük yap",
+      "minLevel": 9
+    },
+    {
+      "id": "jw_earring_gold",
+      "station": "item.forge",
+      "produces": "item.jw_earring_gold",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Altın küpe yap",
+      "minLevel": 9
+    },
+    {
+      "id": "jw_earring_gem",
+      "station": "item.forge",
+      "produces": "item.jw_earring_gem",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 2
+        },
+        {
+          "item": "item.gemstone",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Taşlı küpe yap",
+      "minLevel": 9
+    },
+    {
+      "id": "jw_necklace_gem",
+      "station": "item.forge",
+      "produces": "item.jw_necklace_gem",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 1
+        },
+        {
+          "item": "item.gemstone",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Taşlı gerdanlık yap",
+      "minLevel": 8
+    },
+    {
+      "id": "jw_evil_eye_gem",
+      "station": "item.glass_bench",
+      "produces": "item.jw_evil_eye_gem",
+      "materials": [
+        {
+          "item": "item.glass_bead",
+          "count": 2
+        },
+        {
+          "item": "item.gemstone",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Pottery",
+      "skillXp": 18,
+      "displayName": "Taşlı nazarlık yap",
+      "minLevel": 8
+    },
+    {
       "id": "seed_hemp",
       "station": "item.seed_maker",
       "produces": "item.seed_hemp",
@@ -51348,6 +52033,20 @@
       "description": "İlk kez giydi.",
       "value": 3,
       "days": 1.0
+    },
+    {
+      "id": "eff_jewelry_joy",
+      "displayName": "Takının keyfi",
+      "description": "Sevdiği bir takıyı takıyor.",
+      "value": 2,
+      "days": 0.1
+    },
+    {
+      "id": "eff_jewelry_fine",
+      "displayName": "Göz alıcı takılar",
+      "description": "Altın ve değerli taş takıyor; kendini iyi hissediyor.",
+      "value": 4,
+      "days": 0.1
     },
     {
       "id": "eff_self_sewn",

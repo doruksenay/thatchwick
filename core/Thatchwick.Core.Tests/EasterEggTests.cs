@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Thatchwick.Core.Animals;
@@ -12,6 +13,7 @@ using Thatchwick.Core.Localization;
 using Thatchwick.Core.Mood;
 using Thatchwick.Core.Save;
 using Thatchwick.Core.Time;
+using Thatchwick.Core.Work;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Tests
@@ -750,9 +752,10 @@ namespace Thatchwick.Core.Tests
             var k = Make();
             Person(k, 1, "Ayla");
             var dog = Pet(k, "animal.dog", 70, "Daisy");
+            Noon(k);
             float before = dog.Friendship;
             k.Life.OddEvents.Force(OddityEvents.JohanWick);
-            var (line, n) = Capture(k, () => k.Life.OddEventsNewDay(5));
+            var (line, n) = Capture(k, () => { k.Life.OddEventsNewDay(5); RunWalkers(k); });
             Assert.Equal("core.oddity.ev.johan_wick.nofield", line.Key);
             Assert.Equal(before + 5f, dog.Friendship);
             Assert.Equal(1, k.House.Count(LifeSystems.RelicCoinItem));
@@ -1113,6 +1116,357 @@ namespace Thatchwick.Core.Tests
                 Assert.True(en.TryGet(extra, out _), "EN eksik: " + extra);
                 Assert.True(tr.TryGet(extra, out _), "TR eksik: " + extra);
             }
+        }
+
+        // ---- sahneler: haritada görünen ziyaretçiler, pozlar, yere düşen süs (kullanıcı 20.11.2026) ----
+
+        /// <summary>Öğle vakti: ziyaretçiler gece yarısı değil gündüz gelir.</summary>
+        private static void Noon(Kit k, int day = 5) => k.Clock.Restore(day + 0.5, 1);
+
+        private static void RunWalkers(Kit k, int steps = 4000)
+        {
+            k.Life.OddScenesTick(0.002);
+            for (int i = 0; i < steps && k.Life.Walkers.Walkers.Count > 0; i++) k.Life.OddScenesTick(0.002);
+            Assert.Empty(k.Life.Walkers.Walkers);
+        }
+
+        [Fact]
+        public void JohanWick_ComesInTheMorning_NotAtMidnight()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            Pet(k, "animal.dog", 70, "Karabaş");
+            k.Clock.Restore(5.0, 1);
+            k.Life.OddEvents.Force(OddityEvents.JohanWick);
+            k.Life.OddEventsNewDay(5);
+            k.Life.OddScenesTick(0.01);
+            Assert.Null(k.Life.Walkers.Find(OddWalkerKind.JohanWick));     // gece yarısı: daha gelmedi
+            Assert.True(k.Life.OddEvents.Has(LifeSystems.JohanFlag));
+            k.Clock.Restore(5.0 + LifeSystems.JohanArrives + 0.01, 1);
+            k.Life.OddScenesTick(0.001);
+            Assert.NotNull(k.Life.Walkers.Find(OddWalkerKind.JohanWick));
+        }
+
+        [Fact]
+        public void OddWalkers_WalkThePath_ThenAct_ThenReportReady()
+        {
+            var walkers = new OddWalkers();
+            int ready = 0;
+            walkers.Ready += w => ready++;
+            var w1 = walkers.Spawn(OddWalkerKind.JohanWick, new GridPos(0, 0));
+            walkers.Walk(w1, new List<GridPos> { new GridPos(1, 0), new GridPos(2, 0) });
+            walkers.Tick(0.5 / OddWalkers.StepsPerDay);
+            Assert.Equal(new GridPos(0, 0), w1.Position);
+            Assert.Equal(new GridPos(1, 0), w1.NextTile);
+            Assert.Equal(0, ready);
+            walkers.Tick(2.0 / OddWalkers.StepsPerDay);
+            Assert.Equal(new GridPos(2, 0), w1.Position);
+            Assert.Null(w1.NextTile);
+            Assert.Equal(1, ready);
+            walkers.Act(w1, "pet", 0.01, new GridPos(3, 0));
+            walkers.Tick(0.004);
+            Assert.Equal("pet", w1.Action);
+            walkers.Tick(0.01);
+            Assert.Null(w1.Action);
+            Assert.Equal(2, ready);
+            w1.Gone = true;
+            walkers.Tick(0.001);
+            Assert.Empty(walkers.Walkers);
+        }
+
+        [Fact]
+        public void JohanWick_WalksIn_PetsTheDog_WrecksCrops_AndWalksOut()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            var dog = Pet(k, "animal.dog", 70, "Karabaş");
+            var seed = k.Db.Items.All.First(i => i.IsCrop);
+            for (int i = 0; i < 6; i++) k.World.PlaceItem(seed, new GridPos(8 + i % 3, 8 + i / 3));
+            float before = dog.Friendship;
+            Noon(k);
+            k.Life.OddEvents.Force(OddityEvents.JohanWick);
+            var first = Capture(k, () => { k.Life.OddEventsNewDay(5); k.Life.OddScenesTick(0.0001); });
+            // Hemen bir şey olmaz: haritanın kenarından girer, köpeğe yürür.
+            Assert.Equal(0, first.count);
+            var w = k.Life.Walkers.Find(OddWalkerKind.JohanWick);
+            Assert.NotNull(w);
+            Assert.True(w.Position.X == 0 || w.Position.Y == 0 || w.Position.X == 15 || w.Position.Y == 15);
+            Assert.Equal(before, dog.Friendship);
+            Assert.Equal(6, k.World.Items.Count(it => it.IsPlant && it.Def.IsCrop));
+            bool petted = false, wrecked = false;
+            LocText line = default;
+            Action<LocText, int> h = (l, id) => line = l;
+            k.Life.OddityLine += h;
+            for (int i = 0; i < 4000 && k.Life.Walkers.Walkers.Count > 0; i++)
+            {
+                k.Life.OddScenesTick(0.002);
+                petted |= w.Action == "pet";
+                wrecked |= w.Action == "wreck";
+            }
+            k.Life.OddityLine -= h;
+            Assert.True(petted && wrecked);
+            Assert.Empty(k.Life.Walkers.Walkers);
+            Assert.Equal("core.oddity.ev.johan_wick.field", line.Key);
+            Assert.Equal(before + 5f, dog.Friendship);
+            int left = k.World.Items.Count(it => it.IsPlant && it.Def.IsCrop);
+            Assert.InRange(6 - left, LifeSystems.JohanCropsMin, LifeSystems.JohanCropsMax);
+            Assert.Equal(1, k.House.Count(LifeSystems.RelicCoinItem));
+            Assert.False(k.Life.OddEvents.Has(LifeSystems.JohanFlag));
+        }
+
+        [Fact]
+        public void JohanWick_SavedMidVisit_StillLeavesTheCoinOnLoad()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            Pet(k, "animal.dog", 70, "Karabaş");
+            Noon(k);
+            k.Life.OddEvents.Force(OddityEvents.JohanWick);
+            k.Life.OddEventsNewDay(5);
+            k.Life.OddScenesTick(0.0001);
+            Assert.NotNull(k.Life.Walkers.Find(OddWalkerKind.JohanWick));
+            var saved = k.Life.ExportOddities();
+            var k2 = Make();
+            Person(k2, 1, "Ayla");
+            Pet(k2, "animal.dog", 70, "Karabaş");
+            var (line, n) = Capture(k2, () => k2.Life.ImportOddities(saved));
+            Assert.Equal("core.oddity.ev.johan_wick.nofield", line.Key);
+            Assert.Equal(1, k2.House.Count(LifeSystems.RelicCoinItem));
+            Assert.Empty(k2.Life.Walkers.Walkers);
+            // İkinci yüklemede yeniden vermez.
+            Assert.Equal(0, Capture(k2, () => k2.Life.ImportOddities(k2.Life.ExportOddities())).count);
+            Assert.Equal(1, k2.House.Count(LifeSystems.RelicCoinItem));
+        }
+
+        [Fact]
+        public void SceneBook_PoseOnlyWhileStandingThere_AndExpires()
+        {
+            double now = 10;
+            var book = new SceneBook { Now = () => now };
+            book.SetPose(7, "stare", new GridPos(3, 3), 0.1, itemId: 44);
+            Assert.Null(book.PoseOf(7, new GridPos(2, 3), false));     // henüz varmadı
+            Assert.Null(book.PoseOf(7, new GridPos(3, 3), true));      // yürüyor
+            Assert.Equal("stare", book.PoseOf(7, new GridPos(3, 3), false).Pose);
+            Assert.Equal(44, book.PoseOf(7, new GridPos(3, 3), false).ItemId);
+            now = 10.2;
+            Assert.Null(book.PoseOf(7, new GridPos(3, 3), false));
+            book.SetWildFx(5, "crown", 0.05); book.SetCharacterScene(1, "top", 0.02);
+            Assert.Equal("crown", book.WildFxOf(5));
+            Assert.Equal("top", book.CharacterSceneOf(1));
+            now = 10.3;
+            Assert.Null(book.WildFxOf(5));
+            Assert.Null(book.CharacterSceneOf(1));
+        }
+
+        [Fact]
+        public void NewBuild_OxWalksOverAndStares_CatGoesToTheChest()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.0;
+            Person(k, 1, "Ayla");
+            var ox = Pet(k, "animal.ox", 73, "Sarı");
+            var stool = k.World.PlaceItem(k.Db.Items.Get("item.stool_wood"), new GridPos(9, 9));
+            k.Life.OnOddFurnished(stool);
+            Assert.Null(k.Life.PoseOf(ox));                             // daha yolda
+            for (int i = 0; i < 4000 && k.Life.PoseOf(ox) == null; i++) k.Animals.Tick(0.0005);
+            var pose = k.Life.PoseOf(ox);
+            Assert.NotNull(pose);
+            Assert.Equal("stare", pose.Pose);
+            Assert.Equal(stool.Id, pose.ItemId);
+            Assert.Equal(1, Math.Abs(ox.Position.X - 9) + Math.Abs(ox.Position.Y - 9));   // yanında durur
+            // Bakıp durur: bekleme süresi dolmadan yerinden kıpırdamaz.
+            var at = ox.Position;
+            k.Animals.Tick(SceneBook.StareDays * 0.5);
+            Assert.Equal(at, ox.Position);
+
+            // Genç kedi (kedinin ömrü kısa; 40 günlük kedi yürürken yaşlılıktan ölür).
+            var cat = k.Animals.Restore(72, k.Db.Animals.Get("animal.cat"), new GridPos(4, 4), 0, 100f, 6, 0, 0, 30f, comfort: 80f);
+            cat.Name = "Alex";
+            var chest = k.World.PlaceItem(k.Db.Items.Get("item.chest_wood"), new GridPos(12, 5));
+            k.Life.OnOddFurnished(chest);
+            for (int i = 0; i < 4000 && k.Life.PoseOf(cat) == null; i++) k.Animals.Tick(0.0005);
+            Assert.Equal("box", k.Life.PoseOf(cat)?.Pose);
+            Assert.Equal(chest.Id, k.Life.PoseOf(cat).ItemId);
+        }
+
+        [Fact]
+        public void Howl_DogStopsAndPoses_HowlerPlaysTheScene()
+        {
+            var k = Make();
+            var c = Person(k, 1, "Ayla");
+            var kid = Person(k, 2, "Can", ChildAge);
+            var dog = Pet(k, "animal.dog", 70, "Karabaş");
+            k.Clock.Restore(OddityEvents.MoonCycle - 1 + 0.9, 1);
+            Assert.True(k.Life.Howl(c));
+            Assert.Equal("howl", k.Life.PoseOf(dog)?.Pose);
+            Assert.Equal("howl", k.Life.Scenes.CharacterSceneOf(c.Id));
+            Assert.Equal("howl", k.Life.Scenes.CharacterSceneOf(kid.Id));
+        }
+
+        [Fact]
+        public void TopShow_PlaysTheTopScene()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.999;
+            var c = Person(k, 1, "Ayla");
+            var top = new Thatchwick.Core.Upbringing.ToyDef { ItemId = LifeSystems.SpinningTopItem };
+            k.Life.OnOddShow(new Thatchwick.Core.Upbringing.ToyShow { Performer = c, Toy = top, Kind = Thatchwick.Core.Upbringing.ShowKind.Show, Watchers = 0 });
+            Assert.Equal("top", k.Life.Scenes.CharacterSceneOf(c.Id));
+        }
+
+        [Fact]
+        public void FrogKiss_CrownShowsOnThatFrog()
+        {
+            var k = Make();
+            k.Life.AttachWild(k.World.Map);
+            var c = Person(k, 1, "Ayla");
+            var frog = k.Life.Roamers.Arrive(Thatchwick.Core.Animals.WildCatalog.Get(FrogKiss.FrogSpecies), k.Clock.TotalDays);
+            Assert.NotNull(frog);
+            Assert.True(k.Life.KissFrog(c, force: true, visitorId: frog.Id));
+            Assert.Equal("crown", k.Life.Scenes.WildFxOf(frog.Id));
+            Assert.True(frog.LeaveAt >= k.Clock.TotalDays + SceneBook.CrownDays);
+            // Sıradan öpücükte taç yok.
+            var frog2 = k.Life.Roamers.Arrive(Thatchwick.Core.Animals.WildCatalog.Get(FrogKiss.FrogSpecies), k.Clock.TotalDays);
+            k.Life.KissFrog(c, force: false, visitorId: frog2.Id);
+            Assert.Null(k.Life.Scenes.WildFxOf(frog2.Id));
+        }
+
+        private static ItemInstance DecorOnTable(Kit k, out ItemInstance table)
+        {
+            table = k.World.PlaceItem(k.Db.Items.Get("item.table_wood"), new GridPos(6, 6));
+            int tableId = table.Id;
+            var def = k.Db.Items.All.First(i => i.Placement == ItemPlacement.Surface && k.World.CanPlaceOnSurface(i, tableId, "a").Ok);
+            return k.World.PlaceOnSurface(def, tableId, "a");
+        }
+
+        [Fact]
+        public void CatAlex_KnocksDecorToTheFloor_NothingIsLost_CharacterPutsItBack()
+        {
+            var k = Make();
+            var c = Person(k, 1, "Ayla");
+            Pet(k, "animal.cat", 72, "Alex");
+            var decor = DecorOnTable(k, out var table);
+            var farm = new FarmWork(k.World) { House = k.House, Content = k.Db };
+            k.Life.Attach(farm);
+            int items = k.World.Items.Count;
+            k.Life.OddEvents.Roll = () => 0.999;
+            k.Life.OddEvents.Force(OddityEvents.AlexDecor);
+            var (line, n) = Capture(k, () => k.Life.OddEventsNewDay(5));
+            Assert.Equal("core.oddity.ev.alex_decor", line.Key);
+            var fallen = k.Life.Scenes.KnockedOf(decor.Id);
+            Assert.NotNull(fallen);
+            // Eşya dünyada, masadaki yuvasında kayıtlı durur: hiçbir şey kaybolmaz.
+            Assert.Equal(items, k.World.Items.Count);
+            Assert.Equal(table.Id, k.World.GetItem(decor.Id).ParentId);
+            Assert.True(k.World.Map.IsWalkable(fallen.Floor));
+            Assert.Same(fallen, k.Life.Scenes.KnockedAt(fallen.Floor));
+            // Aynı süs iki kez düşmez.
+            k.Life.OddEvents.Force(OddityEvents.AlexDecor);
+            Assert.Equal(0, Capture(k, () => k.Life.OddEventsNewDay(6)).count);
+
+            // Kayıt: yerde kalır.
+            var saved = k.Life.ExportOddities();
+            Assert.Single(saved.knocked);
+            k.Life.ImportOddities(saved);
+            Assert.NotNull(k.Life.Scenes.KnockedOf(decor.Id));
+
+            // "Yerine koy": yalnızca düşen eşyanın karosunda.
+            Assert.NotNull(farm.CanDo(c, new GridPos(1, 1), TileAction.PutBack));
+            Assert.Null(farm.CanDo(c, fallen.Floor, TileAction.PutBack));
+            Assert.True(farm.Duration(c, TileAction.PutBack) > 0);
+            Assert.Equal("pickup", ActivityDescriber.DescribeJob(Job.OnTile(fallen.Floor, TileAction.PutBack), k.World).Icon);
+            var back = Capture(k, () => farm.Apply(c, fallen.Floor, TileAction.PutBack));
+            Assert.Equal("core.oddity.ev.alex_decor.put_back", back.line.Key);
+            Assert.Null(k.Life.Scenes.KnockedOf(decor.Id));
+            Assert.Equal(items, k.World.Items.Count);
+            Assert.NotNull(farm.CanDo(c, fallen.Floor, TileAction.PutBack));
+        }
+
+        [Fact]
+        public void KnockedDecor_RecordIsDropped_WhenTheItemLeavesTheWorld()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            var decor = DecorOnTable(k, out _);
+            Assert.NotNull(k.Life.KnockDecor());
+            k.World.RemoveItem(decor.Id);
+            k.Life.OdditiesNewDay(7);
+            Assert.Empty(k.Life.Scenes.Knocked);
+            Assert.Null(k.Life.KnockDecor());                      // düşürecek süs kalmadı
+        }
+
+        // ---- +18 çeşitleri ve ad sürprizleri ----
+
+        private static (LocTable en, LocTable tr) UiTables()
+        {
+            string dir = System.IO.Path.GetFullPath(System.IO.Path.Combine(ContentFilesTests.ContentDir(), "..", "Localization"));
+            var errors = new List<string>();
+            var en = LocTable.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "ui.en.json")), errors, "ui.en.json");
+            var tr = LocTable.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "ui.tr.json")), errors, "ui.tr.json");
+            Assert.True(errors.Count == 0, string.Join("\n", errors));
+            return (en, tr);
+        }
+
+        private static List<string> Placeholders(string text)
+        {
+            var list = new List<string>();
+            foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(text, @"\{(\w+)\}")) list.Add(m.Groups[1].Value);
+            list.Sort(StringComparer.Ordinal);
+            return list;
+        }
+
+        [Fact]
+        public void AdultPack_SwapsInTheSwearingVariant_OnlyWhenThePackIsOn()
+        {
+            var (en, tr) = UiTables();
+            var plain = LocText.Of("core.oddity.ev.top_show.v0", ("who", "Ayla"));
+            Assert.Equal(plain.Key, OddityLines.ForPack(plain, false, en.Contains).Key);
+            var adult = OddityLines.ForPack(plain, true, en.Contains);
+            Assert.Equal("core.oddity.ev.top_show.v0.adult", adult.Key);
+            Assert.Equal(plain.Args, adult.Args);
+            // Çeşidi olmayan satır paket açıkken de aynen kalır.
+            var other = LocText.Of("core.oddity.ev.cat_gift", ("animal", "Alex"));
+            Assert.Equal(other.Key, OddityLines.ForPack(other, true, en.Contains).Key);
+
+            foreach (var key in OddityLines.AdultKeys)
+            {
+                foreach (var (table, name) in new[] { (en, "EN"), (tr, "TR") })
+                {
+                    Assert.True(table.TryGet(key, out var baseText), name + " eksik: " + key);
+                    Assert.True(table.TryGet(key + OddityLines.AdultSuffix, out var adultText), name + " +18 eksik: " + key);
+                    // Çeşit aynı argümanlarla doldurulur: fazladan yer tutucu olamaz.
+                    var have = Placeholders(baseText);
+                    foreach (var ph in Placeholders(adultText)) Assert.True(have.Contains(ph), $"{name} {key}: bilinmeyen {{{ph}}}");
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData("Doruk", "doruk")]
+        [InlineData("sanem", "sanem")]
+        [InlineData("BORA", "bora")]
+        [InlineData("Alpaslan", "alpaslan")]
+        [InlineData("Alex", "alex")]
+        [InlineData("Lonta", "lonta")]
+        [InlineData("Lontaj", "lontaj")]
+        [InlineData("KaosLontaj", "kaoslontaj")]
+        [InlineData("  Sanem   Bal ", "sanem_bal")]
+        [InlineData("Mars", "mars")]
+        public void NameSurprise_ForTheChosenNames(string name, string key)
+        {
+            Assert.Equal(key, LifeSystems.NameSurpriseKey(name));
+            var (en, tr) = UiTables();
+            Assert.True(en.Contains("core.oddity.ev.name_surprise." + key));
+            Assert.True(tr.Contains("core.oddity.ev.name_surprise." + key));
+        }
+
+        [Fact]
+        public void NameSurprise_OtherNamesGetNothing()
+        {
+            Assert.Null(LifeSystems.NameSurpriseKey("Murat"));
+            Assert.Null(LifeSystems.NameSurpriseKey("Bal"));
+            Assert.Null(LifeSystems.NameSurpriseKey(""));
+            Assert.Null(LifeSystems.NameSurpriseKey(null));
         }
     }
 }

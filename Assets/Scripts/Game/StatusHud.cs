@@ -295,6 +295,13 @@ namespace Thatchwick.Game
             if (!(info.Icon == "idle" && string.IsNullOrEmpty(info.Reason)))   // boştakiler için balon çizilmez
             {
                 string text = info.Full;
+                // Zincir adımı (belge 60): balonda işin o anki adımı öne yazılır ("Karıştırıyor · Etli güveç yap").
+                if (info.StepId != null && !info.Walking)
+                {
+                    string stepKey = "chain.step." + info.StepId;
+                    string stepText = GameLocalization.T(stepKey);
+                    if (!string.IsNullOrEmpty(stepText) && stepText != stepKey) text = stepText + " · " + text;
+                }
                 float width = Mathf.Clamp(text.Length * 6.2f + 12f, 60f, 260f);
                 GUI.Box(new Rect(x - width * 0.5f, y - 46f, width, 20f), text, _balloon);
             }
