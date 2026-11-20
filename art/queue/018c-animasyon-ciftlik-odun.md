@@ -1,7 +1,7 @@
 ---
 id: "018c"
 title: Etkileşim animasyonları: boşta, odun, çapa, ekim, sulama
-status: running
+status: review
 claimed_at: 2026-11-20T06:39Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50
