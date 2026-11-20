@@ -36973,6 +36973,78 @@
       ]
     },
     {
+      "id": "item.jw_ring_gold",
+      "displayName": "Altın yüzük",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 190,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_ring_gem",
+      "displayName": "Taşlı altın yüzük",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 280,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_earring_gold",
+      "displayName": "Altın küpe",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 190,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_earring_gem",
+      "displayName": "Taşlı altın küpe",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 290,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_necklace_gem",
+      "displayName": "Taşlı gerdanlık",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 260,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
+      "id": "item.jw_evil_eye_gem",
+      "displayName": "Taşlı nazarlık",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 110,
+      "tags": [
+        "clothing",
+        "jewelry",
+        "craftonly"
+      ]
+    },
+    {
       "id": "item.mohair_yarn",
       "displayName": "Tiftik ipliği",
       "placement": "Resource",
@@ -46323,6 +46395,122 @@
       "minLevel": 7
     },
     {
+      "id": "jw_ring_gold",
+      "station": "item.forge",
+      "produces": "item.jw_ring_gold",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Altın yüzük yap",
+      "minLevel": 9
+    },
+    {
+      "id": "jw_ring_gem",
+      "station": "item.forge",
+      "produces": "item.jw_ring_gem",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 2
+        },
+        {
+          "item": "item.gemstone",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Taşlı yüzük yap",
+      "minLevel": 9
+    },
+    {
+      "id": "jw_earring_gold",
+      "station": "item.forge",
+      "produces": "item.jw_earring_gold",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Altın küpe yap",
+      "minLevel": 9
+    },
+    {
+      "id": "jw_earring_gem",
+      "station": "item.forge",
+      "produces": "item.jw_earring_gem",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 2
+        },
+        {
+          "item": "item.gemstone",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Taşlı küpe yap",
+      "minLevel": 9
+    },
+    {
+      "id": "jw_necklace_gem",
+      "station": "item.forge",
+      "produces": "item.jw_necklace_gem",
+      "materials": [
+        {
+          "item": "item.gold_dust",
+          "count": 1
+        },
+        {
+          "item": "item.gemstone",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Taşlı gerdanlık yap",
+      "minLevel": 8
+    },
+    {
+      "id": "jw_evil_eye_gem",
+      "station": "item.glass_bench",
+      "produces": "item.jw_evil_eye_gem",
+      "materials": [
+        {
+          "item": "item.glass_bead",
+          "count": 2
+        },
+        {
+          "item": "item.gemstone",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.2,
+      "skill": "Pottery",
+      "skillXp": 18,
+      "displayName": "Taşlı nazarlık yap",
+      "minLevel": 8
+    },
+    {
       "id": "seed_hemp",
       "station": "item.seed_maker",
       "produces": "item.seed_hemp",
@@ -48793,6 +48981,20 @@
       "description": "İlk kez giydi.",
       "value": 3,
       "days": 1.0
+    },
+    {
+      "id": "eff_jewelry_joy",
+      "displayName": "Takının keyfi",
+      "description": "Sevdiği bir takıyı takıyor.",
+      "value": 2,
+      "days": 0.1
+    },
+    {
+      "id": "eff_jewelry_fine",
+      "displayName": "Göz alıcı takılar",
+      "description": "Altın ve değerli taş takıyor; kendini iyi hissediyor.",
+      "value": 4,
+      "days": 0.1
     },
     {
       "id": "eff_self_sewn",

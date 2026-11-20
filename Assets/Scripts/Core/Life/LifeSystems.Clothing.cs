@@ -30,6 +30,19 @@ namespace Thatchwick.Core.Life
             return s;
         }
 
+        private bool HasClothing => Content.Clothing != null && Content.Clothing.Count > 0;
+
+        /// <summary>Takıların işlevleri (belge 48 §5.7): yüzük pazarlığa, küpe gönül kazanmaya, nazarlık kazaya karşı.</summary>
+        private double JewelryTradeBonus()
+        {
+            if (!HasClothing) return 0;
+            double best = 0;
+            foreach (var c in Household()) if (!c.IsDead) best = Math.Max(best, Clothing.TradeBonus(c));
+            return best;
+        }
+        private double JewelryCourtBonus(Character c) => HasClothing && c != null ? Clothing.CourtBonus(c) : 0.0;
+        private double JewelryLuck(Character c) => HasClothing && c != null ? Clothing.AccidentFactor(c) : 1.0;
+
         /// <summary>Köylü bir hane üyesinin giyimine yorum yaptı (konuşan, hedef, arayüz anahtarı); oyun katmanı balon çizer.</summary>
         public event Action<Character, Character, string> ClothingRemark;
 
@@ -123,7 +136,11 @@ namespace Thatchwick.Core.Life
                     int lvl = c.Skills.GetLevel(skill);
                     int q = lvl >= 9 ? 3 : lvl >= 7 ? 2 : lvl >= 4 ? 1 : 0;
                     var it = Clothing.FromItem(p.ItemId, c, Clock.TotalDays, q, ownLabor: true);
-                    if (it != null && it.IsJewelry) it.JewelryStep = lvl >= 9 ? 2 : 1;
+                    if (it != null && it.IsJewelry)
+                    {
+                        it.JewelryStep = Math.Max(it.JewelryStep, lvl >= 9 ? 2 : 1);   // altın (3) ustalıkla düşmez
+                        Clothing.WearJewelry(c, it);                                  // yapan takar; takamıyorsa çekmecede kalır
+                    }
                 }
             }
         }

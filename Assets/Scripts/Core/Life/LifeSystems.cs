@@ -262,6 +262,8 @@ namespace Thatchwick.Core.Life
                 ToolSpeed = id => Tools.SpeedFor(id),
                 Notify = (text, id) => Say(text, NoticeLevel.Warning, id)
             };
+            Injuries.LuckFactor = JewelryLuck;          // nazar boncuğu (takı işlevi)
+            Villagers.CourtBonus = JewelryCourtBonus;   // küpe (takı işlevi)
             Duties = new TimedDutyService(population, house, content, seed != 0 ? Seeds.Derive(seed, 17) : 311)
             {
                 Now = () => Clock.TotalDays,
@@ -617,7 +619,7 @@ namespace Thatchwick.Core.Life
         }
 
         public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction + SkillSpoilReduction());
-        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus() + PersuadeBonus() + TradeCartBonus());
+        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus() + PersuadeBonus() + TradeCartBonus() + JewelryTradeBonus());
 
         /// <summary>Gönül kazanma 8 "İkna et": hanede ikna edici biri varsa o gün satış %5 iyi (belge 45).</summary>
         public const double PersuadeSellBonus = 0.05;
