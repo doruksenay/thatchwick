@@ -4,19 +4,19 @@ title: Kepçeyle kaba alma
 kind: sfx
 family: foley
 freq: B
-status: review
+status: ready
 approved_by: user
 depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
 key: kitchen.ladle
 generate: 8
 keep: 4
-duration_s: 1.4
+duration_s: 1.5
 cost_max: 500
 axes:
-  food:
-  - thick lentil stew
-  - chunky vegetable soup
+  liquid:
+  - thick soup
+  - runny broth
   bowl:
   - clay bowl
   - wooden bowl
@@ -30,13 +30,10 @@ inceleme_notlari:
 - tarih: '2026-11-20'
   karar: yeniden
   not: yemek sesi yok, katı bir şey koymak gibi
-yeniden_sayisi: 2
-prompt_influence: 0.7
-claimed_by: ip-10-0-139-217
-claimed_at: '2026-11-20T17:09:07Z'
-candidates: 8
-passed: 8
-credits_spent: 792
-generated_at: '2026-11-20T17:09:20Z'
+- tarih: '2026-11-20'
+  karar: yeniden
+  not: hiç sıvı sesi yok
+yeniden_sayisi: 3
+prompt_influence: 0.8
 ---
-A wooden ladle slurping into a pot of warm, wet stew and pouring it into a bowl: liquid sloshing, a soft wet glug and splatter of soup landing in the bowl. Clearly wet food and liquid, cozy kitchen. No dry thuds, nothing solid, no metal.
+Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds.

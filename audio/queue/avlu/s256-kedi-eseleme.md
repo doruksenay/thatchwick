@@ -4,7 +4,7 @@ title: Kedi toprağı eşeliyor
 kind: sfx
 family: foley
 freq: C
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 key: yard.cat_dig
@@ -31,5 +31,8 @@ candidates: 6
 passed: 6
 credits_spent: 0
 generated_at: '2026-11-20T17:09:32Z'
+pick:
+- c2
+karar_zamani: '2026-11-20'
 ---
 Tiny, soft, muffled pitter-patter of small paws gently patting and brushing soft crumbly earth, very quiet and cute, like fingertips softly patting a pillow of dirt. Cozy and calm. No scratching, no claws, no harsh scraping, nothing loud or sharp.
