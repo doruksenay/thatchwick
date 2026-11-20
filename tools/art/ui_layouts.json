@@ -1640,7 +1640,7 @@
     }
   },
   "hud_v2": {
-    "_aciklama": "Yeni HUD düzeni (Project belgesi 66 §3). Oyunun yerel çözünürlüğü 480x270 (16:9); masaüstünde 2x, telefonda 3x. Parça adları ui_hud2_<yon>_<piece>.png; 'slice' olanlar 9-slice (köşe px). 'yon' altındaki listeler o yön için aynı id'li öğenin yerini alır. Karakter kartı oyunda yalnızca karaktere dokununca açılır (karar S1); önizlemede açık gösterilir. Öğedeki 'src' parçayı başka bir yönün dosyasından alır (karma yön, kullanıcı kararı 2026-11-21: meşe paneller ve kart, ilmek düğmeler ve rozet).",
+    "_aciklama": "Yeni HUD düzeni (Project belgesi 66 §3). Oyunun yerel çözünürlüğü 480x270 (16:9); masaüstünde 2x, telefonda 3x. Parça adları ui_hud2_<yon>_<piece>.png; 'slice' olanlar 9-slice (köşe px). 'yon' altındaki listeler o yön için aynı id'li öğenin yerini alır. Karakter kartı oyunda yalnızca karaktere dokununca açılır (karar S1); önizlemede açık gösterilir. Öğedeki 'src' parçayı başka bir yönün dosyasından alır (karma yön, kullanıcı kararı 2026-11-21: meşe paneller ve kart, ilmek düğmeler ve rozet). 'slice' tek sayı ya da [sol, sağ, üst, alt]. mese2: kullanıcı kararı 2026-11-21 (oyma meşe, dünya ile aynı piksel boyutu; işler 810-812); kart sabit boy sarmaşıklı çerçeve.",
     "size": [
       480,
       270
@@ -2177,371 +2177,83 @@
             14
           ]
         }
+      ],
+      "mese2": [
+        {
+          "id": "card",
+          "piece": "card",
+          "box": [
+            4,
+            122,
+            132,
+            112
+          ]
+        },
+        {
+          "id": "card_name",
+          "text": "Selcan",
+          "box": [
+            16,
+            129,
+            104,
+            10
+          ],
+          "size": 8
+        },
+        {
+          "id": "needs",
+          "needs": [
+            [
+              "need_hunger",
+              "Açlık",
+              93
+            ],
+            [
+              "need_energy",
+              "Enerji",
+              71
+            ],
+            [
+              "need_warmth",
+              "Isınma",
+              64
+            ],
+            [
+              "need_fun",
+              "Eğlence",
+              42
+            ],
+            [
+              "need_hygiene",
+              "Temizlik",
+              28
+            ],
+            [
+              "need_social",
+              "Sosyal",
+              55
+            ],
+            [
+              "need_toilet",
+              "Tuvalet",
+              12
+            ]
+          ],
+          "box": [
+            16,
+            141,
+            104,
+            91
+          ],
+          "row": 13,
+          "bar": [
+            20,
+            4,
+            84,
+            8
+          ]
+        }
       ]
     }
-  },
-  "hud_v2_mese": {
-    "_aciklama": "Meşe yönü (kullanıcı kararı 2026-11-21, 745 kabul; 774-776). Parçalar üretildikleri boyutta native sayılır (774 kuralı, ölçek düşürme yok); bu yüzden düzen 960x540 yerel çözünürlükte, 1x. hud_v2 (480x270) ile aynı yerleşim fikri, kutular parçaların gerçek boyutlarına göre. 'slice' tek sayı ya da [sol, sağ, üst, alt].",
-    "size": [
-      960,
-      540
-    ],
-    "elements": [
-      {
-        "id": "clock",
-        "piece": "clock",
-        "box": [
-          8,
-          8,
-          77,
-          73
-        ]
-      },
-      {
-        "id": "clock_season",
-        "piece": "season_spring",
-        "box": [
-          38,
-          41,
-          24,
-          24
-        ]
-      },
-      {
-        "id": "date",
-        "piece": "tracker",
-        "slice": [
-          21,
-          22,
-          0,
-          0
-        ],
-        "box": [
-          88,
-          22,
-          160,
-          25
-        ],
-        "text": "İlkbahar 1 · 06:40 · Yıl 1",
-        "text_box": [
-          108,
-          28,
-          124,
-          12
-        ],
-        "size": 8
-      },
-      {
-        "id": "speed_frame",
-        "piece": "frame",
-        "slice": [
-          8,
-          8,
-          8,
-          8
-        ],
-        "box": [
-          88,
-          52,
-          128,
-          36
-        ]
-      },
-      {
-        "id": "speed_0",
-        "piece": "speed_pause",
-        "box": [
-          96,
-          58,
-          24,
-          24
-        ]
-      },
-      {
-        "id": "speed_1",
-        "piece": "speed_1",
-        "box": [
-          124,
-          58,
-          24,
-          24
-        ]
-      },
-      {
-        "id": "speed_2",
-        "piece": "speed_2",
-        "box": [
-          152,
-          58,
-          24,
-          24
-        ]
-      },
-      {
-        "id": "speed_3",
-        "piece": "speed_3",
-        "box": [
-          180,
-          58,
-          24,
-          24
-        ]
-      },
-      {
-        "id": "money",
-        "piece": "money",
-        "box": [
-          887,
-          8,
-          65,
-          45
-        ]
-      },
-      {
-        "id": "money_coin",
-        "icon": "ui_icon_misc_coin",
-        "box": [
-          900,
-          16,
-          9,
-          9
-        ]
-      },
-      {
-        "id": "money_coin_text",
-        "text": "100",
-        "box": [
-          911,
-          16,
-          26,
-          9
-        ],
-        "size": 8
-      },
-      {
-        "id": "money_gem",
-        "icon": "icon_item_gemstone",
-        "box": [
-          900,
-          29,
-          9,
-          9
-        ]
-      },
-      {
-        "id": "money_gem_text",
-        "text": "0",
-        "box": [
-          911,
-          29,
-          26,
-          9
-        ],
-        "size": 8
-      },
-      {
-        "id": "tracker",
-        "piece": "tracker",
-        "slice": [
-          21,
-          22,
-          0,
-          0
-        ],
-        "box": [
-          752,
-          58,
-          200,
-          25
-        ],
-        "text": "Odun kes 0/1",
-        "text_box": [
-          788,
-          64,
-          140,
-          12
-        ],
-        "size": 8
-      },
-      {
-        "id": "tracker_icon",
-        "icon": "ui_icon_request_favor",
-        "box": [
-          772,
-          64,
-          13,
-          13
-        ]
-      },
-      {
-        "id": "card",
-        "piece": "window",
-        "slice": 32,
-        "box": [
-          8,
-          236,
-          225,
-          236
-        ]
-      },
-      {
-        "id": "card_name",
-        "text": "Selcan",
-        "box": [
-          36,
-          266,
-          150,
-          12
-        ],
-        "size": 8
-      },
-      {
-        "id": "needs",
-        "needs": [
-          [
-            "need_hunger",
-            "Açlık",
-            93
-          ],
-          [
-            "need_energy",
-            "Enerji",
-            71
-          ],
-          [
-            "need_warmth",
-            "Isınma",
-            64
-          ],
-          [
-            "need_fun",
-            "Eğlence",
-            42
-          ],
-          [
-            "need_hygiene",
-            "Temizlik",
-            28
-          ],
-          [
-            "need_social",
-            "Sosyal",
-            55
-          ],
-          [
-            "need_toilet",
-            "Tuvalet",
-            12
-          ]
-        ],
-        "box": [
-          36,
-          282,
-          154,
-          150
-        ],
-        "row": 21,
-        "icon_size": 16,
-        "bar": [
-          20,
-          0,
-          134,
-          19
-        ],
-        "bar_slice": [
-          8,
-          8,
-          0,
-          0
-        ],
-        "bar_dy": -1,
-        "fill_inset": [
-          7,
-          6
-        ],
-        "fill_h": 7
-      },
-      {
-        "id": "portrait_0",
-        "piece": "frame",
-        "slice": [
-          8,
-          8,
-          8,
-          8
-        ],
-        "box": [
-          8,
-          478,
-          54,
-          54
-        ],
-        "portrait": "iso_char_villager_se"
-      },
-      {
-        "id": "portrait_1",
-        "piece": "frame",
-        "slice": [
-          8,
-          8,
-          8,
-          8
-        ],
-        "box": [
-          66,
-          478,
-          54,
-          54
-        ],
-        "portrait": "iso_char_farmer_a_56_cand_se"
-      },
-      {
-        "id": "portrait_2",
-        "piece": "frame",
-        "slice": [
-          8,
-          8,
-          8,
-          8
-        ],
-        "box": [
-          124,
-          478,
-          54,
-          54
-        ],
-        "portrait": "iso_char_farmer_a2_56_cand_se"
-      },
-      {
-        "id": "btn_build",
-        "piece": "btn_build",
-        "box": [
-          844,
-          484,
-          48,
-          48
-        ]
-      },
-      {
-        "id": "btn_book",
-        "piece": "btn_book",
-        "box": [
-          900,
-          484,
-          48,
-          48
-        ]
-      },
-      {
-        "id": "badge",
-        "piece": "badge",
-        "box": [
-          930,
-          474,
-          24,
-          24
-        ]
-      }
-    ]
   }
 }
