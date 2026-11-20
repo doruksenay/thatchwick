@@ -651,8 +651,10 @@ namespace Thatchwick.Core.Life
         public const int SouthTripEvery = 7, SouthTripLevel = 6, CaravanLevel = 8, FarLandLevel = 9;
         public static readonly string[] SouthGoods = { "item.olive_oil", "item.coffee_green", "item.pomegranate", "item.saffron", "item.bay_leaf" };
 
-        private bool HasCart() => House.Count(WheelbarrowId) > 0 || House.Count(HorseCartId) > 0 || House.Count(CoveredCartId) > 0 || World.Items.Any(x => x.Def.Id == "item.ox_cart");
-        private bool HasDraftCart() => House.Count(HorseCartId) > 0 || House.Count(CoveredCartId) > 0 || World.Items.Any(x => x.Def.Id == "item.ox_cart");
+        /// <summary>Hanenin bu türden arabası: envanterdeki ve avluya konmuş olanlar (belge 57e: araba yerleştirilen eşya).</summary>
+        private int CartCount(string id) => House.Count(id) + World.Items.Count(x => !x.IsDecor && x.Def.Id == id);
+        private bool HasCart() => CartCount(WheelbarrowId) > 0 || CartCount(HorseCartId) > 0 || CartCount(CoveredCartId) > 0 || World.Items.Any(x => x.Def.Id == "item.ox_cart");
+        private bool HasDraftCart() => CartCount(HorseCartId) > 0 || CartCount(CoveredCartId) > 0 || World.Items.Any(x => x.Def.Id == "item.ox_cart");
 
         /// <summary>Satış eki: Tüccar mührü (Ticaret 10) +%5; pazar seferi (Arabacılık 5, arabayla pazar günü) +%5.</summary>
         public double TradeCartBonus()
@@ -764,11 +766,11 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Depo eki: el arabası, at arabası, kızak (kışın).</summary>
         public int CartStorageBonus() =>
-            (House.Count(WheelbarrowId) > 0 ? 15 : 0) + (House.Count(HorseCartId) > 0 ? 40 : 0)
-            + (House.Count(SledId) > 0 && Clock.Season == Season.Winter ? 20 : 0) + (BestSkill(SkillType.Carting) >= 2 ? 10 : 0);
+            (CartCount(WheelbarrowId) > 0 ? 15 : 0) + (CartCount(HorseCartId) > 0 ? 40 : 0)
+            + (CartCount(SledId) > 0 && Clock.Season == Season.Winter ? 20 : 0) + (BestSkill(SkillType.Carting) >= 2 ? 10 : 0);
 
         /// <summary>Bozulma azaltma eki: böcek kovucu ve üstü örtülü araba.</summary>
-        public float SkillSpoilReduction() => (House.Count(RepellentId) > 0 ? 0.05f : 0f) + (House.Count(CoveredCartId) > 0 ? 0.10f : 0f)
+        public float SkillSpoilReduction() => (House.Count(RepellentId) > 0 ? 0.05f : 0f) + (CartCount(CoveredCartId) > 0 ? 0.10f : 0f)
             + (BestSkill(SkillType.Stewardship) >= 6 ? 0.10f : 0f);   // kiler düzeni (Kâhyalık 6)
     }
 }

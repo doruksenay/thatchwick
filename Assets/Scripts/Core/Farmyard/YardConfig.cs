@@ -90,6 +90,8 @@ namespace Thatchwick.Core.Farmyard
         /// <summary>Temizlikte kirlilik başına çıkan pislik birimi (4 birim = 1 gübre).</summary>
         public float DungPerDirt = 0.1f;
         public int DungPerManure = 4;
+        /// <summary>Taze gübre yığında bu kadar günde olgunlaşır (yanmış gübre ekini yakmaz).</summary>
+        public double ManureAgeDays = 6.0;
         /// <summary>Derin altlık: kirlilik bu oranda birikir; büyükbaş başına günde bir saman ister.</summary>
         public float DeepLitterFactor = 0.25f;
         /// <summary>Akıtma oluğu olan ahırda kirlilik bu oranda birikir.</summary>
@@ -135,6 +137,13 @@ namespace Thatchwick.Core.Farmyard
         // ---- araba filosu ----
         public int WheelbarrowTiles = 4, HorseCartTiles = 8, OxCartTiles = 12, CoveredCartTiles = 10, SledTiles = 8;
         public double WheelWearPerTrip = 0.02;
+        /// <summary>Yağmurlu günde sundurmasız duran arabanın yıpranması; sundurmanın koruduğu yarıçap (karo).</summary>
+        public double RainWear = 0.01;
+        public int ShedRadius = 2;
+        /// <summary>Arabanın gün içindeki seferi: çıkış, yolda olma ve dönüş (gün kesri).</summary>
+        public double TripLeave = 0.27, TripGone = 0.33, TripBack = 0.70, TripHome = 0.76;
+        /// <summary>Kâhya arabalara görev dağıtmak için bu Kâhyalık seviyesini ister.</summary>
+        public int StewardCartLevel = 4;
         /// <summary>Üst üste bu kadar gün çalışan çeki hayvanı ertesi gün dinlenir.</summary>
         public int MaxWorkStreak = 3;
         public float FertilizeBelow = 0.5f;

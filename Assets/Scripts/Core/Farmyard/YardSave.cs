@@ -30,8 +30,17 @@ namespace Thatchwick.Core.Farmyard
     }
 
     [Serializable]
+    public sealed class YardBatchSave
+    {
+        public int itemId;
+        public double day;
+        public int count;
+    }
+
+    [Serializable]
     public sealed class YardCompostSave
     {
+        public YardBatchSave[] fresh;    // gübre yığınında olgunlaşan taze gübre
         public YardHeapSave[] heaps;
         public YardTimerSave[] timers;
         public bool rawFilth;
@@ -85,6 +94,7 @@ namespace Thatchwick.Core.Farmyard
         public YardCartSave[] carts;
         public YardAnimalWorkSave[] work;
         public int fertilizeRule;
+        public int stewardCarts;
         public float fertilizeBelow;
     }
 

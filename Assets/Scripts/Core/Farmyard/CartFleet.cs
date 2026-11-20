@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Content;
 using Thatchwick.Core.Localization;
 using Thatchwick.Core.World;
 
@@ -36,6 +37,8 @@ namespace Thatchwick.Core.Farmyard
         public static readonly string[] CartIds = { WheelbarrowId, HorseCartId, OxCartId, CoveredCartId, SledId };
         /// <summary>Arabacılık bu seviyedeyse alışmış hayvan bilinen yolu arabacısız gider.</summary>
         public const int DriverlessLevel = 7;
+        /// <summary>Araba sundurması: altındaki araba yağmurda yıpranmaz.</summary>
+        public const string ShedTag = "cart_shed";
 
         private readonly WorldState _world;
         private readonly Household _house;
@@ -51,6 +54,8 @@ namespace Thatchwick.Core.Farmyard
         /// <summary>Kural: verimi eşiğin altına düşen karoya tarla arabası kendiliğinden gübre serer.</summary>
         public bool FertilizeRule { get; set; }
         public float FertilizeBelow { get; set; }
+        /// <summary>Kâhya boşta duran arabalara o günün işini dağıtsın (Kâhyalık 4 ve görevde bir kâhya ister).</summary>
+        public bool StewardCarts { get; set; }
 
         public CartFleet(WorldState world, Household house, AnimalSystem animals, YardConfig config = null)
         {
@@ -97,6 +102,80 @@ namespace Thatchwick.Core.Farmyard
         {
             if (!_known.TryGetValue(key, out var c)) _known[key] = c = new Cart { Key = key, DefId = defId, ItemId = itemId, Job = initial };
             return c;
+        }
+
+        /// <summary>
+        /// Envanterdeki arabaları avluya koyar (belge 57e §2.5, kayıt göçü): araba artık yerleştirilen eşyadır. Görevi,
+        /// hayvanı, arabacısı ve tekerlek durumu yeni eşyaya taşınır. Yer bulunamayan araba envanterde bekler. Konan adet.
+        /// </summary>
+        public int ParkInventory(ContentDatabase content, Func<ItemDef, GridPos?> findSpot)
+        {
+            int placed = 0;
+            if (content == null || findSpot == null) return 0;
+            foreach (var id in CartIds)
+            {
+                if (!content.Items.TryGet(id, out var def) || def.Placement == ItemPlacement.Resource) continue;
+                for (int i = _house.Count(id) - 1; i >= 0; i--)
+                {
+                    var spot = findSpot(def);
+                    if (!spot.HasValue || !_house.TryTakeItem(id)) break;
+                    var item = _world.PlaceItem(def, spot.Value);
+                    var cart = new Cart { Key = "item:" + item.Id, DefId = id, ItemId = item.Id };
+                    if (_known.TryGetValue(id + "#" + i, out var old))
+                    {
+                        cart.Job = old.Job; cart.AnimalId = old.AnimalId; cart.DriverId = old.DriverId; cart.Wear = old.Wear;
+                        _known.Remove(id + "#" + i);
+                    }
+                    _known[cart.Key] = cart;
+                    placed++;
+                }
+            }
+            return placed;
+        }
+
+        /// <summary>Araba bir sundurmanın altında mı (envanterdeki araba kapalı yerde sayılır).</summary>
+        public bool Sheltered(Cart c)
+        {
+            if (c == null || c.ItemId == 0) return true;
+            var item = _world.GetItem(c.ItemId);
+            if (item == null) return true;
+            foreach (var it in _world.Items)
+            {
+                if (it.IsDecor || !it.Def.HasTag(ShedTag) || it.Position.Z != item.Position.Z) continue;
+                int dx = item.Position.X - it.Position.X, dy = item.Position.Y - it.Position.Y;
+                if (dx >= -Config.ShedRadius && dx <= it.Def.Width - 1 + Config.ShedRadius && dy >= -Config.ShedRadius && dy <= it.Def.Height - 1 + Config.ShedRadius) return true;
+            }
+            return false;
+        }
+
+        /// <summary>Yağmurlu gün: sundurmasız duran arabaların tekerleği yıpranır. Islanan araba sayısı.</summary>
+        public int RainOnCarts()
+        {
+            int n = 0;
+            foreach (var c in Carts)
+            {
+                if (Sheltered(c)) continue;
+                c.Wear = Math.Min(1.0, c.Wear + Config.RainWear);
+                n++;
+            }
+            return n;
+        }
+
+        /// <summary>
+        /// Arabanın gün içindeki seferi (görünüm için): 0 avluda, 1 çıkıyor, 2 yolda (görünmez), 3 dönüyor; t evre içi 0-1.
+        /// Tarla arabası çiftlikten çıkmaz.
+        /// </summary>
+        public (int phase, float t) TripPhase(Cart cart, double dayFraction)
+        {
+            if (cart == null) return (0, 0f);
+            Cart worked = null;
+            foreach (var c in _today) if (c.Key == cart.Key) { worked = c; break; }
+            if (worked == null || worked.Job == CartJob.Idle || worked.Job == CartJob.Field) return (0, 0f);
+            var k = Config;
+            if (dayFraction < k.TripLeave || dayFraction >= k.TripHome) return (0, 0f);
+            if (dayFraction < k.TripGone) return (1, (float)((dayFraction - k.TripLeave) / (k.TripGone - k.TripLeave)));
+            if (dayFraction < k.TripBack) return (2, 0f);
+            return (3, (float)((dayFraction - k.TripBack) / (k.TripHome - k.TripBack)));
         }
 
         public Cart Find(string key) { foreach (var c in Carts) if (c.Key == key) return c; return null; }
@@ -320,16 +399,17 @@ namespace Thatchwick.Core.Farmyard
             var work = new List<YardAnimalWorkSave>();
             foreach (var kv in _work) work.Add(new YardAnimalWorkSave { animalId = kv.Key, lastDay = kv.Value.day, streak = kv.Value.streak });
             work.Sort((a, b) => a.animalId.CompareTo(b.animalId));
-            return new YardFleetSave { carts = carts.ToArray(), work = work.ToArray(), fertilizeRule = FertilizeRule ? 1 : 0, fertilizeBelow = FertilizeBelow };
+            return new YardFleetSave { carts = carts.ToArray(), work = work.ToArray(), fertilizeRule = FertilizeRule ? 1 : 0, fertilizeBelow = FertilizeBelow, stewardCarts = StewardCarts ? 1 : 0 };
         }
 
         public void Import(YardFleetSave data)
         {
             _known.Clear(); _work.Clear(); _today.Clear(); _carts.Clear();
             _migrated = data != null;   // eski kayıtta filo yok: avludaki öküz arabası pazar görevine başlar
-            FertilizeRule = false; FertilizeBelow = Config.FertilizeBelow;
+            FertilizeRule = false; StewardCarts = false; FertilizeBelow = Config.FertilizeBelow;
             if (data == null) return;
             FertilizeRule = data.fertilizeRule != 0;
+            StewardCarts = data.stewardCarts != 0;
             if (data.fertilizeBelow > 0f) FertilizeBelow = data.fertilizeBelow;
             if (data.carts != null)
                 foreach (var s in data.carts)
