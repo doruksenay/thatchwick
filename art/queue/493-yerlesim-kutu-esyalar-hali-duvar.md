@@ -1,7 +1,7 @@
 ---
 id: "493"
 title: "Yerleşim: kutu çizilen halı, masa üstü, duvar ve tavan eşyaları (10)"
-status: running
+status: review
 claimed_at: 2026-11-20T10:25Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 20.11.2026 "ne eksik ... dükkan dekorasyonları ... doğal duruyor mu" (yerleşim raporu: kutu çizilen eşyalar)
 priority: 15
@@ -52,6 +52,9 @@ Halılar **337 ile aynı yöntem** (düz, gölgesiz, ayak izi elmasına oturur).
 ## Notlar
 - Önceki denemelerde kalma nedeni çoğunlukla palet ve doygunluktu (303 raporu: tezgâh 57 renk, x1,54 doygun; su fıçısı %70 palet dışı). Açıklamaya `earthy muted medieval palette, desaturated` eki konur.
 - Dosya adları `items.json`'daki eşlemeyle aynı olmalı; teslimde `cp -n`, `.meta` yok. Teslim edilen eşyanın `pending` alanını işçi değil kod oturumu kaldırır.
+
+## Sorular
+Teslim edilmeyen 7 eşya için `art/results/493-yerlesim-kutu-esyalar-hali-duvar.md` > Sorunlar (yeni deneme ya da yöntem kararı).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
