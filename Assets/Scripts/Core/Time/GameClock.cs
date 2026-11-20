@@ -54,8 +54,15 @@ namespace Thatchwick.Core.Time
         /// <summary>Yapı modu, katalog, menü ya da konuşma açık: zaman durur (belge 47, karar 4).</summary>
         public bool Paused { get; set; }
 
-        /// <summary>Hızlı gece şu an uygulanıyor mu (kritik an yokken).</summary>
-        public bool IsFastNightActive => FastNight && !Paused && _criticalLocks == 0;
+        /// <summary>Hızlı gece yalnızca bu saatler arasında uygulanır (belge 65c B1: gündüz şekerlemesinde de ×4 akıyordu).</summary>
+        public const double FastNightFromHour = 20.0;
+        public const double FastNightUntilHour = 6.0;
+
+        /// <summary>Saat hızlı gece aralığında mı.</summary>
+        public bool IsFastNightHour { get { double h = DayFraction * 24.0; return h >= FastNightFromHour || h < FastNightUntilHour; } }
+
+        /// <summary>Hızlı gece şu an uygulanıyor mu (gece saatinde, kritik an yokken).</summary>
+        public bool IsFastNightActive => FastNight && IsFastNightHour && !Paused && _criticalLocks == 0;
 
         /// <summary>Uygulanan toplam çarpan: hız × hızlı gece (duraklatmada 0).</summary>
         public double EffectiveMultiplier => Paused ? 0.0 : EffectiveSpeed * (IsFastNightActive ? FastNightMultiplier : 1.0);

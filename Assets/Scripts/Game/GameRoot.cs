@@ -1713,7 +1713,8 @@ namespace Thatchwick.Game
                     WaterNetworkAccess = () => _water != null ? _water.AllWaterAccess() : WaterNetwork.WaterAccess(_world),
                     PipedWater = it => _water != null && _water.IsSupplied(it),
                     WalkSpeed = () => _animals.RideSpeed(character.Id), DutyProvider = _duties.Next,
-                    DutySpeed = () => SkillNames.Factor(_life.BestSkill(SkillType.Stewardship), 0.03)
+                    DutySpeed = () => SkillNames.Factor(_life.BestSkill(SkillType.Stewardship), 0.03),
+                    HourOfDay = () => _clock != null ? _clock.DayFraction * 24.0 : 12.0   // gece yatma eşiği (belge 65c B2)
                 },
                 View = go.transform,
                 Renderer = sr,
