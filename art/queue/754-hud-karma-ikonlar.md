@@ -1,7 +1,7 @@
 ---
 id: "754"
 title: "HUD karma yön: ihtiyaç, hız ve mevsim ikonları (parça başına)"
-status: pending
+status: hold        # 2026-11-21: 774-776 (saf meşe) ile çakışıyor; kullanıcı kararı bekleniyor
 approved_by: user        # kullanıcı kararı 2026-11-21: meşe + ilmek karışık; ikonlar parça başına
 priority: 1
 family: arayuz

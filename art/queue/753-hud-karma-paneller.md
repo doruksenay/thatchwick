@@ -1,7 +1,7 @@
 ---
 id: "753"
 title: "HUD karma yön: meşe paneller ve sarmaşıklı kart çerçevesi (parça başına)"
-status: pending
+status: hold        # 2026-11-21: 774-776 (saf meşe) ile çakışıyor; kullanıcı kararı bekleniyor
 approved_by: user        # kullanıcı kararı 2026-11-21: meşe + ilmek karışık; meşedeki sarmaşıklı çerçeve beğenildi; parça başına üretim
 priority: 1
 family: arayuz
