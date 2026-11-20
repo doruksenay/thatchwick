@@ -20,10 +20,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 2   # PR'da HEAD birleştirme commit'idir; HEAD^1 ana dal tarafı (sabit metin denetimi)
 
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: 8.0.x
+
+      # Yalnızca PR'da ve yalnızca PR'ın kendi eklediğine bakar: main'de kırmızıya dönmez, başkasının borcunu saymaz.
+      - name: Yeni sabit metin denetimi
+        if: github.event_name == 'pull_request'
+        run: python3 tools/loc/sabit_metin.py --base HEAD^1
 
       - name: Test
         run: dotnet test core/Thatchwick.Core.Tests --verbosity normal
@@ -39,3 +46,4 @@ jobs:
         run: |
           python3 -m pip install --quiet pillow
           python3 -m unittest discover tools/art/tests
+          python3 -m unittest discover tools/loc/tests

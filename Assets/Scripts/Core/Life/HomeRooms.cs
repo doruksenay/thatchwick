@@ -18,7 +18,9 @@ namespace Thatchwick.Core.Life
         /// <summary>Sera: pencereli, ışıklı zemin kat odası (PlantSystem.IsGreenhouse) içinde bitki ya da seraya ait eşya; yatak ve ocak yok.</summary>
         Greenhouse = 6,
         /// <summary>Ağaç köşkü (belge 52): ulu ağaca bağlı oda; konforlu eşyaya manzara katkısı, içindekilere manzara moodlet'i.</summary>
-        TreeKiosk = 7
+        TreeKiosk = 7,
+        /// <summary>Mezbaha (belge 60a §2): içinde kesim kancası olan kapalı oda. Kesim burada, görünmeden yapılır.</summary>
+        Slaughterhouse = 8
     }
 
     public sealed partial class HomeLife
@@ -69,6 +71,7 @@ namespace Thatchwick.Core.Life
                 case RoomKind.Pantry: return "Kiler";
                 case RoomKind.Greenhouse: return "Sera";
                 case RoomKind.TreeKiosk: return "Ağaç köşkü";
+                case RoomKind.Slaughterhouse: return "Mezbaha";
                 case RoomKind.Living: return "Oturma odası";
                 default: return "Oda";
             }
@@ -123,6 +126,7 @@ namespace Thatchwick.Core.Life
             public int Beds, Stoves, Stations, Pantries, Shelves, WallItems, Storage, SurfaceDecor, Light;
             public int Plants, GreenhouseItems, GreenhouseWork;
             public bool SoftFloorOrCurtain;
+            public int Hooks, MeatStores;
         }
 
         private static bool IsBed(ItemDef d)
@@ -153,6 +157,8 @@ namespace Thatchwick.Core.Life
                 if (RoomOf(it) != room) continue;
                 var d = it.Def;
                 if (it.GivesLight) info.Light++;
+                if (d.HasTag(Cooking.Slaughterhouse.HookTag)) info.Hooks++;
+                if (d.HasTag(Cooking.Slaughterhouse.StoreTag)) info.MeatStores++;
                 if (d.HasTag(GreenhouseTag)) info.GreenhouseItems++;
                 if (d.HasTag(GreenhouseWorkTag)) info.GreenhouseWork++;
                 if (it.IsPlant) { info.Plants++; continue; }
@@ -172,6 +178,7 @@ namespace Thatchwick.Core.Life
                 if (d.Storage > 0) info.Storage++;
             }
             if (IsKioskRoom != null && IsKioskRoom(room)) info.Kind = RoomKind.TreeKiosk;
+            else if (info.Hooks > 0) info.Kind = RoomKind.Slaughterhouse;
             else if (info.Beds > 0) info.Kind = RoomKind.Bedroom;
             else if (info.Stoves > 0) info.Kind = RoomKind.Kitchen;
             else if ((info.Plants > 0 || info.GreenhouseItems > 0) && IsGreenhouseRoom != null && IsGreenhouseRoom(room)) info.Kind = RoomKind.Greenhouse;
@@ -193,6 +200,7 @@ namespace Thatchwick.Core.Life
                 case RoomKind.Bedroom: tidy = info.Storage >= 1 && info.SoftFloorOrCurtain; break;
                 case RoomKind.Greenhouse: tidy = info.GreenhouseWork >= 1 && info.GreenhouseItems >= TidyGreenhouseItems; break;
                 case RoomKind.TreeKiosk: tidy = info.Light >= 1; break;
+                case RoomKind.Slaughterhouse: tidy = info.MeatStores >= 1; break;
             }
             return (info.Kind, tidy);
         }

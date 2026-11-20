@@ -1,18 +1,20 @@
 ---
 id: "600"
-title: "Mutfak, pişirme kapları: tencere, sac, tava, güveç, şiş, tepsi, sacayağı (11)"
-status: pending
+title: "Mutfak, pişirme kapları: tencere, kazan, sac, tava, güveç, şiş, tepsi, sacayağı (12)"
+status: review
+claimed_at: 2026-11-20T15:16Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (63a-K10: "mutfak eşyaları hemen girebilir: olur"), Project belgeleri 63, 63a
 priority: 30
 family: esya
 style_gate: false
-cost_est: 11
-cost_max: 22
+cost_est: 12
+cost_max: 24
 depends_on: ["301"]
 max_attempts: 2
 pixellab: true
 outputs:
   - Assets/Art/Iso/_aday/iso_item_pot_clay_se.png
+  - Assets/Art/Iso/_aday/iso_item_cauldron_iron_se.png
   - Assets/Art/Iso/_aday/iso_item_griddle_iron_se.png
   - Assets/Art/Iso/_aday/iso_item_pan_copper_se.png
   - Assets/Art/Iso/_aday/iso_item_guvec_plain_se.png
@@ -25,10 +27,10 @@ outputs:
   - Assets/Art/Iso/_aday/iso_item_trivet_iron_se.png
 created: 2026-11-20
 ---
-# 600 Mutfak, pişirme kapları: tencere, sac, tava, güveç, şiş, tepsi, sacayağı (11)
+# 600 Mutfak, pişirme kapları: tencere, kazan, sac, tava, güveç, şiş, tepsi, sacayağı (12)
 
 ## Amaç
-Gerekenler modeli (Project belgeleri 63 §2, 63a §2 ve §5): pişirme kabı gerçek eşyadır; kancada, rafta ya da masada durur, karakter alıp ocağa götürür. Her kap bir pişirme yöntemini açar; kademe (K1-K3) yemek kalitesinin tavanını belirler. Demir kazan (K2) var olan `iso_item_cooking_pot_se_v3`, bakır kazan (K3) var olan `iso_item_copper_pot_se` görselini kullanır; yeniden üretilmez.
+Gerekenler modeli (Project belgeleri 63 §2, 63a §2 ve §5): pişirme kabı gerçek eşyadır; kancada, rafta ya da masada durur, karakter alıp ocağa götürür. Her kap bir pişirme yöntemini açar; kademe (K1-K3) yemek kalitesinin tavanını belirler. Bakır kazan (K3) var olan `iso_item_copper_pot_se` görselini kullanır, yeniden üretilmez.
 
 ## Tarif
 Eşya dalgasının yöntemi (301/302): `create_map_object` stil eşleme, `tools/art/footprint_guide.py` kılavuzu ve maskesi, aile `esya`. Masa üstü eşyalar masa üstü dekor ölçüsünde (referans: `iso_item_copper_pot_se`, `iso_item_ladle_se`, `iso_item_wooden_bowl_se`); 1x1 eşyalar eşya dalgası ölçüsünde.
@@ -36,6 +38,7 @@ Eşya dalgasının yöntemi (301/302): `create_map_object` stil eşleme, `tools/
 | Dosya | Ayak izi | Açıklama |
 |---|---|---|
 | `iso_item_pot_clay_se.png` | masa üstü | `small round unglazed earthenware cooking pot with two lug handles and a clay lid, soot-darkened base` |
+| `iso_item_cauldron_iron_se.png` | masa üstü | `small black wrought-iron cauldron with a round belly, three short feet and an arched bail handle` |
 | `iso_item_griddle_iron_se.png` | masa üstü | `shallow round convex black iron griddle with two small ring handles` |
 | `iso_item_pan_copper_se.png` | masa üstü | `shallow round tinned copper frying pan with one long flat iron handle` |
 | `iso_item_guvec_plain_se.png` | masa üstü | `wide low unglazed reddish clay casserole with a domed clay lid and a knob` |

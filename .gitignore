@@ -64,7 +64,7 @@ Assets/mcp-pixellab-blob-*
 art/.worker.lock
 
 # Stil kilidi palet önizlemesi (tools/art/style.py palette --png)
-art/style/palette.png
+art/style/palette*.png
 
 # Python önbelleği (tools/art)
 __pycache__/
@@ -86,3 +86,6 @@ tools/layout-report/obj/
 .audio_masters/
 .audio_work_indir/
 tools/audio-poll.log
+art/preview/
+tools/map-preview/bin/
+tools/map-preview/obj/

@@ -141,6 +141,7 @@ namespace Thatchwick.Game
 
         private static readonly string[] GrassTiles = { "iso_ground_grass_a", "iso_ground_grass_b", "iso_ground_grass_c" };
         private static readonly string[] DirtTiles = { "iso_ground_dirt_a", "iso_ground_dirt_b" };
+        private static readonly string[] SandTiles = { "iso_ground_sand_a", "iso_ground_sand_b", "iso_ground_sand_c" };
 
         /// <summary>Çim ve toprak için gerçek karo (konuma göre sabit varyasyon); diğer zeminler için null.</summary>
         public static Sprite Ground(FloorType floor, int x, int y)
@@ -151,6 +152,8 @@ namespace Thatchwick.Game
             {
                 case FloorType.Grass: return GetCentered(GrassTiles[h % GrassTiles.Length]);
                 case FloorType.Dirt: return GetCentered(DirtTiles[h % DirtTiles.Length]);
+                // Kum (belge 64a): iso_ground_sand_a/b/c (art/queue Z1); yoksa kumsal karosu; o da yoksa null (renk).
+                case FloorType.Sand: return GetCentered(SandTiles[h % SandTiles.Length]) ?? GetCentered("iso_ground_sand_a") ?? Beach(x, y);
                 default: return null;
             }
         }

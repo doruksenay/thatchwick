@@ -43,6 +43,7 @@ namespace Thatchwick.Core.Layout
             map.SetRoad(new GridPos(94, 41), RoadType.Path); map.SetRoad(new GridPos(95, 41), RoadType.Path);
             Regions.BuildTerrain(map);
             TownBuilder.BuildFloors(map, layouts);   // dükkânların üst katı, bodrumu, han odaları (belge 44 C)
+            BuildingKits.ApplyTerrain(map, layouts);  // bina kimlik kartları: cephe, zemin, çatı, iç kaplama (belge 64 §5)
             Regions.Naturalize(map);
             Regions.Apply(map);
             return map;
@@ -110,6 +111,7 @@ namespace Thatchwick.Core.Layout
             var wild = s.PlaceRegions();
             DropInvalid(world, content, res.Plan, wild, log);   // yaban haritalarının elle konmuş eşyaları da aynı kurallardan geçer
             res.Reports.AddRange(TownBuilder.Furnish(world, content, layouts, res.Plan, seed, log));
+            BuildingKits.ApplyFinishes(world, layouts, content);   // dükkânın tek ahşap tonu ve kumaş rengi (belge 64 §5)
             res.Reports.AddRange(OutdoorBuilder.Place(world, content, layouts, res.Plan, seed, log));   // dış mekân, bahçeler, bitki örtüsü (D)
             s.PlaceWildOaks();
             foreach (var it in world.Items) if (it.Def.Id == "item.market_stall") { res.StallId = it.Id; break; }
@@ -309,6 +311,8 @@ namespace Thatchwick.Core.Layout
                         continue;
                     }
                     if (ti.Slot != null) { PutOn(ti.Id, ti.X, ti.Y, 0, ti.Slot); continue; }
+                    // Simge yapı görseli gelmeden konmaz (görünmez engel olmasın; belge 64a Aşama F).
+                    if (_content.Items.TryGet(ti.Id, out var lm) && lm.HasTag("landmark") && (lm.Art == null || lm.Art.Pending)) continue;
                     if (_world.Map.GetRoad(at) != RoadType.None) { _log($"Yol üstüne eşya konmaz: {ti.Id} {at}"); continue; }
                     if (ti.WallSide >= 0) { PutWall(ti.Id, at, ti.WallSide); continue; }
                     var placed = Put(ti.Id, ti.X, ti.Y);

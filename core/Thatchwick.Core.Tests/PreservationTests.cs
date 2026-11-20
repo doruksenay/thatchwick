@@ -63,11 +63,20 @@ namespace Thatchwick.Core.Tests
             var fx = new InteractionEffects(w, house, db, 1) { Animals = animals };
             var c = Cook();
 
-            Run(fx, c, coop, "slaughter");
+            // Mezbaha (belge 60a): oyuncu hayvanı işaretler; kümes hayvanı da aynı kuralla kesilir (60b-M2).
+            var mezbaha = new Thatchwick.Core.Cooking.Slaughterhouse(animals, house, db);
+            var hook = db.Items.Get("item.slaughter_hook");
+            var cut = hook.Interactions.Single(i => i.MealAction == Thatchwick.Core.Cooking.Slaughterhouse.SlaughterAction);
+            var carry = hook.Interactions.Single(i => i.MealAction == Thatchwick.Core.Cooking.Slaughterhouse.CollectAction);
+            Assert.True(mezbaha.Mark(hen, true));
+            mezbaha.OnApplied(c, null, cut);
+            mezbaha.OnApplied(c, null, carry);
             Assert.Equal(1, house.Count("item.poultry"));
             Assert.Equal(0, animals.Residents(coop.Id));
 
-            Run(fx, c, barn, "slaughter");
+            Assert.True(mezbaha.Mark(cow, true));
+            mezbaha.OnApplied(c, null, cut);
+            mezbaha.OnApplied(c, null, carry);
             Assert.Equal(4, house.Count("item.meat"));
             Assert.Equal(0, animals.Residents(barn.Id));
         }
@@ -81,14 +90,19 @@ namespace Thatchwick.Core.Tests
             var coop = w.PlaceItem(db.Items.Get("item.coop"), new GridPos(5, 5));
             var fx = new InteractionEffects(w, new Household(10), db, 1) { Animals = animals };
             var c = Cook();
-            var cut = coop.Def.Interactions.First(i => i.Id == "slaughter");
+            var mezbaha = new Thatchwick.Core.Cooking.Slaughterhouse(animals, new Household(10), db);
+            var hookItem = w.PlaceItem(db.Items.Get("item.slaughter_hook"), new GridPos(8, 8));
+            var cut = hookItem.Def.Interactions.Single(i => i.MealAction == Thatchwick.Core.Cooking.Slaughterhouse.SlaughterAction);
 
-            Assert.Equal("Burada hayvan yok.", fx.CanStart(c, coop, cut));
+            Assert.NotNull(mezbaha.HookBlocker(c, hookItem, cut));   // liste boş
             var chick = animals.Restore(1, db.Animals.Get("animal.chicken"), new GridPos(4, 5), coop.Id, 100f, 1, 0, 0, friendship: 0f);
-            Assert.Equal("Kesilecek kadar büyümüş hayvan yok.", fx.CanStart(c, coop, cut));
-            animals.Restore(2, db.Animals.Get("animal.chicken"), new GridPos(4, 4), coop.Id, 100f, 10, 0, 0, friendship: AnimalSystem.SpareFriendship);
+            Assert.NotNull(mezbaha.Blocked(chick));                  // yavru kesilemez
+            Assert.False(mezbaha.Mark(chick, true));
+            var friend = animals.Restore(2, db.Animals.Get("animal.chicken"), new GridPos(4, 4), coop.Id, 100f, 10, 0, 0, friendship: AnimalSystem.SpareFriendship);
             // Yetişkin ama dost: kıyılmaz; civciv henüz küçük.
-            Assert.Equal("Kalan hayvanlar artık dost; kıyamazsın.", fx.CanStart(c, coop, cut));
+            Assert.NotNull(mezbaha.Blocked(friend));
+            Assert.False(mezbaha.Mark(friend, true));
+            Assert.NotNull(mezbaha.HookBlocker(c, hookItem, cut));
             Assert.Equal(2, animals.Residents(coop.Id));
         }
 

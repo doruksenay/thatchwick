@@ -27,6 +27,7 @@ internal static class Program
         bool list = args.Contains("--list") || args.Contains("list"), md = args.Contains("--md") || args.Contains("md");
         var root = RepoRoot();
         var content = Path.Combine(root, "Assets", "Resources", "Content");
+        MapFiles.Provider = MapFiles.FromFolder(Path.Combine(content, "maps"), t => JsonSerializer.Deserialize<MapMarkersDto>(t, Json));
         var file = JsonSerializer.Deserialize<ContentFileDto>(File.ReadAllText(Path.Combine(content, "items.json")), Json);
         file.Merge(JsonSerializer.Deserialize<ContentFileDto>(File.ReadAllText(Path.Combine(content, "life.json")), Json));
         var db = new ContentDatabase();

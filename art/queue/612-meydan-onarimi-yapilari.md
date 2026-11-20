@@ -1,7 +1,8 @@
 ---
 id: "612"
 title: "Köy meydanı onarımı: 7 yapının yıkık ve onarılmış hâli, iki iskele katmanı"
-status: pending
+status: failed
+claimed_at: 2026-11-20T14:26Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("köy meydanının onarımı ... bu olsun"), Project belgesi 64c
 priority: 15
 family: yapi
@@ -52,6 +53,9 @@ Yapı ailesinin izometrik tarifi (`create_image_pixflux`, izometrik görünüm, 
 ## Notlar
 - Yerleşim ve kod: belge 64a Aşama E (meydan) ile birlikte; konumlar `markers.json`'a `square:<ad>` olarak girer.
 - Eşleme gelene kadar kod yıkık hâl için yer tutucu çizmez; yapı yoksa onarım projesi listede görünür ama haritada işaret olmaz.
+
+## Sorular
+Kısmi sonuç: 8 görsel teslim (kuyu, kiler, çark, çan kulesi, pazar yeri, köprü, 2 iskele). Yıkık hâllerin tümü ve ocak teslim edilmedi; ayrıntı `art/results/612-meydan-onarimi-yapilari.md`. Yıkık hâller için 612b gerekir (düşük init gücü ya da edit/inpaint).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

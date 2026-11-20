@@ -39,6 +39,12 @@ namespace Thatchwick.Core.Save
     }
 
     [Serializable]
+    public sealed class CookingSave
+    {
+        public string[] recipes, meals, butchery, kitchen, routines, social, outings;
+    }
+
+    [Serializable]
     public sealed class LifeSaveData
     {
         /// <summary>Avlu: yığınlar, kompost, ahır kirliliği, fare, araba filosu (belge 57-57e). Eski kayıtta null.</summary>
@@ -106,6 +112,8 @@ namespace Thatchwick.Core.Save
         public bool locustIncoming;
         public string[] adoptedWild;
         public string[] coffeeHabits;
+        /// <summary>Yemek, sofra, mezbaha, mutfak görevi, rutin ve baş başa etkinlikler (belge 58-62). Eski kayıtta null.</summary>
+        public CookingSave cooking;
         public string[] olives;         // zeytin ağaçları (32-7): "itemId:dikimGünü:yadigâr:diken"   // kahve alışkanlığı (belge 32-6): "id:sonGün:seri:alışkanlık"
         public string[] contests;
         /// <summary>Bekleyen at yarışı bahsi (RaceBets.Export); yoksa null.</summary>

@@ -75,6 +75,37 @@ namespace Thatchwick.Game
 
         private const string LayoutsPath = "Content/layouts";
 
+        /// <summary>
+        /// Harita taslakları (belge 64a): Resources/Content/maps/&lt;bölge&gt;/terrain.png (okunabilir doku, IsoImportPostprocessor)
+        /// ve markers.json. Core taslağı ilk istendiğinde bu kaynaktan okur; dosyası olmayan bölge kod çizimiyle kurulur.
+        /// </summary>
+        public static void InstallMaps()
+        {
+            Thatchwick.Core.World.MapFiles.Reset();
+            Thatchwick.Core.World.MapFiles.Provider = id =>
+            {
+                var tex = Resources.Load<Texture2D>($"Content/maps/{id}/terrain");
+                if (tex == null) return null;
+                Color32[] px;
+                try { px = tex.GetPixels32(); }
+                catch (Exception ex) { Debug.LogError($"maps/{id}/terrain.png okunamıyor (Read/Write kapalı?): {ex.Message}"); return null; }
+                int w = tex.width, h = tex.height;
+                var rgba = new byte[w * h * 4];
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        var c = px[(h - 1 - y) * w + x];   // Unity'de satır 0 alttadır; taslakta üstte
+                        int o = (y * w + x) * 4;
+                        rgba[o] = c.r; rgba[o + 1] = c.g; rgba[o + 2] = c.b; rgba[o + 3] = c.a;
+                    }
+                var mk = Resources.Load<TextAsset>($"Content/maps/{id}/markers");
+                var markers = mk != null ? JsonUtility.FromJson<Thatchwick.Core.World.MapMarkersDto>(mk.text) : null;
+                var map = Thatchwick.Core.World.RegionMap.FromRgba(id, w, h, rgba, markers, Thatchwick.Core.World.MapFiles.Errors);
+                foreach (var e in Thatchwick.Core.World.MapFiles.Errors) Debug.LogWarning(e);
+                return map;
+            };
+        }
+
         /// <summary>Yerleşim şablonlarını (layouts.json: oda, bina, bahçe; belge 44) okur. Dosya yoksa null (iç mekânlar boş kalır).</summary>
         public static Thatchwick.Core.Layout.LayoutCatalog LoadLayouts(ContentDatabase content, out List<string> errors)
         {

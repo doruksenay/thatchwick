@@ -26,6 +26,12 @@ Shader "Thatchwick/SwaySprite"
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
             float _TwWind;
+            // Rüzgâr yönü ve hamle (belge 57 §8): _TwLean rüzgâr yönüne kalıcı eğim (piksel, işaretli);
+            // _TwGustPos haritayı dolaşan hamlenin konumu (dünya x + 0,5 y), _TwGustWidth genişliği, _TwGustAmp gücü (piksel, işaretli).
+            float _TwLean;
+            float _TwGustPos;
+            float _TwGustWidth;
+            float _TwGustAmp;
 
             struct Attributes
             {
@@ -53,7 +59,9 @@ Shader "Thatchwick/SwaySprite"
                 float lift = saturate(input.positionOS.y * 0.6);
                 float phase = origin.x * 1.7 + origin.y * 2.3;
                 float wave = sin(_Time.y * 1.5 + phase) + 0.35 * sin(_Time.y * 3.7 + phase * 1.3);
-                float px = round(wave * _TwWind * lift * lift);
+                float along = origin.x + origin.y * 0.5;
+                float gust = saturate(1.0 - abs(along - _TwGustPos) / max(_TwGustWidth, 0.5)) * _TwGustAmp;
+                float px = round((wave * _TwWind + _TwLean + gust) * lift * lift);
                 world.x += px / 32.0;
                 o.positionCS = TransformWorldToHClip(world);
                 o.color = input.color * unity_SpriteColor;

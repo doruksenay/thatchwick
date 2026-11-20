@@ -194,6 +194,14 @@ namespace Thatchwick.Core.Animals
             return true;
         }
 
+        /// <summary>Mezbaha ya da pazar kesimi (belge 60a): seçilen hayvan sürüden çıkar; ürünleri Cooking.Slaughterhouse verir.</summary>
+        public bool RemoveForSlaughter(Animal a)
+        {
+            if (a == null || !_animals.Remove(a)) return false;
+            TakenAway?.Invoke(a);
+            return true;
+        }
+
         /// <summary>Kesim işi başlamadan neden olmayacağı (null: olur).</summary>
         public string SlaughterBlocker(int homeItemId)
         {

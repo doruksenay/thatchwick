@@ -56,8 +56,9 @@ namespace Thatchwick.Core.Life
         public static int MaxQuality(int cap) => cap < SuperiorAt ? ItemQuality.Fine : cap < MasterworkAt ? ItemQuality.Superior : ItemQuality.Max;
 
         /// <summary>
-        /// Ekipman puanının bugünkü kalite kuralına (53 §4.4, "kapının üstü" seviyesi) etkisi: altı bileşenli sofra puanı
-        /// (58 §6) kurulana dek puan, usta şansını belirleyen seviyeyi kaydırır.
+        /// Ekipman puanının 53 §4.4 kalite kuralına ("kapının üstü" seviyesi) etkisi: yemek sınıfı olmayan pişirme işlerinde
+        /// (reçel, pekmez, peynir, çay) puan, usta şansını belirleyen seviyeyi kaydırır. Yemeklerde puan sofra puanının
+        /// ekipman bileşenidir (58 §6; <see cref="KitchenSystem.EquipmentPointsFor"/>), seviye kaydırılmaz.
         /// </summary>
         public static int LevelShift(int score) => score <= 1 ? -2 : score <= 3 ? -1 : score <= 6 ? 0 : score <= 8 ? 1 : 2;
     }
@@ -204,6 +205,10 @@ namespace Thatchwick.Core.Life
         public double DirtyAgeDays => DirtyPieces > 0 && _dirtySince >= 0 ? Math.Max(0, Today - _dirtySince) : 0;
 
         public int TablewareOwned { get { int n = 0; foreach (var d in _tableware) n += Owned(d.Id); return n; } }
+        /// <summary>Masalarda duran, henüz toplanmamış kirli tabak (sofra: MealService.PlatesOnTables).</summary>
+        public Func<int> PlatesOnTables { get; set; }
+        /// <summary>Temiz sofra takımı: ne bulaşıkta ne masada bekleyen.</summary>
+        public int CleanTableware => TablewareOwned - _dirtyTableware - (PlatesOnTables?.Invoke() ?? 0);
 
         // ---- gerekenler ----
 
@@ -535,8 +540,22 @@ namespace Thatchwick.Core.Life
             if (!Enforce || i == null || i.Cook == null || Exempt(c)) return null;
             var use = UseFor(c, item, i);
             if (use == null) return null;
-            return (KitchenQuality.MaxQuality(use.Cap), KitchenQuality.LevelShift(use.Score));
+            return (KitchenQuality.MaxQuality(use.Cap), i.Dish != null ? 0 : KitchenQuality.LevelShift(use.Score));
         }
+
+        /// <summary>
+        /// Sofra puanının ekipman bileşeni (MealService.EquipmentPoints; 58 §6, 63a §5.2). Kap istemeyen işte (çiğ, köz,
+        /// tepsisiz fırın) null: bileşen ocağın ya da fırının durumundan gelir.
+        /// </summary>
+        public int? EquipmentPointsFor(Character c, ItemInstance station, InteractionDef i)
+        {
+            if (!Enforce || i == null || i.Cook == null || Exempt(c)) return null;
+            var use = UseFor(c, station, i);
+            return use == null || use.Vessel == null ? (int?)null : use.Score;
+        }
+
+        /// <summary>Kabın kalite tavanı (MealService.QualityCap; 63a §5.4); tavan yoksa null.</summary>
+        public int? QualityCapFor(Character c, ItemInstance station, InteractionDef i) => QualityFor(c, station, i)?.maxQuality;
 
         /// <summary>Tarif kartı için: bu iş bugün hangi kapla, kaç puanla ve hangi tavanla yapılır; eksik varsa nedeni.</summary>
         public KitchenUse Preview(Character c, ItemInstance item, InteractionDef i, out string missing) => Resolve(c, item, i, out missing);
@@ -573,14 +592,33 @@ namespace Thatchwick.Core.Life
         {
             if (!Enforce || i == null || Exempt(c) || !i.RestoresNeed || i.Need != NeedType.Hunger || i.ConsumeItem == null) return;
             if (!_content.Items.TryGet(i.ConsumeItem, out var food) || !food.HasTag("cooked")) return;
-            int owned = TablewareOwned;
-            if (owned <= 0) return;
-            if (_dirtyTableware < owned)
+            if (TablewareOwned <= 0) return;
+            if (CleanTableware > 0)
             {
                 _dirtyTableware++;
                 if (_dirtySince < 0) _dirtySince = Today;
             }
             else c.AddMoodlet(DirtyPlateMood, Text(LocText.Of("kitchen.mood.dirty_plate")), -1, 0.25);
+        }
+
+        /// <summary>
+        /// Sofrada bir porsiyon yendi (MealService.PlateUsed): tabak masada kirli kalır, sofra toplanınca bulaşığa girer.
+        /// Temiz tabak kalmadıysa kasvet (kirli tabaktan yedi).
+        /// </summary>
+        public void OnTablePlate(Character c)
+        {
+            if (!Enforce || Exempt(c) || TablewareOwned <= 0) return;
+            if (CleanTableware <= 0) c.AddMoodlet(DirtyPlateMood, Text(LocText.Of("kitchen.mood.dirty_plate")), -1, 0.25);
+        }
+
+        /// <summary>Sofra toplandı (MealService.PlatesCleared): masadaki kirli tabaklar bulaşığa girer (elde olan takım kadar).</summary>
+        public void AddDirtyTableware(int plates)
+        {
+            if (!Enforce || plates <= 0) return;
+            int n = Math.Min(TablewareOwned, _dirtyTableware + plates);
+            if (n <= _dirtyTableware) return;
+            _dirtyTableware = n;
+            if (_dirtySince < 0) _dirtySince = Today;
         }
 
         private bool HasSoap() { foreach (var id in SoapIds) if (_house.Count(id) > 0) return true; return false; }

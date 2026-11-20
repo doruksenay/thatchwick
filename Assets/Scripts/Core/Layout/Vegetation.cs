@@ -73,6 +73,7 @@ namespace Thatchwick.Core.Layout
             var map = ctx.Map;
             if (map.GetZone(p) == ZoneType.Pasture || map.GetFloor(p) == FloorType.Dirt) return false;   // ağıl, tarh
             if (Regions.PlazaRect.Contains(p)) return false;
+            if (OutdoorBuilder.Reserved(region, p)) return false;           // taslağın kenar bandı, kaya sırtı ve boş kalacak alanı
             return true;
         }
 

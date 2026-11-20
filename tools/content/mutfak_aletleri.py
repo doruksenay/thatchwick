@@ -3,6 +3,8 @@
 Kullanım:  python tools/content/mutfak_aletleri.py
 Yeniden çalıştırılabilir: eklediği eşya ve tarifleri baştan yazar, var olan etkileşimlere cook ve needTools alanlarını
 yeniden koyar.
+Sıra: yemek_gelistirme.py yemekleri kazana yazar; bu betik ondan SONRA çalışır ve hepsini ocağa taşır. Zincirler için
+ardından eylem_zincirleri.py. Yeni yemek eklenince yöntemi aşağıdaki kümelere yazılır (yazılmayan "kaynat" olur).
 
 - Pişirme ocakta olur: kazandaki pişirme işleri taş ocağa ve büyük şömineye taşınır. Kazanda yalnızca "ye" kalır.
 - "Pişirme kazanı" Demir kazan olur (kademe 2, taşınan kap); bakır kazan seti ve bakır tencere kademe 3.
@@ -141,17 +143,36 @@ RECIPES = [
 ]
 
 # ---- pişirme yöntemi ----
-STEW = {"cook_stew", "make_stew_meat", "make_stew_game"}
-FRY = {"cook_omelet", "make_saute_mushroom", "make_kaygana", "make_helva", "roast_coffee"}
-GRILL = {"roast_meat", "roast_poultry", "roast_game"}
+# Yemek geliştirmesinin (belge 64) yemekleri de burada: güveç ve yahni güveçte, kızartma ve kavurma tavada ya da sacda,
+# çevirme ve köfte şişte; salata, azık ve doldurma ateşsiz. Listede olmayan iş kaynatmadır (çorba, pilav, lapa, haşlama).
+STEW = {"cook_stew", "make_stew_meat", "make_stew_game",
+        "cook_beef_yahni", "cook_rabbit_stew", "cook_boar_stew", "cook_paste_stew", "cook_fish_steam", "cook_cabbage_paste"}
+FRY = {"cook_omelet", "make_saute_mushroom", "make_kaygana", "make_helva", "roast_coffee",
+       "cook_pork_kavurma", "cook_liver_fry", "cook_sucuk_egg", "cook_spinach_saute", "cook_duck_kaygana", "cook_gozleme",
+       "cook_fish_fry", "roast_fenugreek", "cook_honey_nuts"}
+GRILL = {"roast_meat", "roast_poultry", "roast_game",
+         "roast_mutton", "roast_pork", "roast_rabbit_meat", "roast_duck_meat", "roast_goose_meat", "roast_pigeon_meat",
+         "roast_boar_meat", "roast_offal", "cook_fish_grill", "cook_meatballs"}
 EMBER = {"eat_chestnut"}
-RAW = {"make_breakfast", "make_wrap_fish", "miner_ration", "bait", "pastirma_pepper"}
+RAW = {"make_breakfast", "make_wrap_fish", "miner_ration", "bait", "pastirma_pepper",
+       "cook_radish_salad", "cook_cress_salad", "cook_olive_bread", "cook_dried_fruit_ration", "verjuice", "sucuk"}
 NO_COOK = {"feast", "taste"}
 CHOP = {"item.turnip", "item.cabbage", "item.leek", "item.onion", "item.carrot", "item.garlic", "item.mushroom", "item.meat",
-        "item.poultry", "item.game_meat", "item.cheese", "item.parsnip", "item.beet", "item.radish", "item.apple"}
-PIN = {"make_borek_leek", "make_kete_meat", "make_tart_apple", "make_simit", "make_yufka", "make_bazlama", "bake_wedding_bread"}
-TRAY = {"make_borek_leek", "make_kete_meat", "make_tart_apple", "bake"}
-STRAIN = {"brew_coffee_cloth", "make_hosaf", "make_pekmez", "make_pekmez_grape"}
+        "item.poultry", "item.game_meat", "item.cheese", "item.parsnip", "item.beet", "item.radish", "item.apple",
+        "item.mutton", "item.goat_meat", "item.pork", "item.rabbit_meat", "item.duck_meat", "item.goose_meat",
+        "item.pigeon_meat", "item.boar_meat", "item.offal", "item.sucuk", "item.spinach", "item.pumpkin", "item.pear",
+        "item.wild_garlic", "group.red_meat", "group.poultry", "group.game", "group.root", "group.greens", "group.cheese"}
+PIN = {"make_borek_leek", "make_kete_meat", "make_tart_apple", "make_simit", "make_yufka", "make_bazlama", "bake_wedding_bread",
+       "cook_eel_pie", "cook_saffron_bun", "cook_walnut_bun", "cook_cherry_tart"}
+TRAY = {"make_borek_leek", "make_kete_meat", "make_tart_apple", "bake",
+        "cook_lamb_tandir", "cook_goose_roast", "cook_venison_roast", "cook_pigeon_stuffed", "cook_duck_plum", "cook_eel_pie",
+        "cook_borek_cheese", "cook_cherry_tart"}
+# Kürekle sürülen ekmek ve çörekler (odunu ayrı malzeme yazmayan fırın tarifleri).
+PEEL = {"cook_chestnut_bread", "cook_saffron_bun", "cook_walnut_bun"}
+STRAIN = {"brew_coffee_cloth", "make_hosaf", "make_pekmez", "make_pekmez_grape",
+          "cook_pear_hosaf", "pomegranate_sherbet", "verjuice", "cook_cokelek", "goat_cheese", "cheese_rennet"}
+# Bulaşık tek sistemde (63a §4): yemek geliştirmesinin leğen ve kovadaki basit "Bulaşık yıka" işi kalkar.
+OLD_WASH = ["item.basin_ewer", "item.water_bucket"]
 
 
 def consumed(i):
@@ -168,10 +189,10 @@ def method_for(key, i):
         return None
     if key in STEW:
         return "stew"
-    if key in FRY or key.startswith("cook_fish_"):
-        return "fry"
     if key in GRILL:
         return "grill"
+    if key in FRY or key.startswith("cook_fish_"):
+        return "fry"
     if key in EMBER:
         return "ember"
     if key in RAW:
@@ -184,7 +205,7 @@ def tools_for(key, method, ins):
     if method in ("bake",):
         if key in PIN:
             tools.append("tool:pin")
-        if "item.firewood" in ins:
+        if "item.firewood" in ins or key in PEEL:
             tools.append("tool:peel")
         if key in TRAY:
             tools.append("vessel:bake")
@@ -220,6 +241,9 @@ def main():
     for iid, act in WASH_ACTS.items():
         acts = by[iid].setdefault("interactions", [])
         acts[:] = [a for a in acts if a["id"] != act["id"]] + [dict(act)]
+    for iid in OLD_WASH:
+        if iid in by and by[iid].get("interactions"):
+            by[iid]["interactions"] = [a for a in by[iid]["interactions"] if a["id"] != "wash_dishes"]
 
     # 3. Pişirme kazandan ocaklara (kazanda yalnızca yeme kalır).
     pot = by[POT]
@@ -275,6 +299,14 @@ def main():
             twin["station"] = HEARTHS[1]
             extra.append(twin)
     recipes.extend(extra)
+    # Fırın tarifleri (yemek geliştirmesi): yerinde kalır, yöntem ve gerekenleri alır.
+    for r in recipes:
+        if r["station"] == OVEN and r.get("skill") in ("Cooking", "Baking"):
+            r["cook"] = "bake"
+            r.pop("needTools", None)
+            t = tools_for(r["id"], "bake", consumed(r))
+            if t:
+                r["needTools"] = t
     for rid, st, prod, mats, skill, lvl, dur, xp, tr, _en in RECIPES:
         r = {"id": rid, "station": st, "produces": prod, "materials": [{"item": a, "count": b} for a, b in mats],
              "durationDays": dur, "skill": skill, "skillXp": xp, "displayName": tr}
@@ -293,6 +325,8 @@ def main():
             en[f"{iid}.act.{aid}"] = text
     for iid, text in WASH_EN.items():
         en[f"{iid}.act.wash_dishes"] = text
+    for iid in OLD_WASH:
+        en.pop(f"{iid}.act.wash_dishes", None)
     for iid, name in ROLE_EN.items():
         en[iid + ".name"] = name
     # Taşınan etkileşimlerin metni (ad ve ruh hali metni) ocaklara kopyalanır, kazandan silinir.

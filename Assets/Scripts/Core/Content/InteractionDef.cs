@@ -204,10 +204,19 @@ namespace Thatchwick.Core.Content
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
             || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
             || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter || Stakes || RequiresWithered
-            || RepairMaterial != null || Polish || Embellish || CollectContents || FillDecor || EatContents || HomeAction != null || TreeAction != null || FarmAction != null
+            || RepairMaterial != null || Polish || Embellish || CollectContents || FillDecor || EatContents || HomeAction != null || TreeAction != null || FarmAction != null || MealAction != null
             || WashDishes;
         /// <summary>Açıkça verilen eylem zinciri kimliği (belge 60); boşsa eşleme kuralı bağlar.</summary>
         public string Chain { get; set; }
+        /// <summary>Yemek üst verisi, ham (içerikten): sınıf, öğrenme yolu, servis. CookingContentMapper çözer.</summary>
+        public string DishRaw { get; set; }
+        public string LearnRaw { get; set; }
+        public string ServeRaw { get; set; }
+        /// <summary>Bu etkileşimin verdiği yemek (çözülmüş); yemek değilse null.</summary>
+        public Cooking.DishDef Dish { get; set; }
+        /// <summary>Sofra ve mutfak işi (eatServing, clearTable, washDishes, slaughter, collectMeat...).</summary>
+        public string MealAction { get; set; }
+        public List<string> Teaches { get; } = new List<string>();
         /// <summary>İçerik yüklenince çözülen zincir; yoksa null (iş tek pozda yapılır).</summary>
         public ActionChainDef ChainDef { get; set; }
 

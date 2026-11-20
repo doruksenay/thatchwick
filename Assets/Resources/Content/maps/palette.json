@@ -1,0 +1,44 @@
+{
+  "entries": [
+    {
+      "terrain": "grass",
+      "color": "#608C48"
+    },
+    {
+      "terrain": "dirt",
+      "color": "#8B6E50"
+    },
+    {
+      "terrain": "sand",
+      "color": "#DEC896"
+    },
+    {
+      "terrain": "stone",
+      "color": "#82828A"
+    },
+    {
+      "terrain": "water",
+      "color": "#4078B0"
+    },
+    {
+      "terrain": "deep_water",
+      "color": "#244884"
+    },
+    {
+      "terrain": "path",
+      "color": "#BA8C5A"
+    },
+    {
+      "terrain": "bridge",
+      "color": "#966038"
+    },
+    {
+      "terrain": "band",
+      "color": "#184022"
+    },
+    {
+      "terrain": "rock",
+      "color": "#5C5854"
+    }
+  ]
+}

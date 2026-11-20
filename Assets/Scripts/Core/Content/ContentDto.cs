@@ -24,6 +24,9 @@ namespace Thatchwick.Core.Content
         public EffectDto[] effects;         // yemek ve içki etkileri (moodlet olarak kaydedilir; etkileşimin "moodlet" alanından verilir)
         public SkillUnlockDto[] skillUnlocks;   // beceri seviyesi → açılan (belge 45, life.json)
         public ChainDto[] chains;               // izlenen eylem zincirleri (belge 60, life.json)
+        public GroupDto[] groups;               // malzeme grupları (belge 58 §5.1)
+        public SpiceDto[] spices;               // ek baharatlar (belge 58 §5.2)
+        public TalkDto[] talk;                  // birlikte iş, koku ve boşta konuşma satırları (belge 60b §3, life.json)
 
         /// <summary>Başka bir içerik dosyasının bölümlerini bunun sonuna ekler (items.json + life.json birleşimi).</summary>
         public void Merge(ContentFileDto other)
@@ -44,6 +47,9 @@ namespace Thatchwick.Core.Content
             effects = Concat(effects, other.effects);
             skillUnlocks = Concat(skillUnlocks, other.skillUnlocks);
             chains = Concat(chains, other.chains);
+            groups = Concat(groups, other.groups);
+            spices = Concat(spices, other.spices);
+            talk = Concat(talk, other.talk);
         }
 
         private static T[] Concat<T>(T[] a, T[] b)
@@ -75,6 +81,9 @@ namespace Thatchwick.Core.Content
         public bool adultPack;          // +18 paketi (şarap): paket kapalıysa görünmez
         public string cook;             // pişirme yöntemi (63 §2.3)
         public string[] needTools;      // ek gerekenler
+        public string dish;             // yemek sınıfı (soup, meat, fish...): boşsa yemek değil, işleme tarifi
+        public string learn;            // öğrenme yolu: basic | level | villager:<id>:<yakınlık> | treatise | request | family
+        public string serve;            // servis kabı ve görünüm: "pot:soup"; boşsa sınıfa göre
     }
 
     [Serializable]
@@ -109,6 +118,7 @@ namespace Thatchwick.Core.Content
         public bool petBreeds;             // evcil hayvan da yavrular (köpek, kedi)
         public bool sterile;               // kısır melez (katır, bardo)
         public bool herd;                  // köy merasına ve yaylaya gönderilir
+        public ByproductDto[] byproducts;  // kesim yan ürünleri (mezbahada; belge 60a §2.2)
     }
 
     [Serializable]
@@ -454,6 +464,11 @@ namespace Thatchwick.Core.Content
         public string cook;        // pişirme yöntemi (63 §2.3): boil, fry, stew, grill, bake, ember, raw
         public string[] needTools; // ek gerekenler: tool:knife, tool:pin, tool:peel, vessel:bake
         public bool washDishes;    // bulaşık yıkar (63a §4)
+        public string dish;        // yemek sınıfı (RecipeDto.dish ile aynı)
+        public string learn;       // öğrenme yolu (RecipeDto.learn ile aynı)
+        public string serve;       // servis kabı ve görünüm
+        public string meal;        // sofra ve mutfak işi: eatServing, clearTable, washDishes, slaughter, collectMeat, feedScrap, writeRecipes, readRecipes, studyTreatise
+        public string[] teaches;   // meal studyTreatise: öğretilen yemekler (ürün kimlikleri)
         public string homeAction;           // ev bakımı (belge 45): candle, strew, whitewash, waterPot, harvestPot, upgrade
         public string upgrade;              // homeAction upgrade: yükseltme kimliği
         public string treeAction;           // ulu ağaç ve ağaç ev (belge 52): found, build, repair, play, lookout, siege, sleep, stash, dig, carve, gather, shade, dine, charity, donate, innToggle
@@ -482,7 +497,8 @@ namespace Thatchwick.Core.Content
     public sealed class ChainDto
     {
         public string id;
-        public ChainMatchDto[] match;   // herhangi biri tutarsa bağlanır; boşsa yalnızca "chain" alanıyla
+        public ChainMatchDto[] match;
+        public string[] jobs;        // eşya dışı işler: social:Chat, animal:Pet, tile:Hoe   // herhangi biri tutarsa bağlanır; boşsa yalnızca "chain" alanıyla
         public ChainStepDto[] steps;
     }
 
@@ -508,5 +524,54 @@ namespace Thatchwick.Core.Content
         public float share;       // 0 ise 1
         public string when;       // ChainConditions
         public bool undress;
+        public string at;            // adımın yeri: storage, prep, table, water, fire (boş = eşyanın başı)
+        public bool closing;         // kapanış adımı: iş yarıda kesilince de oynar (kurulan, giyin)
+        public bool take;            // malzeme bu adımda envanterden alınır (etki anı)
+    }
+
+    [Serializable]
+    public sealed class GroupDto
+    {
+        public string id;            // group.fish
+        public string displayName;
+        public GroupMemberDto[] members;
+    }
+
+    [Serializable]
+    public sealed class GroupMemberDto
+    {
+        public string item;
+        public int bonus;            // sofra puanına katkı (−3..+3)
+        public string kind;          // alt sınıf (beyaz etli, yağlı)
+    }
+
+    [Serializable]
+    public sealed class SpiceDto
+    {
+        public string item;
+        public string effect;        // yiyene verilen etki (effects)
+        public bool processed;       // işlenmiş baharat (güçlü)
+        public string[] fits;        // uyduğu yemek sınıfları (boş = tatlı ve içecek dışında hepsi)
+        public string[] clashes;
+        public int smell;
+    }
+
+    [Serializable]
+    public sealed class ByproductDto
+    {
+        public string item;
+        public int count;            // 0 = 1
+        public float chance;         // 0 = 1
+        public bool youngOnly;       // şirden mayası: yalnızca genç hayvandan
+    }
+
+    [Serializable]
+    public sealed class TalkDto
+    {
+        public string id;
+        public string[] tags;
+        public int lines;            // 0 = 2
+        public bool adultPack;
+        public bool rare;
     }
 }

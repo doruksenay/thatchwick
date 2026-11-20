@@ -1158,7 +1158,10 @@
       ],
       "cellar": "cellar_wine",
       "cellarType": "cellar|pantry",
-      "garden": "yard_tavern"
+      "garden": "yard_tavern",
+      "kits": [
+        "kit_tavern"
+      ]
     },
     {
       "id": "general",
@@ -1166,7 +1169,10 @@
       "upper": "home_upper",
       "cellar": "storehouse",
       "cellarType": "storehouse",
-      "garden": "yard_general"
+      "garden": "yard_general",
+      "kits": [
+        "kit_general"
+      ]
     },
     {
       "id": "scribe",
@@ -1174,7 +1180,10 @@
       "upper": "home_upper",
       "cellar": "archive",
       "cellarType": "storehouse",
-      "garden": "garden_shop"
+      "garden": "garden_shop",
+      "kits": [
+        "kit_scribe"
+      ]
     },
     {
       "id": "herb",
@@ -1182,18 +1191,27 @@
       "upper": "home_upper",
       "cellar": "cool_cellar",
       "cellarType": "cellar|pantry",
-      "garden": "yard_herb"
+      "garden": "yard_herb",
+      "kits": [
+        "kit_herb"
+      ]
     },
     {
       "id": "smithy",
       "ground": "shop_smithy",
-      "garden": "yard_smithy"
+      "garden": "yard_smithy",
+      "kits": [
+        "kit_smithy"
+      ]
     },
     {
       "id": "carpenter",
       "ground": "shop_carpenter",
       "upper": "home_upper",
-      "garden": "yard_carpenter"
+      "garden": "yard_carpenter",
+      "kits": [
+        "kit_carpenter"
+      ]
     },
     {
       "id": "mill",
@@ -1201,19 +1219,28 @@
       "upper": "home_upper",
       "cellar": "flour_store",
       "cellarType": "storehouse|pantry",
-      "garden": "yard_mill"
+      "garden": "yard_mill",
+      "kits": [
+        "kit_mill"
+      ]
     },
     {
       "id": "tailor",
       "ground": "shop_tailor",
       "upper": "home_upper",
-      "garden": "yard_tailor"
+      "garden": "yard_tailor",
+      "kits": [
+        "kit_tailor"
+      ]
     },
     {
       "id": "potter",
       "ground": "shop_potter",
       "upper": "home_upper",
-      "garden": "yard_potter"
+      "garden": "yard_potter",
+      "kits": [
+        "kit_potter"
+      ]
     },
     {
       "id": "fisher",
@@ -1221,27 +1248,45 @@
       "upper": "home_upper",
       "cellar": "salting_cellar",
       "cellarType": "cellar|pantry",
-      "garden": "yard_fisher"
+      "garden": "yard_fisher",
+      "kits": [
+        "kit_fisher"
+      ]
     },
     {
       "id": "saddler",
       "ground": "shop_saddler",
       "upper": "home_upper",
-      "garden": "yard_saddler"
+      "garden": "yard_saddler",
+      "kits": [
+        "kit_saddler"
+      ]
     },
     {
       "id": "mason",
       "ground": "shop_mason",
-      "garden": "yard_mason"
+      "garden": "yard_mason",
+      "kits": [
+        "kit_mason"
+      ]
     },
     {
       "id": "animals_hut",
-      "ground": "shed_animals"
+      "ground": "shed_animals",
+      "kits": [
+        "kit_animals_hut"
+      ]
     },
     {
       "id": "cottage",
       "ground": "cottage",
-      "garden": "garden_house"
+      "garden": "garden_house",
+      "kits": [
+        "kit_cottage_cob",
+        "kit_cottage_timber",
+        "kit_cottage_stone",
+        "kit_cottage_black"
+      ]
     },
     {
       "id": "farmhouse",
@@ -1701,6 +1746,209 @@
           "anchor": "wallBase"
         }
       ]
+    }
+  ],
+  "kits": [
+    {
+      "id": "kit_smithy",
+      "wall": "wall_rubble_lime",
+      "door": "door_iron",
+      "window": "window_grille",
+      "roof": "roof_stone_slab",
+      "floor": "floor_black_flag",
+      "wood": "wood_black",
+      "metal": "metal_iron",
+      "accent": "kor kırmızısı"
+    },
+    {
+      "id": "kit_tavern",
+      "wall": "wall_timber_black",
+      "door": "door_carved",
+      "window": "window_leaded",
+      "roof": "roof_thatch",
+      "floor": "floor_oak",
+      "upperFloor": "floor_pine",
+      "finish": "finish_panel",
+      "wood": "wood_dark",
+      "cloth": "cloth_madder",
+      "metal": "metal_copper",
+      "accent": "bordo"
+    },
+    {
+      "id": "kit_general",
+      "wall": "wall_timber",
+      "door": "door_dutch",
+      "window": "window_shutter_green",
+      "roof": "roof_shingle",
+      "floor": "floor_pine",
+      "upperFloor": "floor_pine",
+      "wood": "wood_natural",
+      "cloth": "cloth_undyed",
+      "accent": "yeşil"
+    },
+    {
+      "id": "kit_scribe",
+      "wall": "wall_ashlar",
+      "door": "door_studded",
+      "window": "window_lattice",
+      "roof": "roof_tile",
+      "floor": "floor_herringbone",
+      "upperFloor": "floor_walnut",
+      "finish": "finish_tapestry",
+      "wood": "wood_walnut",
+      "cloth": "cloth_navy",
+      "metal": "metal_brass",
+      "accent": "lacivert"
+    },
+    {
+      "id": "kit_herb",
+      "wall": "wall_cob",
+      "door": "door_green",
+      "window": "window_shutter_green",
+      "roof": "roof_thatch",
+      "floor": "floor_pine",
+      "upperFloor": "floor_pine",
+      "finish": "finish_green_wash",
+      "wood": "wood_ash",
+      "cloth": "cloth_green",
+      "clay": "clay_green",
+      "accent": "adaçayı yeşili"
+    },
+    {
+      "id": "kit_carpenter",
+      "wall": "wall_plank",
+      "door": "door_ledged",
+      "window": "window_shutter",
+      "roof": "roof_shingle",
+      "floor": "floor_pine",
+      "upperFloor": "floor_oak",
+      "wood": "wood_natural",
+      "metal": "metal_iron",
+      "accent": "çam sarısı"
+    },
+    {
+      "id": "kit_mill",
+      "wall": "wall_stone",
+      "door": "door_ledged",
+      "window": "window_shutter",
+      "roof": "roof_tile",
+      "floor": "floor_oak",
+      "upperFloor": "floor_pine",
+      "wood": "wood_whitewash",
+      "cloth": "cloth_undyed",
+      "accent": "un beyazı"
+    },
+    {
+      "id": "kit_tailor",
+      "wall": "wall_timber_red",
+      "door": "door_red",
+      "window": "window_shutter_blue",
+      "roof": "roof_tile",
+      "floor": "floor_painted_boards",
+      "upperFloor": "floor_pine",
+      "finish": "finish_blue_wash",
+      "wood": "wood_blue",
+      "cloth": "cloth_woad",
+      "accent": "çivit mavisi"
+    },
+    {
+      "id": "kit_potter",
+      "wall": "wall_cob",
+      "door": "door_ledged",
+      "window": "window_shutter_red",
+      "roof": "roof_tile_glazed",
+      "floor": "floor_earth",
+      "upperFloor": "floor_pine",
+      "finish": "finish_rose_wash",
+      "wood": "wood_ochre",
+      "clay": "clay_slip_red",
+      "accent": "pişmiş toprak"
+    },
+    {
+      "id": "kit_fisher",
+      "wall": "wall_plank",
+      "door": "door_dutch",
+      "window": "window_shutter_blue",
+      "roof": "roof_thatch",
+      "floor": "floor_pine",
+      "upperFloor": "floor_pine",
+      "wood": "wood_ash",
+      "cloth": "cloth_navy",
+      "accent": "deniz mavisi"
+    },
+    {
+      "id": "kit_saddler",
+      "wall": "wall_brick",
+      "door": "door_studded",
+      "window": "window_shutter",
+      "roof": "roof_tile",
+      "floor": "floor_earth",
+      "upperFloor": "floor_oak",
+      "finish": "finish_red_band",
+      "wood": "wood_dark",
+      "cloth": "cloth_ochre",
+      "metal": "metal_brass",
+      "accent": "deri kahvesi"
+    },
+    {
+      "id": "kit_mason",
+      "wall": "wall_red_ashlar",
+      "door": "door_arched",
+      "window": "window_slit",
+      "roof": "roof_stone_slab",
+      "floor": "floor_cobble",
+      "wood": "wood_natural",
+      "stone": "stone_natural",
+      "accent": "taş grisi"
+    },
+    {
+      "id": "kit_animals_hut",
+      "wall": "wall_cob",
+      "door": "door_ledged",
+      "window": "window_shutter",
+      "roof": "roof_thatch",
+      "floor": "floor_straw",
+      "wood": "wood_natural"
+    },
+    {
+      "id": "kit_cottage_cob",
+      "wall": "wall_cob",
+      "door": "door_ledged",
+      "window": "window_shutter",
+      "roof": "roof_thatch",
+      "floor": "floor_pine",
+      "wood": "wood_natural",
+      "cloth": "cloth_undyed"
+    },
+    {
+      "id": "kit_cottage_timber",
+      "wall": "wall_timber",
+      "door": "door_green",
+      "window": "window_shutter_green",
+      "roof": "roof_shingle",
+      "floor": "floor_pine",
+      "wood": "wood_ash",
+      "cloth": "cloth_green"
+    },
+    {
+      "id": "kit_cottage_stone",
+      "wall": "wall_stone",
+      "door": "door_red",
+      "window": "window_shutter_red",
+      "roof": "roof_thatch",
+      "floor": "floor_oak",
+      "wood": "wood_dark",
+      "cloth": "cloth_madder"
+    },
+    {
+      "id": "kit_cottage_black",
+      "wall": "wall_timber_black",
+      "door": "door_dutch",
+      "window": "window_lattice",
+      "roof": "roof_tile_black",
+      "floor": "floor_pine",
+      "wood": "wood_dark",
+      "cloth": "cloth_ochre"
     }
   ]
 }

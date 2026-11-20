@@ -259,7 +259,9 @@ namespace Thatchwick.Core.Tests
             k.H.AddItem("item.pea", 3);
             k.Fx.Apply(c, k.Hearth, soup);
             Assert.Equal(1, k.K.DirtyPieces);
-            Assert.True(k.K.QualityFor(c, k.Hearth, soup).Value.levelShift <= KitchenQuality.LevelShift(KitchenQuality.EquipmentScore(2, 0, 0, 1, true, false, false)));
+            // Kirli kap ekipman puanını düşürür. Çorba bir yemek: puan sofra puanının ekipman bileşenine girer, seviye kaymaz.
+            Assert.True(k.K.EquipmentPointsFor(c, k.Hearth, soup) <= KitchenQuality.EquipmentScore(2, 0, 0, 1, true, false, false));
+            Assert.Equal(0, k.K.QualityFor(c, k.Hearth, soup).Value.levelShift);
 
             var tub = k.W.PlaceItem(db.Items.Get("item.dish_tub"), new GridPos(12, 2));
             var wash = k.At(tub, "wash_dishes");

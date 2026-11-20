@@ -59,6 +59,8 @@ namespace Thatchwick.Core.Localization
             }
             foreach (var r in file.recipes ?? new RecipeDto[0])
                 if (r != null) r.displayName = f(ContentKeys.Recipe(r.id), r.displayName);
+            foreach (var g in file.groups ?? new GroupDto[0])
+                if (g != null) g.displayName = f(ContentKeys.Name(g.id), g.displayName);
             foreach (var a in file.animals ?? new AnimalDto[0])
                 if (a != null) a.displayName = f(ContentKeys.Name(a.id), a.displayName);
             foreach (var p in file.buildParts ?? new BuildPartDto[0])

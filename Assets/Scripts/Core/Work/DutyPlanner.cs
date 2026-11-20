@@ -44,12 +44,30 @@ namespace Thatchwick.Core.Work
         /// </summary>
         public Func<int> FirewoodStock { get; set; }
         public const int LowFirewood = 6;
+        /// <summary>Sonbahar ve kışta tutulan odun (kış ~2 kütük/gün; Denge 41'de kış stoğu yapılmadığı için hane donuyordu).</summary>
+        public const int WinterFirewood = 24;
+        /// <summary>Mevsim (odun hedefi için); null ise Now ve varsayılan takvimden hesaplanır.</summary>
+        public Func<Thatchwick.Core.Time.Season> Season { get; set; }
+
+        /// <summary>Bu mevsim tutulacak odun: ilkbahar ve yaz LowFirewood, sonbahar ve kış WinterFirewood.</summary>
+        public int FirewoodTarget()
+        {
+            Thatchwick.Core.Time.Season season;
+            if (Season != null) season = Season();
+            else
+            {
+                var cfg = Thatchwick.Core.Time.TimeConfig.Default;
+                long day = (long)Math.Floor(Now?.Invoke() ?? 0);
+                season = (Thatchwick.Core.Time.Season)((day / cfg.DaysPerSeason) % Thatchwick.Core.Time.TimeConfig.SeasonsPerYear);
+            }
+            return season == Thatchwick.Core.Time.Season.Autumn || season == Thatchwick.Core.Time.Season.Winter ? WinterFirewood : LowFirewood;
+        }
         public const string FirewoodId = "item.firewood";
         public const string LogId = "item.log";
         /// <summary>Meyve toplama etkileşimi: bunu taşıyan ağaç odun için kesilmez.</summary>
         public const string PickId = "pick";
 
-        private bool FirewoodLow => FirewoodStock != null && FirewoodStock() < LowFirewood;
+        private bool FirewoodLow => FirewoodStock != null && FirewoodStock() < FirewoodTarget();
 
         /// <summary>
         /// Ev görevinin işleri (belge 45): bakım isteyen eşya ve etkileşimi (mum, sepet, döküntü, ayna, saksı, ot serpme,
@@ -72,6 +90,8 @@ namespace Thatchwick.Core.Work
                 consider(HouseKey(item.Id, inter.Id), item.Position, () => Job.UseItem(item.Id, inter.Id));
             }
         }
+        /// <summary>Mutfak görevlisinin işleri, öncelik sırasıyla (karakter null: yalnızca sayım).</summary>
+        public Func<Character, IEnumerable<(ItemInstance item, InteractionDef interaction)>> KitchenChores { get; set; }
         /// <summary>Ev görevi akşam da sürer (mum yakmak akşam işidir): bu saate kadar.</summary>
         public Func<bool> HouseHours { get; set; }
 
@@ -102,6 +122,7 @@ namespace Thatchwick.Core.Work
                 case DutyKind.Mine: return "Maden";
                 case DutyKind.Steward: return "Kâhya";
                 case DutyKind.House: return "Ev";
+                case DutyKind.Kitchen: return "Mutfak";
                 default: return "Görev yok";
             }
         }
@@ -125,6 +146,8 @@ namespace Thatchwick.Core.Work
             }
             else if (duty == DutyKind.House && HouseChores != null)
                 foreach (var _ in HouseChores()) n++;
+            else if (duty == DutyKind.Kitchen && KitchenChores != null)
+                foreach (var _ in KitchenChores(null)) n++;
             else if (duty == DutyKind.Mine && Mines != null)
                 foreach (var m in Mines.Sites)
                     foreach (var (_, _, t) in m.All()) if (t.Marked || t.Creaking) n++;
@@ -135,7 +158,8 @@ namespace Thatchwick.Core.Work
         public Job Next(Character c)
         {
             if (!CanTakeDuty(c, c.Duty) || c.Duty == DutyKind.None) return null;
-            if (c.Duty == DutyKind.House ? (HouseHours ?? WorkHours) != null && !(HouseHours ?? WorkHours)() : WorkHours != null && !WorkHours()) return null;
+            // Ev ve Mutfak görevi akşam da sürer (mum yakmak, akşam öğünü).
+            if (c.Duty == DutyKind.House || c.Duty == DutyKind.Kitchen ? (HouseHours ?? WorkHours) != null && !(HouseHours ?? WorkHours)() : WorkHours != null && !WorkHours()) return null;
             double now = Now?.Invoke() ?? 0;
             Expire(now);
 
@@ -255,6 +279,17 @@ namespace Thatchwick.Core.Work
                     if (it == null || i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;
                     var item = it; var inter = i;
                     Consider(HouseKey(item.Id, inter.Id), item.Position, () => Job.UseItem(item.Id, inter.Id));
+                }
+            }
+            else if (c.Duty == DutyKind.Kitchen && KitchenChores != null)
+            {
+                // Mutfak görevi (belge 58a §4): sıradaki iş çizelgeden gelir; görevli kendi başına tarif seçmez.
+                foreach (var (it, i) in KitchenChores(c))
+                {
+                    if (it == null || i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;
+                    var item = it; var inter = i;
+                    Consider(HouseKey(item.Id, inter.Id), item.Position, () => Job.UseItem(item.Id, inter.Id));
+                    break;   // çizelge sırası önemli: en yakın değil, ilk yapılabilir iş
                 }
             }
             else if (c.Duty == DutyKind.Mine && TileWork != null && Mines?.Get(Mining.MineSystem.PlotId) is Mining.MineMap plot)
@@ -387,7 +422,7 @@ namespace Thatchwick.Core.Work
             InteractionDef fell = null;
             foreach (var i in it.Def.Interactions)
             {
-                if (i.RequiresFruit && i.Id == "pick") return null;   // meyve ağacı kesilmez (meşenin mazısı meyve sayılmaz)
+                if (i.RequiresFruit && i.Id == PickId) return null;   // meyve ağacı kesilmez (mazılı meşe kesilebilir)
                 if (i.RequiresGrown && i.RemovesItem && (Produces(i, LogId) || Produces(i, FirewoodId))) fell = i;
             }
             return fell;

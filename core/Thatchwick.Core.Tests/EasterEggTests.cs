@@ -649,9 +649,8 @@ namespace Thatchwick.Core.Tests
         {
             string dir = System.IO.Path.GetFullPath(System.IO.Path.Combine(ContentFilesTests.ContentDir(), "..", "Localization"));
             var errors = new System.Collections.Generic.List<string>();
-            var en = LocTable.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "ui.en.json")), errors, "ui.en.json");
-            var tr = LocTable.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "ui.tr.json")), errors, "ui.tr.json");
-            Assert.True(errors.Count == 0, string.Join("\n", errors));
+            var en = UiKeys.All("en");   // ana tablo ve alan dosyaları (ui.<alan>.<dil>.json)
+            var tr = UiKeys.All("tr");
             var keys = new System.Collections.Generic.List<string>();
             foreach (AnimalComplaint c in Enum.GetValues(typeof(AnimalComplaint))) keys.Add("core.oddity.talk.complaint." + AnimalTalkService.ComplaintKey(c));
             keys.AddRange(new[] { "core.oddity.talk.stare", "core.oddity.talk.confided", "core.oddity.tell.shared", "core.oddity.tell.family",

@@ -19,7 +19,9 @@ namespace Thatchwick.Core.Characters
         /// <summary>Kâhya: her sabah öbür aile üyelerine bekleyen işe göre görev dağıtır (kendisi tarlaya inmez).</summary>
         Steward = 4,
         /// <summary>Ev: mum değiştirir, sepeti tazeler, döküntüyü toplar, aynayı cilalar, saksıyı sular, ot serper, badana yapar (belge 45).</summary>
-        House = 5
+        House = 5,
+        /// <summary>Mutfak: oyuncunun öğün çizelgesindeki tarifi pişirir, sofrayı kurar ve toplar, bulaşığı yıkar, fazlayı saklar (belge 58 §9, 58a §4).</summary>
+        Kitchen = 6
     }
 
     /// <summary>

@@ -202,9 +202,9 @@ namespace Thatchwick.Core.Life
             };
             Mood.BeautyBonus = it => Keepsakes.BeautyBonus(it) + Thatchwick.Core.Build.DecorSystem.SeasonalBeauty(it, Clock.Season) + Home.BeautyBonus(it);
             Mood.RoomBeautyExtra = room => { var e = Home.RoomBeautyExtra(room); return (e.plus, e.minus + Filth.BeautyPenalty(room)); };
-            Kitchen = new KitchenSystem(world, house, content) { Now = () => Clock.TotalDays };
-            Kitchen.Notice += (c, text) => Say(text, NoticeLevel.Info, c?.Id ?? 0, transient: true);
-            Kitchen.Text = t => Text(t);   // oyuncunun dili (GameRoot Text'i sonradan kurar)
+            KitchenTools = new KitchenSystem(world, house, content) { Now = () => Clock.TotalDays };
+            KitchenTools.Notice += (c, text) => Say(text, NoticeLevel.Info, c?.Id ?? 0, transient: true);
+            KitchenTools.Text = t => Text(t);   // oyuncunun dili (GameRoot Text'i sonradan kurar)
             Mood.ExtraComfort = it => Legacy.ComfortBonus(it) + Home.ComfortBonus(it);
             Decor.CollapseFactor = Home.CollapseFactor;
             UpdateMerchant(false);
@@ -318,6 +318,7 @@ namespace Thatchwick.Core.Life
                 Resolve = t => Text(t)
             };
             Duties.Finished += Requests.OnDutyFinished;
+            InitCooking(seed);   // yemek, sofra, mezbaha, rutin (belge 58-62); istekler ve köylüler kurulduktan sonra
             Trees = new TreehouseSystem(world, content, house, population, clock, seed != 0 ? Seeds.Derive(seed, 52) : 52)
             {
                 Notify = (text, id) => Say(text, NoticeLevel.Info, id),
@@ -737,6 +738,7 @@ namespace Thatchwick.Core.Life
         {
             Home.AddAffection = (a, b, d) => family.SetAffection(a, b, family.Affection(a, b) + d);
             _family = family;
+            AttachCooking(family);
             family.JoinedHousehold += c => Keepsakes.OnJoined(c);
             family.JoinedHousehold += c => Upbringing.Weddings?.OnGroomJoined(c, id => Content.Items.Contains(id));   // damat tarafı (34-D2)
             Villagers.Family = family;
@@ -769,7 +771,8 @@ namespace Thatchwick.Core.Life
         public void Attach(JobRunner runner)
         {
             runner.ActionTimeScale = Clock.Config.ActionTimeScale;   // belge 47: işler gerçek zamanda sabit
-            runner.SpeedProvider = WorkSpeedFor;
+            runner.SpeedProvider = (c, i) => WorkSpeedFor(c, i) * Social.SpeedFor(c);
+            AttachCooking(runner);
             runner.SquarePosition = () => SquarePosition?.Invoke();
             runner.Refuge = Trees.RefugeFor;   // bunalımdaki çocuk ağaç eve küser (belge 52)
             runner.Refused += (c, text) => Say($"{c.Name}: \"{text}\"", NoticeLevel.Info, c.Id, transient: true);
@@ -777,11 +780,11 @@ namespace Thatchwick.Core.Life
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
             runner.InteractionCompleted += OnMasterCraft;
             // Ustalık eseri denemesi iki kat sürer (53 §4.6).
-            runner.DurationFactor = (c, item, i) => (QualityBook.WillAttempt(c, item, i, Clock.DayIndex) ? 2.0 : 1.0) * Kitchen.DurationFactor(c, item, i);
+            runner.DurationFactor = (c, item, i) => (QualityBook.WillAttempt(c, item, i, Clock.DayIndex) ? 2.0 : 1.0) * KitchenTools.DurationFactor(c, item, i);
             // Mutfak (63, 63a): kabı ve aletleri alıp getirir, ocağı yakar, iş bitince yerine koyar; öğün tabak kirletir.
-            runner.Errands = Kitchen.ErrandFor;
-            runner.PrepareUse = Kitchen.Prepare;
-            runner.InteractionCompleted += Kitchen.OnCompleted;
+            runner.Errands = KitchenTools.ErrandFor;
+            runner.PrepareUse = KitchenTools.Prepare;
+            runner.InteractionCompleted += KitchenTools.OnCompleted;
             AttachYard(runner);   // açıkta tuvalet ve gübre kapağı (belge 57)
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
             runner.ItemUsed += (c, item, interaction) => { if (interaction.Id == ReadBoardInteraction) ReadBoard(c); };
@@ -892,23 +895,25 @@ namespace Thatchwick.Core.Life
             if (cause == WitherCause.Season && _witherNoticeDay != day)
             {
                 _witherNoticeDay = day;
-                Say("Mevsimi geçen ekinler sarardı. Sararan ekin büyümez; sökünce yan ürün verir (tohum, yem, saman). Dokunarak ya da sürükleyerek sök.", NoticeLevel.Warning);
+                Say(LocText.Of("ui.farm.notice.withered_season"), NoticeLevel.Warning);
             }
             else if (cause == WitherCause.Frost && _frostNoticeDay != day)
             {
                 _frostNoticeDay = day;
-                Say("Don vurdu: gelişmiş ekinler sarardı, filizler yitti. Sararanları sökünce yan ürün verir.", NoticeLevel.Warning);
+                Say(LocText.Of("ui.farm.notice.frost"), NoticeLevel.Warning);
             }
         }
 
         private void OnGiantGrown(ItemDef crop, ItemInstance giant)
         {
             string name = giant.Def.DisplayName;
-            Say($"Tarlada bir {name.ToLowerInvariant()} büyüdü! Dört karoyu kaplıyor; hasat edince bol ürün ve sergilik bir dev ürün verir.", NoticeLevel.Info);
+            Say(LocText.Of("ui.farm.notice.giant", ("crop", name.ToLowerInvariant())), NoticeLevel.Info);
+            // Kroniğe anahtarla yazılır: kayıt dile bağlı kalmaz, eşya adı okunurken seçili dilde çözülür.
+            string chronicle = SavedText.Encode("core.chronicle.giant_crop", ("item", SavedText.Content(giant.Def.Id)));
             foreach (var m in Household())
             {
                 m.AddMoodlet(MoodCatalog.GoodHarvest);
-                m.AddChronicle($"Tarlada bir {name.ToLowerInvariant()} büyüdü.");
+                m.AddChronicle(chronicle);
             }
         }
 
@@ -922,8 +927,8 @@ namespace Thatchwick.Core.Life
             int n = _plants.AtRiskNextSeason(next);
             if (n <= 0) return;
             Say(next == Season.Winter
-                ? $"Kışa iki gün var: tarladaki {n} ekin dona dayanmaz. Olgunları biç; gelişmiş ekin donunca sararır, filiz yitip gider."
-                : $"Mevsim iki gün sonra dönüyor: {n} ekinin mevsimi bitiyor ve sararacak. Olgunları biç; sararan ekin yalnız yan ürün verir.",
+                ? LocText.Of("ui.farm.notice.winter_soon", ("n", n))
+                : LocText.Of("ui.farm.notice.season_soon", ("n", n)),
                 NoticeLevel.Warning);
         }
         public void Attach(HeatSystem heat)
@@ -937,9 +942,9 @@ namespace Thatchwick.Core.Life
             if (_plants != null) _plants.TemperatureAt = heat.TemperatureAt;
             Filth.TemperatureAt = heat.TemperatureAt;      // sinek ve yığın yaşı sıcaklığa bağlı (belge 57)
             Compost.TemperatureAt = heat.TemperatureAt;
-            Kitchen.TemperatureAt = heat.TemperatureAt;
-            Kitchen.Stoke = it => heat.TryStoke(it.Id, House);
-            Kitchen.DaysPerLog = heat.Config.BurnDaysPerLog;
+            KitchenTools.TemperatureAt = heat.TemperatureAt;
+            KitchenTools.Stoke = it => heat.TryStoke(it.Id, House);
+            KitchenTools.DaysPerLog = heat.Config.BurnDaysPerLog;
         }
         private PlantSystem _plants;
         private HeatSystem _heat;
@@ -958,6 +963,7 @@ namespace Thatchwick.Core.Life
         public void Attach(Thatchwick.Core.Animals.AnimalSystem animals)
         {
             AttachYard(animals);   // ahır kirliliği ve araba filosu (belge 57, 57e)
+            AttachCooking(animals);
             animals.RiderFell += (horse, rider) =>
             {
                 Injuries.InjureById(rider, "horse_fall");   // moodlet ve bildirim InjurySystem'den
@@ -1086,9 +1092,10 @@ namespace Thatchwick.Core.Life
             Fields.Apply = effects.Apply;
             Fields.HasScythe = () => Tools.Tier(Thatchwick.Core.Work.HarvestOrders.ScytheTool) > 0;
             effects.AppliedOn += Fields.OnApplied;
-            effects.ExtraBlocker = (c, it, i) => Kitchen.Blocker(c, it, i) ?? Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i) ?? DrinkBlocker(c, it, i) ?? Trees.CanStart(c, it, i);
-            effects.KitchenQuality = Kitchen.QualityFor;   // kabın kalite tavanı, ekipman puanı (63a §5)
-            effects.AppliedOn += Kitchen.OnApplied;        // kirlenme, bulaşık, bileme
+            effects.ExtraBlocker = (c, it, i) => KitchenTools.Blocker(c, it, i) ?? Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i) ?? DrinkBlocker(c, it, i) ?? Trees.CanStart(c, it, i) ?? CookingBlocker(c, it, i);
+            effects.KitchenQuality = KitchenTools.QualityFor;   // kabın kalite tavanı, ekipman puanı (63a §5)
+            effects.AppliedOn += KitchenTools.OnApplied;        // kirlenme, bulaşık, bileme
+            AttachCooking(effects);
             Home.Effects = effects;
             AttachYard(effects);   // pislik, kompost, ahır (belge 57); ExtraBlocker zincirine eklenir
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
@@ -1097,7 +1104,8 @@ namespace Thatchwick.Core.Life
         /// <summary>Kahve alışkanlığı ve falı (belge 32-5, 32-6).</summary>
         public CoffeeHabits Coffee { get; } = new CoffeeHabits();
         /// <summary>Mutfak aletleri, yakıt, bulaşık ve ekipman puanı (Project belgeleri 63, 63a).</summary>
-        public KitchenSystem Kitchen { get; private set; }
+        /// <summary>Mutfak aletleri (belge 63, 63a): kap ve alet gereği, yakıt, bulaşık. Mutfak görevi ayrı: <see cref="Kitchen"/>.</summary>
+        public KitchenSystem KitchenTools { get; private set; }
         public const string FortuneInteraction = "cezve_fal";
 
         public void OnInteractionApplied(Character c, InteractionDef interaction)
@@ -1368,6 +1376,7 @@ namespace Thatchwick.Core.Life
             Upbringing.Tick(gameDays);
             Roamers?.Tick(gameDays, Clock.TotalDays, Clock.Season, Clock.DayFraction);
             Coffee.Tick(Clock.TotalDays, Population.Members);
+            CookingTick(gameDays);
             Trees.Tick();   // mevsimin son akşamı Bereket Sofrası (belge 52)
 
             long day = Clock.DayIndex;
@@ -1492,6 +1501,7 @@ namespace Thatchwick.Core.Life
             var orphan = Adoptions.OnNewDay(Clock.Season);
             if (orphan != null) Say($"Tarlanın kenarında öksüz bir {orphan.Name.ToLowerInvariant()} yavrusu bulundu. Sahiplenmek ister misin?", NoticeLevel.Info);
             Coffee.OnNewDay((int)Clock.TotalDays, Population.Find);
+            CookingNewDay(day);
             foreach (var note in Olives.OnNewDay((int)Clock.TotalDays, World, HeadName()))
             {
                 Say(note, NoticeLevel.Info);
@@ -1610,6 +1620,7 @@ namespace Thatchwick.Core.Life
                 natureJournal = Journal.Export(),
                 adoptedWild = Adoptions.Export(),
                 coffeeHabits = Coffee.Export(),
+                cooking = ExportCooking(),
                 olives = Olives.Export(),
                 contests = Contests.Export(),
                 raceBet = Bets.Export(),
@@ -1617,7 +1628,7 @@ namespace Thatchwick.Core.Life
                 wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0,
                 keepsakes = Keepsakes.Export(),
                 home = Home.Export(),
-                kitchen = Kitchen.Export(),
+                kitchen = KitchenTools.Export(),
                 timedDuties = Duties.Export(),
                 roaming = Roaming.Export(),
                 requests = Requests.Export(),
@@ -1660,6 +1671,7 @@ namespace Thatchwick.Core.Life
             Locusts.DryDays = data.locustDry; Locusts.Incoming = data.locustIncoming;
             Adoptions.Import(data.adoptedWild);
             Coffee.Import(data.coffeeHabits);
+            ImportCooking(data.cooking);
             Olives.Import(data.olives);
             Contests.Import(data.contests);
             Bets.Import(data.raceBet);
@@ -1674,7 +1686,8 @@ namespace Thatchwick.Core.Life
             Homes.AssignAll();
             Keepsakes.Restore(data.keepsakes);
             Home.Import(data.home);
-            Kitchen.Restore(data.kitchen);
+            KitchenTools.Restore(data.kitchen);
+            KitchenTools.AddDirtyTableware(Meals.TakeLegacySink());   // eski kaydın basit bulaşık sayacı
             Duties.Import(data.timedDuties);
             Roaming.Import(data.roaming);
             Requests.Import(data.requests);

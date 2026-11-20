@@ -22,3 +22,6 @@
 
 # Araç fontu küçük; LFS dışında tutulur (tools/art/ui_mockup.py)
 tools/art/fonts/*.ttf -filter -diff -merge binary
+
+# Harita taslakları küçük ve elle düzenlenir: LFS dışında (belge 64a)
+Assets/Resources/Content/maps/**/*.png -filter -diff -merge binary

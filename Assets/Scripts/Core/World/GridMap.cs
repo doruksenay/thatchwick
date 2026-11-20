@@ -37,7 +37,7 @@ namespace Thatchwick.Core.World
 
     /// <summary>Zemin kaplaması (iç mekan göstergesi: Grass dışındakiler).</summary>
     /// <summary>Zemin türü. Water: dere ve gölet karosu (zemin katta, açık havada): içine girilir, yavaşlatır, ıslatır; kışın donar.</summary>
-    public enum FloorType { Grass = 0, Dirt = 1, Wood = 2, Stone = 3, Water = 4 }
+    public enum FloorType { Grass = 0, Dirt = 1, Wood = 2, Stone = 3, Water = 4, /** Kum: göl ve deniz kıyısı (belge 64a, harita taslağı). */ Sand = 5 }
 
     /// <summary>Karo bölgesi (oyuncunun çizdiği alan): depo, otlak (hayvanlar gündüz otlar).</summary>
     public enum ZoneType { None = 0, Storage = 1, Pasture = 2 }

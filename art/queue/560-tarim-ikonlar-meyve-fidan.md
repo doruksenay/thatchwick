@@ -1,7 +1,8 @@
 ---
 id: "560"
 title: "Tarım ikonları 5/6: meyve ve fidan (19)"
-status: pending
+status: running
+claimed_at: 2026-11-20T15:34Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 35
 family: arayuz

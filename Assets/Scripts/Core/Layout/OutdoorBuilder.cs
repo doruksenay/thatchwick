@@ -41,6 +41,7 @@ namespace Thatchwick.Core.Layout
             Pen(ctx);
             Farm(ctx);
             Crossroads(ctx);
+            foreach (var r in Regions.All) EdgeBand(ctx, r, Seeds.Derive(seed, 4410 + Array.IndexOf(Regions.All, r)));   // taslaktaki kenar bandı ve kaya sırtı (belge 64a)
             VillageRoad(ctx, seed);
             Vegetation.Scatter(ctx, Regions.Town, Seeds.Derive(seed, 4405));
             Vegetation.Scatter(ctx, Regions.Road, Seeds.Derive(seed, 4406));
@@ -615,6 +616,87 @@ namespace Thatchwick.Core.Layout
             ctx.Reports.Add(rep);
         }
 
+        // ---------------- kenar bandı ve kaya sırtı (belge 64a, taslak) ----------------
+
+        private static readonly string[] Thickets = { "item.edge_thicket_oak", "item.edge_thicket_pine", "item.edge_thicket_young" };
+
+        /// <summary>
+        /// Taslağı olan bölgede kenar bandını sık ağaç öbekleri ve gerçek ağaçlarla, kaya sırtını iri kaya ve kütükle doldurur.
+        /// Bant düz bir kesim değil, iç sınırı girintili; öbekler 2x2 hücrelerde, hücre içinde kayık konur (dizi görünmez).
+        /// </summary>
+        private static void EdgeBand(Context ctx, Region region, int seed)
+        {
+            var data = MapFiles.Get(region.Id);
+            if (data == null || !Regions.Exists(ctx.Map, region)) return;
+            var rng = new LayoutRng(seed);
+            var placed = new List<ItemInstance>();
+            var rep = new FurnishReport { Room = $"{region.Id}: edge band" };
+            for (int cy = 0; cy < data.H; cy += 2)
+                for (int cx = 0; cx < data.W; cx += 2)
+                {
+                    // Hücrenin bant ya da kaya karoları; birini kayık seç.
+                    var cells = new List<(int x, int y, MapTerrain t)>();
+                    for (int dy = 0; dy < 2; dy++) for (int dx = 0; dx < 2; dx++)
+                    {
+                        var t = data.At(cx + dx, cy + dy);
+                        if (t == MapTerrain.Band || t == MapTerrain.Rock) cells.Add((cx + dx, cy + dy, t));
+                    }
+                    if (cells.Count == 0) continue;
+                    var (x, y, kind) = cells[rng.Next(cells.Count)];
+                    var p = new GridPos(region.X + x, region.Y + y);
+                    if (!Open(ctx, p)) continue;
+                    double r = rng.NextDouble();
+                    if (kind == MapTerrain.Rock)
+                    {
+                        string id = r < 0.3 ? "item.boulder_large" : r < 0.45 ? "item.fallen_log" : r < 0.75 ? "item.boulder" : "item.boulder_round";
+                        if (Put(ctx, id, p, rng.Next(2), placed) == null) Put(ctx, "item.boulder", p, 0, placed);
+                        continue;
+                    }
+                    // Bandın içi (bölge kenarına yakın) öbek, iç sınırı gerçek ağaç: oyuncu kenara ağaç gibi bakar, arkası koyu orman.
+                    int edge = Math.Min(Math.Min(x, data.W - 1 - x), Math.Min(y, data.H - 1 - y));
+                    if (edge <= 1 || r < 0.5) Put(ctx, Thickets[rng.Next(Thickets.Length)], p, rng.Next(2), placed, grown: false);
+                    else
+                    {
+                        double s = rng.NextDouble();
+                        var tree = s < 0.45 ? "item.tree_oak" : s < 0.75 ? "item.tree_birch" : "item.tree_pine";
+                        var it = Put(ctx, tree, p, 0, placed);
+                        if (it != null && rng.NextDouble() < 0.25) it.GrowthDays = it.Def.GrowDays * (0.55 + 0.35 * rng.NextDouble());
+                    }
+                }
+            rep.Placed.AddRange(placed);
+            ctx.Reports.Add(rep);
+        }
+
+        /// <summary>Karo taslakta kenar bandı, kaya sırtı ya da markers "keep" alanında mı (bitki örtüsü buraya serpilmez).</summary>
+        internal static bool Reserved(Region region, GridPos p)
+        {
+            var data = MapFiles.Get(region.Id);
+            if (data == null) return false;
+            var t = data.At(p.X - region.X, p.Y - region.Y);
+            if (t == MapTerrain.Band || t == MapTerrain.Rock) return true;
+            if (data.Markers.keep != null)
+                foreach (var k in data.Markers.keep)
+                {
+                    int lx = p.X - region.X, ly = p.Y - region.Y;
+                    if (lx >= k.x0 && lx <= k.x1 && ly >= k.y0 && ly <= k.y1) return true;
+                }
+            return false;
+        }
+
+        /// <summary>Karonun en yakın suya uzaklığı (en çok 'max').</summary>
+        private static int WaterDistance(GridMap map, GridPos p, int max)
+        {
+            for (int d = 0; d <= max; d++)
+                for (int dy = -d; dy <= d; dy++)
+                    for (int dx = -d; dx <= d; dx++)
+                    {
+                        if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != d) continue;
+                        var q = new GridPos(p.X + dx, p.Y + dy);
+                        if (map.InBounds(q) && map.IsWater(q)) return d;
+                    }
+            return max + 1;
+        }
+
         // ---------------- köy yolu ----------------
 
         /// <summary>Gezgin tüccar durağı (yola bakan bank, arkasında çit; fıçı ve tohum sandığı) ve toplama düğümleri.</summary>
@@ -660,7 +742,8 @@ namespace Thatchwick.Core.Layout
                 {
                     var p = new GridPos(road.X + rng.Next(road.W), road.Y + rng.Next(road.H));
                     if (!Open(ctx, p)) continue;
-                    int stream = Math.Abs(p.X - (road.X + Regions.StreamAt(p.Y - road.Y)));
+                    if (Reserved(road, p)) continue;
+                    int stream = WaterDistance(map, p, 5);
                     if (wet ? stream > 4 || stream < 2 : stream < 3) continue;
                     if (Put(ctx, id, p, 0, null, grown: true) != null) break;
                 }

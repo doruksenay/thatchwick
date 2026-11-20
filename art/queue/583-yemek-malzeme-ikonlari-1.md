@@ -12,16 +12,16 @@ depends_on: ["316"]
 max_attempts: 1
 pixellab: true
 outputs:
-  - Assets/Art/Iso/_aday/icon_item_beef.png
-  - Assets/Art/Iso/_aday/icon_item_lamb.png
+  - Assets/Art/Iso/_aday/icon_item_meat.png
+  - Assets/Art/Iso/_aday/icon_item_mutton.png
   - Assets/Art/Iso/_aday/icon_item_goat_meat.png
   - Assets/Art/Iso/_aday/icon_item_pork.png
   - Assets/Art/Iso/_aday/icon_item_rabbit_meat.png
-  - Assets/Art/Iso/_aday/icon_item_chicken_meat.png
+  - Assets/Art/Iso/_aday/icon_item_poultry.png
   - Assets/Art/Iso/_aday/icon_item_duck_meat.png
   - Assets/Art/Iso/_aday/icon_item_goose_meat.png
   - Assets/Art/Iso/_aday/icon_item_pigeon_meat.png
-  - Assets/Art/Iso/_aday/icon_item_venison.png
+  - Assets/Art/Iso/_aday/icon_item_game_meat.png
   - Assets/Art/Iso/_aday/icon_item_boar_meat.png
   - Assets/Art/Iso/_aday/icon_item_duck_egg.png
   - Assets/Art/Iso/_aday/icon_item_goose_egg.png
@@ -47,16 +47,16 @@ Et, yumurta ve süt türlere ayrılıyor (58 §8); mezbaha yan ürünleri (60a �
 ## Tarif
 | Dosya (`_aday/`) | Açıklama |
 |---|---|
-| `icon_item_beef.png` | `thick cut of dark red raw beef with a strip of fat` |
-| `icon_item_lamb.png` | `small raw lamb leg cut, pink with a white bone end` |
+| `icon_item_meat.png` | `thick cut of dark red raw beef with a strip of fat` |
+| `icon_item_mutton.png` | `small raw lamb leg cut, pink with a white bone end` |
 | `icon_item_goat_meat.png` | `lean dark raw goat meat cut` |
 | `icon_item_pork.png` | `raw pork cut with a thick white fat cap` |
 | `icon_item_rabbit_meat.png` | `small pale raw rabbit meat portion` |
-| `icon_item_chicken_meat.png` | `plucked raw chicken drumstick and thigh` |
+| `icon_item_poultry.png` | `plucked raw chicken drumstick and thigh` |
 | `icon_item_duck_meat.png` | `raw duck breast with yellowish skin` |
 | `icon_item_goose_meat.png` | `large raw goose leg with thick skin` |
 | `icon_item_pigeon_meat.png` | `very small plucked raw pigeon portion` |
-| `icon_item_venison.png` | `deep red lean raw venison cut` |
+| `icon_item_game_meat.png` | `deep red lean raw venison cut` |
 | `icon_item_boar_meat.png` | `dark raw wild boar cut with coarse fat` |
 | `icon_item_duck_egg.png` | `pale blue-green duck egg` |
 | `icon_item_goose_egg.png` | `very large white goose egg` |
@@ -71,7 +71,7 @@ Et, yumurta ve süt türlere ayrılıyor (58 §8); mezbaha yan ürünleri (60a �
 316 ölçütleri; `python tools/art/style.py check --family arayuz <dosya> ...`. Toplu önizleme x4, parşömen ve koyu zeminde (`art/results/583-ikonlar-x4.png`).
 
 ## Notlar
-`icon_item_<id>` adıyla geldikleri için kod kendiliğinden bulur. Eşya kimlikleri kod oturumunda bu adlarla açılır (58 §8, 58a §2-3, 60a §2.2).
+`icon_item_<id>` adıyla geldikleri için kod kendiliğinden bulur. Eşya kimlikleri kodda bu adlarla açıldı (dana eti item.meat, kuzu eti item.mutton, tavuk eti item.poultry, karaca eti item.game_meat: eski kimlikler korundu) (58 §8, 58a §2-3, 60a §2.2).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
