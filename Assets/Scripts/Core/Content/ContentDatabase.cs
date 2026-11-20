@@ -12,6 +12,8 @@ namespace Thatchwick.Core.Content
         public ContentRegistry<BranchDef> Branches { get; } = new ContentRegistry<BranchDef>();
         public ContentRegistry<ProjectDef> Projects { get; } = new ContentRegistry<ProjectDef>();
         public ContentRegistry<VillagerDef> Villagers { get; } = new ContentRegistry<VillagerDef>();
+        /// <summary>Yaşayan köy ayarları ve meslek iş döngüleri (life.json "villageLife", "villagerWork"; belge 66f).</summary>
+        public VillageLifeConfig VillageLife { get; } = new VillageLifeConfig();
         /// <summary>Genel ad havuzu (life.json namePool; belge 61b §5).</summary>
         public List<string> MaleNamePool { get; } = new List<string>();
         public List<string> FemaleNamePool { get; } = new List<string>();
@@ -236,6 +238,24 @@ namespace Thatchwick.Core.Content
             return errors;
         }
 
+        /// <summary>Yaşayan köy verisi (belge 66f): eşya, zincir ve meslek başvuruları.</summary>
+        private void ValidateVillageLife(List<string> errors)
+        {
+            var cfg = VillageLife;
+            foreach (var p in cfg.Pantry) if (!Items.Contains(p.Item)) errors.Add($"villageLife.pantry: eşya '{p.Item}' bulunamadı.");
+            foreach (var p in cfg.Produce) if (!Items.Contains(p.Item)) errors.Add($"villageLife.produce/{p.Role}: eşya '{p.Item}' bulunamadı.");
+            foreach (var kv in cfg.Treats) if (!Items.Contains(kv.Value)) errors.Add($"villageLife.treats/{kv.Key}: eşya '{kv.Value}' bulunamadı.");
+            foreach (var m in cfg.Meals)
+            {
+                if (m.Chain != null && !Chains.Contains(m.Chain)) errors.Add($"villageLife.meals/{m.Id}: zincir '{m.Chain}' bulunamadı.");
+                foreach (var c in m.Consume) if (!Items.Contains(c.Key)) errors.Add($"villageLife.meals/{m.Id}: eşya '{c.Key}' bulunamadı.");
+            }
+            var roles = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var v in Villagers.All) if (!string.IsNullOrEmpty(v.Role)) roles.Add(v.Role);
+            foreach (var kv in cfg.Work)
+                if (roles.Count > 0 && !roles.Contains(kv.Key)) errors.Add($"villagerWork: meslek '{kv.Key}' hiçbir köylüde yok.");
+        }
+
         private void ValidateFarm(List<string> errors)
         {
             var roles = new HashSet<string> { AnimalRoles.Water, AnimalRoles.Bedding, AnimalRoles.Collector, AnimalRoles.Feeder, AnimalRoles.Bell };
@@ -375,6 +395,7 @@ namespace Thatchwick.Core.Content
                     if (e.RewardItem != null && !Items.Contains(e.RewardItem)) errors.Add($"{v.Id}/{e.Id}: ödül eşyası '{e.RewardItem}' bulunamadı.");
                 }
             }
+            ValidateVillageLife(errors);
             foreach (var i in Items.All)
                 foreach (var vid in i.Variants)
                 {

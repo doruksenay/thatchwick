@@ -34,6 +34,67 @@ namespace Thatchwick.Core.Content
 
         private static float Mult(float v) => v <= 0f ? 1f : v;
 
+        /// <summary>Yaşayan köy (belge 66f): ayarlar ve meslek iş döngüleri. 0 ya da eksik alan = varsayılan.</summary>
+        private static void MapVillageLife(ContentDatabase db, ContentFileDto file, List<string> errors)
+        {
+            var cfg = db.VillageLife;
+            var d = file.villageLife;
+            if (d != null && !d.IsEmpty)
+            {
+                if (d.giftChance > 0) cfg.GiftChance = Math.Min(1.0, d.giftChance);
+                if (d.discount > 0) cfg.Discount = Math.Min(0.5, d.discount);
+                if (d.breakdownMinDays > 0) cfg.BreakdownMinDays = d.breakdownMinDays;
+                if (d.breakdownMaxDays > 0) cfg.BreakdownMaxDays = Math.Max(cfg.BreakdownMinDays, d.breakdownMaxDays);
+                if (d.consoleShare > 0) cfg.ConsoleShare = Math.Min(1.0, d.consoleShare);
+                if (d.sharedLossDays > 0) cfg.SharedLossDays = d.sharedLossDays;
+                if (d.criticalNeed > 0) cfg.CriticalNeed = d.criticalNeed;
+                if (d.eveningTavernShare > 0) cfg.EveningTavernShare = Math.Min(1.0, d.eveningTavernShare);
+                if (d.stockFood > 0) cfg.StockFood = d.stockFood;
+                if (d.stockCooked > 0) cfg.StockCooked = d.stockCooked;
+                if (d.stockRaw > 0) cfg.StockRaw = d.stockRaw;
+                if (d.stockSeed > 0) cfg.StockSeed = d.stockSeed;
+                if (d.stockOther > 0) cfg.StockOther = d.stockOther;
+                if (d.stockStaple > 0) cfg.StockStaple = d.stockStaple;
+                cfg.Pantry.Clear(); cfg.Produce.Clear(); cfg.Meals.Clear(); cfg.Treats.Clear();
+                if (d.treats != null)
+                    foreach (var t in d.treats)
+                        if (t != null && !string.IsNullOrWhiteSpace(t.role) && !string.IsNullOrWhiteSpace(t.item)) cfg.Treats[t.role] = t.item;
+                if (d.pantry != null)
+                    foreach (var p in d.pantry)
+                        if (p != null && !string.IsNullOrWhiteSpace(p.item))
+                            cfg.Pantry.Add(new PantryStaple { Item = p.item, Target = Math.Max(1, p.target), Min = Math.Max(0, Math.Min(p.min, p.target)) });
+                if (d.produce != null)
+                    foreach (var p in d.produce)
+                        if (p != null && !string.IsNullOrWhiteSpace(p.item) && !string.IsNullOrWhiteSpace(p.role))
+                            cfg.Produce.Add(new PantryProduce { Role = p.role, Item = p.item, Count = Math.Max(1, p.count) });
+                if (d.meals != null)
+                    foreach (var m in d.meals)
+                    {
+                        if (m == null || string.IsNullOrWhiteSpace(m.id)) continue;
+                        if (m.where != "home" && m.where != "work") { errors.Add($"villageLife.meals/{m.id}: yer 'home' ya da 'work' olmalı."); continue; }
+                        var meal = new VillageMeal { Id = m.id, Where = m.where, Chain = m.chain, Hunger = m.hunger > 0f ? m.hunger : 60f };
+                        if (m.consume != null)
+                            foreach (var c in m.consume)
+                                if (c != null && !string.IsNullOrWhiteSpace(c.item)) meal.Consume.Add(new KeyValuePair<string, int>(c.item, c.count <= 0 ? 1 : c.count));
+                        cfg.Meals.Add(meal);
+                    }
+            }
+            if (file.villagerWork == null) return;
+            foreach (var w in file.villagerWork)
+            {
+                if (w == null || string.IsNullOrWhiteSpace(w.role)) continue;
+                var list = new List<VillagerWorkStep>();
+                if (w.steps != null)
+                    foreach (var st in w.steps)
+                    {
+                        if (st == null || string.IsNullOrWhiteSpace(st.id) || string.IsNullOrWhiteSpace(st.pose)) { errors.Add($"villagerWork/{w.role}: adımın kimliği ya da pozu boş."); continue; }
+                        list.Add(new VillagerWorkStep { Id = st.id, Pose = st.pose, Fallback = string.IsNullOrWhiteSpace(st.fallback) ? null : st.fallback, Minutes = st.minutes > 0 ? st.minutes : 20 });
+                    }
+                if (list.Count == 0) { errors.Add($"villagerWork/{w.role}: iş listesi boş."); continue; }
+                cfg.Work[w.role] = list;
+            }
+        }
+
         /// <summary>DTO'daki etkileri çarpan nesnesine çevirir (0 = değişiklik yok).</summary>
         public static LifeModifiers ToModifiers(ModifierDto d, List<string> errors, string where)
         {
@@ -168,6 +229,8 @@ namespace Thatchwick.Core.Content
                 db.MaleNamePool.Clear(); db.MaleNamePool.AddRange(CleanNames(file.namePool.maleNames, "namePool.maleNames", errors));
                 db.FemaleNamePool.Clear(); db.FemaleNamePool.AddRange(CleanNames(file.namePool.femaleNames, "namePool.femaleNames", errors));
             }
+
+            MapVillageLife(db, file, errors);
 
             if (file.festivals != null)
                 foreach (var f in file.festivals)

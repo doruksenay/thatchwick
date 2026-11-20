@@ -47,6 +47,9 @@ namespace Thatchwick.Core.Audio
         public const string DoorOpen = "door.open";           // B foley
         public const string DoorClose = "door.close";         // B foley
         public const string ChestOpen = "chest.open";         // B foley
+        // Köy (belge 66f): dükkân kapısının çanı, köylünün kapısını çalmak (cozy kuralı, 45c; iş dosyaları s340-s341)
+        public const string ShopBell = "village.shop_bell";   // B foley
+        public const string DoorKnock = "village.door_knock"; // B foley
 
         // Hayvanlar
         public const string AnimalChicken = "animal.chicken"; // A animals

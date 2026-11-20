@@ -200,4 +200,75 @@ namespace Thatchwick.Core.Content
         public string floor;       // Dirt/Wood/Stone
         public TemplateItemDto[] items;
     }
+
+    // ---- Yaşayan köy, parti 1 (Project belgeleri 66d, 66e, 66f) ----
+
+    /// <summary>Mesleğin işyerinde sırayla yaptığı bir iş (life.json "villagerWork").</summary>
+    [Serializable]
+    public sealed class VillagerWorkStepDto
+    {
+        public string id;          // ui.village: "village.work.<id>"
+        public string pose;        // oynayacak kare anahtarı (craft_hammer, bellows ...)
+        public string fallback;    // pozun karesi yoksa en yakın genel poz
+        public double minutes;     // oyun dakikası; 0 = 20
+    }
+
+    /// <summary>Meslek → iş döngüsü (kod sabiti değil, veri).</summary>
+    [Serializable]
+    public sealed class VillagerWorkDto
+    {
+        public string role;
+        public VillagerWorkStepDto[] steps;
+    }
+
+    /// <summary>Hane kilerinde tutulmak istenen mal: eşiğin altına inince hanenin bir yetişkini o gün dükkândan alır.</summary>
+    [Serializable]
+    public sealed class PantryStapleDto
+    {
+        public string item;
+        public int target;         // alımda bu sayıya tamamlanır
+        public int min;            // bunun altına inince alım
+    }
+
+    /// <summary>Çiftçi, çoban, balıkçı haneleri kendi ürününü her sabah kilere koyar.</summary>
+    [Serializable]
+    public sealed class PantryProduceDto
+    {
+        public string role;
+        public string item;
+        public int count;
+    }
+
+    /// <summary>Köylü öğünü: nerede (home | work), hangi zincir (pozlar), kilerden ne düşer, açlığı ne kadar doyurur.</summary>
+    [Serializable]
+    public sealed class VillageMealDto
+    {
+        public string id;
+        public string where;
+        public string chain;
+        public ConsumeDto[] consume;
+        public float hunger;       // 0 = 60
+    }
+
+    /// <summary>Yaşayan köy ayarları (life.json "villageLife"). 0 ya da eksik = varsayılan.</summary>
+    [Serializable]
+    public sealed class VillageLifeDto
+    {
+        public double giftChance;          // keyifli ustanın ikram olasılığı (öneri 0,15)
+        public double discount;            // ikramın indirim biçimi (0,05)
+        public double breakdownMinDays, breakdownMaxDays;   // köylü bunalımı (1-2 gün)
+        public double consoleShare;        // teselli: kalan sürenin gidecek payı (0,5)
+        public double sharedLossDays;      // "yakın zamanda kayıp" penceresi; 0 = bir mevsim
+        public double criticalNeed;        // öğle arasını öne aldıran ihtiyaç eşiği (10)
+        public double eveningTavernShare;  // akşam meyhaneye giden yetişkin payı (0,4)
+        public int stockFood, stockCooked, stockRaw, stockSeed, stockOther;   // dükkânın günlük temel stoğu
+        public int stockStaple;   // köylü kilerinin malları (ekmek, yumurta ...): köylü alımı için daha çok
+        public PantryStapleDto[] pantry;
+        public PantryProduceDto[] produce;
+        public VillageMealDto[] meals;
+        public PantryProduceDto[] treats;   // meslek → ikram eşyası (count kullanılmaz)
+
+        public bool IsEmpty => giftChance <= 0 && (pantry == null || pantry.Length == 0) && (meals == null || meals.Length == 0);
+    }
 }
+

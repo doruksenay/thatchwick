@@ -230,7 +230,7 @@ namespace Thatchwick.Core.Content
             if (def.IceCollect > 0) parts.Add($"Donlu sabahlar {def.IceCollect} buz toplar");
             if (def.HasTag("craftonly")) parts.Add(def.ShopUnlock == "glassworks" ? "Yapılır; köye camcılık gelince çömlekçide de satılır" : "Yalnızca yapılır (tarif)");
             if (def.HasTag(Decor.SealedTag)) parts.Add("Ağzı bağlı: içindeki yiyecek 4 kat yavaş bozulur");
-            if (def.HasTag(Decor.MerchantTag)) parts.Add("Gezgin tüccar getirir: yalnızca pazar günü satılır");
+            if (def.HasTag(Decor.MerchantTag)) parts.Add(Localization.CoreText.T("ui.village.merchant_only"));
             if (def.IsKeepsake) parts.Add("Hatıra: kazanılır, satılmaz; nesiller geçtikçe güzelleşir");
             if (def.IsSeasonal)
             {

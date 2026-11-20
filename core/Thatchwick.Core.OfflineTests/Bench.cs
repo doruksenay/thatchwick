@@ -134,6 +134,88 @@ namespace Thatchwick.Core.Tests
             var loaded = SaveGame.Load(back, db);
             Console.WriteLine($"BENCH save load (SaveGame.Load) {swl.Elapsed.TotalMilliseconds:0} ms, items={loaded.World.Items.Count}");
             Console.WriteLine($"BENCH save capture        {tCap:0.0} ms; json {json.Length / 1024} KB (map {mapJson.Length / 1024} KB), serialize {tJson:0.0} ms (System.Text.Json)");
+            RunVillage();
+        }
+
+        /// <summary>
+        /// Yaşayan köy (belge 66f §E.17): 40 köylü, oyuncu şehirde (şehirdekiler tam simülasyon, en kötü durum), 2 oyun günü,
+        /// 3x hız. "bugün": eski kurallar (ihtiyaç ve ruh hali kapalı, otonomi yok, köy hayatı yok). "yaşayan": gerçek ihtiyaç,
+        /// özgür irade (izinli yerler), köy hayatı. Hedef: yaşayan ≤ 1,5 × bugün.
+        /// </summary>
+        public static void RunVillage()
+        {
+            double baseline = VillageRun(false), living = VillageRun(true);
+            Console.WriteLine($"BENCH village 40: today {baseline:0.00} ms/s, living {living:0.00} ms/s, ratio {living / Math.Max(1e-6, baseline):0.00} (hedef <= 1.5)");
+        }
+
+        private static double VillageRun(bool living)
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var lay = YerlesimSablonTests.LoadLayouts(db, out _);
+            var w = new WorldState(StarterWorld.BuildMap(lay));
+            StarterWorld.Place(w, db, lay, 1);
+            var house = new Household();
+            var pop = new Population();
+            var clock = new GameClock();
+            clock.Restore(1.25, 3);
+            var life = new LifeSystems(db, w, house, pop, clock, 7);
+            var family = new Thatchwick.Core.Family.FamilyService(pop, house, db);
+            life.Attach(family);
+            var places = Regions.Places(w.Map);
+            GridPos Near(GridPos p) { for (int r = 0; r < 6; r++) for (int dy = -r; dy <= r; dy++) for (int dx = -r; dx <= r; dx++) { var q = new GridPos(p.X + dx, p.Y + dy, p.Z); if (w.Map.IsWalkable(q)) return q; } return p; }
+            GridPos Resolve(string key) => places.TryGetValue(VillageHomes.IsInn(key) ? "home:tavern" : key ?? "square", out var t) ? Near(t) : Near(places["square"]);
+            life.Villagers.SpawnMissing(Resolve);
+            life.Houses.EnsureHouses();
+            var rng = new Random(4);
+            int extra = 0;
+            while (pop.Members.Count(m => m.IsVillager) < 40)
+            {
+                var c = new Character(pop.NextId(), "V" + extra++, Resolve(VillageHomes.Cottages[extra % VillageHomes.Cottages.Length])) { IsVillager = true };   // loc-yok: ölçüm kişisi
+                c.SetAge(20 + rng.Next(40));
+                pop.Add(c);
+            }
+            var runners = new List<(Character c, JobRunner r)>();
+            var anchors = new Dictionary<int, List<GridPos>>();
+            foreach (var c in pop.Members.Where(m => m.IsVillager))
+            {
+                var r = new JobRunner(c, w);
+                life.Attach(r);
+                if (living)
+                {
+                    LivingVillage.ApplyRules(c, r);
+                    var list = new List<GridPos>();
+                    foreach (var key in VillagerFreeWill.AllowedPlaces(life.Living.HomeOf(c), life.Living.WorkOf(c), life.Living.PlaceFor(c)))
+                        if (places.ContainsKey(key) || VillageHomes.IsInn(key)) list.Add(Resolve(key));
+                    anchors[c.Id] = list;
+                    r.PlaceFilter = (ch, item) => VillagerFreeWill.MayUse(w, item, anchors[ch.Id]);
+                }
+                else
+                {
+                    c.CanStarve = false; c.MoodEnabled = false; r.Autonomous = false;
+                    c.Needs.SetDecayPerDay(NeedType.Hunger, 0f); c.Needs.SetDecayPerDay(NeedType.Energy, 0f);
+                }
+                runners.Add((c, r));
+            }
+            if (living) life.Living.FullSimulation = c => Regions.Town.Contains(c.Position);
+            const double hz = 10;
+            var sw = new Stopwatch();
+            double sum = 0; int n = 0; double start = clock.TotalDays;
+            var part = new double[4];
+            while (clock.TotalDays < start + 2.0)
+            {
+                double gd = clock.Advance(1.0 / hz);
+                sw.Restart();
+                pop.Tick(gd); double t0 = sw.Elapsed.TotalMilliseconds;
+                life.Tick(gd); double t1 = sw.Elapsed.TotalMilliseconds;
+                if (living) life.Living.Tick(0); double t2 = sw.Elapsed.TotalMilliseconds;
+                foreach (var (c, r) in runners) if (!living || Regions.Town.Contains(c.Position)) r.Tick(gd);
+                double t3 = sw.Elapsed.TotalMilliseconds;
+                part[0] += t0; part[1] += t1 - t0; part[3] += t3 - t2;
+                sum += t3; n++;
+            }
+            double secs = n / hz;
+            Console.WriteLine($"BENCH   village {(living ? "living" : "today ")}: pop {part[0] / secs:0.00} life {part[1] / secs:0.00} runners {part[3] / secs:0.00} ms/s");
+            return sum / secs;
         }
     }
 }

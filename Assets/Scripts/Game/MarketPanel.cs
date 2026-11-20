@@ -183,7 +183,7 @@ namespace Thatchwick.Game
         {
             var m = Merchant;
             if (m == null || (!m.Here && m.Order == null)) return;
-            UiSkin.Wrap(m.Here ? (m.IsFair ? "— Panayır: gezgin tüccar —" : "— Gezgin tüccar —") : "— Tüccarın siparişi (pazar günü gelir) —", UiSkin.MarketTextW);
+            UiSkin.Wrap(m.Here ? (m.IsFair ? "— Panayır: gezgin tüccar —" : "— Gezgin tüccar —") : GameLocalization.T("ui.village.merchant_order"), UiSkin.MarketTextW);
             if (m.Here)
             {
                 if (m.Offers.Count == 0) UiSkin.Wrap("Tüccarın malı tükendi.", UiSkin.MarketTextW);

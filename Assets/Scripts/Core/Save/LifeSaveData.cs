@@ -49,6 +49,8 @@ namespace Thatchwick.Core.Save
     {
         /// <summary>Avlu: yığınlar, kompost, ahır kirliliği, fare, araba filosu (belge 57-57e). Eski kayıtta null.</summary>
         public Thatchwick.Core.Farmyard.YardSave yard;
+        /// <summary>Yaşayan köy: hane kilerleri, dükkân stoğu, bugünkü öğünler (belge 66f). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Life.LivingVillageSave village;
         /// <summary>Giysiler, dolaplar ve takımlar (belge 48). Eski kayıtta null.</summary>
         public Thatchwick.Core.Clothing.ClothingSave clothing;
         /// <summary>Ismarlamalar ve biçki kalıpları (belge 48 §10-11). Eski kayıtta null.</summary>
