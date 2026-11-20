@@ -29,6 +29,12 @@ namespace Thatchwick.Core.Work
         public event Action<Character, ItemInstance, int> CropHarvested;
         /// <summary>Balık tutuldu (karakter, balık eşyası): ilk balık hatırası (D3b).</summary>
         public event Action<Character, string> FishCaught;
+        /// <summary>Gübre serildi (karakter, ekin, tür, sonuç): bildirim ve beceri kaydı (belge 57c).</summary>
+        public event Action<Character, ItemInstance, Fertilizer, FertilizeOutcome> Fertilized;
+        /// <summary>Çiğ yenen ekin pislikli ham kompostla büyütülüp hasat edildi (karın ağrısı riski, belge 57b Z2).</summary>
+        public event Action<Character, ItemInstance> RawFilthHarvested;
+        /// <summary>Envanterdeki ham kompost pislik içeriyor mu (kompost servisi bildirir); null ise içermez.</summary>
+        public Func<bool> RawCompostHasFilth { get; set; }
 
         /// <summary>Oyuncu kendisi mi balık tutuyor (mini oyun, belge 50). True ise vuran balık <see cref="FishBite"/> ile bildirilir, <see cref="GrantFish"/> bekler.</summary>
         public Func<Character, bool> PlayerFishing { get; set; }
@@ -167,7 +173,14 @@ namespace Thatchwick.Core.Work
             if (interaction.Fertilize > 0f)
             {
                 if (!item.IsPlant || !item.Def.IsCrop) return "Gübre ekinin toprağına atılır.";
-                if (Plants != null && Plants.FertilityAt(item.Position) >= 0.99f) return "Toprak zaten çok verimli.";
+                bool soilAid = interaction.FertilizerKind == Fertilizer.Marl || interaction.FertilizerKind == Fertilizer.Mulch;
+                if (!soilAid && Plants != null && Plants.FertilityAt(item.Position) >= 0.99f) return "Toprak zaten çok verimli.";
+                if (Plants != null)
+                    switch (Plants.CanFertilize(item.Position, interaction.FertilizerKind))
+                    {
+                        case FertilizeOutcome.Saturated: return "Toprak doymuş: bu ekimde gübrelendi, hasattan sonra yeniden serilir.";
+                        case FertilizeOutcome.AshUsed: return "Bu toprağa bu yıl kül serildi.";
+                    }
             }
             if (interaction.Slaughter)
             {
@@ -324,9 +337,19 @@ namespace Thatchwick.Core.Work
             }
             if (interaction.Fertilize > 0f && Plants != null)
             {
-                // Toprak bakımı: gübre seviye başına %5 daha etkili.
-                Plants.Fertilize(item.Position, (float)(interaction.Fertilize * SkillNames.Factor(character.Skills.GetLevel(SkillType.SoilCare), 0.05)));
-                farmNotes.Add($"toprak verimi %{Plants.FertilityAt(item.Position) * 100f:0}");
+                // Toprak bakımı: gübre seviye başına %5 daha etkili. Tür kuralları (yakma, artık bereket, marn, malç) PlantSystem'de.
+                float amount = (float)(interaction.Fertilize * SkillNames.Factor(character.Skills.GetLevel(SkillType.SoilCare), 0.05));
+                bool filth = interaction.FertilizerKind == Fertilizer.CompostRaw && RawCompostHasFilth != null && RawCompostHasFilth();
+                var outcome = Plants.ApplyFertilizer(item.Position, interaction.FertilizerKind, amount, item, filth);
+                switch (outcome)
+                {
+                    case FertilizeOutcome.Burned: farmNotes.Add("taze gübre ekini yaktı: büyüme bir gün durdu"); break;
+                    case FertilizeOutcome.Limed: farmNotes.Add("marn erken serildi: toprak kireçlendi"); break;
+                }
+                if (interaction.FertilizerKind == Fertilizer.Marl) farmNotes.Add("marnlandı: nadas tavanı yükseldi");
+                else if (interaction.FertilizerKind == Fertilizer.Mulch) farmNotes.Add("malçlandı: toprak nemini tutar");
+                else farmNotes.Add($"toprak verimi %{Plants.FertilityAt(item.Position) * 100f:0}");
+                Fertilized?.Invoke(character, item, interaction.FertilizerKind, outcome);
             }
 
             // Beceri seviyesi (+ özellik/dal kalite bonusu) ürün satırlarını seçer: aynı yemeğin sıradan ve iyi hali.
@@ -343,7 +366,19 @@ namespace Thatchwick.Core.Work
             // Ekin hasadında kalite: sulama düzeni, toprak verimi ve çiftçilik seviyesi ürün miktarını artırır (tohum hariç).
             bool cropHarvest = interaction.RequiresGrown && item.IsPlant && item.Def.IsCrop;
             int tier = cropHarvest && Plants != null ? Plants.QualityOf(item, level) : 0;
-            float yieldMult = PlantSystem.QualityYield(tier);
+            float yieldMult = PlantSystem.QualityYield(tier) * (cropHarvest && Plants != null ? Plants.YieldFactor(item) : 1f);
+            if (cropHarvest && Plants != null)
+            {
+                // Hasat notları (belge 57c, 57d): oyuncu ürünün neden az ya da düşük kaliteli çıktığını görsün.
+                switch (Plants.DamageOf(item))
+                {
+                    case CerealDamage.Lodged: farmNotes.Add("ekin yatmıştı: ürünün bir kısmı yerde kaldı"); break;
+                    case CerealDamage.Shattered: farmNotes.Add("fırtına başağı dökmüştü"); break;
+                }
+                if (Plants.IsSpoiledByManure(item)) farmNotes.Add(item.Def.Feed == FeedType.Light ? "taze gübre yaramadı: kalite düştü" : "fazla gübre yaramadı: kalite düştü");
+                else if (Plants.IsLeafy(item)) farmNotes.Add("toprak fazla zengindi: yaprağa kaçtı");
+                if (Plants.HasRawFilth(item)) RawFilthHarvested?.Invoke(character, item);
+            }
             // Kalite kaynağı (53 §4.3-4.6): ekin puanı (birim başına dağılım), toplama/balık/av/meyve (toplayanın becerisi),
             // işleme (girdilerin ortalaması + usta), yapım (beceri tablosu); "Ustalık eseri dene" bütün partiyi belirler.
             int rawLevel = interaction.Skill.HasValue ? character.Skills.GetLevel(interaction.Skill.Value) : 0;
@@ -401,11 +436,13 @@ namespace Thatchwick.Core.Work
                     if (fam > 0 && _rng.NextDouble() < fam) count += 1;   // aile tarifi
                 }
                 firstRow = false;
-                if (yieldMult > 1f && _content.Items.TryGet(p.ItemId, out var rowDef) && rowDef.PlantsAs == null)
+                // Çarpan 1'in altına da inebilir (belge 57c, 57d: gübresiz obur ekin, yapraklanma, fırtına kaybı); en az 1 ürün kalır.
+                if (Math.Abs(yieldMult - 1f) > 1e-4f && _content.Items.TryGet(p.ItemId, out var rowDef) && rowDef.PlantsAs == null)
                 {
                     double scaled = count * yieldMult;
-                    count = (int)Math.Floor(scaled);
-                    if (_rng.NextDouble() < scaled - count) count++;
+                    int floor = (int)Math.Floor(scaled);
+                    if (_rng.NextDouble() < scaled - floor) floor++;
+                    count = yieldMult < 1f ? Math.Max(Math.Min(count, 1), floor) : floor;
                 }
                 if (playerRod)
                 {

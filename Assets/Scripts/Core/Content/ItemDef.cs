@@ -1,7 +1,51 @@
+using System;
 using System.Collections.Generic;
 
 namespace Thatchwick.Core.Content
 {
+    /// <summary>
+    /// Ekinin beslenme tipi (belge 57c §2). Gerçek tarımdaki "çok yiyen, az yiyen, toprak yapan" ayrımı ve gübreye
+    /// verilen tepki: kök ve soğan taze gübreden zarar görür, yağsız toprak seven fazla gübrede kalite kaybeder.
+    /// </summary>
+    public enum FeedType
+    {
+        /// <summary>Orta: bugünkü varsayılan davranış.</summary>
+        Medium = 0,
+        /// <summary>Obur: çok çeker, gübresiz belirgin yavaş; iyi gübreyle en hızlı ve en kaliteli.</summary>
+        Heavy = 1,
+        /// <summary>Kanaatkâr (kök, soğan): az çeker; taze gübre zarar verir.</summary>
+        Light = 2,
+        /// <summary>Yağsız toprak seven (ot, asma, çavdar): fazla verimde miktar artar, kalite düşer.</summary>
+        Lean = 3,
+        /// <summary>Toprak yapan (baklagil, fiğ): toprağa verim katar; fazla gübrede yaprağa kaçar.</summary>
+        Builder = 4
+    }
+
+    /// <summary>Gübre türleri (belge 57c §2.2, 57d §3). Bayrak: bir ekim döngüsünde serilenler toprak karosunda birikir.</summary>
+    [Flags]
+    public enum Fertilizer
+    {
+        None = 0,
+        /// <summary>Türü verilmemiş eski "fertilize" etkileşimi (bereket iksiri, balık unu...).</summary>
+        Generic = 1,
+        CompostRaw = 2,
+        Compost = 4,
+        BlackSoil = 8,
+        /// <summary>Taze gübre: boş toprağa tam etki; ekili karoyu yakar.</summary>
+        FreshManure = 16,
+        /// <summary>Güvercin ve kümes gübresi: sert; yalnızca boş toprağa ve obur ekine.</summary>
+        HotManure = 32,
+        BoneMeal = 64,
+        Ash = 128,
+        /// <summary>Deniz yosunu: taze serilir, yakmaz, otu bastırır.</summary>
+        Seaweed = 256,
+        /// <summary>Marn: verim eklemez; nadas tavanını yıllarca yükseltir.</summary>
+        Marl = 512,
+        /// <summary>Yaprak çürüğü (malç): verim eklemez; su tutar, otu bastırır.</summary>
+        Mulch = 1024,
+        Lime = 2048
+    }
+
     /// <summary>Eşyanın nereye konabildiği: yere (zemin karolarına) ya da başka eşyanın yüzeyine (dekor).</summary>
     public enum ItemPlacement
     {
@@ -314,6 +358,16 @@ namespace Thatchwick.Core.Content
         public bool FixesNitrogen { get; set; }
         /// <summary>Ekin ailesi (tahıl, baklagil, kök, lahanagil, soğangil, kabakgil, lif): nöbetleşe ekim aileye bakar.</summary>
         public string CropFamily { get; set; }
+        /// <summary>Beslenme tipi (belge 57c): toprağı ne kadar yorduğu ve gübreye nasıl karşılık verdiği.</summary>
+        public FeedType Feed { get; set; } = FeedType.Medium;
+        /// <summary>Çiğ yenen ekin (marul, turp, mutfak otu): pislikli ham kompostla gübrelenirse yiyeni hasta edebilir.</summary>
+        public bool EatenRaw { get; set; }
+        /// <summary>Bu gübrelerle beslenince kalitesi artar (kül: lahana ailesi; kemik unu: kök ve soğan).</summary>
+        public Fertilizer LikesFertilizer { get; set; }
+        /// <summary>Bu gübreler ürünü azaltır (kül: ahududu).</summary>
+        public Fertilizer DislikesFertilizer { get; set; }
+        /// <summary>Tahıl mı (fırtınada döker, aşırı gübreliyse yatar)?</summary>
+        public bool IsCereal => CropFamily == "tahil";
         /// <summary>Ekin demeti: harmanda dövülünce bu taneye (ve samana) döner; boş = demet değil.</summary>
         public string ThreshesTo { get; set; }
         /// <summary>Düven: çeki hayvanı varken her sabah envanterdeki demetlerden bu kadarını döver. 0 = düven değil.</summary>

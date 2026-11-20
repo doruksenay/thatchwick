@@ -256,7 +256,13 @@ namespace Thatchwick.Core.Save
             {
                 var soil = new List<SoilSave>();
                 foreach (var kv in plants.SoilPlots)
-                    soil.Add(new SoilSave { x = kv.Key.X, y = kv.Key.Y, fertility = kv.Value.Fertility, lastCrop = kv.Value.LastCrop, prevCrop = kv.Value.PrevCrop });
+                    soil.Add(new SoilSave
+                    {
+                        x = kv.Key.X, y = kv.Key.Y, fertility = kv.Value.Fertility, lastCrop = kv.Value.LastCrop, prevCrop = kv.Value.PrevCrop,
+                        worked = kv.Value.Worked, residual = kv.Value.Residual, residualNext = kv.Value.ResidualNext, cycle = (int)kv.Value.Cycle,
+                        rawFilth = kv.Value.RawFilth, burnUntil = kv.Value.BurnUntil, marlUntil = kv.Value.MarlUntil, limedUntil = kv.Value.LimedUntil,
+                        mulchUntil = kv.Value.MulchUntil, ashDay = kv.Value.AshDay
+                    });
                 soil.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
                 data.soil = soil.ToArray();
             }
@@ -483,7 +489,16 @@ namespace Thatchwick.Core.Save
         public static void RestoreSoil(LoadedGame loaded, PlantSystem plants)
         {
             foreach (var s in loaded.Soil)
-                if (s != null) plants.SetSoil(new GridPos(s.x, s.y), s.fertility, s.lastCrop, s.prevCrop);
+            {
+                if (s == null) continue;
+                var pos = new GridPos(s.x, s.y);
+                plants.SetSoil(pos, s.fertility, s.lastCrop, s.prevCrop);
+                var plot = plants.Plot(pos);
+                plot.Worked = s.worked; plot.Residual = s.residual; plot.ResidualNext = s.residualNext;
+                plot.Cycle = (Content.Fertilizer)s.cycle; plot.RawFilth = s.rawFilth;
+                plot.BurnUntil = s.burnUntil; plot.MarlUntil = s.marlUntil; plot.LimedUntil = s.limedUntil; plot.MulchUntil = s.mulchUntil;
+                plot.AshDay = s.ashDay == 0 && !s.worked ? -1000 : s.ashDay;
+            }
         }
 
         /// <summary>Kayıttaki hayvanları kurulan hayvan sistemine geri koyar (barınağı olmayanlar atlanır).</summary>
