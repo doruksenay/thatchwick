@@ -1,7 +1,7 @@
 ---
 id: "601"
 title: "Mutfak, el aletleri ve bulaşık: bıçak, tahta, kaşık, oklava, kevgir, kürek, bulaşık sepeti, leğen, yıkama taşı (11)"
-status: running
+status: review
 claimed_at: 2026-11-20T15:22Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (63a-K10: "mutfak eşyaları hemen girebilir: olur"), Project belgeleri 63, 63a
 priority: 30
