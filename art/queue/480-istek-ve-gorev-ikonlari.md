@@ -1,7 +1,7 @@
 ---
 id: "480"
 title: "İstek, süreli görev ve azık ikonları (16)"
-status: running
+status: review
 claimed_at: 2026-11-20T09:56Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("tüm kod işlerini hallet geriye sadece asset üretme ve test etme kalsın"), Project belgeleri 46 ve 47
 priority: 30
