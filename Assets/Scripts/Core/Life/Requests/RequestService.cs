@@ -219,6 +219,50 @@ namespace Thatchwick.Core.Life.Requests
 
         public static bool OnBoard(Request r) => r.Kind == RequestKind.Favor || r.Kind == RequestKind.Order || r.Kind == RequestKind.Call;
 
+        // ================================================================== tellal (karar 20.11.2026)
+
+        /// <summary>Tellalın meydana çıktığı saat. Pano bütün açık ilanları tutar; tellal yalnızca son turundan beri asılanları bağırır.</summary>
+        public const double CrierHour = 8.0;
+        /// <summary>Tellal turu atılıyor mu (LifeSystems açar; tek başına kurulan hizmette kapalı, her ilan ayrı bildirilir).</summary>
+        public bool CrierEnabled { get; set; }
+        private double _criedAt = -1;
+
+        /// <summary>Tellalın bir turu: yeni ilanlar, duyan oldu mu, kaçı böylece okundu, kaçı panoda okunmayı bekliyor.</summary>
+        public sealed class CrierCall
+        {
+            public readonly List<Request> Fresh = new List<Request>();
+            public bool Heard;
+            public int NewlyRead, Unread;
+        }
+
+        /// <summary>Bugünün turu daha atılmadı ve saat geldi.</summary>
+        public bool CrierDue
+        {
+            get
+            {
+                double now = Now();
+                return (now - Math.Floor(now)) * 24.0 >= CrierHour && Math.Floor(_criedAt) < Math.Floor(now);
+            }
+        }
+
+        /// <summary>
+        /// Tellal son turundan beri panoya asılan ilanları meydanda bağırır. Hane üyesi kasabadaysa (heard) okunmamış olanlar
+        /// okunmuş sayılır; değilse panoda bekler ("İlanları oku"). Okuryazar hane zaten defterden okur.
+        /// </summary>
+        public CrierCall Cry(bool heard)
+        {
+            var call = new CrierCall { Heard = heard };
+            foreach (var r in _requests)
+            {
+                if (r.State != RequestState.Posted || !OnBoard(r) || r.PostedDay <= _criedAt) continue;
+                call.Fresh.Add(r);
+                if (r.Read) continue;
+                if (heard) { r.Read = true; call.NewlyRead++; } else call.Unread++;
+            }
+            _criedAt = Now();
+            return call;
+        }
+
         /// <summary>Hedefin satırı ("6 kömür getir (2/6; elde 3)"); eşya kimliği argümanı oyun katmanında ada çevrilir.</summary>
         public LocText ObjectiveText(Objective o)
         {
@@ -1498,7 +1542,9 @@ namespace Thatchwick.Core.Life.Requests
             if (Literate) r.Read = true;
             _requests.Add(r);
             Posted?.Invoke(r);
-            if (announce && OnBoard(r))
+            // Sabah turundan önce asılan okunmamış ilanı tellal duyurur; ayrıca "kâğıt asıldı" denmez.
+            bool crierWillCall = !r.Read && Math.Floor(_criedAt) < Math.Floor(Now()) && CrierEnabled;
+            if (announce && OnBoard(r) && !crierWillCall)
                 Notify?.Invoke(r.Read ? L("core.req.n.posted", ("kind", L(Request.KindKey(r.Kind))), ("title", r.Title), ("giver", r.GiverName)) : L("core.req.n.posted_unread"), r.GiverId);
             return r;
         }
@@ -1516,7 +1562,7 @@ namespace Thatchwick.Core.Life.Requests
 
         public RequestSave Export()
         {
-            var s = new RequestSave { nextId = _nextId, seasonPosted = _seasonPosted, playerScore = PlayerScore };
+            var s = new RequestSave { nextId = _nextId, seasonPosted = _seasonPosted, playerScore = PlayerScore, criedAt = _criedAt };
             var list = new List<RequestEntrySave>();
             foreach (var r in _requests) list.Add(RequestSaveMapper.Save(r));
             s.requests = list.ToArray();
@@ -1540,8 +1586,9 @@ namespace Thatchwick.Core.Life.Requests
         public void Import(RequestSave s)
         {
             _requests.Clear(); Memory.Clear(); _rivalScore.Clear(); _storySteps.Clear(); _originals.Clear(); _vowsDone.Clear(); _setPieces.Clear();
-            _nextId = 1; _seasonPosted = -1; PlayerScore = 0; _lastTick = -1;
+            _nextId = 1; _seasonPosted = -1; PlayerScore = 0; _lastTick = -1; _criedAt = -1;
             if (s == null) return;
+            _criedAt = s.criedAt;
             _nextId = Math.Max(1, s.nextId);
             _seasonPosted = s.seasonPosted;
             PlayerScore = s.playerScore;

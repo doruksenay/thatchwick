@@ -300,6 +300,7 @@ namespace Thatchwick.Core.Life
             Requests = new Thatchwick.Core.Life.Requests.RequestService(population, house, content, Villagers, Houses, seed != 0 ? Seeds.Derive(seed, 18) : 46)
             {
                 Now = () => Clock.TotalDays,
+                CrierEnabled = true,
                 DaysPerSeason = clock.Config.DaysPerSeason,
                 MarketDay = () => Festivals.IsMarketDayToday,
                 Legacy = Legacy,
@@ -1213,6 +1214,7 @@ namespace Thatchwick.Core.Life
             Aging.Tick(gameDays);
             Duties.Tick(gameDays);
             Requests.Tick();
+            UpdateCrier();
             Festivals.Tick(Population.Members);
             // Kararma, dekor içeriği yaşlanması ve kandil yağı dakika hassasiyeti istemez: bütün eşyaları taradıkları için
             // biriktirilip ~15 oyun dakikasında bir uygulanır (sabit adımlı simülasyon, performans incelemesi 20.11.2026).
@@ -1239,6 +1241,33 @@ namespace Thatchwick.Core.Life
         }
 
         public Season CurrentSeason => Clock.Season;
+
+        /// <summary>Tellal turunu attı (ses ve görsel için; oyun katmanı dinler).</summary>
+        public event Action<Thatchwick.Core.Life.Requests.RequestService.CrierCall> CrierCalled;
+
+        /// <summary>
+        /// Tellal (karar 20.11.2026): her sabah meydanda o günün yeni ilanlarını bağırır. Hane üyesi kasabadaysa ilanlar
+        /// okunmuş sayılır; değilse yalnızca "tellal bir şeyler duyurdu" bildirimi gelir ve ilanlar panodan okunur.
+        /// </summary>
+        private void UpdateCrier()
+        {
+            if (!Requests.CrierDue) return;
+            Character listener = null;
+            if (Regions.IsRegional(World.Map))
+                foreach (var c in Household())
+                    if (!c.IsDead && c.Stage >= AgeStage.Child && Regions.Town.Contains(c.Position)) { listener = c; break; }
+            var call = Requests.Cry(listener != null);
+            if (call.Fresh.Count == 0) return;
+            CrierCalled?.Invoke(call);
+            if (listener != null && call.NewlyRead > 0)
+            {
+                var first = call.Fresh[0];
+                Say(call.Fresh.Count == 1
+                    ? LocText.Of("core.req.n.crier_one", ("name", listener.Name), ("title", first.Title), ("giver", first.GiverName))
+                    : LocText.Of("core.req.n.crier_many", ("name", listener.Name), ("title", first.Title), ("more", call.Fresh.Count - 1)), NoticeLevel.Info, listener.Id);
+            }
+            else if (call.Unread > 0) Say(LocText.Of("core.req.n.crier_far", ("n", call.Unread)), NoticeLevel.Info);
+        }
 
         /// <summary>İlan tahtasının "İlanları oku" etkileşimi (items.json, item.notice_post).</summary>
         public const string ReadBoardInteraction = "read_board";
