@@ -5,7 +5,7 @@ kind: sfx
 family: ui
 freq: A
 pilot: true
-status: ready
+status: claimed
 approved_by: auto
 key: ui.tap
 generate: 8
@@ -18,5 +18,7 @@ axes:
   - small wooden bead click
   - thread pluck
   - felt press
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T09:52:57Z'
 ---
 A single soft tap when pressing a button in a cozy game menu.
