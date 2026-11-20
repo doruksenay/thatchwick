@@ -11,7 +11,7 @@ Yan yana sayfası: `art/results/583-yanyana.png`; x4 önizleme (parşömen + koy
 - Renk: ham 20-59 renk; Pillow median-cut 16 renk, dither yok, alfa ikili (yeniden boyama yok).
 
 ## Dosyalar (`Assets/Art/Iso/_aday/`, 32x32 RGBA, pivot x 16, pivot y 0 alttan; ikon, pivot önemsiz)
-Teslim edilen 17: meat, mutton, goat_meat, pork, rabbit_meat, poultry, duck_meat, goose_meat, pigeon_meat, game_meat, duck_egg HARİÇ goose_egg, goat_milk, goat_cheese, offal, gut, horn, rennet (icon_item_ öneki).
+Teslim edilen 14 (yeni dosya). `meat`, `poultry`, `game_meat` zaten `_aday/` altında vardı, üzerine yazılmadı; yeni hâlleri `art/tmp583/out/` içinde commit edilmedi, istenirse yeniden kopyalanır. Liste: meat, mutton, goat_meat, pork, rabbit_meat, poultry, duck_meat, goose_meat, pigeon_meat, game_meat, duck_egg HARİÇ goose_egg, goat_milk, goat_cheese, offal, gut, horn, rennet (icon_item_ öneki).
 
 ## Teslim edilmeyen
 - `icon_item_boar_meat`: pixen yaban domuzu yüzü çizdi, map_object bütün bir domuz çizdi (tek deneme). Ham hâller `art/583-red/`. Öneri: tarif "wild boar" kelimesini atıp "dark red raw ham-like meat cut with coarse fat" yazılsın.
