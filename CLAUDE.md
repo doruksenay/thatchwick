@@ -4,6 +4,7 @@ Oyun: Thatchwick: Generations of a Village (Unity 6, 2D URP, izometrik 2:1). Tas
 
 ## Kod
 - Mantık `Assets/Scripts/Core` (UnityEngine yok), Unity katmanı `Assets/Scripts/Game`. Çekirdek testleri: `dotnet test` (`core/`).
+- NuGet'e erişim yoksa (bulut oturumu) testler `tools/offline-tests/run.sh` ile koşar: CI ile aynı test dosyaları, aynı xunit 2.4.2 aşırı yüklemeleri, ardından Game katmanı derleme denetimi. Push'tan önce çalıştır; `main`'de "Core tests" kırmızıysa önce onu düzelt. `XunitShim.cs`'e gerçek xunit'te olmayan imza ekleme.
 - `.meta` dosyalarını Unity üretir; Unity'siz ortamda `.meta` yazma.
 - Görsel şartname bağlayıcıdır: `docs/gorsel-yonerge.md`.
 - İçerik (eşya, hayvan, ekin, yemek, alet) eklerken dönem kurallarına uy: hayali bir ortaçağ yerleşimi; Yeni Dünya bitkisi/hayvanı yok (patates, domates, mısır, balkabağı, tütün, hindi), ortaçağ sonrası icat yok (gazyağı, balya, mibzer vb.). Gerçekçilik: mevsim, ömür oranı (1 gün ≈ yarım yıl), türün gerçek davranışı. Ayrıntı: Project belgesi `20-donem-tutarliligi-ve-gercekcilik.md`.

@@ -136,9 +136,9 @@ namespace Thatchwick.Core.Tests
             s.Equip(c, cloak, OutfitKind.Daily);
             s.Dress(c, default);
             float w0 = s.WarmthPoints(c);
-            Assert.Equal(3f * 1.5f, w0, 3);   // yün × dış
+            Assert.Equal((double)(3f * 1.5f), (double)(w0), 3);   // yün × dış
             cloak.Quality = 2;
-            Assert.Equal(w0 * 1.5f, s.WarmthPoints(c), 3);
+            Assert.Equal((double)(w0 * 1.5f), (double)(s.WarmthPoints(c)), 3);
             var fur = s.Create("fur_lined_cloak");
             s.Equip(c, fur, OutfitKind.Daily);
             Assert.True(s.WarmthPoints(c) > w0);
@@ -160,7 +160,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(0f, c.Wetness);
             c.RainGuard = 0.5f;
             c.SoakRain(0.5f);
-            Assert.Equal(0.25f, c.Wetness, 3);
+            Assert.Equal((double)(0.25f), (double)(c.Wetness), 3);
         }
 
         [Fact]
@@ -242,14 +242,14 @@ namespace Thatchwick.Core.Tests
             daily.Fixed = false;
             s.Equip(c, daily, OutfitKind.Daily); s.Equip(c, work, OutfitKind.Work);
             for (int i = 0; i < 10; i++) s.DailyWear(c);
-            Assert.Equal(90f, daily.Durability, 3);
-            Assert.Equal(80f, work.Durability, 3);
+            Assert.Equal((double)(90f), (double)(daily.Durability), 3);
+            Assert.Equal((double)(80f), (double)(work.Durability), 3);
             Assert.Equal(ClothTone.Mid, daily.Color.Tone);   // 10 giyişte bir ton
             var kid = Person(3, 15);
             var kt = s.Create("child_tunic");
             s.Equip(kid, kt, OutfitKind.Daily);
             s.DailyWear(kid);
-            Assert.Equal(98.5f, kt.Durability, 3);
+            Assert.Equal((double)(98.5f), (double)(kt.Durability), 3);
         }
 
         [Fact]
@@ -290,7 +290,7 @@ namespace Thatchwick.Core.Tests
             s.Unequip(c, t.Id, OutfitKind.Daily);
             Assert.Single(s.Basket(new[] { c }));
             Assert.Equal(1, s.WashAll(new[] { c }, soap: false));
-            Assert.Equal(12f, t.Dirt, 3);   // kül suyu %30 bırakır
+            Assert.Equal((double)(12f), (double)(t.Dirt), 3);   // kül suyu %30 bırakır
             s.Wash(t, soap: true);
             Assert.Equal(0f, t.Dirt);
             // bez önlük yemekte kiri tutar

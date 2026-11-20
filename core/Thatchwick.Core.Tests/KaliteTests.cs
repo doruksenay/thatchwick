@@ -163,8 +163,8 @@ namespace Thatchwick.Core.Tests
             var tenth = Enumerable.Range(0, 400).Select(_ => ItemQuality.Gathered(10, rng)).ToList();
             Assert.Contains(ItemQuality.Superior, tenth);
             Assert.InRange(tenth.Count(q => q == ItemQuality.Superior) / 400.0, 0.15, 0.35);
-            Assert.Equal(1.1f, Work.PlantSystem.QualityYield(1), 3);       // adet bonusu yarıya indi
-            Assert.Equal(1.2f, Work.PlantSystem.QualityYield(2), 3);
+            Assert.Equal((double)(1.1f), (double)(Work.PlantSystem.QualityYield(1)), 3);       // adet bonusu yarıya indi
+            Assert.Equal((double)(1.2f), (double)(Work.PlantSystem.QualityYield(2)), 3);
             Assert.True(ItemQuality.PriceFactor(ItemQuality.Masterwork) > ItemQuality.PriceFactor(ItemQuality.Superior));
             Assert.Equal(ItemQuality.Superior, ItemQuality.Aged(0, 9, 4));
             Assert.Equal(ItemQuality.Fine, ItemQuality.Aged(0, 5, 4));

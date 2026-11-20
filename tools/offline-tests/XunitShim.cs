@@ -1,3 +1,5 @@
+// Çevrimdışı test koşucusu için xunit taklidi. Aşırı yüklemeler CI'daki xunit 2.4.2 ile AYNI tutulur: burada olup
+// gerçek xunit'te olmayan bir imza, CI'da derlenmeyen testin yerelde geçmesine yol açar. Çalıştırma: tools/offline-tests/run.sh
 using System.Collections;
 using System.Reflection;
 
@@ -22,7 +24,9 @@ namespace Xunit
         public static void NotSame(object a, object b) { if (ReferenceEquals(a, b)) throw F("NotSame failed"); }
         public static void Equal<T>(T e, T a) { if (!Eq(e, a)) throw F($"Equal failed. Expected: {Show(e)} Actual: {Show(a)}"); }
         public static void Equal(double e, double a, int precision) { if (Math.Round(e - a, precision) != 0 && Math.Round(e, precision) != Math.Round(a, precision)) throw F($"Equal failed {e} vs {a}"); }
-        public static void Equal(float e, float a, int precision) => Equal((double)e, (double)a, precision);
+        // DİKKAT: xunit 2.4.2'de Equal(float, float, int) YOKTUR. Buraya eklenirse CI'da derlenmeyen kod yerelde geçer
+        // (20.11.2026'da main böyle kırıldı). float karşılaştırırken iki yanı double'a çevir ya da tolerans ver.
+        public static void Equal(float e, float a, float tolerance) { if (Math.Abs(e - a) > tolerance) throw F($"Equal failed {e} vs {a}"); }
         public static void Equal(double e, double a, double tolerance) { if (Math.Abs(e - a) > tolerance) throw F($"Equal failed {e} vs {a}"); }
         public static void Equal<T>(IEnumerable<T> e, IEnumerable<T> a) { if (!e.SequenceEqual(a)) throw F($"Equal(seq) failed. Expected: {Show(e)} Actual: {Show(a)}"); }
         public static void NotEqual<T>(T e, T a) { if (Eq(e, a)) throw F($"NotEqual failed: {Show(a)}"); }

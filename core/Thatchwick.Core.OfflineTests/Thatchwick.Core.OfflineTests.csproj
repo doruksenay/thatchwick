@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Çevrimdışı test koşucusu: NuGet'e erişimi olmayan ortamlarda (bulut oturumları) çekirdek testlerini
+       tools/offline-tests/XunitShim.cs ile derleyip çalıştırır. Asıl hakem CI'daki `dotnet test`tir; bu proje aynı
+       test dosyalarını aynı aşırı yükleme kurallarıyla derler. Çalıştırma: tools/offline-tests/run.sh [SınıfAdıParçası] -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Thatchwick.Core.Tests</AssemblyName>
+    <RootNamespace>Thatchwick.Core.Tests</RootNamespace>
+    <StartupObject>Xunit.Runner</StartupObject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Thatchwick.Core.Tests\**\*.cs" Exclude="..\Thatchwick.Core.Tests\bin\**;..\Thatchwick.Core.Tests\obj\**" />
+    <Compile Include="..\..\tools\offline-tests\XunitShim.cs" Link="XunitShim.cs" />
+    <None Include="..\Thatchwick.Core.Tests\SaveFixtures\**\*" LinkBase="SaveFixtures" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\Assets\Resources\Content\items.json" Link="GameContent\items.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\Assets\Resources\Content\life.json" Link="GameContent\life.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Thatchwick.Core\Thatchwick.Core.csproj" />
+  </ItemGroup>
+
+</Project>
