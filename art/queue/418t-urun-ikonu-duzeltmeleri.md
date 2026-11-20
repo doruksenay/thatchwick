@@ -70,3 +70,5 @@ Her ikon kendi kaynak işinin tarifini (tuval, kenar, palet, ışık yönü) ayn
 Kaynak işlerin doğrulaması. Yan yana sayfası: `art/results/418t-yanyana.png`. Her ikonun eski hâli ve v2'si yan yana, ayrıca 418b'den 3 ikonla aynı satırda (stil uyumu).
 
 ## Notlar
+
+kullanıcı kararı (2026-11-20, kısmi): icon_item_turnip_v2, icon_item_cabbage_v2 (palete oturtuldu), icon_item_pumpkin_v2 kabul. Kalan 16 ikon henüz gösterilmedi; iş `review` kalır.
