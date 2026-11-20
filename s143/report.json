@@ -1,0 +1,61 @@
+{
+  "job": "s143",
+  "kind": "voice_design",
+  "family": "voice",
+  "created": "2026-11-20T18:34:27Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 27.808,
+          "lufs": -20.0,
+          "true_peak_db": -4.3,
+          "rms_db": -21.3,
+          "flags": [],
+          "pass": true,
+          "generated_voice_id": "8cIkhCVvpkg9QHu45ZZm"
+        },
+        "c2": {
+          "duration_s": 26.337,
+          "lufs": -20.0,
+          "true_peak_db": -2.5,
+          "rms_db": -20.6,
+          "flags": [],
+          "pass": true,
+          "generated_voice_id": "UqmhnGp7Zt5XUUv6ied2"
+        },
+        "c3": {
+          "duration_s": 29.053,
+          "lufs": -20.0,
+          "true_peak_db": -3.2,
+          "rms_db": -21.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0166)"
+          ],
+          "pass": true,
+          "generated_voice_id": "MtjDFoqE70FsdUkdV3DH",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0166
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0166,
+          "c2": 0.0199,
+          "c3": 0.0166
+        },
+        "ref_distance": {
+          "c1": 0.16,
+          "c2": 0.1021,
+          "c3": 0.1332
+        }
+      }
+    }
+  }
+}
