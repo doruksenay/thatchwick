@@ -239,8 +239,9 @@ namespace Thatchwick.Game
             // İlan sıralaması (belge 46 §8.5): panodan alınan siparişlerin puanı; rakip haneler alınmayan siparişi üstlenir.
             var rank = _life.Requests.Ranking(_dynasty.Name);
             var top = new List<string>();
-            for (int i = 0; i < rank.Count && i < 5; i++) top.Add($"{i + 1}. {rank[i].Name}{(rank[i].IsPlayer ? " ★" : "")} {rank[i].Points}");
-            GUILayout.Label("İlan sıralaması: " + string.Join(" · ", top));
+            for (int i = 0; i < rank.Count && i < 5; i++)
+                top.Add(GameLocalization.T(rank[i].IsPlayer ? "ui.req.rank_short_you" : "ui.req.rank_short", ("i", i + 1), ("name", rank[i].Name), ("points", rank[i].Points)));
+            GUILayout.Label(GameLocalization.T("ui.req.rank_inline", ("list", string.Join(" · ", top))));
             foreach (var h in svc.Houses)
             {
                 if (h.Extinct && _openHouse != h.Id) continue;

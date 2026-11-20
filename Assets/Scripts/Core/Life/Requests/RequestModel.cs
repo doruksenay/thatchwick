@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Work;
 
 namespace Thatchwick.Core.Life.Requests
@@ -70,8 +71,6 @@ namespace Thatchwick.Core.Life.Requests
         public string Region;
         public int VillagerId;
         public TimedDutyKind DutyKind;
-        /// <summary>Görünen metin ("6 taş getir"); boşsa üretilir.</summary>
-        public string Text;
 
         public bool Done => Progress >= Count;
         public int Left => Math.Max(0, Count - Progress);
@@ -89,18 +88,17 @@ namespace Thatchwick.Core.Life.Requests
         public readonly List<KeyValuePair<string, int>> Items = new List<KeyValuePair<string, int>>();
         public int Seals;
         /// <summary>Hatıra eşyası (Keepsakes.Grant) ve etiketi.</summary>
-        public string KeepsakeItem, KeepsakeLabel;
+        public string KeepsakeItem;
+        public LocText KeepsakeLabel;
         /// <summary>Hane hafızasına (veren hane) eklenecek.</summary>
         public int Memory;
-        public string MoodText;
-        public int MoodValue;
 
         public Reward Clone()
         {
             var copy = new Reward
             {
                 Akce = Akce, Affinity = Affinity, Reputation = Reputation, Xp = Xp, XpSkill = XpSkill, Seals = Seals, KeepsakeItem = KeepsakeItem,
-                KeepsakeLabel = KeepsakeLabel, Memory = Memory, MoodText = MoodText, MoodValue = MoodValue
+                KeepsakeLabel = KeepsakeLabel, Memory = Memory
             };
             copy.Items.AddRange(Items);
             return copy;
@@ -110,7 +108,8 @@ namespace Thatchwick.Core.Life.Requests
     /// <summary>Çağrının bir çözüm yolu (belge 46 §5.2): beceri, eşya, akçe ve süre.</summary>
     public sealed class CallPath
     {
-        public string Label;
+        /// <summary>Yolun adı ve sonucu: ui anahtarları (RequestKeys.Path).</summary>
+        public string LabelKey, OutcomeKey;
         public SkillType? Skill;
         public int Level;
         public string ItemId;
@@ -118,7 +117,6 @@ namespace Thatchwick.Core.Life.Requests
         public int Akce;
         /// <summary>Çözen aile üyesi bu kadar saat köy işinde (süreli görev, Errand).</summary>
         public double Hours;
-        public string Outcome;
         /// <summary>Akçe yolu: iş ücretliye gider, itibar yarım.</summary>
         public bool Paid => Akce > 0 && !Skill.HasValue;
     }
@@ -126,7 +124,8 @@ namespace Thatchwick.Core.Life.Requests
     /// <summary>Adağın bir aşaması.</summary>
     public sealed class VowStage
     {
-        public string Title;
+        /// <summary>Aşamanın adı: ui anahtarı (RequestKeys.Stage).</summary>
+        public string TitleKey;
         public readonly List<Objective> Objectives = new List<Objective>();
         public Reward Reward = new Reward();
     }
@@ -137,8 +136,9 @@ namespace Thatchwick.Core.Life.Requests
         public int Id;
         public RequestKind Kind;
         public string TemplateId;
-        public string Title;
-        public string Text;
+        /// <summary>Başlık ve metin: anahtarlı (Core metni çevirmez, kayda anahtar yazılır; belge 21).</summary>
+        public LocText Title;
+        public LocText Text;
         /// <summary>Veren köylünün karakter kimliği (0: köy).</summary>
         public int GiverId;
         public string GiverName;
@@ -170,8 +170,8 @@ namespace Thatchwick.Core.Life.Requests
         public readonly List<CallPath> Paths = new List<CallPath>();
         public int ChosenPath = -1;
         public int SolverId;
-        /// <summary>Çağrıyla ilgilenilmezse olayın kendi sonucu.</summary>
-        public string IgnoreText;
+        /// <summary>Çağrıyla ilgilenilmezse olayın kendi sonucu (anahtarlı).</summary>
+        public LocText IgnoreText;
         // Mevsim işi
         public int Season = -1;
         public int DayFrom, DayTo;
@@ -202,19 +202,7 @@ namespace Thatchwick.Core.Life.Requests
             }
         }
 
-        public static string KindName(RequestKind k)
-        {
-            switch (k)
-            {
-                case RequestKind.Favor: return "Rica";
-                case RequestKind.Order: return "Sipariş";
-                case RequestKind.Seasonal: return "Mevsim işi";
-                case RequestKind.Call: return "Çağrı";
-                case RequestKind.Story: return "Hikâye";
-                case RequestKind.Vow: return "Adak";
-                case RequestKind.Bequest: return "Vasiyet";
-                default: return "İstek";
-            }
-        }
+        /// <summary>Tür adının anahtarı ("req.kind.favor").</summary>
+        public static string KindKey(RequestKind k) => "req.kind." + k.ToString().ToLowerInvariant();
     }
 }

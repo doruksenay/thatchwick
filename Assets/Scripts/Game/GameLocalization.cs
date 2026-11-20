@@ -44,6 +44,12 @@ namespace Thatchwick.Game
 
         public static string T(string key, params (string name, object value)[] args) => Current.Format(key, args);
 
+        /// <summary>Eşya kimliğinden görünen ad (GameRoot içerik yüklenince verir; yoksa kimlik).</summary>
+        public static Func<string, string> ItemName { get; set; }
+
+        /// <summary>Core'un anahtarlı metnini seçili dilde çözer: iç içe metinler ve "item." argümanları dahil.</summary>
+        public static string R(LocText t) => LocResolve.Deep(Current, t, ItemName);
+
         private static Localizer Build(string language)
         {
             var errors = new List<string>();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Economy;
 using Thatchwick.Core.Family;
@@ -79,16 +80,16 @@ namespace Thatchwick.Core.Life
         public void ApplyGaze(Thatchwick.Core.Upbringing.GazeEvent ev)
         {
             if (ev == null || !ev.Scolding) return;
-            if (ev.Reputation != 0) Upbringing.Reputation.Add(ev.Reputation, "başıboş çocuk dedikodusu");
-            Requests?.Memory.Add(ev.Villager, Thatchwick.Core.Life.Requests.HouseMemory.Gaze, $"{ev.Child.Name} tek başına gezerken görüldü");
+            if (ev.Reputation != 0) Upbringing.Reputation.Add(ev.Reputation, Text(LocText.Of("roam.rep.gossip")));
+            Requests?.Memory.Add(ev.Villager, Thatchwick.Core.Life.Requests.HouseMemory.Gaze, "gaze:" + ev.Child.Id);
             if (!ev.Escort) return;
             foreach (var m in Household())
             {
                 if (m == ev.Child || m.Stage == AgeStage.Baby || m.Stage == AgeStage.Child || m.Stage == AgeStage.Teen) continue;
                 if (m.Id == ev.Child.BirthMotherId || m.Id == ev.Child.BirthFatherId)
-                    m.AddMoodlet(Thatchwick.Core.Upbringing.ChildRoaming.AshamedMood, "Mahcup oldu", Thatchwick.Core.Upbringing.ChildRoaming.AshamedValue, 1.0);
+                    m.AddMoodlet(Thatchwick.Core.Upbringing.ChildRoaming.AshamedMood, Text(LocText.Of("roam.mood.ashamed")), Thatchwick.Core.Upbringing.ChildRoaming.AshamedValue, 1.0);
             }
-            Say($"{ev.Villager.Name}, gece tek başına gezen {ev.Child.Name}'i eve getirdi. \"Bu saatte çocuk sokakta olur mu?\"", NoticeLevel.Warning, ev.Child.Id);
+            Say(LocText.Of("roam.n.escort", ("villager", ev.Villager.Name), ("child", ev.Child.Name)), NoticeLevel.Warning, ev.Child.Id);
         }
         /// <summary>Ev dekorasyonu: raf çökmesi, ayna kararması, ayna hatırlatması (Project belgesi 27).</summary>
         public Thatchwick.Core.Build.DecorSystem Decor { get; }
@@ -252,13 +253,14 @@ namespace Thatchwick.Core.Life
                 ToolTier = id => Tools.Tier(id),
                 Injure = (c, id) => Injuries.InjureById(c, id),
                 Notify = (text, id) => Say(text, NoticeLevel.Info, id),
+                Resolve = t => Text(t),
                 HasLeader = () =>
                 {
                     foreach (var c in Household()) if (c.Duty == DutyKind.Steward && !c.Away) return true;
                     return false;
                 }
             };
-            Duties.Finished += r => Ledger.Note($"{r.CharacterName}: {TimedDutyService.KindName(r.Kind).ToLowerInvariant()} görevinden döndü");
+            Duties.Finished += r => Ledger.Note(Text(LocText.Of("duty.ledger", ("name", r.CharacterName), ("kind", TimedDutyService.KindText(r.Kind)))));
             Breakdowns = new BreakdownService(population, seed != 0 ? Seeds.Derive(seed, 12) : 83)
             {
                 SquarePosition = () => SquarePosition?.Invoke(),
@@ -283,9 +285,10 @@ namespace Thatchwick.Core.Life
                 Legacy = Legacy,
                 Keepsakes = Keepsakes,
                 Duties = Duties,
-                AddReputation = (n, why) => Upbringing.Reputation.Add(n, why),
+                AddReputation = (n, why) => Upbringing.Reputation.Add(n, Text(why)),
                 Notify = (text, id) => Say(text, NoticeLevel.Info, id),
-                Chronicle = text => Ledger.Note(text)
+                Chronicle = text => Ledger.Note(Text(text)),
+                Resolve = t => Text(t)
             };
             Duties.Finished += Requests.OnDutyFinished;
             population.MemberDied += c => Requests.OnDied(c);
@@ -505,6 +508,16 @@ namespace Thatchwick.Core.Life
             foreach (var h in Legacy.Heirlooms)
                 if (h.Level > 1) { Say($"Yadigârlar bir nesil daha hanede: bonuslar güçlendi.", NoticeLevel.Info); break; }
         }
+
+        /// <summary>
+        /// Anahtarlı metni seçili dilde çözer (oyun katmanı verir; Core metni çevirmez, belge 21). Verilmezse anahtar döner.
+        /// İstekler, süreli görev ve çocuk gezme bildirimleri bunu kullanır; bildirim akışı henüz düz metin tuttuğu için çözüm
+        /// bildirimin yazıldığı anda yapılır.
+        /// </summary>
+        public Func<LocText, string> Text { get; set; } = t => t.Literal ?? t.Key ?? "";
+
+        public void Say(LocText message, NoticeLevel level = NoticeLevel.Info, int characterId = 0, bool transient = false) =>
+            Say(Text(message), level, characterId, transient);
 
         /// <summary>Bildirim akışına ve düz metin olayına yazar. Dış sistemler (aile, pazar) bunu çağırabilir.</summary>
         public void Say(string message, NoticeLevel level = NoticeLevel.Info, int characterId = 0, bool transient = false)
@@ -1027,7 +1040,7 @@ namespace Thatchwick.Core.Life
         public int ReadBoard(Character reader)
         {
             int n = Requests.ReadBoard();
-            Say(n > 0 ? $"{reader?.Name ?? "Hane"} panodan {n} ilan okudu (İstekler, I)." : "Panoda yeni ilan yok.", NoticeLevel.Info, reader?.Id ?? 0, transient: true);
+            Say(n > 0 ? LocText.Of("core.req.n.board_read", ("name", reader?.Name ?? ""), ("n", n)) : LocText.Of("core.req.n.board_empty"), NoticeLevel.Info, reader?.Id ?? 0, transient: true);
             return n;
         }
 

@@ -567,6 +567,9 @@ namespace Thatchwick.Game
                 AccountLevel = () => _account.Level,
                 AccountXp = () => _account.Xp
             };
+            // Core anahtarlı metin döndürür; bildirim akışı düz metin tuttuğu için seçili dilde burada çözülür (belge 21).
+            GameLocalization.ItemName = id => _content.Items.TryGet(id, out var itemDef) ? itemDef.DisplayName : id;
+            _life.Text = GameLocalization.R;
             _life.Home.ServantWalks = true;   // hizmetkâr sabahları eve yürür, işleri kendisi yapar (belge 45)
             // Kilitler beceride (karar 28-4): hanenin o becerideki en iyi seviyesi.
             _life.SkillLocks = true;
@@ -1416,7 +1419,8 @@ namespace Thatchwick.Game
         {
             if (c == null || !_regional || !Thatchwick.Core.Upbringing.ChildRoaming.IsMinor(c)) return null;
             var region = Thatchwick.Core.World.Regions.At(target);
-            return _life.Roaming.Blocker(c, region, HourOfDay, _clock.DayIndex, AccompaniedByElder(c));
+            var why = _life.Roaming.Blocker(c, region, HourOfDay, _clock.DayIndex, AccompaniedByElder(c));
+            return why.IsEmpty ? null : GameLocalization.R(why);
         }
 
         /// <summary>Aile panelindeki "İzin iste": çocuk annesine (yoksa evdeki bir yetişkine) kasabaya gitmeyi sorar.</summary>
@@ -1431,7 +1435,8 @@ namespace Thatchwick.Game
                     if (!m.IsDead && !m.IsVillager && !m.Away && m.Stage >= AgeStage.YoungAdult) { adult = m; break; }
             }
             _life.Roaming.AskPermission(child, adult, Thatchwick.Core.Upbringing.RoamPermission.Town, HourOfDay, _clock.DayIndex,
-                _life.Weather.Today(_clock.TotalDays), out var reply);
+                _life.Weather.Today(_clock.TotalDays), out var replyKey);
+            string reply = GameLocalization.R(replyKey);
             Say(adult, reply);
             return reply;
         }
@@ -1466,7 +1471,7 @@ namespace Thatchwick.Game
                 }
                 var ev = _life.Roaming.Observe(c, region, HourOfDay, _clock.DayIndex, _clock.TotalDays, weather, AccompaniedByElder(c), villagers);
                 if (ev == null) continue;
-                Say(ev.Villager, ev.Line);
+                Say(ev.Villager, GameLocalization.R(ev.Line));
                 _life.ApplyGaze(ev);
                 if (ev.Escort)
                 {
@@ -3290,7 +3295,7 @@ namespace Thatchwick.Game
             if (HudToggle("Ocak (M)", _minePanel.Active)) _minePanel.Toggle();
             if (HudToggle("Aile (F)", _familyPanel.Active)) ToggleFamily();
             if (HudToggle("Köy (V)", _villagePanel.Active)) ToggleVillage();
-            { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? $"İstekler (I) •{unread}" : "İstekler (I)", _requestPanel.Active)) ToggleRequests(); }
+            { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? GameLocalization.T("ui.req.hud_unread", ("n", unread)) : GameLocalization.T("ui.req.hud"), _requestPanel.Active)) ToggleRequests(); }
             if (_keepsakePanel != null && HudToggle("Hatıra (J)", _keepsakePanel.Active)) _keepsakePanel.Toggle();
             if (_homePanel != null && HudToggle("Ev (E)", _homePanel.Active)) _homePanel.Toggle();
             GUILayout.EndHorizontal();

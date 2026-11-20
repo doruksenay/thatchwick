@@ -176,15 +176,18 @@ namespace Thatchwick.Game
             {
                 var place = TimedDutyService.Place(running.Order.PlaceId);
                 var got = new List<string>();
-                foreach (var kv in TimedDutyService.SoFar(running)) got.Add($"{kv.Value} {Name(kv.Key)}");
-                string playing = running.Playing ? " · oyuna daldı" : "";
+                foreach (var kv in TimedDutyService.SoFar(running)) got.Add(GameLocalization.R(Thatchwick.Core.Localization.LocText.Of("duty.sum.item", ("n", kv.Value), ("item", kv.Key))));
                 var dutyIcon = UiSkin.Icon("duty_" + running.Order.Kind.ToString().ToLowerInvariant());   // PixelLab işi 480
                 if (dutyIcon != null) GUILayout.Label(dutyIcon, GUILayout.Width(20f), GUILayout.Height(20f));
-                UiSkin.Wrap($"    ⛏ Görevde: {TimedDutyService.KindName(running.Order.Kind)}, {place?.Name} · {running.ElapsedHours:0.0}/{running.PlannedHours:0.0} saat{playing}" +
-                            (got.Count > 0 ? $" · şimdiye kadar: {string.Join(", ", got)}" : ""), UiSkin.FamilyTextW);
+                string line = GameLocalization.T("ui.duty.running", ("kind", GameLocalization.R(TimedDutyService.KindText(running.Order.Kind))),
+                    ("place", GameLocalization.R(TimedDutyService.PlaceText(running.Order.PlaceId))),
+                    ("done", running.ElapsedHours.ToString("0.0")), ("planned", running.PlannedHours.ToString("0.0")));
+                if (running.Playing) line += GameLocalization.T("ui.duty.playing");
+                if (got.Count > 0) line += GameLocalization.T("ui.duty.so_far", ("items", string.Join(", ", got)));
+                UiSkin.Wrap(line, UiSkin.FamilyTextW);
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(12f);
-                if (GUILayout.Button(new GUIContent("Geri çağır", "O ana kadarki ürünle döner"), GUILayout.Width(100f))) { var r = svc.Recall(c.Id); _status = r?.Summary ?? ""; }
+                if (GUILayout.Button(new GUIContent(GameLocalization.T("ui.duty.recall"), GameLocalization.T("ui.duty.recall_tip")), GUILayout.Width(100f))) { var r = svc.Recall(c.Id); _status = r != null ? GameLocalization.R(r.Summary) : ""; }
                 GUILayout.EndHorizontal();
                 return;
             }
@@ -192,12 +195,12 @@ namespace Thatchwick.Game
             foreach (var o in svc.Repeats) if (o.CharacterId == c.Id) repeating = true;
             GUILayout.BeginHorizontal();
             GUILayout.Space(12f);
-            if (GUILayout.Button(_dutyFor == c.Id ? "Göreve gönder ▾" : "Göreve gönder ▸", GUILayout.Width(120f)))
+            if (GUILayout.Button(GameLocalization.T(_dutyFor == c.Id ? "ui.duty.send_open" : "ui.duty.send"), GUILayout.Width(120f)))
             {
                 _dutyFor = _dutyFor == c.Id ? 0 : c.Id;
                 _dutyPlace = null;
             }
-            if (repeating && GUILayout.Button(new GUIContent("Tekrarı bırak", "Her gün tekrarlanan görevi kaldır"), GUILayout.Width(100f))) { svc.StopRepeat(c.Id); _status = $"{c.Name} artık her gün göreve çıkmayacak."; }
+            if (repeating && GUILayout.Button(new GUIContent(GameLocalization.T("ui.duty.stop_repeat"), GameLocalization.T("ui.duty.stop_repeat_tip")), GUILayout.Width(100f))) { svc.StopRepeat(c.Id); _status = GameLocalization.T("ui.duty.repeat_stopped", ("name", c.Name)); }
             GUILayout.EndHorizontal();
             if (_dutyFor != c.Id) return;
 
@@ -207,7 +210,7 @@ namespace Thatchwick.Game
             {
                 if (TimedDutyService.MaxHours(c, k) <= 0) continue;
                 GUI.color = _dutyKind == k ? new Color(1f, 0.9f, 0.55f) : Color.white;
-                if (GUILayout.Button(TimedDutyService.KindName(k), GUILayout.Width(70f))) { _dutyKind = k; _dutyPlace = null; }
+                if (GUILayout.Button(GameLocalization.R(TimedDutyService.KindText(k)), GUILayout.Width(70f))) { _dutyKind = k; _dutyPlace = null; }
             }
             GUI.color = Color.white;
             GUILayout.EndHorizontal();
@@ -219,7 +222,7 @@ namespace Thatchwick.Game
                 if (p.Kind != _dutyKind) continue;
                 if (_dutyPlace == null) _dutyPlace = p.Id;
                 GUI.color = _dutyPlace == p.Id ? new Color(1f, 0.9f, 0.55f) : Color.white;
-                if (GUILayout.Button(p.Name, GUILayout.Width(118f))) _dutyPlace = p.Id;
+                if (GUILayout.Button(GameLocalization.R(TimedDutyService.PlaceText(p.Id)), GUILayout.Width(118f))) _dutyPlace = p.Id;
             }
             GUI.color = Color.white;
             GUILayout.EndHorizontal();
@@ -229,38 +232,42 @@ namespace Thatchwick.Game
             foreach (var h in new[] { 2.0, 4.0, 8.0, 0.0 })
             {
                 GUI.color = Math.Abs(_dutyHours - h) < 0.01 ? new Color(1f, 0.9f, 0.55f) : Color.white;
-                if (GUILayout.Button(h > 0 ? $"{h:0} saat" : "Akşama kadar", GUILayout.Width(h > 0 ? 56f : 96f))) _dutyHours = h;
+                if (GUILayout.Button(h > 0 ? GameLocalization.T("ui.duty.hours", ("n", (int)h)) : GameLocalization.T("ui.duty.until_evening"), GUILayout.Width(h > 0 ? 56f : 96f))) _dutyHours = h;
             }
             GUI.color = Color.white;
-            _dutyRepeat = GUILayout.Toggle(_dutyRepeat, "Her gün");
+            _dutyRepeat = GUILayout.Toggle(_dutyRepeat, GameLocalization.T("ui.duty.every_day"));
             GUILayout.EndHorizontal();
 
             var order = new TimedDutyOrder { CharacterId = c.Id, Kind = _dutyKind, PlaceId = _dutyPlace, Hours = _dutyHours, Repeat = _dutyRepeat };
-            string why = svc.CanStart(c, order);
+            var why = svc.CanStart(c, order);
             double hours = svc.HoursFor(order);
             var food = svc.SuggestFood(c, hours);
             int meals = svc.MealsNeeded(c, hours);
             var foodText = new List<string>();
             int have = 0;
-            foreach (var kv in food) { foodText.Add($"{kv.Value} {Name(kv.Key)}"); have += kv.Value; }
+            foreach (var kv in food) { foodText.Add(GameLocalization.R(Thatchwick.Core.Localization.LocText.Of("duty.sum.item", ("n", kv.Value), ("item", kv.Key)))); have += kv.Value; }
             var place2 = TimedDutyService.Place(_dutyPlace);
-            string eff = place2 != null && place2.Kind != TimedDutyKind.Errand ? $" · verim %{svc.Efficiency(c, place2) * 100:0} (elle oynamanın)" : "";
-            UiSkin.Wrap($"      Azık: {(foodText.Count > 0 ? string.Join(", ", foodText) : "yok")}{(have < meals ? $" (yetersiz {have}/{meals} öğün)" : "")}{eff}", UiSkin.FamilyTextW);
-            if (c.Stage == AgeStage.Child) UiSkin.Wrap("      Çocuk görevde çabuk sıkılır; sıkılınca işi bırakıp oyuncağıyla oynar.", UiSkin.FamilyTextW);
-            if (c.Needs.Get(NeedType.Energy) < 40f) UiSkin.Wrap($"      {c.Name} yorgun; uzun görevi bitiremeyebilir.", UiSkin.FamilyTextW);
-            if (why != null) UiSkin.Wrap("      " + why, UiSkin.FamilyTextW);
+            string foodLine = GameLocalization.T("ui.duty.food", ("food", foodText.Count > 0 ? string.Join(", ", foodText) : GameLocalization.T("ui.duty.food_none")));
+            if (have < meals) foodLine += GameLocalization.T("ui.duty.food_short", ("have", have), ("meals", meals));
+            if (place2 != null && place2.Kind != TimedDutyKind.Errand) foodLine += GameLocalization.T("ui.duty.efficiency", ("pct", (int)Math.Round(svc.Efficiency(c, place2) * 100)));
+            UiSkin.Wrap(foodLine, UiSkin.FamilyTextW);
+            if (c.Stage == AgeStage.Child) UiSkin.Wrap(GameLocalization.T("ui.duty.child_note"), UiSkin.FamilyTextW);
+            if (c.Needs.Get(NeedType.Energy) < 40f) UiSkin.Wrap(GameLocalization.T("ui.duty.tired_note", ("name", c.Name)), UiSkin.FamilyTextW);
+            if (!why.IsEmpty) UiSkin.Wrap("      " + GameLocalization.R(why), UiSkin.FamilyTextW);
             GUILayout.BeginHorizontal();
             GUILayout.Space(18f);
-            GUI.enabled = why == null;
-            if (GUILayout.Button("Başlat", GUILayout.Width(80f)))
+            GUI.enabled = why.IsEmpty;
+            if (GUILayout.Button(GameLocalization.T("ui.duty.start"), GUILayout.Width(80f)))
             {
                 if (svc.Start(order, out var reason) != null)
                 {
                     _runnerOf(c)?.Cancel();
-                    _status = $"{c.Name} {place2?.Name.ToLowerInvariant()} yolunda ({(hours > 0 ? $"{hours:0.#} saat" : "akşama kadar")}).";
+                    string where = GameLocalization.R(TimedDutyService.PlaceText(_dutyPlace));
+                    _status = hours > 0 ? GameLocalization.T("ui.duty.started", ("name", c.Name), ("place", where), ("hours", hours.ToString("0.#")))
+                                        : GameLocalization.T("ui.duty.started_evening", ("name", c.Name), ("place", where));
                     _dutyFor = 0;
                 }
-                else _status = reason;
+                else _status = GameLocalization.R(reason);
             }
             GUI.enabled = true;
             GUILayout.EndHorizontal();
@@ -272,18 +279,19 @@ namespace Thatchwick.Game
             if (Roaming == null || c.Stage != AgeStage.Child) return;
             GUILayout.BeginHorizontal();
             GUILayout.Space(12f);
-            GUILayout.Label("Gezme izni:", GUILayout.Width(76f));
+            GUILayout.Label(GameLocalization.T("ui.roam.permission"), GUILayout.Width(76f));
             foreach (var p in new[] { Thatchwick.Core.Upbringing.RoamPermission.Home, Thatchwick.Core.Upbringing.RoamPermission.Road, Thatchwick.Core.Upbringing.RoamPermission.Town })
             {
                 GUI.color = Roaming.PermissionOf(c.Id) == p ? new Color(1f, 0.9f, 0.55f) : Color.white;
-                if (GUILayout.Button(Thatchwick.Core.Upbringing.ChildRoaming.PermissionName(p), GUILayout.Width(96f))) { Roaming.SetPermission(c.Id, p); _status = $"{c.Name}: {Thatchwick.Core.Upbringing.ChildRoaming.PermissionName(p).ToLowerInvariant()}."; }
+                string perm = GameLocalization.R(Thatchwick.Core.Upbringing.ChildRoaming.PermissionText(p));
+                if (GUILayout.Button(perm, GUILayout.Width(96f))) { Roaming.SetPermission(c.Id, p); _status = GameLocalization.T("ui.roam.set", ("name", c.Name), ("permission", GameLocalization.Current.ToLower(perm))); }
             }
             GUI.color = Color.white;
             GUILayout.EndHorizontal();
             if (AskRoam == null) return;
             GUILayout.BeginHorizontal();
             GUILayout.Space(88f);
-            if (GUILayout.Button(new GUIContent("İzin iste (bugün kasaba)", "Çocuk annesine sorar; cevap saate, havaya ve annenin keyfine bağlı"), GUILayout.Width(190f)))
+            if (GUILayout.Button(new GUIContent(GameLocalization.T("ui.roam.ask"), GameLocalization.T("ui.roam.ask_tip")), GUILayout.Width(190f)))
                 _status = AskRoam(c);
             GUILayout.EndHorizontal();
         }

@@ -68,7 +68,7 @@ namespace Thatchwick.Core.Tests
             k.Duties.ToolTier = id => 1;
             k.House.AddItem("item.bread", 4);
             var d = k.Duties.Start(new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Mine, PlaceId = "mine:gallery", Hours = 4 }, out var why);
-            Assert.Null(why);
+            Assert.True(why.IsEmpty, why.ToString());
             Assert.True(ali.Away);
             Run(k, 4.5);
             Assert.False(ali.Away);
@@ -106,10 +106,10 @@ namespace Thatchwick.Core.Tests
             var ali = Person(k, 1, 40);
             ali.Needs.Set(NeedType.Hunger, 22f);
             k.Duties.Start(new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Fish, PlaceId = "fish:pond", Hours = 8 }, out var why);
-            Assert.Null(why);
+            Assert.True(why.IsEmpty, why.ToString());
             Run(k, 8.5);
             Assert.Equal(TimedDutyEnd.Hungry, k.Duties.LastResult.End);
-            Assert.Contains("Aç kaldı", k.Duties.LastResult.Summary);
+            Assert.Equal("duty.sum", k.Duties.LastResult.Summary.Key);
         }
 
         [Fact]
@@ -118,14 +118,14 @@ namespace Thatchwick.Core.Tests
             var k = Make();
             var child = Person(k, 1, 15);
             var baby = Person(k, 2, 3);
-            Assert.NotNull(k.Duties.CanStart(child, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Mine, PlaceId = "mine:gallery", Hours = 2 }));
-            Assert.NotNull(k.Duties.CanStart(child, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Forage, PlaceId = "forage:forest", Hours = 2 }));
-            Assert.NotNull(k.Duties.CanStart(child, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Forage, PlaceId = "forage:meadow", Hours = 3 }));
-            Assert.Null(k.Duties.CanStart(child, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Forage, PlaceId = "forage:meadow", Hours = 2 }));
-            Assert.NotNull(k.Duties.CanStart(baby, new TimedDutyOrder { CharacterId = 2, Kind = TimedDutyKind.Forage, PlaceId = "forage:meadow", Hours = 1 }));
+            Assert.False(k.Duties.CanStart(child, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Mine, PlaceId = "mine:gallery", Hours = 2 }).IsEmpty);
+            Assert.False(k.Duties.CanStart(child, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Forage, PlaceId = "forage:forest", Hours = 2 }).IsEmpty);
+            Assert.False(k.Duties.CanStart(child, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Forage, PlaceId = "forage:meadow", Hours = 3 }).IsEmpty);
+            Assert.True(k.Duties.CanStart(child, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Forage, PlaceId = "forage:meadow", Hours = 2 }).IsEmpty);
+            Assert.False(k.Duties.CanStart(baby, new TimedDutyOrder { CharacterId = 2, Kind = TimedDutyKind.Forage, PlaceId = "forage:meadow", Hours = 1 }).IsEmpty);
             var elder = Person(k, 3, 90);
-            Assert.NotNull(k.Duties.CanStart(elder, new TimedDutyOrder { CharacterId = 3, Kind = TimedDutyKind.Mine, PlaceId = "mine:gallery", Hours = 2 }));
-            Assert.Null(k.Duties.CanStart(elder, new TimedDutyOrder { CharacterId = 3, Kind = TimedDutyKind.Fish, PlaceId = "fish:pond", Hours = 4 }));
+            Assert.False(k.Duties.CanStart(elder, new TimedDutyOrder { CharacterId = 3, Kind = TimedDutyKind.Mine, PlaceId = "mine:gallery", Hours = 2 }).IsEmpty);
+            Assert.True(k.Duties.CanStart(elder, new TimedDutyOrder { CharacterId = 3, Kind = TimedDutyKind.Fish, PlaceId = "fish:pond", Hours = 4 }).IsEmpty);
         }
 
         [Fact]
@@ -138,7 +138,7 @@ namespace Thatchwick.Core.Tests
             k.Duties.Start(new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Forage, PlaceId = "forage:meadow", Hours = 2 }, out _);
             Run(k, 2.5);
             var r = k.Duties.LastResult;
-            Assert.Contains(r.Notes, n => n.Contains("sıkıldı"));
+            Assert.Contains(r.Notes, n => n.Key == "duty.ev.bored_toy");
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace Thatchwick.Core.Tests
             var mother = Person(k, 1, 35);
             mother.Sex = Sex.Female;
             Assert.True(mother.TryStartPregnancy(2));
-            Assert.NotNull(k.Duties.CanStart(mother, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Mine, PlaceId = "mine:gallery", Hours = 2 }));
+            Assert.False(k.Duties.CanStart(mother, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Mine, PlaceId = "mine:gallery", Hours = 2 }).IsEmpty);
         }
 
         [Fact]
@@ -216,7 +216,7 @@ namespace Thatchwick.Core.Tests
             var k = Make();
             var ali = Person(k, 1, 40, SkillType.Fishing, 3);
             k.Duties.SeasonNow = () => Season.Winter;
-            Assert.Contains("Balıkçılık 7", k.Duties.CanStart(ali, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Fish, PlaceId = "fish:pond", Hours = 2 }));
+            Assert.Equal("duty.err.ice", k.Duties.CanStart(ali, new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Fish, PlaceId = "fish:pond", Hours = 2 }).Key);
         }
 
         [Fact]
