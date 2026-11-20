@@ -50,7 +50,10 @@ namespace Thatchwick.Game
             GUILayout.Label($"KÖY · durum {_life.Projects.VillageStatus}");
             if (GUILayout.Button("Kapat", GUILayout.Width(56f))) Active = false;
             GUILayout.EndHorizontal();
-            int tab = GUILayout.Toolbar(_tab, Tabs);
+            var tabs = new string[Tabs.Length + 1];
+            Tabs.CopyTo(tabs, 0);
+            tabs[Tabs.Length] = GameLocalization.T("ui.show.tab");
+            int tab = GUILayout.Toolbar(_tab, tabs);
             if (tab != _tab) { _tab = tab; _status = ""; _giftTo = null; }
             if (_status.Length > 0) GUILayout.Label(_status);
             _scroll = GUILayout.BeginScrollView(_scroll);
@@ -62,13 +65,53 @@ namespace Thatchwick.Game
                 case 3: DrawSmith(); break;
                 case 4: DrawBranches(); break;
                 case 5: DrawGoals(); break;
-                default: DrawLineage(); break;
+                case 6: DrawLineage(); break;
+                default: DrawShows(); break;
             }
             GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
 
         private string ItemName(string id) => _content.Items.TryGet(id, out var d) ? d.DisplayName : id;
+
+        // ---- şenlik ürün yarışmaları (belge 57) ----
+
+        private void DrawShows()
+        {
+            var svc = _life.Shows;
+            UiSkin.Wrap(GameLocalization.T("ui.show.help"), 330f);
+            int year = svc.Year?.Invoke() ?? 0;
+            foreach (var show in ProduceShowService.Shows)
+            {
+                string fest = _content.Festivals.TryGet(show.FestivalId, out var f) ? f.DisplayName : show.FestivalId;
+                GUILayout.Label(GameLocalization.T("ui.show.line", ("show", GameLocalization.R(show.Name)), ("festival", fest), ("wins", svc.Wins(show.Id))));
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(12f);
+                bool on = svc.Participating(show.Id);
+                if (GUILayout.Button(GameLocalization.T(on ? "ui.show.participating" : "ui.show.not_participating"), GUILayout.Width(110f)))
+                    svc.SetParticipating(show.Id, !on);
+                var entries = svc.PlannedEntries(show);
+                if (on && show.Kind == ProduceShowKind.Tasting)
+                {
+                    var cands = svc.Candidates(show);
+                    if (cands.Count > 1 && GUILayout.Button(GameLocalization.T("ui.show.change"), GUILayout.Width(70f)))
+                    {
+                        int i = entries.Count > 0 ? cands.FindIndex(c => c.Id == entries[0].Id) : -1;
+                        var next = cands[(i + 1) % cands.Count];
+                        svc.Choose(show.Id, next);
+                        entries = svc.PlannedEntries(show);
+                    }
+                }
+                GUILayout.EndHorizontal();
+                if (!on) continue;
+                if (entries.Count == 0) { GUILayout.Label("   " + GameLocalization.T("ui.show.no_entry")); continue; }
+                var names = new System.Collections.Generic.List<string>();
+                foreach (var e in entries) names.Add(UiSkin.QualityTag(e.Quality) + ItemName(e.Id));
+                GUILayout.Label("   " + string.Join(", ", names), UiSkin.Rich);
+                double mine = svc.EntryScore(show, entries), rivals = ProduceShowService.RivalBase(show.Kind, year);
+                GUILayout.Label("   " + GameLocalization.T("ui.show.score", ("score", (int)System.Math.Round(mine)), ("rivals", (int)System.Math.Round(rivals))));
+            }
+        }
 
         // ---- köylüler ----
 

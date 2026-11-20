@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Life;
 using Thatchwick.Core.Life.Requests;
 using Thatchwick.Core.Localization;
 using Thatchwick.Core.Upbringing;
@@ -62,6 +63,7 @@ namespace Thatchwick.Core.Tests
             for (int i = 0; i < ChildRoaming.ScoldCount; i++) keys.Add(ChildRoaming.Scold(i).Key);
             for (int i = 0; i < ChildRoaming.KindCount; i++) keys.Add(ChildRoaming.Kind(i).Key);
             for (int q = 0; q <= Thatchwick.Core.Content.ItemQuality.Max; q++) keys.Add(Thatchwick.Core.Content.ItemQuality.NameKey(q));
+            foreach (var sh in ProduceShowService.Shows) keys.Add(sh.Name.Key);
             keys.Add("content.act.embellish_carve"); keys.Add("content.act.embellish_stitch");
             AssertKeys(keys);
         }
@@ -74,9 +76,9 @@ namespace Thatchwick.Core.Tests
             {
                 "Core/Life/Requests/RequestService.cs", "Core/Life/Requests/RequestCatalog.cs", "Core/Work/TimedDuties.cs",
                 "Core/Upbringing/ChildRoaming.cs", "Core/Life/LifeSystems.cs", "Game/RequestPanel.cs", "Game/FamilyPanel.cs",
-                "Game/VillagePanel.cs", "Game/GameRoot.cs", "Core/Life/QualityBook.cs", "Game/MarketPanel.cs", "Game/UiSkin.cs"
+                "Game/VillagePanel.cs", "Game/GameRoot.cs", "Core/Life/QualityBook.cs", "Game/MarketPanel.cs", "Game/UiSkin.cs", "Core/Life/ProduceShow.cs"
             };
-            var rx = new Regex("(?:LocText\\.Of|\\bL|\\bT|GameLocalization\\.T)\\(\\s*\"((?:core\\.req|req|duty|roam|ui\\.req|ui\\.duty|ui\\.roam|quality|ui\\.quality|ui\\.market)\\.[a-z0-9_.]*[a-z0-9_])\"");
+            var rx = new Regex("(?:LocText\\.Of|\\bL|\\bT|GameLocalization\\.T)\\(\\s*\"((?:core\\.req|req|duty|roam|ui\\.req|ui\\.duty|ui\\.roam|quality|ui\\.quality|ui\\.market|show|ui\\.show)\\.[a-z0-9_.]*[a-z0-9_])\"");
             var keys = new List<string>();
             foreach (var f in files)
             {

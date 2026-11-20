@@ -27902,6 +27902,73 @@
       ]
     },
     {
+      "id": "item.show_ribbon",
+      "displayName": "Tadım kurdelesi",
+      "category": "decor",
+      "price": 0,
+      "placement": "Surface",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 3,
+      "material": "cloth",
+      "fitsOn": [
+        "ocak",
+        "raf",
+        "masa"
+      ],
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "interactions": [],
+      "tags": [
+        "keepsake"
+      ],
+      "art": {
+        "alongX": "iso_item_show_ribbon_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "pending": true,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.show_rosette",
+      "displayName": "Hasat sergisi rozeti",
+      "category": "decor_wall",
+      "price": 0,
+      "placement": "Wall",
+      "rooms": [
+        "living"
+      ],
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "beauty": 4,
+      "material": "cloth",
+      "interactions": [],
+      "tags": [
+        "keepsake"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_show_rosette_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 20.0,
+        "pending": true,
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
+    },
+    {
       "id": "item.wall_niche",
       "displayName": "Duvar nişi",
       "category": "decor_wall",

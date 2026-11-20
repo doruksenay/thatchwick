@@ -51,6 +51,8 @@ namespace Thatchwick.Core.Life
         public QualityBook QualityBook { get; } = new QualityBook();
         /// <summary>Mahzende olgunlaşma ve dede şarabı (53, karar 4).</summary>
         public AgingService Aging { get; }
+        /// <summary>Şenlik ürün yarışmaları: her şenlikte tadım, Hasat Şenliği'nde sergi (Project belgesi 57).</summary>
+        public ProduceShowService Shows { get; }
         public ForageSystem Forage { get; }
 
         // Köy ve hanedan katmanı (Adım 38-41)
@@ -157,6 +159,11 @@ namespace Thatchwick.Core.Life
             Festivals = new FestivalService(content, clock) { Village = Village };
             Spoilage = new SpoilageService(content, house, world) { ExtraReduction = SpoilReduction };
             Aging = new AgingService(content, house, world) { Today = () => Clock.TotalDays };
+            Shows = new ProduceShowService(content, house, seed != 0 ? Seeds.Derive(seed, 19) : 57)
+            {
+                Year = () => (int)(Clock.DayIndex / Math.Max(1, Clock.Config.DaysPerYear)),
+                RivalNames = () => RivalHouseNames()
+            };
             Aging.Matured += (id, q, n) => { if (q >= ItemQuality.Heirloom) Say(LocText.Of("quality.n.grandfather_wine", ("n", n), ("item", id)), NoticeLevel.Info); };
             Forage = seed != 0 ? new ForageSystem(world, content, Seeds.Derive(seed, 2)) : new ForageSystem(world, content);
             Villagers = seed != 0 ? new VillagerService(content, population, house, clock, Seeds.Derive(seed, 3)) : new VillagerService(content, population, house, clock);
@@ -318,7 +325,11 @@ namespace Thatchwick.Core.Life
                 bool ice = content.Items.TryGet(id, out var d) && d.HasTag("ice");
                 Say(ice ? $"{n} buz eridi (buzluğa koy)." : $"{n} {(d != null ? d.DisplayName : id)} bozuldu.", ice ? NoticeLevel.Info : NoticeLevel.Warning);
             };
-            Festivals.Announced += f => Say($"Bugün {f.DisplayName}!", NoticeLevel.Info);
+            Festivals.Announced += f =>
+            {
+                Say($"Bugün {f.DisplayName}!", NoticeLevel.Info);
+                AnnounceShow(f.Id);
+            };
             Festivals.Celebrated += (f, n) =>
             {
                 FestivalsCelebrated++;
@@ -330,6 +341,7 @@ namespace Thatchwick.Core.Life
                 Keepsakes.OnFestival(f.DisplayName, n);
                 if (f.Id == HomeLife.ContestFestival) Home.JudgeContest();   // panayırda ev yarışması (belge 45)
                 if (f.Id == VintageFestival) foreach (var note in Vintage()) Say(note, NoticeLevel.Info);
+                JudgeShow(f.Id);   // ürün yarışması (belge 57): Bağbozumu'nda şıra ezildikten sonra
                 Ledger.Note(f.DisplayName);
                 Goals.Update();
             };
@@ -1148,6 +1160,48 @@ namespace Thatchwick.Core.Life
             return n;
         }
 
+        private IEnumerable<string> RivalHouseNames()
+        {
+            foreach (var h in Houses.Houses) if (!string.IsNullOrEmpty(h.Name)) yield return h.Name;
+        }
+
+        /// <summary>Şenlik sabahı: hanenin yarışmaya ne sunacağı (belge 57).</summary>
+        private void AnnounceShow(string festivalId)
+        {
+            var show = ProduceShowService.ForFestival(festivalId);
+            if (show == null || !Shows.Participating(show.Id)) return;
+            var entries = Shows.PlannedEntries(show);
+            if (entries.Count == 0) { Say(LocText.Of("show.n.nothing", ("show", show.Name)), NoticeLevel.Info); return; }
+            Say(show.Kind == ProduceShowKind.Exhibit
+                ? LocText.Of("show.n.exhibit_entered", ("show", show.Name), ("n", entries.Count))
+                : LocText.Of("show.n.entered", ("show", show.Name), ("item", entries[0].Id), ("quality", LocText.Of(ItemQuality.NameKey(entries[0].Quality)))), NoticeLevel.Info);
+        }
+
+        /// <summary>Ürün yarışmasının sonucu: bildirim, akçe ve itibar; birincilikte kurdele hatırası ve kronik (belge 57).</summary>
+        public ShowResult JudgeShow(string festivalId)
+        {
+            var r = Shows.Run(festivalId);
+            if (r == null || r.Rank == 0) return r;
+            bool exhibit = r.Show.Kind == ProduceShowKind.Exhibit;
+            string itemId = r.Entries[0].Id;
+            if (r.Reputation > 0) Upbringing.Reputation.Add(r.Reputation, Text(LocText.Of("show.rep", ("show", r.Show.Name))));
+            if (r.Rank == 1)
+            {
+                Say(exhibit ? LocText.Of("show.n.exhibit_won", ("show", r.Show.Name), ("akce", r.Akce), ("rep", r.Reputation))
+                            : LocText.Of("show.n.won", ("show", r.Show.Name), ("item", itemId), ("akce", r.Akce), ("rep", r.Reputation)), NoticeLevel.Info);
+                var label = exhibit ? LocText.Of("show.ribbon.exhibit", ("show", r.Show.Name), ("year", r.Year + 1))
+                                    : LocText.Of("show.ribbon.tasting", ("show", r.Show.Name), ("year", r.Year + 1), ("item", itemId));
+                Keepsakes.Grant(exhibit ? ProduceShowService.ExhibitRosette : ProduceShowService.TastingRibbon, Text(label));
+                string note = Text(LocText.Of("show.chr.won", ("show", r.Show.Name), ("year", r.Year + 1)));
+                foreach (var m in Household()) m.AddChronicle(note);
+            }
+            else
+                Say(LocText.Of(exhibit ? "show.n.exhibit_placed" : "show.n.placed", ("show", r.Show.Name), ("item", itemId), ("rank", r.Rank), ("n", r.Entrants),
+                    ("akce", r.Akce)), NoticeLevel.Info);
+            Ledger.Note(Text(LocText.Of("show.ledger", ("show", r.Show.Name), ("rank", r.Rank))));
+            return r;
+        }
+
         private QualityBookSave ExportQuality()
         {
             var q = QualityBook.Export();
@@ -1269,6 +1323,7 @@ namespace Thatchwick.Core.Life
                 festivalCelebratedDay = Festivals.CelebratedDay,
                 spoilage = Spoilage.Export().ToArray(),
                 quality = ExportQuality(),
+                produceShows = Shows.Export(),
                 tools = Tools.Export().ToArray(),
                 projectsDone = new List<string>(Projects.Done).ToArray(),
                 goalsDone = new List<string>(Goals.Done).ToArray(),
@@ -1341,6 +1396,7 @@ namespace Thatchwick.Core.Life
             Roaming.Import(data.roaming);
             Requests.Import(data.requests);
             QualityBook.Import(data.quality);
+            Shows.Import(data.produceShows);
             Aging.Import(data.quality?.aging);
             UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
