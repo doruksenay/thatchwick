@@ -421,7 +421,7 @@ namespace Thatchwick.Core.World
                         if (p.Map.GetRoad(a) != RoadType.None || p.Map.GetRoad(b) != RoadType.None) continue;
                         if ((x <= 2 || x >= 29) && Hash(x + 396, ty) < 0.5) continue;
                         if (Math.Abs(x - 16) <= 1 || Math.Abs(x - 9) <= 1) continue;
-                        p.Map.SetEdge(new Edge(a.X, b.Y, EdgeAxis.Horizontal), EdgeKind.HalfWall);
+                        p.Map.SetEdge(new Edge(a.X, b.Y, EdgeAxis.Horizontal), EdgeKind.HalfWall, "wall_stone");   // kuru taş set
                     }
             }
             // Barınak (4x3), kapısı güneyde, yola bağlı (taslakta patika zaten çizili)

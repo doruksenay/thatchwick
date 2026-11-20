@@ -530,7 +530,8 @@ def wild(region):
                 near_m = 24 <= x <= 32 and 31 <= y <= 39
                 if near_q or near_m:
                     continue
-                cv.set(x, y, 'rock' if noise(x / 1.9, y / 1.9, 291) > 0.72 else 'dirt')
+                v = noise(x / 2.3, y / 2.3, 291)
+                cv.set(x, y, 'rock' if v > 0.74 else 'dirt' if v > 0.5 else 'grass')   # taşlık: çim, çakıl ve kaya karışık
     trails, ponds = _wild_src(WILD_FN[region])
     roads = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('path', 'bridge')}
     edge_paths = {(x, y) for (x, y) in roads if x <= 2 or y <= 2 or x >= W - 3 or y >= H - 3}
