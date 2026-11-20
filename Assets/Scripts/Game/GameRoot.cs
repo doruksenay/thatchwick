@@ -3435,12 +3435,15 @@ namespace Thatchwick.Game
                 && !(actor.Character.IsVillager && !moving && _life.Trees.VillagerInside(actor.Character, _clock.DayFraction, _life.Weather.Today(_clock.TotalDays)));
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
             // Kare animasyonu (018a/018b) varsa yürürken onu oynat: tam döngü = iki adım (WalkPhase iki π).
-            var walkFrame = moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
+            // Binici (iş 787): atın üstünde oturma karesi; kare yoksa olağan görsel (yürüme dahil) kalır.
+            var rideFrame = _animals != null && _animals.MountOf(actor.Character.Id) != null
+                ? IsoArt.CharacterAction(actor.Character, "ride", actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
+            var walkFrame = rideFrame == null && moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
             // Easter egg gösterisi (topaç şovu, uluma; belge 55): dururken kısa süre kendi karesini oynar.
             string sceneKey = moving || actor.Character.Stage == AgeStage.Baby ? null : _life.Scenes.CharacterSceneOf(actor.Character.Id);
             var sceneFrame = sceneKey != null ? ActionFrameFor(actor, sceneKey, seed) : null;
             if (sceneFrame == null && !moving && actor.Character.Stage != AgeStage.Baby) sceneFrame = IdleFrameFor(actor, seed);
-            var real = walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
+            var real = rideFrame ?? walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.

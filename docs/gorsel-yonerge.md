@@ -54,6 +54,12 @@ Her görselin boyu tek bir insana göre ayarlanır. Ölçü **ayak noktasının 
 - 21.11.2026 ölçümü: ağaçların hepsi (58-81 px), kedi, tavuk, güvercin, tavşan, kaz, tilki, martı ve küçük köpek aralık dışında;
   sandalye ve masalar aralıkta (ilk tester raporundaki "sandalye insan boyunda" ölçüsü elmas derinliğini saymıyordu).
 
+### Hayvan ölçek setleri (`_v2`) ve arşiv (kullanıcı kararı 21.11.2026)
+- Ölçek dışı hayvanlar yeniden çizilir; yeniden örnekleme yapılmaz. PixelLab'in en küçük tuvali 32 px olduğu için küçük hayvan 32'lik tuvalde maskeyle küçük çizdirilir, sonra kırpılır ("küçük gövde", iş 780).
+- Ad: `iso_animal_<gövde>_v2_<yön>.png`, klip kareleri `iso_animal_<gövde>_v2_<klip>_<yön>_<NN>.png` (`_aday/` altında, `anim/` değil). Pivot tuvalden: yatayda orta, ayak satırı alttan 2. satır (`IsoArt.Foot`). Bir gövdenin bütün kareleri aynı tuval boyundadır.
+- Klipler: `walk` (yürür), `ride` (eyerli, binicili), `pull` (arabaya koşulu); 4 çapraz yön. Binici karesi `iso_char_<gövde>_r84_ride_<yön>_<NN>` (84x112 tuval, pivot 42,2).
+- Eski görsel silinmez: iş `accepted` olunca `python tools/art/archive_superseded.py --job <id> --apply` iş dosyasının `supersedes:` listesini `Assets/Art/Iso/_arsiv/` altına taşır (`git mv`, .meta ile). Oyun ve kütüphane `_arsiv/`i okumaz.
+
 ## Adlandırma
 `iso_<tür>_<ad>_<yön>.png` (ör. `iso_char_villager_se.png`, `iso_item_bed_straw.png`, `iso_ground_grass_a.png`).
 Yönler: se, sw, nw, ne. Çok karolu nesne: `_2x1` eki.

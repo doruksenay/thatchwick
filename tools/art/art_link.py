@@ -29,7 +29,7 @@ def library():
     files = {}
     for root, _, names in os.walk(ART):
         rel = os.path.relpath(root, ART).replace("\\", "/")
-        if "anim" in rel.split("/") or "_ham" in rel or "katman" in rel:
+        if "anim" in rel.split("/") or "_ham" in rel or "katman" in rel or "_arsiv" in rel:
             continue
         for n in names:
             if n.endswith(".png"):

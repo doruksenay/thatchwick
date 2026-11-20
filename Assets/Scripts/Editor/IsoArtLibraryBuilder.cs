@@ -24,6 +24,8 @@ namespace Thatchwick.Editor
         private static bool IsArt(string path) =>
             path.Replace('\\', '/').StartsWith(ArtRoot + "/") && path.EndsWith(".png")
             && !path.Contains("/_ham/")
+            // _arsiv/: yerini ölçek seti (_v2) alan eski görseller saklanır, oyuna girmez (tools/art/archive_superseded.py).
+            && !path.Contains("/_arsiv/")
             // anim/: yalnızca gerçekçi taban (84 yetişkin/yaşlı, 64 çocuk) karelerini al (eski 56'lık deneme kareleri kütüphaneye girmez).
             && (!path.Contains("/anim/") || path.Contains("_r84_") || path.Contains("_r64_"));
 

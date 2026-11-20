@@ -27,6 +27,8 @@ namespace Thatchwick.Game
             public SpriteRenderer Fx;      // kurbağadaki taç (belge 55)
             public OddWalker Walker;       // Johan Wick, atsız şövalye
             public int Lift;               // poz verirken çizim sırası payı (kutudaki kedi sandığın üstünde)
+            public Vector3 LastRider;      // binicinin önceki konumu: at yürüyor mu, hangi yöne
+            public bool RiderMoving;
         }
 
         /// <summary>Kutudaki kedinin sandık karosuna göre yüksekliği (dünya birimi; 32 px = 1). Poz kareleri gelince gözle ayarlanır.</summary>
@@ -225,6 +227,26 @@ namespace Thatchwick.Game
                 string body = look != null && look.Layers.Count > 0 ? look.Layers[0] : null;
                 Sprite real = pose != null ? IsoArt.AnimalPose(body, a.Species.Id, pose.Pose, v.Dir, Time.time / 1.1f + a.Id * 0.13f) : null;
                 bool posed = real != null;
+                // Hareket klibi (işler 783-786): binilmişse "ride", arabaya koşuluysa "pull", yürüyorsa "walk".
+                if (real == null)
+                {
+                    bool hitched = over.HasValue && !over.Value.hidden;
+                    if (a.RiderId != 0)
+                    {
+                        var rv = _riderView(a.RiderId);
+                        if (rv != null)
+                        {
+                            var d = rv.position - v.LastRider;
+                            v.RiderMoving = d.sqrMagnitude > 1e-6f;
+                            if (v.RiderMoving) v.Dir = IsoArt.DirectionIndex(new Vector2(d.x, d.y));
+                            v.LastRider = rv.position;
+                        }
+                    }
+                    bool walking = a.NextTile.HasValue || hitched || (a.RiderId != 0 && v.RiderMoving);
+                    string clip = a.RiderId != 0 ? (walking ? "ride" : null) : hitched ? "pull" : walking ? "walk" : null;
+                    if (clip != null) real = IsoArt.AnimalMotion(body, a.Species.Id, clip, v.Dir, Time.time * 1.6f + a.Id * 0.13f)
+                        ?? (clip != "walk" ? IsoArt.AnimalMotion(body, a.Species.Id, "walk", v.Dir, Time.time * 1.6f + a.Id * 0.13f) : null);
+                }
                 if (real == null && body != null) real = IsoArt.AnimalBody(body, look.LongCoat, v.Dir);
                 Color tint = Color.white;
                 var gene = Tint(look?.TintHex);

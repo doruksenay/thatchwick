@@ -9,17 +9,15 @@ family: hayvan
 style_gate: false
 cost_est: 17
 cost_max: 28
-depends_on: []
+depends_on: ["784"]   # 2026-11-21: büyük hayvan ölçeği ve yolu 784 pilotuna bağlandı
 max_attempts: 1
 pixellab: true
 outputs:
-  - Assets/Art/Iso/_aday/iso_animal_horse_light_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_horse_medium_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_horse_heavy_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_pony_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_donkey_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_mule_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_hinny_cand_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_horse_light_v2_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_horse_heavy_v2_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_pony_v2_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_mule_v2_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_hinny_v2_{se,sw,nw,ne,s,w,n,e}.png
 created: 2026-11-20
 ---
 # 486 At tipleri, eşek, katır, bardo
@@ -44,7 +42,7 @@ Tarif **375 ile aynı** (106 tarifi, yol B, güney kontrolü, zemin kontrolü, `
 | 6 | `mule` | katır | `mule: horse-sized body with long donkey ears, short mane, slim legs, donkey-like tufted tail` |
 | 7 | `hinny` | bardo | `hinny: smaller than a mule, horse-like head with medium ears, fuller mane and tail` |
 
-- Tuval: atlar ve katır 56, midilli ve eşek 44, bardo 48. Maliyet ≈ 17. `cost_max` 28.
+- ~~Tuval: atlar ve katır 56, midilli ve eşek 44, bardo 48.~~ **2026-11-21 ölçek kararı:** bu tuvaller atı ~50 px çizerdi (hedef 60-82). Yeni tuvaller (784'teki doluluk, boy ≈ tuval x 0,91): hafif at 80, ağır at 84, katır 76, bardo 72, midilli 64 (midilli at sınıfının altında kalabilir; raporda yazılır). **`horse_medium` ve `donkey` 784'te üretilir, bu işte atlanır.** Yol, güney kontrolü ve kırpma 784 ile aynı; dosya adı `iso_animal_<gövde>_v2_<yön>.png`. Maliyet ≈ 12. `cost_max` 28.
 
 ## Doğrulama
 375 doğrulaması. Yan yana: 7 gövde + mevcut at (104). Katır uzun kulağıyla attan, bardo kısa kulak ve dolgun yelesiyle katırdan ayrılmalı.

@@ -637,12 +637,27 @@ namespace Thatchwick.Game
         // ---------------- hayvanlar ----------------
 
         // Hayvan setleri (aday): tür → (ad öneki, pivot x, pivot y alttan). Görseli olmayan tür yer tutucuda kalır.
+        // Ölçek tablosuna (docs/gorsel-yonerge.md) uyan yeni setler "<V2 kökü>_<yön>" adıyla gelir (işler 780-787);
+        // varsa önce onlar çizilir (pivot tuvalden: alt orta, ayak satırı alttan 1 px). Eski set geri dönüş olarak kalır.
         private static readonly Dictionary<string, (string set, float px, float py)> Animals = new Dictionary<string, (string, float, float)>
         {
-            ["animal.sheep"] = ("iso_animal_sheep_1_cand", 26f, 14f),   // 56x56, ayaklar alttan 14 px
-            ["animal.ox"] = ("iso_animal_ox_cand", 28f, 12f),          // iş 411; dosya yoksa yer tutucu
+            ["animal.sheep"] = ("iso_animal_sheep_2_cand", 24f, 5f),    // 100 kabul (sheep_1 reddedildi, ölçek dışı), 48x48
+            ["animal.ox"] = ("iso_animal_ox_v2_cand", 34f, 2f),         // 104t, 68x68; ox v1 ölçek dışı (43 px)
             ["animal.cat"] = ("iso_animal_cat_1_cand", 15f, 2f),       // 375 kabul, 32x32, ayak bandı alttan 2 px
             ["animal.dog"] = ("iso_animal_dog_1_cand", 19f, 4f),       // 379 (review), 40x40; dosya yoksa yer tutucu
+            ["animal.chicken"] = ("iso_animal_chicken_3_cand", 16f, 3f),
+            ["animal.goose"] = ("iso_animal_goose_1_cand", 16f, 2f),
+            ["animal.duck"] = ("iso_animal_duck_cand", 16f, 2f),       // görsel 781 ile gelir
+            ["animal.goat"] = ("iso_animal_goat_5_cand", 24f, 4f),
+            ["animal.angora_goat"] = ("iso_animal_goat_6_cand", 24f, 3f),
+            ["animal.pig"] = ("iso_animal_pig_2_cand", 24f, 6f),
+            ["animal.rabbit"] = ("iso_animal_rabbit_cand", 16f, 2f),
+            ["animal.pigeon"] = ("iso_animal_pigeon_cand", 16f, 0f),
+            ["animal.cow"] = ("iso_animal_cow_cand", 32f, 2f),         // görsel 784 ile gelir
+            ["animal.horse"] = ("iso_animal_horse_medium_cand", 28f, 12f),
+            ["animal.donkey"] = ("iso_animal_donkey_cand", 22f, 8f),
+            ["animal.mule"] = ("iso_animal_mule_cand", 28f, 12f),
+            ["animal.hinny"] = ("iso_animal_hinny_cand", 24f, 10f),
             // Yaban hayvanları (iş 408-410): dosya yoksa yer tutucu küp.
             ["wild.rabbit"] = ("iso_wild_rabbit_cand", 24f, 10f),
             ["wild.squirrel"] = ("iso_wild_squirrel_cand", 24f, 10f),
@@ -681,6 +696,13 @@ namespace Thatchwick.Game
             string dir = Directions[direction];
             if (longCoat)
             {
+                var l2 = Foot("iso_animal_" + body + "_long_v2_" + dir) ?? Foot("iso_animal_" + body + "_long_v2_se");
+                if (l2 != null) return l2;
+            }
+            var v2 = Foot("iso_animal_" + body + "_v2_" + dir) ?? Foot("iso_animal_" + body + "_v2_se");
+            if (v2 != null) return v2;
+            if (longCoat)
+            {
                 var l = Get("iso_animal_" + body + "_long_cand_" + dir, b.px, b.py) ?? Get("iso_animal_" + body + "_long_cand_se", b.px, b.py);
                 if (l != null) return l;
             }
@@ -699,12 +721,14 @@ namespace Thatchwick.Game
             string dir = direction >= 3 && direction <= 6 ? "sw" : "se";
             if (body != null && Bodies.TryGetValue(body, out var b))
             {
-                var s = PoseFrame("iso_animal_" + body + "_" + pose + "_", dir, b.px, b.py, cycle);
+                var s = PoseFrame("iso_animal_" + body + "_v2_" + pose + "_", dir, -1f, -1f, cycle)
+                    ?? PoseFrame("iso_animal_" + body + "_" + pose + "_", dir, b.px, b.py, cycle);
                 if (s != null) return s;
             }
             if (speciesId == null || !Animals.TryGetValue(speciesId, out var a)) return null;
             string set = a.set.EndsWith("_cand", System.StringComparison.Ordinal) ? a.set.Substring(0, a.set.Length - 5) : a.set;
-            return PoseFrame(set + "_" + pose + "_", dir, a.px, a.py, cycle);
+            return PoseFrame(V2Stem(a.set) + "_" + pose + "_", dir, -1f, -1f, cycle)
+                ?? PoseFrame(set + "_" + pose + "_", dir, a.px, a.py, cycle);
         }
 
         private static Sprite PoseFrame(string stem, string dir, float px, float py, float cycle)
@@ -713,8 +737,13 @@ namespace Thatchwick.Game
             {
                 string prefix = stem + d + "_";
                 int n = FrameCount(prefix, closingFrame: false);
-                if (n > 0) return Get(prefix + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n).ToString("00"), px, py);
-                var still = Get(stem + d, px, py);
+                // px < 0: ölçek seti, pivot tuvalden (Foot).
+                if (n > 0)
+                {
+                    string frame = prefix + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n).ToString("00");
+                    return px < 0f ? Foot(frame) : Get(frame, px, py);
+                }
+                var still = px < 0f ? Foot(stem + d) : Get(stem + d, px, py);
                 if (still != null) return still;
             }
             return null;
@@ -760,7 +789,61 @@ namespace Thatchwick.Game
         public static Sprite Animal(string speciesId, int direction)
         {
             if (!Animals.TryGetValue(speciesId, out var a)) return null;
-            return Get(a.set + "_" + Directions[direction], a.px, a.py) ?? Get(a.set + "_se", a.px, a.py);
+            string v2 = V2Stem(a.set);
+            return Foot(v2 + "_" + Directions[direction]) ?? Foot(v2 + "_se")
+                ?? Get(a.set + "_" + Directions[direction], a.px, a.py) ?? Get(a.set + "_se", a.px, a.py);
+        }
+
+        /// <summary>Ölçek setinin kökü: "iso_animal_cat_1_cand" → "iso_animal_cat_1_v2" (işler 780-787).</summary>
+        private static string V2Stem(string set)
+        {
+            string stem = set.EndsWith("_cand", System.StringComparison.Ordinal) ? set.Substring(0, set.Length - 5) : set;
+            return stem.EndsWith("_v2", System.StringComparison.Ordinal) ? stem : stem + "_v2";   // ox_v2 zaten ölçekte
+        }
+
+        /// <summary>
+        /// Ölçek seti görseli: pivot tuvalden gelir (yatayda orta, ayak satırı alttan 1 px; işlerin kırpma kuralı).
+        /// Görsel yoksa null.
+        /// </summary>
+        public static Sprite Foot(string name)
+        {
+            if (!Enabled || string.IsNullOrEmpty(name)) return null;
+            EnsureLoaded();
+            if (!_art.TryGetValue(name, out var art) || art.Tex == null) return null;
+            return Get(name, Mathf.Round(art.Rect.width / 2f), FootRow);
+        }
+
+        private const float FootRow = 1f;
+
+        /// <summary>
+        /// Hareket karesi (işler 783-786): "walk" yürür, "ride" eyerli ve binicili yürür, "pull" arabaya koşulu çeker.
+        /// Kareler 4 çapraz yönde ("&lt;kök&gt;_&lt;klip&gt;_&lt;yön&gt;_NN"); düz yön en yakın çapraza, o yoksa eldeki çapraza düşer.
+        /// Önce tipin gövdesi, sonra türün seti; kare yoksa null (durma görseli çizilir).
+        /// </summary>
+        public static Sprite AnimalMotion(string body, string speciesId, string clip, int direction, float cycle)
+        {
+            if (!Enabled || string.IsNullOrEmpty(clip)) return null;
+            int diag = direction % 2 == 1 ? direction : (direction + 7) % 8;
+            if (body != null && Bodies.ContainsKey(body))
+            {
+                var s = MotionFrame("iso_animal_" + body + "_v2_" + clip + "_", diag, cycle);
+                if (s != null) return s;
+            }
+            if (speciesId == null || !Animals.TryGetValue(speciesId, out var a)) return null;
+            return MotionFrame(V2Stem(a.set) + "_" + clip + "_", diag, cycle);
+        }
+
+        private static Sprite MotionFrame(string stem, int diag, float cycle)
+        {
+            string prefix = stem + Directions[diag] + "_";
+            int n = FrameCount(prefix, closingFrame: true);
+            for (int i = 0; n <= 0 && i < ActionFallback.Length; i++)
+            {
+                prefix = stem + ActionFallback[i] + "_";
+                n = FrameCount(prefix, closingFrame: true);
+            }
+            if (n <= 0) return null;
+            return Foot(prefix + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n).ToString("00"));
         }
 
         /// <summary>
