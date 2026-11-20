@@ -276,8 +276,8 @@ namespace Thatchwick.Core.World
             for (int y = 0; y < 24; y++) { int c = StreamX(y); p.Water(c, y); p.Water(c + 1, y); }
             // Köprü: yolun dereyi geçtiği yer (y12-13)
             for (int x = StreamX(12) - 1; x <= StreamX(13) + 2; x++) p.Floor(x, 12, x, 13, FloorType.Wood);
-            p.PondAt(StreamX(0), 0, F("item.fish_trout", 5), F("item.fish_crayfish", 5));
-            p.PondAt(StreamX(23), 23, F("item.fish_trout", 3), F("item.fish_crayfish", 4));
+            p.PondAt(StreamX(0), 0, F("item.fish_trout", 5), F("item.fish_crayfish", 5), F("item.fish_bullhead", 4));
+            p.PondAt(StreamX(23), 23, F("item.fish_trout", 3), F("item.fish_crayfish", 4), F("item.mussel", 4));
             p.Path(2, (0, 20), (7, 20), (7, 16), (14, 16), (14, 12), (27, 12), (27, 8), (39, 8));
             p.Path(1, (7, 16), (7, 0));   // güneye ayrılan patika: Güney Yamaçları
 
@@ -302,9 +302,9 @@ namespace Thatchwick.Core.World
             for (int y = 0; y < 52; y++) { int c = RiverX(y); for (int x = c - 1; x <= c + 1; x++) p.Water(x, y); }
             for (int y = 26; y <= 27; y++) for (int x = RiverX(y) - 1; x <= RiverX(y) + 1; x++) p.Floor(x, y, x, y, FloorType.Wood);
             for (int y = 44; y <= 45; y++) for (int x = RiverX(y) - 1; x <= RiverX(y) + 1; x++) p.Floor(x, y, x, y, FloorType.Wood);
-            p.PondAt(RiverX(0), 0, F("item.fish_trout", 6), F("item.fish_pike", 2), F("item.fish_carp", 3));
-            p.PondAt(RiverX(35), 35, F("item.fish_trout", 4), F("item.fish_carp", 4), F("item.fish_eel", 2));
-            p.PondAt(RiverX(51), 51, F("item.fish_trout", 2), F("item.fish_crayfish", 4));
+            p.PondAt(RiverX(0), 0, F("item.fish_trout", 6), F("item.fish_pike", 2), F("item.fish_carp", 3), F("item.fish_perch", 4));
+            p.PondAt(RiverX(35), 35, F("item.fish_trout", 4), F("item.fish_carp", 4), F("item.fish_eel", 2), F("item.fish_salmon", 2), F("item.fish_perch", 2));
+            p.PondAt(RiverX(51), 51, F("item.fish_trout", 2), F("item.fish_crayfish", 4), F("item.mussel", 3));
 
             // Meydan: sekizgen taş
             for (int y = 21; y <= 31; y++) for (int x = 23; x <= 37; x++) if (InPlaza(x, y)) p.Floor(x, y, x, y, FloorType.Stone);

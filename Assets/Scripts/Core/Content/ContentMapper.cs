@@ -580,7 +580,10 @@ namespace Thatchwick.Core.Content
                     Draft = a.draft,
                     FemaleName = string.IsNullOrWhiteSpace(a.femaleName) ? null : a.femaleName,
                     MaleName = string.IsNullOrWhiteSpace(a.maleName) ? null : a.maleName,
-                    MaleOnly = a.maleOnly
+                    MaleOnly = a.maleOnly,
+                    PetBreeds = a.petBreeds,
+                    Sterile = a.sterile,
+                    Herd = a.herd
                 };
                 try { db.Animals.Register(def); }
                 catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }

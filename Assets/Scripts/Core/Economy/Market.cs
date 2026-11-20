@@ -161,17 +161,21 @@ namespace Thatchwick.Core.Economy
         public static double SaleXp(int earned) => earned > 0 ? 2.0 + 1.5 * Math.Sqrt(earned) : 0.0;
         public static double PurchaseXp(int cost) => cost > 0 ? 1.0 + 0.5 * Math.Sqrt(cost) : 0.0;
 
+        /// <summary>Takvim çarpanı (perhiz günlerinde balık pahalı, et ucuz; belge 48 §9.4). null = 1.</summary>
+        public Func<ItemDef, double> CalendarFactor { get; set; }
+        private double Calendar(ItemDef def) => CalendarFactor != null ? Math.Max(0.1, CalendarFactor(def)) : 1.0;
+
         public int BuyPrice(string itemId)
         {
             var def = _content.Items.Get(itemId);
-            return Math.Max(1, (int)Math.Ceiling(def.Price * SeasonMultiplier(def) * TradeBuyFactor));
+            return Math.Max(1, (int)Math.Ceiling(def.Price * SeasonMultiplier(def) * Calendar(def) * TradeBuyFactor));
         }
 
         public int SellPrice(string itemId)
         {
             var def = _content.Items.Get(itemId);
             double bonus = 1.0 + (SellBonus != null ? Math.Max(0.0, Math.Min(0.75, SellBonus())) : 0.0);
-            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * bonus * TradeSellFactor * RawSaturation(itemId), MidpointRounding.AwayFromZero));
+            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * Calendar(def) * bonus * TradeSellFactor * RawSaturation(itemId), MidpointRounding.AwayFromZero));
         }
 
         /// <summary>Gün ilerledikçe talep toparlanır; yeni günde teklifler yenilenir.</summary>

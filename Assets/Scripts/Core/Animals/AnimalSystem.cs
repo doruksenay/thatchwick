@@ -105,7 +105,7 @@ namespace Thatchwick.Core.Animals
         /// <summary>Hanenin en iyi beceri seviyesi; verilirse hayvan kilidi Hayvancılık'a bakar (karar 28-4).</summary>
         public Func<SkillType, int> SkillLevel { get; set; }
 
-        public PlacementCheck Buy(string speciesId, Household house, out Animal animal, int accountLevel = int.MaxValue, bool? female = null)
+        public PlacementCheck Buy(string speciesId, Household house, out Animal animal, int accountLevel = int.MaxValue, bool? female = null, string typeId = null)
         {
             animal = null;
             if (!_content.Animals.TryGet(speciesId, out var species)) return PlacementCheck.Fail("Böyle bir hayvan yok.");
@@ -114,8 +114,10 @@ namespace Thatchwick.Core.Animals
 
             var home = FindHome(species);
             if (home == null) return PlacementCheck.Fail($"Önce barınak koy ({HousingName(species.Housing)}) ya da yer aç.");
+            if (AtPetCap(species)) return PlacementCheck.Fail($"Hanede en çok {PetCap} {species.DisplayName.ToLowerInvariant()} bakılır.");
             if (!house.TrySpend(species.Price)) return PlacementCheck.Fail("Akçe yetmiyor.");
             animal = Spawn(species, home, BuyAsFemale(species, female));
+            AssignGenome(animal, typeId);   // genomlu tür: istenen tip ya da pazar tipi (belge 48)
             return PlacementCheck.Success;
         }
 
@@ -227,6 +229,7 @@ namespace Thatchwick.Core.Animals
             var a = new Animal(_nextId++, species, pos, home.Id) { IsFemale = female && !species.MaleOnly };
             a.WaitDays = _rng.NextDouble() * MaxWaitDays;
             _animals.Add(a);
+            RecordPedigree(a);
             return a;
         }
 
@@ -248,12 +251,13 @@ namespace Thatchwick.Core.Animals
         public Animal Restore(int id, AnimalSpeciesDef species, GridPos pos, int homeId, float fullness, double age, double produce, double hungryDays, float friendship = 0f, double petCooldown = 0,
             string saddle = null, float comfort = 50f, bool sick = false, double sickDays = 0, int coldDays = 0,
             bool? female = null, double pregnantDays = 0, int motherId = 0, int generation = 0,
-            int lineage = 0, double xp = 0, bool legendaryDescent = false, string legendTitle = null, float stamina = -1f, double shyDays = 0)
+            int lineage = 0, double xp = 0, bool legendaryDescent = false, string legendTitle = null, float stamina = -1f, double shyDays = 0,
+            string[] genome = null, int fatherId = 0, string[] deeds = null, int sireId = 0, string sireSpecies = null, string[] sireGenome = null)
         {
             var a = new Animal(id, species, pos, homeId)
             {
                 IsFemale = !species.MaleOnly && (female ?? (id % 2 == 1)),          // eski kayıt: tek kimlik dişi, çift kimlik erkek
-                PregnantDays = species.Breeds && (female ?? (id % 2 == 1)) ? Math.Max(0, pregnantDays) : 0,
+                PregnantDays = (species.Breeds || species.Sterile) && (female ?? (id % 2 == 1)) ? Math.Max(0, pregnantDays) : 0,
                 MotherId = Math.Max(0, motherId),
                 Generation = Math.Max(0, generation),
                 Friendship = Math.Max(0f, Math.Min(100f, friendship)),
@@ -275,7 +279,32 @@ namespace Thatchwick.Core.Animals
                 Stamina = stamina < 0f ? HorseAbilities.MaxStamina : Math.Min(HorseAbilities.MaxStamina, stamina),
                 ShyDays = Math.Max(0, shyDays)
             };
+            a.FatherId = Math.Max(0, fatherId);
+            a.PregnancySireId = a.IsPregnant ? Math.Max(0, sireId) : 0;
+            a.PregnancySireSpecies = a.IsPregnant ? sireSpecies : null;
+            a.PregnancySireGenome = a.IsPregnant && sireSpecies != null ? Genetics.Genome.Import(sireSpecies, sireGenome) : null;
+            if (species.HasGenetics)
+            {
+                a.Genome = Genetics.Genome.Import(species.Id, genome);
+                if (a.Genome == null)
+                {
+                    // Eski kayıt: kimlikten türetilen sabit genom (yüklemede değişmez). Tip türün ilk tipi (beygir, çoban köpeği,
+                    // ambar kedisi), istatistikler tipin tabanı: eski atın hızı değişmez, görünüş rastgele.
+                    var rng = new Random(id * 7919 + 17);
+                    var legacyType = Genetics.GeneticsCatalog.DefaultType(species.Id);
+                    a.Genome = Genetics.GeneticsService.Random(species.Id, legacyType?.Id, a.Lineage, a.IsFemale, rng);
+                    if (legacyType != null)
+                        foreach (var kv in legacyType.Stats) a.Genome.Stats[kv.Key] = Math.Min(Genetics.GeneStat.Cap(a.Lineage), kv.Value);
+                }
+            }
+            if (deeds != null)
+                foreach (var d in deeds)
+                {
+                    int i = d?.LastIndexOf(':') ?? -1;
+                    if (i > 0 && int.TryParse(d.Substring(i + 1), out int n) && n > 0) a.Deeds[d.Substring(0, i)] = n;
+                }
             _animals.Add(a);
+            if (!_pedigree.ContainsKey(id)) RecordPedigree(a);
             if (id >= _nextId) _nextId = id + 1;
             return a;
         }

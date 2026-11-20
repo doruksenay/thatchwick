@@ -21,7 +21,7 @@ namespace Thatchwick.Core.Life
     /// kayıtta Export/Restore kullanır. Alt sistemler (mezar, ruh hali, ...) burada toplanır; her biri
     /// bağımsız test edilebilir, burası yalnızca bağlama ve sıralamadır.
     /// </summary>
-    public sealed class LifeSystems
+    public sealed partial class LifeSystems
     {
         public ContentDatabase Content { get; }
         public WorldState World { get; }
@@ -739,6 +739,7 @@ namespace Thatchwick.Core.Life
                 }
                 foreach (var d in r.InjuredDogs) Say($"{d.Name} kurtlarla boğuşurken yaralandı; birkaç gün dinlenecek.", NoticeLevel.Info);
             };
+            AttachAnimalGenetics(animals);   // genetik, mera ve yayla, böcek ve balık defteri (belge 48)
         }
 
         /// <summary>Kurt saldırısı; hayvan sistemi bağlanınca kurulur.</summary>
@@ -752,7 +753,11 @@ namespace Thatchwick.Core.Life
         public ContestBook Contests { get; } = new ContestBook();
         private static Animal FindAnimal(AnimalSystem animals, int id) { foreach (var a in animals.Animals) if (a.Id == id) return a; return null; }
 
-        public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; Merchant.BuyFactor = () => market.TradeBuyFactor; }
+        public void Attach(Market market)
+        {
+            market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; Merchant.BuyFactor = () => market.TradeBuyFactor;
+            market.CalendarFactor = def => FastingCalendar.PriceFactor(def, IsFasting);   // perhiz günleri (belge 48 §9.4)
+        }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; Home.Build = build; }
         /// <summary>Depo: sandığa demir kuşak kapasite verir (belge 45).</summary>
         public void Attach(Thatchwick.Core.Build.StorageService storage) { storage.ExtraStorage = Home.ExtraStorage; }
@@ -893,6 +898,7 @@ namespace Thatchwick.Core.Life
             farm.JarBlocker = (tile, fill) => Home.WaterJarBlocker(tile, fill);
             farm.JarCatch = (c, tile) => Home.CatchAtWater(c, tile);
             farm.JarFill = tile => Home.FillAtWater(tile);
+            AttachFishing(farm);   // defter, efsane balık, inci (belge 48 §9.4)
         }
         private FamilyService _family;
 
@@ -1085,6 +1091,7 @@ namespace Thatchwick.Core.Life
             var report = Forecast.Report(Clock.TotalDays);
             if (report.Warnings.Count > 0)
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
+            AnimalDay(day);   // hüner etkileri, çekirge, perhiz (belge 48)
             DailyHealing();
             Injuries.DailyUpdate();
             Decor.RemindFreeMirror();
@@ -1149,7 +1156,10 @@ namespace Thatchwick.Core.Life
                 home = Home.Export(),
                 timedDuties = Duties.Export(),
                 roaming = Roaming.Export(),
-                requests = Requests.Export()
+                requests = Requests.Export(),
+                creatureBook = Book.Export(),
+                locustDry = Locusts.DryDays,
+                locustIncoming = Locusts.Incoming
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1170,6 +1180,8 @@ namespace Thatchwick.Core.Life
             Upbringing.Import(data.upbringing);
             Merchant.Import(data.merchant);
             Journal.Import(data.natureJournal);
+            Book.Import(data.creatureBook);
+            Locusts.DryDays = data.locustDry; Locusts.Incoming = data.locustIncoming;
             Adoptions.Import(data.adoptedWild);
             Coffee.Import(data.coffeeHabits);
             Olives.Import(data.olives);
