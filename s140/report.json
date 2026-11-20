@@ -1,0 +1,57 @@
+{
+  "job": "s140",
+  "kind": "voice_design",
+  "family": "voice",
+  "created": "2026-11-20T09:58:46Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 30.838,
+          "lufs": -20.0,
+          "true_peak_db": -3.0,
+          "rms_db": -21.4,
+          "flags": [],
+          "pass": true,
+          "generated_voice_id": "huHpRc7lGJX1vS15BVq3"
+        },
+        "c2": {
+          "duration_s": 27.303,
+          "lufs": -20.0,
+          "true_peak_db": -4.0,
+          "rms_db": -20.7,
+          "flags": [],
+          "pass": true,
+          "generated_voice_id": "Ir0nDgyaNqi4k5TViI98"
+        },
+        "c3": {
+          "duration_s": 28.818,
+          "lufs": -20.0,
+          "true_peak_db": -3.0,
+          "rms_db": -21.0,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0195)"
+          ],
+          "pass": true,
+          "generated_voice_id": "XdRVKth6lFm2FxOwqgfG",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c2",
+            "c3",
+            0.0195
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0237,
+          "c2": 0.0195,
+          "c3": 0.0195
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

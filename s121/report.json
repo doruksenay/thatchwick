@@ -1,0 +1,171 @@
+{
+  "job": "s121",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T09:54:05Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.12,
+          "lufs": -23.3,
+          "true_peak_db": -1.0,
+          "rms_db": -19.2,
+          "note": "tepe sınırında, yükseklik -23.3 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. One single axe strike into a log on a chopping block, wood chips falling, one strike only. Details: dry birch, heavy swing.",
+          "duration": 1.134591027258982,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.16,
+          "lufs": -24.1,
+          "true_peak_db": -1.0,
+          "rms_db": -21.6,
+          "note": "tepe sınırında, yükseklik -24.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0174)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. One single axe strike into a log on a chopping block, wood chips falling, one strike only. Details: dry birch, firm swing.",
+          "duration": 1.1890420317113677,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.24,
+          "lufs": -30.9,
+          "true_peak_db": -1.0,
+          "rms_db": -25.6,
+          "note": "tepe sınırında, yükseklik -30.9 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0342)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. One single axe strike into a log on a chopping block, wood chips falling, one strike only. Details: seasoned oak, firm swing.",
+          "duration": 1.2780827962625805,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.58,
+          "lufs": -26.4,
+          "true_peak_db": -1.0,
+          "rms_db": -28.5,
+          "note": "tepe sınırında, yükseklik -26.4 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. One single axe strike into a log on a chopping block, wood chips falling, one strike only. Details: wet log, firm swing.",
+          "duration": 1.1466369849275704,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.666,
+          "lufs": -28.0,
+          "true_peak_db": -1.0,
+          "rms_db": -30.5,
+          "note": "tepe sınırında, yükseklik -28.0 (hedef -18)",
+          "flags": [
+            "c4 ile neredeyse aynı (0.0302)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. One single axe strike into a log on a chopping block, wood chips falling, one strike only. Details: pine with knots, firm swing.",
+          "duration": 1.115060057450017,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.477,
+          "lufs": -26.4,
+          "true_peak_db": -1.0,
+          "rms_db": -27.5,
+          "note": "tepe sınırında, yükseklik -26.4 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0305)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. One single axe strike into a log on a chopping block, wood chips falling, one strike only. Details: wet log, heavy swing.",
+          "duration": 1.2583972356626159,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.869,
+          "lufs": -25.3,
+          "true_peak_db": -1.0,
+          "rms_db": -28.5,
+          "note": "tepe sınırında, yükseklik -25.3 (hedef -18)",
+          "flags": [
+            "c4 ile neredeyse aynı (0.0312)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. One single axe strike into a log on a chopping block, wood chips falling, one strike only. Details: seasoned oak, heavy swing.",
+          "duration": 1.118749828126545,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.688,
+          "lufs": -27.8,
+          "true_peak_db": -1.0,
+          "rms_db": -30.5,
+          "note": "tepe sınırında, yükseklik -27.8 (hedef -18)",
+          "flags": [
+            "c4 ile neredeyse aynı (0.0275)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. One single axe strike into a log on a chopping block, wood chips falling, one strike only. Details: pine with knots, heavy swing.",
+          "duration": 1.210963585471646,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0174
+          ],
+          [
+            "c1",
+            "c3",
+            0.0342
+          ],
+          [
+            "c1",
+            "c6",
+            0.0305
+          ],
+          [
+            "c4",
+            "c5",
+            0.0302
+          ],
+          [
+            "c4",
+            "c7",
+            0.0312
+          ],
+          [
+            "c4",
+            "c8",
+            0.0275
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0174,
+          "c2": 0.0128,
+          "c3": 0.0128,
+          "c4": 0.0185,
+          "c5": 0.0018,
+          "c6": 0.0185,
+          "c7": 0.0071,
+          "c8": 0.0018
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

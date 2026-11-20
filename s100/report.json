@@ -1,0 +1,171 @@
+{
+  "job": "s100",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T09:53:08Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.404,
+          "lufs": -20.6,
+          "true_peak_db": -1.0,
+          "rms_db": -20.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A single soft tap when pressing a button in a cozy game menu. Details: thread pluck.",
+          "duration": 0.28215190816146507,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.43,
+          "lufs": -20.1,
+          "true_peak_db": -1.0,
+          "rms_db": -20.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0148)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A single soft tap when pressing a button in a cozy game menu. Details: soft linen tap.",
+          "duration": 0.3099764052803406,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.459,
+          "lufs": -21.1,
+          "true_peak_db": -1.0,
+          "rms_db": -19.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0261)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A single soft tap when pressing a button in a cozy game menu. Details: felt press.",
+          "duration": 0.3075274171064723,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.41,
+          "lufs": -20.0,
+          "true_peak_db": -4.1,
+          "rms_db": -20.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0281)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A single soft tap when pressing a button in a cozy game menu. Details: small wooden bead click.",
+          "duration": 0.2866862672714471,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.48,
+          "lufs": -21.7,
+          "true_peak_db": -1.0,
+          "rms_db": -17.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.019)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A single soft tap when pressing a button in a cozy game menu. Details: thread pluck.",
+          "duration": 0.3231569035425351,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.472,
+          "lufs": -21.5,
+          "true_peak_db": -1.0,
+          "rms_db": -20.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.016)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A single soft tap when pressing a button in a cozy game menu. Details: soft linen tap.",
+          "duration": 0.3206884968279183,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.421,
+          "lufs": -20.0,
+          "true_peak_db": -1.6,
+          "rms_db": -20.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0133)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A single soft tap when pressing a button in a cozy game menu. Details: felt press.",
+          "duration": 0.30597979696963956,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.411,
+          "lufs": -22.2,
+          "true_peak_db": -1.0,
+          "rms_db": -22.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0269)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A single soft tap when pressing a button in a cozy game menu. Details: small wooden bead click.",
+          "duration": 0.2713694170424058,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0148
+          ],
+          [
+            "c1",
+            "c3",
+            0.0261
+          ],
+          [
+            "c1",
+            "c4",
+            0.0281
+          ],
+          [
+            "c1",
+            "c5",
+            0.019
+          ],
+          [
+            "c1",
+            "c6",
+            0.016
+          ],
+          [
+            "c1",
+            "c7",
+            0.0133
+          ],
+          [
+            "c1",
+            "c8",
+            0.0269
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0133,
+          "c2": 0.0115,
+          "c3": 0.0261,
+          "c4": 0.0153,
+          "c5": 0.019,
+          "c6": 0.016,
+          "c7": 0.0115,
+          "c8": 0.0153
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

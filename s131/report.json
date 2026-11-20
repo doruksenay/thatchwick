@@ -1,0 +1,66 @@
+{
+  "job": "s131",
+  "kind": "spot",
+  "family": "spots",
+  "created": "2026-11-20T09:54:19Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 2.019,
+          "lufs": -24.0,
+          "true_peak_db": -12.0,
+          "rms_db": -28.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. One short song phrase of a single small songbird, a little distant. Details: blackbird.",
+          "duration": 2.084239780153334,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.92,
+          "lufs": -24.0,
+          "true_peak_db": -7.4,
+          "rms_db": -27.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. One short song phrase of a single small songbird, a little distant. Details: european robin.",
+          "duration": 1.9363841580964476,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 1.84,
+          "lufs": -24.0,
+          "true_peak_db": -12.6,
+          "rms_db": -29.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. One short song phrase of a single small songbird, a little distant. Details: song thrush.",
+          "duration": 1.8353164444842054,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 1.76,
+          "lufs": -24.0,
+          "true_peak_db": -8.9,
+          "rms_db": -27.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. One short song phrase of a single small songbird, a little distant. Details: chaffinch.",
+          "duration": 1.8046856537580942,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [],
+        "nearest": {
+          "c1": 0.0746,
+          "c2": 0.0764,
+          "c3": 0.0746,
+          "c4": 0.0764
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

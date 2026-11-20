@@ -1,0 +1,40 @@
+{
+  "job": "s150",
+  "kind": "music",
+  "family": "music",
+  "created": "2026-11-20T09:55:09Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 60.082,
+          "lufs": -20.0,
+          "true_peak_db": -7.8,
+          "rms_db": -22.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Instrumental medieval folk music for a cozy village life game. Period instruments only: lute, recorder, kaval flute, hurdy-gurdy, frame drum, bagpipe, lyre, harp. No piano, no synthesizer, no electric guitar, no modern drum kit, no vocals. Gentle, warm spring morning on a small farm. Lute and recorder carry a simple folk melody, soft frame drum, light and hopeful, relaxed tempo around 90 BPM, loops naturally back to the start.",
+          "model": "music_v1"
+        },
+        "c2": {
+          "duration_s": 60.082,
+          "lufs": -20.0,
+          "true_peak_db": -10.1,
+          "rms_db": -22.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Instrumental medieval folk music for a cozy village life game. Period instruments only: lute, recorder, kaval flute, hurdy-gurdy, frame drum, bagpipe, lyre, harp. No piano, no synthesizer, no electric guitar, no modern drum kit, no vocals. Gentle, warm spring morning on a small farm. Lute and recorder carry a simple folk melody, soft frame drum, light and hopeful, relaxed tempo around 90 BPM, loops naturally back to the start.",
+          "model": "music_v1"
+        }
+      },
+      "set": {
+        "pairs_dup": [],
+        "nearest": {
+          "c1": 0.0482,
+          "c2": 0.0482
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

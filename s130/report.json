@@ -1,0 +1,71 @@
+{
+  "job": "s130",
+  "kind": "ambience",
+  "family": "ambience",
+  "created": "2026-11-20T09:55:27Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -7.5,
+          "rms_db": -28.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). Daytime countryside around a small medieval farm in spring, calm and even, nothing stands out. Details: soft rustling leaves and faint distant birds.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -12.3,
+          "rms_db": -28.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.011)"
+          ],
+          "pass": true,
+          "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). Daytime countryside around a small medieval farm in spring, calm and even, nothing stands out. Details: calm open meadow air with faint insects.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -11.9,
+          "rms_db": -28.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0135)"
+          ],
+          "pass": true,
+          "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). Daytime countryside around a small medieval farm in spring, calm and even, nothing stands out. Details: gentle breeze through grass and distant trees.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.011
+          ],
+          [
+            "c1",
+            "c3",
+            0.0135
+          ]
+        ],
+        "nearest": {
+          "c1": 0.011,
+          "c2": 0.011,
+          "c3": 0.0135
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

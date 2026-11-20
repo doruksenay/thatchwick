@@ -1,0 +1,223 @@
+{
+  "job": "s120",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T09:53:47Z",
+  "groups": {
+    "impact": {
+      "candidates": {
+        "impact_c1": {
+          "duration_s": 0.39,
+          "lufs": -21.3,
+          "true_peak_db": -1.0,
+          "rms_db": -21.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. The dull thud of an iron axe blade biting into a log, only the impact.",
+          "duration": 0.5383993254249833,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "impact_c2": {
+          "duration_s": 0.433,
+          "lufs": -19.4,
+          "true_peak_db": -1.0,
+          "rms_db": -19.4,
+          "flags": [
+            "impact_c1 ile neredeyse aynı (0.032)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. The dull thud of an iron axe blade biting into a log, only the impact.",
+          "duration": 0.49564052052448004,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "impact_c3": {
+          "duration_s": 0.348,
+          "lufs": -24.9,
+          "true_peak_db": -1.0,
+          "rms_db": -24.9,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. The dull thud of an iron axe blade biting into a log, only the impact.",
+          "duration": 0.5247865179218084,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "impact_c4": {
+          "duration_s": 0.392,
+          "lufs": -21.7,
+          "true_peak_db": -1.0,
+          "rms_db": -21.7,
+          "flags": [
+            "impact_c3 ile neredeyse aynı (0.0343)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. The dull thud of an iron axe blade biting into a log, only the impact.",
+          "duration": 0.5127955596177173,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "impact_c1",
+            "impact_c2",
+            0.032
+          ],
+          [
+            "impact_c3",
+            "impact_c4",
+            0.0343
+          ]
+        ],
+        "nearest": {
+          "impact_c1": 0.032,
+          "impact_c2": 0.028,
+          "impact_c3": 0.0343,
+          "impact_c4": 0.028
+        },
+        "ref_distance": {}
+      }
+    },
+    "crack": {
+      "candidates": {
+        "crack_c1": {
+          "duration_s": 0.545,
+          "lufs": -21.4,
+          "true_peak_db": -1.0,
+          "rms_db": -25.4,
+          "note": "tepe sınırında, yükseklik -21.4 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Short dry wood crack and creak of wood fibres splitting, no impact. Details: pine with knots.",
+          "duration": 0.7537590555949765,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "crack_c2": {
+          "duration_s": 0.68,
+          "lufs": -22.9,
+          "true_peak_db": -1.0,
+          "rms_db": -25.0,
+          "note": "tepe sınırında, yükseklik -22.9 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Short dry wood crack and creak of wood fibres splitting, no impact. Details: seasoned oak.",
+          "duration": 0.693896728734272,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "crack_c3": {
+          "duration_s": 0.533,
+          "lufs": -23.9,
+          "true_peak_db": -1.0,
+          "rms_db": -26.9,
+          "note": "tepe sınırında, yükseklik -23.9 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Short dry wood crack and creak of wood fibres splitting, no impact. Details: wet log.",
+          "duration": 0.7347011250905318,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "crack_c4": {
+          "duration_s": 0.608,
+          "lufs": -20.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Short dry wood crack and creak of wood fibres splitting, no impact. Details: dry birch.",
+          "duration": 0.7179137834648042,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [],
+        "nearest": {
+          "crack_c1": 0.0371,
+          "crack_c2": 0.0372,
+          "crack_c3": 0.0371,
+          "crack_c4": 0.0464
+        },
+        "ref_distance": {}
+      }
+    },
+    "chips": {
+      "candidates": {
+        "chips_c1": {
+          "duration_s": 0.687,
+          "lufs": -22.1,
+          "true_peak_db": -1.0,
+          "rms_db": -25.9,
+          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A few small wood chips and splinters falling onto grass and earth.",
+          "duration": 0.8614389206799733,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "chips_c2": {
+          "duration_s": 0.604,
+          "lufs": -25.6,
+          "true_peak_db": -1.0,
+          "rms_db": -30.4,
+          "note": "tepe sınırında, yükseklik -25.6 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A few small wood chips and splinters falling onto grass and earth.",
+          "duration": 0.7930248328391681,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "chips_c3": {
+          "duration_s": 0.543,
+          "lufs": -28.3,
+          "true_peak_db": -1.0,
+          "rms_db": -32.9,
+          "note": "tepe sınırında, yükseklik -28.3 (hedef -18)",
+          "flags": [
+            "chips_c2 ile neredeyse aynı (0.0346)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A few small wood chips and splinters falling onto grass and earth.",
+          "duration": 0.8396584286748935,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "chips_c4": {
+          "duration_s": 0.599,
+          "lufs": -28.9,
+          "true_peak_db": -1.0,
+          "rms_db": -30.9,
+          "note": "tepe sınırında, yükseklik -28.9 (hedef -18)",
+          "flags": [
+            "chips_c2 ile neredeyse aynı (0.0293)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A few small wood chips and splinters falling onto grass and earth.",
+          "duration": 0.8204728953883477,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "chips_c2",
+            "chips_c3",
+            0.0346
+          ],
+          [
+            "chips_c2",
+            "chips_c4",
+            0.0293
+          ]
+        ],
+        "nearest": {
+          "chips_c1": 0.0406,
+          "chips_c2": 0.0293,
+          "chips_c3": 0.0321,
+          "chips_c4": 0.0293
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}
