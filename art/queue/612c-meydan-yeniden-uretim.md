@@ -1,7 +1,7 @@
 ---
 id: "612c"
 title: "Köy meydanı: değirmen çarkı, köprü, ortak ocak ve iki iskele katmanı (612 reddedilenler)"
-status: running
+status: review
 claimed_at: 2026-11-20T18:51Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (Project belgesi 64c §3; 612 kısmi kabul)
 priority: 15
