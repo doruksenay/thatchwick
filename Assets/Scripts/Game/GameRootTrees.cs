@@ -1,4 +1,5 @@
 using Thatchwick.Core.Audio;
+using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Life;
 using Thatchwick.Core.Time;
@@ -100,25 +101,63 @@ namespace Thatchwick.Game
                 _menuOptions.Add(new MenuOption { Label = GameLocalization.T("ui.treehouse.carved", ("names", names)), Run = () => ShowMessage(GameLocalization.T("ui.treehouse.carved", ("names", names)), 5f) });
             }
             var commander = Commander?.Character;
-            if (commander == null || !TreehouseSystem.IsAdult(commander) || GreatTrees.IsInn(tree.Def)) return;
-            var minors = new System.Collections.Generic.List<Thatchwick.Core.Characters.Character>();
-            bool anyBanned = false;
+            if (commander == null || GreatTrees.IsInn(tree.Def)) return;
+            // Hazine seçimi (Saz Damlı Kulübe): çocuk ne saklayacağını seçer.
+            var stashI = FindInteraction(tree, "stash");
+            if (site != null && site.IsUsable && site.Kind == TreehouseKind.Hut && site.Stash == null && stashI != null && TreehouseSystem.IsMinor(commander))
+            {
+                foreach (var id in _life.Trees.StashCandidates())
+                {
+                    string itemId = id, name = _content.Items.TryGet(id, out var d) ? d.DisplayName : id;
+                    _menuOptions.Add(new MenuOption
+                    {
+                        Label = GameLocalization.T("ui.treehouse.stash_item", ("item", name)),
+                        Blocked = Commander.Runner.WhyCannotStart(tree, stashI),
+                        Run = () => { _life.Trees.ChooseStash(commander.Id, itemId); Commander.Runner.Command(Job.UseItem(tree.Id, stashI.Id)); }
+                    });
+                }
+            }
+            if (!TreehouseSystem.IsAdult(commander)) return;
+            // Ebeveyn yasağı: çocuk başına.
             foreach (var m in _population.Members)
             {
                 if (m.IsDead || m.IsVillager || !TreehouseSystem.IsMinor(m)) continue;
-                minors.Add(m);
-                anyBanned |= _life.Trees.IsBanned(m);
-            }
-            if (minors.Count == 0) return;
-            _menuOptions.Add(new MenuOption
-            {
-                Label = anyBanned ? GameLocalization.T("ui.treehouse.unban") : GameLocalization.T("ui.treehouse.ban", ("count", minors.Count)),
-                Run = () =>
+                var child = m;
+                bool banned = _life.Trees.IsBanned(child);
+                _menuOptions.Add(new MenuOption
                 {
-                    foreach (var m in minors) _life.Trees.SetBanned(m, !anyBanned);
-                    ShowMessage(GameLocalization.T(anyBanned ? "ui.treehouse.unbanned" : "ui.treehouse.banned"));
-                }
-            });
+                    Label = GameLocalization.T(banned ? "ui.treehouse.unban_child" : "ui.treehouse.ban_child", ("name", child.Name)),
+                    Run = () =>
+                    {
+                        _life.Trees.SetBanned(child, !banned);
+                        ShowMessage(GameLocalization.T(banned ? "ui.treehouse.unbanned_child" : "ui.treehouse.banned_child", ("name", child.Name)));
+                    }
+                });
+            }
+        }
+
+        private static Thatchwick.Core.Content.InteractionDef FindInteraction(ItemInstance item, string id)
+        {
+            foreach (var i in item.Def.Interactions) if (i.Id == id) return i;
+            return null;
+        }
+
+        private long _feastWalkDay = -1;
+
+        /// <summary>Mevsimin son akşamı: hanenin (oyuncunun yönettiği dışındaki) üyeleri çınarın altındaki sofraya yürür.</summary>
+        private void GatherForFeast()
+        {
+            if (_life == null || !_life.Trees.FeastGatherNow || _feastWalkDay == _clock.DayIndex) return;
+            _feastWalkDay = _clock.DayIndex;
+            var tile = _life.Trees.PlaceTile("feast");
+            if (!tile.HasValue) return;
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (c.IsDead || c.IsVillager || c.Away || a == Commander || c.Stage == Thatchwick.Core.Characters.AgeStage.Baby || c.InBreakdown) continue;
+                a.Runner.Command(Job.MoveTo(NearestWalkable(tile.Value, 6)));
+            }
+            ShowMessage(GameLocalization.T("ui.treehouse.feast_gather"), 4f);
         }
 
         private static void TreeSfx(string key) { var a = AudioService.Instance; if (a != null) a.Play(key); }

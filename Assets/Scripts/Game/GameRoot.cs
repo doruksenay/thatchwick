@@ -1691,12 +1691,15 @@ namespace Thatchwick.Game
                 if (_life.Villagers.PlaceAvailable == null)
                     _life.Villagers.PlaceAvailable = k => Places.TryGetValue(k, out var pp) && _world.Map.InBounds(pp) && !_world.Map.IsBlocked(pp);
                 // Adsız köylü (Maud, komşu hane üyesi): kendi hanesinin evi ya da handaki oda; asla oyuncunun arsası değil (belge 47 §8).
-                string where = def != null ? _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival)
-                                           : _life.Homes.LocationFor(c, _clock.DayFraction, weather, festival);
+                // Ağaç evler (belge 52): köy çocukları ikindi ağaç eve, yoksullar öğlen aşevine, herkes mevsim sonu sofraya.
+                string tree = _life.Trees.VillagerPlace(c, _clock.DayFraction, weather);
+                string where = tree ?? (def != null ? _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival)
+                                                    : _life.Homes.LocationFor(c, _clock.DayFraction, weather, festival));
                 if (string.IsNullOrEmpty(where)) continue;
                 if (_villagerLocation.TryGetValue(c.Id, out var last) && last == where) continue;
                 _villagerLocation[c.Id] = where;
-                a.Runner.Command(Job.MoveTo(ResolvePlace(where, where == "square" ? c.Id : 0)));
+                var treeTile = tree != null ? _life.Trees.PlaceTile(tree) : null;
+                a.Runner.Command(Job.MoveTo(treeTile.HasValue ? NearestWalkable(treeTile.Value, tree == "feast" ? 6 : 3) : ResolvePlace(where, where == "square" ? c.Id : 0)));
             }
         }
 
@@ -3089,7 +3092,7 @@ namespace Thatchwick.Game
             _population.Tick(gameDays);
             _life.Tick(gameDays);
             _scheduleTimer += gameDays;
-            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); }
+            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); GatherForFeast(); }
             foreach (var actor in _actors.ToArray())
             {
                 if (actor.Character.IsDead)
@@ -3221,7 +3224,8 @@ namespace Thatchwick.Game
             int fromLevel = actor.Character.Position.Z;
             int toLevel = next.HasValue ? next.Value.Z : fromLevel;
             int level = toLevel != fromLevel && actor.Runner.StepProgress > 0.5f ? toLevel : fromLevel;
-            actor.Renderer.enabled = (_view.IsLevelVisible(fromLevel) || _view.IsLevelVisible(toLevel)) && !InsideTreehouse(actor);
+            actor.Renderer.enabled = (_view.IsLevelVisible(fromLevel) || _view.IsLevelVisible(toLevel)) && !InsideTreehouse(actor)
+                && !(actor.Character.IsVillager && !moving && _life.Trees.VillagerInside(actor.Character, _clock.DayFraction, _life.Weather.Today(_clock.TotalDays)));
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
             // Kare animasyonu (018a/018b) varsa yürürken onu oynat: tam döngü = iki adım (WalkPhase iki π).
             var walkFrame = moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;

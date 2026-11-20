@@ -24,7 +24,7 @@ namespace Thatchwick.Core.Life
     public sealed class CharityKitchen
     {
         public const int PlayerKey = 0;
-        public const int CheapestMeal = 8;
+        public const int CheapestMeal = 5;
         public const int CharityCost = 2;
         public const int WeeklyRepCap = 10;
         public const int HostReputation = 5;

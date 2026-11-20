@@ -37178,6 +37178,14 @@
           "treeAction": "innToggle"
         },
         {
+          "id": "call_down",
+          "displayName": "Küsen çocuğu aşağı çağır",
+          "durationDays": 0.05,
+          "treeAction": "callDown",
+          "skill": "Parenting",
+          "skillXp": 4
+        },
+        {
           "id": "carve",
           "displayName": "Adını gövdeye kazı",
           "durationDays": 0.04,
@@ -37398,6 +37406,14 @@
           "displayName": "Köşkte aşevi aç ya da kapat",
           "durationDays": 0.02,
           "treeAction": "innToggle"
+        },
+        {
+          "id": "call_down",
+          "displayName": "Küsen çocuğu aşağı çağır",
+          "durationDays": 0.05,
+          "treeAction": "callDown",
+          "skill": "Parenting",
+          "skillXp": 4
         },
         {
           "id": "carve",
@@ -37621,6 +37637,14 @@
           "treeAction": "innToggle"
         },
         {
+          "id": "call_down",
+          "displayName": "Küsen çocuğu aşağı çağır",
+          "durationDays": 0.05,
+          "treeAction": "callDown",
+          "skill": "Parenting",
+          "skillXp": 4
+        },
+        {
           "id": "carve",
           "displayName": "Adını gövdeye kazı",
           "durationDays": 0.04,
@@ -37842,6 +37866,14 @@
           "treeAction": "innToggle"
         },
         {
+          "id": "call_down",
+          "displayName": "Küsen çocuğu aşağı çağır",
+          "durationDays": 0.05,
+          "treeAction": "callDown",
+          "skill": "Parenting",
+          "skillXp": 4
+        },
+        {
           "id": "carve",
           "displayName": "Adını gövdeye kazı",
           "durationDays": 0.04,
@@ -37942,8 +37974,16 @@
           ]
         },
         {
+          "id": "inn_soup",
+          "displayName": "Aşevinde çorba iç (5 akçe)",
+          "durationDays": 0.06,
+          "treeAction": "dine",
+          "need": "Hunger",
+          "restore": 45
+        },
+        {
           "id": "inn_eat",
-          "displayName": "Aşevinde ye (8 akçe)",
+          "displayName": "Aşevinde yahni ye (8 akçe)",
           "durationDays": 0.08,
           "treeAction": "dine",
           "need": "Hunger",
@@ -37951,6 +37991,24 @@
           "extraRestore": [
             {
               "need": "Fun",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "inn_roast",
+          "displayName": "Aşevinde ziyafet çek (14 akçe)",
+          "durationDays": 0.1,
+          "treeAction": "dine",
+          "need": "Hunger",
+          "restore": 90,
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 20
+            },
+            {
+              "need": "Social",
               "amount": 10
             }
           ]
@@ -37980,6 +38038,12 @@
           "displayName": "Aşevine bağış yap (100 akçe)",
           "durationDays": 0.02,
           "treeAction": "donate"
+        },
+        {
+          "id": "donate_food",
+          "displayName": "Aşevine yiyecek bağışla (en çok 5)",
+          "durationDays": 0.03,
+          "treeAction": "donateFood"
         }
       ]
     },

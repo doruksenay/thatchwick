@@ -64,6 +64,7 @@ def tree_interactions(kiosk_ok, inn, gather_tr, gather_produce):
             act("stash", "Hazine sakla", "stash", 0.04),
             act("dig", "Hazine ara", "dig", 0.05),
             act("inn_toggle", "Köşkte aşevi aç ya da kapat", "innToggle", 0.02),
+            act("call_down", "Küsen çocuğu aşağı çağır", "callDown", 0.05, skill="Parenting", skillXp=4),
         ]
     produce = []
     for item, n, chance, seasons in gather_produce:
@@ -80,11 +81,15 @@ def tree_interactions(kiosk_ok, inn, gather_tr, gather_produce):
     ]
     if inn:
         acts += [
-            act("inn_eat", "Aşevinde ye (8 akçe)", "dine", 0.08, need="Hunger", restore=70, extraRestore=[{"need": "Fun", "amount": 10}]),
+            act("inn_soup", "Aşevinde çorba iç (5 akçe)", "dine", 0.06, need="Hunger", restore=45),
+            act("inn_eat", "Aşevinde yahni ye (8 akçe)", "dine", 0.08, need="Hunger", restore=70, extraRestore=[{"need": "Fun", "amount": 10}]),
+            act("inn_roast", "Aşevinde ziyafet çek (14 akçe)", "dine", 0.10, need="Hunger", restore=90,
+                extraRestore=[{"need": "Fun", "amount": 20}, {"need": "Social", "amount": 10}]),
             act("inn_charity", "Hayır sofrasına otur", "charity", 0.08, need="Hunger", restore=45),
             act("donate_10", "Aşevine bağış yap (10 akçe)", "donate", 0.02),
             act("donate_50", "Aşevine bağış yap (50 akçe)", "donate", 0.02),
             act("donate_100", "Aşevine bağış yap (100 akçe)", "donate", 0.02),
+            act("donate_food", "Aşevine yiyecek bağışla (en çok 5)", "donateFood", 0.03),
         ]
     return acts
 
@@ -106,7 +111,11 @@ EN_ACTS = {
     "inn_toggle": "Open or close a kitchen in the pavilion",
     "carve": "Carve your name in the trunk",
     "shade": "Sit in its shade",
-    "inn_eat": "Eat at the kitchen (8 akçe)",
+    "call_down": "Call the sulking child down",
+    "inn_soup": "Have soup at the kitchen (5 akçe)",
+    "inn_eat": "Have stew at the kitchen (8 akçe)",
+    "inn_roast": "Feast at the kitchen (14 akçe)",
+    "donate_food": "Donate food to the kitchen (up to 5)",
     "inn_charity": "Sit at the charity table",
     "donate_10": "Donate to the kitchen (10 akçe)",
     "donate_50": "Donate to the kitchen (50 akçe)",

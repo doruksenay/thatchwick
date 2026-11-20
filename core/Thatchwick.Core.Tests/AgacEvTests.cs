@@ -197,6 +197,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(map.CanTraverse(ladder, new GridPos(ladder.X, ladder.Y, 1)));
             k.World.RebuildLinks();
             Assert.True(map.CanTraverse(ladder, new GridPos(ladder.X, ladder.Y, 1)));
+            Assert.False(k.World.CanPlaceFloor(k.D("item.stool_wood"), ladder, 0).Ok);   // merdiven başına eşya konmaz
             // Kabuk sabit, içi hanenin: arsa dışında da eşya konur.
             map.RestrictOwnership(0, 0, 2, 2);
             var build = new BuildService(k.World, k.House, k.Db) { ExtraOwned = k.Trees.ExtraOwned, Shell = k.Trees.IsShell };
@@ -490,6 +491,249 @@ namespace Thatchwick.Core.Tests
                 Assert.True(w.Map.IsWalkable(GreatTrees.LadderTile(t)), t.Def.Id + " ip merdiveni karosu açık");
             }
             Assert.Empty(GreatTrees.Ensure(w, db));
+        }
+
+        // ---------------- ikinci parti: belgede olup ilk sürüme girmeyenler ----------------
+
+        private static TreehouseSite BuiltKiosk(Kit k, ItemInstance tree, Character dad)
+        {
+            if (GreatTrees.KioskSize(tree.Def) == 5) { k.House.AddItem("item.plank", 8); k.House.AddItem("item.nails", 4); }
+            Do(k, dad, tree, "found_kiosk");
+            for (int n = 0; n < 4; n++) Do(k, dad, tree, "build");
+            return k.Trees.SiteOf(tree);
+        }
+
+        [Fact]
+        public void Kosk_TasimaSiniri_GicirdarSonraEnAgirEsyaDuser()
+        {
+            var k = Make();
+            var tree = Tree(k, GreatTrees.Chestnut);   // 4x4, kestane: %10 az
+            var dad = Person(k, 1, AdultAge);
+            var s = BuiltKiosk(k, tree, dad);
+            Assert.Equal(36, k.Trees.KioskCapacity(s));
+            int x0 = s.KioskX, y0 = s.KioskY;
+            // 6 masa (2x1, yük 4) = 24: henüz sorun yok.
+            for (int n = 0; n < 3; n++) { k.World.PlaceItem(k.D("item.table_wood"), new GridPos(x0, y0 + n, 1)); k.World.PlaceItem(k.D("item.table_wood"), new GridPos(x0 + 2, y0 + n, 1)); }
+            k.Trees.CheckLoad(s);
+            Assert.Equal(24, k.Trees.KioskLoad(s));
+            Assert.DoesNotContain(k.Notices, n => n.Contains("gıcırdıyor"));
+            // 2 masa ve bir tabure daha: 34 ≥ %90 → uyarı.
+            k.World.PlaceItem(k.D("item.table_wood"), new GridPos(x0, y0 + 3, 1));
+            k.World.PlaceItem(k.D("item.table_wood"), new GridPos(x0 + 2, y0 + 3, 1));
+            var stool1 = k.World.PlaceItem(k.D("item.stool_wood"), new GridPos(x0, y0 - 1, 1));
+            k.Trees.OnFurnished(stool1);
+            Assert.Contains(k.Notices, n => n.Contains("dallar gıcırdıyor"));
+            // Balkona iki tabure daha: 36'yı aşar → en ağır eşya (masa) düşer, hasarlı olarak envantere.
+            k.World.PlaceItem(k.D("item.stool_wood"), new GridPos(x0 + 2, y0 - 1, 1));   // x0+1: ip merdiveninin ucu, eşya konmaz
+            var stool2 = k.World.PlaceItem(k.D("item.stool_wood"), new GridPos(x0 + 3, y0 - 1, 1));
+            k.Trees.OnFurnished(stool2);
+            Assert.True(k.Trees.KioskLoad(s) <= k.Trees.KioskCapacity(s));
+            Assert.True(k.House.DamagedList().Any(kv => kv.Key == "item.table_wood"));
+            Assert.Contains(k.Notices, n => n.Contains("dallardan aşağı düştü"));
+        }
+
+        [Fact]
+        public void Kosk_OdaTuruVeManzara()
+        {
+            var k = Make();
+            var tree = Tree(k, GreatTrees.Linden);
+            var dad = Person(k, 1, AdultAge);
+            var s = BuiltKiosk(k, tree, dad);
+            var home = new HomeLife(k.World, k.Db, k.House, k.Clock) { IsKioskRoom = k.Trees.IsKioskRoom };
+            var room = k.World.Map.Rooms.RoomAt(new GridPos(s.KioskX + 1, s.KioskY + 1, 1));
+            Assert.Equal(RoomKind.TreeKiosk, home.Classify(room).kind);
+            Assert.Equal("Ağaç köşkü", HomeLife.RoomKindName(RoomKind.TreeKiosk));
+            var seat = k.World.PlaceItem(k.D("item.stool_wood"), new GridPos(s.KioskX + 1, s.KioskY + 1, 1));
+            Assert.Equal(seat.Def.Comfort > 0 ? TreehouseSystem.ViewComfort : 0, k.Trees.ComfortBonus(seat));
+            Assert.True(k.Trees.InKiosk(new GridPos(s.KioskX, s.KioskY, 1)));
+        }
+
+        [Fact]
+        public void Hazine_OyuncuSecer()
+        {
+            var k = Make();
+            var tree = Tree(k, GreatTrees.Walnut);
+            var dad = Person(k, 1, AdultAge);
+            var kid = Person(k, 2, ChildAge);
+            Do(k, dad, tree, "found_hut");
+            for (int n = 0; n < 3; n++) Do(k, dad, tree, "build");
+            var toys = k.Db.Items.All.Where(d => d.Category == "kids").OrderBy(d => d.Price).Take(2).ToList();
+            foreach (var t in toys) k.House.AddItem(t.Id, 1);
+            var cands = k.Trees.StashCandidates();
+            Assert.Contains(toys[0].Id, cands);
+            k.Trees.ChooseStash(kid.Id, toys[0].Id);   // ucuz olanı seçti (kendiliğinden pahalısı seçilirdi)
+            Do(k, kid, tree, "stash");
+            Assert.Equal(toys[0].Id, k.Trees.SiteOf(tree).Stash.ItemId);
+            Assert.Equal(1, k.House.Count(toys[1].Id));
+        }
+
+        [Fact]
+        public void Asevi_UcOgun_ParasizligeGoreHayirSofrasi_YiyecekBagisi()
+        {
+            var k = Make(akce: 6);
+            var plane = Tree(k, GreatTrees.Plane, 15, 15);
+            var c = Person(k, 1, AdultAge);
+            k.Clock.Restore(0.5, 1);
+            Assert.Equal("8 akçe gerekir.", k.Trees.CanStart(c, plane, k.I(plane, "inn_eat")));
+            Assert.Equal("14 akçe gerekir.", k.Trees.CanStart(c, plane, k.I(plane, "inn_roast")));
+            Assert.Equal("Hayır sofrası parası olmayanlar için.", k.Trees.CanStart(c, plane, k.I(plane, "inn_charity")));   // çorbaya (5) yetiyor
+            Do(k, c, plane, "inn_soup");
+            Assert.Equal(1, k.House.Akce);
+            Do(k, c, plane, "inn_charity");                                                                                   // artık yetmiyor
+            Assert.Equal("Bağışlanacak yiyecek yok (ekmek, tahıl, sebze, pişmiş yemek).", k.Trees.CanStart(c, plane, k.I(plane, "donate_food")));
+            var food = k.Db.Items.All.First(d => d.HasTag("food") && !d.HasTag("raw") && d.Price > 0);
+            k.House.AddItem(food.Id, 8);
+            Do(k, c, plane, "donate_food");
+            Assert.Equal(3, k.House.Count(food.Id));                                                                          // en çok 5
+            Assert.Equal(5 * food.Price, k.Trees.Kitchen.Fund);
+            Assert.True(c.Mood.Has(TreehouseSystem.GoodDeedMood));
+        }
+
+        [Fact]
+        public void Koyluler_AseveOglen_AgacEveIkindi_SofrayaAksam()
+        {
+            var k = Make();
+            var plane = Tree(k, GreatTrees.Plane, 15, 15);
+            var walnut = Tree(k, GreatTrees.Walnut, 30, 30);
+            var dad = Person(k, 1, AdultAge);
+            Do(k, dad, walnut, "found_nest"); Do(k, dad, walnut, "build");
+            var kid = Person(k, 2, ChildAge, villager: true);
+            var adult = Person(k, 3, AdultAge, villager: true);
+            k.Trees.Kitchen.Donate(50, 0);
+            for (int d = 0; d < 30 && (!k.Trees.SiteOf(walnut).Visitors.Contains(kid.Id) || k.Trees.VillagerPlace(adult, 0.5, WeatherType.Clear) != "inn"); d++)
+            {
+                k.Clock.Restore(d + 0.1, 1);
+                k.Trees.OnNewDay();
+            }
+            Assert.Contains(kid.Id, k.Trees.SiteOf(walnut).Visitors);
+            Assert.Equal("tree:" + walnut.Id, k.Trees.VillagerPlace(kid, 0.6, WeatherType.Clear));
+            Assert.Null(k.Trees.VillagerPlace(kid, 0.6, WeatherType.Rain));
+            Assert.Equal(GreatTrees.LadderTile(walnut), k.Trees.PlaceTile("tree:" + walnut.Id));
+            kid.Position = GreatTrees.LadderTile(walnut);
+            Assert.True(k.Trees.VillagerInside(kid, 0.6, WeatherType.Clear));
+            // Mevsimin son günü akşamı herkes sofraya.
+            int last = k.Clock.Config.DaysPerSeason - 1;
+            k.Clock.Restore(last + 0.72, 1);
+            Assert.Equal("feast", k.Trees.VillagerPlace(adult, 0.72, WeatherType.Clear));
+            Assert.True(k.Trees.FeastGatherNow);
+            Assert.NotNull(k.Trees.PlaceTile("feast"));
+        }
+
+        [Fact]
+        public void Ebeveyn_KusenCocuguAsagiCagirir()
+        {
+            var k = Make();
+            var tree = Tree(k);
+            var dad = Person(k, 1, AdultAge);
+            var kid = Person(k, 2, ChildAge);
+            Do(k, dad, tree, "found_nest"); Do(k, dad, tree, "build");
+            var affection = new List<(int, int, int)>();
+            k.Trees.AddAffection = (a, b, d) => affection.Add((a, b, d));
+            Assert.False(k.Trees.Shows(tree, k.I(tree, "call_down")));
+            Assert.True(kid.BeginBreakdown(Thatchwick.Core.Mood.BreakdownKind.Cry, 1.0));
+            Assert.NotNull(k.Trees.RefugeFor(kid));
+            Assert.True(k.Trees.Shows(tree, k.I(tree, "call_down")));
+            Assert.Equal("Küsen çocuğu bir büyük çağırır.", k.Trees.CanStart(kid, tree, k.I(tree, "call_down")));
+            Do(k, dad, tree, "call_down");
+            Assert.False(kid.InBreakdown);
+            Assert.True(kid.Mood.Has(TreehouseSystem.CalledDownMood));
+            Assert.Contains(affection, x => x.Item1 == dad.Id && x.Item2 == kid.Id);
+            Assert.True(dad.Skills.GetXp(SkillType.Parenting) > 0);
+        }
+
+        [Fact]
+        public void Cocukluk_OyuncakAliskanligi_YukseklikSevdalisiIzi()
+        {
+            var k = Make();
+            var toys = new Thatchwick.Core.Upbringing.ToyHabitSystem();
+            k.Trees.ToyBoost = (c, f) => toys.PlayFavorite(c, k.Clock.TotalDays, f);
+            var tree = Tree(k);
+            var dad = Person(k, 1, AdultAge);
+            var kid = Person(k, 2, ChildAge);
+            Do(k, dad, tree, "found_nest"); Do(k, dad, tree, "build");
+            toys.OnPlayed(kid, "item.spinning_top", 0);
+            double before = toys.HabitOf(kid.Id, "item.spinning_top");
+            Do(k, kid, tree, "play");
+            Assert.Equal(before * (1 + TreehouseSystem.ToyBoostFactor), toys.HabitOf(kid.Id, "item.spinning_top"), 3);
+            for (int n = 1; n < TreehouseSystem.HeightsPlays; n++) k.Trees.OnApplied(kid, tree, k.I(tree, "play"));
+            Assert.True(k.Trees.EarnedHeightsMark(kid));
+            Assert.True(toys.AddMark(kid.Id, TreehouseSystem.HeightsMark));
+            Assert.Equal("Yükseklik sevdalısı", toys.MarkName(TreehouseSystem.HeightsMark));
+            Assert.Equal(1.10, toys.XpFactor(kid.Id, SkillType.Woodcutting), 3);
+            Assert.Equal(1.10, toys.XpFactor(kid.Id, SkillType.Riding), 3);
+            // Oynama sayısı kayıtla taşınır.
+            var t2 = new TreehouseSystem(k.World, k.Db, k.House, k.Pop, k.Clock);
+            t2.Import(k.Trees.Export());
+            Assert.True(t2.EarnedHeightsMark(kid));
+        }
+
+        [Fact]
+        public void Dusme_NadirenGercekYara()
+        {
+            var k = Make();
+            int injured = 0;
+            k.Trees.Injure = c => { injured++; return true; };
+            var tree = Tree(k);
+            var dad = Person(k, 1, AdultAge);
+            var kid = Person(k, 2, ChildAge);
+            Do(k, dad, tree, "found_nest"); Do(k, dad, tree, "build");
+            for (int n = 0; n < 4000; n++) k.Trees.OnApplied(kid, tree, k.I(tree, "play"));
+            Assert.InRange(injured, 1, 30);   // 4000 × %2 × %10 ≈ 8
+        }
+
+        [Fact]
+        public void Istek_KoyCocugununAilesiRicaEder_HaneCocuguDileginiSoyler()
+        {
+            var k = Make();
+            k.World.Map.RestrictOwnership(0, 0, 15, 15);
+            Tree(k, GreatTrees.Walnut, 30, 30);   // boş ortak ağaç
+            var mom = Person(k, 1, AdultAge, villager: true);
+            var vkid = Person(k, 2, ChildAge, villager: true);
+            vkid.BirthMotherId = mom.Id;
+            var ownKid = Person(k, 3, ChildAge);
+            var asked = new List<(Character giver, Character kid)>();
+            k.Trees.PostRequest = (g, c) => { asked.Add((g, c)); return true; };
+            for (int season = 0; season < 30 && asked.Count == 0; season++)
+            {
+                k.Clock.Restore(season * k.Clock.Config.DaysPerSeason + 2.1, 1);
+                k.Trees.OnNewDay();
+            }
+            Assert.Single(asked);
+            Assert.Same(mom, asked[0].giver);
+            Assert.Contains(k.Notices, n => n.StartsWith(ownKid.Name + ": \"Ulu ağaca bir ağaç ev"));
+        }
+
+        [Fact]
+        public void Rakip_KulubeVeKoskDeKurar_KendiEviniOnarir()
+        {
+            var kinds = new HashSet<TreehouseKind>();
+            for (int seed = 1; seed < 40 && !(kinds.Contains(TreehouseKind.Hut) && kinds.Contains(TreehouseKind.Kiosk)); seed++)
+            {
+                var k = Make();
+                k.Trees = new TreehouseSystem(k.World, k.Db, k.House, k.Pop, k.Clock, seed) { Neighbors = () => new[] { (7, "Demirci hanesi") } };
+                k.World.Map.RestrictOwnership(0, 0, 2, 2);
+                var t = Tree(k, GreatTrees.Oak, 20, 20);
+                for (int season = 0; season < 20 && k.Trees.SiteOf(t)?.HasHouse != true; season++)
+                {
+                    k.Clock.Restore(season * k.Clock.Config.DaysPerSeason + 0.1, 1);
+                    k.Trees.OnNewDay();
+                }
+                var s = k.Trees.SiteOf(t);
+                if (s?.HasHouse != true) continue;
+                kinds.Add(s.Kind);
+                if (s.Kind == TreehouseKind.Kiosk)
+                {
+                    Assert.Equal(5, s.KioskN);
+                    Assert.False(k.Trees.ExtraOwned(new GridPos(s.KioskX, s.KioskY, 1)));   // rakibin köşkü oyuncunun eşya alanı değil
+                    Assert.True(k.Trees.IsShell(new GridPos(s.KioskX, s.KioskY, 1)));
+                }
+                // Kendi evini onarır.
+                s.Durability = 0; s.RuinedSince = k.Clock.TotalDays;
+                for (int d = 1; d < 40 && s.IsRuined; d++) { k.Clock.Restore(k.Clock.TotalDays + 1, 1); k.Trees.OnNewDay(); }
+                Assert.False(s.IsRuined);
+            }
+            Assert.Contains(TreehouseKind.Hut, kinds);
+            Assert.Contains(TreehouseKind.Kiosk, kinds);
         }
     }
 }

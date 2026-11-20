@@ -16,7 +16,7 @@ namespace Thatchwick.Core.Life
     {
         public const string Found = "found", Build = "build", Repair = "repair", Play = "play", Lookout = "lookout",
             Siege = "siege", Sleep = "sleep", Stash = "stash", Dig = "dig", Carve = "carve", Gather = "gather", Shade = "shade",
-            Dine = "dine", Charity = "charity", Donate = "donate", InnToggle = "innToggle";
+            Dine = "dine", Charity = "charity", Donate = "donate", InnToggle = "innToggle", DonateFood = "donateFood", CallDown = "callDown";
     }
 
     /// <summary>Bir ağaç evde saklanan hazine (Saz Damlı Kulübe, belge 52 §4).</summary>
@@ -74,7 +74,7 @@ namespace Thatchwick.Core.Life
         // ---- sabitler ----
         public const double DecayPerDay = 0.6, WinterDecay = 0.6, StormDecay = 6.0, WarnAt = 30.0;
         public const double RepairBelow = 90.0;
-        public const int MealPrice = CharityKitchen.CheapestMeal;
+        public const int MealPrice = 8;   // aşevinde yahni (inn_eat)
         public const double InnOpens = 0.30, InnCloses = 0.92;
         public const double FallChance = 0.02;
         public const double RefugeRange = 40;
@@ -82,6 +82,35 @@ namespace Thatchwick.Core.Life
         public const double FeastHour = 0.75;
         public const int InnCustomersBase = 3;
         public const double NestFeatherChance = 0.15;
+        /// <summary>Düşenlerin bu kadarı gerçek yara alır (yara izi kuralına uyar).</summary>
+        public const double FallInjuryShare = 0.10;
+        /// <summary>Ağaç evde oynayan çocuğun en sevdiği oyuncağa alışkanlık çarpanı (belge 52 §7).</summary>
+        public const double ToyBoostFactor = 1.25;
+        /// <summary>"Yükseklik sevdalısı" izi için çocuklukta ağaç evde oynama sayısı.</summary>
+        public const int HeightsPlays = 15;
+        public const string HeightsMark = "mark.heights";
+        /// <summary>Köşk taşıma sınırı (4x4 / 5x5) ve kestane çarpanı (belge 52 §5.1).</summary>
+        public const int KioskCapacity4 = 40, KioskCapacity5 = 60;
+        public const double ChestnutCapacity = 0.9, LoadWarnAt = 0.9;
+        /// <summary>Ağaç köşkündeki konforlu eşyaya manzara katkısı.</summary>
+        public const int ViewComfort = 2;
+        public const string ViewMood = "mood.tree_view";
+        /// <summary>Yiyecek bağışında bir seferde en çok bu kadar birim.</summary>
+        public const int FoodDonationUnits = 5;
+        /// <summary>İstek sistemi: ağaç ev bitince sayılan iş (belge 46).</summary>
+        public const string BuiltActId = "treehouse.built";
+        public const double RivalRepairChance = 0.3, RequestChance = 0.35;
+        /// <summary>Köylülerin yürüdüğü saatler (gün kesri): aşevinde öğle, çocuklar ağaç evde ikindi, mevsim sonu sofra.</summary>
+        public const double LunchFrom = 0.45, LunchTo = 0.55, VisitFrom = 0.55, VisitTo = 0.68, FeastGatherFrom = 0.70, FeastTo = 0.86;
+
+        /// <summary>Çınar Aşevi'nin öğünleri (belge 52 §5.4): etkileşim kimliği → fiyat, moodlet metni, değer.</summary>
+        public static readonly Dictionary<string, (int price, string mood, int value)> Meals = new Dictionary<string, (int, string, int)>(StringComparer.Ordinal)
+        {
+            ["inn_soup"] = (5, "Sıcak çorba", 3),
+            ["inn_eat"] = (8, "Manzaralı sofra", 5),
+            ["inn_roast"] = (14, "Çınar altında ziyafet", 10),
+        };
+        public static int PriceOf(string interactionId) => interactionId != null && Meals.TryGetValue(interactionId, out var m) ? m.price : MealPrice;
         public const string NestFeather = "item.down_feather";
         public const string PlayMood = "mood.treehouse_play", OwnFortMood = "mood.own_treehouse", BuiltTogetherMood = "mood.built_together",
             FortWinnerMood = "mood.fort_holder", KneeMood = "mood.scraped_knee", ShadeMood = "mood.great_tree_shade",
@@ -134,6 +163,12 @@ namespace Thatchwick.Core.Life
         private readonly HashSet<int> _banned = new HashSet<int>();
         private readonly Dictionary<int, long> _fedVillagers = new Dictionary<int, long>();
         private long _feastAnnounced = -1;
+        private readonly Dictionary<int, int> _sulking = new Dictionary<int, int>();
+        private readonly Dictionary<int, int> _plays = new Dictionary<int, int>();
+        private readonly HashSet<int> _poorToday = new HashSet<int>();
+        private readonly HashSet<int> _loadWarned = new HashSet<int>();
+        private readonly Dictionary<int, string> _chosenStash = new Dictionary<int, string>();
+        private long _wishSeason = -1, _requestSeason = -1;
 
         public CharityKitchen Kitchen { get; } = new CharityKitchen();
 
@@ -160,6 +195,14 @@ namespace Thatchwick.Core.Life
         public Func<IEnumerable<(int id, string name)>> Neighbors { get; set; }
         /// <summary>Hatıra verir (eşya, etiket, karakter).</summary>
         public Action<string, string, int> GrantKeepsake { get; set; }
+        /// <summary>Gerçek düşme yarası (InjurySystem "fall"; yara izi kuralı orada). Yara olduysa true.</summary>
+        public Func<Character, bool> Injure { get; set; }
+        /// <summary>Çocuğun en sevdiği oyuncağa alışkanlık (çarpan) — ToyHabitSystem.PlayFavorite.</summary>
+        public Action<Character, double> ToyBoost { get; set; }
+        /// <summary>Köy çocuğunun ailesinden "Bize ağaç ev yapar mısın?" ricası (veren, çocuk). Asıldıysa true.</summary>
+        public Func<Character, Character, bool> PostRequest { get; set; }
+        /// <summary>Hanenin ağaç evi bitti (son çivi çakan, yer): istek sayımı.</summary>
+        public event Action<Character, TreehouseSite> Built;
 
         public TreehouseSystem(WorldState world, ContentDatabase content, Household house, Population population, GameClock clock, int seed = 52)
         {
@@ -313,7 +356,8 @@ namespace Thatchwick.Core.Life
             switch (i.TreeAction)
             {
                 case TreeActions.Carve: case TreeActions.Gather: case TreeActions.Shade: return true;
-                case TreeActions.Dine: case TreeActions.Charity: case TreeActions.Donate: return inn;
+                case TreeActions.Dine: case TreeActions.Charity: case TreeActions.Donate: case TreeActions.DonateFood: return inn;
+                case TreeActions.CallDown: return !inn && s != null && SulkingAt(item.Id).Count > 0;
             }
             if (inn) return false;
             switch (i.TreeAction)
@@ -404,13 +448,16 @@ namespace Thatchwick.Core.Life
                 case TreeActions.Shade:
                     return null;
                 case TreeActions.Dine:
+                {
                     if (!inn) return "Burada aşevi yok.";
                     if (!InnOpenNow) return "Aşevi şu an kapalı.";
-                    return _house.Akce < MealPrice ? $"{MealPrice} akçe gerekir." : null;
+                    int price = PriceOf(i.Id);
+                    return _house.Akce < price ? $"{price} akçe gerekir." : null;
+                }
                 case TreeActions.Charity:
                     if (!inn) return "Burada aşevi yok.";
                     if (!InnOpenNow) return "Aşevi şu an kapalı.";
-                    if (_house.Akce >= MealPrice) return "Hayır sofrası parası olmayanlar için.";
+                    if (_house.Akce >= CharityKitchen.CheapestMeal) return "Hayır sofrası parası olmayanlar için.";
                     return Kitchen.AteCharityToday(c.Id, Today) ? "Bugün hayır sofrasına oturdu; yarın yine gelebilir." : null;
                 case TreeActions.Donate:
                 {
@@ -419,6 +466,13 @@ namespace Thatchwick.Core.Life
                     int amount = DonateAmount(i);
                     return _house.Akce < amount ? $"{amount} akçe yok." : null;
                 }
+                case TreeActions.DonateFood:
+                    if (!inn) return "Burada aşevi yok.";
+                    if (c.Stage < AgeStage.Teen) return "Bağışı büyükler yapar.";
+                    return FoodForDonation().Count == 0 ? "Bağışlanacak yiyecek yok (ekmek, tahıl, sebze, pişmiş yemek)." : null;
+                case TreeActions.CallDown:
+                    if (!IsAdult(c)) return "Küsen çocuğu bir büyük çağırır.";
+                    return SulkingAt(item.Id).Count == 0 ? "Ağaç evde küsen kimse yok." : null;
                 case TreeActions.InnToggle:
                     if (s == null || !s.IsUsable || s.Kind != TreehouseKind.Kiosk || s.Builder != 0) return "Hanenin köşkü yok.";
                     if (!IsAdult(c)) return "Aşevini büyükler açar.";
@@ -497,8 +551,28 @@ namespace Thatchwick.Core.Life
                     if (_clock.Season == Season.Summer) c.AddMoodlet(ShadeMood, "Ulu ağacın gölgesi", 5, 0.5);
                     break;
                 case TreeActions.Dine:
-                    if (_house.TrySpend(MealPrice)) c.AddMoodlet(ViewMealMood, "Manzaralı sofra", 5, 0.5);
+                {
+                    int price = PriceOf(i.Id);
+                    var meal = Meals.TryGetValue(i.Id, out var m) ? m : (MealPrice, "Manzaralı sofra", 5);
+                    if (_house.TrySpend(price)) c.AddMoodlet(ViewMealMood, meal.Item2, meal.Item3, 0.5);
                     break;
+                }
+                case TreeActions.DonateFood:
+                {
+                    int value = 0, units = 0;
+                    foreach (var (id, price) in FoodForDonation())
+                    {
+                        while (units < FoodDonationUnits && _house.Count(id) > 0 && _house.TryTakeItem(id)) { value += price; units++; }
+                        if (units >= FoodDonationUnits) break;
+                    }
+                    if (units == 0) break;
+                    int rep = Kitchen.Donate(value, Today, CharityKitchen.PlayerKey, HouseName);
+                    if (rep > 0) AddReputation?.Invoke(rep, "aşevine bağış");
+                    c.AddMoodlet(GoodDeedMood, "Hayırlı iş", 10, 1.0);
+                    Say($"{c.Name} aşevine {units} parça yiyecek bağışladı ({value} akçelik). Kasada {Kitchen.Fund} akçe var.", c.Id);
+                    break;
+                }
+                case TreeActions.CallDown: CallDown(c, item); break;
                 case TreeActions.Charity:
                     if (Kitchen.ServeCharity(c.Id, Today))
                     {
@@ -551,6 +625,7 @@ namespace Thatchwick.Core.Life
         {
             if (s.IsBuilt) return;
             s.Progress = Math.Min(s.Needed, s.Progress + WorkShare(c));
+            LastWorker = c;
             if (!s.Helpers.Contains(c.Id)) s.Helpers.Add(c.Id);
             if (IsMinor(c)) { s.HadChild = true; Climbed(c); }
             if (s.IsBuilt) Complete(tree, s);
@@ -569,7 +644,10 @@ namespace Thatchwick.Core.Life
             string where = tree.Def.DisplayName.ToLowerInvariant();
             Say($"{KindName(s.Kind)} bitti ({where}).{(together ? " Çocuklar da çivi çaktı." : "")}", 0);
             Chronicle?.Invoke($"{HouseName}, {where} üstüne {KindName(s.Kind)} kurdu.");
+            if (s.Builder == 0 && LastWorker != null) Built?.Invoke(LastWorker, s);
         }
+
+        private Character LastWorker;
 
         private void Repair(Character c, ItemInstance tree, TreehouseSite s)
         {
@@ -586,6 +664,7 @@ namespace Thatchwick.Core.Life
             double p = FallChance * Math.Max(0.3, 1.0 - 0.1 * c.Skills.GetLevel(SkillType.Athletics));
             if (_rng.NextDouble() >= p) return;
             c.AddMoodlet(KneeMood, "Dizi sıyrıldı", -5, 0.5);
+            if (Injure != null && _rng.NextDouble() < FallInjuryShare && Injure(c)) return;   // nadiren gerçek yara (iz kalabilir)
             Say($"{c.Name} merdivenden kaydı, dizi sıyrıldı.", c.Id);
         }
 
@@ -606,6 +685,7 @@ namespace Thatchwick.Core.Life
             if (own) c.AddMoodlet(OwnFortMood, "Kendi kalemiz", 15, 1.0);
             else c.AddMoodlet(PlayMood, "Ağaç evde oynadı", 10, 1.0);
             if (c.Stage == AgeStage.Child) c.GainSkillXp(SkillType.Literacy, 3);   // hayal gücü (belge 52 §6)
+            if (IsMinor(c)) { _plays[c.Id] = PlayCount(c.Id) + 1; ToyBoost?.Invoke(c, ToyBoostFactor); }
             if (s.Kind == TreehouseKind.Nest && _rng.NextDouble() < NestFeatherChance)
             {
                 _house.AddItem(NestFeather, 1);   // kuş yuvasından tüy: yazı tüyü ve mürekkep zinciri (34-B5)
@@ -652,9 +732,33 @@ namespace Thatchwick.Core.Life
             Say($"Kale kuşatması: {winner.Name} kaleyi tuttu ({all.Count} çocuk).", winner.Id);
         }
 
+        /// <summary>Oyuncunun seçtiği hazine (bir sonraki "Hazine sakla" için); geçersizse kendiliğinden seçilir.</summary>
+        public void ChooseStash(int characterId, string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId)) _chosenStash.Remove(characterId); else _chosenStash[characterId] = itemId;
+        }
+
+        /// <summary>Saklanabilecek eşyalar: oyuncaklar ve küçük süsler (değere göre, en çok max).</summary>
+        public List<string> StashCandidates(int max = 6)
+        {
+            var list = new List<(string id, bool toy, int price)>();
+            foreach (var kv in _house.InventoryList())
+            {
+                if (kv.Value <= 0 || !_content.Items.TryGet(kv.Key, out var d)) continue;
+                bool toy = d.Category == "kids";
+                if (!toy && !(d.Category == "decor" && d.Width <= 1 && d.Height <= 1)) continue;
+                list.Add((d.Id, toy, d.Price));
+            }
+            list.Sort((a, b) => a.toy != b.toy ? (a.toy ? -1 : 1) : b.price.CompareTo(a.price));
+            var ids = new List<string>();
+            foreach (var x in list) { if (ids.Count >= max) break; ids.Add(x.id); }
+            return ids;
+        }
+
         private void StashItem(Character c, TreehouseSite s)
         {
-            string id = StashCandidate();
+            string id = _chosenStash.TryGetValue(c.Id, out var chosen) && _house.Count(chosen) > 0 ? chosen : StashCandidate();
+            _chosenStash.Remove(c.Id);
             if (id == null || !_house.TryTakeItem(id)) return;
             s.Stash = new TreeStash { ItemId = id, OwnerId = c.Id, OwnerName = c.Name, Day = Now };
             Say($"{c.Name}, {ItemName(id).ToLowerInvariant()} eşyasını kulübenin sandığına sakladı. Yıllar sonra biri bulabilir.", c.Id);
@@ -728,7 +832,7 @@ namespace Thatchwick.Core.Life
         public GridPos? RefugeFor(Character c)
         {
             if (c == null || !IsMinor(c) || _banned.Contains(c.Id)) return null;
-            GridPos? best = null; double bestD = RefugeRange;
+            GridPos? best = null; double bestD = RefugeRange; int bestTree = 0;
             foreach (var s in _sites.Values)
             {
                 if (!s.IsUsable || s.IsVillageInn) continue;
@@ -736,8 +840,9 @@ namespace Thatchwick.Core.Life
                 if (tree == null) continue;
                 var p = GreatTrees.LadderTile(tree);
                 double d = Math.Abs(p.X - c.Position.X) + Math.Abs(p.Y - c.Position.Y);
-                if (d < bestD) { bestD = d; best = p; }
+                if (d < bestD) { bestD = d; best = p; bestTree = s.TreeId; }
             }
+            if (best.HasValue) _sulking[c.Id] = bestTree;
             return best;
         }
 
@@ -769,6 +874,9 @@ namespace Thatchwick.Core.Life
                 if (s.Kind == TreehouseKind.Kiosk && s.InnOpen && s.Builder == 0 && s.IsUsable) RunPlayerInn(s);
             }
             if (_clock.DayOfSeason == 0) RivalBuilds();
+            RivalRepairs();
+            foreach (var st in _sites.Values) if (st.KioskN > 0) CheckLoad(st);
+            Wishes(villageKids);
             FeedPoor(villageKids.Count > 0 || _population.Members.Count > 0);
             NeighborDonations();
             if (CharityKitchen.IsFeastDay(_clock.DayOfSeason, _clock.Config.DaysPerSeason) && _feastAnnounced != Today)
@@ -819,10 +927,11 @@ namespace Thatchwick.Core.Life
                 if (_sites.TryGetValue(it.Id, out var had) && had.HasHouse) continue;
                 if (_rng.NextDouble() >= RivalBuildChance) continue;
                 var h = houses[_rng.Next(houses.Count)];
-                var kind = (TreehouseKind)(1 + _rng.Next(3));
+                var kind = RivalKind();
                 var s = Ensure(it);
                 s.Kind = kind; s.Needed = WorkNeeded(kind); s.Progress = s.Needed; s.Durability = 100;
                 s.Builder = h.id; s.BuilderName = h.name; s.BuiltDay = Now;
+                if (kind == TreehouseKind.Kiosk) BuildKiosk(it, s);
                 Say($"{h.name}, {it.Def.DisplayName.ToLowerInvariant()} üstüne {KindName(kind)} kurdu. Bütün çocuklar çıkabilir.", 0);
             }
         }
@@ -857,6 +966,7 @@ namespace Thatchwick.Core.Life
                 if (m.IsVillager && !m.IsDead && m.Stage >= AgeStage.Child) poor.Add(m);
             if (poor.Count == 0) return;
             int want = 1 + _rng.Next(Math.Min(3, Math.Max(1, poor.Count / 6 + 1)));
+            _poorToday.Clear();
             int fed = Kitchen.FeedPoor(want);
             if (fed == 0) return;
             bool playerGave = Kitchen.PlayerSeasonShare > 0;
@@ -864,6 +974,7 @@ namespace Thatchwick.Core.Life
             for (int k = 0; k < fed; k++)
             {
                 var v = poor[_rng.Next(poor.Count)];
+                _poorToday.Add(v.Id);
                 if (!playerGave || AddMemory == null) continue;
                 if (_fedVillagers.TryGetValue(v.Id, out long last) && last == season) continue;   // köylü başına mevsimde bir kez
                 _fedVillagers[v.Id] = season;
@@ -917,6 +1028,275 @@ namespace Thatchwick.Core.Life
             return false;
         }
 
+        // ---- ebeveyn, oyuncak, iz (belge 52 §3, §7) ----
+
+        /// <summary>Bu ağaç evde küsen (bunalımdaki) hane çocukları.</summary>
+        public List<Character> SulkingAt(int treeId)
+        {
+            var list = new List<Character>();
+            foreach (var kv in _sulking)
+            {
+                if (kv.Value != treeId) continue;
+                var ch = _population.Find(kv.Key);
+                if (ch != null && !ch.IsDead && ch.InBreakdown) list.Add(ch);
+            }
+            return list;
+        }
+
+        /// <summary>"Çocuğu aşağı çağır": büyük ağacın dibinde konuşur; çocuğun bunalımı biter, ikisi yakınlaşır.</summary>
+        private void CallDown(Character parent, ItemInstance tree)
+        {
+            foreach (var child in SulkingAt(tree.Id))
+            {
+                child.EndBreakdown(interrupted: true);
+                _sulking.Remove(child.Id);
+                child.AddMoodlet(CalledDownMood, "Ağaç evden indirildi, konuştular", 8, 1.0);
+                parent.AddMoodlet(CalledDownMood, "Çocuğuyla konuştu", 5, 1.0);
+                parent.GainSkillXp(SkillType.Parenting, 10);
+                AddAffection?.Invoke(parent.Id, child.Id, 5);
+                Say($"{parent.Name}, ağaç evde küsen {child.Name}'i aşağı çağırdı; biraz konuştular.", child.Id);
+            }
+        }
+        public const string CalledDownMood = "mood.called_down";
+
+        public int PlayCount(int characterId) => _plays.TryGetValue(characterId, out int n) ? n : 0;
+
+        /// <summary>Genç yetişkinliğe geçerken çocuklukta yeterince ağaç evde oynadı mı ("Yükseklik sevdalısı").</summary>
+        public bool EarnedHeightsMark(Character c) => c != null && PlayCount(c.Id) >= HeightsPlays;
+
+        // ---- yiyecek bağışı ----
+
+        /// <summary>Bağışlanabilecek yiyecekler (ucuzdan pahalıya; çiğ et ve bozulmuş hariç): kimlik, birim değer.</summary>
+        public List<(string id, int price)> FoodForDonation()
+        {
+            var list = new List<(string, int)>();
+            foreach (var kv in _house.InventoryList())
+            {
+                if (kv.Value <= 0 || !_content.Items.TryGet(kv.Key, out var d) || d.Price <= 0 || d.HasTag("raw")) continue;
+                if (d.HasTag("food") || d.HasTag("cooked") || d.HasTag("grain") || d.HasTag("veg")) list.Add((d.Id, d.Price));
+            }
+            list.Sort((a, b) => a.Item2.CompareTo(b.Item2));
+            return list;
+        }
+
+        // ---- köşk: taşıma sınırı, oda türü, manzara ----
+
+        /// <summary>Köşkün taşıma sınırı: 4x4'te 40, 5x5'te 60; kestanede %10 az.</summary>
+        public int KioskCapacity(TreehouseSite s)
+        {
+            if (s == null || s.KioskN <= 0) return 0;
+            double cap = s.KioskN >= 5 ? KioskCapacity5 : KioskCapacity4;
+            var tree = _world.GetItem(s.TreeId);
+            if (tree != null && tree.Def.Id == GreatTrees.Chestnut) cap *= ChestnutCapacity;
+            return (int)Math.Round(cap);
+        }
+
+        /// <summary>Eşyanın köşke yükü: tanımdaki ağırlık (varsayılan 1) ya da ayak izi; halı 1.</summary>
+        public static int LoadOf(ItemInstance it)
+        {
+            if (it.IsRug) return 1;
+            int w = Math.Max(1, it.Def.Weight);
+            if (!it.IsDecor && !it.IsWallMounted && !it.IsCeiling) w = Math.Max(w, 2 * it.Width * it.Height);
+            return w;
+        }
+
+        public int KioskLoad(TreehouseSite s)
+        {
+            if (s == null || s.KioskN <= 0) return 0;
+            var tiles = new HashSet<GridPos>(KioskTiles(s));
+            int load = 0;
+            foreach (var it in _world.Items)
+            {
+                var at = it.IsDecor && it.ParentId.HasValue ? (_world.GetItem(it.ParentId.Value)?.Position ?? it.Position) : it.Position;
+                if (tiles.Contains(at)) load += LoadOf(it);
+            }
+            return load;
+        }
+
+        /// <summary>
+        /// Taşıma denetimi (eşya konunca ve her gün): %90'da "Dallar gıcırdıyor"; sınır aşılırsa en ağır eşya düşer,
+        /// hasarlı olarak hane envanterine (raf çökmesi kuralı, belge 27 §16) ya da arsa dışındaysa yine haneye döner.
+        /// </summary>
+        public void CheckLoad(TreehouseSite s)
+        {
+            if (s == null || s.KioskN <= 0 || s.IsVillageInn) return;
+            int cap = KioskCapacity(s);
+            int load = KioskLoad(s);
+            var tree = _world.GetItem(s.TreeId);
+            string where = tree?.Def.DisplayName.ToLowerInvariant() ?? "ağaç";
+            if (load <= cap)
+            {
+                if (load >= cap * LoadWarnAt)
+                {
+                    if (_loadWarned.Add(s.TreeId)) { Creaked?.Invoke(); Alarm($"{where} köşkünde dallar gıcırdıyor: köşk ağır ({load}/{cap}).", 0); }
+                }
+                else _loadWarned.Remove(s.TreeId);
+                return;
+            }
+            var tiles = new HashSet<GridPos>(KioskTiles(s));
+            while (load > cap)
+            {
+                ItemInstance heaviest = null;
+                foreach (var it in _world.Items)
+                    if (!it.IsDecor && tiles.Contains(it.Position) && (heaviest == null || LoadOf(it) > LoadOf(heaviest))) heaviest = it;
+                if (heaviest == null) break;
+                int before = load;
+                var fallen = _world.RemoveItemInstances(heaviest.Id);
+                foreach (var f in fallen) _house.AddItem(f.Def.Id, 1, ItemCondition.Damaged);
+                load = KioskLoad(s);
+                Creaked?.Invoke();
+                Alarm($"{where} köşkü fazla yüklendi: {heaviest.Def.DisplayName.ToLowerInvariant()} dallardan aşağı düştü ve hasar gördü (envanterde).", 0);
+                if (load >= before) break;
+            }
+            _world.NotifyChanged();
+        }
+
+        /// <summary>Eşya konunca (BuildService.Furnished): köşkteyse yük denetimi.</summary>
+        public void OnFurnished(ItemInstance it)
+        {
+            if (it == null || it.Position.Z != 1) return;
+            var at = it.IsDecor && it.ParentId.HasValue ? (_world.GetItem(it.ParentId.Value)?.Position ?? it.Position) : it.Position;
+            var s = KioskAt(at);
+            if (s != null) CheckLoad(s);
+        }
+
+        /// <summary>Karonun köşkü (z=1); yoksa null.</summary>
+        public TreehouseSite KioskAt(GridPos p)
+        {
+            if (!_shell.Contains(p)) return null;
+            foreach (var s in _sites.Values)
+                if (s.KioskN > 0 && p.X >= s.KioskX && p.X < s.KioskX + s.KioskN && p.Y >= s.KioskY - 1 && p.Y < s.KioskY + s.KioskN) return s;
+            return null;
+        }
+
+        public bool InKiosk(GridPos p) => _shell.Contains(p);
+
+        /// <summary>Oda bir ağaç köşkü mü (HomeLife oda türü "Ağaç köşkü").</summary>
+        public bool IsKioskRoom(Room room)
+        {
+            if (room == null || room.Tiles.Count == 0) return false;
+            foreach (var t in room.Tiles) if (_shell.Contains(t)) return true;
+            return false;
+        }
+
+        /// <summary>Köşkteki konforlu eşyaya manzara katkısı (MoodService.ExtraComfort).</summary>
+        public int ComfortBonus(ItemInstance it) => it != null && !it.IsDecor && it.Def.Comfort > 0 && _shell.Contains(it.Position) ? ViewComfort : 0;
+
+        private TreehouseKind RivalKind()
+        {
+            int r = _rng.Next(100);
+            return r < 30 ? TreehouseKind.Nest : r < 55 ? TreehouseKind.Lookout : r < 75 ? TreehouseKind.Fort : r < 90 ? TreehouseKind.Hut : TreehouseKind.Kiosk;
+        }
+
+        /// <summary>Rakip hane kendi kurduğu ağaç evi onarır (hane yaşıyorsa); soyu biten hanenin evi harabeye döner.</summary>
+        private void RivalRepairs()
+        {
+            if (Neighbors == null) return;
+            var alive = new HashSet<int>();
+            foreach (var (id, _) in Neighbors()) alive.Add(id);
+            foreach (var s in _sites.Values)
+            {
+                if (s.Builder <= 0 || !s.IsBuilt || s.Durability >= 40 || !alive.Contains(s.Builder)) continue;
+                if (_rng.NextDouble() >= RivalRepairChance) continue;
+                bool wasRuined = s.IsRuined;
+                s.Durability = 100; s.RuinedSince = -1; s.Warned = false;
+                var tree = _world.GetItem(s.TreeId);
+                if (wasRuined && tree != null) Say($"{s.BuilderName}, {tree.Def.DisplayName.ToLowerInvariant()} üstündeki {KindName(s.Kind).ToLowerInvariant()} evini onardı.", 0);
+            }
+        }
+
+        // ---- istek: "Bize ağaç ev yapar mısın?" (belge 46) ----
+
+        private void Wishes(List<Character> villageKids)
+        {
+            long season = _clock.DayIndex / Math.Max(1, _clock.Config.DaysPerSeason);
+            if (_clock.DayOfSeason != 2) return;
+            // Hanenin çocukları: hanenin kurduğu kullanılabilir ağaç ev yoksa mevsimde bir kez dile getirir.
+            if (_wishSeason != season)
+            {
+                bool own = false;
+                foreach (var st in _sites.Values) if (st.Builder == 0 && st.IsUsable) { own = true; break; }
+                Character kid = null;
+                foreach (var m in _population.Members)
+                    if (!m.IsDead && !m.IsVillager && !m.Away && IsMinor(m)) { kid = m; break; }
+                if (!own && kid != null)
+                {
+                    _wishSeason = season;
+                    kid.AddMoodlet(WishMood, "Ağaç ev hayali", 0, 3.0);
+                    Say($"{kid.Name}: \"Ulu ağaca bir ağaç ev yapar mısın? Ben de çivi tutarım!\"", kid.Id);
+                }
+            }
+            // Köy çocuğunun ailesi: boş ulu ağaç varsa rica asar.
+            if (_requestSeason == season || PostRequest == null || villageKids.Count == 0 || _rng.NextDouble() >= RequestChance) return;
+            bool empty = false;
+            foreach (var it in _world.Items)
+                if (GreatTrees.IsGreatTree(it.Def) && !GreatTrees.IsInn(it.Def) && !OnPlot(it) && !(SiteOf(it)?.HasHouse ?? false)) { empty = true; break; }
+            if (!empty) return;
+            var child = villageKids[_rng.Next(villageKids.Count)];
+            var giver = child.BirthMotherId.HasValue ? _population.Find(child.BirthMotherId.Value) : null;
+            if (giver == null || giver.IsDead) giver = child.BirthFatherId.HasValue ? _population.Find(child.BirthFatherId.Value) : null;
+            if (giver == null || giver.IsDead) giver = child;
+            if (PostRequest(giver, child)) _requestSeason = season;
+        }
+        public const string WishMood = "mood.treehouse_wish";
+
+        // ---- köylülerin yürüyüşü (oyun katmanı programa ekler) ----
+
+        /// <summary>
+        /// Köylünün şu anki ağaç ev yeri: mevsim sonu sofrası ("feast"), aşevinde öğle ("inn", bugün doyan yoksullar),
+        /// ağaç eve uğrayan köy çocuğu ("tree:&lt;kimlik&gt;"); yoksa null (köylü programına uyar).
+        /// </summary>
+        public string VillagerPlace(Character c, double dayFraction, WeatherType weather)
+        {
+            if (c == null || c.IsDead || !c.IsVillager) return null;
+            bool feastDay = CharityKitchen.IsFeastDay(_clock.DayOfSeason, _clock.Config.DaysPerSeason);
+            if (feastDay && HasInn() && c.Stage >= AgeStage.Child && dayFraction >= FeastGatherFrom && dayFraction < FeastTo) return "feast";
+            if (weather == WeatherType.Storm) return null;
+            if (_poorToday.Contains(c.Id) && HasInn() && dayFraction >= LunchFrom && dayFraction < LunchTo) return "inn";
+            if (weather == WeatherType.Rain || weather == WeatherType.Snow || !IsMinor(c)) return null;
+            if (dayFraction < VisitFrom || dayFraction >= VisitTo) return null;
+            foreach (var s in _sites.Values)
+                if (s.IsUsable && !s.IsVillageInn && s.Visitors.Contains(c.Id)) return "tree:" + s.TreeId;
+            return null;
+        }
+
+        /// <summary>VillagerPlace anahtarının karosu (merdiven başı, aşevi önü, sofra yeri); yoksa null.</summary>
+        public GridPos? PlaceTile(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return null;
+            if (key == "inn" || key == "feast")
+            {
+                foreach (var s in _sites.Values)
+                {
+                    if (!s.IsVillageInn) continue;
+                    var tree = _world.GetItem(s.TreeId);
+                    if (tree == null) return null;
+                    var l = GreatTrees.LadderTile(tree);
+                    return key == "inn" ? l : new GridPos(l.X + 2, l.Y - 1, 0);
+                }
+                return null;
+            }
+            if (key.StartsWith("tree:", StringComparison.Ordinal) && int.TryParse(key.Substring(5), out int id))
+            {
+                var tree = _world.GetItem(id);
+                return tree != null ? GreatTrees.LadderTile(tree) : (GridPos?)null;
+            }
+            return null;
+        }
+
+        /// <summary>Köylü ağaç evin ya da aşevinin içinde mi (merdiven başına vardı): oyun katmanı çizmez.</summary>
+        public bool VillagerInside(Character c, double dayFraction, WeatherType weather)
+        {
+            var key = VillagerPlace(c, dayFraction, weather);
+            if (key == null || key == "feast") return false;
+            var t = PlaceTile(key);
+            return t.HasValue && t.Value.Z == c.Position.Z && Math.Abs(t.Value.X - c.Position.X) <= 1 && Math.Abs(t.Value.Y - c.Position.Y) <= 1;
+        }
+
+        /// <summary>Hane üyelerinin sofraya yürüme vakti (mevsimin son günü, sofradan hemen önce).</summary>
+        public bool FeastGatherNow => HasInn() && CharityKitchen.IsFeastDay(_clock.DayOfSeason, _clock.Config.DaysPerSeason)
+            && _clock.DayFraction >= FeastGatherFrom && _clock.DayFraction < FeastHour && Kitchen.FeastHeldDay != Today;
+
         // ---- kayıt ----
 
         public TreehouseSave Export()
@@ -932,12 +1312,21 @@ namespace Thatchwick.Core.Life
                     stashItem = s.Stash?.ItemId, stashOwner = s.Stash?.OwnerId ?? 0, stashOwnerName = s.Stash?.OwnerName, stashDay = s.Stash?.Day ?? 0,
                     kioskX = s.KioskX, kioskY = s.KioskY, kioskN = s.KioskN
                 });
-            return new TreehouseSave { sites = list.ToArray(), kitchen = Kitchen.Export(), banned = new List<int>(_banned).ToArray(), feastAnnounced = _feastAnnounced };
+            var pk = new List<int>(); var pv = new List<int>();
+            foreach (var kv in _plays) { pk.Add(kv.Key); pv.Add(kv.Value); }
+            return new TreehouseSave
+            {
+                sites = list.ToArray(), kitchen = Kitchen.Export(), banned = new List<int>(_banned).ToArray(), feastAnnounced = _feastAnnounced,
+                playIds = pk.ToArray(), playCounts = pv.ToArray(), wishSeason = _wishSeason, requestSeason = _requestSeason
+            };
         }
 
         public void Import(TreehouseSave data)
         {
-            _sites.Clear(); _banned.Clear(); _fedVillagers.Clear();
+            _sites.Clear(); _banned.Clear(); _fedVillagers.Clear(); _plays.Clear(); _sulking.Clear(); _poorToday.Clear(); _loadWarned.Clear(); _chosenStash.Clear();
+            _wishSeason = data?.wishSeason ?? -1; _requestSeason = data?.requestSeason ?? -1;
+            if (data?.playIds != null)
+                for (int k = 0; k < data.playIds.Length && data.playCounts != null && k < data.playCounts.Length; k++) _plays[data.playIds[k]] = data.playCounts[k];
             Kitchen.Import(data?.kitchen);
             _feastAnnounced = data?.feastAnnounced ?? -1;
             if (data?.banned != null) foreach (var b in data.banned) _banned.Add(b);
@@ -969,6 +1358,9 @@ namespace Thatchwick.Core.Life
         public CharityKitchenSave kitchen;
         public int[] banned;
         public long feastAnnounced = -1;
+        public int[] playIds;
+        public int[] playCounts;
+        public long wishSeason = -1, requestSeason = -1;
     }
 
     [Serializable]

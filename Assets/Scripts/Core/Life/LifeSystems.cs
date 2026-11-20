@@ -310,8 +310,17 @@ namespace Thatchwick.Core.Life
                     foreach (var h in Houses.Houses) list.Add((h.Id, h.Name));
                     return list;
                 },
-                GrantKeepsake = (id, label, cid) => Keepsakes.Grant(id, label, cid)
+                GrantKeepsake = (id, label, cid) => Keepsakes.Grant(id, label, cid),
+                Injure = c => Injuries.InjureById(c, "fall") != null,
+                ToyBoost = (c, f) => Upbringing.Toys.PlayFavorite(c, Clock.TotalDays, f),
+                PostRequest = (giver, kid) => Requests.PostActFavor(giver, "rica.treehouse", "Ağaç ev",
+                    $"{giver.Name}: \"{(giver == kid ? "Bize" : kid.Name + " ve arkadaşlarına")} bir ulu ağaca ağaç ev yapar mısın? Bütün çocuklar oynasın.\"",
+                    TreehouseSystem.BuiltActId, "Bir ulu ağaca ağaç ev kur", 1, Clock.Config.DaysPerSeason, 30) != null
             };
+            Trees.Built += (c, site) => Requests.OnWork(c, SkillType.Carpentry, TreehouseSystem.BuiltActId);
+            Home.IsKioskRoom = Trees.IsKioskRoom;   // oda türü "Ağaç köşkü" (belge 52)
+            var comfortBase = Mood.ExtraComfort;
+            Mood.ExtraComfort = it => (comfortBase != null ? comfortBase(it) : 0) + Trees.ComfortBonus(it);   // köşkten manzara
             population.MemberDied += c => Requests.OnDied(c);
             population.BabyBorn += (baby, mother, father) => Requests.OnBabyBorn(baby, mother);
             Houses.VillagersMarried += (a, b) => Requests.OnVillageWedding(a, b);
@@ -384,6 +393,8 @@ namespace Thatchwick.Core.Life
             var mother = c.BirthMotherId.HasValue ? Population.Find(c.BirthMotherId.Value) : null;
             var father = c.BirthFatherId.HasValue ? Population.Find(c.BirthFatherId.Value) : null;
             string aptitudeNote = LifeRules.ApplyChildhoodAptitude(c);
+            if (Trees.EarnedHeightsMark(c) && Upbringing.Toys.AddMark(c.Id, TreehouseSystem.HeightsMark) && !c.IsVillager)
+                Say($"{c.Name} çocukluğundan bir iz taşıyor: Yükseklik sevdalısı (ağaç evlerde büyüdü).", NoticeLevel.Info, c.Id);
             if (aptitudeNote != null && !c.IsVillager) Say($"{c.Name}: {aptitudeNote}", NoticeLevel.Info, c.Id);
             string note = LifeRules.ApplyUpbringing(Content, _upbringingRng, c, mother, father);
             if (note == null) return null;
@@ -858,6 +869,7 @@ namespace Thatchwick.Core.Life
             build.Discount = BuildDiscount; Home.Build = build;
             build.ExtraOwned = Trees.ExtraOwned;   // hanenin ağaç köşkü: içine eşya konur (belge 52)
             build.Shell = Trees.IsShell;
+            build.Furnished += Trees.OnFurnished;   // köşkün taşıma sınırı
         }
         /// <summary>Depo: sandığa demir kuşak kapasite verir (belge 45).</summary>
         public void Attach(Thatchwick.Core.Build.StorageService storage) { storage.ExtraStorage = Home.ExtraStorage; }
@@ -1098,6 +1110,8 @@ namespace Thatchwick.Core.Life
             {
                 double step = _moodAccumulator;
                 _moodAccumulator = 0;
+                foreach (var m in Population.Members)   // ağaç köşkünden manzara (belge 52)
+                    if (!m.IsDead && !m.IsVillager && m.Position.Z == 1 && Trees.InKiosk(m.Position)) m.AddMoodlet(TreehouseSystem.ViewMood, "Köşkten manzara", 5, 0.25);
                 Mood.Update(Population.Members);
                 Watcher.Update(Population.Members, day: Clock.TotalDays);
                 Breakdowns.Update(step);

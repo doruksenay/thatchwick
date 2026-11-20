@@ -146,11 +146,11 @@ namespace Thatchwick.Core.Upbringing
         /// <summary>Alışkanlık kazanç çarpanı (belge 45: Ebeveynlik 8 "çocukluk izi şansı" ×1,25); null ise 1.</summary>
         public Func<double> GainFactor { get; set; }
 
-        public bool OnPlayed(Character c, string itemId, double today, Character teacher = null)
+        public bool OnPlayed(Character c, string itemId, double today, Character teacher = null, double factor = 1.0)
         {
             var def = Def(itemId);
             if (c == null || def == null || c.IsDead) return false;
-            double gain = def.HabitPerPlay * AgeFactor(c.Stage) * (GainFactor != null ? GainFactor() : 1.0);
+            double gain = def.HabitPerPlay * AgeFactor(c.Stage) * (GainFactor != null ? GainFactor() : 1.0) * factor;
             if (gain <= 0) return false;
             if (teacher != null && teacher.Id != c.Id && !teacher.IsDead && IsMastered(teacher.Id, itemId))
             {
@@ -293,7 +293,47 @@ namespace Thatchwick.Core.Upbringing
             double f = 1.0;
             foreach (var d in _defs.Values)
                 if (d.Skill == skill && d.MarkId != null && list.Contains(d.MarkId)) f += d.MarkXpBonus;
+            foreach (var x in ExtraMarks)
+                if (list.Contains(x.Id) && Array.IndexOf(x.Skills, skill) >= 0) f += x.Bonus;
             return f;
+        }
+
+        /// <summary>Oyuncak dışından gelen çocukluk izleri (belge 52: ağaç ev → "Yükseklik sevdalısı").</summary>
+        public static readonly (string Id, string Name, SkillType[] Skills, double Bonus)[] ExtraMarks =
+        {
+            ("mark.heights", "Yükseklik sevdalısı", new[] { SkillType.Woodcutting, SkillType.Riding }, 0.10),
+        };
+
+        /// <summary>İzin görünen adı (oyuncak ya da ek iz); bilinmiyorsa null.</summary>
+        public string MarkName(string markId)
+        {
+            foreach (var d in _defs.Values) if (d.MarkId == markId) return d.MarkName;
+            foreach (var x in ExtraMarks) if (x.Id == markId) return x.Name;
+            return null;
+        }
+
+        /// <summary>Oyuncak dışı izi ekler (genç yetişkinliğe geçerken). Yeni eklendiyse true.</summary>
+        public bool AddMark(int characterId, string markId)
+        {
+            if (!_marks.TryGetValue(characterId, out var list)) _marks[characterId] = list = new List<string>();
+            if (list.Contains(markId)) return false;
+            list.Add(markId);
+            return true;
+        }
+
+        /// <summary>
+        /// Çocuğun en çok alışkanlık kazandığı (ustalaşmadığı) oyuncağa bir oynayışlık kazanç, çarpanla (ağaç evde oynarken
+        /// oyuncağını da götürür, belge 52 §7). Kaydı yoksa bir şey olmaz.
+        /// </summary>
+        public bool PlayFavorite(Character c, double today, double factor)
+        {
+            if (c == null) return false;
+            HabitRecord best = null;
+            foreach (var r in _habits.Values)
+                if (r.CharacterId == c.Id && !r.Mastered && (best == null || r.Habit > best.Habit)) best = r;
+            if (best == null) return false;
+            OnPlayed(c, best.ItemId, today, null, factor);
+            return true;
         }
 
         /// <summary>
