@@ -1,7 +1,7 @@
 ---
 id: "583"
 title: "Yeni malzeme ikonları 1/2: etler, yumurta, süt, mezbaha yan ürünleri (19)"
-status: running
+status: review
 claimed_at: 2026-11-20T15:40Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 35
