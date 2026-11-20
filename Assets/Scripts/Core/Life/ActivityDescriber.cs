@@ -125,7 +125,7 @@ namespace Thatchwick.Core.Life
                     {
                         case TileAction.Repair: info.Text = "Yolu onarıyor"; break;
                         case TileAction.Bathe: info.Icon = "fun"; info.Text = "Suda yıkanıyor"; break;
-                        case TileAction.Fish: info.Text = "Kıyıda balık tutuyor"; break;
+                        case TileAction.Fish: info.Icon = "fish"; info.Text = "Kıyıda balık tutuyor"; break;
                         case TileAction.CutIce: info.Text = "Buz kesiyor"; break;
                         case TileAction.Dig: info.Icon = "mine"; info.Text = "Kazıyor"; break;
                         case TileAction.Support: info.Icon = "mine_support"; info.Text = "Destek kuruyor"; break;
