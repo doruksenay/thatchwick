@@ -63,6 +63,7 @@ namespace Thatchwick.Core.Progress
             { SkillType.Leatherwork, "bir deri parçasına desen işliyor" }, { SkillType.Pottery, "avucunda kilden küçük bir kuş yapıyor" },
             { SkillType.WeatherLore, "bulutlara bakıp yarını söylüyor" }, { SkillType.Literacy, "bir duvara harfler kazıyor" },
             { SkillType.Riding, "atının yelesini örüyor" }, { SkillType.Hunting, "bir kuşun ötüşünü taklit ediyor" },
+            { SkillType.Tailoring, "dizinde bir yakaya ince bir nakış işliyor" },
         };
 
         /// <summary>Gösteriye çıkacak beceri: 7+ seviyedeki en yüksek beceri; yoksa null.</summary>

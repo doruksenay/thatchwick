@@ -33616,20 +33616,20 @@
     },
     {
       "id": "item.tunic",
-      "displayName": "Yün cepken",
+      "displayName": "Kaba yün tunik",
       "placement": "Resource",
-      "category": "resource",
-      "price": 20,
+      "category": "clothing",
+      "price": 22,
       "tags": [
         "clothing"
       ]
     },
     {
       "id": "item.linen_shirt",
-      "displayName": "Keten gömlek",
+      "displayName": "Keten iç gömlek",
       "placement": "Resource",
-      "category": "resource",
-      "price": 25,
+      "category": "clothing",
+      "price": 22,
       "tags": [
         "clothing"
       ]
@@ -33689,8 +33689,8 @@
       "id": "item.leather_vest",
       "displayName": "Deri yelek",
       "placement": "Resource",
-      "category": "resource",
-      "price": 30,
+      "category": "clothing",
+      "price": 37,
       "tags": [
         "clothing"
       ]
@@ -34193,6 +34193,2746 @@
         "greenhouse_work"
       ],
       "beauty": 1
+    },
+    {
+      "id": "item.hemp",
+      "displayName": "Kendir sapı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "fiber"
+      ]
+    },
+    {
+      "id": "item.hemp_yarn",
+      "displayName": "Kendir ipliği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "cloth"
+      ]
+    },
+    {
+      "id": "item.hemp_cloth",
+      "displayName": "Çuval bezi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "cloth"
+      ]
+    },
+    {
+      "id": "item.mohair",
+      "displayName": "Tiftik",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "fiber"
+      ]
+    },
+    {
+      "id": "item.weld_berry",
+      "displayName": "Cehri tanesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "dye_source"
+      ]
+    },
+    {
+      "id": "item.madder_root",
+      "displayName": "Kökboya kökü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "dye_source"
+      ]
+    },
+    {
+      "id": "item.woad_leaf",
+      "displayName": "Çivit otu yaprağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "dye_source"
+      ]
+    },
+    {
+      "id": "item.walnut_hull",
+      "displayName": "Ceviz kabuğu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "dye_source"
+      ]
+    },
+    {
+      "id": "item.lichen",
+      "displayName": "Taş likeni",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "dye_source"
+      ]
+    },
+    {
+      "id": "item.copperas",
+      "displayName": "Karaboya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "dye_source"
+      ]
+    },
+    {
+      "id": "item.alum",
+      "displayName": "Şap",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "dye_mordant"
+      ]
+    },
+    {
+      "id": "item.dye_brown",
+      "displayName": "Ceviz boyası (kahve)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_grey",
+      "displayName": "Mazı boyası (gri)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_black",
+      "displayName": "Kara boya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_ochre",
+      "displayName": "Aşı boyası (kırmızı toprak)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_lichen",
+      "displayName": "Liken moru",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_green",
+      "displayName": "Yeşil boya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_purple",
+      "displayName": "Mor boya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_orange",
+      "displayName": "Turuncu boya",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_olive",
+      "displayName": "Zeytin boyası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_saffron",
+      "displayName": "Safran sarısı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 26,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.dye_navy",
+      "displayName": "Gerçek çivit (lacivert)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.button_bone",
+      "displayName": "Kemik düğme",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "trim"
+      ]
+    },
+    {
+      "id": "item.button_wood",
+      "displayName": "Ahşap düğme",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "trim"
+      ]
+    },
+    {
+      "id": "item.buckle",
+      "displayName": "Pirinç toka",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "trim"
+      ]
+    },
+    {
+      "id": "item.glass_bead",
+      "displayName": "Cam boncuk",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "trim"
+      ]
+    },
+    {
+      "id": "item.copper",
+      "displayName": "Bakır tel",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "metal"
+      ]
+    },
+    {
+      "id": "item.silver",
+      "displayName": "Gümüş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 40,
+      "tags": [
+        "metal",
+        "merchantonly"
+      ]
+    },
+    {
+      "id": "item.gold_dust",
+      "displayName": "Altın tozu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 70,
+      "tags": [
+        "metal",
+        "merchantonly"
+      ]
+    },
+    {
+      "id": "item.gemstone",
+      "displayName": "Değerli taş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 60,
+      "tags": [
+        "merchantonly"
+      ]
+    },
+    {
+      "id": "item.gold_thread",
+      "displayName": "Sırma",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "trim"
+      ]
+    },
+    {
+      "id": "item.cloth_scrap",
+      "displayName": "Kumaş parçası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "cloth"
+      ]
+    },
+    {
+      "id": "item.tea_black",
+      "displayName": "Kuru siyah çay",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 18,
+      "tags": [
+        "merchantonly"
+      ]
+    },
+    {
+      "id": "item.black_tea",
+      "displayName": "Demli çay",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "drink",
+        "tea_black",
+        "food"
+      ],
+      "spoilDays": 0.25
+    },
+    {
+      "id": "item.reading_stone",
+      "displayName": "Okuma taşı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 25,
+      "tags": [
+        "aging_aid"
+      ]
+    },
+    {
+      "id": "item.crop_hemp",
+      "displayName": "Kendir ekini",
+      "category": "plant",
+      "growDays": 10,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.hemp",
+              "count": 4
+            },
+            {
+              "item": "item.seed_hemp",
+              "count": 1
+            },
+            {
+              "item": "item.seed_hemp",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.flax",
+              "count": 3
+            },
+            {
+              "item": "item.seed_flax",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "cropFamily": "lif",
+      "site": "outdoor"
+    },
+    {
+      "id": "item.seed_hemp",
+      "displayName": "Kendir tohumu",
+      "placement": "Resource",
+      "price": 5,
+      "category": "resource",
+      "level": 3,
+      "plantsAs": "item.crop_hemp"
+    },
+    {
+      "id": "item.crop_woad",
+      "displayName": "Çivit otu ekini",
+      "category": "plant",
+      "growDays": 8,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.woad_leaf",
+              "count": 3
+            },
+            {
+              "item": "item.seed_woad",
+              "count": 1
+            },
+            {
+              "item": "item.woad_leaf",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.flax",
+              "count": 3
+            },
+            {
+              "item": "item.seed_flax",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "cropFamily": "lif",
+      "site": "outdoor",
+      "lockSkill": "Farming"
+    },
+    {
+      "id": "item.seed_woad",
+      "displayName": "Çivit otu tohumu",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource",
+      "level": 3,
+      "plantsAs": "item.crop_woad",
+      "lockSkill": "Farming"
+    },
+    {
+      "id": "item.crop_madder",
+      "displayName": "Kökboya ekini",
+      "category": "plant",
+      "growDays": 18,
+      "tilled": true,
+      "diesInWinter": false,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 8,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.madder_root",
+              "count": 3
+            },
+            {
+              "item": "item.seed_madder",
+              "count": 1
+            },
+            {
+              "item": "item.madder_root",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.flax",
+              "count": 3
+            },
+            {
+              "item": "item.seed_flax",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "cropFamily": "lif",
+      "site": "outdoor",
+      "lockSkill": "Horticulture"
+    },
+    {
+      "id": "item.seed_madder",
+      "displayName": "Kökboya fidesi",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource",
+      "level": 4,
+      "plantsAs": "item.crop_madder",
+      "lockSkill": "Horticulture"
+    },
+    {
+      "id": "item.crop_weld",
+      "displayName": "Sarı boya otu ekini",
+      "category": "plant",
+      "growDays": 9,
+      "tilled": true,
+      "diesInWinter": true,
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.weld_berry",
+              "count": 3
+            },
+            {
+              "item": "item.seed_weld",
+              "count": 1
+            },
+            {
+              "item": "item.weld_berry",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "hoe"
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "hoe",
+          "produce": [
+            {
+              "item": "item.flax",
+              "count": 3
+            },
+            {
+              "item": "item.seed_flax",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
+        }
+      ],
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "cropFamily": "lif",
+      "site": "outdoor",
+      "lockSkill": "Farming"
+    },
+    {
+      "id": "item.seed_weld",
+      "displayName": "Sarı boya otu tohumu",
+      "placement": "Resource",
+      "price": 6,
+      "category": "resource",
+      "level": 4,
+      "plantsAs": "item.crop_weld",
+      "lockSkill": "Farming"
+    },
+    {
+      "id": "item.forage_buckthorn",
+      "displayName": "Cehri çalısı",
+      "category": "forage",
+      "forageSeasons": [
+        "Autumn"
+      ],
+      "forageMax": 3,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.04,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.weld_berry",
+              "count": 2
+            },
+            {
+              "item": "item.weld_berry",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "minLevel": 3
+        }
+      ],
+      "forageRegions": [
+        "forest"
+      ],
+      "site": "outdoor"
+    },
+    {
+      "id": "item.forage_walnut_hull",
+      "displayName": "Düşmüş ceviz kabukları",
+      "category": "forage",
+      "forageSeasons": [
+        "Autumn"
+      ],
+      "forageMax": 3,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Topla",
+          "durationDays": 0.04,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.walnut_hull",
+              "count": 2
+            },
+            {
+              "item": "item.walnut_hull",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "minLevel": 5
+        }
+      ],
+      "forageRegions": [
+        "forest"
+      ],
+      "site": "outdoor"
+    },
+    {
+      "id": "item.forage_lichen",
+      "displayName": "Likenli kaya",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring",
+        "Summer",
+        "Autumn",
+        "Winter"
+      ],
+      "forageMax": 2,
+      "interactions": [
+        {
+          "id": "gather",
+          "displayName": "Liken kazı",
+          "durationDays": 0.04,
+          "skill": "Foraging",
+          "skillXp": 6,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.lichen",
+              "count": 2
+            },
+            {
+              "item": "item.lichen",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "minLevel": 6
+        }
+      ],
+      "forageRegions": [
+        "forest"
+      ],
+      "site": "outdoor"
+    },
+    {
+      "id": "item.sewing_table",
+      "displayName": "Dikiş sehpası",
+      "category": "work",
+      "price": 45,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "finishGroup": "wood",
+      "interactions": [],
+      "front": "work",
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "workshop"
+      ],
+      "trades": [
+        "tailor"
+      ],
+      "lockSkill": "Tailoring",
+      "art": {
+        "alongX": "iso_item_sewing_table_se",
+        "pivotX": 32.0,
+        "pivotY": 20.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.laundry_basket",
+      "displayName": "Kirli sepeti",
+      "category": "storage",
+      "price": 10,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "bedroom",
+        "kitchen"
+      ],
+      "finishGroup": "wood",
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "kitchen",
+        "living"
+      ],
+      "interactions": [
+        {
+          "id": "wash_all",
+          "displayName": "Hepsini yıka",
+          "durationDays": 0.12,
+          "skill": "Decorating",
+          "skillXp": 2,
+          "skillWork": "wash_all"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_laundry_basket_se",
+        "pivotX": 16.0,
+        "pivotY": 10.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.teapot",
+      "displayName": "Demlik",
+      "category": "decor",
+      "price": 16,
+      "level": 1,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "living"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "clay",
+      "fitsOn": [
+        "masa",
+        "ocak",
+        "raf"
+      ],
+      "interactions": [
+        {
+          "id": "brew_black_tea",
+          "displayName": "Çay demle (1 kuru çay → 4 bardak)",
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 5,
+          "materials": [
+            {
+              "item": "item.tea_black",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.black_tea",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "id": "drink_black_tea",
+          "displayName": "Çay iç",
+          "need": "Fun",
+          "restore": 12,
+          "durationDays": 0.03,
+          "consume": "item.black_tea",
+          "moodlet": "eff_black_tea",
+          "bladder": 10
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_teapot_se",
+        "pivotX": 12.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.tea_set",
+      "displayName": "Çay takımı",
+      "category": "decor",
+      "price": 34,
+      "level": 3,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 3,
+      "material": "glass",
+      "fitsOn": [
+        "masa"
+      ],
+      "interactions": [
+        {
+          "id": "serve_tea",
+          "displayName": "Çay ikram et",
+          "need": "Social",
+          "restore": 15,
+          "durationDays": 0.05,
+          "consume": "item.black_tea",
+          "moodlet": "eff_tea_talk",
+          "bladder": 8
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_tea_set_se",
+        "pivotX": 24.0,
+        "pivotY": 12.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.cl_work_tunic",
+      "displayName": "Kısa kollu iş tuniği",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 22,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_long_tunic",
+      "displayName": "Uzun kollu tunik",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 35,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_riding_tunic",
+      "displayName": "Yırtmaçlı binici tuniği",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 35,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_embroidered_shirt",
+      "displayName": "Yakası işlemeli gömlek",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 35,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_buttoned_jacket",
+      "displayName": "Düğmeli dar ceket",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 74,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_silk_shirt",
+      "displayName": "İpek gömlek",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 126,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_quilted_jacket",
+      "displayName": "Kapitone kışlık ceket",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 35,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_plain_entari",
+      "displayName": "Basit entari",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 22,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_summer_entari",
+      "displayName": "Yazlık keten entari",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 22,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_three_skirts",
+      "displayName": "Üç etek",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 35,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_kaftan",
+      "displayName": "Kaftan",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 57,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_aba",
+      "displayName": "Aba",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 24,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_feast_entari",
+      "displayName": "Bayram entarisi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 57,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_wedding_kaftan",
+      "displayName": "Düğün kaftanı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 218,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_felt_vest",
+      "displayName": "Keçe yelek",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 20,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_fur_vest",
+      "displayName": "Kürklü yelek",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 84,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_sleeveless_overgown",
+      "displayName": "Kolsuz üstlük",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 47,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_cloth_apron",
+      "displayName": "Bez önlük",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 18,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_leather_apron",
+      "displayName": "Deri önlük",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 37,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_linen_drawers",
+      "displayName": "Keten don",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 16,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_wool_hose",
+      "displayName": "Yün tozluk",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 16,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_leg_wraps",
+      "displayName": "Dolaklı tozluk",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 16,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_laced_trousers",
+      "displayName": "Dar pantolon",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 26,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_salvar",
+      "displayName": "Şalvar",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 26,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_riding_leggings",
+      "displayName": "Deri binici tozluğu",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 33,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_long_wool_skirt",
+      "displayName": "Uzun yün etek",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 16,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_linen_skirt",
+      "displayName": "Keten etek",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 16,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_tucked_skirt",
+      "displayName": "Sıvalı iş eteği",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 16,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_pleated_skirt",
+      "displayName": "Pileli bayram eteği",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 42,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_carik",
+      "displayName": "Çarık",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 18,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_low_shoes",
+      "displayName": "Düşük deri ayakkabı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 18,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_ankle_shoes",
+      "displayName": "Bileği bağlı ayakkabı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 29,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_half_boots",
+      "displayName": "Yarım çizme",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 29,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_riding_boots",
+      "displayName": "Uzun binici çizmesi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 47,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_fur_boots",
+      "displayName": "Kürk astarlı çizme",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 66,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_felt_boots",
+      "displayName": "Keçe çizme",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 15,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_knit_slippers",
+      "displayName": "Örgü yün patik",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 11,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_clogs",
+      "displayName": "Tahta takunya",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 10,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_soft_mest",
+      "displayName": "Yumuşak deri mest",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 82,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_linen_kerchief",
+      "displayName": "Keten başörtüsü",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 12,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_long_veil",
+      "displayName": "Uzun örtü",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 19,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_chin_wimple",
+      "displayName": "Çene bağlı örtü",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 19,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_yemeni",
+      "displayName": "Yemeni",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 12,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_turban_wrap",
+      "displayName": "Tülbent sarma",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 19,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_hair_net",
+      "displayName": "Saç filesi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 69,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_baby_bonnet",
+      "displayName": "Bebek takkesi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 7,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_linen_coif",
+      "displayName": "Keten takke",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 12,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_wool_cap",
+      "displayName": "Yün takke",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 12,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_knit_beret",
+      "displayName": "Örgü bere",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 10,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_felt_kulah",
+      "displayName": "Keçe külah",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 13,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_bork",
+      "displayName": "Börk",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 21,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_fur_kalpak",
+      "displayName": "Kürk kalpak",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 56,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_bag_hood",
+      "displayName": "Torba başlık",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 19,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_caped_hood",
+      "displayName": "Pelerinli kapüşon",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 12,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_liripipe_hood",
+      "displayName": "Uzun uçlu kapüşon",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 19,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_fur_hood",
+      "displayName": "Kürk kapüşon",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 56,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_chaperon",
+      "displayName": "Sarma şaperon",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 41,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_wide_straw_hat",
+      "displayName": "Geniş kenarlı hasır şapka",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 6,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_straw_hat",
+      "displayName": "Düz hasır şapka",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 6,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_pilgrim_hat",
+      "displayName": "Geniş kenarlı keçe şapka",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 21,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_rolled_brim_hat",
+      "displayName": "Kıvrık kenarlı yün şapka",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 19,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_feathered_hat",
+      "displayName": "Tüylü şapka",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 31,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_fur_hat",
+      "displayName": "Kürk şapka",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 97,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_hunter_hat",
+      "displayName": "Avcı şapkası",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 19,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_flower_crown",
+      "displayName": "Çiçek tacı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 4,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_hair_band",
+      "displayName": "Saç bandı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 19,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_bridal_crown",
+      "displayName": "Gelin tacı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 94,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_wheat_crown",
+      "displayName": "Başak tacı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 6,
+      "tags": [
+        "clothing",
+        "rewardonly"
+      ]
+    },
+    {
+      "id": "item.cl_beekeeper_veil",
+      "displayName": "Arıcı başlığı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 12,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_smith_cap",
+      "displayName": "Demirci deri başlığı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 25,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_oiled_fisher_hood",
+      "displayName": "Yağlı balıkçı başlığı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 12,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_short_cloak",
+      "displayName": "Kısa yün pelerin",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 28,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_long_cloak",
+      "displayName": "Uzun yün pelerin",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 45,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_hooded_cloak",
+      "displayName": "Kapüşonlu yol pelerini",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 45,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_brooch_cloak",
+      "displayName": "Yarım daire pelerin",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 95,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_fur_collar_cloak",
+      "displayName": "Kürk yakalı pelerin",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 73,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_fur_lined_cloak",
+      "displayName": "Kürk astarlı pelerin",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 227,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_kepenek",
+      "displayName": "Kepenek",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 31,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_oiled_cloak",
+      "displayName": "Yağmurluk",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 28,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_sheepskin_mantle",
+      "displayName": "Koyun postu omuzluk",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 36,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_wool_shawl",
+      "displayName": "Omuz şalı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 28,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_silk_shawl",
+      "displayName": "İpek şal",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 160,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_crest_cloak",
+      "displayName": "Armalı pelerin",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 164,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_feast_cloak",
+      "displayName": "Bayram pelerini",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 73,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_child_cloak",
+      "displayName": "Çocuk pelerini",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 17,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_knit_scarf",
+      "displayName": "Örgü atkı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 6,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_fur_neckpiece",
+      "displayName": "Kürk boyunluk",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 37,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_embroidered_collar",
+      "displayName": "Takma işlemeli yaka",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 13,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_neck_wrap",
+      "displayName": "Puşi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 8,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_knit_mitts",
+      "displayName": "Örgü eldiven",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 8,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_work_gloves",
+      "displayName": "Deri iş eldiveni",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 21,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_fur_gloves",
+      "displayName": "Kürk eldiven",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 47,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_rope_sash",
+      "displayName": "İp kuşak",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 8,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_woven_sash",
+      "displayName": "Dokuma kuşak",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 13,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_leather_belt",
+      "displayName": "Deri kemer",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 10,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_buckled_belt",
+      "displayName": "Tokalı kemer",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 17,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_silver_belt",
+      "displayName": "Gümüş kemer",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 108,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_belt_pouch",
+      "displayName": "Bel kesesi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 10,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_shoulder_bag",
+      "displayName": "Çapraz omuz çantası",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 17,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_swaddle",
+      "displayName": "Kundak",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 13,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_baby_smock",
+      "displayName": "Bebek entarisi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 13,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_baby_booties",
+      "displayName": "Örgü bebek patiği",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 7,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_baby_blanket",
+      "displayName": "Bebek battaniyesi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 17,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_baby_bib",
+      "displayName": "Göğüslük",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 5,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_child_shirt",
+      "displayName": "Çocuk gömleği",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 13,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_child_tunic",
+      "displayName": "Çocuk tuniği",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 13,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_child_entari",
+      "displayName": "Çocuk entarisi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 13,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_pinafore_entari",
+      "displayName": "Önlüklü çocuk entarisi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 13,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_child_felt_vest",
+      "displayName": "Keçe çocuk yeleği",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 12,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_first_feast_suit",
+      "displayName": "İlk bayramlık",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 21,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_child_drawers",
+      "displayName": "Çocuk donu",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 10,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_child_hose",
+      "displayName": "Çocuk tozluğu",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 10,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_child_skirt",
+      "displayName": "Çocuk eteği",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 10,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_child_salvar",
+      "displayName": "Çocuk şalvarı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 10,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_small_shawl",
+      "displayName": "Küçük şal",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 17,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_maternity_entari",
+      "displayName": "Gebelik entarisi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 22,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.cl_belly_band",
+      "displayName": "Karın kuşağı",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 6,
+      "tags": [
+        "clothing"
+      ]
+    },
+    {
+      "id": "item.jw_earring",
+      "displayName": "Küpe",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 33,
+      "tags": [
+        "clothing",
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.jw_nose_ring",
+      "displayName": "Burun halkası",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 33,
+      "tags": [
+        "clothing",
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.jw_cord_necklace",
+      "displayName": "İp kolye",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 15,
+      "tags": [
+        "clothing",
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.jw_glass_beads",
+      "displayName": "Cam boncuk dizisi",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 30,
+      "tags": [
+        "clothing",
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.jw_brooch",
+      "displayName": "Broş",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 21,
+      "tags": [
+        "clothing",
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.jw_ring",
+      "displayName": "Yüzük",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 33,
+      "tags": [
+        "clothing",
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.jw_seal_ring",
+      "displayName": "Mühür yüzüğü",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 36,
+      "tags": [
+        "clothing",
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.jw_bracelet",
+      "displayName": "Bilezik",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 33,
+      "tags": [
+        "clothing",
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.jw_evil_eye",
+      "displayName": "Nazar boncuğu",
+      "placement": "Resource",
+      "category": "clothing",
+      "price": 33,
+      "tags": [
+        "clothing",
+        "jewelry"
+      ]
+    },
+    {
+      "id": "item.mohair_yarn",
+      "displayName": "Tiftik ipliği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "cloth"
+      ]
     }
   ],
   "recipes": [
@@ -38413,7 +41153,7 @@
     },
     {
       "id": "tunic",
-      "station": "item.loom",
+      "station": "item.sewing_table",
       "produces": "item.tunic",
       "materials": [
         {
@@ -38425,15 +41165,15 @@
           "count": 1
         }
       ],
-      "durationDays": 0.15,
-      "skill": "Weaving",
-      "skillXp": 16,
-      "displayName": "Cepken dik",
-      "minLevel": 5
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Kaba yün tunik dik",
+      "minLevel": 2
     },
     {
       "id": "linen_shirt",
-      "station": "item.loom",
+      "station": "item.sewing_table",
       "produces": "item.linen_shirt",
       "materials": [
         {
@@ -38445,11 +41185,11 @@
           "count": 1
         }
       ],
-      "durationDays": 0.15,
-      "skill": "Weaving",
-      "skillXp": 16,
-      "displayName": "Keten gömlek dik",
-      "minLevel": 6
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Keten iç gömlek dik",
+      "minLevel": 2
     },
     {
       "id": "silk_thread",
@@ -38570,13 +41310,13 @@
       "materials": [
         {
           "item": "item.leather",
-          "count": 3
+          "count": 2
         }
       ],
-      "durationDays": 0.15,
+      "durationDays": 0.19,
       "skill": "Leatherwork",
-      "skillXp": 20,
-      "displayName": "Deri yelek dik",
+      "skillXp": 25,
+      "displayName": "Deri yelek yap",
       "minLevel": 7
     },
     {
@@ -39305,6 +42045,2863 @@
       "skillXp": 6,
       "displayName": "Nane saksıla",
       "minLevel": 4
+    },
+    {
+      "id": "hemp_yarn",
+      "station": "item.spinning_wheel",
+      "produces": "item.hemp_yarn",
+      "materials": [
+        {
+          "item": "item.hemp",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Weaving",
+      "skillXp": 5,
+      "displayName": "Kendir eğir",
+      "count": 2
+    },
+    {
+      "id": "hemp_cloth",
+      "station": "item.loom",
+      "produces": "item.hemp_cloth",
+      "materials": [
+        {
+          "item": "item.hemp_yarn",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Weaving",
+      "skillXp": 10,
+      "displayName": "Çuval bezi doku"
+    },
+    {
+      "id": "mohair_yarn",
+      "station": "item.spinning_wheel",
+      "produces": "item.mohair_yarn",
+      "materials": [
+        {
+          "item": "item.mohair",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Tiftik eğir",
+      "count": 2,
+      "minLevel": 4
+    },
+    {
+      "id": "dye_red_madder",
+      "station": "item.dye_vat",
+      "produces": "item.dye_red",
+      "materials": [
+        {
+          "item": "item.madder_root",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Kökboya kökü kaynat"
+    },
+    {
+      "id": "dye_yellow_weld",
+      "station": "item.dye_vat",
+      "produces": "item.dye_yellow",
+      "materials": [
+        {
+          "item": "item.weld_berry",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Cehri kaynat (tane)"
+    },
+    {
+      "id": "dye_blue_woad",
+      "station": "item.dye_vat",
+      "produces": "item.dye_blue",
+      "materials": [
+        {
+          "item": "item.woad_leaf",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Çivit otu mayala",
+      "minLevel": 2
+    },
+    {
+      "id": "dye_brown",
+      "station": "item.dye_vat",
+      "produces": "item.dye_brown",
+      "materials": [
+        {
+          "item": "item.walnut_hull",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Ceviz kabuğu kaynat"
+    },
+    {
+      "id": "dye_grey",
+      "station": "item.dye_vat",
+      "produces": "item.dye_grey",
+      "materials": [
+        {
+          "item": "item.oak_gall",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Mazı kaynat"
+    },
+    {
+      "id": "copperas",
+      "station": "item.dye_vat",
+      "produces": "item.copperas",
+      "materials": [
+        {
+          "item": "item.iron_ore",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Mining",
+      "skillXp": 6,
+      "displayName": "Karaboya çıkar",
+      "count": 2,
+      "minLevel": 3
+    },
+    {
+      "id": "dye_black",
+      "station": "item.dye_vat",
+      "produces": "item.dye_black",
+      "materials": [
+        {
+          "item": "item.oak_gall",
+          "count": 2
+        },
+        {
+          "item": "item.copperas",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 10,
+      "displayName": "Kara boya kaynat",
+      "count": 2,
+      "minLevel": 3
+    },
+    {
+      "id": "dye_ochre",
+      "station": "item.dye_vat",
+      "produces": "item.dye_ochre",
+      "materials": [
+        {
+          "item": "item.ochre",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 5,
+      "displayName": "Aşı boyası çöz"
+    },
+    {
+      "id": "dye_lichen",
+      "station": "item.dye_vat",
+      "produces": "item.dye_lichen",
+      "materials": [
+        {
+          "item": "item.lichen",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 8,
+      "displayName": "Liken mayala",
+      "minLevel": 3
+    },
+    {
+      "id": "dye_green",
+      "station": "item.dye_vat",
+      "produces": "item.dye_green",
+      "materials": [
+        {
+          "item": "item.dye_blue",
+          "count": 1
+        },
+        {
+          "item": "item.dye_yellow",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 10,
+      "displayName": "Yeşil boya (iki banyo)",
+      "count": 2,
+      "minLevel": 5
+    },
+    {
+      "id": "dye_purple",
+      "station": "item.dye_vat",
+      "produces": "item.dye_purple",
+      "materials": [
+        {
+          "item": "item.dye_red",
+          "count": 1
+        },
+        {
+          "item": "item.dye_blue",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 10,
+      "displayName": "Mor boya (iki banyo)",
+      "count": 2,
+      "minLevel": 5
+    },
+    {
+      "id": "dye_orange",
+      "station": "item.dye_vat",
+      "produces": "item.dye_orange",
+      "materials": [
+        {
+          "item": "item.dye_red",
+          "count": 1
+        },
+        {
+          "item": "item.dye_yellow",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 10,
+      "displayName": "Turuncu boya (iki banyo)",
+      "count": 2,
+      "minLevel": 5
+    },
+    {
+      "id": "dye_olive",
+      "station": "item.dye_vat",
+      "produces": "item.dye_olive",
+      "materials": [
+        {
+          "item": "item.dye_yellow",
+          "count": 1
+        },
+        {
+          "item": "item.dye_grey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 10,
+      "displayName": "Zeytin boyası (iki banyo)",
+      "count": 2,
+      "minLevel": 5
+    },
+    {
+      "id": "dye_saffron",
+      "station": "item.dye_vat",
+      "produces": "item.dye_saffron",
+      "materials": [
+        {
+          "item": "item.saffron",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 10,
+      "displayName": "Safranla sarı boya",
+      "minLevel": 4
+    },
+    {
+      "id": "dye_navy",
+      "station": "item.dye_vat",
+      "produces": "item.dye_navy",
+      "materials": [
+        {
+          "item": "item.indigo",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Weaving",
+      "skillXp": 12,
+      "displayName": "Gerçek çivitle lacivert",
+      "count": 2,
+      "minLevel": 5
+    },
+    {
+      "id": "button_bone",
+      "station": "item.workbench",
+      "produces": "item.button_bone",
+      "materials": [
+        {
+          "item": "item.bone",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Carpentry",
+      "skillXp": 3,
+      "displayName": "Kemik düğme oy",
+      "count": 4
+    },
+    {
+      "id": "button_wood",
+      "station": "item.workbench",
+      "produces": "item.button_wood",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Carpentry",
+      "skillXp": 3,
+      "displayName": "Ahşap düğme oy",
+      "count": 6
+    },
+    {
+      "id": "buckle",
+      "station": "item.forge",
+      "produces": "item.buckle",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        },
+        {
+          "item": "item.copper",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Smithing",
+      "skillXp": 6,
+      "displayName": "Toka dök",
+      "count": 2,
+      "minLevel": 2
+    },
+    {
+      "id": "glass_bead",
+      "station": "item.glass_bench",
+      "produces": "item.glass_bead",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Pottery",
+      "skillXp": 6,
+      "displayName": "Cam boncuk çek",
+      "count": 6,
+      "minLevel": 6
+    },
+    {
+      "id": "gold_thread",
+      "station": "item.forge",
+      "produces": "item.gold_thread",
+      "materials": [
+        {
+          "item": "item.silver",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 10,
+      "displayName": "Sırma çek",
+      "count": 2,
+      "minLevel": 9
+    },
+    {
+      "id": "sewing_table",
+      "station": "item.workbench",
+      "produces": "item.sewing_table",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Carpentry",
+      "skillXp": 12,
+      "displayName": "Dikiş sehpası yap"
+    },
+    {
+      "id": "laundry_basket",
+      "station": "item.workbench",
+      "produces": "item.laundry_basket",
+      "materials": [
+        {
+          "item": "item.withy",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Carpentry",
+      "skillXp": 4,
+      "displayName": "Kirli sepeti ör"
+    },
+    {
+      "id": "cl_work_tunic",
+      "station": "item.sewing_table",
+      "produces": "item.cl_work_tunic",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 2
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Kısa kollu iş tuniği dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_long_tunic",
+      "station": "item.sewing_table",
+      "produces": "item.cl_long_tunic",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Uzun kollu tunik dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_riding_tunic",
+      "station": "item.sewing_table",
+      "produces": "item.cl_riding_tunic",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Yırtmaçlı binici tuniği dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_embroidered_shirt",
+      "station": "item.sewing_table",
+      "produces": "item.cl_embroidered_shirt",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 2
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Yakası işlemeli gömlek dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_buttoned_jacket",
+      "station": "item.sewing_table",
+      "produces": "item.cl_buttoned_jacket",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 4
+        },
+        {
+          "item": "item.yarn",
+          "count": 2
+        },
+        {
+          "item": "item.button_bone",
+          "count": 4
+        }
+      ],
+      "durationDays": 0.19,
+      "skill": "Tailoring",
+      "skillXp": 25,
+      "displayName": "Düğmeli dar ceket dik",
+      "minLevel": 7
+    },
+    {
+      "id": "cl_silk_shirt",
+      "station": "item.sewing_table",
+      "produces": "item.cl_silk_shirt",
+      "materials": [
+        {
+          "item": "item.silk",
+          "count": 3
+        },
+        {
+          "item": "item.silk_thread",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.19,
+      "skill": "Tailoring",
+      "skillXp": 25,
+      "displayName": "İpek gömlek dik",
+      "minLevel": 7
+    },
+    {
+      "id": "cl_quilted_jacket",
+      "station": "item.sewing_table",
+      "produces": "item.cl_quilted_jacket",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 2
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        },
+        {
+          "item": "item.wool",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Tailoring",
+      "skillXp": 19,
+      "displayName": "Kapitone kışlık ceket dik",
+      "minLevel": 5
+    },
+    {
+      "id": "cl_plain_entari",
+      "station": "item.sewing_table",
+      "produces": "item.cl_plain_entari",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Basit entari dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_summer_entari",
+      "station": "item.sewing_table",
+      "produces": "item.cl_summer_entari",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 2
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Yazlık keten entari dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_three_skirts",
+      "station": "item.sewing_table",
+      "produces": "item.cl_three_skirts",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Üç etek dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_kaftan",
+      "station": "item.sewing_table",
+      "produces": "item.cl_kaftan",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Tailoring",
+      "skillXp": 19,
+      "displayName": "Kaftan dik",
+      "minLevel": 5
+    },
+    {
+      "id": "cl_aba",
+      "station": "item.sewing_table",
+      "produces": "item.cl_aba",
+      "materials": [
+        {
+          "item": "item.felt",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Aba dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_feast_entari",
+      "station": "item.sewing_table",
+      "produces": "item.cl_feast_entari",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Bayram entarisi dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_wedding_kaftan",
+      "station": "item.sewing_table",
+      "produces": "item.cl_wedding_kaftan",
+      "materials": [
+        {
+          "item": "item.silk",
+          "count": 3
+        },
+        {
+          "item": "item.silk_thread",
+          "count": 1
+        },
+        {
+          "item": "item.gold_thread",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.23,
+      "skill": "Tailoring",
+      "skillXp": 31,
+      "displayName": "Düğün kaftanı dik",
+      "minLevel": 9
+    },
+    {
+      "id": "cl_felt_vest",
+      "station": "item.sewing_table",
+      "produces": "item.cl_felt_vest",
+      "materials": [
+        {
+          "item": "item.felt",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Keçe yelek dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_fur_vest",
+      "station": "item.sewing_table",
+      "produces": "item.cl_fur_vest",
+      "materials": [
+        {
+          "item": "item.fur",
+          "count": 3
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Kürklü yelek dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_sleeveless_overgown",
+      "station": "item.sewing_table",
+      "produces": "item.cl_sleeveless_overgown",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Tailoring",
+      "skillXp": 19,
+      "displayName": "Kolsuz üstlük dik",
+      "minLevel": 5
+    },
+    {
+      "id": "cl_cloth_apron",
+      "station": "item.sewing_table",
+      "produces": "item.cl_cloth_apron",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 2
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Bez önlük dik"
+    },
+    {
+      "id": "cl_leather_apron",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_leather_apron",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Leatherwork",
+      "skillXp": 13,
+      "displayName": "Deri önlük yap",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_linen_drawers",
+      "station": "item.sewing_table",
+      "produces": "item.cl_linen_drawers",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 2
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Keten don dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_wool_hose",
+      "station": "item.sewing_table",
+      "produces": "item.cl_wool_hose",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Yün tozluk dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_leg_wraps",
+      "station": "item.sewing_table",
+      "produces": "item.cl_leg_wraps",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Dolaklı tozluk dik"
+    },
+    {
+      "id": "cl_laced_trousers",
+      "station": "item.sewing_table",
+      "produces": "item.cl_laced_trousers",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Dar pantolon dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_salvar",
+      "station": "item.sewing_table",
+      "produces": "item.cl_salvar",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Şalvar dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_riding_leggings",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_riding_leggings",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Leatherwork",
+      "skillXp": 19,
+      "displayName": "Deri binici tozluğu yap",
+      "minLevel": 5
+    },
+    {
+      "id": "cl_long_wool_skirt",
+      "station": "item.sewing_table",
+      "produces": "item.cl_long_wool_skirt",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Uzun yün etek dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_linen_skirt",
+      "station": "item.sewing_table",
+      "produces": "item.cl_linen_skirt",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 2
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Keten etek dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_tucked_skirt",
+      "station": "item.sewing_table",
+      "produces": "item.cl_tucked_skirt",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Sıvalı iş eteği dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_pleated_skirt",
+      "station": "item.sewing_table",
+      "produces": "item.cl_pleated_skirt",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Pileli bayram eteği dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_carik",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_carik",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Leatherwork",
+      "skillXp": 10,
+      "displayName": "Çarık yap",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_low_shoes",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_low_shoes",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Leatherwork",
+      "skillXp": 10,
+      "displayName": "Düşük deri ayakkabı yap",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_ankle_shoes",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_ankle_shoes",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Leatherwork",
+      "skillXp": 13,
+      "displayName": "Bileği bağlı ayakkabı yap",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_half_boots",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_half_boots",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Leatherwork",
+      "skillXp": 22,
+      "displayName": "Yarım çizme yap",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_riding_boots",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_riding_boots",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Leatherwork",
+      "skillXp": 22,
+      "displayName": "Uzun binici çizmesi yap",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_fur_boots",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_fur_boots",
+      "materials": [
+        {
+          "item": "item.fur",
+          "count": 2
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.19,
+      "skill": "Leatherwork",
+      "skillXp": 25,
+      "displayName": "Kürk astarlı çizme yap",
+      "minLevel": 7
+    },
+    {
+      "id": "cl_felt_boots",
+      "station": "item.sewing_table",
+      "produces": "item.cl_felt_boots",
+      "materials": [
+        {
+          "item": "item.felt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Keçe çizme dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_knit_slippers",
+      "station": "item.sewing_table",
+      "produces": "item.cl_knit_slippers",
+      "materials": [
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Örgü yün patik dik"
+    },
+    {
+      "id": "cl_clogs",
+      "station": "item.workbench",
+      "produces": "item.cl_clogs",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 1
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Carpentry",
+      "skillXp": 10,
+      "displayName": "Tahta takunya yap",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_soft_mest",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_soft_mest",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.23,
+      "skill": "Leatherwork",
+      "skillXp": 31,
+      "displayName": "Yumuşak deri mest yap",
+      "minLevel": 9
+    },
+    {
+      "id": "cl_linen_kerchief",
+      "station": "item.sewing_table",
+      "produces": "item.cl_linen_kerchief",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Keten başörtüsü dik"
+    },
+    {
+      "id": "cl_long_veil",
+      "station": "item.sewing_table",
+      "produces": "item.cl_long_veil",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Uzun örtü dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_chin_wimple",
+      "station": "item.sewing_table",
+      "produces": "item.cl_chin_wimple",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Çene bağlı örtü dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_yemeni",
+      "station": "item.sewing_table",
+      "produces": "item.cl_yemeni",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Yemeni dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_turban_wrap",
+      "station": "item.sewing_table",
+      "produces": "item.cl_turban_wrap",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Tülbent sarma dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_hair_net",
+      "station": "item.sewing_table",
+      "produces": "item.cl_hair_net",
+      "materials": [
+        {
+          "item": "item.silk",
+          "count": 2
+        },
+        {
+          "item": "item.silk_thread",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Saç filesi dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_baby_bonnet",
+      "station": "item.sewing_table",
+      "produces": "item.cl_baby_bonnet",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Bebek takkesi dik"
+    },
+    {
+      "id": "cl_linen_coif",
+      "station": "item.sewing_table",
+      "produces": "item.cl_linen_coif",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Keten takke dik"
+    },
+    {
+      "id": "cl_wool_cap",
+      "station": "item.sewing_table",
+      "produces": "item.cl_wool_cap",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Yün takke dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_knit_beret",
+      "station": "item.sewing_table",
+      "produces": "item.cl_knit_beret",
+      "materials": [
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Örgü bere dik"
+    },
+    {
+      "id": "cl_felt_kulah",
+      "station": "item.loom",
+      "produces": "item.cl_felt_kulah",
+      "materials": [
+        {
+          "item": "item.felt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Weaving",
+      "skillXp": 16,
+      "displayName": "Keçe külah yap",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_bork",
+      "station": "item.sewing_table",
+      "produces": "item.cl_bork",
+      "materials": [
+        {
+          "item": "item.felt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Tailoring",
+      "skillXp": 19,
+      "displayName": "Börk dik",
+      "minLevel": 5
+    },
+    {
+      "id": "cl_fur_kalpak",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_fur_kalpak",
+      "materials": [
+        {
+          "item": "item.fur",
+          "count": 2
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Leatherwork",
+      "skillXp": 22,
+      "displayName": "Kürk kalpak yap",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_bag_hood",
+      "station": "item.sewing_table",
+      "produces": "item.cl_bag_hood",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Torba başlık dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_caped_hood",
+      "station": "item.sewing_table",
+      "produces": "item.cl_caped_hood",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Pelerinli kapüşon dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_liripipe_hood",
+      "station": "item.sewing_table",
+      "produces": "item.cl_liripipe_hood",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Uzun uçlu kapüşon dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_fur_hood",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_fur_hood",
+      "materials": [
+        {
+          "item": "item.fur",
+          "count": 2
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Leatherwork",
+      "skillXp": 22,
+      "displayName": "Kürk kapüşon yap",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_chaperon",
+      "station": "item.sewing_table",
+      "produces": "item.cl_chaperon",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.19,
+      "skill": "Tailoring",
+      "skillXp": 25,
+      "displayName": "Sarma şaperon dik",
+      "minLevel": 7
+    },
+    {
+      "id": "cl_wide_straw_hat",
+      "station": "item.loom",
+      "produces": "item.cl_wide_straw_hat",
+      "materials": [
+        {
+          "item": "item.straw",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Weaving",
+      "skillXp": 7,
+      "displayName": "Geniş kenarlı hasır şapka yap"
+    },
+    {
+      "id": "cl_straw_hat",
+      "station": "item.loom",
+      "produces": "item.cl_straw_hat",
+      "materials": [
+        {
+          "item": "item.straw",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Weaving",
+      "skillXp": 7,
+      "displayName": "Düz hasır şapka yap"
+    },
+    {
+      "id": "cl_pilgrim_hat",
+      "station": "item.sewing_table",
+      "produces": "item.cl_pilgrim_hat",
+      "materials": [
+        {
+          "item": "item.felt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Geniş kenarlı keçe şapka dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_rolled_brim_hat",
+      "station": "item.sewing_table",
+      "produces": "item.cl_rolled_brim_hat",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Kıvrık kenarlı yün şapka dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_feathered_hat",
+      "station": "item.sewing_table",
+      "produces": "item.cl_feathered_hat",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        },
+        {
+          "item": "item.heron_feather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Tüylü şapka dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_fur_hat",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_fur_hat",
+      "materials": [
+        {
+          "item": "item.fur",
+          "count": 2
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.21,
+      "skill": "Leatherwork",
+      "skillXp": 28,
+      "displayName": "Kürk şapka yap",
+      "minLevel": 8
+    },
+    {
+      "id": "cl_hunter_hat",
+      "station": "item.sewing_table",
+      "produces": "item.cl_hunter_hat",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        },
+        {
+          "item": "item.heron_feather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Tailoring",
+      "skillXp": 19,
+      "displayName": "Avcı şapkası dik",
+      "minLevel": 5
+    },
+    {
+      "id": "cl_flower_crown",
+      "station": "item.sewing_table",
+      "produces": "item.cl_flower_crown",
+      "materials": [
+        {
+          "item": "item.elderflower",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Horticulture",
+      "skillXp": 8,
+      "displayName": "Çiçek tacı yap",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_hair_band",
+      "station": "item.sewing_table",
+      "produces": "item.cl_hair_band",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Saç bandı dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_bridal_crown",
+      "station": "item.forge",
+      "produces": "item.cl_bridal_crown",
+      "materials": [
+        {
+          "item": "item.silver",
+          "count": 2
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.23,
+      "skill": "Smithing",
+      "skillXp": 31,
+      "displayName": "Gelin tacı yap",
+      "minLevel": 9
+    },
+    {
+      "id": "cl_beekeeper_veil",
+      "station": "item.sewing_table",
+      "produces": "item.cl_beekeeper_veil",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Arıcı başlığı dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_smith_cap",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_smith_cap",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Leatherwork",
+      "skillXp": 13,
+      "displayName": "Demirci deri başlığı yap",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_oiled_fisher_hood",
+      "station": "item.sewing_table",
+      "produces": "item.cl_oiled_fisher_hood",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        },
+        {
+          "item": "item.tallow",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Yağlı balıkçı başlığı dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_short_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_short_cloak",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Kısa yün pelerin dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_long_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_long_cloak",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Uzun yün pelerin dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_hooded_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_hooded_cloak",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Kapüşonlu yol pelerini dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_brooch_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_brooch_cloak",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 5
+        },
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Yarım daire pelerin dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_fur_collar_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_fur_collar_cloak",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 4
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        },
+        {
+          "item": "item.fur",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Kürk yakalı pelerin dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_fur_lined_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_fur_lined_cloak",
+      "materials": [
+        {
+          "item": "item.fur",
+          "count": 4
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.21,
+      "skill": "Tailoring",
+      "skillXp": 28,
+      "displayName": "Kürk astarlı pelerin dik",
+      "minLevel": 8
+    },
+    {
+      "id": "cl_kepenek",
+      "station": "item.sewing_table",
+      "produces": "item.cl_kepenek",
+      "materials": [
+        {
+          "item": "item.felt",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Kepenek dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_oiled_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_oiled_cloak",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        },
+        {
+          "item": "item.tallow",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Yağmurluk dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_sheepskin_mantle",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_sheepskin_mantle",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Leatherwork",
+      "skillXp": 13,
+      "displayName": "Koyun postu omuzluk yap",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_wool_shawl",
+      "station": "item.sewing_table",
+      "produces": "item.cl_wool_shawl",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 3
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Omuz şalı dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_silk_shawl",
+      "station": "item.sewing_table",
+      "produces": "item.cl_silk_shawl",
+      "materials": [
+        {
+          "item": "item.silk",
+          "count": 4
+        },
+        {
+          "item": "item.silk_thread",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Tailoring",
+      "skillXp": 19,
+      "displayName": "İpek şal dik",
+      "minLevel": 5
+    },
+    {
+      "id": "cl_crest_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_crest_cloak",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 5
+        },
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.23,
+      "skill": "Tailoring",
+      "skillXp": 31,
+      "displayName": "Armalı pelerin dik",
+      "minLevel": 9
+    },
+    {
+      "id": "cl_feast_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_feast_cloak",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 4
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Bayram pelerini dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_child_cloak",
+      "station": "item.sewing_table",
+      "produces": "item.cl_child_cloak",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Çocuk pelerini dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_knit_scarf",
+      "station": "item.sewing_table",
+      "produces": "item.cl_knit_scarf",
+      "materials": [
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Örgü atkı dik"
+    },
+    {
+      "id": "cl_fur_neckpiece",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_fur_neckpiece",
+      "materials": [
+        {
+          "item": "item.fur",
+          "count": 2
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Leatherwork",
+      "skillXp": 22,
+      "displayName": "Kürk boyunluk yap",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_embroidered_collar",
+      "station": "item.sewing_table",
+      "produces": "item.cl_embroidered_collar",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Tailoring",
+      "skillXp": 22,
+      "displayName": "Takma işlemeli yaka dik",
+      "minLevel": 6
+    },
+    {
+      "id": "cl_neck_wrap",
+      "station": "item.sewing_table",
+      "produces": "item.cl_neck_wrap",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Puşi dik"
+    },
+    {
+      "id": "cl_knit_mitts",
+      "station": "item.sewing_table",
+      "produces": "item.cl_knit_mitts",
+      "materials": [
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Örgü eldiven dik"
+    },
+    {
+      "id": "cl_work_gloves",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_work_gloves",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Leatherwork",
+      "skillXp": 16,
+      "displayName": "Deri iş eldiveni yap",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_fur_gloves",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_fur_gloves",
+      "materials": [
+        {
+          "item": "item.fur",
+          "count": 2
+        },
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.19,
+      "skill": "Leatherwork",
+      "skillXp": 25,
+      "displayName": "Kürk eldiven yap",
+      "minLevel": 7
+    },
+    {
+      "id": "cl_rope_sash",
+      "station": "item.sewing_table",
+      "produces": "item.cl_rope_sash",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "İp kuşak dik"
+    },
+    {
+      "id": "cl_woven_sash",
+      "station": "item.loom",
+      "produces": "item.cl_woven_sash",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Weaving",
+      "skillXp": 16,
+      "displayName": "Dokuma kuşak yap",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_leather_belt",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_leather_belt",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Leatherwork",
+      "skillXp": 10,
+      "displayName": "Deri kemer yap",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_buckled_belt",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_buckled_belt",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        },
+        {
+          "item": "item.buckle",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Leatherwork",
+      "skillXp": 13,
+      "displayName": "Tokalı kemer yap",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_silver_belt",
+      "station": "item.forge",
+      "produces": "item.cl_silver_belt",
+      "materials": [
+        {
+          "item": "item.silver",
+          "count": 2
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.23,
+      "skill": "Smithing",
+      "skillXp": 31,
+      "displayName": "Gümüş kemer yap",
+      "minLevel": 9
+    },
+    {
+      "id": "cl_belt_pouch",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_belt_pouch",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Leatherwork",
+      "skillXp": 10,
+      "displayName": "Bel kesesi yap",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_shoulder_bag",
+      "station": "item.saddler_bench",
+      "produces": "item.cl_shoulder_bag",
+      "materials": [
+        {
+          "item": "item.leather",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Leatherwork",
+      "skillXp": 10,
+      "displayName": "Çapraz omuz çantası yap",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_swaddle",
+      "station": "item.sewing_table",
+      "produces": "item.cl_swaddle",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Kundak dik"
+    },
+    {
+      "id": "cl_baby_smock",
+      "station": "item.sewing_table",
+      "produces": "item.cl_baby_smock",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Bebek entarisi dik"
+    },
+    {
+      "id": "cl_baby_booties",
+      "station": "item.sewing_table",
+      "produces": "item.cl_baby_booties",
+      "materials": [
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Örgü bebek patiği dik"
+    },
+    {
+      "id": "cl_baby_blanket",
+      "station": "item.loom",
+      "produces": "item.cl_baby_blanket",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Weaving",
+      "skillXp": 13,
+      "displayName": "Bebek battaniyesi yap",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_baby_bib",
+      "station": "item.sewing_table",
+      "produces": "item.cl_baby_bib",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Göğüslük dik"
+    },
+    {
+      "id": "cl_child_shirt",
+      "station": "item.sewing_table",
+      "produces": "item.cl_child_shirt",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Çocuk gömleği dik"
+    },
+    {
+      "id": "cl_child_tunic",
+      "station": "item.sewing_table",
+      "produces": "item.cl_child_tunic",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Çocuk tuniği dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_child_entari",
+      "station": "item.sewing_table",
+      "produces": "item.cl_child_entari",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Çocuk entarisi dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_pinafore_entari",
+      "station": "item.sewing_table",
+      "produces": "item.cl_pinafore_entari",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Önlüklü çocuk entarisi dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_child_felt_vest",
+      "station": "item.sewing_table",
+      "produces": "item.cl_child_felt_vest",
+      "materials": [
+        {
+          "item": "item.felt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Tailoring",
+      "skillXp": 13,
+      "displayName": "Keçe çocuk yeleği dik",
+      "minLevel": 3
+    },
+    {
+      "id": "cl_first_feast_suit",
+      "station": "item.sewing_table",
+      "produces": "item.cl_first_feast_suit",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "İlk bayramlık dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_child_drawers",
+      "station": "item.sewing_table",
+      "produces": "item.cl_child_drawers",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Çocuk donu dik"
+    },
+    {
+      "id": "cl_child_hose",
+      "station": "item.sewing_table",
+      "produces": "item.cl_child_hose",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Çocuk tozluğu dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_child_skirt",
+      "station": "item.sewing_table",
+      "produces": "item.cl_child_skirt",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Çocuk eteği dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_child_salvar",
+      "station": "item.sewing_table",
+      "produces": "item.cl_child_salvar",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.09,
+      "skill": "Tailoring",
+      "skillXp": 10,
+      "displayName": "Çocuk şalvarı dik",
+      "minLevel": 2
+    },
+    {
+      "id": "cl_small_shawl",
+      "station": "item.sewing_table",
+      "produces": "item.cl_small_shawl",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Küçük şal dik"
+    },
+    {
+      "id": "cl_maternity_entari",
+      "station": "item.sewing_table",
+      "produces": "item.cl_maternity_entari",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Tailoring",
+      "skillXp": 16,
+      "displayName": "Gebelik entarisi dik",
+      "minLevel": 4
+    },
+    {
+      "id": "cl_belly_band",
+      "station": "item.sewing_table",
+      "produces": "item.cl_belly_band",
+      "materials": [
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.07,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Karın kuşağı dik"
+    },
+    {
+      "id": "jw_earring",
+      "station": "item.forge",
+      "produces": "item.jw_earring",
+      "materials": [
+        {
+          "item": "item.copper",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 13,
+      "displayName": "Küpe yap",
+      "minLevel": 7
+    },
+    {
+      "id": "jw_nose_ring",
+      "station": "item.forge",
+      "produces": "item.jw_nose_ring",
+      "materials": [
+        {
+          "item": "item.copper",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 13,
+      "displayName": "Burun halkası yap",
+      "minLevel": 7
+    },
+    {
+      "id": "jw_cord_necklace",
+      "station": "item.sewing_table",
+      "produces": "item.jw_cord_necklace",
+      "materials": [
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        },
+        {
+          "item": "item.bone",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "İp kolye yap"
+    },
+    {
+      "id": "jw_glass_beads",
+      "station": "item.glass_bench",
+      "produces": "item.jw_glass_beads",
+      "materials": [
+        {
+          "item": "item.glass_bead",
+          "count": 3
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Pottery",
+      "skillXp": 12,
+      "displayName": "Cam boncuk dizisi yap",
+      "minLevel": 6
+    },
+    {
+      "id": "jw_brooch",
+      "station": "item.forge",
+      "produces": "item.jw_brooch",
+      "materials": [
+        {
+          "item": "item.copper",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 9,
+      "displayName": "Broş yap",
+      "minLevel": 3
+    },
+    {
+      "id": "jw_ring",
+      "station": "item.forge",
+      "produces": "item.jw_ring",
+      "materials": [
+        {
+          "item": "item.copper",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 13,
+      "displayName": "Yüzük yap",
+      "minLevel": 7
+    },
+    {
+      "id": "jw_seal_ring",
+      "station": "item.forge",
+      "produces": "item.jw_seal_ring",
+      "materials": [
+        {
+          "item": "item.silver",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 14,
+      "displayName": "Mühür yüzüğü yap",
+      "minLevel": 8
+    },
+    {
+      "id": "jw_bracelet",
+      "station": "item.forge",
+      "produces": "item.jw_bracelet",
+      "materials": [
+        {
+          "item": "item.copper",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 13,
+      "displayName": "Bilezik yap",
+      "minLevel": 7
+    },
+    {
+      "id": "jw_evil_eye",
+      "station": "item.glass_bench",
+      "produces": "item.jw_evil_eye",
+      "materials": [
+        {
+          "item": "item.glass_bead",
+          "count": 3
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Pottery",
+      "skillXp": 13,
+      "displayName": "Nazar boncuğu yap",
+      "minLevel": 7
+    },
+    {
+      "id": "seed_hemp",
+      "station": "item.seed_maker",
+      "produces": "item.seed_hemp",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.hemp",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Kendir"
+    },
+    {
+      "id": "seed_woad",
+      "station": "item.seed_maker",
+      "produces": "item.seed_woad",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.woad_leaf",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Çivit otu"
+    },
+    {
+      "id": "seed_madder",
+      "station": "item.seed_maker",
+      "produces": "item.seed_madder",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.madder_root",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 4,
+      "displayName": "Fide çıkar: Kökboya"
+    },
+    {
+      "id": "seed_weld",
+      "station": "item.seed_maker",
+      "produces": "item.seed_weld",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.weld_berry",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Sarı boya otu"
     }
   ],
   "animals": [
@@ -39688,6 +45285,36 @@
       "litterMax": 2,
       "femaleName": "dişi güvercin",
       "maleName": "erkek güvercin"
+    },
+    {
+      "id": "animal.angora_goat",
+      "displayName": "Tiftik keçisi",
+      "price": 70,
+      "housing": "barn",
+      "feedPerDay": 1.5,
+      "produces": "item.mohair",
+      "produceEveryDays": 10,
+      "lifespanDays": 26,
+      "matureDays": 6,
+      "level": 7,
+      "meat": "item.meat",
+      "meatCount": 2,
+      "hide": "item.hide",
+      "hideCount": 1,
+      "trample": 1,
+      "seasonOutput": [
+        1.5,
+        1.0,
+        0.5,
+        0.0
+      ],
+      "gestationDays": 1,
+      "litterMin": 1,
+      "litterMax": 2,
+      "femaleProduces": false,
+      "femaleName": "tiftik keçisi",
+      "maleName": "tiftik tekesi",
+      "herd": true
     }
   ],
   "buildParts": [
@@ -41334,6 +46961,120 @@
       "description": "Bağda herkes birlikte; kopuz çaldı, şıra içildi.",
       "value": 8,
       "days": 1.0
+    },
+    {
+      "id": "eff_new_clothes",
+      "displayName": "Yeni giysi",
+      "description": "İlk kez giydi.",
+      "value": 3,
+      "days": 1.0
+    },
+    {
+      "id": "eff_self_sewn",
+      "displayName": "Kendi diktiğim",
+      "description": "Kendi diktiği giysiyi giyiyor.",
+      "value": 2,
+      "days": 0.1
+    },
+    {
+      "id": "eff_our_labor",
+      "displayName": "Kendi emeğimiz",
+      "description": "Hanenin kendi malzemesinden dikilmiş giysi.",
+      "value": 1,
+      "days": 0.1
+    },
+    {
+      "id": "eff_festive_dress",
+      "displayName": "Bayramlık",
+      "description": "Şenlikte bayram takımıyla.",
+      "value": 4,
+      "days": 0.5
+    },
+    {
+      "id": "eff_patched",
+      "displayName": "Yamalı",
+      "description": "Yamalı giysi hoşuna gitmiyor.",
+      "value": -1,
+      "days": 0.1
+    },
+    {
+      "id": "eff_ancestors",
+      "displayName": "Atalarımın izinde",
+      "description": "Yadigâr bir giysi ya da takı taşıyor.",
+      "value": 3,
+      "days": 0.1
+    },
+    {
+      "id": "eff_confident",
+      "displayName": "Özgüvenli",
+      "description": "Giyimi övüldü: gönül işlerinde %10, pazarlıkta %5 başarılı.",
+      "value": 4,
+      "days": 0.25,
+      "skillSpeed": [
+        {
+          "skill": "Charm",
+          "rate": 0.1
+        },
+        {
+          "skill": "Trade",
+          "rate": 0.05
+        }
+      ]
+    },
+    {
+      "id": "eff_ashamed_dress",
+      "displayName": "Mahcup",
+      "description": "Giyimine laf edildi: gönül işlerinde %10 başarısız.",
+      "value": -3,
+      "days": 0.167,
+      "skillSpeed": [
+        {
+          "skill": "Charm",
+          "rate": -0.1
+        }
+      ]
+    },
+    {
+      "id": "eff_dirty_clothes",
+      "displayName": "Kirli giysi",
+      "description": "Üstü başı kirli.",
+      "value": -1,
+      "days": 0.1
+    },
+    {
+      "id": "eff_grown_up",
+      "displayName": "Büyüdüm",
+      "description": "İlk bayramlığını giydi.",
+      "value": 6,
+      "days": 2.0
+    },
+    {
+      "id": "eff_comfy",
+      "displayName": "Rahatım",
+      "description": "Gebelik giysisi rahat ettiriyor.",
+      "value": 3,
+      "days": 0.1
+    },
+    {
+      "id": "eff_comfy_plus",
+      "displayName": "Rahatım",
+      "description": "Gebelik entarisi ve karın kuşağı: çok rahat.",
+      "value": 4,
+      "days": 0.1
+    },
+    {
+      "id": "eff_black_tea",
+      "displayName": "Çay keyfi",
+      "description": "Bir bardak demli çay.",
+      "value": 4,
+      "days": 0.25
+    },
+    {
+      "id": "eff_tea_talk",
+      "displayName": "Çay sohbeti",
+      "description": "Birlikte çay içip sohbet etti.",
+      "value": 5,
+      "days": 0.25
     }
   ]
 }

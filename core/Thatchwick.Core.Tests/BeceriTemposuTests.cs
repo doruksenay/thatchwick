@@ -280,10 +280,10 @@ namespace Thatchwick.Core.Tests
                 Assert.Equal(want, list.Count);
                 if (want == 2) Assert.All(list, b => Assert.Equal(5, b.Level));
             }
-            Assert.Equal(118, total);   // 116 + Atletizm (5. seviye 2 dal)
+            Assert.Equal(120, total);   // 116 + Atletizm + Terzilik (5. seviye 2 dal)
             Assert.Equal(14, main);
             Assert.Equal(4, none);
-            Assert.Equal(118, db.Branches.Count);
+            Assert.Equal(120, db.Branches.Count);
         }
     }
 }
