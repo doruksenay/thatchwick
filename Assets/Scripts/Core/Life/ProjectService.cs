@@ -32,11 +32,18 @@ namespace Thatchwick.Core.Life
         /// <summary>"Köy durumu" puanı: tamamlanan projelerin durum etkilerinin toplamı.</summary>
         public int VillageStatus => _village.Status;
 
+        /// <summary>Proje akçesi çarpanı (belge 45: Mühendislik 10 değirmen, Öğretmenlik 10 okul önderliği); null ise 1.</summary>
+        public Func<string, double> AkceFactor { get; set; }
+
+        /// <summary>Projenin bu hanede ödenecek akçesi.</summary>
+        public int AkceOf(ProjectDef p) => p == null ? 0 : (int)Math.Round(p.Akce * (AkceFactor != null ? AkceFactor(p.Id) : 1.0), MidpointRounding.AwayFromZero);
+
         public string CanBuild(string projectId)
         {
             if (!_content.Projects.TryGet(projectId, out var p)) return "Böyle bir proje yok.";
             if (IsDone(projectId)) return "Bu proje zaten tamamlandı.";
-            if (_house.Akce < p.Akce) return $"Akçe yetmiyor ({p.Akce} gerekir).";
+            int cost = AkceOf(p);
+            if (_house.Akce < cost) return $"Akçe yetmiyor ({cost} gerekir).";
             foreach (var c in p.Costs)
                 if (_house.Count(c.ItemId) < c.Count)
                 {
@@ -51,7 +58,7 @@ namespace Thatchwick.Core.Life
             reason = CanBuild(projectId);
             if (reason != null) return false;
             var p = _content.Projects.Get(projectId);
-            if (p.Akce > 0) _house.TrySpend(p.Akce);
+            if (AkceOf(p) > 0) _house.TrySpend(AkceOf(p));
             foreach (var c in p.Costs) for (int i = 0; i < c.Count; i++) _house.TryTakeItem(c.ItemId);
             _done.Add(projectId);
             Rebuild();

@@ -56,7 +56,10 @@ namespace Thatchwick.Core.Upbringing
         public int Weddings { get; private set; }
         public int GrandWeddings { get; private set; }
 
-        public static readonly string[] Breads = { "item.bread", "item.bread_rye", "item.bread_maslin", "item.simit" };
+        public static readonly string[] Breads = { "item.wedding_bread", "item.bread", "item.bread_sourdough", "item.bread_rye", "item.bread_maslin", "item.simit", "item.bazlama" };
+        /// <summary>Düğün yemeği (Aşçılık 9): varsa harcanır, itibar +4 (belge 45).</summary>
+        public const string WeddingDishId = "item.wedding_dish";
+        public const int WeddingDishReputation = 4, FamilySongReputation = 5, FamilySongLevel = 10;
         public static readonly string[] Drinks = { "item.ale", "item.cider", "item.mead", "item.serbet", "item.boza" };
         public static readonly string[] Lights = { "item.candle", "item.tallow_candle", "item.beeswax_candle" };
         public const int BreadNeed = 4, DrinkNeed = 4, LightNeed = 3;
@@ -122,6 +125,9 @@ namespace Thatchwick.Core.Upbringing
             }
             r.Scale = ScaleFor(ready, dowryFull);
             r.Reputation = r.Scale == WeddingScale.Grand ? ReputationGrand : r.Scale == WeddingScale.Fine ? ReputationFine : ReputationPlain;
+            if (_house.TryTakeItem(WeddingDishId)) { r.Reputation += WeddingDishReputation; r.Used.Add("düğün yemeği"); }
+            var musician = Musician();
+            if (musician != null && musician.Skills.GetLevel(SkillType.Music) >= FamilySongLevel) { r.Reputation += FamilySongReputation; r.Used.Add("aile ezgisi"); }
             Weddings++;
             if (r.Scale == WeddingScale.Grand) GrandWeddings++;
 

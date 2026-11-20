@@ -401,6 +401,7 @@ namespace Thatchwick.Core.Tests
             var db = ContentFilesTests.LoadDb(out _);
             var pop = new Population();
             var life = new LifeSystems(db, new WorldState(new GridMap(12, 12)), new Household(), pop, new GameClock());
+            life.SkillPacing = false;   // XP ölçeği ve doygunluk ayrı sınanır (belge 45 bölüm 4)
             var master = Person(1, AdultAge); var app = Person(2, ChildAge);
             app.BirthMotherId = 1;
             pop.Add(master); pop.Add(app);

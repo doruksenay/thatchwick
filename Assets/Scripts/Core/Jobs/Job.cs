@@ -24,7 +24,14 @@ namespace Thatchwick.Core.Jobs
         Propose = 2,
         TryForBaby = 3,
         /// <summary>Çocuğa masal anlat (kitap gerekmez; ortaçağda masal sözlüydü).</summary>
-        TellStory = 4
+        TellStory = 4,
+        // Beceri seviyesiyle açılan sosyal işler (Project belgesi 45, 9. bölüm; FamilyService.SkillSocials).
+        Compliment = 10, Joke = 11, Listen = 12, Mediate = 13, Matchmake = 14, Persuade = 15, FestivalSpeech = 16,
+        LearnSong = 20, PlayTavern = 21, OpenFestival = 22, Compose = 23, LeadDance = 24,
+        Lullaby = 30, PlayWithBaby = 31, FirstSteps = 32, ShowWork = 33, Soothe = 34, TalkTeen = 35, SingLullaby = 36,
+        TeachLetters = 40, VillageLesson = 41, Assess = 42, ElderLesson = 43,
+        Diagnose = 50, Bandage = 51, Midwife = 52, SetBone = 53, VisitPatient = 54, ElderCare = 55,
+        TellWeather = 60, WriteLetter = 61
     }
 
     /// <summary>Karakterin yapacağı bir iş. Oyuncu komutu ve NPC otonomisi aynı işleri üretir.</summary>

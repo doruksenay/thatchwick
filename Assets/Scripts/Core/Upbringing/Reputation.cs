@@ -26,8 +26,12 @@ namespace Thatchwick.Core.Upbringing
                 Breakdown = -3, NursingMotherHunted = -10, CompanionTrait = 4, RecipeLost = -5;
         }
 
+        /// <summary>Kazanılan itibar çarpanı (belge 45: Cazibe 10 "köy meclisinde oy" ×1,1); null ise 1. Kayıp etkilenmez.</summary>
+        public Func<double> GainFactor { get; set; }
+
         public void Add(int amount, string reason)
         {
+            if (amount > 0 && GainFactor != null) amount = (int)Math.Round(amount * GainFactor(), MidpointRounding.AwayFromZero);
             if (amount == 0) return;
             int before = Points;
             Points = Math.Max(Min, Math.Min(Max, Points + amount));

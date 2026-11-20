@@ -67,6 +67,10 @@ namespace Thatchwick.Core.Save
         public Thatchwick.Core.Upbringing.UpbringingSave upbringing;
         /// <summary>Gezgin tüccar: mallar, sipariş (belge 34-D5). Eski kayıtta null.</summary>
         public Thatchwick.Core.Economy.MerchantSave merchant;
+        /// <summary>Beceri işlerinin kalıcı bayrakları (belge 45: aşı, stoklu gölet, kara toprak, imece, ırgat). Eski kayıtta null.</summary>
+        public string[] skillFlags;
+        /// <summary>Oda adları "x,y,z=ad" (belge 45, Ev düzenleme 2). Eski kayıtta null.</summary>
+        public string[] roomNames;
         // Hatıralar ve "ilk"ler (D3b, 18.11.2026). Eski kayıtta null: boş başlar.
         public Thatchwick.Core.Life.KeepsakeSave keepsakes;
         // Ev bakımı ve otomasyonu (belge 45); eski kayıtta null.
