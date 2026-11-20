@@ -2168,6 +2168,186 @@
           "moodDays": 0.5,
           "bladder": 15,
           "adultPack": true
+        },
+        {
+          "id": "cook_fish_tench",
+          "displayName": "Kadife balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_tench",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_bream",
+          "displayName": "Çapak pişir ve ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.075,
+          "consume": "item.fish_bream",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_rudd",
+          "displayName": "Kızılkanat pişir ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.075,
+          "consume": "item.fish_rudd",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_catfish",
+          "displayName": "Yayın balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.075,
+          "consume": "item.fish_catfish",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_perch",
+          "displayName": "Tatlı su levreği pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_perch",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_salmon",
+          "displayName": "Somon pişir ve ye",
+          "need": "Hunger",
+          "restore": 75,
+          "durationDays": 0.075,
+          "consume": "item.fish_salmon",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 6,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_bullhead",
+          "displayName": "Dere kaya balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.075,
+          "consume": "item.fish_bullhead",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_mussel",
+          "displayName": "Midye pişir ve ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.075,
+          "consume": "item.mussel",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_carp_gold",
+          "displayName": "Altın sazan pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.075,
+          "consume": "item.fish_carp_gold",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_catfish_giant",
+          "displayName": "Dev yayın pişir ve ye",
+          "need": "Hunger",
+          "restore": 100,
+          "durationDays": 0.15,
+          "consume": "item.fish_catfish_giant",
+          "skill": "Cooking",
+          "skillXp": 40,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık şöleni",
+          "moodValue": 10,
+          "moodDays": 3.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_sturgeon_old",
+          "displayName": "Mersin pişir ve ye",
+          "need": "Hunger",
+          "restore": 100,
+          "durationDays": 0.15,
+          "consume": "item.fish_sturgeon_old",
+          "skill": "Cooking",
+          "skillXp": 40,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık şöleni",
+          "moodValue": 10,
+          "moodDays": 3.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_pike_old",
+          "displayName": "Yaşlı turna pişir ve ye",
+          "need": "Hunger",
+          "restore": 100,
+          "durationDays": 0.15,
+          "consume": "item.fish_pike_old",
+          "skill": "Cooking",
+          "skillXp": 40,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık şöleni",
+          "moodValue": 10,
+          "moodDays": 3.0,
+          "bladder": 4
         }
       ],
       "price": 25,
@@ -7157,6 +7337,21 @@
         {
           "item": "item.snail_shell",
           "chance": 0.2
+        },
+        {
+          "item": "item.bug_snow_fly",
+          "chance": 0.03,
+          "seasons": [
+            "Winter"
+          ]
+        },
+        {
+          "item": "item.bug_ant",
+          "chance": 0.2,
+          "seasons": [
+            "Winter",
+            "Spring"
+          ]
         }
       ],
       "tags": [
@@ -7286,6 +7481,39 @@
             "Summer"
           ],
           "night": true
+        },
+        {
+          "item": "item.bug_swallowtail",
+          "chance": 0.25,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.bug_peacock_moth",
+          "chance": 0.03,
+          "seasons": [
+            "Spring"
+          ],
+          "night": true
+        },
+        {
+          "item": "item.locust",
+          "chance": 0.3,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.bug_night_moth",
+          "chance": 0.3,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ],
+          "night": true
         }
       ],
       "art": {
@@ -7384,6 +7612,33 @@
         {
           "item": "item.viv_bark",
           "chance": 0.5
+        },
+        {
+          "item": "item.bug_stag_beetle",
+          "chance": 0.03,
+          "seasons": [
+            "Summer"
+          ],
+          "night": true
+        },
+        {
+          "item": "item.bug_rhino_beetle",
+          "chance": 0.03,
+          "seasons": [
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.bug_woodworm",
+          "chance": 0.3,
+          "seasons": [
+            "Winter",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.bug_ant",
+          "chance": 0.3
         }
       ],
       "art": {
@@ -7731,6 +7986,121 @@
             {
               "item": "item.pickled_cabbage",
               "count": 3
+            }
+          ]
+        },
+        {
+          "id": "salt_fish_tench",
+          "displayName": "Kadife balığı tuzla (2 balık, 1 tuz)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.fish_tench",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "salt_fish_bream",
+          "displayName": "Çapak tuzla (2 balık, 1 tuz)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.fish_bream",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "salt_fish_perch",
+          "displayName": "Tatlı su levreği tuzla (2 balık, 1 tuz)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.fish_perch",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "salt_fish_salmon",
+          "displayName": "Somon tuzla (2 balık, 1 tuz)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.fish_salmon",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "salt_fish_catfish",
+          "displayName": "Yayın tuzla (2 balık, 1 tuz)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.fish_catfish",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
             }
           ]
         }
@@ -9873,6 +10243,53 @@
         {
           "item": "item.viv_driftwood",
           "chance": 0.2
+        },
+        {
+          "item": "item.bug_dragonfly",
+          "chance": 0.3,
+          "seasons": [
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.bug_diving_beetle",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.bug_water_scorpion",
+          "chance": 0.2,
+          "seasons": [
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.leech",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.bug_pond_skater",
+          "chance": 0.35,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.bug_silver_water_beetle",
+          "chance": 0.03,
+          "seasons": [
+            "Summer"
+          ]
         }
       ],
       "art": {
@@ -11965,6 +12382,53 @@
         {
           "item": "item.mussel_shell",
           "chance": 0.3
+        },
+        {
+          "item": "item.bug_dragonfly",
+          "chance": 0.3,
+          "seasons": [
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.bug_diving_beetle",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.bug_water_scorpion",
+          "chance": 0.2,
+          "seasons": [
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.leech",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.bug_pond_skater",
+          "chance": 0.35,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.bug_silver_water_beetle",
+          "chance": 0.03,
+          "seasons": [
+            "Summer"
+          ]
         }
       ],
       "gathers": [
@@ -19732,6 +20196,14 @@
         {
           "item": "item.viv_pot_shard",
           "chance": 0.1
+        },
+        {
+          "item": "item.bug_dung_beetle",
+          "chance": 0.25,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ]
         }
       ],
       "tags": [
@@ -23077,6 +23549,14 @@
             "Summer",
             "Autumn"
           ]
+        },
+        {
+          "item": "item.bug_swallowtail",
+          "chance": 0.2,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
         }
       ],
       "art": {
@@ -23172,6 +23652,29 @@
           "seasons": [
             "Summer"
           ]
+        },
+        {
+          "item": "item.bug_mantis",
+          "chance": 0.2,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.bug_cicada",
+          "chance": 0.3,
+          "seasons": [
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.kermes",
+          "chance": 0.25,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ]
         }
       ],
       "art": {
@@ -23235,6 +23738,14 @@
             "Autumn"
           ],
           "rain": true
+        },
+        {
+          "item": "item.bug_mantis",
+          "chance": 0.15,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ]
         }
       ],
       "art": {
@@ -24032,7 +24543,22 @@
       "beauty": 5,
       "material": "stone",
       "level": 6,
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Dane serp (1)",
+          "durationDays": 0.03,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 1
+            }
+          ],
+          "addFeed": 2,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
+        }
+      ],
       "finishGroup": "stone",
       "tags": [
         "dovecote"
@@ -24047,7 +24573,9 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "housing": "dovecote",
+      "capacity": 8
     },
     {
       "id": "item.dovecote_village",
@@ -27615,6 +28143,446 @@
       ],
       "gathers": [
         "item.viv_sea_sand"
+      ]
+    },
+    {
+      "id": "item.warren",
+      "displayName": "Tavşan yastığı",
+      "category": "barn",
+      "price": 30,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "housing": "warren",
+      "capacity": 6,
+      "interactions": [
+        {
+          "id": "feed",
+          "displayName": "Ot ve yem bırak (2)",
+          "durationDays": 0.03,
+          "materials": [
+            {
+              "item": "item.feed",
+              "count": 2
+            }
+          ],
+          "addFeed": 2,
+          "skill": "AnimalHusbandry",
+          "skillXp": 2
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_warren_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.rabbit_fur",
+      "displayName": "Tavşan kürkü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "leather"
+      ]
+    },
+    {
+      "id": "item.pigeon_dung",
+      "displayName": "Güvercin gübresi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.kermes",
+      "displayName": "Kırmız (kurutulmuş böcek)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "critter",
+        "dye_source"
+      ]
+    },
+    {
+      "id": "item.dye_crimson",
+      "displayName": "Kırmız boyası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "dye"
+      ]
+    },
+    {
+      "id": "item.scarlet_cloth",
+      "displayName": "İskarlat çuha",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 70,
+      "tags": [
+        "cloth"
+      ]
+    },
+    {
+      "id": "item.leech",
+      "displayName": "Sülük",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.locust",
+      "displayName": "Çekirge",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "critter",
+        "feed"
+      ]
+    },
+    {
+      "id": "item.mussel",
+      "displayName": "Tatlı su midyesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.pearl",
+      "displayName": "Tatlı su incisi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 80,
+      "tags": [
+        "treasure"
+      ]
+    },
+    {
+      "id": "item.fish_tench",
+      "displayName": "Kadife balığı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_bream",
+      "displayName": "Çapak",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_rudd",
+      "displayName": "Kızılkanat",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_catfish",
+      "displayName": "Yayın balığı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_perch",
+      "displayName": "Tatlı su levreği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_salmon",
+      "displayName": "Somon",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_bullhead",
+      "displayName": "Dere kaya balığı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_carp_gold",
+      "displayName": "Altın sazan",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 40,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_catfish_giant",
+      "displayName": "Göl canavarı (dev yayın)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 120,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_sturgeon_old",
+      "displayName": "Yaşlı mersin",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 150,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_pike_old",
+      "displayName": "Yaşlı turna",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 100,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.bug_swallowtail",
+      "displayName": "Kırlangıçkuyruk kelebeği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_peacock_moth",
+      "displayName": "Büyük tavus güvesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_dragonfly",
+      "displayName": "İmparator yusufçuk",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_mantis",
+      "displayName": "Peygamber devesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_cicada",
+      "displayName": "Ağustos böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_stag_beetle",
+      "displayName": "Geyik böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_night_moth",
+      "displayName": "Gece kelebeği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_dung_beetle",
+      "displayName": "Bok böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_rhino_beetle",
+      "displayName": "Gergedan böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_ant",
+      "displayName": "Karınca",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_woodworm",
+      "displayName": "Tahta kurdu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_snow_fly",
+      "displayName": "Kar sineği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_diving_beetle",
+      "displayName": "Dalgıç böcek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_water_scorpion",
+      "displayName": "Su akrebi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_pond_skater",
+      "displayName": "Su kayağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "critter"
+      ]
+    },
+    {
+      "id": "item.bug_silver_water_beetle",
+      "displayName": "Büyük gümüş su böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "critter"
       ]
     }
   ],
@@ -31373,6 +32341,75 @@
       "skill": "Cooking",
       "skillXp": 4,
       "displayName": "Azık heybesi hazırla"
+    },
+    {
+      "id": "dye_crimson",
+      "station": "item.dye_vat",
+      "produces": "item.dye_crimson",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.kermes",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Weaving",
+      "skillXp": 15,
+      "displayName": "Kırmız kaynat",
+      "minLevel": 4
+    },
+    {
+      "id": "scarlet_cloth",
+      "station": "item.loom",
+      "produces": "item.scarlet_cloth",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 1
+        },
+        {
+          "item": "item.dye_crimson",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Weaving",
+      "skillXp": 30,
+      "displayName": "İskarlat çuha boya",
+      "minLevel": 5
+    },
+    {
+      "id": "pigeon_manure",
+      "station": "item.seed_maker",
+      "produces": "item.manure",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.pigeon_dung",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Farming",
+      "skillXp": 3,
+      "displayName": "Güvercin gübresini karıştır"
+    },
+    {
+      "id": "feed_locust",
+      "station": "item.seed_maker",
+      "produces": "item.feed",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.locust",
+          "count": 4
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Farming",
+      "skillXp": 2,
+      "displayName": "Çekirgeden yem"
     }
   ],
   "animals": [
@@ -31459,7 +32496,8 @@
       "litterMax": 2,
       "femaleProduces": true,
       "femaleName": "keçi",
-      "maleName": "teke"
+      "maleName": "teke",
+      "herd": true
     },
     {
       "id": "animal.sheep",
@@ -31487,7 +32525,8 @@
       "litterMin": 1,
       "litterMax": 2,
       "femaleName": "koyun",
-      "maleName": "koç"
+      "maleName": "koç",
+      "herd": true
     },
     {
       "id": "animal.cow",
@@ -31517,7 +32556,8 @@
       "femaleProduces": true,
       "draft": true,
       "femaleName": "inek",
-      "maleName": "boğa"
+      "maleName": "boğa",
+      "herd": true
     },
     {
       "id": "animal.ox",
@@ -31535,7 +32575,8 @@
       "trample": 3,
       "draft": true,
       "maleOnly": true,
-      "maleName": "öküz"
+      "maleName": "öküz",
+      "herd": true
     },
     {
       "id": "animal.pig",
@@ -31558,7 +32599,8 @@
       "litterMin": 2,
       "litterMax": 4,
       "femaleName": "dişi domuz",
-      "maleName": "erkek domuz"
+      "maleName": "erkek domuz",
+      "herd": true
     },
     {
       "id": "animal.dog",
@@ -31569,7 +32611,11 @@
       "pet": true,
       "lifespanDays": 24,
       "matureDays": 2,
-      "level": 2
+      "level": 2,
+      "petBreeds": true,
+      "gestationDays": 1,
+      "litterMin": 1,
+      "litterMax": 4
     },
     {
       "id": "animal.cat",
@@ -31579,7 +32625,11 @@
       "feedPerDay": 0.3,
       "pet": true,
       "lifespanDays": 30,
-      "matureDays": 2
+      "matureDays": 2,
+      "petBreeds": true,
+      "gestationDays": 1,
+      "litterMin": 1,
+      "litterMax": 4
     },
     {
       "id": "animal.bees",
@@ -31617,6 +32667,132 @@
       "draft": true,
       "femaleName": "kısrak",
       "maleName": "aygır"
+    },
+    {
+      "id": "animal.donkey",
+      "displayName": "Eşek",
+      "price": 40,
+      "housing": "stable",
+      "feedPerDay": 0.8,
+      "lifespanDays": 60,
+      "matureDays": 10,
+      "level": 3,
+      "rideable": true,
+      "rideSpeed": 1.5,
+      "trample": 2,
+      "gestationDays": 2,
+      "litterMin": 1,
+      "litterMax": 1,
+      "draft": true,
+      "femaleName": "dişi eşek",
+      "maleName": "eşek aygırı",
+      "hide": "item.hide",
+      "hideCount": 1
+    },
+    {
+      "id": "animal.mule",
+      "displayName": "Katır",
+      "price": 150,
+      "housing": "stable",
+      "feedPerDay": 1.1,
+      "lifespanDays": 76,
+      "matureDays": 10,
+      "level": 6,
+      "rideable": true,
+      "rideSpeed": 1.9,
+      "trample": 3,
+      "draft": true,
+      "sterile": true,
+      "femaleName": "dişi katır",
+      "maleName": "katır",
+      "hide": "item.hide",
+      "hideCount": 1
+    },
+    {
+      "id": "animal.hinny",
+      "displayName": "Bardo",
+      "price": 120,
+      "housing": "stable",
+      "feedPerDay": 1.0,
+      "lifespanDays": 70,
+      "matureDays": 10,
+      "level": 6,
+      "rideable": true,
+      "rideSpeed": 1.7,
+      "trample": 2,
+      "draft": true,
+      "sterile": true,
+      "femaleName": "dişi bardo",
+      "maleName": "bardo",
+      "hide": "item.hide",
+      "hideCount": 1
+    },
+    {
+      "id": "animal.goose",
+      "displayName": "Kaz",
+      "price": 10,
+      "housing": "coop",
+      "feedPerDay": 0.6,
+      "produces": "item.egg",
+      "produceEveryDays": 3,
+      "lifespanDays": 24,
+      "matureDays": 3,
+      "level": 2,
+      "meat": "item.poultry",
+      "meatCount": 2,
+      "seasonOutput": [
+        1.4,
+        0.6,
+        0.2,
+        0.0
+      ],
+      "gestationDays": 1,
+      "litterMin": 1,
+      "litterMax": 3,
+      "femaleProduces": true,
+      "femaleName": "kaz",
+      "maleName": "erkek kaz",
+      "hide": "item.down_feather",
+      "hideCount": 3,
+      "herd": true
+    },
+    {
+      "id": "animal.rabbit",
+      "displayName": "Ada tavşanı",
+      "price": 8,
+      "housing": "warren",
+      "feedPerDay": 0.3,
+      "lifespanDays": 16,
+      "matureDays": 1,
+      "level": 3,
+      "meat": "item.meat",
+      "meatCount": 1,
+      "gestationDays": 1,
+      "litterMin": 3,
+      "litterMax": 6,
+      "femaleName": "dişi tavşan",
+      "maleName": "erkek tavşan",
+      "hide": "item.rabbit_fur",
+      "hideCount": 1
+    },
+    {
+      "id": "animal.pigeon",
+      "displayName": "Güvercin",
+      "price": 5,
+      "housing": "dovecote",
+      "feedPerDay": 0.2,
+      "produces": "item.pigeon_dung",
+      "produceEveryDays": 1,
+      "lifespanDays": 14,
+      "matureDays": 1,
+      "level": 3,
+      "meat": "item.poultry",
+      "meatCount": 1,
+      "gestationDays": 1,
+      "litterMin": 1,
+      "litterMax": 2,
+      "femaleName": "dişi güvercin",
+      "maleName": "erkek güvercin"
     }
   ],
   "buildParts": [

@@ -3040,7 +3040,7 @@
     {"skill": "AnimalHusbandry", "level": 9, "kind": "interaction", "text": "Yarışa hazırla", "planned": true},
     {"skill": "AnimalHusbandry", "level": 10, "kind": "feature", "text": "Unvan Sürü sahibi", "planned": true},
     {"skill": "AnimalHusbandry", "level": 10, "kind": "passive", "text": "Efsane denemesinde bonus", "planned": true},
-    {"skill": "Riding", "level": 1, "kind": "feature", "text": "Rahvan, heybe"},
+    {"skill": "Riding", "level": 1, "kind": "feature", "text": "Tırıs, heybe"},
     {"skill": "Riding", "level": 2, "kind": "feature", "text": "Dörtnala (At 2)"},
     {"skill": "Riding", "level": 3, "kind": "feature", "text": "Sığ su geçme (At 3)"},
     {"skill": "Riding", "level": 4, "kind": "feature", "text": "Engel atlama (At 3)"},

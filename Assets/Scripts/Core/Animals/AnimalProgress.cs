@@ -59,7 +59,7 @@ namespace Thatchwick.Core.Animals
             if (a == null || a.IsDead || xp <= 0) return 0;
             int before = a.Level;
             double ceiling = XpForLevel(MaxLevelFor(a.Lineage));
-            a.Xp = Math.Min(ceiling, a.Xp + xp);
+            a.Xp = Math.Min(ceiling, a.Xp + xp * Genetics.GeneticsService.XpFactor(a.Genome));   // çekingen (akrabalık kusuru) −%20
             int after = a.Level;
             return after > before ? after : 0;
         }
@@ -190,7 +190,7 @@ namespace Thatchwick.Core.Animals
             if (horse == null || horse.IsDead || !horse.Species.Rideable) return "Binek yok.";
             var (needHorse, needRiding) = Requirement(ab);
             if (ab == HorseAbility.HighJump && horse.Lineage < AnimalLineage.Noble) return "Yalnızca Soylu ve Efsane atlar.";
-            if (ab == HorseAbility.Whistle && horse.Friendship < WhistleFriendship) return $"Dostluk {WhistleFriendship:0} gerekli.";
+            if (ab == HorseAbility.Whistle && horse.Friendship < WhistleFriendship && !AnimalSystem.HasGift(horse, Genetics.Gift.Homing)) return $"Dostluk {WhistleFriendship:0} gerekli.";
             int riding = rider != null ? rider.Skills.GetLevel(SkillType.Riding) : 99;
             bool horseOk = horse.Level >= needHorse, riderOk = needRiding == 0 || riding >= needRiding;
             if (horseOk && riderOk) return null;
@@ -202,9 +202,12 @@ namespace Thatchwick.Core.Animals
         /// <summary>Dörtnala dayanıklılık çarpanı (Uzun dörtnala x0,65, Yorulmaz x0,5).</summary>
         public static double DrainFactor(Animal horse, Character rider)
         {
-            if (Has(HorseAbility.Tireless, horse, rider)) return 0.5;
-            if (Has(HorseAbility.LongGallop, horse, rider)) return 0.65;
-            return 1.0;
+            double gift = AnimalSystem.HasGift(horse, Genetics.Gift.LongBreathHorse) ? 0.85 : 1.0;   // Uzun soluk (belge 48)
+            // Dayanıklılık geni: 5'in üstünde her puan %4 daha az harcar (en çok %20).
+            if (horse?.Genome != null) gift *= 1.0 - Math.Min(0.20, Math.Max(0, horse.Genome.Stat(Genetics.GeneStat.Stamina) - 5) * 0.04);
+            if (Has(HorseAbility.Tireless, horse, rider)) return 0.5 * gift;
+            if (Has(HorseAbility.LongGallop, horse, rider)) return 0.65 * gift;
+            return gift;
         }
 
         /// <summary>
@@ -237,6 +240,7 @@ namespace Thatchwick.Core.Animals
             var (needHorse, needRiding) = Requirement(ab);
             int riding = rider != null ? rider.Skills.GetLevel(SkillType.Riding) : needRiding;
             double points = 85 + 3 * (riding - needRiding) + 5 * (horse.Level - needHorse) + horse.Friendship / 20.0 + extraPoints;
+            if (AnimalSystem.HasGift(horse, Genetics.Gift.SureFoot)) points += 10;   // Sağlam ayak
             if (horse.Stamina < 20) points -= 15;
             if (badWeather) points -= 10;
             return Math.Max(0.50, Math.Min(0.99, points / 100.0));

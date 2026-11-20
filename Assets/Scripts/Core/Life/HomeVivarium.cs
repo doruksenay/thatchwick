@@ -531,6 +531,9 @@ namespace Thatchwick.Core.Life
         /// <summary>Kavanoza girmesi mini oyun ister mi (suda yüzen ya da dipte gezen canlı).</summary>
         public bool IsSwimmer(string id) { var s = V(id); return s != null && s.IsCreature && (s.Move == "swim" || s.Move == "bottom"); }
 
+        /// <summary>Kavanoza bir canlı girdi (eşya kimliği): böcek ve balık defteri (belge 48 §9).</summary>
+        public event Action<string> Caught;
+
         /// <summary>Yakalama başlama engeli: cam kavanoz gerekir; bu saat ve mevsimde bir şey yoksa söylenir.</summary>
         public string CatchBlocker(ItemInstance node)
         {
@@ -576,6 +579,7 @@ namespace Thatchwick.Core.Life
         {
             _house.AddItem(id, 1);
             Say($"Cam kavanoza {Def(id).DisplayName.ToLowerInvariant()} yakalandı.");
+            Caught?.Invoke(id);   // böcek defteri (belge 48 §9)
         }
 
         /// <summary>Toplama yerinde kavanoza doldurulacak zemin malzemesi (orman toprağı, kum ...): kesin gelir.</summary>

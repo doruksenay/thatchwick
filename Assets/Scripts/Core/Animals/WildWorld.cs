@@ -156,6 +156,11 @@ namespace Thatchwick.Core.Animals
             return $"{v.Species.Name} ürktü, kaçtı.";
         }
 
+        /// <summary>Av köpeğinin genetik katkısı (belge 48): (ek isabet şansı, ek et). Yol bilen +%15, Yumuşak ağız +1.</summary>
+        public Func<(double, int)> HoundEffects { get; set; }
+        /// <summary>Köpekle yapılan av başarılı (efsane yolu "İz Ustası" sayacı).</summary>
+        public event Action HoundSucceeded;
+
         /// <summary>Yayla avlama: av ürünleri haneye eklenir, hayvan haritadan çıkar ya da kaçar.</summary>
         public HuntResult Shoot(int visitorId, Character hunter, Household house, bool houndHelps)
         {
@@ -163,9 +168,12 @@ namespace Thatchwick.Core.Animals
             if (v == null) return new HuntResult { Message = "Gitti bile." };
             bool motherWithYoung = false;
             foreach (var o in _visitors) if (o != v && o.Young && o.Species == v.Species) motherWithYoung = !v.Young;
-            var r = Hunting.Try(_rng, v.Species.Id, HuntMethod.Bow, hunter, houndHelps, motherWithYoung);
+            var hound = houndHelps && HoundEffects != null ? HoundEffects() : (0.0, 0);
+            var r = Hunting.Try(_rng, v.Species.Id, HuntMethod.Bow, hunter, houndHelps, motherWithYoung, hound.Item1);
             if (r.Success)
             {
+                if (houndHelps && r.MeatCount > 0) r.MeatCount += hound.Item2;   // Yumuşak ağız (belge 48)
+                if (houndHelps) HoundSucceeded?.Invoke();
                 _visitors.Remove(v);
                 Give(r, house);
                 Journal?.Mark(v.Species.Id, JournalMark.Hunted);
@@ -275,6 +283,9 @@ namespace Thatchwick.Core.Animals
         private readonly WildAdoptions _adoptions;
         private readonly Random _rng;
 
+        /// <summary>Köpek tilkiyi ya da yaban domuzunu savdı (efsane yolu "Kapı Aslanı").</summary>
+        public event Action DogGuarded;
+
         public WildMischief(AnimalSystem animals, WorldState world, WildAdoptions adoptions, int seed = 307)
         {
             _animals = animals; _world = world; _adoptions = adoptions; _rng = new Random(seed);
@@ -307,7 +318,7 @@ namespace Thatchwick.Core.Animals
             if (poultry.Count == 0) return null;
             if (!force && _rng.NextDouble() >= FoxChance) return null;
             if (_adoptions != null && _adoptions.FoxGuard) { message = "Gece bir tilki kümese yaklaştı; büyüttüğün tilki onu kovaladı."; return null; }
-            if (ActiveDog()) { message = "Köpek gece kümese yaklaşan tilkiyi kovaladı."; return null; }
+            if (ActiveDog()) { message = "Köpek gece kümese yaklaşan tilkiyi kovaladı."; DogGuarded?.Invoke(); return null; }
             poultry.Sort((x, y) => x.AgeDays.CompareTo(y.AgeDays));   // önce civciv
             var prey = poultry[0];
             _animals.KillByPredator(prey);
@@ -324,7 +335,7 @@ namespace Thatchwick.Core.Animals
             var crops = new List<ItemInstance>();
             foreach (var item in _world.Items) if (item.IsPlant && item.Def.IsCrop) crops.Add(item);
             if (crops.Count == 0) return 0;
-            if (WildWorld.HasPen(_world.Map) && ActiveDog()) { message = "Gece yaban domuzları geldi; çit ve köpek tarlaya sokmadı."; return 0; }
+            if (WildWorld.HasPen(_world.Map) && ActiveDog()) { message = "Gece yaban domuzları geldi; çit ve köpek tarlaya sokmadı."; DogGuarded?.Invoke(); return 0; }
             int n = Math.Min(BoarCropsMax, crops.Count);
             for (int i = 0; i < n; i++)
             {

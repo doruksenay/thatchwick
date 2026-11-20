@@ -195,7 +195,10 @@ namespace Thatchwick.Core.Animals
         public static int DogDefense(Animal dog)
         {
             if (dog == null || dog.IsDead || !dog.IsMature || dog.ShyDays > 0) return 0;
-            return dog.Level >= 5 ? 3 : dog.Level >= 3 ? 2 : 1;
+            // Genetik (belge 48): Doğuştan önder 3. seviyede kurt başı; Gece gözü ve yüksek Cesaret +1.
+            int leader = Genetics.GeneticsService.LeaderLevel(dog.Genome);
+            int baseDef = dog.Level >= leader ? 3 : dog.Level >= 3 ? 2 : 1;
+            return baseDef + Genetics.GeneticsService.DogDefenseBonus(dog.Genome);
         }
 
         public List<Animal> Dogs()
@@ -260,11 +263,15 @@ namespace Thatchwick.Core.Animals
             }
             if (r.Defense > 0)
                 foreach (var dog in Dogs())
-                    if (DogDefense(dog) > 0 && _rng.NextDouble() < DogInjuryChance)
+                    if (DogDefense(dog) > 0 && _rng.NextDouble() < DogInjuryChance * (AnimalSystem.HasGift(dog, Genetics.Gift.LongBreathDog) ? 0.5 : 1.0))
                     {
                         dog.ShyDays = DogRestDays;
                         r.InjuredDogs.Add(dog);
                     }
+            // Efsane yolu "Kurt Kıran" (belge 48 §6.4): kovulan her kurt savunan köpeklere sayılır.
+            if (r.Repelled && r.Defense > 0)
+                foreach (var dog in Dogs())
+                    if (DogDefense(dog) > 0) _animals.AddDeed(dog, Genetics.PetLegends.Wolves, r.Pack);
             Raided?.Invoke(r);
             return r;
         }
@@ -291,23 +298,23 @@ namespace Thatchwick.Core.Animals
     public static class Hunting
     {
         /// <summary>Başarı şansı: yay %35 + Avcılık seviye başına %6 − ürkeklik x %20 (tazı +%15); tuzak %25 + %4/sv.</summary>
-        public static double Chance(WildSpecies s, HuntMethod m, int huntingLevel, bool houndHelps)
+        public static double Chance(WildSpecies s, HuntMethod m, int huntingLevel, bool houndHelps, double extra = 0)
         {
             if (s == null || !s.Huntable) return 0;
             if (m == HuntMethod.Trap && !s.Trappable) return 0;
             double c = m == HuntMethod.Bow
-                ? 0.35 + 0.06 * (huntingLevel - 1) - 0.20 * s.Shyness + (houndHelps ? 0.15 : 0)
+                ? 0.35 + 0.06 * (huntingLevel - 1) - 0.20 * s.Shyness + (houndHelps ? 0.15 + extra : 0)
                 : 0.25 + 0.04 * (huntingLevel - 1);
             return Math.Max(0.05, Math.Min(0.95, c));
         }
 
-        public static HuntResult Try(Random rng, string speciesId, HuntMethod m, Character hunter, bool houndHelps = false, bool motherWithYoung = false)
+        public static HuntResult Try(Random rng, string speciesId, HuntMethod m, Character hunter, bool houndHelps = false, bool motherWithYoung = false, double houndExtra = 0)
         {
             var s = WildCatalog.Get(speciesId);
             var r = new HuntResult { SpeciesId = speciesId };
             if (s == null || !s.Huntable) { r.Message = s != null && s.Id == "wild.bear" ? "Ayı avlanmaz; uzak dur." : "Bu avlanmaz."; return r; }
             int level = hunter != null ? hunter.Skills.GetLevel(SkillType.Hunting) : 1;
-            double chance = Chance(s, m, level, houndHelps);
+            double chance = Chance(s, m, level, houndHelps, houndExtra);
             if (chance <= 0) { r.Message = "Bu yöntemle olmaz."; return r; }
             hunter?.GainSkillXp(SkillType.Hunting, 4);
             if (rng.NextDouble() >= chance) { r.Message = m == HuntMethod.Bow ? $"{s.Name} kaçtı." : "Tuzak boş."; return r; }

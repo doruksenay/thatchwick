@@ -102,6 +102,9 @@ namespace Thatchwick.Core.Content
         public bool draft;            // çeki hayvanı (düven)
         public string femaleName, maleName;
         public bool maleOnly;              // iğdiş öküz gibi: hep erkek, üremez
+        public bool petBreeds;             // evcil hayvan da yavrular (köpek, kedi)
+        public bool sterile;               // kısır melez (katır, bardo)
+        public bool herd;                  // köy merasına ve yaylaya gönderilir
     }
 
     [Serializable]

@@ -25,7 +25,7 @@ namespace Thatchwick.Game
     /// (dokununca yürür ya da eşyayı kullanır), otonom bir NPC ve oyun saati HUD'u.
     /// Sahneyi koddan kurar; GameBootstrap oyun başlayınca bunu otomatik oluşturur.
     /// </summary>
-    public sealed class GameRoot : MonoBehaviour
+    public sealed partial class GameRoot : MonoBehaviour
     {
         private const int MapWidth = Thatchwick.Core.World.Regions.WorldWidth;   // çiftlik (96x72, 64x64 arsa) + köy yolu + şehir (belge 39-40)
         private const int MapHeight = Thatchwick.Core.World.Regions.WorldHeight;
@@ -1993,8 +1993,9 @@ namespace Thatchwick.Game
             var animal = AnimalAt(tile);
             if (animal != null)
             {
-                names.Add($"{animal.Name} ({animal.Species.DisplayName}, {AnimalProgress.LineageName(animal.Lineage)} · sv {animal.Level}{(animal.LegendaryTitle != null ? " · " + animal.LegendaryTitle : "")}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")}{(animal.IsSick || animal.IsCold ? ", " + animal.HealthText.ToLowerInvariant() : "")}{(animal.Species.Rideable ? $", dayanıklılık {animal.Stamina:0}" : "")})");
+                names.Add($"{animal.Name} ({animal.Species.DisplayName}, {AnimalProgress.LineageName(animal.Lineage)} · sv {animal.Level}{(animal.LegendaryTitle != null ? " · " + animal.LegendaryTitle : "")}, dostluk {animal.Friendship:0}{(animal.IsMature ? "" : ", yavru")}{(animal.IsSick || animal.IsCold ? ", " + animal.HealthText.ToLowerInvariant() : "")}{(animal.Species.Rideable ? $", dayanıklılık {animal.Stamina:0}" : "")}{GeneticsSummary(animal)})");
                 AddAnimalOptions(animal);
+                AddGeneticsOptions(animal);   // ad, soy defteri, köy merası, yayla (belge 48)
             }
             foreach (var item in items)
             {
@@ -2030,6 +2031,7 @@ namespace Thatchwick.Game
                         + $"{(pond.Insects ? ", böcekli" : ", böcek yok")}, balık: {(fishText.Count > 0 ? string.Join(", ", fishText) : "yok")}");
                 }
                 var waterTile = tile;
+                AddPondCleanOption(waterTile, pond);   // çamur (belge 48 §9.4)
                 foreach (var species in _farmWork.FishSpecies())
                 {
                     int have = _household.Count(species);
@@ -2171,6 +2173,7 @@ namespace Thatchwick.Game
             _animals.Born += (mother, baby) =>
             {
                 ShowMessage($"{mother.Species.DisplayName} yavruladı: {baby.Name}");
+                OnPetBorn(baby);   // köpek ve kedi yavrusuna ad (görünüş genden)
                 foreach (var c in _population.Members) if (!c.IsVillager && !c.IsDead) c.AddMoodlet(MoodCatalog.NewFoal);
             };
             _effects.Season = () => _clock.Season;
@@ -2554,6 +2557,10 @@ namespace Thatchwick.Game
                 case "wild.butterfly": return new Color(0.95f, 0.85f, 0.3f);
                 case "wild.firefly": return new Color(1f, 1f, 0.5f);
                 case "animal.horse": return new Color(0.45f, 0.3f, 0.2f);
+                case "animal.donkey": case "animal.mule": case "animal.hinny": return new Color(0.55f, 0.5f, 0.45f);
+                case "animal.goose": return new Color(0.93f, 0.93f, 0.9f);
+                case "animal.rabbit": return new Color(0.58f, 0.5f, 0.42f);
+                case "animal.pigeon": return new Color(0.55f, 0.57f, 0.62f);
                 case "animal.dog": return new Color(0.6f, 0.45f, 0.3f);
                 case "animal.cat": return new Color(0.85f, 0.55f, 0.25f);
                 default: return new Color(0.95f, 0.8f, 0.2f);
@@ -2604,10 +2611,20 @@ namespace Thatchwick.Game
                 }
                 v.T.position = pos;
                 v.R.enabled = _view.IsLevelVisible(a.Position.Z);
-                var real = IsoArt.Animal(a.Species.Id, v.Dir);
+                // Genetik (belge 48): tipin gövdesi + genden renk; gövde görseli yoksa türün görseli, o da yoksa genden renkli küp.
+                var look = LookOf(a);
+                Sprite real = look != null && look.Layers.Count > 0 ? IsoArt.AnimalBody(look.Layers[0], look.LongCoat, v.Dir) : null;
+                Color tint = Color.white;
+                if (real != null && look.TintHex != null && ColorUtility.TryParseHtmlString(look.TintHex, out var gene)) tint = Color.Lerp(Color.white, gene, 0.8f);
+                if (real == null) real = IsoArt.Animal(a.Species.Id, v.Dir);
                 float scale = a.IsMature ? 1f : 0.7f;
-                if (real != null) { v.R.sprite = real; v.R.color = Color.white; }
-                else { v.R.sprite = SpriteMaterials.Cube(AnimalColor(a.Species.Id)); v.R.color = Color.white; scale *= AnimalScale(a.Species.Id); }
+                if (real != null) { v.R.sprite = real; v.R.color = tint; }
+                else
+                {
+                    Color cube = AnimalColor(a.Species.Id);
+                    if (look?.TintHex != null && ColorUtility.TryParseHtmlString(look.TintHex, out var gc)) cube = gc;
+                    v.R.sprite = SpriteMaterials.Cube(cube); v.R.color = Color.white; scale *= AnimalScale(a.Species.Id);
+                }
                 v.T.localScale = new Vector3(scale, scale, 1f);
                 v.R.sortingOrder = Iso.SortOrder(pos.y, 1, a.Position.Z);
                 if (v.Shadow != null) { v.Shadow.enabled = v.R.enabled && rider == null; v.Shadow.sortingOrder = ShadowOrder(a.Position.Z); }
@@ -3077,6 +3094,7 @@ namespace Thatchwick.Game
                 string warn = _life.Wolves.RaidInDays >= 0 ? $" · kurtlar {(_life.Wolves.RaidInDays <= 0 ? "bu gece" : $"{_life.Wolves.RaidInDays} gün içinde")} gelebilir" : "";
                 if (wolves > 0 || warn.Length > 0) GUILayout.Label($"   Kurt riski: {wolves} kurt / savunma {defense}{warn}");
             }
+            DrawHerdAndBook();   // köy merası, yayla, defter, perhiz (belge 48)
             var pending = _life.Adoptions.Pending;
             if (pending != null)
             {
@@ -3107,7 +3125,9 @@ namespace Thatchwick.Game
             foreach (var a in _animals.Animals)
             {
                 ContestKind kind;
-                if (a.Species.Rideable) kind = ContestKind.HorseRace;
+                var petContest = PetContest(a);
+                if (petContest.HasValue) kind = petContest.Value;
+                else if (a.Species.Rideable) kind = ContestKind.HorseRace;
                 else if (a.Species.Id == "animal.cow" && a.IsFemale) kind = ContestKind.BeautyContest;
                 else if (a.Species.Draft && !a.IsFemale) kind = ContestKind.LogPull;
                 else continue;
@@ -3355,6 +3375,7 @@ namespace Thatchwick.Game
                 GUILayout.EndScrollView();
             }
             GUILayout.EndArea();
+            DrawAnimalNaming();   // yeni doğan köpek ve kedi adı (belge 48 §6.2)
         }
 
         /// <summary>Sol paneldeki aç-kapa düğmesi; açıkken vurgulu.</summary>

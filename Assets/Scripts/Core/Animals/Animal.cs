@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Thatchwick.Core.Animals.Genetics;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.World;
 
@@ -32,7 +33,7 @@ namespace Thatchwick.Core.Animals
         /// Bu hayvanın ömrü: tür ömrünün %85-115'i, kimlikten türetilir (aynı gün alınan hayvanlar aynı gün ölmez;
         /// kayda ek alan gerekmez, yüklemede değişmez).
         /// </summary>
-        public double LifespanDays => Species.LifespanDays * LifespanFactor(Id);
+        public double LifespanDays => Species.LifespanDays * LifespanFactor(Id) * GeneticsService.LifespanFactor(Genome);
 
         internal static double LifespanFactor(int id)
         {
@@ -61,8 +62,26 @@ namespace Thatchwick.Core.Animals
         /// <summary>Gebe ise doğuma kalan gün (gün başlarında azalır); 0 = gebe değil.</summary>
         public double PregnantDays { get; internal set; }
         public bool IsPregnant => PregnantDays > 0;
+        /// <summary>Gebeliğin babası (doğumda yavrunun türü ve genomu için; satılsa ya da ölse de kalır).</summary>
+        public int PregnancySireId { get; internal set; }
+        public string PregnancySireSpecies { get; internal set; }
+        public Genome PregnancySireGenome { get; internal set; }
         /// <summary>Annenin kimliği (satın alınan ya da eski kayıttaki hayvanda 0).</summary>
         public int MotherId { get; internal set; }
+        /// <summary>Babanın kimliği (0 = bilinmiyor; belge 48 §3.4 soy defteri).</summary>
+        public int FatherId { get; internal set; }
+        /// <summary>Genom (köpek, kedi, at, eşek, katır, bardo; belge 48). Diğer türlerde null.</summary>
+        public Genome Genome { get; internal set; }
+        /// <summary>Tip (köpekte "dog.sighthound", atta "horse.courser"); genomu yoksa null.</summary>
+        public string TypeId => Genome?.TypeId;
+        /// <summary>Kısır (katır, bardo, erkek üç renkli kedi).</summary>
+        public bool IsSterile => Genome != null && Genome.Sterile;
+        /// <summary>Efsane yolu sayaçları (belge 48 §6.4): "wolves", "rats", "tracks", "trips" ...</summary>
+        public System.Collections.Generic.Dictionary<string, int> Deeds { get; } = new System.Collections.Generic.Dictionary<string, int>(System.StringComparer.Ordinal);
+        public int Deed(string key) => Deeds.TryGetValue(key, out var n) ? n : 0;
+        /// <summary>Görünüş (genomdan; yaş kır atın ağarmasını belirler).</summary>
+        public Phenotype Look => Phenotype.Of(Genome, Species.LifespanDays > 0 ? AgeDays / Species.LifespanDays : 0, Id);
+
         /// <summary>Kaçıncı kuşak: satın alınan 0, yavrusu 1, torunu 2 ... Soy hayvanı (3+) biraz daha verimlidir.</summary>
         public int Generation { get; internal set; }
         public bool IsHeritage => Generation >= Content.AnimalSpeciesDef.HeritageGeneration;
@@ -107,6 +126,8 @@ namespace Thatchwick.Core.Animals
 
         /// <summary>Binilebilir: binek türü, erişkin ve eyerli.</summary>
         public bool CanBeRidden => Species.Rideable && IsMature && Saddle != null;
+        /// <summary>Çocuk ve ergen binebilir (midilli, eşek; belge 48 §7.1).</summary>
+        public bool ChildMount => GeneticsService.ChildMount(Genome);
 
         public Animal(int id, AnimalSpeciesDef species, GridPos position, int homeItemId)
         {

@@ -95,7 +95,7 @@ namespace Thatchwick.Core.World
             // Gölet: turna ve kerevit
             for (int y = 0; y < 48; y++) for (int x = 0; x < 48; x++) if (ForestPond(x, y)) { p.Water(x, y); keep.Add((x, y)); }
             Keep(keep, 32, 7, 44, 17);
-            p.PondAt(38, 12, F("item.fish_pike", 3), F("item.fish_crayfish", 5), F("item.fish_trout", 2));
+            p.PondAt(38, 12, F("item.fish_pike", 3), F("item.fish_crayfish", 5), F("item.fish_trout", 2), F("item.fish_eel", 2), F("item.mussel", 3));
 
             // Açıklık (avcı dinlenme yeri): kütük sehpa ve yanında kuru dal yığını (tomruk "item.log" bir kaynaktır, yere
             // eşya olarak konmaz). Bank yok: dış mekân bankı yola bakmalı ve
@@ -148,7 +148,7 @@ namespace Thatchwick.Core.World
             // İskele: göle yürüyen ahşap
             for (int y = 9; y <= 15; y++) for (int x = 24; x <= 25; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
             p.I("item.stump_table", 24, 15); p.On("item.fish_basket_decor", 24, 15, "a"); p.I("item.barrel", 25, 9);   // iskele ucunda sehpa, üstünde balık sepeti
-            p.PondAt(28, 20, F("item.fish_carp", 8), F("item.fish_pike", 4), F("item.fish_eel", 3), F("item.fish_trout", 2));
+            p.PondAt(28, 20, F("item.fish_carp", 8), F("item.fish_pike", 4), F("item.fish_eel", 3), F("item.fish_trout", 2), F("item.fish_tench", 4), F("item.fish_bream", 4), F("item.fish_rudd", 4), F("item.fish_catfish", 1));
 
             foreach (var (x, y) in new[] { (17, 10), (21, 9), (30, 9), (34, 10), (13, 12) }) Node(p, keep, "item.forage_sand", x, y);
             foreach (var (x, y) in new[] { (9, 18), (42, 22), (40, 14) }) Node(p, keep, "item.forage_cress", x, y);
