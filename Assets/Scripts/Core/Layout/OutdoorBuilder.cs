@@ -690,33 +690,64 @@ namespace Thatchwick.Core.Layout
         private static void Farm(Context ctx)
         {
             var house = new RectI(StarterWorld.HouseX0, StarterWorld.HouseY0, StarterWorld.HouseX1 - StarterWorld.HouseX0 + 1, StarterWorld.HouseY1 - StarterWorld.HouseY0 + 1);
-            // Kuyu bir yol kesişiminin yanında olur: kapı patikasından batıya kuyuya giden kısa bir patika ayrılır (T kavşak).
-            int spurY = StarterWorld.HouseY1 + 5;
-            for (int x = StarterWorld.HouseDoorX - 1; x >= StarterWorld.HouseDoorX - 5; x--)
+            // Çiftlik avlusu (tasarım dili, Project 68b; 21.11 "kuyu ve bahçe dip dibe", "alakasız tasarım"): ev, çitle çevrili
+            // tek bir avlunun ortasında durur. Kapı patikası avlu kapısından çıkar; avlunun içinde her şeyin yeri bellidir:
+            //   ön avlu (kapı patikasının doğusu): kuyu tek başına, çevresi boş;
+            //   mutfak bahçesi (batı): kapı patikasından ayrılan bahçe yolu, tarhlar yolun kuzeyinde;
+            //   doğu duvarı: yağmur fıçısı, bank, çiçek;  arka avlu (kuzey): odunluk, kütük, saman, araba öbeği.
+            int hx0 = StarterWorld.HouseX0, hx1 = StarterWorld.HouseX1, hy0 = StarterWorld.HouseY0, hy1 = StarterWorld.HouseY1, dx = StarterWorld.HouseDoorX;
+            var yard = new RectI(hx0 - 6, hy0 - 5, (hx1 + 3) - (hx0 - 6) + 1, (hy1 + 4) - (hy0 - 5) + 1);
+            int gardenY = hy1 + 3;
+            // Kapı patikasından iki kol: batıya uzun bahçe yolu, doğuya kuyuya giden kısa kol (kavşak; kuyu kavşağın yanında olur).
+            for (int x = yard.X + 2; x <= dx + 3; x++)
             {
-                var p = new GridPos(x, spurY);
-                if (ctx.Map.GetFloor(p) == FloorType.Grass && !ctx.Map.IsBlocked(p)) ctx.Map.SetRoad(p, RoadType.Path);
+                var p = new GridPos(x, gardenY);
+                if (x != dx && ctx.Map.GetFloor(p) == FloorType.Grass && !ctx.Map.IsBlocked(p)) ctx.Map.SetRoad(p, RoadType.Path);
             }
+            FarmYardFence(ctx, yard);
             ctx.JunctionList = null;
-            // Avlu üç bölgeye ayrılır (tasarım dili, 21.11: "kuyu ve bahçe dip dibe"): ön avlu açık kalır (kuyu yol ayrımında,
-            // ev duvarı dibinde çiçek ve bank); mutfak bahçesi evin güneybatısında, yolun batısında (kapısı yola açılır), kuyudan uzak; iş köşesi (odunluk, kütük,
-            // saman, araba) evin arkasında öbek. Bölgeler arasında boşluk: göz dinlenir, öbekler okunur.
             var all = FarmZone(ctx, house, 8);
             TownSiteView Part(Func<GridPos, bool> keep, int spacing) => new TownSiteView
             {
-                Building = house, DoorDir = Dir4.S, DoorOutside = new GridPos(StarterWorld.HouseDoorX, StarterWorld.HouseY1 + 1), Name = "Çiftlik evi",
-                Zone = new HashSet<GridPos>(all.Where(keep)), Wide = FarmZone(ctx, house, 10), Spacing = spacing,
+                Building = house, DoorDir = Dir4.S, DoorOutside = new GridPos(dx, hy1 + 1), Name = "Çiftlik evi",
+                Zone = new HashSet<GridPos>(all.Where(p => yard.Contains(p) && keep(p))), Wide = FarmZone(ctx, house, 10), Spacing = spacing,
             };
-            int hx0 = StarterWorld.HouseX0, hx1 = StarterWorld.HouseX1, hy0 = StarterWorld.HouseY0, hy1 = StarterWorld.HouseY1;
-            var view = Part(p => (p.Y > hy1 && p.X >= hx0 - 1 && p.X <= hx1 + 2) || (p.X > hx1 && p.X <= hx1 + 3 && p.Y >= hy0), 3);   // ön avlu + doğu duvarı (fıçı köşede, bank duvar dibinde)
+            var view = Part(p => (p.Y > hy1 && p.X > dx + 1) || (p.X > hx1 && p.Y >= hy0), 3);
             RunGarden(ctx, view, "garden_farm", "Çiftlik avlusu (ön)");
-            RunGarden(ctx, Part(p => p.X <= hx0 - 1 && p.X >= hx0 - 10 && p.Y >= hy1 - 2 && p.Y <= hy1 + 8, 1), "farm_kitchen", "Çiftlik avlusu (mutfak bahçesi)");
-            RunGarden(ctx, Part(p => p.Y <= hy0 - 2 && p.Y >= hy0 - 8 && p.X >= hx0 - 2 && p.X <= hx1 + 3, 1), "farm_utility", "Çiftlik avlusu (iş köşesi)");
+            RunGarden(ctx, Part(p => p.X < hx0 && p.Y >= hy0, 1), "farm_kitchen", "Çiftlik avlusu (mutfak bahçesi)");
+            RunGarden(ctx, Part(p => p.Y < hy0, 1), "farm_utility", "Çiftlik avlusu (arka)");
             // Avlu masasının üstünde dokuz taş (eski başlangıç evinden).
             foreach (var it in ctx.World.Items.ToList())
                 if (it.Def.Id == "item.stump_table" && view.Zone.Contains(it.Position) && ctx.Content.Items.TryGet("item.morris_board", out var board)
                     && ctx.World.CanPlaceOnSurface(board, it.Id, "a").Ok)
                 { ctx.World.PlaceOnSurface(board, it.Id, "a"); break; }
+        }
+
+        /// <summary>Çiftlik avlusunun çiti: dikdörtgenin dış kenarları çit; patikanın geçtiği yerde kapı, engel olan yerde boşluk.</summary>
+        private static void FarmYardFence(Context ctx, RectI yard)
+        {
+            var map = ctx.Map;
+            for (int y = yard.Y; y < yard.Y + yard.H; y++)
+                for (int x = yard.X; x < yard.X + yard.W; x++)
+                {
+                    var c = new GridPos(x, y);
+                    foreach (var d in Facing.All)
+                    {
+                        var o = Facing.Step(c, d);
+                        if (yard.Contains(o)) continue;
+                        var e = Facing.EdgeOf(c, d);
+                        if (map.GetEdge(e) != EdgeKind.None) continue;
+                        bool roadIn = map.GetRoad(c) != RoadType.None, roadOut = map.GetRoad(o) != RoadType.None;
+                        if (roadIn && roadOut)
+                        {
+                            map.SetEdge(e, EdgeKind.Gate);
+                            ctx.Reserved.Add(c); ctx.Reserved.Add(o);
+                            continue;
+                        }
+                        if (roadIn || roadOut || !Open(ctx, c) || !Open(ctx, o)) continue;   // yol kenarı, ağaç, su: çit yok
+                        map.SetEdge(e, EdgeKind.Fence);
+                    }
+                }
         }
 
         private static bool TooClose(List<ItemInstance> placed, GridPos p, int gap)

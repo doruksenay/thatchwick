@@ -1846,7 +1846,7 @@
         {
           "item": "item.woodshed",
           "optional": true,
-          "anchor": "open"
+          "anchor": "back"
         },
         {
           "item": "item.chopping_block",
