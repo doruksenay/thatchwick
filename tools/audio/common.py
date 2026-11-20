@@ -179,6 +179,16 @@ def family_of(job: Job) -> dict:
     fam = dict(fams["defaults"])
     fam.update(fams["families"][name])
     fam["name"] = name
+    # İş dosyası aileden uzun süre isteyebilir (ör. 4 sn sinek vızıltısı, foley üst sınırı 3 sn):
+    # süre kapısı iş dosyasının istediği süreyi geçersiz saymasın.
+    if job.get("duration_range"):
+        fam["duration_range"] = [float(x) for x in job.get("duration_range")]
+    else:
+        durs = [job.get("duration_s")] + [L.get("duration_s") for L in (job.get("layers") or [])]
+        durs = [float(d) for d in durs if d]
+        if durs and "duration_range" in fam:
+            lo, hi = fam["duration_range"]
+            fam["duration_range"] = [lo, max(hi, round(max(durs) * 1.3, 2))]
     return fam
 
 
