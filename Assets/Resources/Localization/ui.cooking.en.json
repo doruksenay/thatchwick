@@ -3,7 +3,6 @@
   "cook.block.help_baby": "A baby can't help.",
   "cook.block.help_no_work": "{name} isn't doing anything to help with.",
   "cook.block.help_taken": "{name} already has a helper.",
-  "cook.block.no_dishes": "There are no dishes to wash.",
   "cook.block.no_dog": "There is no dog.",
   "cook.block.no_serving": "There is no food on the table.",
   "cook.block.no_spice": "There is no {item}.",

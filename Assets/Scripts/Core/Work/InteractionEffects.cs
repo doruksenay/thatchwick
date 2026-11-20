@@ -113,6 +113,11 @@ namespace Thatchwick.Core.Work
         /// <summary>Ek başlama engeli (ev bakımı, belge 45: Life.HomeLife.CanStart); null ise yok.</summary>
         public Func<Character, ItemInstance, InteractionDef, string> ExtraBlocker { get; set; }
 
+        /// <summary>
+        /// Pişirmede kabın kalite tavanı ve ekipman puanının seviye kaydırması (63a §5.2); mutfak kuralı yoksa null.
+        /// </summary>
+        public Func<Character, ItemInstance, InteractionDef, (int maxQuality, int levelShift)?> KitchenQuality { get; set; }
+
         public InteractionEffects(WorldState world, Household house, ContentDatabase content, int seed = 1)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
@@ -509,10 +514,19 @@ namespace Thatchwick.Core.Work
             int levelAboveGate = level - Math.Max(1, interaction.MinSkillLevel);
             int? batchQuality = null;
             int batchMaker = 0;
+            // Mutfak (63a §5.2): kabın kademesi kaliteye tavan koyar, ekipman puanı usta şansını kaydırır.
+            var kitchen = interaction.Cook != null ? KitchenQuality?.Invoke(character, item, interaction) : null;
+            if (kitchen.HasValue) levelAboveGate += kitchen.Value.levelShift;
+            bool vesselAllowsMasterwork = !kitchen.HasValue || kitchen.Value.maxQuality >= ItemQuality.Masterwork;
             if (processing || (interaction.IsCraft && interaction.Skill.HasValue))
             {
                 long day = DayIndex?.Invoke() ?? 0;
-                if (Quality != null && Quality.WillAttempt(character, item, interaction, day) && ItemQuality.CanAttemptMasterwork(rawLevel, inputQualities))
+                if (!vesselAllowsMasterwork && Quality != null && Quality.WillAttempt(character, item, interaction, day))
+                {
+                    farmNotes.Add("bu kapla eser denenmez (en iyi kap gerekir)");
+                    batchQuality = Math.Min(kitchen.Value.maxQuality, ItemQuality.Processed(inputQualities, levelAboveGate, rawLevel, _rng));
+                }
+                else if (Quality != null && Quality.WillAttempt(character, item, interaction, day) && ItemQuality.CanAttemptMasterwork(rawLevel, inputQualities))
                 {
                     Quality.MarkAttempted(character, item, interaction, day);
                     if (_rng.NextDouble() < ItemQuality.MasterworkChance)
@@ -536,6 +550,11 @@ namespace Thatchwick.Core.Work
                     if (Quality != null && Quality.WillAttempt(character, item, interaction, day)) farmNotes.Add("malzeme has değil, eser denenmedi");
                     batchQuality = (interaction.Dish != null ? DishQuality?.Invoke(character, item, interaction, LastTaken) : null)
                         ?? ItemQuality.Processed(inputQualities, levelAboveGate, rawLevel, _rng);
+                    if (kitchen.HasValue && batchQuality.Value > kitchen.Value.maxQuality)
+                    {
+                        batchQuality = kitchen.Value.maxQuality;
+                        farmNotes.Add("kap daha iyisine izin vermedi");
+                    }
                 }
             }
             var qualityTotals = new Dictionary<string, int[]>();

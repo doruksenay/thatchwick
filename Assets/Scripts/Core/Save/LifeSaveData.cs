@@ -100,6 +100,8 @@ namespace Thatchwick.Core.Save
         public Thatchwick.Core.Life.KeepsakeSave keepsakes;
         // Ev bakımı ve otomasyonu (belge 45); eski kayıtta null.
         public Thatchwick.Core.Life.HomeSave home;
+        /// <summary>Mutfak (63a): kirli bulaşık, bıçak, sabunlu takım. Eski kayıtta null: hane hediye takımı alır.</summary>
+        public Thatchwick.Core.Life.KitchenSave kitchen;
         // Komşu NPC hanedanları (18.11.2026). Eski kayıtta null: haneler mevcut köylülerden kurulur.
         public NeighborHouseSave[] houses;
         // Yaban hayvanları (18.11.2026, belge 31). Eski kayıtta null / 0: defter boş, tehdit yok.

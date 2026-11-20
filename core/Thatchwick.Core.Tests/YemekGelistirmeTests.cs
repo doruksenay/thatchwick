@@ -41,7 +41,8 @@ namespace Thatchwick.Core.Tests
     // Mutfak görevi, rutin, koku ve konuşmalar, baş başa etkinlikler; zincirde adım yeri, etki anı ve güvenli kesme.
     public class YemekGelistirmeTests
     {
-        private const string Pot = "item.cooking_pot";
+        // Pişirme ocakta (belge 63a): yemekler taş ocakta pişer; kazan ocağa götürülen kaptır.
+        private const string Pot = "item.hearth_stone";
 
         private sealed class Rig
         {
@@ -84,6 +85,8 @@ namespace Thatchwick.Core.Tests
             rig.Fx = new InteractionEffects(rig.World, rig.House, db, 7);
             rig.Life.Attach(rig.Fx);
             rig.Life.AttachEffects(rig.Fx);
+            // Bu testler yemeğin kendi kurallarına bakar; kap, alet ve yakıt gereği kapalı (MutfakAletleriTests ve aşağıdaki "Mutfak_" testleri açık sınar).
+            rig.Life.KitchenTools.Enforce = false;
             rig.Life.Bubble += (c, t) => rig.Bubbles.Add(c.Name + ":" + t.Key);
             return rig;
         }
@@ -256,6 +259,111 @@ namespace Thatchwick.Core.Tests
             Assert.True(x.House.Count("item.beef_yahni") > 0);
         }
 
+        // ---------- mutfak aletleriyle birlikte (belge 63, 63a) ----------
+
+        [Fact]
+        public void Mutfak_EkipmanPuaniSofraPuaninaGirer_KapTavaniKeser()
+        {
+            var x = Make();
+            x.Life.KitchenTools.Enforce = true;
+            var hearth = x.Place(Pot, 5, 5);
+            var table = x.Place("item.table_wood", 10, 5);
+            var master = x.Person(1, "Usta", new GridPos(5, 6));
+            Level(master, SkillType.Cooking, 10);
+            var yahni = x.Cook(hearth, "item.beef_yahni");
+            Assert.Equal("stew", yahni.Cook);                                          // yahni güveçte pişer
+            void Stock() { x.House.AddItem("item.meat", 2, ItemQuality.Superior); x.House.AddItem("item.onion", 2, ItemQuality.Superior); x.House.AddItem("item.carrot", 1, ItemQuality.Superior); }
+            Stock();
+            x.House.AddItem("item.firewood", 8); x.House.AddItem("item.kitchen_knife", 1);
+            Assert.NotNull(x.Fx.CanStart(master, hearth, yahni));                      // güveç kabı yok: emir verilemez
+
+            x.House.AddItem("item.guvec_plain", 1);                                    // kademe 1: tavan 70, en çok Seçme
+            Assert.Null(x.Fx.CanStart(master, hearth, yahni));
+            var use = x.Life.KitchenTools.Preview(master, hearth, yahni, out _);
+            var est = x.Life.Meals.Estimate(master, hearth, yahni);
+            Assert.Equal(use.Score, est.Equipment);                                    // ekipman bileşeni mutfak aletlerinden gelir
+            Assert.Equal(ItemQuality.Fine, est.MaxQuality);
+            Assert.True(est.Quality <= ItemQuality.Fine);
+            Assert.Equal(0, x.Life.KitchenTools.QualityFor(master, hearth, yahni).Value.levelShift);   // yemekte seviye kaymaz, puan sofra puanında
+
+            x.Life.Meals.Order(master, hearth, yahni.Id, batch: 1, serve: true);
+            x.Run(master, hearth, yahni);
+            var s = x.Life.Meals.ServingAt(table.Id);
+            Assert.NotNull(s);                                                         // tavanlı kalite sofraya da aynı gider
+            Assert.True(s.Quality <= ItemQuality.Fine);
+            Assert.Equal(0, x.House.Count("item.beef_yahni", ItemQuality.Superior));
+            Assert.Equal(1, x.Life.KitchenTools.DirtyCount("item.guvec_plain"));       // pişirme kabı kirletir
+            Assert.True(x.Life.KitchenTools.DirtyCount("item.kitchen_knife") == 1);
+
+            // Daha iyi kap: puan yükselir, tavan kalkar; aynı usta ve malzemeyle Has çıkar.
+            x.House.AddItem("item.guvec_fine", 1, ItemQuality.Superior);
+            x.House.AddItem("item.wooden_spoon", 1); x.House.AddItem("item.ladle", 1); x.House.AddItem("item.cutting_board", 1);
+            Stock();
+            var better = x.Life.Meals.Estimate(master, hearth, yahni);
+            Assert.True(better.Equipment > est.Equipment);
+            Assert.Equal(ItemQuality.Max, better.MaxQuality);
+            Assert.True(better.Total >= DishScore.SuperiorAt, "puan " + better.Total);
+            Assert.Equal(ItemQuality.Superior, better.Quality);
+
+            // Tavan puanın kendisinde: aynı toplam, kil kapta Seçme'de kalır.
+            Assert.Equal(ItemQuality.Fine, new DishScoreBreakdown { Ingredients = 35, Skill = 25, Mastery = 10, Equipment = 10, MaxQuality = ItemQuality.Fine }.Quality);
+        }
+
+        [Fact]
+        public void Mutfak_AyakIsiVeAdimYeriTekSirada_IptalMalzemeyiVeKabiBirakir()
+        {
+            var x = Make();
+            for (int yy = 0; yy < 40; yy++) for (int xx = 0; xx < 40; xx++) x.World.Map.SetOwned(new GridPos(xx, yy), true);
+            x.Life.KitchenTools.Enforce = true;
+            var hearth = x.Place(Pot, 5, 5);
+            var shelf = x.Place("item.pantry_shelf", 14, 5);                           // "malzemeyi al" adımının yeri
+            var side = x.Place("item.table_wood", 5, 12);
+            var vessel = x.World.PlaceOnSurface(x.Db.Items.Get("item.pot_clay"), side.Id, side.Def.SurfaceSlots[0].Id);   // kap yerinden alınır, iş bitince yerine konur
+            x.Place("item.water_barrel", 9, 12);
+            var cook = x.Person(1, "Ayşe", new GridPos(5, 6)); Level(cook, SkillType.Cooking, 5);
+            var other = x.Person(2, "Fatma", new GridPos(6, 6)); Level(other, SkillType.Cooking, 5);
+            var soup = x.Cook(hearth, "item.soup_cabbage");
+            Assert.Equal("boil", soup.Cook);
+            void Stock() { x.House.AddItem("item.cabbage", 2); x.House.AddItem("item.onion", 1); }
+            Stock();
+            x.House.AddItem("item.firewood", 6); x.House.AddItem("item.kitchen_knife", 1);
+
+            var r = x.Runners[1];
+            var steps = new List<string>();
+            r.StepChanged += (_, st) => { if (st != null) steps.Add(st.Id); };
+            bool atPantry = false, heldVessel = false;
+            r.Command(Job.UseItem(hearth.Id, soup.Id));
+            for (int k = 0; k < 20000 && !r.IsIdle; k++)
+            {
+                r.Tick(0.0002);
+                if (r.IsUsingItem && Math.Abs(cook.Position.X - shelf.Position.X) + Math.Abs(cook.Position.Y - shelf.Position.Y) <= 1) atPantry = true;
+                if (r.HeldItemId == "item.pot_clay") heldVessel = true;
+            }
+            Assert.True(r.IsIdle, "iş bitmedi (" + r.LastFailure + ")");
+            // Tek sıra: kabı al, su doldur (ayak işi) → malzemeyi kilerden al, doğra, pişir (zincir) → kabı yerine koy.
+            int fetch = steps.IndexOf("fetch_vessel"), fill = steps.IndexOf("fill_water"), gather = steps.IndexOf("gather"), stir = steps.IndexOf("stir"), back = steps.LastIndexOf("put_back");
+            Assert.True(fetch >= 0 && fill > fetch && gather > fill && stir > gather && back > stir, string.Join(",", steps));
+            Assert.True(heldVessel, "kap elde taşınmalı");
+            Assert.True(atPantry, "malzeme için kilere yürümeli");
+            Assert.Equal(0, vessel.TakenBy);                                           // yerine kondu
+            Assert.Equal(0, x.House.Count("item.cabbage"));
+            Assert.True(x.House.Count("item.soup_cabbage") > 0);
+            Assert.Equal(1, x.Life.KitchenTools.DirtyCount("item.pot_clay"));
+
+            // İptal: ayrılan malzeme geri konur (yemek geliştirmesi), kap ve bıçak serbest kalır (mutfak aletleri).
+            Stock();
+            r.Command(Job.UseItem(hearth.Id, soup.Id));
+            for (int k = 0; k < 20000 && x.House.Count("item.cabbage") > 0; k++) r.Tick(0.0002);
+            Assert.Equal(0, x.House.Count("item.cabbage"));                            // "malzemeyi al" adımında ayrıldı
+            Assert.Equal(cook.Id, vessel.TakenBy);
+            Assert.NotNull(x.Fx.CanStart(other, hearth, soup));                        // tek tencere meşgul
+            r.Cancel();
+            Assert.Equal(2, x.House.Count("item.cabbage"));
+            Assert.Equal(1, x.House.Count("item.onion"));
+            Assert.Equal(0, vessel.TakenBy);
+            Assert.Null(x.Fx.CanStart(other, hearth, soup));
+        }
+
         // ---------- tarif bilgisi ve defter ----------
 
         [Fact]
@@ -327,7 +435,9 @@ namespace Thatchwick.Core.Tests
             var x = Make();
             var pot = x.Place(Pot, 5, 5);
             var table = x.Place("item.table_wood", 10, 5);
-            var basin = x.Place("item.basin_ewer", 14, 5);
+            var tub = x.Place("item.dish_tub", 14, 5);
+            x.Place("item.water_barrel", 16, 5);
+            x.House.AddItem("item.wooden_bowl", 6); x.House.AddItem("item.dish_basket", 1);
             var cook = x.Person(1, "Ayşe", new GridPos(5, 6)); Level(cook, SkillType.Cooking, 6);
             var soup = x.Cook(pot, "item.soup_cabbage");
             x.House.AddItem("item.cabbage", 4); x.House.AddItem("item.onion", 2);
@@ -351,12 +461,21 @@ namespace Thatchwick.Core.Tests
             for (int k = 0; k < 3; k++) { cook.Needs.Set(NeedType.Hunger, 20f); x.Run(cook, table, x.Act(table, "eat_serving")); }
             Assert.Equal(2, x.Life.Meals.ServingAt(table.Id).FillStage);               // yarım
 
+            // Bulaşık tek sistemde (belge 63a §4): sofradan kalkan tabaklar mutfak aletlerinin bulaşığına girer,
+            // sepetle leğene taşınıp yıkanır. (Kap ve alet gereği bu testte kapalıydı; bulaşık için açılır.)
+            x.Life.KitchenTools.Enforce = true;
+            Assert.Equal(4, x.Life.Meals.PlatesOnTables);                              // tabaklar masada bekliyor
+            Assert.Equal(2, x.Life.KitchenTools.CleanTableware);                       // altı kâseden dördü kullanıldı
+            Assert.NotNull(x.Fx.CanStart(cook, tub, x.Act(tub, "wash_dishes")));       // toplanmadan yıkanacak bulaşık yok
             x.Run(cook, table, x.Act(table, "clear_table"));
             Assert.Null(x.Life.Meals.ServingAt(table.Id));
             Assert.Equal(2, x.House.Count("item.soup_cabbage"));                       // artan kilere
-            Assert.Equal(4, x.Life.Meals.Sink);
-            x.Run(cook, basin, x.Act(basin, "wash_dishes"));
-            Assert.Equal(0, x.Life.Meals.Sink);
+            Assert.Equal(0, x.Life.Meals.PlatesOnTables);
+            Assert.Equal(4, x.Life.KitchenTools.DirtyTableware);
+            x.Run(cook, tub, x.Act(tub, "wash_dishes"));
+            Assert.Equal(0, x.Life.KitchenTools.DirtyPieces);
+            Assert.Equal(6, x.Life.KitchenTools.CleanTableware);
+            Assert.DoesNotContain(x.Db.Items.Get("item.basin_ewer").Interactions, i => i.Id == "wash_dishes");   // basit bulaşık işi kalktı
         }
 
         [Fact]

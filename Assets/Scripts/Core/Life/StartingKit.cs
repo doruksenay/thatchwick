@@ -36,6 +36,7 @@ namespace Thatchwick.Core.Life
         public static void Apply(Household house)
         {
             foreach (var (id, count) in Items) house.AddItem(id, count);
+            foreach (var (id, count) in KitchenSystem.StarterKit) house.AddItem(id, count);   // mutfak takımı (63a §2)
         }
 
         /// <summary>

@@ -29,6 +29,12 @@ LABELS = [
     ("tidy_up", "Ortalığı topluyor", "Tidying up"),
     # mutfak
     ("chop_food", "Doğruyor", "Chopping"),
+    ("chop_on_knee", "Dizinde doğruyor", "Chopping on the knee"),
+    ("fill_tub", "Leğene su dolduruyor", "Filling the tub"),
+    ("unload_basket", "Sepeti boşaltıyor", "Unloading the basket"),
+    ("wash_dishes", "Bulaşık yıkıyor", "Washing up"),
+    ("scrub_dishes", "Bulaşığı ovalıyor", "Scrubbing the dishes"),
+    ("stack_dishes", "Temizleri diziyor", "Stacking the clean dishes"),
     ("stir", "Karıştırıyor", "Stirring"),
     ("taste", "Tadına bakıyor", "Tasting"),
     ("serve_up", "Kaba alıyor", "Dishing up"),
@@ -223,9 +229,11 @@ CHAINS = [
     ]),
 
     # ---- mutfak ----
-    ("cook_pot", [{"station": "item.cooking_pot", "skill": "Cooking"}, {"station": "item.copper_pots", "skill": "Cooking"},
-                  {"station": "item.cooking_pot", "skill": "Brewing"}], [
+    # Ocakta pişirme (63, 63a): kap ve aletler ayak işiyle (JobRunner.Errands) gelir; ateş sönükse tutuşturulur.
+    ("cook_pot", [{"flag": "cook", "category": "heat_light"}], [
+        S("kindle", "kindle", 1, when="unlit", sfx="fire.kindle"),
         S("gather", "reach", 1, held="consume"),
+        S("chop_on_knee", "chop_knife", 1, when="noBoard", sfx="kitchen.chop"),
         S("chop_food", "chop_knife", 2, sfx="kitchen.chop"),
         FUMBLE,
         S("stir", "stir", 4, sfx="kitchen.stir"),
@@ -437,6 +445,21 @@ CHAINS = [
         S("collect", "milk", 4),
         S("basket", "reach", 1),
     ]),
+    # Bulaşık (63a §4): kirliler sepette gelir; yalakta ayakta, leğende ve kıyıda çömelerek yıkanır.
+    ("wash_dishes_stand", [{"flag": "washDishes", "station": "item.kitchen_spout"}], [
+        S("unload_basket", "reach", 1),
+        S("wash_dishes", "wash_dishes", 5, sfx="bath.splash"),
+        WHISTLE,
+        S("stack_dishes", "reach", 1),
+    ]),
+    ("wash_dishes", [{"flag": "washDishes"}], [
+        S("fill_tub", "pour", 1, when="carriedWater", sfx="work.water"),
+        S("unload_basket", "reach", 1),
+        S("scrub_dishes", "scrub", 5, sfx="bath.splash"),
+        WHISTLE,
+        SIGH,
+        S("stack_dishes", "reach", 1),
+    ]),
     ("pet_animals", [{"flag": "pet"}], [
         S("offer_hand", "reach", 1),
         S("stroke", "love", 4),
@@ -472,8 +495,6 @@ LABELS += [
     ("stack_plates", "Tabakları topluyor", "Stacking the plates"),
     ("carry_dishes", "Bulaşığı götürüyor", "Carrying the dishes"),
     ("wipe_table", "Masayı siliyor", "Wiping the table"),
-    ("scrub_dishes", "Bulaşık yıkıyor", "Washing the dishes"),
-    ("rack_dishes", "Tabakları diziyor", "Racking the plates"),
     ("lead_animal", "Hayvanı içeri götürüyor", "Leading the animal in"),
     ("door_closes", "Kapı kapalı", "The door is closed"),
     ("come_out", "Dışarı çıkıyor", "Coming out"),
@@ -571,10 +592,6 @@ def _extend():
             S("stack_plates", "reach", 2),
             S("carry_dishes", "carry", 2),
             S("wipe_table", "reach", 1),
-        ]),
-        ("wash_dishes", [{"flag": "meal", "idPrefix": "wash_dishes"}], [
-            S("scrub_dishes", "wash", 4, sfx="work.water"),
-            S("rack_dishes", "reach", 1),
         ]),
         ("slaughter", [{"flag": "meal", "idPrefix": "slaughter"}], [
             S("lead_animal", "carry", 2),

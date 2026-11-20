@@ -16,7 +16,8 @@ namespace Thatchwick.Core.Tests
             var world = new WorldState(new GridMap(12, 12));
             var pot = world.PlaceItem(db.Items.Get("item.cooking_pot"), new GridPos(2, 2));
             Assert.Equal("item.apple", HeldFood.Of(Job.UseItem(pot.Id, "eat_apple"), world, db));
-            Assert.Equal("item.egg", HeldFood.Of(Job.UseItem(pot.Id, "eat_egg"), world, db));
+            var hearth = world.PlaceItem(db.Items.Get("item.hearth_stone"), new GridPos(8, 2));   // pişirme ocakta (63a)
+            Assert.Equal("item.egg", HeldFood.Of(Job.UseItem(hearth.Id, "eat_egg"), world, db));
 
             var table = world.PlaceItem(db.Items.Get("item.table_wood"), new GridPos(5, 5));
             var basket = world.PlaceOnSurface(db.Items.Get("item.fruit_basket"), table.Id, "b");
