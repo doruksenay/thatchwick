@@ -5,7 +5,7 @@ kind: ambience
 family: ambience
 freq: C
 pilot: true
-status: claimed
+status: review
 approved_by: auto
 key: amb.farm.day
 generate: 3
@@ -28,5 +28,9 @@ yeniden_sayisi: 2
 prompt_influence: 0.7
 claimed_by: ip-10-0-139-217
 claimed_at: '2026-11-20T17:08:36Z'
+candidates: 3
+passed: 3
+credits_spent: 0
+generated_at: '2026-11-20T17:08:49Z'
 ---
 A bright, cheerful, sunny spring morning on a cozy little medieval farm. Lively, happy birdsong, bees humming over flowers, warm and pleasant, a feeling of a lovely day. Gentle and even. No wind, no rain, no gloom, no drone, no hiss.
