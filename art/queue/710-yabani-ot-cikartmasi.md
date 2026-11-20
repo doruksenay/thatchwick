@@ -1,7 +1,7 @@
 ---
 id: "710"
 title: Yabani ot çıkartması (iki değişke)
-status: running
+status: review
 claimed_at: 2026-11-20T18:13Z
 approved_by: user
 family: zemin
