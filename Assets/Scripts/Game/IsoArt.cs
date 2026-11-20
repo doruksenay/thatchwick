@@ -298,10 +298,32 @@ namespace Thatchwick.Game
             ["item.crop_herb_bed"] = "iso_crop_herb_bed",   // belge 45 (art/queue 478a)
             ["item.crop_saffron"] = "iso_crop_saffron",
             ["item.crop_vetch"] = "iso_crop_vetch",
+            // 58 §4 bulgu 2: evre görseli olup eşlemesi olmayan ekinler (317, 318, 318t) ve 478a/545 ile gelenler.
+            ["item.crop_parsnip"] = "iso_crop_parsnip",
+            ["item.crop_carrot"] = "iso_crop_carrot",
+            ["item.crop_onion"] = "iso_crop_onion",
+            ["item.crop_garlic"] = "iso_crop_garlic",
+            ["item.crop_beet"] = "iso_crop_beet",
+            ["item.crop_radish"] = "iso_crop_radish",
+            ["item.crop_lettuce"] = "iso_crop_lettuce",
+            ["item.crop_broad_bean"] = "iso_crop_broad_bean",
+            ["item.crop_barley"] = "iso_crop_barley",
+            ["item.crop_spinach"] = "iso_crop_spinach",
+            ["item.crop_wheat"] = "iso_crop_wheat",
+            ["item.crop_rye"] = "iso_crop_rye",
+            ["item.crop_oats"] = "iso_crop_oats",
+            ["item.crop_flax"] = "iso_crop_flax",
+            ["item.crop_hemp"] = "iso_crop_hemp",
+            ["item.crop_woad"] = "iso_crop_woad",
+            ["item.crop_madder"] = "iso_crop_madder",
+            ["item.crop_weld"] = "iso_crop_weld",
         };
 
-        /// <summary>Ekin evresi (1-3) büyüme oranından.</summary>
-        public static int CropStage(float growth) => growth < 0.34f ? 1 : growth < 0.67f ? 2 : 3;
+        /// <summary>
+        /// Ekin evresi (1-3). Üçüncü (olgun) görsel yalnızca ekin biçilmeye hazırken gelir (58 §4 bulgu 4): tarlaya bakınca
+        /// neyin olgun olduğu etiketsiz anlaşılsın. Büyürken yarıya kadar filiz, sonra gelişmiş bitki.
+        /// </summary>
+        public static int CropStage(float growth, bool grown) => grown ? 3 : growth < 0.5f ? 1 : 2;
 
         /// <summary>
         /// Bitkinin görseli. staged: görsel bitkinin şimdiki evresine ait (genç ağaç, ekin evresi); çağıran onu ölçekle
@@ -314,7 +336,7 @@ namespace Thatchwick.Game
             string id = item.Def.Id;
             if (Crops.TryGetValue(id, out var crop))
             {
-                int st = CropStage(item.GrowthFraction);
+                int st = CropStage(item.GrowthFraction, item.IsGrown);
                 for (int k = st; k >= 1; k--)
                 {
                     var s = Get($"{crop}_{k}_se", 40f, 24f);

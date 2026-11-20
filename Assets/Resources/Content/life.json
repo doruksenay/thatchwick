@@ -361,6 +361,60 @@
           "level": 9
         }
       ]
+    },
+    {
+      "id": "sickle",
+      "displayName": "Orak",
+      "tiers": [
+        {
+          "name": "Demir orak",
+          "akce": 45,
+          "firewood": 3,
+          "speed": 1.2,
+          "level": 3
+        },
+        {
+          "name": "Çelik orak",
+          "akce": 120,
+          "firewood": 6,
+          "speed": 1.4,
+          "level": 6
+        },
+        {
+          "name": "Usta orağı",
+          "akce": 260,
+          "firewood": 10,
+          "speed": 1.6,
+          "level": 9
+        }
+      ]
+    },
+    {
+      "id": "scythe",
+      "displayName": "Tırpan",
+      "tiers": [
+        {
+          "name": "Demir tırpan",
+          "akce": 90,
+          "firewood": 5,
+          "speed": 1.0,
+          "level": 4
+        },
+        {
+          "name": "Çelik tırpan",
+          "akce": 180,
+          "firewood": 8,
+          "speed": 1.15,
+          "level": 7
+        },
+        {
+          "name": "Usta tırpanı",
+          "akce": 340,
+          "firewood": 12,
+          "speed": 1.3,
+          "level": 9
+        }
+      ]
     }
   ],
   "branches": [

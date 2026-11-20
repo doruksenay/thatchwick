@@ -13,6 +13,11 @@ namespace Thatchwick.Game
         public const float MinZoom = 3f;
         public const float MaxZoom = 20f;
         private const float TapMaxMovePixels = 14f;
+        /// <summary>Bu kadar basılı tutulup kıpırdamayan dokunuş uzun basıştır (etkileşim menüsü; belge 59 karar 2).</summary>
+        private const float LongPressSeconds = 0.45f;
+        private float _pressTime;
+        private bool _longFired;
+        private bool _painting;
 
         private Camera _camera;
         private Rect _bounds;
@@ -26,6 +31,14 @@ namespace Thatchwick.Game
         public Func<Vector2, bool> IsOverUi;
 
         public event Action<Vector2> Tapped;
+        /// <summary>Uzun basış (kıpırdamadan basılı tutma). Verildiyse parmak kalkınca Tapped gelmez.</summary>
+        public event Action<Vector2> LongPressed;
+        /// <summary>
+        /// Basışın başladığı ekran konumu için true dönerse sürükleme kamerayı kaydırmaz; geçilen her konum için Painted gelir
+        /// (olgun ekinden başlayan sürükleme hasada ekler). null ise her sürükleme kaydırmadır.
+        /// </summary>
+        public Func<Vector2, bool> BeginsPaint;
+        public event Action<Vector2> Painted;
 
         // Tanılama (HUD'da gösterilir): girdinin nerede takıldığını görmek için.
         public int PressCount, BlockedCount, TapCount;
@@ -171,6 +184,9 @@ namespace Thatchwick.Game
                 _movedTooFar = false;
                 _pressStart = pos;
                 _lastPos = pos;
+                _pressTime = Time.unscaledTime;
+                _longFired = false;
+                _painting = BeginsPaint != null && BeginsPaint(pos);
                 return;
             }
 
@@ -178,8 +194,20 @@ namespace Thatchwick.Game
 
             if (pointer.press.isPressed)
             {
-                if ((pos - _pressStart).magnitude > TapMaxMovePixels) _movedTooFar = true;
-                if (_movedTooFar) Pan(pos - _lastPos);
+                if (!_movedTooFar && (pos - _pressStart).magnitude > TapMaxMovePixels)
+                {
+                    _movedTooFar = true;
+                    if (_painting) Painted?.Invoke(_pressStart);   // sürüklemenin başladığı ekin de sayılır
+                }
+                if (_movedTooFar)
+                {
+                    if (_painting) Painted?.Invoke(pos); else Pan(pos - _lastPos);
+                }
+                else if (!_longFired && Time.unscaledTime - _pressTime >= LongPressSeconds)
+                {
+                    _longFired = true;
+                    LongPressed?.Invoke(pos);
+                }
                 _lastPos = pos;
                 return;
             }
@@ -187,7 +215,8 @@ namespace Thatchwick.Game
             if (pointer.press.wasReleasedThisFrame || !pointer.press.isPressed)
             {
                 _pressing = false;
-                if (!_movedTooFar && !_wasPinching) { TapCount++; Tapped?.Invoke(pos); }
+                if (!_movedTooFar && !_wasPinching && !_longFired) { TapCount++; Tapped?.Invoke(pos); }
+                _painting = false;
             }
         }
 
