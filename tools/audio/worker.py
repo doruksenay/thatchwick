@@ -260,6 +260,8 @@ def voice_id(job: Job) -> str:
 
 def finish(job: Job, groups: dict, g: Gen) -> dict:
     fam = family_of(job)
+    if job.get("kind") == "voice_design":
+        fam["duration_range"] = [0.5, 60]  # önizlemeler örnek cümle okur; süre sınırı onlar için anlamsız
     loop = bool(job.get("loop", False))
     cand_dir = WORK / job.id / "cand"
     master_dir = WORK / job.id / "master"
@@ -370,7 +372,9 @@ def run_job(job: Job, api, mock: bool, use_git: bool) -> None:
         if passed:
             job.meta.pop("error", None)
         else:
-            job.meta["error"] = "hiçbir aday kapıdan geçmedi; prompt'u değiştir"
+            reasons = sorted({f for gr in report["groups"].values() for m in gr["candidates"].values()
+                              for f in m.get("flags", [])})
+            job.meta["error"] = "hiçbir aday kapıdan geçmedi: " + "; ".join(reasons[:4])
         job.save()
         copy_for_review(job)
         log_budget(job, est, before, after)
