@@ -735,6 +735,8 @@ namespace Thatchwick.Core.Life
         public void Attach(PlantSystem plants)
         {
             _plants = plants;
+            // Güney Yamaçları (belge 32): zeytin yalnızca orada, kahve orada ya da ılık serada büyür.
+            plants.IsSouth = p => Thatchwick.Core.World.Regions.Slopes.Contains(p);
             plants.GrowthMultiplier = GrowthMultiplier;
             Home.IsGreenhouseRoom = plants.IsGreenhouse;          // sera oda tipi
             plants.GreenhouseGrowth = Home.GreenhouseGrowth;
