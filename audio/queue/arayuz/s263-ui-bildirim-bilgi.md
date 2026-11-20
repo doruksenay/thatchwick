@@ -4,7 +4,7 @@ title: Arayüz bildirimi (bilgi)
 kind: sfx
 family: ui
 freq: A
-status: pending
+status: ready
 approved_by: user
 depends_on: []
 note: 'Tester raporu 65 B6 ve 66: eksik ses anahtarı ui.notify.info. ui.tap (s100) ile aynı aile: keten, ahşap boncuk, tel.'
@@ -19,3 +19,4 @@ axes:
   - small felt-muted bell, single soft ding
   - light plucked thread, rising two notes
 ---
+A soft small notification: two gentle wooden bead taps, warm and friendly.
