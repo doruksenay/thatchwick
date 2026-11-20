@@ -1,5 +1,5 @@
 ---
-id: "510"
+id: "570"
 title: Kement tuzağı (haritaya kurulan eşya)
 status: pending
 approved_by: user        # otomatik akış (CLAUDE.md, 2026-11-17); kullanıcı isteği sohbette 2026-11-20: "kementi de haritaya ekle"
@@ -14,7 +14,7 @@ outputs:
   - Assets/Art/Iso/_aday/iso_item_snare_se.png
 created: 2026-11-20
 ---
-# 510 Kement tuzağı
+# 570 Kement tuzağı
 
 ## Amaç
 `item.snare` artık envanterde sayı değil, haritaya kurulan 1x1 dış mekân eşyası (kendi arsana ya da ormana, göle, sazlığa, tepeye; en çok 3). Şu an görseli yok, yer tutucuyla çiziliyor. Oyuncu ormanda uzaktan tuzağını seçebilmeli.
