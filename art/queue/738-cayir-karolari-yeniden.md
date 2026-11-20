@@ -1,14 +1,14 @@
 ---
 id: "738"
 title: "Çayır karoları yeniden: ana çimle aynı ton (612 çayırının düzeltmesi)"
-status: blocked
+status: pending
 claimed_at: 2026-11-20T20:30Z
 approved_by: user        # kullanıcı onayı 2026-11-20 (sohbet: "kıyı karosu ve çim tonu için PixelLab işi hazırla"; belge 65b B2)
 priority: 10
 family: zemin
 style_gate: false
-cost_est: 4
-cost_max: 8
+cost_est: 10
+cost_max: 12
 depends_on: []
 max_attempts: 1
 pixellab: true
@@ -57,6 +57,8 @@ Ton aynı olursa geçiş karosuna gerek kalmaz: çayır, çimin üstüne serpilm
 ## Sorular
 - `create_tiles_pro` bir çağrıyı karo sayısından bağımsız 10 generation fiyatlıyor (stil modu, 64x32 referans; araç açıklaması: "Numbering fewer tiles does not make a call cheaper"). `cost_est` 4 / `cost_max` 8, kural gereği 2 katı aşan sapma olduğundan çağrı yapılmadı (0 gen harcandı). Öneri: `cost_est: 10`, `cost_max: 12` yapılıp tek çağrıda 3 çeşit (ya da 16 numaralı karodan en iyi 3) üretilsin; 8 gen bütçesi içinde sığmaz.
 - Referans yüklemeleri (3 grass karosu, upload id'leri 3 gün geçerli) hazırdı; ücretsiz.
+
+- 2026-11-21: kullanıcı kararı: bütçe `cost_est: 10`, `cost_max: 12` (tek create_tiles_pro çağrısı). İş yeniden pending.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

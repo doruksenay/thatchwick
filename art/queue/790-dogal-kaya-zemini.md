@@ -55,5 +55,11 @@ Zeminde doğal kaya karosu yok; bu iş onu üretir.
 - Hangi karonun nereye çizileceği `IsoArt.Ground`'a eklenecek (yeni dal; `FloorType` değişmeden, harita arazisinden okunur
   ya da `FloorStyle` ile işaretlenir; kod oturumu seçer).
 
+## Kod durumu (2026-11-21, fix/uyku-sabah-kademeli)
+- Kod hazır: `IsoArt.NaturalGround(kind)` `iso_ground_rockbed_*` / `iso_ground_quarry_*` arar; `WorldView` taslakta `rock` (çim kalan) ve
+  yeni `quarry` arazisinde bunu çizer. Görseller gelene kadar bugünkü çim ve taş çizilir. Zemin türü değişmez (kaya sırtı çim, ocak taş).
+- Harita: tepedeki taş ocağı (119 karo) `stone` → `quarry` (#A8A090). Kıyı kayalığı main'de zaten `rock`.
+- Görseller gelince yalnızca dosyaları koymak yeter; ek kod gerekmez.
+
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

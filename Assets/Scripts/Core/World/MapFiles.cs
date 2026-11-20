@@ -18,6 +18,8 @@ namespace Thatchwick.Core.World
         Band = 8,
         /// <summary>Kaya sırtı: iri kayalar ve kütükler; yükseklik hissi verir (gerçek yükseklik yok, belge 64a K2).</summary>
         Rock = 9,
+        /// <summary>Taş ocağı tabanı (art/queue 790): oyunda taş zemin (Stone), görünümde kırık kireç taşı.</summary>
+        Quarry = 10,
         /// <summary>Bilinmeyen renk (yükleme hatası).</summary>
         Unknown = 255,
     }
@@ -36,6 +38,7 @@ namespace Thatchwick.Core.World
             (150, 96, 56, MapTerrain.Bridge, "bridge"),
             (24, 64, 34, MapTerrain.Band, "band"),
             (92, 88, 84, MapTerrain.Rock, "rock"),
+            (168, 160, 144, MapTerrain.Quarry, "quarry"),
         };
 
         public static MapTerrain Of(byte r, byte g, byte b)

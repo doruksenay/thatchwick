@@ -233,6 +233,22 @@ namespace Thatchwick.Game
             return null;
         }
 
+        /// <summary>
+        /// Doğal kaya zemini (art/queue 790): <paramref name="kind"/> "rockbed" (kayalık, kaya sırtı) ya da "quarry" (taş ocağı
+        /// tabanı); dosya iso_ground_&lt;kind&gt;_a/b/c. Görsel yoksa null (çağıran bugünkü zemine düşer).
+        /// </summary>
+        public static Sprite NaturalGround(string kind, int x, int y)
+        {
+            if (!Enabled || kind == null) return null;
+            int h = TileHash(x, y);
+            for (int i = 0; i < 3; i++)
+            {
+                var s = GetCentered($"iso_ground_{kind}_{VariantLetters[(h + i) % 3]}");
+                if (s != null) return s;
+            }
+            return null;
+        }
+
         /// <summary>Çim ve toprak için gerçek karo (konuma göre sabit varyasyon); diğer zeminler için null.</summary>
         public static Sprite Ground(FloorType floor, int x, int y)
         {
@@ -564,7 +580,9 @@ namespace Thatchwick.Game
             for (int i = 0; i < PathWangVariants; i++)
             {
                 string v = VariantLetters[(variant + i) % PathWangVariants];
-                var s = mask >= 15 ? GetCentered($"iso_path_dirt_fill_v2_{v}") : GetCentered($"iso_path_dirt_wang_{mask:00}_{v}");
+                // 739: renk düzeltmeli çeşit (_v2) varsa o (c çeşidinin çimi ana çimden koyuydu, yol kenarında şerit yapıyordu).
+                var s = mask >= 15 ? GetCentered($"iso_path_dirt_fill_v2_{v}")
+                    : GetCentered($"iso_path_dirt_wang_{mask:00}_{v}_v2") ?? GetCentered($"iso_path_dirt_wang_{mask:00}_{v}");
                 if (s != null) return s;
             }
             return mask >= 15 ? GetCentered("iso_path_dirt_fill_a") ?? Ground(FloorType.Dirt, 0, 0) : null;

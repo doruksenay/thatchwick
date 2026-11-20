@@ -23,7 +23,7 @@ MAPS = os.path.join(ROOT, 'Assets', 'Resources', 'Content', 'maps')
 PALETTE = {
     'grass': (96, 140, 72), 'dirt': (139, 110, 80), 'sand': (222, 200, 150), 'stone': (130, 130, 138),
     'water': (64, 120, 176), 'deep_water': (36, 72, 132), 'path': (186, 140, 90), 'bridge': (150, 96, 56),
-    'band': (24, 64, 34), 'rock': (92, 88, 84),
+    'band': (24, 64, 34), 'rock': (92, 88, 84), 'quarry': (168, 160, 144),
 }
 
 
