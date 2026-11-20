@@ -48,6 +48,19 @@ namespace Thatchwick.Core.Content
         Manure = 4096
     }
 
+    /// <summary>Ekinin hasat döngüsü (Project belgesi 59 §1).</summary>
+    public enum CropCycle
+    {
+        /// <summary>Biçilir, karo boşalır (kökler, tahıllar, soğangil).</summary>
+        Single,
+        /// <summary>Devşirme: ilk üründen sonra birkaç kez daha verir, sonra sararır (bezelye, bakla).</summary>
+        Repeat,
+        /// <summary>Kes, yine gelir: yaprak kesilir, bitki kalır; birkaç kesimden sonra tohuma kaçar (ıspanak, marul).</summary>
+        Cut,
+        /// <summary>Kalıcı yatak: bir kez dikilir, her yıl mevsiminde verir; mevsim dışında uyur (safran, kökboya).</summary>
+        Perennial
+    }
+
     /// <summary>Eşyanın nereye konabildiği: yere (zemin karolarına) ya da başka eşyanın yüzeyine (dekor).</summary>
     public enum ItemPlacement
     {
@@ -430,6 +443,18 @@ namespace Thatchwick.Core.Content
         public Fertilizer DislikesFertilizer { get; set; }
         /// <summary>Tahıl mı (fırtınada döker, aşırı gübreliyse yatar)?</summary>
         public bool IsCereal => CropFamily == "tahil";
+        /// <summary>Hasat döngüsü (59 §1): tek hasat, devşirme, kes-yine-gelir ya da kalıcı yatak.</summary>
+        public CropCycle Cycle { get; set; }
+        /// <summary>Devşirme ve kes-yine-gelir ekinde en çok kaç kez toplanır; sonra bitki sararır. Kalıcı yatakta sınır yok.</summary>
+        public int MaxHarvests { get; set; }
+        /// <summary>Toplamadan sonra yeniden olgunlaşma süresi (gün).</summary>
+        public float RegrowDays { get; set; }
+        /// <summary>Sırık ister (bezelye, hıyar, şerbetçiotu): sırıksız ürün yarıya iner.</summary>
+        public bool NeedsStake { get; set; }
+        /// <summary>Dev ürün (59 §2): aynı ekinden 2×2 olgun ve sulu karo küçük şansla bu eşyaya dönüşür; boş = dev olmaz.</summary>
+        public string GiantAs { get; set; }
+        /// <summary>Hasatta bitki yerinde kalır mı (tek hasat dışındaki döngüler).</summary>
+        public bool Regrows => IsCrop && Cycle != CropCycle.Single;
         /// <summary>Ekin demeti: harmanda dövülünce bu taneye (ve samana) döner; boş = demet değil.</summary>
         public string ThreshesTo { get; set; }
         /// <summary>Düven: çeki hayvanı varken her sabah envanterdeki demetlerden bu kadarını döver. 0 = düven değil.</summary>

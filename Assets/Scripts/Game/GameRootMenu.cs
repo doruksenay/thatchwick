@@ -51,6 +51,7 @@ namespace Thatchwick.Game
 
         private void DrawTitle()
         {
+            if (AchievementsVisible) return;   // başarım penceresi UI Toolkit'te; IMGUI başlık onun üstünü örtmesin
             float s = Mathf.Max(1f, Screen.height / 540f);
             GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
             float sw = Screen.width / s, sh = Screen.height / s;
@@ -58,7 +59,7 @@ namespace Thatchwick.Game
             GUI.DrawTexture(new Rect(0, 0, sw, sh), Texture2D.whiteTexture);
             GUI.color = Color.white;
 
-            float pw = Mathf.Min(sw - 16f, 520f), ph = Mathf.Min(sh - 16f, 400f);
+            float pw = Mathf.Min(sw - 16f, 520f), ph = Mathf.Min(sh - 16f, 460f);
             GUILayout.BeginArea(new Rect((sw - pw) / 2f, (sh - ph) / 2f, pw, ph), GUI.skin.box);
             var title = new GUIStyle(GUI.skin.label) { fontSize = 22, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
             var sub = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
@@ -184,15 +185,19 @@ namespace Thatchwick.Game
                     GUILayout.EndHorizontal();
                     if (Mathf.Abs(now - cur) > 0.005f) { audio.SetVolume(g, now); PlayerPrefs.SetFloat(VolumePref(g), now); }
                 }
+            DrawDisplaySettings();   // masaüstü: tam ekran, çözünürlük, dikey eşitleme (GameRootPlatform.cs)
             GUILayout.FlexibleSpace();
+            DrawSystemSettings();    // başarımlar, hata raporu, ana menü ve çıkış, sürüm
             if (GUILayout.Button(T("ui.settings.back"), GUILayout.Height(28f))) { _settingsOpen = false; PlayerPrefs.Save(); }
         }
 
         /// <summary>Oyun içinde ayarlar penceresi (üst şeritteki düğmeden).</summary>
         private void DrawSettingsWindow(float s)
         {
+            if (AchievementsVisible) return;   // başarım penceresi (UI Toolkit) açıkken üstünü örtmesin
             float sw = Screen.width / s, sh = Screen.height / s;
-            GUILayout.BeginArea(new Rect((sw - 420f) / 2f, (sh - 300f) / 2f, 420f, 300f), GUI.skin.box);
+            float wh = Mathf.Min(sh - 16f, 430f);
+            GUILayout.BeginArea(new Rect((sw - 460f) / 2f, (sh - wh) / 2f, 460f, wh), GUI.skin.box);
             DrawSettings();
             GUILayout.EndArea();
         }

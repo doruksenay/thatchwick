@@ -40,7 +40,6 @@ namespace Thatchwick.Core.Life
         private int Today => (int)Math.Floor(Clock.TotalDays);
 
         // ---- sabitler ----
-        public const double GiantCropChance = 0.06;
         public const int ImeceCooldownDays = 7, ImeceReputation = 100;
         public const double PruneFruitShare = 0.30;
         public const int GraftBonus = 2;
@@ -184,7 +183,7 @@ namespace Thatchwick.Core.Life
                     int watered = 0, grown = 0;
                     foreach (var it in World.Items)
                     {
-                        if (!it.IsPlant || !it.Def.IsCrop) continue;
+                        if (!it.IsPlant || !it.Def.IsCrop || it.Withered) continue;
                         if (!it.IsGrown && !it.Watered) { PlantSystem.Water(it); watered++; }
                         if (!it.IsGrown) { it.GrowthDays = Math.Min(it.Def.GrowDays, it.GrowthDays + 1.0); grown++; }
                     }
@@ -373,12 +372,8 @@ namespace Thatchwick.Core.Life
             int lv = c.Skills.GetLevel(SkillType.Farming);
             var harvest = crop.Def.Interactions.FirstOrDefault(x => x.Id == "harvest");
             string main = harvest?.Produce.FirstOrDefault()?.ItemId;
-            if (lv >= 8 && main != null && _masteryRng.NextDouble() < GiantCropChance)
-            {
-                House.AddItem(main, harvest.Produce[0].Count);
-                c.AddMoodlet(MoodCatalog.GoodHarvest);
-                Say($"{c.Name} iri bir {Name(main).ToLowerInvariant()} hasadı çıkardı (iki kat).", NoticeLevel.Info, c.Id);
-            }
+            // "İri ürün" pasifi (hasatta iki kat) kalktı: Çiftçilik 8 artık tarlada görünen dev ürünün şansını ikiye katlar
+            // (PlantSystem.GrowGiants; 59 §2).
             if (lv >= Progress.Mastery.MasterLevel)
             {
                 var seed = Content.Items.All.FirstOrDefault(d => d.PlantsAs == crop.Def.Id);
@@ -630,7 +625,7 @@ namespace Thatchwick.Core.Life
                 {
                     int done = 0;
                     foreach (var it in World.Items)
-                        if (it.IsPlant && it.Def.IsCrop && !it.IsGrown && !it.Watered && done < 12 * hands) { PlantSystem.Water(it); done++; }
+                        if (it.IsPlant && it.Def.IsCrop && !it.Withered && !it.IsGrown && !it.Watered && done < 12 * hands) { PlantSystem.Water(it); done++; }
                     if (done > 0) Say($"Irgat{(hands > 1 ? "lar" : "")} {done} ekini suladı ({HiredWage * hands} akçe).", NoticeLevel.Info, transient: true);
                 }
             }

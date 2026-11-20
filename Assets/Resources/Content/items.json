@@ -3183,6 +3183,21 @@
           ],
           "skill": "Carpentry",
           "skillXp": 6
+        },
+        {
+          "id": "make_stakes",
+          "displayName": "Ekin sırığı yont (1 kütük → 6 sırık)",
+          "durationDays": 0.04,
+          "skill": "Woodcutting",
+          "skillXp": 4,
+          "consume": "item.log",
+          "produce": [
+            {
+              "item": "item.crop_stake",
+              "count": 6
+            }
+          ],
+          "tool": "axe"
         }
       ],
       "styleSet": "Köylü",
@@ -3258,6 +3273,15 @@
           ],
           "moodlet": "good_harvest",
           "tool": "sickle"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -3500,7 +3524,8 @@
       "likesFertilizer": [
         "ash",
         "bone"
-      ]
+      ],
+      "giantAs": "item.giant_crop_turnip"
     },
     {
       "id": "item.market_stall",
@@ -7552,7 +7577,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -7797,7 +7832,8 @@
         "manure",
         "ash",
         "seaweed"
-      ]
+      ],
+      "giantAs": "item.giant_crop_cabbage"
     },
     {
       "id": "item.seed_leek",
@@ -7853,7 +7889,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -8131,7 +8177,7 @@
       "interactions": [
         {
           "id": "harvest",
-          "displayName": "Hasat et",
+          "displayName": "Devşir (bitki kalır)",
           "durationDays": 0.05,
           "skill": "Farming",
           "skillXp": 15,
@@ -8140,19 +8186,20 @@
           "produce": [
             {
               "item": "item.pea",
-              "count": 4
-            },
-            {
-              "item": "item.seed_pea",
-              "count": 1
-            },
-            {
-              "item": "item.seed_pea",
-              "count": 1,
-              "chance": 0.5
+              "count": 2
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -8162,6 +8209,15 @@
           "skillXp": 2,
           "water": true,
           "tool": "can"
+        },
+        {
+          "id": "stake",
+          "displayName": "Sırık dik (sırıksız ürün yarım)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "stake": true,
+          "consume": "item.crop_stake"
         },
         {
           "id": "fertilize",
@@ -8402,7 +8458,11 @@
       "dislikesFertilizer": [
         "hot",
         "fresh"
-      ]
+      ],
+      "cycle": "repeat",
+      "maxHarvests": 3,
+      "regrowDays": 2,
+      "needsStake": true
     },
     {
       "id": "item.seed_pumpkin",
@@ -8458,7 +8518,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -8701,7 +8771,8 @@
       "likesFertilizer": [
         "manure",
         "compost"
-      ]
+      ],
+      "giantAs": "item.giant_crop_pumpkin"
     },
     {
       "id": "item.pickled_cabbage",
@@ -10238,7 +10309,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -10542,7 +10623,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -10843,7 +10934,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -11147,7 +11248,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -11450,7 +11561,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -11698,7 +11819,8 @@
         "seaweed",
         "bone",
         "ash"
-      ]
+      ],
+      "giantAs": "item.giant_crop_beet"
     },
     {
       "id": "item.radish",
@@ -11751,7 +11873,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -12003,7 +12135,8 @@
       ],
       "dislikesFertilizer": [
         "fresh"
-      ]
+      ],
+      "giantAs": "item.giant_crop_radish"
     },
     {
       "id": "item.lettuce",
@@ -12035,7 +12168,7 @@
       "interactions": [
         {
           "id": "harvest",
-          "displayName": "Hasat et",
+          "displayName": "Yaprak kes (yine gelir)",
           "durationDays": 0.05,
           "skill": "Farming",
           "skillXp": 15,
@@ -12045,18 +12178,19 @@
             {
               "item": "item.lettuce",
               "count": 2
-            },
-            {
-              "item": "item.seed_lettuce",
-              "count": 1
-            },
-            {
-              "item": "item.seed_lettuce",
-              "count": 1,
-              "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -12307,7 +12441,10 @@
       ],
       "dislikesFertilizer": [
         "fresh"
-      ]
+      ],
+      "cycle": "cut",
+      "maxHarvests": 3,
+      "regrowDays": 2
     },
     {
       "id": "item.broad_bean",
@@ -12339,7 +12476,7 @@
       "interactions": [
         {
           "id": "harvest",
-          "displayName": "Hasat et",
+          "displayName": "Devşir (bitki kalır)",
           "durationDays": 0.05,
           "skill": "Farming",
           "skillXp": 15,
@@ -12348,19 +12485,20 @@
           "produce": [
             {
               "item": "item.broad_bean",
-              "count": 4
-            },
-            {
-              "item": "item.seed_broad_bean",
-              "count": 1
-            },
-            {
-              "item": "item.seed_broad_bean",
-              "count": 1,
-              "chance": 0.5
+              "count": 2
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -12613,7 +12751,10 @@
       "dislikesFertilizer": [
         "hot",
         "fresh"
-      ]
+      ],
+      "cycle": "repeat",
+      "maxHarvests": 3,
+      "regrowDays": 2
     },
     {
       "id": "item.barley",
@@ -12676,7 +12817,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -12955,7 +13106,7 @@
       "interactions": [
         {
           "id": "harvest",
-          "displayName": "Hasat et",
+          "displayName": "Yaprak kes (yine gelir)",
           "durationDays": 0.05,
           "skill": "Farming",
           "skillXp": 15,
@@ -12965,18 +13116,19 @@
             {
               "item": "item.spinach",
               "count": 2
-            },
-            {
-              "item": "item.seed_spinach",
-              "count": 1
-            },
-            {
-              "item": "item.seed_spinach",
-              "count": 1,
-              "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -13224,7 +13376,10 @@
       "likesFertilizer": [
         "compost",
         "seaweed"
-      ]
+      ],
+      "cycle": "cut",
+      "maxHarvests": 3,
+      "regrowDays": 2
     },
     {
       "id": "item.apple",
@@ -19838,7 +19993,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -20148,7 +20313,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -20464,7 +20639,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -20762,7 +20947,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -35111,7 +35306,7 @@
       "interactions": [
         {
           "id": "harvest",
-          "displayName": "Ot kes",
+          "displayName": "Ot kes (yine gelir)",
           "durationDays": 0.05,
           "skill": "Horticulture",
           "skillXp": 7,
@@ -35133,12 +35328,18 @@
             {
               "item": "item.lavender",
               "count": 1
-            },
-            {
-              "item": "item.seed_herb_bed",
-              "count": 1
             }
-          ]
+          ],
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -35207,7 +35408,10 @@
       "dislikesFertilizer": [
         "hot",
         "fresh"
-      ]
+      ],
+      "cycle": "cut",
+      "maxHarvests": 3,
+      "regrowDays": 2
     },
     {
       "id": "item.seed_herb_bed",
@@ -35227,7 +35431,6 @@
       "level": 1,
       "growDays": 10,
       "tilled": true,
-      "diesInWinter": true,
       "growSeasons": [
         "Autumn"
       ],
@@ -35249,10 +35452,6 @@
             },
             {
               "item": "item.saffron_corm",
-              "count": 1
-            },
-            {
-              "item": "item.saffron_corm",
               "count": 1,
               "chance": 0.5
             }
@@ -35261,7 +35460,17 @@
             5,
             10
           ],
-          "bestHoursBonus": 1
+          "bestHoursBonus": 1,
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -35329,7 +35538,9 @@
       "dislikesFertilizer": [
         "hot",
         "fresh"
-      ]
+      ],
+      "cycle": "perennial",
+      "regrowDays": 6
     },
     {
       "id": "item.saffron_corm",
@@ -35466,6 +35677,15 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "bone_meal",
@@ -37033,7 +37253,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -37321,7 +37551,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -37590,11 +37830,10 @@
       "category": "plant",
       "growDays": 18,
       "tilled": true,
-      "diesInWinter": false,
       "interactions": [
         {
           "id": "harvest",
-          "displayName": "Hasat et",
+          "displayName": "Kök al (yatak kalır)",
           "durationDays": 0.05,
           "skill": "Horticulture",
           "skillXp": 8,
@@ -37606,16 +37845,27 @@
               "count": 3
             },
             {
-              "item": "item.seed_madder",
-              "count": 1
+              "item": "item.madder_root",
+              "count": 1,
+              "chance": 0.5
             },
             {
-              "item": "item.madder_root",
+              "item": "item.seed_madder",
               "count": 1,
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -37863,7 +38113,9 @@
       "likesFertilizer": [
         "marl",
         "bone"
-      ]
+      ],
+      "cycle": "perennial",
+      "regrowDays": 10
     },
     {
       "id": "item.seed_madder",
@@ -37906,7 +38158,17 @@
               "chance": 0.5
             }
           ],
-          "tool": "sickle"
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
         },
         {
           "id": "water",
@@ -42011,6 +42273,318 @@
       "belongs": [
         "outdoor"
       ]
+    },
+    {
+      "id": "item.crop_stake",
+      "displayName": "Ekin sırığı",
+      "placement": "Resource",
+      "price": 1,
+      "category": "resource"
+    },
+    {
+      "id": "item.giant_turnip",
+      "displayName": "Dev şalgam (sergilik)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "giant"
+      ]
+    },
+    {
+      "id": "item.giant_crop_turnip",
+      "displayName": "Dev şalgam",
+      "category": "plant",
+      "width": 2,
+      "height": 2,
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "harvest_giant",
+          "displayName": "Dev ürünü kaldır",
+          "durationDays": 0.15,
+          "skill": "Farming",
+          "skillXp": 40,
+          "removeItem": true,
+          "tool": "axe",
+          "moodlet": "good_harvest",
+          "produce": [
+            {
+              "item": "item.giant_turnip",
+              "count": 1
+            },
+            {
+              "item": "item.turnip",
+              "count": 10
+            },
+            {
+              "item": "item.turnip",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.turnip",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.seed_turnip",
+              "count": 2
+            }
+          ]
+        }
+      ],
+      "art": {
+        "alongX": "iso_crop_giant_turnip_2x2_se",
+        "pivotX": 64.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.giant_cabbage",
+      "displayName": "Dev lahana (sergilik)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "giant"
+      ]
+    },
+    {
+      "id": "item.giant_crop_cabbage",
+      "displayName": "Dev lahana",
+      "category": "plant",
+      "width": 2,
+      "height": 2,
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "harvest_giant",
+          "displayName": "Dev ürünü kaldır",
+          "durationDays": 0.15,
+          "skill": "Farming",
+          "skillXp": 40,
+          "removeItem": true,
+          "tool": "axe",
+          "moodlet": "good_harvest",
+          "produce": [
+            {
+              "item": "item.giant_cabbage",
+              "count": 1
+            },
+            {
+              "item": "item.cabbage",
+              "count": 10
+            },
+            {
+              "item": "item.cabbage",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.cabbage",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.seed_cabbage",
+              "count": 2
+            }
+          ]
+        }
+      ],
+      "art": {
+        "alongX": "iso_crop_giant_cabbage_2x2_se",
+        "pivotX": 64.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.giant_pumpkin",
+      "displayName": "Dev su kabağı (sergilik)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 50,
+      "tags": [
+        "giant"
+      ]
+    },
+    {
+      "id": "item.giant_crop_pumpkin",
+      "displayName": "Dev su kabağı",
+      "category": "plant",
+      "width": 2,
+      "height": 2,
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "harvest_giant",
+          "displayName": "Dev ürünü kaldır",
+          "durationDays": 0.15,
+          "skill": "Farming",
+          "skillXp": 40,
+          "removeItem": true,
+          "tool": "axe",
+          "moodlet": "good_harvest",
+          "produce": [
+            {
+              "item": "item.giant_pumpkin",
+              "count": 1
+            },
+            {
+              "item": "item.pumpkin",
+              "count": 10
+            },
+            {
+              "item": "item.pumpkin",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.pumpkin",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.seed_pumpkin",
+              "count": 2
+            }
+          ]
+        }
+      ],
+      "art": {
+        "alongX": "iso_crop_giant_pumpkin_2x2_se",
+        "pivotX": 64.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.giant_radish",
+      "displayName": "Dev turp (sergilik)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "giant"
+      ]
+    },
+    {
+      "id": "item.giant_crop_radish",
+      "displayName": "Dev turp",
+      "category": "plant",
+      "width": 2,
+      "height": 2,
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "harvest_giant",
+          "displayName": "Dev ürünü kaldır",
+          "durationDays": 0.15,
+          "skill": "Farming",
+          "skillXp": 40,
+          "removeItem": true,
+          "tool": "axe",
+          "moodlet": "good_harvest",
+          "produce": [
+            {
+              "item": "item.giant_radish",
+              "count": 1
+            },
+            {
+              "item": "item.radish",
+              "count": 10
+            },
+            {
+              "item": "item.radish",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.radish",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.seed_radish",
+              "count": 2
+            }
+          ]
+        }
+      ],
+      "art": {
+        "alongX": "iso_crop_giant_radish_2x2_se",
+        "pivotX": 64.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.giant_beet",
+      "displayName": "Dev pancar (sergilik)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "giant"
+      ]
+    },
+    {
+      "id": "item.giant_crop_beet",
+      "displayName": "Dev pancar",
+      "category": "plant",
+      "width": 2,
+      "height": 2,
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "harvest_giant",
+          "displayName": "Dev ürünü kaldır",
+          "durationDays": 0.15,
+          "skill": "Farming",
+          "skillXp": 40,
+          "removeItem": true,
+          "tool": "axe",
+          "moodlet": "good_harvest",
+          "produce": [
+            {
+              "item": "item.giant_beet",
+              "count": 1
+            },
+            {
+              "item": "item.beet",
+              "count": 10
+            },
+            {
+              "item": "item.beet",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.beet",
+              "count": 2,
+              "chance": 0.5
+            },
+            {
+              "item": "item.seed_beet",
+              "count": 2
+            }
+          ]
+        }
+      ],
+      "art": {
+        "alongX": "iso_crop_giant_beet_2x2_se",
+        "pivotX": 64.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
     }
   ],
   "recipes": [

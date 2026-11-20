@@ -61,6 +61,11 @@ namespace Thatchwick.Core.Content
                     EatenRaw = dto.eatenRaw,
                     LikesFertilizer = ParseFertilizers(dto.likesFertilizer),
                     DislikesFertilizer = ParseFertilizers(dto.dislikesFertilizer),
+                    Cycle = ParseCycle(dto.cycle),
+                    MaxHarvests = Math.Max(0, dto.maxHarvests),
+                    RegrowDays = Math.Max(0f, dto.regrowDays),
+                    NeedsStake = dto.needsStake,
+                    GiantAs = string.IsNullOrWhiteSpace(dto.giantAs) ? null : dto.giantAs,
                     ThreshesTo = string.IsNullOrWhiteSpace(dto.threshesTo) ? null : dto.threshesTo,
                     ThreshPerDay = Math.Max(0, dto.threshPerDay),
                     WaterRadius = dto.waterRadius,
@@ -289,6 +294,8 @@ namespace Thatchwick.Core.Content
                             Skill = skill,
                             SkillXp = i.skillXp,
                             RequiresGrown = i.requiresGrown,
+                            RequiresWithered = i.requiresWithered,
+                            Stakes = i.stake,
                             ConsumeItem = string.IsNullOrWhiteSpace(i.consume) ? null : i.consume,
                             RemovesItem = i.removeItem,
                             Moodlet = string.IsNullOrWhiteSpace(i.moodlet) ? null : i.moodlet,
@@ -808,6 +815,17 @@ namespace Thatchwick.Core.Content
                 };
                 try { db.Animals.Register(def); }
                 catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }
+            }
+        }
+
+        private static CropCycle ParseCycle(string text)
+        {
+            switch ((text ?? "").Trim().ToLowerInvariant())
+            {
+                case "repeat": return CropCycle.Repeat;
+                case "cut": return CropCycle.Cut;
+                case "perennial": return CropCycle.Perennial;
+                default: return CropCycle.Single;
             }
         }
 

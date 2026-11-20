@@ -122,11 +122,28 @@ namespace Thatchwick.Core.World
             Watered = watered; AgeDays = ageDays; WetDays = wetDays; FruitReady = fruitReady; FruitDays = fruitDays;
         }
 
+        // ---- hasat döngüsü ve sararma (59 §1, §3; PlantSystem yönetir) ----
+        /// <summary>Bu bitkiden kaç kez ürün toplandı (devşirme, kes-yine-gelir, kalıcı yatak).</summary>
+        public int Harvests { get; internal set; }
+        /// <summary>Sırık dikildi mi (sırık isteyen ekin).</summary>
+        public bool Staked { get; internal set; }
+        /// <summary>Sarardı: mevsimi geçti, toplama hakkı bitti ya da don vurdu. Büyümez; "Sök" ile kaldırılır.</summary>
+        public bool Withered { get; internal set; }
+        /// <summary>Sarardığında yan ürün verecek kadar gelişmiş miydi (yarı boyun üstü).</summary>
+        public bool WitheredMature { get; internal set; }
+        /// <summary>Mevsimi dışında geçirdiği süre (gün); bir günü doldurunca sararır.</summary>
+        public double OffSeasonDays { get; internal set; }
+
+        internal void SetCropState(int harvests, bool staked, bool withered, bool witheredMature, double offSeasonDays)
+        {
+            Harvests = harvests; Staked = staked; Withered = withered; WitheredMature = witheredMature; OffSeasonDays = offSeasonDays;
+        }
+
         /// <summary>Bitkinin büyüme ilerlemesi (oyun günü).</summary>
         public double GrowthDays { get; internal set; }
         public bool IsPlant => Def.IsPlant;
         /// <summary>Bitki değilse ya da olgunlaştıysa true.</summary>
-        public bool IsGrown => !IsPlant || GrowthDays >= Def.GrowDays;
+        public bool IsGrown => !IsPlant || (!Withered && GrowthDays >= Def.GrowDays);
         /// <summary>0-1 büyüme oranı (bitki değilse 1).</summary>
         public float GrowthFraction => IsPlant ? (float)System.Math.Min(1.0, GrowthDays / Def.GrowDays) : 1f;
 

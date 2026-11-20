@@ -1,0 +1,10 @@
+{
+  "ui.farm.hint.long_press": "Tip: press and hold a crop to open the watering and manure menu.",
+  "ui.farm.label.no_stake": ", no stake: half yield",
+  "ui.farm.label.ripe_bed": "{crop} (ripe; the bed stays)",
+  "ui.farm.label.ripe_left": "{crop} (ripe; {n} pickings left)",
+  "ui.farm.label.withered": "{crop} (withered: pull it up for a by-product)",
+  "ui.farm.tool.none": "none",
+  "ui.farm.uproot.field": "{who}: clearing the withered field ({n} crops)",
+  "ui.farm.uproot.one": "{who}: pulling up withered {crop}"
+}

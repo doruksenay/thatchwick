@@ -185,6 +185,14 @@ namespace Thatchwick.Core.Work
             if (interaction.RequiresFrost && (TemperatureAt == null || TemperatureAt(item.Position) > 0f)) return "Buz yok: don olunca (kışın) kesilir.";
             if (interaction.NeedsPipedWater && !Piped(item)) return "Su gelmiyor: bir kaynağa bağlı boruya bağla.";
             if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return $"{item.Def.DisplayName} buzla dolu.";
+            if (interaction.RequiresWithered && !item.Withered) return "Ekin sararmadı: sökmek için mevsiminin geçmesini bekle ya da hasat et.";
+            if (interaction.Stakes)
+            {
+                if (!item.Def.NeedsStake) return "Bu ekin sırık istemez.";
+                if (item.Staked) return "Sırığı zaten dikili.";
+                if (item.Withered) return "Sararmış ekine sırık dikilmez.";
+            }
+            if (item.Withered && item.Def.IsCrop && (interaction.Water || interaction.Fertilize > 0f)) return "Ekin sarardı: sök, yan ürününü al.";
             if (interaction.Water)
             {
                 if (!item.IsPlant || !item.Def.IsCrop) return "Bu sulanacak bir ekin değil.";
@@ -298,6 +306,7 @@ namespace Thatchwick.Core.Work
                 hideCount = hideId != null ? Math.Max(1, killed.Species.HideCount) : 0;
             }
             if (interaction.Water) { PlantSystem.Water(item); farmNotes.Add("sulandı"); }
+            if (interaction.Stakes && item.Def.NeedsStake && !item.Staked) { item.Staked = true; farmNotes.Add("sırık dikildi"); _world.NotifyChanged(); }
             if (interaction.Teach)
             {
                 int taught = Teach(character);
@@ -393,6 +402,12 @@ namespace Thatchwick.Core.Work
             string bite = null; int biteCount = 0;
             // Ekin hasadında kalite: sulama düzeni, toprak verimi ve çiftçilik seviyesi ürün miktarını artırır (tohum hariç).
             bool cropHarvest = interaction.RequiresGrown && item.IsPlant && item.Def.IsCrop;
+            // Yeniden veren ekin (devşirme, kes-yine-gelir, kalıcı yatak) olağan hasatta yerinde kalır; sırıksız sırık ekini yarım verir.
+            bool keepsPlant = cropHarvest && interaction.RemovesItem && PlantSystem.KeepsAfterHarvest(item, interaction);
+            bool unstaked = cropHarvest && PlantSystem.MissingStake(item);
+            // Sararmış ekini sökmek: ürün içerikten değil, ekinin ailesine göre yan üründen gelir (59 §3).
+            bool uproot = interaction.RequiresWithered && item.IsPlant && item.Def.IsCrop;
+            var produceRows = uproot ? PlantSystem.WitherYield(item, _content) : interaction.Produce;
             int tier = cropHarvest && Plants != null ? Plants.QualityOf(item, level) : 0;
             float yieldMult = PlantSystem.QualityYield(tier) * (cropHarvest && Plants != null ? Plants.YieldFactor(item) : 1f);
             if (cropHarvest && Plants != null)
@@ -445,7 +460,7 @@ namespace Thatchwick.Core.Work
                 }
             }
             var qualityTotals = new Dictionary<string, int[]>();
-            foreach (var p in interaction.Produce)
+            foreach (var p in produceRows)
             {
                 if (p.MinLevel > 0 && level < p.MinLevel) continue;
                 if (p.MaxLevel > 0 && level > p.MaxLevel) continue;
@@ -472,6 +487,8 @@ namespace Thatchwick.Core.Work
                     farmNotes.Add(best ? "tam saatinde toplandı" : $"en iyisi saat {interaction.BestHourFrom}-{interaction.BestHourTo} arası");
                 }
                 firstRow = false;
+                if (unstaked && _content.Items.TryGet(p.ItemId, out var stakeRow) && stakeRow.PlantsAs == null)
+                    count = Math.Max(1, (int)Math.Floor(count * (Plants?.Config.UnstakedYield ?? 0.5f)));
                 // Çarpan 1'in altına da inebilir (belge 57c, 57d: gübresiz obur ekin, yapraklanma, fırtına kaybı); en az 1 ürün kalır.
                 if (Math.Abs(yieldMult - 1f) > 1e-4f && _content.Items.TryGet(p.ItemId, out var rowDef) && rowDef.PlantsAs == null)
                 {
@@ -564,14 +581,26 @@ namespace Thatchwick.Core.Work
             if (bite != null) { parts.Add("oltaya bir şey vurdu!"); FishBite?.Invoke(character, item, bite, biteCount); }
             else if (interaction.Skill == SkillType.Fishing && order.Count == 0) parts.Add("bu sefer bir şey çıkmadı");
             if (interaction.TakesFruit) { item.FruitReady = false; item.FruitDays = 0; }
-            if (cropHarvest && interaction.RemovesItem) Plants?.OnHarvest(item);
+            if (unstaked) farmNotes.Add("sırık yok: ürün yarım");
+            if (keepsPlant && Plants != null)
+            {
+                Plants.OnPicked(item);
+                int left = PlantSystem.HarvestsLeft(item);
+                farmNotes.Add(item.Withered ? "son toplama: bitki tohuma kaçtı, sökünce tohum verir"
+                    : left > 0 ? $"bitki yerinde, {left} toplama daha verir" : "yatak yerinde, yeniden verir");
+                _world.NotifyChanged();
+            }
+            else if (cropHarvest && interaction.RemovesItem) Plants?.OnHarvest(item);
+            if (uproot) Plants?.OnUproot(item);
+            // Sırık bitkiyle birlikte sökülür ve depoya döner.
+            if (interaction.RemovesItem && !keepsPlant && item.Staked && _content.Items.Contains(PlantSystem.StakeItemId)) _house.AddItem(PlantSystem.StakeItemId, 1);
             if (cropHarvest && order.Count > 0) CropHarvested?.Invoke(character, item, tier);
             if (interaction.Skill == SkillType.Fishing)
                 foreach (var id in order)
                     if (_content.Items.TryGet(id, out var fishDef) && fishDef.HasTag("fish")) { FishCaught?.Invoke(character, id); break; }
             parts.AddRange(farmNotes);
 
-            if (interaction.RemovesItem && _world.GetItem(item.Id) != null)
+            if (interaction.RemovesItem && !keepsPlant && _world.GetItem(item.Id) != null)
                 _world.RemoveItem(item.Id);
 
             AppliedOn?.Invoke(character, item, interaction);

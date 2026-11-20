@@ -336,7 +336,8 @@ namespace Thatchwick.Game
             string id = item.Def.Id;
             if (Crops.TryGetValue(id, out var crop))
             {
-                int st = CropStage(item.GrowthFraction, item.IsGrown);
+                // Sararmış ekin son evresinde kalır (görünüm sarıya tonlanır: ItemViews.WitheredTint).
+                int st = CropStage(item.GrowthFraction, item.IsGrown || (item.Withered && item.GrowthFraction >= 1f));
                 for (int k = st; k >= 1; k--)
                 {
                     var s = Get($"{crop}_{k}_se", 40f, 24f);

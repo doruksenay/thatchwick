@@ -4,6 +4,12 @@ name: Core tests
 on:
   push:
     branches: [main]
+    # İşçilerin yalnızca görsel/ses ve kuyruk dosyası içeren push'ları testleri etkilemez; boşuna çalışmasın
+    # (haftada ~340 çalışmanın çoğu buydu). PR'da süzgeç yok: "test" denetimi her PR'da görünmeli.
+    paths-ignore:
+      - 'art/**'
+      - 'audio/**'
+      - 'Assets/Art/**'
   pull_request:
 
 permissions:

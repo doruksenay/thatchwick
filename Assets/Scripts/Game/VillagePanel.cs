@@ -202,6 +202,10 @@ namespace Thatchwick.Game
             foreach (var tool in _content.Tools.All)
             {
                 int tier = _life.Tools.Tier(tool.Id);
+                // Tırpanın taban kademesi yoktur: alınana kadar "yok" yazar (öteki aletlerin taban hâli hanede hep vardır).
+                if (tier == 0 && tool.Id == Thatchwick.Core.Work.HarvestOrders.ScytheTool)
+                    GUILayout.Label($"{tool.DisplayName}: {GameLocalization.T("ui.farm.tool.none")} ({tier}/{tool.Tiers.Count})");
+                else
                 GUILayout.Label($"{tool.DisplayName}: {_life.Tools.NameOf(tool.Id)} · hız x{_life.Tools.SpeedFor(tool.Id):0.0#} ({tier}/{tool.Tiers.Count})");
                 var heir = _life.Legacy.ToolHeirloom(tool.Id);
                 if (heir != null)

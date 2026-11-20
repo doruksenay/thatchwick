@@ -244,6 +244,44 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void T16_Surum2KayitDosyasiAcilir()
+        {
+            // save_v2.json: sürüm 2 koduyla (ac48159, RLE ve oda sıcaklığı öncesi) BuildState'ten üretilmiş sabit örnek.
+            // Sürüm 3'te karo dizileri sıkıştırıldı ve sıcaklık oda başına alındı; eski düz diziler açılmaya devam etmeli.
+            var path = Path.Combine(System.AppContext.BaseDirectory, "SaveFixtures", "save_v2.json");
+            var data = JsonSerializer.Deserialize<SaveData>(File.ReadAllText(path), Json);
+            Assert.Equal(2, data.version);
+            Assert.NotNull(data.map.terrainBlocked);        // eski biçim: düz dizi
+            var loaded = SaveGame.Load(data, Content());
+            Assert.Empty(loaded.Warnings);
+            Assert.Equal(SaveGame.CurrentVersion, data.version);
+
+            var fresh = BuildState();
+            Assert.Equal(fresh.Chars.Select(c => c.Name).ToArray(), loaded.Characters.Select(c => c.Name).ToArray());
+            Assert.Equal(fresh.World.Items.Count, loaded.World.Items.Count);
+            Assert.Equal(fresh.Clock.TotalDays, loaded.Clock.TotalDays, 6);
+            Assert.Equal(fresh.House.Count("firewood"), loaded.Household.Count("firewood"));
+            var map = loaded.World.Map;
+            Assert.True(map.IsBlocked(new GridPos(0, 9)));
+            Assert.True(map.Rooms.RoomAt(new GridPos(3, 3)).IsIndoor);
+            for (int x = 0; x < map.Width; x++)
+                for (int y = 0; y < map.Height; y++)
+                {
+                    var p = new GridPos(x, y);
+                    Assert.Equal(fresh.World.Map.GetFloor(p), map.GetFloor(p));
+                    Assert.Equal(fresh.World.Map.IsOwned(p), map.IsOwned(p));
+                    Assert.Equal(fresh.World.Map.GetZone(p), map.GetZone(p));
+                }
+
+            // Yeniden kaydedilince güncel biçimde (sıkıştırılmış) yazılır ve aynı dünya geri gelir.
+            var again = SaveGame.Capture(loaded.Clock, loaded.World, loaded.Household, loaded.Characters, loaded.Account, new HeatSystem(loaded.World, loaded.Clock.Config, null, loaded.Clock.TotalDays), fresh.Market);
+            Assert.NotNull(again.map.terrainBlockedRle);
+            var reloaded = SaveGame.Load(JsonSerializer.Deserialize<SaveData>(JsonSerializer.Serialize(again, Json), Json), Content());
+            Assert.Empty(reloaded.Warnings);
+            Assert.Equal(loaded.World.Items.Count, reloaded.World.Items.Count);
+        }
+
+        [Fact]
         public void T16_EskiGencKarakterler_YaslarinaGoreErgenYaDaGencYetiskinOlur()
         {
             // 56: evre kayda yazılmaz, yaştan türetilir. Eski kayıttaki "Genç" (24-36) karakterler
