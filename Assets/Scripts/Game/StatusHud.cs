@@ -46,6 +46,9 @@ namespace Thatchwick.Game
             _life.Ledger.DayEnded += s => { if (s != null && !s.IsEmpty) { _card = s; _cardShownAt = Time.unscaledTime; } };
         }
 
+        /// <summary>Alttaki karakter kartı UI Toolkit'te çiziliyor (Ui.CharacterCard, Project belgesi 68): IMGUI alt çubuğu çizilmez.</summary>
+        public bool BottomInToolkit { get; set; }
+
         public bool LogOpen => _logOpen;
         public void ToggleLog() { _logOpen = !_logOpen; if (_logOpen) _life.Log.MarkAllRead(); }
 
@@ -93,7 +96,7 @@ namespace Thatchwick.Game
             float w = Screen.width / s;
             float h = Screen.height / s;
             DrawTopBar(w);
-            DrawBottom(w, h);
+            if (!BottomInToolkit) DrawBottom(w, h);
             DrawLogButton(w, h);
             if (_logOpen) DrawLog(w, h);
             if (_card != null) DrawCard(w, h);

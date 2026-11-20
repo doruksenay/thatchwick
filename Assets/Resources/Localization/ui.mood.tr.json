@@ -1,5 +1,26 @@
 {
   "ui.mood.inner_voices.header": "İç Sesler · {joys} keyif, {glooms} kasvet",
   "ui.mood.upbringing.pessimist": "Karamsar büyüyor",
-  "ui.need.fun": "Eğlence"
+  "ui.need.fun": "Eğlence",
+  "ui.mood.status.miserable": "Perişan",
+  "ui.mood.status.unhappy": "Mutsuz",
+  "ui.mood.status.neutral": "Nötr",
+  "ui.mood.status.good": "İyi",
+  "ui.mood.status.happy": "Mutlu",
+  "ui.mood.card.kind_joy": "{value} · keyif",
+  "ui.mood.card.kind_gloom": "{value} · kasvet",
+  "ui.mood.card.kind_status": "yalnızca durum bildiriyor",
+  "ui.mood.card.while_condition": "durum sürdükçe",
+  "ui.mood.card.ending": "bitmek üzere",
+  "ui.mood.card.hours_left.other": "{n} saat kaldı",
+  "ui.mood.card.days_left.other": "{n} gün kaldı",
+  "ui.mood.card.total_top": "Toplam {total} · en üst basamak",
+  "ui.mood.card.total_next": "Toplam {total} · {next} için {need} daha",
+  "ui.mood.card.effects": "Tecrübe ×{xp} · iş hızı ×{speed}",
+  "ui.mood.card.need_value": "{value} / 100",
+  "ui.mood.card.breakdown": "Bunalımda: {name} (emirler bitince yapılır)",
+  "ui.mood.card.queue_first": "Öne al",
+  "ui.mood.card.queue_cancel": "İptal",
+  "ui.mood.card.hours_left.one": "{n} saat kaldı",
+  "ui.mood.card.days_left.one": "{n} gün kaldı"
 }

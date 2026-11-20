@@ -1,5 +1,26 @@
 {
   "ui.mood.inner_voices.header": "Inner Voices · {joys} joy, {glooms} gloom",
   "ui.mood.upbringing.pessimist": "growing up a pessimist",
-  "ui.need.fun": "Fun"
+  "ui.need.fun": "Fun",
+  "ui.mood.status.miserable": "Miserable",
+  "ui.mood.status.unhappy": "Unhappy",
+  "ui.mood.status.neutral": "Neutral",
+  "ui.mood.status.good": "Good",
+  "ui.mood.status.happy": "Happy",
+  "ui.mood.card.kind_joy": "{value} · joy",
+  "ui.mood.card.kind_gloom": "{value} · gloom",
+  "ui.mood.card.kind_status": "status only",
+  "ui.mood.card.while_condition": "while it lasts",
+  "ui.mood.card.ending": "ending soon",
+  "ui.mood.card.hours_left.one": "{n} hour left",
+  "ui.mood.card.hours_left.other": "{n} hours left",
+  "ui.mood.card.days_left.one": "{n} day left",
+  "ui.mood.card.days_left.other": "{n} days left",
+  "ui.mood.card.total_top": "Total {total} · top step",
+  "ui.mood.card.total_next": "Total {total} · {need} more for {next}",
+  "ui.mood.card.effects": "Experience ×{xp} · work speed ×{speed}",
+  "ui.mood.card.need_value": "{value} / 100",
+  "ui.mood.card.breakdown": "Breaking down: {name} (after current orders)",
+  "ui.mood.card.queue_first": "Move up",
+  "ui.mood.card.queue_cancel": "Cancel"
 }

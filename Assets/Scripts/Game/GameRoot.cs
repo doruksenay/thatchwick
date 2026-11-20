@@ -587,6 +587,8 @@ namespace Thatchwick.Game
         private const string ToolkitHudPref = "ui.toolkit_hud";
         private Ui.UiHost _ui;
         private Ui.HudBar _hudBar;
+        /// <summary>Alttaki karakter kartı (Project belgesi 68): F4'ten bağımsız, UI Toolkit kurulabildiyse hep o çizer.</summary>
+        private Ui.CharacterCard _characterCard;
         private bool _toolkitHud;
         private bool _toolkitHudRestored;
         private const float HudWidth = 340f;
@@ -602,6 +604,22 @@ namespace Thatchwick.Game
             _toolkitHud = on && _hudBar != null;
             if (_hudBar != null) _hudBar.Visible = _toolkitHud;
             PlayerPrefs.SetInt(ToolkitHudPref, _toolkitHud ? 1 : 0);
+        }
+
+        private void UpdateCharacterCard()
+        {
+            if (_statusHud == null) return;
+            if (_characterCard == null)
+            {
+                var host = EnsureUi();
+                if (host == null) return;   // UI Toolkit yoksa IMGUI alt çubuğu kalır
+                _characterCard = new Ui.CharacterCard(host, _life, _content, () => Commander?.Character,
+                    c => _actors.Find(a => a.Character == c)?.Runner);
+                _statusHud.BottomInToolkit = true;
+            }
+            // Yapı modunda ve sağ panellerde IMGUI alt çubuğu da çizilmiyordu (belge 65 A4, 66 §1.6); tam ekran pencerede de gizli.
+            bool show = !SidePanelOpen && !_dynastyEnded && !AchievementsVisible && !UiWindowOpen;
+            _characterCard.Refresh(show);
         }
 
         private string HudDateText() => T("ui.hud.date", ("year", _clock.YearIndex + 1), ("season", SeasonName(_clock.Season)),
@@ -1773,7 +1791,7 @@ namespace Thatchwick.Game
             if (_dynastyEnded) return true;
             if (_menuOpen && _menuRect.Contains(guiPos)) return true;
             if (AchievementsVisible || UiWindowOpen) return true;   // tam ekran pencere: dünyaya dokunma geçmez
-            if (_toolkitHud && _ui != null && _ui.IsPointerOver(screenPos)) return true;
+            if ((_toolkitHud || (_characterCard != null && _characterCard.Visible)) && _ui != null && _ui.IsPointerOver(screenPos)) return true;
             return HudRect.Contains(guiPos);
         }
 
@@ -2950,6 +2968,7 @@ namespace Thatchwick.Game
                 ShowMessage(T(_toolkitHud ? "ui.hud.toolkit_on" : "ui.hud.toolkit_off"));
             }
             if (_toolkitHud) _hudBar.Refresh();
+            UpdateCharacterCard();
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
