@@ -60,13 +60,27 @@ namespace Thatchwick.Core.Customization
         public string NoseId { get; set; } = "straight";
         public string MouthId { get; set; } = "neutral";
         public string EarsId { get; set; } = "normal";
+        /// <summary>Kirpik (yalnız portre).</summary>
+        public string LashesId { get; set; } = "normal";
 
-        // --- Saç ve sakal ---
+        // --- Saç ve sakal (modüler, belge 43b: kütle + ön + eklenti + süs; bıyık + sakal + favori) ---
+        /// <summary>Saç kütlesi: uzunluk ve doku (arka ve yanlar). Eski tam stil kimlikleri Normalize'da kütle + eklentiye çevrilir.</summary>
         public string HairStyleId { get; set; } = "short";
         public Rgb HairColor { get; set; } = new Rgb(90, 60, 35);
+        /// <summary>Saçın önü: kâkül, ayrık, alın açık ("none" = alın açık).</summary>
         public string BangsId { get; set; } = None;
+        /// <summary>Saç eklentisi: örgü, topuz, at kuyruğu. Kütle yeterince uzun olmalı (OptionDef.Level).</summary>
+        public string HairExtraId { get; set; } = None;
+        /// <summary>Saç süsü: kurdele, firkete, çiçek vb.</summary>
+        public string HairOrnamentId { get; set; } = None;
+        public Rgb HairOrnamentColor { get; set; } = new Rgb(140, 50, 45);
         public string MustacheId { get; set; } = None;
         public string BeardId { get; set; } = None;
+        /// <summary>Favori (yanak yanı sakal).</summary>
+        public string SideburnsId { get; set; } = None;
+        /// <summary>Kirli sakal dokusu 0-3 (betikle çizilir, 0 gen).</summary>
+        public int StubbleLevel { get; set; }
+        public const int MaxStubble = 3;
         public Rgb FacialHairColor { get; set; } = new Rgb(90, 60, 35);
 
         /// <summary>
@@ -142,7 +156,7 @@ namespace Thatchwick.Core.Customization
         /// <summary>Önbellek anahtarı: aynı görünüm aynı metni verir.</summary>
         public string Key() =>
             $"{(int)Build}|{(int)Frame}|{SkinColor}|{FaceShapeId}|{EyeShapeId}|{EyeColor}|{EyeColorRight}|{BrowId}|{EffectiveBrowColor}|{NoseId}|{MouthId}|{EarsId}" +
-            $"|{HairStyleId}|{HairColor}|{BangsId}|{MustacheId}|{BeardId}|{FacialHairColor}" +
+            $"|{LashesId}|{HairStyleId}|{HairColor}|{BangsId}|{HairExtraId}|{HairOrnamentId}|{HairOrnamentColor}|{MustacheId}|{BeardId}|{SideburnsId}|{StubbleLevel}|{FacialHairColor}" +
             $"|{OutfitId}|{OutfitColor}|{TrimColor}|{PatternId}|{BottomId}|{ShoesId}|{OuterId}|{OuterColor}|{HatId}|{HatColor}" +
             $"|{string.Join(",", Marks.Select(m => m.Key()))}";
     }

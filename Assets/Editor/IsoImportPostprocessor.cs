@@ -59,6 +59,9 @@ namespace Thatchwick.EditorTools
             }
             if (best != null) return new Vector2(bestPx.x / w, bestPx.y / h);
 
+            // Katmanlı karakter parçaları (lay_*): pivotu LayeredCharacterArt çapa dosyasından verir; uyarı gerekmez.
+            if (stem.StartsWith("lay_", StringComparison.OrdinalIgnoreCase)) return new Vector2(0.5f, 0f);
+
             if (stem.StartsWith("iso_ground_", StringComparison.OrdinalIgnoreCase))
             {
                 if (w != 64 || h != 32)

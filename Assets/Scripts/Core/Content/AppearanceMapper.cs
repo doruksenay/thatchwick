@@ -19,8 +19,11 @@ namespace Thatchwick.Core.Content
 
             Options(catalog.HairStyles, file.hairStyles, "hairStyles", errors);
             Options(catalog.Bangs, file.bangs, "bangs", errors);
+            Options(catalog.HairExtras, file.hairExtras, "hairExtras", errors);
+            Options(catalog.HairOrnaments, file.hairOrnaments, "hairOrnaments", errors);
             Options(catalog.Mustaches, file.mustaches, "mustaches", errors);
             Options(catalog.Beards, file.beards, "beards", errors);
+            Options(catalog.Sideburns, file.sideburns, "sideburns", errors);
             Options(catalog.FacialHair, file.facialHair, "facialHair", errors);
             Options(catalog.FaceShapes, file.faceShapes, "faceShapes", errors);
             Options(catalog.EyeShapes, file.eyeShapes, "eyeShapes", errors);
@@ -28,6 +31,7 @@ namespace Thatchwick.Core.Content
             Options(catalog.Noses, file.noses, "noses", errors);
             Options(catalog.Mouths, file.mouths, "mouths", errors);
             Options(catalog.Ears, file.ears, "ears", errors);
+            Options(catalog.Lashes, file.lashes, "lashes", errors);
             Options(catalog.FaceMarks, file.faceMarks, "faceMarks", errors);
             Options(catalog.SkinDetails, file.skinDetails, "skinDetails", errors);
             Options(catalog.ScarPatterns, file.scarPatterns, "scarPatterns", errors);
@@ -63,6 +67,8 @@ namespace Thatchwick.Core.Content
                 }
             }
 
+            Presets(catalog, file, errors);
+
             Require(catalog.HairStyles.Count, "hairStyles", errors);
             Require(catalog.Outfits.Count, "outfits", errors);
             Require(catalog.SkinTones.Count, "skinTones", errors);
@@ -76,6 +82,10 @@ namespace Thatchwick.Core.Content
             if (catalog.Mustaches.Count > 0) RequireNone(catalog.Mustaches, "mustaches", errors);
             if (catalog.Beards.Count > 0) RequireNone(catalog.Beards, "beards", errors);
             if (catalog.Outers.Count > 0) RequireNone(catalog.Outers, "outers", errors);
+            if (catalog.HairExtras.Count > 0) RequireNone(catalog.HairExtras, "hairExtras", errors);
+            if (catalog.HairOrnaments.Count > 0) RequireNone(catalog.HairOrnaments, "hairOrnaments", errors);
+            if (catalog.Sideburns.Count > 0) RequireNone(catalog.Sideburns, "sideburns", errors);
+            if (catalog.HairPresets.Count > 0 || catalog.LegacyHairStyles.Count > 0) errors.AddRange(catalog.ValidatePresets());
             return catalog;
         }
 
@@ -83,8 +93,13 @@ namespace Thatchwick.Core.Content
         {
             hairStyles = Dto(c.HairStyles),
             bangs = Dto(c.Bangs),
+            hairExtras = Dto(c.HairExtras),
+            hairOrnaments = Dto(c.HairOrnaments),
+            hairPresets = c.HairPresets.ConvertAll(p => new HairPresetDto { id = p.Id, displayName = p.DisplayName, group = p.Group ?? "", mass = p.Mass, front = p.Front ?? "", extra = p.Extra ?? "", sex = p.OnlyFor.HasValue ? p.OnlyFor.Value.ToString() : "" }).ToArray(),
+            legacyHair = LegacyDto(c),
             mustaches = Dto(c.Mustaches),
             beards = Dto(c.Beards),
+            sideburns = Dto(c.Sideburns),
             facialHair = Dto(c.FacialHair),
             faceShapes = Dto(c.FaceShapes),
             eyeShapes = Dto(c.EyeShapes),
@@ -92,6 +107,7 @@ namespace Thatchwick.Core.Content
             noses = Dto(c.Noses),
             mouths = Dto(c.Mouths),
             ears = Dto(c.Ears),
+            lashes = Dto(c.Lashes),
             faceMarks = Dto(c.FaceMarks),
             skinDetails = Dto(c.SkinDetails),
             scarPatterns = Dto(c.ScarPatterns),
@@ -121,8 +137,59 @@ namespace Thatchwick.Core.Content
         {
             var arr = new OptionDto[list.Count];
             for (int i = 0; i < arr.Length; i++)
-                arr[i] = new OptionDto { id = list[i].Id, displayName = list[i].DisplayName, sex = list[i].OnlyFor.HasValue ? list[i].OnlyFor.Value.ToString() : "", tag = list[i].Tag ?? "" };
+                arr[i] = new OptionDto { id = list[i].Id, displayName = list[i].DisplayName, sex = list[i].OnlyFor.HasValue ? list[i].OnlyFor.Value.ToString() : "", tag = list[i].Tag ?? "", level = list[i].Level, group = list[i].Group ?? "" };
             return arr;
+        }
+
+        private static LegacyHairDto[] LegacyDto(AppearanceCatalog c)
+        {
+            var list = new List<LegacyHairDto>();
+            foreach (var kv in c.LegacyHairStyles)
+                list.Add(new LegacyHairDto { id = kv.Key, mass = kv.Value.Mass, front = kv.Value.Front, extra = kv.Value.Extra });
+            return list.ToArray();
+        }
+
+        private static string NoneIfEmpty(string s) => string.IsNullOrWhiteSpace(s) ? Appearance.None : s;
+
+        private static bool TryParseSex(string s, string where, List<string> errors, out Sex? only)
+        {
+            only = null;
+            if (string.IsNullOrWhiteSpace(s)) return true;
+            if (!Enum.TryParse(s, true, out Sex parsed) || !Enum.IsDefined(typeof(Sex), parsed))
+            {
+                errors.Add($"{where}: bilinmeyen cinsiyet '{s}'.");
+                return false;
+            }
+            only = parsed;
+            return true;
+        }
+
+        private static void Presets(AppearanceCatalog catalog, AppearanceFileDto file, List<string> errors)
+        {
+            if (file.hairPresets != null)
+            {
+                foreach (var p in file.hairPresets)
+                {
+                    if (p == null) continue;
+                    if (string.IsNullOrWhiteSpace(p.id) || string.IsNullOrWhiteSpace(p.mass) || string.IsNullOrWhiteSpace(p.displayName))
+                    { errors.Add($"hairPresets/{p.id}: kimlik, ad ve kütle gerekli."); continue; }
+                    if (!TryParseSex(p.sex, $"hairPresets/{p.id}", errors, out var only)) continue;
+                    catalog.HairPresets.Add(new HairPreset
+                    {
+                        Id = p.id, DisplayName = p.displayName, Group = string.IsNullOrWhiteSpace(p.group) ? null : p.group,
+                        Mass = p.mass, Front = NoneIfEmpty(p.front), Extra = NoneIfEmpty(p.extra), OnlyFor = only
+                    });
+                }
+            }
+            if (file.legacyHair != null)
+            {
+                foreach (var l in file.legacyHair)
+                {
+                    if (l == null || string.IsNullOrWhiteSpace(l.id) || string.IsNullOrWhiteSpace(l.mass)) { errors.Add("legacyHair: kimlik ve kütle gerekli."); continue; }
+                    if (catalog.LegacyHairStyles.ContainsKey(l.id)) { errors.Add($"legacyHair/{l.id}: kimlik tekrar ediyor."); continue; }
+                    catalog.LegacyHairStyles[l.id] = new LegacyHair { Mass = l.mass, Front = NoneIfEmpty(l.front), Extra = NoneIfEmpty(l.extra) };
+                }
+            }
         }
 
         private static string[] Hex(List<Rgb> list)
@@ -153,7 +220,8 @@ namespace Thatchwick.Core.Content
                     }
                     only = parsed;
                 }
-                target.Add(new OptionDef { Id = o.id, DisplayName = o.displayName, OnlyFor = only, Tag = string.IsNullOrWhiteSpace(o.tag) ? null : o.tag });
+                if (o.level < 0) { errors.Add($"{where}/{o.id}: level negatif olamaz."); continue; }
+                target.Add(new OptionDef { Id = o.id, DisplayName = o.displayName, OnlyFor = only, Tag = string.IsNullOrWhiteSpace(o.tag) ? null : o.tag, Level = o.level, Group = string.IsNullOrWhiteSpace(o.group) ? null : o.group });
             }
         }
 

@@ -286,6 +286,9 @@ namespace Thatchwick.Core.Save
         public int voice = -1;
         public int voicePitch;
         public string laugh;
+        // Modüler saç ve sakal (belge 43b, 20.11.2026); eski kayıtta null ya da 0.
+        public string hairExtra, hairOrnament, hairOrnamentColor, sideburns, lashes;
+        public int stubble;
         public MarkSave[] marks;               // null ise faceMark'tan çevrilir
         public string[] genome;                // gizli kalıtım: "gen|A|B"
     }

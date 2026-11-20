@@ -25,6 +25,7 @@ namespace Thatchwick.Game
         private readonly System.Random _rng;
         private readonly CharacterDraft _draft;
         private Sprite _preview;
+        private bool _previewLayered;   // katman karesi LayeredCharacterArt önbelleğine aittir, burada silinmez
         private string _previewKey;
         private Vector2 _scroll;
         private List<string> _errors = new List<string>();
@@ -67,7 +68,7 @@ namespace Thatchwick.Game
 
         public void Release()
         {
-            PersonSprites.Destroy(_preview);
+            if (!_previewLayered) PersonSprites.Destroy(_preview);
             _preview = null;
         }
 
@@ -134,8 +135,11 @@ namespace Thatchwick.Game
             string key = a.Key();
             if (_preview == null || key != _previewKey)
             {
-                PersonSprites.Destroy(_preview);
-                _preview = PersonSprites.Create(a);
+                if (!_previewLayered) PersonSprites.Destroy(_preview);
+                // Katman görselleri (belge 43) varsa önizleme oyundaki gerçek karakterdir; yoksa prosedürel yer tutucu.
+                _preview = LayeredCharacterArt.Frame(a, _draft.Sex, _draft.StartStage, "idle", "se", 0);
+                _previewLayered = _preview != null;
+                if (!_previewLayered) _preview = PersonSprites.Create(a);
                 _previewKey = key;
             }
 
@@ -145,6 +149,12 @@ namespace Thatchwick.Game
             GUI.DrawTexture(area, Texture2D.whiteTexture);
             GUI.color = Color.white;
             float w = 24f * scale, h = 48f * scale;
+            if (_previewLayered)
+            {
+                // Katman karesi gerçek ölçüde (84 px'lik tuval): tam sayı büyütmeyle alana sığdır.
+                float k = Mathf.Max(1f, Mathf.Floor(Mathf.Min(area.width / _preview.texture.width, (area.height - 10f) / _preview.texture.height)));
+                w = _preview.texture.width * k; h = _preview.texture.height * k;
+            }
             var r = new Rect(area.x + (area.width - w) / 2f, area.yMax - 10f - h, w, h);
             GUI.DrawTexture(r, _preview.texture, ScaleMode.StretchToFill, true);
 
@@ -351,18 +361,32 @@ namespace Thatchwick.Game
             a.NoseId = OptionRow("Burun", _catalog.Noses, a.NoseId);
             a.MouthId = OptionRow("Ağız", _catalog.Mouths, a.MouthId);
             a.EarsId = OptionRow("Kulak", _catalog.Ears, a.EarsId);
+            a.LashesId = OptionRow("Kirpik", _catalog.Lashes, a.LashesId);
             GUILayout.Label("   Ten, göz, yüz, burun ve kulak çocuklara geçer; sonradan Ayna'da değişmez.", _smallStyle);
         }
 
         private void DrawHair()
         {
             var a = _draft.Appearance;
-            a.HairStyleId = OptionRow("Saç", _catalog.HairStyles, a.HairStyleId);
-            a.BangsId = OptionRow("Perçem", _catalog.Bangs, a.BangsId);
+            // Modüler saç (belge 43b): önce hazır stil; "Ayrıntılı" kütle, ön, eklenti ve süsü ayrı açar.
+            PresetRow(a);
+            _hairDetailed = GUILayout.Toggle(_hairDetailed, " Ayrıntılı (kütle, ön, eklenti, süs)");
+            if (_hairDetailed)
+            {
+                a.HairStyleId = OptionRow("Saç boyu", _catalog.HairStyles, a.HairStyleId);
+                _catalog.FitHair(a);
+                a.BangsId = OptionRow("Saçın önü", _catalog.FittingModules(_catalog.Bangs, a.HairStyleId).ToList(), a.BangsId);
+                a.HairExtraId = OptionRow("Toplama", _catalog.FittingModules(_catalog.HairExtras, a.HairStyleId).ToList(), a.HairExtraId);
+            }
+            a.HairOrnamentId = OptionRow("Saç süsü", _catalog.FittingModules(_catalog.HairOrnaments, a.HairStyleId).ToList(), a.HairOrnamentId);
+            if (a.HairOrnamentId != Appearance.None)
+                a.HairOrnamentColor = ColorRow("orn", "Süs rengi", a.HairOrnamentColor, _catalog.ClothColors, true);
             a.HairColor = ColorRow("hair", "Saç rengi", a.HairColor, _catalog.HairColors, true);
             a.MustacheId = OptionRow("Bıyık", _catalog.Mustaches, a.MustacheId);
             a.BeardId = OptionRow("Sakal", _catalog.Beards, a.BeardId);
-            if (a.MustacheId != Appearance.None || a.BeardId != Appearance.None)
+            a.SideburnsId = OptionRow("Favori", _catalog.Sideburns, a.SideburnsId);
+            a.StubbleLevel = Row("Kirli sakal", () => GUILayout.Toolbar(a.StubbleLevel, StubbleLabels));
+            if (a.MustacheId != Appearance.None || a.BeardId != Appearance.None || a.SideburnsId != Appearance.None || a.StubbleLevel > 0)
             {
                 bool same = a.FacialHairColor == a.HairColor;
                 bool nowSame = GUILayout.Toggle(same, " Sakal rengi saçla aynı");
@@ -461,11 +485,13 @@ namespace Thatchwick.Game
                 case Tab.Face:
                     a.FaceShapeId = r.FaceShapeId; a.EyeShapeId = r.EyeShapeId; a.EyeColor = r.EyeColor; a.EyeColorRight = r.EyeColorRight;
                     a.BrowId = r.BrowId; a.BrowFollowsHair = r.BrowFollowsHair; a.BrowColor = r.BrowColor;
-                    a.NoseId = r.NoseId; a.MouthId = r.MouthId; a.EarsId = r.EarsId;
+                    a.NoseId = r.NoseId; a.MouthId = r.MouthId; a.EarsId = r.EarsId; a.LashesId = r.LashesId;
                     break;
                 case Tab.Hair:
-                    a.HairStyleId = r.HairStyleId; a.BangsId = r.BangsId; a.HairColor = r.HairColor;
-                    a.MustacheId = r.MustacheId; a.BeardId = r.BeardId; a.FacialHairColor = r.FacialHairColor;
+                    a.HairStyleId = r.HairStyleId; a.BangsId = r.BangsId; a.HairExtraId = r.HairExtraId; a.HairColor = r.HairColor;
+                    a.HairOrnamentId = r.HairOrnamentId; a.HairOrnamentColor = r.HairOrnamentColor;
+                    a.MustacheId = r.MustacheId; a.BeardId = r.BeardId; a.SideburnsId = r.SideburnsId; a.StubbleLevel = r.StubbleLevel;
+                    a.FacialHairColor = r.FacialHairColor;
                     break;
                 case Tab.Marks:
                     a.Marks.Clear();
@@ -589,6 +615,32 @@ namespace Thatchwick.Game
                 if (GUILayout.Button("Kaldır", GUILayout.Width(60f))) a.Marks.Remove(m);
                 GUILayout.EndHorizontal();
             }
+        }
+
+        private static readonly string[] StubbleLabels = { "Yok", "Hafif", "Orta", "Sık" };
+        private bool _hairDetailed;
+        private List<OptionDef> _presetOptions;
+
+        /// <summary>Hazır saç stilleri (belge 43b): seçince kütle, ön ve eklenti birlikte değişir.</summary>
+        private void PresetRow(Appearance a)
+        {
+            if (_catalog.HairPresets.Count == 0) return;
+            if (_presetOptions == null)
+                _presetOptions = _catalog.HairPresets.Select(p => new OptionDef { Id = p.Id, DisplayName = p.DisplayName, Group = p.Group }).ToList();
+            var current = _catalog.PresetOf(a);
+            if (current == null)
+            {
+                // Ayrıntılı modda yapılmış birleşim hazır stillerde yoksa "Özel" görünür; oklar ilk hazır stile döner.
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Saç", GUILayout.Width(100f));
+                if (GUILayout.Button("<", GUILayout.Width(28f))) _catalog.ApplyPreset(a, _catalog.HairPresets[_catalog.HairPresets.Count - 1]);
+                GUILayout.Label("Özel", _centerStyle, GUILayout.Width(130f));
+                if (GUILayout.Button(">", GUILayout.Width(28f))) _catalog.ApplyPreset(a, _catalog.HairPresets[0]);
+                GUILayout.EndHorizontal();
+                return;
+            }
+            string chosen = OptionRow("Saç", _presetOptions, current.Id);
+            if (chosen != current.Id) _catalog.ApplyPreset(a, _catalog.HairPresets.First(p => p.Id == chosen));
         }
 
         private string OptionRow(string label, List<OptionDef> list, string currentId)

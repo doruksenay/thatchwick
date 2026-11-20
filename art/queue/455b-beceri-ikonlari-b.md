@@ -1,7 +1,7 @@
 ---
 id: "455b"
 title: Beceri ikonları B (17)
-status: running
+status: review
 claimed_at: 2026-11-20T07:02Z
 approved_by: user
 priority: 20

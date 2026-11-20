@@ -1,7 +1,8 @@
 ---
 id: "455c"
 title: Seviye kartı çerçevesi ve beceri çubuğu
-status: pending
+status: review
+claimed_at: 2026-11-20T07:07Z
 approved_by: user
 priority: 20
 family: arayuz

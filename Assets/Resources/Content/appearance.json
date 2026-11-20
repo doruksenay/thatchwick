@@ -4,165 +4,1106 @@
       "id": "bald",
       "displayName": "Kel",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": "ozel"
     },
     {
       "id": "crop",
       "displayName": "Kırpık",
       "sex": "",
-      "tag": "straight"
+      "tag": "straight",
+      "level": 1,
+      "group": "kisa"
     },
     {
       "id": "short",
       "displayName": "Kısa",
       "sex": "",
-      "tag": "straight"
-    },
-    {
-      "id": "side_part",
-      "displayName": "Yandan ayrık",
-      "sex": "",
-      "tag": "straight"
-    },
-    {
-      "id": "shaggy",
-      "displayName": "Dağınık",
-      "sex": "",
-      "tag": "wavy"
-    },
-    {
-      "id": "tousled",
-      "displayName": "Karışık dalgalı",
-      "sex": "",
-      "tag": "wavy"
-    },
-    {
-      "id": "long",
-      "displayName": "Uzun düz",
-      "sex": "",
-      "tag": "straight"
-    },
-    {
-      "id": "long_wavy",
-      "displayName": "Uzun dalgalı",
-      "sex": "",
-      "tag": "wavy"
-    },
-    {
-      "id": "long_curly",
-      "displayName": "Uzun kıvırcık",
-      "sex": "",
-      "tag": "curly"
+      "tag": "straight",
+      "level": 1,
+      "group": "kisa"
     },
     {
       "id": "curls",
       "displayName": "Kısa bukleler",
       "sex": "",
-      "tag": "curly"
+      "tag": "curly",
+      "level": 1,
+      "group": "kisa"
     },
     {
-      "id": "afro",
-      "displayName": "Gür kıvırcık",
+      "id": "thinning",
+      "displayName": "Tepesi açık",
       "sex": "",
-      "tag": "curly"
-    },
-    {
-      "id": "ponytail",
-      "displayName": "At kuyruğu",
-      "sex": "",
-      "tag": "straight"
-    },
-    {
-      "id": "low_tail",
-      "displayName": "Ense bağı",
-      "sex": "",
-      "tag": "wavy"
-    },
-    {
-      "id": "braid",
-      "displayName": "Örgü",
-      "sex": "",
-      "tag": "straight"
-    },
-    {
-      "id": "twin_braids",
-      "displayName": "İki örgü",
-      "sex": "Female",
-      "tag": "straight"
-    },
-    {
-      "id": "crown_braid",
-      "displayName": "Taç örgü",
-      "sex": "Female",
-      "tag": "wavy"
-    },
-    {
-      "id": "bun",
-      "displayName": "Topuz",
-      "sex": "",
-      "tag": "curly"
-    },
-    {
-      "id": "top_knot",
-      "displayName": "Tepe topuzu",
-      "sex": "",
-      "tag": "straight"
+      "tag": "straight",
+      "level": 1,
+      "group": "ozel"
     },
     {
       "id": "monk",
       "displayName": "Tepe tıraşı",
       "sex": "Male",
-      "tag": "straight"
+      "tag": "straight",
+      "level": 1,
+      "group": "ozel"
+    },
+    {
+      "id": "ear_length",
+      "displayName": "Kulak hizası",
+      "sex": "",
+      "tag": "straight",
+      "level": 2,
+      "group": "orta"
+    },
+    {
+      "id": "nape",
+      "displayName": "Ense boyu",
+      "sex": "",
+      "tag": "wavy",
+      "level": 2,
+      "group": "orta"
+    },
+    {
+      "id": "afro",
+      "displayName": "Gür kıvırcık",
+      "sex": "",
+      "tag": "curly",
+      "level": 2,
+      "group": "orta"
     },
     {
       "id": "shoulder",
-      "displayName": "Omuz boyu",
+      "displayName": "Omuz boyu dalgalı",
       "sex": "",
-      "tag": "wavy"
+      "tag": "wavy",
+      "level": 3,
+      "group": "orta"
+    },
+    {
+      "id": "shoulder_straight",
+      "displayName": "Omuz boyu düz",
+      "sex": "",
+      "tag": "straight",
+      "level": 3,
+      "group": "orta"
+    },
+    {
+      "id": "shoulder_curly",
+      "displayName": "Omuz boyu kıvırcık",
+      "sex": "",
+      "tag": "curly",
+      "level": 3,
+      "group": "orta"
+    },
+    {
+      "id": "long",
+      "displayName": "Uzun düz",
+      "sex": "",
+      "tag": "straight",
+      "level": 4,
+      "group": "uzun"
+    },
+    {
+      "id": "long_wavy",
+      "displayName": "Uzun dalgalı",
+      "sex": "",
+      "tag": "wavy",
+      "level": 4,
+      "group": "uzun"
+    },
+    {
+      "id": "long_curly",
+      "displayName": "Uzun kıvırcık",
+      "sex": "",
+      "tag": "curly",
+      "level": 4,
+      "group": "uzun"
+    },
+    {
+      "id": "waist",
+      "displayName": "Bel boyu",
+      "sex": "",
+      "tag": "straight",
+      "level": 5,
+      "group": "uzun"
     }
   ],
   "bangs": [
     {
       "id": "none",
-      "displayName": "Yok",
+      "displayName": "Alın açık",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "straight",
       "displayName": "Düz kâkül",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 1,
+      "group": ""
     },
     {
       "id": "side",
       "displayName": "Yana kâkül",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 1,
+      "group": ""
     },
     {
       "id": "wispy",
       "displayName": "Seyrek kâkül",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 1,
+      "group": ""
     },
     {
       "id": "curly",
       "displayName": "Kıvırcık kâkül",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 1,
+      "group": ""
     },
     {
       "id": "parted",
       "displayName": "Ortadan ayrık",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 1,
+      "group": ""
     },
     {
       "id": "long",
       "displayName": "Gözü örten",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "curtain",
+      "displayName": "Perde kâkül",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "side_part",
+      "displayName": "Yandan ayrık",
+      "sex": "",
+      "tag": "",
+      "level": 1,
+      "group": ""
+    },
+    {
+      "id": "swept",
+      "displayName": "Yana taranmış",
+      "sex": "",
+      "tag": "",
+      "level": 1,
+      "group": ""
+    },
+    {
+      "id": "slicked",
+      "displayName": "Geriye taranmış",
+      "sex": "",
+      "tag": "",
+      "level": 1,
+      "group": ""
+    },
+    {
+      "id": "strand",
+      "displayName": "Yüze düşen tutam",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "short_fringe",
+      "displayName": "Kısa perçem",
+      "sex": "",
+      "tag": "",
+      "level": 1,
+      "group": ""
+    },
+    {
+      "id": "braided_front",
+      "displayName": "Örgülü ön",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    }
+  ],
+  "hairExtras": [
+    {
+      "id": "none",
+      "displayName": "Yok",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "ponytail",
+      "displayName": "At kuyruğu",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "low_tail",
+      "displayName": "Ense bağı",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "braid",
+      "displayName": "Tek örgü",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    },
+    {
+      "id": "twin_braids",
+      "displayName": "İki örgü",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    },
+    {
+      "id": "crown_braid",
+      "displayName": "Taç örgü",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    },
+    {
+      "id": "bun",
+      "displayName": "Ense topuzu",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    },
+    {
+      "id": "top_knot",
+      "displayName": "Tepe topuzu",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "side_bun",
+      "displayName": "Yan topuz",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    },
+    {
+      "id": "twin_buns",
+      "displayName": "Çift topuz",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    },
+    {
+      "id": "half_up",
+      "displayName": "Yarım toplama",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    },
+    {
+      "id": "braid_bun",
+      "displayName": "Örgülü topuz",
+      "sex": "",
+      "tag": "",
+      "level": 4,
+      "group": ""
+    },
+    {
+      "id": "warrior_braid",
+      "displayName": "Yan örgü",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    }
+  ],
+  "hairOrnaments": [
+    {
+      "id": "none",
+      "displayName": "Yok",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "ribbon",
+      "displayName": "Kurdele",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "pin",
+      "displayName": "Firkete",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "flower",
+      "displayName": "Çiçek",
+      "sex": "",
+      "tag": "",
+      "level": 1,
+      "group": ""
+    },
+    {
+      "id": "bone_comb",
+      "displayName": "Kemik tarak",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    },
+    {
+      "id": "beads",
+      "displayName": "Boncuk",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "feather",
+      "displayName": "Tüy",
+      "sex": "",
+      "tag": "",
+      "level": 1,
+      "group": ""
+    },
+    {
+      "id": "metal_ring",
+      "displayName": "Metal halka",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    },
+    {
+      "id": "headband",
+      "displayName": "Saç bandı",
+      "sex": "",
+      "tag": "",
+      "level": 1,
+      "group": ""
+    },
+    {
+      "id": "hairnet",
+      "displayName": "Saç filesi",
+      "sex": "",
+      "tag": "",
+      "level": 3,
+      "group": ""
+    },
+    {
+      "id": "leather_tie",
+      "displayName": "Deri bağ",
+      "sex": "",
+      "tag": "",
+      "level": 2,
+      "group": ""
+    }
+  ],
+  "hairPresets": [
+    {
+      "id": "p_crop",
+      "displayName": "Kırpık",
+      "group": "kisa",
+      "mass": "crop",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_short",
+      "displayName": "Kısa",
+      "group": "kisa",
+      "mass": "short",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_short_side",
+      "displayName": "Yandan ayrık kısa",
+      "group": "kisa",
+      "mass": "short",
+      "front": "side_part",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_short_swept",
+      "displayName": "Yana taranmış",
+      "group": "kisa",
+      "mass": "short",
+      "front": "swept",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_short_slick",
+      "displayName": "Geriye taranmış",
+      "group": "kisa",
+      "mass": "short",
+      "front": "slicked",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_short_fringe",
+      "displayName": "Kâküllü kısa",
+      "group": "kisa",
+      "mass": "short",
+      "front": "straight",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_crop_fringe",
+      "displayName": "Kısa perçemli",
+      "group": "kisa",
+      "mass": "crop",
+      "front": "short_fringe",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_curls",
+      "displayName": "Kısa bukleler",
+      "group": "kisa",
+      "mass": "curls",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_curls_fringe",
+      "displayName": "Kıvırcık kâküllü",
+      "group": "kisa",
+      "mass": "curls",
+      "front": "curly",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_short_wispy",
+      "displayName": "Dağınık kısa",
+      "group": "kisa",
+      "mass": "short",
+      "front": "wispy",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_short_parted",
+      "displayName": "Ortadan ayrık kısa",
+      "group": "kisa",
+      "mass": "short",
+      "front": "parted",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_ear",
+      "displayName": "Kulak hizası",
+      "group": "orta",
+      "mass": "ear_length",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_ear_bangs",
+      "displayName": "Küt kâküllü",
+      "group": "orta",
+      "mass": "ear_length",
+      "front": "straight",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_ear_side",
+      "displayName": "Yana kâküllü",
+      "group": "orta",
+      "mass": "ear_length",
+      "front": "side",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_ear_curtain",
+      "displayName": "Perde kâküllü",
+      "group": "orta",
+      "mass": "ear_length",
+      "front": "curtain",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_nape",
+      "displayName": "Ense boyu",
+      "group": "orta",
+      "mass": "nape",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_nape_wispy",
+      "displayName": "Dağınık ense",
+      "group": "orta",
+      "mass": "nape",
+      "front": "wispy",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_nape_tail",
+      "displayName": "Ense bağlı",
+      "group": "orta",
+      "mass": "nape",
+      "front": "none",
+      "extra": "low_tail",
+      "sex": ""
+    },
+    {
+      "id": "p_nape_topknot",
+      "displayName": "Tepe topuzlu",
+      "group": "orta",
+      "mass": "nape",
+      "front": "none",
+      "extra": "top_knot",
+      "sex": ""
+    },
+    {
+      "id": "p_nape_warrior",
+      "displayName": "Yan örgülü",
+      "group": "orta",
+      "mass": "nape",
+      "front": "none",
+      "extra": "warrior_braid",
+      "sex": ""
+    },
+    {
+      "id": "p_afro",
+      "displayName": "Gür kıvırcık",
+      "group": "orta",
+      "mass": "afro",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_afro_curly",
+      "displayName": "Kıvırcık perçemli",
+      "group": "orta",
+      "mass": "afro",
+      "front": "curly",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_afro_topknot",
+      "displayName": "Kıvırcık tepe topuzu",
+      "group": "orta",
+      "mass": "afro",
+      "front": "none",
+      "extra": "top_knot",
+      "sex": ""
+    },
+    {
+      "id": "p_shoulder",
+      "displayName": "Omuz boyu",
+      "group": "orta",
+      "mass": "shoulder",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_shoulder_parted",
+      "displayName": "Ortadan ayrık omuz",
+      "group": "orta",
+      "mass": "shoulder",
+      "front": "parted",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_shoulder_curtain",
+      "displayName": "Perde kâküllü omuz",
+      "group": "orta",
+      "mass": "shoulder",
+      "front": "curtain",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_shoulder_strand",
+      "displayName": "Tutamlı omuz",
+      "group": "orta",
+      "mass": "shoulder",
+      "front": "strand",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_shoulder_straight",
+      "displayName": "Düz omuz",
+      "group": "orta",
+      "mass": "shoulder_straight",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_shoulder_straight_bangs",
+      "displayName": "Küt omuz",
+      "group": "orta",
+      "mass": "shoulder_straight",
+      "front": "straight",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_shoulder_straight_side",
+      "displayName": "Yandan ayrık omuz",
+      "group": "orta",
+      "mass": "shoulder_straight",
+      "front": "side_part",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_shoulder_curly",
+      "displayName": "Kıvırcık omuz",
+      "group": "orta",
+      "mass": "shoulder_curly",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_shoulder_curly_bangs",
+      "displayName": "Kıvırcık kâküllü omuz",
+      "group": "orta",
+      "mass": "shoulder_curly",
+      "front": "curly",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long",
+      "displayName": "Uzun düz",
+      "group": "uzun",
+      "mass": "long",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long_parted",
+      "displayName": "Ortadan ayrık uzun",
+      "group": "uzun",
+      "mass": "long",
+      "front": "parted",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long_bangs",
+      "displayName": "Kâküllü uzun",
+      "group": "uzun",
+      "mass": "long",
+      "front": "straight",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long_cover",
+      "displayName": "Gözü örten",
+      "group": "uzun",
+      "mass": "long",
+      "front": "long",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long_wavy",
+      "displayName": "Uzun dalgalı",
+      "group": "uzun",
+      "mass": "long_wavy",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long_wavy_side",
+      "displayName": "Yandan ayrık dalgalı",
+      "group": "uzun",
+      "mass": "long_wavy",
+      "front": "side_part",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long_wavy_curtain",
+      "displayName": "Perde kâküllü dalgalı",
+      "group": "uzun",
+      "mass": "long_wavy",
+      "front": "curtain",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long_curly",
+      "displayName": "Uzun kıvırcık",
+      "group": "uzun",
+      "mass": "long_curly",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long_curly_bangs",
+      "displayName": "Kâküllü bukleler",
+      "group": "uzun",
+      "mass": "long_curly",
+      "front": "curly",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_waist",
+      "displayName": "Bel boyu",
+      "group": "uzun",
+      "mass": "waist",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_waist_parted",
+      "displayName": "Ortadan ayrık bel boyu",
+      "group": "uzun",
+      "mass": "waist",
+      "front": "parted",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_long_braided_front",
+      "displayName": "Önü örgülü uzun",
+      "group": "uzun",
+      "mass": "long",
+      "front": "braided_front",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_ponytail",
+      "displayName": "At kuyruğu",
+      "group": "toplu",
+      "mass": "shoulder_straight",
+      "front": "none",
+      "extra": "ponytail",
+      "sex": ""
+    },
+    {
+      "id": "p_ponytail_bangs",
+      "displayName": "Kâküllü at kuyruğu",
+      "group": "toplu",
+      "mass": "shoulder_straight",
+      "front": "straight",
+      "extra": "ponytail",
+      "sex": ""
+    },
+    {
+      "id": "p_low_tail",
+      "displayName": "Uzun ense bağı",
+      "group": "toplu",
+      "mass": "long",
+      "front": "parted",
+      "extra": "low_tail",
+      "sex": ""
+    },
+    {
+      "id": "p_braid",
+      "displayName": "Tek örgü",
+      "group": "toplu",
+      "mass": "long",
+      "front": "parted",
+      "extra": "braid",
+      "sex": ""
+    },
+    {
+      "id": "p_braid_wavy",
+      "displayName": "Dalgalı örgü",
+      "group": "toplu",
+      "mass": "long_wavy",
+      "front": "none",
+      "extra": "braid",
+      "sex": ""
+    },
+    {
+      "id": "p_twin_braids",
+      "displayName": "İki örgü",
+      "group": "toplu",
+      "mass": "long",
+      "front": "parted",
+      "extra": "twin_braids",
+      "sex": ""
+    },
+    {
+      "id": "p_twin_braids_bangs",
+      "displayName": "Kâküllü iki örgü",
+      "group": "toplu",
+      "mass": "long",
+      "front": "straight",
+      "extra": "twin_braids",
+      "sex": ""
+    },
+    {
+      "id": "p_crown",
+      "displayName": "Taç örgü",
+      "group": "toplu",
+      "mass": "long_wavy",
+      "front": "none",
+      "extra": "crown_braid",
+      "sex": ""
+    },
+    {
+      "id": "p_crown_strand",
+      "displayName": "Tutamlı taç örgü",
+      "group": "toplu",
+      "mass": "long_wavy",
+      "front": "strand",
+      "extra": "crown_braid",
+      "sex": ""
+    },
+    {
+      "id": "p_bun",
+      "displayName": "Ense topuzu",
+      "group": "toplu",
+      "mass": "shoulder",
+      "front": "parted",
+      "extra": "bun",
+      "sex": ""
+    },
+    {
+      "id": "p_bun_curly",
+      "displayName": "Kıvırcık topuz",
+      "group": "toplu",
+      "mass": "shoulder_curly",
+      "front": "none",
+      "extra": "bun",
+      "sex": ""
+    },
+    {
+      "id": "p_top_knot",
+      "displayName": "Uzun tepe topuzu",
+      "group": "toplu",
+      "mass": "long",
+      "front": "none",
+      "extra": "top_knot",
+      "sex": ""
+    },
+    {
+      "id": "p_side_bun",
+      "displayName": "Yan topuz",
+      "group": "toplu",
+      "mass": "shoulder",
+      "front": "side_part",
+      "extra": "side_bun",
+      "sex": ""
+    },
+    {
+      "id": "p_twin_buns",
+      "displayName": "Çift topuz",
+      "group": "toplu",
+      "mass": "shoulder_straight",
+      "front": "parted",
+      "extra": "twin_buns",
+      "sex": ""
+    },
+    {
+      "id": "p_half_up",
+      "displayName": "Yarım toplama",
+      "group": "toplu",
+      "mass": "long_wavy",
+      "front": "parted",
+      "extra": "half_up",
+      "sex": ""
+    },
+    {
+      "id": "p_half_up_bangs",
+      "displayName": "Kâküllü yarım toplama",
+      "group": "toplu",
+      "mass": "long",
+      "front": "straight",
+      "extra": "half_up",
+      "sex": ""
+    },
+    {
+      "id": "p_braid_bun",
+      "displayName": "Örgülü topuz",
+      "group": "toplu",
+      "mass": "waist",
+      "front": "parted",
+      "extra": "braid_bun",
+      "sex": ""
+    },
+    {
+      "id": "p_warrior",
+      "displayName": "Savaşçı örgüsü",
+      "group": "toplu",
+      "mass": "shoulder",
+      "front": "slicked",
+      "extra": "warrior_braid",
+      "sex": ""
+    },
+    {
+      "id": "p_waist_braid",
+      "displayName": "Bel boyu örgü",
+      "group": "toplu",
+      "mass": "waist",
+      "front": "none",
+      "extra": "braid",
+      "sex": ""
+    },
+    {
+      "id": "p_bald",
+      "displayName": "Kel",
+      "group": "ozel",
+      "mass": "bald",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_thinning",
+      "displayName": "Tepesi açık",
+      "group": "ozel",
+      "mass": "thinning",
+      "front": "none",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_thinning_slick",
+      "displayName": "Geriye taranmış seyrek",
+      "group": "ozel",
+      "mass": "thinning",
+      "front": "slicked",
+      "extra": "none",
+      "sex": ""
+    },
+    {
+      "id": "p_monk",
+      "displayName": "Tepe tıraşı",
+      "group": "ozel",
+      "mass": "monk",
+      "front": "none",
+      "extra": "none",
+      "sex": "Male"
+    }
+  ],
+  "legacyHair": [
+    {
+      "id": "side_part",
+      "mass": "short",
+      "front": "side_part",
+      "extra": "none"
+    },
+    {
+      "id": "shaggy",
+      "mass": "ear_length",
+      "front": "wispy",
+      "extra": "none"
+    },
+    {
+      "id": "tousled",
+      "mass": "nape",
+      "front": "wispy",
+      "extra": "none"
+    },
+    {
+      "id": "ponytail",
+      "mass": "shoulder_straight",
+      "front": "none",
+      "extra": "ponytail"
+    },
+    {
+      "id": "low_tail",
+      "mass": "shoulder",
+      "front": "none",
+      "extra": "low_tail"
+    },
+    {
+      "id": "braid",
+      "mass": "long",
+      "front": "none",
+      "extra": "braid"
+    },
+    {
+      "id": "twin_braids",
+      "mass": "long",
+      "front": "parted",
+      "extra": "twin_braids"
+    },
+    {
+      "id": "crown_braid",
+      "mass": "long_wavy",
+      "front": "none",
+      "extra": "crown_braid"
+    },
+    {
+      "id": "bun",
+      "mass": "shoulder_curly",
+      "front": "none",
+      "extra": "bun"
+    },
+    {
+      "id": "top_knot",
+      "mass": "shoulder_straight",
+      "front": "none",
+      "extra": "top_knot"
     }
   ],
   "mustaches": [
@@ -170,37 +1111,121 @@
       "id": "none",
       "displayName": "Yok",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "mustache",
       "displayName": "Bıyık",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "thin",
       "displayName": "İnce bıyık",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "handlebar",
       "displayName": "Burma bıyık",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "walrus",
       "displayName": "Pala bıyık",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "drooping",
       "displayName": "Sarkık bıyık",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "chevron",
+      "displayName": "Kalın düz bıyık",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "horseshoe",
+      "displayName": "At nalı bıyık",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "brush",
+      "displayName": "Fırça bıyık",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "curled",
+      "displayName": "Kıvrık uçlu bıyık",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "long_drooping",
+      "displayName": "Uzun sarkık bıyık",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "split",
+      "displayName": "Ortadan ayrık bıyık",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "short_trim",
+      "displayName": "Kısa düzgün bıyık",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "bushy",
+      "displayName": "Gür bıyık",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "tapered",
+      "displayName": "Sivri uçlu bıyık",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
     }
   ],
   "beards": [
@@ -208,43 +1233,203 @@
       "id": "none",
       "displayName": "Yok",
       "sex": "",
-      "tag": ""
-    },
-    {
-      "id": "stubble",
-      "displayName": "Kirli sakal",
-      "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "goatee",
       "displayName": "Keçi sakalı",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "chin",
       "displayName": "Çene sakalı",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "beard",
       "displayName": "Sakal",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "full_beard",
       "displayName": "Gür sakal",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "forked",
       "displayName": "Çatal sakal",
       "sex": "Male",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "short_boxed",
+      "displayName": "Kısa düzgün sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "chin_strap",
+      "displayName": "Çene şeridi",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "anchor",
+      "displayName": "Çapa sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "circle",
+      "displayName": "Çember sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "lip_tuft",
+      "displayName": "Dudak altı",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "long",
+      "displayName": "Uzun sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "very_long",
+      "displayName": "Göğse inen sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "braided",
+      "displayName": "Örgülü sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "pointed",
+      "displayName": "Sivri sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "spade",
+      "displayName": "Kürek sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "neck",
+      "displayName": "Boyun sakalı",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "patchy",
+      "displayName": "Seyrek sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "bushy",
+      "displayName": "Gür dağınık sakal",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    }
+  ],
+  "sideburns": [
+    {
+      "id": "none",
+      "displayName": "Yok",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "short",
+      "displayName": "Kısa favori",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "long",
+      "displayName": "Uzun favori",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "wide",
+      "displayName": "Geniş favori",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "thin",
+      "displayName": "İnce favori",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "pointed",
+      "displayName": "Sivri favori",
+      "sex": "Male",
+      "tag": "",
+      "level": 0,
+      "group": ""
     }
   ],
   "facialHair": [
@@ -309,6 +1494,30 @@
       "displayName": "Kalp",
       "sex": "",
       "tag": ""
+    },
+    {
+      "id": "diamond",
+      "displayName": "Elmas",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "triangle",
+      "displayName": "Üçgen",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "wide",
+      "displayName": "Geniş",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
     }
   ],
   "eyeShapes": [
@@ -316,49 +1525,161 @@
       "id": "almond",
       "displayName": "Badem",
       "sex": "",
-      "tag": ""
+      "tag": "normal",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "round",
       "displayName": "Yuvarlak",
       "sex": "",
-      "tag": ""
+      "tag": "round",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "narrow",
       "displayName": "Çekik",
       "sex": "",
-      "tag": ""
+      "tag": "narrow",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "hooded",
       "displayName": "Düşük kapaklı",
       "sex": "",
-      "tag": ""
+      "tag": "hooded",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "wide",
       "displayName": "İri",
       "sex": "",
-      "tag": ""
+      "tag": "wide",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "downturned",
       "displayName": "Aşağı bakan",
       "sex": "",
-      "tag": ""
+      "tag": "downturned",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "upturned",
       "displayName": "Yukarı bakan",
       "sex": "",
-      "tag": ""
+      "tag": "upturned",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "deep",
       "displayName": "Çukur",
       "sex": "",
-      "tag": ""
+      "tag": "deep",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "monolid",
+      "displayName": "Tek katlı",
+      "sex": "",
+      "tag": "narrow",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "close_set",
+      "displayName": "Yakın",
+      "sex": "",
+      "tag": "normal",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "wide_set",
+      "displayName": "Aralık",
+      "sex": "",
+      "tag": "normal",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "small",
+      "displayName": "Küçük",
+      "sex": "",
+      "tag": "small",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "sleepy",
+      "displayName": "Uykulu",
+      "sex": "",
+      "tag": "hooded",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "sharp",
+      "displayName": "Keskin",
+      "sex": "",
+      "tag": "sharp",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "soft",
+      "displayName": "Yumuşak",
+      "sex": "",
+      "tag": "round",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "crescent",
+      "displayName": "Hilal",
+      "sex": "",
+      "tag": "upturned",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "large",
+      "displayName": "Büyük",
+      "sex": "",
+      "tag": "wide",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "tired",
+      "displayName": "Torbalı",
+      "sex": "",
+      "tag": "downturned",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "cat",
+      "displayName": "Kedi gözü",
+      "sex": "",
+      "tag": "sharp",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "squint",
+      "displayName": "Kısık",
+      "sex": "",
+      "tag": "narrow",
+      "level": 0,
+      "group": ""
     }
   ],
   "brows": [
@@ -366,37 +1687,129 @@
       "id": "natural",
       "displayName": "Doğal",
       "sex": "",
-      "tag": ""
+      "tag": "natural",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "thick",
       "displayName": "Kalın",
       "sex": "",
-      "tag": ""
+      "tag": "thick",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "thin",
       "displayName": "İnce",
       "sex": "",
-      "tag": ""
+      "tag": "thin",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "arched",
       "displayName": "Kavisli",
       "sex": "",
-      "tag": ""
+      "tag": "arched",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "straight",
       "displayName": "Düz",
       "sex": "",
-      "tag": ""
+      "tag": "straight",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "bushy",
       "displayName": "Gür",
       "sex": "",
-      "tag": ""
+      "tag": "bushy",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "unibrow",
+      "displayName": "Çatık",
+      "sex": "",
+      "tag": "unibrow",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "sparse",
+      "displayName": "Seyrek",
+      "sex": "",
+      "tag": "sparse",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "angled",
+      "displayName": "Açılı",
+      "sex": "",
+      "tag": "angled",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "rounded",
+      "displayName": "Yuvarlak",
+      "sex": "",
+      "tag": "arched",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "short",
+      "displayName": "Kısa",
+      "sex": "",
+      "tag": "short",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "long",
+      "displayName": "Uzun",
+      "sex": "",
+      "tag": "straight",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "high",
+      "displayName": "Yüksek",
+      "sex": "",
+      "tag": "arched",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "low",
+      "displayName": "Alçak",
+      "sex": "",
+      "tag": "straight",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "feathered",
+      "displayName": "Dağınık uçlu",
+      "sex": "",
+      "tag": "bushy",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "tapered",
+      "displayName": "İncelen",
+      "sex": "",
+      "tag": "thin",
+      "level": 0,
+      "group": ""
     }
   ],
   "noses": [
@@ -435,6 +1848,38 @@
       "displayName": "Eğri",
       "sex": "",
       "tag": ""
+    },
+    {
+      "id": "small",
+      "displayName": "Küçük",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "long",
+      "displayName": "Uzun",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "flat",
+      "displayName": "Basık",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "bulbous",
+      "displayName": "Yumru",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
     }
   ],
   "mouths": [
@@ -473,6 +1918,38 @@
       "displayName": "Büzük",
       "sex": "",
       "tag": ""
+    },
+    {
+      "id": "small",
+      "displayName": "Küçük",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "downturned",
+      "displayName": "Aşağı kıvrık",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "heart",
+      "displayName": "Kalp",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "crooked",
+      "displayName": "Çarpık",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
     }
   ],
   "ears": [
@@ -493,6 +1970,56 @@
       "displayName": "Kepçe",
       "sex": "",
       "tag": ""
+    },
+    {
+      "id": "large",
+      "displayName": "Büyük",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "long_lobe",
+      "displayName": "Uzun memeli",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    }
+  ],
+  "lashes": [
+    {
+      "id": "sparse",
+      "displayName": "Seyrek",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "normal",
+      "displayName": "Normal",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "long",
+      "displayName": "Uzun",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "thick",
+      "displayName": "Gür",
+      "sex": "",
+      "tag": "",
+      "level": 0,
+      "group": ""
     }
   ],
   "faceMarks": [
@@ -945,49 +2472,137 @@
       "id": "none",
       "displayName": "Yok",
       "sex": "",
-      "tag": ""
+      "tag": "",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "cap",
       "displayName": "Takke",
       "sex": "",
-      "tag": ""
+      "tag": "top",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "hood",
       "displayName": "Kapüşon",
       "sex": "",
-      "tag": ""
+      "tag": "full",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "straw",
       "displayName": "Hasır şapka",
       "sex": "",
-      "tag": ""
+      "tag": "top",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "kerchief",
       "displayName": "Başörtüsü",
       "sex": "",
-      "tag": ""
+      "tag": "full",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "coif",
       "displayName": "Bez başlık",
       "sex": "",
-      "tag": ""
+      "tag": "full",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "felt",
       "displayName": "Keçe şapka",
       "sex": "",
-      "tag": ""
+      "tag": "top",
+      "level": 0,
+      "group": ""
     },
     {
       "id": "wreath",
       "displayName": "Çiçek tacı",
       "sex": "",
-      "tag": ""
+      "tag": "none",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "chaperon",
+      "displayName": "Şaperon",
+      "sex": "",
+      "tag": "full",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "wimple",
+      "displayName": "Yaşmak",
+      "sex": "",
+      "tag": "full",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "bonnet",
+      "displayName": "Bere",
+      "sex": "",
+      "tag": "top",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "fur_hat",
+      "displayName": "Kürk börk",
+      "sex": "",
+      "tag": "top",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "tied_scarf",
+      "displayName": "Bağlı yazma",
+      "sex": "",
+      "tag": "full",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "turban",
+      "displayName": "Sarık",
+      "sex": "",
+      "tag": "full",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "brimmed",
+      "displayName": "Geniş kenarlı şapka",
+      "sex": "",
+      "tag": "top",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "pointed_hat",
+      "displayName": "Sivri şapka",
+      "sex": "",
+      "tag": "top",
+      "level": 0,
+      "group": ""
+    },
+    {
+      "id": "veil",
+      "displayName": "Duvak",
+      "sex": "",
+      "tag": "none",
+      "level": 0,
+      "group": ""
     }
   ],
   "patterns": [
@@ -1130,7 +2745,10 @@
     "#6A3E6E",
     "#C2A23B",
     "#464646",
-    "#B9B9B9"
+    "#B9B9B9",
+    "#5E4630",
+    "#D8CDB0",
+    "#8E8A82"
   ],
   "inkColors": [
     "#2F4E7A",

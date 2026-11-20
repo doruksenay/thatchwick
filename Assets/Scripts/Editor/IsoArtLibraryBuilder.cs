@@ -35,6 +35,8 @@ namespace Thatchwick.Editor
             importer.mipmapEnabled = false;
             importer.spritePixelsPerUnit = 32;
             importer.alphaIsTransparency = true;
+            // Katmanlı karakter (belge 43): bölge haritaları ve baş parçaları oyunda piksel piksel okunur.
+            if (assetPath.Replace('\\', '/').Contains("/katman/")) importer.isReadable = true;
         }
 
         private static void OnPostprocessAllAssets(string[] imported, string[] deleted, string[] moved, string[] movedFrom)
