@@ -13,7 +13,7 @@ Bu dosya işçinin freni ve harcama defteridir. İşçi her iş öncesi okur, he
 | Kural | Değer |
 |---|---|
 | Tek iş tavanı (`cost_max`) | 60 generation (çalışma tavanı). Daha büyük iş parçalara bölünür. Onay için ayrıca bir tavan yok (aşağıda "Otomatik akış") |
-| Çalışma başına tavan | Şerit sayısı kadar iş (10), her biri kendi `cost_max` tavanıyla |
+| Çalışma başına tavan | Şerit sayısı kadar iş (6), her biri kendi `cost_max` tavanıyla |
 | Günlük tavan | **Yok** (kullanıcı kararı 2026-11-21: "sınırı kaldır sadece her işlemden sonra agent beni bilgilendirsin"). Bir güne sayı konmak istenirse "Günlük tavan istisnaları" bölümüne yazılır. Önceki: 150 |
 | Bildirim | Bulut işçisi her işten sonra "art-bildirim" etiketli konuya yorum yazar ve depo sahibini anar (`tools/art/notify.py`): durum, harcanan, kalan bakiye, sonuç dosyaları, varsa sorular |
 | Rezerv | Kalan bakiye (`get_balance`), işten sonra 200'ün altına düşecekse işçi durur |
@@ -44,12 +44,13 @@ Kullanıcı: "Bunu otomatize et. Bu projede istenen tüm asset'ler PixelLab'e ü
 
 ## Paralel üretim (kullanıcı kararı 2026-11-18)
 Kullanıcı: "Asset üretimini hızlandıramaz mıyız kaliteden taviz vermeden? Paralel bir agent vs."
-- **10 şerit (2026-11-21; önce 3):** bulut işçisi her turda 10 işi aynı anda yürütür (`art-worker.yml` matrisi). Her şerit sıradaki uygun işi sahiplenir; iki şerit aynı işe denk gelirse push reddedilir, kaybeden şerit sahiplenmesini geri alıp sonraki işi dener.
-- **İş içi paralellik:** bir işteki bağımsız PixelLab çağrıları aynı anda gönderilir, ama **en çok 2 eşzamanlı çağrı** (10 şerit x 2 = PixelLab'in 20 eşzamanlı iş sınırı); tarif "sırayla" diyorsa sırayla.
+- **6 şerit (2026-11-21; önce 3, kısa süre 10):** bulut işçisi her turda 6 işi aynı anda yürütür (`art-worker.yml` matrisi). Her şerit sıradaki uygun işi sahiplenir; iki şerit aynı işe denk gelirse push reddedilir, kaybeden şerit sahiplenmesini geri alıp sonraki işi dener.
+- **İş içi paralellik:** bir işteki bağımsız PixelLab çağrıları aynı anda gönderilir, ama **en çok 3 eşzamanlı çağrı** (6 şerit x 3 = 18, PixelLab'in 20 eşzamanlı iş sınırının altında); tarif "sırayla" diyorsa sırayla.
 - **Hız sınırı:** PixelLab eşzamanlılık ya da hız sınırı hatası verirse (429 / "too many") o çağrı bekleyip bir kez yeniden denenir. "Yeniden deneme: yok" kuralının tek istisnası budur.
 - **Defter:** paralel işler aynı tabloya yazıp çakışmasın diye her iş defter satırını `art/ledger/NNN.md` dosyasına yazar (aynı tablo biçimi). Aşağıdaki tablo 2026-11-18'e kadarki geçmiştir; `queue_ready.py` ikisini birlikte okur.
 - Kalite kapıları değişmedi: stil kilidi, `validate_iso.py`, yan yana sayfası ve kullanıcının `accepted`/`rejected` kararı aynen geçerli.
-- Not: her şerit ayrı bir Claude Code oturumudur; Claude aboneliğinin kullanım sınırı şerit sayısı kadar (10 kat) hızlı dolar. Sınıra takılan şerit işi `running` bırakır; 6 saat sonra yeniden alınır.
+- Not: her şerit ayrı bir Claude Code oturumudur; Claude aboneliğinin kullanım sınırı şerit sayısı kadar (6 kat) hızlı dolar.
+- **Claude kullanım sınırı (kullanıcı kararı 2026-11-21):** şeritteki oturum sınıra takılırsa işçi yarım çıktıyı atar, işi hemen `pending`'e geri koyar ve `art/claude-sinir.md`'ye zamanı yazar. Bu andan sonra 60 dakika hiçbir işçi yeni iş almaz (`queue_ready.py`); zincir de o şeritten yeni tur başlatmaz. Bildirimde "Claude kullanım sınırı, iş sıraya geri kondu" yazar. Sınırdan önce harcanan gen boşa gitmiş olabilir.
 
 ## Öncelik (kullanıcı kararı 2026-11-18)
 Kullanıcı: portre işleri (021o-r ve sonrası) duraklatılsın; kalan bütçe önce oyunun dünyasına gitsin (toprak yol, zemin, duvar malzemeleri, kapı ve pencere, eşya dalgası, ekinler). Portreler bir sonraki dönemde ya da paket yükseltilince tamamlanır.

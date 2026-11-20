@@ -44,6 +44,8 @@ DAILY_LIMIT = float("inf")   # kullanıcı kararı 2026-11-21: günlük tavan yo
 RESERVE = 200.0
 DEFAULT_PRIORITY = 50.0   # küçük sayı önce çalışır (art/budget.md "Öncelik"); eşitlikte iş numarası
 STALE_HOURS = 6.0
+CLAUDE_LIMIT = os.path.join(ROOT, "art", "claude-sinir.md")   # bulut işçisi Claude kullanım sınırına takılınca yazar
+CLAUDE_COOLDOWN_MIN = 60.0   # o andan sonra bu kadar dakika yeni iş sahiplenilmez (kullanıcı kararı 2026-11-21)
 
 
 def _num(text, default=0.0):
@@ -91,6 +93,20 @@ def job_id(path, fm):
 def parse_list(val):
     return [x.strip().strip('"').strip("'") for x in re.findall(r'"[^"]*"|\'[^\']*\'|[^\[\],\s]+', val or "")
             if x.strip().strip('"').strip("'")]
+
+
+def claude_cooldown(now=None):
+    """Claude kullanım sınırı işaretinden bu yana bekleme sürmekteyse kalan dakika, yoksa 0."""
+    if not os.path.exists(CLAUDE_LIMIT):
+        return 0.0
+    with open(CLAUDE_LIMIT, encoding="utf-8") as f:
+        m = re.search(r"zaman:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?)Z?", f.read())
+    if not m:
+        return 0.0
+    hit = datetime.datetime.fromisoformat(m.group(1)).replace(tzinfo=datetime.timezone.utc)
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    left = CLAUDE_COOLDOWN_MIN - (now - hit).total_seconds() / 60
+    return max(0.0, left)
 
 
 def daily_limit(today):
@@ -249,6 +265,13 @@ def main():
     spent, balance = read_budget(a.today)
     limit = daily_limit(a.today)
     ready, waiting, remaining = evaluate(jobs, spent, balance, a.strict, limit, a.worker)
+    cool = claude_cooldown()
+    if cool > 0:
+        why = f"Claude kullanım sınırı: {cool:.0f} dk daha yeni iş alınmaz (art/claude-sinir.md)"
+        waiting = sorted(waiting + [(j, [why]) for j, _ in ready], key=lambda t: t[0]["id"])
+        ready = []
+        if not a.quiet and not a.json:
+            print(why)
 
     if a.claim:
         if not ready:

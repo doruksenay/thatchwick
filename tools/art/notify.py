@@ -6,7 +6,8 @@ anar; GitHub uygulaması ve e-postası bunu anında iletir. Konu yoksa oluşturu
 
 Kullanım (iş akışında, GH_TOKEN ve GITHUB_REPOSITORY ortamda):
   python tools/art/notify.py <iş> <push_sonucu> [--dry-run]
-push_sonucu: art-worker.yml "Denetle ve push et" adımının outcome değeri (success, failure, skipped...).
+push_sonucu: art-worker.yml "Denetle ve push et" adımının outcome değeri (success, failure, skipped...)
+  ya da Claude kullanım sınırında `claude-limit`.
 --dry-run: yorumu göndermez, yalnızca metni yazdırır.
 """
 import json
@@ -83,7 +84,10 @@ def body(job, push_outcome, repo, owner):
     path = job_file(job)
     fm = front(path) if path else {}
     status = fm.get("status", "?")
-    if push_outcome not in ("success", ""):
+    if push_outcome == "claude-limit":
+        line = ("Claude kullanım sınırına takıldı; iş sıraya geri kondu (yarım çıktılar atıldı, "
+                "harcanan gen boşa gitmiş olabilir). 60 dakika yeni iş alınmaz, sonra kuyruk kendiliğinden sürer")
+    elif push_outcome not in ("success", ""):
         line = f"push edilemedi ({push_outcome}); iş `running` kalır, 6 saat sonra yeniden alınabilir"
     else:
         line = STATUS_TEXT.get(status, status)
