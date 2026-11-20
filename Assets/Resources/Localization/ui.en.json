@@ -1546,6 +1546,7 @@
   "ui.show.participating": "Entering",
   "ui.show.score": "score ~{score} · rivals ~{rivals}",
   "ui.show.tab": "Shows",
+  "ui.sim.error": "Something went wrong in the simulation ({system}); the game keeps running. Details are in thatchwick_errors.log.",
   "ui.social.tell_animal_talk": "Tell about the talking animal",
   "ui.treehouse.ban_child": "{name}: ban from treehouses",
   "ui.treehouse.banned_child": "{name} may not climb the treehouses.",

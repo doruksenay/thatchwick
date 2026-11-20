@@ -1231,8 +1231,10 @@ namespace Thatchwick.Core.Life
             long day = Clock.DayIndex;
             if (day != _lastDay)
             {
-                OnNewDay(day);
+                // Gün önce işaretlenir: günlük işlerden biri hata verirse aynı günün işleri her adımda baştan çalışmasın
+                // (yarım kalan gün bir kez atlanır; hata SimGuard günlüğüne düşer).
                 _lastDay = day;
+                OnNewDay(day);
             }
         }
 

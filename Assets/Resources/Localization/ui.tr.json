@@ -1546,6 +1546,7 @@
   "ui.show.participating": "Katılıyor",
   "ui.show.score": "puan ~{score} · rakipler ~{rivals}",
   "ui.show.tab": "Yarışma",
+  "ui.sim.error": "Simülasyonda bir hata oluştu ({system}); oyun sürüyor. Ayrıntı thatchwick_errors.log dosyasında.",
   "ui.social.tell_animal_talk": "Hayvanın konuştuğunu anlat",
   "ui.treehouse.ban_child": "{name}: ağaç ev yasağı koy",
   "ui.treehouse.banned_child": "{name} ağaç evlere çıkamaz.",

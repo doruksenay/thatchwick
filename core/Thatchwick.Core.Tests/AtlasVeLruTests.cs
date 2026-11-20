@@ -71,3 +71,52 @@ namespace Thatchwick.Core.Tests
         }
     }
 }
+
+namespace Thatchwick.Core.Tests
+{
+    using Thatchwick.Core.Save;
+
+    public class KayitSikistirmaTests
+    {
+        [Fact]
+        public void KosuUzunlugu_GidisDonus()
+        {
+            var rng = new System.Random(3);
+            for (int trial = 0; trial < 50; trial++)
+            {
+                int n = 1 + rng.Next(400);
+                var ints = new int[n]; var bools = new bool[n];
+                int v = rng.Next(5) - 1; bool b = false;
+                for (int i = 0; i < n; i++)
+                {
+                    if (rng.Next(6) == 0) { v = rng.Next(7) - 2; b = !b; }
+                    ints[i] = v; bools[i] = b;
+                }
+                Assert.Equal(ints, TileRle.Decode(TileRle.Encode(ints), n));
+                Assert.Equal(bools, TileRle.DecodeBools(TileRle.Encode(bools), n));
+            }
+            Assert.Equal("", TileRle.Encode(new int[0]));
+            Assert.Equal("5:0,7,2:-1", TileRle.Encode(new[] { 0, 0, 0, 0, 0, 7, -1, -1 }));
+            Assert.Equal(new[] { 4, 4, 0, 0 }, TileRle.Decode("2:4,bozuk,x:1", 4));   // bozuk parça yok sayılır, kalan 0
+        }
+
+        [Fact]
+        public void HaritaDizileri_PaketlenirVeEskiBicimDeOkunur()
+        {
+            var m = new MapSave { width = 3, height = 2, terrainBlocked = new[] { false, true, true, false, false, false }, floor = new[] { 0, 0, 2, 2, 2, 4 },
+                owned = new[] { true, true, true, true, false, false }, zone = new[] { 0, 0, 0, 1, 1, 0 } };
+            m.Pack();
+            Assert.Null(m.floor);
+            Assert.Equal("2:0,3:2,4", m.floorRle);
+            m.Unpack();
+            Assert.Equal(new[] { 0, 0, 2, 2, 2, 4 }, m.floor);
+            Assert.Equal(new[] { false, true, true, false, false, false }, m.terrainBlocked);
+            Assert.Equal(new[] { true, true, true, true, false, false }, m.owned);
+            Assert.Equal(new[] { 0, 0, 0, 1, 1, 0 }, m.zone);
+            // Eski kayıt (diziler dolu, metin yok): Unpack dokunmaz.
+            var old = new MapSave { width = 2, height = 1, floor = new[] { 3, 1 } };
+            old.Unpack();
+            Assert.Equal(new[] { 3, 1 }, old.floor);
+        }
+    }
+}
