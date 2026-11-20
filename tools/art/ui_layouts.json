@@ -1908,7 +1908,7 @@
           28,
           28
         ],
-        "portrait": "iso_char_villager_se"
+        "portrait": "iso_char_woman_r84_idle_se"
       },
       {
         "id": "portrait_1",
@@ -1920,7 +1920,7 @@
           28,
           28
         ],
-        "portrait": "iso_char_farmer_a_56_cand_se"
+        "portrait": "iso_char_man_r84_idle_se"
       },
       {
         "id": "portrait_2",
@@ -1932,7 +1932,7 @@
           28,
           28
         ],
-        "portrait": "iso_char_farmer_a2_56_cand_se"
+        "portrait": "iso_char_elder_f_r84_idle_se"
       },
       {
         "id": "btn_build",
@@ -2193,9 +2193,9 @@
           "id": "card_name",
           "text": "Selcan",
           "box": [
-            18,
-            135,
-            98,
+            16,
+            132,
+            100,
             10
           ],
           "size": 8
@@ -2240,18 +2240,19 @@
             ]
           ],
           "box": [
-            18,
-            145,
-            100,
-            77
+            16,
+            143,
+            104,
+            84
           ],
-          "row": 11,
+          "row": 12,
           "bar": [
-            18,
-            4,
-            82,
+            16,
+            2,
+            88,
             8
-          ]
+          ],
+          "icon_size": 12
         },
         {
           "id": "clock_season",
