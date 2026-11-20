@@ -39,7 +39,7 @@ Arayüz ailesi stil eşlemesi; 55b ve 706 ile aynı boyut ve çerçeve.
 - Dedikodu: kulağa fısıldayan ağız, üç nokta.
 - Laf sok: diken çıkan konuşma balonu.
 - Morarmış (iç ses): mor bir göz morluğu, çizgi film.
-- Sakal battı (iç ses): sakal ve kızarmış yanak, minik çizgiler.
+- "Oops" (iç ses; sakallı öpücükten tahriş, kullanıcı adı 20.11.2026): sakal ve kızarmış yanak, minik çizgiler.
 - Kavgadan korktu (çocuk iç sesi): büyük gözlü, ellerini kulağına kapatmış çocuk.
 
 ## Doğrulama
