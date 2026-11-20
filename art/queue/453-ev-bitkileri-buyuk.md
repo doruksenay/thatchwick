@@ -1,7 +1,7 @@
 ---
 id: "453"
 title: "Ev bitkileri: büyük saksılar, su teknesi, sarmaşık, pencere çiçekliği (6)"
-status: running
+status: failed
 claimed_at: 2026-11-20T06:48Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (ev bitkileri ve yeni dekor), Project belgesi 45
 priority: 20
@@ -45,6 +45,9 @@ Yer bitkileri 302 ölçeği, duvar bitkileri 306 ile aynı (`sw_ne`). Bitkiler *
 ## Notlar
 - Eşya → dosya eşlemesi `Assets/Scripts/Game/IsoArt.cs`'te hazır (bu adlarla); görsel gelince kendiliğinden kullanılır. Pivotları kullanıcı `Assets/Editor/IsoPivots.txt`'e ekler.
 - Teslim `cp -n`, `.meta` yok.
+
+## Sorular
+Altı çıktı da stil denetiminde KALDI (palet dışı bitki renkleri); teslim yok. Ayrıntı: art/results/453-ev-bitkileri-buyuk.md
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
