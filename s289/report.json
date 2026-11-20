@@ -1,0 +1,163 @@
+{
+  "job": "s289",
+  "kind": "sfx",
+  "family": "animals",
+  "created": "2026-11-20T21:58:21Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.15,
+          "lufs": -18.0,
+          "true_peak_db": -8.2,
+          "rms_db": -22.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A sheep giving one soft gentle baa. No wind, no rustling leaves, no birds, no background noise. Details: young lamb.",
+          "duration": 1.1739111945706224,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.181,
+          "lufs": -18.0,
+          "true_peak_db": -7.4,
+          "rms_db": -19.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A sheep giving one soft gentle baa. No wind, no rustling leaves, no birds, no background noise. Details: adult ewe.",
+          "duration": 1.2634258668021279,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 1.224,
+          "lufs": -18.0,
+          "true_peak_db": -3.5,
+          "rms_db": -21.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0114)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A sheep giving one soft gentle baa. No wind, no rustling leaves, no birds, no background noise. Details: young lamb.",
+          "duration": 1.2790352613320495,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.192,
+          "lufs": -18.0,
+          "true_peak_db": -7.2,
+          "rms_db": -19.2,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0178)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A sheep giving one soft gentle baa. No wind, no rustling leaves, no birds, no background noise. Details: adult ewe.",
+          "duration": 1.19942574320144,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.4,
+          "lufs": -18.0,
+          "true_peak_db": -6.8,
+          "rms_db": -21.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0117)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A sheep giving one soft gentle baa. No wind, no rustling leaves, no birds, no background noise. Details: young lamb.",
+          "duration": 1.4112038682006423,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.08,
+          "lufs": -18.0,
+          "true_peak_db": -4.3,
+          "rms_db": -19.9,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0328)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A sheep giving one soft gentle baa. No wind, no rustling leaves, no birds, no background noise. Details: adult ewe.",
+          "duration": 1.203072344023479,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.23,
+          "lufs": -18.0,
+          "true_peak_db": -7.1,
+          "rms_db": -21.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0121)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A sheep giving one soft gentle baa. No wind, no rustling leaves, no birds, no background noise. Details: young lamb.",
+          "duration": 1.24744015698999,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.202,
+          "lufs": -18.0,
+          "true_peak_db": -5.8,
+          "rms_db": -20.0,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0179)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A sheep giving one soft gentle baa. No wind, no rustling leaves, no birds, no background noise. Details: adult ewe.",
+          "duration": 1.3001274885671548,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0114
+          ],
+          [
+            "c1",
+            "c5",
+            0.0117
+          ],
+          [
+            "c1",
+            "c7",
+            0.0121
+          ],
+          [
+            "c2",
+            "c4",
+            0.0178
+          ],
+          [
+            "c2",
+            "c6",
+            0.0328
+          ],
+          [
+            "c2",
+            "c8",
+            0.0179
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0114,
+          "c2": 0.0178,
+          "c3": 0.0114,
+          "c4": 0.0178,
+          "c5": 0.0117,
+          "c6": 0.0259,
+          "c7": 0.0121,
+          "c8": 0.0179
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

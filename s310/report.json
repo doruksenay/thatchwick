@@ -1,0 +1,91 @@
+{
+  "job": "s310",
+  "kind": "sfx",
+  "family": "stinger",
+  "created": "2026-11-20T22:03:11Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 4.368,
+          "lufs": -18.0,
+          "true_peak_db": -12.1,
+          "rms_db": -22.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A joyful, warm little village folk melody for a wedding celebration, bright and dancing, short. Details: kaval flute and frame drum.",
+          "duration": 4.614679376262942,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 4.946,
+          "lufs": -18.0,
+          "true_peak_db": -11.3,
+          "rms_db": -21.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0148)"
+          ],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A joyful, warm little village folk melody for a wedding celebration, bright and dancing, short. Details: lute and recorder.",
+          "duration": 5.166390376182235,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 4.198,
+          "lufs": -18.0,
+          "true_peak_db": -13.4,
+          "rms_db": -22.5,
+          "flags": [
+            "c1 ile neredeyse aynı (0.024)"
+          ],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A joyful, warm little village folk melody for a wedding celebration, bright and dancing, short. Details: kaval flute and frame drum.",
+          "duration": 5.040031056541255,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 4.601,
+          "lufs": -18.0,
+          "true_peak_db": -9.7,
+          "rms_db": -21.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0173)"
+          ],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A joyful, warm little village folk melody for a wedding celebration, bright and dancing, short. Details: lute and recorder.",
+          "duration": 4.6850221780355,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0148
+          ],
+          [
+            "c1",
+            "c3",
+            0.024
+          ],
+          [
+            "c1",
+            "c4",
+            0.0173
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0148,
+          "c2": 0.0148,
+          "c3": 0.024,
+          "c4": 0.0173
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

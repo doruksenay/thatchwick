@@ -1,0 +1,66 @@
+{
+  "job": "s309",
+  "kind": "sfx",
+  "family": "stinger",
+  "created": "2026-11-20T22:02:59Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 3.702,
+          "lufs": -18.0,
+          "true_peak_db": -13.4,
+          "rms_db": -21.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A tender, warm little folk melody welcoming a newborn baby, soft and hopeful, gently rising. Details: kaval flute and frame drum.",
+          "duration": 4.153518073902233,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 3.76,
+          "lufs": -18.0,
+          "true_peak_db": -5.2,
+          "rms_db": -21.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A tender, warm little folk melody welcoming a newborn baby, soft and hopeful, gently rising. Details: lute and recorder.",
+          "duration": 3.7747461655832093,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 3.68,
+          "lufs": -18.0,
+          "true_peak_db": -1.4,
+          "rms_db": -21.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A tender, warm little folk melody welcoming a newborn baby, soft and hopeful, gently rising. Details: kaval flute and frame drum.",
+          "duration": 3.7110316458303845,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 4.04,
+          "lufs": -18.0,
+          "true_peak_db": -3.5,
+          "rms_db": -20.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A tender, warm little folk melody welcoming a newborn baby, soft and hopeful, gently rising. Details: lute and recorder.",
+          "duration": 4.078539767116548,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [],
+        "nearest": {
+          "c1": 0.0952,
+          "c2": 0.0355,
+          "c3": 0.0454,
+          "c4": 0.0355
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "job": "s314",
+  "kind": "ambience",
+  "family": "ambience",
+  "created": "2026-11-20T22:04:07Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -13.0,
+          "rms_db": -30.5,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes). A calm spring night on a small medieval farm: soft crickets, a distant owl now and then, a quiet frog chorus by a pond. Peaceful and warm, not eerie. Details: crickets and a distant owl.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -13.2,
+          "rms_db": -30.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes). A calm spring night on a small medieval farm: soft crickets, a distant owl now and then, a quiet frog chorus by a pond. Peaceful and warm, not eerie. Details: soft frogs by the pond and crickets.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -9.6,
+          "rms_db": -29.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes). A calm spring night on a small medieval farm: soft crickets, a distant owl now and then, a quiet frog chorus by a pond. Peaceful and warm, not eerie. Details: crickets and a distant owl.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [],
+        "nearest": {
+          "c1": 0.0613,
+          "c2": 0.0793,
+          "c3": 0.0613
+        },
+        "ref_distance": {
+          "c1": 0.0477,
+          "c2": 0.0467,
+          "c3": 0.0282
+        }
+      }
+    }
+  }
+}

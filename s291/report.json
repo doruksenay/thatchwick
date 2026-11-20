@@ -1,0 +1,353 @@
+{
+  "job": "s291",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T21:54:14Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.403,
+          "lufs": -25.9,
+          "true_peak_db": -1.0,
+          "rms_db": -25.9,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: dry crumbly soil.",
+          "duration": 0.5429609302946937,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.367,
+          "lufs": -24.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0179)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: soft dark loam.",
+          "duration": 0.5900920660945786,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.408,
+          "lufs": -28.7,
+          "true_peak_db": -1.0,
+          "rms_db": -28.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0073)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: dry crumbly soil.",
+          "duration": 0.5763359629336728,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.329,
+          "lufs": -27.0,
+          "true_peak_db": -1.0,
+          "rms_db": -27.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.014)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: soft dark loam.",
+          "duration": 0.6507295022368073,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.438,
+          "lufs": -27.2,
+          "true_peak_db": -1.0,
+          "rms_db": -27.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0145)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: dry crumbly soil.",
+          "duration": 0.6424572393968981,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.314,
+          "lufs": -26.8,
+          "true_peak_db": -1.0,
+          "rms_db": -26.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0074)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: soft dark loam.",
+          "duration": 0.544160920374246,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.469,
+          "lufs": -22.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "note": "tepe sınırında, yükseklik -22.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0083)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: dry crumbly soil.",
+          "duration": 0.571834369694505,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.486,
+          "lufs": -26.4,
+          "true_peak_db": -1.0,
+          "rms_db": -28.4,
+          "note": "tepe sınırında, yükseklik -26.4 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0168)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: soft dark loam.",
+          "duration": 0.6375407657097117,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c9": {
+          "duration_s": 0.432,
+          "lufs": -28.9,
+          "true_peak_db": -1.0,
+          "rms_db": -28.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0138)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: dry crumbly soil.",
+          "duration": 0.5847354406633856,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c10": {
+          "duration_s": 0.478,
+          "lufs": -23.1,
+          "true_peak_db": -1.0,
+          "rms_db": -23.2,
+          "note": "tepe sınırında, yükseklik -23.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.005)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: soft dark loam.",
+          "duration": 0.6518178715180256,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c11": {
+          "duration_s": 0.412,
+          "lufs": -25.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.003)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: dry crumbly soil.",
+          "duration": 0.5458431919466127,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c12": {
+          "duration_s": 0.391,
+          "lufs": -25.3,
+          "true_peak_db": -1.0,
+          "rms_db": -25.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0058)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: soft dark loam.",
+          "duration": 0.5469699510162216,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c13": {
+          "duration_s": 0.5,
+          "lufs": -23.8,
+          "true_peak_db": -1.0,
+          "rms_db": -26.8,
+          "note": "tepe sınırında, yükseklik -23.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0117)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: dry crumbly soil.",
+          "duration": 0.6250041246376701,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c14": {
+          "duration_s": 0.398,
+          "lufs": -23.9,
+          "true_peak_db": -1.0,
+          "rms_db": -23.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0068)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: soft dark loam.",
+          "duration": 0.6330664586250121,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c15": {
+          "duration_s": 0.478,
+          "lufs": -21.5,
+          "true_peak_db": -1.0,
+          "rms_db": -23.8,
+          "note": "tepe sınırında, yükseklik -21.5 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0262)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: dry crumbly soil.",
+          "duration": 0.6559451785326946,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c16": {
+          "duration_s": 0.327,
+          "lufs": -28.9,
+          "true_peak_db": -1.0,
+          "rms_db": -28.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0163)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single hoe stroke into soft garden soil, a dull earthy chop and a little crumble of earth. Only one stroke. No wind, no rustling leaves, no birds, no background noise. Details: soft dark loam.",
+          "duration": 0.543039245791193,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0179
+          ],
+          [
+            "c1",
+            "c3",
+            0.0073
+          ],
+          [
+            "c1",
+            "c4",
+            0.014
+          ],
+          [
+            "c1",
+            "c5",
+            0.0145
+          ],
+          [
+            "c1",
+            "c6",
+            0.0074
+          ],
+          [
+            "c1",
+            "c7",
+            0.0083
+          ],
+          [
+            "c1",
+            "c8",
+            0.0168
+          ],
+          [
+            "c1",
+            "c9",
+            0.0138
+          ],
+          [
+            "c1",
+            "c10",
+            0.005
+          ],
+          [
+            "c1",
+            "c11",
+            0.003
+          ],
+          [
+            "c1",
+            "c12",
+            0.0058
+          ],
+          [
+            "c1",
+            "c13",
+            0.0117
+          ],
+          [
+            "c1",
+            "c14",
+            0.0068
+          ],
+          [
+            "c1",
+            "c15",
+            0.0262
+          ],
+          [
+            "c1",
+            "c16",
+            0.0163
+          ]
+        ],
+        "nearest": {
+          "c1": 0.003,
+          "c2": 0.0062,
+          "c3": 0.0029,
+          "c4": 0.0052,
+          "c5": 0.0062,
+          "c6": 0.0027,
+          "c7": 0.0065,
+          "c8": 0.0101,
+          "c9": 0.0063,
+          "c10": 0.0034,
+          "c11": 0.003,
+          "c12": 0.0027,
+          "c13": 0.0029,
+          "c14": 0.0028,
+          "c15": 0.0134,
+          "c16": 0.0052
+        },
+        "ref_distance": {
+          "c1": 0.0218,
+          "c2": 0.0202,
+          "c3": 0.0151,
+          "c4": 0.0072,
+          "c5": 0.0261,
+          "c6": 0.0164,
+          "c7": 0.0333,
+          "c8": 0.0066,
+          "c9": 0.0115,
+          "c10": 0.0147,
+          "c11": 0.0272,
+          "c12": 0.0161,
+          "c13": 0.0162,
+          "c14": 0.0157,
+          "c15": 0.0406,
+          "c16": 0.0082
+        }
+      }
+    }
+  }
+}

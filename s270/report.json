@@ -1,0 +1,340 @@
+{
+  "job": "s270",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T21:50:47Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.48,
+          "lufs": -26.5,
+          "true_peak_db": -1.0,
+          "rms_db": -25.1,
+          "note": "tepe sınırında, yükseklik -26.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: worn leather boot, firm step, short soft lawn grass.",
+          "duration": 0.3612461992495162,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.465,
+          "lufs": -23.2,
+          "true_peak_db": -1.0,
+          "rms_db": -19.7,
+          "note": "tepe sınırında, yükseklik -23.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0115)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: worn leather boot, light step, slightly longer meadow grass.",
+          "duration": 0.346398378564899,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.432,
+          "lufs": -20.5,
+          "true_peak_db": -1.0,
+          "rms_db": -20.5,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0073)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: worn leather boot, light step, short soft lawn grass.",
+          "duration": 0.33780752622621146,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.48,
+          "lufs": -21.1,
+          "true_peak_db": -1.0,
+          "rms_db": -20.4,
+          "note": "tepe sınırında, yükseklik -21.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: soft leather shoe, firm step, slightly longer meadow grass.",
+          "duration": 0.3519558874314283,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.472,
+          "lufs": -21.4,
+          "true_peak_db": -1.0,
+          "rms_db": -20.7,
+          "note": "tepe sınırında, yükseklik -21.4 (hedef -18)",
+          "flags": [
+            "c4 ile neredeyse aynı (0.0133)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: soft leather shoe, light step, slightly longer meadow grass.",
+          "duration": 0.3469938018170934,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.444,
+          "lufs": -23.6,
+          "true_peak_db": -1.0,
+          "rms_db": -23.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0116)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: soft leather shoe, firm step, short soft lawn grass.",
+          "duration": 0.3414245157689408,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.46,
+          "lufs": -18.5,
+          "true_peak_db": -1.0,
+          "rms_db": -21.1,
+          "flags": [
+            "c4 ile neredeyse aynı (0.0216)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: soft leather shoe, light step, short soft lawn grass.",
+          "duration": 0.38427421397503825,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.455,
+          "lufs": -22.7,
+          "true_peak_db": -1.0,
+          "rms_db": -20.7,
+          "note": "tepe sınırında, yükseklik -22.7 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0214)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: worn leather boot, firm step, slightly longer meadow grass.",
+          "duration": 0.37214653200263553,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c9": {
+          "duration_s": 0.445,
+          "lufs": -21.9,
+          "true_peak_db": -1.0,
+          "rms_db": -21.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0127)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: worn leather boot, firm step, short soft lawn grass.",
+          "duration": 0.36664057066974914,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c10": {
+          "duration_s": 0.394,
+          "lufs": -20.8,
+          "true_peak_db": -1.0,
+          "rms_db": -20.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0194)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: worn leather boot, light step, slightly longer meadow grass.",
+          "duration": 0.3326587389964681,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c11": {
+          "duration_s": 0.467,
+          "lufs": -23.8,
+          "true_peak_db": -1.0,
+          "rms_db": -20.1,
+          "note": "tepe sınırında, yükseklik -23.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0117)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: worn leather boot, light step, short soft lawn grass.",
+          "duration": 0.3519077468317345,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c12": {
+          "duration_s": 0.461,
+          "lufs": -21.2,
+          "true_peak_db": -1.0,
+          "rms_db": -19.7,
+          "note": "tepe sınırında, yükseklik -21.2 (hedef -18)",
+          "flags": [
+            "c4 ile neredeyse aynı (0.0125)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: soft leather shoe, firm step, slightly longer meadow grass.",
+          "duration": 0.34371004602136274,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c13": {
+          "duration_s": 0.457,
+          "lufs": -18.5,
+          "true_peak_db": -1.0,
+          "rms_db": -18.2,
+          "flags": [
+            "c4 ile neredeyse aynı (0.0265)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: soft leather shoe, light step, slightly longer meadow grass.",
+          "duration": 0.3327010858934259,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c14": {
+          "duration_s": 0.467,
+          "lufs": -19.0,
+          "true_peak_db": -1.0,
+          "rms_db": -21.9,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: soft leather shoe, firm step, short soft lawn grass.",
+          "duration": 0.3201648539119636,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c15": {
+          "duration_s": 0.48,
+          "lufs": -19.2,
+          "true_peak_db": -1.0,
+          "rms_db": -22.6,
+          "flags": [
+            "c14 ile neredeyse aynı (0.0347)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: soft leather shoe, light step, short soft lawn grass.",
+          "duration": 0.3504658919252352,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c16": {
+          "duration_s": 0.471,
+          "lufs": -23.1,
+          "true_peak_db": -1.0,
+          "rms_db": -22.1,
+          "note": "tepe sınırında, yükseklik -23.1 (hedef -18)",
+          "flags": [
+            "c4 ile neredeyse aynı (0.0144)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single footstep on short meadow grass, heel then toe, only one step. No wind, no rustling leaves, no birds, no background noise. Details: worn leather boot, firm step, slightly longer meadow grass.",
+          "duration": 0.34201160379316725,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0115
+          ],
+          [
+            "c1",
+            "c3",
+            0.0073
+          ],
+          [
+            "c1",
+            "c6",
+            0.0116
+          ],
+          [
+            "c1",
+            "c8",
+            0.0214
+          ],
+          [
+            "c1",
+            "c9",
+            0.0127
+          ],
+          [
+            "c1",
+            "c10",
+            0.0194
+          ],
+          [
+            "c1",
+            "c11",
+            0.0117
+          ],
+          [
+            "c4",
+            "c5",
+            0.0133
+          ],
+          [
+            "c4",
+            "c7",
+            0.0216
+          ],
+          [
+            "c4",
+            "c12",
+            0.0125
+          ],
+          [
+            "c4",
+            "c13",
+            0.0265
+          ],
+          [
+            "c4",
+            "c16",
+            0.0144
+          ],
+          [
+            "c14",
+            "c15",
+            0.0347
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0073,
+          "c2": 0.0105,
+          "c3": 0.0052,
+          "c4": 0.0125,
+          "c5": 0.0133,
+          "c6": 0.0095,
+          "c7": 0.0136,
+          "c8": 0.0105,
+          "c9": 0.0095,
+          "c10": 0.011,
+          "c11": 0.0052,
+          "c12": 0.0036,
+          "c13": 0.017,
+          "c14": 0.0136,
+          "c15": 0.017,
+          "c16": 0.0036
+        },
+        "ref_distance": {
+          "c1": 0.041,
+          "c2": 0.0418,
+          "c3": 0.0396,
+          "c4": 0.0748,
+          "c5": 0.0526,
+          "c6": 0.0661,
+          "c7": 0.1093,
+          "c8": 0.0487,
+          "c9": 0.0726,
+          "c10": 0.0294,
+          "c11": 0.0307,
+          "c12": 0.0587,
+          "c13": 0.1086,
+          "c14": 0.123,
+          "c15": 0.1447,
+          "c16": 0.0473
+        }
+      }
+    }
+  }
+}

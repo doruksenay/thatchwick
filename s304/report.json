@@ -1,0 +1,173 @@
+{
+  "job": "s304",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T22:00:06Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.428,
+          "lufs": -20.3,
+          "true_peak_db": -1.0,
+          "rms_db": -20.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small wooden object being turned on a table, a short soft scrape and click. Details: small wooden chair.",
+          "duration": 0.271209433108768,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.413,
+          "lufs": -23.8,
+          "true_peak_db": -1.0,
+          "rms_db": -23.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small wooden object being turned on a table, a short soft scrape and click. Details: wooden block.",
+          "duration": 0.32778103817276033,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.434,
+          "lufs": -20.0,
+          "true_peak_db": -2.6,
+          "rms_db": -20.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0318)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small wooden object being turned on a table, a short soft scrape and click. Details: small wooden chair.",
+          "duration": 0.30572386056191975,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.454,
+          "lufs": -21.6,
+          "true_peak_db": -1.0,
+          "rms_db": -22.5,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0237)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small wooden object being turned on a table, a short soft scrape and click. Details: wooden block.",
+          "duration": 0.2706055209737019,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.457,
+          "lufs": -20.0,
+          "true_peak_db": -2.0,
+          "rms_db": -19.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0273)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small wooden object being turned on a table, a short soft scrape and click. Details: small wooden chair.",
+          "duration": 0.31326715637293373,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.414,
+          "lufs": -24.0,
+          "true_peak_db": -1.0,
+          "rms_db": -24.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0236)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small wooden object being turned on a table, a short soft scrape and click. Details: wooden block.",
+          "duration": 0.31995092330187763,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.426,
+          "lufs": -21.2,
+          "true_peak_db": -1.0,
+          "rms_db": -21.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0309)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small wooden object being turned on a table, a short soft scrape and click. Details: small wooden chair.",
+          "duration": 0.30674947023705607,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.455,
+          "lufs": -24.1,
+          "true_peak_db": -1.0,
+          "rms_db": -23.1,
+          "note": "tepe sınırında, yükseklik -24.1 (hedef -20)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.016)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small wooden object being turned on a table, a short soft scrape and click. Details: wooden block.",
+          "duration": 0.2956443601783985,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0318
+          ],
+          [
+            "c1",
+            "c5",
+            0.0273
+          ],
+          [
+            "c1",
+            "c6",
+            0.0236
+          ],
+          [
+            "c1",
+            "c7",
+            0.0309
+          ],
+          [
+            "c2",
+            "c4",
+            0.0237
+          ],
+          [
+            "c2",
+            "c8",
+            0.016
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0236,
+          "c2": 0.016,
+          "c3": 0.0318,
+          "c4": 0.0237,
+          "c5": 0.0245,
+          "c6": 0.0236,
+          "c7": 0.0245,
+          "c8": 0.016
+        },
+        "ref_distance": {
+          "c1": 0.0571,
+          "c2": 0.0302,
+          "c3": 0.0594,
+          "c4": 0.0353,
+          "c5": 0.0451,
+          "c6": 0.0419,
+          "c7": 0.0418,
+          "c8": 0.0232
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,331 @@
+{
+  "job": "s292",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T21:54:36Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.059,
+          "lufs": -30.3,
+          "true_peak_db": -1.0,
+          "rms_db": -30.1,
+          "note": "tepe sınırında, yükseklik -30.3 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: wooden bucket.",
+          "duration": 1.2663167243964886,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.04,
+          "lufs": -23.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.4,
+          "note": "tepe sınırında, yükseklik -23.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0327)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: clay watering jug.",
+          "duration": 1.2388819864893161,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.966,
+          "lufs": -24.9,
+          "true_peak_db": -1.0,
+          "rms_db": -25.9,
+          "note": "tepe sınırında, yükseklik -24.9 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.032)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: wooden bucket.",
+          "duration": 1.1065687541867246,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.882,
+          "lufs": -26.8,
+          "true_peak_db": -1.0,
+          "rms_db": -24.6,
+          "note": "tepe sınırında, yükseklik -26.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0343)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: clay watering jug.",
+          "duration": 1.1815771983060912,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.968,
+          "lufs": -32.7,
+          "true_peak_db": -1.0,
+          "rms_db": -32.0,
+          "note": "tepe sınırında, yükseklik -32.7 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: wooden bucket.",
+          "duration": 1.1653290769808136,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 1.012,
+          "lufs": -23.6,
+          "true_peak_db": -1.0,
+          "rms_db": -23.3,
+          "note": "tepe sınırında, yükseklik -23.6 (hedef -18)",
+          "flags": [
+            "c5 ile neredeyse aynı (0.0189)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: clay watering jug.",
+          "duration": 1.1849906785019033,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.176,
+          "lufs": -26.7,
+          "true_peak_db": -1.0,
+          "rms_db": -28.7,
+          "note": "tepe sınırında, yükseklik -26.7 (hedef -18)",
+          "flags": [
+            "c5 ile neredeyse aynı (0.0242)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: wooden bucket.",
+          "duration": 1.2628888574536017,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.096,
+          "lufs": -19.3,
+          "true_peak_db": -1.0,
+          "rms_db": -20.8,
+          "flags": [
+            "c5 ile neredeyse aynı (0.0119)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: clay watering jug.",
+          "duration": 1.1688580640273594,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c9": {
+          "duration_s": 1.13,
+          "lufs": -21.1,
+          "true_peak_db": -1.0,
+          "rms_db": -23.0,
+          "note": "tepe sınırında, yükseklik -21.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: wooden bucket.",
+          "duration": 1.22335029008029,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c10": {
+          "duration_s": 1.043,
+          "lufs": -22.5,
+          "true_peak_db": -1.0,
+          "rms_db": -22.8,
+          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: clay watering jug.",
+          "duration": 1.2445537451503075,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c11": {
+          "duration_s": 1.062,
+          "lufs": -29.5,
+          "true_peak_db": -1.0,
+          "rms_db": -29.2,
+          "note": "tepe sınırında, yükseklik -29.5 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0248)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: wooden bucket.",
+          "duration": 1.248537608474986,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c12": {
+          "duration_s": 1.058,
+          "lufs": -24.7,
+          "true_peak_db": -1.0,
+          "rms_db": -26.9,
+          "note": "tepe sınırında, yükseklik -24.7 (hedef -18)",
+          "flags": [
+            "c5 ile neredeyse aynı (0.0158)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: clay watering jug.",
+          "duration": 1.2702760293821111,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c13": {
+          "duration_s": 0.969,
+          "lufs": -31.8,
+          "true_peak_db": -1.0,
+          "rms_db": -30.6,
+          "note": "tepe sınırında, yükseklik -31.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0267)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: wooden bucket.",
+          "duration": 1.298549031725484,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c14": {
+          "duration_s": 0.78,
+          "lufs": -21.2,
+          "true_peak_db": -1.0,
+          "rms_db": -19.0,
+          "note": "tepe sınırında, yükseklik -21.2 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: clay watering jug.",
+          "duration": 1.3074555892719295,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c15": {
+          "duration_s": 0.993,
+          "lufs": -27.2,
+          "true_peak_db": -1.0,
+          "rms_db": -26.5,
+          "note": "tepe sınırında, yükseklik -27.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0313)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: wooden bucket.",
+          "duration": 1.2068421776032934,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c16": {
+          "duration_s": 0.985,
+          "lufs": -23.5,
+          "true_peak_db": -1.0,
+          "rms_db": -21.4,
+          "note": "tepe sınırında, yükseklik -23.5 (hedef -18)",
+          "flags": [
+            "c5 ile neredeyse aynı (0.0281)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pouring water from a wooden bucket onto garden soil, a short gentle splash and soaking trickle. No wind, no rustling leaves, no birds, no background noise. Details: clay watering jug.",
+          "duration": 1.22624448372659,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0327
+          ],
+          [
+            "c1",
+            "c3",
+            0.032
+          ],
+          [
+            "c1",
+            "c4",
+            0.0343
+          ],
+          [
+            "c1",
+            "c11",
+            0.0248
+          ],
+          [
+            "c1",
+            "c13",
+            0.0267
+          ],
+          [
+            "c1",
+            "c15",
+            0.0313
+          ],
+          [
+            "c5",
+            "c6",
+            0.0189
+          ],
+          [
+            "c5",
+            "c7",
+            0.0242
+          ],
+          [
+            "c5",
+            "c8",
+            0.0119
+          ],
+          [
+            "c5",
+            "c12",
+            0.0158
+          ],
+          [
+            "c5",
+            "c16",
+            0.0281
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0248,
+          "c2": 0.0091,
+          "c3": 0.0153,
+          "c4": 0.0085,
+          "c5": 0.0097,
+          "c6": 0.0085,
+          "c7": 0.0085,
+          "c8": 0.0119,
+          "c9": 0.0379,
+          "c10": 0.0371,
+          "c11": 0.0066,
+          "c12": 0.0085,
+          "c13": 0.0066,
+          "c14": 0.0143,
+          "c15": 0.009,
+          "c16": 0.0143
+        },
+        "ref_distance": {
+          "c1": 0.0756,
+          "c2": 0.0745,
+          "c3": 0.1043,
+          "c4": 0.0425,
+          "c5": 0.0417,
+          "c6": 0.0372,
+          "c7": 0.0483,
+          "c8": 0.0417,
+          "c9": 0.1612,
+          "c10": 0.0665,
+          "c11": 0.0788,
+          "c12": 0.057,
+          "c13": 0.0857,
+          "c14": 0.0497,
+          "c15": 0.057,
+          "c16": 0.0373
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "job": "s302",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T21:59:51Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.424,
+          "lufs": -28.3,
+          "true_peak_db": -1.0,
+          "rms_db": -28.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A tiny soft wooden bead click, like choosing a tab. Details: wooden bead.",
+          "duration": 0.20276461409998384,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.476,
+          "lufs": -20.2,
+          "true_peak_db": -1.0,
+          "rms_db": -20.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A tiny soft wooden bead click, like choosing a tab. Details: felt-tipped wooden key.",
+          "duration": 0.21968115558369422,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.455,
+          "lufs": -22.6,
+          "true_peak_db": -1.0,
+          "rms_db": -21.2,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0187)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A tiny soft wooden bead click, like choosing a tab. Details: wooden bead.",
+          "duration": 0.21882692587135155,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.456,
+          "lufs": -25.1,
+          "true_peak_db": -1.0,
+          "rms_db": -25.9,
+          "note": "tepe sınırında, yükseklik -25.1 (hedef -20)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0219)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A tiny soft wooden bead click, like choosing a tab. Details: felt-tipped wooden key.",
+          "duration": 0.18349329166116657,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.435,
+          "lufs": -20.4,
+          "true_peak_db": -1.0,
+          "rms_db": -20.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A tiny soft wooden bead click, like choosing a tab. Details: wooden bead.",
+          "duration": 0.2143605146245926,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 0.46,
+          "lufs": -21.7,
+          "true_peak_db": -1.0,
+          "rms_db": -20.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0316)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A tiny soft wooden bead click, like choosing a tab. Details: felt-tipped wooden key.",
+          "duration": 0.18619524465438622,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.442,
+          "lufs": -22.9,
+          "true_peak_db": -1.0,
+          "rms_db": -22.9,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0254)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A tiny soft wooden bead click, like choosing a tab. Details: wooden bead.",
+          "duration": 0.2172012012857675,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.478,
+          "lufs": -25.0,
+          "true_peak_db": -1.0,
+          "rms_db": -25.5,
+          "note": "tepe sınırında, yükseklik -25.0 (hedef -20)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0181)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A tiny soft wooden bead click, like choosing a tab. Details: felt-tipped wooden key.",
+          "duration": 0.2199068064628957,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c6",
+            0.0316
+          ],
+          [
+            "c2",
+            "c3",
+            0.0187
+          ],
+          [
+            "c2",
+            "c4",
+            0.0219
+          ],
+          [
+            "c2",
+            "c7",
+            0.0254
+          ],
+          [
+            "c2",
+            "c8",
+            0.0181
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0316,
+          "c2": 0.0181,
+          "c3": 0.0179,
+          "c4": 0.012,
+          "c5": 0.0301,
+          "c6": 0.0179,
+          "c7": 0.0254,
+          "c8": 0.012
+        },
+        "ref_distance": {
+          "c1": 0.0281,
+          "c2": 0.0263,
+          "c3": 0.0215,
+          "c4": 0.026,
+          "c5": 0.0236,
+          "c6": 0.03,
+          "c7": 0.0233,
+          "c8": 0.0169
+        }
+      }
+    }
+  }
+}

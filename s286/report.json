@@ -1,0 +1,171 @@
+{
+  "job": "s286",
+  "kind": "sfx",
+  "family": "animals",
+  "created": "2026-11-20T21:57:36Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.482,
+          "lufs": -18.0,
+          "true_peak_db": -5.9,
+          "rms_db": -18.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A big ox giving one deep low lazy moo and a soft snort. No wind, no rustling leaves, no birds, no background noise. Details: pulling a cart.",
+          "duration": 1.6805371552148445,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.597,
+          "lufs": -18.0,
+          "true_peak_db": -6.0,
+          "rms_db": -19.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0291)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A big ox giving one deep low lazy moo and a soft snort. No wind, no rustling leaves, no birds, no background noise. Details: resting.",
+          "duration": 1.7321290543779158,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.597,
+          "lufs": -18.0,
+          "true_peak_db": -5.5,
+          "rms_db": -18.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.017)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A big ox giving one deep low lazy moo and a soft snort. No wind, no rustling leaves, no birds, no background noise. Details: pulling a cart.",
+          "duration": 1.6490417576853702,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.848,
+          "lufs": -18.0,
+          "true_peak_db": -6.3,
+          "rms_db": -18.5,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0233)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A big ox giving one deep low lazy moo and a soft snort. No wind, no rustling leaves, no birds, no background noise. Details: resting.",
+          "duration": 1.956572522184278,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.686,
+          "lufs": -18.0,
+          "true_peak_db": -7.2,
+          "rms_db": -19.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.016)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A big ox giving one deep low lazy moo and a soft snort. No wind, no rustling leaves, no birds, no background noise. Details: pulling a cart.",
+          "duration": 1.7675373026286838,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.773,
+          "lufs": -18.0,
+          "true_peak_db": -6.8,
+          "rms_db": -18.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.019)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A big ox giving one deep low lazy moo and a soft snort. No wind, no rustling leaves, no birds, no background noise. Details: resting.",
+          "duration": 1.8669166160244661,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.639,
+          "lufs": -18.0,
+          "true_peak_db": -4.7,
+          "rms_db": -19.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0205)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A big ox giving one deep low lazy moo and a soft snort. No wind, no rustling leaves, no birds, no background noise. Details: pulling a cart.",
+          "duration": 1.7137238249424134,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.536,
+          "lufs": -18.0,
+          "true_peak_db": -5.7,
+          "rms_db": -19.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0271)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A big ox giving one deep low lazy moo and a soft snort. No wind, no rustling leaves, no birds, no background noise. Details: resting.",
+          "duration": 1.6555027228906085,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0291
+          ],
+          [
+            "c1",
+            "c3",
+            0.017
+          ],
+          [
+            "c1",
+            "c4",
+            0.0233
+          ],
+          [
+            "c1",
+            "c5",
+            0.016
+          ],
+          [
+            "c1",
+            "c6",
+            0.019
+          ],
+          [
+            "c1",
+            "c7",
+            0.0205
+          ],
+          [
+            "c1",
+            "c8",
+            0.0271
+          ]
+        ],
+        "nearest": {
+          "c1": 0.016,
+          "c2": 0.0124,
+          "c3": 0.0136,
+          "c4": 0.0059,
+          "c5": 0.0134,
+          "c6": 0.0059,
+          "c7": 0.01,
+          "c8": 0.02
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

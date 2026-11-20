@@ -1,0 +1,83 @@
+{
+  "job": "s296",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T22:02:34Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 2.871,
+          "lufs": -25.0,
+          "true_peak_db": -1.0,
+          "rms_db": -25.6,
+          "note": "tepe sınırında, yükseklik -25.0 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. A small rockfall inside a mine tunnel: soft rumble, loose earth and stones sliding down and settling, then dust trickling. Muffled and short, not scary. Details: small slide of loose earth.",
+          "duration": 3.1987079180037608,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 2.643,
+          "lufs": -20.6,
+          "true_peak_db": -1.0,
+          "rms_db": -25.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0238)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. A small rockfall inside a mine tunnel: soft rumble, loose earth and stones sliding down and settling, then dust trickling. Muffled and short, not scary. Details: a few larger stones rolling.",
+          "duration": 2.8573959122301846,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 2.526,
+          "lufs": -25.8,
+          "true_peak_db": -1.0,
+          "rms_db": -29.7,
+          "note": "tepe sınırında, yükseklik -25.8 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. A small rockfall inside a mine tunnel: soft rumble, loose earth and stones sliding down and settling, then dust trickling. Muffled and short, not scary. Details: small slide of loose earth.",
+          "duration": 2.7388689178763754,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 2.703,
+          "lufs": -26.9,
+          "true_peak_db": -1.0,
+          "rms_db": -31.7,
+          "note": "tepe sınırında, yükseklik -26.9 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. A small rockfall inside a mine tunnel: soft rumble, loose earth and stones sliding down and settling, then dust trickling. Muffled and short, not scary. Details: a few larger stones rolling.",
+          "duration": 3.1212437645751465,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0238
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0238,
+          "c2": 0.0198,
+          "c3": 0.0281,
+          "c4": 0.0198
+        },
+        "ref_distance": {
+          "c1": 0.0888,
+          "c2": 0.0682,
+          "c3": 0.0809,
+          "c4": 0.0262
+        }
+      }
+    }
+  }
+}

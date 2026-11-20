@@ -1,0 +1,72 @@
+{
+  "job": "s306",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T22:02:47Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.746,
+          "lufs": -20.6,
+          "true_peak_db": -1.0,
+          "rms_db": -24.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small muffled handbell rung twice in a low tone, calling attention calmly, not alarming. Details: small brass handbell muffled with cloth.",
+          "duration": 0.8594469622434607,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.702,
+          "lufs": -20.0,
+          "true_peak_db": -2.6,
+          "rms_db": -23.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small muffled handbell rung twice in a low tone, calling attention calmly, not alarming. Details: low wooden chime.",
+          "duration": 0.7500138857628761,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.72,
+          "lufs": -20.0,
+          "true_peak_db": -3.3,
+          "rms_db": -23.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small muffled handbell rung twice in a low tone, calling attention calmly, not alarming. Details: small brass handbell muffled with cloth.",
+          "duration": 0.7203169374153479,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 0.604,
+          "lufs": -23.4,
+          "true_peak_db": -1.0,
+          "rms_db": -22.3,
+          "note": "tepe sınırında, yükseklik -23.4 (hedef -20)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A small muffled handbell rung twice in a low tone, calling attention calmly, not alarming. Details: low wooden chime.",
+          "duration": 0.7429885515608908,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [],
+        "nearest": {
+          "c1": 0.0431,
+          "c2": 0.0708,
+          "c3": 0.0431,
+          "c4": 0.1233
+        },
+        "ref_distance": {
+          "c1": 0.1009,
+          "c2": 0.1007,
+          "c3": 0.1346,
+          "c4": 0.0331
+        }
+      }
+    }
+  }
+}

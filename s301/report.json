@@ -1,0 +1,180 @@
+{
+  "job": "s301",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T21:59:37Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.42,
+          "lufs": -23.7,
+          "true_peak_db": -1.0,
+          "rms_db": -23.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Closing a small cloth-bound book softly, a gentle muted pat. Details: leather cover pat.",
+          "duration": 0.35439895258224136,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.363,
+          "lufs": -24.7,
+          "true_peak_db": -1.0,
+          "rms_db": -24.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0265)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Closing a small cloth-bound book softly, a gentle muted pat. Details: linen cover closing.",
+          "duration": 0.31525422166865064,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.404,
+          "lufs": -23.8,
+          "true_peak_db": -1.0,
+          "rms_db": -23.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0255)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Closing a small cloth-bound book softly, a gentle muted pat. Details: leather cover pat.",
+          "duration": 0.37818499140986567,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.386,
+          "lufs": -25.7,
+          "true_peak_db": -1.0,
+          "rms_db": -25.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0053)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Closing a small cloth-bound book softly, a gentle muted pat. Details: linen cover closing.",
+          "duration": 0.3436131753096702,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.424,
+          "lufs": -22.6,
+          "true_peak_db": -1.0,
+          "rms_db": -22.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0095)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Closing a small cloth-bound book softly, a gentle muted pat. Details: leather cover pat.",
+          "duration": 0.35222043854698465,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.394,
+          "lufs": -23.8,
+          "true_peak_db": -1.0,
+          "rms_db": -23.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0251)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Closing a small cloth-bound book softly, a gentle muted pat. Details: linen cover closing.",
+          "duration": 0.3792278470475259,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.268,
+          "lufs": -24.4,
+          "true_peak_db": -1.0,
+          "rms_db": -24.4,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0257)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Closing a small cloth-bound book softly, a gentle muted pat. Details: leather cover pat.",
+          "duration": 0.3515167675092305,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.396,
+          "lufs": -23.7,
+          "true_peak_db": -1.0,
+          "rms_db": -23.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0253)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Closing a small cloth-bound book softly, a gentle muted pat. Details: linen cover closing.",
+          "duration": 0.353203669831997,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0265
+          ],
+          [
+            "c1",
+            "c3",
+            0.0255
+          ],
+          [
+            "c1",
+            "c4",
+            0.0053
+          ],
+          [
+            "c1",
+            "c5",
+            0.0095
+          ],
+          [
+            "c1",
+            "c6",
+            0.0251
+          ],
+          [
+            "c1",
+            "c7",
+            0.0257
+          ],
+          [
+            "c1",
+            "c8",
+            0.0253
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0053,
+          "c2": 0.0042,
+          "c3": 0.0188,
+          "c4": 0.0053,
+          "c5": 0.0095,
+          "c6": 0.0023,
+          "c7": 0.0188,
+          "c8": 0.0023
+        },
+        "ref_distance": {
+          "c1": 0.0405,
+          "c2": 0.0364,
+          "c3": 0.0464,
+          "c4": 0.043,
+          "c5": 0.0393,
+          "c6": 0.045,
+          "c7": 0.0394,
+          "c8": 0.0463
+        }
+      }
+    }
+  }
+}

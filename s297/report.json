@@ -1,0 +1,146 @@
+{
+  "job": "s297",
+  "kind": "sfx",
+  "family": "craft",
+  "created": "2026-11-20T21:58:36Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.778,
+          "lufs": -24.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "note": "tepe sınırında, yükseklik -24.2 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A carpenter tapping a wooden mallet on a wooden peg three times, about one tap every half second, warm woody knocks. No wind, no rustling leaves, no birds, no background noise. Details: wooden mallet on oak.",
+          "duration": 1.5387695941459594,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.731,
+          "lufs": -22.1,
+          "true_peak_db": -1.0,
+          "rms_db": -22.2,
+          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A carpenter tapping a wooden mallet on a wooden peg three times, about one tap every half second, warm woody knocks. No wind, no rustling leaves, no birds, no background noise. Details: small iron hammer on a nail into wood.",
+          "duration": 1.6381042678290285,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.624,
+          "lufs": -23.1,
+          "true_peak_db": -1.0,
+          "rms_db": -22.7,
+          "note": "tepe sınırında, yükseklik -23.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A carpenter tapping a wooden mallet on a wooden peg three times, about one tap every half second, warm woody knocks. No wind, no rustling leaves, no birds, no background noise. Details: wooden mallet on oak.",
+          "duration": 1.5783025242252062,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 1.411,
+          "lufs": -25.2,
+          "true_peak_db": -1.0,
+          "rms_db": -26.0,
+          "note": "tepe sınırında, yükseklik -25.2 (hedef -18)",
+          "flags": [
+            "c3 ile neredeyse aynı (0.0288)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A carpenter tapping a wooden mallet on a wooden peg three times, about one tap every half second, warm woody knocks. No wind, no rustling leaves, no birds, no background noise. Details: small iron hammer on a nail into wood.",
+          "duration": 1.4786429300968547,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.931,
+          "lufs": -20.7,
+          "true_peak_db": -1.0,
+          "rms_db": -21.9,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0336)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A carpenter tapping a wooden mallet on a wooden peg three times, about one tap every half second, warm woody knocks. No wind, no rustling leaves, no birds, no background noise. Details: wooden mallet on oak.",
+          "duration": 1.4746081682231287,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.869,
+          "lufs": -26.3,
+          "true_peak_db": -1.0,
+          "rms_db": -23.6,
+          "note": "tepe sınırında, yükseklik -26.3 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A carpenter tapping a wooden mallet on a wooden peg three times, about one tap every half second, warm woody knocks. No wind, no rustling leaves, no birds, no background noise. Details: small iron hammer on a nail into wood.",
+          "duration": 1.3665865470028526,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 0.738,
+          "lufs": -22.5,
+          "true_peak_db": -1.0,
+          "rms_db": -21.6,
+          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0274)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A carpenter tapping a wooden mallet on a wooden peg three times, about one tap every half second, warm woody knocks. No wind, no rustling leaves, no birds, no background noise. Details: wooden mallet on oak.",
+          "duration": 1.3765582123390798,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.225,
+          "lufs": -25.1,
+          "true_peak_db": -1.0,
+          "rms_db": -25.4,
+          "note": "tepe sınırında, yükseklik -25.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A carpenter tapping a wooden mallet on a wooden peg three times, about one tap every half second, warm woody knocks. No wind, no rustling leaves, no birds, no background noise. Details: small iron hammer on a nail into wood.",
+          "duration": 1.5935950014475107,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c2",
+            "c5",
+            0.0336
+          ],
+          [
+            "c2",
+            "c7",
+            0.0274
+          ],
+          [
+            "c3",
+            "c4",
+            0.0288
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0369,
+          "c2": 0.0274,
+          "c3": 0.0288,
+          "c4": 0.0242,
+          "c5": 0.0336,
+          "c6": 0.0328,
+          "c7": 0.0274,
+          "c8": 0.0242
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

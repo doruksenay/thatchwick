@@ -1,0 +1,323 @@
+{
+  "job": "s293",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T21:54:58Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.498,
+          "lufs": -27.7,
+          "true_peak_db": -1.0,
+          "rms_db": -29.3,
+          "note": "tepe sınırında, yükseklik -27.7 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: root vegetable like a turnip.",
+          "duration": 0.6118221921404767,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.497,
+          "lufs": -19.3,
+          "true_peak_db": -1.0,
+          "rms_db": -21.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: leafy cabbage.",
+          "duration": 0.5534813439561675,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.562,
+          "lufs": -26.1,
+          "true_peak_db": -1.0,
+          "rms_db": -29.9,
+          "note": "tepe sınırında, yükseklik -26.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0348)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: root vegetable like a turnip.",
+          "duration": 0.6109069230487978,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.561,
+          "lufs": -19.5,
+          "true_peak_db": -1.0,
+          "rms_db": -22.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: leafy cabbage.",
+          "duration": 0.6137454713781075,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.486,
+          "lufs": -25.7,
+          "true_peak_db": -1.0,
+          "rms_db": -29.2,
+          "note": "tepe sınırında, yükseklik -25.7 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0225)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: root vegetable like a turnip.",
+          "duration": 0.6457574172366073,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.56,
+          "lufs": -20.8,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "flags": [
+            "c4 ile neredeyse aynı (0.016)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: leafy cabbage.",
+          "duration": 0.6400573277830172,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.376,
+          "lufs": -29.0,
+          "true_peak_db": -1.0,
+          "rms_db": -29.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0307)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: root vegetable like a turnip.",
+          "duration": 0.5454110547403271,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.484,
+          "lufs": -21.4,
+          "true_peak_db": -1.0,
+          "rms_db": -23.3,
+          "note": "tepe sınırında, yükseklik -21.4 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: leafy cabbage.",
+          "duration": 0.5574438267227848,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c9": {
+          "duration_s": 0.485,
+          "lufs": -24.0,
+          "true_peak_db": -1.0,
+          "rms_db": -26.5,
+          "note": "tepe sınırında, yükseklik -24.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.019)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: root vegetable like a turnip.",
+          "duration": 0.5754489849941771,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c10": {
+          "duration_s": 0.531,
+          "lufs": -19.5,
+          "true_peak_db": -1.0,
+          "rms_db": -23.0,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0239)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: leafy cabbage.",
+          "duration": 0.5614903934417366,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c11": {
+          "duration_s": 0.562,
+          "lufs": -22.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.4,
+          "note": "tepe sınırında, yükseklik -22.2 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.023)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: root vegetable like a turnip.",
+          "duration": 0.6176884670829611,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c12": {
+          "duration_s": 0.513,
+          "lufs": -21.1,
+          "true_peak_db": -1.0,
+          "rms_db": -24.0,
+          "note": "tepe sınırında, yükseklik -21.1 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0293)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: leafy cabbage.",
+          "duration": 0.5893775405360311,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c13": {
+          "duration_s": 0.48,
+          "lufs": -18.1,
+          "true_peak_db": -1.0,
+          "rms_db": -21.2,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0256)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: root vegetable like a turnip.",
+          "duration": 0.5524013961898486,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c14": {
+          "duration_s": 0.586,
+          "lufs": -20.4,
+          "true_peak_db": -1.0,
+          "rms_db": -22.8,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0084)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: leafy cabbage.",
+          "duration": 0.6309231314366753,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c15": {
+          "duration_s": 0.64,
+          "lufs": -20.8,
+          "true_peak_db": -1.0,
+          "rms_db": -24.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: root vegetable like a turnip.",
+          "duration": 0.6454852183108941,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c16": {
+          "duration_s": 0.54,
+          "lufs": -18.4,
+          "true_peak_db": -1.0,
+          "rms_db": -21.3,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0343)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. Pulling one vegetable out of soft soil by hand, a little root snap and earth falling off. Only one pull. No wind, no rustling leaves, no birds, no background noise. Details: leafy cabbage.",
+          "duration": 0.5654185757764528,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0348
+          ],
+          [
+            "c1",
+            "c5",
+            0.0225
+          ],
+          [
+            "c1",
+            "c7",
+            0.0307
+          ],
+          [
+            "c1",
+            "c9",
+            0.019
+          ],
+          [
+            "c2",
+            "c10",
+            0.0239
+          ],
+          [
+            "c2",
+            "c11",
+            0.023
+          ],
+          [
+            "c2",
+            "c12",
+            0.0293
+          ],
+          [
+            "c2",
+            "c13",
+            0.0256
+          ],
+          [
+            "c2",
+            "c14",
+            0.0084
+          ],
+          [
+            "c2",
+            "c16",
+            0.0343
+          ],
+          [
+            "c4",
+            "c6",
+            0.016
+          ]
+        ],
+        "nearest": {
+          "c1": 0.019,
+          "c2": 0.0084,
+          "c3": 0.0272,
+          "c4": 0.016,
+          "c5": 0.0225,
+          "c6": 0.0087,
+          "c7": 0.0111,
+          "c8": 0.0188,
+          "c9": 0.0111,
+          "c10": 0.0146,
+          "c11": 0.0186,
+          "c12": 0.0171,
+          "c13": 0.0146,
+          "c14": 0.0084,
+          "c15": 0.0337,
+          "c16": 0.0087
+        },
+        "ref_distance": {
+          "c1": 0.0489,
+          "c2": 0.1136,
+          "c3": 0.0915,
+          "c4": 0.1142,
+          "c5": 0.0305,
+          "c6": 0.1207,
+          "c7": 0.0696,
+          "c8": 0.1561,
+          "c9": 0.061,
+          "c10": 0.1545,
+          "c11": 0.1289,
+          "c12": 0.1563,
+          "c13": 0.152,
+          "c14": 0.119,
+          "c15": 0.064,
+          "c16": 0.1351
+        }
+      }
+    }
+  }
+}

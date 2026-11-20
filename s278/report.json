@@ -1,0 +1,188 @@
+{
+  "job": "s278",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T21:56:16Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.603,
+          "lufs": -22.5,
+          "true_peak_db": -1.0,
+          "rms_db": -21.2,
+          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A wooden cottage door closing gently with a soft wooden thud and the latch dropping once. Not a slam. No wind, no rustling leaves, no birds, no background noise. Details: oak plank door with iron latch.",
+          "duration": 0.7832433207247966,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.616,
+          "lufs": -24.2,
+          "true_peak_db": -1.0,
+          "rms_db": -23.5,
+          "note": "tepe sınırında, yükseklik -24.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0107)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A wooden cottage door closing gently with a soft wooden thud and the latch dropping once. Not a slam. No wind, no rustling leaves, no birds, no background noise. Details: thin wicket door with wooden latch.",
+          "duration": 0.7881521693838359,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.712,
+          "lufs": -25.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.1,
+          "note": "tepe sınırında, yükseklik -25.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0143)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A wooden cottage door closing gently with a soft wooden thud and the latch dropping once. Not a slam. No wind, no rustling leaves, no birds, no background noise. Details: oak plank door with iron latch.",
+          "duration": 0.8172835664986299,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.655,
+          "lufs": -21.8,
+          "true_peak_db": -1.0,
+          "rms_db": -20.7,
+          "note": "tepe sınırında, yükseklik -21.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0117)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A wooden cottage door closing gently with a soft wooden thud and the latch dropping once. Not a slam. No wind, no rustling leaves, no birds, no background noise. Details: thin wicket door with wooden latch.",
+          "duration": 0.7956827350861022,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.7,
+          "lufs": -23.6,
+          "true_peak_db": -1.0,
+          "rms_db": -24.4,
+          "note": "tepe sınırında, yükseklik -23.6 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0178)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A wooden cottage door closing gently with a soft wooden thud and the latch dropping once. Not a slam. No wind, no rustling leaves, no birds, no background noise. Details: oak plank door with iron latch.",
+          "duration": 0.8682950931665583,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.642,
+          "lufs": -22.8,
+          "true_peak_db": -1.0,
+          "rms_db": -20.7,
+          "note": "tepe sınırında, yükseklik -22.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0172)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A wooden cottage door closing gently with a soft wooden thud and the latch dropping once. Not a slam. No wind, no rustling leaves, no birds, no background noise. Details: thin wicket door with wooden latch.",
+          "duration": 0.7710058714237442,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.606,
+          "lufs": -26.0,
+          "true_peak_db": -1.0,
+          "rms_db": -25.1,
+          "note": "tepe sınırında, yükseklik -26.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0075)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A wooden cottage door closing gently with a soft wooden thud and the latch dropping once. Not a slam. No wind, no rustling leaves, no birds, no background noise. Details: oak plank door with iron latch.",
+          "duration": 0.7334760393492923,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.546,
+          "lufs": -26.5,
+          "true_peak_db": -1.0,
+          "rms_db": -24.5,
+          "note": "tepe sınırında, yükseklik -26.5 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0133)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A wooden cottage door closing gently with a soft wooden thud and the latch dropping once. Not a slam. No wind, no rustling leaves, no birds, no background noise. Details: thin wicket door with wooden latch.",
+          "duration": 0.7403073830325642,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0107
+          ],
+          [
+            "c1",
+            "c3",
+            0.0143
+          ],
+          [
+            "c1",
+            "c4",
+            0.0117
+          ],
+          [
+            "c1",
+            "c5",
+            0.0178
+          ],
+          [
+            "c1",
+            "c6",
+            0.0172
+          ],
+          [
+            "c1",
+            "c7",
+            0.0075
+          ],
+          [
+            "c1",
+            "c8",
+            0.0133
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0075,
+          "c2": 0.0107,
+          "c3": 0.0069,
+          "c4": 0.0069,
+          "c5": 0.016,
+          "c6": 0.0123,
+          "c7": 0.0075,
+          "c8": 0.0123
+        },
+        "ref_distance": {
+          "c1": 0.0337,
+          "c2": 0.041,
+          "c3": 0.0542,
+          "c4": 0.0484,
+          "c5": 0.0434,
+          "c6": 0.0607,
+          "c7": 0.0478,
+          "c8": 0.0535
+        }
+      }
+    }
+  }
+}

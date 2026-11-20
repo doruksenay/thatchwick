@@ -1,0 +1,316 @@
+{
+  "job": "s303",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T21:55:44Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.317,
+          "lufs": -24.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: clay cup.",
+          "duration": 0.32092769189367415,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.374,
+          "lufs": -25.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: small wooden block.",
+          "duration": 0.366065604080246,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.343,
+          "lufs": -24.7,
+          "true_peak_db": -1.0,
+          "rms_db": -24.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0229)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: clay cup.",
+          "duration": 0.36465631720741437,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.456,
+          "lufs": -21.9,
+          "true_peak_db": -1.0,
+          "rms_db": -20.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: small wooden block.",
+          "duration": 0.3454801073250265,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.37,
+          "lufs": -20.0,
+          "true_peak_db": -1.6,
+          "rms_db": -20.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0202)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: clay cup.",
+          "duration": 0.37614323221519436,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.437,
+          "lufs": -24.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: small wooden block.",
+          "duration": 0.3804736719384493,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 0.412,
+          "lufs": -20.0,
+          "true_peak_db": -1.3,
+          "rms_db": -20.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.016)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: clay cup.",
+          "duration": 0.34121809081798987,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.367,
+          "lufs": -20.8,
+          "true_peak_db": -1.0,
+          "rms_db": -20.8,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0203)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: small wooden block.",
+          "duration": 0.3736337923902978,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c9": {
+          "duration_s": 0.305,
+          "lufs": -23.3,
+          "true_peak_db": -1.0,
+          "rms_db": -23.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0275)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: clay cup.",
+          "duration": 0.3740844987199108,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c10": {
+          "duration_s": 0.393,
+          "lufs": -23.0,
+          "true_peak_db": -1.0,
+          "rms_db": -23.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: small wooden block.",
+          "duration": 0.34796748031111135,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c11": {
+          "duration_s": 0.403,
+          "lufs": -20.0,
+          "true_peak_db": -1.3,
+          "rms_db": -20.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0272)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: clay cup.",
+          "duration": 0.33585184608965346,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c12": {
+          "duration_s": 0.39,
+          "lufs": -22.4,
+          "true_peak_db": -1.0,
+          "rms_db": -22.4,
+          "flags": [
+            "c6 ile neredeyse aynı (0.0237)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: small wooden block.",
+          "duration": 0.33842684627053593,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c13": {
+          "duration_s": 0.292,
+          "lufs": -25.7,
+          "true_peak_db": -1.0,
+          "rms_db": -25.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0136)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: clay cup.",
+          "duration": 0.3150843713554423,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c14": {
+          "duration_s": 0.418,
+          "lufs": -23.5,
+          "true_peak_db": -1.0,
+          "rms_db": -23.5,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0147)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: small wooden block.",
+          "duration": 0.3429379651912155,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c15": {
+          "duration_s": 0.321,
+          "lufs": -24.6,
+          "true_peak_db": -1.0,
+          "rms_db": -24.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0189)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: clay cup.",
+          "duration": 0.35346285764577406,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c16": {
+          "duration_s": 0.399,
+          "lufs": -20.0,
+          "true_peak_db": -2.4,
+          "rms_db": -20.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0191)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Setting a small wooden object down on a wooden table, one soft satisfying tock. Details: small wooden block.",
+          "duration": 0.3303687978913913,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0229
+          ],
+          [
+            "c1",
+            "c5",
+            0.0202
+          ],
+          [
+            "c1",
+            "c7",
+            0.016
+          ],
+          [
+            "c1",
+            "c9",
+            0.0275
+          ],
+          [
+            "c1",
+            "c11",
+            0.0272
+          ],
+          [
+            "c1",
+            "c13",
+            0.0136
+          ],
+          [
+            "c1",
+            "c15",
+            0.0189
+          ],
+          [
+            "c1",
+            "c16",
+            0.0191
+          ],
+          [
+            "c2",
+            "c8",
+            0.0203
+          ],
+          [
+            "c2",
+            "c14",
+            0.0147
+          ],
+          [
+            "c6",
+            "c12",
+            0.0237
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0136,
+          "c2": 0.0147,
+          "c3": 0.0121,
+          "c4": 0.0393,
+          "c5": 0.0202,
+          "c6": 0.0237,
+          "c7": 0.016,
+          "c8": 0.0118,
+          "c9": 0.004,
+          "c10": 0.0467,
+          "c11": 0.0118,
+          "c12": 0.0237,
+          "c13": 0.0056,
+          "c14": 0.0147,
+          "c15": 0.004,
+          "c16": 0.013
+        },
+        "ref_distance": {
+          "c1": 0.0725,
+          "c2": 0.0484,
+          "c3": 0.0824,
+          "c4": 0.0438,
+          "c5": 0.0825,
+          "c6": 0.1272,
+          "c7": 0.0686,
+          "c8": 0.0647,
+          "c9": 0.0593,
+          "c10": 0.0894,
+          "c11": 0.0813,
+          "c12": 0.0977,
+          "c13": 0.0715,
+          "c14": 0.0544,
+          "c15": 0.061,
+          "c16": 0.0815
+        }
+      }
+    }
+  }
+}

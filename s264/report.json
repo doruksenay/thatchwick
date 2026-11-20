@@ -1,0 +1,140 @@
+{
+  "job": "s264",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T21:50:24Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.613,
+          "lufs": -21.9,
+          "true_peak_db": -1.0,
+          "rms_db": -21.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft attention sound: a small muted handbell or wooden knock twice in a lower tone. Noticeable but gentle, never alarming. Details: soft wooden knock twice, slightly lower pitch.",
+          "duration": 0.6785856183125571,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.544,
+          "lufs": -20.0,
+          "true_peak_db": -3.1,
+          "rms_db": -23.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft attention sound: a small muted handbell or wooden knock twice in a lower tone. Noticeable but gentle, never alarming. Details: low plucked string, short and warm, attention without alarm.",
+          "duration": 0.6726517308952338,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.638,
+          "lufs": -20.0,
+          "true_peak_db": -1.3,
+          "rms_db": -24.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft attention sound: a small muted handbell or wooden knock twice in a lower tone. Noticeable but gentle, never alarming. Details: small muted handbell, two gentle descending notes.",
+          "duration": 0.7180808350227087,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 0.599,
+          "lufs": -20.5,
+          "true_peak_db": -1.0,
+          "rms_db": -25.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft attention sound: a small muted handbell or wooden knock twice in a lower tone. Noticeable but gentle, never alarming. Details: soft wooden knock twice, slightly lower pitch.",
+          "duration": 0.6889354587373363,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.633,
+          "lufs": -20.0,
+          "true_peak_db": -1.3,
+          "rms_db": -24.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0315)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft attention sound: a small muted handbell or wooden knock twice in a lower tone. Noticeable but gentle, never alarming. Details: low plucked string, short and warm, attention without alarm.",
+          "duration": 0.7165797281154223,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.56,
+          "lufs": -20.4,
+          "true_peak_db": -1.0,
+          "rms_db": -23.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft attention sound: a small muted handbell or wooden knock twice in a lower tone. Noticeable but gentle, never alarming. Details: small muted handbell, two gentle descending notes.",
+          "duration": 0.6793125506517272,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 0.607,
+          "lufs": -21.6,
+          "true_peak_db": -1.0,
+          "rms_db": -20.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft attention sound: a small muted handbell or wooden knock twice in a lower tone. Noticeable but gentle, never alarming. Details: soft wooden knock twice, slightly lower pitch.",
+          "duration": 0.6820464701069199,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c8": {
+          "duration_s": 0.665,
+          "lufs": -22.9,
+          "true_peak_db": -1.0,
+          "rms_db": -23.8,
+          "flags": [
+            "c7 ile neredeyse aynı (0.0089)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft attention sound: a small muted handbell or wooden knock twice in a lower tone. Noticeable but gentle, never alarming. Details: low plucked string, short and warm, attention without alarm.",
+          "duration": 0.7695031257167833,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c5",
+            0.0315
+          ],
+          [
+            "c7",
+            "c8",
+            0.0089
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0315,
+          "c2": 0.0605,
+          "c3": 0.0359,
+          "c4": 0.0295,
+          "c5": 0.0265,
+          "c6": 0.0605,
+          "c7": 0.0089,
+          "c8": 0.0089
+        },
+        "ref_distance": {
+          "c1": 0.0291,
+          "c2": 0.1181,
+          "c3": 0.1012,
+          "c4": 0.0702,
+          "c5": 0.0331,
+          "c6": 0.1253,
+          "c7": 0.0223,
+          "c8": 0.0192
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "job": "s315",
+  "kind": "ambience",
+  "family": "ambience",
+  "created": "2026-11-20T22:04:24Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -3.9,
+          "rms_db": -28.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes). A cheerful small medieval village square in the morning: gentle distant chatter without words, a far blacksmith's soft tapping, chickens, a cart wheel now and then. Warm and lively, never busy. Details: market morning, soft murmur and chickens.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -2.4,
+          "rms_db": -28.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes). A cheerful small medieval village square in the morning: gentle distant chatter without words, a far blacksmith's soft tapping, chickens, a cart wheel now and then. Warm and lively, never busy. Details: quiet square, distant workshop taps and a dog.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -8.4,
+          "rms_db": -28.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0114)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes). A cheerful small medieval village square in the morning: gentle distant chatter without words, a far blacksmith's soft tapping, chickens, a cart wheel now and then. Warm and lively, never busy. Details: market morning, soft murmur and chickens.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0114
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0114,
+          "c2": 0.0306,
+          "c3": 0.0114
+        },
+        "ref_distance": {
+          "c1": 0.0262,
+          "c2": 0.0363,
+          "c3": 0.02
+        }
+      }
+    }
+  }
+}

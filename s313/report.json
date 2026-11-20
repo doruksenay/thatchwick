@@ -1,0 +1,75 @@
+{
+  "job": "s313",
+  "kind": "sfx",
+  "family": "stinger",
+  "created": "2026-11-20T22:03:51Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 4.237,
+          "lufs": -18.0,
+          "true_peak_db": -3.6,
+          "rms_db": -22.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A calm, cozy little evening folk melody closing the day, soft and content, like a lullaby phrase. Details: lute and recorder.",
+          "duration": 4.269207432028534,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 3.658,
+          "lufs": -18.0,
+          "true_peak_db": -5.7,
+          "rms_db": -21.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A calm, cozy little evening folk melody closing the day, soft and content, like a lullaby phrase. Details: kaval flute and frame drum.",
+          "duration": 3.79412557085044,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 4.08,
+          "lufs": -18.0,
+          "true_peak_db": -7.4,
+          "rms_db": -21.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A calm, cozy little evening folk melody closing the day, soft and content, like a lullaby phrase. Details: lute and recorder.",
+          "duration": 4.110806256373496,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 3.638,
+          "lufs": -18.0,
+          "true_peak_db": -2.0,
+          "rms_db": -20.2,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0205)"
+          ],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A calm, cozy little evening folk melody closing the day, soft and content, like a lullaby phrase. Details: kaval flute and frame drum.",
+          "duration": 3.7518772246887484,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c2",
+            "c4",
+            0.0205
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0419,
+          "c2": 0.0205,
+          "c3": 0.0419,
+          "c4": 0.0205
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

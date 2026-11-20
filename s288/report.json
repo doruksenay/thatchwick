@@ -1,0 +1,163 @@
+{
+  "job": "s288",
+  "kind": "sfx",
+  "family": "animals",
+  "created": "2026-11-20T21:58:07Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.185,
+          "lufs": -18.0,
+          "true_peak_db": -4.3,
+          "rms_db": -18.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A pig grunting softly and contentedly a few times while rooting in straw. No wind, no rustling leaves, no birds, no background noise. Details: sleepy grunt.",
+          "duration": 1.2163350285635257,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.167,
+          "lufs": -18.0,
+          "true_peak_db": -4.3,
+          "rms_db": -19.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0228)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A pig grunting softly and contentedly a few times while rooting in straw. No wind, no rustling leaves, no birds, no background noise. Details: happy rooting.",
+          "duration": 1.2535534040921177,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.13,
+          "lufs": -18.0,
+          "true_peak_db": -3.7,
+          "rms_db": -18.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0334)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A pig grunting softly and contentedly a few times while rooting in straw. No wind, no rustling leaves, no birds, no background noise. Details: sleepy grunt.",
+          "duration": 1.1906564499278278,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.069,
+          "lufs": -18.0,
+          "true_peak_db": -3.7,
+          "rms_db": -18.5,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0222)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A pig grunting softly and contentedly a few times while rooting in straw. No wind, no rustling leaves, no birds, no background noise. Details: happy rooting.",
+          "duration": 1.1530732910421846,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.145,
+          "lufs": -18.0,
+          "true_peak_db": -1.9,
+          "rms_db": -17.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0157)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A pig grunting softly and contentedly a few times while rooting in straw. No wind, no rustling leaves, no birds, no background noise. Details: sleepy grunt.",
+          "duration": 1.1896015464013536,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.014,
+          "lufs": -18.0,
+          "true_peak_db": -3.0,
+          "rms_db": -19.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A pig grunting softly and contentedly a few times while rooting in straw. No wind, no rustling leaves, no birds, no background noise. Details: happy rooting.",
+          "duration": 1.1032150533177356,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 1.067,
+          "lufs": -18.0,
+          "true_peak_db": -4.7,
+          "rms_db": -19.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0344)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A pig grunting softly and contentedly a few times while rooting in straw. No wind, no rustling leaves, no birds, no background noise. Details: sleepy grunt.",
+          "duration": 1.0876360222681776,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.187,
+          "lufs": -18.0,
+          "true_peak_db": -5.3,
+          "rms_db": -18.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0153)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A pig grunting softly and contentedly a few times while rooting in straw. No wind, no rustling leaves, no birds, no background noise. Details: happy rooting.",
+          "duration": 1.2132314908702604,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0228
+          ],
+          [
+            "c1",
+            "c3",
+            0.0334
+          ],
+          [
+            "c1",
+            "c4",
+            0.0222
+          ],
+          [
+            "c1",
+            "c5",
+            0.0157
+          ],
+          [
+            "c1",
+            "c7",
+            0.0344
+          ],
+          [
+            "c1",
+            "c8",
+            0.0153
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0153,
+          "c2": 0.0179,
+          "c3": 0.0102,
+          "c4": 0.0204,
+          "c5": 0.0157,
+          "c6": 0.0102,
+          "c7": 0.0179,
+          "c8": 0.0153
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

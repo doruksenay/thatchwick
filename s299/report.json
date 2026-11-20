@@ -1,0 +1,163 @@
+{
+  "job": "s299",
+  "kind": "sfx",
+  "family": "craft",
+  "created": "2026-11-20T21:59:08Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 3.269,
+          "lufs": -29.1,
+          "true_peak_db": -1.0,
+          "rms_db": -28.9,
+          "note": "tepe sınırında, yükseklik -29.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A clay pot simmering gently over a small hearth fire, soft bubbling and a quiet crackle of embers. Warm and homely. No wind, no rustling leaves, no birds, no background noise. Details: soup with lentils.",
+          "duration": 3.2866761633651898,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 2.284,
+          "lufs": -22.2,
+          "true_peak_db": -1.0,
+          "rms_db": -23.1,
+          "note": "tepe sınırında, yükseklik -22.2 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A clay pot simmering gently over a small hearth fire, soft bubbling and a quiet crackle of embers. Warm and homely. No wind, no rustling leaves, no birds, no background noise. Details: thick vegetable stew.",
+          "duration": 2.7487856911907125,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 2.64,
+          "lufs": -27.4,
+          "true_peak_db": -1.0,
+          "rms_db": -28.2,
+          "note": "tepe sınırında, yükseklik -27.4 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A clay pot simmering gently over a small hearth fire, soft bubbling and a quiet crackle of embers. Warm and homely. No wind, no rustling leaves, no birds, no background noise. Details: soup with lentils.",
+          "duration": 2.996119063437115,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 2.429,
+          "lufs": -22.4,
+          "true_peak_db": -1.0,
+          "rms_db": -23.3,
+          "note": "tepe sınırında, yükseklik -22.4 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0053)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A clay pot simmering gently over a small hearth fire, soft bubbling and a quiet crackle of embers. Warm and homely. No wind, no rustling leaves, no birds, no background noise. Details: thick vegetable stew.",
+          "duration": 2.7193588189562528,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 2.963,
+          "lufs": -27.3,
+          "true_peak_db": -1.0,
+          "rms_db": -29.6,
+          "note": "tepe sınırında, yükseklik -27.3 (hedef -18)",
+          "flags": [
+            "c3 ile neredeyse aynı (0.0281)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A clay pot simmering gently over a small hearth fire, soft bubbling and a quiet crackle of embers. Warm and homely. No wind, no rustling leaves, no birds, no background noise. Details: soup with lentils.",
+          "duration": 3.2310232782916213,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 2.393,
+          "lufs": -22.6,
+          "true_peak_db": -1.0,
+          "rms_db": -23.6,
+          "note": "tepe sınırında, yükseklik -22.6 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0218)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A clay pot simmering gently over a small hearth fire, soft bubbling and a quiet crackle of embers. Warm and homely. No wind, no rustling leaves, no birds, no background noise. Details: thick vegetable stew.",
+          "duration": 2.7991578524236957,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 3.12,
+          "lufs": -29.0,
+          "true_peak_db": -1.0,
+          "rms_db": -28.7,
+          "note": "tepe sınırında, yükseklik -29.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0268)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A clay pot simmering gently over a small hearth fire, soft bubbling and a quiet crackle of embers. Warm and homely. No wind, no rustling leaves, no birds, no background noise. Details: soup with lentils.",
+          "duration": 3.128362591391207,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 2.753,
+          "lufs": -22.3,
+          "true_peak_db": -1.0,
+          "rms_db": -26.8,
+          "note": "tepe sınırında, yükseklik -22.3 (hedef -18)",
+          "flags": [
+            "c3 ile neredeyse aynı (0.0089)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, craft workshop sound: warm, gentle and satisfying, never harsh or grating. Dry recording, no music, no voice. A clay pot simmering gently over a small hearth fire, soft bubbling and a quiet crackle of embers. Warm and homely. No wind, no rustling leaves, no birds, no background noise. Details: thick vegetable stew.",
+          "duration": 3.079583363718477,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c7",
+            0.0268
+          ],
+          [
+            "c2",
+            "c4",
+            0.0053
+          ],
+          [
+            "c2",
+            "c6",
+            0.0218
+          ],
+          [
+            "c3",
+            "c5",
+            0.0281
+          ],
+          [
+            "c3",
+            "c8",
+            0.0089
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0268,
+          "c2": 0.0053,
+          "c3": 0.0081,
+          "c4": 0.0053,
+          "c5": 0.0281,
+          "c6": 0.0081,
+          "c7": 0.0268,
+          "c8": 0.0089
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

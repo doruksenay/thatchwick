@@ -1,0 +1,75 @@
+{
+  "job": "s311",
+  "kind": "sfx",
+  "family": "stinger",
+  "created": "2026-11-20T22:03:25Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 4.306,
+          "lufs": -18.0,
+          "true_peak_db": -3.9,
+          "rms_db": -21.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A gentle, bittersweet little folk melody for a farewell, peaceful and loving rather than dark, slowly fading. Details: kaval flute and frame drum.",
+          "duration": 5.0540635303399615,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 4.93,
+          "lufs": -18.0,
+          "true_peak_db": -5.6,
+          "rms_db": -22.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A gentle, bittersweet little folk melody for a farewell, peaceful and loving rather than dark, slowly fading. Details: lute and recorder.",
+          "duration": 5.25280202351297,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 4.425,
+          "lufs": -18.0,
+          "true_peak_db": -5.5,
+          "rms_db": -21.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A gentle, bittersweet little folk melody for a farewell, peaceful and loving rather than dark, slowly fading. Details: kaval flute and frame drum.",
+          "duration": 5.10987509761235,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 4.885,
+          "lufs": -18.0,
+          "true_peak_db": -13.3,
+          "rms_db": -21.7,
+          "flags": [
+            "c3 ile neredeyse aynı (0.0172)"
+          ],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A gentle, bittersweet little folk melody for a farewell, peaceful and loving rather than dark, slowly fading. Details: lute and recorder.",
+          "duration": 4.931481392104786,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c3",
+            "c4",
+            0.0172
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0471,
+          "c2": 0.0471,
+          "c3": 0.0172,
+          "c4": 0.0172
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

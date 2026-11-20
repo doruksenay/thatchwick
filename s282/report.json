@@ -1,0 +1,83 @@
+{
+  "job": "s282",
+  "kind": "sfx",
+  "family": "animals",
+  "created": "2026-11-20T22:01:54Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 2.408,
+          "lufs": -18.0,
+          "true_peak_db": -8.9,
+          "rms_db": -20.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A rooster crowing once at sunrise from a little distance, warm and natural, not piercing. No wind, no rustling leaves, no birds, no background noise. Details: from the barn roof.",
+          "duration": 2.5662227292698425,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 2.108,
+          "lufs": -18.0,
+          "true_peak_db": -3.6,
+          "rms_db": -19.5,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A rooster crowing once at sunrise from a little distance, warm and natural, not piercing. No wind, no rustling leaves, no birds, no background noise. Details: across the yard.",
+          "duration": 2.3244645811268225,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 2.284,
+          "lufs": -18.0,
+          "true_peak_db": -3.2,
+          "rms_db": -19.8,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0204)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A rooster crowing once at sunrise from a little distance, warm and natural, not piercing. No wind, no rustling leaves, no birds, no background noise. Details: from the barn roof.",
+          "duration": 2.413068396596203,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 2.269,
+          "lufs": -18.0,
+          "true_peak_db": -10.7,
+          "rms_db": -20.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.032)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A rooster crowing once at sunrise from a little distance, warm and natural, not piercing. No wind, no rustling leaves, no birds, no background noise. Details: across the yard.",
+          "duration": 2.4152372307369445,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c4",
+            0.032
+          ],
+          [
+            "c2",
+            "c3",
+            0.0204
+          ]
+        ],
+        "nearest": {
+          "c1": 0.032,
+          "c2": 0.0204,
+          "c3": 0.0204,
+          "c4": 0.032
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

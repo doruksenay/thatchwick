@@ -1,0 +1,188 @@
+{
+  "job": "s277",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T21:56:01Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.866,
+          "lufs": -31.1,
+          "true_peak_db": -1.0,
+          "rms_db": -31.7,
+          "note": "tepe sınırında, yükseklik -31.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A heavy wooden cottage door opening slowly, iron latch lifting once and soft hinge creak, warm and friendly, about one second. No wind, no rustling leaves, no birds, no background noise. Details: oak plank door with iron latch.",
+          "duration": 1.0056160324886898,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.656,
+          "lufs": -31.1,
+          "true_peak_db": -1.0,
+          "rms_db": -30.3,
+          "note": "tepe sınırında, yükseklik -31.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0332)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A heavy wooden cottage door opening slowly, iron latch lifting once and soft hinge creak, warm and friendly, about one second. No wind, no rustling leaves, no birds, no background noise. Details: thin wicket door with wooden latch.",
+          "duration": 0.9515509704564948,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.971,
+          "lufs": -25.9,
+          "true_peak_db": -1.0,
+          "rms_db": -24.3,
+          "note": "tepe sınırında, yükseklik -25.9 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0164)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A heavy wooden cottage door opening slowly, iron latch lifting once and soft hinge creak, warm and friendly, about one second. No wind, no rustling leaves, no birds, no background noise. Details: oak plank door with iron latch.",
+          "duration": 1.0627330734265075,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.854,
+          "lufs": -27.8,
+          "true_peak_db": -1.0,
+          "rms_db": -31.6,
+          "note": "tepe sınırında, yükseklik -27.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0268)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A heavy wooden cottage door opening slowly, iron latch lifting once and soft hinge creak, warm and friendly, about one second. No wind, no rustling leaves, no birds, no background noise. Details: thin wicket door with wooden latch.",
+          "duration": 1.0706125463680745,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.004,
+          "lufs": -23.7,
+          "true_peak_db": -1.0,
+          "rms_db": -26.4,
+          "note": "tepe sınırında, yükseklik -23.7 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0287)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A heavy wooden cottage door opening slowly, iron latch lifting once and soft hinge creak, warm and friendly, about one second. No wind, no rustling leaves, no birds, no background noise. Details: oak plank door with iron latch.",
+          "duration": 1.0860678457688113,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.748,
+          "lufs": -23.7,
+          "true_peak_db": -1.0,
+          "rms_db": -27.1,
+          "note": "tepe sınırında, yükseklik -23.7 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0275)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A heavy wooden cottage door opening slowly, iron latch lifting once and soft hinge creak, warm and friendly, about one second. No wind, no rustling leaves, no birds, no background noise. Details: thin wicket door with wooden latch.",
+          "duration": 1.0208827258689817,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.896,
+          "lufs": -22.1,
+          "true_peak_db": -1.0,
+          "rms_db": -23.2,
+          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0191)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A heavy wooden cottage door opening slowly, iron latch lifting once and soft hinge creak, warm and friendly, about one second. No wind, no rustling leaves, no birds, no background noise. Details: oak plank door with iron latch.",
+          "duration": 0.9790733818164643,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.671,
+          "lufs": -30.0,
+          "true_peak_db": -1.0,
+          "rms_db": -32.5,
+          "note": "tepe sınırında, yükseklik -30.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0328)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A heavy wooden cottage door opening slowly, iron latch lifting once and soft hinge creak, warm and friendly, about one second. No wind, no rustling leaves, no birds, no background noise. Details: thin wicket door with wooden latch.",
+          "duration": 0.9104402973948842,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0332
+          ],
+          [
+            "c1",
+            "c3",
+            0.0164
+          ],
+          [
+            "c1",
+            "c4",
+            0.0268
+          ],
+          [
+            "c1",
+            "c5",
+            0.0287
+          ],
+          [
+            "c1",
+            "c6",
+            0.0275
+          ],
+          [
+            "c1",
+            "c7",
+            0.0191
+          ],
+          [
+            "c1",
+            "c8",
+            0.0328
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0164,
+          "c2": 0.009,
+          "c3": 0.0134,
+          "c4": 0.0121,
+          "c5": 0.0121,
+          "c6": 0.009,
+          "c7": 0.0191,
+          "c8": 0.0258
+        },
+        "ref_distance": {
+          "c1": 0.0444,
+          "c2": 0.0635,
+          "c3": 0.0366,
+          "c4": 0.046,
+          "c5": 0.0515,
+          "c6": 0.0534,
+          "c7": 0.0536,
+          "c8": 0.0581
+        }
+      }
+    }
+  }
+}

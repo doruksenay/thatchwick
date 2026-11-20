@@ -1,0 +1,341 @@
+{
+  "job": "s294",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T21:55:20Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.326,
+          "lufs": -22.4,
+          "true_peak_db": -1.0,
+          "rms_db": -22.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: packed clay and stone.",
+          "duration": 0.4731143684101428,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.48,
+          "lufs": -29.3,
+          "true_peak_db": -1.0,
+          "rms_db": -29.6,
+          "note": "tepe sınırında, yükseklik -29.3 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0319)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: soft sandstone.",
+          "duration": 0.5101087278402026,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.326,
+          "lufs": -26.7,
+          "true_peak_db": -1.0,
+          "rms_db": -26.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0276)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: packed clay and stone.",
+          "duration": 0.49829513965706795,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.339,
+          "lufs": -21.8,
+          "true_peak_db": -1.0,
+          "rms_db": -21.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: soft sandstone.",
+          "duration": 0.522516320387419,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.305,
+          "lufs": -20.9,
+          "true_peak_db": -1.0,
+          "rms_db": -20.9,
+          "flags": [
+            "c4 ile neredeyse aynı (0.0276)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: packed clay and stone.",
+          "duration": 0.4928847766523891,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.35,
+          "lufs": -23.2,
+          "true_peak_db": -1.0,
+          "rms_db": -23.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0076)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: soft sandstone.",
+          "duration": 0.49217955883089914,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.308,
+          "lufs": -22.1,
+          "true_peak_db": -1.0,
+          "rms_db": -22.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0095)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: packed clay and stone.",
+          "duration": 0.5337443782448903,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.31,
+          "lufs": -27.2,
+          "true_peak_db": -1.0,
+          "rms_db": -27.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0178)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: soft sandstone.",
+          "duration": 0.5466467216364204,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c9": {
+          "duration_s": 0.48,
+          "lufs": -20.1,
+          "true_peak_db": -1.0,
+          "rms_db": -23.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0296)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: packed clay and stone.",
+          "duration": 0.4781511283994008,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c10": {
+          "duration_s": 0.287,
+          "lufs": -26.8,
+          "true_peak_db": -1.0,
+          "rms_db": -26.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0214)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: soft sandstone.",
+          "duration": 0.48339896605641836,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c11": {
+          "duration_s": 0.399,
+          "lufs": -23.8,
+          "true_peak_db": -1.0,
+          "rms_db": -23.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0268)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: packed clay and stone.",
+          "duration": 0.5139945982119019,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c12": {
+          "duration_s": 0.282,
+          "lufs": -23.0,
+          "true_peak_db": -1.0,
+          "rms_db": -23.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0102)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: soft sandstone.",
+          "duration": 0.5103091052457375,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c13": {
+          "duration_s": 0.334,
+          "lufs": -23.4,
+          "true_peak_db": -1.0,
+          "rms_db": -23.4,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0087)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: packed clay and stone.",
+          "duration": 0.48906638113317497,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c14": {
+          "duration_s": 0.336,
+          "lufs": -26.7,
+          "true_peak_db": -1.0,
+          "rms_db": -26.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0121)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: soft sandstone.",
+          "duration": 0.4933709227718086,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c15": {
+          "duration_s": 0.273,
+          "lufs": -23.5,
+          "true_peak_db": -1.0,
+          "rms_db": -23.5,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0337)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: packed clay and stone.",
+          "duration": 0.49644404253825297,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c16": {
+          "duration_s": 0.351,
+          "lufs": -28.3,
+          "true_peak_db": -1.0,
+          "rms_db": -28.3,
+          "flags": [
+            "c4 ile neredeyse aynı (0.0123)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, hand tool sound: satisfying, soft-edged and pleasant, never harsh, screechy or aggressive. Dry close-mic recording, no reverb, no music, no voice. One single iron pickaxe strike on soft rock inside a mine, a muffled dull chip and a few small stones falling. Soft-edged, not a sharp clang. Only one strike. No wind, no rustling leaves, no birds, no background noise. Details: soft sandstone.",
+          "duration": 0.5214866668309005,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0319
+          ],
+          [
+            "c1",
+            "c3",
+            0.0276
+          ],
+          [
+            "c1",
+            "c6",
+            0.0076
+          ],
+          [
+            "c1",
+            "c7",
+            0.0095
+          ],
+          [
+            "c1",
+            "c8",
+            0.0178
+          ],
+          [
+            "c1",
+            "c9",
+            0.0296
+          ],
+          [
+            "c1",
+            "c10",
+            0.0214
+          ],
+          [
+            "c1",
+            "c11",
+            0.0268
+          ],
+          [
+            "c1",
+            "c12",
+            0.0102
+          ],
+          [
+            "c1",
+            "c13",
+            0.0087
+          ],
+          [
+            "c1",
+            "c14",
+            0.0121
+          ],
+          [
+            "c1",
+            "c15",
+            0.0337
+          ],
+          [
+            "c4",
+            "c5",
+            0.0276
+          ],
+          [
+            "c4",
+            "c16",
+            0.0123
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0076,
+          "c2": 0.0107,
+          "c3": 0.0072,
+          "c4": 0.0123,
+          "c5": 0.0176,
+          "c6": 0.0076,
+          "c7": 0.008,
+          "c8": 0.0161,
+          "c9": 0.0239,
+          "c10": 0.0072,
+          "c11": 0.0154,
+          "c12": 0.008,
+          "c13": 0.0087,
+          "c14": 0.0103,
+          "c15": 0.008,
+          "c16": 0.0107
+        },
+        "ref_distance": {
+          "c1": 0.0381,
+          "c2": 0.0245,
+          "c3": 0.0251,
+          "c4": 0.0361,
+          "c5": 0.0541,
+          "c6": 0.0469,
+          "c7": 0.0421,
+          "c8": 0.0334,
+          "c9": 0.0474,
+          "c10": 0.0218,
+          "c11": 0.0463,
+          "c12": 0.0305,
+          "c13": 0.0405,
+          "c14": 0.0393,
+          "c15": 0.0387,
+          "c16": 0.0259
+        }
+      }
+    }
+  }
+}

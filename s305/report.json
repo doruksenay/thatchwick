@@ -1,0 +1,164 @@
+{
+  "job": "s305",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T22:00:21Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.299,
+          "lufs": -22.2,
+          "true_peak_db": -1.0,
+          "rms_db": -22.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft low muted wooden knock twice, gently saying no. Not harsh, not a buzzer. Details: low felt-wrapped wood.",
+          "duration": 0.4025818935593046,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.308,
+          "lufs": -21.9,
+          "true_peak_db": -1.0,
+          "rms_db": -21.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0309)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft low muted wooden knock twice, gently saying no. Not harsh, not a buzzer. Details: hollow wooden box.",
+          "duration": 0.41170251761171656,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.395,
+          "lufs": -27.9,
+          "true_peak_db": -1.0,
+          "rms_db": -27.9,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft low muted wooden knock twice, gently saying no. Not harsh, not a buzzer. Details: low felt-wrapped wood.",
+          "duration": 0.36271827254444744,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 0.441,
+          "lufs": -25.1,
+          "true_peak_db": -1.0,
+          "rms_db": -25.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft low muted wooden knock twice, gently saying no. Not harsh, not a buzzer. Details: hollow wooden box.",
+          "duration": 0.40070395890986793,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.438,
+          "lufs": -21.3,
+          "true_peak_db": -1.0,
+          "rms_db": -21.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0257)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft low muted wooden knock twice, gently saying no. Not harsh, not a buzzer. Details: low felt-wrapped wood.",
+          "duration": 0.36786724937972576,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.389,
+          "lufs": -24.8,
+          "true_peak_db": -1.0,
+          "rms_db": -24.8,
+          "flags": [
+            "c4 ile neredeyse aynı (0.0268)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft low muted wooden knock twice, gently saying no. Not harsh, not a buzzer. Details: hollow wooden box.",
+          "duration": 0.4048898888561283,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.409,
+          "lufs": -25.3,
+          "true_peak_db": -1.0,
+          "rms_db": -25.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0254)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft low muted wooden knock twice, gently saying no. Not harsh, not a buzzer. Details: low felt-wrapped wood.",
+          "duration": 0.41741332127803327,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.283,
+          "lufs": -22.9,
+          "true_peak_db": -1.0,
+          "rms_db": -22.9,
+          "flags": [
+            "c3 ile neredeyse aynı (0.031)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A soft low muted wooden knock twice, gently saying no. Not harsh, not a buzzer. Details: hollow wooden box.",
+          "duration": 0.4050428389008877,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0309
+          ],
+          [
+            "c1",
+            "c5",
+            0.0257
+          ],
+          [
+            "c1",
+            "c7",
+            0.0254
+          ],
+          [
+            "c3",
+            "c8",
+            0.031
+          ],
+          [
+            "c4",
+            "c6",
+            0.0268
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0254,
+          "c2": 0.0132,
+          "c3": 0.031,
+          "c4": 0.0202,
+          "c5": 0.0199,
+          "c6": 0.0239,
+          "c7": 0.0199,
+          "c8": 0.0132
+        },
+        "ref_distance": {
+          "c1": 0.1223,
+          "c2": 0.101,
+          "c3": 0.0482,
+          "c4": 0.1292,
+          "c5": 0.1311,
+          "c6": 0.1203,
+          "c7": 0.1457,
+          "c8": 0.0657
+        }
+      }
+    }
+  }
+}

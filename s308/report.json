@@ -1,0 +1,168 @@
+{
+  "job": "s308",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T22:00:54Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.434,
+          "lufs": -28.6,
+          "true_peak_db": -1.0,
+          "rms_db": -28.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small copper coins slid out of a cloth purse onto a wooden counter, soft clinks. Details: two coins.",
+          "duration": 0.5177513321870187,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.52,
+          "lufs": -24.3,
+          "true_peak_db": -1.0,
+          "rms_db": -25.7,
+          "note": "tepe sınırında, yükseklik -24.3 (hedef -20)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small copper coins slid out of a cloth purse onto a wooden counter, soft clinks. Details: a small handful.",
+          "duration": 0.5492873732547754,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.508,
+          "lufs": -24.5,
+          "true_peak_db": -1.0,
+          "rms_db": -27.4,
+          "note": "tepe sınırında, yükseklik -24.5 (hedef -20)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0282)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small copper coins slid out of a cloth purse onto a wooden counter, soft clinks. Details: two coins.",
+          "duration": 0.5297447269297174,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.461,
+          "lufs": -25.7,
+          "true_peak_db": -1.0,
+          "rms_db": -27.8,
+          "note": "tepe sınırında, yükseklik -25.7 (hedef -20)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0239)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small copper coins slid out of a cloth purse onto a wooden counter, soft clinks. Details: a small handful.",
+          "duration": 0.493213722883448,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.48,
+          "lufs": -25.5,
+          "true_peak_db": -1.0,
+          "rms_db": -24.5,
+          "note": "tepe sınırında, yükseklik -25.5 (hedef -20)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0272)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small copper coins slid out of a cloth purse onto a wooden counter, soft clinks. Details: two coins.",
+          "duration": 0.47501181133664727,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.52,
+          "lufs": -22.5,
+          "true_peak_db": -1.0,
+          "rms_db": -24.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0279)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small copper coins slid out of a cloth purse onto a wooden counter, soft clinks. Details: a small handful.",
+          "duration": 0.5286696669250526,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.488,
+          "lufs": -20.0,
+          "true_peak_db": -3.5,
+          "rms_db": -24.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small copper coins slid out of a cloth purse onto a wooden counter, soft clinks. Details: two coins.",
+          "duration": 0.5403829492080535,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c8": {
+          "duration_s": 0.458,
+          "lufs": -20.0,
+          "true_peak_db": -2.5,
+          "rms_db": -19.4,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0193)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small copper coins slid out of a cloth purse onto a wooden counter, soft clinks. Details: a small handful.",
+          "duration": 0.5109461648174235,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0282
+          ],
+          [
+            "c1",
+            "c4",
+            0.0239
+          ],
+          [
+            "c1",
+            "c5",
+            0.0272
+          ],
+          [
+            "c1",
+            "c6",
+            0.0279
+          ],
+          [
+            "c1",
+            "c8",
+            0.0193
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0193,
+          "c2": 0.0194,
+          "c3": 0.0237,
+          "c4": 0.0177,
+          "c5": 0.0188,
+          "c6": 0.0145,
+          "c7": 0.0338,
+          "c8": 0.0145
+        },
+        "ref_distance": {
+          "c1": 0.0282,
+          "c2": 0.0258,
+          "c3": 0.0376,
+          "c4": 0.0216,
+          "c5": 0.0181,
+          "c6": 0.0289,
+          "c7": 0.0801,
+          "c8": 0.0226
+        }
+      }
+    }
+  }
+}

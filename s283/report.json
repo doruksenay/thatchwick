@@ -1,0 +1,155 @@
+{
+  "job": "s283",
+  "kind": "sfx",
+  "family": "animals",
+  "created": "2026-11-20T21:56:46Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.963,
+          "lufs": -18.0,
+          "true_peak_db": -6.1,
+          "rms_db": -21.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly house cat giving one soft short meow, then a little purr. No wind, no rustling leaves, no birds, no background noise. Details: asking for attention.",
+          "duration": 1.059115712330571,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.908,
+          "lufs": -18.0,
+          "true_peak_db": -7.8,
+          "rms_db": -21.4,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0148)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly house cat giving one soft short meow, then a little purr. No wind, no rustling leaves, no birds, no background noise. Details: sleepy greeting.",
+          "duration": 0.9731955861341931,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.88,
+          "lufs": -18.0,
+          "true_peak_db": -5.4,
+          "rms_db": -21.5,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0096)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly house cat giving one soft short meow, then a little purr. No wind, no rustling leaves, no birds, no background noise. Details: asking for attention.",
+          "duration": 0.9406055384376774,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.048,
+          "lufs": -18.0,
+          "true_peak_db": -6.3,
+          "rms_db": -21.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly house cat giving one soft short meow, then a little purr. No wind, no rustling leaves, no birds, no background noise. Details: sleepy greeting.",
+          "duration": 1.0949593156743966,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.982,
+          "lufs": -18.0,
+          "true_peak_db": -7.1,
+          "rms_db": -21.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly house cat giving one soft short meow, then a little purr. No wind, no rustling leaves, no birds, no background noise. Details: asking for attention.",
+          "duration": 1.0669186494669372,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 0.873,
+          "lufs": -18.0,
+          "true_peak_db": -5.6,
+          "rms_db": -20.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0188)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly house cat giving one soft short meow, then a little purr. No wind, no rustling leaves, no birds, no background noise. Details: sleepy greeting.",
+          "duration": 0.9085775815374595,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.895,
+          "lufs": -18.0,
+          "true_peak_db": -6.2,
+          "rms_db": -22.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0141)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly house cat giving one soft short meow, then a little purr. No wind, no rustling leaves, no birds, no background noise. Details: asking for attention.",
+          "duration": 0.9732805520275603,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.898,
+          "lufs": -18.0,
+          "true_peak_db": -5.5,
+          "rms_db": -21.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0254)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly house cat giving one soft short meow, then a little purr. No wind, no rustling leaves, no birds, no background noise. Details: sleepy greeting.",
+          "duration": 0.9328964413156462,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0148
+          ],
+          [
+            "c1",
+            "c3",
+            0.0096
+          ],
+          [
+            "c1",
+            "c6",
+            0.0188
+          ],
+          [
+            "c1",
+            "c7",
+            0.0141
+          ],
+          [
+            "c1",
+            "c8",
+            0.0254
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0096,
+          "c2": 0.0148,
+          "c3": 0.0096,
+          "c4": 0.0199,
+          "c5": 0.0188,
+          "c6": 0.0131,
+          "c7": 0.0141,
+          "c8": 0.0188
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

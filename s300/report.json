@@ -1,0 +1,165 @@
+{
+  "job": "s300",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T21:59:22Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.456,
+          "lufs": -23.7,
+          "true_peak_db": -1.0,
+          "rms_db": -25.7,
+          "note": "tepe sınırında, yükseklik -23.7 (hedef -20)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Opening a cloth-bound book or unrolling a small linen panel, a soft papery flap. Details: parchment page turn.",
+          "duration": 0.43088143567017695,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.439,
+          "lufs": -25.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0323)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Opening a cloth-bound book or unrolling a small linen panel, a soft papery flap. Details: linen cloth unfold.",
+          "duration": 0.36854397986652443,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.433,
+          "lufs": -22.1,
+          "true_peak_db": -1.0,
+          "rms_db": -22.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0246)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Opening a cloth-bound book or unrolling a small linen panel, a soft papery flap. Details: parchment page turn.",
+          "duration": 0.38780477091522764,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.462,
+          "lufs": -20.6,
+          "true_peak_db": -1.0,
+          "rms_db": -21.9,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Opening a cloth-bound book or unrolling a small linen panel, a soft papery flap. Details: linen cloth unfold.",
+          "duration": 0.43275292583870284,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.465,
+          "lufs": -21.9,
+          "true_peak_db": -1.0,
+          "rms_db": -23.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0259)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Opening a cloth-bound book or unrolling a small linen panel, a soft papery flap. Details: parchment page turn.",
+          "duration": 0.4286457385109359,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.472,
+          "lufs": -21.7,
+          "true_peak_db": -1.0,
+          "rms_db": -22.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Opening a cloth-bound book or unrolling a small linen panel, a soft papery flap. Details: linen cloth unfold.",
+          "duration": 0.43086582357952113,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 0.437,
+          "lufs": -26.8,
+          "true_peak_db": -1.0,
+          "rms_db": -26.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0049)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Opening a cloth-bound book or unrolling a small linen panel, a soft papery flap. Details: parchment page turn.",
+          "duration": 0.43547421727382096,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.457,
+          "lufs": -21.3,
+          "true_peak_db": -1.0,
+          "rms_db": -22.7,
+          "flags": [
+            "c6 ile neredeyse aynı (0.0124)"
+          ],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. Opening a cloth-bound book or unrolling a small linen panel, a soft papery flap. Details: linen cloth unfold.",
+          "duration": 0.3984997022270623,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0323
+          ],
+          [
+            "c1",
+            "c3",
+            0.0246
+          ],
+          [
+            "c1",
+            "c5",
+            0.0259
+          ],
+          [
+            "c1",
+            "c7",
+            0.0049
+          ],
+          [
+            "c6",
+            "c8",
+            0.0124
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0049,
+          "c2": 0.0207,
+          "c3": 0.0207,
+          "c4": 0.0605,
+          "c5": 0.0259,
+          "c6": 0.0124,
+          "c7": 0.0049,
+          "c8": 0.0124
+        },
+        "ref_distance": {
+          "c1": 0.0435,
+          "c2": 0.0354,
+          "c3": 0.0429,
+          "c4": 0.1127,
+          "c5": 0.0544,
+          "c6": 0.0362,
+          "c7": 0.0462,
+          "c8": 0.0481
+        }
+      }
+    }
+  }
+}

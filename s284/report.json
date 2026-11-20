@@ -1,0 +1,155 @@
+{
+  "job": "s284",
+  "kind": "sfx",
+  "family": "animals",
+  "created": "2026-11-20T21:57:03Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.879,
+          "lufs": -21.0,
+          "true_peak_db": -1.0,
+          "rms_db": -20.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly farm dog giving one or two soft happy woofs, tail-wagging mood, not aggressive. No wind, no rustling leaves, no birds, no background noise. Details: small terrier.",
+          "duration": 1.0854780005472544,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.023,
+          "lufs": -18.0,
+          "true_peak_db": -1.7,
+          "rms_db": -18.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0255)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly farm dog giving one or two soft happy woofs, tail-wagging mood, not aggressive. No wind, no rustling leaves, no birds, no background noise. Details: medium shepherd dog.",
+          "duration": 1.083872949776733,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.836,
+          "lufs": -18.5,
+          "true_peak_db": -1.0,
+          "rms_db": -18.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0279)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly farm dog giving one or two soft happy woofs, tail-wagging mood, not aggressive. No wind, no rustling leaves, no birds, no background noise. Details: small terrier.",
+          "duration": 0.9740169504733712,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.9,
+          "lufs": -18.3,
+          "true_peak_db": -1.0,
+          "rms_db": -18.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly farm dog giving one or two soft happy woofs, tail-wagging mood, not aggressive. No wind, no rustling leaves, no birds, no background noise. Details: medium shepherd dog.",
+          "duration": 0.9739693503036687,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.891,
+          "lufs": -18.0,
+          "true_peak_db": -3.2,
+          "rms_db": -17.9,
+          "flags": [
+            "c4 ile neredeyse aynı (0.0216)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly farm dog giving one or two soft happy woofs, tail-wagging mood, not aggressive. No wind, no rustling leaves, no birds, no background noise. Details: small terrier.",
+          "duration": 0.9316704265629301,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.983,
+          "lufs": -18.0,
+          "true_peak_db": -2.2,
+          "rms_db": -18.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0314)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly farm dog giving one or two soft happy woofs, tail-wagging mood, not aggressive. No wind, no rustling leaves, no birds, no background noise. Details: medium shepherd dog.",
+          "duration": 1.0874666532808104,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.894,
+          "lufs": -18.0,
+          "true_peak_db": -4.3,
+          "rms_db": -18.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly farm dog giving one or two soft happy woofs, tail-wagging mood, not aggressive. No wind, no rustling leaves, no birds, no background noise. Details: small terrier.",
+          "duration": 1.0231321103212905,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c8": {
+          "duration_s": 0.781,
+          "lufs": -18.0,
+          "true_peak_db": -2.0,
+          "rms_db": -18.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0187)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A friendly farm dog giving one or two soft happy woofs, tail-wagging mood, not aggressive. No wind, no rustling leaves, no birds, no background noise. Details: medium shepherd dog.",
+          "duration": 0.9556427201719743,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0255
+          ],
+          [
+            "c1",
+            "c3",
+            0.0279
+          ],
+          [
+            "c1",
+            "c6",
+            0.0314
+          ],
+          [
+            "c1",
+            "c8",
+            0.0187
+          ],
+          [
+            "c4",
+            "c5",
+            0.0216
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0187,
+          "c2": 0.0151,
+          "c3": 0.0171,
+          "c4": 0.0216,
+          "c5": 0.0156,
+          "c6": 0.0151,
+          "c7": 0.0487,
+          "c8": 0.0187
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

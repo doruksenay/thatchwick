@@ -1,0 +1,307 @@
+{
+  "job": "s281",
+  "kind": "sfx",
+  "family": "animals",
+  "created": "2026-11-20T21:53:50Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.058,
+          "lufs": -20.1,
+          "true_peak_db": -1.0,
+          "rms_db": -20.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: curious little cluck.",
+          "duration": 1.1040769562253383,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.16,
+          "lufs": -19.7,
+          "true_peak_db": -1.0,
+          "rms_db": -19.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0114)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: calm pecking cluck.",
+          "duration": 1.1873256480558927,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.119,
+          "lufs": -18.0,
+          "true_peak_db": -3.4,
+          "rms_db": -20.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: curious little cluck.",
+          "duration": 1.260896246791843,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 1.124,
+          "lufs": -19.3,
+          "true_peak_db": -1.0,
+          "rms_db": -19.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0125)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: calm pecking cluck.",
+          "duration": 1.2055797555807541,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.279,
+          "lufs": -19.0,
+          "true_peak_db": -1.0,
+          "rms_db": -19.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: curious little cluck.",
+          "duration": 1.2903632584253757,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 1.084,
+          "lufs": -20.8,
+          "true_peak_db": -1.0,
+          "rms_db": -21.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0337)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: calm pecking cluck.",
+          "duration": 1.1644889133874223,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.118,
+          "lufs": -18.0,
+          "true_peak_db": -1.2,
+          "rms_db": -18.4,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0347)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: curious little cluck.",
+          "duration": 1.118564139024353,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.155,
+          "lufs": -19.4,
+          "true_peak_db": -1.0,
+          "rms_db": -19.9,
+          "flags": [
+            "c3 ile neredeyse aynı (0.0329)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: calm pecking cluck.",
+          "duration": 1.1933135944055235,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c9": {
+          "duration_s": 1.12,
+          "lufs": -18.0,
+          "true_peak_db": -5.3,
+          "rms_db": -21.0,
+          "flags": [
+            "c3 ile neredeyse aynı (0.0213)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: curious little cluck.",
+          "duration": 1.1500890373381314,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c10": {
+          "duration_s": 1.137,
+          "lufs": -18.0,
+          "true_peak_db": -2.4,
+          "rms_db": -21.5,
+          "flags": [
+            "c3 ile neredeyse aynı (0.0234)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: calm pecking cluck.",
+          "duration": 1.1821112425700373,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c11": {
+          "duration_s": 1.094,
+          "lufs": -18.0,
+          "true_peak_db": -1.1,
+          "rms_db": -18.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: curious little cluck.",
+          "duration": 1.135186150219469,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c12": {
+          "duration_s": 1.103,
+          "lufs": -18.0,
+          "true_peak_db": -2.1,
+          "rms_db": -21.8,
+          "flags": [
+            "c3 ile neredeyse aynı (0.0226)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: calm pecking cluck.",
+          "duration": 1.2155646805594638,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c13": {
+          "duration_s": 1.16,
+          "lufs": -19.6,
+          "true_peak_db": -1.0,
+          "rms_db": -20.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0349)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: curious little cluck.",
+          "duration": 1.1953027959795008,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c14": {
+          "duration_s": 1.032,
+          "lufs": -19.6,
+          "true_peak_db": -1.0,
+          "rms_db": -20.3,
+          "flags": [
+            "c3 ile neredeyse aynı (0.0276)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: calm pecking cluck.",
+          "duration": 1.135219745472394,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c15": {
+          "duration_s": 1.074,
+          "lufs": -18.9,
+          "true_peak_db": -1.0,
+          "rms_db": -19.1,
+          "flags": [
+            "c3 ile neredeyse aynı (0.0342)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: curious little cluck.",
+          "duration": 1.1230962565626508,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c16": {
+          "duration_s": 1.106,
+          "lufs": -18.2,
+          "true_peak_db": -1.0,
+          "rms_db": -18.4,
+          "flags": [
+            "c5 ile neredeyse aynı (0.0323)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A contented farmyard hen clucking softly a few times while pecking. No wind, no rustling leaves, no birds, no background noise. Details: calm pecking cluck.",
+          "duration": 1.2225124885773402,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0114
+          ],
+          [
+            "c1",
+            "c4",
+            0.0125
+          ],
+          [
+            "c1",
+            "c6",
+            0.0337
+          ],
+          [
+            "c1",
+            "c7",
+            0.0347
+          ],
+          [
+            "c1",
+            "c13",
+            0.0349
+          ],
+          [
+            "c3",
+            "c8",
+            0.0329
+          ],
+          [
+            "c3",
+            "c9",
+            0.0213
+          ],
+          [
+            "c3",
+            "c10",
+            0.0234
+          ],
+          [
+            "c3",
+            "c12",
+            0.0226
+          ],
+          [
+            "c3",
+            "c14",
+            0.0276
+          ],
+          [
+            "c3",
+            "c15",
+            0.0342
+          ],
+          [
+            "c5",
+            "c16",
+            0.0323
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0114,
+          "c2": 0.0046,
+          "c3": 0.0213,
+          "c4": 0.0046,
+          "c5": 0.0216,
+          "c6": 0.0065,
+          "c7": 0.0065,
+          "c8": 0.0069,
+          "c9": 0.0213,
+          "c10": 0.0234,
+          "c11": 0.0149,
+          "c12": 0.0223,
+          "c13": 0.0253,
+          "c14": 0.016,
+          "c15": 0.0069,
+          "c16": 0.0235
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

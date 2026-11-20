@@ -1,0 +1,163 @@
+{
+  "job": "s287",
+  "kind": "sfx",
+  "family": "animals",
+  "created": "2026-11-20T21:57:52Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.417,
+          "lufs": -18.0,
+          "true_peak_db": -4.3,
+          "rms_db": -18.5,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A horse giving a soft friendly nicker, or a gentle snort, calm. No wind, no rustling leaves, no birds, no background noise. Details: soft nicker.",
+          "duration": 1.443124068429278,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.481,
+          "lufs": -18.0,
+          "true_peak_db": -3.4,
+          "rms_db": -18.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0211)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A horse giving a soft friendly nicker, or a gentle snort, calm. No wind, no rustling leaves, no birds, no background noise. Details: gentle snort and head shake.",
+          "duration": 1.5772436139099932,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.235,
+          "lufs": -18.0,
+          "true_peak_db": -1.5,
+          "rms_db": -18.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A horse giving a soft friendly nicker, or a gentle snort, calm. No wind, no rustling leaves, no birds, no background noise. Details: soft nicker.",
+          "duration": 1.4182913672002448,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 1.372,
+          "lufs": -18.0,
+          "true_peak_db": -4.2,
+          "rms_db": -18.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0186)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A horse giving a soft friendly nicker, or a gentle snort, calm. No wind, no rustling leaves, no birds, no background noise. Details: gentle snort and head shake.",
+          "duration": 1.5111701412729435,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.429,
+          "lufs": -18.0,
+          "true_peak_db": -1.6,
+          "rms_db": -19.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0234)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A horse giving a soft friendly nicker, or a gentle snort, calm. No wind, no rustling leaves, no birds, no background noise. Details: soft nicker.",
+          "duration": 1.5363752589340474,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.412,
+          "lufs": -18.0,
+          "true_peak_db": -1.4,
+          "rms_db": -18.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0206)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A horse giving a soft friendly nicker, or a gentle snort, calm. No wind, no rustling leaves, no birds, no background noise. Details: gentle snort and head shake.",
+          "duration": 1.5487291561063503,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.448,
+          "lufs": -18.0,
+          "true_peak_db": -3.7,
+          "rms_db": -19.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0135)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A horse giving a soft friendly nicker, or a gentle snort, calm. No wind, no rustling leaves, no birds, no background noise. Details: soft nicker.",
+          "duration": 1.4816116910077262,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.429,
+          "lufs": -18.0,
+          "true_peak_db": -2.5,
+          "rms_db": -18.4,
+          "flags": [
+            "c1 ile neredeyse aynı (0.024)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, real farm animal sound at close distance: natural, calm and endearing, never distressed or aggressive. No music, no human voice. A horse giving a soft friendly nicker, or a gentle snort, calm. No wind, no rustling leaves, no birds, no background noise. Details: gentle snort and head shake.",
+          "duration": 1.597747837837358,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0211
+          ],
+          [
+            "c1",
+            "c4",
+            0.0186
+          ],
+          [
+            "c1",
+            "c5",
+            0.0234
+          ],
+          [
+            "c1",
+            "c6",
+            0.0206
+          ],
+          [
+            "c1",
+            "c7",
+            0.0135
+          ],
+          [
+            "c1",
+            "c8",
+            0.024
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0135,
+          "c2": 0.0106,
+          "c3": 0.0268,
+          "c4": 0.0134,
+          "c5": 0.0156,
+          "c6": 0.0206,
+          "c7": 0.0134,
+          "c8": 0.0106
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "job": "s280",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T22:01:42Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.182,
+          "lufs": -25.3,
+          "true_peak_db": -1.0,
+          "rms_db": -23.8,
+          "note": "tepe sınırında, yükseklik -25.3 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A small overloaded wooden wall shelf giving way: a soft crack, then a few clay cups and wooden bowls tumbling onto a wooden floor and rolling. Clumsy and a little comic, not violent. Details: wooden spoons and baskets.",
+          "duration": 1.6878363098552136,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.25,
+          "lufs": -29.6,
+          "true_peak_db": -1.0,
+          "rms_db": -27.9,
+          "note": "tepe sınırında, yükseklik -29.6 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A small overloaded wooden wall shelf giving way: a soft crack, then a few clay cups and wooden bowls tumbling onto a wooden floor and rolling. Clumsy and a little comic, not violent. Details: clay cups and bowls.",
+          "duration": 1.8531885559454053,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 1.395,
+          "lufs": -26.3,
+          "true_peak_db": -1.0,
+          "rms_db": -24.5,
+          "note": "tepe sınırında, yükseklik -26.3 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0154)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A small overloaded wooden wall shelf giving way: a soft crack, then a few clay cups and wooden bowls tumbling onto a wooden floor and rolling. Clumsy and a little comic, not violent. Details: wooden spoons and baskets.",
+          "duration": 1.7966658404315066,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.335,
+          "lufs": -28.0,
+          "true_peak_db": -1.0,
+          "rms_db": -26.4,
+          "note": "tepe sınırında, yükseklik -28.0 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0292)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. A small overloaded wooden wall shelf giving way: a soft crack, then a few clay cups and wooden bowls tumbling onto a wooden floor and rolling. Clumsy and a little comic, not violent. Details: clay cups and bowls.",
+          "duration": 1.9465366072716725,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0154
+          ],
+          [
+            "c2",
+            "c4",
+            0.0292
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0154,
+          "c2": 0.0184,
+          "c3": 0.0154,
+          "c4": 0.0266
+        },
+        "ref_distance": {
+          "c1": 0.1175,
+          "c2": 0.0929,
+          "c3": 0.105,
+          "c4": 0.0769
+        }
+      }
+    }
+  }
+}

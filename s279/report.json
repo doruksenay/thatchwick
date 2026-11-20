@@ -1,0 +1,187 @@
+{
+  "job": "s279",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T21:56:32Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.586,
+          "lufs": -22.8,
+          "true_peak_db": -1.0,
+          "rms_db": -21.3,
+          "note": "tepe sınırında, yükseklik -22.8 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. Lifting the lid of a wooden storage chest, a short soft creak of the hinge and a light wooden knock. Calm and satisfying. No wind, no rustling leaves, no birds, no background noise. Details: old pine chest.",
+          "duration": 0.8529229163595696,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.718,
+          "lufs": -25.3,
+          "true_peak_db": -1.0,
+          "rms_db": -27.2,
+          "note": "tepe sınırında, yükseklik -25.3 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0265)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. Lifting the lid of a wooden storage chest, a short soft creak of the hinge and a light wooden knock. Calm and satisfying. No wind, no rustling leaves, no birds, no background noise. Details: small oak chest with brass corners.",
+          "duration": 0.9492902231969835,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.739,
+          "lufs": -23.2,
+          "true_peak_db": -1.0,
+          "rms_db": -23.2,
+          "note": "tepe sınırında, yükseklik -23.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0282)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. Lifting the lid of a wooden storage chest, a short soft creak of the hinge and a light wooden knock. Calm and satisfying. No wind, no rustling leaves, no birds, no background noise. Details: old pine chest.",
+          "duration": 0.9435556743027113,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.521,
+          "lufs": -24.4,
+          "true_peak_db": -1.0,
+          "rms_db": -23.1,
+          "note": "tepe sınırında, yükseklik -24.4 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0303)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. Lifting the lid of a wooden storage chest, a short soft creak of the hinge and a light wooden knock. Calm and satisfying. No wind, no rustling leaves, no birds, no background noise. Details: small oak chest with brass corners.",
+          "duration": 0.8508172300800682,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.77,
+          "lufs": -20.4,
+          "true_peak_db": -1.0,
+          "rms_db": -20.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0099)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. Lifting the lid of a wooden storage chest, a short soft creak of the hinge and a light wooden knock. Calm and satisfying. No wind, no rustling leaves, no birds, no background noise. Details: old pine chest.",
+          "duration": 0.9369368968041305,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.454,
+          "lufs": -25.9,
+          "true_peak_db": -1.0,
+          "rms_db": -23.3,
+          "note": "tepe sınırında, yükseklik -25.9 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0138)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. Lifting the lid of a wooden storage chest, a short soft creak of the hinge and a light wooden knock. Calm and satisfying. No wind, no rustling leaves, no birds, no background noise. Details: small oak chest with brass corners.",
+          "duration": 0.8784011506226119,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.692,
+          "lufs": -23.7,
+          "true_peak_db": -1.0,
+          "rms_db": -21.5,
+          "note": "tepe sınırında, yükseklik -23.7 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0063)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. Lifting the lid of a wooden storage chest, a short soft creak of the hinge and a light wooden knock. Calm and satisfying. No wind, no rustling leaves, no birds, no background noise. Details: old pine chest.",
+          "duration": 0.8681434447013272,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.707,
+          "lufs": -21.5,
+          "true_peak_db": -1.0,
+          "rms_db": -21.4,
+          "note": "tepe sınırında, yükseklik -21.5 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0286)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game foley: soft, warm, gentle and pleasant, close and intimate, never harsh, shrill or aggressive. Dry close-mic recording, no reverb, no music, no voice. Lifting the lid of a wooden storage chest, a short soft creak of the hinge and a light wooden knock. Calm and satisfying. No wind, no rustling leaves, no birds, no background noise. Details: small oak chest with brass corners.",
+          "duration": 0.8729429042760077,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0265
+          ],
+          [
+            "c1",
+            "c3",
+            0.0282
+          ],
+          [
+            "c1",
+            "c4",
+            0.0303
+          ],
+          [
+            "c1",
+            "c5",
+            0.0099
+          ],
+          [
+            "c1",
+            "c6",
+            0.0138
+          ],
+          [
+            "c1",
+            "c7",
+            0.0063
+          ],
+          [
+            "c1",
+            "c8",
+            0.0286
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0063,
+          "c2": 0.0242,
+          "c3": 0.0172,
+          "c4": 0.0191,
+          "c5": 0.0055,
+          "c6": 0.0138,
+          "c7": 0.0055,
+          "c8": 0.0242
+        },
+        "ref_distance": {
+          "c1": 0.0284,
+          "c2": 0.0422,
+          "c3": 0.0367,
+          "c4": 0.0592,
+          "c5": 0.029,
+          "c6": 0.0515,
+          "c7": 0.0302,
+          "c8": 0.0443
+        }
+      }
+    }
+  }
+}
