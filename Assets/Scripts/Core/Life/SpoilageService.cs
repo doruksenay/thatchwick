@@ -17,6 +17,8 @@ namespace Thatchwick.Core.Life
     public sealed class SpoilageService
     {
         private sealed class Batch { public int Count; public double Age; }
+        // Parti anahtarı: kalite 0'da yalnızca kimlik, değilse "kimlik#kalite" (53: bozulma kaliteyle ayrı izlenir).
+        private static string BatchKey(string id, int q) => ItemKey.StockKey(id, q);
 
         private readonly ContentDatabase _content;
         private readonly Household _house;
@@ -187,10 +189,16 @@ namespace Thatchwick.Core.Life
         // Envanter ile partileri eşitle: fazlalık yeni parti, eksiklik en eski partilerden düşer.
         private void Reconcile(ItemDef def)
         {
-            var list = Batches(def.Id);
+            var counts = _house.QualityCounts(def.Id);
+            for (int q = 0; q < counts.Length; q++)
+                if (counts[q] > 0 || _batches.ContainsKey(BatchKey(def.Id, q))) Reconcile(def, q, counts[q]);
+        }
+
+        private void Reconcile(ItemDef def, int quality, int actual)
+        {
+            var list = Batches(BatchKey(def.Id, quality));
             int tracked = 0;
             foreach (var b in list) tracked += b.Count;
-            int actual = _house.Count(def.Id);
             if (actual > tracked) list.Add(new Batch { Count = actual - tracked, Age = 0 });
             else if (actual < tracked)
             {
@@ -236,20 +244,21 @@ namespace Thatchwick.Core.Life
             foreach (var def in Spoilable())
             {
                 double rate = plan.RateOf(def.Id) * (plan.Rate.ContainsKey(def.Id) ? 1.0 : Extra());
-                var list = Batches(def.Id);
-                int spoiled = 0;
-                for (int i = 0; i < list.Count; )
+                int removed = 0;
+                for (int q = 0; q <= ItemQuality.Max; q++)
                 {
-                    list[i].Age += gameDays * rate;
-                    if (list[i].Age >= def.SpoilDays) { spoiled += list[i].Count; list.RemoveAt(i); }
-                    else i++;
+                    string key = BatchKey(def.Id, q);
+                    if (!_batches.TryGetValue(key, out var list)) continue;
+                    int spoiled = 0;
+                    for (int i = 0; i < list.Count; )
+                    {
+                        list[i].Age += gameDays * rate;
+                        if (list[i].Age >= def.SpoilDays) { spoiled += list[i].Count; list.RemoveAt(i); }
+                        else i++;
+                    }
+                    for (int i = 0; i < spoiled; i++) if (_house.TryTakeQuality(def.Id, q)) removed++;
                 }
-                if (spoiled > 0)
-                {
-                    int removed = 0;
-                    for (int i = 0; i < spoiled; i++) if (_house.TryTakeItem(def.Id)) removed++;
-                    if (removed > 0) Spoiled?.Invoke(def.Id, removed);
-                }
+                if (removed > 0) Spoiled?.Invoke(def.Id, removed);
             }
         }
 
@@ -258,8 +267,10 @@ namespace Thatchwick.Core.Life
         {
             if (!_content.Items.TryGet(itemId, out var def) || def.SpoilDays <= 0f) return 0;
             Reconcile(def);
-            var list = Batches(itemId);
-            return list.Count > 0 ? list[0].Age : 0;
+            double oldest = 0;
+            for (int q = 0; q <= ItemQuality.Max; q++)
+                if (_batches.TryGetValue(BatchKey(itemId, q), out var list) && list.Count > 0) oldest = Math.Max(oldest, list[0].Age);
+            return oldest;
         }
 
         /// <summary>Bir yiyeceğin en taze ve en eski partisinin kalan günü (kiler çarpanıyla); izlenmiyorsa -1.</summary>
@@ -267,10 +278,12 @@ namespace Thatchwick.Core.Life
         {
             if (!_content.Items.TryGet(itemId, out var def) || def.SpoilDays <= 0f) return -1;
             Reconcile(def);
-            var list = Batches(itemId);
-            if (list.Count == 0) return -1;
+            double oldest = -1;
+            for (int q = 0; q <= ItemQuality.Max; q++)
+                if (_batches.TryGetValue(BatchKey(itemId, q), out var list) && list.Count > 0) oldest = Math.Max(oldest, list[0].Age);
+            if (oldest < 0) return -1;
             double rate = Math.Max(0.01, CurrentPlan.RateOf(itemId) * (_house.Count(itemId) > 0 ? 1.0 : Extra()));
-            return (def.SpoilDays - list[0].Age) / rate;
+            return (def.SpoilDays - oldest) / rate;
         }
 
         // ---- kayıt ----
@@ -280,7 +293,11 @@ namespace Thatchwick.Core.Life
             var result = new List<SpoilBatchSave>();
             foreach (var kv in _batches)
                 foreach (var b in kv.Value)
-                    if (b.Count > 0) result.Add(new SpoilBatchSave { item = kv.Key, count = b.Count, age = b.Age });
+                    if (b.Count > 0)
+                    {
+                        var k = ItemKey.FromStockKey(kv.Key);
+                        result.Add(new SpoilBatchSave { item = k.Id, quality = k.Quality, count = b.Count, age = b.Age });
+                    }
             return result;
         }
 
@@ -290,8 +307,12 @@ namespace Thatchwick.Core.Life
             _reconciledVersion = -1;
             if (saved == null) return;
             foreach (var s in saved)
-                if (s != null && s.count > 0 && _content.Items.Contains(s.item))
-                    Batches(s.item).Add(new Batch { Count = s.count, Age = Math.Max(0, s.age) });
+            {
+                if (s == null || s.count <= 0) continue;
+                var (id, q) = ItemQuality.Resolve(s.item);
+                if (!_content.Items.Contains(id)) continue;
+                Batches(BatchKey(id, Math.Max(q, s.quality))).Add(new Batch { Count = s.count, Age = Math.Max(0, s.age) });
+            }
         }
     }
 }

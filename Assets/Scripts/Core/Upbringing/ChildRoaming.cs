@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Life;
 using Thatchwick.Core.World;
 
@@ -22,7 +23,8 @@ namespace Thatchwick.Core.Upbringing
     {
         public Character Villager;
         public Character Child;
-        public string Line;
+        /// <summary>Köylünün sözü (anahtarlı).</summary>
+        public LocText Line;
         /// <summary>Hane itibarı değişimi (0 ya da eksi).</summary>
         public int Reputation;
         /// <summary>Köylü çocuğu eve getiriyor (gece ya da kötü hava).</summary>
@@ -58,26 +60,12 @@ namespace Thatchwick.Core.Upbringing
 
         public ChildRoaming(int seed = 409) { _rng = new Random(seed); }
 
-        public static readonly string[] ScoldLines =
-        {
-            "Bu çocuk neden tek başına geziyor?",
-            "Bu nasıl bir aile böyle?",
-            "Annen nerede yavrum?",
-            "Hava kararıyor, evine git.",
-            "Tek başına buralarda ne arıyorsun sen?",
-            "Kimin çocuğu bu? Kimse aramıyor mu?",
-        };
+        /// <summary>Söylenme sözleri (ui anahtarları "roam.scold.0".."5").</summary>
+        public const int ScoldCount = 6, KindCount = 4;
+        public static LocText Scold(int i) => LocText.Of("roam.scold." + i);
+        public static LocText Kind(int i) => LocText.Of("roam.kind." + i);
 
-        public static readonly string[] KindLines =
-        {
-            "Ne büyümüş maşallah.",
-            "Kimin torunusun sen?",
-            "Selam küçük, annene selam söyle.",
-            "Aferin, ne güzel geziyorsun.",
-        };
-
-        public static string PermissionName(RoamPermission p) =>
-            p == RoamPermission.Home ? "Yalnızca arsa" : p == RoamPermission.Road ? "Köy yoluna kadar" : "Gündüz kasaba";
+        public static LocText PermissionText(RoamPermission p) => LocText.Of("roam.perm." + p.ToString().ToLowerInvariant());
 
         public RoamPermission PermissionOf(int childId) => _permissions.TryGetValue(childId, out var p) ? p : RoamPermission.Home;
         public void SetPermission(int childId, RoamPermission p) { if (p == RoamPermission.Home) _permissions.Remove(childId); else _permissions[childId] = p; }
@@ -94,33 +82,33 @@ namespace Thatchwick.Core.Upbringing
         public static bool IsMinor(Character c) => c != null && (c.Stage == AgeStage.Baby || c.Stage == AgeStage.Child);
 
         /// <summary>
-        /// Küçük, bu bölgeye tek başına girebilir mi? Yasaksa nedeni (karakterin ağzından), serbestse null.
+        /// Küçük, bu bölgeye tek başına girebilir mi? Yasaksa nedeni (karakterin ağzından), serbestse boş.
         /// <paramref name="accompanied"/>: yanında hanenin bir yetişkini ya da ergeni var.
         /// </summary>
-        public string Blocker(Character c, Region region, double hour, long day, bool accompanied)
+        public LocText Blocker(Character c, Region region, double hour, long day, bool accompanied)
         {
-            if (!IsMinor(c) || region == null || region.Id == Regions.Farm.Id) return null;
-            if (accompanied) return null;
-            if (c.Stage == AgeStage.Baby) return "Bebek bir büyüğü olmadan arsadan çıkamaz.";
+            if (!IsMinor(c) || region == null || region.Id == Regions.Farm.Id) return default;
+            if (accompanied) return default;
+            if (c.Stage == AgeStage.Baby) return LocText.Of("roam.block.baby");
             bool wild = region.Id != Regions.Road.Id && region.Id != Regions.Town.Id;
-            if (wild) return $"{region.Name}: tek başıma gidemem, bir büyüğümle gelmeliyim.";
+            if (wild) return LocText.Of("roam.block.wild", ("region", LocText.Of("region." + region.Id)));
             var p = Effective(c.Id, day);
-            if (region.Id == Regions.Road.Id) return p >= RoamPermission.Road ? null : "Annemden izin almalıyım.";
-            if (p < RoamPermission.Town) return "Annemden izin almalıyım.";
-            if (hour < DayStartHour || hour >= DayEndHour) return "Karanlıkta kasabaya gidemem.";
-            return null;
+            if (region.Id == Regions.Road.Id) return p >= RoamPermission.Road ? default : LocText.Of("roam.block.ask");
+            if (p < RoamPermission.Town) return LocText.Of("roam.block.ask");
+            if (hour < DayStartHour || hour >= DayEndHour) return LocText.Of("roam.block.dark");
+            return default;
         }
 
         /// <summary>
         /// İzin iste: yetişkin saat, hava, çocuğun yaşı, kendi ruh hali ve özelliğine göre karar verir. Verilirse o gün geçerli.
         /// Dönen metin yetişkinin cevabı.
         /// </summary>
-        public bool AskPermission(Character child, Character adult, RoamPermission wanted, double hour, long day, WeatherType weather, out string reply, double? roll = null)
+        public bool AskPermission(Character child, Character adult, RoamPermission wanted, double hour, long day, WeatherType weather, out LocText reply, double? roll = null)
         {
-            if (child == null || adult == null) { reply = "Sorulacak kimse yok."; return false; }
-            if (child.Stage == AgeStage.Baby) { reply = $"{adult.Name}: \"Bebek tek başına hiçbir yere gitmez.\""; return false; }
-            if (hour < DayStartHour || hour >= DayEndHour) { reply = $"{adult.Name}: \"Bu saatte mi? Olmaz, hava karardı.\""; return false; }
-            if (weather == WeatherType.Storm) { reply = $"{adult.Name}: \"Fırtınada dışarı çıkılmaz.\""; return false; }
+            if (child == null || adult == null) { reply = LocText.Of("roam.ask.nobody"); return false; }
+            if (child.Stage == AgeStage.Baby) { reply = LocText.Of("roam.ask.baby", ("name", adult.Name)); return false; }
+            if (hour < DayStartHour || hour >= DayEndHour) { reply = LocText.Of("roam.ask.dark", ("name", adult.Name)); return false; }
+            if (weather == WeatherType.Storm) { reply = LocText.Of("roam.ask.storm", ("name", adult.Name)); return false; }
             double chance = wanted == RoamPermission.Town ? 0.55 : 0.8;
             double childDays = child.AgeDays - child.AgeConfig.ChildStartDay;   // çocukluğun kaçıncı günü
             if (childDays < 4) chance -= 0.25;   // daha küçük
@@ -131,9 +119,9 @@ namespace Thatchwick.Core.Upbringing
             if (yes)
             {
                 _todayGrants[child.Id] = (day, wanted);
-                reply = wanted == RoamPermission.Town ? $"{adult.Name}: \"Peki, ama hava kararmadan dön.\"" : $"{adult.Name}: \"Köy yoluna kadar git, uzaklaşma.\"";
+                reply = LocText.Of(wanted == RoamPermission.Town ? "roam.ask.yes_town" : "roam.ask.yes_road", ("name", adult.Name));
             }
-            else reply = $"{adult.Name}: \"Bugün olmaz, evde kal.\"";
+            else reply = LocText.Of("roam.ask.no", ("name", adult.Name));
             return yes;
         }
 
@@ -160,15 +148,15 @@ namespace Thatchwick.Core.Upbringing
 
             bool night = hour < DayStartHour || hour >= DayEndHour;
             bool bad = weather == WeatherType.Storm || weather == WeatherType.Snow;
-            bool allowed = Blocker(child, region, hour, day, false) == null;
+            bool allowed = Blocker(child, region, hour, day, false).IsEmpty;
             var ev = new GazeEvent { Villager = seer, Child = child };
             if (allowed && !night && !bad)
             {
-                ev.Line = KindLines[_rng.Next(KindLines.Length)];
+                ev.Line = Kind(_rng.Next(KindCount));
                 return ev;
             }
             ev.Scolding = true;
-            ev.Line = night ? (_rng.NextDouble() < 0.5 ? "Hava kararıyor, evine git." : ScoldLines[_rng.Next(ScoldLines.Length)]) : ScoldLines[_rng.Next(ScoldLines.Length)];
+            ev.Line = night && _rng.NextDouble() < 0.5 ? Scold(3) : Scold(_rng.Next(ScoldCount));
             int count = _sightings.TryGetValue(child.Id, out var s) && s.day == day ? s.count + 1 : 1;
             _sightings[child.Id] = (day, count);
             int penalty = count >= 2 ? (child.Stage == AgeStage.Baby ? 2 : 1) : 0;

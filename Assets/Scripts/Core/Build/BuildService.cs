@@ -119,17 +119,27 @@ namespace Thatchwick.Core.Build
             for (int i = from; i < items.Count; i++)
             {
                 var it = items[i];
-                if (it.Def.Id == Decor.Debris) { foreach (var c in it.Contents) _house.AddItem(c.ItemId, 1, c.Condition); continue; }
+                if (it.Def.Id == Decor.Debris) { foreach (var c in it.Contents) _house.Add(new ItemKey(c.ItemId, c.Quality, c.Condition, false, c.Maker), 1); continue; }
                 if (it.Def.IsFillDecor) DecorSystem.EmptyInto(it, _house, _content);   // sepetteki ürünler de döner (çürük atılır)
-                _house.AddItem(it.Def.Id, 1, it.Condition);
+                _house.Add(KeyOf(it), 1);
             }
         }
 
-        /// <summary>Örneğin satış değeri: fiyatın oranı × durum çarpanı (hasarlı %50, onarılmış %75).</summary>
-        public int SellValue(ItemInstance item) => item == null ? 0 : (int)Math.Floor(item.Def.Price * SellRatio * Decor.SellFactor(item.Condition));
+        /// <summary>Yerleşik eşyanın envanter anahtarı: kalite, durum ve eser korunur (53).</summary>
+        public static ItemKey KeyOf(ItemInstance it) => new ItemKey(it.Def.Id, it.Quality, it.Condition, false, it.Maker);
+
+        private static void ApplyKey(ItemInstance it, ItemKey key)
+        {
+            it.Condition = key.Condition;
+            it.Quality = it.Def.HasQuality ? key.Quality : 0;
+            it.Maker = key.Maker;
+        }
+
+        /// <summary>Örneğin satış değeri: fiyatın oranı × durum çarpanı (hasarlı %50, onarılmış %75) × kalite çarpanı.</summary>
+        public int SellValue(ItemInstance item) => item == null ? 0 : (int)Math.Floor(item.Def.Price * SellRatio * Decor.SellFactor(item.Condition) * ItemQuality.PriceFactor(item.Quality));
 
         /// <summary>Envanterdeki belirli durumdaki bir adedin satış değeri.</summary>
-        public int SellValue(ItemDef def, ItemCondition condition) => (int)Math.Floor(def.Price * SellRatio * Decor.SellFactor(condition));
+        public int SellValue(ItemDef def, ItemCondition condition, int quality = 0) => (int)Math.Floor(def.Price * SellRatio * Decor.SellFactor(condition) * ItemQuality.PriceFactor(quality));
 
         /// <summary>Depo kapasitesi; null ise sınırsız (testler, eski kurulumlar).</summary>
         public StorageService Storage { get; set; }
@@ -229,11 +239,15 @@ namespace Thatchwick.Core.Build
             public string Accent;
             public int Band = -1;
             public ItemCondition Condition;
+            public int Quality, Maker;
+            public bool Embellished;
+            public ItemKey Key => new ItemKey(Def.Id, Quality, Condition, false, Maker);
         }
 
         private static Spot SpotOf(ItemInstance it, ItemDef def = null) =>
             new Spot { Def = def ?? it.Def, Pos = it.Position, Rot = it.Rotation, ParentId = it.ParentId, SlotId = it.SlotId, Wall = it.IsWallMounted,
-                Finish = def == null || def == it.Def ? it.FinishId : null, Accent = def == null || def == it.Def ? it.AccentId : null, Band = it.IsWallMounted ? it.WallBand : -1, Condition = it.Condition };
+                Finish = def == null || def == it.Def ? it.FinishId : null, Accent = def == null || def == it.Def ? it.AccentId : null, Band = it.IsWallMounted ? it.WallBand : -1, Condition = it.Condition,
+                Quality = it.Quality, Maker = it.Maker, Embellished = it.Embellished };
 
         private PlacementCheck CanPutBack(Spot s, int? ignoreItemId = null) =>
             s.ParentId.HasValue ? _world.CanPlaceOnSurface(s.Def, s.ParentId.Value, s.SlotId, ignoreItemId)
@@ -250,6 +264,9 @@ namespace Thatchwick.Core.Build
             it.FinishId = s.Finish;
             it.AccentId = s.Accent;
             it.Condition = s.Condition;
+            it.Quality = s.Quality;
+            it.Maker = s.Maker;
+            it.Embellished = s.Embellished;
             return it;
         }
 
@@ -322,8 +339,8 @@ namespace Thatchwick.Core.Build
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.IsKeepsake) return PlacementCheck.Fail(KeepsakeNoSell);
-            if (!_house.TryTakeItem(itemId, out var cond)) return PlacementCheck.Fail("Envanterde yok.");
-            return FinishInventorySale(itemId, def, cond);
+            if (!_house.TryTake(itemId, TakePolicy.Lowest, out var key)) return PlacementCheck.Fail("Envanterde yok.");
+            return FinishInventorySale(def, key);
         }
 
         /// <summary>Envanterden belirli durumdaki (hasarlı, onarılmış) bir adedi satar; değeri durumla düşer.</summary>
@@ -332,17 +349,26 @@ namespace Thatchwick.Core.Build
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.IsKeepsake) return PlacementCheck.Fail(KeepsakeNoSell);
             if (!_house.TakeCondition(itemId, condition)) return PlacementCheck.Fail($"Envanterde {Decor.ConditionName(condition).ToLowerInvariant()} {def.DisplayName} yok.");
-            return FinishInventorySale(itemId, def, condition);
+            return FinishInventorySale(def, new ItemKey(itemId, 0, condition));
         }
 
-        private PlacementCheck FinishInventorySale(string itemId, ItemDef def, ItemCondition cond)
+        /// <summary>Envanterden tam bu yığından (kalite, durum) bir adet satar (53: satılacak kalite oyuncunun seçimi).</summary>
+        public PlacementCheck SellFromInventory(ItemKey key)
         {
-            int value = SellValue(def, cond);
+            if (!_content.Items.TryGet(key.Id, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
+            if (def.IsKeepsake) return PlacementCheck.Fail(KeepsakeNoSell);
+            if (!_house.TryTakeKey(key)) return PlacementCheck.Fail("Envanterde yok.");
+            return FinishInventorySale(def, key);
+        }
+
+        private PlacementCheck FinishInventorySale(ItemDef def, ItemKey key)
+        {
+            int value = SellValue(def, key.Condition, key.Quality);
             _house.AddAkce(value);
             Record("Satış", () =>
             {
                 if (!_house.TrySpend(value)) return PlacementCheck.Fail("Akçe yetmiyor, satış geri alınamaz.");
-                _house.AddItem(itemId, 1, cond);
+                _house.Add(key, 1);
                 return PlacementCheck.Success;
             });
             return PlacementCheck.Success;
@@ -374,7 +400,7 @@ namespace Thatchwick.Core.Build
             var removed = new List<ItemDef>();
             foreach (var it in removedItems)
             {
-                if (it.Def.IsKeepsake) { _house.AddItem(it.Def.Id, 1, it.Condition); continue; }   // üstündeki hatıra satılmaz, envantere döner
+                if (it.Def.IsKeepsake) { _house.Add(KeyOf(it), 1); continue; }   // üstündeki hatıra satılmaz, envantere döner
                 removed.Add(it.Def); total += SellValue(it);
                 if (it.Def.IsFillDecor) DecorSystem.EmptyInto(it, _house, _content);   // içindekiler satılmaz, envantere döner
             }
@@ -554,9 +580,9 @@ namespace Thatchwick.Core.Build
                 BeginGroup("Merdiven");
             }
             CutStairwell(def, position, rotation);
-            _house.TryTakeItem(itemId, out var cond);
+            _house.TryTake(itemId, TakePolicy.Highest, out var key);   // en iyisi yerleşir (53)
             var placedItem = _world.PlaceItem(def, position, rotation);
-            placedItem.Condition = cond;
+            ApplyKey(placedItem, key);
             placed = placedItem;
             int placedId = placedItem.Id;
             Record("Yerleştirme", () =>
@@ -598,9 +624,9 @@ namespace Thatchwick.Core.Build
             placed = null;
             var check = CanPlaceWallFromInventory(itemId, tile, side, band);
             if (!check.Ok) return check;
-            _house.TryTakeItem(itemId, out var cond);
+            _house.TryTake(itemId, TakePolicy.Highest, out var key);
             var wallItem = _world.PlaceOnWall(_content.Items.Get(itemId), tile, side, band);
-            wallItem.Condition = cond;
+            ApplyKey(wallItem, key);
             placed = wallItem;
             int wallId = wallItem.Id;
             Record("Duvara asma", () =>
@@ -620,9 +646,9 @@ namespace Thatchwick.Core.Build
             var def = _content.Items.Get(itemId);
             var check = _world.CanPlaceOnSurface(def, surfaceItemId, slotId);
             if (!check.Ok) return check;
-            _house.TryTakeItem(itemId, out var cond);
+            _house.TryTake(itemId, TakePolicy.Highest, out var key);
             var decor = _world.PlaceOnSurface(def, surfaceItemId, slotId);
-            decor.Condition = cond;
+            ApplyKey(decor, key);
             placed = decor;
             int decorId = decor.Id;
             Record("Dekor", () =>
@@ -714,7 +740,7 @@ namespace Thatchwick.Core.Build
             {
                 if (!CanPutBack(spot).Ok) return PlacementCheck.Fail("Eski yeri doldu.");
                 if (finishRefund > 0 && _house.Akce < finishRefund) return PlacementCheck.Fail("Akçe yetmiyor, geri alınamaz.");
-                if (!_house.TakeCondition(spot.Def.Id, spot.Condition) && !_house.TryTakeItem(spot.Def.Id)) return PlacementCheck.Fail("Eşya artık envanterde değil.");
+                if (!_house.TryTakeKey(spot.Key) && !_house.TakeCondition(spot.Def.Id, spot.Condition) && !_house.TryTakeItem(spot.Def.Id)) return PlacementCheck.Fail("Eşya artık envanterde değil.");
                 if (finishRefund > 0) _house.TrySpend(finishRefund);
                 PutBack(spot);
                 return PlacementCheck.Success;

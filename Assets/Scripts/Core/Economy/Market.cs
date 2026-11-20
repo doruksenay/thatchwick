@@ -231,11 +231,15 @@ namespace Thatchwick.Core.Economy
             foreach (var g in Goods()) _todayPrices[g.Id] = SellPrice(g.Id);
         }
 
-        public int SellPrice(string itemId)
+        public int SellPrice(string itemId) => SellPrice(itemId, ItemQuality.Common);
+
+        /// <summary>Kalite başına satış fiyatı (53 §4.5): ×1 / 1,25 / 1,5 / 3 / 4. Talep kimlik başına ortaktır.</summary>
+        public int SellPrice(string itemId, int quality)
         {
             var def = _content.Items.Get(itemId);
             double bonus = 1.0 + (SellBonus != null ? Math.Max(0.0, Math.Min(0.75, SellBonus())) : 0.0);
-            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * Calendar(def) * bonus * TradeSellFactor * RawSaturation(itemId) * StallFactor(), MidpointRounding.AwayFromZero));
+            double q = def.HasQuality ? ItemQuality.PriceFactor(quality) : 1.0;
+            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * Calendar(def) * bonus * TradeSellFactor * RawSaturation(itemId) * StallFactor() * q, MidpointRounding.AwayFromZero));
         }
 
         /// <summary>Gün ilerledikçe talep toparlanır; yeni günde teklifler yenilenir.</summary>
@@ -270,14 +274,22 @@ namespace Thatchwick.Core.Economy
         }
 
         /// <summary>Malları birer birer satar; her birim talebi düşürdüğü için fiyat azalarak gider. Satılan toplam akçe.</summary>
-        public int Sell(string itemId, int count = 1)
+        public int Sell(string itemId, int count = 1) => Sell(itemId, count, null);
+
+        /// <summary>
+        /// Satış (53 §4.7): kalite verilmezse en düşükten başlar (toplu satış); verilirse yalnızca o kalitedekiler satılır
+        /// (oyuncunun seçimi). Her adet kendi kalitesinin fiyatını alır.
+        /// </summary>
+        public int Sell(string itemId, int count, int? quality)
         {
             if (!IsGood(itemId)) return 0;
             int earned = 0;
             for (int i = 0; i < count; i++)
             {
-                if (!_house.TryTakeItem(itemId)) break;
-                earned += SellPrice(itemId);
+                int q;
+                if (quality.HasValue) { if (!_house.TryTakeQuality(itemId, quality.Value)) break; q = quality.Value; }
+                else { if (!_house.TryTake(itemId, TakePolicy.Lowest, out var key)) break; q = key.Quality; }
+                earned += SellPrice(itemId, q);
                 _demand[itemId] = Math.Max(_cfg.MinDemand, Demand(itemId) * (1.0 - _cfg.DemandDropPerUnit));
                 if (_content.Items.TryGet(itemId, out var sd) && sd.HasTag("raw")) _rawSold[itemId] = RawSoldThisWeek(itemId) + 1;
             }

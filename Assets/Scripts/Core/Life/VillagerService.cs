@@ -259,6 +259,9 @@ namespace Thatchwick.Core.Life
             return null;
         }
 
+        /// <summary>Son hediyenin kalitesi (53): sevilen eşyada yakınlık ×1 / 1,25 / 1,5 / 2.</summary>
+        public int LastGiftQuality { get; private set; }
+
         public bool Give(Character giver, string villagerDefId, string itemId, out string message)
         {
             message = CanGive(giver, villagerDefId, itemId);
@@ -269,9 +272,14 @@ namespace Thatchwick.Core.Life
             var item = _content.Items.Get(itemId);
             var taste = TasteFor(def, item);
 
-            _house.TryTakeItem(itemId);
+            // Hediye (53 §4.7): sevilen ya da beğenilen eşyada en iyisi verilir ve yakınlık kaliteyle artar; ötekinde en düşüğü.
+            bool liked = taste == GiftTaste.Love || taste == GiftTaste.Like;
+            _house.TryTake(itemId, liked ? TakePolicy.Highest : TakePolicy.Lowest, out var given);
+            LastGiftQuality = item.HasQuality ? given.Quality : 0;
             s.LastGiftDay = _clock.DayIndex;
-            int aff = Family.Affection(giver.Id, v.Id) + AffectionFor(taste);
+            int gain = AffectionFor(taste);
+            if (liked) gain = (int)Math.Round(gain * ItemQuality.GiftFactor(LastGiftQuality));
+            int aff = Family.Affection(giver.Id, v.Id) + gain;
             Family.SetAffection(giver.Id, v.Id, aff);
             if (CanRomance(giver, v)) s.Romance = Math.Min(MaxRomance, s.Romance + RomanceFor(taste));
             v.AddMoodlet("mood.gift", "Hediye aldı", taste == GiftTaste.Dislike ? -4 : 5, 0.6);

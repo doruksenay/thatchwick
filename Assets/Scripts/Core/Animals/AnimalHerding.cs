@@ -116,7 +116,7 @@ namespace Thatchwick.Core.Animals
             a.Target = a.Position;
             _away.Remove(w);
             _animals.Add(a);
-            if (house != null) foreach (var kv in w.Stock) if (kv.Value > 0) house.AddItem(kv.Key, kv.Value);
+            if (house != null) foreach (var kv in w.Stock) if (kv.Value > 0) house.Add(ItemKey.FromStockKey(kv.Key), kv.Value);
             w.Stock.Clear();
             return true;
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Economy;
 using Thatchwick.Core.Family;
@@ -47,6 +48,12 @@ namespace Thatchwick.Core.Life
         public WeatherSystem Weather { get; }
         public FestivalService Festivals { get; }
         public SpoilageService Spoilage { get; }
+        /// <summary>Kalite defteri: "En iyi malzeme", "Ustalık eseri dene", eser kaydı ve yadigâr (Project belgesi 53).</summary>
+        public QualityBook QualityBook { get; } = new QualityBook();
+        /// <summary>Mahzende olgunlaşma ve dede şarabı (53, karar 4).</summary>
+        public AgingService Aging { get; }
+        /// <summary>Şenlik ürün yarışmaları: her şenlikte tadım, Hasat Şenliği'nde sergi (Project belgesi 57).</summary>
+        public ProduceShowService Shows { get; }
         public ForageSystem Forage { get; }
 
         // Köy ve hanedan katmanı (Adım 38-41)
@@ -82,16 +89,16 @@ namespace Thatchwick.Core.Life
         public void ApplyGaze(Thatchwick.Core.Upbringing.GazeEvent ev)
         {
             if (ev == null || !ev.Scolding) return;
-            if (ev.Reputation != 0) Upbringing.Reputation.Add(ev.Reputation, "başıboş çocuk dedikodusu");
-            Requests?.Memory.Add(ev.Villager, Thatchwick.Core.Life.Requests.HouseMemory.Gaze, $"{ev.Child.Name} tek başına gezerken görüldü");
+            if (ev.Reputation != 0) Upbringing.Reputation.Add(ev.Reputation, Text(LocText.Of("roam.rep.gossip")));
+            Requests?.Memory.Add(ev.Villager, Thatchwick.Core.Life.Requests.HouseMemory.Gaze, "gaze:" + ev.Child.Id);
             if (!ev.Escort) return;
             foreach (var m in Household())
             {
                 if (m == ev.Child || m.Stage == AgeStage.Baby || m.Stage == AgeStage.Child || m.Stage == AgeStage.Teen) continue;
                 if (m.Id == ev.Child.BirthMotherId || m.Id == ev.Child.BirthFatherId)
-                    m.AddMoodlet(Thatchwick.Core.Upbringing.ChildRoaming.AshamedMood, "Mahcup oldu", Thatchwick.Core.Upbringing.ChildRoaming.AshamedValue, 1.0);
+                    m.AddMoodlet(Thatchwick.Core.Upbringing.ChildRoaming.AshamedMood, Text(LocText.Of("roam.mood.ashamed")), Thatchwick.Core.Upbringing.ChildRoaming.AshamedValue, 1.0);
             }
-            Say($"{ev.Villager.Name}, gece tek başına gezen {ev.Child.Name}'i eve getirdi. \"Bu saatte çocuk sokakta olur mu?\"", NoticeLevel.Warning, ev.Child.Id);
+            Say(LocText.Of("roam.n.escort", ("villager", ev.Villager.Name), ("child", ev.Child.Name)), NoticeLevel.Warning, ev.Child.Id);
         }
         /// <summary>Ev dekorasyonu: raf çökmesi, ayna kararması, ayna hatırlatması (Project belgesi 27).</summary>
         public Thatchwick.Core.Build.DecorSystem Decor { get; }
@@ -154,6 +161,13 @@ namespace Thatchwick.Core.Life
             Weather = new WeatherSystem(clock.Config, seed: 1);
             Festivals = new FestivalService(content, clock) { Village = Village };
             Spoilage = new SpoilageService(content, house, world) { ExtraReduction = SpoilReduction };
+            Aging = new AgingService(content, house, world) { Today = () => Clock.TotalDays };
+            Shows = new ProduceShowService(content, house, seed != 0 ? Seeds.Derive(seed, 19) : 57)
+            {
+                Year = () => (int)(Clock.DayIndex / Math.Max(1, Clock.Config.DaysPerYear)),
+                RivalNames = () => RivalHouseNames()
+            };
+            Aging.Matured += (id, q, n) => { if (q >= ItemQuality.Heirloom) Say(LocText.Of("quality.n.grandfather_wine", ("n", n), ("item", id)), NoticeLevel.Info); };
             Forage = seed != 0 ? new ForageSystem(world, content, Seeds.Derive(seed, 2)) : new ForageSystem(world, content);
             Villagers = seed != 0 ? new VillagerService(content, population, house, clock, Seeds.Derive(seed, 3)) : new VillagerService(content, population, house, clock);
             Tools = new ToolService(content, house)
@@ -256,13 +270,14 @@ namespace Thatchwick.Core.Life
                 ToolTier = id => Tools.Tier(id),
                 Injure = (c, id) => Injuries.InjureById(c, id),
                 Notify = (text, id) => Say(text, NoticeLevel.Info, id),
+                Resolve = t => Text(t),
                 HasLeader = () =>
                 {
                     foreach (var c in Household()) if (c.Duty == DutyKind.Steward && !c.Away) return true;
                     return false;
                 }
             };
-            Duties.Finished += r => Ledger.Note($"{r.CharacterName}: {TimedDutyService.KindName(r.Kind).ToLowerInvariant()} görevinden döndü");
+            Duties.Finished += r => Ledger.Note(Text(LocText.Of("duty.ledger", ("name", r.CharacterName), ("kind", TimedDutyService.KindText(r.Kind)))));
             Breakdowns = new BreakdownService(population, seed != 0 ? Seeds.Derive(seed, 12) : 83)
             {
                 SquarePosition = () => SquarePosition?.Invoke(),
@@ -287,9 +302,10 @@ namespace Thatchwick.Core.Life
                 Legacy = Legacy,
                 Keepsakes = Keepsakes,
                 Duties = Duties,
-                AddReputation = (n, why) => Upbringing.Reputation.Add(n, why),
+                AddReputation = (n, why) => Upbringing.Reputation.Add(n, Text(why)),
                 Notify = (text, id) => Say(text, NoticeLevel.Info, id),
-                Chronicle = text => Ledger.Note(text)
+                Chronicle = text => Ledger.Note(Text(text)),
+                Resolve = t => Text(t)
             };
             Duties.Finished += Requests.OnDutyFinished;
             Trees = new TreehouseSystem(world, content, house, population, clock, seed != 0 ? Seeds.Derive(seed, 52) : 52)
@@ -313,9 +329,10 @@ namespace Thatchwick.Core.Life
                 GrantKeepsake = (id, label, cid) => Keepsakes.Grant(id, label, cid),
                 Injure = c => Injuries.InjureById(c, "fall") != null,
                 ToyBoost = (c, f) => Upbringing.Toys.PlayFavorite(c, Clock.TotalDays, f),
-                PostRequest = (giver, kid) => Requests.PostActFavor(giver, "rica.treehouse", "Ağaç ev",
-                    $"{giver.Name}: \"{(giver == kid ? "Bize" : kid.Name + " ve arkadaşlarına")} bir ulu ağaca ağaç ev yapar mısın? Bütün çocuklar oynasın.\"",
-                    TreehouseSystem.BuiltActId, "Bir ulu ağaca ağaç ev kur", 1, Clock.Config.DaysPerSeason, 30) != null
+                PostRequest = (giver, kid) => Requests.PostActFavor(giver, "rica.treehouse", LocText.Of("core.req.sys.treehouse.title"),
+                    giver == kid ? LocText.Of("core.req.sys.treehouse.text", ("giver", giver.Name))
+                                 : LocText.Of("core.req.sys.treehouse.text_for", ("giver", giver.Name), ("kid", kid.Name)),
+                    TreehouseSystem.BuiltActId, 1, Clock.Config.DaysPerSeason, 30) != null
             };
             Trees.Built += (c, site) => Requests.OnWork(c, SkillType.Carpentry, TreehouseSystem.BuiltActId);
             Home.IsKioskRoom = Trees.IsKioskRoom;   // oda türü "Ağaç köşkü" (belge 52)
@@ -341,7 +358,11 @@ namespace Thatchwick.Core.Life
                 bool ice = content.Items.TryGet(id, out var d) && d.HasTag("ice");
                 Say(ice ? $"{n} buz eridi (buzluğa koy)." : $"{n} {(d != null ? d.DisplayName : id)} bozuldu.", ice ? NoticeLevel.Info : NoticeLevel.Warning);
             };
-            Festivals.Announced += f => Say($"Bugün {f.DisplayName}!", NoticeLevel.Info);
+            Festivals.Announced += f =>
+            {
+                Say($"Bugün {f.DisplayName}!", NoticeLevel.Info);
+                AnnounceShow(f.Id);
+            };
             Festivals.Celebrated += (f, n) =>
             {
                 FestivalsCelebrated++;
@@ -353,6 +374,7 @@ namespace Thatchwick.Core.Life
                 Keepsakes.OnFestival(f.DisplayName, n);
                 if (f.Id == HomeLife.ContestFestival) Home.JudgeContest();   // panayırda ev yarışması (belge 45)
                 if (f.Id == VintageFestival) foreach (var note in Vintage()) Say(note, NoticeLevel.Info);
+                JudgeShow(f.Id);   // ürün yarışması (belge 57): Bağbozumu'nda şıra ezildikten sonra
                 Ledger.Note(f.DisplayName);
                 Goals.Update();
             };
@@ -548,6 +570,16 @@ namespace Thatchwick.Core.Life
                 if (h.Level > 1) { Say($"Yadigârlar bir nesil daha hanede: bonuslar güçlendi.", NoticeLevel.Info); break; }
         }
 
+        /// <summary>
+        /// Anahtarlı metni seçili dilde çözer (oyun katmanı verir; Core metni çevirmez, belge 21). Verilmezse anahtar döner.
+        /// İstekler, süreli görev ve çocuk gezme bildirimleri bunu kullanır; bildirim akışı henüz düz metin tuttuğu için çözüm
+        /// bildirimin yazıldığı anda yapılır.
+        /// </summary>
+        public Func<LocText, string> Text { get; set; } = t => t.Literal ?? t.Key ?? "";
+
+        public void Say(LocText message, NoticeLevel level = NoticeLevel.Info, int characterId = 0, bool transient = false) =>
+            Say(Text(message), level, characterId, transient);
+
         /// <summary>Bildirim akışına ve düz metin olayına yazar. Dış sistemler (aile, pazar) bunu çağırabilir.</summary>
         public void Say(string message, NoticeLevel level = NoticeLevel.Info, int characterId = 0, bool transient = false)
         {
@@ -721,6 +753,8 @@ namespace Thatchwick.Core.Life
             runner.ItemBonus = (it, i) => HomeLife.Combine(Legacy.BonusFor(it, i), Home.BonusFor(it, i));
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
             runner.InteractionCompleted += OnMasterCraft;
+            // Ustalık eseri denemesi iki kat sürer (53 §4.6).
+            runner.DurationFactor = (c, item, i) => QualityBook.WillAttempt(c, item, i, Clock.DayIndex) ? 2.0 : 1.0;
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
             runner.ItemUsed += (c, item, interaction) => { if (interaction.Id == ReadBoardInteraction) ReadBoard(c); };
             runner.WorkDone += Requests.OnWork;
@@ -732,21 +766,48 @@ namespace Thatchwick.Core.Life
         private readonly Random _masteryRng;
         private readonly Dictionary<int, long> _masterworkDay = new Dictionary<int, long>();
 
-        /// <summary>Usta bir tarifi bitirince %25 ustalık eseri: bir fazla ürün, "Ustalık eseri" moodlet'i, kronik, itibar (günde bir).</summary>
+        /// <summary>
+        /// Usta eli (belge 45 Sv 10): usta bir tarifi bitirince %25 bir fazla ürün. Asıl ustalık eseri artık bilinçli denemedir
+        /// (tezgâhta "Ustalık eseri dene", belge 53 §4.6); onun moodlet'i, kroniği ve itibarı <see cref="OnMasterworkMade"/>'de.
+        /// </summary>
         public void OnMasterCraft(Character c, InteractionDef interaction)
         {
             if (c == null || c.IsVillager || !Progress.Mastery.IsMasterCraft(c, interaction)) return;
             if (_masteryRng.NextDouble() >= Progress.Mastery.MasterworkChance) return;
             var product = interaction.Produce[0].ItemId;
             House.AddItem(product, 1);
+            Say(LocText.Of("quality.n.master_hand", ("name", c.Name), ("item", product)), NoticeLevel.Info, c.Id);
+        }
+
+        /// <summary>Kalite kaynaklarını etkilere bağlar (GameRoot ve testler çağırır): defter, gün, yıl, aile tarifi, eser olayı.</summary>
+        public void AttachEffects(Thatchwick.Core.Work.InteractionEffects fx)
+        {
+            if (fx == null) return;
+            fx.Quality = QualityBook;
+            fx.DayIndex = () => Clock.DayIndex;
+            fx.Year = () => (int)(Clock.DayIndex / Math.Max(1, Clock.Config.DaysPerYear)) + 1;
+            fx.Today = () => Clock.TotalDays;
+            fx.FamilyRecipe = (c, skill) =>
+            {
+                var r = c != null ? Upbringing.Recipes.OldestKnown(c.Id, skill) : null;
+                return r != null ? (r.Generations, r.Name) : (0, null);
+            };
+            fx.MasterworkMade += OnMasterworkMade;
+        }
+
+        /// <summary>Ustalık eseri (53): "Ustalık eseri" moodlet'i, kronik, bildirim ve itibar (günde bir).</summary>
+        public void OnMasterworkMade(Character c, string itemId, int quality)
+        {
+            if (c == null) return;
             c.AddMoodlet(Thatchwick.Core.Mood.MoodCatalog.MasterWork);
-            string name = Content.Items.TryGet(product, out var d) ? d.DisplayName : product;
-            Say($"{Progress.Mastery.DisplayName(c)} bir ustalık eseri çıkardı: {name} ({c.Name} imzalı).", NoticeLevel.Info, c.Id);
+            var note = LocText.Of(quality >= ItemQuality.Heirloom ? "quality.n.heirloom_meal" : "quality.n.masterwork", ("name", c.Name), ("item", itemId));
+            Say(note, NoticeLevel.Info, c.Id);
+            c.AddChronicle(Text(note));
             long today = Clock.DayIndex;
             if (!_masterworkDay.TryGetValue(c.Id, out var last) || last != today)
             {
                 _masterworkDay[c.Id] = today;
-                Upbringing.Reputation.Add(Progress.Mastery.MasterworkReputation, "ustalık eseri");
+                Upbringing.Reputation.Add(Progress.Mastery.MasterworkReputation, Text(LocText.Of("quality.rep.masterwork")));
             }
         }
 
@@ -970,7 +1031,7 @@ namespace Thatchwick.Core.Life
             else if (item.Def.Id == OliveHeritage.TreeId && interaction.TakesFruit)
             {
                 int extra = Olives.BonusOlives(item.Id, (int)Clock.TotalDays);
-                if (extra > 0) { House.AddItem(interaction.Id == "pick_hand" ? "item.olive_fine" : "item.olive", extra); Say($"Yadigâr zeytin {extra} zeytin fazla verdi.", NoticeLevel.Info); }
+                if (extra > 0) { House.AddItem("item.olive", extra, interaction.Id == "pick_hand" ? ItemQuality.Fine : ItemQuality.Common); Say($"Yadigâr zeytin {extra} zeytin fazla verdi.", NoticeLevel.Info); }
             }
         }
 
@@ -1136,6 +1197,7 @@ namespace Thatchwick.Core.Life
             }
 
             Spoilage.Tick(gameDays);
+            Aging.Tick(gameDays);
             Duties.Tick(gameDays);
             Requests.Tick();
             Festivals.Tick(Population.Members);
@@ -1172,12 +1234,71 @@ namespace Thatchwick.Core.Life
         public int ReadBoard(Character reader)
         {
             int n = Requests.ReadBoard();
-            Say(n > 0 ? $"{reader?.Name ?? "Hane"} panodan {n} ilan okudu (İstekler, I)." : "Panoda yeni ilan yok.", NoticeLevel.Info, reader?.Id ?? 0, transient: true);
+            Say(n > 0 ? LocText.Of("core.req.n.board_read", ("name", reader?.Name ?? ""), ("n", n)) : LocText.Of("core.req.n.board_empty"), NoticeLevel.Info, reader?.Id ?? 0, transient: true);
             return n;
+        }
+
+        private IEnumerable<string> RivalHouseNames()
+        {
+            foreach (var h in Houses.Houses) if (!string.IsNullOrEmpty(h.Name)) yield return h.Name;
+        }
+
+        /// <summary>Şenlik sabahı: hanenin yarışmaya ne sunacağı (belge 57).</summary>
+        private void AnnounceShow(string festivalId)
+        {
+            var show = ProduceShowService.ForFestival(festivalId);
+            if (show == null || !Shows.Participating(show.Id)) return;
+            var entries = Shows.PlannedEntries(show);
+            if (entries.Count == 0) { Say(LocText.Of("show.n.nothing", ("show", show.Name)), NoticeLevel.Info); return; }
+            Say(show.Kind == ProduceShowKind.Exhibit
+                ? LocText.Of("show.n.exhibit_entered", ("show", show.Name), ("n", entries.Count))
+                : LocText.Of("show.n.entered", ("show", show.Name), ("item", entries[0].Id), ("quality", LocText.Of(ItemQuality.NameKey(entries[0].Quality)))), NoticeLevel.Info);
+        }
+
+        /// <summary>Ürün yarışmasının sonucu: bildirim, akçe ve itibar; birincilikte kurdele hatırası ve kronik (belge 57).</summary>
+        public ShowResult JudgeShow(string festivalId)
+        {
+            var r = Shows.Run(festivalId);
+            if (r == null || r.Rank == 0) return r;
+            bool exhibit = r.Show.Kind == ProduceShowKind.Exhibit;
+            string itemId = r.Entries[0].Id;
+            if (r.Reputation > 0) Upbringing.Reputation.Add(r.Reputation, Text(LocText.Of("show.rep", ("show", r.Show.Name))));
+            if (r.Rank == 1)
+            {
+                Say(exhibit ? LocText.Of("show.n.exhibit_won", ("show", r.Show.Name), ("akce", r.Akce), ("rep", r.Reputation))
+                            : LocText.Of("show.n.won", ("show", r.Show.Name), ("item", itemId), ("akce", r.Akce), ("rep", r.Reputation)), NoticeLevel.Info);
+                var label = exhibit ? LocText.Of("show.ribbon.exhibit", ("show", r.Show.Name), ("year", r.Year + 1))
+                                    : LocText.Of("show.ribbon.tasting", ("show", r.Show.Name), ("year", r.Year + 1), ("item", itemId));
+                Keepsakes.Grant(exhibit ? ProduceShowService.ExhibitRosette : ProduceShowService.TastingRibbon, Text(label));
+                string note = Text(LocText.Of("show.chr.won", ("show", r.Show.Name), ("year", r.Year + 1)));
+                foreach (var m in Household()) m.AddChronicle(note);
+            }
+            else
+                Say(LocText.Of(exhibit ? "show.n.exhibit_placed" : "show.n.placed", ("show", r.Show.Name), ("item", itemId), ("rank", r.Rank), ("n", r.Entrants),
+                    ("akce", r.Akce)), NoticeLevel.Info);
+            Ledger.Note(Text(LocText.Of("show.ledger", ("show", r.Show.Name), ("rank", r.Rank))));
+            return r;
+        }
+
+        private QualityBookSave ExportQuality()
+        {
+            var q = QualityBook.Export();
+            q.aging = Aging.Export();
+            return q;
+        }
+
+        /// <summary>Ustalık eserleri kuşak geçince yadigâr olur (53, karar 1): hanenin en genç kuşağı yapanın iki kuşak sonrası.</summary>
+        private void CheckHeirloomWorks()
+        {
+            int youngest = 0;
+            foreach (var m in Household()) youngest = Math.Max(youngest, m.Generation);
+            foreach (var e in QualityBook.CheckHeirlooms(youngest, House, World))
+                Say(LocText.Of("quality.n.heirloom", ("maker", e.MakerName), ("item", e.ItemId)), NoticeLevel.Info);
         }
 
         private void OnNewDay(long day)
         {
+            CheckHeirloomWorks();
             var today = Weather.Today(Clock.TotalDays);
             Forage.OnNewDay(Clock.Season, today == WeatherType.Rain || today == WeatherType.Storm);
             _plants?.OnNewDay(today == WeatherType.Rain || today == WeatherType.Storm, today == WeatherType.Storm);
@@ -1284,6 +1405,8 @@ namespace Thatchwick.Core.Life
                 lastProcessedDay = _lastDay,
                 festivalCelebratedDay = Festivals.CelebratedDay,
                 spoilage = Spoilage.Export().ToArray(),
+                quality = ExportQuality(),
+                produceShows = Shows.Export(),
                 tools = Tools.Export().ToArray(),
                 projectsDone = new List<string>(Projects.Done).ToArray(),
                 goalsDone = new List<string>(Goals.Done).ToArray(),
@@ -1360,6 +1483,9 @@ namespace Thatchwick.Core.Life
             Duties.Import(data.timedDuties);
             Roaming.Import(data.roaming);
             Requests.Import(data.requests);
+            QualityBook.Import(data.quality);
+            Shows.Import(data.produceShows);
+            Aging.Import(data.quality?.aging);
             Trees.Import(data.treehouses);
             Clothing.Import(data.clothing);
             Tailor.Import(data.tailor);

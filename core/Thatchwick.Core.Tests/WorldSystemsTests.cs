@@ -251,27 +251,34 @@ namespace Thatchwick.Core.Tests
             runner.Tick(0.05);
             Assert.Contains("2. seviye", runner.LastFailure);
 
-            string Produced(int level, int qualityBonus = 0)
+            // Belge 53: güveç tek eşyadır; kalite girdilerin ortalaması + aşçının ustalığıyla, tavan en iyi girdinin bir üstü.
+            var made = new List<int>();
+            int Produced(Character chef, int inputQuality, int seed)
             {
-                var chef = Cook(2, new GridPos(5, 6), level);
-                var h = new Household(); h.AddItem("item.turnip", 1); h.AddItem("item.cabbage", 1); h.AddItem("item.leek", 1);
-                var eff = new InteractionEffects(world, h, db, seed: 3);
-                eff.Apply(chef, pot, stew);
-                foreach (var id in new[] { "item.stew_plain", "item.stew_good", "item.stew_fine" }) if (h.Count(id) > 0) return id;
-                return null;
+                var h = new Household();
+                foreach (var id in new[] { "item.turnip", "item.cabbage", "item.leek" }) h.AddItem(id, 1, inputQuality);
+                new InteractionEffects(world, h, db, seed: seed).Apply(chef, pot, stew);
+                Assert.Equal(0, h.Count("item.stew_good") + h.Count("item.stew_fine"));
+                Assert.Equal(2, h.Count("item.stew_plain"));
+                return h.BestQuality("item.stew_plain");
             }
-            Assert.Equal("item.stew_plain", Produced(2));
-            Assert.Equal("item.stew_good", Produced(5));
-            Assert.Equal("item.stew_fine", Produced(8));
+            var apprentice = Cook(2, new GridPos(5, 6), 2);
+            var master = Cook(3, new GridPos(5, 6), 9);
+            for (int seed = 1; seed <= 30; seed++)
+            {
+                Assert.Equal(ItemQuality.Common, Produced(apprentice, 0, seed));         // çırak sıradan sebzeden sıradan güveç
+                int q = Produced(master, 0, seed);
+                Assert.InRange(q, ItemQuality.Common, ItemQuality.Fine);                // usta sıradan sebzeden en çok Seçme
+                made.Add(q);
+                Assert.Equal(ItemQuality.Superior, Produced(master, ItemQuality.Superior, seed));   // has sebze, has güveç
+            }
+            Assert.Contains(ItemQuality.Fine, made);
 
-            // Usta eller (+1 kalite seviyesi) 3. seviyeyi iyi yapar.
-            var db2 = db;
-            var handy = Cook(3, new GridPos(5, 6), 3);
+            // Usta eller (+1 kalite seviyesi) ustalık şansını artırır; güveç yine tek kimlik.
+            var handy = Cook(4, new GridPos(5, 6), 3);
             handy.SetTraits(new[] { "trait.handy" });
-            LifeRules.Recompute(handy, db2);
-            var hh = new Household(); hh.AddItem("item.turnip", 1); hh.AddItem("item.cabbage", 1); hh.AddItem("item.leek", 1);
-            new InteractionEffects(world, hh, db, seed: 3).Apply(handy, pot, stew);
-            Assert.Equal(2, hh.Count("item.stew_good"));
+            LifeRules.Recompute(handy, db);
+            Assert.InRange(Produced(handy, ItemQuality.Fine, 3), ItemQuality.Fine, ItemQuality.Superior);
         }
 
         [Fact]
@@ -279,22 +286,26 @@ namespace Thatchwick.Core.Tests
         {
             var db = Real();
             var (world, house, pot, effects) = Kitchen(db);
-            float Eat(string interactionId, string foodId)
+            Character last = null;
+            float Eat(int quality)
             {
                 var c = Cook(1, new GridPos(5, 6), 1);
                 c.Needs.Set(NeedType.Hunger, 0);
-                house.AddItem(foodId, 1);
+                house.AddItem("item.stew_plain", 1, quality);
                 var runner = new JobRunner(c, world) { Effects = effects };
-                runner.Command(Job.UseItem(pot.Id, interactionId));
+                runner.Command(Job.UseItem(pot.Id, "eat_stew_plain"));
                 for (int i = 0; i < 40 && !runner.IsIdle; i++) runner.Tick(0.02);
-                if (interactionId == "eat_stew_fine") Assert.True(c.Mood.Has("mood.meal"));
+                last = c;
                 return c.Needs.Get(NeedType.Hunger);
             }
-            float plain = Eat("eat_stew_plain", "item.stew_plain");
-            float good = Eat("eat_stew_good", "item.stew_good");
-            float fine = Eat("eat_stew_fine", "item.stew_fine");
-            Assert.True(plain < good && good < fine, $"{plain} < {good} < {fine}");
-            Assert.True(db.Items.Get("item.stew_fine").Price > db.Items.Get("item.stew_plain").Price);   // satış değeri kaliteyle artar
+            float plain = Eat(ItemQuality.Common);
+            Assert.False(last.Mood.Has(Thatchwick.Core.Mood.MoodCatalog.MealFine));
+            float fine = Eat(ItemQuality.Fine);
+            Assert.True(last.Mood.Has(Thatchwick.Core.Mood.MoodCatalog.MealFine));
+            float superior = Eat(ItemQuality.Superior);
+            Assert.True(last.Mood.Has(Thatchwick.Core.Mood.MoodCatalog.MealSuperior));
+            Assert.True(plain < fine && fine < superior, $"{plain} < {fine} < {superior}");
+            Assert.True(ItemQuality.PriceFactor(ItemQuality.Superior) > ItemQuality.PriceFactor(ItemQuality.Common));   // satış değeri kaliteyle artar
         }
 
         [Fact]
@@ -302,12 +313,12 @@ namespace Thatchwick.Core.Tests
         {
             var db = Real();
             var (world, house, pot, effects) = Kitchen(db);
-            house.AddItem("item.turnip", 2); house.AddItem("item.stew_fine", 2);
+            house.AddItem("item.turnip", 2); house.AddItem("item.stew_plain", 2, ItemQuality.Superior);
             var npc = Cook(1, new GridPos(5, 6), 1);
             npc.Needs.Set(NeedType.Hunger, 10);
             var runner = new JobRunner(npc, world) { Effects = effects, Autonomous = true };
             runner.Tick(0.001);
-            Assert.Equal("eat_stew_fine", runner.Queue.Current.InteractionId);
+            Assert.Equal("eat_stew_plain", runner.Queue.Current.InteractionId);
         }
 
         [Fact]

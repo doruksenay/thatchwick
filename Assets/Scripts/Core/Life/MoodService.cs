@@ -107,7 +107,7 @@ namespace Thatchwick.Core.Life
             foreach (var item in _world.Items)
             {
                 if (!tiles.Contains(item.Position)) continue;
-                result.Score += item.Def.Comfort + (ExtraComfort != null ? ExtraComfort(item) : 0);
+                result.Score += (int)Math.Round(item.Def.Comfort * ItemQuality.ComfortFactor(item.Quality)) + (ExtraComfort != null ? ExtraComfort(item) : 0);
                 if (!string.IsNullOrEmpty(item.Def.StyleSet))
                     styleCount[item.Def.StyleSet] = (styleCount.TryGetValue(item.Def.StyleSet, out var n) ? n : 0) + 1;
             }
@@ -211,6 +211,7 @@ namespace Thatchwick.Core.Life
             if (b > 0)
             {
                 b *= Decor.BeautyFactor(item.Condition);
+                b *= ItemQuality.BeautyFactor(item.Quality);   // yapılan eşyanın kalitesi (belge 53 §4.5)
                 if (item.IsTarnished) b *= 0.5;
             }
             return b;
