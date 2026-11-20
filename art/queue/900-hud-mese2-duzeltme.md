@@ -1,7 +1,8 @@
 ---
 id: "900"
 title: "HUD meşe düzeltmeleri: para, görev şeridi, kart, Yapı düğmesi, rozet, 12 px ihtiyaç ikonları"
-status: pending
+status: running
+claimed_at: 2026-11-20T23:54Z
 approved_by: user        # kullanıcı kararı 2026-11-21: "düzelt" (HUD pilotu sonuç sayfası, 420_hud_pilot.png)
 priority: 1
 family: arayuz
