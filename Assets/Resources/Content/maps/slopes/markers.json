@@ -1,5 +1,20 @@
 {
   "ponds": [],
-  "items": [],
-  "keep": []
+  "items": [
+    {
+      "id": "item.landmark_vineyard_house_ruin",
+      "x": 5,
+      "y": 2,
+      "rot": 0,
+      "grown": false
+    }
+  ],
+  "keep": [
+    {
+      "x0": 3,
+      "y0": 0,
+      "x1": 8,
+      "y1": 5
+    }
+  ]
 }

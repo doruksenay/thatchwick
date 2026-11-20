@@ -42,6 +42,7 @@ namespace Thatchwick.Core.World
             {
                 var p = new Painter(null, r.X, r.Y); draw(p);
                 foreach (var it in p.Items) if (!OnDraftWay(r, it)) all.Add(it);
+                DataItems(r, all);   // taslağın simge yapısı (markers.json)
             }
             return all;
         }
@@ -96,6 +97,9 @@ namespace Thatchwick.Core.World
                     if (t == MapTerrain.Path || t == MapTerrain.Bridge)
                         for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) keep.Add((x + dx, y + dy));
                 }
+            if (data.Markers.keep != null)   // simge yapının çevresi açık kalır (ağaç serpilmez)
+                foreach (var k in data.Markers.keep)
+                    for (int y = k.y0; y <= k.y1; y++) for (int x = k.x0; x <= k.x1; x++) keep.Add((x, y));
             return true;
         }
 

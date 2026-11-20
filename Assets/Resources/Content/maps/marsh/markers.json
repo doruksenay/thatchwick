@@ -1,5 +1,20 @@
 {
   "ponds": [],
-  "items": [],
-  "keep": []
+  "items": [
+    {
+      "id": "item.landmark_broken_boardwalk",
+      "x": 26,
+      "y": 3,
+      "rot": 0,
+      "grown": false
+    }
+  ],
+  "keep": [
+    {
+      "x0": 24,
+      "y0": 1,
+      "x1": 29,
+      "y1": 5
+    }
+  ]
 }
