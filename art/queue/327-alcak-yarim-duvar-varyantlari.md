@@ -1,7 +1,7 @@
 ---
 id: "327"
 title: Alçak (kesit) ve yarım duvar varyantları: betikle kırpma
-status: review
+status: accepted
 claimed_at: 2026-11-18T11:37Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -55,3 +55,4 @@ Kapı ve pencere alçak modda düz alçak duvar çizilir, ayrı varyant gerekmez
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
