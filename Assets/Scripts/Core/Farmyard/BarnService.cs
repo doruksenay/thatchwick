@@ -49,6 +49,8 @@ namespace Thatchwick.Core.Farmyard
 
         /// <summary>Kedi pisliğini gömdü (yalnızca görsel).</summary>
         public event Action<Animal> CatBuried;
+        /// <summary>Köpek yığın bıraktı (poz ve görünüm için).</summary>
+        public event Action<Animal> DogDropped;
         /// <summary>Derin altlığa saman yetmedi (barınak).</summary>
         public event Action<ItemInstance> LitterShort;
 
@@ -212,8 +214,9 @@ namespace Thatchwick.Core.Farmyard
                 var room = _world.Map.Rooms.RoomAt(a.Position);
                 bool outdoor = room == null || !room.IsIndoor;
                 if (kind == 2) { if (outdoor) CatBuried?.Invoke(a); }
+                else if (kind == 1 && outdoor) { if (_filth.Drop(PileKind.Dog, a.Position) != null) DogDropped?.Invoke(a); }
                 else if (outdoor)
-                    _filth.Drop(kind == 1 ? PileKind.Dog : PileKind.Animal, a.Position,
+                    _filth.Drop(PileKind.Animal, a.Position,
                         kind == 0 && a.Species.Housing == "barn" && !a.Species.Draft ? FilthService.SheepPileId : null);   // davar kığı, büyükbaş tezek bırakır
             }
         }

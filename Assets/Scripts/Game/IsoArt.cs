@@ -231,6 +231,9 @@ namespace Thatchwick.Game
         /// <summary>Kıyı karosu (346): kara (çamur ve saz) karonun sağ üst kenarında, yani +x komşusu yönünde. Sol üst (+y) için aynalanır.</summary>
         public static Sprite Shore() => GetCentered("iso_ground_water_shore");
 
+        /// <summary>Zemin çıkartması (birikinti, çamur, kıyı köpüğü, yabani ot; art/queue 709-710): karo ortasına oturur.</summary>
+        public static Sprite Decal(string name) => GetCentered(name);
+
         /// <summary>Kumsal karosu (484): iso_ground_beach_a/b; yoksa null (oyun katmanı toprağı kum rengine boyar).</summary>
         public static Sprite Beach(int x, int y)
         {

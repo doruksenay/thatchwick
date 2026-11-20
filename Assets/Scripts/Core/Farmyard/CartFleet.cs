@@ -380,7 +380,19 @@ namespace Thatchwick.Core.Farmyard
 
         // ---------- tekerlek ----------
 
-        public bool CanRepair(Cart c) => c != null && c.Wear >= 0.5 && _house.Count(WheelId) > 0;
+        /// <summary>Hanenin en iyi Marangozluk seviyesi (tekerlek takmak ister); null ise kısıt yok.</summary>
+        public Func<int> CarpentryLevel { get; set; }
+
+        /// <summary>Tekerlek takılamıyorsa neden; takılabiliyorsa boş.</summary>
+        public LocText RepairBlocker(Cart c)
+        {
+            if (c == null || c.Wear < 0.5) return LocText.Of("yard.cart.b.wheel_fine");
+            if (_house.Count(WheelId) <= 0) return LocText.Of("yard.cart.b.no_wheel");
+            if (CarpentryLevel != null && CarpentryLevel() < Config.RepairCarpentry) return LocText.Of("yard.cart.b.carpentry", ("lvl", Config.RepairCarpentry));
+            return default;
+        }
+
+        public bool CanRepair(Cart c) => RepairBlocker(c).IsEmpty;
 
         public bool Repair(Cart c)
         {

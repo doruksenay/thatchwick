@@ -1742,7 +1742,6 @@ namespace Thatchwick.Game
             if (_shopPanel != null && _shopPanel.Active && _shopPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
-            if (_cartPanel != null && _cartPanel.Active && _cartPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_kitchenPanel != null && _kitchenPanel.Active && _kitchenPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_homePanel != null && _homePanel.Active && _homePanel.PanelRect(s).Contains(guiPos)) return true;
@@ -2485,6 +2484,7 @@ namespace Thatchwick.Game
                 DraftAnimals = _animals.DraftAnimals,
                 FleetBlocker = () => _life.MarketCartBlocker(),      // araba filosu: pazara atanmış araba (belge 57e)
                 ExtraCapacity = () => _life.MarketExtraCapacity(),
+                EarnFactor = () => _life.MarketEarnFactor(),         // yağmurda örtüsüz araba: mal ıslanır (belge 57e)
                 Carter = () => BestMember(SkillType.Carting)
             };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
@@ -2987,7 +2987,7 @@ namespace Thatchwick.Game
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
             _mirror != null || _settingsOpen || UiWindowOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
-            || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_cartPanel != null && _cartPanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
+            || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
             || (_homePanel != null && _homePanel.Active) || (_vivView != null && _vivView.Active) || (_familyPanel != null && _familyPanel.Active)
             || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
 
@@ -3250,6 +3250,7 @@ namespace Thatchwick.Game
                 _animalViews = new AnimalViews(transform, _view, LookOf, RiderView);
                 // Easter egg sahneleri (belge 55): pozlar, kurbağanın tacı.
                 _animalViews.PoseOf = a => _life?.PoseOf(a);
+                _animalViews.Override = HitchedView;   // arabaya koşulu hayvan yolda (belge 57e)
                 _animalViews.WildFx = id => _life?.Scenes.WildFxOf(id);
                 _animalViews.ItemTile = id => _world.GetItem(id)?.Position;
             }
@@ -3684,7 +3685,6 @@ namespace Thatchwick.Game
             _shopPanel?.OnGUI(s);
             _storagePanel.OnGUI(s);
             _minePanel.OnGUI(s);
-            _cartPanel?.OnGUI(s);
             _keepsakePanel?.OnGUI(s);
             _kitchenPanel?.OnGUI(s);
             _homePanel?.OnGUI(s);

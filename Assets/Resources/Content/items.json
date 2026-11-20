@@ -5179,6 +5179,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "cropFamily": "kok",
@@ -11097,6 +11105,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "cropFamily": "yaprak",
@@ -11409,6 +11425,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "cropFamily": "sogan",
@@ -11718,6 +11742,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "nitrogen": true,
@@ -12038,6 +12070,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "cropFamily": "kabak",
@@ -13832,6 +13872,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -14146,6 +14194,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "cropFamily": "kok",
@@ -14457,6 +14513,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -14771,6 +14835,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -15084,6 +15156,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -15396,6 +15476,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -15703,6 +15791,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -16011,6 +16107,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -16340,6 +16444,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -16641,6 +16753,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -23516,6 +23636,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -23836,6 +23964,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -24162,6 +24298,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -24470,6 +24614,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -39277,6 +39429,14 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "feed": "lean",
@@ -39408,6 +39568,14 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "feed": "lean",
@@ -39614,6 +39782,14 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "feed": "builder",
@@ -41437,6 +41613,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -41735,6 +41919,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -42039,6 +42231,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -42342,6 +42542,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ],
       "growSeasons": [
@@ -47282,6 +47490,14 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3
+        },
+        {
+          "id": "weed",
+          "displayName": "Otunu yol",
+          "durationDays": 0.02,
+          "farmAction": "weed",
+          "skill": "Farming",
+          "skillXp": 1
         }
       ]
     },

@@ -205,6 +205,8 @@ namespace Thatchwick.Core.Save
         public int cycle;           // Content.Fertilizer bayrakları
         public bool rawFilth;
         public double burnUntil, marlUntil, limedUntil, mulchUntil;
+        public bool weedy;
+        public double weedFreeUntil;
         public double ashDay = -1000;
     }
 

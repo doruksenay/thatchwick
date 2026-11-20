@@ -394,7 +394,7 @@ namespace Thatchwick.Core.Tests
             Do(c, ok, "harvest"); int full = c.House.Count("wheat");
             Do(c, down, "harvest"); int half = c.House.Count("wheat") - full;
             Assert.True(half <= full / 2 + 1 && half < full, $"{half} / {full}");
-            Assert.Contains("yatmıştı", note);
+            Assert.Contains("yard.note.lodged", note);   // testte çözücü kurulu değil: anahtar döner
         }
 
         [Fact]
@@ -444,6 +444,7 @@ namespace Thatchwick.Core.Tests
         private static (int first, int last, int total, float minFertility) Village(bool fertilize)
         {
             var c = Setup();
+            c.Plants.Config.WeedChance = 0f;   // yalnızca gübrenin etkisi ölçülür (yabani ot ayrı testte)
             string[] rota = { "wheat", "carrot", "pea", "cabbage", "leek", "lettuce" };
             int first = 0, last = 0, total = 0, cycle = 0;
             float min = 1f;

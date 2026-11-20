@@ -168,6 +168,14 @@ namespace Thatchwick.Core.Farmyard
             return true;
         }
 
+        /// <summary>Görevli doldursun mu: yerinde yer var ve süreç başında (olgunlaşan tek gözlü yığına taze girdi süreci geri atar).</summary>
+        public bool WantsFill(ItemInstance heapItem)
+        {
+            var h = HeapOf(heapItem);
+            if (h == null || h.ReadyTotal > 0 || RoomIn(heapItem) < 1) return false;
+            return IsBays(heapItem) || h.Progress < 0.3;
+        }
+
         public bool CanTurn(ItemInstance heapItem) { var h = HeapOf(heapItem); return h != null && !h.IsEmpty && Today - h.LastTurn >= 0.5; }
 
         public void Turn(ItemInstance heapItem)
@@ -183,6 +191,7 @@ namespace Thatchwick.Core.Farmyard
         {
             var h = HeapOf(heapItem);
             if (h == null || h.IsEmpty || AutoTurned(heapItem)) return false;
+            if (h.Total < MinFillOf(heapItem)) return false;   // dolmamış yığın ısınmaz; çevirmek boşa iş
             return Today - h.LastTurn >= Config.TurnFreshDays;
         }
 

@@ -14,6 +14,8 @@ namespace Thatchwick.Game
     public sealed class WorldView : MonoBehaviour
     {
         private const int GroundSortOrder = -10000;
+        private GroundLayer _shimmerLayer, _decalLayer, _snowLayer;
+        private readonly TileCell _shimmerCell = new TileCell(), _decalCell = new TileCell(), _snowCell = new TileCell();
 
         private static readonly Color GrassA = new Color32(92, 140, 77, 255);
         private static readonly Color GrassB = new Color32(86, 133, 72, 255);
@@ -129,7 +131,16 @@ namespace Thatchwick.Game
                     _layers[z - GridMap.MinLevel] = new GroundLayer(transform, $"Ground {z}", new Vector3(0f, z * Iso.LevelHeight, 0f),
                         GroundSortOrder + z * Iso.LevelSortStep, SpriteMaterials.Unlit);
                 _fringeLayer = new GroundLayer(transform, "Ground edge", Vector3.zero, GroundSortOrder - 1, SpriteMaterials.Unlit);
+                // Su parıltısı (shader varsa) ve zemin çıkartmaları (birikinti, çamur, köpük, ot): zeminin ve patikanın üstünde.
+                var shimmer = SpriteMaterials.WaterShimmer;
+                if (shimmer != null) _shimmerLayer = new GroundLayer(transform, "Water shimmer", Vector3.zero, GroundSortOrder + 2, shimmer);
+                var snow = SpriteMaterials.SnowCover;
+                if (snow != null) _snowLayer = new GroundLayer(transform, "Snow cover", Vector3.zero, GroundSortOrder + 4, snow);
+                _decalLayer = new GroundLayer(transform, "Ground decals", Vector3.zero, GroundSortOrder + 3, SpriteMaterials.Unlit);
             }
+            _shimmerLayer?.SetArea(_area);
+            _snowLayer?.SetArea(_area);
+            _decalLayer?.SetArea(_area);
             foreach (var layer in _layers) layer.SetArea(_area);
             BuildFringe();
         }
@@ -188,6 +199,27 @@ namespace Thatchwick.Game
 
         /// <summary>Zemin kaplamalarını haritadan yeniden boyar (Grass dışındakiler döşeme rengi alır).</summary>
         /// <summary>Zeminin tonu: yağmurda ıslak ve koyu (belge 57 §9). Kat katmanları ve harita kenarı birlikte.</summary>
+        /// <summary>
+        /// Zemin çıkartmaları: verilen işlev karo başına çıkartma sprite'ı döner (yoksa null). Oyun katmanı birkaç saniyede
+        /// bir çağırır (yağmur birikintisi, çamur, kıyı köpüğü, yabani ot). Yalnızca zemin katında çizilir.
+        /// </summary>
+        public void RefreshDecals(System.Func<int, int, Sprite> decalAt)
+        {
+            if (_decalLayer == null || Map == null) return;
+            bool visible = IsLevelVisible(0);
+            _decalLayer.SetVisible(visible);
+            if (!visible) return;
+            for (int y = _area.yMin; y < _area.yMax; y++)
+                for (int x = _area.xMin; x < _area.xMax; x++)
+                {
+                    var c = _decalCell.Reset();
+                    c.sprite = decalAt != null ? decalAt(x, y) : null;
+                    c.flipX = ((x * 7 + y * 13) & 1) == 1;   // aynı çıkartma her karoda aynı yöne bakmasın
+                    _decalLayer.Set(x, y, c);
+                }
+            _decalLayer.Flush();
+        }
+
         public void SetGroundTint(Color tint)
         {
             if (_layers != null) foreach (var layer in _layers) layer?.SetTint(tint);
@@ -217,9 +249,30 @@ namespace Thatchwick.Game
                     var sr = _cell.Reset();
                     PaintTile(sr, x, y, z, visible);
                     layer.Set(x, y, sr);
+                    if (z == 0 && _shimmerLayer != null)
+                    {
+                        var p = new GridPos(x, y, 0);
+                        bool water = sr.enabled && sr.sprite != null && Map.GetFloor(p) == FloorType.Water && Map.IsFilled(p) && !Map.FrozenAt(p);
+                        var w = _shimmerCell.Reset();
+                        w.sprite = water ? sr.sprite : null;
+                        w.flipX = sr.flipX;
+                        _shimmerLayer.Set(x, y, w);
+                    }
+                    if (z == 0 && _snowLayer != null)
+                    {
+                        // Kar yalnızca açıktaki kara karosunu örter (oda içi, su ve kapalı karo hariç).
+                        var p = new GridPos(x, y, 0);
+                        var room = Map.Rooms.RoomAt(p);
+                        bool open = sr.enabled && sr.sprite != null && Map.GetFloor(p) != FloorType.Water && (room == null || !room.IsIndoor);
+                        var c = _snowCell.Reset();
+                        c.sprite = open ? sr.sprite : null;
+                        c.flipX = sr.flipX;
+                        _snowLayer.Set(x, y, c);
+                    }
                 }
             }
             layer.Flush();
+            if (z == 0) { _shimmerLayer?.SetVisible(visible); _shimmerLayer?.Flush(); _snowLayer?.SetVisible(visible); _snowLayer?.Flush(); }
         }
 
         // Bir karonun zemin görünümü (eski karo SpriteRenderer'ının yerine TileCell'e boyanır).

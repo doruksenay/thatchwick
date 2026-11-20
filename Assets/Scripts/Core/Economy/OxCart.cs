@@ -31,6 +31,8 @@ namespace Thatchwick.Core.Economy
         public Func<string> FleetBlocker { get; set; }
         /// <summary>Pazara giden öbür arabaların eklediği yük.</summary>
         public Func<int> ExtraCapacity { get; set; }
+        /// <summary>Satış çarpanı (yağmurda örtüsüz araba: mal ıslanır); null ise 1.</summary>
+        public Func<double> EarnFactor { get; set; }
 
         public OxCart(WorldState world, Household house, Market market, ContentDatabase content)
         {
@@ -111,6 +113,9 @@ namespace Thatchwick.Core.Economy
                 if (n > 0) { sold.Add(new KeyValuePair<string, int>(kv.Key, n)); units += n; }
             }
             Carter?.Invoke()?.GainSkillXp(SkillType.Carting, 0.5 * units);
+            double factor = EarnFactor != null ? Math.Max(0.0, Math.Min(1.0, EarnFactor())) : 1.0;
+            int loss = earned - (int)Math.Round(earned * factor);
+            if (loss > 0 && _house.TrySpend(loss)) earned -= loss;   // ıslanan mal ucuza gitti
             return earned;
         }
     }

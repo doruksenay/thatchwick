@@ -43,6 +43,9 @@ namespace Thatchwick.Core.Life
         /// <summary>Açıkta kalan yiyeceğin ek bozulma çarpanı (evde sinek: 1,2); null ise 1.</summary>
         public Func<double> OpenRateFactor { get; set; }
 
+        /// <summary>Depoya sığmayıp açıkta kalan yiyecek adedi (son adımda; belge 57b Z1, 60c §2.6).</summary>
+        public int OpenUnits { get; private set; }
+
         /// <summary>Bodrum depolarının bozulma çarpanı (yer tutucu; Adım 28).</summary>
         public double BasementFactor = 0.7;
         /// <summary>Derin kiler (kat -2) ek çarpanı: bozulma bodrumun yarısı (23. belge 3.4).</summary>
@@ -258,10 +261,19 @@ namespace Thatchwick.Core.Life
             var plan = _plan;
             double extra = Extra();   // adım başına bir kez (eskiden her tanım için yeniden hesaplanıyordu)
             // Depoya sığmayıp açıkta kalan yiyecek: evin içinde sinek varsa daha çabuk bozulur (belge 57b Z1).
-            double open = extra * (OpenRateFactor != null ? Math.Max(1.0, OpenRateFactor()) : 1.0);
+            // Plan her yiyeceğin ortalama hızını tutar; açıkta kalan adetler (plan.Open) o ortalamaya OpenRate ile girer.
+            // Sinek varsa yalnızca açıktaki pay hızlanır: ortalamaya fark kadar eklenir.
+            double flies = OpenRateFactor != null ? Math.Max(1.0, OpenRateFactor()) : 1.0;
+            int openUnits = 0;
             foreach (var def in Spoilable())
             {
-                double rate = plan.RateOf(def.Id) * (plan.Rate.ContainsKey(def.Id) ? 1.0 : open);
+                double rate = plan.RateOf(def.Id);
+                if (plan.Open.TryGetValue(def.Id, out int left) && left > 0)
+                {
+                    openUnits += left;
+                    int total = _house.Count(def.Id);
+                    if (flies > 1.0 && total > 0) rate += extra * OpenRate * (flies - 1.0) * Math.Min(left, total) / total;
+                }
                 int removed = 0;
                 for (int q = 0; q <= ItemQuality.Max; q++)
                 {
@@ -278,6 +290,7 @@ namespace Thatchwick.Core.Life
                 }
                 if (removed > 0) Spoiled?.Invoke(def.Id, removed);
             }
+            OpenUnits = openUnits;
         }
 
         /// <summary>Envanterdeki en eski partinin yaşı (bozulma günü); izlenmiyorsa 0. Doldurulan dekora giren ürün bu yaşla girer.</summary>

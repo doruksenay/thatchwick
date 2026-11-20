@@ -36,6 +36,11 @@ namespace Thatchwick.Game
         public Func<Animal, AnimalPose> PoseOf;
         public Func<int, string> WildFx;
         public Func<int, GridPos?> ItemTile;
+        /// <summary>
+        /// Hayvanın çizim yerini geçici olarak değiştirir (arabaya koşulu hayvan yolda; belge 57e): (dünya konumu, yön, gizli).
+        /// null dönerse hayvan simülasyondaki yerinde çizilir.
+        /// </summary>
+        public Func<Animal, (Vector3 pos, int dir, bool hidden)?> Override;
         private readonly Dictionary<int, View> _walkers = new Dictionary<int, View>();
 
         private readonly Transform _parent;
@@ -209,10 +214,12 @@ namespace Thatchwick.Game
                     if (pose.Pose == "box") { pos = at + new Vector3(0f, BoxCatLift, 0f); v.Lift = 3; }   // sandığın içinden bakar
                     else v.Dir = IsoArt.DirectionIndex(new Vector2(at.x - pos.x, at.y - pos.y));
                 }
+                var over = Override?.Invoke(a);
+                if (over.HasValue) { pos = over.Value.pos; v.Dir = over.Value.dir; }
                 v.Pos.Push(pos);
                 v.RiderId = a.RiderId;
                 v.Level = a.Position.Z;
-                v.R.enabled = _world.IsLevelVisible(a.Position.Z);
+                v.R.enabled = _world.IsLevelVisible(a.Position.Z) && !(over.HasValue && over.Value.hidden);
                 // Genetik (belge 48): tipin gövdesi + genden renk; gövde görseli yoksa türün görseli, o da yoksa genden renkli küp.
                 var look = _lookOf(a);
                 string body = look != null && look.Layers.Count > 0 ? look.Layers[0] : null;
