@@ -115,7 +115,7 @@ namespace Thatchwick.Game
             Color32 skin = C(a.SkinColor);
             Color32 outfit = C(a.OutfitColor);
             Color32 trim = C(a.TrimColor);
-            Color32 hair = C(AgingLook.GrayedHair(a.HairColor, gray));
+            Color32 hair = C(a.ShownHairColor(gray));   // geçici ton dahil (belge 65)
             Color32 hat = C(a.HatColor);
             Color32 shoes = a.ShoesId == "clogs" ? new Color32(150, 110, 70, 255) : new Color32(45, 34, 28, 255);
             var visible = MarkRules.Visible(a.Marks);

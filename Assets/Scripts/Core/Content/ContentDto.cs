@@ -458,6 +458,7 @@ namespace Thatchwick.Core.Content
         public bool slaughter;              // barınaktan bir yetişkin hayvanı keser (et verir)
         public string repair;               // onarım istasyonu: wood, metal, cloth (hasarlı eşyayı onarır)
         public bool polish;                 // kararmış metal aynayı cilalar
+        public string hairCare;             // geçici saç bakımı (59a §6, belge 65): henna, chamomile, walnut, purple, shine
         public bool collectContents;        // döküntü yığınındakileri envantere alır (doldurulan dekorda: boşalt)
         public bool fillDecor;              // doldurulan dekoru envanterdeki gerçek ürünle doldurur
         public bool eatContents;            // doldurulan dekordan bir tane yer (açlık)

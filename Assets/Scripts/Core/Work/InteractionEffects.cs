@@ -407,7 +407,15 @@ namespace Thatchwick.Core.Work
                 if (interaction.AddFill > 0) item.Fill += interaction.AddFill;
             }
             if (interaction.EmptyFill && item.Def.FillProduct != null) farmNotes.Add(EmptyInto(item));
-            if (interaction.Bath) farmNotes.Add(BathEffect(character, item));
+            if (interaction.Bath)
+            {
+                farmNotes.Add(BathEffect(character, item));
+                // Yıkanınca kına ve saç suyu tonu gider (59a §6).
+                if (character.Appearance != null && character.Appearance.WashHair())
+                    farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("hair.note.washed"));
+            }
+            if (interaction.HairCare != null && Thatchwick.Core.Customization.HairTints.Treat(character.Appearance, interaction.HairCare))
+                farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("hair.note." + interaction.HairCare));
             if (interaction.Wets > 0f) character.Soak(interaction.Wets);
             if (interaction.Dries && character.Wetness > 0f) { character.Dry(); farmNotes.Add("kurulandı"); }
             if (interaction.Polish && item.TarnishDays > 0) { item.TarnishDays = 0; farmNotes.Add($"{item.Def.DisplayName} parladı"); }

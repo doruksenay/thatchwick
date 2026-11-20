@@ -345,6 +345,7 @@ namespace Thatchwick.Core.Content
                             Slaughter = i.slaughter,
                             RepairMaterial = string.IsNullOrWhiteSpace(i.repair) ? null : i.repair,
                             Polish = i.polish,
+                            HairCare = string.IsNullOrWhiteSpace(i.hairCare) ? null : i.hairCare.Trim(),
                             CollectContents = i.collectContents,
                             FillDecor = i.fillDecor,
                             EatContents = i.eatContents,
@@ -358,6 +359,8 @@ namespace Thatchwick.Core.Content
                             TreeAction = string.IsNullOrWhiteSpace(i.treeAction) ? null : i.treeAction.Trim()
                         };
                         AddMaterials(interaction, i.materials);
+                        if (interaction.HairCare != null && !Thatchwick.Core.Customization.HairTints.IsKnown(interaction.HairCare))
+                            errors.Add($"{dto.id}/{i.id}: bilinmeyen saç bakımı '{interaction.HairCare}'.");
                         if (!MapKitchenNeeds(interaction, i.needTools, $"{dto.id}/{i.id}", errors)) continue;
                         if (i.teaches != null) foreach (var t in i.teaches) if (!string.IsNullOrWhiteSpace(t)) interaction.Teaches.Add(t.Trim());
                         bool badExtra = false;

@@ -57,7 +57,7 @@ namespace Thatchwick.Core.Economy
         private static bool TavernGoods(ItemDef d) => !IsClothing(d) && (Has(d, "cooked", "drink"));
         private static bool MillGoods(ItemDef d) => !IsClothing(d) && (Has(d, "grain", "sheaf") || IdHas(d, "flour", "bread", "meal"));
         private static bool ScribeGoods(ItemDef d) => !IsClothing(d) && (Has(d, "writing"));
-        private static bool HerbGoods(ItemDef d) => !IsClothing(d) && (Has(d, "potion") || IdHas(d, "herb", "nettle", "salve", "remedy"));
+        private static bool HerbGoods(ItemDef d) => !IsClothing(d) && (Has(d, "potion", "hair_care") || IdHas(d, "herb", "nettle", "salve", "remedy"));   // kına ve saç suları aktarda (belge 65)
         private static bool PotterGoods(ItemDef d) => Has(d, "shop_pottery") || !IsClothing(d) && Has(d, "glass") || !IsClothing(d) && IdHas(d, "clay", "sand");
         private static bool TailorGoods(ItemDef d) => Has(d, "shop_tailor") || !IsClothing(d) && Has(d, "cloth", "fiber", "dye") || !IsClothing(d) && IdHas(d, "wool", "yarn", "linen", "flax", "thread");
         private static bool SaddlerGoods(ItemDef d) => Has(d, "shop_saddler") || !IsClothing(d) && Has(d, "leather", "hide", "saddle");

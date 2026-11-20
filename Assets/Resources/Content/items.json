@@ -9128,6 +9128,41 @@
           "durationDays": 0.08,
           "fetchWater": true,
           "bath": true
+        },
+        {
+          "id": "hair_henna",
+          "displayName": "Saça kına yak",
+          "durationDays": 0.08,
+          "consume": "item.henna_paste",
+          "hairCare": "henna"
+        },
+        {
+          "id": "hair_chamomile",
+          "displayName": "Papatya suyuyla durula",
+          "durationDays": 0.04,
+          "consume": "item.rinse_chamomile",
+          "hairCare": "chamomile"
+        },
+        {
+          "id": "hair_walnut",
+          "displayName": "Ceviz suyuyla saçı boya",
+          "durationDays": 0.06,
+          "consume": "item.rinse_walnut",
+          "hairCare": "walnut"
+        },
+        {
+          "id": "hair_purple",
+          "displayName": "Mor saç suyu sür",
+          "durationDays": 0.06,
+          "consume": "item.rinse_purple",
+          "hairCare": "purple"
+        },
+        {
+          "id": "hair_oil",
+          "displayName": "Saç yağı sür",
+          "durationDays": 0.03,
+          "consume": "item.hair_oil",
+          "hairCare": "shine"
         }
       ],
       "waterUse": 1,
@@ -9149,6 +9184,66 @@
       ],
       "trades": [
         "herb"
+      ]
+    },
+    {
+      "id": "item.henna",
+      "displayName": "Kına",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "hair_care"
+      ]
+    },
+    {
+      "id": "item.henna_paste",
+      "displayName": "Kına hamuru",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "hair_care"
+      ]
+    },
+    {
+      "id": "item.rinse_chamomile",
+      "displayName": "Papatya suyu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "hair_care"
+      ]
+    },
+    {
+      "id": "item.rinse_walnut",
+      "displayName": "Ceviz kabuğu suyu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "hair_care"
+      ]
+    },
+    {
+      "id": "item.rinse_purple",
+      "displayName": "Mor saç suyu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "hair_care"
+      ]
+    },
+    {
+      "id": "item.hair_oil",
+      "displayName": "Saç yağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "hair_care"
       ]
     },
     {
@@ -53332,6 +53427,95 @@
       "skillXp": 18,
       "displayName": "Defne sabunu kaynat",
       "minLevel": 6
+    },
+    {
+      "id": "henna_paste",
+      "station": "item.mortar_pestle",
+      "produces": "item.henna_paste",
+      "materials": [
+        {
+          "item": "item.henna",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Herbalism",
+      "skillXp": 4,
+      "displayName": "Kına hamuru yoğur",
+      "count": 2,
+      "minLevel": 1
+    },
+    {
+      "id": "rinse_chamomile",
+      "station": "item.mortar_pestle",
+      "produces": "item.rinse_chamomile",
+      "materials": [
+        {
+          "item": "item.tea_chamomile",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Herbalism",
+      "skillXp": 4,
+      "displayName": "Papatya suyu kaynat",
+      "count": 2,
+      "minLevel": 1
+    },
+    {
+      "id": "rinse_walnut",
+      "station": "item.mortar_pestle",
+      "produces": "item.rinse_walnut",
+      "materials": [
+        {
+          "item": "item.walnut_hull",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Herbalism",
+      "skillXp": 5,
+      "displayName": "Ceviz kabuğu suyu kaynat",
+      "count": 2,
+      "minLevel": 2
+    },
+    {
+      "id": "rinse_purple",
+      "station": "item.mortar_pestle",
+      "produces": "item.rinse_purple",
+      "materials": [
+        {
+          "item": "item.dye_purple",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Herbalism",
+      "skillXp": 8,
+      "displayName": "Mor saç suyu hazırla",
+      "count": 2,
+      "minLevel": 4
+    },
+    {
+      "id": "hair_oil",
+      "station": "item.mortar_pestle",
+      "produces": "item.hair_oil",
+      "materials": [
+        {
+          "item": "item.olive_oil",
+          "count": 1
+        },
+        {
+          "item": "item.lavender_dried",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Herbalism",
+      "skillXp": 6,
+      "displayName": "Saç yağı hazırla",
+      "count": 2,
+      "minLevel": 3
     },
     {
       "id": "mine_candle",
