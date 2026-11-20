@@ -5,7 +5,7 @@ kind: sfx
 family: tools
 freq: A
 pilot: true
-status: ready
+status: claimed
 approved_by: auto
 key: work.chop
 note: '45a bölüm 6: katmanlı ile tek dosya karşılaştırması. İkisinden yalnız biri kabul edilir; diğeri ret.'
@@ -29,5 +29,7 @@ layers:
   prompt: A few small wood chips and splinters falling onto grass and earth.
   duration_s: 0.8
   generate: 4
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T09:53:33Z'
 ---
 Axe chopping wood, built from three layers that play together.
