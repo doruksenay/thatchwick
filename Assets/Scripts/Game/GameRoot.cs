@@ -697,6 +697,9 @@ namespace Thatchwick.Game
             _life.Home.ServantWalks = true;   // hizmetkâr sabahları eve yürür, işleri kendisi yapar (belge 45)
             // Giyim uyumu (belge 48 §12.3): köylünün yorumu başında konuşma balonu olarak çıkar.
             _life.ClothingRemark += (villager, target, key) => Say(villager, GameLocalization.T(key));
+            // Yaşlılık (belge 51 §3.3a): dalgınlık işareti ve işi bırakma balonları (ilerleme kaybolmaz).
+            _life.AbsentSignal += c => Say(c, GameLocalization.T("aging.signal"));
+            _life.AbsentPause += c => Say(c, GameLocalization.T("aging.drop"));
             // Kilitler beceride (karar 28-4): hanenin o becerideki en iyi seviyesi.
             _life.SkillLocks = true;
             _buildService.SkillLevel = _life.BestSkill;
