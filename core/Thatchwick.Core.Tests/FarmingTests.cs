@@ -19,6 +19,8 @@ namespace Thatchwick.Core.Tests
         {
             var p = new PlantSystem(w);
             p.Config.DryGrowth = 1f;
+            // Beslenme tipleri (57c) büyüme hızını verime bağlar; eski testler hızı sabit sayar.
+            p.Config.HeavyBase = 1f; p.Config.HeavySpan = 0f; p.Config.LightBase = 1f; p.Config.LightSpan = 0f;
             return p;
         }
     }
@@ -515,7 +517,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(db.Items.Get("item.irrigation_ditch").WaterRadius < db.Items.Get("item.bucket_pulley").WaterRadius);
             Assert.True(db.Items.Get("item.bucket_pulley").WaterRadius < db.Items.Get("item.water_channel").WaterRadius);
             Assert.True(db.Items.Get("item.scarecrow").ProtectRadius > 0);
-            Assert.True(db.Items.Get("item.compost_heap").Interactions.Any(i => i.Produce.Any(pr => pr.ItemId == "item.compost")));
+            Assert.True(db.Items.Get("item.compost_heap").Interactions.Any(i => i.FarmAction == "compost_take"));   // kompost artık süreç (belge 57b)
         }
 
         [Fact]

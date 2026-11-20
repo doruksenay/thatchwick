@@ -232,6 +232,10 @@ namespace Thatchwick.Core.Content
         public string fillProduct;           // boşaltınca verdiği ürün (gübre)
         public int fillPerProduct;           // kaç dolum bir ürün (0 = 4)
         public string cropFamily;            // ekin ailesi (nöbetleşe ekim)
+        public string feed;                  // beslenme tipi (57c): heavy | medium | light | lean | builder (boş: nitrogen ise builder, değilse medium)
+        public bool eatenRaw;                // çiğ yenen ekin (pislikli ham kompost riski)
+        public string[] likesFertilizer;     // kalite veren gübreler: ash, bone, hot, seaweed...
+        public string[] dislikesFertilizer;  // ürünü azaltan gübreler
         public string threshesTo;            // demet: harmanda bu taneye döner
         public int threshPerDay;             // düven: çeki hayvanıyla her sabah dövdüğü demet
         public int harvestRadius;            // hasat tırmığı: güç alınca bu yarıçaptaki olgun ekini her sabah biçer
@@ -419,6 +423,8 @@ namespace Thatchwick.Core.Content
         public bool requiresLit;            // yalnızca yanan ısı kaynağında
         public bool water;                  // ekini sular
         public float fertilize;             // toprak verimine eklenen (0-1)
+        public string fertilizerKind;       // gübre türü (57c): compostRaw, compost, blackSoil, fresh, hot, bone, ash, seaweed, marl, mulch, lime
+        public string farmAction;           // pislik, kompost, ahır ve araba işleri (belge 57): LifeSystems.Farmyard
         public bool requiresFruit;          // meyvesi olgun ağaç gerekir
         public bool adultOnly;              // çocuk ve ergen yapamaz (kahve, belge 32-6)
         public bool adultPack;              // +18 paketi (şarap içmek): paket kapalıysa görünmez

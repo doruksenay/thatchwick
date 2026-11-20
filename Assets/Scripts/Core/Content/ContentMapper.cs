@@ -57,6 +57,10 @@ namespace Thatchwick.Core.Content
                     FruitRipenDays = dto.fruitDays,
                     FixesNitrogen = dto.nitrogen,
                     CropFamily = string.IsNullOrWhiteSpace(dto.cropFamily) ? null : dto.cropFamily,
+                    Feed = ParseFeed(dto.feed, dto.nitrogen),
+                    EatenRaw = dto.eatenRaw,
+                    LikesFertilizer = ParseFertilizers(dto.likesFertilizer),
+                    DislikesFertilizer = ParseFertilizers(dto.dislikesFertilizer),
                     ThreshesTo = string.IsNullOrWhiteSpace(dto.threshesTo) ? null : dto.threshesTo,
                     ThreshPerDay = Math.Max(0, dto.threshPerDay),
                     WaterRadius = dto.waterRadius,
@@ -316,6 +320,8 @@ namespace Thatchwick.Core.Content
                             RequiresLit = i.requiresLit,
                             Water = i.water,
                             Fertilize = i.fertilize,
+                            FertilizerKind = ParseFertilizer(i.fertilizerKind),
+                            FarmAction = string.IsNullOrWhiteSpace(i.farmAction) ? null : i.farmAction.Trim(),
                             RequiresFruit = i.requiresFruit,
                             AdultOnly = i.adultOnly,
                             AdultPack = i.adultPack,
@@ -418,6 +424,47 @@ namespace Thatchwick.Core.Content
 
         // Kalite taşıyan eşyalar (53 §4.2): yiyecek, içecek, hayvan ürünü, tekstil ve deri zinciri (Goods); tarifle yapılan
         // mobilya, eyer, giysi, oyuncak (Crafted). Ham madde, yakıt, tohum ve yapı malzemesi kalitesiz (Dwarf Fortress dersi).
+        /// <summary>Beslenme tipi (belge 57c): boşsa baklagil toprak yapan, ötekiler orta.</summary>
+        public static FeedType ParseFeed(string feed, bool nitrogen)
+        {
+            switch ((feed ?? "").Trim().ToLowerInvariant())
+            {
+                case "heavy": return FeedType.Heavy;
+                case "light": return FeedType.Light;
+                case "lean": return FeedType.Lean;
+                case "builder": return FeedType.Builder;
+                case "medium": return FeedType.Medium;
+                default: return nitrogen ? FeedType.Builder : FeedType.Medium;
+            }
+        }
+
+        /// <summary>Gübre türü adı (içerik): bilinmeyen ya da boş ad Generic sayılır.</summary>
+        public static Fertilizer ParseFertilizer(string kind)
+        {
+            switch ((kind ?? "").Trim().ToLowerInvariant())
+            {
+                case "compostraw": return Fertilizer.CompostRaw;
+                case "compost": return Fertilizer.Compost;
+                case "blacksoil": return Fertilizer.BlackSoil;
+                case "fresh": return Fertilizer.FreshManure;
+                case "hot": return Fertilizer.HotManure;
+                case "bone": return Fertilizer.BoneMeal;
+                case "ash": return Fertilizer.Ash;
+                case "seaweed": return Fertilizer.Seaweed;
+                case "marl": return Fertilizer.Marl;
+                case "mulch": return Fertilizer.Mulch;
+                case "lime": return Fertilizer.Lime;
+                default: return Fertilizer.Generic;
+            }
+        }
+
+        private static Fertilizer ParseFertilizers(string[] kinds)
+        {
+            var f = Fertilizer.None;
+            if (kinds != null) foreach (var k in kinds) if (!string.IsNullOrWhiteSpace(k)) f |= ParseFertilizer(k);
+            return f & ~Fertilizer.Generic;
+        }
+
         private static readonly string[] GoodsTags = { "food", "drink", "fish", "cloth", "fiber", "leather", "hide", "coffee", "potion", "remedy" };
         private static readonly string[] GoodsIds = { "item.wool", "item.coffee_roasted", "item.coffee_beans", "item.vinegar", "item.honeycomb", "item.raw_hide" };
         private static readonly string[] NoQualityTags = { "seed", "feed", "fertilizer", "fuel", "stone", "metal", "ice", "keepsake", "relic", "salvage" };

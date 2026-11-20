@@ -126,6 +126,10 @@ namespace Thatchwick.Core.Content
         public bool Water { get; set; }
         /// <summary>Ekinin toprağına bu kadar verim ekler (0-1); harcanan gübre Consume ile verilir.</summary>
         public float Fertilize { get; set; }
+        /// <summary>Serilen gübrenin türü (belge 57c); tür verilmemişse Generic.</summary>
+        public Fertilizer FertilizerKind { get; set; } = Fertilizer.Generic;
+        /// <summary>Avlu işi (belge 57): pislik toplama, kompost, ahır temizliği, araba. Kuralları Life.Farmyard'da.</summary>
+        public string FarmAction { get; set; }
         /// <summary>Barınaktaki hayvanları sever: dostlukları artar (hayvan başına günde bir kez).</summary>
         public bool PetsAnimals { get; set; }
         /// <summary>Barınaktaki yetişkin, dostu olmayan bir hayvanı keser; hayvanın türüne göre et verir.</summary>
@@ -188,7 +192,7 @@ namespace Thatchwick.Core.Content
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
             || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
             || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter
-            || RepairMaterial != null || Polish || Embellish || CollectContents || FillDecor || EatContents || HomeAction != null || TreeAction != null;
+            || RepairMaterial != null || Polish || Embellish || CollectContents || FillDecor || EatContents || HomeAction != null || TreeAction != null || FarmAction != null;
         /// <summary>Açıkça verilen eylem zinciri kimliği (belge 60); boşsa eşleme kuralı bağlar.</summary>
         public string Chain { get; set; }
         /// <summary>İçerik yüklenince çözülen zincir; yoksa null (iş tek pozda yapılır).</summary>

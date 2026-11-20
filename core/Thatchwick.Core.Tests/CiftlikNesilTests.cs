@@ -276,7 +276,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal((double)(f1 - cfg.HarvestDraw + cfg.NitrogenBonus + cfg.RotationBonus), (double)plants.FertilityAt(pos), 4);
             float f2 = plants.FertilityAt(pos);
             Harvest("item.crop_turnip");                            // tahıl → baklagil → kök: üç tarla
-            Assert.Equal((double)(f2 - cfg.HarvestDraw + cfg.RotationBonus + cfg.ThreeFieldBonus), (double)plants.FertilityAt(pos), 4);
+            Assert.Equal((double)(f2 - cfg.DrawOf(FeedType.Light) + cfg.RotationBonus + cfg.ThreeFieldBonus), (double)plants.FertilityAt(pos), 4);   // şalgam az yiyen (57c)
             Assert.Equal("item.crop_pea", plants.SoilPlots.First().Value.PrevCrop);
         }
 

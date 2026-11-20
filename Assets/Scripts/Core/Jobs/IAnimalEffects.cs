@@ -71,7 +71,9 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Su kenarında cam kavanozla yakala (balık, karides, su bitkisi; oyuncuysa mini oyun).</summary>
         JarCatch = 12,
         /// <summary>Kedinin yere düşürdüğü süsü alıp yerine koy (belge 55, Kedi Alex).</summary>
-        PutBack = 13
+        PutBack = 13,
+        /// <summary>Açıkta tuvalet (belge 57b §2): hela, lazımlık ve siper yokken son çare; yerde pislik kalır.</summary>
+        Relieve = 14
     }
 
     /// <summary>Karo işlerinin kuralları ve etkileri (Core.Work.FarmWork uygular).</summary>

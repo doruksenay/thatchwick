@@ -189,10 +189,10 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(2, k.Commands.Count);
             Assert.Equal(b.Id, k.Commands[1].ItemId);
 
-            // Karakter başka bir işe geçerse (kompost yapmak) emir düşer.
+            // Karakter başka bir işe geçerse (komposta yaş atık eklemek; belge 57b) emir düşer.
             var heap = k.World.PlaceItem(k.Db.Items.Get("item.compost_heap"), new GridPos(12, 12));
             k.House.AddItem("item.herb", 3);
-            k.Fx.Apply(farmer, heap, heap.Def.Interactions.First(i => i.Id == "make_compost"));
+            k.Fx.Apply(farmer, heap, heap.Def.Interactions.First(i => i.Id == "add_wet"));
             Assert.Equal(0, k.Life.Fields.PendingCount(farmer));
         }
 

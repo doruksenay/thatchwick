@@ -14,7 +14,9 @@ namespace Thatchwick.Core.Animals
     public sealed class AnimalComfortReport
     {
         public float Shelter, Space, Warmth, Water, Bedding, Light, Decor;
-        public float Total => Math.Min(100f, Shelter + Space + Warmth + Water + Bedding + Light + Decor);
+        /// <summary>Barınak pisliğinin konfordan götürdüğü (belge 57b Z5); temiz barınakta 0.</summary>
+        public float Filth;
+        public float Total => Math.Max(0f, Math.Min(100f, Shelter + Space + Warmth + Water + Bedding + Light + Decor) - Filth);
         public bool IsRoom;
         public int Animals, Tiles;
 
@@ -29,6 +31,7 @@ namespace Thatchwick.Core.Animals
             if (Bedding <= 0f) missing.Add("saman altlık");
             if (IsRoom && Light <= 0f) missing.Add("ışık ya da pencere");
             if (IsRoom && Decor < 5f) missing.Add("süs");
+            if (Filth > 0f) missing.Add("temizlik");
             return missing.Count == 0 ? "her şey yerinde" : "eksik: " + string.Join(", ", missing);
         }
     }
@@ -135,6 +138,11 @@ namespace Thatchwick.Core.Animals
         /// Barınak konforu: barınak (kapalı oda 25, hazır barınak 20), alan (20), sıcaklık (15), su (10), saman altlık (10),
         /// ışık (5), süs (15). Hazır dış barınak en çok ~70, iyi kurulmuş ve süslenmiş oda 100.
         /// </summary>
+        /// <summary>Barınak pisliğinin konfor cezası (avlu sistemi bağlar, belge 57b); null ise 0.</summary>
+        public Func<ItemInstance, float> FilthPenalty { get; set; }
+        /// <summary>Barınak pisliğinden gelen ek hastalık riski (günlük olasılığa eklenir); null ise 0.</summary>
+        public Func<ItemInstance, double> FilthSickRisk { get; set; }
+
         public AnimalComfortReport ComfortOf(ItemInstance home)
         {
             var r = new AnimalComfortReport();
@@ -186,6 +194,7 @@ namespace Thatchwick.Core.Animals
                 if (bedded * 2 >= room.Tiles.Count) r.Bedding = 10f;           // odanın yarısı saman/saz serili
             }
             r.Decor = Math.Min(15f, decor);
+            if (FilthPenalty != null) r.Filth = Math.Max(0f, FilthPenalty(home));
             return r;
         }
 

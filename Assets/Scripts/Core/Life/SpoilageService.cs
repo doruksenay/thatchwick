@@ -40,6 +40,9 @@ namespace Thatchwick.Core.Life
         /// <summary>Ek bozulma azaltma oranı (köy projesi, özellik); yoksa 0.</summary>
         public Func<float> ExtraReduction { get; set; }
 
+        /// <summary>Açıkta kalan yiyeceğin ek bozulma çarpanı (evde sinek: 1,2); null ise 1.</summary>
+        public Func<double> OpenRateFactor { get; set; }
+
         /// <summary>Bodrum depolarının bozulma çarpanı (yer tutucu; Adım 28).</summary>
         public double BasementFactor = 0.7;
         /// <summary>Derin kiler (kat -2) ek çarpanı: bozulma bodrumun yarısı (23. belge 3.4).</summary>
@@ -254,9 +257,11 @@ namespace Thatchwick.Core.Life
             if (_plan == null || _planAge >= PlanRefreshDays) { _plan = Plan(); _planAge = 0; }
             var plan = _plan;
             double extra = Extra();   // adım başına bir kez (eskiden her tanım için yeniden hesaplanıyordu)
+            // Depoya sığmayıp açıkta kalan yiyecek: evin içinde sinek varsa daha çabuk bozulur (belge 57b Z1).
+            double open = extra * (OpenRateFactor != null ? Math.Max(1.0, OpenRateFactor()) : 1.0);
             foreach (var def in Spoilable())
             {
-                double rate = plan.RateOf(def.Id) * (plan.Rate.ContainsKey(def.Id) ? 1.0 : extra);
+                double rate = plan.RateOf(def.Id) * (plan.Rate.ContainsKey(def.Id) ? 1.0 : open);
                 int removed = 0;
                 for (int q = 0; q <= ItemQuality.Max; q++)
                 {

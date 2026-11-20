@@ -546,6 +546,7 @@ namespace Thatchwick.Game
                 new Ui.HudBar.Item { Text = () => T("ui.hud.market"), On = () => _marketPanel.Active, Click = ToggleMarket },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.storage"), On = () => _storagePanel.Active, Click = () => _storagePanel.Toggle() },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.mine"), On = () => _minePanel.Active, Click = () => _minePanel.Toggle() },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.carts"), On = () => _cartPanel != null && _cartPanel.Active, Click = () => _cartPanel?.Toggle() },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.family"), On = () => _familyPanel.Active, Click = ToggleFamily },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.village"), On = () => _villagePanel.Active, Click = ToggleVillage },
                 new Ui.HudBar.Item
@@ -1614,6 +1615,7 @@ namespace Thatchwick.Game
             if (_shopPanel != null && _shopPanel.Active && _shopPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_cartPanel != null && _cartPanel.Active && _cartPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_homePanel != null && _homePanel.Active && _homePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_vivView != null && _vivView.Active && _vivView.PanelRect(s).Contains(guiPos)) return true;
@@ -2293,11 +2295,13 @@ namespace Thatchwick.Game
             _automation = new FarmAutomation(_world, _household)
             {
                 Storage = _storage, Plants = _plants, Build = _buildService, Content = _content, TemperatureAt = p => _heat.TemperatureAt(p),
-                DraftAnimals = _animals.DraftAnimals                          // düven: çeki hayvanı (at, öküz)
+                DraftAnimals = () => _life.FreeDraftAnimals()                 // düven: arabaya koşulmamış çeki hayvanı (at, öküz)
             };
             _cart = new OxCart(_world, _household, _market, _content)
             {
                 DraftAnimals = _animals.DraftAnimals,
+                FleetBlocker = () => _life.MarketCartBlocker(),      // araba filosu: pazara atanmış araba (belge 57e)
+                ExtraCapacity = () => _life.MarketExtraCapacity(),
                 Carter = () => BestMember(SkillType.Carting)
             };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
@@ -2308,6 +2312,7 @@ namespace Thatchwick.Game
                 TileWork = _farmWork,
                 Mines = _mines,
                 HouseChores = _life.Home.Chores,                                      // ev görevi (belge 45)
+                YardChores = _life.YardChores,                                        // kompost, ahır temizliği, yığın toplama (belge 57)
                 HouseHours = () => HourOfDay >= 7.0 && HourOfDay < 22.0              // mum yakmak akşam işi
             };
             _world.Map.WearMultiplier = RoadWear();
@@ -2426,6 +2431,7 @@ namespace Thatchwick.Game
                 OpenBlocker = () => _life.BestSkill(SkillType.Mining) < 1 ? "Madencilik gerekir." : null
             };
             _minePanel.Message += m => ShowMessage(m, 4f);
+            InitYard();   // sinek, azar, arabalar paneli (belge 57-57e)
             _buildService.DeepShaftOpened += p => { _mines.OpenShaft(p); _floorsDirty = true; };
             _buildService.ProtectedItem = it => _life.Legacy.HeirloomOf(it.Id) != null && MineSystem.InTreasureRoom(_world, it);
             _view.RockTint = p =>
@@ -2686,7 +2692,7 @@ namespace Thatchwick.Game
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
             _mirror != null || _settingsOpen || _betOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
-            || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
+            || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_cartPanel != null && _cartPanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
             || (_homePanel != null && _homePanel.Active) || (_vivView != null && _vivView.Active) || (_familyPanel != null && _familyPanel.Active)
             || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
 
@@ -2739,6 +2745,7 @@ namespace Thatchwick.Game
             float wind = weather == WeatherType.Storm ? 3f : weather == WeatherType.Rain ? 1.6f : weather == WeatherType.Snow ? 0.6f : 1f;
             if (_clock.Season == Season.Autumn) wind += 0.5f;
             Shader.SetGlobalFloat("_TwWind", building ? 0f : wind);
+            if (!building) UpdateYardFx(dt);
 
             // Yanan ocak: duman yükselir, arada kıvılcım. Yağmurda duman daha sık (ıslak odun).
             foreach (var (heatItem, heatView) in _items.Heat.Values)
@@ -3371,6 +3378,7 @@ namespace Thatchwick.Game
             _shopPanel?.OnGUI(s);
             _storagePanel.OnGUI(s);
             _minePanel.OnGUI(s);
+            _cartPanel?.OnGUI(s);
             _keepsakePanel?.OnGUI(s);
             _homePanel?.OnGUI(s);
             _vivView?.OnGUI(s);
@@ -3517,6 +3525,7 @@ namespace Thatchwick.Game
             if (HudToggle(T("ui.hud.market"), _marketPanel.Active)) ToggleMarket();
             if (HudToggle(T("ui.hud.storage"), _storagePanel.Active)) _storagePanel.Toggle();
             if (HudToggle(T("ui.hud.mine"), _minePanel.Active)) _minePanel.Toggle();
+            if (_cartPanel != null && HudToggle(T("ui.hud.carts"), _cartPanel.Active)) _cartPanel.Toggle();
             if (HudToggle(T("ui.hud.family"), _familyPanel.Active)) ToggleFamily();
             if (HudToggle(T("ui.hud.village"), _villagePanel.Active)) ToggleVillage();
             { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? T("ui.hud.requests_unread", ("count", unread)) : T("ui.hud.requests"), _requestPanel.Active)) ToggleRequests(); }
@@ -3533,6 +3542,7 @@ namespace Thatchwick.Game
             GUILayout.Label(new GUIContent(T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)), HudReputationTip()), GUILayout.Width(110f));
             if (HudToggle(T("ui.hud.labels"), _labelsAll)) _labelsAll = !_labelsAll;
             if (GUILayout.Button(T("ui.hud.save"))) SaveNow(quiet: false);
+            if (GUILayout.Button(T("ui.hud.fx." + _fxLevel))) CycleFx();   // efekt yoğunluğu (belge 57)
             if (AdultPackAvailable)
             {
                 bool adult = Thatchwick.Core.Content.ContentPacks.Adult;

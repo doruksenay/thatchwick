@@ -27,6 +27,10 @@ namespace Thatchwick.Core.Economy
         public Func<int> DraftAnimals { get; set; }
         /// <summary>Hanenin en iyi arabacısı; null ise kapasite tabandır, XP verilmez.</summary>
         public Func<Character> Carter { get; set; }
+        /// <summary>Araba filosu bağlıysa pazar seferinin engeli buradan sorulur (gidecekse null).</summary>
+        public Func<string> FleetBlocker { get; set; }
+        /// <summary>Pazara giden öbür arabaların eklediği yük.</summary>
+        public Func<int> ExtraCapacity { get; set; }
 
         public OxCart(WorldState world, Household house, Market market, ContentDatabase content)
         {
@@ -44,13 +48,19 @@ namespace Thatchwick.Core.Economy
             {
                 var c = Carter?.Invoke();
                 int lvl = c != null ? c.Skills.GetLevel(SkillType.Carting) : 1;
-                return BaseCapacity + CapacityPerLevel * Math.Max(0, lvl - 1);
+                return BaseCapacity + CapacityPerLevel * Math.Max(0, lvl - 1) + Math.Max(0, ExtraCapacity?.Invoke() ?? 0);
             }
         }
 
         /// <summary>Bugün araba gider mi (neden gitmediği, gidecekse null).</summary>
         public string Blocker(long dayIndex)
         {
+            if (FleetBlocker != null)
+            {
+                // Araba filosu (belge 57e): pazara atanmış, hayvanı ve arabacısı hazır bir araba ister.
+                if ((dayIndex + 1) % TripEvery != 0) return $"Araba {TripEvery - (int)((dayIndex + 1) % TripEvery)} gün sonra pazara iner.";
+                return FleetBlocker();
+            }
             if (!HasCart) return "Öküz arabası yok.";
             if ((dayIndex + 1) % TripEvery != 0) return $"Araba {TripEvery - (int)((dayIndex + 1) % TripEvery)} gün sonra pazara iner.";
             if ((DraftAnimals?.Invoke() ?? 0) <= 0) return "Arabayı çekecek hayvan yok (at ya da öküz, tok ve sağlıklı).";

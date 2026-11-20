@@ -3126,6 +3126,20 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "rake_leaves",
+          "displayName": "Dibindeki yaprağı topla",
+          "durationDays": 0.04,
+          "requiresGrown": true,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "produce": [
+            {
+              "item": "item.leaves",
+              "count": 2
+            }
+          ]
         }
       ],
       "fruitSeasons": [
@@ -3265,7 +3279,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -3284,7 +3299,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -3360,7 +3376,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -3399,10 +3416,79 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "cropFamily": "kok",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "light",
+      "likesFertilizer": [
+        "ash",
+        "bone"
+      ]
     },
     {
       "id": "item.market_stall",
@@ -6545,6 +6631,14 @@
           "minLevel": 8,
           "requiresAnimal": true,
           "befriendAnimals": 4
+        },
+        {
+          "id": "clean_out",
+          "displayName": "Temizle (gübre çıkar)",
+          "durationDays": 0.1,
+          "farmAction": "barn_clean",
+          "skill": "AnimalHusbandry",
+          "skillXp": 6
         }
       ],
       "art": {
@@ -6657,6 +6751,22 @@
           "minLevel": 8,
           "requiresAnimal": true,
           "befriendAnimals": 4
+        },
+        {
+          "id": "clean_out",
+          "displayName": "Temizle (gübre çıkar)",
+          "durationDays": 0.1,
+          "farmAction": "barn_clean",
+          "skill": "AnimalHusbandry",
+          "skillXp": 6
+        },
+        {
+          "id": "deep_litter",
+          "displayName": "Derin altlık: aç ya da kapat",
+          "durationDays": 0.02,
+          "farmAction": "barn_litter",
+          "skill": "AnimalHusbandry",
+          "skillXp": 1
         }
       ],
       "tags": [
@@ -6772,6 +6882,22 @@
           "minLevel": 8,
           "requiresAnimal": true,
           "befriendAnimals": 4
+        },
+        {
+          "id": "clean_out",
+          "displayName": "Temizle (gübre çıkar)",
+          "durationDays": 0.1,
+          "farmAction": "barn_clean",
+          "skill": "AnimalHusbandry",
+          "skillXp": 6
+        },
+        {
+          "id": "deep_litter",
+          "displayName": "Derin altlık: aç ya da kapat",
+          "durationDays": 0.02,
+          "farmAction": "barn_litter",
+          "skill": "AnimalHusbandry",
+          "skillXp": 1
         }
       ],
       "art": {
@@ -7437,7 +7563,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -7456,7 +7583,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -7532,7 +7660,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -7571,10 +7700,81 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "cropFamily": "yaprak",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "heavy",
+      "eatenRaw": true,
+      "likesFertilizer": [
+        "hot",
+        "ash",
+        "seaweed"
+      ]
     },
     {
       "id": "item.seed_leek",
@@ -7653,7 +7853,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -7672,7 +7873,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -7748,7 +7950,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -7787,10 +7990,79 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "cropFamily": "sogan",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "heavy",
+      "likesFertilizer": [
+        "hot",
+        "compost"
+      ]
     },
     {
       "id": "item.seed_pea",
@@ -7869,7 +8141,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -7888,7 +8161,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -7964,7 +8238,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -8003,11 +8278,86 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "nitrogen": true,
       "cropFamily": "baklagil",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "builder",
+      "eatenRaw": true,
+      "likesFertilizer": [
+        "ash",
+        "bone",
+        "marl"
+      ],
+      "dislikesFertilizer": [
+        "hot",
+        "fresh"
+      ]
     },
     {
       "id": "item.seed_pumpkin",
@@ -8086,7 +8436,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -8105,7 +8456,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -8181,7 +8533,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -8220,10 +8573,79 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "cropFamily": "kabak",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "heavy",
+      "likesFertilizer": [
+        "hot",
+        "compost"
+      ]
     },
     {
       "id": "item.pickled_cabbage",
@@ -9655,63 +10077,44 @@
       ],
       "interactions": [
         {
-          "id": "make_compost",
-          "displayName": "Kompost yap (3 ot)",
-          "durationDays": 0.08,
-          "skill": "SoilCare",
-          "skillXp": 5,
-          "materials": [
-            {
-              "item": "item.herb",
-              "count": 3
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.compost",
-              "count": 2
-            }
-          ]
-        },
-        {
-          "id": "compost_pomace",
-          "displayName": "Pirinayı komposta göm (3)",
-          "durationDays": 0.05,
-          "skill": "SoilCare",
-          "skillXp": 4,
-          "minLevel": 6,
-          "materials": [
-            {
-              "item": "item.pomace",
-              "count": 3
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.compost",
-              "count": 2
-            }
-          ]
-        },
-        {
-          "id": "compost_grounds",
-          "displayName": "Telveyi komposta göm (3)",
+          "id": "add_wet",
+          "displayName": "Yaş atık ekle (ot, artık, gübre)",
           "durationDays": 0.04,
+          "farmAction": "compost_add_wet",
           "skill": "SoilCare",
-          "skillXp": 3,
-          "minLevel": 6,
-          "materials": [
-            {
-              "item": "item.coffee_spent",
-              "count": 3
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.compost",
-              "count": 1
-            }
-          ]
+          "skillXp": 3
+        },
+        {
+          "id": "add_dry",
+          "displayName": "Kuru atık ekle (saman, yaprak)",
+          "durationDays": 0.04,
+          "farmAction": "compost_add_dry",
+          "skill": "SoilCare",
+          "skillXp": 3
+        },
+        {
+          "id": "add_ash",
+          "displayName": "Bir avuç kül serp",
+          "durationDays": 0.02,
+          "farmAction": "compost_add_ash",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "turn",
+          "displayName": "Yığını çevir",
+          "durationDays": 0.08,
+          "farmAction": "compost_turn",
+          "skill": "SoilCare",
+          "skillXp": 6
+        },
+        {
+          "id": "take",
+          "displayName": "Kompostu al",
+          "durationDays": 0.05,
+          "farmAction": "compost_take",
+          "skill": "SoilCare",
+          "skillXp": 4
         }
       ],
       "art": {
@@ -9723,6 +10126,9 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "tags": [
+        "compost"
       ]
     },
     {
@@ -9799,7 +10205,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -9818,7 +10225,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -9894,7 +10302,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -9933,6 +10342,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -9940,7 +10413,16 @@
         "Autumn"
       ],
       "cropFamily": "kok",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "light",
+      "likesFertilizer": [
+        "compost",
+        "bone"
+      ],
+      "dislikesFertilizer": [
+        "hot",
+        "fresh"
+      ]
     },
     {
       "id": "item.carrot",
@@ -10016,7 +10498,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -10035,7 +10518,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -10111,7 +10595,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -10150,10 +10635,84 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "cropFamily": "kok",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "light",
+      "eatenRaw": true,
+      "likesFertilizer": [
+        "compost",
+        "bone"
+      ],
+      "dislikesFertilizer": [
+        "hot",
+        "fresh"
+      ]
     },
     {
       "id": "item.onion",
@@ -10229,7 +10788,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -10248,7 +10808,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -10324,7 +10885,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -10363,6 +10925,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -10370,7 +10996,16 @@
         "Summer"
       ],
       "cropFamily": "sogan",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "light",
+      "eatenRaw": true,
+      "likesFertilizer": [
+        "ash",
+        "bone"
+      ],
+      "dislikesFertilizer": [
+        "fresh"
+      ]
     },
     {
       "id": "item.garlic",
@@ -10446,7 +11081,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -10465,7 +11101,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -10541,7 +11178,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -10580,6 +11218,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -10587,7 +11289,15 @@
         "Spring"
       ],
       "cropFamily": "sogan",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "light",
+      "likesFertilizer": [
+        "ash",
+        "bone"
+      ],
+      "dislikesFertilizer": [
+        "fresh"
+      ]
     },
     {
       "id": "item.beet",
@@ -10663,7 +11373,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -10682,7 +11393,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -10758,7 +11470,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -10797,6 +11510,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -10804,7 +11581,13 @@
         "Autumn"
       ],
       "cropFamily": "kok",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "medium",
+      "likesFertilizer": [
+        "seaweed",
+        "bone",
+        "ash"
+      ]
     },
     {
       "id": "item.radish",
@@ -10880,7 +11663,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -10899,7 +11683,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -10975,7 +11760,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -11014,6 +11800,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -11022,7 +11872,16 @@
         "Autumn"
       ],
       "cropFamily": "kok",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "light",
+      "eatenRaw": true,
+      "likesFertilizer": [
+        "ash",
+        "compost"
+      ],
+      "dislikesFertilizer": [
+        "fresh"
+      ]
     },
     {
       "id": "item.lettuce",
@@ -11098,7 +11957,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -11117,7 +11977,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -11193,7 +12054,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -11232,6 +12094,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -11239,7 +12165,16 @@
         "Autumn"
       ],
       "cropFamily": "yaprak",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "medium",
+      "eatenRaw": true,
+      "likesFertilizer": [
+        "compost",
+        "blackSoil"
+      ],
+      "dislikesFertilizer": [
+        "fresh"
+      ]
     },
     {
       "id": "item.broad_bean",
@@ -11315,7 +12250,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -11334,7 +12270,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -11410,7 +12347,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -11449,6 +12387,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -11457,7 +12459,17 @@
       ],
       "nitrogen": true,
       "cropFamily": "baklagil",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "builder",
+      "likesFertilizer": [
+        "ash",
+        "bone",
+        "marl"
+      ],
+      "dislikesFertilizer": [
+        "hot",
+        "fresh"
+      ]
     },
     {
       "id": "item.barley",
@@ -11543,7 +12555,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -11562,7 +12575,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -11638,7 +12652,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -11677,6 +12692,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -11684,7 +12763,12 @@
         "Summer"
       ],
       "cropFamily": "tahil",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "medium",
+      "likesFertilizer": [
+        "compost",
+        "marl"
+      ]
     },
     {
       "id": "item.spinach",
@@ -11760,7 +12844,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -11779,7 +12864,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -11855,7 +12941,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -11894,6 +12981,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -11901,7 +13052,13 @@
         "Autumn"
       ],
       "cropFamily": "yaprak",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "medium",
+      "eatenRaw": true,
+      "likesFertilizer": [
+        "compost",
+        "seaweed"
+      ]
     },
     {
       "id": "item.apple",
@@ -12012,6 +13169,20 @@
           "skillWork": "heritage",
           "minLevel": 9,
           "requiresGrown": true
+        },
+        {
+          "id": "rake_leaves",
+          "displayName": "Dibindeki yaprağı topla",
+          "durationDays": 0.04,
+          "requiresGrown": true,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "produce": [
+            {
+              "item": "item.leaves",
+              "count": 2
+            }
+          ]
         }
       ],
       "site": "outdoor"
@@ -12125,6 +13296,20 @@
           "skillWork": "heritage",
           "minLevel": 9,
           "requiresGrown": true
+        },
+        {
+          "id": "rake_leaves",
+          "displayName": "Dibindeki yaprağı topla",
+          "durationDays": 0.04,
+          "requiresGrown": true,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "produce": [
+            {
+              "item": "item.leaves",
+              "count": 2
+            }
+          ]
         }
       ],
       "site": "outdoor"
@@ -12238,6 +13423,20 @@
           "skillWork": "heritage",
           "minLevel": 9,
           "requiresGrown": true
+        },
+        {
+          "id": "rake_leaves",
+          "displayName": "Dibindeki yaprağı topla",
+          "durationDays": 0.04,
+          "requiresGrown": true,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "produce": [
+            {
+              "item": "item.leaves",
+              "count": 2
+            }
+          ]
         }
       ],
       "site": "outdoor"
@@ -12352,6 +13551,20 @@
           "skillWork": "heritage",
           "minLevel": 9,
           "requiresGrown": true
+        },
+        {
+          "id": "rake_leaves",
+          "displayName": "Dibindeki yaprağı topla",
+          "durationDays": 0.04,
+          "requiresGrown": true,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "produce": [
+            {
+              "item": "item.leaves",
+              "count": 2
+            }
+          ]
         }
       ],
       "site": "outdoor"
@@ -13616,6 +14829,20 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "rake_leaves",
+          "displayName": "Dibindeki yaprağı topla",
+          "durationDays": 0.04,
+          "requiresGrown": true,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "produce": [
+            {
+              "item": "item.leaves",
+              "count": 2
+            }
+          ]
         }
       ],
       "site": "outdoor"
@@ -13704,6 +14931,20 @@
               "count": 1
             }
           ]
+        },
+        {
+          "id": "rake_leaves",
+          "displayName": "Dibindeki yaprağı topla",
+          "durationDays": 0.04,
+          "requiresGrown": true,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "produce": [
+            {
+              "item": "item.leaves",
+              "count": 2
+            }
+          ]
         }
       ],
       "site": "outdoor"
@@ -13774,6 +15015,20 @@
             {
               "item": "item.firewood",
               "count": 1
+            }
+          ]
+        },
+        {
+          "id": "rake_leaves",
+          "displayName": "Dibindeki yaprağı topla",
+          "durationDays": 0.04,
+          "requiresGrown": true,
+          "skill": "Foraging",
+          "skillXp": 2,
+          "produce": [
+            {
+              "item": "item.leaves",
+              "count": 2
             }
           ]
         }
@@ -14362,6 +15617,14 @@
           "minLevel": 8,
           "requiresAnimal": true,
           "befriendAnimals": 4
+        },
+        {
+          "id": "clean_out",
+          "displayName": "Temizle (gübre çıkar)",
+          "durationDays": 0.1,
+          "farmAction": "barn_clean",
+          "skill": "AnimalHusbandry",
+          "skillXp": 6
         }
       ],
       "art": {
@@ -14461,6 +15724,22 @@
           "minLevel": 8,
           "requiresAnimal": true,
           "befriendAnimals": 4
+        },
+        {
+          "id": "clean_out",
+          "displayName": "Temizle (gübre çıkar)",
+          "durationDays": 0.1,
+          "farmAction": "barn_clean",
+          "skill": "AnimalHusbandry",
+          "skillXp": 6
+        },
+        {
+          "id": "deep_litter",
+          "displayName": "Derin altlık: aç ya da kapat",
+          "durationDays": 0.02,
+          "farmAction": "barn_litter",
+          "skill": "AnimalHusbandry",
+          "skillXp": 1
         }
       ],
       "art": {
@@ -14560,6 +15839,22 @@
           "minLevel": 8,
           "requiresAnimal": true,
           "befriendAnimals": 4
+        },
+        {
+          "id": "clean_out",
+          "displayName": "Temizle (gübre çıkar)",
+          "durationDays": 0.1,
+          "farmAction": "barn_clean",
+          "skill": "AnimalHusbandry",
+          "skillXp": 6
+        },
+        {
+          "id": "deep_litter",
+          "displayName": "Derin altlık: aç ya da kapat",
+          "durationDays": 0.02,
+          "farmAction": "barn_litter",
+          "skill": "AnimalHusbandry",
+          "skillXp": 1
         }
       ],
       "art": {
@@ -14640,6 +15935,22 @@
           "minLevel": 8,
           "requiresAnimal": true,
           "befriendAnimals": 4
+        },
+        {
+          "id": "clean_out",
+          "displayName": "Temizle (gübre çıkar)",
+          "durationDays": 0.1,
+          "farmAction": "barn_clean",
+          "skill": "AnimalHusbandry",
+          "skillXp": 6
+        },
+        {
+          "id": "deep_litter",
+          "displayName": "Derin altlık: aç ya da kapat",
+          "durationDays": 0.02,
+          "farmAction": "barn_litter",
+          "skill": "AnimalHusbandry",
+          "skillXp": 1
         }
       ],
       "art": {
@@ -18367,7 +19678,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -18386,7 +19698,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -18462,7 +19775,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -18501,6 +19815,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -18508,7 +19886,12 @@
         "Spring"
       ],
       "cropFamily": "tahil",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "medium",
+      "likesFertilizer": [
+        "compost",
+        "marl"
+      ]
     },
     {
       "id": "item.rye",
@@ -18594,7 +19977,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -18613,7 +19997,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -18689,7 +20074,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -18728,6 +20114,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -18735,7 +20185,18 @@
         "Spring"
       ],
       "cropFamily": "tahil",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "lean",
+      "likesFertilizer": [
+        "marl"
+      ],
+      "dislikesFertilizer": [
+        "hot",
+        "fresh"
+      ],
+      "tags": [
+        "tall"
+      ]
     },
     {
       "id": "item.oats",
@@ -18821,7 +20282,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -18840,7 +20302,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -18916,7 +20379,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -18955,6 +20419,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -18962,7 +20490,11 @@
         "Summer"
       ],
       "cropFamily": "tahil",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "light",
+      "likesFertilizer": [
+        "compost"
+      ]
     },
     {
       "id": "item.flax",
@@ -19037,7 +20569,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -19056,7 +20589,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -19132,7 +20666,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -19171,6 +20706,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -19178,7 +20777,14 @@
         "Summer"
       ],
       "cropFamily": "lif",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "medium",
+      "likesFertilizer": [
+        "compost"
+      ],
+      "tags": [
+        "exhausting"
+      ]
     },
     {
       "id": "item.rye_flour",
@@ -29033,6 +30639,14 @@
           "minLevel": 8,
           "requiresAnimal": true,
           "befriendAnimals": 4
+        },
+        {
+          "id": "clean_out",
+          "displayName": "Temizle (gübre çıkar)",
+          "durationDays": 0.1,
+          "farmAction": "barn_clean",
+          "skill": "AnimalHusbandry",
+          "skillXp": 6
         }
       ],
       "finishGroup": "stone",
@@ -32799,6 +34413,14 @@
           "minLevel": 8,
           "requiresAnimal": true,
           "befriendAnimals": 4
+        },
+        {
+          "id": "clean_out",
+          "displayName": "Temizle (gübre çıkar)",
+          "durationDays": 0.1,
+          "farmAction": "barn_clean",
+          "skill": "AnimalHusbandry",
+          "skillXp": 6
         }
       ],
       "art": {
@@ -33308,7 +34930,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -33348,6 +34971,15 @@
             }
           ]
         }
+      ],
+      "feed": "lean",
+      "eatenRaw": true,
+      "likesFertilizer": [
+        "marl"
+      ],
+      "dislikesFertilizer": [
+        "hot",
+        "fresh"
       ]
     },
     {
@@ -33421,7 +35053,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -33461,6 +35094,14 @@
             }
           ]
         }
+      ],
+      "feed": "lean",
+      "likesFertilizer": [
+        "bone"
+      ],
+      "dislikesFertilizer": [
+        "hot",
+        "fresh"
       ]
     },
     {
@@ -33607,7 +35248,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -33647,6 +35289,14 @@
             }
           ]
         }
+      ],
+      "feed": "builder",
+      "likesFertilizer": [
+        "marl"
+      ],
+      "dislikesFertilizer": [
+        "hot",
+        "fresh"
       ]
     },
     {
@@ -35116,7 +36766,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -35135,7 +36786,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -35211,7 +36863,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -35250,6 +36903,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -35257,7 +36974,11 @@
         "Summer"
       ],
       "cropFamily": "lif",
-      "site": "outdoor"
+      "site": "outdoor",
+      "feed": "heavy",
+      "likesFertilizer": [
+        "hot"
+      ]
     },
     {
       "id": "item.seed_hemp",
@@ -35322,7 +37043,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -35341,7 +37063,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -35417,7 +37140,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -35456,6 +37180,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -35464,7 +37252,15 @@
       ],
       "cropFamily": "lif",
       "site": "outdoor",
-      "lockSkill": "Farming"
+      "lockSkill": "Farming",
+      "feed": "heavy",
+      "likesFertilizer": [
+        "hot",
+        "ash"
+      ],
+      "tags": [
+        "exhausting"
+      ]
     },
     {
       "id": "item.seed_woad",
@@ -35530,7 +37326,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -35549,7 +37346,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -35625,7 +37423,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -35664,6 +37463,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -35672,7 +37535,12 @@
       ],
       "cropFamily": "lif",
       "site": "outdoor",
-      "lockSkill": "Horticulture"
+      "lockSkill": "Horticulture",
+      "feed": "medium",
+      "likesFertilizer": [
+        "marl",
+        "bone"
+      ]
     },
     {
       "id": "item.seed_madder",
@@ -35738,7 +37606,8 @@
               "item": "item.compost",
               "count": 1
             }
-          ]
+          ],
+          "fertilizerKind": "compost"
         },
         {
           "id": "growth_potion",
@@ -35757,7 +37626,8 @@
           "fertilize": 0.45,
           "skill": "SoilCare",
           "skillXp": 3,
-          "minLevel": 3
+          "minLevel": 3,
+          "fertilizerKind": "hot"
         },
         {
           "id": "inspect_field",
@@ -35833,7 +37703,8 @@
           "fertilize": 0.5,
           "skill": "SoilCare",
           "skillXp": 2,
-          "minLevel": 4
+          "minLevel": 4,
+          "fertilizerKind": "bone"
         },
         {
           "id": "fish_meal",
@@ -35872,6 +37743,70 @@
               "count": 4
             }
           ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         }
       ],
       "growSeasons": [
@@ -35880,7 +37815,15 @@
       ],
       "cropFamily": "lif",
       "site": "outdoor",
-      "lockSkill": "Farming"
+      "lockSkill": "Farming",
+      "feed": "lean",
+      "likesFertilizer": [
+        "marl"
+      ],
+      "dislikesFertilizer": [
+        "hot",
+        "fresh"
+      ]
     },
     {
       "id": "item.seed_weld",
@@ -39051,6 +40994,618 @@
         "mirror": true,
         "pending": true
       }
+    },
+    {
+      "id": "item.compost_raw",
+      "displayName": "Ham kompost",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.black_soil",
+      "displayName": "Kara toprak",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.leaves",
+      "displayName": "Kuru yaprak",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "raw"
+      ]
+    },
+    {
+      "id": "item.leaf_mould",
+      "displayName": "Yaprak çürüğü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.seaweed",
+      "displayName": "Deniz yosunu (gübrelik)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.marl",
+      "displayName": "Marn",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
+      "id": "item.dung_cake",
+      "displayName": "Tezek (yakacak)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "fuel"
+      ]
+    },
+    {
+      "id": "item.dung_pile",
+      "displayName": "Pislik",
+      "category": "utility",
+      "placement": "Rug",
+      "beauty": -3,
+      "interactions": [
+        {
+          "id": "collect",
+          "displayName": "Kürekle topla",
+          "durationDays": 0.03,
+          "farmAction": "pile_collect",
+          "skill": "SoilCare",
+          "skillXp": 2
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_dung_pile_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor"
+    },
+    {
+      "id": "item.dog_pile",
+      "displayName": "Köpek pisliği",
+      "category": "utility",
+      "placement": "Rug",
+      "beauty": -1,
+      "interactions": [
+        {
+          "id": "collect",
+          "displayName": "Kürekle topla",
+          "durationDays": 0.03,
+          "farmAction": "pile_collect",
+          "skill": "SoilCare",
+          "skillXp": 2
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_dog_pile_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor"
+    },
+    {
+      "id": "item.animal_dung",
+      "displayName": "Tezek",
+      "category": "utility",
+      "placement": "Rug",
+      "beauty": -1,
+      "interactions": [
+        {
+          "id": "collect",
+          "displayName": "Kürekle topla",
+          "durationDays": 0.03,
+          "farmAction": "pile_collect",
+          "skill": "SoilCare",
+          "skillXp": 2
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_animal_dung_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor"
+    },
+    {
+      "id": "item.sheep_dung",
+      "displayName": "Kığı",
+      "category": "utility",
+      "placement": "Rug",
+      "beauty": -1,
+      "interactions": [
+        {
+          "id": "collect",
+          "displayName": "Kürekle topla",
+          "durationDays": 0.03,
+          "farmAction": "pile_collect",
+          "skill": "SoilCare",
+          "skillXp": 2
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_sheep_dung_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor"
+    },
+    {
+      "id": "item.refuse_pile",
+      "displayName": "Süprüntü",
+      "category": "utility",
+      "placement": "Rug",
+      "beauty": -3,
+      "interactions": [
+        {
+          "id": "collect",
+          "displayName": "Kürekle topla",
+          "durationDays": 0.03,
+          "farmAction": "pile_collect",
+          "skill": "SoilCare",
+          "skillXp": 2
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_refuse_pile_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor"
+    },
+    {
+      "id": "item.compost_bays",
+      "displayName": "Üç gözlü kompostluk",
+      "category": "garden",
+      "price": 40,
+      "width": 3,
+      "level": 5,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "compost",
+        "compost_bays"
+      ],
+      "interactions": [
+        {
+          "id": "add_wet",
+          "displayName": "Yaş atık ekle (ot, artık, gübre)",
+          "durationDays": 0.04,
+          "farmAction": "compost_add_wet",
+          "skill": "SoilCare",
+          "skillXp": 3
+        },
+        {
+          "id": "add_dry",
+          "displayName": "Kuru atık ekle (saman, yaprak)",
+          "durationDays": 0.04,
+          "farmAction": "compost_add_dry",
+          "skill": "SoilCare",
+          "skillXp": 3
+        },
+        {
+          "id": "add_ash",
+          "displayName": "Bir avuç kül serp",
+          "durationDays": 0.02,
+          "farmAction": "compost_add_ash",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "turn",
+          "displayName": "Yığını çevir",
+          "durationDays": 0.08,
+          "farmAction": "compost_turn",
+          "skill": "SoilCare",
+          "skillXp": 6
+        },
+        {
+          "id": "take",
+          "displayName": "Kompostu al",
+          "durationDays": 0.05,
+          "farmAction": "compost_take",
+          "skill": "SoilCare",
+          "skillXp": 4
+        }
+      ],
+      "art": {
+        "alongY": "iso_item_compost_bays_3x1_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.compost_tumbler",
+      "displayName": "Döner kompost fıçısı",
+      "category": "garden",
+      "price": 90,
+      "level": 7,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "compost",
+        "compost_tumbler"
+      ],
+      "interactions": [
+        {
+          "id": "add_wet",
+          "displayName": "Yaş atık ekle (ot, artık, gübre)",
+          "durationDays": 0.04,
+          "farmAction": "compost_add_wet",
+          "skill": "SoilCare",
+          "skillXp": 3
+        },
+        {
+          "id": "add_dry",
+          "displayName": "Kuru atık ekle (saman, yaprak)",
+          "durationDays": 0.04,
+          "farmAction": "compost_add_dry",
+          "skill": "SoilCare",
+          "skillXp": 3
+        },
+        {
+          "id": "add_ash",
+          "displayName": "Bir avuç kül serp",
+          "durationDays": 0.02,
+          "farmAction": "compost_add_ash",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "turn",
+          "displayName": "Fıçıyı çevir",
+          "durationDays": 0.08,
+          "farmAction": "compost_turn",
+          "skill": "SoilCare",
+          "skillXp": 6
+        },
+        {
+          "id": "take",
+          "displayName": "Kompostu al",
+          "durationDays": 0.05,
+          "farmAction": "compost_take",
+          "skill": "SoilCare",
+          "skillXp": 4
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_compost_tumbler_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.worm_bin",
+      "displayName": "Solucan kasası",
+      "category": "garden",
+      "price": 25,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "worm_bin"
+      ],
+      "fillCapacity": 6,
+      "interactions": [
+        {
+          "id": "feed_worms",
+          "displayName": "Solucanlara yaş atık ver",
+          "durationDays": 0.03,
+          "farmAction": "worm_feed",
+          "skill": "SoilCare",
+          "skillXp": 3
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_worm_bin_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.leaf_bin",
+      "displayName": "Yaprak ağılı",
+      "category": "garden",
+      "price": 10,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "leaf_bin"
+      ],
+      "fillCapacity": 12,
+      "interactions": [
+        {
+          "id": "fill_leaves",
+          "displayName": "Yaprak doldur",
+          "durationDays": 0.04,
+          "farmAction": "leaf_fill",
+          "skill": "SoilCare",
+          "skillXp": 3
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_leaf_bin_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.slurry_barrel",
+      "displayName": "Şerbet fıçısı",
+      "category": "garden",
+      "price": 30,
+      "level": 5,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "slurry_barrel"
+      ],
+      "interactions": [
+        {
+          "id": "brew",
+          "displayName": "Gübre şerbeti kur (2 gübre)",
+          "durationDays": 0.05,
+          "farmAction": "slurry_brew",
+          "skill": "SoilCare",
+          "skillXp": 3
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_slurry_barrel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.chaff_cutter",
+      "displayName": "Saman kıyıcı",
+      "category": "garden",
+      "price": 45,
+      "level": 6,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "chaff_cutter"
+      ],
+      "art": {
+        "alongX": "iso_item_chaff_cutter_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.dung_heap",
+      "displayName": "Gübre yığını",
+      "category": "garden",
+      "price": 8,
+      "level": 2,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "dung_heap"
+      ],
+      "fillCapacity": 40,
+      "art": {
+        "alongX": "iso_item_dung_heap_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.dung_stead",
+      "displayName": "Gübrelik",
+      "category": "garden",
+      "price": 35,
+      "width": 2,
+      "height": 2,
+      "level": 5,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "dung_heap"
+      ],
+      "fillCapacity": 120,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.manure_hatch",
+      "displayName": "Gübre kapağı",
+      "category": "garden",
+      "price": 20,
+      "level": 5,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "manure_hatch"
+      ],
+      "art": {
+        "alongX": "iso_item_manure_hatch_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.barn_drain",
+      "displayName": "Akıtma oluğu",
+      "category": "garden",
+      "price": 25,
+      "level": 6,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "barn_drain"
+      ],
+      "art": {
+        "alongX": "iso_item_barn_drain_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.fold_hurdle",
+      "displayName": "Ağıl çiti",
+      "category": "garden",
+      "price": 12,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "fold_hurdle"
+      ],
+      "art": {
+        "alongX": "iso_item_fold_hurdle_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.swallow_nest",
+      "displayName": "Kırlangıç yuvası",
+      "category": "garden",
+      "price": 10,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "swallow_nest"
+      ],
+      "beauty": 2,
+      "art": {
+        "alongX": "iso_item_swallow_nest_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     }
   ],
   "recipes": [
@@ -49663,6 +52218,69 @@
       "description": "Büyüğüne çözüm eşyası yaptı.",
       "value": 5,
       "days": 2.0
+    },
+    {
+      "id": "eff_stomach_ache",
+      "displayName": "Karın ağrısı",
+      "description": "Kirli el, sinekli sofra ya da bulanık su: sık sık tuvalete koşar. Nane ya da papatya çayı iyi gelir.",
+      "value": -6,
+      "days": 1.0
+    },
+    {
+      "id": "eff_scolded",
+      "displayName": "Azar işitti",
+      "description": "Açıkta yakalandı ve azarı yedi.",
+      "value": -3,
+      "days": 0.25
+    },
+    {
+      "id": "eff_saw_too_much",
+      "displayName": "Gördüğüne pişman",
+      "description": "Görmemesi gereken bir şey gördü.",
+      "value": -2,
+      "days": 0.15
+    },
+    {
+      "id": "eff_stepped_in_it",
+      "displayName": "Kahretsin, bastım!",
+      "description": "Pisliğe bastı; ayakkabıyı silmek gerek.",
+      "value": -4,
+      "days": 0.125
+    },
+    {
+      "id": "eff_bad_smell",
+      "displayName": "Kötü koku",
+      "description": "Yakında bir şey fena kokuyor.",
+      "value": -2,
+      "days": 0.06
+    },
+    {
+      "id": "eff_lost_appetite",
+      "displayName": "İştahı kaçtı",
+      "description": "Sofranın yanında sinek uçuşuyor.",
+      "value": -3,
+      "days": 0.2
+    },
+    {
+      "id": "eff_murky_water",
+      "displayName": "Bulanık su",
+      "description": "Kuyunun yakınında pislik var; su bulanık.",
+      "value": -2,
+      "days": 0.25
+    },
+    {
+      "id": "eff_tidy_yard",
+      "displayName": "Tertemiz avlu",
+      "description": "Bir haftadır avluda ne pislik var ne sinek.",
+      "value": 3,
+      "days": 1.0
+    },
+    {
+      "id": "eff_disgusted",
+      "displayName": "Midesi bulandı",
+      "description": "Elleriyle pislik topladı; yıkanmak ister.",
+      "value": -2,
+      "days": 0.15
     }
   ]
 }
