@@ -1,7 +1,7 @@
 ---
 id: "577"
 title: "Zincir pozları, çocuklar: otur, sofrada ye, uyu, yüzünü yıka (32)"
-status: running
+status: review
 claimed_at: 2026-11-20T16:43Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 40
@@ -47,6 +47,9 @@ created: 2026-11-20
 
 ## Doğrulama
 018a ölçütleri her klip için; ayak satırı sabit, karakterin giysisi ve saçı durma karesiyle aynı. Elde tutulan nesne (bıçak, kepçe, kürek) okunur ama küçük olmalı: oyunda taşınan eşya ayrıca el çapasına çizilir. Klip başına GIF `art/results/` altına.
+
+## Sorular
+- 2026-11-20 (işçi): kısmi teslim. Yalnızca `wash` geçti (8 klip). `sit`, `sit_eat`, `lie_sleep` pixminimax + durma karesi bitiş yöntemiyle oturma/yatma pozuna gitmedi (karakter ayakta kaldı); tek deneme kuralı gereği tekrar denenmedi. Öneri: oturan/yatan başlangıç karesi (`custom_start_frame`, yön başına) ile yeni iş (ör. 577b); tabure ve yatak ayrı nesne. Ayrıntı: art/results/577-zincir-poz-cocuk.md. Kullanıcı kararı: 577b yazılsın mı?
 
 ## Notlar
 - Giysi katmanları (43c, 509 planı): bu kareler gövde setidir; giysi ailelerine aktarım 509'daki toplu parti yöntemiyle ayrı iştir.
