@@ -19,6 +19,7 @@
   <ItemGroup>
     <Compile Include="..\Thatchwick.Core.Tests\**\*.cs" Exclude="..\Thatchwick.Core.Tests\bin\**;..\Thatchwick.Core.Tests\obj\**" />
     <Compile Include="..\..\tools\offline-tests\XunitShim.cs" Link="XunitShim.cs" />
+    <Compile Include="Bench.cs" />
     <None Include="..\Thatchwick.Core.Tests\SaveFixtures\**\*" LinkBase="SaveFixtures" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\Assets\Resources\Content\items.json" Link="GameContent\items.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\Assets\Resources\Content\life.json" Link="GameContent\life.json" CopyToOutputDirectory="PreserveNewest" />
