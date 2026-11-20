@@ -172,7 +172,7 @@ namespace Thatchwick.Core.Economy
 
         public string DeliverBlocker()
         {
-            if (!Here) return "Tüccar köyde değil; pazar günü gelir.";
+            if (!Here) return Localization.CoreText.T("ui.village.merchant_away");
             if (Order == null) return "Sipariş yok.";
             if (_house.Count(Order.ItemId) < Order.Count) return $"{Name(Order.ItemId)} {_house.Count(Order.ItemId)}/{Order.Count}.";
             return null;

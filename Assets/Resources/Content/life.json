@@ -3459,7 +3459,7 @@
     {"skill": "Carting", "level": 2, "kind": "passive", "text": "Çift yük: depo +10"},
     {"skill": "Carting", "level": 3, "kind": "recipe", "text": "At arabası"},
     {"skill": "Carting", "level": 4, "kind": "feature", "text": "Öküz arabası"},
-    {"skill": "Carting", "level": 5, "kind": "interaction", "text": "Pazar seferi: arabayla pazar günü satış %5 iyi"},
+    {"skill": "Carting", "level": 5, "kind": "interaction", "text": "Pazar seferi: arabayla alışveriş günü satış %5 iyi"},
     {"skill": "Carting", "level": 6, "kind": "interaction", "text": "Güney Yamaçları seferi"},
     {"skill": "Carting", "level": 7, "kind": "recipe", "text": "Kış kızağı"},
     {"skill": "Carting", "level": 8, "kind": "interaction", "text": "Kervana mal götür (haftalık toptan sipariş)"},
@@ -3687,5 +3687,63 @@
     {"id": "soc_hands", "jobs": ["social:HoldHands"], "steps": [{"id": "hold_hands", "pose": "hold_hands", "share": 3}]},
     {"id": "soc_kerchief", "jobs": ["social:GiveHandkerchief", "social:ReturnHandkerchief", "social:AskHand", "social:BreakEngagement"], "steps": [{"id": "greet", "pose": "social"}, {"id": "offer_handkerchief", "pose": "offer_handkerchief", "share": 3}, {"id": "speak_heart", "pose": "love"}]},
     {"id": "soc_whisper", "jobs": ["social:Gossip", "social:SpreadRumor", "social:DenyRumor", "social:Lobby", "social:JoinChat"], "steps": [{"id": "greet", "pose": "social"}, {"id": "whisper", "pose": "gossip", "share": 3}]}
-  ]
+  ],
+  "villagerWork": [
+    {"role": "blacksmith", "steps": [{"id": "forge", "pose": "craft_hammer", "minutes": 25}, {"id": "bellows", "pose": "bellows", "fallback": "work", "minutes": 15}, {"id": "quench", "pose": "dip", "fallback": "care", "minutes": 10}]},
+    {"role": "miller", "steps": [{"id": "carry_sack", "pose": "carry", "fallback": "work", "minutes": 20}, {"id": "grind", "pose": "grind", "fallback": "work", "minutes": 25}, {"id": "sieve_flour", "pose": "sieve", "minutes": 15}]},
+    {"role": "herbalist", "steps": [{"id": "hang_herbs", "pose": "reach", "fallback": "craft_hand", "minutes": 15}, {"id": "pound_herbs", "pose": "pound", "fallback": "craft_hammer", "minutes": 20}, {"id": "sort_herbs", "pose": "craft_hand", "minutes": 15}]},
+    {"role": "shepherd", "steps": [{"id": "watch_flock", "pose": "lean_staff", "fallback": "idle", "minutes": 30}, {"id": "tend_flock", "pose": "care", "minutes": 15}]},
+    {"role": "trader", "steps": [{"id": "arrange_goods", "pose": "reach", "fallback": "craft_hand", "minutes": 15}, {"id": "carry_goods", "pose": "carry", "fallback": "work", "minutes": 15}, {"id": "tally", "pose": "write", "fallback": "craft_hand", "minutes": 10}]},
+    {"role": "potter", "steps": [{"id": "throw_pot", "pose": "wheel_throw", "fallback": "craft_hand", "minutes": 25}, {"id": "knead_clay", "pose": "knead", "minutes": 15}]},
+    {"role": "carpenter", "steps": [{"id": "plane", "pose": "plane", "fallback": "craft_hammer", "minutes": 20}, {"id": "saw", "pose": "saw", "fallback": "craft_hammer", "minutes": 20}, {"id": "join", "pose": "craft_hammer", "minutes": 15}]},
+    {"role": "innkeeper", "steps": [{"id": "wipe_counter", "pose": "wipe", "fallback": "craft_hand", "minutes": 15}, {"id": "serve", "pose": "carry", "fallback": "work", "minutes": 15}, {"id": "ladle_stew", "pose": "ladle", "fallback": "cook", "minutes": 15}]},
+    {"role": "scribe", "steps": [{"id": "write", "pose": "write", "fallback": "craft_hand", "minutes": 30}, {"id": "sand_ink", "pose": "sprinkle", "fallback": "craft_hand", "minutes": 5}]},
+    {"role": "tailor", "steps": [{"id": "sew", "pose": "sew", "fallback": "craft_hand", "minutes": 25}, {"id": "measure", "pose": "measure", "fallback": "craft_hand", "minutes": 10}, {"id": "cut_cloth", "pose": "chop_knife", "minutes": 10}]},
+    {"role": "saddler", "steps": [{"id": "stitch_leather", "pose": "sew", "fallback": "craft_hand", "minutes": 25}, {"id": "scrape_hide", "pose": "scrape", "fallback": "craft_hand", "minutes": 15}]},
+    {"role": "fisher", "steps": [{"id": "mend_net", "pose": "mend_net", "fallback": "craft_hand", "minutes": 25}, {"id": "sort_catch", "pose": "bend", "minutes": 10}, {"id": "carry_basket", "pose": "carry", "fallback": "work", "minutes": 10}]},
+    {"role": "mason", "steps": [{"id": "chisel", "pose": "chisel", "fallback": "craft_hammer", "minutes": 25}, {"id": "carry_stone", "pose": "carry", "fallback": "work", "minutes": 15}]}
+  ],
+  "villageLife": {
+    "giftChance": 0.15, "discount": 0.05, "breakdownMinDays": 1, "breakdownMaxDays": 2, "consoleShare": 0.5,
+    "sharedLossDays": 0, "criticalNeed": 10, "eveningTavernShare": 0.4,
+    "stockFood": 10, "stockCooked": 8, "stockRaw": 20, "stockSeed": 15, "stockOther": 6, "stockStaple": 24,
+    "pantry": [
+      {"item": "item.bread", "target": 4, "min": 1},
+      {"item": "item.egg", "target": 4, "min": 2},
+      {"item": "item.onion", "target": 3, "min": 1},
+      {"item": "item.cabbage", "target": 2, "min": 1},
+      {"item": "item.oats", "target": 2, "min": 1},
+      {"item": "item.milk", "target": 2, "min": 1},
+      {"item": "item.cheese", "target": 2, "min": 1}
+    ],
+    "produce": [
+      {"role": "shepherd", "item": "item.milk", "count": 2},
+      {"role": "shepherd", "item": "item.cheese", "count": 1},
+      {"role": "fisher", "item": "item.fish_carp", "count": 2},
+      {"role": "miller", "item": "item.bread", "count": 3}
+    ],
+    "meals": [
+      {"id": "porridge", "where": "home", "chain": "cook_pot", "consume": [{"item": "item.oats"}, {"item": "item.milk"}], "hunger": 65},
+      {"id": "cabbage_soup", "where": "home", "chain": "cook_pot", "consume": [{"item": "item.cabbage"}, {"item": "item.onion"}], "hunger": 60},
+      {"id": "eggs", "where": "home", "chain": "cook_pot", "consume": [{"item": "item.egg", "count": 2}], "hunger": 55},
+      {"id": "fish_supper", "where": "home", "chain": "cook_pot", "consume": [{"item": "item.fish_carp"}, {"item": "item.onion"}], "hunger": 70},
+      {"id": "bread_cheese", "where": "home", "chain": "eat", "consume": [{"item": "item.bread"}, {"item": "item.cheese"}], "hunger": 55},
+      {"id": "bundle_bread", "where": "work", "chain": "eat", "consume": [{"item": "item.bread"}], "hunger": 45},
+      {"id": "bundle_cheese", "where": "work", "chain": "eat", "consume": [{"item": "item.bread"}, {"item": "item.cheese"}], "hunger": 60}
+    ],
+    "treats": [
+      {"role": "blacksmith", "item": "item.horseshoe"},
+      {"role": "miller", "item": "item.simit"},
+      {"role": "herbalist", "item": "item.mint"},
+      {"role": "shepherd", "item": "item.cheese"},
+      {"role": "trader", "item": "item.apple"},
+      {"role": "potter", "item": "item.clay_cup"},
+      {"role": "carpenter", "item": "item.wooden_spoon"},
+      {"role": "innkeeper", "item": "item.bread"},
+      {"role": "scribe", "item": "item.parchment"},
+      {"role": "tailor", "item": "item.button_wood"},
+      {"role": "fisher", "item": "item.fish_crayfish"},
+      {"role": "mason", "item": "item.whetstone"}
+    ]
+  }
 }

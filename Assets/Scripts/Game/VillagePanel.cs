@@ -30,6 +30,8 @@ namespace Thatchwick.Game
         private string _giftTo;
 
         public bool Active { get; private set; }
+        /// <summary>Kapıda iş (köylü, 1 teselli, 2 ortak kayıp, 3 çağır): oyun katmanı komutanı kapıya yürütür; dönen metin durum satırı.</summary>
+        public System.Func<Character, int, string> Door { get; set; }
 
         public VillagePanel(LifeSystems life, ContentDatabase content, Household house, FamilyService family, Dynasty dynasty, Func<Character> commander)
         {
@@ -129,6 +131,7 @@ namespace Thatchwick.Game
                 string romance = giver != null && VillagerService.CanRomance(giver, c) ? $" · romantik {s.Romance}/{VillagerService.MaxRomance}" : "";
                 GUILayout.Label($"   dostluk {aff}/100{romance} · olay {s.EventsSeen.Count}/{def.Events.Count}");
                 if (!c.IsVillager || giver == null) continue;
+                DrawVillageLife(c, giver);
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(12f);
@@ -154,6 +157,31 @@ namespace Thatchwick.Game
                     }
             }
             GUILayout.Label("İpucu: köylülerin sevdiği ve sevmediği şeyleri hediye verince öğrenirsin. Evlenmek için hem dostluk hem romantik yakınlık 100 olmalı.");
+        }
+
+        /// <summary>Köy hayatı (belge 66f): ruh hali, nerede, bunalım; teselli, ortak kayıp ve kapıyı çalıp çağırma.</summary>
+        private void DrawVillageLife(Character c, Character giver)
+        {
+            var lv = _life.Living;
+            var tier = LivingVillage.MoodTier(c);
+            string mood = GameLocalization.T(tier == VillageMood.Cheerful ? "ui.village.mood.cheerful" : tier == VillageMood.Gloomy ? "ui.village.mood.gloomy" : "ui.village.mood.neutral");
+            GUILayout.Label(GameLocalization.T("ui.village.status.mood", ("mood", mood)) + " · " + GameLocalization.T("ui.village.status.place", ("where", GameLocalization.T(LivingVillage.PlaceTextKey(lv.PlaceFor(c))))));
+            if (c.InBreakdown) GUILayout.Label(GameLocalization.T("ui.village.status.breakdown"));
+            if (Door == null) return;
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(12f);
+            if (c.InBreakdown)
+            {
+                if (GUILayout.Button(GameLocalization.T("ui.village.console"), GUILayout.Width(120f))) _status = Door(c, 1) ?? _status;
+                string lost = lv.RecentLoss(giver);
+                if (lost != null && GUILayout.Button(GameLocalization.T("ui.village.share_loss", ("name", lost)), GUILayout.Width(220f))) _status = Door(c, 2) ?? _status;
+            }
+            else
+            {
+                var shop = lv.ShopOf(c);
+                if (shop != null && !lv.IsShopOpen(shop, c) && GUILayout.Button(GameLocalization.T("ui.village.call"), GUILayout.Width(150f))) _status = Door(c, 3) ?? _status;
+            }
+            GUILayout.EndHorizontal();
         }
 
         private string FirstGiftable()

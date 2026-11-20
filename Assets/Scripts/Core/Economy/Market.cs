@@ -214,6 +214,8 @@ namespace Thatchwick.Core.Economy
         {
             int lv = TradeLevel();
             if (lv < HaggleLevel) return $"Pazarlık için Ticaret {HaggleLevel} gerekli.";
+            var blocked = HaggleBlocked?.Invoke();
+            if (!string.IsNullOrEmpty(blocked)) return blocked;
             if (_haggleDay == _offerDay) return HaggledToday ? "Bugünkü pazarlık tuttu (alışlar %10 ucuz)." : "Bugün pazarlık edildi; satıcı yumuşamadı.";
             _haggleDay = _offerDay;
             var rng = new Random(unchecked(_seed * 31 + (int)_offerDay * 977));
@@ -275,14 +277,28 @@ namespace Thatchwick.Core.Economy
             if (week != _rawWeek) { _rawWeek = week; _rawSold.Clear(); }
         }
 
+        /// <summary>
+        /// Dükkân stoğu (belge 66e karar 3): bağlıysa alım günün stoğundan düşer, stok bitmişse alınamaz. Köylü alımı da aynı
+        /// stoktan düşer. Null ise eski düzen (sınırsız).
+        /// </summary>
+        public ShopStock Stock { get; set; }
+
+        /// <summary>
+        /// Pazarlık kapalı mı (belge 66f §B.8: kasvetli usta pazarlık kabul etmez; fiyat cezası yok). Null ya da null dönerse açık;
+        /// dönen metin oyuncuya gösterilir.
+        /// </summary>
+        public Func<string> HaggleBlocked { get; set; }
+
         public PlacementCheck Buy(string itemId, int count = 1)
         {
             if (!IsGood(itemId)) return PlacementCheck.Fail("Pazarda bu yok.");
             if (!IsBuyable(itemId)) return PlacementCheck.Fail("Bu pazarda satılmaz, yalnızca yapılır (sat ama alınmaz).");
             if (count <= 0) return PlacementCheck.Fail("Adet geçersiz.");
+            if (Stock != null && Stock.Available(itemId) < count) return PlacementCheck.Fail(Localization.CoreText.T("ui.village.stock.sold_out"));
             if (_storage != null && !_storage.HasRoomFor(itemId, count)) return PlacementCheck.Fail("Depo dolu.");
             int cost = BuyPrice(itemId) * count;
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
+            Stock?.TryTake(itemId, count);
             _house.AddItem(itemId, count);
             _house.MarkBought(itemId, count);   // pazar malı: "Kendi emeğimiz" eki almaz (27 §9)
             TradeXp(PurchaseXp(cost));

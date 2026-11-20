@@ -17,8 +17,17 @@ namespace Thatchwick.Core.Economy
         /// <summary>Sahibinin iş yeri anahtarı (life.json villagers[].work); sahibi bu karonun dükkânındayken açık.</summary>
         public string WorkKey;
         public int OpenHour = 9, CloseHour = 17;
-        /// <summary>Haftanın kapalı günü (DayIndex % 7); -1: her gün açık.</summary>
-        public int ClosedDay = -1;
+        /// <summary>
+        /// Haftanın kapalı günü (DayIndex % 7); -1: her gün açık. Pazar dinlenme günü (belge 66e §3): bütün dükkânlar
+        /// <see cref="RestDay"/>'de kapalı, yalnızca meyhane öğlenden açık (<see cref="OpenOnRestDay"/>).
+        /// </summary>
+        public int ClosedDay = RestDay;
+        /// <summary>Haftanın dinlenme günü (Pazar; DayIndex % 7 == 6).</summary>
+        public const int RestDay = 6;
+        /// <summary>Pazar da açık (meyhane, öğlenden).</summary>
+        public bool OpenOnRestDay;
+
+        public static bool IsRestDay(long dayIndex) => dayIndex >= 0 && dayIndex % 7 == RestDay;
         /// <summary>Malların (Market) süzgeci: bu dükkân satar ve oyuncudan alır.</summary>
         public Func<ItemDef, bool> Goods;
         /// <summary>Eşyaların (BuildService) süzgeci: bu dükkân satar.</summary>
@@ -27,14 +36,15 @@ namespace Thatchwick.Core.Economy
 
         public bool IsOpenAt(double hour, long dayIndex)
         {
-            if (ClosedDay >= 0 && dayIndex % 7 == ClosedDay) return false;
+            if (IsRestDay(dayIndex) && !OpenOnRestDay) return false;
+            if (ClosedDay >= 0 && dayIndex % 7 == ClosedDay && !OpenOnRestDay) return false;
             int close = CloseHour <= OpenHour ? CloseHour + 24 : CloseHour;
             double h = hour < OpenHour && CloseHour <= OpenHour ? hour + 24 : hour;
             return h >= OpenHour && h < close;
         }
 
         public string HoursText =>
-            $"{OpenHour:00}:00-{CloseHour % 24:00}:00" + (ClosedDay >= 0 ? $", {DayName(ClosedDay)} kapalı" : "");
+            $"{OpenHour:00}:00-{CloseHour % 24:00}:00" + (ClosedDay >= 0 && !OpenOnRestDay ? $", {DayName(ClosedDay)} kapalı" : "");
 
         public static string DayName(int d) => d switch
         {
@@ -81,40 +91,40 @@ namespace Thatchwick.Core.Economy
 
         public static readonly ShopDef[] All =
         {
-            new ShopDef { Id = "general", Name = "Pazar / genel dükkân", WorkKey = "work:market", OpenHour = 8, CloseHour = 18, ClosedDay = 6,
+            new ShopDef { Id = "general", Name = "Pazar / genel dükkân", WorkKey = "work:market", OpenHour = 8, CloseHour = 18,
                 Blurb = "Tohum, fidan, tuz, temel yiyecek, yakıt; ev ve bahçe eşyası.",
                 Goods = GeneralGoods, Wares = GeneralWares },
-            new ShopDef { Id = "smithy", Name = "Demirci", WorkKey = "work:smithy", OpenHour = 7, CloseHour = 17, ClosedDay = 6,
+            new ShopDef { Id = "smithy", Name = "Demirci", WorkKey = "work:smithy", OpenHour = 7, CloseHour = 17,
                 Blurb = "Alet, çivi, nal, menteşe, demir; hurda alır.",
                 Goods = SmithGoods, Wares = d => Cat(d, "work") && IdHas(d, "anvil", "forge", "tool", "whetstone", "hammer", "bloomery") },
-            new ShopDef { Id = "carpenter", Name = "Marangoz / mobilyacı", WorkKey = "work:carpenter", OpenHour = 8, CloseHour = 17, ClosedDay = 6,
+            new ShopDef { Id = "carpenter", Name = "Marangoz / mobilyacı", WorkKey = "work:carpenter", OpenHour = 8, CloseHour = 17,
                 Blurb = "Mobilya setleri, raflar, yataklar, sandıklar; kalas ve kereste. Katalog siparişini ertesi sabah getirir.",
                 Goods = CarpenterGoods, Wares = d => Cat(d, "seating", "surfaces", "storage", "sleep", "kids", "structure") || Cat(d, "work") && IdHas(d, "bench", "table", "rack", "press", "loom", "wheel", "churn", "quern", "sawmill", "stool") },
-            new ShopDef { Id = "tavern", Name = "Meyhane / han", WorkKey = "work:tavern", OpenHour = 12, CloseHour = 24,
+            new ShopDef { Id = "tavern", Name = "Meyhane / han", WorkKey = "work:tavern", OpenHour = 12, CloseHour = 24, OpenOnRestDay = true,
                 Blurb = "Pişmiş yemek ve alkolsüz içecek; akşamları müzik.",
                 Goods = TavernGoods, Wares = d => false },
-            new ShopDef { Id = "mill", Name = "Değirmen ve fırın", WorkKey = "work:mill", OpenHour = 6, CloseHour = 15, ClosedDay = 6,
+            new ShopDef { Id = "mill", Name = "Değirmen ve fırın", WorkKey = "work:mill", OpenHour = 6, CloseHour = 15,
                 Blurb = "Un, ekmek, yem; tahıl alır.",
                 Goods = MillGoods, Wares = d => false },
-            new ShopDef { Id = "scribe", Name = "Kâtip ve ulak", WorkKey = "work:scribe", OpenHour = 9, CloseHour = 16, ClosedDay = 5,
+            new ShopDef { Id = "scribe", Name = "Kâtip ve ulak", WorkKey = "work:scribe", OpenHour = 9, CloseHour = 16,
                 Blurb = "Kitap, mürekkep, parşömen; soy ve miras kayıtları.",
                 Goods = ScribeGoods, Wares = d => Cat(d, "memorial") || IdHas(d, "book", "hourglass", "family_tree") },
             new ShopDef { Id = "herb", Name = "Aktar ve ebe", WorkKey = "work:herb", OpenHour = 8, CloseHour = 18,
                 Blurb = "İksir, merhem, ot; doğumda ebelik.",
                 Goods = HerbGoods, Wares = d => IdHas(d, "herb_pot", "herb_bundle", "drying_rack", "potion_shelf", "mortar") },
-            new ShopDef { Id = "potter", Name = "Çömlekçi", WorkKey = "work:pottery", OpenHour = 8, CloseHour = 17, ClosedDay = 6,
+            new ShopDef { Id = "potter", Name = "Çömlekçi", WorkKey = "work:pottery", OpenHour = 8, CloseHour = 17,
                 Blurb = "Küp, testi, saksı, çini; kil alır.",
                 Goods = PotterGoods, Wares = d => IdHas(d, "jar", "_pot", "pot_", "clay", "cup", "plate", "amphora", "glass", "kiln", "pottery") && !IdHas(d, "copper", "cooking", "potion", "chamber") },
-            new ShopDef { Id = "tailor", Name = "Terzi ve dokumacı", WorkKey = "work:tailor", OpenHour = 9, CloseHour = 17, ClosedDay = 6,
+            new ShopDef { Id = "tailor", Name = "Terzi ve dokumacı", WorkKey = "work:tailor", OpenHour = 9, CloseHour = 17,
                 Blurb = "Kumaş, iplik, boya; kilim ve perde; çok basit kıyafetler. Yün ve keten alır.",
                 Goods = TailorGoods, Wares = d => Cat(d, "rug") || IdHas(d, "curtain", "tapestry", "embroidery", "tablecloth", "cushion", "sewing", "yarn") },
-            new ShopDef { Id = "saddler", Name = "Saraç", WorkKey = "work:saddler", OpenHour = 8, CloseHour = 17, ClosedDay = 6,
+            new ShopDef { Id = "saddler", Name = "Saraç", WorkKey = "work:saddler", OpenHour = 8, CloseHour = 17,
                 Blurb = "Düz eyer, yular, deri; ham deri ve post alır. İşlemeli eyer yalnızca üretilir.",
                 Goods = SaddlerGoods, Wares = d => IdHas(d, "saddle", "tanning", "harness", "bridle") },
             new ShopDef { Id = "fisher", Name = "Balıkçı", WorkKey = "work:fisher", OpenHour = 5, CloseHour = 14,
                 Blurb = "Olta, yem, ağ, balık sepeti; balık alır.",
                 Goods = FisherGoods, Wares = d => IdHas(d, "fish", "_net", "net_", "oar_rack") },
-            new ShopDef { Id = "mason", Name = "Taşçı", WorkKey = "work:mason", OpenHour = 7, CloseHour = 16, ClosedDay = 6,
+            new ShopDef { Id = "mason", Name = "Taşçı", WorkKey = "work:mason", OpenHour = 7, CloseHour = 16,
                 Blurb = "Taş, yontma taş, tuğla, kiremit, kireç; ocak ve fırın.",
                 Goods = MasonGoods, Wares = d => Cat(d, "heat_light", "work", "structure") && IdHas(d, "hearth", "oven", "stone", "lime_kiln", "stonecutter") && !IdHas(d, "stair") },
             new ShopDef { Id = "animals", Name = "Hayvan pazarı", WorkKey = "work:pasture", OpenHour = 6, CloseHour = 13,

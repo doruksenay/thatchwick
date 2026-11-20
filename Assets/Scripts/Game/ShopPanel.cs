@@ -41,6 +41,8 @@ namespace Thatchwick.Game
         public ShopDef Shop => _shop;
         /// <summary>Meyhaneden bir şey alındı (alan, eşya): "her zamankinden mi?" easter egg'i (belge 55 §2b).</summary>
         public System.Action<Character, string> TavernOrdered { get; set; }
+        /// <summary>Köy hayatı (belge 66f): Pazar, ustanın bunalımı/hastalığı/yası, çağrı, stok ve keyifli ustanın ikramı.</summary>
+        public Thatchwick.Core.Life.LivingVillage Village { get; set; }
 
         public ShopPanel(Market market, BuildService build, Household house, ContentDatabase content, WorldState world,
             Func<Character> player, Func<JobRunner> runner, Func<double> hour, Func<long> day, Func<ShopDef, Character> owner,
@@ -118,6 +120,24 @@ namespace Thatchwick.Game
             return _wares;
         }
 
+        /// <summary>Keyifli usta düşük olasılıkla ikram eder (belge 66f §B.8): eşya ya da indirim; balonu köy hayatı çıkarır.</summary>
+        private void Treat(Character owner, int paid)
+        {
+            var treat = Village?.OnPurchase(owner);
+            if (treat == null) return;
+            if (treat.ItemId != null)
+            {
+                _house.AddItem(treat.ItemId, 1);
+                _status += " " + GameLocalization.T("ui.village.treat_item", ("item", _content.Items.TryGet(treat.ItemId, out var d) ? d.DisplayName : treat.ItemId));
+            }
+            else if (treat.Discount > 0 && paid > 0)
+            {
+                int back = System.Math.Max(1, (int)System.Math.Round(paid * treat.Discount));
+                _house.AddAkce(back);
+                _status += " " + GameLocalization.T("ui.village.treat_discount", ("percent", (int)System.Math.Round(treat.Discount * 100)), ("akce", back));
+            }
+        }
+
         public void OnGUI(float guiScale)
         {
             if (!Active || _shop == null) return;
@@ -128,12 +148,15 @@ namespace Thatchwick.Game
             GUILayout.EndHorizontal();
 
             var owner = _owner(_shop);
-            bool open = _shop.IsOpenAt(_hour(), _day());
+            bool open = Village != null ? Village.IsShopOpen(_shop, owner) : _shop.IsOpenAt(_hour(), _day());
+            var closure = Village != null ? Village.ClosureOf(_shop, owner) : Thatchwick.Core.Life.ShopClosure.None;
             bool ownerHere = owner != null && _areas.TryGetValue(_shop.Id, out var area) && area.Contains(owner.Position);
             bool inside = PlayerInside();
             GUILayout.Label(_shop.Blurb);
             GUILayout.Label($"Saatler: {_shop.HoursText} · {(open ? "açık" : "kapalı")}");
             GUILayout.Label(owner == null ? "Dükkânın sahibi yok." : ownerHere ? $"{owner.Name} tezgâhta." : $"{owner.Name} şu an dükkânda değil.");
+            if (closure != Thatchwick.Core.Life.ShopClosure.None)
+                GUILayout.Label(GameLocalization.T("ui.village.closed_reason", ("reason", GameLocalization.R(Thatchwick.Core.Life.LivingVillage.ClosureText(closure)))));
             if (_status.Length > 0) GUILayout.Label(_status);
 
             bool canTrade = inside && open && ownerHere;
@@ -174,6 +197,7 @@ namespace Thatchwick.Game
                     GUILayout.BeginHorizontal();
                     IsoArt.IconCell(g.Id);
                     GUILayout.Label($"{g.DisplayName} ({_house.Count(g.Id)})", GUILayout.Width(130f));
+                    if (_market.Stock != null) GUILayout.Label(GameLocalization.T("ui.village.stock", ("n", _market.Stock.Available(g.Id))), GUILayout.Width(52f));
                     if (_house.Count(g.Id) > 0 && GUILayout.Button($"Sat {_market.SellPrice(g.Id)}", GUILayout.Width(56f)))
                     {
                         int earned = _market.Sell(g.Id, 1);
@@ -182,8 +206,10 @@ namespace Thatchwick.Game
                     if (!_market.IsBuyable(g.Id)) GUILayout.Label("yalnızca yapılır", GUILayout.Width(90f));
                     else if (GUILayout.Button($"Al {_market.BuyPrice(g.Id)}", GUILayout.Width(52f)))
                     {
+                        int paid = _market.BuyPrice(g.Id);
                         var r = _market.Buy(g.Id);
                         _status = r.Ok ? $"{g.DisplayName} alındı." : r.Reason;
+                        if (r.Ok) Treat(owner, paid);
                         if (r.Ok && _shop != null && _shop.Id == "tavern") TavernOrdered?.Invoke(_player(), g.Id);   // "her zamankinden mi?" (belge 55)
                     }
                     GUILayout.EndHorizontal();
@@ -200,8 +226,10 @@ namespace Thatchwick.Game
                     if (!_build.IsUnlocked(d)) GUILayout.Label(_build.LockText(d), GUILayout.Width(110f));
                     else if (GUILayout.Button($"Al {_build.PriceFor(d)}", GUILayout.Width(64f)))
                     {
+                        int paid = _build.PriceFor(d);
                         var r = _build.Buy(d.Id);
                         _status = r.Ok ? $"{d.DisplayName} alındı (envanterde)." : r.Reason;
+                        if (r.Ok) Treat(owner, paid);
                     }
                     GUILayout.EndHorizontal();
                 }

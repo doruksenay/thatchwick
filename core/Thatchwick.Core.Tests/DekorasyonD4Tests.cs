@@ -190,7 +190,7 @@ namespace Thatchwick.Core.Tests
             var house = new Household();
             var lamp = db.Items.Get("item.brass_lantern");
             Assert.True(lamp.HasTag(Decor.MerchantTag));
-            Assert.Contains("pazar günü", ItemCatalog.Describe(lamp));
+            Assert.Contains("ui.village.merchant_only", ItemCatalog.Describe(lamp));   // "alışveriş günü" (belge 66e karar 6); testte anahtar döner
             house.MerchantInVillage = false;
             Assert.DoesNotContain(lamp, ItemCatalog.InCategory(db, lamp.Category, null, null, null, house));
             house.MerchantInVillage = true;

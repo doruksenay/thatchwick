@@ -1014,6 +1014,7 @@ namespace Thatchwick.Game
             _statusHud = new StatusHud(_life, _content, () => Commander?.Character, c => _actors.Find(a => a.Character == c)?.Runner, () => _plants.Summary());
             _statusHud.OpenSkills = (c, skill) => { _hudExpanded = true; _skillStripFor = c.Id; };
             _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
+            WireLivingVillage();   // yaşayan köy (belge 66f): bölge, yer, kapı
             _requestPanel = new RequestPanel(_life, () => Commander?.Character)
             {
                 ShowOnMap = c => ShowMessage(GameLocalization.T("ui.where.now", ("name", c.Name), ("place", _mines != null && _mines.InMine(c) ? GameLocalization.T("ui.mine.name")
@@ -1224,6 +1225,7 @@ namespace Thatchwick.Game
             _items?.ResetPop();   // yeni bölgenin eşyaları "yeni geldi" diye zıplamasın
             ResetSmoothing();
             _fadeUntil = Time.unscaledTime + RegionFadeSeconds;
+            SettleVillagers(r);   // köylüler programdaki yerlerine yerleşir (belge 66f §E.17)
             ShowMessage(r.Name);
         }
 
@@ -1605,11 +1607,13 @@ namespace Thatchwick.Game
             if (moved > 0) Debug.Log($"Kayıt: {moved} köylü arsadan evine taşındı.");
         }
 
-        // Köylüler gün saatine, havaya ve şenliğe göre evinden işine, meydana yürür.
+        // Köylüler gün saatine, havaya, şenliğe ve haftanın gününe göre evinden işine, meydana, meyhaneye yürür. Yer köy hayatı
+        // servisinden gelir (belge 66f): Pazar, akşam sofrası, akşam meyhanesi, bunalım, yas, çağrı; ağaç ev, aşevi ve sofra.
+        // Kendisi de hedefi de oyuncunun bölgesinin dışındaysa yürümez, yerine yerleşir (soyut hesap, belge 66e §2.5).
         private void UpdateVillagerSchedules()
         {
-            var weather = _life.Weather.Today(_clock.TotalDays);
-            bool festival = _life.Festivals.TodaysFestival() != null;
+            if (_life.Villagers.PlaceAvailable == null)
+                _life.Villagers.PlaceAvailable = k => Places.TryGetValue(k, out var pp) && _world.Map.InBounds(pp) && !_world.Map.IsBlocked(pp);
             foreach (var a in _actors)
             {
                 var c = a.Character;
@@ -1622,40 +1626,31 @@ namespace Thatchwick.Game
                     continue;
                 }
                 if (a.Runner.DutyWhenIdle) { a.Runner.DutyWhenIdle = false; a.Runner.Cancel(); _villagerLocation.Remove(c.Id); }
-                var def = _life.Villagers.DefOf(c);
-                if (def == null)
-                {
-                    // Komşu haneye evlenen ya da orada doğan köylü: eşinin (yoksa annesinin) programına uyar.
-                    Character anchor = c.SpouseId.HasValue ? _population.Find(c.SpouseId.Value) : null;
-                    if ((anchor == null || anchor.IsDead || _life.Villagers.DefOf(anchor) == null) && c.BirthMotherId.HasValue)
-                        anchor = _population.Find(c.BirthMotherId.Value);
-                    def = anchor != null && !anchor.IsDead ? _life.Villagers.DefOf(anchor) : null;
-                    if (def == null && anchor != null && !anchor.IsDead && anchor.SpouseId.HasValue)
-                        def = _life.Villagers.DefOf(_population.Find(anchor.SpouseId.Value));
-                }
-                if (_life.Villagers.PlaceAvailable == null)
-                    _life.Villagers.PlaceAvailable = k => Places.TryGetValue(k, out var pp) && _world.Map.InBounds(pp) && !_world.Map.IsBlocked(pp);
                 // Adsız köylü (Maud, komşu hane üyesi): kendi hanesinin evi ya da handaki oda; asla oyuncunun arsası değil (belge 47 §8).
-                // Ağaç evler (belge 52): köy çocukları ikindi ağaç eve, yoksullar öğlen aşevine, herkes mevsim sonu sofraya.
-                string tree = _life.Trees.VillagerPlace(c, _clock.DayFraction, weather);
-                string where = tree ?? (def != null ? _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival)
-                                                    : _life.Homes.LocationFor(c, _clock.DayFraction, weather, festival));
+                string where = _life.Living.PlaceFor(c);
                 if (string.IsNullOrEmpty(where)) continue;
                 if (_villagerLocation.TryGetValue(c.Id, out var last) && last == where) continue;
                 _villagerLocation[c.Id] = where;
-                var treeTile = tree != null ? _life.Trees.PlaceTile(tree) : null;
-                a.Runner.Command(Job.MoveTo(treeTile.HasValue ? NearestWalkable(treeTile.Value, tree == "feast" ? 6 : 3) : ResolvePlace(where, where == "square" ? c.Id : 0)));
+                UpdateVillagerAnchors(c, where);
+                var tile = VillageTarget(where, c);
+                _villagerTarget[c.Id] = tile;
+                if (_region != null && !_region.Contains(c.Position) && !_region.Contains(tile))
+                {
+                    a.Runner.Cancel();
+                    c.Position = tile;
+                    continue;
+                }
+                a.Runner.Command(Job.MoveTo(tile));
+                a.Runner.WakeAutonomy();   // yeni yerinde ihtiyacına hemen bakar
             }
         }
 
-        // Köylünün ihtiyaçları köyde karşılanır (sabit); haneye katılınca hane gibi yaşar.
-        private static void ApplyVillagerRules(Character c, JobRunner runner)
+        // Köylünün gerçek ihtiyacı, ruh hali ve özgür iradesi var (belge 66e karar 1); açlıktan ve soğuktan ölmez. Özgür irade
+        // yalnızca programdaki ve izinli yerlerdeki eşyaları puanlar. Haneye katılınca hane gibi yaşar.
+        private void ApplyVillagerRules(Character c, JobRunner runner)
         {
-            c.CanStarve = !c.IsVillager;
-            c.MoodEnabled = !c.IsVillager;   // keyif, hijyen ve ruh hali hane üyelerinde
-            c.Needs.SetDecayPerDay(NeedType.Hunger, c.IsVillager ? 0f : NeedSet.DefaultDecayPerDay[(int)NeedType.Hunger]);   // denge 41
-            c.Needs.SetDecayPerDay(NeedType.Energy, c.IsVillager ? 0f : NeedSet.DefaultDecayPerDay[(int)NeedType.Energy]);
-            runner.Autonomous = !c.IsVillager;   // Sims tarzı özgür irade: oyuncu karakteri de kuyruğu boşken ihtiyacını kendisi giderir; komut her zaman önce gelir
+            LivingVillage.ApplyRules(c, runner);
+            if (c.IsVillager) runner.PlaceFilter = VillagerMayUse;
         }
 
         // Komşu haneye evlenen üye köylü olur: komut almaz, eşinin programına uyar.
@@ -1682,6 +1677,9 @@ namespace Thatchwick.Game
         {
             ShowMessage(message);
             SpeakSocial(actor, target, action, message);
+            // Köylünün sohbet satırı ruh hali basamağına göre (belge 66f §B.7): keyifli, olağan, kasvetli.
+            if (action == SocialAction.Chat && target != null && target.IsVillager && !target.IsDead)
+                _speechQueue.Add((target.Id, GameLocalization.R(_life.Living.ChatLine(target)), Time.unscaledTime + 1.5f));
             switch (action)
             {
                 case SocialAction.Feed: _account.Record("feed", _clock.DayIndex); break;
@@ -1949,8 +1947,10 @@ namespace Thatchwick.Game
             if (shop == null || !areas.TryGetValue("general", out var area)) return null;
             var p = _player?.Character;
             if (p == null || !area.Contains(p.Position)) return GameLocalization.T("ui.shop.need_kerem");
-            if (!shop.IsOpenAt(HourOfDay, _clock.DayIndex)) return $"Genel dükkân kapalı. Saatler: {shop.HoursText}.";
             var owner = ShopOwner(shop);
+            var closure = _life.Living.ClosureOf(shop, owner);
+            if (closure != ShopClosure.None) return GameLocalization.T("ui.village.closed_reason", ("reason", GameLocalization.R(LivingVillage.ClosureText(closure))));
+            if (!_life.Living.IsShopOpen(shop, owner)) return $"Genel dükkân kapalı. Saatler: {shop.HoursText}.";
             if (owner == null || !area.Contains(owner.Position)) return "Kerem şu an tezgâhta değil; biraz bekle.";
             return null;
         }
@@ -3230,7 +3230,7 @@ namespace Thatchwick.Game
             foreach (var a in _actors)
             {
                 if (a.Character.Away) continue;   // süreli görevde: sıcaklığı görev servisi verir (belge 47 §3)
-                a.Character.AmbientTemperature = a.Character.IsVillager ? 15f : _heat.TemperatureAt(a.Character.Position);
+                a.Character.AmbientTemperature = a.Character.IsVillager ? VillagerTemperature(a.Character) : _heat.TemperatureAt(a.Character.Position);
             }
             // Su donar: dondurucu soğukta gölet buz tutar (üstünden yürünür, buz kesilir, delikten balık tutulur).
             _world.Map.WaterFrozen = _heat.OutdoorTemperature <= FrozenBelow;
@@ -3248,7 +3248,9 @@ namespace Thatchwick.Game
         private void SimSchedules()
         {
             _scheduleTimer += _simDays;
-            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); GatherForFeast(); WatchUnderground(); }
+            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); GatherForFeast(); WatchUnderground(); CheckVillageDoor(); }
+            FlushSpeechQueue();
+            RingShopBell();
         }
 
         private readonly List<Actor> _actorScratch = new List<Actor>();
@@ -3289,6 +3291,8 @@ namespace Thatchwick.Game
             if (actor.View != null && !actor.View.gameObject.activeSelf && (_region == null || _region.Contains(actor.Character.Position)))
                 actor.View.gameObject.SetActive(true);
             actor.Runner.AutonomyRetry = retry;
+            // Oyuncunun bölgesi dışındaki köylü: yürüyüş ve eşya kullanımı yok, ihtiyacını köy hayatı saatlik hesaplar (belge 66e §2.5).
+            if (VillagerAbstract(actor.Character)) { PushSimPosition(actor); return; }
             if (actor.Character.Stage != AgeStage.Baby) actor.Runner.Tick(gameDays);   // bebek iş yapmaz; büyükler besler
             TickIdleShow(actor, gameDays);
             PushSimPosition(actor);
@@ -3469,6 +3473,7 @@ namespace Thatchwick.Game
             // Easter egg gösterisi (topaç şovu, uluma; belge 55): dururken kısa süre kendi karesini oynar.
             string sceneKey = moving || actor.Character.Stage == AgeStage.Baby ? null : _life.Scenes.CharacterSceneOf(actor.Character.Id);
             var sceneFrame = sceneKey != null ? ActionFrameFor(actor, sceneKey, seed) : null;
+            if (sceneFrame == null && !moving && actor.Character.IsVillager && actor.Character.Stage != AgeStage.Baby) sceneFrame = VillagePoseFrame(actor, seed);   // iş döngüsü, öğün (belge 66f)
             if (sceneFrame == null && !moving && actor.Character.Stage != AgeStage.Baby) sceneFrame = IdleFrameFor(actor, seed);
             var real = walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             // Kavga (belge 67a §5.2): toz bulutu kavgayı başlatanın yerine çizilir, hedef bulutun içinde kaybolur.

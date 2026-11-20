@@ -293,7 +293,7 @@ namespace Thatchwick.Core.Life
                 FoodScarce = () => Forecast.Report(Clock.TotalDays).HasDanger
             };
             Breakdowns.Raised += (level, text, id) => Say(text, level, id);
-            Breakdowns.Started += (c, kind) => Ledger.Note($"{c.Name}: {MoodBehavior.BreakdownName(kind).ToLowerInvariant()}");
+            Breakdowns.Started += (c, kind) => { if (!c.IsVillager) Ledger.Note($"{c.Name}: {MoodBehavior.BreakdownName(kind).ToLowerInvariant()}"); };
             _upbringingRng = new Random(seed != 0 ? Seeds.Derive(seed, 13) : 89);
             Upbringing = new Thatchwick.Core.Upbringing.UpbringingSystems(population, seed != 0 ? Seeds.Derive(seed, 15) : 0)
             {
@@ -420,6 +420,7 @@ namespace Thatchwick.Core.Life
             WireOddScenes();          // haritada görünen sahneler (belge 55)
             WireOddityEvents(seed);   // küçük easter egg'ler (belge 55); bütün alt sistemler kurulduktan sonra
             InitRelations(seed);      // ilişki sistemi (belgeler 67, 67a-d)
+            WireLivingVillage(seed);  // yaşayan köy (belge 66f); köylüler, haneler, istekler ve ağaç evler kurulduktan sonra
         }
 
         /// <summary>
@@ -495,7 +496,7 @@ namespace Thatchwick.Core.Life
             if (SkillPacing && !c.IsVillager) c.Skills.PacingEnabled = true;
             c.BreakdownEnded += (ch, kind, interrupted) =>
             {
-                if (ch.IsDead) return;
+                if (ch.IsDead || ch.IsVillager) return;   // köylünün dükkânı yeniden açılır: bildirimi köy hayatı verir (belge 66f)
                 Say(interrupted ? $"{ch.Name} bunalımı bırakıp kendine bakıyor." : $"{ch.Name} toparlandı: içini döktü.", NoticeLevel.Info, ch.Id);
             };
             c.StageChanged += (ch, before, after) =>
@@ -745,6 +746,7 @@ namespace Thatchwick.Core.Life
             family.JoinedHousehold += c => Upbringing.Weddings?.OnGroomJoined(c, id => Content.Items.Contains(id));   // damat tarafı (34-D2)
             Villagers.Family = family;
             Requests.Family = family;
+            AttachVillageFamily(family);
             family.Chatted += (a, b) => { Requests.OnTalk(a, b); Requests.OnTalk(b, a); };
             family.ExtraProposalCheck = Villagers.ProposalCheck;
             // Beceri sosyal işleri (belge 45): itibar, yara, şenlik, hava, görücü, köylü rolü.
@@ -1085,6 +1087,7 @@ namespace Thatchwick.Core.Life
             _market = market;
             market.IsFairDay = () => Festivals.TodaysFestival() != null;
             market.CalendarFactor = def => FastingCalendar.PriceFactor(def, IsFasting);   // perhiz günleri (belge 48 §9.4)
+            AttachVillageMarket(market);   // dükkân stoğu ve kasvetli ustanın pazarlığı (belge 66f)
         }
         public void Attach(Thatchwick.Core.Build.BuildService build)
         {
@@ -1399,6 +1402,7 @@ namespace Thatchwick.Core.Life
             CookingTick(gameDays);
             Trees.Tick();   // mevsimin son akşamı Bereket Sofrası (belge 52)
             RelationsTick(gameDays);   // gönül yolu sahneleri, kararlar, köyün sosyal ağı (belge 67)
+            Living.Tick(gameDays);   // köylülerin öğünleri, kileri, alımı (belge 66f)
 
             long day = Clock.DayIndex;
             if (day != _lastDay)
@@ -1666,7 +1670,8 @@ namespace Thatchwick.Core.Life
                 ailments = _ailments?.Export(),
                 ailmentSetting = _ailments != null ? (int)_ailments.Setting + 1 : 0,
                 yard = ExportYard(),
-                relations = ExportRelations()
+                relations = ExportRelations(),
+                village = Living.Export()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1681,7 +1686,7 @@ namespace Thatchwick.Core.Life
 
         public void Restore(LifeSaveData data)
         {
-            if (data == null) { Home.Import(null); Trees.Import(null); ImportYard(null); ImportRelations(null); Population.RecomputeAll(); return; }
+            if (data == null) { Home.Import(null); Trees.Import(null); ImportYard(null); ImportRelations(null); Living.Import(null); Population.RecomputeAll(); return; }
             ImportRelations(data.relations);
             Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
             Festivals.CelebratedDay = data.festivalCelebratedDay;
@@ -1720,6 +1725,7 @@ namespace Thatchwick.Core.Life
             Aging.Import(data.quality?.aging);
             Trees.Import(data.treehouses);
             ImportYard(data.yard);
+            Living.Import(data.village);
             Clothing.Import(data.clothing);
             Tailor.Import(data.tailor);
             Ailments.Import(data.ailments);

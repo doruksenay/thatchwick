@@ -14,7 +14,8 @@ namespace Thatchwick.Core.Life
     /// - Hayati güvenlik: açlık, uyku ya da soğuk kritikse başlamaz (sürerken kritikleşirse biter); bakılacak aç bebeğin
     ///   başka bakanı yoksa başlamaz; bebekte hiç, çocukta yalnızca ağlama.
     /// - Bitince "İçini döktü" (+20, 2 gün) art arda bunalımı önler (Character.EndBreakdown).
-    /// Köylülerde ruh hali kapalı olduğu için yalnızca hane üyeleri izlenir.
+    /// Köylüler (belge 66f §B.9): ruh hali açık köylüde hafif biçimde işler. Uyarı yok; bunalım hep "odasına kapandı"
+    /// (dükkânı erken kapatır, eve gider) ve süresi <see cref="VillagerDays"/> (life.json villageLife, öneri 1-2 gün).
     /// </summary>
     public sealed class BreakdownService
     {
@@ -31,6 +32,9 @@ namespace Thatchwick.Core.Life
         public Func<GridPos?> SquarePosition { get; set; }
         /// <summary>Kış stoğu yetmiyor mu (kış göstergesi kırmızı): öyleyse "Tıkındı" seçilmez.</summary>
         public Func<bool> FoodScarce { get; set; }
+
+        /// <summary>Köylü bunalımının süresi (en az, en çok; oyun günü). Null ise köylü bunalıma girmez.</summary>
+        public Func<(double min, double max)> VillagerDays { get; set; }
 
         /// <summary>Bildirim (düzey, metin, kişi).</summary>
         public event Action<NoticeLevel, string, int> Raised;
@@ -50,7 +54,12 @@ namespace Thatchwick.Core.Life
             for (int i = 0; i < members.Count; i++)
             {
                 var c = members[i];
-                if (c.IsDead || c.IsVillager || !c.MoodEnabled || c.Stage == AgeStage.Baby) continue;
+                if (c.IsDead || !c.MoodEnabled || c.Stage == AgeStage.Baby) continue;
+                if (c.IsVillager)
+                {
+                    if (VillagerDays != null && c.Stage >= AgeStage.YoungAdult) TryStart(c, gameDays);
+                    continue;
+                }
                 Warn(c);
                 TryStart(c, gameDays);
             }
@@ -91,6 +100,16 @@ namespace Thatchwick.Core.Life
         public bool Start(Character c, BreakdownKind kind)
         {
             if (c == null || c.IsDead || c.InBreakdown || !IsSafe(c)) return false;
+            if (c.IsVillager)
+            {
+                // Köylü: hafif bunalım, dükkânı kapatıp evine kapanır (belge 66f §B.9); bildirimi köy hayatı servisi verir.
+                if (VillagerDays == null) return false;
+                var (min, max) = VillagerDays();
+                double vd = min + _rng.NextDouble() * Math.Max(0.0, max - min);
+                if (!c.BeginBreakdown(BreakdownKind.Withdraw, vd)) return false;
+                Started?.Invoke(c, BreakdownKind.Withdraw);
+                return true;
+            }
             if (c.Stage == AgeStage.Child) kind = BreakdownKind.Cry;
             if (kind == BreakdownKind.RunOff && SquarePosition?.Invoke() == null) kind = BreakdownKind.Cry;
             if (kind == BreakdownKind.Binge && FoodScarce != null && FoodScarce()) kind = BreakdownKind.Withdraw;
@@ -121,6 +140,7 @@ namespace Thatchwick.Core.Life
         public bool IsSafe(Character c)
         {
             if (c.Stage == AgeStage.Baby || c.Needs.AnyCritical()) return false;
+            if (c.IsVillager) return true;   // köylünün bakacağı hane bebeği yok
             foreach (var baby in _population.Members)
             {
                 if (baby.IsDead || baby.IsVillager || baby.Stage != AgeStage.Baby) continue;

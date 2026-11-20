@@ -71,6 +71,40 @@ namespace Thatchwick.Core.Jobs
 
         /// <summary>Açıksa, kuyruk boşken ve ihtiyaç kritikken karakter kendi iş seçer (NPC).</summary>
         public bool Autonomous { get; set; }
+
+        /// <summary>
+        /// Köylü özgür iradesi (belge 66f §A.2): otonomi yalnızca ihtiyaç giderir (bebek besleme, sohbet, rutin, görev, ev işi yok),
+        /// haneyi ilgilendiren etkileşimleri (envanterden yeme, üretim, toplama) seçmez; açlık ve sosyal ihtiyaç köy hayatı
+        /// servisinden (hane kileri, meydan, meyhane) karşılanır.
+        /// </summary>
+        public bool NeedsOnly { get; set; }
+
+        /// <summary>
+        /// Otonominin eşya süzgeci: verilirse <see cref="MayUseForNeeds"/> yerine geçer (köylü: yalnızca programdaki yer ve
+        /// izinli yerler, oyuncunun arsası asla). Null ise eski kural.
+        /// </summary>
+        public Func<Character, ItemInstance, bool> PlaceFilter { get; set; }
+
+        /// <summary>
+        /// Köylünün seyrek aranan ihtiyaçları (belge 66f §E.17, ölçüm 21.11.2026: 40 köylüde otonomi taraması bütçeyi aşıyordu):
+        /// Eğlence ve Temizlik yalnızca <see cref="SparseBelow"/>'ın altına inince aranır; meydan ve meyhane eğlenceyi de verir.
+        /// </summary>
+        public static bool Sparse(NeedType need) => need == NeedType.Fun || need == NeedType.Hygiene;
+        public const float SparseBelow = 30f;
+        /// <summary>Köylünün başarısız otonomi aramasından sonra bekleme çarpanı (≈25 oyun dakikası).</summary>
+        public const double VillagerRetryFactor = 8.0;
+
+        /// <summary>Otonominin bekleme süresini sıfırlar: köylü yeni yerine varınca hemen bakar.</summary>
+        public void WakeAutonomy() => _autonomyIdleUntil = 0;
+
+        /// <summary>NeedsOnly karakterin otonomide aramadığı ihtiyaçlar (köy hayatı servisi karşılar).</summary>
+        public static bool VillageHandled(NeedType need) => need == NeedType.Hunger || need == NeedType.Social;
+
+        /// <summary>Etkileşim hanenin envanterine ya da işine dokunuyor mu (köylü otonomisi seçmez).</summary>
+        public static bool TouchesHousehold(InteractionDef i) =>
+            i != null && (!string.IsNullOrEmpty(i.ConsumeItem) || i.Consume.Count > 0 || i.Produce.Count > 0 || i.RemovesItem || i.Collect
+                || i.AddFeed > 0 || i.RequiresAnimal || i.Teach || i.FillDecor || i.EatContents || i.CollectContents || i.MealAction != null
+                || i.HomeAction != null || i.TreeAction != null || i.FarmAction != null || i.Slaughter || i.TakesFruit || i.WashDishes);
         /// <summary>
         /// Otonomi kapalıyken de boşta görev işi alır (hizmetkâr: köylü, ihtiyaç otonomisi yok ama sabah Ev görevini yapar; belge 45).
         /// </summary>
@@ -1310,7 +1344,7 @@ namespace Thatchwick.Core.Jobs
         private static bool IsUnlitHeatSource(ItemInstance item, InteractionDef interaction) =>
             interaction.Need == NeedType.Warmth && item.Def.HeatOutput > 0f && !item.IsLit;
 
-        private bool CanStoke => Stoke != null && HasFirewood != null && HasFirewood();
+        private bool CanStoke => !NeedsOnly && Stoke != null && HasFirewood != null && HasFirewood();   // köylü hanenin odununu yakmaz
 
         // Isınmaya gelen ocağı besler: yakıt StokeTargetDays altındaysa en çok StokeMaxLogs kütük atar.
         private void TopUpFire(ItemInstance item)
@@ -1348,7 +1382,7 @@ namespace Thatchwick.Core.Jobs
         private bool TryStartAutonomy()
         {
             // Bakım: kendisi kritik değilse önce aç bebeği besler.
-            if (Social != null && !_character.Needs.AnyCritical())
+            if (!NeedsOnly && Social != null && !_character.Needs.AnyCritical())
             {
                 var dependent = Social.DependentNeedingCare(_character);
                 if (dependent != null && !PersonOnCooldown(dependent.Id) && Social.CanDo(_character, dependent, SocialAction.Feed) == null)
@@ -1360,8 +1394,9 @@ namespace Thatchwick.Core.Jobs
 
             _needOrder.Clear();
             foreach (var need in AllNeeds)
-                if (_character.Needs.Get(need) < AutonomyThresholdFor(need)) _needOrder.Add(need);
-            if (_needOrder.Count == 0) return TryStartRoutine() || TryStartDuty() || TryStartChore();
+                if (_character.Needs.Get(need) < AutonomyThresholdFor(need) && !(NeedsOnly && VillageHandled(need))
+                    && !(NeedsOnly && Sparse(need) && _character.Needs.Get(need) >= SparseBelow)) _needOrder.Add(need);
+            if (_needOrder.Count == 0) return !NeedsOnly && (TryStartRoutine() || TryStartDuty() || TryStartChore());
             _needOrder.Sort((a, b) =>
             {
                 int ka = Rank(a), kb = Rank(b);
@@ -1374,23 +1409,24 @@ namespace Thatchwick.Core.Jobs
             if (Rank(_needOrder[0]) == 2 && ComfortCanWait() && TryStartDuty()) return true;
 
             // Başarısız arama her adımda yinelenmesin: bütün dünyayı tarar ve rahatlık ihtiyaçları hemen her an eşiğin altındadır.
-            if (_elapsedDays < _autonomyIdleUntil && !_character.Needs.AnyCritical()) return TryStartChore();
+            if (_elapsedDays < _autonomyIdleUntil && (NeedsOnly || !_character.Needs.AnyCritical())) return TryStartChore();
             foreach (var need in _needOrder)
             {
-                if (need == NeedType.Social && TryStartChat()) return true;
+                if (need == NeedType.Social && !NeedsOnly && TryStartChat()) return true;
                 // (sıra: kritik hayatta kalma > tuvalet ve öbür hayatta kalma > keyif ihtiyaçları)
                 if (need == NeedType.Energy && _character.ComfortNeedsActive && _character.Needs.Get(NeedType.Bladder) < PreSleepBladder
                     && TryStartNeedItem(NeedType.Bladder)) return true;          // yatmadan önce tuvalet
                 if (TryStartNeedItem(need)) return true;
             }
-            _autonomyIdleUntil = _elapsedDays + AutonomyRetry;
+            // Köylü (belge 66f §E.17): bulamadığı ihtiyacı daha seyrek arar; programdaki yeri değişince yeniden bakar.
+            _autonomyIdleUntil = _elapsedDays + AutonomyRetry * (NeedsOnly ? VillagerRetryFactor : 1.0);
             return TryStartChore();
         }
 
         /// <summary>İhtiyaç işi bulunamadıysa ve kritik ihtiyaç yoksa yakındaki ufak ev işi (IdleChore).</summary>
         private bool TryStartChore()
         {
-            if (IdleChore == null || _character.Needs.AnyCritical()) return false;
+            if (NeedsOnly || IdleChore == null || _character.Needs.AnyCritical()) return false;
             var job = IdleChore(_character);
             if (job == null) return false;
             ResetJobState();
@@ -1542,9 +1578,10 @@ namespace Thatchwick.Core.Jobs
                 var item = candidates[ci];
                 // Eşyaya bağlı elemeler etkileşimlerden önce bir kez: kullanabilir mi (arsa, bölge), ulaşılır mı.
                 if (_unreachableUntil.Count > 0 && _unreachableUntil.TryGetValue(item.Id, out var until) && until > _elapsedDays) continue;
-                if (!MayUseForNeeds(_world, _character, item)) continue;
+                if (PlaceFilter != null ? !PlaceFilter(_character, item) : !MayUseForNeeds(_world, _character, item)) continue;
                 foreach (var interaction in item.Def.AutonomyInteractions(need))
                 {
+                    if (NeedsOnly && TouchesHousehold(interaction)) continue;   // köylü hanenin kilerinden yemez, üretmez
                     float restore = interaction.RestoreFor(need);
                     // Otonomi iş yapmaz (ağaç kesmez, hasat etmez, üretmez, yem koymaz); yalnızca ihtiyaç giderir.
                     // Malzeme ya da hayvan gerektiren ihtiyaç etkileşimi (şalgam yemek, köpekle oynamak) koşul sağlanıyorsa seçilir.

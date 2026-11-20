@@ -64,7 +64,17 @@ namespace Thatchwick.Core.Life
             return null;
         }
 
-        public bool IsMarketDay(long day) => day % MarketDayInterval == MarketDayInterval - 1;
+        /// <summary>
+        /// Alışveriş günü (belge 66e karar 6; kod anahtarları "market day" kalır): 5 günde bir. Pazar dinlenme günüdür;
+        /// alışveriş günü pazara denk gelirse bir sonraki güne kayar.
+        /// </summary>
+        public bool IsMarketDay(long day)
+        {
+            if (Economy.ShopDef.IsRestDay(day)) return false;
+            return IsBaseMarketDay(day) || (IsBaseMarketDay(day - 1) && Economy.ShopDef.IsRestDay(day - 1));
+        }
+
+        private static bool IsBaseMarketDay(long day) => day >= 0 && day % MarketDayInterval == MarketDayInterval - 1;
         public bool IsMarketDayToday => IsMarketDay(_clock.DayIndex);
 
         /// <summary>Market.ExtraOffers sağlayıcısı: pazar günü +1, festivalin ek teklifi.</summary>

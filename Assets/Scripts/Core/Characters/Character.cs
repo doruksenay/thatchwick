@@ -272,6 +272,8 @@ namespace Thatchwick.Core.Characters
         /// testler yemek döngüsü kurmadan uzun süre ilerletebilsin diye varsayılan kapalı.
         /// </summary>
         public bool CanStarve { get; set; }
+        /// <summary>Soğuktan donarak ölebilir mi. Köylüler ölmez (belge 66f §A.1): soğuk kasvet, hastalık ve rica doğurur.</summary>
+        public bool CanFreeze { get; set; } = true;
         public DeathCause CauseOfDeath { get; private set; }
         public AgeStage Stage => AgeConfig.StageAt(AgeDays);
 
@@ -450,6 +452,17 @@ namespace Thatchwick.Core.Characters
             BreakdownEnded?.Invoke(this, kind, interrupted);
         }
 
+        /// <summary>
+        /// Teselli (belge 66f §B.10): kalan bunalım süresinin <paramref name="share"/> kadarı gider; 1 ya da çok kısa kalırsa
+        /// bunalım biter (kesilmiş sayılmaz).
+        /// </summary>
+        public void ShortenBreakdown(double share)
+        {
+            if (!InBreakdown || share <= 0) return;
+            BreakdownLeft *= 1.0 - Math.Min(1.0, share);
+            if (BreakdownLeft <= 0.001) EndBreakdown();
+        }
+
         /// <summary>Kayıttan yükleme.</summary>
         public void RestoreBreakdown(BreakdownKind kind, double left)
         {
@@ -595,7 +608,7 @@ namespace Thatchwick.Core.Characters
 
             if (Needs.Get(NeedType.Warmth) <= NeedSet.Min) FreezeDays += gameDays;
             else FreezeDays = Math.Max(0.0, FreezeDays - 2.0 * gameDays);
-            if (FreezeDays >= FreezeDeathDays)
+            if (FreezeDays >= FreezeDeathDays && CanFreeze)
             {
                 Die(DeathCause.Cold);
                 return;
