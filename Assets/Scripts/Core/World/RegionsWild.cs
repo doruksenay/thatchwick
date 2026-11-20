@@ -383,6 +383,7 @@ namespace Thatchwick.Core.World
             // şimdilik M paneliyle açılır. Merdiven eşyası konmaz: kat -1'e bağlantı kurup bölgesiz bir bodrum açardı.
             p.Floor(MineMouthX - 2, MineMouthY - 1, MineMouthX + 2, MineMouthY + 2, FloorType.Stone);
             Keep(keep, MineMouthX - 3, MineMouthY - 2, MineMouthX + 3, MineMouthY + 3);
+            p.I("item.mine_mouth", MineMouthX - 1, MineMouthY - 2);   // kaya yüzündeki açıklık (430); önündeki karo ağızdır
             p.I("item.barn_lantern", MineMouthX + 2, MineMouthY);
             p.I("item.barrel", MineMouthX - 2, MineMouthY + 1);
             if (!draft) Trail(p, keep, 2, (0, 20), (12, 20), (12, 28), (24, 28), (24, 33), (MineMouthX - 3, 33));

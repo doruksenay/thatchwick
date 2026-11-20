@@ -279,6 +279,13 @@ namespace Thatchwick.Core.Layout
                 // --- avlu: kuyu, kütük, yağmur fıçısı, avlu masası kurallarla (OutdoorBuilder, bahçe şablonu garden_farm) ---
                 Put("item.scarecrow", 48, 32);                // tarla alanı: 42-56 x 26-38
                 StartingKit.TillBed(_world, new GridPos(43, 27), ditch: _content.Items.TryGet("item.irrigation_ditch", out var ditch) ? ditch : null);
+                // Yeni ekilmiş iki sıra (filiz): tarla boş toprak değil, işlenen bir yer gibi görünsün. Hasat günler sonra.
+                foreach (var (crop, row) in new[] { ("item.crop_turnip", 27), ("item.crop_cabbage", 29) })
+                    for (int x = 43; x < 43 + StartingKit.BedWidth; x++)
+                        if (_world.Map.GetFloor(new GridPos(x, row)) == FloorType.Dirt && _world.GetItemAt(new GridPos(x, row)) == null && (x + row) % 5 != 0)
+                            Put(crop, x, row);
+                // İkinci, nadasa bırakılmış tarh (boş toprak) ve yanında tohum sandığı ile el arabası yeri.
+                StartingKit.TillBed(_world, new GridPos(50, 34), 5, 2);
 
                 // --- ağaçlar: meyve bahçesi (kuzeybatı), gölet söğütleri, arsa kenarı ---
                 string[] fruit = { "item.tree_apple", "item.tree_pear", "item.tree_cherry", "item.tree_plum" };

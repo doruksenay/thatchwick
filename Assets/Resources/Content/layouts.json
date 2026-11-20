@@ -1824,6 +1824,42 @@
           "count": 2,
           "optional": true,
           "anchor": "wallBase"
+        },
+        {
+          "any": [
+            "item.crop_cabbage",
+            "item.crop_leek",
+            "item.crop_onion",
+            "item.crop_carrot"
+          ],
+          "with": "bed",
+          "optional": true
+        },
+        {
+          "item": "item.forage_herbs",
+          "with": "bed",
+          "optional": true
+        },
+        {
+          "item": "item.woodshed",
+          "optional": true,
+          "anchor": "side"
+        },
+        {
+          "item": "item.beehive",
+          "optional": true,
+          "anchor": "open"
+        },
+        {
+          "item": "item.flower_clump",
+          "count": 3,
+          "optional": true,
+          "anchor": "open"
+        },
+        {
+          "item": "item.ox_cart",
+          "optional": true,
+          "anchor": "open"
         }
       ]
     }

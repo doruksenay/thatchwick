@@ -49462,6 +49462,34 @@
         "pxH": 96,
         "mirror": true
       }
+    },
+    {
+      "id": "item.mine_mouth",
+      "displayName": "Maden ağzı",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "townonly"
+      ],
+      "art": {
+        "alongX": "iso_item_mine_mouth_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 144,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     }
   ],
   "recipes": [
