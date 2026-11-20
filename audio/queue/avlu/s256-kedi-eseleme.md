@@ -4,7 +4,7 @@ title: Kedi toprağı eşeliyor
 kind: sfx
 family: foley
 freq: C
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 key: yard.cat_dig
@@ -16,5 +16,7 @@ axes:
   soil:
   - dry garden soil
   - loose sand
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T14:11:28Z'
 ---
 A cat scratching loose soil with its paws, three or four quick light scrapes.
