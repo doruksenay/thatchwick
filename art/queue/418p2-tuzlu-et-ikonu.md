@@ -1,7 +1,7 @@
 ---
 id: "418p2"
 title: "Tuzlu et ikonu (418p'de reddedilen v2 yerine v3)"
-status: review
+status: accepted
 claimed_at: 2026-11-20T18:36Z
 approved_by: user        # kullanıcı kararı 2026-11-20: "tuzlu eti tekrar üret"
 priority: 20
@@ -32,3 +32,5 @@ created: 2026-11-20
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+Kullanıcı kararı 2026-11-21: **accepted.** Üç sürüm içinde tuzlu et olarak okunan tek sürüm (kesik uç, tuz taneleri). Palete %85 (UYARI): yerelde `style.py snap --set arayuz` ile oturtulacak (0 gen). Eşleme: PR (IsoArt `item.salted_meat` → v3).
