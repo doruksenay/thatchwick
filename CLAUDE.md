@@ -8,6 +8,12 @@ Oyun: Thatchwick: Generations of a Village (Unity 6, 2D URP, izometrik 2:1). Tas
 - Görsel şartname bağlayıcıdır: `docs/gorsel-yonerge.md`.
 - İçerik (eşya, hayvan, ekin, yemek, alet) eklerken dönem kurallarına uy: hayali bir ortaçağ yerleşimi; Yeni Dünya bitkisi/hayvanı yok (patates, domates, mısır, balkabağı, tütün, hindi), ortaçağ sonrası icat yok (gazyağı, balya, mibzer vb.). Gerçekçilik: mevsim, ömür oranı (1 gün ≈ yarım yıl), türün gerçek davranışı. Ayrıntı: Project belgesi `20-donem-tutarliligi-ve-gercekcilik.md`.
 
+## Dil ve yerelleştirme
+Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, Almanca. Kurallar: `docs/yerellestirme.md`.
+- İçeriğe (items/life/appearance.json) yeni metin ekleyince İngilizcesini `Assets/Resources/Localization/content.en.json`'a aynı turda yaz. Eksikleri `python tools/loc/check.py` listeler; eksik varsa CI'da `LocalizationTests` kırılır.
+- Yeni arayüz metni düz yazılmaz: anahtar `ui.en.json` ve `ui.tr.json`'a girer, kodda `GameLocalization.T("ui....")`. Core metin üretecekse `LocText` döndürür.
+- Anahtar ve kimlik karşılaştırmasında `ToUpperInvariant`/`StringComparison.Ordinal` kullan; Türkçe cihazda `ToUpper()` "i"yi "İ" yapar.
+
 ## Asset kuyruğu (PixelLab)
 Asset üretimi `art/queue/` altındaki iş dosyalarıyla yürür. Akış ve tetikleme: `art/README.md`. İşçi ajan: `.claude/agents/pixellab-artist.md`. Bütçe kuralları: `art/budget.md` (bağlayıcı).
 
