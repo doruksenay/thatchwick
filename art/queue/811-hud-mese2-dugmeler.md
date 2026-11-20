@@ -1,7 +1,8 @@
 ---
 id: "811"
 title: "HUD meşe, dünya ölçeği: Yapı ve Defter düğmeleri, rozet"
-status: pending
+status: running
+claimed_at: 2026-11-20T23:08Z
 approved_by: user        # kullanıcı kararı 2026-11-21: saf meşe; HUD dünya ile aynı piksel boyutu (2x); üç iş toplam üst sınır 40
 priority: 1
 family: arayuz
