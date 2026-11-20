@@ -1,5 +1,5 @@
 ---
-id: "612"
+id: "612t"
 title: "Takı katmanı pilotu: küpe ve gerdanlık (karakterin üstünde)"
 status: pending
 approved_by: user        # kullanıcı 20.11.2026 sohbet: "aç buna iş" (karakterin üstünde takı görünsün)
@@ -14,10 +14,10 @@ pixellab: true
 outputs:
   - Assets/Art/Iso/katman/lay_jw_earring_<yön>_fr.png
   - Assets/Art/Iso/katman/lay_jw_necklace_<yön>_fr.png
-  - art/results/612-taki-katmani-pilotu.md
+  - art/results/612t-taki-katmani-pilotu.md
 created: 2026-11-20
 ---
-# 612 Takı katmanı pilotu: küpe ve gerdanlık
+# 612t Takı katmanı pilotu: küpe ve gerdanlık
 
 ## Amaç
 Project belgesi 62 §2: takılar artık takılıyor ve etki veriyor ama karakterin üstünde görünmüyor. Soru: 84 piksellik karakterde takı okunuyor mu? Pilot iki parçayla yanıtlar: küpe (baş) ve gerdanlık (boyun). Yüzük, hızma ve nazar boncuğu bu ölçekte bir pikselin altında kalır; çizilmez.
@@ -32,7 +32,7 @@ Project belgesi 62 §2: takılar artık takılıyor ve etki veriyor ama karakter
 ## Doğrulama
 - Yan yana sayfası x4: takısız manken, yalnız küpe, yalnız gerdanlık, ikisi birlikte; üç metal rampasıyla (bakır, gümüş, altın). Oyun yakınlığında (x2) da bir satır.
 - Ölçüt: x2'de gerdanlık bir bakışta seçiliyor; küpe en az s ve se yönlerinde seçiliyor; yürüme karelerinde parça gövdeden kopmuyor.
-- Rapor (`art/results/612-...md`) açık bir sonuç yazar: **okunuyor** (613 çalışır) ya da **okunmuyor** (öneri: takı yalnızca portrede ve karakter kartında gösterilsin, 613 iptal).
+- Rapor (`art/results/612t-...md`) açık bir sonuç yazar: **okunuyor** (613 çalışır) ya da **okunmuyor** (öneri: takı yalnızca portrede ve karakter kartında gösterilsin, 613 iptal).
 - `python tools/art/ramps.py check --ref cloth <dosya>`.
 
 ## Notlar

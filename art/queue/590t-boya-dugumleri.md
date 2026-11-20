@@ -1,5 +1,5 @@
 ---
-id: "590"
+id: "590t"
 title: "Boya düğümleri: cehri çalısı, ceviz kabukları, likenli kaya (3)"
 status: pending
 approved_by: user        # otomatik akış (CLAUDE.md, 2026-11-17); kullanıcı 20.11.2026 sohbet: "assetleri de sıraya ekle"
@@ -17,7 +17,7 @@ outputs:
   - Assets/Art/Iso/_aday/iso_forage_lichen_se.png
 created: 2026-11-20
 ---
-# 590 Boya düğümleri (3)
+# 590t Boya düğümleri (3)
 
 ## Amaç
 Üç boya düğümü ormanda mevsiminde kendiliğinden çıkıyor (`ForageSystem`, `forageRegions: forest`) ama görselleri yok; yer tutucuyla çiziliyor. Ölü özellik taramasında (Project belgesi 62) bu yüzden "haritada yok" sanıldı. Ürünleri boya tariflerine girer: cehri tanesi (sarı), ceviz kabuğu (kahve), taş likeni (mor).
@@ -36,7 +36,7 @@ Yöntem **373 ile aynı**: tuval 80x72, 1x1 kılavuz + maske, pivot 40,24; 373't
 
 ## Notlar
 - Kabulden sonra `items.json`'da üç düğüme `art` alanı eklenir (`{"alongX": "iso_forage_<ad>_se", "pivotX": 40.0, "pivotY": 24.0, "mirror": true}`); kod oturumunun işi.
-- Ürün ikonları 591'de.
+- Ürün ikonları 591t'de.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

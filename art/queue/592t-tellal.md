@@ -1,5 +1,5 @@
 ---
-id: "592"
+id: "592t"
 title: "Tellal (84 px, 8 yön durma)"
 status: pending
 approved_by: user        # otomatik akış (CLAUDE.md, 2026-11-17); kullanıcı 20.11.2026 sohbet: tellal kararı "Pano + tellal", "assetleri de sıraya ekle"
@@ -13,10 +13,10 @@ max_attempts: 1
 pixellab: true
 outputs:
   - Assets/Art/Iso/_aday/anim/iso_char_crier_r84_idle_<yön>.png
-  - art/results/592-tellal.md
+  - art/results/592t-tellal.md
 created: 2026-11-20
 ---
-# 592 Tellal
+# 592t Tellal
 
 ## Amaç
 Project belgesi 62 §4: tellal her sabah 08:00'de, yeni ilan varsa şehir meydanındaki ilan tahtasının yanında bir oyun saati durup ilanları bağırır. Kod hazır (`OddWalkerKind.Crier`, görsel takımı `iso_char_crier_r84`); görsel gelene kadar kırmızı bir yer tutucu çiziliyor. Meydanda köylülerden uzaktan ayırt edilmeli.

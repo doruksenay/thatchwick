@@ -1,5 +1,5 @@
 ---
-id: "591"
+id: "591t"
 title: "Takı, takı malzemesi ve boya malzemesi ikonları (20)"
 status: pending
 approved_by: user        # otomatik akış (CLAUDE.md, 2026-11-17); kullanıcı 20.11.2026 sohbet: "assetleri de sıraya ekle"
@@ -34,7 +34,7 @@ outputs:
   - Assets/Art/Iso/_aday/icon_item_lichen.png
 created: 2026-11-20
 ---
-# 591 Takı, takı malzemesi ve boya malzemesi ikonları (20)
+# 591t Takı, takı malzemesi ve boya malzemesi ikonları (20)
 
 ## Amaç
 Project belgesi 62 §2: altın tozu ve değerli taşla yapılan altı yeni takı eklendi, takılar Aile panelinde takılıp çıkarılıyor. Eski dokuz takının, iki malzemenin (altın tozu, değerli taş) ve üç boya malzemesinin (cehri tanesi, ceviz kabuğu, taş likeni) ikonu yok; listelerde yalnızca yazı görünüyor.
@@ -71,7 +71,7 @@ Project belgesi 62 §2: altın tozu ve değerli taşla yapılan altı yeni takı
 
 ## Doğrulama
 - 32x32, yarı saydam 0, renk ≤ 16. `python tools/art/style.py check --family arayuz <dosya> ...`.
-- Toplu önizleme x4, parşömen (#EADBB8) ve koyu (#333333) zeminde: `art/results/591-ikonlar-x4.png`, `art/results/591-ikonlar-x4-koyu.png`.
+- Toplu önizleme x4, parşömen (#EADBB8) ve koyu (#333333) zeminde: `art/results/591t-ikonlar-x4.png`, `art/results/591t-ikonlar-x4-koyu.png`.
 - Göz kontrolü: yüzük, mühür yüzüğü, altın yüzük ve taşlı yüzük dördü yan yana ayırt ediliyor; nazar boncuğu ile taşlı nazarlık ortadaki taştan ayrılıyor; küpe çifti tek bir halka gibi okunmuyor.
 
 ## Notlar
