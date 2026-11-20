@@ -2,79 +2,72 @@
   "ponds": [],
   "items": [
     {
-      "id": "item.hay_bale",
+      "id": "item.boulder_round",
       "x": 89,
       "y": 37,
       "rot": 0,
       "grown": false
     },
     {
-      "id": "item.hay_bale",
+      "id": "item.boulder_round",
       "x": 86,
       "y": 36,
       "rot": 0,
       "grown": false
     },
     {
-      "id": "item.boulder_round",
+      "id": "item.fallen_log",
       "x": 75,
       "y": 44,
       "rot": 0,
       "grown": false
     },
     {
-      "id": "item.hay_bale",
-      "x": 77,
-      "y": 43,
-      "rot": 0,
-      "grown": false
-    },
-    {
-      "id": "item.fallen_log",
-      "x": 65,
+      "id": "item.boulder_round",
+      "x": 66,
       "y": 41,
       "rot": 0,
       "grown": false
     },
     {
-      "id": "item.stump_table",
-      "x": 64,
+      "id": "item.boulder_round",
+      "x": 65,
       "y": 43,
       "rot": 0,
       "grown": false
     },
     {
       "id": "item.fallen_log",
-      "x": 91,
+      "x": 90,
       "y": 45,
       "rot": 0,
       "grown": false
     },
     {
-      "id": "item.fallen_log",
-      "x": 67,
+      "id": "item.boulder_round",
+      "x": 94,
+      "y": 44,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder",
+      "x": 68,
       "y": 36,
       "rot": 0,
       "grown": false
     },
     {
-      "id": "item.hay_bale",
-      "x": 71,
-      "y": 35,
+      "id": "item.fallen_log",
+      "x": 68,
+      "y": 32,
       "rot": 0,
       "grown": false
     },
     {
       "id": "item.fallen_log",
-      "x": 67,
-      "y": 33,
-      "rot": 0,
-      "grown": false
-    },
-    {
-      "id": "item.hay_bale",
-      "x": 69,
-      "y": 44,
+      "x": 72,
+      "y": 45,
       "rot": 0,
       "grown": false
     },

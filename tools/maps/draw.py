@@ -614,7 +614,7 @@ PROPS = {
     'hill': [('item.boulder', 1, 3), ('item.boulder_large', 2, 2), ('item.fallen_log', 2, 1)],
     'slopes': [('item.hay_bale', 1, 2), ('item.boulder_round', 1, 1), ('item.barrel', 1, 1)],
     'coast': [('item.boulder_round', 1, 2), ('item.boulder', 1, 2), ('item.fallen_log', 2, 1)],
-    'farm': [('item.hay_bale', 1, 3), ('item.boulder_round', 1, 2), ('item.fallen_log', 2, 2), ('item.stump_table', 1, 1)],
+    'farm': [('item.boulder_round', 1, 2), ('item.fallen_log', 2, 2), ('item.boulder', 1, 1)],
 }
 
 
@@ -729,7 +729,11 @@ def farm():
                 cv.set(n[0], n[1], 'sand')
     built = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('stone', 'bridge', 'dirt')}
     keep = near(roads, 2) | near(water, 2) | near(built, 3)
-    band(cv, (1.0, 3.0), salt=257, sides='NWS', keep=keep)
+    # Doğal çiftlik (kullanıcı 21.11: "haritamız doğal durmuyor"): ince tek sıra ağaç yerine kuzey ve batıda derin, girintili
+    # orman kütlesi; güneyde daha sığ. Açık arazinin içine farklı boyda korular. Orman kenarının seyrelmesi (tek ağaç, çalı)
+    # OutdoorBuilder.EdgeFringe'de.
+    band(cv, (3.0, 10.0), salt=257, sides='NW', keep=keep)
+    band(cv, (2.0, 6.0), salt=259, sides='S', keep=keep)
     # Çiftlik doğası: köşelerde iki koru (bant öbeği), batıda kaya çıkıntısı; evden ve yoldan uzak.
     def blob(cx, cy, rx, ry, kind, salt):
         for y in range(int(cy - ry - 2), int(cy + ry + 3)):
@@ -739,8 +743,15 @@ def farm():
                 dx, dy = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
                 if dx * dx + dy * dy + (noise(x / 1.6, y / 1.6, salt) - 0.5) * 0.7 <= 1.0:
                     cv.set(x, y, kind)
+    yard = {(x, y) for x in range(18, 62) for y in range(16, 42)}       # ev, avlu ve tarla çevresi açık kalır
+    keep |= yard
     blob(84, 9, 6.5, 4.0, 'band', 271)     # kuzeydoğu korusu
     blob(78, 62, 5.0, 3.5, 'band', 273)    # güneydoğu korusu
+    blob(66, 13, 4.5, 3.0, 'band', 291)    # kuzey ormanından açıklığa uzanan dil
+    blob(47, 59, 3.5, 2.2, 'band', 293)    # güneyde küçük koru
+    blob(70, 50, 2.6, 1.8, 'band', 295)    # yol güneyinde tek küme
+    blob(11, 31, 3.0, 4.5, 'band', 297)    # batı ormanında koy (kenar düz durmasın)
+    blob(88, 27, 3.2, 2.4, 'band', 299)    # doğuda geçit öncesi koru
     blob(6, 22, 2.2, 3.2, 'rock', 277)     # batıda kaya çıkıntısı
     blob(52, 60, 2.5, 1.6, 'rock', 279)    # güneyde taşlık
     markers = {'ponds': [], 'items': [], 'keep': []}

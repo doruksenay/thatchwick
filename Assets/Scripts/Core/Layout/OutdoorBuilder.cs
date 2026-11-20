@@ -42,6 +42,7 @@ namespace Thatchwick.Core.Layout
             Farm(ctx);
             Crossroads(ctx);
             foreach (var r in Regions.All) EdgeBand(ctx, r, Seeds.Derive(seed, 4410 + Array.IndexOf(Regions.All, r)));   // taslaktaki kenar bandı ve kaya sırtı (belge 64a)
+            foreach (var r in Regions.All) EdgeFringe(ctx, r, Seeds.Derive(seed, 4430 + Array.IndexOf(Regions.All, r)));  // orman kenarı seyrelir (doğal geçiş)
             VillageRoad(ctx, seed);
             Vegetation.Scatter(ctx, Regions.Town, Seeds.Derive(seed, 4405));
             Vegetation.Scatter(ctx, Regions.Road, Seeds.Derive(seed, 4406));
@@ -848,6 +849,66 @@ namespace Thatchwick.Core.Layout
             placed.RemoveAll(i => ctx.World.GetItem(i.Id) == null);
             rep.Placed.AddRange(placed);
             ctx.Reports.Add(rep);
+        }
+
+        /// <summary>
+        /// Orman kenarının seyrelmesi (kullanıcı 21.11: "haritamız doğal durmuyor"): gerçek ormanda sık ağaç birden çimene
+        /// kesilmez; kenardan açıklığa doğru tek tük ağaç, genç ağaç ve çalı azalarak sürer. Bant ya da koru karosuna 1-4 karo
+        /// uzaklıktaki çimene, uzaklıkla düşen olasılıkla konur. Yol, keep alanı, bina ve su çevresi boş kalır.
+        /// </summary>
+        private static void EdgeFringe(Context ctx, Region region, int seed)
+        {
+            var data = MapFiles.Get(region.Id);
+            if (data == null || !Regions.Exists(ctx.Map, region)) return;
+            var rng = new LayoutRng(seed);
+            var placed = new List<ItemInstance>();
+            var rep = new FurnishReport { Room = $"{region.Id}: edge fringe" };
+            var trees = new List<GridPos>();
+            for (int y = 0; y < data.H; y++)
+                for (int x = 0; x < data.W; x++)
+                {
+                    if (data.At(x, y) != MapTerrain.Grass) continue;
+                    int d = BandDistance(data, x, y, 4);
+                    if (d < 1 || d > 4) continue;
+                    double prob = d == 1 ? 0.30 : d == 2 ? 0.15 : d == 3 ? 0.07 : 0.03;
+                    if (rng.NextDouble() >= prob) continue;
+                    var p = new GridPos(region.X + x, region.Y + y);
+                    if (!Open(ctx, p) || Reserved(region, p) || !BuildingClear(ctx, p, 3) || WaterDistance(ctx.Map, p, 1) <= 1) continue;
+                    bool nearRoad = false;
+                    for (int dy = -2; dy <= 2 && !nearRoad; dy++) for (int dx = -2; dx <= 2 && !nearRoad; dx++)
+                        if (ctx.Map.GetRoad(new GridPos(p.X + dx, p.Y + dy)) != RoadType.None) nearRoad = true;
+                    if (nearRoad) continue;
+                    double r = rng.NextDouble();
+                    if (r < 0.40)
+                    {
+                        if (trees.Any(t => Math.Max(Math.Abs(t.X - p.X), Math.Abs(t.Y - p.Y)) < 2)) continue;
+                        double s = rng.NextDouble();
+                        var it = Put(ctx, s < 0.5 ? "item.tree_oak" : s < 0.8 ? "item.tree_birch" : "item.tree_pine", p, 0, placed);
+                        if (it == null) continue;
+                        trees.Add(p);
+                        if (d >= 2 || rng.NextDouble() < 0.4) it.GrowthDays = it.Def.GrowDays * (0.45 + 0.4 * rng.NextDouble());   // açıklığa doğru gençleşir
+                    }
+                    else if (r < 0.75) Put(ctx, "item.shrub", p, rng.Next(2), placed);
+                    else Put(ctx, "item.edge_thicket_young", p, rng.Next(2), placed, grown: false);
+                }
+            Validate(ctx, placed, rep);
+            placed.RemoveAll(i => ctx.World.GetItem(i.Id) == null);
+            rep.Placed.AddRange(placed);
+            ctx.Reports.Add(rep);
+        }
+
+        private static int BandDistance(RegionMap data, int x, int y, int max)
+        {
+            for (int d = 1; d <= max; d++)
+                for (int dy = -d; dy <= d; dy++)
+                    for (int dx = -d; dx <= d; dx++)
+                    {
+                        if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != d) continue;
+                        int xx = x + dx, yy = y + dy;
+                        if (xx < 0 || yy < 0 || xx >= data.W || yy >= data.H) continue;
+                        if (data.At(xx, yy) == MapTerrain.Band) return d;
+                    }
+            return max + 1;
         }
 
         /// <summary>Karo taslakta kenar bandı, kaya sırtı ya da markers "keep" alanında mı (bitki örtüsü buraya serpilmez).</summary>
