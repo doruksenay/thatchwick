@@ -8,16 +8,16 @@ family: hayvan
 style_gate: false
 cost_est: 13
 cost_max: 22
-depends_on: []
+depends_on: ["780"]   # 2026-11-21: ölçek yöntemi 780 pilotuna bağlandı
 max_attempts: 1
 pixellab: true
 outputs:
-  - Assets/Art/Iso/_aday/iso_animal_cat_medium_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_cat_medium_long_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_cat_large_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_cat_large_long_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_cat_slim_cand_{se,sw,nw,ne,s,w,n,e}.png
-  - Assets/Art/Iso/_aday/iso_animal_cat_slim_long_cand_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_cat_medium_v2_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_cat_medium_long_v2_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_cat_large_v2_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_cat_large_long_v2_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_cat_slim_v2_{se,sw,nw,ne,s,w,n,e}.png
+  - Assets/Art/Iso/_aday/iso_animal_cat_slim_long_v2_{se,sw,nw,ne,s,w,n,e}.png
 created: 2026-11-20
 ---
 # 485 Kedi gövdeleri
@@ -41,7 +41,7 @@ Tarif **375 ile aynı** (106 tarifi, yol B, güney kontrolü, zemin kontrolü, `
 | 5 | `cat_slim` | ince gövde (kıyı, Ankara) | `slim elegant cat, long legs, narrow head, short coat` |
 | 6 | `cat_slim_long` | ince gövde, uzun tüy | `slim elegant cat with long silky coat and plumed tail` |
 
-- Tuval 32 (kedi). Maliyet ≈ 13. `cost_max` 22.
+- ~~Tuval 32 (kedi).~~ **2026-11-21 ölçek kararı:** 32'lik tuval kediyi 28 px çiziyor (hedef 16-24). Bu iş **780'in küçük gövde yöntemiyle** yapılır (tek kare `create_map_object` + maske, v3 döndürme, boy ölçümü, kırpma kuralı). Maske: orta 22 x 20, iri 24 x 22, ince 20 x 20 (uzun tüylü eşler aynı maske). Dosya adı `iso_animal_<gövde>_v2_<yön>.png` (kod önce bunu arar). Hedef boy: kedi 16-24, iri gövde üst yarıda, ince gövde alt yarıda. Maliyet ≈ 13. `cost_max` 22.
 
 ## Doğrulama
 375 doğrulaması. Yan yana: 6 gövde + kabul edilen `cat_1`. Kısa ve uzun tüylü eşler aynı duruşta olmalı.
