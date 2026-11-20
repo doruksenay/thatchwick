@@ -3434,7 +3434,14 @@
       "belongs": [
         "bedroom",
         "inn_room"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_bed_frame_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.cradle",
@@ -3823,7 +3830,14 @@
       "trades": [
         "scribe",
         "carpenter"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_table_painted_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.brazier",
@@ -3984,7 +3998,14 @@
         "light"
       ],
       "site": "indoor",
-      "anywhere": true
+      "anywhere": true,
+      "art": {
+        "alongX": "iso_item_candlestick_se",
+        "pivotX": 24.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.torch_wall",
@@ -4396,7 +4417,14 @@
       ],
       "trades": [
         "smithy"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_water_barrel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.drying_rack",
@@ -4552,7 +4580,14 @@
       ],
       "trades": [
         "herb"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_drying_rack_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.pantry_shelf",
@@ -4614,7 +4649,14 @@
       "trades": [
         "tavern",
         "general"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_pantry_shelf_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.copper_pots",
@@ -4649,7 +4691,14 @@
       ],
       "trades": [
         "tavern"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_copper_pots_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.woodshed",
@@ -4965,7 +5014,14 @@
       "trades": [
         "carpenter",
         "mason"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_workbench_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.seed_crate",
@@ -5334,7 +5390,14 @@
       "weight": 2,
       "fitsOn": [
         "masa"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_morris_board_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.book",
@@ -5363,7 +5426,14 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_book_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.firewood_basket",
@@ -5390,7 +5460,14 @@
         "smithy",
         "carpenter",
         "mill"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_firewood_basket_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.plant_large",
@@ -5474,7 +5551,14 @@
         "living",
         "bedroom",
         "inn_room"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_wall_item_tapestry_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.shield_crest",
@@ -5536,7 +5620,14 @@
         "bedroom",
         "inn_room",
         "kitchen"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_rug_rush_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.rug_wool_small",
@@ -5562,7 +5653,14 @@
         "living",
         "bedroom",
         "inn_room"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_rug_wool_small_2x1_se",
+        "pivotX": 48.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.rug_runner",
@@ -5647,7 +5745,14 @@
         "living",
         "bedroom",
         "inn_room"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_rug_wool_2x2_se",
+        "pivotX": 64.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.rug_woven_large",
@@ -9794,7 +9899,14 @@
       "site": "any",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_irrigation_ditch_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.bucket_pulley",
@@ -11345,7 +11457,14 @@
       ],
       "trades": [
         "animals"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_water_trough_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.hay_bale",
@@ -12031,7 +12150,13 @@
       ],
       "trades": [
         "tailor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_spinning_wheel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.loom",
@@ -12071,7 +12196,13 @@
       ],
       "trades": [
         "tailor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_loom_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.yarn",
@@ -12450,7 +12581,13 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_fish_trap_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.alembic",
@@ -12613,7 +12750,13 @@
       ],
       "trades": [
         "herb"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_potion_shelf_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.clay",
@@ -13117,7 +13260,13 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_quarry_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.forge",
@@ -13159,7 +13308,13 @@
       ],
       "trades": [
         "smithy"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_forge_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.pottery_wheel",
@@ -13183,7 +13338,13 @@
       ],
       "trades": [
         "potter"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_pottery_wheel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.storage_jar",
@@ -13213,7 +13374,13 @@
         "general",
         "herb",
         "potter"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_storage_jar_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.brew_barrel",
@@ -13239,7 +13406,13 @@
       ],
       "trades": [
         "tavern"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_brew_barrel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.chandler_table",
@@ -13262,7 +13435,13 @@
         "living",
         "outdoor",
         "workshop"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_chandler_table_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.hunting_blind",
@@ -13304,7 +13483,13 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_hunting_blind_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.weather_vane",
@@ -13328,7 +13513,13 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_weather_vane_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.slate",
@@ -13356,7 +13547,13 @@
       "belongs": [
         "kids",
         "living"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_slate_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.lute",
@@ -13390,7 +13587,13 @@
         "bedroom",
         "inn_room",
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_lute_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.churn",
@@ -13410,7 +13613,13 @@
         "kitchen",
         "outdoor",
         "workshop"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_churn_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.yogurt",
@@ -13734,7 +13943,13 @@
       ],
       "trades": [
         "mason"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_stonecutter_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.windmill",
@@ -13777,7 +13992,13 @@
       "site": "any",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_water_gate_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.noria",
@@ -14332,7 +14553,13 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_harvest_rake_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.seeder",
@@ -14375,7 +14602,13 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_ice_well_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.kiln",
@@ -14399,7 +14632,13 @@
       ],
       "trades": [
         "potter"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_kiln_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.dye_vat",
@@ -14422,7 +14661,13 @@
       ],
       "trades": [
         "tailor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_dye_vat_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.brick",
@@ -15169,7 +15414,13 @@
       ],
       "trades": [
         "mill"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_quern_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.bread_rye",
@@ -17178,7 +17429,14 @@
       "trades": [
         "tavern",
         "herb"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_deco_ceiling_herbs_se",
+        "pivotX": 32.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.ceiling_garland",
@@ -19270,7 +19528,14 @@
         "living",
         "kitchen",
         "dining"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_sini_table_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.yukluk",
@@ -20312,7 +20577,14 @@
       "tags": [
         "glass",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_glass_bottle_se",
+        "pivotX": 8.0,
+        "pivotY": 6.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.glass_cup",
@@ -22050,7 +22322,14 @@
         "living",
         "kitchen",
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_rope_coil_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.han_table",
@@ -22191,7 +22470,14 @@
       ],
       "trades": [
         "tavern"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_barrel_table_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.han_bench",
@@ -23344,7 +23630,14 @@
         "pantry",
         "cellar",
         "storehouse"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_brine_crock_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.olive_crusher",
@@ -25774,7 +26067,14 @@
       ],
       "trades": [
         "mason"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_wall_item_chisel_rack_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.pot_bay",
