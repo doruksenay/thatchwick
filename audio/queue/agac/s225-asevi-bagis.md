@@ -4,7 +4,7 @@ title: Aşevine bağış (kutuya düşen akçeler)
 kind: sfx
 family: foley
 freq: B
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 note: 'Belge 52: aşevine bağış.'
@@ -23,5 +23,7 @@ axes:
 pilot_onayi_bekliyordu:
 - s101
 not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; s101 aynı turda üretilir (Project 45b)'
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T14:22:35Z'
 ---
 Coins clinking as they drop into a wooden charity box, short and clean.
