@@ -36,7 +36,7 @@ namespace Thatchwick.Core.Life
             // Arsa: güneydoğudaki yabani meşelerin yerinde (karar 0-1).
             new GreatTreeSite { Id = "farm", ItemId = Oak, RegionId = "farm", X = 54, Y = 52 },
             // Köy yolu: yol kenarında ceviz.
-            new GreatTreeSite { Id = "road", ItemId = Walnut, RegionId = "road", X = Regions.Road.X + 30, Y = Regions.Road.Y + 17 },
+            new GreatTreeSite { Id = "road", ItemId = Walnut, RegionId = "road", X = Regions.Road.X + 30, Y = Regions.Road.Y + 21 },
             // Şehir meydanının güneydoğusu: hazır aşevi köşklü çınar.
             new GreatTreeSite { Id = "town", ItemId = Plane, RegionId = "town", X = Regions.Town.X + 40, Y = Regions.Town.Y + 34 },
             // Orman: kestane.

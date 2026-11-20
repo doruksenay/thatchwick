@@ -12,6 +12,21 @@ namespace Thatchwick.Core.Layout
         public LayoutRoomDto[] rooms;          // oda şablonları (yatak odası, mutfak, dükkân zeminleri ...)
         public LayoutBuildingDto[] buildings;  // bina şablonları: hangi katta hangi oda (Ek tablosu)
         public LayoutGardenDto[] gardens;      // bahçe ve avlu şablonları (Aşama D)
+        public LayoutKitDto[] kits;            // bina kimlik kartları: cephe, iç malzeme, renk (belge 64 §5)
+    }
+
+    /// <summary>
+    /// Bina kimlik kartı (belge 64 §5): cephe (duvar malzemesi, kapı, pencere, çatı), iç (zemin, üst kat zemini, duvar
+    /// kaplaması) ve eşya kaplamaları (tek ahşap tonu, tek kumaş rengi, metal, kil). Değerler yapı parçası ve eşya kaplaması
+    /// kimlikleridir (items.json buildParts); boş alan varsayılanı bırakır.
+    /// </summary>
+    [Serializable]
+    public sealed class LayoutKitDto
+    {
+        public string id;
+        public string wall, door, window, roof, floor, upperFloor, finish;
+        public string wood, cloth, metal, clay, stone;
+        public string accent;      // vurgu rengi (kapı ve pencere kepengi rengiyle uyumlu; belgede ve denetimde)
     }
 
     /// <summary>Oda şablonu: sırayla uygulanan adımlar (ana eşya → ilişkili eşya → süs). Koordinat yok.</summary>
@@ -47,6 +62,7 @@ namespace Thatchwick.Core.Layout
         public string cellar;      // bodrum (boş = yok)
         public string cellarType;  // bodrumun oda türü (cellar, pantry, storehouse)
         public string garden;      // bahçe şablonu (Aşama D)
+        public string[] kits;      // kimlik kartı (tek ya da seçenekler: köylü evleri tohum ve komşuya göre seçer)
     }
 
     [Serializable]
@@ -93,8 +109,17 @@ namespace Thatchwick.Core.Layout
     {
         public string Id, Ground, Upper, UpperKind, Cellar, CellarType, Garden;
         public readonly List<string> InnRooms = new List<string>();
+        public readonly List<string> Kits = new List<string>();
         public bool HasUpper => Upper != null || InnRooms.Count > 0;
         public bool HasCellar => Cellar != null;
+    }
+
+    public sealed class BuildingKit
+    {
+        public string Id, Wall, Door, Window, Roof, Floor, UpperFloor, Finish, Wood, Cloth, Metal, Clay, Stone, Accent;
+
+        /// <summary>Eşya kaplama grubu (wood, cloth, metal, clay, stone) için kitin kaplaması; yoksa null.</summary>
+        public string FinishFor(string group) => group == "wood" ? Wood : group == "cloth" ? Cloth : group == "metal" ? Metal : group == "clay" ? Clay : group == "stone" ? Stone : null;
     }
 
     public sealed class GardenTemplate
@@ -110,6 +135,8 @@ namespace Thatchwick.Core.Layout
         public readonly Dictionary<string, RoomTemplate> Rooms = new Dictionary<string, RoomTemplate>(StringComparer.Ordinal);
         public readonly Dictionary<string, BuildingTemplate> Buildings = new Dictionary<string, BuildingTemplate>(StringComparer.Ordinal);
         public readonly Dictionary<string, GardenTemplate> Gardens = new Dictionary<string, GardenTemplate>(StringComparer.Ordinal);
+        public readonly Dictionary<string, BuildingKit> Kits = new Dictionary<string, BuildingKit>(StringComparer.Ordinal);
+        public BuildingKit Kit(string id) => id != null && Kits.TryGetValue(id, out var k) ? k : null;
 
         public RoomTemplate Room(string id) => id != null && Rooms.TryGetValue(id, out var r) ? r : null;
         public BuildingTemplate Building(string id) => id != null && Buildings.TryGetValue(id, out var b) ? b : null;
@@ -135,6 +162,29 @@ namespace Thatchwick.Core.Layout
                 foreach (var s in g.steps ?? new LayoutStepDto[0]) { var st = Step(s, $"bahçe {g.id}", content, errors); if (st != null) t.Steps.Add(st); }
                 cat.Gardens[g.id] = t;
             }
+            foreach (var k in file.kits ?? new LayoutKitDto[0])
+            {
+                if (string.IsNullOrWhiteSpace(k.id)) { errors.Add("layouts: kimliksiz kit."); continue; }
+                var kit = new BuildingKit
+                {
+                    Id = k.id, Wall = Blank(k.wall), Door = Blank(k.door), Window = Blank(k.window), Roof = Blank(k.roof), Floor = Blank(k.floor),
+                    UpperFloor = Blank(k.upperFloor), Finish = Blank(k.finish), Wood = Blank(k.wood), Cloth = Blank(k.cloth), Metal = Blank(k.metal),
+                    Clay = Blank(k.clay), Stone = Blank(k.stone), Accent = Blank(k.accent),
+                };
+                if (content != null)
+                {
+                    void Part(string id, BuildPartKind kind)
+                    {
+                        if (id == null) return;
+                        if (!content.Parts.TryGet(id, out var part) || part.Kind != kind) errors.Add($"layouts kit {k.id}: {kind} parçası yok '{id}'.");
+                    }
+                    Part(kit.Wall, BuildPartKind.WallMaterial); Part(kit.Door, BuildPartKind.Door); Part(kit.Window, BuildPartKind.Window);
+                    Part(kit.Roof, BuildPartKind.Roof); Part(kit.Floor, BuildPartKind.Floor); Part(kit.UpperFloor, BuildPartKind.Floor);
+                    Part(kit.Finish, BuildPartKind.WallFinish);
+                    foreach (var f in new[] { kit.Wood, kit.Cloth, kit.Metal, kit.Clay, kit.Stone }) Part(f, BuildPartKind.ItemFinish);
+                }
+                cat.Kits[k.id] = kit;
+            }
             foreach (var b in file.buildings ?? new LayoutBuildingDto[0])
             {
                 if (string.IsNullOrWhiteSpace(b.id)) continue;
@@ -144,6 +194,8 @@ namespace Thatchwick.Core.Layout
                     Cellar = Blank(b.cellar), CellarType = Blank(b.cellarType) ?? Placements.Cellar, Garden = Blank(b.garden),
                 };
                 if (b.innRooms != null) foreach (var x in b.innRooms) if (!string.IsNullOrWhiteSpace(x)) t.InnRooms.Add(x);
+                if (b.kits != null) foreach (var x in b.kits) if (!string.IsNullOrWhiteSpace(x)) t.Kits.Add(x.Trim());
+                foreach (var id in t.Kits) if (!cat.Kits.ContainsKey(id)) errors.Add($"layouts bina {b.id}: kit yok '{id}'.");
                 foreach (var id in new[] { t.Ground, t.Upper, t.Cellar })
                     if (id != null && !cat.Rooms.ContainsKey(id)) errors.Add($"layouts bina {b.id}: oda şablonu yok '{id}'.");
                 foreach (var id in t.InnRooms) if (!cat.Rooms.ContainsKey(id)) errors.Add($"layouts bina {b.id}: oda şablonu yok '{id}'.");

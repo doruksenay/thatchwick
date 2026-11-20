@@ -86,3 +86,6 @@ tools/layout-report/obj/
 .audio_masters/
 .audio_work_indir/
 tools/audio-poll.log
+art/preview/
+tools/map-preview/bin/
+tools/map-preview/obj/

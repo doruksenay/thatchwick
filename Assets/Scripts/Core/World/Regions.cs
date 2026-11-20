@@ -31,6 +31,7 @@ namespace Thatchwick.Core.World
     internal sealed class Painter
     {
         private readonly GridMap _m; private readonly int _ox, _oy;
+        public GridMap Map => _m;
         public readonly List<RegionItem> Items = new List<RegionItem>();
         public Painter(GridMap m, int ox, int oy) { _m = m; _ox = ox; _oy = oy; }
         public GridPos P(int x, int y) => new GridPos(_ox + x, _oy + y);
@@ -151,7 +152,8 @@ namespace Thatchwick.Core.World
         public const int LegacyWorldWidth = 208;
 
         public static readonly Region Farm = new Region { Id = "farm", Name = "Çiftlik", X = 0, Y = 0, W = 96, H = 72 };
-        public static readonly Region Road = new Region { Id = "road", Name = "Köy yolu", X = 100, Y = 20, W = 40, H = 24 };
+        // Köy yolu taslaktan (maps/road): kenar bandı için kuzeye ve güneye 4'er karo büyüdü (belge 64a K5).
+        public static readonly Region Road = new Region { Id = "road", Name = "Köy yolu", X = 100, Y = 16, W = 40, H = 32 };
         public static readonly Region Town = new Region { Id = "town", Name = "Şehir", X = 144, Y = 10, W = 64, H = 52 };
         public static readonly Region Forest = new Region { Id = "forest", Name = "Orman", X = 212, Y = 0, W = 48, H = 48 };
         public static readonly Region Lake = new Region { Id = "lake", Name = "Irmak ve göl", X = 264, Y = 0, W = 48, H = 32 };
@@ -174,7 +176,7 @@ namespace Thatchwick.Core.World
             new[] { 207, 36, 352, 20 }, new[] { 207, 37, 352, 21 },
             // Gölün doğu kıyısı -> sazlık; köy yolunun güney patikası -> Güney Yamaçları
             new[] { 311, 16, 316, 12 }, new[] { 311, 17, 316, 13 },
-            new[] { 107, 20, 412, 23 },
+            new[] { 107, 16, 412, 23 },
             // Gölün güneybatı patikası -> deniz kıyısı
             new[] { 269, 31, 269, 36 },
         };
@@ -256,10 +258,54 @@ namespace Thatchwick.Core.World
             }
         }
 
+        /// <summary>
+        /// Taslaktan arazi (belge 64a): zemin, su, yol, köprü; kenar bandı ve kaya sırtı çimdir, üstüne eşya geçişi öbek koyar
+        /// (OutdoorBuilder.EdgeBand). Balık noktaları markers.json'dan.
+        /// </summary>
+        internal static void PaintData(Painter p, RegionMap data)
+        {
+            if (p.Map == null) return;
+            for (int y = 0; y < data.H; y++)
+                for (int x = 0; x < data.W; x++)
+                {
+                    var t = data.At(x, y);
+                    var f = t == MapTerrain.Dirt ? FloorType.Dirt : t == MapTerrain.Sand ? FloorType.Sand : t == MapTerrain.Stone ? FloorType.Stone
+                        : t == MapTerrain.Water || t == MapTerrain.DeepWater ? FloorType.Water : t == MapTerrain.Bridge ? FloorType.Wood : FloorType.Grass;
+                    p.Floor(x, y, x, y, f);
+                    if (t == MapTerrain.Path) p.Map.SetRoad(p.P(x, y), RoadType.Path);
+                }
+            if (data.Markers.ponds != null)
+                foreach (var pond in data.Markers.ponds)
+                {
+                    var fish = new List<KeyValuePair<string, int>>();
+                    if (pond.fish != null) foreach (var f in pond.fish) fish.Add(F(f.id, f.n));
+                    p.PondAt(pond.x, pond.y, fish.ToArray());
+                }
+        }
+
+        /// <summary>Taslağın sabit eşyaları (simge yapılar): markers.json items.</summary>
+        private static void DataItems(Region r, List<RegionItem> into)
+        {
+            var data = MapFiles.Get(r.Id);
+            if (data?.Markers.items == null) return;
+            foreach (var it in data.Markers.items) into.Add(new RegionItem(it.id, r.X + it.x, r.Y + it.y, it.grown));
+        }
+
+        /// <summary>Taslaktaki arazi türü (dünya karosu); taslak yoksa ya da bölge dışıysa null.</summary>
+        public static MapTerrain? TerrainAt(GridPos p)
+        {
+            var r = At(p);
+            var data = r != null ? MapFiles.Get(r.Id) : null;
+            if (data == null) return null;
+            var t = data.At(p.X - r.X, p.Y - r.Y);
+            return t == MapTerrain.Unknown ? (MapTerrain?)null : t;
+        }
+
         /// <summary>Köy yolu ve şehrin başlangıç eşyaları.</summary>
         public static List<RegionItem> Items()
         {
             var a = new Painter(null, Road.X, Road.Y); RoadMap(a);
+            DataItems(Road, a.Items);
             var b = new Painter(null, Town.X, Town.Y); TownMap(b);
             a.Items.AddRange(b.Items);
             a.Items.AddRange(WildItems());
@@ -273,6 +319,10 @@ namespace Thatchwick.Core.World
 
         private static void RoadMap(Painter p)
         {
+            // Taslak varsa (maps/road/terrain.png) arazi oradan; yoksa eski kod çizimi (bölge 4 karo büyüdüğü için yerel y +4).
+            var data = MapFiles.Get(Road.Id);
+            if (data != null) { PaintData(p, data); return; }
+            p = new Painter(p.Map, Road.X, Road.Y + 4);
             for (int y = 0; y < 24; y++) { int c = StreamX(y); p.Water(c, y); p.Water(c + 1, y); }
             // Köprü: yolun dereyi geçtiği yer (y12-13)
             for (int x = StreamX(12) - 1; x <= StreamX(13) + 2; x++) p.Floor(x, 12, x, 13, FloorType.Wood);
@@ -336,8 +386,8 @@ namespace Thatchwick.Core.World
         public static RectI PlazaRect => new RectI(Town.X + PlazaCX - 7, Town.Y + PlazaCY - 5, 15, 11);
         public static RectI PenRect => new RectI(Town.X + PenX0, Town.Y + PenY0, PenX1 - PenX0 + 1, PenY1 - PenY0 + 1);
         public static int RiverAt(int localY) => RiverX(localY);
-        /// <summary>Köy yolundaki derenin orta sütunu (yerel).</summary>
-        public static int StreamAt(int localY) => StreamX(localY);
+        /// <summary>Eski köy yolu derenin orta sütunu (yerel; taslaktan önceki düzen).</summary>
+        public static int StreamAt(int localY) => StreamX(localY - 4);
 
         /// <summary>
         /// Şehrin binaları (yerel koordinat, plan belge 40). Template: layouts.json bina şablonu (meslek ya da "cottage"); katlar ve

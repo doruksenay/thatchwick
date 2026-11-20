@@ -607,6 +607,7 @@ namespace Thatchwick.Game
             _content = ContentLoader.Load(out var contentErrors);
             _content.Clothing = ContentLoader.LoadClothing(_content, out var clothingErrors);
             contentErrors.AddRange(clothingErrors);
+            ContentLoader.InstallMaps();                                                  // harita taslakları (belge 64a)
             _layouts = ContentLoader.LoadLayouts(_content, out var layoutErrors);   // oda/bina şablonları (belge 44)
             foreach (var e in layoutErrors) Debug.LogWarning($"Yerleşim şablonu: {e}");
             foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");

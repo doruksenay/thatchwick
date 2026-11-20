@@ -42585,6 +42585,232 @@
         "mirror": true,
         "pending": true
       }
+    },
+    {
+      "id": "item.edge_thicket_oak",
+      "displayName": "Meşe öbeği",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "townonly"
+      ],
+      "art": {
+        "alongX": "iso_edge_trees_a",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.edge_thicket_pine",
+      "displayName": "Çam öbeği",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "townonly"
+      ],
+      "art": {
+        "alongX": "iso_edge_trees_b",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.edge_thicket_young",
+      "displayName": "Genç koru",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "townonly"
+      ],
+      "art": {
+        "alongX": "iso_edge_trees_d",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 112,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.boulder",
+      "displayName": "Kaya",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "townonly"
+      ],
+      "art": {
+        "alongX": "iso_terrain_boulder_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.boulder_round",
+      "displayName": "Yuvarlak kaya",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "townonly"
+      ],
+      "art": {
+        "alongX": "iso_terrain_boulder_se_v2",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.boulder_large",
+      "displayName": "İri kaya",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "townonly"
+      ],
+      "art": {
+        "alongY": "iso_terrain_boulder_large_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.fallen_log",
+      "displayName": "Devrik kütük",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "townonly"
+      ],
+      "art": {
+        "alongY": "iso_terrain_fallen_log_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.boundary_stone",
+      "displayName": "Sınır taşı",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "art": {
+        "alongX": "iso_item_boundary_stone_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 112,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
     }
   ],
   "recipes": [

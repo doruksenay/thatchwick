@@ -21,8 +21,25 @@ namespace Thatchwick.EditorTools
 
         public override uint GetVersion() { return 2; }
 
+        const string MapsRoot = "Assets/Resources/Content/maps/";
+
         void OnPreprocessTexture()
         {
+            // Harita taslağı (belge 64a): oyun pikselleri renk tablosuyla okur; renk birebir korunmalı.
+            if (assetPath.StartsWith(MapsRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                var mi = (TextureImporter)assetImporter;
+                mi.textureType = TextureImporterType.Default;
+                mi.isReadable = true;
+                mi.npotScale = TextureImporterNPOTScale.None;
+                mi.filterMode = FilterMode.Point;
+                mi.mipmapEnabled = false;
+                mi.sRGBTexture = true;
+                mi.alphaSource = TextureImporterAlphaSource.None;
+                mi.textureCompression = TextureImporterCompression.Uncompressed;
+                mi.maxTextureSize = 2048;
+                return;
+            }
             if (!assetPath.StartsWith(Root, StringComparison.OrdinalIgnoreCase)) return;
             if (!assetPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)) return;
             var ti = (TextureImporter)assetImporter;

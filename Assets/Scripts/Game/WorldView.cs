@@ -267,6 +267,7 @@ namespace Thatchwick.Game
                         case FloorType.Wood: sr.color = ((x + y) & 1) == 0 ? new Color32(168, 124, 76, 255) : new Color32(158, 115, 68, 255); break;
                         case FloorType.Stone: sr.color = ((x + y) & 1) == 0 ? new Color32(140, 140, 148, 255) : new Color32(130, 130, 138, 255); break;
                         case FloorType.Dirt: sr.color = ((x + y) & 1) == 0 ? new Color32(139, 110, 80, 255) : new Color32(131, 103, 74, 255); break;
+                        case FloorType.Sand: sr.color = ((x + y) & 1) == 0 ? new Color32(222, 200, 150, 255) : new Color32(214, 192, 142, 255); break;
                         case FloorType.Water:   // görseli gelene kadar: kuru çukur çamur, mavi su, donunca soluk buz
                             sr.color = !Map.IsFilled(p)
                                 ? (((x + y) & 1) == 0 ? new Color32(104, 84, 62, 255) : new Color32(98, 79, 58, 255))

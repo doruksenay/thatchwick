@@ -1,0 +1,77 @@
+{
+  "ponds": [
+    {
+      "x": 20,
+      "y": 0,
+      "fish": [
+        {
+          "id": "item.fish_trout",
+          "n": 5
+        },
+        {
+          "id": "item.fish_crayfish",
+          "n": 5
+        },
+        {
+          "id": "item.fish_bullhead",
+          "n": 4
+        }
+      ]
+    },
+    {
+      "x": 19,
+      "y": 31,
+      "fish": [
+        {
+          "id": "item.fish_trout",
+          "n": 3
+        },
+        {
+          "id": "item.fish_crayfish",
+          "n": 4
+        },
+        {
+          "id": "item.mussel",
+          "n": 4
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "item.boundary_stone",
+      "x": 12,
+      "y": 17,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 13,
+      "y": 16,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder",
+      "x": 11,
+      "y": 15,
+      "rot": 0,
+      "grown": false
+    }
+  ],
+  "keep": [
+    {
+      "x0": 28,
+      "y0": 19,
+      "x1": 33,
+      "y1": 24
+    },
+    {
+      "x0": 10,
+      "y0": 14,
+      "x1": 14,
+      "y1": 18
+    }
+  ]
+}
