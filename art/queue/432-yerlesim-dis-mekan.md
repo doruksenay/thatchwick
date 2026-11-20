@@ -1,7 +1,8 @@
 ---
 id: "432"
 title: "Yerleşim: dış mekân, bahçe ve bitki örtüsü (13 eşya)"
-status: pending
+status: running
+claimed_at: 2026-11-20T11:20Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 family: esya
 style_gate: false
