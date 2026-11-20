@@ -39,7 +39,7 @@ namespace Thatchwick.Core.Life
             NeverStoppingTop = "oddity.never_stopping_top", OxStare = "oddity.ox_stare", BoxCat = "oddity.box_cat",
             JealousDog = "oddity.jealous_dog", DogGift = "oddity.dog_gift", Howl = "oddity.howl",
             CountingSheep = "oddity.counting_sheep", TheUsual = "oddity.the_usual", Regift = "oddity.regift",
-            Scarecrow = "oddity.scarecrow", ChickenRevenge = "oddity.chicken_revenge", CrowGift = "oddity.crow_gift",
+            Scarecrow = "oddity.scarecrow", ChickenRevenge = "oddity.chicken_revenge", CrowGift = "oddity.crow_gift", CatThief = "oddity.cat_thief",
             OddBequest = "oddity.odd_bequest";
 
         /// <summary>Olay kimliğinden tuhaflık kimliği ("johan_wick" → "oddity.johan_wick").</summary>
@@ -53,7 +53,7 @@ namespace Thatchwick.Core.Life
             JohanWick, HorselessKnight, Crier, ScreamingGoat, CatGift, AlexDecor, HoneyThief, ServantCaught, AprilFirst,
             Rumor, NameTwin, NameSurprise, AbsentElder, SameOutfit, VillageMemory, OldBoot, MessageBottle, FishTale,
             MineTablet, SwordInStone, TopShow, NeverStoppingTop, OxStare, BoxCat, JealousDog, DogGift, Howl,
-            CountingSheep, TheUsual, Regift, Scarecrow, ChickenRevenge, CrowGift, OddBequest
+            CountingSheep, TheUsual, Regift, Scarecrow, ChickenRevenge, CrowGift, OddBequest, CatThief
         };
 
         public const string AchAnimalSpoke = "ach.animal_spoke";

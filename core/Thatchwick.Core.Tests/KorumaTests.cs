@@ -24,8 +24,23 @@ namespace Thatchwick.Core.Tests
         /// <summary>Kararı bekleyen ya da bilerek kalan adlar (anahtar → neden).</summary>
         private static readonly Dictionary<string, string> PeriodExceptions = new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            ["item.seeder.name"] = "ekim makinesinin dönem karşılığı karar bekliyor (Project belgesi 20)"
+            ["item.seeder.name"] = "ekim makinesinin dönem karşılığı karar bekliyor (Project belgesi 20)",
+            // Domates: salça için bilinçli dönem istisnası (kullanıcı kararı 20.11.2026, Project belgesi 60a-E1); yalnızca salça ve salçalı yemekler.
+            ["item.cabbage_paste.name"] = Tomato,
+            ["item.crop_tomato.name"] = Tomato,
+            ["item.paste_pilaf.name"] = Tomato,
+            ["item.paste_stew.name"] = Tomato,
+            ["item.seed_tomato.name"] = Tomato,
+            ["item.tomato.name"] = Tomato,
+            ["item.tomato_paste.name"] = Tomato,
+            ["item.tomato_puree.name"] = Tomato,
+            ["recipe.cook_cabbage_paste.name"] = Tomato,
+            ["recipe.cook_paste_pilaf.name"] = Tomato,
+            ["recipe.cook_paste_stew.name"] = Tomato,
+            ["recipe.seed_tomato.name"] = Tomato,
+            ["recipe.tomato_puree.name"] = Tomato,
         };
+        private const string Tomato = "domates, salça için bilinçli dönem istisnası (Project belgesi 60a-E1)";
 
         [Fact]
         public void Donem_IcerikAdlarindaYasakSozcukYok()

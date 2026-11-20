@@ -31,6 +31,8 @@ namespace Thatchwick.Core.Content
         public int MeatCount { get; set; } = 1;
         /// <summary>Kesilince verdiği ham deri (yoksa null) ve adedi.</summary>
         public string Hide { get; set; }
+        /// <summary>Mezbahada çıkan yan ürünler (kemik, iç yağı, sakatat, bağırsak, boynuz, şirden).</summary>
+        public System.Collections.Generic.List<Cooking.ByproductDef> Byproducts { get; } = new System.Collections.Generic.List<Cooking.ByproductDef>();
         public int HideCount { get; set; } = 1;
         /// <summary>Binek: erişkin ve eyerliyken binilir; binince yürüme hızı çarpanı.</summary>
         public bool Rideable { get; set; }

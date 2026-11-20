@@ -8,7 +8,7 @@ Oyun: Thatchwick: Generations of a Village (Unity 6, 2D URP, izometrik 2:1). Tas
 - `.meta` dosyalarını Unity üretir; Unity'siz ortamda `.meta` yazma.
 - Hata bildirimi: `ErrorReporter.Report("kaynak", ex)` (günlük, tekilleştirme, oyuncuya uyarı). Yakalanmamış istisna ve `Debug.LogError` kendiliğinden günlüğe düşer; hatayı yutan boş `catch` yazma. Başarım, mağaza ve ayar altyapısı: `docs/yayin-altyapisi.md`.
 - Görsel şartname bağlayıcıdır: `docs/gorsel-yonerge.md`.
-- İçerik (eşya, hayvan, ekin, yemek, alet) eklerken dönem kurallarına uy: hayali bir ortaçağ yerleşimi; Yeni Dünya bitkisi/hayvanı yok (patates, domates, mısır, balkabağı, tütün, hindi), ortaçağ sonrası icat yok (gazyağı, balya, mibzer vb.). Gerçekçilik: mevsim, ömür oranı (1 gün ≈ yarım yıl), türün gerçek davranışı. Ayrıntı: Project belgesi `20-donem-tutarliligi-ve-gercekcilik.md`.
+- İçerik (eşya, hayvan, ekin, yemek, alet) eklerken dönem kurallarına uy: hayali bir ortaçağ yerleşimi; Yeni Dünya bitkisi/hayvanı yok (patates, domates, mısır, balkabağı, tütün, hindi), ortaçağ sonrası icat yok (gazyağı, balya, mibzer vb.). Bilinçli istisnalar (kullanıcı kararı): kahve, siyah çay, avokado (yalnızca gezgin tüccar), domates (yalnızca salça ve salçalı yemekler; Project belgesi 60a); yeni istisna `KorumaTests.PeriodExceptions`'a nedeniyle yazılır. Gerçekçilik: mevsim, ömür oranı (1 gün ≈ yarım yıl), türün gerçek davranışı. Ayrıntı: Project belgesi `20-donem-tutarliligi-ve-gercekcilik.md`.
 
 ## Dil ve yerelleştirme
 Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, Almanca. Kurallar: `docs/yerellestirme.md`.

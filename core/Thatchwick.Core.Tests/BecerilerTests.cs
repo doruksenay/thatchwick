@@ -59,6 +59,7 @@ namespace Thatchwick.Core.Tests
             foreach (var d in db.Items.All)
                 foreach (var i in d.Interactions)
                 {
+                    if (i.ConsumeItem != null && i.Produce.Count == 0 && db.TryDish(i.ConsumeItem, out _)) continue;   // pişmiş yemeği yemek ("Balık kızartması ye") pişirmek değil
                     string n = i.DisplayName.ToLowerInvariant();
                     if (n.Contains("pişir") || n.Contains("haşla") || n.Contains("kızart") || n.Contains("tüttür") || n.Contains("tuzla"))
                         Assert.True((i.Skill == SkillType.Cooking || i.Skill == SkillType.Baking || i.Skill == SkillType.Pottery || i.Skill == SkillType.Brewing) && i.SkillXp > 0, $"{d.Id}.{i.Id} yemek XP'si vermiyor");

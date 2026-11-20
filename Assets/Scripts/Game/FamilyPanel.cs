@@ -182,6 +182,15 @@ namespace Thatchwick.Game
                     Action(actor, c, SocialAction.Propose, "Evlen");
             }
             GUILayout.EndHorizontal();
+            // Birlikte iş, baş başa etkinlikler ve yemeğe davet (belge 58 §10, 60b §3): yalnızca şu an yapılabilenler görünür.
+            if (c.Stage != AgeStage.Baby)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(12f);
+                foreach (var (action, key) in CookingSocials)
+                    if (_family.CanDo(actor, c, action) == null) Action(actor, c, action, GameLocalization.T(key));
+                GUILayout.EndHorizontal();
+            }
             DrawSkillSocials(actor, c);
         }
 
@@ -651,6 +660,12 @@ namespace Thatchwick.Game
             }
             if (n > 0) GUILayout.EndHorizontal();
         }
+
+        private static readonly (SocialAction action, string key)[] CookingSocials =
+        {
+            (SocialAction.HelpWork, "cook.ui.soc.help"), (SocialAction.Picnic, "cook.ui.soc.picnic"), (SocialAction.EveningWalk, "cook.ui.soc.walk"),
+            (SocialAction.FishTogether, "cook.ui.soc.fish"), (SocialAction.Fireside, "cook.ui.soc.fireside"), (SocialAction.InviteDinner, "cook.ui.soc.dinner"),
+        };
 
         private void Action(Character actor, Character target, SocialAction action, string label)
         {
