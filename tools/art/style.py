@@ -11,6 +11,7 @@ Palet seçimi: dosya adı icon_ ya da ui_ ile başlıyorsa ya da aile "arayuz" i
 Karakter katmanlarının asıl kilidi rampalardır (tools/art/ramps.py); burada dünya paletiyle kaba denetim yapılır.
 
 Kullanım:
+  python tools/art/style.py snap [--set dunya|arayuz] <png>...      # donmuş palete oturt (yerinde, 0 gen; kullanıcı kararıyla)
   python tools/art/style.py palette --set dunya|arayuz --yeniden "karar notu" [--png]
                                                          # donmuş paleti yeniden üretir; yalnızca kullanıcı kararıyla
   python tools/art/style.py check <png>... [--family F] [--light]  # palet uyumu; eşik altıysa çıkış 1
@@ -208,6 +209,33 @@ def _stratified_palette(files, size):
     return sorted(colors, key=lambda c: (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2], c))
 
 
+def snap_to_palette(path, set_name=None, out=None):
+    """Her opak pikseli donmuş paletteki en yakın renge çeker (saydamlık korunur). 0 gen.
+    Kullanıcı kararıyla kilitten önce kabul edilmiş görselleri oturtmak için (Project belgesi 64c §0.1)."""
+    set_name = set_name or palette_set_for(path)
+    pal = load_palette(set_name)
+    im = Image.open(path).convert("RGBA")
+    px = im.load()
+    cache = {}
+    for y in range(im.height):
+        for x in range(im.width):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            key = (r, g, b)
+            if key not in cache:
+                cache[key] = min(pal, key=lambda p: (p[0] - r) ** 2 + (p[1] - g) ** 2 + (p[2] - b) ** 2)
+            px[x, y] = cache[key] + (a,)
+    im.save(out or path)
+    return set_name
+
+
+def snap(args):
+    for p in args.files:
+        used = snap_to_palette(p, args.set)
+        print(f"oturtuldu ({used}): {os.path.relpath(os.path.abspath(p), ROOT)}")
+
+
 def palette_set_for(path, family=""):
     if family == "arayuz" or os.path.basename(path).startswith(UI_PREFIXES):
         return "arayuz"
@@ -369,6 +397,11 @@ def sheet(args):
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
+    sn = sub.add_parser("snap", help="görseli donmuş palete oturt (yerinde yazar)")
+    sn.add_argument("--set", choices=sorted(PALETTE_SETS), default=None, help="boşsa dosya adından seçilir")
+    sn.add_argument("files", nargs="+")
+    sn.set_defaults(fn=snap)
+
     pp = sub.add_parser("palette")
     pp.add_argument("--set", choices=sorted(PALETTE_SETS), required=True)
     pp.add_argument("--yeniden", default="", help="donmuş paleti yeniden üret; kullanıcı kararının notu (tarih, gerekçe)")

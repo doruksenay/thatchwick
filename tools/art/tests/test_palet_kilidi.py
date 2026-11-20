@@ -77,5 +77,23 @@ class KabulListesi(unittest.TestCase):
             self.assertEqual([os.path.basename(p) for p in got["esya"]], ["a.png"])
 
 
+class Oturtma(unittest.TestCase):
+    def test_oturtulan_gorsel_paletten_gecer_saydamlik_korunur(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as tmp:
+            p = os.path.join(tmp, "icon_item_deneme.png")
+            im = Image.new("RGBA", (8, 8), (0, 0, 0, 0))
+            for x in range(8):
+                for y in range(4, 8):
+                    im.putpixel((x, y), (255, 20 * x, 200, 255))   # palet dışı pembe-mor
+            im.save(p)
+            self.assertEqual(style.snap_to_palette(p), "arayuz")
+            ratio, mean = style.conformity(p, style.load_palette("arayuz"), {})
+            self.assertEqual(ratio, 1.0)
+            self.assertEqual(mean, 0.0)
+            out = Image.open(p).convert("RGBA")
+            self.assertEqual(out.getpixel((0, 0))[3], 0)
+
+
 if __name__ == "__main__":
     unittest.main()
