@@ -405,6 +405,7 @@ namespace Thatchwick.Core.Life
             population.Content = content;
             population.Village = Village;
             population.MemberDied += OnMemberDied;
+            WireOddScenes();          // haritada görünen sahneler (belge 55)
             WireOddityEvents(seed);   // küçük easter egg'ler (belge 55); bütün alt sistemler kurulduktan sonra
         }
 
@@ -1086,6 +1087,8 @@ namespace Thatchwick.Core.Life
             farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish);
             // Su kenarında kavanoz (cam bahçe, belge 47 ek): su ve canlı doğadan.
             farm.JarBlocker = (tile, fill) => Home.WaterJarBlocker(tile, fill);
+            farm.PutBackBlocker = PutBackBlocker;                       // kedinin düşürdüğü süs (belge 55)
+            farm.PutBackDone = (c, tile) => PutBackKnocked(c, tile);
             farm.JarCatch = (c, tile) => Home.CatchAtWater(c, tile);
             farm.JarFill = tile => Home.FillAtWater(tile);
             AttachFishing(farm);   // defter, efsane balık, inci (belge 48 §9.4)
@@ -1193,6 +1196,7 @@ namespace Thatchwick.Core.Life
 
         public void Tick(double gameDays)
         {
+            OddScenesTick(gameDays);   // easter egg ziyaretçileri yürür (belge 55)
             _moodAccumulator += gameDays;
             if (_moodAccumulator >= MoodUpdateStepDays)
             {

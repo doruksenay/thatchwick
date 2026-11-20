@@ -828,5 +828,7 @@ namespace Thatchwick.Core.Life
         public string[] talkHistory;
         /// <summary>Küçük easter egg'lerin sayaç ve bayrakları (OddityEvents).</summary>
         public string[] events;
+        /// <summary>Kedinin yere düşürdüğü, henüz yerine konmamış süsler ("eşyaKimliği:x:y:z").</summary>
+        public string[] knocked;
     }
 }

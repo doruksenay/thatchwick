@@ -434,6 +434,26 @@ namespace Thatchwick.Core.Animals
             Died?.Invoke(a);
         }
 
+        /// <summary>
+        /// Hayvanı bir karoya yürütür ve varınca <paramref name="waitDays"/> kadar orada tutar (easter egg sahneleri:
+        /// öküz yeni yapılana bakar, kedi sandığa gider, köpek ulurken durur). Binili hayvan gitmez; yol yoksa false.
+        /// </summary>
+        public bool SendTo(Animal a, GridPos target, double waitDays)
+        {
+            if (a == null || a.IsDead || a.RiderId != 0) return false;
+            var from = a.NextTile ?? a.Position;
+            if (from == target)
+            {
+                a.Path = null; a.Target = target; a.WaitDays = waitDays; a.SceneWaitDays = waitDays;
+                return true;
+            }
+            var path = Pathfinder.FindPath(_world.Map, from, target);
+            if (path == null || path.Count == 0) return false;
+            if (path[0] == from) path.RemoveAt(0);
+            a.Path = path; a.Target = target; a.WaitDays = 0; a.SceneWaitDays = waitDays;
+            return true;
+        }
+
         // Yaşam alanında (barınak odası ya da barınak çevresi; gündüz ve salınmışken otlak) rastgele bir karoya yol
         // bulup adım adım yürür, varınca bir süre durur. Eve girmez: yaşam alanı dışına yalnızca eve dönerken çıkar.
         private void Wander(Animal a, ItemInstance home, double gameDays)
@@ -474,7 +494,7 @@ namespace Thatchwick.Core.Animals
                     a.NextTile = null;
                     a.StepProgress = 0f;
                     _world.Map.Trample(a.Position, a.Species.Trample);
-                    if (a.Path == null || a.Path.Count == 0) { a.Path = null; a.WaitDays = MinWaitDays + _rng.NextDouble() * (MaxWaitDays - MinWaitDays); }
+                    if (a.Path == null || a.Path.Count == 0) { a.Path = null; a.WaitDays = a.SceneWaitDays > 0 ? a.SceneWaitDays : MinWaitDays + _rng.NextDouble() * (MaxWaitDays - MinWaitDays); a.SceneWaitDays = 0; }
                 }
                 else
                 {

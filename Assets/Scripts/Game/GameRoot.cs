@@ -94,6 +94,10 @@ namespace Thatchwick.Game
             ["mine"] = new[] { "mine_dig" },
             ["mine_support"] = new[] { "mine_support" },
             ["mine_bucket"] = new[] { "mine_bucket" },
+            // Easter egg sahneleri (belge 55; işler 511-512): kareler gelene kadar en yakın eldeki kare oynar.
+            ["pickup"] = new[] { "pickup", "care", "sow" },   // yere düşen süsü eğilip alır
+            ["top"] = new[] { "top", "fun" },                 // topaç şovu
+            ["howl"] = new[] { "howl", "fun" },               // dolunayda uluma
         };
 
         /// <summary>
@@ -855,8 +859,11 @@ namespace Thatchwick.Game
             SetupFarm();
             _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
             // Easter egg'ler (belge 55): Core anahtarlı metin yollar, burada çözülür ve bildirim akışına yazılır.
+            // +18 paketi açıksa satırın küfürlü çeşidi ("<anahtar>.adult") yazılır; çeşidi olmayan satır aynen kalır.
             _life.OddityLine += (text, who) => _life.Say(
-                VivText.Resolve(GameLocalization.Current, text, id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id), NoticeLevel.Info, who);
+                VivText.Resolve(GameLocalization.Current,
+                    OddityLines.ForPack(text, Thatchwick.Core.Content.ContentPacks.Adult, GameLocalization.Current.Has),
+                    id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id), NoticeLevel.Info, who);
             _life.RealNow = () => System.DateTime.Now;   // 1 Nisan easter egg'i gerçek tarihe bakar
             _life.Oddities.Discovered += id => _life.Say(OddityIds.IsAchievement(id)
                 ? GameLocalization.T("ui.oddity.achievement", ("name", OddityName(id)))
@@ -2028,6 +2035,21 @@ namespace Thatchwick.Game
                     });
                 }
             }
+            // Kedinin yere düşürdüğü süs (belge 55, Kedi Alex): karakter eğilip alır, eski yerine koyar.
+            var fallen = _life.Scenes.KnockedAt(tile);
+            if (fallen != null)
+            {
+                var fallenTile = tile;
+                var fallenItem = _world.GetItem(fallen.ItemId);
+                string fallenName = fallenItem != null ? fallenItem.Def.DisplayName : "";
+                names.Add(GameLocalization.T("ui.oddity.fallen", ("item", fallenName)));
+                _menuOptions.Add(new MenuOption
+                {
+                    Label = $"{GameLocalization.T("ui.oddity.put_back")} ({fallenName})",
+                    Blocked = _farmWork.CanDo(Commander.Character, fallenTile, TileAction.PutBack),
+                    Run = () => Commander.Runner.Command(Job.OnTile(fallenTile, TileAction.PutBack))
+                });
+            }
             AddMineOptions(tile, names);
             _menuTitle = string.Join(", ", names);
         }
@@ -2489,7 +2511,7 @@ namespace Thatchwick.Game
                 _menuOptions.Add(new MenuOption
                 {
                     Label = $"{GameLocalization.T("ui.oddity.kiss_frog")} ({v.Species.Name})",
-                    Run = () => _life.KissFrog(c.Character)
+                    Run = () => _life.KissFrog(c.Character, false, id)
                 });
             if (v.Species.Huntable)
                 _menuOptions.Add(new MenuOption
@@ -2795,8 +2817,16 @@ namespace Thatchwick.Game
                 TickIdleShow(actor, gameDays);
                 PushSimPosition(actor);
             }
-            if (_animalViews == null) _animalViews = new AnimalViews(transform, _view, LookOf, RiderView);
+            if (_animalViews == null)
+            {
+                _animalViews = new AnimalViews(transform, _view, LookOf, RiderView);
+                // Easter egg sahneleri (belge 55): pozlar, kurbağanın tacı.
+                _animalViews.PoseOf = a => _life?.PoseOf(a);
+                _animalViews.WildFx = id => _life?.Scenes.WildFxOf(id);
+                _animalViews.ItemTile = id => _world.GetItem(id)?.Position;
+            }
             _animalViews.Sync(_animals, _life?.Roamers);
+            _animalViews.SyncWalkers(_life?.Walkers);
 
             if (Commander == null) return;
             var failure = Commander.Runner.LastFailure;
@@ -2949,7 +2979,10 @@ namespace Thatchwick.Game
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
             // Kare animasyonu (018a/018b) varsa yürürken onu oynat: tam döngü = iki adım (WalkPhase iki π).
             var walkFrame = moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
-            var real = walkFrame ?? ((actor.Runner.IsUsingItem || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
+            // Easter egg gösterisi (topaç şovu, uluma; belge 55): dururken kısa süre kendi karesini oynar.
+            string sceneKey = moving || actor.Character.Stage == AgeStage.Baby ? null : _life.Scenes.CharacterSceneOf(actor.Character.Id);
+            var sceneFrame = sceneKey != null ? ActionFrameFor(actor, sceneKey, seed) : null;
+            var real = walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.

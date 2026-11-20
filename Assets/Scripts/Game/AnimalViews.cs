@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Animals;
 using Thatchwick.Core.Animals.Genetics;
+using Thatchwick.Core.Life;
+using Thatchwick.Core.World;
 using UnityEngine;
 
 namespace Thatchwick.Game
@@ -22,7 +24,19 @@ namespace Thatchwick.Game
             public int Level;
             public int RiderId;
             public SmoothPosition Pos;
+            public SpriteRenderer Fx;      // kurbağadaki taç (belge 55)
+            public OddWalker Walker;       // Johan Wick, atsız şövalye
+            public int Lift;               // poz verirken çizim sırası payı (kutudaki kedi sandığın üstünde)
         }
+
+        /// <summary>Kutudaki kedinin sandık karosuna göre yüksekliği (dünya birimi; 32 px = 1). Poz kareleri gelince gözle ayarlanır.</summary>
+        private const float BoxCatLift = 0.4f;
+
+        /// <summary>Easter egg sahneleri (belge 55): hayvanın pozu, yaban hayvanının efekti, eşyanın karosu.</summary>
+        public Func<Animal, AnimalPose> PoseOf;
+        public Func<int, string> WildFx;
+        public Func<int, GridPos?> ItemTile;
+        private readonly Dictionary<int, View> _walkers = new Dictionary<int, View>();
 
         private readonly Transform _parent;
         private readonly WorldView _world;
@@ -61,8 +75,42 @@ namespace Thatchwick.Game
                 if (rider != null) pos = rider.position - new Vector3(0f, 0.02f, 0f);   // binicinin altında, onunla birlikte
                 else pos = v.Pos.At(alpha);
                 v.T.position = pos;
+                v.R.sortingOrder = Iso.SortOrder(pos.y, 1, v.Level) + v.Lift;
+                if (v.Shadow != null) { v.Shadow.enabled = v.R.enabled && rider == null && v.Lift == 0; v.Shadow.sortingOrder = Shadows.Order(v.Level); }
+            }
+            foreach (var kv in _walkers)
+            {
+                var v = kv.Value;
+                if (v.T == null || v.Walker == null) continue;
+                var w = v.Walker;
+                string set = WalkerSet(w.Kind);
+                bool moving = w.NextTile.HasValue;
+                Sprite frame = null;
+                float bob = 0f;
+                if (moving)
+                {
+                    frame = IsoArt.SetWalk(set, v.Dir, Time.time / 0.8f);
+                    // Yürüme karesi gelene kadar (iş 510) durma görseli iki piksellik adımla sallanır.
+                    if (frame == null) bob = Mathf.Round(Mathf.Abs(Mathf.Sin(Time.time * 8f)) * 2f) / 32f;
+                }
+                else if (w.Action != null)
+                {
+                    frame = IsoArt.SetAction(set, w.Action, v.Dir, Time.time / 0.9f);
+                    // Hareket karesi yoksa: severken eğilir, dağıtırken sert sert çöker.
+                    if (frame == null) bob = -Mathf.Round(Mathf.Abs(Mathf.Sin(Time.time * (w.Action == "wreck" ? 10f : 4f))) * 3f) / 32f;
+                }
+                frame = frame ?? IsoArt.SetIdle(set, v.Dir);
+                if (frame != null) { if (v.R.sprite != frame) v.R.sprite = frame; v.T.localScale = Vector3.one; }
+                else
+                {
+                    var cube = SpriteMaterials.Cube(w.Kind == OddWalkerKind.JohanWick ? new Color(0.25f, 0.25f, 0.28f) : new Color(0.6f, 0.62f, 0.66f));
+                    if (v.R.sprite != cube) v.R.sprite = cube;
+                    v.T.localScale = new Vector3(0.35f, 0.7f, 1f);
+                }
+                var pos = v.Pos.At(alpha);
+                v.T.position = pos + new Vector3(0f, bob, 0f);
                 v.R.sortingOrder = Iso.SortOrder(pos.y, 1, v.Level);
-                if (v.Shadow != null) { v.Shadow.enabled = v.R.enabled && rider == null; v.Shadow.sortingOrder = Shadows.Order(v.Level); }
+                if (v.Shadow != null) { v.Shadow.enabled = v.R.enabled; v.Shadow.sortingOrder = Shadows.Order(v.Level); }
             }
             foreach (var kv in _wild)
             {
@@ -71,7 +119,40 @@ namespace Thatchwick.Game
                 var pos = v.Pos.At(alpha);
                 v.T.position = pos;
                 v.R.sortingOrder = Iso.SortOrder(pos.y, 1, v.Level);
+                if (v.Fx != null && v.Fx.enabled) v.Fx.sortingOrder = v.R.sortingOrder + 1;
             }
+        }
+
+        private static string WalkerSet(OddWalkerKind kind) =>
+            kind == OddWalkerKind.JohanWick ? "iso_char_johan_wick_r84" : "iso_char_horseless_knight_r84";
+
+        /// <summary>Simülasyon adımı: haritada yürüyen easter egg ziyaretçileri (Johan Wick, atsız şövalye).</summary>
+        public void SyncWalkers(OddWalkers walkers)
+        {
+            if (walkers == null) return;
+            _alive.Clear();
+            foreach (var w in walkers.Walkers)
+            {
+                if (w.Gone) continue;
+                _alive.Add(w.Id);
+                if (!_walkers.TryGetValue(w.Id, out var v)) { v = Create(w.Kind.ToString(), true); v.Walker = w; _walkers[w.Id] = v; }
+                Vector3 pos = _world.TileToWorld(w.Position);
+                if (w.NextTile.HasValue)
+                {
+                    var to = _world.TileToWorld(w.NextTile.Value);
+                    v.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
+                    pos = Vector3.Lerp(pos, to, (float)w.StepProgress);
+                }
+                else if (w.Facing.HasValue && w.Facing.Value != w.Position)
+                {
+                    var to = _world.TileToWorld(w.Facing.Value);
+                    v.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
+                }
+                v.Pos.Push(pos);
+                v.Level = w.Position.Z;
+                v.R.enabled = _world.IsLevelVisible(w.Position.Z);
+            }
+            RemoveGone(_walkers);
         }
 
         /// <summary>Bölge değişince ara değer sıfırlanır (eski konumdan kayarak gelmesin).</summary>
@@ -79,6 +160,7 @@ namespace Thatchwick.Game
         {
             foreach (var v in _animals.Values) v.Pos.Reset();
             foreach (var v in _wild.Values) v.Pos.Reset();
+            foreach (var v in _walkers.Values) v.Pos.Reset();
         }
 
         private View Create(string name, bool shadow)
@@ -105,18 +187,33 @@ namespace Thatchwick.Game
                     v.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
                     pos = Vector3.Lerp(pos, to, a.StepProgress);
                 }
+                // Easter egg pozu (belge 55): öküz yeni yapılana döner, kedi sandığın üstünde çizilir, köpek ular.
+                var pose = a.RiderId == 0 ? PoseOf?.Invoke(a) : null;
+                var poseTile = pose != null && pose.ItemId != 0 ? ItemTile?.Invoke(pose.ItemId) : null;
+                v.Lift = 0;
+                if (poseTile.HasValue)
+                {
+                    var at = _world.TileToWorld(poseTile.Value);
+                    if (pose.Pose == "box") { pos = at + new Vector3(0f, BoxCatLift, 0f); v.Lift = 3; }   // sandığın içinden bakar
+                    else v.Dir = IsoArt.DirectionIndex(new Vector2(at.x - pos.x, at.y - pos.y));
+                }
                 v.Pos.Push(pos);
                 v.RiderId = a.RiderId;
                 v.Level = a.Position.Z;
                 v.R.enabled = _world.IsLevelVisible(a.Position.Z);
                 // Genetik (belge 48): tipin gövdesi + genden renk; gövde görseli yoksa türün görseli, o da yoksa genden renkli küp.
                 var look = _lookOf(a);
-                Sprite real = look != null && look.Layers.Count > 0 ? IsoArt.AnimalBody(look.Layers[0], look.LongCoat, v.Dir) : null;
+                string body = look != null && look.Layers.Count > 0 ? look.Layers[0] : null;
+                Sprite real = pose != null ? IsoArt.AnimalPose(body, a.Species.Id, pose.Pose, v.Dir, Time.time / 1.1f + a.Id * 0.13f) : null;
+                bool posed = real != null;
+                if (real == null && body != null) real = IsoArt.AnimalBody(body, look.LongCoat, v.Dir);
                 Color tint = Color.white;
                 var gene = Tint(look?.TintHex);
-                if (real != null && gene.HasValue) tint = Color.Lerp(Color.white, gene.Value, 0.8f);
+                if (real != null && gene.HasValue && (body != null)) tint = Color.Lerp(Color.white, gene.Value, 0.8f);
                 if (real == null) real = IsoArt.Animal(a.Species.Id, v.Dir);
                 float scale = a.IsMature ? 1f : 0.7f;
+                // Poz karesi gelene kadar (iş 513-514): uluyan köpek başını kaldırır gibi hafif geriye yatar.
+                v.T.localRotation = pose != null && !posed && pose.Pose == "howl" ? Quaternion.Euler(0f, 0f, v.Dir >= 3 && v.Dir <= 6 ? -14f : 14f) : Quaternion.identity;
                 if (real != null) { if (v.R.sprite != real) v.R.sprite = real; v.R.color = tint; }
                 else
                 {
@@ -153,6 +250,21 @@ namespace Thatchwick.Game
                 if (real == null) scale *= ScaleOf(w.Species.Id);
                 if (v.R.sprite != sprite) v.R.sprite = sprite;
                 v.T.localScale = new Vector3(scale, scale, 1f);
+                // Öpülen kurbağanın başında minik taç (belge 55 §2).
+                bool crown = WildFx != null && WildFx(w.Id) == "crown";
+                if (crown && v.Fx == null)
+                {
+                    var fx = new GameObject("crown");
+                    fx.transform.SetParent(v.T, false);
+                    v.Fx = fx.AddComponent<SpriteRenderer>();
+                    v.Fx.sharedMaterial = SpriteMaterials.Unlit;
+                    v.Fx.sprite = IsoArt.TinyCrown ?? SpriteMaterials.Cube(new Color(1f, 0.85f, 0.2f));
+                    bool art = IsoArt.TinyCrown != null;
+                    // Görselli kurbağada başın üstü yaklaşık 10 px; yer tutucu küpte küpün tepesi.
+                    fx.transform.localPosition = new Vector3(0f, real != null ? 10f / 32f : 1f, 0f);
+                    fx.transform.localScale = art ? new Vector3(1f / scale, 1f / scale, 1f) : new Vector3(0.5f, 0.3f, 1f);
+                }
+                if (v.Fx != null) v.Fx.enabled = crown && v.R.enabled;
             }
             RemoveGone(_wild);
         }

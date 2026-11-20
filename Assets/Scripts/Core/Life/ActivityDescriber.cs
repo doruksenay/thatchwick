@@ -147,6 +147,7 @@ namespace Thatchwick.Core.Life
                         case TileAction.Light: info.Text = "Kandil yakıyor"; break;
                         case TileAction.Sow: info.Icon = "sow"; info.Text = "Ekiyor"; break;
                         case TileAction.Till: info.Icon = "farm"; info.Text = "Çapalıyor"; break;
+                        case TileAction.PutBack: info.Icon = "pickup"; info.Text = "Düşen eşyayı yerine koyuyor"; break;
                         case TileAction.Stock: info.Text = "Gölete balık bırakıyor"; break;
                         default: info.Text = "Çalışıyor"; break;
                     }
