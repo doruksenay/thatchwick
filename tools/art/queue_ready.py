@@ -10,7 +10,7 @@ Bir iş uygundur, eğer (art/budget.md "Otomatik akış", kullanıcı kararı 20
   - approved_by: user ya da auto (pending = açık soru, çalışmaz)
   - depends_on içindeki her iş `accepted` ya da `review` (stil pilotları dahil)
   - cost_max <= 60 (çalışma tavanı; büyük iş bölünmeli)
-  - cost_max bugünkü kalan günlük tavana (150; art/budget.md "Günlük tavan istisnaları" o günü
+  - cost_max bugünkü kalan günlük tavana (varsayılan sınırsız, 2026-11-21; art/budget.md "Günlük tavan istisnaları" o günü
     değiştirebilir, `sınırsız` = tavan yok) ve rezerve (200) sığıyor
   --strict: eski kural (yalnızca accepted bağımlılık, auto için cost_max <= 25).
   - status: running olan ama iş dosyası STALE_HOURS (6) saattir değişmemiş iş takılı sahiplenme sayılır
@@ -40,7 +40,7 @@ LEDGER = os.path.join(ROOT, "art", "ledger")   # paralel işçiler: iş başına
 
 AUTO_LIMIT = 25.0   # yalnızca --strict
 RUN_LIMIT = 60.0
-DAILY_LIMIT = 150.0
+DAILY_LIMIT = float("inf")   # kullanıcı kararı 2026-11-21: günlük tavan yok (Pixel Architect); gün bazında sayı art/budget.md istisnasıyla konabilir
 RESERVE = 200.0
 DEFAULT_PRIORITY = 50.0   # küçük sayı önce çalışır (art/budget.md "Öncelik"); eşitlikte iş numarası
 STALE_HOURS = 6.0
