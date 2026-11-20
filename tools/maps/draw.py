@@ -721,10 +721,11 @@ def farm():
             if r <= 1.0 or (x, y) in ((8, 44), (9, 44), (8, 45)):
                 cv.set(x, y, 'water')
     water = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) == 'water'}
+    # Kıyı kumu dağınık benekler gibi duruyordu (Unity 21.11): yalnızca güneydoğu kıyısında tek parça küçük bir kumsal.
     for (x, y) in water:
-        for ddx, ddy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        for ddx, ddy in ((1, 0), (0, 1)):
             n = (x + ddx, y + ddy)
-            if cv.get(*n) == 'grass' and noise(n[0] / 1.7, n[1] / 1.7, 263) > 0.55:
+            if cv.get(*n) == 'grass' and x + y >= 63 and noise(n[0] / 3.0, n[1] / 3.0, 263) > 0.35:
                 cv.set(n[0], n[1], 'sand')
     built = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('stone', 'bridge', 'dirt')}
     keep = near(roads, 2) | near(water, 2) | near(built, 3)
@@ -745,6 +746,16 @@ def farm():
     markers = {'ponds': [], 'items': [], 'keep': []}
     house = {(x, y) for x in range(24, 41) for y in range(22, 38)}   # ev, avlu ve başlangıç tarlası çevresi boş kalır
     place_props(cv, roads, markers, 'farm', 6, 283, avoid=house | near(water, 1))
+    # Göletin kuzey ve batı kıyısında saz öbekleri (kenarın basamaklı çizgisini kırar).
+    shore = sorted({(x + dx, y + dy) for (x, y) in water for dx, dy in ((-1, 0), (0, -1)) if cv.get(x + dx, y + dy) == 'grass' and (x + dx, y + dy) != (8, 43)})
+    picked = []
+    for (x, y) in shore:
+        if x < 8 or y < 8 or any(cv.get(x + a, y + b) in ('band', 'rock') for a in (-1, 0, 1) for b in (-1, 0, 1)):   # kenar ağaçları x,y 5-6'da
+            continue
+        if noise(x / 1.4, y / 1.4, 287) > 0.45 and all(abs(x - a) + abs(y - b) >= 2 for a, b in picked):
+            picked.append((x, y))
+    for (x, y) in picked[:9]:
+        markers['items'].append({'id': 'item.reeds', 'x': x, 'y': y, 'rot': 0, 'grown': False})
     return cv, markers
 
 
