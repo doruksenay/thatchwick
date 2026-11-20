@@ -1,7 +1,8 @@
 ---
 id: "831"
 title: "Servis kapları: balık ve tatlı dolu katmanı yeniden (_v2) (2)"
-status: pending
+status: running
+claimed_at: 2026-11-20T23:30Z
 approved_by: user        # kullanıcı 21.11.2026: 797 "kabul, ara dolulukları kod üretsin" (balık ve tatlı katmanı neredeyse görünmüyordu)
 priority: 5
 family: esya
