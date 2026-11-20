@@ -1,7 +1,7 @@
 ---
 id: "486"
 title: "At tipleri ve eşek ailesi: 7 gövde"
-status: running
+status: failed
 claimed_at: 2026-11-20T10:47Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (hayvan genetiği ve tür genişletme, tek PR), Project belgeleri 48 ve 48b
 priority: 30
@@ -52,3 +52,6 @@ Tarif **375 ile aynı** (106 tarifi, yol B, güney kontrolü, zemin kontrolü, `
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 - 2026-11-20: kullanıcı kararıyla yeniden denenir. Stil kapısı bu işte 104t'deki gibi: bir yön kalırsa yalnız o yön en çok 2 kez yeniden denenir, olmazsa geçen yönler teslim edilir ve kalan yön raporlanır (tür bütünüyle atılmaz).
+
+## Sonuç (işçi)
+7 tek kare de güney kontrolünde elendi (yandan duruş; 3 tanesinde zemin lekesi). Ayrıntı ve öneri: `art/results/486-at-tipleri-esek-katir.md`.
