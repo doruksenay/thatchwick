@@ -1,7 +1,7 @@
 ---
 id: "322b"
 title: "Toplama düğümleri ikinci set yeniden (kestane hariç)"
-status: running
+status: failed
 claimed_at: 2026-11-20T10:33Z
 approved_by: user        # kullanıcı kararı 2026-11-20: 322 reddedildi, yeniden üretim
 priority: 20
@@ -39,3 +39,6 @@ created: 2026-11-20
 - Raporda 322'in reddedilen çıktısıyla yan yana sayfası (`art/results/322b-yanyana.png`) olmalı.
 
 ## Notlar
+
+## Sorular
+Mürver 2 denemede de tutmadı (kala çiçeği / çiçeksiz ağaç); 6 diğer düğüm `_v2` olarak teslim. Mürver için yeni iş (322c) ve farklı yöntem gerekir; ayrıntı `art/results/322b-toplama-ikinci-set-yeniden.md`.
