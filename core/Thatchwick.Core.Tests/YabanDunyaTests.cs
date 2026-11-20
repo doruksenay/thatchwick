@@ -96,17 +96,45 @@ namespace Thatchwick.Core.Tests
             Assert.True((r.Journal.Get("wild.rabbit") & JournalMark.Hunted) != 0);
         }
 
+        /// <summary>Kement haritaya kurulur (karar 20.11.2026): arsaya ya da yabana, en çok 3; av tuzakta bekler, biri toplar.</summary>
         [Fact]
-        public void Tuzak_GunlukYakalar()
+        public void Kement_HaritayaKurulur_AvTuzaktaBekler()
         {
-            var x = Make();
-            var r = new WildRoamers(x.World.Map, 9) { Journal = new NatureJournal() };
+            var db = ContentFilesTests.LoadDb(out var errors);
+            Assert.True(errors.Count == 0, string.Join("\n", errors));
+            var map = new GridMap(Regions.WorldWidth, Regions.WorldHeight);
+            map.RestrictOwnership(0, 0, 10, 10);   // arsa: çiftliğin köşesi
+            var w = new WorldState(map);
+            var house = new Household(100);
+            var build = new BuildService(w, house, db);
+            house.AddItem("item.snare", 5);
+
+            var forest = new GridPos(Regions.Forest.X + 10, Regions.Forest.Y + 10);
+            var town = new GridPos(Regions.Town.X + 10, Regions.Town.Y + 10);
+            Assert.Equal(BuildService.SnareGround, build.CanPlaceFromInventory("item.snare", town, 0).Reason);   // şehre kurulmaz
+            Assert.True(build.PlaceFromInventory("item.snare", forest, 0, out var s1).Ok);
+            Assert.True(build.PlaceFromInventory("item.snare", new GridPos(forest.X + 3, forest.Y), 0, out var s2).Ok);
+            Assert.True(build.PlaceFromInventory("item.snare", new GridPos(5, 5), 0, out var s3).Ok);             // kendi arsası
+            Assert.Equal(BuildService.SnareLimit, build.CanPlaceFromInventory("item.snare", new GridPos(forest.X, forest.Y + 3), 0).Reason);
+            Assert.Equal(2, house.Count("item.snare"));
+
+            var r = new WildRoamers(map, 9) { Journal = new NatureJournal() };
             var hunter = Adult(1, SkillType.Hunting, 8);
             int caught = 0;
-            for (int d = 0; d < 20; d++) caught += r.CheckSnares(Season.Autumn, 5, hunter, x.House).Count;
-            Assert.True(caught > 0);
-            Assert.True(caught <= 20 * WildRoamers.MaxSnares);
-            Assert.True(x.House.Count("item.game_meat") > 0);
+            for (int d = 0; d < 30; d++) caught += r.CheckSnares(Season.Autumn, w.Items, hunter).Count;
+            Assert.InRange(caught, 1, WildRoamers.MaxSnares);                 // dolu tuzak toplanana dek yeniden tutmaz
+            Assert.Equal(0, house.Count("item.game_meat") + house.Count("item.hide"));   // av eve kendiliğinden gelmez
+            var full = new[] { s1, s2, s3 }.First(s => s.StockTotal > 0);
+
+            var fx = new Thatchwick.Core.Work.InteractionEffects(w, house, db, seed: 4);
+            var collect = db.Items.Get("item.snare").Interactions.Single(i => i.Id == "check_snare");
+            Assert.True(collect.Collect);
+            fx.Apply(hunter, full, collect);
+            Assert.Equal(0, full.StockTotal);
+            Assert.True(house.Count("item.game_meat") + house.Count("item.hide") > 0);
+            caught = 0;
+            for (int d = 0; d < 30 && caught == 0; d++) caught += r.CheckSnares(Season.Autumn, new[] { full }, hunter).Count;
+            Assert.Equal(1, caught);                                          // boşalan tuzak yine tutar
         }
 
         [Fact]

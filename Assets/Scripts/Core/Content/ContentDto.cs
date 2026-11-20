@@ -222,6 +222,7 @@ namespace Thatchwick.Core.Content
         public bool powerSource;     // su çarkı: kaynağa bağlı kanala değerse yanındaki makineleri çalıştırır
         public AutoProcessDto autoProcess;   // güç alan makine: her gün kendiliğinden işler (değirmen taşı)
         public bool iceBox;                  // buzluk: içinde buz varken yiyeceği çok soğuk tutar
+        public bool snare;                   // kement tuzağı: haritaya kurulur, av tuzakta bekler
         public bool fishTrap;                // balık sepeti: gölete değerken her sabah balık
         public bool windPower;               // yel değirmeni: suya gerek olmadan güç verir
         public bool waterGate;               // su kapağı: açıkken suyu geçirir, kapalıyken keser

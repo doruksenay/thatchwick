@@ -1191,6 +1191,7 @@
   "skill.WeatherLore": "Weather lore",
   "skill.Weaving": "Weaving",
   "skill.Woodcutting": "Woodcutting",
+  "snare.n.caught": "A {animal} is caught in a snare; someone has to go and collect it.",
   "ui.animal.departed": "(gone)",
   "ui.animal.genes": "Genes:",
   "ui.animal.howl": "Howl",

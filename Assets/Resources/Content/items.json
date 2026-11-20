@@ -25377,12 +25377,28 @@
     {
       "id": "item.snare",
       "displayName": "Kement tuzağı",
-      "placement": "Resource",
-      "category": "resource",
+      "category": "farm",
       "price": 6,
       "level": 2,
       "tags": [
         "tool"
+      ],
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "snare": true,
+      "interactions": [
+        {
+          "id": "check_snare",
+          "displayName": "Tuzağı topla",
+          "durationDays": 0.03,
+          "collect": true
+        }
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {

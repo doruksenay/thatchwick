@@ -1191,6 +1191,7 @@
   "skill.WeatherLore": "Hava bilgisi",
   "skill.Weaving": "Dokumacılık",
   "skill.Woodcutting": "Odunculuk",
+  "snare.n.caught": "Kemente {animal} düştü; birinin gidip toplaması gerek.",
   "ui.animal.departed": "(yok)",
   "ui.animal.genes": "Genler:",
   "ui.animal.howl": "Ulu",

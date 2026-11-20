@@ -1347,9 +1347,11 @@ namespace Thatchwick.Core.Life
             if (Roamers != null)
             {
                 Roamers.TryBearSighting(Clock.Season);
-                int snares = House.Count("item.snare");
-                if (snares > 0)
-                    foreach (var r in Roamers.CheckSnares(Clock.Season, snares, BestAt(SkillType.Hunting), House)) Say($"Tuzağa {WildCatalog.Get(r.SpeciesId)?.Name.ToLowerInvariant()} düştü.", NoticeLevel.Info);
+                var snares = new List<ItemInstance>();
+                foreach (var it in World.Items) if (!it.IsDecor && it.Def.IsSnare) snares.Add(it);
+                if (snares.Count > 0)
+                    foreach (var r in Roamers.CheckSnares(Clock.Season, snares, BestAt(SkillType.Hunting)))
+                        Say(LocText.Of("snare.n.caught", ("animal", WildCatalog.Get(r.SpeciesId)?.Name.ToLowerInvariant())), NoticeLevel.Info);
             }
             Villagers.PollEvents();
             Goals.Update();
