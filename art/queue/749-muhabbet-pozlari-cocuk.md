@@ -1,7 +1,8 @@
 ---
 id: "749"
 title: "Muhabbet pozları, çocuk: gül, kıkırda, başını salla, şaşır, alkışla, anlat (48)"
-status: pending
+status: running
+claimed_at: 2026-11-20T21:07Z
 approved_by: user        # kullanıcı 20.11.2026 ("çocuk muhabbet asset'leri ... alınsın"); Project belgeleri 67a §6, 67b §5
 priority: 40
 family: karakter
