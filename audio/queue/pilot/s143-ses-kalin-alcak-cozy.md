@@ -4,7 +4,7 @@ title: Karakter sesi tasarımı, Kalın-alçak, daha cozy (2. tur)
 kind: voice_design
 family: voice
 pilot: true
-status: accepted
+status: done
 approved_by: user
 voice_key: kalin_alcak
 generate: 1
@@ -27,5 +27,6 @@ generated_at: '2026-11-20T18:34:31Z'
 pick:
 - c1
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T18:53:34Z'
 ---
 s140'ın yerine: kullanıcı c1'i cozy bulmadı. 6 önizleme (2 tasarım çağrısı). Seçilen ses voices.json'daki kalin_alcak'ın yerine geçer; s141 ve s142 bu sesle yeniden üretilir.
