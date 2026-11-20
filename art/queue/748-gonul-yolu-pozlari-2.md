@@ -1,7 +1,8 @@
 ---
 id: "748"
 title: "Gönül yolu pozları 2: yüzük tak, kurdele kes, kına yak, halay, alay yürüyüşü, testi kır (48)"
-status: pending
+status: running
+claimed_at: 2026-11-20T21:07Z
 approved_by: user        # kullanıcı 20.11.2026; Project belgeleri 67b §3.5-3.7, 67c
 priority: 40
 family: karakter
