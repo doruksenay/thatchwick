@@ -88,6 +88,7 @@ namespace Thatchwick.Core.Work
         public bool Playing;
         public World.GridPos StartPos;
         public readonly Dictionary<string, double> Gains = new Dictionary<string, double>();
+        /// <summary>Azık: anahtar <see cref="Content.ItemKey.Token"/> ("item.bread", "item.bread#2!"), değer adet. Kalite ve kaynak korunur.</summary>
         public readonly Dictionary<string, int> Packed = new Dictionary<string, int>();
         public readonly List<LocText> Events = new List<LocText>();
         public double Xp;
@@ -425,12 +426,14 @@ namespace Thatchwick.Core.Work
             if (!reason.IsEmpty) return null;
             double hours = Math.Min(HoursFor(order), MaxHours(c, order.Kind));
             var duty = new TimedDuty { Id = _nextId++, Order = order, StartDay = Now(), PlannedHours = hours, StartPos = c.Position };
+            // Azık en düşük kaliteden alınır (belge 53 §4.7); anahtar kaliteyi ve kaynağı taşır ("item.bread#2"), artan eve öyle döner.
             foreach (var kv in food ?? SuggestFood(c, hours))
-            {
-                int took = 0;
-                for (int i = 0; i < kv.Value; i++) if (_house.TryTakeItem(kv.Key)) took++;
-                if (took > 0) duty.Packed[kv.Key] = (duty.Packed.TryGetValue(kv.Key, out int n) ? n : 0) + took;
-            }
+                for (int i = 0; i < kv.Value; i++)
+                {
+                    if (!_house.TryTake(kv.Key, TakePolicy.Lowest, out var taken)) break;
+                    string token = taken.Token();
+                    duty.Packed[token] = (duty.Packed.TryGetValue(token, out int n) ? n : 0) + 1;
+                }
             c.Away = true;
             c.Asleep = false;
             _active.Add(duty);
@@ -571,11 +574,13 @@ namespace Thatchwick.Core.Work
 
         private bool EatPacked(TimedDuty d, Character c)
         {
+            // Kaliteli azık daha çok doyurur (53 §4.5); en çok doyuranı yer.
             string best = null; float bestValue = 0;
             foreach (var kv in d.Packed)
             {
                 if (kv.Value <= 0) continue;
-                float v = MealValue(kv.Key);
+                var key = ItemKey.FromToken(kv.Key);
+                float v = (float)(MealValue(key.Id) * ItemQuality.SatietyFactor(key.Quality));
                 if (v > bestValue) { best = kv.Key; bestValue = v; }
             }
             if (best == null) return false;
@@ -622,7 +627,7 @@ namespace Thatchwick.Core.Work
                     _house.AddItem(kv.Key, 1, graded ? Math.Max(0, ItemQuality.Gathered(level, _rng) - 1) : 0);
                 r.Items.Add(kv);
             }
-            foreach (var kv in d.Packed) if (kv.Value > 0) _house.AddItem(kv.Key, kv.Value);   // artan azık eve döner
+            foreach (var kv in d.Packed) if (kv.Value > 0) _house.Add(ItemKey.FromToken(kv.Key), kv.Value);   // artan azık kalitesiyle eve döner
             r.Notes.AddRange(d.Events);
             if (c != null)
             {
