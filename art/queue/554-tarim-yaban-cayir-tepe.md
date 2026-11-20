@@ -1,7 +1,8 @@
 ---
 id: "554"
 title: "Yaban bitkileri 2/3: çayır ve tepe (9)"
-status: pending
+status: running
+claimed_at: 2026-11-20T14:49Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 30
 family: bitki
