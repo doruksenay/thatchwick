@@ -1,7 +1,8 @@
 ---
 id: "499"
 title: "Eşya kalitesi rozetleri (4)"
-status: pending
+status: review
+claimed_at: 2026-11-20T11:10Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("taşı ve başla. tek prda hallet"), Project belgesi 53
 priority: 30
 family: arayuz

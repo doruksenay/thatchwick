@@ -1,7 +1,7 @@
 ---
 id: "345"
 title: Lazımlık, yıkanma kulübesi, havluluk
-status: review
+status: accepted
 approved_by: user        # 2026-11-18 kullanıcı: toplu işçi mobilya pilotu ("geç")
 worker: batch            # Claude'suz toplu işçi; bulut ajanı almaz
 priority: 20
@@ -108,3 +108,4 @@ Tarifin makine okunur hâli (`tools/art/batch_worker.py`); tuval ve yükseklik 3
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

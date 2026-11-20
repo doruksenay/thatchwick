@@ -1,7 +1,7 @@
 ---
 id: "425k"
 title: "Petekli bal ikonu ve zeytinyağı kandili (iso, yanık/sönük)"
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:55Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 32 (kullanıcı 19.11.2026 "hepsini yap")
 family: esya
@@ -37,3 +37,4 @@ created: 2026-11-19
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

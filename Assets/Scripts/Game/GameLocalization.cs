@@ -42,6 +42,12 @@ namespace Thatchwick.Game
         /// <summary>Kısa yol: seçili dilde metin.</summary>
         public static string T(string key) => Current.Get(key);
 
+        /// <summary>İçerik kimliğinden (item.…, trait.…) seçili dildeki ad; GameRoot içerik yüklenince kurar.</summary>
+        public static Func<string, string> ContentName { get; set; }
+
+        /// <summary>Kayıttan gelen metni (hayat notu, kronik) seçili dilde gösterir; eski düz metin olduğu gibi kalır.</summary>
+        public static string Saved(string saved) => SavedText.Resolve(saved, Current, ContentName);
+
         public static string T(string key, params (string name, object value)[] args) => Current.Format(key, args);
 
         /// <summary>Eşya kimliğinden görünen ad (GameRoot içerik yüklenince verir; yoksa kimlik).</summary>

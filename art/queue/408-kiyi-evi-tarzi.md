@@ -1,7 +1,7 @@
 ---
 id: "408"
 title: "Kıyı Evi tarzı (8 eşya)"
-status: review
+status: accepted
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 18.11.2026 ("hepsini"), Project belgesi 27 §6.1 ve 27e
 priority: 30
 family: esya
@@ -51,3 +51,4 @@ Masa ve raf üstü **301 ile aynı** (32 px tuval, pivot nesnenin tabanı), duva
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

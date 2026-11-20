@@ -1,7 +1,7 @@
 ---
 id: "405"
 title: "Mevsim süsleri (taze ve solmuş) ve hayvan bölmesi süsleri (10)"
-status: review
+status: accepted
 claimed_at: 2026-11-18T19:17Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 27 §7.11, §7.12, §9 (18.11.2026)
 priority: 20
@@ -56,3 +56,4 @@ Masa ve raf üstü **301 ile aynı**, duvar eşyaları **306 ile aynı** (`sw_ne
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

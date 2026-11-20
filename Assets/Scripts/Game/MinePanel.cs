@@ -19,6 +19,7 @@ namespace Thatchwick.Game
         private readonly ContentDatabase _content;
         private Vector2 _scroll;
         private string _status;
+        private bool _fireMode;   // ateşle kırma kipi: dokunulan sert karoya karşı odun yakılır (belge 23)
 
         /// <summary>Panelden "kendin in" diyen karakter (komut alan); null ise düğme görünmez.</summary>
         public Func<Character> Actor { get; set; }
@@ -92,7 +93,13 @@ namespace Thatchwick.Game
                         : t.Rock == RockKind.Bedrock ? new Color(0.25f, 0.25f, 0.28f)
                         : new Color(0.38f, 0.36f, 0.34f);
                     var r = new Rect(area.x + x * cell, area.y + y * cell, cell - 1f, cell - 1f);
-                    if (GUI.Button(r, GUIContent.none) && !t.IsOpen && seen)
+                    if (!GUI.Button(r, GUIContent.none) || t.IsOpen || !seen) continue;
+                    if (_fireMode)
+                    {
+                        string why = _mines.CanFireSet(m, x, y);
+                        _status = why ?? (_mines.FireSet(m, x, y) ? GameLocalization.T("ui.mine.fire.lit", ("rock", MineSystem.RockName(t.Rock))) : GameLocalization.T("ui.mine.fire.failed"));
+                    }
+                    else
                     {
                         _mines.Mark(m, x, y, !t.Marked);
                         _status = t.Marked ? $"İşaretlendi: {MineSystem.RockName(t.Rock)}{(t.Ore != null ? ", " + Name(t.Ore) : "")}" : "İşaret kaldırıldı";
@@ -117,6 +124,8 @@ namespace Thatchwick.Game
             if (GUILayout.Button("Kovayla su boşalt")) { _mines.Bail(m, Actor?.Invoke()); _status = $"Su: {m.Water:0.#}"; }
             GUI.enabled = true;
             GUILayout.EndHorizontal();
+            bool fire = GUILayout.Toggle(_fireMode, " " + GameLocalization.T("ui.mine.fire.mode", ("wood", MineSystem.FireWood)));
+            if (fire != _fireMode) { _fireMode = fire; _status = fire ? GameLocalization.T("ui.mine.fire.help") : null; }
             var c = Actor?.Invoke();
             if (c != null && GUILayout.Button($"{c.Name} insin: üç saat kaz"))
             {

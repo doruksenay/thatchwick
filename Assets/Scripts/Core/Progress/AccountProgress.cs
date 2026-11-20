@@ -34,6 +34,46 @@ namespace Thatchwick.Core.Progress
 
         public int Xp { get; private set; }
         public int Level => LevelForXp(Xp);
+
+        // ---- Elmas (karar 20.11.2026): şimdilik yalnızca oyun içinden kazanılır; mağaza gelir modeli kararından sonra. ----
+        // Sayılar yer tutucudur (Adım 28). Harcama yeri: Ayna (görünüş ve ad değiştirme, Customization.MirrorRules).
+        public const int DiamondsPerLevel = 5;
+        public const int DiamondsPerBadge = 3;
+        public const int DiamondsPerGoal = 5;
+
+        /// <summary>Elmas bakiyesi.</summary>
+        public int Diamonds { get; private set; }
+        /// <summary>Bakiye değişti: (yeni bakiye, fark; harcamada eksi).</summary>
+        public event Action<int, int> DiamondsChanged;
+
+        public void AddDiamonds(int amount)
+        {
+            if (amount <= 0) return;
+            Diamonds += amount;
+            DiamondsChanged?.Invoke(Diamonds, amount);
+        }
+
+        /// <summary>Yeterliyse düşer ve true döner; yetmezse hiçbir şey değişmez.</summary>
+        public bool TrySpendDiamonds(int amount)
+        {
+            if (amount < 0 || amount > Diamonds) return false;
+            if (amount == 0) return true;
+            Diamonds -= amount;
+            DiamondsChanged?.Invoke(Diamonds, -amount);
+            return true;
+        }
+
+        /// <summary>Hanedan hedefi tamamlandı (LifeSystems.Goals.Completed).</summary>
+        public void OnGoalCompleted() => AddDiamonds(DiamondsPerGoal);
+
+        /// <summary>
+        /// Kayıttan yükleme (olay tetiklemez). seeded false ise (elmastan önceki kayıt) o güne dek kazanılmış
+        /// seviye ve rozetlerin elması bir kez verilir; Restore'dan sonra çağrılır.
+        /// </summary>
+        public void RestoreDiamonds(int diamonds, bool seeded)
+        {
+            Diamonds = seeded ? Math.Max(0, diamonds) : (Level - 1) * DiamondsPerLevel + _badges.Count * DiamondsPerBadge;
+        }
         public List<BadgeDef> Badges { get; } = DefaultBadges();
 
         public event Action<int, int> LevelChanged;          // eski, yeni
@@ -79,6 +119,7 @@ namespace Thatchwick.Core.Progress
             int before = Level;
             Xp += amount;
             int after = Level;
+            if (after > before) AddDiamonds((after - before) * DiamondsPerLevel);
             if (after != before) LevelChanged?.Invoke(before, after);
         }
 
@@ -111,6 +152,7 @@ namespace Thatchwick.Core.Progress
             {
                 if (b.Counter != key || _badges.Contains(b.Id) || Counter(key) < b.Target) continue;
                 _badges.Add(b.Id);
+                AddDiamonds(DiamondsPerBadge);
                 Grant(b.RewardXp);
                 BadgeEarned?.Invoke(b);
             }
