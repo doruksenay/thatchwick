@@ -808,6 +808,185 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(1, g.World.Items.Count(i => i.Def.Id == "item.wheelbarrow"));      // araba avluya çekildi
         }
 
+        // ---------- üçüncü tur: kalan eksikler ----------
+
+        private static void Days(WorldState world, PlantSystem plants, double[] day, int n, bool water = true)
+        {
+            for (int d = 0; d < n; d++)
+            {
+                if (water) foreach (var w in world.Items) if (w.IsPlant) w.Watered = true;
+                plants.Tick(1.0, Season.Spring);
+                day[0] += 1; plants.OnNewDay(false);
+            }
+        }
+
+        [Fact]
+        public void YabaniOt_SulananEkindeCikar_BuyumeyiYavaslatir_YosunVeSikYaprakBastirir()
+        {
+            var world = World();
+            var day = new[] { 0.0 };
+            var plants = new PlantSystem(world, seed: 11) { Now = () => day[0] };
+            plants.Config.WeedChance = 1f;
+            var carrot = Put(world, "item.crop_carrot", 2, 2);
+            var shaded = Put(world, "item.crop_lettuce", 6, 2);
+            Put(world, "item.crop_lettuce", 5, 2); Put(world, "item.crop_lettuce", 7, 2);
+            var guarded = Put(world, "item.crop_carrot", 10, 2);
+            plants.ApplyFertilizer(guarded.Position, Fertilizer.Seaweed, 0.2f, guarded);
+            Days(world, plants, day, 2);
+            Assert.True(plants.IsWeedy(carrot.Position));
+            Assert.False(plants.IsWeedy(shaded.Position));                       // sık ekilmiş yaprak otu bastırır
+            Assert.False(plants.IsWeedy(guarded.Position));                      // yosun 20 gün bastırır
+            Assert.Equal(3, plants.WeedyPlots.Count());                          // havuç ve iki uçtaki marul (tek komşu yetmez)
+
+            // otlu karo %15 yavaş büyür
+            var clean = Put(world, "item.crop_carrot", 14, 2);
+            plants.Plot(clean.Position).Fertility = plants.Plot(carrot.Position).Fertility;
+            plants.Config.WeedChance = 0f;
+            double a0 = carrot.GrowthDays, b0 = clean.GrowthDays;
+            foreach (var w in world.Items) if (w.IsPlant) w.Watered = true;
+            plants.Tick(1.0, Season.Spring);
+            Assert.Equal(0.85, (carrot.GrowthDays - a0) / (clean.GrowthDays - b0), 3);
+            Assert.True(plants.Weed(carrot.Position));
+            Assert.False(plants.Weed(carrot.Position));
+
+            // malçlı karoda yarı şans, sulanmayan karoda hiç
+            plants.Config.WeedChance = 0.5f;
+            var dry = Put(world, "item.crop_carrot", 18, 2);
+            Days(world, plants, day, 6, water: false);
+            Assert.False(plants.IsWeedy(dry.Position));
+        }
+
+        [Fact]
+        public void Butun_OtYolunur_OtVerir_TarlaGorevlisiOtYolarVeKompostuDoldurur()
+        {
+            var g = Whole();
+            var c = Person(1, 6, 5);
+            g.Pop.Add(c);
+            var crop = Put(g.World, "item.crop_carrot", 15, 5);
+            g.Plants.Plot(crop.Position).Weedy = true;
+            var heap = Put(g.World, "item.compost_heap", 5, 5);
+            g.House.AddItem("item.herb", 4); g.House.AddItem("item.straw", 4);
+            var chores = g.Life.YardChores(DutyKind.Farm).ToList();
+            Assert.Contains(chores, x => x.item == crop && x.interaction.Id == "weed");
+            Assert.Contains(chores, x => x.item == heap && x.interaction.FarmAction == LifeSystems.ActCompostDry);   // boş yığın: denge yarı yarıya, önce kuru
+            Assert.Null(Use(g, c, crop, "weed"));
+            Assert.False(g.Plants.IsWeedy(crop.Position));
+            Assert.Equal(5, g.House.Count("item.herb"));                         // yolunan ot yem ya da kompost olur
+            Assert.NotNull(Use(g, c, crop, "weed"));                             // ot yok
+            Assert.Null(Use(g, c, heap, "add_dry"));
+            chores = g.Life.YardChores(DutyKind.Farm).ToList();
+            Assert.Contains(chores, x => x.item == heap && x.interaction.FarmAction == LifeSystems.ActCompostWet);   // kuru ağır bastı: şimdi yaş
+            g.Life.Compost.HeapOf(heap).Progress = 0.5;
+            Assert.DoesNotContain(g.Life.YardChores(DutyKind.Farm), x => x.item == heap && x.interaction.FarmAction == LifeSystems.ActCompostWet);   // olgunlaşan yığına girdi atılmaz
+        }
+
+        [Fact]
+        public void Butun_TarlaArabasiEkinTipineGoreSerer()
+        {
+            var g = Whole();
+            var steward = Person(1, 6, 5);
+            g.Pop.Add(steward);
+            g.House.AddItem("item.wheelbarrow", 1);
+            var lean = Put(g.World, "item.crop_rye", 20, 4);
+            var root = Put(g.World, "item.crop_carrot", 22, 4);
+            var heavy = Put(g.World, "item.crop_cabbage", 24, 4);
+            foreach (var crop in new[] { lean, root, heavy }) { var p = g.Plants.Plot(crop.Position); p.Fertility = 0.2f; p.Worked = true; }
+            g.House.AddItem("item.compost", 5); g.House.AddItem("item.manure", 5); g.House.AddItem("item.bone_meal", 5);
+            g.Life.Fleet.FertilizeRule = true;
+            g.Life.RunFleetDay(0);
+            Assert.True(g.Life.Fleet.Assign(g.Life.Fleet.Carts[0], CartJob.Field, 0, 1, 0).IsEmpty);
+            Assert.Equal(3, g.Life.SpreadByCart(4) + 1);                         // çavdara serilmez
+            Assert.Equal(0.2f, g.Plants.FertilityAt(lean.Position));
+            Assert.True((g.Plants.Plot(root.Position).Cycle & Fertilizer.BoneMeal) != 0);   // köke kemik unu
+            Assert.True((g.Plants.Plot(heavy.Position).Cycle & Fertilizer.Manure) != 0);    // oburdaki önce gübre
+            Assert.Equal(4, g.House.Count("item.manure"));
+            Assert.Equal(5, g.House.Count("item.compost"));
+        }
+
+        [Fact]
+        public void Butun_KemikDegirmeniGucleOgutur_KumesHayvaniYiginaGubreKatarVeSinekYer()
+        {
+            var g = Whole();
+            var mill = Put(g.World, "item.bone_mill", 3, 3);
+            g.House.AddItem("item.bone", 5);
+            bool power = false;
+            g.Life.Compost.Powered = it => power;
+            long clear = 1;
+            while (g.Life.Weather.WeatherOn(clear) != WeatherType.Clear || g.Life.Weather.WeatherOn(clear + 1) != WeatherType.Clear) clear++;
+            g.Clock.Restore(clear + 0.3, 1);                                   // açık hava: yağmurda sinek uçmaz
+            var barn = Put(g.World, "item.coop", 15, 12);
+            var heap = Put(g.World, "item.compost_heap", 8, 8);
+            var birds = new List<Animal>();
+            for (int i = 0; i < 4; i++) birds.Add(g.Animals.Restore(10 + i, Db.Animals.Get("animal.chicken"), new GridPos(25, 15), barn.Id, 100f, 30, 0, 0));
+            g.Life.Filth.TemperatureAt = _ => 18f;
+            var pile = g.Life.Filth.Drop(PileKind.Human, new GridPos(9, 7));
+            g.Life.Filth.Tick(0.3); g.Life.Filth.Refresh();
+            var src = g.Life.Filth.Sources.Single(x => x.ItemId == pile.Id);
+            Assert.True(g.Life.Filth.HasFlies(src));
+
+            g.Life.RunYardDay(clear);
+            Assert.Equal(5, g.House.Count("item.bone"));                         // güç yok: öğütmez
+            Assert.Equal(0.0, g.Life.Compost.HeapOf(heap).Wet, 3);               // tavuklar uzakta
+            power = true;
+            for (int i = 0; i < 4; i++) birds[i].Position = new GridPos(9 + i % 2, 9);
+            g.Life.RunYardDay(clear + 1);
+            Assert.Equal(1, g.House.Count("item.bone"));
+            Assert.Equal(4, g.House.Count("item.bone_meal"));
+            Assert.Equal(1.0, g.Life.Compost.HeapOf(heap).Wet, 3);               // dört tavuk × 0,25
+            Assert.False(g.Life.Filth.HasFlies(src));                            // yığın başındaki tavuklar sineği yer
+        }
+
+        [Fact]
+        public void Araba_TekerlekMarangozlukIster_OrtuluArabaYagmurdaKorur()
+        {
+            var (f, fleet, d1, _) = Fleet();
+            var cart = fleet.Carts[0];
+            cart.Wear = 0.9;
+            int carpentry = 1;
+            fleet.CarpentryLevel = () => carpentry;
+            Assert.Equal("yard.cart.b.no_wheel", fleet.RepairBlocker(cart).Key);
+            f.House.AddItem("item.cart_wheel", 1);
+            Assert.Equal("yard.cart.b.carpentry", fleet.RepairBlocker(cart).Key);
+            Assert.False(fleet.Repair(cart));
+            carpentry = 2;
+            Assert.True(fleet.Repair(cart));
+            Assert.Equal("yard.cart.b.wheel_fine", fleet.RepairBlocker(cart).Key);
+
+            var g = Whole();
+            var d = Person(1, 3, 3); g.Pop.Add(d);
+            var barn = Put(g.World, "item.barn", 10, 10);
+            g.Animals.Restore(1, Db.Animals.Get("animal.horse"), new GridPos(14, 12), barn.Id, 100f, 30, 0, 0);
+            long rainy = 0;
+            while (g.Life.Weather.WeatherOn(rainy) != WeatherType.Rain) rainy++;
+            g.Clock.Restore(rainy + 0.3, 1);
+            g.House.AddItem("item.horse_cart", 1);
+            var horse = g.Life.Fleet.Carts.Single();
+            Assert.True(g.Life.Fleet.Assign(horse, CartJob.Market, 1, 1, g.Clock.DayIndex).IsEmpty);
+            Assert.Equal(0.9, g.Life.MarketEarnFactor(), 6);
+            g.Life.Fleet.Assign(horse, CartJob.Idle, 0, 0, g.Clock.DayIndex);
+            g.House.AddItem("item.covered_cart", 1);
+            var covered = g.Life.Fleet.Carts.Single(x => x.DefId == "item.covered_cart");
+            Assert.True(g.Life.Fleet.Assign(covered, CartJob.Market, 1, 1, g.Clock.DayIndex).IsEmpty);
+            Assert.Equal(1.0, g.Life.MarketEarnFactor(), 6);
+        }
+
+        [Fact]
+        public void Butun_AciktaKalanYemekMutfagaSinekVeFareCeker()
+        {
+            var g = Whole();
+            var pot = Put(g.World, "item.cooking_pot", 4, 4);
+            g.House.AddItem("item.cabbage", 6);                                  // depo yok: hepsi açıkta
+            g.House.AddItem("item.wheat", 6);
+            g.Life.Spoilage.Tick(0.01);
+            Assert.True(g.Life.Spoilage.OpenUnits >= 6);
+            g.Life.Filth.TemperatureAt = _ => 18f;
+            g.Life.RunYardDay(1);
+            Assert.Contains(g.Life.Filth.Sources, x => x.ItemId == pot.Id && x.Kind == "food");
+            g.Life.RunYardDay(2);
+            Assert.Equal(2, g.Life.YardHealth.OpenFoodDays);
+            Assert.Equal(1, g.Life.YardHealth.Mice);                             // ikinci açık günde fare geldi
+        }
+
         [Fact]
         public void Icerik_HerEkinBeslenmeTipiBildirir_YeniEsyalarVar()
         {

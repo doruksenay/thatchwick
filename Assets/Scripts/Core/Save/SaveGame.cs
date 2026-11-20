@@ -268,7 +268,7 @@ namespace Thatchwick.Core.Save
                         x = kv.Key.X, y = kv.Key.Y, fertility = kv.Value.Fertility, lastCrop = kv.Value.LastCrop, prevCrop = kv.Value.PrevCrop,
                         worked = kv.Value.Worked, residual = kv.Value.Residual, residualNext = kv.Value.ResidualNext, cycle = (int)kv.Value.Cycle,
                         rawFilth = kv.Value.RawFilth, burnUntil = kv.Value.BurnUntil, marlUntil = kv.Value.MarlUntil, limedUntil = kv.Value.LimedUntil,
-                        mulchUntil = kv.Value.MulchUntil, ashDay = kv.Value.AshDay
+                        mulchUntil = kv.Value.MulchUntil, ashDay = kv.Value.AshDay, weedy = kv.Value.Weedy, weedFreeUntil = kv.Value.WeedFreeUntil
                     });
                 soil.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
                 data.soil = soil.ToArray();
@@ -517,7 +517,7 @@ namespace Thatchwick.Core.Save
                 var plot = plants.Plot(pos);
                 plot.Worked = s.worked; plot.Residual = s.residual; plot.ResidualNext = s.residualNext;
                 plot.Cycle = (Content.Fertilizer)s.cycle; plot.RawFilth = s.rawFilth;
-                plot.BurnUntil = s.burnUntil; plot.MarlUntil = s.marlUntil; plot.LimedUntil = s.limedUntil; plot.MulchUntil = s.mulchUntil;
+                plot.BurnUntil = s.burnUntil; plot.MarlUntil = s.marlUntil; plot.LimedUntil = s.limedUntil; plot.MulchUntil = s.mulchUntil; plot.Weedy = s.weedy; plot.WeedFreeUntil = s.weedFreeUntil;
                 plot.AshDay = s.ashDay == 0 && !s.worked ? -1000 : s.ashDay;
             }
         }

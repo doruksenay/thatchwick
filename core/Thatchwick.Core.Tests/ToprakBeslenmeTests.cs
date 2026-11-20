@@ -394,7 +394,7 @@ namespace Thatchwick.Core.Tests
             Do(c, ok, "harvest"); int full = c.House.Count("wheat");
             Do(c, down, "harvest"); int half = c.House.Count("wheat") - full;
             Assert.True(half <= full / 2 + 1 && half < full, $"{half} / {full}");
-            Assert.Contains("yatmıştı", note);
+            Assert.Contains("yard.note.lodged", note);   // testte çözücü kurulu değil: anahtar döner
         }
 
         [Fact]

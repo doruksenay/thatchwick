@@ -22,7 +22,9 @@ namespace Thatchwick.Core.Farmyard
         private readonly FilthService _filth;
         private readonly HashSet<int> _dirtyHands = new HashSet<int>();
         private readonly Random _rng;
-        private int _tainted, _mice, _cleanDays, _reekDays;
+        private int _tainted, _mice, _cleanDays, _reekDays, _openFoodDays;
+        /// <summary>Açıkta yiyecek kalan üst üste gün (fare çağırır).</summary>
+        public int OpenFoodDays => _openFoodDays;
 
         public YardConfig Config => _filth.Config;
 
@@ -91,16 +93,17 @@ namespace Thatchwick.Core.Farmyard
         /// Yeni gün: kokan yığın ya da bayat süprüntü fareyi çağırır; kedi başına bir fare eksilir. Kalan her fare kilerden
         /// bir mal yer. Dönen liste yenen mallardır.
         /// </summary>
-        public List<string> OnNewDay(int cats, out int caught)
+        public List<string> OnNewDay(int cats, out int caught, bool openFood = false)
         {
             caught = 0;
             bool refuse = false;
+            _openFoodDays = openFood ? _openFoodDays + 1 : 0;
             foreach (var p in _filth.Piles) if (p.Kind == PileKind.Refuse && p.Age >= Config.MiceAttractAge) { refuse = true; break; }
             int reeking = _filth.ReekingCount;
             if (reeking > 0) { _reekDays++; _cleanDays = 0; }
             else { _reekDays = 0; _cleanDays = _filth.Sources.Count == 0 ? _cleanDays + 1 : 0; }
 
-            if (refuse || _reekDays >= 2) _mice = Math.Min(Config.MiceMax, _mice + 1);
+            if (refuse || _reekDays >= 2 || _openFoodDays >= Config.OpenFoodMiceDays) _mice = Math.Min(Config.MiceMax, _mice + 1);
             else if (_mice > 0) _mice--;
             caught = Math.Min(_mice, Math.Max(0, cats));
             _mice -= caught;
@@ -117,13 +120,14 @@ namespace Thatchwick.Core.Farmyard
         {
             var hands = new List<int>(_dirtyHands);
             hands.Sort();
-            return new YardHealthSave { dirtyHands = hands.ToArray(), tainted = _tainted, mice = _mice, cleanDays = _cleanDays, reekDays = _reekDays };
+            return new YardHealthSave { dirtyHands = hands.ToArray(), tainted = _tainted, mice = _mice, cleanDays = _cleanDays, reekDays = _reekDays, openFoodDays = _openFoodDays };
         }
 
         public void Import(YardHealthSave data)
         {
-            _dirtyHands.Clear(); _tainted = 0; _mice = 0; _cleanDays = 0; _reekDays = 0;
+            _dirtyHands.Clear(); _tainted = 0; _mice = 0; _cleanDays = 0; _reekDays = 0; _openFoodDays = 0;
             if (data == null) return;
+            _openFoodDays = Math.Max(0, data.openFoodDays);
             if (data.dirtyHands != null) foreach (var id in data.dirtyHands) _dirtyHands.Add(id);
             _tainted = Math.Max(0, data.tainted); _mice = Math.Max(0, data.mice);
             _cleanDays = Math.Max(0, data.cleanDays); _reekDays = Math.Max(0, data.reekDays);

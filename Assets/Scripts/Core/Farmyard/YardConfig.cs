@@ -61,6 +61,18 @@ namespace Thatchwick.Core.Farmyard
         public double FlySpoilFactor = 1.2;
         /// <summary>Kırlangıç yuvasının sinekten koruduğu yarıçap (karo).</summary>
         public int SwallowRadius = 6;
+        /// <summary>Kompost avlusu (57c D7): yığının bu kadar karo yakınındaki kümes hayvanı sinek yer, gübresi yığına
+        /// eklenir (kuş başına günde yaş birim).</summary>
+        public int PoultryHeapRadius = 2;
+        public double PoultryDroppings = 0.25;
+        /// <summary>Su gücüyle kemik değirmeni günde en çok bu kadar kemik öğütür (2 kemik → 2 kemik unu).</summary>
+        public int BoneMillPerDay = 4;
+        /// <summary>Depoya sığmayıp açıkta kalan yiyecek bu adedi geçince mutfakta sinek olur; iki gün sürerse fare gelir.</summary>
+        public int OpenFoodFlies = 3, OpenFoodMiceDays = 2;
+        /// <summary>Yağmurda örtüsüz arabayla pazara inen malın kaybı (örtülü araba korur).</summary>
+        public double RainSaleLoss = 0.10;
+        /// <summary>Tekerlek takmak için gereken Marangozluk seviyesi.</summary>
+        public int RepairCarpentry = 2;
 
         // ---- açıkta tuvalet ----
         public float ReliefRestore = 70f;

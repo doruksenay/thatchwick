@@ -283,8 +283,8 @@ namespace Thatchwick.Core.Work
                 if (Plants != null)
                     switch (Plants.CanFertilize(item.Position, interaction.FertilizerKind))
                     {
-                        case FertilizeOutcome.Saturated: return "Toprak doymuş: bu ekimde gübrelendi, hasattan sonra yeniden serilir.";
-                        case FertilizeOutcome.AshUsed: return "Bu toprağa bu yıl kül serildi.";
+                        case FertilizeOutcome.Saturated: return Thatchwick.Core.Localization.CoreText.T("yard.block.saturated");
+                        case FertilizeOutcome.AshUsed: return Thatchwick.Core.Localization.CoreText.T("yard.block.ash_used");
                     }
             }
             if (interaction.Slaughter)
@@ -463,12 +463,12 @@ namespace Thatchwick.Core.Work
                 var outcome = Plants.ApplyFertilizer(item.Position, interaction.FertilizerKind, amount, item, filth);
                 switch (outcome)
                 {
-                    case FertilizeOutcome.Burned: farmNotes.Add("taze gübre ekini yaktı: büyüme bir gün durdu"); break;
-                    case FertilizeOutcome.Limed: farmNotes.Add("marn erken serildi: toprak kireçlendi"); break;
+                    case FertilizeOutcome.Burned: farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("yard.note.burned")); break;
+                    case FertilizeOutcome.Limed: farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("yard.note.limed")); break;
                 }
-                if (interaction.FertilizerKind == Fertilizer.Marl) farmNotes.Add("marnlandı: nadas tavanı yükseldi");
-                else if (interaction.FertilizerKind == Fertilizer.Mulch) farmNotes.Add("malçlandı: toprak nemini tutar");
-                else farmNotes.Add($"toprak verimi %{Plants.FertilityAt(item.Position) * 100f:0}");
+                if (interaction.FertilizerKind == Fertilizer.Marl) farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("yard.note.marled"));
+                else if (interaction.FertilizerKind == Fertilizer.Mulch) farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("yard.note.mulched"));
+                else farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("yard.note.fertility", ("pct", (int)Math.Round(Plants.FertilityAt(item.Position) * 100f))));
                 Fertilized?.Invoke(character, item, interaction.FertilizerKind, outcome);
             }
 
@@ -498,11 +498,11 @@ namespace Thatchwick.Core.Work
                 // Hasat notları (belge 57c, 57d): oyuncu ürünün neden az ya da düşük kaliteli çıktığını görsün.
                 switch (Plants.DamageOf(item))
                 {
-                    case CerealDamage.Lodged: farmNotes.Add("ekin yatmıştı: ürünün bir kısmı yerde kaldı"); break;
-                    case CerealDamage.Shattered: farmNotes.Add("fırtına başağı dökmüştü"); break;
+                    case CerealDamage.Lodged: farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("yard.note.lodged")); break;
+                    case CerealDamage.Shattered: farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("yard.note.shattered")); break;
                 }
-                if (Plants.IsSpoiledByManure(item)) farmNotes.Add(item.Def.Feed == FeedType.Light ? "taze gübre yaramadı: kalite düştü" : "fazla gübre yaramadı: kalite düştü");
-                else if (Plants.IsLeafy(item)) farmNotes.Add("toprak fazla zengindi: yaprağa kaçtı");
+                if (Plants.IsSpoiledByManure(item)) farmNotes.Add(Thatchwick.Core.Localization.CoreText.T(item.Def.Feed == FeedType.Light ? "yard.note.spoiled_fresh" : "yard.note.spoiled_rich"));
+                else if (Plants.IsLeafy(item)) farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("yard.note.leafy"));
                 if (Plants.HasRawFilth(item)) RawFilthHarvested?.Invoke(character, item);
             }
             // Kalite kaynağı (53 §4.3-4.6): ekin puanı (birim başına dağılım), toplama/balık/av/meyve (toplayanın becerisi),

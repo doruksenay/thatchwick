@@ -2484,6 +2484,7 @@ namespace Thatchwick.Game
                 DraftAnimals = _animals.DraftAnimals,
                 FleetBlocker = () => _life.MarketCartBlocker(),      // araba filosu: pazara atanmış araba (belge 57e)
                 ExtraCapacity = () => _life.MarketExtraCapacity(),
+                EarnFactor = () => _life.MarketEarnFactor(),         // yağmurda örtüsüz araba: mal ıslanır (belge 57e)
                 Carter = () => BestMember(SkillType.Carting)
             };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)

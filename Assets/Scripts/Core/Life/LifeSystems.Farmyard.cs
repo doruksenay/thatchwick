@@ -25,7 +25,8 @@ namespace Thatchwick.Core.Life
         public const string ActPileCollect = "pile_collect", ActCompostWet = "compost_add_wet", ActCompostDry = "compost_add_dry",
             ActCompostAsh = "compost_add_ash", ActCompostTurn = "compost_turn", ActCompostTake = "compost_take", ActWormFeed = "worm_feed",
             ActLeafFill = "leaf_fill", ActSlurryBrew = "slurry_brew", ActBarnClean = "barn_clean", ActBarnLitter = "barn_litter",
-            ActDungStack = "dung_stack", ActRakeLeaves = "rake_leaves";
+            ActDungStack = "dung_stack", ActRakeLeaves = "rake_leaves", ActWeed = "weed";
+        public const string BoneMillTag = "bone_mill", BoneId = "item.bone", BoneMealId = "item.bone_meal", WeedYieldId = "item.herb";
         /// <summary>Kıyı ve Güney seferinin getirdikleri.</summary>
         public const string SeaweedId = "item.seaweed", MarlId = "item.marl", DungCakeId = "item.dung_cake";
 
@@ -44,6 +45,41 @@ namespace Thatchwick.Core.Life
         private double _refuseDebt;
         private YardSave _pendingYard;
         private bool _parkPending = true;
+        private readonly List<GridPos> _guardNests = new List<GridPos>(), _guardHeaps = new List<GridPos>();
+        private long _flyGuardsDay = long.MinValue;
+        private int _kitchenAnchor;
+
+        private static bool Near(GridPos a, GridPos b, int r) => a.Z == b.Z && Math.Abs(a.X - b.X) <= r && Math.Abs(a.Y - b.Y) <= r;
+
+        /// <summary>Sinek yiyenlerin yerleri: kırlangıç yuvaları ve yanında kümes hayvanı eşelenen kompost yığınları.</summary>
+        private void RefreshFlyGuards()
+        {
+            _flyGuardsDay = Clock.DayIndex;
+            _guardNests.Clear(); _guardHeaps.Clear();
+            foreach (var it in World.Items)
+            {
+                if (it.IsDecor) continue;
+                if (it.Def.HasTag("swallow_nest")) _guardNests.Add(it.Position);
+                else if (Compost.IsHeap(it) && Compost.PoultryNear != null && Compost.PoultryNear(it)) _guardHeaps.Add(it.Position);
+            }
+        }
+
+        /// <summary>
+        /// Mutfak: depoya sığmayan yiyeceğin "açıkta" durduğu yer (belge 60c §2.6). İçerideki ilk mutfak eşyası; yoksa 0.
+        /// </summary>
+        private void RefreshKitchenAnchor()
+        {
+            _kitchenAnchor = 0;
+            foreach (var it in World.Items)
+            {
+                if (it.IsDecor || it.Def.Category != "kitchen") continue;
+                var room = World.Map.Rooms.RoomAt(it.Position);
+                if (room != null && room.IsIndoor) { _kitchenAnchor = it.Id; return; }
+                if (_kitchenAnchor == 0) _kitchenAnchor = it.Id;   // içeride mutfak yoksa dışarıdaki ocak
+            }
+        }
+
+        private bool FoodLeftOut => Spoilage.OpenUnits >= YardNumbers.OpenFoodFlies;
 
         public FilthService Filth => _filth ?? (_filth = CreateFilth());
         public CompostService Compost => _compost ?? (_compost = CreateCompost());
@@ -77,11 +113,14 @@ namespace Thatchwick.Core.Life
             f.Night = () => IsNightNow;
             f.IsRotten = it => Thatchwick.Core.Build.DecorSystem.IsRottenFill(it, Content);   // sepetteki çürük sinek ve koku yapar
             // Kırlangıç yuvası: bahar ve yazda altı karo içindeki sinekleri kırlangıçlar yer.
+            // Kırlangıç yuvası (bahar ve yaz) ve kompost avlusundaki kümes hayvanları sinek yer. Konumlar günde bir toplanır:
+            // bu sorgu her karede her koku kaynağı için çağrılır.
             f.FlyGuard = p =>
             {
-                if (Clock.Season != Time.Season.Spring && Clock.Season != Time.Season.Summer) return false;
-                foreach (var it in World.Items)
-                    if (!it.IsDecor && it.Def.HasTag("swallow_nest") && Math.Abs(it.Position.X - p.X) <= YardNumbers.SwallowRadius && Math.Abs(it.Position.Y - p.Y) <= YardNumbers.SwallowRadius) return true;
+                if (_flyGuardsDay != Clock.DayIndex) RefreshFlyGuards();
+                bool warm = Clock.Season == Time.Season.Spring || Clock.Season == Time.Season.Summer;
+                if (warm) foreach (var n in _guardNests) if (Near(n, p, YardNumbers.SwallowRadius)) return true;
+                foreach (var h in _guardHeaps) if (Near(h, p, YardNumbers.PoultryHeapRadius)) return true;
                 return false;
             };
             if (_heat != null) f.TemperatureAt = _heat.TemperatureAt;
@@ -96,6 +135,8 @@ namespace Thatchwick.Core.Life
             c.Finished += (heap, grade, n) =>
                 Say(LocText.Of(grade == CompostGrade.BlackSoil ? "yard.n.compost_black" : grade == CompostGrade.Mature ? "yard.n.compost_mature" : "yard.n.compost_raw", ("n", n)), NoticeLevel.Info);
             Filth.TierProviders.Add(it => { int t = c.SmellTier(it); return (t, t > 0 ? "compost" : null); });
+            // Açıkta kalan yiyecek mutfakta sinek çeker (60c §2.6).
+            Filth.TierProviders.Add(it => it.Id == _kitchenAnchor && _kitchenAnchor != 0 && FoodLeftOut ? (1, "food") : (0, null));
             return c;
         }
 
@@ -167,6 +208,7 @@ namespace Thatchwick.Core.Life
             {
                 FindCharacter = id => Population.Find(id),
                 CartingLevel = () => BestSkill(SkillType.Carting),
+                CarpentryLevel = () => BestSkill(SkillType.Carpentry),
                 Snow = () => Clock.Season == Time.Season.Winter,
                 JobActive = (job, day) => job != CartJob.Market || (day + 1) % Economy.OxCart.TripEvery == 0,   // pazar seferi haftada bir
                 AnimalLabel = a => string.IsNullOrEmpty(a.Name) ? a.Species.DisplayName : a.Species.DisplayName + " " + a.Name
@@ -227,7 +269,14 @@ namespace Thatchwick.Core.Life
                     var h = Compost.HeapOf(item);
                     if (h.ReadyTotal > 0) act = ActionOf(item, ActCompostTake);
                     else if (Compost.NeedsTurn(item)) act = ActionOf(item, ActCompostTurn);
+                    else if (Compost.WantsFill(item))
+                    {
+                        // Doldurma (57b §5.1): dengeyi koruyacak girdiyi seçer; ötekisi yoksa eldekini koyar.
+                        bool wet = Compost.HeapOf(item).WetShare < 0.5 ? Compost.HasInput(true) : !Compost.HasInput(false) && Compost.HasInput(true);
+                        if (wet || Compost.HasInput(false)) act = ActionOf(item, wet ? ActCompostWet : ActCompostDry);
+                    }
                 }
+                else if (duty == DutyKind.Farm && item.IsPlant && item.Def.IsCrop && _plants != null && _plants.IsWeedy(item.Position)) act = ActionOf(item, ActWeed);
                 else if (duty == DutyKind.Animals && _barn != null && _barn.NeedsCleaning(item)) act = ActionOf(item, ActBarnClean);
                 else if (Filth.IsPile(item))
                 {
@@ -261,6 +310,7 @@ namespace Thatchwick.Core.Life
                     key = Compost.SlurryState(item) != 0 ? "yard.b.slurry_busy" : Compost.ManureForSlurry < YardNumbers.SlurryManure ? "yard.b.no_manure" : null;
                     break;
                 case ActDungStack: key = House.Count(CompostService.FreshManureId) <= 0 ? "yard.b.no_fresh" : Compost.Room(CompostService.ManureId) <= 0 ? "yard.b.heap_full" : null; break;
+                case ActWeed: key = _plants == null || !_plants.IsWeedy(item.Position) ? "yard.b.no_weeds" : null; break;
                 case ActRakeLeaves: key = Clock.Season != Time.Season.Autumn ? "yard.b.leaves_season" : null; break;   // yaprak güzün dökülür
                 case ActBarnClean: key = _barn == null ? "yard.b.clean" : _barn.DirtAt(item) < 1f ? "yard.b.clean" : null; break;
             }
@@ -311,6 +361,9 @@ namespace Thatchwick.Core.Life
                 case ActLeafFill: Compost.FillLeaves(item); break;
                 case ActSlurryBrew: Compost.BrewSlurry(item); break;
                 case ActDungStack: Compost.StackFresh(); YardHealth.MarkDirty(c.Id); break;
+                case ActWeed:
+                    if (_plants != null && _plants.Weed(item.Position) && Content.Items.Contains(WeedYieldId)) House.AddItem(WeedYieldId, 1);   // yolunan ot yem ya da kompost
+                    break;
                 case ActBarnClean:
                     if (_barn != null)
                     {
@@ -428,18 +481,25 @@ namespace Thatchwick.Core.Life
             }
         }
 
+        /// <summary>Avlunun günlük adımı (yeni gün başında kendiliğinden çalışır; testler doğrudan çağırır).</summary>
+        public void RunYardDay(long day) => YardDay(day);
+
         private void YardDay(long day)
         {
             var yesterday = Weather.Today(Clock.TotalDays - 0.5);
             Filth.OnNewDay(yesterday == WeatherType.Rain || yesterday == WeatherType.Storm, yesterday == WeatherType.Storm);
             Compost.OnNewDay();
             _barn?.OnNewDay();
+            RefreshFlyGuards();
+            RefreshKitchenAnchor();
             Filth.Refresh();
             FleetDay(day);
 
             int cats = 0;
             if (_yardAnimals != null) foreach (var a in _yardAnimals.Animals) if (!a.IsDead && a.IsMature && a.Species.Id == "animal.cat") cats++;
-            var eaten = YardHealth.OnNewDay(cats, out int caught);
+            PoultryDroppings();
+            MillBones();
+            var eaten = YardHealth.OnNewDay(cats, out int caught, FoodLeftOut);
             if (caught > 0 && _yardAnimals != null)
                 foreach (var a in _yardAnimals.Animals)
                     if (!a.IsDead && a.IsMature && a.Species.Id == "animal.cat") { _yardAnimals.AddDeed(a, Animals.Genetics.PetLegends.Rats, 1); if (--caught <= 0) break; }
@@ -608,14 +668,69 @@ namespace Thatchwick.Core.Life
                 var crop = World.GetItemAt(t.Key);
                 if (crop != null && !(crop.IsPlant && crop.Def.IsCrop)) continue;
                 if (_plants.CanFertilize(t.Key, Fertilizer.Compost) != FertilizeOutcome.Ok) continue;
-                if (House.Count(CompostService.MatureId) > 0 && House.TryTakeItem(CompostService.MatureId))
-                    _plants.ApplyFertilizer(t.Key, Fertilizer.Compost, 0.30f, crop);
-                else if (TakeManure())
-                    _plants.ApplyFertilizer(t.Key, Fertilizer.Manure, 0.45f, crop);   // olgun gübre yakmaz
-                else continue;
-                done++;
+                if (SpreadFor(t.Key, crop)) done++;
             }
             return done;
+        }
+
+        /// <summary>
+        /// Ekinin tipine göre serer (57c §4): yağsız toprak seven ekine hiç; az yiyen köke yalnızca kemik unu; çok yiyene önce
+        /// olgun gübre; ötekilere önce olgun kompost. Boş karoya kompost ya da gübre. Serdiyse true.
+        /// </summary>
+        private bool SpreadFor(GridPos p, ItemInstance crop)
+        {
+            var feed = crop?.Def.Feed ?? FeedType.Medium;
+            if (feed == FeedType.Lean) return false;
+            if (feed == FeedType.Light)
+            {
+                if (crop.Def.IsCrop && (crop.Def.DislikesFertilizer & Fertilizer.BoneMeal) != 0) return false;
+                if (!House.TryTakeItem(BoneMealId)) return false;
+                _plants.ApplyFertilizer(p, Fertilizer.BoneMeal, 0.25f, crop);
+                return true;
+            }
+            bool manureFirst = feed == FeedType.Heavy;
+            for (int pass = 0; pass < 2; pass++)
+            {
+                bool tryManure = (pass == 0) == manureFirst;
+                if (tryManure && TakeManure()) { _plants.ApplyFertilizer(p, Fertilizer.Manure, 0.45f, crop); return true; }   // olgun gübre yakmaz
+                if (!tryManure && House.TryTakeItem(CompostService.MatureId)) { _plants.ApplyFertilizer(p, Fertilizer.Compost, 0.30f, crop); return true; }
+            }
+            return false;
+        }
+
+        /// <summary>Kompost avlusu (57c D7): yığının yanında eşelenen kümes hayvanlarının gübresi yığına eklenir.</summary>
+        private void PoultryDroppings()
+        {
+            if (_yardAnimals == null || !_yardAnimals.Released) return;
+            foreach (var heap in new List<ItemInstance>(World.Items))
+            {
+                if (heap.IsDecor || !Compost.IsHeap(heap)) continue;
+                int birds = 0;
+                foreach (var a in _yardAnimals.Animals)
+                    if (!a.IsDead && a.Species.Housing == "coop" && Near(a.Position, heap.Position, YardNumbers.PoultryHeapRadius)) birds++;
+                if (birds > 0) Compost.Add(heap, birds * YardNumbers.PoultryDroppings, 0);
+            }
+        }
+
+        /// <summary>Kemik değirmeni (57c D5): su ya da yel gücü alıyorsa envanterdeki kemiği kendiliğinden öğütür.</summary>
+        private void MillBones()
+        {
+            if (Compost.Powered == null || !Content.Items.Contains(BoneMealId)) return;
+            int budget = 0;
+            foreach (var it in World.Items) if (!it.IsDecor && it.Def.HasTag(BoneMillTag) && Compost.Powered(it)) budget += YardNumbers.BoneMillPerDay;
+            int milled = 0;
+            while (budget >= 2 && House.Count(BoneId) >= 2 && House.TryTakeItem(BoneId) && House.TryTakeItem(BoneId)) { House.AddItem(BoneMealId, 2); milled += 2; budget -= 2; }
+            if (milled > 0) Say(LocText.Of("yard.n.bones_milled", ("n", milled)), NoticeLevel.Info);
+        }
+
+        /// <summary>Pazar seferinin satış çarpanı: yağmurda örtüsüz arabayla inen mal ıslanır (örtülü araba korur, 57e §2.3).</summary>
+        public double MarketEarnFactor()
+        {
+            var w = Weather.Today(Clock.TotalDays);
+            if (w != WeatherType.Rain && w != WeatherType.Storm || _fleet == null) return 1.0;
+            foreach (var c in _fleet.Carts) if (c.Job == CartJob.Market && c.DefId == CartFleet.CoveredCartId && _fleet.Blocker(c, Clock.DayIndex).IsEmpty) return 1.0;
+            Say(LocText.Of("yard.n.rain_sale", ("pct", (int)Math.Round(YardNumbers.RainSaleLoss * 100))), NoticeLevel.Warning);
+            return 1.0 - YardNumbers.RainSaleLoss;
         }
 
         private bool TakeManure() => Compost.Withdraw(CompostService.ManureId, 1) > 0 || House.TryTakeItem(CompostService.ManureId);

@@ -68,7 +68,7 @@ namespace Thatchwick.Core.Farmyard
         public int[] dirtyHands;
         public int tainted;              // pislikli ham kompostla büyümüş, sofraya gelecek çiğ ürün
         public int mice;
-        public int cleanDays, reekDays;
+        public int cleanDays, reekDays, openFoodDays;
     }
 
     [Serializable]

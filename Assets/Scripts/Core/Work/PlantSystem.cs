@@ -41,6 +41,12 @@ namespace Thatchwick.Core.Work
 
         /// <summary>Bu döngüde verim katan bir gübre serildi mi (marn ve malç sayılmaz).</summary>
         public bool Fed => (Cycle & ~(Fertilizer.Marl | Fertilizer.Mulch)) != 0;
+
+        // ---- yabani ot (belge 59 §8, 57d §3) ----
+        /// <summary>Karoda yabani ot var: yolunana dek büyüme yavaşlar.</summary>
+        public bool Weedy;
+        /// <summary>Deniz yosunu serildi: bu güne dek ot çıkmaz.</summary>
+        public double WeedFreeUntil;
     }
 
     /// <summary>Gübre serme sonucu.</summary>
@@ -101,6 +107,10 @@ namespace Thatchwick.Core.Work
         /// <summary>Malç bu kadar gün sürer; malçlı toprakta sulanmamış ekinin büyüme çarpanı.</summary>
         public double MulchDays = 20.0;
         public float MulchDryGrowth = 0.65f;
+        /// <summary>Yabani ot (59 §8): sulanan ekili karoda günlük çıkma şansı (3-4 günde bir), otlu karonun büyüme çarpanı;
+        /// malçta yarı şans; deniz yosunu bu kadar gün ot bastırır.</summary>
+        public float WeedChance = 0.28f, WeedGrowth = 0.85f, MulchWeedFactor = 0.5f;
+        public double SeaweedWeedDays = 20;
         /// <summary>Kül yılda bir serilir.</summary>
         public double AshEveryDays = 40.0;
         /// <summary>Aynı aileyi üst üste sevmeyen ekinlerde (keten, çivit otu) nöbet cezası çarpanı.</summary>
@@ -330,6 +340,59 @@ namespace Thatchwick.Core.Work
         /// <summary>Karonun toprak kaydı (yoksa oluşturur).</summary>
         public SoilPlot Plot(GridPos p) => PlotAt(p);
 
+        // ---------- yabani ot ----------
+
+        /// <summary>Ot çıkma şansı çarpanı (zorluk ayarı; null ise 1).</summary>
+        public Func<float> WeedRate { get; set; }
+
+        public bool IsWeedy(GridPos p) { var plot = PlotOrNull(p); return plot != null && plot.Weedy; }
+
+        /// <summary>Otlu karolar (görünüm ve görevli).</summary>
+        public IEnumerable<GridPos> WeedyPlots { get { foreach (var kv in _soil) if (kv.Value.Weedy) yield return kv.Key; } }
+
+        /// <summary>Otu yolar; karoda ot varsa true.</summary>
+        public bool Weed(GridPos p)
+        {
+            var plot = PlotOrNull(p);
+            if (plot == null || !plot.Weedy) return false;
+            plot.Weedy = false;
+            return true;
+        }
+
+        /// <summary>Bu ekin otu bastırır mı: sık ekilmiş yapraklı ya da kabak (aynı aileden en az iki komşu).</summary>
+        private bool Shades(ItemInstance crop)
+        {
+            string fam = crop.Def.CropFamily;
+            if (fam != "yaprak" && fam != "kabak") return false;
+            int n = 0;
+            var p = crop.Position;
+            foreach (var q in new[] { new GridPos(p.X + 1, p.Y, p.Z), new GridPos(p.X - 1, p.Y, p.Z), new GridPos(p.X, p.Y + 1, p.Z), new GridPos(p.X, p.Y - 1, p.Z) })
+            {
+                var o = _world.GetItemAt(q);
+                if (o != null && o.IsPlant && o.Def.IsCrop && o.Def.CropFamily == fam) n++;
+            }
+            return n >= 2;
+        }
+
+        /// <summary>
+        /// Yabani ot (belge 59 §8): dün sulanan, büyümekte olan ekinin karosunda 3-4 günde bir ot çıkar. Malç yarı şans,
+        /// deniz yosunu hiç; sık ekilmiş yaprak ve kabak otu bastırır.
+        /// </summary>
+        private void SproutWeeds(List<ItemInstance> crops, HashSet<int> wetBefore)
+        {
+            double now = Today;
+            float rate = WeedRate != null ? Math.Max(0f, WeedRate()) : 1f;
+            if (rate <= 0f) return;
+            foreach (var crop in crops)
+            {
+                if (crop.IsGrown || !wetBefore.Contains(crop.Id)) continue;
+                var plot = PlotAt(crop.Position);
+                if (plot.Weedy || plot.WeedFreeUntil > now || Shades(crop)) continue;
+                float chance = Config.WeedChance * rate * (plot.MulchUntil > now ? Config.MulchWeedFactor : 1f);
+                if (_rng.NextDouble() < chance) plot.Weedy = true;
+            }
+        }
+
         public bool IsMulched(GridPos p) { var plot = PlotOrNull(p); return plot != null && plot.MulchUntil > Today; }
         public bool IsMarled(GridPos p) { var plot = PlotOrNull(p); return plot != null && plot.MarlUntil > Today; }
 
@@ -364,6 +427,7 @@ namespace Thatchwick.Core.Work
                 if (early) { plot.LimedUntil = now + Config.LimedDays; return FertilizeOutcome.Limed; }
                 return FertilizeOutcome.Ok;
             }
+            if (kind == Fertilizer.Seaweed) plot.WeedFreeUntil = now + Config.SeaweedWeedDays;   // yosun otu bastırır (57d §3.2)
             if (kind == Fertilizer.Mulch)
             {
                 plot.MulchUntil = now + Config.MulchDays;
@@ -757,6 +821,7 @@ namespace Thatchwick.Core.Work
                 bool indoor = room != null && room.IsIndoor;
                 if (rained && !indoor) crop.Watered = true;
             }
+            SproutWeeds(crops, wetBefore);
 
             // Kanal yalnızca kaynağa (kuyu, kova-makara) bağlı bir zincirdeyse sular.
             HashSet<int> network = null;
@@ -999,6 +1064,7 @@ namespace Thatchwick.Core.Work
                     var plot = PlotOrNull(item.Position);
                     if (plot != null && plot.BurnUntil > Today) { item.AgeDays += gameDays; continue; }   // taze gübre yaktı: büyüme durdu
                     rate *= Config.GrowthFactor(item.Def.Feed, FertilityAt(item.Position));
+                    if (plot != null && plot.Weedy) rate *= Config.WeedGrowth;   // yolunmamış ot (59 §8)
                     if (NearActiveHive(item.Position)) rate *= 1f + Config.PollinationGrowth;
                     // Malç toprağın nemini tutar: sulanmamış gün daha az yavaşlatır.
                     if (!item.Watered) rate *= plot != null && plot.MulchUntil > Today ? Math.Max(Config.DryGrowth, Config.MulchDryGrowth) : Config.DryGrowth;
