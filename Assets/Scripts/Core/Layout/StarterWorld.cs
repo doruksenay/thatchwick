@@ -24,9 +24,11 @@ namespace Thatchwick.Core.Layout
         {
             var map = new GridMap(MapWidth, MapHeight);
             // Test haritası: kaynaklı doğal gölet (hep dolu; böcekli, içinde sazan, kerevit ve alabalık).
-            for (int x = 8; x < 20; x++)
-                for (int y = 44; y < 52; y++)
-                    map.SetFloor(new GridPos(x, y), FloorType.Water);
+            // Taslak varsa (maps/farm) gölet girintili biçimiyle ve kıyı kumuyla oradan; yoksa eski dikdörtgen.
+            if (!Regions.FarmPond(map))
+                for (int x = 8; x < 20; x++)
+                    for (int y = 44; y < 52; y++)
+                        map.SetFloor(new GridPos(x, y), FloorType.Water);
             var natural = new GridPos(8, 44);
             map.SetSpring(natural);
             map.RestorePond(natural, 1f, spring: true, insects: true, filledDays: 30, new[]
