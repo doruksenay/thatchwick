@@ -339,6 +339,22 @@ namespace Thatchwick.Core.World
             return true;
         }
 
+        /// <summary>Çiftlik göleti ve kıyı kumu taslaktan (kaynak karosu 8,44 taslakta sudur). Taslak yoksa false.</summary>
+        public static bool FarmPond(GridMap map)
+        {
+            var data = MapFiles.Get(Farm.Id);
+            if (data == null) return false;
+            for (int y = 0; y < data.H; y++)
+                for (int x = 0; x < data.W; x++)
+                {
+                    var t = data.At(x, y);
+                    var p = new GridPos(Farm.X + x, Farm.Y + y);
+                    if (t == MapTerrain.Water || t == MapTerrain.DeepWater) map.SetFloor(p, FloorType.Water);
+                    else if (t == MapTerrain.Sand) map.SetFloor(p, FloorType.Sand);
+                }
+            return true;
+        }
+
         /// <summary>Taslağın sabit eşyaları (simge yapılar): markers.json items.</summary>
         private static void DataItems(Region r, List<RegionItem> into)
         {

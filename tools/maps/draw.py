@@ -479,7 +479,7 @@ def _brush(cv, pts, width, kind, salt, over, mark):
     for i, (x, y) in enumerate(dense):
         if i:
             dist += math.hypot(x - dense[i - 1][0], y - dense[i - 1][1])
-        r = width / 2 + (noise(dist / 3.0, 0, salt) - 0.5) * 0.4
+        r = max(0.72, width / 2 + (noise(dist / 3.0, 0, salt) - 0.5) * 0.4)   # 0.72 > √0.5: çizginin geçtiği her karo boyanır (kopuk patika olmaz)
         for yy in range(math.floor(y - r - 1), math.ceil(y + r + 1)):
             for xx in range(math.floor(x - r - 1), math.ceil(x + r + 1)):
                 if (xx + 0.5 - x) ** 2 + (yy + 0.5 - y) ** 2 <= r * r and cv.get(xx, yy) in over:
@@ -490,8 +490,8 @@ def _brush(cv, pts, width, kind, salt, over, mark):
 WILD_OPTS = {
     # band: (derinlik aralığı, kenarlar) listesi; restroke: patikalar yeniden çizilir; shore: kum olasılığı eşiği (düşük = çok kum)
     'forest': {'band': [((2.5, 5.5), 'NEW'), ((1.5, 3.0), 'S')], 'restroke': True, 'shore': 0.62, 'grow': 0.72, 'salt': 211},
-    'lake': {'band': [((1.5, 3.5), 'NEW'), ((1.0, 2.2), 'S')], 'restroke': True, 'shore': 0.42, 'grow': 0.7, 'salt': 223},
-    'marsh': {'band': [((1.0, 2.8), 'NSE')], 'restroke': False, 'shore': 0.7, 'grow': 0.6, 'salt': 227},
+    'lake': {'band': [((1.5, 3.5), 'NEW'), ((1.0, 2.2), 'S')], 'beach': True, 'restroke': True, 'shore': 0.42, 'grow': 0.7, 'salt': 223},
+    'marsh': {'band': [((1.0, 2.8), 'NSEW')], 'restroke': False, 'shore': 0.7, 'grow': 0.6, 'salt': 227},
     'hill': {'band': [((2.0, 4.5), 'NW'), ((1.0, 2.5), 'S')], 'rock': [((1.5, 3.5), 'E')], 'restroke': True, 'shore': 1.0, 'grow': 1.0, 'salt': 229},
     'slopes': {'band': [((1.0, 2.5), 'EW')], 'restroke': False, 'shore': 1.0, 'grow': 1.0, 'salt': 233},
     'coast': {'band': [((1.5, 3.5), 'NEW')], 'beach': True, 'restroke': True, 'shore': 1.0, 'grow': 1.0, 'salt': 239},
@@ -513,6 +513,24 @@ def wild(region):
             for x in range(W):
                 if cv.get(x, y) == 'dirt':
                     cv.set(x, y, 'sand')   # kumsal: eski kod çiziminde toprak (FloorType.Sand sonradan geldi)
+    if region == 'slopes':
+        # Teras setleri taş döşeme şeridi değil, alçak taş duvar (RegionsWild.SlopesMap kenar olarak çizer).
+        for y in range(H):
+            for x in range(W):
+                if cv.get(x, y) == 'stone':
+                    cv.set(x, y, 'grass')
+    if region == 'hill':
+        # Taş ocağı düzlüğü döşeme gibi duruyordu (Unity 20.11): ocak ve maden ağzı çevresi taş kalır, gerisi çakıllı toprak,
+        # aralarda gürültüyle kaya çıkıntıları (EdgeBand iri kaya koyar).
+        for y in range(H):
+            for x in range(W):
+                if cv.get(x, y) != 'stone':
+                    continue
+                near_q = 27 <= x <= 35 and 21 <= y <= 29
+                near_m = 24 <= x <= 32 and 31 <= y <= 39
+                if near_q or near_m:
+                    continue
+                cv.set(x, y, 'rock' if noise(x / 1.9, y / 1.9, 291) > 0.72 else 'dirt')
     trails, ponds = _wild_src(WILD_FN[region])
     roads = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('path', 'bridge')}
     edge_paths = {(x, y) for (x, y) in roads if x <= 2 or y <= 2 or x >= W - 3 or y >= H - 3}
@@ -556,6 +574,10 @@ def wild(region):
             for x in range(W):
                 if cv.get(x, y) == 'band' and (x, y) not in before:
                     cv.set(x, y, 'rock')
+    # Kaya sırtı patikaya değmez (2x1 devrik kütük yola taşmasın).
+    for (x, y) in near(roads, 2):
+        if cv.get(x, y) == 'rock':
+            cv.set(x, y, 'dirt' if region == 'hill' else 'grass')
     return cv, {'ponds': [], 'items': [], 'keep': []}
 
 
@@ -571,15 +593,58 @@ def farm():
     roads = set()
     for (x, y) in [(x, y) for y in range(H) for x in range(W) if cv.get(x, y) == 'path' and x >= 70]:
         cv.set(x, y, 'grass')
-    _brush(cv, _rounded([(73.5, 40.5), (78.0, 40.8), (83.0, 39.6), (88.0, 39.9), (92.5, 41.0), (96.0, 41.0)], 3.0), 2.2, 'path', 251, over=('grass', 'dirt'), mark=roads)
+    _brush(cv, _rounded([(68.5, 40.5), (73.5, 40.5), (78.0, 40.8), (83.0, 39.6), (88.0, 39.9), (92.5, 41.0), (96.0, 41.0)], 3.0), 2.2, 'path', 251, over=('grass', 'dirt'), mark=roads)
     for (x, y) in [(94, 40), (95, 40), (94, 41), (95, 41)]:
         cv.set(x, y, 'path'); roads.add((x, y))
     connect4(cv)
+    # Gölet: dikdörtgen yerine aynı yerde, kaynağı (8,44) içinde kalan girintili gölet; kıyısında kum ve sazlık cebi.
+    for (x, y) in [(x, y) for y in range(H) for x in range(W) if cv.get(x, y) == 'water']:
+        cv.set(x, y, 'grass')
+    cxp, cyp = 13.5, 47.5
+    for y in range(40, 56):
+        for x in range(4, 24):
+            dx, dy = (x + 0.5 - cxp) / 7.2, (y + 0.5 - cyp) / 4.6
+            r = dx * dx + dy * dy + (noise(x / 2.2, y / 2.2, 261) - 0.5) * 0.55
+            if r <= 1.0 or (x, y) in ((8, 44), (9, 44), (8, 45)):
+                cv.set(x, y, 'water')
     water = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) == 'water'}
+    for (x, y) in water:
+        for ddx, ddy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            n = (x + ddx, y + ddy)
+            if cv.get(*n) == 'grass' and noise(n[0] / 1.7, n[1] / 1.7, 263) > 0.55:
+                cv.set(n[0], n[1], 'sand')
     built = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('stone', 'bridge', 'dirt')}
-    keep = near(roads, 2) | near(water, 2) | near(built, 2)
+    keep = near(roads, 2) | near(water, 2) | near(built, 3)
     band(cv, (1.0, 3.0), salt=257, sides='NWS', keep=keep)
+    # Çiftlik doğası: köşelerde iki koru (bant öbeği), batıda kaya çıkıntısı; evden ve yoldan uzak.
+    def blob(cx, cy, rx, ry, kind, salt):
+        for y in range(int(cy - ry - 2), int(cy + ry + 3)):
+            for x in range(int(cx - rx - 2), int(cx + rx + 3)):
+                if (x, y) in keep or cv.get(x, y) != 'grass':
+                    continue
+                dx, dy = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
+                if dx * dx + dy * dy + (noise(x / 1.6, y / 1.6, salt) - 0.5) * 0.7 <= 1.0:
+                    cv.set(x, y, kind)
+    blob(84, 9, 6.5, 4.0, 'band', 271)     # kuzeydoğu korusu
+    blob(78, 62, 5.0, 3.5, 'band', 273)    # güneydoğu korusu
+    blob(6, 22, 2.2, 3.2, 'rock', 277)     # batıda kaya çıkıntısı
+    blob(52, 60, 2.5, 1.6, 'rock', 279)    # güneyde taşlık
     return cv, {'ponds': [], 'items': [], 'keep': []}
+
+
+def despeckle(cv):
+    """Tek karoluk benek (dört komşusu aynı başka tür): komşunun türüne çevrilir. Yol, köprü ve su dokunulmaz
+    (geçit, iskele ve balık noktası olabilir)."""
+    for y in range(1, cv.h - 1):
+        for x in range(1, cv.w - 1):
+            k = cv.get(x, y)
+            if k in ('path', 'bridge', 'water', 'deep_water'):
+                continue
+            nb = {cv.get(x - 1, y), cv.get(x + 1, y), cv.get(x, y - 1), cv.get(x, y + 1)}
+            if len(nb) == 1:
+                n = nb.pop()
+                if n != k and n not in ('path', 'bridge'):
+                    cv.set(x, y, n)
 
 
 REGIONS = {'road': road, 'town': town, 'farm': farm, **{k: (lambda k=k: wild(k)) for k in WILD_FN}}
@@ -594,6 +659,7 @@ def main():
         if a.only and name != a.only:
             continue
         cv, markers = fn()
+        despeckle(cv)
         out = os.path.join(MAPS, name)
         cv.save(os.path.join(out, 'terrain.png'))
         with open(os.path.join(out, 'markers.json'), 'w', encoding='utf-8') as fh:
