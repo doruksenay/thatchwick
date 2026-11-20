@@ -439,5 +439,53 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(Fertilizer.CompostRaw, ContentMapper.ParseFertilizer("compostRaw"));
             Assert.Equal(Fertilizer.Generic, ContentMapper.ParseFertilizer(null));
         }
+
+        /// <summary>240 günlük (altı yıl) sanal köy: altı karoluk tarla, nöbetleşe ekim. Dönen (ilk yıl, son yıl, toplam, en düşük verim).</summary>
+        private static (int first, int last, int total, float minFertility) Village(bool fertilize)
+        {
+            var c = Setup();
+            string[] rota = { "wheat", "carrot", "pea", "cabbage", "leek", "lettuce" };
+            int first = 0, last = 0, total = 0, cycle = 0;
+            float min = 1f;
+            int Stock() { int n = 0; foreach (var id in rota) n += c.House.Count(id); return n; }
+            while (c.Day < 240)
+            {
+                var crops = new List<ItemInstance>();
+                for (int x = 0; x < 6; x++)
+                {
+                    var crop = Place(c, rota[(x + cycle) % rota.Length], 1 + x * 2, 1);
+                    crops.Add(crop);
+                    if (fertilize && c.Plants.FertilityAt(crop.Position) < 0.6f) { c.House.AddItem("compost", 1); Do(c, crop, "compost"); }
+                }
+                for (int d = 0; d < 30 && crops.Exists(k => !k.IsGrown); d++)
+                {
+                    foreach (var w in c.World.Items) if (w.IsPlant) w.Watered = true;
+                    c.Plants.Tick(1.0, Season.Spring);
+                    c.Day += 1; c.Plants.OnNewDay(false);
+                }
+                int before = Stock();
+                foreach (var crop in crops) Do(c, crop, "harvest");
+                int got = Stock() - before;
+                total += got;
+                if (c.Day <= 40) first += got;
+                if (c.Day > 200) last += got;
+                for (int x = 0; x < 6; x++) min = System.Math.Min(min, c.Plants.FertilityAt(new GridPos(1 + x * 2, 1)));
+                for (int d = 0; d < 2; d++) { c.Day += 1; c.Plants.OnNewDay(false); }   // iki gün nadas
+                cycle++;
+            }
+            return (first, last, total, min);
+        }
+
+        [Fact]
+        public void SanalKoy_240Gun_GubrelemeyenBatmaz_GubreleyenBelirginKazanir()
+        {
+            var lazy = Village(false);
+            var keen = Village(true);
+            // 20.11.2026 ölçümü: gübresiz (ilk yıl 88, son yıl 87, toplam 455, en düşük verim 0,32); gübreli (92, 93, 564, 0,46).
+            Assert.True(lazy.last >= lazy.first * 0.8, $"gübrelemeyen çöktü: ilk yıl {lazy.first}, son yıl {lazy.last}");
+            Assert.True(lazy.minFertility >= 0.2f, $"toprak tükendi: {lazy.minFertility}");
+            Assert.True(keen.total >= lazy.total * 1.15, $"gübrelemenin ödülü az: {lazy.total} -> {keen.total}");
+            Assert.True(keen.total <= lazy.total * 1.6, $"gübreleme oyunu bozuyor: {lazy.total} -> {keen.total}");
+        }
     }
 }

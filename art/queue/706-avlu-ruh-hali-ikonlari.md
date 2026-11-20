@@ -1,5 +1,5 @@
 ---
-id: "596"
+id: "706"
 title: Avlu ruh hali ikonları (9 adet)
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -22,7 +22,7 @@ outputs:
   - Assets/Art/Ui/mood_disgusted.png
 created: 2026-11-20
 ---
-# 596 Avlu ruh hali ikonları (9 adet)
+# 706 Avlu ruh hali ikonları (9 adet)
 
 ## Amaç
 items.json `effects`: eff_stomach_ache, eff_scolded, eff_saw_too_much, eff_stepped_in_it, eff_bad_smell, eff_lost_appetite, eff_murky_water, eff_tidy_yard, eff_disgusted.

@@ -184,6 +184,13 @@ namespace Thatchwick.Game
         }
 
         /// <summary>Zemin kaplamalarını haritadan yeniden boyar (Grass dışındakiler döşeme rengi alır).</summary>
+        /// <summary>Zeminin tonu: yağmurda ıslak ve koyu (belge 57 §9). Kat katmanları ve harita kenarı birlikte.</summary>
+        public void SetGroundTint(Color tint)
+        {
+            if (_layers != null) foreach (var layer in _layers) layer?.SetTint(tint);
+            _fringeLayer?.SetTint(tint);
+        }
+
         public void RefreshFloors()
         {
             if (Map == null || _layers == null) return;

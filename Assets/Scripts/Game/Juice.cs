@@ -13,7 +13,7 @@ namespace Thatchwick.Game
     {
         public const float Px = 1f / 32f;
 
-        public enum Kind { Smoke, Spark, Dust, Chip, Leaf, Steam, Soil, Pop, Fly }
+        public enum Kind { Smoke, Spark, Dust, Chip, Leaf, Steam, Soil, Pop, Fly, Moth, Firefly, Butterfly, Bee, Stink, Drip, Splash, Glint, Breath }
 
         private struct Particle
         {
@@ -45,6 +45,9 @@ namespace Thatchwick.Game
 
         /// <summary>Oyun hızı (1-3); parçacıklar biraz hızlanır ama sim hızı kadar değil, göz yorulmasın.</summary>
         public float SpeedScale { get; set; } = 1f;
+
+        /// <summary>Rüzgâr (birim/sn, işaretli): duman, buhar, yaprak ve koku bununla eğilir (belge 57 §8).</summary>
+        public float Wind { get; set; }
 
         private float Rand(float a, float b) => a + (float)_rng.NextDouble() * (b - a);
 
@@ -99,6 +102,56 @@ namespace Thatchwick.Game
                         p.Pos += new Vector3(Rand(-0.22f, 0.22f), Rand(0.05f, 0.4f), 0f);
                         p.Life = Rand(1.4f, 2.4f); p.Size = 1f;
                         p.Color = new Color(0.1f, 0.09f, 0.08f, 0.95f);
+                        break;
+                    case Kind.Moth:
+                        // Güve: yanan ışığın çevresinde dönen soluk nokta.
+                        p.Pos += new Vector3(Rand(-0.18f, 0.18f), Rand(-0.05f, 0.25f), 0f);
+                        p.Life = Rand(1.6f, 2.8f); p.Size = 1f;
+                        p.Color = new Color(0.86f, 0.8f, 0.68f, 0.9f);
+                        break;
+                    case Kind.Firefly:
+                        p.Pos += new Vector3(Rand(-0.5f, 0.5f), Rand(0.1f, 0.7f), 0f);
+                        p.Vel = new Vector3(Rand(-0.06f, 0.06f), Rand(-0.03f, 0.05f), 0f);
+                        p.Life = Rand(3f, 5f); p.Size = 1f;
+                        p.Color = new Color(0.82f, 1f, 0.42f, 1f);
+                        break;
+                    case Kind.Butterfly:
+                        p.Pos += new Vector3(Rand(-0.3f, 0.3f), Rand(0.15f, 0.5f), 0f);
+                        p.Life = Rand(3f, 5f); p.Size = 2f;
+                        p.Color = _rng.NextDouble() < 0.5 ? new Color(0.98f, 0.96f, 0.86f, 1f) : new Color(0.96f, 0.82f, 0.32f, 1f);
+                        break;
+                    case Kind.Bee:
+                        p.Pos += new Vector3(Rand(-0.25f, 0.25f), Rand(0.1f, 0.4f), 0f);
+                        p.Life = Rand(1.6f, 2.6f); p.Size = 1f;
+                        p.Color = new Color(0.9f, 0.7f, 0.15f, 1f);
+                        break;
+                    case Kind.Stink:
+                        // Koku dalgası: kokmuş kaynağın üstünde yükselen yeşilimsi kıvrım.
+                        p.Pos += new Vector3(Rand(-0.15f, 0.15f), 0.15f, 0f);
+                        p.Vel = new Vector3(0f, Rand(0.12f, 0.18f), 0f);
+                        p.Life = Rand(1.4f, 2f); p.Size = 1f; p.Drift = 0.09f;
+                        p.Color = new Color(0.55f, 0.66f, 0.3f, 0.75f);
+                        break;
+                    case Kind.Drip:
+                        p.Vel = new Vector3(0f, -Rand(1.6f, 2.2f), 0f);
+                        p.Life = Rand(0.45f, 0.65f); p.Size = 1f;
+                        p.Color = new Color(0.72f, 0.82f, 0.95f, 0.9f);
+                        break;
+                    case Kind.Splash:
+                        p.Vel = new Vector3(Rand(-0.25f, 0.25f), Rand(0.3f, 0.5f), 0f);
+                        p.Life = Rand(0.18f, 0.28f); p.Size = 1f;
+                        p.Color = new Color(0.8f, 0.88f, 0.98f, 0.8f);
+                        break;
+                    case Kind.Glint:
+                        // Su parıltısı ve yağmur halkası: su karosunda kısa süre yanıp sönen açık nokta.
+                        p.Pos += new Vector3(Rand(-0.4f, 0.4f), Rand(-0.18f, 0.18f), 0f);
+                        p.Life = Rand(0.5f, 0.9f); p.Size = _rng.NextDouble() < 0.3 ? 2f : 1f;
+                        p.Color = new Color(0.86f, 0.94f, 1f, 0.85f);
+                        break;
+                    case Kind.Breath:
+                        p.Vel = new Vector3(Rand(-0.02f, 0.04f), Rand(0.08f, 0.14f), 0f);
+                        p.Life = Rand(0.7f, 1f); p.Size = 2f; p.Drift = 0.03f;
+                        p.Color = new Color(0.95f, 0.96f, 1f, 0.4f);
                         break;
                     case Kind.Pop:
                         float a = Rand(0f, 6.28f);
@@ -167,7 +220,24 @@ namespace Thatchwick.Game
                         p.Vel *= 1f - Mathf.Min(1f, 4f * dt);
                         break;
                     case Kind.Fly:
+                    case Kind.Bee:
                         p.Vel = new Vector3(Mathf.Sin(t * 9f + p.Phase) * 0.4f, Mathf.Cos(t * 7f + p.Phase * 1.7f) * 0.25f, 0f);
+                        break;
+                    case Kind.Moth:
+                        p.Vel = new Vector3(Mathf.Sin(t * 5f + p.Phase) * 0.3f, Mathf.Cos(t * 6f + p.Phase * 1.3f) * 0.2f, 0f);
+                        break;
+                    case Kind.Butterfly:
+                        p.Vel = new Vector3(Mathf.Sin(t * 1.3f + p.Phase) * 0.22f, Mathf.Sin(t * 6f + p.Phase) * 0.18f + 0.01f, 0f);
+                        break;
+                    case Kind.Splash:
+                        p.Vel.y -= 2.6f * dt;
+                        break;
+                    case Kind.Smoke:
+                    case Kind.Steam:
+                    case Kind.Stink:
+                    case Kind.Leaf:
+                    case Kind.Breath:
+                        p.Pos.x += Wind * (p.Kind == Kind.Leaf ? 0.5f : 0.22f) * k * dt;   // rüzgâr yükseldikçe daha çok eğer
                         break;
                 }
                 p.Pos += p.Vel * dt;
@@ -182,7 +252,9 @@ namespace Thatchwick.Game
                 float s = size / 4f;
                 p.R.transform.localScale = new Vector3(s, s, 1f);
                 var c = p.Color;
-                c.a *= p.Kind == Kind.Smoke || p.Kind == Kind.Steam ? (1f - k) * Mathf.Min(1f, k * 6f) : 1f - k * k;
+                c.a *= p.Kind == Kind.Smoke || p.Kind == Kind.Steam || p.Kind == Kind.Breath || p.Kind == Kind.Stink ? (1f - k) * Mathf.Min(1f, k * 6f)
+                    : p.Kind == Kind.Firefly || p.Kind == Kind.Glint ? Mathf.Sin(k * 3.14159f) * (p.Kind == Kind.Firefly ? 0.5f + 0.5f * Mathf.Sin(t * 5f + p.Phase) : 1f)
+                    : 1f - k * k;
                 p.R.color = c;
                 _live[i] = p;
             }

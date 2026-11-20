@@ -89,6 +89,12 @@ namespace Thatchwick.Game
         }
 
         /// <summary>Bütün katı gizler ya da gösterir (görünmeyen katın karoları tek tek gezilmez).</summary>
+        /// <summary>Katmanın tonu (ıslak zemin: yağmurda koyulaşır; belge 57 §9).</summary>
+        public void SetTint(Color tint)
+        {
+            if (_tilemap != null) _tilemap.color = tint;
+        }
+
         public void SetVisible(bool visible)
         {
             if (_visible == visible) return;

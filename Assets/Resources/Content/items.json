@@ -3129,7 +3129,7 @@
         },
         {
           "id": "rake_leaves",
-          "displayName": "Dibindeki yaprağı topla",
+          "displayName": "Dibindeki yaprağı topla (güzün)",
           "durationDays": 0.04,
           "requiresGrown": true,
           "skill": "Foraging",
@@ -3139,7 +3139,8 @@
               "item": "item.leaves",
               "count": 2
             }
-          ]
+          ],
+          "farmAction": "rake_leaves"
         }
       ],
       "fruitSeasons": [
@@ -3324,7 +3325,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -7619,7 +7631,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -7806,7 +7829,7 @@
       "feed": "heavy",
       "eatenRaw": true,
       "likesFertilizer": [
-        "hot",
+        "manure",
         "ash",
         "seaweed"
       ],
@@ -7920,7 +7943,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -8106,7 +8140,7 @@
       "site": "outdoor",
       "feed": "heavy",
       "likesFertilizer": [
-        "hot",
+        "manure",
         "compost"
       ]
     },
@@ -8218,7 +8252,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -8527,7 +8572,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -8713,7 +8769,7 @@
       "site": "outdoor",
       "feed": "heavy",
       "likesFertilizer": [
-        "hot",
+        "manure",
         "compost"
       ],
       "giantAs": "item.giant_crop_pumpkin"
@@ -10307,7 +10363,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -10610,7 +10677,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -10910,7 +10988,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -11213,7 +11302,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -11515,7 +11615,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -11816,7 +11927,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -12112,7 +12234,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -12409,7 +12542,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -12727,7 +12871,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -13017,7 +13172,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -13327,7 +13493,7 @@
         },
         {
           "id": "rake_leaves",
-          "displayName": "Dibindeki yaprağı topla",
+          "displayName": "Dibindeki yaprağı topla (güzün)",
           "durationDays": 0.04,
           "requiresGrown": true,
           "skill": "Foraging",
@@ -13337,7 +13503,8 @@
               "item": "item.leaves",
               "count": 2
             }
-          ]
+          ],
+          "farmAction": "rake_leaves"
         }
       ],
       "site": "outdoor"
@@ -13454,7 +13621,7 @@
         },
         {
           "id": "rake_leaves",
-          "displayName": "Dibindeki yaprağı topla",
+          "displayName": "Dibindeki yaprağı topla (güzün)",
           "durationDays": 0.04,
           "requiresGrown": true,
           "skill": "Foraging",
@@ -13464,7 +13631,8 @@
               "item": "item.leaves",
               "count": 2
             }
-          ]
+          ],
+          "farmAction": "rake_leaves"
         }
       ],
       "site": "outdoor"
@@ -13581,7 +13749,7 @@
         },
         {
           "id": "rake_leaves",
-          "displayName": "Dibindeki yaprağı topla",
+          "displayName": "Dibindeki yaprağı topla (güzün)",
           "durationDays": 0.04,
           "requiresGrown": true,
           "skill": "Foraging",
@@ -13591,7 +13759,8 @@
               "item": "item.leaves",
               "count": 2
             }
-          ]
+          ],
+          "farmAction": "rake_leaves"
         }
       ],
       "site": "outdoor"
@@ -13709,7 +13878,7 @@
         },
         {
           "id": "rake_leaves",
-          "displayName": "Dibindeki yaprağı topla",
+          "displayName": "Dibindeki yaprağı topla (güzün)",
           "durationDays": 0.04,
           "requiresGrown": true,
           "skill": "Foraging",
@@ -13719,7 +13888,8 @@
               "item": "item.leaves",
               "count": 2
             }
-          ]
+          ],
+          "farmAction": "rake_leaves"
         }
       ],
       "site": "outdoor"
@@ -14987,7 +15157,7 @@
         },
         {
           "id": "rake_leaves",
-          "displayName": "Dibindeki yaprağı topla",
+          "displayName": "Dibindeki yaprağı topla (güzün)",
           "durationDays": 0.04,
           "requiresGrown": true,
           "skill": "Foraging",
@@ -14997,7 +15167,8 @@
               "item": "item.leaves",
               "count": 2
             }
-          ]
+          ],
+          "farmAction": "rake_leaves"
         }
       ],
       "site": "outdoor"
@@ -15089,7 +15260,7 @@
         },
         {
           "id": "rake_leaves",
-          "displayName": "Dibindeki yaprağı topla",
+          "displayName": "Dibindeki yaprağı topla (güzün)",
           "durationDays": 0.04,
           "requiresGrown": true,
           "skill": "Foraging",
@@ -15099,7 +15270,8 @@
               "item": "item.leaves",
               "count": 2
             }
-          ]
+          ],
+          "farmAction": "rake_leaves"
         }
       ],
       "site": "outdoor"
@@ -15175,7 +15347,7 @@
         },
         {
           "id": "rake_leaves",
-          "displayName": "Dibindeki yaprağı topla",
+          "displayName": "Dibindeki yaprağı topla (güzün)",
           "durationDays": 0.04,
           "requiresGrown": true,
           "skill": "Foraging",
@@ -15185,7 +15357,8 @@
               "item": "item.leaves",
               "count": 2
             }
-          ]
+          ],
+          "farmAction": "rake_leaves"
         }
       ],
       "site": "outdoor"
@@ -19668,6 +19841,16 @@
       ]
     },
     {
+      "id": "item.manure_fresh",
+      "displayName": "Taze gübre",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "fertilizer"
+      ]
+    },
+    {
       "id": "item.bath_hut",
       "displayName": "Yıkanma kulübesi",
       "category": "hygiene",
@@ -19864,7 +20047,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -20173,7 +20367,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -20488,7 +20693,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -20785,7 +21001,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -36481,41 +36708,104 @@
     {
       "id": "item.wheelbarrow",
       "displayName": "El arabası",
-      "placement": "Resource",
-      "category": "resource",
+      "category": "farm",
       "price": 20,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
       "tags": [
         "tool"
+      ],
+      "art": {
+        "alongX": "iso_item_wheelbarrow_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
       "id": "item.horse_cart",
       "displayName": "Hafif at arabası",
-      "placement": "Resource",
-      "category": "resource",
+      "category": "farm",
       "price": 60,
+      "width": 2,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
       "tags": [
         "tool"
+      ],
+      "art": {
+        "alongY": "iso_item_horse_cart_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
       "id": "item.sled",
       "displayName": "Kış kızağı",
-      "placement": "Resource",
-      "category": "resource",
+      "category": "farm",
       "price": 25,
+      "width": 2,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
       "tags": [
         "tool"
+      ],
+      "art": {
+        "alongY": "iso_item_sled_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
       "id": "item.covered_cart",
       "displayName": "Üstü örtülü araba",
-      "placement": "Resource",
-      "category": "resource",
+      "category": "farm",
       "price": 90,
+      "width": 2,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
       "tags": [
         "tool"
+      ],
+      "art": {
+        "alongY": "iso_item_covered_cart_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     },
     {
@@ -37017,7 +37307,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -37207,7 +37508,7 @@
       "site": "outdoor",
       "feed": "heavy",
       "likesFertilizer": [
-        "hot"
+        "manure"
       ]
     },
     {
@@ -37304,7 +37605,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -37495,7 +37807,7 @@
       "lockSkill": "Farming",
       "feed": "heavy",
       "likesFertilizer": [
-        "hot",
+        "manure",
         "ash"
       ],
       "tags": [
@@ -37597,7 +37909,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -37889,7 +38212,18 @@
           "skill": "SoilCare",
           "skillXp": 3,
           "minLevel": 3,
-          "fertilizerKind": "hot"
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
         },
         {
           "id": "inspect_field",
@@ -41735,6 +42069,16 @@
         "dung_heap"
       ],
       "fillCapacity": 40,
+      "interactions": [
+        {
+          "id": "stack_fresh",
+          "displayName": "Taze gübreyi yığ",
+          "durationDays": 0.04,
+          "farmAction": "dung_stack",
+          "skill": "SoilCare",
+          "skillXp": 2
+        }
+      ],
       "art": {
         "alongX": "iso_item_dung_heap_se",
         "pivotX": 40.0,
@@ -41763,6 +42107,16 @@
         "dung_heap"
       ],
       "fillCapacity": 120,
+      "interactions": [
+        {
+          "id": "stack_fresh",
+          "displayName": "Taze gübreyi yığ",
+          "durationDays": 0.04,
+          "farmAction": "dung_stack",
+          "skill": "SoilCare",
+          "skillXp": 2
+        }
+      ],
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -41861,6 +42215,57 @@
         "alongX": "iso_item_swallow_nest_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.bone_mill",
+      "displayName": "Kemik değirmeni",
+      "category": "garden",
+      "price": 55,
+      "level": 5,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "bone_mill"
+      ],
+      "art": {
+        "alongX": "iso_item_bone_mill_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.cart_shed",
+      "displayName": "Araba sundurması",
+      "category": "farm",
+      "price": 45,
+      "width": 2,
+      "level": 4,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "tags": [
+        "cart_shed"
+      ],
+      "art": {
+        "alongY": "iso_item_cart_shed_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
         "mirror": true,
         "pending": true
       },
@@ -45996,6 +46401,23 @@
       "skill": "SoilCare",
       "skillXp": 10,
       "displayName": "Kemik unu döv",
+      "count": 2,
+      "minLevel": 4
+    },
+    {
+      "id": "bone_meal_mill",
+      "station": "item.bone_mill",
+      "produces": "item.bone_meal",
+      "materials": [
+        {
+          "item": "item.bone",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "SoilCare",
+      "skillXp": 8,
+      "displayName": "Kemik öğüt",
       "count": 2,
       "minLevel": 4
     },

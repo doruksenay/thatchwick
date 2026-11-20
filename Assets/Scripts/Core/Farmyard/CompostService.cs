@@ -49,12 +49,13 @@ namespace Thatchwick.Core.Farmyard
         public const string HeapTag = "compost", BaysTag = "compost_bays", TumblerTag = "compost_tumbler", WormTag = "worm_bin",
             LeafTag = "leaf_bin", SlurryTag = "slurry_barrel", DungHeapTag = "dung_heap", ShredderTag = "chaff_cutter";
         public const string ManureId = "item.manure", RawId = "item.compost_raw", MatureId = "item.compost", BlackId = "item.black_soil",
-            LeavesId = "item.leaves", LeafMouldId = "item.leaf_mould", AshId = "item.ash", WormId = "item.viv_worm";
+            FreshManureId = "item.manure_fresh", LeavesId = "item.leaves", LeafMouldId = "item.leaf_mould", AshId = "item.ash", WormId = "item.viv_worm";
 
         /// <summary>Yaş girdiler ve birim değerleri.</summary>
         public static readonly KeyValuePair<string, int>[] WetInputs =
         {
-            new KeyValuePair<string, int>("item.herb", 1), new KeyValuePair<string, int>("item.seaweed", 1), new KeyValuePair<string, int>(ManureId, 2)
+            new KeyValuePair<string, int>("item.herb", 1), new KeyValuePair<string, int>("item.seaweed", 1),
+            new KeyValuePair<string, int>(FreshManureId, 2), new KeyValuePair<string, int>(ManureId, 2)
         };
         /// <summary>Kuru girdiler ve birim değerleri.</summary>
         public static readonly KeyValuePair<string, int>[] DryInputs =
@@ -68,6 +69,7 @@ namespace Thatchwick.Core.Farmyard
         private readonly ContentDatabase _content;
         private readonly Dictionary<int, CompostHeap> _heaps = new Dictionary<int, CompostHeap>();
         private readonly Dictionary<int, double> _timers = new Dictionary<int, double>();   // yaprak ağılı ve şerbet fıçısı: başlangıç günü
+        private readonly List<YardBatchSave> _fresh = new List<YardBatchSave>();   // gübre yığınında olgunlaşan taze gübre
         private bool _rawFilthStock;
         private int _dungUnits;
 
@@ -229,7 +231,7 @@ namespace Thatchwick.Core.Farmyard
         public int SmellTier(ItemInstance item)
         {
             if (item == null || item.IsDecor) return 0;
-            if (item.Def.HasTag(DungHeapTag)) return item.Fill > 0 ? 1 : 0;
+            if (item.Def.HasTag(DungHeapTag)) return item.Fill > 0 || FreshIn(item) > 0 ? 1 : 0;
             if (!IsHeap(item) || IsTumbler(item)) return 0;
             var h = HeapOf(item);
             if (h.IsEmpty) return 0;
@@ -253,6 +255,7 @@ namespace Thatchwick.Core.Farmyard
                 else if (item.Def.HasTag(WormTag)) StepWorms(item);
                 else if (item.Def.HasTag(LeafTag)) StepLeaves(item, now);
             }
+            MatureManure(now);
             // Dünyadan kalkan yığınların kaydı düşer.
             var gone = new List<int>();
             foreach (var id in _heaps.Keys) if (_world.GetItem(id) == null) gone.Add(id);
@@ -326,7 +329,7 @@ namespace Thatchwick.Core.Farmyard
             int cap = Math.Max(1, bin.Def.FillCapacity), added = 0;
             foreach (var kv in WetInputs)
             {
-                if (kv.Key == ManureId) continue;
+                if (kv.Key == ManureId || kv.Key == FreshManureId) continue;
                 while (bin.Fill < cap && added < Config.AddUnits && _house.TryTakeItem(kv.Key)) { bin.Fill += 1; added++; }
             }
             return added;
@@ -362,8 +365,9 @@ namespace Thatchwick.Core.Farmyard
         public bool BrewSlurry(ItemInstance barrel)
         {
             if (barrel == null || !barrel.Def.HasTag(SlurryTag) || SlurryState(barrel) != 0) return false;
-            if (Count(ManureId) + _house.Count(ManureId) < Config.SlurryManure) return false;
+            if (ManureForSlurry < Config.SlurryManure) return false;
             int need = Config.SlurryManure;
+            while (need > 0 && _house.TryTakeItem(FreshManureId)) need--;   // şerbete taze gübre de olur
             while (need > 0 && _house.TryTakeItem(ManureId)) need--;
             if (need > 0) Withdraw(ManureId, need);
             _timers[barrel.Id] = Today;
@@ -427,7 +431,7 @@ namespace Thatchwick.Core.Farmyard
         {
             if (itemId != ManureId) return 0;
             int n = 0;
-            foreach (var h in DungHeaps()) n += Math.Max(0, h.Def.FillCapacity - h.Fill);
+            foreach (var h in DungHeaps()) n += Free(h);
             return n;
         }
 
@@ -437,7 +441,7 @@ namespace Thatchwick.Core.Farmyard
             int left = count;
             foreach (var h in DungHeaps())
             {
-                int put = Math.Min(left, Math.Max(0, h.Def.FillCapacity - h.Fill));
+                int put = Math.Min(left, Free(h));
                 if (put <= 0) continue;
                 h.Fill += put; left -= put;
                 _world.NotifyChanged(h.Id);
@@ -472,12 +476,66 @@ namespace Thatchwick.Core.Farmyard
             int manure = _dungUnits / Math.Max(1, Config.DungPerManure);
             if (manure <= 0) return 0;
             _dungUnits -= manure * Config.DungPerManure;
-            int heaped = Deposit(ManureId, manure);
-            if (manure > heaped) _house.AddItem(ManureId, manure - heaped);
+            int heaped = DepositFresh(manure);
+            if (manure > heaped) _house.AddItem(_content.Items.Contains(FreshManureId) ? FreshManureId : ManureId, manure - heaped);
             return manure;
         }
 
         public int PendingDungUnits => _dungUnits;
+
+        /// <summary>Slurry için eldeki gübre: envanterdeki taze ve olgun, yığındaki olgun.</summary>
+        public int ManureForSlurry => _house.Count(FreshManureId) + _house.Count(ManureId) + Count(ManureId);
+
+        /// <summary>Yığında olgunlaşmayı bekleyen taze gübre.</summary>
+        public int FreshIn(ItemInstance heap)
+        {
+            int n = 0;
+            if (heap != null) foreach (var b in _fresh) if (b.itemId == heap.Id) n += b.count;
+            return n;
+        }
+
+        public int FreshTotal { get { int n = 0; foreach (var b in _fresh) n += b.count; return n; } }
+        private int Free(ItemInstance heap) => Math.Max(0, heap.Def.FillCapacity - heap.Fill - FreshIn(heap));
+
+        /// <summary>Taze gübreyi gübre yığınlarına koyar (orada olgunlaşır); sığan adedi döner.</summary>
+        public int DepositFresh(int count)
+        {
+            if (count <= 0) return 0;
+            int left = count;
+            foreach (var h in DungHeaps())
+            {
+                int put = Math.Min(left, Free(h));
+                if (put <= 0) continue;
+                _fresh.Add(new YardBatchSave { itemId = h.Id, day = Today, count = put });
+                left -= put;
+                _world.NotifyChanged(h.Id);
+                if (left == 0) break;
+            }
+            return count - left;
+        }
+
+        /// <summary>Envanterdeki taze gübreyi yığına taşır (etkileşim: "Taze gübreyi yığ"); taşınan adet.</summary>
+        public int StackFresh()
+        {
+            int moved = 0;
+            while (_house.Count(FreshManureId) > 0 && Room(ManureId) > 0 && _house.TryTakeItem(FreshManureId)) moved += DepositFresh(1);
+            return moved;
+        }
+
+        /// <summary>Yığındaki taze gübre <see cref="YardConfig.ManureAgeDays"/> günde olgunlaşır; yığın kalktıysa envantere düşer.</summary>
+        private void MatureManure(double now)
+        {
+            for (int i = _fresh.Count - 1; i >= 0; i--)
+            {
+                var b = _fresh[i];
+                var heap = _world.GetItem(b.itemId);
+                if (heap == null) { _house.AddItem(FreshManureId, b.count); _fresh.RemoveAt(i); continue; }
+                if (now - b.day < Config.ManureAgeDays) continue;
+                heap.Fill += b.count;
+                _fresh.RemoveAt(i);
+                _world.NotifyChanged(heap.Id);
+            }
+        }
 
         // ---------- kayıt ----------
 
@@ -495,13 +553,14 @@ namespace Thatchwick.Core.Farmyard
             var timers = new List<YardTimerSave>();
             foreach (var kv in _timers) timers.Add(new YardTimerSave { itemId = kv.Key, value = kv.Value });
             timers.Sort((a, b) => a.itemId.CompareTo(b.itemId));
-            return new YardCompostSave { heaps = heaps.ToArray(), timers = timers.ToArray(), rawFilth = _rawFilthStock, dungUnits = _dungUnits };
+            return new YardCompostSave { fresh = _fresh.ToArray(), heaps = heaps.ToArray(), timers = timers.ToArray(), rawFilth = _rawFilthStock, dungUnits = _dungUnits };
         }
 
         public void Import(YardCompostSave data)
         {
-            _heaps.Clear(); _timers.Clear(); _rawFilthStock = false; _dungUnits = 0;
+            _heaps.Clear(); _timers.Clear(); _fresh.Clear(); _rawFilthStock = false; _dungUnits = 0;
             if (data == null) return;
+            if (data.fresh != null) foreach (var b in data.fresh) if (b != null && b.count > 0 && _world.GetItem(b.itemId) != null) _fresh.Add(new YardBatchSave { itemId = b.itemId, day = b.day, count = b.count });
             _rawFilthStock = data.rawFilth;
             _dungUnits = Math.Max(0, data.dungUnits);
             if (data.heaps != null)

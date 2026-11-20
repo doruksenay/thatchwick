@@ -271,15 +271,22 @@ namespace Thatchwick.Core.Tests
         {
             var day = new[] { 0.0 };
             var (world, house, compost, _) = Compost(day);
-            Assert.Equal(1, compost.AddDung(5));                                 // yığın yokken envantere
-            Assert.Equal(1, house.Count("item.manure"));
+            Assert.Equal(1, compost.AddDung(5));                                 // yığın yokken envantere, taze
+            Assert.Equal(1, house.Count("item.manure_fresh"));
             Assert.Equal(1, compost.PendingDungUnits);
             var dung = Put(world, "item.dung_heap", 10, 5);
             Assert.Equal(2, compost.AddDung(7));
-            Assert.Equal(2, dung.Fill);
-            Assert.Equal(2, compost.Count("item.manure"));
-            Assert.Equal(1, house.Count("item.manure"));
-            Assert.Equal(1, compost.Withdraw("item.manure", 1));
+            Assert.Equal(2, compost.FreshIn(dung));                              // yığında taze bekler
+            Assert.Equal(0, compost.Count("item.manure"));
+            Assert.Equal(1, compost.StackFresh());                               // envanterdeki taze de yığına
+            Assert.Equal(0, house.Count("item.manure_fresh"));
+            day[0] = 5; compost.OnNewDay();
+            Assert.Equal(0, dung.Fill);
+            day[0] = 6; compost.OnNewDay();                                      // altı günde olgunlaşır
+            Assert.Equal(3, dung.Fill);
+            Assert.Equal(0, compost.FreshIn(dung));
+            Assert.Equal(37, compost.Room("item.manure"));
+            Assert.Equal(2, compost.Withdraw("item.manure", 2));
             Assert.Equal(1, dung.Fill);
             Assert.Equal(0, compost.Count("item.compost"));
             Assert.Equal(1, compost.SmellTier(dung));
@@ -357,7 +364,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(15f, f.Barn.ComfortPenalty(f.Home));
             Assert.True(f.Barn.NeedsCleaning(f.Home));
             Assert.Equal(2, f.Barn.Clean(f.Home));                               // 9,6 birim ≈ 10: iki gübre, iki birim bekler
-            Assert.Equal(2, f.House.Count("item.manure"));
+            Assert.Equal(2, f.House.Count("item.manure_fresh"));              // ahırdan çıkan taze gübredir
             Assert.Equal(0f, f.Barn.DirtAt(f.Home));
             Assert.Equal((0, "barn"), f.Barn.SmellTier(f.Home));
         }
@@ -582,6 +589,44 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(CartJob.Idle, third.Find("item:" + ox.Id).Job);                              // oyuncunun kararı korunur
         }
 
+        [Fact]
+        public void Araba_EnvanterdenAvluyaGocer_SundurmaYagmurdanKorur_SeferEvreleri()
+        {
+            var (f, fleet, d1, _) = Fleet();
+            Assert.True(fleet.Assign(fleet.Carts[0], CartJob.Mine, 200, 1, 0).IsEmpty);
+            fleet.Carts[0].Wear = 0.4;
+            int next = 0;
+            var spots = new[] { new GridPos(20, 15), new GridPos(24, 15) };
+            Assert.Equal(2, fleet.ParkInventory(Db, def => next < spots.Length ? spots[next++] : (GridPos?)null));
+            Assert.Equal(0, f.House.Count("item.horse_cart"));
+            Assert.Equal(2, f.World.Items.Count(i => i.Def.Id == "item.horse_cart"));
+            var mine = fleet.Carts.Single(c => c.Job == CartJob.Mine);
+            Assert.True(mine.ItemId != 0);                                                            // görev, hayvan ve yıpranma taşındı
+            Assert.Equal(200, mine.AnimalId);
+            Assert.Equal(0.4, mine.Wear);
+            Assert.Equal(0, fleet.ParkInventory(Db, def => new GridPos(1, 1)));                       // ikinci kez göçmez
+
+            Assert.False(fleet.Sheltered(mine));
+            Assert.Equal(2, fleet.RainOnCarts());
+            Assert.Equal(0.41, mine.Wear, 6);
+            var item = f.World.GetItem(mine.ItemId);
+            Put(f.World, "item.cart_shed", item.Position.X, item.Position.Y + 2);
+            Assert.True(fleet.Sheltered(mine));
+            Assert.Equal(1, fleet.RainOnCarts());                                                     // yalnızca açıktaki ıslanır
+
+            Assert.Equal((0, 0f), fleet.TripPhase(mine, 0.30));                                       // bugün çalışmadı
+            fleet.OnNewDay(0);
+            Assert.Equal(0, fleet.TripPhase(mine, 0.10).phase);
+            Assert.Equal(1, fleet.TripPhase(mine, 0.30).phase);
+            Assert.Equal(2, fleet.TripPhase(mine, 0.50).phase);
+            Assert.Equal(3, fleet.TripPhase(mine, 0.73).phase);
+            Assert.Equal(0, fleet.TripPhase(mine, 0.90).phase);
+            // kayıt: yerleşik araba anahtarıyla geri gelir
+            var again = new CartFleet(f.World, f.House, f.Animals) { FindCharacter = id => d1 };
+            again.Import(fleet.Export());
+            Assert.Equal(CartJob.Mine, again.Find(mine.Key).Job);
+        }
+
         // ---------- bütün ----------
 
         private sealed class Game
@@ -628,7 +673,7 @@ namespace Thatchwick.Core.Tests
             Assert.Single(g.Life.YardChores(DutyKind.House));
             Assert.Null(Use(g, c, a, "collect"));
             Assert.Null(Use(g, c, b, "collect"));
-            Assert.Equal(1, dung.Fill);                                          // 2 + 2 birim = 1 gübre, gübre yığınında
+            Assert.Equal(1, g.Life.Compost.FreshIn(dung));                       // 2 + 2 birim = 1 taze gübre, yığında olgunlaşacak
             Assert.True(g.Life.YardHealth.HasDirtyHands(c.Id));
             Assert.Empty(g.Life.YardChores(DutyKind.Animals));
             Assert.Null(Use(g, c, h, "collect"));
@@ -694,13 +739,62 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void Butun_OlgunGubreYakmaz_TazeYakar_YaprakGuzunToplanir()
+        {
+            var g = Whole();
+            var c = Person(1, 6, 5);
+            g.Pop.Add(c);
+            for (int i = 0; i < 60; i++) c.GainSkillXp(SkillType.SoilCare, 5000);
+            var a = Put(g.World, "item.crop_carrot", 15, 5);
+            var b = Put(g.World, "item.crop_carrot", 17, 5);
+            g.House.AddItem("item.manure", 1); g.House.AddItem("item.manure_fresh", 1);
+            Assert.Null(Use(g, c, a, "manure"));
+            Assert.Null(Use(g, c, b, "manure_fresh"));
+            Assert.True(g.Plants.Plot(a.Position).BurnUntil <= 0);               // olgun gübre az yiyeni de yakmaz
+            Assert.True(g.Plants.Plot(b.Position).BurnUntil > 0);                // taze gübre yakar
+            Assert.False(g.Plants.IsSpoiledByManure(a));
+            Assert.True(g.Plants.IsSpoiledByManure(b));
+
+            var tree = Put(g.World, "item.tree_oak", 20, 10);
+            PlantSystem.SetGrown(tree);
+            Assert.Equal(Season.Spring, g.Clock.Season);
+            Assert.NotNull(Use(g, c, tree, "rake_leaves"));                      // yaprak güzün dökülür
+        }
+
+        [Fact]
+        public void Butun_KahyaBostakiArabayaIsVerir_ElleVerilenGoreveDokunmaz()
+        {
+            var g = Whole();
+            var steward = Person(1, 6, 5);
+            g.Pop.Add(steward);
+            steward.Duty = DutyKind.Steward;
+            var barn = Put(g.World, "item.barn", 10, 10);
+            g.Animals.Restore(1, Db.Animals.Get("animal.horse"), new GridPos(14, 12), barn.Id, 100f, 30, 0, 0);
+            g.House.AddItem("item.wheelbarrow", 1);
+            g.House.AddItem("item.compost", 3);
+            var plot = g.Plants.Plot(new GridPos(22, 4));
+            plot.Fertility = 0.2f; plot.Worked = true;
+            g.Life.Fleet.FertilizeRule = true;
+            g.Life.Fleet.StewardCarts = true;
+
+            g.Life.RunFleetDay(0);
+            Assert.Equal(0.2f, g.Plants.FertilityAt(new GridPos(22, 4)));        // Kâhyalık 4 yok: kâhya araba dağıtmaz
+            for (int i = 0; i < 60; i++) steward.GainSkillXp(SkillType.Stewardship, 5000);
+            g.Life.RunFleetDay(1);
+            Assert.True(g.Plants.FertilityAt(new GridPos(22, 4)) > 0.35f);       // el arabası tarlaya çıktı, kompost serildi
+            Assert.Equal(2, g.House.Count("item.compost"));
+            Assert.All(g.Life.Fleet.Carts, cart => Assert.Equal(CartJob.Idle, cart.Job));   // gün bitince yine boşta
+            Assert.Equal(1, g.World.Items.Count(i => i.Def.Id == "item.wheelbarrow"));      // araba avluya çekildi
+        }
+
+        [Fact]
         public void Icerik_HerEkinBeslenmeTipiBildirir_YeniEsyalarVar()
         {
             var file = ContentFilesTests.LoadAll();
             var missing = file.items.Where(i => !string.IsNullOrEmpty(i.cropFamily) && string.IsNullOrEmpty(i.feed)).Select(i => i.id).ToArray();
             Assert.True(missing.Length == 0, "beslenme tipi eksik: " + string.Join(", ", missing));
             foreach (var id in new[] { FilthService.HumanPileId, FilthService.DogPileId, FilthService.AnimalPileId, FilthService.SheepPileId, FilthService.RefusePileId,
-                         CompostService.RawId, CompostService.BlackId, CompostService.LeavesId, CompostService.LeafMouldId, LifeSystems.SeaweedId, LifeSystems.MarlId, LifeSystems.DungCakeId })
+                         CompostService.RawId, CompostService.BlackId, CompostService.FreshManureId, "item.bone_mill", "item.cart_shed", CompostService.LeavesId, CompostService.LeafMouldId, LifeSystems.SeaweedId, LifeSystems.MarlId, LifeSystems.DungCakeId })
                 Assert.True(Db.Items.Contains(id), id);
             foreach (var id in new[] { LifeSystems.MoodStomachAche, LifeSystems.MoodScolded, LifeSystems.MoodSawTooMuch, LifeSystems.MoodSteppedInIt, LifeSystems.MoodBadSmell,
                          LifeSystems.MoodLostAppetite, LifeSystems.MoodMurkyWater, LifeSystems.MoodTidyYard, LifeSystems.MoodDisgusted })
@@ -708,6 +802,11 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(FeedType.Heavy, Db.Items.Get("item.crop_cabbage").Feed);
             Assert.Equal(FeedType.Builder, Db.Items.Get("item.crop_pea").Feed);
             Assert.True(Db.Items.Get("item.crop_rye").HasTag("tall"));
+            // Arabalar yerleştirilen eşya (belge 57e); olgun gübre ayrı tür, çok yiyen sever.
+            foreach (var id in CartFleet.CartIds) Assert.NotEqual(ItemPlacement.Resource, Db.Items.Get(id).Placement);
+            Assert.True((Db.Items.Get("item.crop_cabbage").LikesFertilizer & Fertilizer.Manure) != 0);
+            Assert.Equal(Fertilizer.Manure, Db.Items.Get("item.crop_cabbage").Interactions.Find(i => i.Id == "manure").FertilizerKind);
+            Assert.Equal(Fertilizer.FreshManure, Db.Items.Get("item.crop_cabbage").Interactions.Find(i => i.Id == "manure_fresh").FertilizerKind);
         }
     }
 }

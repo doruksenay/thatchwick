@@ -43,7 +43,9 @@ namespace Thatchwick.Core.Content
         Marl = 512,
         /// <summary>Yaprak çürüğü (malç): verim eklemez; su tutar, otu bastırır.</summary>
         Mulch = 1024,
-        Lime = 2048
+        Lime = 2048,
+        /// <summary>Olgun gübre: yığında bekleyip yanmış ahır gübresi; yakmaz (belge 57c).</summary>
+        Manure = 4096
     }
 
     /// <summary>Ekinin hasat döngüsü (Project belgesi 59 §1).</summary>

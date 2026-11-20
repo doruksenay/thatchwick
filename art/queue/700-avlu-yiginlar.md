@@ -1,5 +1,5 @@
 ---
-id: "590"
+id: "700"
 title: Avlu yığınları (pislik, köpek pisliği, tezek, kığı, süprüntü)
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -20,7 +20,7 @@ outputs:
   - Assets/Art/Iso/iso_item_dung_pile_dry_se.png
 created: 2026-11-20
 ---
-# 590 Avlu yığınları (pislik, köpek pisliği, tezek, kığı, süprüntü)
+# 700 Avlu yığınları (pislik, köpek pisliği, tezek, kığı, süprüntü)
 
 ## Amaç
 Belge 57 §3 ve 57d §5: yerde kalan yığınlar. Halı katmanında çizilir (yürümeyi engellemez), üstünde kod sinek uçurur. Kurumuş hâller evre 4 içindir (`FilthService.StageOf == Dried`).
