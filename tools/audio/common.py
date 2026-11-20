@@ -205,6 +205,9 @@ def git(*args: str, check: bool = True) -> subprocess.CompletedProcess:
 
 def git_commit_push(paths: list[str], message: str) -> bool:
     """Yalnız verilen yolları commit'ler; pull --rebase ve push yapar. Değişiklik yoksa False."""
+    paths = [p for p in paths if (ROOT / p).exists()]
+    if not paths:
+        return False
     git("add", "--", *paths)
     if git("diff", "--cached", "--quiet", check=False).returncode == 0:
         return False

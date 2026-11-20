@@ -136,6 +136,9 @@ class Gen:
             raise
 
     def sound(self, text, duration, influence, loop, model) -> bytes:
+        if duration:
+            # API sınırı 0,5-30 sn; daha kısa sesler son işlemde kırpılır
+            duration = min(30.0, max(0.5, float(duration)))
         try:
             return self._fmt_retry(self.api.sound, "sfx_format", text=text, model_id=model, duration=duration,
                                    prompt_influence=influence, loop=loop)
@@ -377,8 +380,11 @@ def run_job(job: Job, api, mock: bool, use_git: bool) -> None:
         job.save()
         traceback.print_exc()
     if use_git:
-        git_commit_push([str(job.path.relative_to(ROOT)), str(BUDGET_FILE.relative_to(ROOT))],
-                        f"ses: {job.id} → {job.meta['status']}")
+        try:
+            git_commit_push([str(job.path.relative_to(ROOT)), str(BUDGET_FILE.relative_to(ROOT))],
+                            f"ses: {job.id} → {job.meta['status']}")
+        except Exception as e:  # bir işin git hatası kuyruğun kalanını durdurmasın
+            print(f"[{job.id}] git hatası: {e}", file=sys.stderr)
 
 
 def main(argv=None) -> int:
