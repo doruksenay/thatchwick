@@ -156,9 +156,16 @@ namespace Thatchwick.Core.Work
         }
 
         /// <summary>Makine güç alıyor mu (çalışan bir su çarkına PowerReach karo yakın)?</summary>
-        public bool IsPowered(ItemInstance machine, List<ItemInstance> wheels = null)
+        public bool IsPowered(ItemInstance machine, List<ItemInstance> wheels = null) =>
+            machine != null && machine.Def.NeedsPower && HasPowerNearby(machine, wheels);
+
+        /// <summary>
+        /// Çalışan bir su çarkı ya da yel değirmeni bu eşyaya Reach karo yakın mı. Güç zorunlu olmayan düzenekler içindir
+        /// (döner kompost fıçısı: güç yoksa elle çevrilir, varsa kendiliğinden döner).
+        /// </summary>
+        public bool HasPowerNearby(ItemInstance machine, List<ItemInstance> wheels = null)
         {
-            if (machine == null || !machine.Def.NeedsPower) return false;
+            if (machine == null) return false;
             wheels = wheels ?? TurningWheels();
             foreach (var w in wheels)
             {

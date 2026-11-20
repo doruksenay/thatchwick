@@ -972,6 +972,7 @@ namespace Thatchwick.Game
                 AskRoam = AskRoamPermission, Life = _life, Content = _content
             };
             _familyPanel.OpenMirror = OpenMirror;
+            _familyPanel.OpenWardrobe = OpenWardrobe;
             _familyPanel.PortraitOf = c => { var pa = _actors.Find(x => x.Character == c); return Portraits.SpriteFor(c, pa != null ? LookFor(pa) : null); };
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
@@ -1716,7 +1717,7 @@ namespace Thatchwick.Game
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
             if (_dynastyEnded) return true;
             if (_menuOpen && _menuRect.Contains(guiPos)) return true;
-            if (AchievementsVisible) return true;   // tam ekran pencere: dünyaya dokunma geçmez
+            if (AchievementsVisible || UiWindowOpen) return true;   // tam ekran pencere: dünyaya dokunma geçmez
             if (_toolkitHud && _ui != null && _ui.IsPointerOver(screenPos)) return true;
             return HudRect.Contains(guiPos);
         }
@@ -2413,6 +2414,16 @@ namespace Thatchwick.Game
                 Storage = _storage, Plants = _plants, Build = _buildService, Content = _content, TemperatureAt = p => _heat.TemperatureAt(p),
                 DraftAnimals = () => _life.FreeDraftAnimals()                 // düven: arabaya koşulmamış çeki hayvanı (at, öküz)
             };
+            // Döner kompost fıçısı: yakınında dönen çark ya da yel değirmeni varsa kendiliğinden döner. Su ağı taraması
+            // pahalı olduğu için sonuç eşya başına birkaç saniye saklanır.
+            var tumblerPower = new Dictionary<int, (bool on, float until)>();
+            _life.Compost.Powered = item =>
+            {
+                if (tumblerPower.TryGetValue(item.Id, out var hit) && Time.unscaledTime < hit.until) return hit.on;
+                bool on = _automation.HasPowerNearby(item);
+                tumblerPower[item.Id] = (on, Time.unscaledTime + 5f);
+                return on;
+            };
             _cart = new OxCart(_world, _household, _market, _content)
             {
                 DraftAnimals = _animals.DraftAnimals,
@@ -2812,7 +2823,7 @@ namespace Thatchwick.Game
 
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
-            _mirror != null || _settingsOpen || _betOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
+            _mirror != null || _settingsOpen || UiWindowOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
             || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_cartPanel != null && _cartPanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
             || (_homePanel != null && _homePanel.Active) || (_vivView != null && _vivView.Active) || (_familyPanel != null && _familyPanel.Active)
             || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
@@ -3495,6 +3506,9 @@ namespace Thatchwick.Game
                 return;
             }
 
+            // UI Toolkit penceresi (bahis, gardırop, terzi) açıkken IMGUI çizilmez: IMGUI onun üstüne çizilir ve örterdi.
+            if (UiWindowOpen) { GUI.matrix = Matrix4x4.identity; return; }
+
             float s = HudScale;
             GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
 
@@ -3519,7 +3533,7 @@ namespace Thatchwick.Game
             { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
             DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
-            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); if (_betOpen) DrawBetWindow(s); } finally { GUI.skin = prevMenuSkin; } }
+            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); } finally { GUI.skin = prevMenuSkin; } }
 
             // Sol panel (görsel analiz, 18.11.2026): varsayılan küçük; ihtiyaç listesi, beceriler ve ayarlar "Ayrıntı" (Tab) altında.
             // UI Toolkit HUD açıkken (F4) küçük bölüm orada çizilir; IMGUI yalnızca açılmış "Ayrıntı" alanını çizer.

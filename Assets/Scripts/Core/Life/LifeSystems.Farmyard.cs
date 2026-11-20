@@ -75,6 +75,7 @@ namespace Thatchwick.Core.Life
             var f = new FilthService(World, Content, YardNumbers);
             f.Raining = () => RainyToday;
             f.Night = () => IsNightNow;
+            f.IsRotten = it => Thatchwick.Core.Build.DecorSystem.IsRottenFill(it, Content);   // sepetteki çürük sinek ve koku yapar
             // Kırlangıç yuvası: bahar ve yazda altı karo içindeki sinekleri kırlangıçlar yer.
             f.FlyGuard = p =>
             {

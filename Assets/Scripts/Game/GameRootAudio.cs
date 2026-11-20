@@ -66,6 +66,7 @@ namespace Thatchwick.Game
             _audioAkce = akce;
 
             if (_animals == null || _clock.Paused) return;
+            UpdateCrierSound();
             // Şafak: hanede yetişkin horoz varsa günde bir kez öter.
             if (_clock.DayIndex != _roosterDay && _clock.DayFraction >= 0.24 && _clock.DayFraction < 0.30)
             {
@@ -84,6 +85,21 @@ namespace Thatchwick.Game
             int dx = pick.Position.X - listener.Position.X, dy = pick.Position.Y - listener.Position.Y;
             if (dx * dx + dy * dy > AnimalCallRange * AnimalCallRange) return;
             Sfx(SoundPicker.Animal(pick.Species.Id, pick.IsMature && !pick.IsFemale), Iso.GridToWorld(pick.Position.X, pick.Position.Y, pick.Position.Z), pick.Id, 0.8f);
+        }
+
+        private float _crierCallAt;
+        private const float CrierCallEvery = 9f;
+
+        /// <summary>Tellal meydandayken çanını çalıp bağırır; yalnızca komut alan karakter şehirdeyse duyulur.</summary>
+        private void UpdateCrierSound()
+        {
+            var crier = _life.Walkers.Find(Thatchwick.Core.Life.OddWalkerKind.Crier);
+            if (crier == null) { _crierCallAt = 0f; return; }
+            if (Time.unscaledTime < _crierCallAt) return;
+            _crierCallAt = Time.unscaledTime + CrierCallEvery;
+            var here = Commander?.Character;
+            if (here == null || Regions.At(here.Position) != Regions.At(crier.Position)) return;
+            Sfx(SoundKeys.VillageCrier, Iso.GridToWorld(crier.Position.X, crier.Position.Y, crier.Position.Z), -crier.Id);
         }
 
         /// <summary>Adım: zemine göre ses; kapı eşiğinden geçerken kapı sesi. Uzak bölgedekiler duyulmaz.</summary>

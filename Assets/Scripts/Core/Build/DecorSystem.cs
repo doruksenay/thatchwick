@@ -363,6 +363,10 @@ namespace Thatchwick.Core.Build
             return (ret, gone);
         }
 
+        /// <summary>Doldurulan dekorun (meyve sepeti gibi) içinde çürümüş bir şey var mı: güzelliği düşürür, sinek ve koku kaynağıdır.</summary>
+        public static bool IsRottenFill(ItemInstance item, ContentDatabase content) =>
+            item != null && item.Def.IsFillDecor && item.HasContents && WorstFreshness(item, content) == Decor.Rotten;
+
         /// <summary>İçeriğin en kötü tazeliği (boşsa taze).</summary>
         public static int WorstFreshness(ItemInstance item, ContentDatabase content)
         {

@@ -222,7 +222,7 @@ namespace Thatchwick.Core.Farmyard
             _sources.Clear();
             foreach (var item in _world.Items)
             {
-                if (item.IsDecor && IsRotten == null) continue;
+                if (item.IsDecor && (IsRotten == null || !item.Def.IsFillDecor)) continue;   // dekorda yalnızca doldurulan sepet koku kaynağı olabilir
                 int tier = 0; string kind = null;
                 if (!_piles.TryGetValue(item.Id, out var pile) && !item.IsDecor)
                 {
