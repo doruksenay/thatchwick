@@ -108,19 +108,20 @@ namespace Thatchwick.Game
                 string variant = kind == EdgeKind.HalfWall ? (low ? "low" : "half") : low ? "low" : null;
                 // Kaplamanın kendi dokusu varsa (lambri, duvar dokuması) o çizilir; yoksa malzeme görseli + kaplama rengi.
                 var finishArt = finish != null ? IsoArt.WallPart(finish, e.Axis, variant) : null;
-                var real = finishArt ?? IsoArt.WallPart(part?.Id, e.Axis, variant);
+                var real = finishArt ?? IsoArt.WallPart(part?.Id, e.Axis, variant) ?? (variant != null ? KinPart(part?.Id, e.Axis, variant) : null);
                 if (low && real == null)
                 {
                     // Alçak duvar (Kesit'te ön duvar, Aşağı'da hepsi): asla tam boy çizilmez. Kapı ve pencere alçakta düz alçak
                     // duvar olur (art/queue 327): komşu duvarın malzemesi, yoksa varsayılan duvarın alçak görseli.
-                    real = IsoArt.WallPart(LowPartFor(e, kind, look?.Style), e.Axis, "low") ?? IsoArt.WallPart("wall", e.Axis, "low");
+                    var lowPart = LowPartFor(e, kind, look?.Style);
+                    real = IsoArt.WallPart(lowPart, e.Axis, "low") ?? KinPart(lowPart, e.Axis, "low") ?? IsoArt.WallPart("wall", e.Axis, "low");
                 }
                 if (!low && real == null && look?.Style == null && (kind == EdgeKind.Wall || kind == EdgeKind.Door || kind == EdgeKind.Window)) real = IsoArt.Wall(e.Axis, kind);
                 if (real != null)
                 {
                     sr.sprite = real;
                     float alpha = 1f;   // alçak duvar opak: zaten kısa, arkası görünür (eskiden tam boy %30 saydamdı)
-                    var tint = finish != null && finishArt == null ? Color.Lerp(Color.white, EdgeColor(kind, look?.Style, finish), 0.6f) : Color.white;
+                    var tint = finish != null && finishArt == null ? Color.Lerp(Color.white, EdgeColor(kind, look?.Style, finish), 0.3f) : Color.white;
                     sr.color = kind == EdgeKind.Window && plain ? new Color(0.75f, 0.85f, 1f, alpha) : new Color(tint.r, tint.g, tint.b, alpha);
                 }
                 else
@@ -139,6 +140,16 @@ namespace Thatchwick.Game
         }
 
         // Alçak çizimde kullanılacak duvar parçası: düz duvarın kendisi; kapı ve pencerede aynı hattaki komşu duvarın malzemesi.
+        /// <summary>Alçak ve yarım görseli olmayan malzemeler için en yakın malzeme (rengi bozuk varsayılan duvar yerine).</summary>
+        private static readonly System.Collections.Generic.Dictionary<string, string> LowKin = new System.Collections.Generic.Dictionary<string, string>
+        {
+            ["wall_timber_black"] = "wall_timber", ["wall_timber_red"] = "wall_timber", ["wall_brick"] = "wall_ashlar",
+            ["wall_red_ashlar"] = "wall_ashlar", ["wall_rubble_lime"] = "wall_stone",
+        };
+
+        private static Sprite KinPart(string partId, EdgeAxis axis, string variant) =>
+            partId != null && LowKin.TryGetValue(partId, out var kin) ? IsoArt.WallPart(kin, axis, variant) : null;
+
         private string LowPartFor(Edge e, EdgeKind kind, string style)
         {
             if (_content == null) return "wall";
