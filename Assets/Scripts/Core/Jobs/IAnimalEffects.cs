@@ -53,7 +53,11 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Kazıdan kovayla su boşalt.</summary>
         Bail = 9,
         /// <summary>Kazıya ışık koy (iş argümanı ışık eşyası).</summary>
-        Light = 10
+        Light = 10,
+        /// <summary>Su kenarında kavanoza su doldur (denizde deniz suyu, sazlıkta çamur da; belge 47 ek).</summary>
+        JarFill = 11,
+        /// <summary>Su kenarında cam kavanozla yakala (balık, karides, su bitkisi; oyuncuysa mini oyun).</summary>
+        JarCatch = 12
     }
 
     /// <summary>Karo işlerinin kuralları ve etkileri (Core.Work.FarmWork uygular).</summary>

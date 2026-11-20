@@ -122,6 +122,10 @@ namespace Thatchwick.Core.Layout
         /// dekorla) gerçek dünyaya kopyalanır. Eski alana ve oyuncunun eşyalarına dokunulmaz. Dönen değer konan eşya sayısı.
         /// </summary>
         public static int PlaceFrom(WorldState world, ContentDatabase content, LayoutCatalog layouts, int seed, int minX, Action<string> log = null)
+            => PlaceIn(world, content, layouts, seed, it => After(it, minX), log);
+
+        /// <summary>Yeni dünyanın eşyalarından seçilenleri (ör. sonradan eklenen deniz kıyısı) var olan dünyaya koyar.</summary>
+        public static int PlaceIn(WorldState world, ContentDatabase content, LayoutCatalog layouts, int seed, Func<ItemInstance, bool> pick, Action<string> log = null)
         {
             var scratch = new WorldState(BuildMap(layouts));
             Place(scratch, content, layouts, seed);
@@ -129,7 +133,7 @@ namespace Thatchwick.Core.Layout
             int n = 0;
             foreach (var it in new List<ItemInstance>(scratch.Items))
             {
-                if (it.IsDecor || !After(it, minX)) continue;
+                if (it.IsDecor || !pick(it)) continue;
                 ItemInstance made = null;
                 try
                 {

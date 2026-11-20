@@ -29,6 +29,17 @@ namespace Thatchwick.Core.Work
         public event Action<Character, ItemInstance, int> CropHarvested;
         /// <summary>Balık tutuldu (karakter, balık eşyası): ilk balık hatırası (D3b).</summary>
         public event Action<Character, string> FishCaught;
+
+        /// <summary>Oyuncu kendisi mi balık tutuyor (mini oyun, belge 50). True ise vuran balık <see cref="FishBite"/> ile bildirilir, <see cref="GrantFish"/> bekler.</summary>
+        public Func<Character, bool> PlayerFishing { get; set; }
+        public event Action<Character, ItemInstance, string, int> FishBite;
+
+        /// <summary>Mini oyunda tutulan balık envantere (depoya) girer.</summary>
+        public void GrantFish(Character character, string fishId, int count)
+        {
+            int added = Storage != null ? Storage.AddUpTo(fishId, count) : AddAll(fishId, count);
+            if (added > 0) FishCaught?.Invoke(character, fishId);
+        }
         /// <summary>Boş cam şişe (D3 tamamlama): iksir yapılırken biri harcanır, bir iksir fazla çıkar. null ise kapalı.</summary>
         public string BottleItemId { get; set; } = "item.glass_bottle";
 
@@ -264,6 +275,8 @@ namespace Thatchwick.Core.Work
             var order = new List<string>();
             var totals = new Dictionary<string, int>();
             bool firstRow = true;
+            bool playerRod = interaction.Skill == SkillType.Fishing && PlayerFishing?.Invoke(character) == true;
+            string bite = null; int biteCount = 0;
             // Ekin hasadında kalite: sulama düzeni, toprak verimi ve çiftçilik seviyesi ürün miktarını artırır (tohum hariç).
             bool cropHarvest = interaction.RequiresGrown && item.IsPlant && item.Def.IsCrop;
             int tier = cropHarvest && Plants != null ? Plants.QualityOf(item, level) : 0;
@@ -292,6 +305,12 @@ namespace Thatchwick.Core.Work
                     double scaled = count * yieldMult;
                     count = (int)Math.Floor(scaled);
                     if (_rng.NextDouble() < scaled - count) count++;
+                }
+                if (playerRod)
+                {
+                    // Oyuncunun oltası: ilk vuran balık mini oyuna gider; ötekiler (aynı atışta) sayılmaz.
+                    if (bite == null && _content.Items.TryGet(p.ItemId, out var bd) && bd.HasTag("fish")) { bite = p.ItemId; biteCount = count; }
+                    continue;
                 }
                 int added = Storage != null ? Storage.AddUpTo(p.ItemId, count) : AddAll(p.ItemId, count);
                 lost += count - added;
@@ -347,7 +366,8 @@ namespace Thatchwick.Core.Work
             if (parts0 != null) parts.Add(parts0);
             if (lost > 0) parts.Add($"depo dolu, {lost} adet kayboldu");
 
-            if (interaction.Skill == SkillType.Fishing && order.Count == 0) parts.Add("bu sefer bir şey çıkmadı");
+            if (bite != null) { parts.Add("oltaya bir şey vurdu!"); FishBite?.Invoke(character, item, bite, biteCount); }
+            else if (interaction.Skill == SkillType.Fishing && order.Count == 0) parts.Add("bu sefer bir şey çıkmadı");
             if (interaction.TakesFruit) { item.FruitReady = false; item.FruitDays = 0; }
             if (cropHarvest && interaction.RemovesItem) Plants?.OnHarvest(item);
             if (cropHarvest && order.Count > 0) CropHarvested?.Invoke(character, item, tier);

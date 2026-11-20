@@ -158,8 +158,10 @@ namespace Thatchwick.Core.World
         public static readonly Region Marsh = new Region { Id = "marsh", Name = "Sazlık", X = 316, Y = 0, W = 32, H = 24 };
         public static readonly Region Hill = new Region { Id = "hill", Name = "Tepe ve taş ocağı", X = 352, Y = 0, W = 40, H = 40 };
         public static readonly Region Slopes = new Region { Id = "slopes", Name = "Güney Yamaçları", X = 396, Y = 0, W = 32, H = 24 };
+        /// <summary>Deniz kıyısı (belge 47 ek, 20.11.2026): gölün güneyinde, dünyanın genişliğini değiştirmeden boş şeritte.</summary>
+        public static readonly Region Coast = new Region { Id = "coast", Name = "Deniz kıyısı", X = 264, Y = 36, W = 48, H = 32 };
 
-        public static readonly Region[] All = { Farm, Road, Town, Forest, Lake, Marsh, Hill, Slopes };
+        public static readonly Region[] All = { Farm, Road, Town, Forest, Lake, Marsh, Hill, Slopes, Coast };
 
         // Geçitler (a, b): çiftliğin doğu yolu -> köy yolunun batı ucu; köy yolunun doğu ucu -> şehrin batı girişi.
         private static readonly int[][] PortalPairs =
@@ -173,6 +175,8 @@ namespace Thatchwick.Core.World
             // Gölün doğu kıyısı -> sazlık; köy yolunun güney patikası -> Güney Yamaçları
             new[] { 311, 16, 316, 12 }, new[] { 311, 17, 316, 13 },
             new[] { 107, 20, 412, 23 },
+            // Gölün güneybatı patikası -> deniz kıyısı
+            new[] { 269, 31, 269, 36 },
         };
 
         public static bool IsRegional(GridMap map) => map != null && map.Height == WorldHeight && (map.Width == WorldWidth || map.Width == LegacyWorldWidth);
@@ -424,7 +428,7 @@ namespace Thatchwick.Core.World
             { "work:mason", T(23, 44) }, { "home:mason", T(24, 46) },
             // Yaban haritalarının buluşma yerleri (köylü programları ve gezinti için)
             { "forest", W(Forest, 24, 24) }, { "lake", W(Lake, 24, 8) }, { "marsh", W(Marsh, 6, 12) },
-            { "hill", W(Hill, 8, 20) }, { "mine", W(Hill, MineMouthX, MineMouthY - 1) }, { "slopes", W(Slopes, 16, 20) },
+            { "hill", W(Hill, 8, 20) }, { "mine", W(Hill, MineMouthX, MineMouthY - 1) }, { "slopes", W(Slopes, 16, 20) }, { "coast", W(Coast, 8, 4) },
         };
 
         /// <summary>Dükkânların iç alanı (dünya koordinatı); dükkân kimliği Core.Economy.Shops ile aynı.</summary>

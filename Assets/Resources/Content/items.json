@@ -1023,6 +1023,36 @@
           "bladder": 4
         },
         {
+          "id": "cook_fish_herring",
+          "displayName": "Ringa pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_herring",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "cook_fish_mackerel",
+          "displayName": "Uskumru pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.075,
+          "consume": "item.fish_mackerel",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
           "id": "cook_fish_trout",
           "displayName": "Alabalık pişir ve ye",
           "need": "Hunger",
@@ -7138,7 +7168,10 @@
         "pivotY": 24.0,
         "mirror": true
       },
-      "site": "outdoor"
+      "site": "outdoor",
+      "gathers": [
+        "item.viv_forest_soil"
+      ]
     },
     {
       "id": "item.forage_hazel",
@@ -7359,7 +7392,10 @@
         "pivotY": 24.0,
         "mirror": true
       },
-      "site": "outdoor"
+      "site": "outdoor",
+      "gathers": [
+        "item.viv_forest_soil"
+      ]
     },
     {
       "id": "item.salting_barrel",
@@ -7592,6 +7628,29 @@
           "materials": [
             {
               "item": "item.fish_carp",
+              "count": 2
+            },
+            {
+              "item": "item.salt",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.salted_fish",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "salt_fish_herring",
+          "displayName": "Ringa tuzla (2 balık, 1 tuz)",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.fish_herring",
               "count": 2
             },
             {
@@ -9454,7 +9513,10 @@
         "pivotY": 24.0,
         "mirror": true
       },
-      "site": "outdoor"
+      "site": "outdoor",
+      "gathers": [
+        "item.viv_forest_soil"
+      ]
     },
     {
       "id": "item.nettle",
@@ -11646,7 +11708,9 @@
         "food",
         "raw",
         "fish"
-      ]
+      ],
+      "fishDifficulty": 15,
+      "fishBehavior": "sinker"
     },
     {
       "id": "item.fish_carp",
@@ -11659,7 +11723,9 @@
         "food",
         "raw",
         "fish"
-      ]
+      ],
+      "fishDifficulty": 30,
+      "fishBehavior": "smooth"
     },
     {
       "id": "item.fish_trout",
@@ -11672,7 +11738,9 @@
         "food",
         "raw",
         "fish"
-      ]
+      ],
+      "fishDifficulty": 45,
+      "fishBehavior": "darting"
     },
     {
       "id": "item.fish_pike",
@@ -11686,7 +11754,9 @@
         "raw",
         "fish",
         "predator"
-      ]
+      ],
+      "fishDifficulty": 70,
+      "fishBehavior": "mixed"
     },
     {
       "id": "item.fish_eel",
@@ -11700,7 +11770,9 @@
         "raw",
         "fish",
         "nobreed"
-      ]
+      ],
+      "fishDifficulty": 80,
+      "fishBehavior": "sinker"
     },
     {
       "id": "item.salted_fish",
@@ -11894,6 +11966,9 @@
           "item": "item.mussel_shell",
           "chance": 0.3
         }
+      ],
+      "gathers": [
+        "item.viv_fresh_water"
       ]
     },
     {
@@ -12120,7 +12195,8 @@
       "category": "resource",
       "price": 1,
       "tags": [
-        "raw"
+        "raw",
+        "substrate"
       ]
     },
     {
@@ -19661,7 +19737,20 @@
       "tags": [
         "shore"
       ],
-      "site": "outdoor"
+      "site": "outdoor",
+      "forageRegions": [
+        "farm",
+        "road",
+        "town",
+        "forest",
+        "lake",
+        "marsh",
+        "hill",
+        "slopes"
+      ],
+      "gathers": [
+        "item.sand"
+      ]
     },
     {
       "id": "item.sieve",
@@ -22196,7 +22285,10 @@
         "kind": "decor",
         "habitats": [],
         "color": "#5E6B78"
-      }
+      },
+      "tags": [
+        "wild"
+      ]
     },
     {
       "id": "item.indigo",
@@ -23338,7 +23430,8 @@
       "category": "resource",
       "price": 1,
       "tags": [
-        "collectible"
+        "collectible",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -23357,7 +23450,8 @@
       "category": "resource",
       "price": 1,
       "tags": [
-        "collectible"
+        "collectible",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -25914,7 +26008,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -25935,7 +26030,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -25956,7 +26052,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -25977,7 +26074,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -25999,7 +26097,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26020,7 +26119,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26042,7 +26142,8 @@
       "category": "resource",
       "price": 3,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26060,7 +26161,8 @@
       "category": "resource",
       "price": 3,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26078,7 +26180,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26106,7 +26209,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26131,7 +26235,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26161,7 +26266,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26185,7 +26291,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26209,7 +26316,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26237,7 +26345,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26262,7 +26371,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26286,7 +26396,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26317,7 +26428,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26345,7 +26457,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26374,7 +26487,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26400,7 +26514,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26433,7 +26548,8 @@
       "category": "resource",
       "price": 4,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26461,7 +26577,8 @@
       "category": "resource",
       "price": 6,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26487,7 +26604,8 @@
       "category": "resource",
       "price": 4,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26502,7 +26620,9 @@
         "move": "swim",
         "lifeDays": 20,
         "breeds": true
-      }
+      },
+      "fishDifficulty": 20,
+      "fishBehavior": "darting"
     },
     {
       "id": "item.glass_garden",
@@ -26613,7 +26733,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26634,7 +26755,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26655,7 +26777,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26677,7 +26800,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26693,7 +26817,9 @@
         "move": "swim",
         "lifeDays": 40,
         "breeds": true
-      }
+      },
+      "fishDifficulty": 15,
+      "fishBehavior": "darting"
     },
     {
       "id": "item.viv_stickleback",
@@ -26702,7 +26828,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26718,7 +26845,9 @@
         "move": "swim",
         "lifeDays": 30,
         "solitary": true
-      }
+      },
+      "fishDifficulty": 25,
+      "fishBehavior": "darting"
     },
     {
       "id": "item.viv_loach",
@@ -26727,7 +26856,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26744,7 +26874,9 @@
         "needs": [
           "hide"
         ]
-      }
+      },
+      "fishDifficulty": 20,
+      "fishBehavior": "sinker"
     },
     {
       "id": "item.viv_water_flea",
@@ -26753,7 +26885,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26777,7 +26910,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26793,7 +26927,9 @@
         "lifeDays": 15,
         "becomes": "item.viv_frog",
         "becomeDays": 6
-      }
+      },
+      "fishDifficulty": 10,
+      "fishBehavior": "smooth"
     },
     {
       "id": "item.viv_pond_snail",
@@ -26802,7 +26938,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26829,7 +26966,8 @@
       "category": "resource",
       "price": 5,
       "tags": [
-        "critter"
+        "critter",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26846,7 +26984,9 @@
         "needs": [
           "hide"
         ]
-      }
+      },
+      "fishDifficulty": 25,
+      "fishBehavior": "sinker"
     },
     {
       "id": "item.viv_mossy_stone",
@@ -26855,7 +26995,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "vivdecor"
+        "vivdecor",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26877,7 +27018,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "vivdecor"
+        "vivdecor",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26897,7 +27039,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "vivdecor"
+        "vivdecor",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26919,7 +27062,8 @@
       "category": "resource",
       "price": 0,
       "tags": [
-        "vivdecor"
+        "vivdecor",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26939,7 +27083,8 @@
       "category": "resource",
       "price": 2,
       "tags": [
-        "vivdecor"
+        "vivdecor",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26958,7 +27103,8 @@
       "category": "resource",
       "price": 2,
       "tags": [
-        "vivdecor"
+        "vivdecor",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -26979,7 +27125,8 @@
       "category": "resource",
       "price": 15,
       "tags": [
-        "vivdecor"
+        "vivdecor",
+        "wild"
       ],
       "interactions": [],
       "viv": {
@@ -27144,6 +27291,330 @@
         "kitchen",
         "bedroom",
         "inn_room"
+      ]
+    },
+    {
+      "id": "item.viv_forest_soil",
+      "displayName": "Orman toprağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "wild",
+        "substrate"
+      ],
+      "forageRegions": [
+        "forest"
+      ]
+    },
+    {
+      "id": "item.viv_sea_sand",
+      "displayName": "Deniz kumu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "wild",
+        "substrate"
+      ]
+    },
+    {
+      "id": "item.viv_marsh_mud",
+      "displayName": "Sazlık çamuru",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "wild",
+        "substrate"
+      ]
+    },
+    {
+      "id": "item.viv_fresh_water",
+      "displayName": "Kavanozda göl suyu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "wild",
+        "substrate"
+      ]
+    },
+    {
+      "id": "item.viv_sea_water",
+      "displayName": "Kavanozda deniz suyu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "wild",
+        "substrate"
+      ]
+    },
+    {
+      "id": "item.fish_herring",
+      "displayName": "Ringa",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 2,
+      "fishDifficulty": 35,
+      "fishBehavior": "darting"
+    },
+    {
+      "id": "item.fish_mackerel",
+      "displayName": "Uskumru",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "raw",
+        "fish"
+      ],
+      "spoilDays": 2,
+      "fishDifficulty": 55,
+      "fishBehavior": "mixed"
+    },
+    {
+      "id": "item.forage_tidepool",
+      "displayName": "Gelgit çukuru",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring",
+        "Summer",
+        "Autumn",
+        "Winter"
+      ],
+      "forageMax": 4,
+      "forageRegions": [
+        "coast"
+      ],
+      "tags": [
+        "shore"
+      ],
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "search_pool",
+          "displayName": "Kayaları ara",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 5,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.salt",
+              "count": 1,
+              "chance": 0.5
+            },
+            {
+              "item": "item.viv_whelk",
+              "count": 1,
+              "chance": 0.3
+            },
+            {
+              "item": "item.viv_seaweed",
+              "count": 1,
+              "chance": 0.4
+            }
+          ]
+        }
+      ],
+      "catches": [
+        {
+          "item": "item.viv_seaweed",
+          "chance": 0.5
+        },
+        {
+          "item": "item.viv_sea_lettuce",
+          "chance": 0.45,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_periwinkle",
+          "chance": 0.45
+        },
+        {
+          "item": "item.viv_hermit",
+          "chance": 0.25,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_shrimp",
+          "chance": 0.4,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_goby",
+          "chance": 0.25,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_whelk",
+          "chance": 0.2
+        }
+      ],
+      "gathers": [
+        "item.viv_sea_water"
+      ]
+    },
+    {
+      "id": "item.forage_driftline",
+      "displayName": "Kıyı çizgisi",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring",
+        "Summer",
+        "Autumn",
+        "Winter"
+      ],
+      "forageMax": 4,
+      "forageRegions": [
+        "coast"
+      ],
+      "tags": [
+        "shore"
+      ],
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "comb_shore",
+          "displayName": "Kıyıyı tara",
+          "durationDays": 0.05,
+          "skill": "Foraging",
+          "skillXp": 5,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.viv_seaweed",
+              "count": 2,
+              "chance": 0.6
+            },
+            {
+              "item": "item.viv_driftwood",
+              "count": 1,
+              "chance": 0.35
+            },
+            {
+              "item": "item.viv_whelk",
+              "count": 1,
+              "chance": 0.3
+            },
+            {
+              "item": "item.viv_pot_shard",
+              "count": 1,
+              "chance": 0.1
+            },
+            {
+              "item": "item.viv_coral",
+              "count": 1,
+              "chance": 0.03
+            }
+          ]
+        }
+      ],
+      "catches": [
+        {
+          "item": "item.viv_hermit",
+          "chance": 0.2,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_whelk",
+          "chance": 0.3
+        },
+        {
+          "item": "item.viv_driftwood",
+          "chance": 0.25
+        },
+        {
+          "item": "item.viv_coral",
+          "chance": 0.02
+        }
+      ]
+    },
+    {
+      "id": "item.forage_sea_sand",
+      "displayName": "Deniz kumsalı",
+      "category": "forage",
+      "forageSeasons": [
+        "Spring",
+        "Summer",
+        "Autumn"
+      ],
+      "forageMax": 3,
+      "forageRegions": [
+        "coast"
+      ],
+      "tags": [
+        "shore"
+      ],
+      "site": "outdoor",
+      "interactions": [
+        {
+          "id": "dig_sea_sand",
+          "displayName": "Deniz kumu kaz",
+          "durationDays": 0.06,
+          "skill": "Mining",
+          "skillXp": 5,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.viv_sea_sand",
+              "count": 2
+            },
+            {
+              "item": "item.sand",
+              "count": 1,
+              "chance": 0.5
+            },
+            {
+              "item": "item.viv_whelk",
+              "count": 1,
+              "chance": 0.2
+            },
+            {
+              "item": "item.viv_flat_stone",
+              "count": 1,
+              "chance": 0.15
+            }
+          ]
+        }
+      ],
+      "catches": [
+        {
+          "item": "item.viv_flat_stone",
+          "chance": 0.3
+        }
+      ],
+      "gathers": [
+        "item.viv_sea_sand"
       ]
     }
   ],

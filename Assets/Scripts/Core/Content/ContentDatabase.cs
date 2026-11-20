@@ -272,6 +272,8 @@ namespace Thatchwick.Core.Content
             {
                 foreach (var c in item.Catches)
                     if (!Items.TryGet(c.Item, out var cd) || cd.Viv == null) errors.Add($"{item.Id}: yakalanan '{c.Item}' bir cam bahçe türü değil.");
+                foreach (var g in item.Gathers)
+                    if (!Items.TryGet(g, out var gd) || !gd.HasTag("substrate")) errors.Add($"{item.Id}: doldurulan '{g}' bir zemin malzemesi değil.");
                 if (item.Viv == null) continue;
                 foreach (var e in item.Viv.Eats)
                     if (!e.StartsWith("*") && (!Items.TryGet(e, out var ed) || ed.Viv == null)) errors.Add($"{item.Id}: yediği '{e}' bir cam bahçe türü değil.");

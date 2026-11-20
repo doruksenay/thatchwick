@@ -208,6 +208,24 @@ namespace Thatchwick.Game
         private KeepsakePanel _keepsakePanel;
         private HomePanel _homePanel;
         private VivariumView _vivView;      // cam bahçe yakın görünümü (belge 47)
+        private readonly FishingView _fishingView = new FishingView();   // balık tutma mini oyunu (belge 50)
+        private double _fishOrderUntil = -1;   // oyuncunun kendi verdiği balık/kavanoz işi bu güne dek geçerli (mini oyun)
+
+        /// <summary>Balığı oyuncu mu tutuyor: komuta edilen karakter ve oyuncunun kendi verdiği iş (aile görevi ve hizmetkâr kendiliğinden tutar).</summary>
+        private bool PlayerFishing(Character c) => Commander != null && c == Commander.Character && _clock != null && _clock.TotalDays <= _fishOrderUntil;
+
+        private void OrderFishing() { if (_clock != null) _fishOrderUntil = _clock.TotalDays + 1.0; }
+
+        /// <summary>Mini oyunu açar; balığın zorluğu ve kaçışı içerikten, çubuk boyu Balıkçılık seviyesi ve olta kademesinden.</summary>
+        private void StartFishing(Character c, string fishId, bool jar, System.Action<bool, bool> done)
+        {
+            _fishOrderUntil = -1;
+            var def = _content.Items.TryGet(fishId, out var d) ? d : null;
+            int level = c.Skills.GetLevel(SkillType.Fishing);
+            float bonus = jar ? 0.08f : 0.02f * (_life?.Tools.Tier("rod") ?? 0);
+            var game = new FishingGame(fishId, def?.FishDifficulty ?? 30, FishingGame.ParseBehavior(def?.FishBehavior), level, bonus, _rng.Next(), skipWait: jar);
+            _fishingView.Start(game, GameLocalization.T(jar ? "ui.fishing.jar_title" : "ui.fishing.title"), def?.DisplayName ?? fishId, done);
+        }
         private bool _buntingShown;
         private FamilyService _family;
         private FamilyPanel _familyPanel;
@@ -341,7 +359,9 @@ namespace Thatchwick.Game
                 {
                     // Bölgeler arası boşluklar engelli kalmalı: eski test engeli temizliği bölgeli haritada çalışmaz
                     // (eski sürüm boşlukları açıyordu; Apply onları yeniden kapatır, geçitleri kurar).
+                    bool coastAdded = Thatchwick.Core.World.Regions.EnsureCoast(map);   // deniz kıyısı sonradan eklendi (belge 47 ek)
                     Thatchwick.Core.World.Regions.Apply(map);
+                    if (coastAdded) AddCoastItems();
                     Places = Thatchwick.Core.World.Regions.Places(map);
                     _layoutPlan = Thatchwick.Core.Layout.TownBuilder.Plan(map, _layouts);
                 }
@@ -683,6 +703,16 @@ namespace Thatchwick.Game
         }
 
         private static int _widenedFrom;
+
+        /// <summary>Eski kayda deniz kıyısının eşyaları; gölden inen yeni patikadaki ağaçlar kaldırılır.</summary>
+        private void AddCoastItems()
+        {
+            var coast = Thatchwick.Core.World.Regions.Coast;
+            foreach (var it in new List<ItemInstance>(_world.Items))
+                if (it.IsPlant && Thatchwick.Core.World.Regions.OnLakeToCoastTrail(_world.Map, it.Position)) _world.RemoveItem(it.Id);
+            int n = Thatchwick.Core.Layout.StarterWorld.PlaceIn(_world, _content, _layouts, _seed, it => coast.Contains(it.Position), msg => Debug.LogWarning(msg));
+            Debug.Log($"Kayıt: deniz kıyısı eklendi, {n} eşya kondu.");
+        }
 
         /// <summary>
         /// Eski kayıt göçü: 96x72 (köy çiftlikte) ve 208x72 (yalnızca çiftlik, köy yolu, şehir) kayıtlar bugünkü dünyaya
@@ -1608,6 +1638,7 @@ namespace Thatchwick.Game
             if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_homePanel != null && _homePanel.Active && _homePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_vivView != null && _vivView.Active && _vivView.PanelRect(s).Contains(guiPos)) return true;
+            if (_fishingView.Active) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_requestPanel != null && _requestPanel.Active && _requestPanel.PanelRect(s).Contains(guiPos)) return true;
@@ -2011,15 +2042,17 @@ namespace Thatchwick.Game
                         Run = () => Commander.Runner.Command(Job.OnTile(waterTile, TileAction.Stock, sp))
                     });
                 }
-                foreach (var (label, act) in new[] { ("Suya gir, yıkan", TileAction.Bathe), ("Kıyıdan balık tut", TileAction.Fish), ("Buz kes", TileAction.CutIce) })
+                foreach (var (label, act) in new[] { ("Suya gir, yıkan", TileAction.Bathe), ("Kıyıdan balık tut", TileAction.Fish), ("Buz kes", TileAction.CutIce),
+                    (GameLocalization.T("ui.water.jar_fill"), TileAction.JarFill), (GameLocalization.T("ui.water.jar_catch"), TileAction.JarCatch) })
                 {
                     if (act == TileAction.CutIce && !_world.Map.WaterFrozen) continue;
+                    if ((act == TileAction.JarFill || act == TileAction.JarCatch) && _household.Count(HomeLife.CatchJar) <= 0) continue;   // kavanozu yoksa gösterme
                     var a = act;
                     _menuOptions.Add(new MenuOption
                     {
                         Label = label,
                         Blocked = _farmWork.CanDo(Commander.Character, waterTile, a),
-                        Run = () => Commander.Runner.Command(Job.OnTile(waterTile, a))
+                        Run = () => { if (a == TileAction.Fish || a == TileAction.JarCatch) OrderFishing(); Commander.Runner.Command(Job.OnTile(waterTile, a)); }
                     });
                 }
             }
@@ -2058,6 +2091,7 @@ namespace Thatchwick.Game
 
         private void RunOption(MenuOption o)
         {
+            if (o.Interaction != null && (o.Interaction.Skill == SkillType.Fishing || o.Interaction.HomeAction == "catch")) OrderFishing();
             if (o.Run != null) { if (o.Blocked == null) o.Run(); else ShowMessage(o.Blocked); return; }
             Commander.Runner.Command(Job.UseItem(o.Item.Id, o.Interaction.Id));
             ShowMessage($"{Commander.Character.Name}: {o.Interaction.DisplayName} ({o.Item.Def.DisplayName})");
@@ -2172,6 +2206,21 @@ namespace Thatchwick.Game
             _farmWork.Sown += (c, t, seed) => _account.Count("act:sow");
             SetupMines();
             _farmWork.Worked += (c, t, note) => { ShowMessage($"{c.Name}: {note}"); _account.Count("act:water"); };
+            // Balık tutma mini oyunu (belge 50): oyuncunun kendi oltası ve kavanozu; görevli ve tuzak kendiliğinden.
+            _farmWork.PlayerFishing = PlayerFishing;
+            _effects.PlayerFishing = PlayerFishing;
+            _life.Home.PlayerCatches = (c, id) => PlayerFishing(c);
+            _farmWork.FishBite += (c, tile, fish) => StartFishing(c, fish, false, (ok, perfect) => _farmWork.CompleteFish(c, tile, fish, ok, perfect));
+            _effects.FishBite += (c, item, fish, count) => StartFishing(c, fish, false, (ok, perfect) =>
+            {
+                if (ok) { _effects.GrantFish(c, fish, count); if (perfect) c.GainSkillXp(SkillType.Fishing, FarmWork.PerfectXp); }
+                ShowMessage(ok ? GameLocalization.T("ui.fishing.caught", ("fish", _content.Items.Get(fish).DisplayName)) : GameLocalization.T("ui.fishing.escaped"));
+            });
+            _life.Home.CatchBite += (c, id) => StartFishing(c, id, true, (ok, perfect) =>
+            {
+                if (ok) _life.Home.GrantCatch(id);
+                else ShowMessage(GameLocalization.T("ui.fishing.escaped"));
+            });
             _farmWork.Tilled += (c, t) => _account.Count("act:till");
             _farmWork.Repaired += (c, t) => { ShowMessage($"{c.Name} yolu onardı"); _account.Count("act:repair_road"); };
             _effects.TemperatureAt = p => _heat.TemperatureAt(p);   // buz kesmek için don
@@ -2604,6 +2653,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.jKey.wasPressedThisFrame) _keepsakePanel?.Toggle();
             if (kb != null && kb.eKey.wasPressedThisFrame) _homePanel?.Toggle();
             if (kb != null && kb.escapeKey.wasPressedThisFrame && _vivView != null && _vivView.Active) _vivView.Close();
+            _fishingView.Update(Time.unscaledDeltaTime);
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.iKey.wasPressedThisFrame) ToggleRequests();
@@ -3149,6 +3199,7 @@ namespace Thatchwick.Game
             _keepsakePanel?.OnGUI(s);
             _homePanel?.OnGUI(s);
             _vivView?.OnGUI(s);
+            _fishingView.OnGUI(s);
             _familyPanel.OnGUI(s);
             _villagePanel.OnGUI(s);
             _requestPanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }

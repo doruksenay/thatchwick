@@ -886,7 +886,14 @@ namespace Thatchwick.Core.Life
             return Injuries.InjureById(c, "bee_sting") != null;
         }
         /// <summary>Kıyıdan balık: ilk balık hatırası.</summary>
-        public void Attach(Thatchwick.Core.Work.FarmWork farm) { farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish); }
+        public void Attach(Thatchwick.Core.Work.FarmWork farm)
+        {
+            farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish);
+            // Su kenarında kavanoz (cam bahçe, belge 47 ek): su ve canlı doğadan.
+            farm.JarBlocker = (tile, fill) => Home.WaterJarBlocker(tile, fill);
+            farm.JarCatch = (c, tile) => Home.CatchAtWater(c, tile);
+            farm.JarFill = tile => Home.FillAtWater(tile);
+        }
         private FamilyService _family;
 
         // ---- şenlik hazırlığı (27 §9 son madde) ----

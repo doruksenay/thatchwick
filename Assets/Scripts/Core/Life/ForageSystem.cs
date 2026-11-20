@@ -74,6 +74,14 @@ namespace Thatchwick.Core.Life
             return false;
         }
 
+        /// <summary>Bölgeye bağlı toplama noktası (deniz kumu yalnızca kıyıda, göl kumu kıyıda değil).</summary>
+        public static bool InRegion(ItemDef def, GridPos p)
+        {
+            if (def.ForageRegions.Count == 0) return true;
+            var r = Regions.At(p);
+            return r != null && def.ForageRegions.Contains(r.Id);
+        }
+
         private bool TrySpawn(ItemDef def)
         {
             var map = _world.Map;
@@ -86,7 +94,7 @@ namespace Thatchwick.Core.Life
                     for (int x = 0; x < map.Width; x++)
                     {
                         var q = new GridPos(x, y);
-                        if (!IsShore(map, q) || map.IsBlocked(q)) continue;
+                        if (!IsShore(map, q) || map.IsBlocked(q) || !InRegion(def, q)) continue;
                         if (TileFilter != null && !TileFilter(q)) continue;
                         if (_world.CanPlaceFloor(def, q, 0).Ok) shore.Add(q);
                     }
@@ -99,7 +107,7 @@ namespace Thatchwick.Core.Life
             for (int attempt = 0; attempt < 40; attempt++)
             {
                 var p = new GridPos(_rng.Next(map.Width), _rng.Next(map.Height));
-                if (map.IsBlocked(p)) continue;
+                if (map.IsBlocked(p) || !InRegion(def, p)) continue;
                 var room = rooms.RoomAt(p);
                 if (room != null && room.IsIndoor) continue;
                 if (map.IsOwned(p) && map.GetFloor(p) != FloorType.Grass) continue;   // işlenmiş arsayı bozma

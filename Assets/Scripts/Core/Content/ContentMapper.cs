@@ -47,6 +47,8 @@ namespace Thatchwick.Core.Content
                     Preserves = dto.preserves,
                     Variants = dto.variants != null ? new List<string>(dto.variants) : new List<string>(),
                     ForageMax = dto.forageMax,
+                    FishDifficulty = dto.fishDifficulty > 0 ? Math.Min(100, dto.fishDifficulty) : 30,
+                    FishBehavior = string.IsNullOrWhiteSpace(dto.fishBehavior) ? "smooth" : dto.fishBehavior,
                     FruitRipenDays = dto.fruitDays,
                     FixesNitrogen = dto.nitrogen,
                     CropFamily = string.IsNullOrWhiteSpace(dto.cropFamily) ? null : dto.cropFamily,
@@ -165,6 +167,8 @@ namespace Thatchwick.Core.Content
                     if (v.avoid != null) vd.Avoid.AddRange(v.avoid);
                     item.Viv = vd;
                 }
+                if (dto.forageRegions != null) item.ForageRegions.AddRange(dto.forageRegions);
+                if (dto.gathers != null) item.Gathers.AddRange(dto.gathers);
                 if (dto.catches != null)
                     foreach (var c in dto.catches)
                     {
@@ -350,6 +354,8 @@ namespace Thatchwick.Core.Content
                 // Cam bahçe (belge 47): yakalanacak türü olan toplama yerine "Cam kavanozla yakala".
                 if (item.Catches.Count > 0)
                     item.Interactions.Add(new InteractionDef { Id = "catch", DisplayName = "Cam kavanozla yakala", DurationDays = 0.05, Skill = SkillType.Foraging, SkillXp = 3f, HomeAction = "catch" });
+                if (item.Gathers.Count > 0)
+                    item.Interactions.Add(new InteractionDef { Id = "fill", DisplayName = "Kavanoza doldur", DurationDays = 0.03, Skill = SkillType.Foraging, SkillXp = 1f, HomeAction = "fill" });
                 // Mevsim süsü: mevsimi geçince ev görevlisi kaldırır (belge 45).
                 if (item.IsSeasonal)
                     item.Interactions.Add(new InteractionDef { Id = "stow_wilted", DisplayName = "Kaldır (mevsimi geçti)", DurationDays = 0.02, HomeAction = "stow" });
