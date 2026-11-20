@@ -278,6 +278,7 @@ namespace Thatchwick.Core.Life
                 }
             };
             Duties.Finished += r => Ledger.Note(Text(LocText.Of("duty.ledger", ("name", r.CharacterName), ("kind", TimedDutyService.KindText(r.Kind)))));
+            WireOddities(seed);   // easter egg'ler (belge 55)
             Breakdowns = new BreakdownService(population, seed != 0 ? Seeds.Derive(seed, 12) : 83)
             {
                 SquarePosition = () => SquarePosition?.Invoke(),
@@ -404,6 +405,7 @@ namespace Thatchwick.Core.Life
             population.Content = content;
             population.Village = Village;
             population.MemberDied += OnMemberDied;
+            WireOddityEvents(seed);   // küçük easter egg'ler (belge 55); bütün alt sistemler kurulduktan sonra
         }
 
         /// <summary>
@@ -734,6 +736,7 @@ namespace Thatchwick.Core.Life
                 var suitor = Suitors.SpawnVillager(single.Sex == Characters.Sex.Female ? Characters.Sex.Male : Characters.Sex.Female);
                 if (suitor != null) Say($"Görücü haberi yayıldı: {suitor.Name} köye geldi.", NoticeLevel.Info, single.Id);
             };
+            AttachOddities(family);   // hayvanın konuştuğunu anlat, fazla selam (belge 55)
             family.Happened += (actor, target, action, msg) =>
             {
                 if (action != SocialAction.Propose) return;
@@ -758,6 +761,7 @@ namespace Thatchwick.Core.Life
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
             runner.ItemUsed += (c, item, interaction) => { if (interaction.Id == ReadBoardInteraction) ReadBoard(c); };
             runner.WorkDone += Requests.OnWork;
+            AttachOddities(runner);   // bulunan silah (belge 55 §4)
             // Üşüyen ocağı kendisi yakar (Denge 41): ısı sistemi bağlıysa envanterden kütük atar.
             runner.Stoke = item => _heat != null && _heat.TryStoke(item.Id, House);
             runner.HasFirewood = () => _heat != null && House.Count(FirewoodId) > 0;
@@ -829,6 +833,10 @@ namespace Thatchwick.Core.Life
         {
             Upbringing.Attach(animals, care);
             Merchant.Animals = animals;
+            AnimalTalk.Animals = () => animals.Animals;   // hayvanla konuşma (belge 55 §3)
+            if (care != null) { care.Talk = AnimalTalk; care.Done += OnOddAnimalCare; }
+            _oddAnimals = animals;
+            animals.TakenAway += AnimalTalk.OnAnimalTaken;
         }
 
         public void Attach(PlantSystem plants)
@@ -870,6 +878,7 @@ namespace Thatchwick.Core.Life
             animals.RiderFell += (horse, rider) =>
             {
                 Injuries.InjureById(rider, "horse_fall");   // moodlet ve bildirim InjurySystem'den
+                OnOddFall(rider);                           // köyün hafızası (belge 55 §2b)
             };
             animals.HorseRefused += horse => Say($"{horse.Name} engelin önünde ürktü.", NoticeLevel.Info);
             // Kurt saldırısı (31-4.1): çoban = "Hayvanlar" görevli genç yetişkin ve üstü.
@@ -932,6 +941,7 @@ namespace Thatchwick.Core.Life
             build.ExtraOwned = Trees.ExtraOwned;   // hanenin ağaç köşkü: içine eşya konur (belge 52)
             build.Shell = Trees.IsShell;
             build.Furnished += Trees.OnFurnished;   // köşkün taşıma sınırı
+            build.Furnished += OnOddFurnished;      // tuhaflıklar (belge 55)
         }
         /// <summary>Depo: sandığa demir kuşak kapasite verir (belge 45).</summary>
         public void Attach(Thatchwick.Core.Build.StorageService storage) { storage.ExtraStorage = Home.ExtraStorage; }
@@ -962,7 +972,8 @@ namespace Thatchwick.Core.Life
             foreach (var con in interaction.AllConsumed())
                 if (Content.Items.TryGet(con.ItemId, out var d) && d.HasTag(CoffeeHabits.Tag)) { coffee = true; break; }
             if (coffee) Coffee.OnCoffee(c, Clock.TotalDays);
-            if (interaction.Id == FortuneInteraction) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
+            if (interaction.AddFeed > 0) foreach (var con in interaction.AllConsumed()) { AnimalTalk.OnFeed(con.ItemId); break; }   // "yine mi saman?" (belge 55 §3.2)
+            if (interaction.Id == FortuneInteraction && !FortuneOddity(c)) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
             if (IsHoneyHarvest(interaction)) TrySting(c);   // petek kesmede sokma OnInteractionAppliedOn'da
             OnClothingCrafted(c, interaction);
             OnAilmentInteraction(c, interaction);
@@ -1285,6 +1296,7 @@ namespace Thatchwick.Core.Life
 
             Ledger.Tick(day);
             SkillDaily(day);   // beceri pasifleri (belge 45)
+            OdditiesNewDay(day);   // hayvanın derdi, kalıntılar (belge 55)
             Wolves?.OnNewDay(Clock.Season, (int)(day % Clock.Config.DaysPerSeason), Clock.Config.DaysPerSeason);
             var orphan = Adoptions.OnNewDay(Clock.Season);
             if (orphan != null) Say($"Tarlanın kenarında öksüz bir {orphan.Name.ToLowerInvariant()} yavrusu bulundu. Sahiplenmek ister misin?", NoticeLevel.Info);
@@ -1306,7 +1318,7 @@ namespace Thatchwick.Core.Life
                 Mischief.BoarVisit(Clock.Season, out var boarMsg);
                 if (boarMsg != null) Say(boarMsg, boarMsg.Contains("çiğnendi") ? NoticeLevel.Warning : NoticeLevel.Info);
                 var gift = Mischief.CrowGift(House);
-                if (gift != null) Say(gift, NoticeLevel.Info);
+                if (gift != null) { Say(gift, NoticeLevel.Info); Oddities.Mark(OddityIds.CrowGift); }
             }
             if (Roamers != null)
             {
@@ -1414,6 +1426,7 @@ namespace Thatchwick.Core.Life
                 locustDry = Locusts.DryDays,
                 locustIncoming = Locusts.Incoming,
                 skillFlags = ExportSkillFlags(),
+                oddities = ExportOddities(),
                 roomNames = ExportRoomNames(),
                 clothing = _clothing?.Export(),
                 tailor = _tailor?.Export(),
@@ -1438,6 +1451,7 @@ namespace Thatchwick.Core.Life
             Festivals.CelebratedDay = data.festivalCelebratedDay;
             Upbringing.Import(data.upbringing);
             ImportSkillFlags(data.skillFlags);
+            ImportOddities(data.oddities);
             ImportRoomNames(data.roomNames);
             Merchant.Import(data.merchant);
             Journal.Import(data.natureJournal);

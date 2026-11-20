@@ -142,6 +142,8 @@ namespace Thatchwick.Core.Life.Requests
 
         public event Action<Request> Completed;
         public event Action<Request> Posted;
+        /// <summary>Bu vasiyet tuhaf olsun mu (easter egg; LifeSystems bağlar). null ise hiç olmaz.</summary>
+        public Func<bool> OddBequest { get; set; }
 
         public RequestService(Population population, Household house, ContentDatabase content, VillagerService villagers, NeighborHouseService houses, int seed = 46)
         {
@@ -917,6 +919,9 @@ namespace Thatchwick.Core.Life.Requests
             var options = new List<BequestTemplate>();
             foreach (var t in RequestCatalog.Bequests) if (t.Role == role) options.Add(t);
             if (options.Count == 0) foreach (var t in RequestCatalog.Bequests) if (t.Role == "*") options.Add(t);
+            // Tuhaf vasiyet (belge 55 §2b): nadiren kim olursa olsun saçma bir son istek.
+            if (OddBequest != null && OddBequest())
+                foreach (var t in RequestCatalog.Bequests) if (t.Role == RequestCatalog.OddBequestRole) { options.Clear(); options.Add(t); break; }
             if (options.Count == 0) return null;
             var tpl = options[_rng.Next(options.Count)];
             var req = NewRequest(RequestKind.Bequest, tpl.Id, L(RequestKeys.Title(tpl.Id)), L(RequestKeys.Text(tpl.Id), ("giver", c.Name)), c);

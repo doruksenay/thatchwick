@@ -84,6 +84,8 @@ namespace Thatchwick.Core.Save
         public Thatchwick.Core.Economy.MerchantSave merchant;
         /// <summary>Beceri işlerinin kalıcı bayrakları (belge 45: aşı, stoklu gölet, kara toprak, imece, ırgat). Eski kayıtta null.</summary>
         public string[] skillFlags;
+        /// <summary>Easter egg'ler: görülen tuhaflıklar, hayvanla konuşma anıları, bulunan kalıntı (belge 55). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Life.OdditySave oddities;
         /// <summary>Oda adları "x,y,z=ad" (belge 45, Ev düzenleme 2). Eski kayıtta null.</summary>
         public string[] roomNames;
         // Hatıralar ve "ilk"ler (D3b, 18.11.2026). Eski kayıtta null: boş başlar.

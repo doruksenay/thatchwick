@@ -31,7 +31,9 @@ namespace Thatchwick.Core.Jobs
         Lullaby = 30, PlayWithBaby = 31, FirstSteps = 32, ShowWork = 33, Soothe = 34, TalkTeen = 35, SingLullaby = 36,
         TeachLetters = 40, VillageLesson = 41, Assess = 42, ElderLesson = 43,
         Diagnose = 50, Bandage = 51, Midwife = 52, SetBone = 53, VisitPatient = 54, ElderCare = 55,
-        TellWeather = 60, WriteLetter = 61
+        TellWeather = 60, WriteLetter = 61,
+        /// <summary>Hayvanın konuştuğunu anlat (belge 55 §3.4): yalnızca bunu yaşayan anlatabilir.</summary>
+        TellAnimalTalk = 70
     }
 
     /// <summary>Karakterin yapacağı bir iş. Oyuncu komutu ve NPC otonomisi aynı işleri üretir.</summary>

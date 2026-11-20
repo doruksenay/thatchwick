@@ -174,6 +174,8 @@ namespace Thatchwick.Game
             {
                 Action(actor, c, SocialAction.Chat, $"Sohbet ({_family.Affection(actor.Id, c.Id)})");
                 if (c.Stage == AgeStage.Child && actor.Stage != AgeStage.Child && actor.Stage != AgeStage.Baby) Action(actor, c, SocialAction.TellStory, "Masal anlat");
+                // Hayvanın konuştuğunu anlat (belge 55 §3.4): yalnızca yaşayan, her dinleyene bir kez.
+                if (_family.CanDo(actor, c, SocialAction.TellAnimalTalk) == null) Action(actor, c, SocialAction.TellAnimalTalk, GameLocalization.T("ui.social.tell_animal_talk"));
                 if (actor.SpouseId == c.Id) Action(actor, c, SocialAction.TryForBaby, "Çocuk iste");
                 else if (FamilyService.IsAdultAge(actor) && FamilyService.IsAdultAge(c) && !actor.SpouseId.HasValue && !c.SpouseId.HasValue)
                     Action(actor, c, SocialAction.Propose, "Evlen");

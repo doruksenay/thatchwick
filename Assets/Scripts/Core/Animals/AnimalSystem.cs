@@ -145,6 +145,9 @@ namespace Thatchwick.Core.Animals
         }
 
         /// <summary>Hayvanı satar (fiyatın yarısı).</summary>
+        /// <summary>Hayvan satıldı ya da kesildi (anası yavrusunu arar; belge 55 §3.2).</summary>
+        public event Action<Animal> TakenAway;
+
         public PlacementCheck Sell(int animalId, Household house)
         {
             var a = Get(animalId);
@@ -152,6 +155,7 @@ namespace Thatchwick.Core.Animals
             if (a.RiderId != 0) return PlacementCheck.Fail("Önce attan in.");
             if (a.Saddle != null) house.AddItem(a.Saddle);    // eyer hayvanla gitmez
             _animals.Remove(a);
+            TakenAway?.Invoke(a);
             house.AddAkce((int)Math.Floor(a.Species.Price * SellRatio));
             return PlacementCheck.Success;
         }
@@ -181,6 +185,7 @@ namespace Thatchwick.Core.Animals
             meatId = animal.Species.Meat;
             meatCount = Math.Max(1, animal.Species.MeatCount);
             _animals.Remove(animal);
+            TakenAway?.Invoke(animal);
             return true;
         }
 

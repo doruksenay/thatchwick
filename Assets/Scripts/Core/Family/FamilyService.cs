@@ -55,6 +55,11 @@ namespace Thatchwick.Core.Family
         /// <summary>Sohbet sonrası eklenecek ek (kişiye özel) etki; (yapan, hedef).</summary>
         public event Action<Character, Character> Chatted;
 
+        /// <summary>Hayvanla konuşma anıları (belge 55 §3.4); bağlanmamışsa "anlat" işi kapalıdır.</summary>
+        public Thatchwick.Core.Life.AnimalTalkService AnimalTalk { get; set; }
+        /// <summary>(anlatan, dinleyen, sonuç).</summary>
+        public event Action<Character, Character, Thatchwick.Core.Life.TellResult> ToldAnimalTalk;
+
         public FamilyService(Population population, Household house, ContentDatabase content, int seed = 1)
         {
             _population = population ?? throw new ArgumentNullException(nameof(population));
@@ -117,6 +122,8 @@ namespace Thatchwick.Core.Family
                     if (target.Stage != AgeStage.Child) return "Masal çocuklara anlatılır.";
                     if (actor.Stage == AgeStage.Child) return "Çocuk masal anlatamaz; dinler.";
                     return null;
+                case SocialAction.TellAnimalTalk:
+                    return AnimalTalk == null ? "Anlatacak böyle bir anısı yok." : AnimalTalk.CanTell(actor, target);
                 case SocialAction.Propose:
                     if (!IsAdultAge(actor) || !IsAdultAge(target)) return "Evlilik için ikisi de genç yetişkin ya da yetişkin olmalı.";
                     if (actor.SpouseId.HasValue || target.SpouseId.HasValue) return "Zaten evli.";
@@ -146,6 +153,7 @@ namespace Thatchwick.Core.Family
                 case SocialAction.Chat: return 0.08;
                 case SocialAction.Propose: return 0.05;
                 case SocialAction.TellStory: return 0.08;
+                case SocialAction.TellAnimalTalk: return 0.06;
                 default: return SkillDuration(action);
             }
         }
@@ -214,6 +222,15 @@ namespace Thatchwick.Core.Family
                     SetAffection(actor.Id, target.Id, Math.Min(100, Affection(actor.Id, target.Id) + ChatAffection / 2));
                     msg = $"{actor.Name}, {target.Name} için bir masal anlattı";
                     break;
+                case SocialAction.TellAnimalTalk:
+                {
+                    // Sonuç satırı (inandı, "bizde de oldu", inanmadı) ToldAnimalTalk ile duyurulur; metin anahtarlıdır.
+                    var told = AnimalTalk.Tell(actor, target);
+                    if (told == null) return;
+                    actor.GainSkillXp(SkillType.Charm, 3);
+                    ToldAnimalTalk?.Invoke(actor, target, told);
+                    return;
+                }
                 case SocialAction.Propose:
                     actor.SpouseId = target.Id;
                     target.SpouseId = actor.Id;

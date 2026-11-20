@@ -292,8 +292,12 @@ namespace Thatchwick.Core.Life.Requests
         };
 
         // ------------------------------------------------------------------ vasiyetler
+        /// <summary>Rolü bu olan vasiyet yalnızca easter egg olarak çıkar (belge 55 §2b).</summary>
+        public const string OddBequestRole = "odd", OddBequestId = "vas.top";
+
         public static readonly BequestTemplate[] Bequests =
         {
+            Beq(OddBequestId, OddBequestRole, Del("item.spinning_top", 1)),   // easter egg (belge 55); metni req.vas.top.* anahtarlarında
             Beq("vas.smith", "blacksmith", Del("item.charcoal", 8)),
             Beq("vas.miller", "miller", Del("item.bread", 6)),
             Beq("vas.herb", "herbalist", Del("item.chamomile", 6)),

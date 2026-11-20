@@ -105,6 +105,7 @@ namespace Thatchwick.Core.Life
                         case SocialAction.Feed: info.Icon = "care"; info.Text = "Bebeği besliyor"; info.Reason = "çünkü bebek aç"; break;
                         case SocialAction.Chat: info.Text = "Sohbet ediyor"; break;
                         case SocialAction.TellStory: info.Text = "Masal anlatıyor"; break;
+                        case SocialAction.TellAnimalTalk: info.Text = "Hayvanın konuştuğunu anlatıyor"; break;
                         case SocialAction.Propose: info.Icon = "love"; info.Text = "Evlenme teklif ediyor"; break;
                         case SocialAction.TryForBaby: info.Icon = "love"; info.Text = "Çocuk istiyor"; break;
                         default: info.Text = (Thatchwick.Core.Family.FamilyService.SkillSocial(job.Action)?.Label ?? "Sosyal iş") + " (beceri)"; break;
@@ -122,6 +123,7 @@ namespace Thatchwick.Core.Life
                         case AnimalAction.Trick: info.Text = "Ata numara öğretiyor"; break;
                         case AnimalAction.Treat: info.Text = "Hasta hayvana bakıyor"; break;
                         case AnimalAction.PrepContest: info.Text = "Hayvanı yarışmaya hazırlıyor"; break;
+                        case AnimalAction.TalkLikeHuman: info.Icon = "love"; info.Text = "Hayvanla insan gibi konuşmayı deniyor"; break;
                         default: info.Icon = "love"; info.Text = "Hayvanı seviyor"; break;
                     }
                     break;

@@ -888,6 +888,9 @@ namespace Thatchwick.Core.Animals
         private readonly Random _rng = new Random(4517);
         private bool DoneToday(int id, AnimalAction act) => Today >= 0 && _done.Contains((id, act, Today));
 
+        /// <summary>Hayvanla konuşma (belge 55 §3); bağlanmamışsa iş kapalıdır.</summary>
+        public Thatchwick.Core.Life.AnimalTalkService Talk { get; set; }
+
         public AnimalCare(AnimalSystem animals, Household house)
         {
             _animals = animals ?? throw new ArgumentNullException(nameof(animals));
@@ -933,6 +936,10 @@ namespace Thatchwick.Core.Animals
                 case AnimalAction.PrepContest:
                     if (actor.Skills.GetLevel(SkillType.AnimalHusbandry) < PrepLevel) return $"Hayvancılık {PrepLevel} gerekli.";
                     return Prepared.Contains(a.Id) ? $"{a.Name} yarışmaya hazır." : null;
+                case AnimalAction.TalkLikeHuman:
+                    return Talk == null ? "Bilinmeyen iş." : Talk.CanTry(actor, a);
+                case AnimalAction.Shoo:
+                    return a.Species.Id == "animal.chicken" ? null : "Yalnızca tavuk kışkışlanır.";
                 default: return "Bilinmeyen iş.";
             }
         }
@@ -948,6 +955,8 @@ namespace Thatchwick.Core.Animals
                 case AnimalAction.Train: case AnimalAction.Trick: return 0.08;
                 case AnimalAction.Treat: return 0.06;
                 case AnimalAction.PrepContest: return 0.1;
+                case AnimalAction.TalkLikeHuman: return 0.04;
+                case AnimalAction.Shoo: return 0.01;
                 default: return 0.02;
             }
         }
@@ -989,6 +998,12 @@ namespace Thatchwick.Core.Animals
                     Prepared.Add(a.Id);
                     _animals.AddAnimalXp(a, 5);
                     ok = true; break;
+                case AnimalAction.Shoo: ok = true; break;   // sayım ve intikam LifeSystems'te (Done)
+                case AnimalAction.TalkLikeHuman:
+                    // Sonuç (hayvan baktı ya da konuştu) Talk.Tried ile duyurulur.
+                    ok = Talk?.Try(actor, a) != null;
+                    if (ok) actor.GainSkillXp(SkillType.Charm, 3);
+                    break;
                 default: ok = false; break;
             }
             if (ok)
