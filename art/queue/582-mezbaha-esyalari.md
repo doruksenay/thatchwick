@@ -1,7 +1,8 @@
 ---
 id: "582"
 title: "Mezbaha eşyaları (5)"
-status: pending
+status: running
+claimed_at: 2026-11-20T15:15Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 30
 family: esya
