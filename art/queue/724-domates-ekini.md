@@ -1,7 +1,7 @@
 ---
 id: "724"
 title: "Domates ekini (3)"
-status: running
+status: review
 claimed_at: 2026-11-20T14:42Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (domates salça için bilinçli dönem istisnası, Project belgesi 60a-E1)
 priority: 20
