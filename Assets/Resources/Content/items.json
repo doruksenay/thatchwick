@@ -47228,8 +47228,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 112,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       },
       "site": "outdoor",
       "belongs": [
