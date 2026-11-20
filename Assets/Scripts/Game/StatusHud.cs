@@ -347,10 +347,10 @@ namespace Thatchwick.Game
             };
         }
 
-        /// <summary>Ses anahtarı çalma kancası (anahtar, varlık kimliği): ses hattı (belge 45b) kurulunca AudioService.Play'e bağlanır; null ise sessiz.</summary>
-        public static System.Action<string, int> PlaySound { get; set; }
-        /// <summary>Seviye atlama stinger'ının ses anahtarı (SoundKeys'e eklenecek: "stinger.level_up").</summary>
-        public const string LevelUpSound = "stinger.level_up";
+        /// <summary>Ses çalma (anahtar, varlık kimliği); varsayılan AudioService (yoksa sessiz). Sınamada değiştirilebilir.</summary>
+        public static System.Action<string, int> PlaySound { get; set; } = (key, id) => { var a = Audio.AudioService.Instance; if (a != null) a.Play(key, null, id); };
+        /// <summary>Seviye atlama stinger'ı (SoundKeys.StingLevelUp, C sınıfı).</summary>
+        public const string LevelUpSound = Thatchwick.Core.Audio.SoundKeys.StingLevelUp;
 
         // 455c çerçeveleri: Resources/UI/ui_skill_card_frame (9-dilim, kenar 12) ve ui_skill_bar_frame (3-dilim, kenar 3).
         // Dosya yoksa (inceleme sürüyor) düz kutu ve düz şerit çizilir.
