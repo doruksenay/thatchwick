@@ -1,0 +1,7 @@
+{
+  "seal.n.contract": "{name} sözleşmeyi mühür yüzüğüyle mühürledi (itibar +{rep}).",
+  "seal.n.letter": "{name} mektubu mühür yüzüğüyle mühürledi (itibar +{rep}).",
+  "seal.n.passed": "Mühür yüzüğü hanenin yeni reisi {name} adlı kişiye geçti.",
+  "seal.rep.contract": "mühürlü sözleşme",
+  "seal.rep.letter": "mühürlü mektup"
+}

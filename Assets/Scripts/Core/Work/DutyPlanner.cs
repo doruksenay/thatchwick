@@ -415,7 +415,8 @@ namespace Thatchwick.Core.Work
 
         private static InteractionDef CollectInteraction(ItemInstance it)
         {
-            if (it.IsDecor || !it.Def.IsHousing || it.StockTotal <= 0) return null;
+            // Barınak ürünü ve tuzağa düşen av (kement haritada kuruludur; karar 20.11.2026: otomatik toplanır).
+            if (it.IsDecor || !(it.Def.IsHousing || it.Def.IsSnare) || it.StockTotal <= 0) return null;
             foreach (var i in it.Def.Interactions) if (i.Collect) return i;
             return null;
         }

@@ -48,6 +48,7 @@ namespace Thatchwick.Core.Clothing
         public const string NewClothes = "eff_new_clothes", SelfSewn = "eff_self_sewn", OurLabor = "eff_our_labor", FestiveDress = "eff_festive_dress",
             Patched = "eff_patched", Ancestors = "eff_ancestors", Confident = "eff_confident", Ashamed = "eff_ashamed_dress",
             DirtyClothes = "eff_dirty_clothes", HandMeDownMood = "eff_hand_me_down", MasteryMood = "eff_mastery_mark", GrownUp = "eff_grown_up", Comfy = "eff_comfy", ComfyPlus = "eff_comfy_plus";
+        /// <summary>Eski kayıtlarda kalan tek takı moodlet'i; artık eklenmez, yalnızca temizlenir.</summary>
         public const string JewelryMood = "mood.jewelry";
 
         public ClothingCatalog Catalog { get; }
@@ -806,6 +807,8 @@ namespace Thatchwick.Core.Clothing
                 if (m != null && m.IsMaternity) { if (m.Slot == ClothingSlot.Body) maternity = true; else band = true; }
             }
             int jewelJoy = JewelryJoy(c);
+            // Tek ruh hali: keyif 1-2 "Takının keyfi" (+2), 3-4 "Göz alıcı takılar" (+4). Eskiden buna ek olarak keyif
+            // kadar değerli "mood.jewelry" de ekleniyordu; ikisi üst üste biniyordu (en çok +8).
             Condition(c, JewelryJoyMood, jewelJoy > 0 && jewelJoy < 3);
             Condition(c, JewelryFineMood, jewelJoy >= 3);
             Condition(c, SelfSewn, self);
@@ -817,14 +820,7 @@ namespace Thatchwick.Core.Clothing
             Condition(c, ComfyPlus, comfy && band);
             Condition(c, Comfy, comfy && !band);
             if (festivalToday && HasWardrobe(c) && WardrobeOf(c).Current == OutfitKind.Festive) c.AddMoodlet(FestiveDress, Moods);
-            int joy = JewelryJoy(c);
-            var cur = c.Mood.Has(JewelryMood);
-            if (joy <= 0) { if (cur) c.Mood.Remove(JewelryMood); }
-            else
-            {
-                c.Mood.Remove(JewelryMood);
-                c.Mood.Add(new MoodletDef { Id = JewelryMood, DisplayName = "Takılar", Description = "Taktığı takılar hoşuna gidiyor.", Value = joy, DurationDays = 0 });
-            }
+            c.Mood.Remove(JewelryMood);   // eski tek moodlet (eski kayıtlar): yerini içerikteki iki ruh hali aldı
         }
 
         // ---------------- kayıt ----------------

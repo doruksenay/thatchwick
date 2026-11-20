@@ -12,7 +12,7 @@ namespace Thatchwick.Core.Characters
         None = 0,
         /// <summary>Tarla: susuz ekini sula, olgun ekini ve meyveyi topla.</summary>
         Farm = 1,
-        /// <summary>Hayvanlar: yemliği doldur, ürünü topla, sev.</summary>
+        /// <summary>Hayvanlar: yemliği doldur, ürünü topla, sev; kemente düşen avı topla.</summary>
         Animals = 2,
         /// <summary>Maden: işaretli karoları kaz, çatırdayana destek kur, suyu boşalt (arsa kazısı; ocakta sabah vardiyası).</summary>
         Mine = 3,
