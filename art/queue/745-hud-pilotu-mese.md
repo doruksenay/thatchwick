@@ -1,7 +1,7 @@
 ---
 id: "745"
 title: "HUD pilotu, yön B: Oyma meşe ve dövme demir"
-status: running
+status: review
 claimed_at: 2026-11-20T20:35Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (Project belgesi 66 §5 S3-S4: önce PixelLab HUD pilotu, üç yön birden)
 priority: 1
@@ -66,6 +66,9 @@ Ad biçimi: `Assets/Art/Iso/_aday/ui_hud2_<yon>_<parça>.png`
 ## Sonuç
 - Bütün parçalar native boyutta; sayfalar; `art/results/<id>-yanyana.png` (bütün parçalar 3× büyütülmüş, adlarıyla); 9-slice testi; ikon sayfası.
 - Kompozisyon (ev içi sahne üstüne `hud_v2` düzeni) bu işte yapılmaz: üç iş bitince kod oturumu `ui_mockup.py` ile birlikte çıkarır (`art/results/420_hud_pilot.png`).
+
+## Sorular
+- Yalnızca 3 sayfa üretildi; native parçalar çıkmadı (bkz. art/results/745-hud-pilotu-mese.md). Parça parça yeniden üretim kararı kullanıcıda.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
