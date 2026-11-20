@@ -4,7 +4,7 @@ title: Balık kaçtı
 kind: sfx
 family: foley
 freq: C
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 key: fish.escape
@@ -31,5 +31,6 @@ pick:
 - c3
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T17:08:25Z'
 ---
 A taut fishing line suddenly snapping slack with a quick soft whip of the rod, then a tiny tail-flick under the water surface as the fish darts away. No fish leaping out, no big splash.

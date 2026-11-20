@@ -4,7 +4,7 @@ title: Bereket Sofrası ezgisi
 kind: sfx
 family: stinger
 freq: C
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 note: 'Belge 52 §5.5: mevsimin son akşamı Bereket Sofrası.'
@@ -31,5 +31,6 @@ pick:
 - c1
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T17:08:25Z'
 ---
 A warm, joyful little folk sting for a village communal feast at dusk under a great tree, rising and welcoming.

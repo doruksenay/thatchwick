@@ -146,6 +146,41 @@
       "syllables": []
     },
     {
+      "key": "fish.escape",
+      "group": "Sfx",
+      "family": "foley",
+      "freq": "C",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/foley/fish_escape_1",
+        "Audio/Sfx/foley/fish_escape_2"
+      ],
+      "layers": [],
+      "pitchVar": 0.04,
+      "volVarDb": 1.5,
+      "timingJitterMs": 15.0,
+      "cooldownMs": 30.0,
+      "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
       "key": "inn.dishes",
       "group": "Sfx",
       "family": "foley",
@@ -477,6 +512,78 @@
       "syllables": []
     },
     {
+      "key": "sting.feast",
+      "group": "Music",
+      "family": "stinger",
+      "freq": "C",
+      "loop": false,
+      "clips": [
+        "Audio/Music/stinger/sting_feast_1",
+        "Audio/Music/stinger/sting_feast_2"
+      ],
+      "layers": [],
+      "pitchVar": 0.0,
+      "volVarDb": 0.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 60.0,
+      "maxVoices": 1,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
+      "key": "treehouse.build",
+      "group": "Sfx",
+      "family": "tools",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/tools/treehouse_build_1",
+        "Audio/Sfx/tools/treehouse_build_2",
+        "Audio/Sfx/tools/treehouse_build_3",
+        "Audio/Sfx/tools/treehouse_build_4"
+      ],
+      "layers": [],
+      "pitchVar": 0.05,
+      "volVarDb": 2.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 80.0,
+      "maxVoices": 3,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
       "key": "treehouse.creak",
       "group": "Sfx",
       "family": "foley",
@@ -485,6 +592,43 @@
       "clips": [
         "Audio/Sfx/foley/treehouse_creak_1",
         "Audio/Sfx/foley/treehouse_creak_2"
+      ],
+      "layers": [],
+      "pitchVar": 0.04,
+      "volVarDb": 1.5,
+      "timingJitterMs": 15.0,
+      "cooldownMs": 30.0,
+      "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
+      "key": "treehouse.ladder",
+      "group": "Sfx",
+      "family": "foley",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/foley/treehouse_ladder_1",
+        "Audio/Sfx/foley/treehouse_ladder_2",
+        "Audio/Sfx/foley/treehouse_ladder_3",
+        "Audio/Sfx/foley/treehouse_ladder_4"
       ],
       "layers": [],
       "pitchVar": 0.04,
@@ -586,6 +730,120 @@
       "syllables": []
     },
     {
+      "key": "voice.kalin_alcak.syl",
+      "group": "Voice",
+      "family": "voice",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Voice/voice/voice_kalin_alcak_syl_be",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_bu",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_dil",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_fer",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_fu",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ga",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_gan",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_gin",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_go",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_gu",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ha",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_he",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_hi",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_kor",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ku",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_man",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_mi",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_mo",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_mu",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_mul",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_na",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ner",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ni",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_nu",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_pel",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_pi",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_pul",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ra",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ri",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_rol",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ru",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ti",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_tu",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_van",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ven",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_vi",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_vu",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_ze",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_zen",
+        "Audio/Voice/voice/voice_kalin_alcak_syl_zi"
+      ],
+      "layers": [],
+      "pitchVar": 0.0,
+      "volVarDb": 1.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 0.0,
+      "maxVoices": 6,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": [
+        "be",
+        "bu",
+        "dil",
+        "fer",
+        "fu",
+        "ga",
+        "gan",
+        "gin",
+        "go",
+        "gu",
+        "ha",
+        "he",
+        "hi",
+        "kor",
+        "ku",
+        "man",
+        "mi",
+        "mo",
+        "mu",
+        "mul",
+        "na",
+        "ner",
+        "ni",
+        "nu",
+        "pel",
+        "pi",
+        "pul",
+        "ra",
+        "ri",
+        "rol",
+        "ru",
+        "ti",
+        "tu",
+        "van",
+        "ven",
+        "vi",
+        "vu",
+        "ze",
+        "zen",
+        "zi"
+      ]
+    },
+    {
       "key": "work.chop",
       "group": "Sfx",
       "family": "tools",
@@ -618,7 +876,79 @@
         1.0
       ],
       "syllables": []
+    },
+    {
+      "key": "yard.shovel",
+      "group": "Sfx",
+      "family": "tools",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/tools/yard_shovel_1",
+        "Audio/Sfx/tools/yard_shovel_2",
+        "Audio/Sfx/tools/yard_shovel_3",
+        "Audio/Sfx/tools/yard_shovel_4"
+      ],
+      "layers": [],
+      "pitchVar": 0.05,
+      "volVarDb": 2.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 80.0,
+      "maxVoices": 3,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
+      "key": "yard.step_in_it",
+      "group": "Sfx",
+      "family": "foley",
+      "freq": "C",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/foley/yard_step_in_it_1",
+        "Audio/Sfx/foley/yard_step_in_it_2"
+      ],
+      "layers": [],
+      "pitchVar": 0.04,
+      "volVarDb": 1.5,
+      "timingJitterMs": 15.0,
+      "cooldownMs": 30.0,
+      "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
     }
   ],
-  "updated": "2026-11-20T16:44:24Z"
+  "updated": "2026-11-20T17:08:27Z"
 }

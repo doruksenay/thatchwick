@@ -4,7 +4,7 @@ title: Ağaç ev yapımı, tahtaya çivi çakma
 kind: sfx
 family: tools
 freq: B
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 note: 'Project belgesi 52: ulu ağaçta ağaç ev kurma, yapıma devam ve onarım.'
@@ -41,5 +41,6 @@ pick:
 - c3
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T17:08:25Z'
 ---
 Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling.

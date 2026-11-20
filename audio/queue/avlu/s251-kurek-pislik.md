@@ -4,7 +4,7 @@ title: Kürekle yığın toplama
 kind: sfx
 family: tools
 freq: B
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 key: yard.shovel
@@ -40,5 +40,6 @@ pick:
 - c5
 - c6
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T17:08:25Z'
 ---
 A shovel blade pushed along the ground with a long gritty scrape through loose muck and straw, then a heavy, wet load lifted and dumped onto a pile with a soft dull thud. No chopping, no knife-like taps.
