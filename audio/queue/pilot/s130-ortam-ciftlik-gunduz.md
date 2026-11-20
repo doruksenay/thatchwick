@@ -5,7 +5,7 @@ kind: ambience
 family: ambience
 freq: C
 pilot: true
-status: ready
+status: claimed
 approved_by: auto
 key: amb.farm.day
 generate: 3
@@ -17,5 +17,7 @@ axes:
   - gentle breeze through grass and distant trees
   - soft rustling leaves and faint distant birds
   - calm open meadow air with faint insects
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T09:55:18Z'
 ---
 Daytime countryside around a small medieval farm in spring, calm and even, nothing stands out.
