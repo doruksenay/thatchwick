@@ -24,7 +24,8 @@ namespace Thatchwick.Core.Life
         /// <summary>items.json'daki <c>farmAction</c> değerleri.</summary>
         public const string ActPileCollect = "pile_collect", ActCompostWet = "compost_add_wet", ActCompostDry = "compost_add_dry",
             ActCompostAsh = "compost_add_ash", ActCompostTurn = "compost_turn", ActCompostTake = "compost_take", ActWormFeed = "worm_feed",
-            ActLeafFill = "leaf_fill", ActSlurryBrew = "slurry_brew", ActBarnClean = "barn_clean", ActBarnLitter = "barn_litter";
+            ActLeafFill = "leaf_fill", ActSlurryBrew = "slurry_brew", ActBarnClean = "barn_clean", ActBarnLitter = "barn_litter",
+            ActDungStack = "dung_stack", ActRakeLeaves = "rake_leaves";
         /// <summary>Kıyı ve Güney seferinin getirdikleri.</summary>
         public const string SeaweedId = "item.seaweed", MarlId = "item.marl", DungCakeId = "item.dung_cake";
 
@@ -42,6 +43,7 @@ namespace Thatchwick.Core.Life
         private readonly Random _yardRng = new Random(574);
         private double _refuseDebt;
         private YardSave _pendingYard;
+        private bool _parkPending = true;
 
         public FilthService Filth => _filth ?? (_filth = CreateFilth());
         public CompostService Compost => _compost ?? (_compost = CreateCompost());
@@ -255,9 +257,10 @@ namespace Thatchwick.Core.Life
                 case ActWormFeed: key = item.Fill >= Math.Max(1, item.Def.FillCapacity) ? "yard.b.heap_full" : !WormFood() ? "yard.b.no_wet" : null; break;
                 case ActLeafFill: key = item.Fill >= Math.Max(1, item.Def.FillCapacity) ? "yard.b.heap_full" : House.Count(CompostService.LeavesId) <= 0 ? "yard.b.no_leaves" : null; break;
                 case ActSlurryBrew:
-                    key = Compost.SlurryState(item) != 0 ? "yard.b.slurry_busy"
-                        : Compost.Count(CompostService.ManureId) + House.Count(CompostService.ManureId) < YardNumbers.SlurryManure ? "yard.b.no_manure" : null;
+                    key = Compost.SlurryState(item) != 0 ? "yard.b.slurry_busy" : Compost.ManureForSlurry < YardNumbers.SlurryManure ? "yard.b.no_manure" : null;
                     break;
+                case ActDungStack: key = House.Count(CompostService.FreshManureId) <= 0 ? "yard.b.no_fresh" : Compost.Room(CompostService.ManureId) <= 0 ? "yard.b.heap_full" : null; break;
+                case ActRakeLeaves: key = Clock.Season != Time.Season.Autumn ? "yard.b.leaves_season" : null; break;   // yaprak güzün dökülür
                 case ActBarnClean: key = _barn == null ? "yard.b.clean" : _barn.DirtAt(item) < 1f ? "yard.b.clean" : null; break;
             }
             return key == null ? null : Text(LocText.Of(key));
@@ -306,6 +309,7 @@ namespace Thatchwick.Core.Life
                 case ActWormFeed: Compost.FeedWorms(item); break;
                 case ActLeafFill: Compost.FillLeaves(item); break;
                 case ActSlurryBrew: Compost.BrewSlurry(item); break;
+                case ActDungStack: Compost.StackFresh(); YardHealth.MarkDirty(c.Id); break;
                 case ActBarnClean:
                     if (_barn != null)
                     {
@@ -353,7 +357,7 @@ namespace Thatchwick.Core.Life
         private void OnFertilized(Character c, ItemInstance crop, Fertilizer kind, FertilizeOutcome outcome)
         {
             if (c == null) return;
-            if (kind == Fertilizer.FreshManure || kind == Fertilizer.HotManure || kind == Fertilizer.CompostRaw) YardHealth.MarkDirty(c.Id);
+            if (kind == Fertilizer.FreshManure || kind == Fertilizer.HotManure || kind == Fertilizer.Manure || kind == Fertilizer.CompostRaw) YardHealth.MarkDirty(c.Id);
         }
 
         private void Ache(Character c, AcheCause cause)
@@ -388,6 +392,7 @@ namespace Thatchwick.Core.Life
         /// <summary>Her adımda: yığınlar yaşlanır, ahırın gün içi olayları, basma ve kaza denetimi.</summary>
         private void TickYard(double gameDays)
         {
+            if (_parkPending) { _parkPending = false; ParkCarts(); }
             Filth.Tick(gameDays);
             _barn?.Tick(gameDays);
             bool anyPiles = Filth.Piles.Count > 0;
@@ -467,34 +472,126 @@ namespace Thatchwick.Core.Life
 
         // ---------- araba filosu ----------
 
+        /// <summary>
+        /// Envanterdeki arabaları avluya koyar: sundurmanın, öküz arabasının ya da bir barınağın yakınında, ekili olmayan
+        /// açık bir yere. Yeni yapılan araba da ertesi sabah böyle yerini bulur.
+        /// </summary>
+        public int ParkCarts()
+        {
+            if (_fleet == null) return 0;
+            GridPos? anchor = null;
+            foreach (var it in World.Items) if (!it.IsDecor && it.Def.HasTag(CartFleet.ShedTag)) { anchor = it.Position; break; }
+            if (!anchor.HasValue) foreach (var it in World.Items) if (!it.IsDecor && it.Def.Id == CartFleet.OxCartId) { anchor = it.Position; break; }
+            if (!anchor.HasValue) foreach (var it in World.Items) if (!it.IsDecor && it.Def.IsHousing) { anchor = it.Position; break; }
+            if (!anchor.HasValue) foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager && !m.Away) { anchor = m.Position.OnLevel(0); break; }
+            if (!anchor.HasValue) return 0;
+            var at = anchor.Value;
+            int n = _fleet.ParkInventory(Content, def =>
+            {
+                for (int r = 1; r <= 10; r++)
+                    for (int dy = -r; dy <= r; dy++)
+                        for (int dx = -r; dx <= r; dx++)
+                        {
+                            if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != r) continue;
+                            var p = new GridPos(at.X + dx, at.Y + dy, 0);
+                            if (!World.Map.InBounds(p) || World.Map.IsWater(p)) continue;
+                            var room = World.Map.Rooms.RoomAt(p);
+                            if (room != null && room.IsIndoor) continue;
+                            if (_plants != null && _plants.PlotOrNull(p) != null) continue;   // tarlaya park edilmez
+                            if (World.CanPlaceFloor(def, p, 0).Ok) return p;
+                        }
+                return null;
+            });
+            if (n > 0) Say(LocText.Of("yard.n.carts_parked", ("n", n)), NoticeLevel.Info);
+            return n;
+        }
+
+        private bool StewardOnDuty()
+        {
+            foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager && !m.Away && m.Duty == DutyKind.Steward) return true;
+            return false;
+        }
+
+        private bool LowPlots()
+        {
+            if (_plants == null) return false;
+            foreach (var kv in _plants.SoilPlots) if (kv.Value.Worked && kv.Value.Fertility < _fleet.FertilizeBelow) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Kâhya (Kâhyalık 4, görevde): boşta duran arabalara o günün işini verir. Pazar günü pazara araba yoksa bir araba
+        /// pazara; gübreleme kuralı açık ve yorgun karo varsa bir araba tarlaya. Gün bitince araba yine boşa döner;
+        /// oyuncunun elle verdiği görevlere dokunmaz. Görev verilen arabaları döner.
+        /// </summary>
+        private List<Cart> StewardAssign(long day)
+        {
+            var given = new List<Cart>();
+            if (!_fleet.StewardCarts || BestSkill(SkillType.Stewardship) < YardNumbers.StewardCartLevel || !StewardOnDuty()) return given;
+            bool needMarket = (day + 1) % Economy.OxCart.TripEvery == 0, needField = _fleet.FertilizeRule && LowPlots();
+            foreach (var c in _fleet.Carts) { if (c.Job == CartJob.Market) needMarket = false; if (c.Job == CartJob.Field) needField = false; }
+            foreach (var cart in new List<Cart>(_fleet.Carts))
+            {
+                if (cart.Job != CartJob.Idle || cart.Broken || (!needMarket && !needField)) continue;
+                var job = needField && (!needMarket || !CartFleet.NeedsAnimal(cart)) ? CartJob.Field : needMarket && CartFleet.NeedsAnimal(cart) ? CartJob.Market : CartJob.Idle;
+                if (job == CartJob.Idle) continue;
+                int animal = CartFleet.NeedsAnimal(cart) ? _fleet.PickAnimal(cart, day)?.Id ?? 0 : 0;
+                int driver = 0;
+                foreach (var m in Population.Members)
+                    if (!m.IsDead && !m.IsVillager && !m.Away && _fleet.DriverBlocker(cart, m).IsEmpty) { driver = m.Id; break; }
+                if (!_fleet.Assign(cart, job, animal, driver, day).IsEmpty) continue;
+                given.Add(cart);
+                if (job == CartJob.Market) needMarket = false; else needField = false;
+            }
+            return given;
+        }
+
+        /// <summary>Filonun günlük adımı (yeni gün başında kendiliğinden çalışır; testler doğrudan çağırır).</summary>
+        public void RunFleetDay(long day) => FleetDay(day);
+
         private void FleetDay(long day)
         {
             if (_fleet == null) return;
+            ParkCarts();
+            var yesterday = Weather.Today(Clock.TotalDays - 0.5);
+            if (yesterday == WeatherType.Rain || yesterday == WeatherType.Storm) _fleet.RainOnCarts();
+            var bySteward = StewardAssign(day);
             var stuck = new List<(Cart cart, LocText why)>();
             var working = _fleet.OnNewDay(day, stuck);
+            foreach (var cart in bySteward) { cart.Job = CartJob.Idle; cart.AnimalId = 0; cart.DriverId = 0; }
             foreach (var (cart, why) in stuck)
                 Say(LocText.Of("yard.n.cart_stuck", ("item", cart.DefId), ("why", Text(why))), NoticeLevel.Warning);
-            int seaweed = 0, marl = 0;
+            int seaweed = 0, marl = 0, mine = 0, forest = 0;
             foreach (var cart in working)
             {
                 if (cart.Job == CartJob.Coast && (HasCoast == null || HasCoast()) && Content.Items.Contains(SeaweedId)) seaweed += YardNumbers.CoastSeaweedPerTrip;
                 else if (cart.Job == CartJob.South && Content.Items.Contains(MarlId)) marl += YardNumbers.SouthMarlPerTrip;
+                else if (cart.Job == CartJob.Mine) mine++;
+                else if (cart.Job == CartJob.Forest) forest++;
                 var driver = Population.Find(cart.DriverId);
                 if (driver != null && !driver.IsDead) driver.GainSkillXp(SkillType.Carting, 4);
+                CartSetOut?.Invoke(cart);
             }
-            if (seaweed > 0) { House.AddItem(SeaweedId, seaweed); Say(LocText.Of("yard.n.cart_seaweed", ("n", seaweed)), NoticeLevel.Info); }
-            if (marl > 0) { House.AddItem(MarlId, marl); Say(LocText.Of("yard.n.cart_marl", ("n", marl)), NoticeLevel.Info); }
+            // Gün sonu kartı (belge 57e §2.4).
+            if (seaweed > 0) { House.AddItem(SeaweedId, seaweed); Say(LocText.Of("yard.n.cart_seaweed", ("n", seaweed)), NoticeLevel.Info); Ledger.Note(Text(LocText.Of("yard.ledger.seaweed", ("n", seaweed)))); }
+            if (marl > 0) { House.AddItem(MarlId, marl); Say(LocText.Of("yard.n.cart_marl", ("n", marl)), NoticeLevel.Info); Ledger.Note(Text(LocText.Of("yard.ledger.marl", ("n", marl)))); }
+            if (mine > 0) Ledger.Note(Text(LocText.Of("yard.ledger.mine", ("n", mine), ("pct", (int)Math.Round(_fleet.HaulBonus(CartJob.Mine) * 100)))));
+            if (forest > 0) Ledger.Note(Text(LocText.Of("yard.ledger.forest", ("n", forest), ("pct", (int)Math.Round(_fleet.HaulBonus(CartJob.Forest) * 100)))));
+            if (_fleet.WorkingCount(CartJob.Market) > 0) Ledger.Note(Text(LocText.Of("yard.ledger.market", ("n", _fleet.WorkingCount(CartJob.Market)))));
             int tiles = _fleet.WorkingCapacity(CartJob.Field);
             if (tiles > 0 && _fleet.FertilizeRule)
             {
                 int spread = SpreadByCart(tiles);
-                if (spread > 0) Say(LocText.Of("yard.n.cart_spread", ("n", spread)), NoticeLevel.Info);
+                if (spread > 0) { Say(LocText.Of("yard.n.cart_spread", ("n", spread)), NoticeLevel.Info); Ledger.Note(Text(LocText.Of("yard.ledger.spread", ("n", spread)))); }
             }
         }
 
+        /// <summary>Araba bu sabah yola çıktı (görünüm ve ses).</summary>
+        public event Action<Cart> CartSetOut;
+
         /// <summary>
         /// Tarla arabası kuralı: verimi eşiğin altındaki işlenmiş karolara, en yorgun olandan başlayarak gübre serer.
-        /// Önce olgun kompost; sert gübre yalnızca boş karoya ya da çok yiyen ekine (ötekini yakar). Serilen karo sayısı.
+        /// Önce olgun kompost, sonra olgun gübre (taze gübre serilmez: ekini yakar). Serilen karo sayısı.
         /// </summary>
         public int SpreadByCart(int tiles)
         {
@@ -509,12 +606,11 @@ namespace Thatchwick.Core.Life
                 if (done >= tiles) break;
                 var crop = World.GetItemAt(t.Key);
                 if (crop != null && !(crop.IsPlant && crop.Def.IsCrop)) continue;
-                bool hotOk = crop == null || crop.IsGrown || crop.Def.Feed == FeedType.Heavy;
                 if (_plants.CanFertilize(t.Key, Fertilizer.Compost) != FertilizeOutcome.Ok) continue;
                 if (House.Count(CompostService.MatureId) > 0 && House.TryTakeItem(CompostService.MatureId))
                     _plants.ApplyFertilizer(t.Key, Fertilizer.Compost, 0.30f, crop);
-                else if (hotOk && TakeManure())
-                    _plants.ApplyFertilizer(t.Key, Fertilizer.HotManure, 0.45f, crop);
+                else if (TakeManure())
+                    _plants.ApplyFertilizer(t.Key, Fertilizer.Manure, 0.45f, crop);   // olgun gübre yakmaz
                 else continue;
                 done++;
             }
@@ -556,6 +652,7 @@ namespace Thatchwick.Core.Life
             YardHealth.Import(data?.health);
             _barn?.Import(data?.barn);
             _fleet?.Import(data?.fleet);
+            _parkPending = true;
             if (_plants != null && data != null)
             {
                 var lodged = new List<KeyValuePair<int, float>>();

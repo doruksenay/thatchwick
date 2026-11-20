@@ -26,7 +26,7 @@ Bu listedeki gün için günlük tavan yerine buradaki değer geçerlidir (`tool
 
 - 2026-11-18: sınırsız (kullanıcı kararı, sohbet: "bugün sınırsız çalışsın")
 - 2026-11-19: sınırsız (aynı karar; bulut işçisi UTC tarihiyle yazar, İstanbul gece yarısı ile UTC 21:00 arasını kapsar)
-- 2026-11-20: 1000 (kullanıcı kararı, sohbet 20.11 12:47: "bunu bugün için 1000e çek"; UTC tarihi: İstanbul 20.11 03:00 – 21.11 02:59)
+- 2026-11-20: 1500 (kullanıcı kararı, sohbet 20.11 17:27: "tavanı bugün için arttıralım", seçim "1500, sıra aynı"; önceki değer 1000, sohbet 20.11 12:47; UTC tarihi: İstanbul 20.11 03:00 – 21.11 02:59)
 
 ## Otomatik akış (kullanıcı kararı, 2026-11-17)
 Kullanıcı: "Bunu otomatize et. Bu projede istenen tüm asset'ler PixelLab'e üretilmeli ve kuyruğa atılmalı."

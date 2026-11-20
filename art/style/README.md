@@ -17,13 +17,17 @@ Her iş bir aileye aittir (`family`: zemin, yapi, esya, bitki, karakter, hayvan,
 
 Aile türevleri pilota `depends_on` ile bağlıdır, pilot kabul edilmeden başlamaz. 302-306'daki "301 sonucu görülmeden başlatılmaması önerilir" notu 2026-11-13'te bağımlılığa çevrildi.
 
-## 2. Referanslar ve palet
+## 2. Referanslar ve paletler
 - `references.json`: aile başına referans görseller (`kabul` ya da `aday`). PixelLab stil eşlemesi bunları kullanır. Pilot kabul edilince yeni çıktıları buraya ekle ve `aday`ları `kabul` yap.
-- `palette.json`: tüm referanslardan çıkarılmış 64 renklik ana palet (`--png` ile `palette.png` önizlemesi yazılır, commit edilmez). Referans listesi değişince yeniden üret:
-  `python tools/art/style.py palette`
+- **Paletler donduruldu** (kullanıcı kararı 2026-11-20, Project belgesi 64c §1; kurallar `docs/gorsel-yonerge.md` "Palet ve kontur kilidi"):
+  - `palette.json`: dünya paleti, 112 renk (zemin, yapı, eşya, bitki, hayvan);
+  - `palette_arayuz.json`: ikon ve arayüz paleti, 128 renk (`icon_*`, `ui_*`, `arayuz` ailesi).
+- Kaynak: `art/queue`'da `status: accepted` işlerin var olan çıktıları (referans listesi değil). Üretim ton dilimlidir: 12 ton dilimi ve 4 nötr basamak, her dilime nüfusunun karekökü oranında renk (düz median-cut su mavisini ve çiçek pembesini eritiyordu).
+- Yeniden üretim yalnızca kullanıcı kararıyla: `python tools/art/style.py palette --set dunya|arayuz --yeniden "<tarih, karar, gerekçe>" [--png]`. `--yeniden` olmadan araç durur.
+- Eski 64 renklik palet (18 referanstan; mavi yoktu, 3 yeşil) 2026-11-20'de emekliye ayrıldı.
 
 ## 3. Denetim ve yan yana sayfası
-- `python tools/art/style.py check --family <aile> <png>...`:
+- `python tools/art/style.py check --family <aile> <png>...` (palet dosya adına ve aileye göre seçilir; donmuş paletlerde palet uyumu her ailede bağlayıcıdır, `KILIT_ESIGI` kuralı yalnızca eski palet içindi):
   - palete ortalama uzaklık (uyarı > 10, kalır > 16);
   - palete yakın piksel oranı (kalır < %80);
   - aile referanslarına göre doygunluk (uyarı > 1,25 kat, kalır > 1,5 kat ya da uyarı < 0,6 kat).

@@ -1,5 +1,5 @@
 ---
-id: "597"
+id: "707"
 title: Arabaların dünya görselleri (el arabası, hafif at arabası, üstü örtülü araba, kış kızağı)
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -17,7 +17,7 @@ outputs:
   - Assets/Art/Iso/iso_item_sled_2x1_se.png
 created: 2026-11-20
 ---
-# 597 Arabaların dünya görselleri (el arabası, hafif at arabası, üstü örtülü araba, kış kızağı)
+# 707 Arabaların dünya görselleri (el arabası, hafif at arabası, üstü örtülü araba, kış kızağı)
 
 ## Amaç
 Belge 57e §2.2: arabalar avluda duran, yerleştirilen eşya olacak ve haritada gidip gelecek. Bu PR'da filo çekirdeği ve paneli var; arabalar hâlâ envanter kaynağı. Bu görseller gelince arabalar yerleştirilen eşyaya geçer.

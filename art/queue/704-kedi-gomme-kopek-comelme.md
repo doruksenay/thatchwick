@@ -1,5 +1,5 @@
 ---
-id: "594"
+id: "704"
 title: Kedi gömme ve köpek çömelme kareleri
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -15,7 +15,7 @@ outputs:
   - Assets/Art/Iso/iso_animal_dog_squat_se.png
 created: 2026-11-20
 ---
-# 594 Kedi gömme ve köpek çömelme kareleri
+# 704 Kedi gömme ve köpek çömelme kareleri
 
 ## Amaç
 Belge 57d §5 (kullanıcı kararı: "kedi gömsün, etkisi olmasın ama animasyonu olmalı"). Şu an kod toprak parçacığı çıkarıyor (`BarnService.CatBuried`); bu kareler gelince gerçek animasyon bağlanır.

@@ -4,10 +4,9 @@ title: Olta atma (balık tutma)
 kind: sfx
 family: tools
 freq: B
-status: ready
+status: review
 approved_by: user
-depends_on:
-- s110
+depends_on: []
 key: fish.cast
 generate: 8
 keep: 4
@@ -20,5 +19,14 @@ axes:
   line:
   - horsehair line
   - linen line
+pilot_onayi_bekliyordu:
+- s110
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T14:20:10Z'
+candidates: 8
+passed: 8
+credits_spent: 0
+generated_at: '2026-11-20T14:20:26Z'
 ---
 A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant.

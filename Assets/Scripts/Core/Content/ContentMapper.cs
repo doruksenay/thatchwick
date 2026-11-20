@@ -455,6 +455,7 @@ namespace Thatchwick.Core.Content
                 case "blacksoil": return Fertilizer.BlackSoil;
                 case "fresh": return Fertilizer.FreshManure;
                 case "hot": return Fertilizer.HotManure;
+                case "manure": return Fertilizer.Manure;
                 case "bone": return Fertilizer.BoneMeal;
                 case "ash": return Fertilizer.Ash;
                 case "seaweed": return Fertilizer.Seaweed;

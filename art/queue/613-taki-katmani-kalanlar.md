@@ -8,7 +8,7 @@ family: karakter
 style_gate: false
 cost_est: 40
 cost_max: 60
-depends_on: ["612", "501"]   # 612: takı bu ölçekte okunuyor mu; 501: bilek noktası (bilezik). İkisi de 18.12.2026 karakter partisini bekler
+depends_on: ["612t", "501"]   # 612t: takı bu ölçekte okunuyor mu; 501: bilek noktası (bilezik). İkisi de 18.12.2026 karakter partisini bekler
 max_attempts: 1
 pixellab: true
 outputs:
@@ -22,10 +22,10 @@ created: 2026-11-20
 # 613 Takı katmanı: kalan dört parça
 
 ## Amaç
-612 "okunuyor" derse kalan görünür takılar. Küpe ve gerdanlık 612'de; altın ve taşlı türler aynı çizimin metal rampası ve taş pikseliyle gelir (kod).
+612t "okunuyor" derse kalan görünür takılar. Küpe ve gerdanlık 612t'de; altın ve taşlı türler aynı çizimin metal rampası ve taş pikseliyle gelir (kod).
 
 ## Tarif
-Yöntem ve anahtar renk **612 ile aynı** (5 benzersiz yön, yalnızca `_fr`, metal #9A9A9A, önce betik).
+Yöntem ve anahtar renk **612t ile aynı** (5 benzersiz yön, yalnızca `_fr`, metal #9A9A9A, önce betik).
 
 | Parça | Çapa | Tarif |
 |---|---|---|
@@ -35,11 +35,11 @@ Yöntem ve anahtar renk **612 ile aynı** (5 benzersiz yön, yalnızca `_fr`, me
 | `lay_jw_brooch` Broş | omuz, göğsün sol üstü | 2x2 metal halka; pelerin varken pelerinin üstünde (B katmanının önünde) |
 
 ## Doğrulama
-612 ölçütleri. Ek: bilezik yürümede elden kopmuyor; broş 500'deki pelerinle birlikte görünüyor; cam boncuk ile gerdanlık x2'de birbirinden ayırt ediliyor.
+612t ölçütleri. Ek: bilezik yürümede elden kopmuyor; broş 500'deki pelerinle birlikte görünüyor; cam boncuk ile gerdanlık x2'de birbirinden ayırt ediliyor.
 
 ## Notlar
-- 612 "okunmuyor" derse bu iş iptal edilir (`status: rejected`, neden: 612 raporu).
-- Kod: 612 Notlar'daki `jw` yuvası; bilezik için el çapası.
+- 612t "okunmuyor" derse bu iş iptal edilir (`status: rejected`, neden: 612t raporu).
+- Kod: 612t Notlar'daki `jw` yuvası; bilezik için el çapası.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

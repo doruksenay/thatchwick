@@ -80,6 +80,8 @@ namespace Thatchwick.Game
             long day = Day != null ? Day() : 0;
             bool rule = GUILayout.Toggle(fleet.FertilizeRule, " " + T("ui.cart.rule"));
             if (rule != fleet.FertilizeRule) fleet.FertilizeRule = rule;
+            bool steward = GUILayout.Toggle(fleet.StewardCarts, " " + T("ui.cart.steward"));
+            if (steward != fleet.StewardCarts) fleet.StewardCarts = steward;
             if (!string.IsNullOrEmpty(_status)) GUILayout.Label(_status);
             _scroll = GUILayout.BeginScrollView(_scroll);
             var family = new List<Character>();
@@ -90,7 +92,8 @@ namespace Thatchwick.Game
                 if (!_pick.TryGetValue(cart.Key, out var pick)) pick = (cart.Job, cart.AnimalId, cart.DriverId);
                 GUILayout.BeginVertical(GUI.skin.box);
                 GUILayout.Label(Name(cart.DefId) + " · " + GameLocalization.T("ui.cart.load", ("n", fleet.Capacity(cart))) + " · "
-                    + GameLocalization.T("ui.cart.wear", ("pct", Mathf.RoundToInt((float)cart.Wear * 100f))));
+                    + GameLocalization.T("ui.cart.wear", ("pct", Mathf.RoundToInt((float)cart.Wear * 100f)))
+                    + " · " + T(cart.ItemId == 0 ? "ui.cart.stored" : fleet.Sheltered(cart) ? "ui.cart.sheltered" : "ui.cart.exposed"));
 
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button(T("ui.cart.job." + (int)pick.job), GUILayout.Width(120f))) pick.job = NextJob(cart, pick.job);
