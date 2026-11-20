@@ -1,13 +1,18 @@
-# Ses üretimi bulutta (Project 45, 45b). Ev bilgisayarı gerekmez.
-# Tetikleyiciler: audio/queue değişince (main'e push) ya da Actions sekmesinden "Run workflow".
-# Gerekli secret: ELEVENLABS_API_KEY (Settings > Secrets and variables > Actions).
-# Çıktı: işler "review" durumuna geçer (commit), adaylar "ses-adaylari-<no>" artifact'ında.
+# Ses hattı bulutta (Project 45, 45b). Yerel makine gerekmez.
+# Sıra: aday dalını geri yükle → kabul edilenleri oyuna yükselt (promote) → hazır işleri üret (worker)
+#       → adayları "ses-adaylar" dalına yaz. İnceleme sayfasını Claude bu daldan hazırlar.
+# Tetikleyiciler: audio/queue değişince (main'e push) ya da Actions > "Run workflow".
+# Gerekli secret: ELEVENLABS_API_KEY.
 name: Ses üretimi
 on:
   workflow_dispatch:
     inputs:
       job:
         description: "Tek iş kimliği (boş: hazır olanların hepsi)"
+        required: false
+        default: ""
+      artifact_runs:
+        description: "Eski artifact'ları aday dalına taşı: çalışma kimlikleri, virgülle"
         required: false
         default: ""
   push:
@@ -18,6 +23,7 @@ concurrency:
   cancel-in-progress: false
 permissions:
   contents: write
+  actions: read
 jobs:
   uret:
     runs-on: ubuntu-latest
@@ -34,21 +40,65 @@ jobs:
           python-version: "3.12"
       - name: Python paketleri
         run: pip install -q -r tools/audio/requirements.txt
-      - name: Hazır işler
-        run: python tools/audio/worker.py --list --worker bulut
-      - name: Üret
+      - name: Git ayarı
+        run: |
+          git config user.name "ses-iscisi"
+          git config user.email "ses-iscisi@users.noreply.github.com"
+          git lfs install --local
+      - name: Aday dalını geri yükle
+        run: |
+          mkdir -p .audio_work
+          if git fetch -q origin ses-adaylar; then git archive origin/ses-adaylar | tar -x -C .audio_work; fi
+          rm -f .audio_work/.gitattributes .audio_work/README.md
+      - name: Eski artifact'ları taşı
+        if: ${{ github.event.inputs.artifact_runs != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUNS: ${{ github.event.inputs.artifact_runs }}
+        run: |
+          for id in ${RUNS//,/ }; do
+            gh run download "$id" --repo "$GITHUB_REPOSITORY" --pattern "ses-adaylari-*" --dir /tmp/eski_$id || true
+            for d in /tmp/eski_$id/ses-adaylari-*; do [ -d "$d" ] && cp -r "$d"/. .audio_work/; done
+          done
+          ls .audio_work
+      - name: Kabul edilenleri oyuna yükselt
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          AUDIO_MASTERS: ${{ runner.temp }}/masters
+        run: python tools/audio/promote.py --git
+      - name: Hazır işleri üret
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           AUDIO_MASTERS: ${{ runner.temp }}/masters
           JOB: ${{ github.event.inputs.job }}
         run: |
           if [ -z "$ELEVENLABS_API_KEY" ]; then echo "::error::ELEVENLABS_API_KEY secret'ı yok"; exit 1; fi
-          git config user.name "ses-iscisi"
-          git config user.email "ses-iscisi@users.noreply.github.com"
+          python tools/audio/worker.py --list --worker bulut
           if [ -n "$JOB" ]; then
             python tools/audio/worker.py --job "$JOB" --git --worker bulut
           else
             python tools/audio/worker.py --once --git --worker bulut
+          fi
+      - name: Adayları dala yaz
+        if: always()
+        run: |
+          D="$RUNNER_TEMP/aday"
+          if git ls-remote --exit-code --heads origin ses-adaylar >/dev/null; then
+            git fetch -q origin ses-adaylar
+            git worktree add -q --detach "$D" origin/ses-adaylar
+          else
+            git worktree add -q --detach "$D"
+            (cd "$D" && git checkout -q --orphan aday-yeni && git rm -rfq .)
+          fi
+          # LFS'siz düz dosya: inceleme sayfası ve sonraki çalışmalar doğrudan okur
+          printf '* -filter -diff -merge -text\n' > "$D/.gitattributes"
+          printf 'Ses adayları (Project 45b). Ana dal değil; oyun dosyası yok. Kabul edilenler main/Assets/Resources/Audio altına yükseltilir.\n' > "$D/README.md"
+          rsync -a --delete --exclude '/.git' --exclude '/.gitattributes' --exclude '/README.md' --exclude 'master/' --exclude 'raw/' .audio_work/ "$D/"
+          cd "$D"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -q -m "ses: adaylar (çalışma ${{ github.run_number }})"
+            git push -q origin HEAD:ses-adaylar
           fi
       - name: Adayları sakla
         if: always()

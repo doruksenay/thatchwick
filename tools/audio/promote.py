@@ -148,8 +148,9 @@ def promote_job(job: Job, mock: bool) -> list[str]:
         if m.exists():
             mdir.mkdir(parents=True, exist_ok=True)
             shutil.copy2(m, mdir / f"{out_name}.wav")
-            if job.get("pilot"):
-                feats_for_ref.append(check.features(post.decode(m)))
+        if job.get("pilot"):
+            # bulutta ana kopya yok (aday dalına yalnız OGG gider): referans izi OGG'den çıkarılır
+            feats_for_ref.append(check.features(post.decode(m if m.exists() else src)))
         info = next(gr["candidates"][cname] for gr in report["groups"].values() if cname in gr["candidates"])
         manifest["files"] = [f for f in manifest["files"] if f["path"] != str(dst.relative_to(ROOT)).replace("\\", "/")]
         manifest["files"].append({
