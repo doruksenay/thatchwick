@@ -73,6 +73,14 @@ namespace Thatchwick.Core.Life
             var f = new FilthService(World, Content, YardNumbers);
             f.Raining = () => RainyToday;
             f.Night = () => IsNightNow;
+            // Kırlangıç yuvası: bahar ve yazda altı karo içindeki sinekleri kırlangıçlar yer.
+            f.FlyGuard = p =>
+            {
+                if (Clock.Season != Time.Season.Spring && Clock.Season != Time.Season.Summer) return false;
+                foreach (var it in World.Items)
+                    if (!it.IsDecor && it.Def.HasTag("swallow_nest") && Math.Abs(it.Position.X - p.X) <= YardNumbers.SwallowRadius && Math.Abs(it.Position.Y - p.Y) <= YardNumbers.SwallowRadius) return true;
+                return false;
+            };
             if (_heat != null) f.TemperatureAt = _heat.TemperatureAt;
             f.Decayed += (kind, pos) => { if (kind != PileKind.Dog && _plants != null && _plants.PlotOrNull(pos) != null) _plants.Enrich(pos, YardNumbers.DecayFertility); };
             return f;

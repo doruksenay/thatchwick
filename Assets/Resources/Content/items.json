@@ -40512,6 +40512,13 @@
           "skillXp": 2
         }
       ],
+      "art": {
+        "alongX": "iso_item_dung_pile_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor"
     },
     {
@@ -40530,6 +40537,13 @@
           "skillXp": 2
         }
       ],
+      "art": {
+        "alongX": "iso_item_dog_pile_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor"
     },
     {
@@ -40548,6 +40562,13 @@
           "skillXp": 2
         }
       ],
+      "art": {
+        "alongX": "iso_item_animal_dung_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor"
     },
     {
@@ -40566,6 +40587,13 @@
           "skillXp": 2
         }
       ],
+      "art": {
+        "alongX": "iso_item_sheep_dung_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor"
     },
     {
@@ -40584,6 +40612,13 @@
           "skillXp": 2
         }
       ],
+      "art": {
+        "alongX": "iso_item_refuse_pile_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor"
     },
     {
@@ -40643,6 +40678,13 @@
           "skillXp": 4
         }
       ],
+      "art": {
+        "alongY": "iso_item_compost_bays_3x1_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40704,6 +40746,13 @@
           "skillXp": 4
         }
       ],
+      "art": {
+        "alongX": "iso_item_compost_tumbler_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40733,6 +40782,13 @@
           "skillXp": 3
         }
       ],
+      "art": {
+        "alongX": "iso_item_worm_bin_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40762,6 +40818,13 @@
           "skillXp": 3
         }
       ],
+      "art": {
+        "alongX": "iso_item_leaf_bin_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40790,6 +40853,13 @@
           "skillXp": 3
         }
       ],
+      "art": {
+        "alongX": "iso_item_slurry_barrel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40808,6 +40878,13 @@
       "tags": [
         "chaff_cutter"
       ],
+      "art": {
+        "alongX": "iso_item_chaff_cutter_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40827,6 +40904,13 @@
         "dung_heap"
       ],
       "fillCapacity": 40,
+      "art": {
+        "alongX": "iso_item_dung_heap_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40866,6 +40950,13 @@
       "tags": [
         "manure_hatch"
       ],
+      "art": {
+        "alongX": "iso_item_manure_hatch_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40884,6 +40975,13 @@
       "tags": [
         "barn_drain"
       ],
+      "art": {
+        "alongX": "iso_item_barn_drain_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40902,6 +41000,13 @@
       "tags": [
         "fold_hurdle"
       ],
+      "art": {
+        "alongX": "iso_item_fold_hurdle_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -40921,6 +41026,13 @@
         "swallow_nest"
       ],
       "beauty": 2,
+      "art": {
+        "alongX": "iso_item_swallow_nest_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      },
       "site": "outdoor",
       "belongs": [
         "outdoor"

@@ -47,6 +47,8 @@ namespace Thatchwick.Core.Farmyard
         public Func<GridPos, float> TemperatureAt { get; set; }
         /// <summary>Şu an yağıyor mu (açıktaki sinekler kaybolur).</summary>
         public Func<bool> Raining { get; set; }
+        /// <summary>Bu karoda sineği yiyen var mı (kırlangıç yuvası, bahar ve yaz): varsa sinek uçmaz.</summary>
+        public Func<GridPos, bool> FlyGuard { get; set; }
         /// <summary>Gece mi (sinekler konar, uçmaz).</summary>
         public Func<bool> Night { get; set; }
         /// <summary>Doldurulan dekorun içi çürük mü.</summary>
@@ -252,6 +254,7 @@ namespace Thatchwick.Core.Farmyard
         public bool HasFlies(SmellSource s)
         {
             if (s.Tier <= 0 || Temp(s.Position) < Config.FlyMinTemp) return false;
+            if (FlyGuard != null && FlyGuard(s.Position)) return false;
             return !(s.Outdoor && Raining != null && Raining());
         }
 

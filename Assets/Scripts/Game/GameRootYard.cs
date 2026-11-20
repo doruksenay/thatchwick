@@ -54,6 +54,20 @@ namespace Thatchwick.Game
                 if (!m.IsDead && !m.IsVillager && !m.Away) yield return m;
         }
 
+        /// <summary>
+        /// Yatmış tahıl (belge 57d §2): fırtınanın yatırdığı ekin yana devrik çizilir. Satır kaydıran shader (`_Lodge`) ve
+        /// yatmış kareler (art/queue 515) gelene kadarki ara görünüm; hasada kadar öyle kalır.
+        /// </summary>
+        private void UpdateLodgedCrops()
+        {
+            if (_plants == null || _items == null) return;
+            foreach (var kv in _plants.LodgedCrops)
+            {
+                if (!_items.Plants.TryGetValue(kv.Key, out var pv) || pv.View == null) continue;
+                pv.View.localRotation = Quaternion.Euler(0f, 0f, -38f);
+            }
+        }
+
         private void CycleFx()
         {
             _fxLevel = (_fxLevel + 1) % 3;
@@ -63,6 +77,7 @@ namespace Thatchwick.Game
         /// <summary>Sinekler: sinekli her koku kaynağının üstünde, kademesine göre 2-6 sinek döner. Gece konarlar, yağmurda ve soğukta yoktur.</summary>
         private void UpdateYardFx(float dt)
         {
+            UpdateLodgedCrops();
             if (_life == null || _juice == null || _fxLevel <= 0) return;
             var filth = _life.Filth;
             if (filth.Sources.Count == 0 || filth.FliesLanded) return;

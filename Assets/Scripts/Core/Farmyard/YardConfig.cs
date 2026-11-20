@@ -59,6 +59,8 @@ namespace Thatchwick.Core.Farmyard
         public int BeautyPenaltyTier1 = 1, BeautyPenaltyTier2 = 3;
         /// <summary>Evin içinde sinek varken açıkta kalan yiyeceğin bozulma çarpanı (Z1).</summary>
         public double FlySpoilFactor = 1.2;
+        /// <summary>Kırlangıç yuvasının sinekten koruduğu yarıçap (karo).</summary>
+        public int SwallowRadius = 6;
 
         // ---- açıkta tuvalet ----
         public float ReliefRestore = 70f;
