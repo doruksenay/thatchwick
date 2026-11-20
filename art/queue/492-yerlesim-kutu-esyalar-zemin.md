@@ -1,7 +1,8 @@
 ---
 id: "492"
 title: "Yerleşim: kutu çizilen yer eşyaları (14)"
-status: pending
+status: running
+claimed_at: 2026-11-20T10:25Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 20.11.2026 "ne eksik ... dükkan dekorasyonları ... doğal duruyor mu" (yerleşim raporu: kutu çizilen eşyalar)
 priority: 15
 family: esya
