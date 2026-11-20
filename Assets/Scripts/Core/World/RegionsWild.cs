@@ -38,7 +38,11 @@ namespace Thatchwick.Core.World
                 (Forest, new Action<Painter>(ForestMap)), (Lake, new Action<Painter>(LakeMap)), (Marsh, new Action<Painter>(MarshMap)),
                 (Hill, new Action<Painter>(HillMap)), (Slopes, new Action<Painter>(SlopesMap)), (Coast, new Action<Painter>(CoastMap)),
             };
-            foreach (var (r, draw) in maps) { var p = new Painter(null, r.X, r.Y); draw(p); all.AddRange(p.Items); }
+            foreach (var (r, draw) in maps)
+            {
+                var p = new Painter(null, r.X, r.Y); draw(p);
+                foreach (var it in p.Items) if (!OnDraftWay(r, it)) all.Add(it);
+            }
             return all;
         }
 
@@ -56,6 +60,37 @@ namespace Thatchwick.Core.World
                 for (int y = Math.Min(ay, by) - 1; y <= Math.Max(ay, by) + width; y++)
                     for (int w = -1; w <= width; w++) keep.Add((bx + w, y));
             }
+        }
+
+        /// <summary>
+        /// Taslak varsa (maps/&lt;bölge&gt;/terrain.png, belge 64a) araziyi oradan çizer ve ağaç dikilmeyecek yerleri işaretler:
+        /// su, taş, köprü, kum, toprak; patika ve bir karoluk kenarı; kenar bandı ve kaya sırtı (onları OutdoorBuilder.EdgeBand
+        /// doldurur). Taslak yoksa false: bölge eski kod çizimiyle kurulur.
+        /// </summary>
+        private static bool Draft(Painter p, Region r, HashSet<(int, int)> keep)
+        {
+            var data = MapFiles.Get(r.Id);
+            if (data == null) return false;
+            if (p.Map != null) PaintData(p, data);
+            for (int y = 0; y < data.H; y++)
+                for (int x = 0; x < data.W; x++)
+                {
+                    var t = data.At(x, y);
+                    if (t == MapTerrain.Grass || t == MapTerrain.Unknown) continue;
+                    keep.Add((x, y));
+                    if (t == MapTerrain.Path || t == MapTerrain.Bridge)
+                        for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) keep.Add((x + dx, y + dy));
+                }
+            return true;
+        }
+
+        /// <summary>Taslakta yürünen ya da su olan karoya düşen başlangıç eşyası konmaz (kod koordinatları eski L patikaya göreydi).</summary>
+        private static bool OnDraftWay(Region r, RegionItem it)
+        {
+            var data = MapFiles.Get(r.Id);
+            if (data == null) return false;
+            var t = data.At(it.X - r.X, it.Y - r.Y);
+            return t == MapTerrain.Path || t == MapTerrain.Bridge || t == MapTerrain.Water || t == MapTerrain.DeepWater;
         }
 
         private static void Keep(HashSet<(int, int)> keep, int x0, int y0, int x1, int y1)
@@ -89,11 +124,13 @@ namespace Thatchwick.Core.World
         private static void ForestMap(Painter p)
         {
             var keep = new HashSet<(int, int)>();
-            Trail(p, keep, 2, (24, 47), (24, 38), (30, 38), (30, 28), (20, 28), (20, 16), (12, 16), (12, 6));
-            Trail(p, keep, 1, (30, 28), (34, 28), (34, 17));   // göle inen patika
-
-            // Gölet: turna ve kerevit
-            for (int y = 0; y < 48; y++) for (int x = 0; x < 48; x++) if (ForestPond(x, y)) { p.Water(x, y); keep.Add((x, y)); }
+            if (!Draft(p, Forest, keep))
+            {
+                Trail(p, keep, 2, (24, 47), (24, 38), (30, 38), (30, 28), (20, 28), (20, 16), (12, 16), (12, 6));
+                Trail(p, keep, 1, (30, 28), (34, 28), (34, 17));   // göle inen patika
+                // Gölet: turna ve kerevit
+                for (int y = 0; y < 48; y++) for (int x = 0; x < 48; x++) if (ForestPond(x, y)) { p.Water(x, y); keep.Add((x, y)); }
+            }
             Keep(keep, 32, 7, 44, 17);
             p.PondAt(38, 12, F("item.fish_pike", 3), F("item.fish_crayfish", 5), F("item.fish_trout", 2), F("item.fish_eel", 2), F("item.mussel", 3));
 
@@ -134,19 +171,21 @@ namespace Thatchwick.Core.World
         private static void LakeMap(Painter p)
         {
             var keep = new HashSet<(int, int)>();
-            for (int y = 0; y < 32; y++)
-                for (int x = 0; x < 48; x++)
-                {
-                    if (LakeWater(x, y)) { p.Water(x, y); keep.Add((x, y)); continue; }
-                    // Güney kıyısındaki plaj: göle yakın ve gölün altında kalan şerit toprak (kum)
-                    bool near = LakeWater(x, y + 1) || LakeWater(x, y + 2) || LakeWater(x - 1, y + 1) || LakeWater(x + 1, y + 1);
-                    if (near && y <= 14) { p.Floor(x, y, x, y, FloorType.Dirt); keep.Add((x, y)); }
-                }
-
-            Trail(p, keep, 2, (24, 0), (24, 7), (44, 7), (44, 16), (47, 16));
-            Trail(p, keep, 1, LakeToCoast);   // batı kıyısından denize inen patika (belge 47 ek)
-            // İskele: göle yürüyen ahşap
-            for (int y = 9; y <= 15; y++) for (int x = 24; x <= 25; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
+            if (!Draft(p, Lake, keep))
+            {
+                for (int y = 0; y < 32; y++)
+                    for (int x = 0; x < 48; x++)
+                    {
+                        if (LakeWater(x, y)) { p.Water(x, y); keep.Add((x, y)); continue; }
+                        // Güney kıyısındaki plaj: göle yakın ve gölün altında kalan şerit toprak (kum)
+                        bool near = LakeWater(x, y + 1) || LakeWater(x, y + 2) || LakeWater(x - 1, y + 1) || LakeWater(x + 1, y + 1);
+                        if (near && y <= 14) { p.Floor(x, y, x, y, FloorType.Dirt); keep.Add((x, y)); }
+                    }
+                Trail(p, keep, 2, (24, 0), (24, 7), (44, 7), (44, 16), (47, 16));
+                Trail(p, keep, 1, LakeToCoast);   // batı kıyısından denize inen patika (belge 47 ek)
+                // İskele: göle yürüyen ahşap
+                for (int y = 9; y <= 15; y++) for (int x = 24; x <= 25; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
+            }
             p.I("item.stump_table", 24, 15); p.On("item.fish_basket_decor", 24, 15, "a"); p.I("item.barrel", 25, 9);   // iskele ucunda sehpa, üstünde balık sepeti
             p.PondAt(28, 20, F("item.fish_carp", 8), F("item.fish_pike", 4), F("item.fish_eel", 3), F("item.fish_trout", 2), F("item.fish_tench", 4), F("item.fish_bream", 4), F("item.fish_rudd", 4), F("item.fish_catfish", 1));
 
@@ -189,20 +228,23 @@ namespace Thatchwick.Core.World
         private static void CoastMap(Painter p)
         {
             var keep = new HashSet<(int, int)>();
-            for (int y = 0; y < 32; y++)
-                for (int x = 0; x < 48; x++)
-                {
-                    if (CoastRock(x, y)) { p.Floor(x, y, x, y, FloorType.Stone); keep.Add((x, y)); continue; }
-                    if (y >= SeaEdge(x)) { p.Water(x, y); keep.Add((x, y)); continue; }
-                    // Kumsal: denizden geriye 6-9 karo; çayıra geçişi gürültüyle girintili.
-                    int depth = 6 + (int)Math.Round(Smooth(x, y / 2) * 3);
-                    if (y >= SeaEdge(x) - depth) { p.Floor(x, y, x, y, FloorType.Dirt); keep.Add((x, y)); }
-                }
-            // Patika: gölden iner, kumsalda iskeleye kadar sürer.
             int pierTop = SeaEdge(20) - 1;
-            Trail(p, keep, 1, (5, 0), (5, 6), (20, 6), (20, pierTop - 1));
-            // İskele: kumsaldan denize
-            for (int y = pierTop; y <= SeaEdge(20) + 5; y++) for (int x = 20; x <= 21; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
+            if (!Draft(p, Coast, keep))
+            {
+                for (int y = 0; y < 32; y++)
+                    for (int x = 0; x < 48; x++)
+                    {
+                        if (CoastRock(x, y)) { p.Floor(x, y, x, y, FloorType.Stone); keep.Add((x, y)); continue; }
+                        if (y >= SeaEdge(x)) { p.Water(x, y); keep.Add((x, y)); continue; }
+                        // Kumsal: denizden geriye 6-9 karo; çayıra geçişi gürültüyle girintili.
+                        int depth = 6 + (int)Math.Round(Smooth(x, y / 2) * 3);
+                        if (y >= SeaEdge(x) - depth) { p.Floor(x, y, x, y, FloorType.Dirt); keep.Add((x, y)); }
+                    }
+                // Patika: gölden iner, kumsalda iskeleye kadar sürer.
+                Trail(p, keep, 1, (5, 0), (5, 6), (20, 6), (20, pierTop - 1));
+                // İskele: kumsaldan denize
+                for (int y = pierTop; y <= SeaEdge(20) + 5; y++) for (int x = 20; x <= 21; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
+            }
             // Balıkçı iniş yeri (iskelenin batısında, kumsalda): sepet, fıçı, halat, ateş yeri. Ağ askısı balıkçı dükkânına aittir (şehir).
             int land = pierTop - 2;
             var used = new HashSet<(int, int)>();
@@ -276,11 +318,14 @@ namespace Thatchwick.Core.World
         private static void MarshMap(Painter p)
         {
             var keep = new HashSet<(int, int)>();
-            for (int y = 0; y < 24; y++)
-                for (int x = 0; x < 32; x++)
-                    if (x >= 3 && MarshWater(x, y)) { p.Water(x, y); keep.Add((x, y)); }
-            Trail(p, keep, 2, (0, 12), (3, 12));
-            for (int x = 3; x <= 28; x++) for (int y = 12; y <= 13; y++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
+            if (!Draft(p, Marsh, keep))
+            {
+                for (int y = 0; y < 24; y++)
+                    for (int x = 0; x < 32; x++)
+                        if (x >= 3 && MarshWater(x, y)) { p.Water(x, y); keep.Add((x, y)); }
+                Trail(p, keep, 2, (0, 12), (3, 12));
+                for (int x = 3; x <= 28; x++) for (int y = 12; y <= 13; y++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
+            }
             p.I("item.fish_trap", 28, 14); keep.Add((28, 14));
 
             // Balık gözleri: her biri kendi tablosuyla (kerevit ve yılan balığı ağırlıklı)
@@ -302,16 +347,18 @@ namespace Thatchwick.Core.World
         private static void HillMap(Painter p)
         {
             var keep = new HashSet<(int, int)>();
-            for (int y = 0; y < 40; y++)
-                for (int x = 0; x < 40; x++)
-                    if (HillRock(x, y)) { p.Floor(x, y, x, y, FloorType.Stone); keep.Add((x, y)); }
+            bool draft = Draft(p, Hill, keep);
+            if (!draft)
+                for (int y = 0; y < 40; y++)
+                    for (int x = 0; x < 40; x++)
+                        if (HillRock(x, y)) { p.Floor(x, y, x, y, FloorType.Stone); keep.Add((x, y)); }
             // Maden ağzı: taş meydancık ve fener. Ağzın kendisi (kaya yüzünde açıklık) görsel iş dosyası bekliyor; ocak
             // şimdilik M paneliyle açılır. Merdiven eşyası konmaz: kat -1'e bağlantı kurup bölgesiz bir bodrum açardı.
             p.Floor(MineMouthX - 2, MineMouthY - 1, MineMouthX + 2, MineMouthY + 2, FloorType.Stone);
             Keep(keep, MineMouthX - 3, MineMouthY - 2, MineMouthX + 3, MineMouthY + 3);
             p.I("item.barn_lantern", MineMouthX + 2, MineMouthY);
             p.I("item.barrel", MineMouthX - 2, MineMouthY + 1);
-            Trail(p, keep, 2, (0, 20), (12, 20), (12, 28), (24, 28), (24, 33), (MineMouthX - 3, 33));
+            if (!draft) Trail(p, keep, 2, (0, 20), (12, 20), (12, 28), (24, 28), (24, 33), (MineMouthX - 3, 33));
 
             // Taş ocağı ve taşçı tezgâhı
             Keep(keep, 28, 22, 34, 28);
@@ -332,17 +379,22 @@ namespace Thatchwick.Core.World
         private static void SlopesMap(Painter p)
         {
             var keep = new HashSet<(int, int)>();
-            Trail(p, keep, 1, (16, 23), (16, 14), (9, 14), (9, 6));
-            // Taş setler: her terasın alt kenarı (yol geçen yerde açık)
-            foreach (int ty in new[] { 17, 11, 5 })
-                for (int x = 1; x <= 30; x++)
-                {
-                    if (Math.Abs(x - 16) <= 1 || Math.Abs(x - 9) <= 1) continue;   // yol geçitleri
-                    p.Floor(x, ty, x, ty, FloorType.Stone); keep.Add((x, ty));
-                }
+            bool draft = Draft(p, Slopes, keep);
+            if (!draft)
+            {
+                Trail(p, keep, 1, (16, 23), (16, 14), (9, 14), (9, 6));
+                // Taş setler: her terasın alt kenarı (yol geçen yerde açık)
+                foreach (int ty in new[] { 17, 11, 5 })
+                    for (int x = 1; x <= 30; x++)
+                    {
+                        if (Math.Abs(x - 16) <= 1 || Math.Abs(x - 9) <= 1) continue;   // yol geçitleri
+                        p.Floor(x, ty, x, ty, FloorType.Stone); keep.Add((x, ty));
+                    }
+            }
 
-            // Barınak (4x3), kapısı güneyde, yola bağlı
-            p.Building(22, 1, 4, 3, 'S', 23, FloorType.Wood, (16, 14));
+            // Barınak (4x3), kapısı güneyde, yola bağlı (taslakta patika zaten çizili)
+            if (draft) p.Building(22, 1, 4, 3, 'S', 23, FloorType.Wood);
+            else p.Building(22, 1, 4, 3, 'S', 23, FloorType.Wood, (16, 14));
             Keep(keep, 21, 0, 27, 5);
             p.I("item.bed_straw", 22, 1); p.I("item.barrel", 25, 1);
 

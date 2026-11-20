@@ -322,6 +322,23 @@ namespace Thatchwick.Core.World
                 }
         }
 
+        /// <summary>
+        /// Çiftlik taslağı (maps/farm): yalnızca yol karoları alınır (oyuncunun arazisi: ev, gölet, tarla kod çiziminde kalır);
+        /// kenar bandını OutdoorBuilder.EdgeBand doldurur. Taslak yoksa false.
+        /// </summary>
+        public static bool FarmDraft(GridMap map)
+        {
+            var data = MapFiles.Get(Farm.Id);
+            if (data == null) return false;
+            for (int y = 0; y < data.H; y++)
+                for (int x = 0; x < data.W; x++)
+                {
+                    var p = new GridPos(Farm.X + x, Farm.Y + y);
+                    if (data.At(x, y) == MapTerrain.Path && map.GetFloor(p) == FloorType.Grass) map.SetRoad(p, RoadType.Path);
+                }
+            return true;
+        }
+
         /// <summary>Taslağın sabit eşyaları (simge yapılar): markers.json items.</summary>
         private static void DataItems(Region r, List<RegionItem> into)
         {

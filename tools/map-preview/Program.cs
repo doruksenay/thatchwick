@@ -94,6 +94,33 @@ internal static class Program
         }
         File.WriteAllText(Path.Combine(outDir, "art-index.json"), JsonSerializer.Serialize(index));
 
+        if (args.Contains("export"))
+        {
+            // Taslak tabanı (tools/maps/draw.py): taslaksız, kod çizimiyle kurulan arazi bölge bölge karakter ızgarası olarak.
+            MapFiles.Provider = null; MapFiles.Reset();
+            var plain = StarterWorld.BuildMap(layouts);
+            foreach (var r in Regions.All)
+            {
+                var rows = new List<string>();
+                for (int y = r.Y; y < r.Y + r.H; y++)
+                {
+                    var sb = new System.Text.StringBuilder();
+                    for (int x = r.X; x < r.X + r.W; x++)
+                    {
+                        var p = new GridPos(x, y);
+                        var f = plain.GetFloor(p);
+                        char c = plain.GetRoad(p) != RoadType.None ? '=' : f == FloorType.Water ? '~' : f == FloorType.Wood ? 'b' : f == FloorType.Stone ? 'S'
+                            : f == FloorType.Dirt ? 'd' : f == FloorType.Sand ? 's' : plain.IsBlocked(p) ? '#' : '.';
+                        sb.Append(c);
+                    }
+                    rows.Add(sb.ToString());
+                }
+                File.WriteAllText(Path.Combine(outDir, "base-" + r.Id + ".json"), JsonSerializer.Serialize(new { id = r.Id, x = r.X, y = r.Y, w = r.W, h = r.H, rows }));
+            }
+            Console.WriteLine("taban yazıldı: " + outDir);
+            return 0;
+        }
+
         var map = StarterWorld.BuildMap(layouts);
         var world = new WorldState(map);
         var log = new List<string>();
@@ -299,7 +326,7 @@ internal static class Program
     private static readonly Dictionary<string, string> Trees = new Dictionary<string, string>
     {
         ["item.tree_oak"] = "iso_tree_oak", ["item.tree_apple"] = "iso_tree_apple", ["item.tree_pear"] = "iso_tree_pear", ["item.tree_cherry"] = "iso_tree_cherry",
-        ["item.tree_plum"] = "iso_tree_plum", ["item.tree_birch"] = "iso_tree_birch", ["item.tree_pine"] = "iso_tree_pine", ["item.tree_willow"] = "iso_tree_willow",
+        ["item.tree_plum"] = "iso_tree_plum", ["item.tree_birch"] = "iso_tree_birch", ["item.tree_pine"] = "iso_tree_pine", ["item.tree_willow"] = "iso_tree_willow", ["item.tree_olive"] = "iso_plant_olive", ["item.vine_grape"] = "iso_plant_grape", ["item.bush_coffee"] = "iso_plant_coffee",
     };
 
     private static (float x, float y) PivotOf(ItemDef def)
