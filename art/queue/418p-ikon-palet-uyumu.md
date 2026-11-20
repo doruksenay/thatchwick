@@ -1,7 +1,7 @@
 ---
 id: "418p"
 title: "İkon palet uyumu: 6 ikonun donmuş arayüz paletiyle yeniden üretimi"
-status: running
+status: review
 claimed_at: 2026-11-20T17:51Z
 approved_by: user        # kullanıcı kararı 2026-11-20: palet karşılaştırmasında "yalnızca belirgin değişenleri yeniden üretelim" (Project belgesi 64c §0.1)
 priority: 20
