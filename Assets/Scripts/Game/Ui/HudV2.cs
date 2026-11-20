@@ -40,7 +40,7 @@ namespace Thatchwick.Game.Ui
         }
 
         private const float RefreshSeconds = 0.1f, Margin = 6f;
-        private const int ButtonFactor = 2;          // ilmek düğmeleri 32 px; 2× = 64 birim (dokunma hedefi)
+        private const float ButtonTarget = 64f;      // köşe düğmesinin en küçük kenarı (arayüz birimi; dokunma hedefi)
         private const float PortraitSize = 44f, MaxPortraits = 8;
         private static readonly Color Cream = new Color32(0xF3, 0xEA, 0xD6, 0xFF);
         private static readonly Color OakFallback = new Color32(0x4A, 0x33, 0x24, 0xF0);
@@ -71,26 +71,46 @@ namespace Thatchwick.Game.Ui
             _topLeft.style.flexDirection = FlexDirection.Row;
             _topLeft.style.alignItems = Align.FlexStart;
             var clock = new VisualElement { pickingMode = PickingMode.Position };
-            HudArt.Fixed(clock, HudArt.Clock, 1, 77f, 73f, OakFallback);
-            clock.style.alignItems = Align.Center;
-            clock.style.justifyContent = Justify.Center;
+            var clockArt = HudArt.Fixed(clock, HudArt.Clock, 1, 77f, 73f, OakFallback);
             clock.style.flexShrink = 0;
             _season = new VisualElement { pickingMode = PickingMode.Ignore };
-            _season.style.width = 16; _season.style.height = 16;
-            _season.style.marginTop = 8;   // levhanın ortasındaki koyu yuva zincirlerin altında
             _season.style.alignItems = Align.Center;
             _season.style.justifyContent = Justify.Center;
             _seasonText = Small("", 10f);
-            _seasonText.style.color = Cream;
             _season.Add(_seasonText);
             clock.Add(_season);
             _topLeft.Add(clock);
 
             var info = new VisualElement { pickingMode = PickingMode.Ignore };
             info.style.marginLeft = 4;
-            info.style.marginTop = 10;
-            var dateStrip = Strip(out _date, 210f);
-            info.Add(dateStrip);
+            if (clockArt.World)
+            {
+                // 810 levhası (96x40, 2×): solda 12x12 mevsim yuvası (x 6-18, y 14-26), sağda iki satır krem yazı alanı (x 24-92, y 6-34).
+                const float k = 2f;
+                Place(_season, 6f * k, 14f * k, 12f * k, 12f * k);
+                _seasonText.style.color = UiSkin.Ink;
+                _date = Small("", 10f);
+                _date.style.color = UiSkin.Ink;
+                _date.style.whiteSpace = WhiteSpace.NoWrap;
+                _date.style.overflow = Overflow.Hidden;
+                Place(_date, 24f * k + 2f, 6f * k + 2f, 68f * k - 4f, 14f * k);
+                _date.style.unityTextAlign = TextAnchor.MiddleLeft;
+                clock.Add(_date);
+                _topLeft.style.flexDirection = FlexDirection.Column;
+                info.style.marginLeft = 0;
+                info.style.marginTop = 2;
+            }
+            else
+            {
+                // 774 levhası (77x73): ortadaki koyu yuvada mevsim; tarih yanda şeritte.
+                clock.style.alignItems = Align.Center;
+                clock.style.justifyContent = Justify.Center;
+                _season.style.width = 16; _season.style.height = 16;
+                _season.style.marginTop = 8;   // yuva zincirlerin altında
+                _seasonText.style.color = Cream;
+                info.style.marginTop = 10;
+                info.Add(Strip(out _date, 210f));
+            }
             _status = Small("", 10f);
             _status.style.marginLeft = 8;
             info.Add(_status);
@@ -111,15 +131,25 @@ namespace Thatchwick.Game.Ui
             _topRight = Corner(left: false, top: true);
             _topRight.style.alignItems = Align.FlexEnd;
             var money = new VisualElement { pickingMode = PickingMode.Position };
-            HudArt.Fixed(money, HudArt.Money, 1, 65f, 45f, OakFallback);
-            // 774: panelde iki yuva (üstte akçe, altta elmas); sayılar yuvaların içine, ikonların sağına.
+            var moneyArt = HudArt.Fixed(money, HudArt.Money, 1, 65f, 45f, OakFallback);
             _akce = Small("", 11f);
-            Place(_akce, 18f, 5f, 42f);
             _akce.style.color = Cream;
-            money.Add(_akce);
             _diamonds = Small("", 11f);
-            Place(_diamonds, 18f, 22f, 42f);
             _diamonds.style.color = Cream;
+            if (moneyArt.World)
+            {
+                // 810: tek satır, iki yuva yan yana (72x20, 2×); her yuvanın solunda 10x10 ikon yeri, sağında sayı alanı.
+                float half = moneyArt.Width / 2f;
+                Place(_akce, 24f, 0f, half - 30f, moneyArt.Height);
+                Place(_diamonds, half + 24f, 0f, half - 30f, moneyArt.Height);
+            }
+            else
+            {
+                // 774: iki yuva alt alta (üstte akçe, altta elmas).
+                Place(_akce, 18f, 5f, 42f, 16f);
+                Place(_diamonds, 18f, 22f, 42f, 16f);
+            }
+            money.Add(_akce);
             money.Add(_diamonds);
             _topRight.Add(money);
 
@@ -154,7 +184,7 @@ namespace Thatchwick.Game.Ui
             _badge = new VisualElement { pickingMode = PickingMode.Ignore };
             _badge.style.position = Position.Absolute;
             _badge.style.right = -4; _badge.style.top = -6;
-            HudArt.Fixed(_badge, HudArt.Badge, ButtonFactor, 20f, 20f, DangerInk);
+            HudArt.Fixed(_badge, HudArt.Badge, HudArt.Get(HudArt.Badge).World ? 1 : 2, 20f, 20f, DangerInk);
             _bookBtn.Add(_badge);
             _bottomRight.Add(_bookBtn);
             _root.Add(_bottomRight);
@@ -211,9 +241,9 @@ namespace Thatchwick.Game.Ui
             _weather.style.color = danger ? new StyleColor(new Color(1f, 0.62f, 0.55f)) : new StyleColor(Cream);
             string season = _h.SeasonKey?.Invoke() ?? "";
             var seasonIcon = HudArt.Icon("season_" + season);
-            if (seasonIcon != null)
+            if (seasonIcon.Ok)
             {
-                _season.style.backgroundImage = new StyleBackground(seasonIcon);
+                _season.style.backgroundImage = new StyleBackground(seasonIcon.Tex);
                 SetText(_seasonText, "");
             }
             else
@@ -299,7 +329,7 @@ namespace Thatchwick.Game.Ui
                 var root = new VisualElement { pickingMode = PickingMode.Position };
                 root.style.width = PortraitSize; root.style.height = PortraitSize;
                 root.style.marginRight = 3;
-                HudArt.Apply(root, HudArt.Frame, HudArt.FrameSlice, OakFallback);
+                HudArt.Apply(root, HudArt.Frame, OakFallback);
                 HudArt.Pad(root, 6, 6, 6, 6);
                 var inner = new VisualElement { pickingMode = PickingMode.Ignore };
                 inner.style.flexGrow = 1;
@@ -360,11 +390,12 @@ namespace Thatchwick.Game.Ui
         {
             var s = new VisualElement { pickingMode = PickingMode.Ignore };
             s.style.width = width;
-            s.style.height = 25;
             s.style.flexDirection = FlexDirection.Row;
             s.style.alignItems = Align.Center;
-            HudArt.Apply(s, HudArt.Tracker, HudArt.TrackerSlice, Cream);
-            HudArt.Pad(s, 20, 20, 0, 1);
+            var art = HudArt.Apply(s, HudArt.Tracker, Cream);
+            s.style.height = art.Ok ? art.Height : 25f;
+            float cap = art.World ? 6f * art.Factor : 20f;   // yapraklı uçların içine yazma
+            HudArt.Pad(s, cap, cap, 0, 1);
             label = Small("", 10f);
             label.style.flexGrow = 1;
             label.style.flexShrink = 1;
@@ -378,18 +409,18 @@ namespace Thatchwick.Game.Ui
         private VisualElement SpeedButton(int speed)
         {
             var b = new VisualElement { pickingMode = PickingMode.Position };
-            b.style.width = 30; b.style.height = 30;
+            b.style.width = 32; b.style.height = 32;
             b.style.marginRight = 2;
             b.style.alignItems = Align.Center;
             b.style.justifyContent = Justify.Center;
-            HudArt.Apply(b, HudArt.Frame, HudArt.FrameSlice, OakFallback);
+            HudArt.Apply(b, HudArt.Frame, OakFallback);
             var icon = HudArt.Icon("speed_" + speed);
             Label label = null;
-            if (icon != null)
+            if (icon.Ok)
             {
                 var img = new VisualElement { pickingMode = PickingMode.Ignore };
-                img.style.width = 16; img.style.height = 16;
-                img.style.backgroundImage = new StyleBackground(icon);
+                img.style.width = icon.Width; img.style.height = icon.Height;
+                img.style.backgroundImage = new StyleBackground(icon.Tex);
                 b.Add(img);
             }
             else
@@ -407,7 +438,9 @@ namespace Thatchwick.Game.Ui
         private static VisualElement ImageButton(string normal, string down, Action click, string fallback)
         {
             var b = new VisualElement { pickingMode = PickingMode.Position };
-            HudArt.Fixed(b, normal, ButtonFactor, 64f, 64f, OakFallback);
+            var art = HudArt.Get(normal);
+            int extra = art.Ok ? Mathf.Max(1, Mathf.CeilToInt(ButtonTarget / art.Width)) : 1;
+            HudArt.Fixed(b, normal, extra, ButtonTarget, ButtonTarget, OakFallback);
             b.style.flexShrink = 0;
             b.style.alignItems = Align.Center;
             b.style.justifyContent = Justify.Center;
@@ -441,10 +474,10 @@ namespace Thatchwick.Game.Ui
             return l;
         }
 
-        private static void Place(VisualElement e, float left, float top, float width)
+        private static void Place(VisualElement e, float left, float top, float width, float height)
         {
             e.style.position = Position.Absolute;
-            e.style.left = left; e.style.top = top; e.style.width = width;
+            e.style.left = left; e.style.top = top; e.style.width = width; e.style.height = height;
             e.style.unityTextAlign = TextAnchor.MiddleRight;
         }
 

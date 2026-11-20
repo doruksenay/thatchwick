@@ -183,7 +183,7 @@ namespace UnityEngine.UIElements {
   StyleLength marginLeft{get;set;} StyleLength marginRight{get;set;} StyleLength marginTop{get;set;} StyleLength marginBottom{get;set;}
   StyleFloat borderLeftWidth{get;set;} StyleFloat borderRightWidth{get;set;} StyleFloat borderTopWidth{get;set;} StyleFloat borderBottomWidth{get;set;}
   StyleFloat flexGrow{get;set;} StyleColor color{get;set;} StyleColor backgroundColor{get;set;} StyleBackground backgroundImage{get;set;}
-  StyleInt unitySliceLeft{get;set;} StyleInt unitySliceRight{get;set;} StyleInt unitySliceTop{get;set;} StyleInt unitySliceBottom{get;set;}
+  StyleInt unitySliceLeft{get;set;} StyleInt unitySliceRight{get;set;} StyleInt unitySliceTop{get;set;} StyleInt unitySliceBottom{get;set;} StyleFloat unitySliceScale{get;set;}
   StyleEnum<DisplayStyle> display{get;set;} StyleEnum<FlexDirection> flexDirection{get;set;} StyleEnum<Wrap> flexWrap{get;set;} StyleEnum<Align> alignItems{get;set;}
   StyleEnum<Position> position{get;set;} StyleEnum<WhiteSpace> whiteSpace{get;set;} StyleEnum<TextAnchor> unityTextAlign{get;set;} StyleFontDefinition unityFontDefinition{get;set;}
   StyleFloat opacity{get;set;} StyleFloat flexShrink{get;set;} StyleEnum<Overflow> overflow{get;set;} StyleEnum<FontStyle> unityFontStyleAndWeight{get;set;} StyleColor unityBackgroundImageTintColor{get;set;}
