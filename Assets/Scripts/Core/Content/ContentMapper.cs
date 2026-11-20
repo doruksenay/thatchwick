@@ -448,7 +448,7 @@ namespace Thatchwick.Core.Content
                 else if (crafted.Contains(d.Id) && Array.IndexOf(CraftedCategories, d.Category) >= 0 && !d.IsPlant && !d.HasTag("light"))
                     d.QualityClass = ItemQualityClass.Crafted;
             }
-            // Oyma süsle (Marangozluk 6, ahşap) ve İşle (Dokumacılık 6, kumaş): yerleşik yapılan eşyaya +1 kalite (53 §4.6).
+            // Oyma süsle (Marangozluk 6, ahşap) ve İşle (Terzilik 6, kumaş): yerleşik yapılan eşyaya +1 kalite (53 §4.6).
             foreach (var d in db.Items.All)
             {
                 if (d.QualityClass != ItemQualityClass.Crafted || d.Placement == ItemPlacement.Resource || d.IsRug) continue;   // halı etkileşimsiz kalır
@@ -464,7 +464,7 @@ namespace Thatchwick.Core.Content
                     d.Interactions.Add(new InteractionDef
                     {
                         Id = "embellish_stitch", DisplayName = GeneratedText("content.act.embellish_stitch", "İşle (nakış)"), DurationDays = 0.2,
-                        Skill = Characters.SkillType.Weaving, SkillXp = 20f, MinSkillLevel = EmbellishLevel, Embellish = true,
+                        Skill = Characters.SkillType.Tailoring, SkillXp = 20f, MinSkillLevel = EmbellishLevel, Embellish = true,
                         Consume = { new ConsumeDef { ItemId = StitchMaterial, Count = 1 } }
                     });
             }
