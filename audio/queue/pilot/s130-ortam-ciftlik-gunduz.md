@@ -5,7 +5,7 @@ kind: ambience
 family: ambience
 freq: C
 pilot: true
-status: claimed
+status: review
 approved_by: auto
 key: amb.farm.day
 generate: 3
@@ -25,5 +25,9 @@ yeniden_sayisi: 1
 prompt_influence: 0.7
 claimed_by: runnervmccnms
 claimed_at: '2026-11-20T16:46:35Z'
+candidates: 3
+passed: 3
+credits_spent: 200
+generated_at: '2026-11-20T16:46:48Z'
 ---
 A calm, still, sunny spring day near a small medieval farm. Quiet open-air room tone with soft distant birdsong and a faint insect hum. No wind, no gusts, no rustling, no rain, no hiss, no storm; nothing stands out.
