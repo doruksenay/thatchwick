@@ -1,7 +1,8 @@
 ---
 id: "614"
 title: "Yaşlılar: easter egg sahne kareleri (topaç, uluma, yerden alma)"
-status: pending
+status: running
+claimed_at: 2026-11-20T17:21Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("yaşlıların eylem kareleri: evet"), Project belgesi 55d
 priority: 50
 family: karakter
