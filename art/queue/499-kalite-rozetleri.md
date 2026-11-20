@@ -1,5 +1,5 @@
 ---
-id: "497"
+id: "499"
 title: "Eşya kalitesi rozetleri (4)"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("taşı ve başla. tek prda hallet"), Project belgesi 53
@@ -18,7 +18,7 @@ outputs:
   - Assets/Art/Iso/_aday/ui_icon_quality_4.png
 created: 2026-11-20
 ---
-# 497 Eşya kalitesi rozetleri (4)
+# 499 Eşya kalitesi rozetleri (4)
 
 ## Amaç
 Eşya kalitesi (Project belgesi 53, beş renkli düzen): envanter, pazar ve kiler satırında eşya ikonunun sağ alt köşesinde küçük rozet. Kod hazır: `UiSkin.QualityCorner` → `Resources/UI/Icons/ui_icon_quality_<1-4>.png`. Rozet yoksa renkli yazı (★, ★★, ✦) çizilir. Sıradan (0) rozetsizdir, ikonu yok.
@@ -42,7 +42,7 @@ Eşya kalitesi (Project belgesi 53, beş renkli düzen): envanter, pazar ve kile
 
 ## Doğrulama
 - 32x32, yarı saydam 0, ≤16 renk; `python tools/art/style.py check --family arayuz <dosya> ...`.
-- 12x12 ve 16x16 küçültmede okunurluk: 4 rozet yan yana `art/results/497-yanyana.png` (koyu ve keten zeminde). Yeşil ve mavi yalnız renkle değil yıldız sayısıyla da ayrılmalı (renk körlüğü); mor ve altın mühür renk dışında kurdeleyle ayrılır.
+- 12x12 ve 16x16 küçültmede okunurluk: 4 rozet yan yana `art/results/499-yanyana.png` (koyu ve keten zeminde). Yeşil ve mavi yalnız renkle değil yıldız sayısıyla da ayrılmalı (renk körlüğü); mor ve altın mühür renk dışında kurdeleyle ayrılır.
 - Renkler kod rengine yakın: yeşil #73C75C, mavi #5C99F2, mor #B873EB, altın #F2C240 (`ItemQuality.Color`).
 
 ## Notlar
