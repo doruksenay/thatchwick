@@ -77,6 +77,8 @@ namespace Thatchwick.Game
             ["cook"] = new[] { "cook" },
             ["craft"] = new[] { "craft_hammer", "craft_hand" },
             ["chop"] = new[] { "chop" },
+            ["sow"] = new[] { "sow", "hoe" },     // 018c
+            ["water"] = new[] { "water" },
             ["farm"] = new[] { "hoe", "sow" },
             ["work"] = new[] { "work" },
             // 018e (kabul 19.11.2026): sosyal, bakım, sevgi, eğlence, balık; maden üçlüsü.
@@ -91,7 +93,7 @@ namespace Thatchwick.Game
         };
 
         /// <summary>
-        /// Eşyasız eylem yerinde mi yapılıyor: sosyal, hayvan ve karo işleri (sohbet, besleme, tımar, kazı, balık) eşya
+        /// Eşyasız eylem yerinde mi yapılıyor: sosyal, hayvan ve karo işleri (sohbet, besleme, tımar, kazı, balık, ekim) eşya
         /// kullanmaz; karakter hedefe varıp durduğunda eylem karesi oynar. Yürürken yürüme karesi kalır.
         /// </summary>
         private static bool IsPerformingInPlace(Actor actor)

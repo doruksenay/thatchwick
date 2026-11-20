@@ -9,6 +9,9 @@ Son güncelleme: 2026-11-20. Bu oturumun kod işleri bitti; kalanlar evden yapı
 - [ ] Madencilik: kazma, destek kurma, kovayla su boşaltma.
 - [ ] Yıkanma ve tuvalette keyif animasyonunun oynamadığını kontrol et.
 
+## İçerik (karar kullanıcıda)
+- [ ] `item.crop_pumpkin` balkabağı Yeni Dünya bitkisi (CLAUDE.md dönem kuralı). Kaldır ya da Eski Dünya ekiniyle değiştir (ör. su kabağı / Lagenaria).
+
 ## Sanat kararları (görselleri sohbette göster, karar kullanıcıda)
 - [ ] 018b4: yürüme, son 5 yön (review; kod zaten kullanıyor, reddedilirse bağlantı geri alınır)
 - [ ] 018d4: boş elle yeme, kalan 4 yön (review; kod zaten kullanıyor)
@@ -22,3 +25,4 @@ Son güncelleme: 2026-11-20. Bu oturumun kod işleri bitti; kalanlar evden yapı
 - [x] Elde yenen yiyecek: #60, #73, #77
 - [x] walk2 yürüme, 018e animasyonları, madencilik üçlüsü oyuna bağlandı (#73, #77)
 - [x] Eşyasız işlerde (sosyal, hayvan, karo) eylem karesi oynuyor; 018c bağlantısı hazır (#79)
+- [x] Yerelleştirme altyapısı ve içerik metinlerinin İngilizcesi (#70)
