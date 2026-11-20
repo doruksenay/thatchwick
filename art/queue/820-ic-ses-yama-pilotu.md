@@ -1,7 +1,8 @@
 ---
 id: "820"
 title: "İç Sesler nakış yaması pilotu: boş yama, üç dikiş, kurdele, dört işlemeli ikon"
-status: pending
+status: running
+claimed_at: 2026-11-20T23:54Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 21.11.2026 sohbet (yama dili A "nakış yaması", hâl katmanı A), Project belgesi 68a
 priority: 1           # 21.11.2026: kullanıcı sonucu hemen görmek istiyor
 family: arayuz
