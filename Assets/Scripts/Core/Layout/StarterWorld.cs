@@ -360,7 +360,7 @@ namespace Thatchwick.Core.Layout
                     }
                     if (ti.Slot != null) { PutOn(ti.Id, ti.X, ti.Y, 0, ti.Slot); continue; }
                     // Simge yapı görseli gelmeden konmaz (görünmez engel olmasın; belge 64a Aşama F).
-                    if (_content.Items.TryGet(ti.Id, out var lm) && lm.HasTag("landmark") && (lm.Art == null || lm.Art.Pending)) continue;
+                    if (_content.Items.TryGet(ti.Id, out var lm) && lm.HasTag("landmark") && (lm.Art == null || lm.Art.Awaiting)) continue;
                     if (_world.Map.GetRoad(at) != RoadType.None) { _log($"Yol üstüne eşya konmaz: {ti.Id} {at}"); continue; }
                     if (ti.WallSide >= 0) { PutWall(ti.Id, at, ti.WallSide); continue; }
                     var placed = Put(ti.Id, ti.X, ti.Y);
