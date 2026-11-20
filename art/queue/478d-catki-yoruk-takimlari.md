@@ -1,7 +1,7 @@
 ---
 id: "478d"
 title: "Beceri tamamlama: Çatkı ve Yörük takımları (6)"
-status: running
+status: review
 claimed_at: 2026-11-20T11:05Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("geliştirmeyi tamamla"), Project belgesi 45 bölüm 9
 priority: 40
