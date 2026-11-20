@@ -1,5 +1,5 @@
 ---
-id: "739"
+id: "814"
 title: "Kavga toz bulutu efekti ve parçaları (Sims tarzı)"
 status: pending
 approved_by: user        # kullanıcı 20.11.2026 ("simsteki gibi bir karmaşa animasyonu girer. animasyonu da ayarla", "şimdi alınabilir"); Project belgeleri 67a §5.2, 67b
@@ -20,13 +20,13 @@ outputs:
   - Assets/Art/Iso/fx/iso_fx_brawl_bit_hat.png
   - Assets/Art/Iso/fx/iso_fx_anger_puff.png
   - Assets/Art/Iso/fx/iso_fx_sweat_drop.png
-  - art/results/739-*.md
+  - art/results/814-*.md
 created: 2026-11-20
 ---
-# 739 Kavga toz bulutu efekti
+# 814 Kavga toz bulutu efekti
 
 ## Amaç
-Kavga eden iki karakter Sims'teki gibi bir **toz bulutunun içinde kaybolur**; bulut iki karonun ortasında kaynar, içinden yumruk, çizme, yıldız, toz, uçan şapka fırlar. Bulut dağılınca 737'deki `fight_win` / `fight_lose` pozları oynar. Ergen itişmesinde aynı bulut %70 ölçekle çizilir (kod).
+Kavga eden iki karakter Sims'teki gibi bir **toz bulutunun içinde kaybolur**; bulut iki karonun ortasında kaynar, içinden yumruk, çizme, yıldız, toz, uçan şapka fırlar. Bulut dağılınca 813'deki `fight_win` / `fight_lose` pozları oynar. Ergen itişmesinde aynı bulut %70 ölçekle çizilir (kod).
 
 ## Tarif
 - **Bulut döngüsü** `iso_fx_brawl_cloud_00..07`: 8 kare, 128x96 tuval (iki karoyu kaplar), alt kenarı zemine oturan kabarık, yuvarlak bej-gri toz bulutu; kenarları kareden kareye kaynar ve şişip iner. İçinde belli belirsiz iki silüet çizilmez. Stil: eşya ailesi, izometrik ışık (sol üst).

@@ -1,5 +1,5 @@
 ---
-id: "737"
+id: "813"
 title: "Kavga ve küslük pozları, yetişkin: tartış, kavgaya hazırlan, kazan, kaybet, küs, özür dile (48)"
 status: pending
 approved_by: user        # kullanıcı 20.11.2026 ("kavga: dediklerini yapalım", "şimdi alınabilir"); Project belgeleri 67, 67a, 67b
@@ -18,13 +18,13 @@ outputs:
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_fight_lose_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_sulk_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_apologize_{se,sw,nw,ne}_<NN>.png
-  - art/results/737-*.md
+  - art/results/813-*.md
 created: 2026-11-20
 ---
-# 737 Kavga ve küslük pozları, yetişkin (48)
+# 813 Kavga ve küslük pozları, yetişkin (48)
 
 ## Amaç
-İlişki sisteminin olumsuz tarafı (Project belgeleri 67a §5, 67b). Kavga Sims'teki gibi **toz bulutunda** oynar (bulut: iş 739); bu işin pozları bulutun öncesi ve sonrasıdır. Kod pozu adla arar (`life.json` → `chains[].steps[].pose`); kare gelene kadar en yakın poza düşer.
+İlişki sisteminin olumsuz tarafı (Project belgeleri 67a §5, 67b). Kavga Sims'teki gibi **toz bulutunda** oynar (bulut: iş 814); bu işin pozları bulutun öncesi ve sonrasıdır. Kod pozu adla arar (`life.json` → `chains[].steps[].pose`); kare gelene kadar en yakın poza düşer.
 
 | Anahtar | Nerede oynar |
 |---|---|
@@ -55,7 +55,7 @@ created: 2026-11-20
 018a ölçütleri her klip için; ayak satırı sabit (`fight_lose`'da oturma karesinde kalça satırı rapora yazılır), giysi ve saç durma karesiyle aynı. Klip başına GIF `art/results/` altına.
 
 ## Notlar
-- Ergen itişmesi ayrı poz istemez: yetişkin bulutunun küçük boyu (739) ve bu pozlar kullanılır.
+- Ergen itişmesi ayrı poz istemez: yetişkin bulutunun küçük boyu (814) ve bu pozlar kullanılır.
 - Giysi katmanlarına aktarım 509 yöntemiyle ayrı iştir.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
