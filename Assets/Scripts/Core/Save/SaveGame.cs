@@ -250,6 +250,7 @@ namespace Thatchwick.Core.Save
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
                         feedStock = it.FeedStock, stock = stock, finish = it.FinishId, accent = it.AccentId, toggled = it.Toggled, fill = it.Fill,
                         watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays,
+                        harvests = it.Harvests, staked = it.Staked, withered = it.Withered, witheredMature = it.WitheredMature, offSeasonDays = it.OffSeasonDays,
                         band = it.IsWallMounted ? it.WallBand : -1, layer = it.IsRug ? it.LayerOrder : 0, condition = (int)it.Condition,
                         tarnish = it.TarnishDays, contents = ContentsOf(it), quality = it.Quality, maker = it.Maker, embellished = it.Embellished
                     });
@@ -669,6 +670,7 @@ namespace Thatchwick.Core.Save
                         restored.Toggled = s.toggled;
                         restored.Fill = Math.Max(0, s.fill);
                     restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));
+                    if (def.IsCrop) restored.SetCropState(Math.Max(0, s.harvests), s.staked, s.withered, s.witheredMature, Math.Max(0, s.offSeasonDays));
                     if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(ItemKey.FromStockKey(kv.key).Id)) restored.SetStock(kv.key, kv.value);
                     int band = s.band;
                     if (restored.IsWallMounted && band < 0) band = world.FirstFreeBand(def, pos, s.rotation, restored.Id);

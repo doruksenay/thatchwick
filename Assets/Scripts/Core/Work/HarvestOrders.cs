@@ -15,6 +15,8 @@ namespace Thatchwick.Core.Work
     public sealed class HarvestOrders
     {
         public const string HarvestId = "harvest";
+        /// <summary>Sararmış ekini sökme (59 §3): tek dokunuş ve sürükleme hasatla aynı çalışır.</summary>
+        public const string UprootId = "uproot";
         public const string ScytheTool = "scythe";
         /// <summary>"Tarlayı biç" (bitişik olgun ekinlerin hepsi) bu Çiftçilik seviyesinde açılır; altında tek karo biçilir.</summary>
         public const int FieldLevel = 3;
@@ -52,6 +54,20 @@ namespace Thatchwick.Core.Work
             return null;
         }
 
+        public static InteractionDef UprootOf(ItemDef def)
+        {
+            if (def == null) return null;
+            foreach (var i in def.Interactions) if (i.Id == UprootId) return i;
+            return null;
+        }
+
+        /// <summary>Tek dokunuşla sökülebilir mi: sararmış tarla ekini ve "uproot" etkileşimi var.</summary>
+        public static bool IsWitheredCrop(ItemInstance item) =>
+            item != null && item.IsPlant && item.Def.IsCrop && item.Withered && UprootOf(item.Def) != null;
+
+        /// <summary>Tek dokunuşluk iş: olgunsa hasat, sararmışsa sökme; ikisi de değilse null.</summary>
+        public static string WorkOf(ItemInstance item) => IsRipeCrop(item) ? HarvestId : IsWitheredCrop(item) ? UprootId : null;
+
         /// <summary>Tek dokunuşla biçilebilir mi: olgun tarla ekini ve "harvest" etkileşimi var.</summary>
         public static bool IsRipeCrop(ItemInstance item) =>
             item != null && item.IsPlant && item.Def.IsCrop && item.IsGrown && HarvestOf(item.Def) != null;
@@ -59,11 +75,15 @@ namespace Thatchwick.Core.Work
         public static bool IsScythable(ItemDef def) =>
             def != null && def.CropFamily != null && Array.IndexOf(ScytheFamilies, def.CropFamily) >= 0;
 
-        /// <summary>Başlangıç ekinine bitişik (dört yön, aynı kat) bütün olgun ekinler; başlangıç da içinde, yakından uzağa.</summary>
+        /// <summary>
+        /// Başlangıç ekinine bitişik (dört yön, aynı kat) aynı işi bekleyen bütün ekinler: başlangıç olgunsa olgunlar, sararmışsa
+        /// sararmışlar; başlangıç da içinde, yakından uzağa.
+        /// </summary>
         public static List<ItemInstance> RipeField(WorldState world, ItemInstance start, int max = 400)
         {
             var result = new List<ItemInstance>();
-            if (world == null || !IsRipeCrop(start)) return result;
+            string work = WorkOf(start);
+            if (world == null || work == null) return result;
             var seen = new HashSet<int> { start.Id };
             var queue = new Queue<ItemInstance>();
             queue.Enqueue(start);
@@ -72,7 +92,7 @@ namespace Thatchwick.Core.Work
                 var cur = queue.Dequeue();
                 result.Add(cur);
                 foreach (var n in Neighbours(world, cur.Position))
-                    if (IsRipeCrop(n) && seen.Add(n.Id)) queue.Enqueue(n);
+                    if (WorkOf(n) == work && seen.Add(n.Id)) queue.Enqueue(n);
             }
             return result;
         }
@@ -99,7 +119,7 @@ namespace Thatchwick.Core.Work
         /// </summary>
         public int OrderFrom(Character c, ItemInstance start)
         {
-            if (c == null || !IsRipeCrop(start)) return 0;
+            if (c == null || WorkOf(start) == null) return 0;
             Cancel(c);
             var field = c.Skills.GetLevel(SkillType.Farming) >= FieldLevel ? RipeField(_world, start) : new List<ItemInstance> { start };
             var list = new List<int>();
@@ -114,7 +134,7 @@ namespace Thatchwick.Core.Work
         /// <summary>Sürükleyerek ekleme: emir varsa sonuna eklenir, yoksa bu ekinle başlar. Eklendiyse true.</summary>
         public bool Add(Character c, ItemInstance item)
         {
-            if (c == null || !IsRipeCrop(item)) return false;
+            if (c == null || WorkOf(item) == null) return false;
             if (!_pending.TryGetValue(c.Id, out var list) || list.Count == 0)
             {
                 Cancel(c);
@@ -142,14 +162,15 @@ namespace Thatchwick.Core.Work
         public void OnApplied(Character c, ItemInstance item, InteractionDef interaction)
         {
             if (c == null || item == null || interaction == null || _reaping) return;
-            bool harvest = interaction.Id == HarvestId && item.Def.IsCrop;
+            bool uproot = interaction.Id == UprootId && item.Def.IsCrop;
+            bool harvest = (interaction.Id == HarvestId || uproot) && item.Def.IsCrop;
             if (!harvest)
             {
                 if (JobRunner.IsWork(interaction)) Cancel(c);
                 return;
             }
 
-            int extra = ReapNeighbours(c, item);
+            int extra = uproot ? 0 : ReapNeighbours(c, item);
             if (extra > 0) Reaped?.Invoke(c, extra);
 
             if (!_pending.TryGetValue(c.Id, out var list)) return;
@@ -194,13 +215,13 @@ namespace Thatchwick.Core.Work
                 for (int i = list.Count - 1; i >= 0; i--)
                 {
                     var it = _world.GetItem(list[i]);
-                    if (!IsRipeCrop(it)) { list.RemoveAt(i); if (best > i) best--; continue; }
+                    if (WorkOf(it) == null) { list.RemoveAt(i); if (best > i) best--; continue; }
                     int dist = Math.Abs(it.Position.X - from.X) + Math.Abs(it.Position.Y - from.Y) + (it.Position.Z == from.Z ? 0 : 1000);
                     if (dist < bestDist) { bestDist = dist; best = i; }
                 }
                 if (best < 0) return false;
                 int id = list[best];
-                if (Command(c, Job.UseItem(id, HarvestId))) return true;
+                if (Command(c, Job.UseItem(id, WorkOf(_world.GetItem(id))))) return true;
                 list.RemoveAt(best);   // emredilemedi (ulaşılamıyor, sıra dolu): sıradakini dene
             }
             return false;

@@ -54,6 +54,10 @@ namespace Thatchwick.Core.Content
         // ---- iş etkileri (Adım 13) ----
         /// <summary>Yalnızca büyümesini tamamlamış bitkide yapılabilir (ağaç kesmek).</summary>
         public bool RequiresGrown { get; set; }
+        /// <summary>Yalnızca sararmış ekinde yapılır ("Sök"); ürünü ekinin ailesine göre yan üründür (PlantSystem.WitherYield).</summary>
+        public bool RequiresWithered { get; set; }
+        /// <summary>Ekine sırık diker (sırık isteyen ekinde ürün yarıya inmez).</summary>
+        public bool Stakes { get; set; }
         /// <summary>Başlamak için hane envanterinde olması gereken ve sonunda harcanan kaynak (1 adet).</summary>
         public string ConsumeItem { get; set; }
         public List<ProduceDef> Produce { get; set; } = new List<ProduceDef>();
@@ -191,7 +195,7 @@ namespace Thatchwick.Core.Content
 
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
             || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
-            || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter
+            || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter || Stakes || RequiresWithered
             || RepairMaterial != null || Polish || Embellish || CollectContents || FillDecor || EatContents || HomeAction != null || TreeAction != null || FarmAction != null;
         /// <summary>Açıkça verilen eylem zinciri kimliği (belge 60); boşsa eşleme kuralı bağlar.</summary>
         public string Chain { get; set; }

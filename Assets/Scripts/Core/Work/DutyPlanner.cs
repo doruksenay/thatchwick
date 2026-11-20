@@ -352,10 +352,16 @@ namespace Thatchwick.Core.Work
             foreach (var k in gone) _claims.Remove(k);
         }
 
-        // Tarla işi: olgun ekin hasadı, olgun meyve, susuz ekin.
+        // Tarla işi: olgun ekin hasadı, sararmış ekini sökme, olgun meyve, susuz ekin.
         private static InteractionDef FarmInteraction(ItemInstance it)
         {
             if (it.IsDecor || !it.IsPlant) return null;
+            // Sararmış ekin sulanmaz, hasat edilmez: görevli söker (yan ürün depoya girer).
+            if (it.Withered)
+            {
+                foreach (var i in it.Def.Interactions) if (i.RequiresWithered) return i;
+                return null;
+            }
             foreach (var i in it.Def.Interactions)
             {
                 if (i.RequiresGrown && i.RemovesItem && it.Def.IsCrop && it.IsGrown) return i;

@@ -406,6 +406,7 @@ namespace Thatchwick.Game
                     var pos = _view.TileToWorld(item.Position);
                     var plantArt = IsoArt.Plant(item, out bool staged);
                     var psr = AddItemSprite(item, pos, plantArt != null ? Color.white : color, ViewScale(item, staged), Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
+                    if (item.Withered) psr.color = plantArt != null ? WitheredTint : color * WitheredTint;
                     var sway = SpriteMaterials.Sway;   // rüzgârda sallanma (vertex shader; yoksa düz)
                     if (sway != null) psr.sharedMaterial = sway;
                     // Ağaç gölgesi: ışık sol üstten, gölge taç boyunca sağ alta uzanır; büyüdükçe büyür.
@@ -613,6 +614,9 @@ namespace Thatchwick.Game
         }
 
         internal static float PlantScale(ItemInstance item) => 0.3f + 0.7f * item.GrowthFraction;
+
+        /// <summary>Sararmış ekinin tonu (59 §3): yeni kare gerekmez, eldeki evre karesi sarıya çalar.</summary>
+        internal static readonly Color WitheredTint = new Color(0.96f, 0.80f, 0.40f);
 
         /// <summary>
         /// Görünüm ölçeği: evre görseli varsa (genç ağaç, ekin evresi) küçültme yalnızca evre içinde hafif;

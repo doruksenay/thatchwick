@@ -866,6 +866,55 @@ namespace Thatchwick.Core.Life
             plants.GreenhouseGrowth = Home.GreenhouseGrowth;
             if (_heat != null) plants.TemperatureAt = _heat.TemperatureAt;   // sera ısısı
             AttachYard(plants);
+            // Hasat döngüleri, sararma ve dev ürün (59 §1-3).
+            plants.DefOf = id => id != null && Content.Items.TryGet(id, out var d) ? d : null;
+            plants.FarmingLevel = () => BestSkill(SkillType.Farming);
+            plants.PlantWithered += OnPlantWithered;
+            plants.GiantGrown += OnGiantGrown;
+        }
+
+        private long _witherNoticeDay = -1, _frostNoticeDay = -1;
+
+        // Sararma bildirimi günde bir kez çıkar (mevsim dönünce onlarca ekin birden sararır).
+        private void OnPlantWithered(ItemInstance crop, WitherCause cause)
+        {
+            long day = Clock.DayIndex;
+            if (cause == WitherCause.Season && _witherNoticeDay != day)
+            {
+                _witherNoticeDay = day;
+                Say("Mevsimi geçen ekinler sarardı. Sararan ekin büyümez; sökünce yan ürün verir (tohum, yem, saman). Dokunarak ya da sürükleyerek sök.", NoticeLevel.Warning);
+            }
+            else if (cause == WitherCause.Frost && _frostNoticeDay != day)
+            {
+                _frostNoticeDay = day;
+                Say("Don vurdu: gelişmiş ekinler sarardı, filizler yitti. Sararanları sökünce yan ürün verir.", NoticeLevel.Warning);
+            }
+        }
+
+        private void OnGiantGrown(ItemDef crop, ItemInstance giant)
+        {
+            string name = giant.Def.DisplayName;
+            Say($"Tarlada bir {name.ToLowerInvariant()} büyüdü! Dört karoyu kaplıyor; hasat edince bol ürün ve sergilik bir dev ürün verir.", NoticeLevel.Info);
+            foreach (var m in Household())
+            {
+                m.AddMoodlet(MoodCatalog.GoodHarvest);
+                m.AddChronicle($"Tarlada bir {name.ToLowerInvariant()} büyüdü.");
+            }
+        }
+
+        // Mevsim dönmeden iki gün önce: mevsimi bitecek (ya da donacak) ekin varsa uyarır.
+        private void WarnSeasonEnd(long day)
+        {
+            if (_plants == null) return;
+            int perSeason = Clock.Config.DaysPerSeason;
+            if (perSeason < 3 || (int)(day % perSeason) != perSeason - 2) return;
+            var next = (Season)(((int)Clock.Season + 1) % TimeConfig.SeasonsPerYear);
+            int n = _plants.AtRiskNextSeason(next);
+            if (n <= 0) return;
+            Say(next == Season.Winter
+                ? $"Kışa iki gün var: tarladaki {n} ekin dona dayanmaz. Olgunları biç; gelişmiş ekin donunca sararır, filiz yitip gider."
+                : $"Mevsim iki gün sonra dönüyor: {n} ekinin mevsimi bitiyor ve sararacak. Olgunları biç; sararan ekin yalnız yan ürün verir.",
+                NoticeLevel.Warning);
         }
         public void Attach(HeatSystem heat)
         {
@@ -1415,6 +1464,7 @@ namespace Thatchwick.Core.Life
             var today = Weather.Today(Clock.TotalDays);
             Forage.OnNewDay(Clock.Season, today == WeatherType.Rain || today == WeatherType.Storm);
             _plants?.OnNewDay(today == WeatherType.Rain || today == WeatherType.Storm, today == WeatherType.Storm);
+            WarnSeasonEnd(day);
             var tomorrow = Weather.Tomorrow(Clock.TotalDays);
             if (tomorrow != WeatherType.Clear) Say(Weather.ForecastText(Clock.TotalDays), tomorrow == WeatherType.Storm ? NoticeLevel.Warning : NoticeLevel.Info);
 

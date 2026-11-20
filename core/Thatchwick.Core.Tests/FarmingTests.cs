@@ -488,7 +488,11 @@ namespace Thatchwick.Core.Tests
                 Assert.True(harvest.RemovesItem && harvest.RequiresGrown);
                 var seed = db.Items.All.FirstOrDefault(i => i.PlantsAs == crop.Id);
                 Assert.NotNull(seed);
-                Assert.True(harvest.Produce.Any(pr => pr.ItemId == seed.Id), crop.Id + " tohum vermiyor");
+                // Yeniden veren ekin (devşirme, kes-yine-gelir) olağan hasatta tohum vermez: tohumu sararınca sökülerek alınır (59 §1, §3).
+                if (crop.Cycle == CropCycle.Repeat || crop.Cycle == CropCycle.Cut)
+                    Assert.True(crop.Interactions.Any(i => i.RequiresWithered), crop.Id + " sökülemiyor");
+                else
+                    Assert.True(harvest.Produce.Any(pr => pr.ItemId == seed.Id), crop.Id + " tohum vermiyor");
             }
             Assert.True(db.Items.Get("item.crop_pea").FixesNitrogen);
             Assert.True(db.Items.Get("item.crop_broad_bean").FixesNitrogen);

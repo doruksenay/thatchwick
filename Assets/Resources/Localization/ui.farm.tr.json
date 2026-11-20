@@ -1,0 +1,10 @@
+{
+  "ui.farm.hint.long_press": "İpucu: ekine basılı tut, sulama ve gübre menüsü açılır.",
+  "ui.farm.label.no_stake": ", sırıksız: ürün yarım",
+  "ui.farm.label.ripe_bed": "{crop} (olgun; yatak kalır)",
+  "ui.farm.label.ripe_left": "{crop} (olgun; {n} toplama hakkı)",
+  "ui.farm.label.withered": "{crop} (sarardı: sök, yan ürün verir)",
+  "ui.farm.tool.none": "yok",
+  "ui.farm.uproot.field": "{who}: sararmış tarlayı söküyor ({n} ekin)",
+  "ui.farm.uproot.one": "{who}: sararmış {crop} söküyor"
+}

@@ -236,6 +236,11 @@ namespace Thatchwick.Core.Content
         public bool eatenRaw;                // çiğ yenen ekin (pislikli ham kompost riski)
         public string[] likesFertilizer;     // kalite veren gübreler: ash, bone, hot, seaweed...
         public string[] dislikesFertilizer;  // ürünü azaltan gübreler
+        public string cycle;                 // hasat döngüsü: single (varsayılan), repeat, cut, perennial (59 §1)
+        public int maxHarvests;              // repeat/cut: en çok kaç toplama
+        public float regrowDays;             // toplamadan sonra yeniden olgunlaşma (gün)
+        public bool needsStake;              // sırık ister; sırıksız ürün yarım
+        public string giantAs;               // 2×2 olgun karo bu dev ürün eşyasına dönüşebilir (59 §2)
         public string threshesTo;            // demet: harmanda bu taneye döner
         public int threshPerDay;             // düven: çeki hayvanıyla her sabah dövdüğü demet
         public int harvestRadius;            // hasat tırmığı: güç alınca bu yarıçaptaki olgun ekini her sabah biçer
@@ -390,6 +395,8 @@ namespace Thatchwick.Core.Content
         public string skill;   // isteğe bağlı: Farming/Woodcutting/Cooking/Carpentry
         public float skillXp;
         public bool requiresGrown;
+        public bool requiresWithered;    // yalnızca sararmış ekinde (sök)
+        public bool stake;               // ekine sırık diker
         public string consume;           // harcanan kaynak kimliği (1 adet)
         public ProduceDto[] produce;
         public bool removeItem;
