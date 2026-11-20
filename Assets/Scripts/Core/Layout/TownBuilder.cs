@@ -316,6 +316,7 @@ namespace Thatchwick.Core.Layout
                             foreach (var p in tiles) spec.Tiles.Add(p);
                             spec.Entrances.Add(door);
                             spec.Keep.Add(door);
+                            KeepHome(map, b, spec);
                             Run(furnisher, cat, i < t.InnRooms.Count ? t.InnRooms[i] : null, spec, seed, $"{b.Id}:1:{i}", reports, log);
                         }
                     }
@@ -325,6 +326,7 @@ namespace Thatchwick.Core.Layout
                         for (int y = b.Y0; y <= b.Y1; y++) for (int x = b.X0; x <= b.X1; x++) { var p = new GridPos(x, y, 1); if (map.HasTile(p)) spec.Tiles.Add(p); }
                         spec.Entrances.Add(up.Value.Landing);
                         spec.Keep.Add(up.Value.Landing);
+                        KeepHome(map, b, spec);
                         Run(furnisher, cat, t.Upper, spec, seed, b.Id + ":1", reports, log);
                     }
                 }
@@ -338,6 +340,15 @@ namespace Thatchwick.Core.Layout
                 }
             }
             return reports;
+        }
+
+        /// <summary>Sahibinin üst kattaki evi (HomeSpot) boş ve kapıdan ulaşılır kalır: köylü oraya yürür, eşya o karoya konmaz.</summary>
+        private static void KeepHome(GridMap map, TownBuilding b, RoomSpec spec)
+        {
+            var home = HomeSpot(map, b);
+            if (!home.HasValue || !spec.Tiles.Contains(home.Value)) return;
+            spec.Keep.Add(home.Value);
+            if (!spec.Entrances.Contains(home.Value)) spec.Entrances.Add(home.Value);
         }
 
         internal static void Run(RoomFurnisher f, LayoutCatalog cat, string templateId, RoomSpec spec, int seed, string key, List<FurnishReport> reports, Action<string> log)
