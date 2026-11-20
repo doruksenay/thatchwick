@@ -30,7 +30,13 @@ namespace Thatchwick.Core.Mood
             Bursting = "need_bladder", Accident = "accident", Wet = "wet", Chilled = "chilled", Relieved = "relieved", Ashamed = "ashamed",
             HotBath = "hot_bath", ColdWater = "cold_water", Swim = "swim",
             Catharsis = "catharsis", HarmonyFine = "harmony_fine",
-            HarmonyTidy = "harmony_tidy", HarmonyFineTidy = "harmony_fine_tidy";
+            HarmonyTidy = "harmony_tidy", HarmonyFineTidy = "harmony_fine_tidy",
+            // Beceri sosyal işleri (belge 45).
+            Complimented = "complimented", Unburdened = "unburdened", Hopeful = "hopeful", Persuasive = "persuasive",
+            FestivalSpeech = "festival_speech", Lulled = "lulled", NewSong = "new_song", PlayedTavern = "played_tavern",
+            Composed = "composed", FirstSteps = "first_steps", Understood = "understood", MidwifeCare = "midwife_care",
+            DoctorVisit = "doctor_visit", WellCared = "well_cared", GotLetter = "got_letter", MasterWork = "master_work",
+            Feast = "feast", SkillShowcase = "skill_showcase";
 
         // Kaza yaraları (InjurySystem; süre yaraya göre ayarlanır, buradaki varsayılan).
         public const string InjuredAxe = "injured_axe", InjuredBurn = "injured_burn", InjuredAnimal = "injured_animal",
@@ -91,6 +97,25 @@ namespace Thatchwick.Core.Mood
             c.Register(M(HarmonyTidy, "Uyumlu ve derli toplu ev", 15, 0.5, "Aynı takım ya da tarz, usta bir elle yerleştirilmiş (Ev düzenleme 5+)."));
             c.Register(M(HarmonyFineTidy, "Özenli ve derli toplu ev", 22, 0.5, "Hem aynı takım hem aynı tarz, usta bir elle yerleştirilmiş (Ev düzenleme 5+)."));
             c.Register(M(BrightRoom, "Aydınlık oda", 5, 0.3, "Odada kandil, meşale ya da lamba var."));
+            // Beceri sosyal işleri ve ustalık (belge 45).
+            c.Register(M(Complimented, "İltifat aldı", 6, 0.5, "Biri güzel sözler söyledi."));
+            c.Register(M(Unburdened, "İçini döktü", 8, 1.0, "Derdini anlattı, hafifledi."));
+            c.Register(M(Hopeful, "Umutlu", 6, 2.0, "Görücü çıkıldı; talip bekleniyor."));
+            c.Register(M(Persuasive, "İkna edici", 5, 1.0, "Bugün pazarlıkta dili tatlı: satışlar %5 iyi."));
+            c.Register(M(FestivalSpeech, "Şenlikte söz aldık", 8, 1.0, "Hanenin sözü şenlikte dinlendi."));
+            c.Register(M(Lulled, "Ninniyle uyudu", 8, 0.5, "Ninni dinledi."));
+            m = M(NewSong, "Yeni türkü", 6, 2.0, "Yeni bir türkü öğrendi: müzikte %20 fazla XP."); m.SkillXp[SkillType.Music] = 0.20f; c.Register(m);
+            c.Register(M(PlayedTavern, "Meyhanede çaldı", 6, 1.0, "Meyhanede çaldı, alkış aldı."));
+            c.Register(M(Composed, "Yeni ezgi", 10, 2.0, "Yeni bir ezgi doğdu."));
+            c.Register(M(FirstSteps, "İlk adımlar", 12, 1.0, "Bebek ilk adımlarını attı."));
+            c.Register(M(Understood, "Anlaşıldı", 10, 2.0, "Biri onu gerçekten dinledi."));
+            c.Register(M(MidwifeCare, "Ebe gözetiminde", 8, 6.0, "Doğuma bir ebe bakacak; içi rahat."));
+            c.Register(M(DoctorVisit, "Hekim baktı", 6, 1.0, "Hekim hâlini sordu."));
+            c.Register(M(WellCared, "Bakımlı", 8, 1.0, "Biri ona özenle baktı."));
+            c.Register(M(GotLetter, "Mektup aldı", 6, 1.0, "Bir mektup geldi."));
+            c.Register(M(MasterWork, "Ustalık eseri", 15, 2.0, "Adını taşıyan bir ustalık eseri yaptı."));
+            c.Register(M(Feast, "Ziyafet", 12, 1.0, "Hane birlikte bol bir sofraya oturdu."));
+            c.Register(M(SkillShowcase, "Ustayı seyretti", 5, 0.5, "Bir ustanın işini seyretti."));
             m = M(GoodHarvest, "Bereketli hasat", 10, 1.0, "Ürün topladı: çiftçilikte %20 fazla XP."); m.SkillXp[SkillType.Farming] = 0.20f; c.Register(m);
             m = M(Proud, "Gururlu", 15, 1.0, "Kendi elleriyle bir eşya yaptı: marangozluk %10 hızlı."); m.SkillSpeed[SkillType.Carpentry] = 0.10f; c.Register(m);
             c.Register(M(PetLove, "Hayvan dostu", 10, 0.5, "Evcil hayvanıyla oynadı."));

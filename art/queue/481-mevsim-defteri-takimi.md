@@ -1,7 +1,8 @@
 ---
 id: "481"
 title: "Mevsim Defteri takımı: dört mevsimin ödül süsü (4)"
-status: pending
+status: review
+claimed_at: 2026-11-20T11:06Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("tüm kod işlerini hallet geriye sadece asset üretme ve test etme kalsın"), Project belgesi 46 §6.3
 priority: 40
 family: esya

@@ -1,7 +1,7 @@
 ---
 id: "379"
 title: Köpekler (375'in devamı, zemin lekesiz)
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:45Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 1: eksikler için iş)
 family: hayvan
@@ -38,3 +38,4 @@ Tarif **375 ile aynı** (106 tarifi, `fit --family hayvan`, teslim kuralı). Far
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

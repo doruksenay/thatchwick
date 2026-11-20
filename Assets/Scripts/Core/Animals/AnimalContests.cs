@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
@@ -34,6 +35,8 @@ namespace Thatchwick.Core.Animals
         public string LegendTitle;
         /// <summary>Kısa sonuç metni (sonuç kartı ve kronik).</summary>
         public string Summary;
+        /// <summary>Kroniğe yazılan anahtarlı özet (SavedText); ekranda Summary gösterilir.</summary>
+        public string SavedSummary;
     }
 
     /// <summary>
@@ -81,7 +84,28 @@ namespace Thatchwick.Core.Animals
         }
 
         /// <summary>Katılımcının taban puanı.</summary>
-        public static double Score(ContestKind kind, Animal a, Character handler)
+        /// <summary>Beceri ekleri (belge 45): Hayvancılık 9 yarışa hazırla, 10 efsane denemesi; Binicilik 9; yarış eyeri. null ise 0.</summary>
+        public static Func<ContestKind, Animal, Character, double> ExtraScore { get; set; }
+        /// <summary>Yarışma koştuktan sonra (hazırlık bonusu harcanır).</summary>
+        public static Action<Animal> AfterRun { get; set; }
+
+        /// <summary>Beceri eki: yarışa hazırlanmış (+8), Hayvancılık 10 (+5), Binicilik 9 yarışta (+10).</summary>
+        public static double SkillBonus(ContestKind kind, Animal a, Character handler, bool prepared, bool raceSaddle)
+        {
+            double b = prepared ? 8 : 0;
+            if (handler == null) return b;
+            if (handler.Skills.GetLevel(SkillType.AnimalHusbandry) >= 10) b += 5;
+            if (kind == ContestKind.HorseRace)
+            {
+                if (handler.Skills.GetLevel(SkillType.Riding) >= 9) b += 10;
+                if (raceSaddle) b += 6;
+            }
+            return b;
+        }
+
+        public static double Score(ContestKind kind, Animal a, Character handler) => BaseScore(kind, a, handler) + (ExtraScore != null ? ExtraScore(kind, a, handler) : 0);
+
+        public static double BaseScore(ContestKind kind, Animal a, Character handler)
         {
             double lineage = Math.Min((int)a.Lineage, (int)AnimalLineage.Legendary);
             switch (kind)
@@ -152,6 +176,7 @@ namespace Thatchwick.Core.Animals
             double chance = EstimateWinChance(kind, a, handler, year, out var rivals);
             double spread = a.Lineage == AnimalLineage.Legendary ? LegendRngSpread : RngSpread;
             int place = Place(rng, Score(kind, a, handler), spread, rivals);
+            AfterRun?.Invoke(a);
             var r = new ContestResult { Kind = kind, Place = place, Entrants = Rivals + 1, WinChance = chance };
             if (place <= 3)
             {
@@ -170,6 +195,10 @@ namespace Thatchwick.Core.Animals
             r.Summary = place == 1
                 ? $"{a.Name}, {what} kazandı!" + (r.LegendTitle != null ? $" Artık bir efsane: {r.LegendTitle}." : "")
                 : $"{a.Name}, {what} {place}. bitirdi.";
+            string kindKey = "core.contest." + kind;
+            r.SavedSummary = place != 1 ? SavedText.Encode("core.chronicle.contest_placed", ("name", a.Name), ("kind", SavedText.Key(kindKey)), ("place", place))
+                : r.LegendTitle != null ? SavedText.Encode("core.chronicle.contest_won_legend", ("name", a.Name), ("kind", SavedText.Key(kindKey)), ("title", r.LegendTitle))
+                : SavedText.Encode("core.chronicle.contest_won", ("name", a.Name), ("kind", SavedText.Key(kindKey)));
             return r;
         }
 
@@ -255,7 +284,7 @@ namespace Thatchwick.Core.Animals
                 var r = a != null && h != null ? AnimalContests.Run(_rng, e.Kind, a, h, year, main) : null;
                 if (r == null) continue;
                 if (r.PrizeAkce > 0) house?.AddAkce(r.PrizeAkce);
-                h.AddChronicle(r.Summary);
+                h.AddChronicle(r.SavedSummary ?? r.Summary);
                 results.Add(r);
                 Finished?.Invoke(r, a, h);
             }

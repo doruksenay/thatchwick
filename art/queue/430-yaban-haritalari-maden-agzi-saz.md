@@ -1,7 +1,7 @@
 ---
 id: "430"
 title: "Yaban haritaları: maden ağzı ve saz kümesi (2)"
-status: review
+status: accepted
 claimed_at: 2026-11-19T12:28Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 19.11.2026 "diğer mapleri de üretmeye başla"
 priority: 20
@@ -37,3 +37,4 @@ Yöntem 301 ile aynı; 2x2 kılavuz `--n 2 --axis both` (tuval 144x112). Dönem:
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

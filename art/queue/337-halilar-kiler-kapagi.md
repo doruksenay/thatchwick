@@ -1,7 +1,7 @@
 ---
 id: "337"
 title: Halılar (6) ve kiler kapağı
-status: review
+status: accepted
 claimed_at: 2026-11-18T09:29Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -36,3 +36,4 @@ Ayrıntılı yöntem **301'deki ile aynıdır** (`create_map_object` stil eşlem
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

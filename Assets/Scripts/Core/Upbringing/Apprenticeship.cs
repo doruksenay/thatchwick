@@ -148,7 +148,7 @@ namespace Thatchwick.Core.Upbringing
     /// </summary>
     public sealed class FamilyRecipeBook
     {
-        public const int WriteLiteracy = 3, ReadLiteracy = 2;
+        public const int WriteLiteracy = 3, ReadLiteracy = 2, TeachingWriteLevel = 8;
         public const string BlankBookItem = "item.blank_book";
 
         private readonly Population _population;
@@ -240,6 +240,10 @@ namespace Thatchwick.Core.Upbringing
             if (WriteBlocker(writer, r, hasBlankBook) != null) return false;
             r.Written = true;
             writer.GainSkillXp(SkillType.Literacy, 10);
+            // Öğretmenlik 8 (belge 45): öğretici yazım; hanede okuyabilen herkes tarifi hemen öğrenir.
+            if (writer.Skills.GetLevel(SkillType.Teaching) >= TeachingWriteLevel)
+                foreach (var m in _population.Members)
+                    if (m != writer && !m.IsDead && !m.IsVillager && TeachBlocker(null, m, r) == null) Teach(null, m, r);
             return true;
         }
 

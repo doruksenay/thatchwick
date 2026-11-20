@@ -1,7 +1,7 @@
 ---
 id: "426k"
 title: "Üzüm asması evreleri, üzüm teknesi ve bağ ürünleri ikonları"
-status: review
+status: accepted
 claimed_at: 2026-11-19T12:23Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 32-8.3 (kullanıcı 18.11.2026)
 family: esya
@@ -48,3 +48,4 @@ Bağ zinciri (belge 32-8.3): asma → üzüm → teknede ayakla ezme → şıra 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

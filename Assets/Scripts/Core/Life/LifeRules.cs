@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
@@ -12,6 +13,9 @@ namespace Thatchwick.Core.Life
     /// </summary>
     public static class LifeRules
     {
+        /// <summary>Ebeveynlik ustalığı: çocuk büyürken ikinci huyunu usta ebeveynden alır (belge 45, 10. seviye).</summary>
+        public const int ParentingMasterLevel = 10;
+
         public const int BranchLevelFirst = 5;
         public const int BranchLevelSecond = 10;
 
@@ -99,6 +103,7 @@ namespace Thatchwick.Core.Life
             string grown = MoodBehavior.UpbringingTrait(c.UpbringingAverage, c.UpbringingDays);
             var traits = new List<string>(c.TraitIds);
             string note = null;
+            string saved = null;   // kroniğe yazılan anahtarlı hâl (SavedText); bildirim metni note
 
             if (grown != null && db.Traits.TryGet(grown, out var grownDef))
             {
@@ -112,18 +117,26 @@ namespace Thatchwick.Core.Life
                     traits.Remove(conflict);
                     string lineage = db.Traits.TryGet(conflict, out var cd) ? cd.DisplayName : conflict;
                     note = $"{lineage} bir soydan geldi ama {(happy ? "mutlu" : "zor")} bir çocukluk geçirdi.";
+                    saved = SavedText.Encode(happy ? "core.chronicle.childhood_conflict_happy" : "core.chronicle.childhood_conflict_hard", ("trait", SavedText.Content(conflict)));
                     c.LifespanDays -= LifespanBonus(db, new[] { conflict });
                 }
                 else if (traits.Count >= Character.MaxTraits) return null;
-                else note = happy ? $"Mutlu bir çocukluk geçirdi: {grownDef.DisplayName} büyüdü." : $"Zor bir çocukluk geçirdi: {grownDef.DisplayName} büyüdü.";
+                else
+                {
+                    note = happy ? $"Mutlu bir çocukluk geçirdi: {grownDef.DisplayName} büyüdü." : $"Zor bir çocukluk geçirdi: {grownDef.DisplayName} büyüdü.";
+                    saved = SavedText.Encode(happy ? "core.chronicle.childhood_happy" : "core.chronicle.childhood_hard", ("trait", SavedText.Content(grown)));
+                }
                 traits.Add(grown);
                 c.LifespanDays += LifespanBonus(db, new[] { grown });
             }
             else
             {
                 if (traits.Count >= Character.MaxTraits) return null;
-                // Ebeveyn huyu: önce henüz huyunu vermemiş ebeveynden.
+                // Ebeveyn huyu: önce henüz huyunu vermemiş ebeveynden. Usta ebeveyn (Ebeveynlik 10) kendi huyunu aktarır (belge 45).
                 string pick = null;
+                foreach (var parent in new[] { mother, father })
+                    if (pick == null && parent != null && parent.Skills.GetLevel(SkillType.Parenting) >= ParentingMasterLevel)
+                        pick = PickParentTrait(db, rng, parent, traits);
                 foreach (var parent in new[] { mother, father })
                 {
                     if (parent == null) continue;
@@ -139,10 +152,11 @@ namespace Thatchwick.Core.Life
                 traits.Add(pick);
                 c.LifespanDays += LifespanBonus(db, new[] { pick });
                 note = db.Traits.TryGet(pick, out var pd) ? $"Ailesinden bir huy aldı: {pd.DisplayName}." : null;
+                saved = note != null ? SavedText.Encode("core.chronicle.trait_inherited", ("trait", SavedText.Content(pick))) : null;
             }
 
             c.SetTraits(traits);
-            if (note != null) c.AddChronicle(note);
+            if (note != null) c.AddChronicle(saved ?? note);
             return note;
         }
 
@@ -210,7 +224,7 @@ namespace Thatchwick.Core.Life
             string note = want == Aptitude.Major
                 ? $"Çocukluktan beri {SkillNames.Name(best)} ile büyüdü: artık çok yatkın."
                 : $"Çocukken çok {SkillNames.Name(best).ToLowerInvariant()} işi yaptı: yatkınlık kazandı.";
-            c.AddChronicle(note);
+            c.AddChronicle(SavedText.Encode(want == Aptitude.Major ? "core.chronicle.aptitude_major" : "core.chronicle.aptitude_minor", ("skill", SavedText.Skill(best))));
             return note;
         }
 

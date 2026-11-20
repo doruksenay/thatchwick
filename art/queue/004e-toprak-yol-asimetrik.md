@@ -1,7 +1,7 @@
 ---
 id: "004e"
 title: Toprak yol - çim geçiş seti, asimetrik ve çeşitli (004c yerine)
-status: review
+status: accepted
 claimed_at: 2026-11-19T12:15Z
 approved_by: user        # kullanıcı: "gerekirse yeni asset çizdir" (18.11); 004c "simetrik durmamalı" diye reddedildi (19.11)
 family: zemin
@@ -50,3 +50,4 @@ simetrik ve yapay görünüyor. Stardew'da yol kenarı her parçada farklı: dü
   içe göre düzelten bir `style.py fit` adımı dene, yeniden boyama yapma.
 - Kod oturumu sonuçla 12 karo uzunluğunda kıvrılan yol önizlemesi yapıp kullanıcıya gösterir (dual-grid; çeşit seçimi
   konuma göre gürültüyle, iki kenar bağımsız).
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

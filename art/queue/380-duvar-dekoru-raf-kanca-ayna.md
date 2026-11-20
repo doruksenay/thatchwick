@@ -1,7 +1,7 @@
 ---
 id: "380"
 title: Duvar dekoru: kancalı çıta, tabak rafı, uzun raf, kaşıklık, çelenk, nazarlık, tunç ayna
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:49Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
@@ -51,3 +51,4 @@ Yöntem, ortak ayarlar, duvar kılavuzu, ikinci deneme kuralı, teslim (`cp -n`,
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

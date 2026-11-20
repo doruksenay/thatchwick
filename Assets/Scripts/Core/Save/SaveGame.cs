@@ -279,7 +279,9 @@ namespace Thatchwick.Core.Save
                     badges = new List<string>(account.EarnedBadges).ToArray(),
                     counters = counters.ToArray(),
                     workDay = account.WorkDay,
-                    workToday = account.WorkXpTodayRaw
+                    workToday = account.WorkXpTodayRaw,
+                    diamonds = account.Diamonds,
+                    diamondsSeeded = true
                 };
             }
 
@@ -667,6 +669,7 @@ namespace Thatchwick.Core.Save
                 var counters = new List<KeyValuePair<string, int>>();
                 if (data.account.counters != null) foreach (var kv in data.account.counters) if (kv != null) counters.Add(new KeyValuePair<string, int>(kv.key, kv.value));
                 result.Account.Restore(data.account.xp, data.account.firsts, data.account.badges, counters, data.account.workDay, data.account.workToday);
+                result.Account.RestoreDiamonds(data.account.diamonds, data.account.diamondsSeeded);
             }
 
             result.Life = data.life;

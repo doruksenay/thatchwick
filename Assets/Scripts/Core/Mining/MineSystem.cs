@@ -67,6 +67,11 @@ namespace Thatchwick.Core.Mining
         public event Action<Character, string> RelicFound;
         /// <summary>Gün başında yeni çatırdayan karolar (yer, adet).</summary>
         public event Action<MineMap, int> Creaked;
+        /// <summary>Damarı dinle (Madencilik 9): çatırdayan karo bir gün geç çöker. null ise yok.</summary>
+        public Func<bool> ListenVein { get; set; }
+        /// <summary>Çatırtı şansı çarpanı (usta madencinin feneri ×0,5, maden mumu ×0,8); null ise 1.</summary>
+        public Func<double> CreakFactor { get; set; }
+        private readonly HashSet<(MineMap, int, int)> _graced = new HashSet<(MineMap, int, int)>();
         /// <summary>Göçük (yer, çöken karolar).</summary>
         public event Action<MineMap, List<(int x, int y)>> CaveIn;
         /// <summary>Göçük altında kalan karakter (yara: oyun katmanı yara sistemine verir; ölüm yok).</summary>
@@ -461,15 +466,18 @@ namespace Thatchwick.Core.Mining
                 foreach (var (x, y, t) in m.All())
                 {
                     if (!t.Creaking) continue;
+                    if (!m.IsLoose(x, y, dist)) { t.Creaking = false; _graced.Remove((m, x, y)); continue; }
+                    // Damarı dinle (Madencilik 9, belge 45): usta çatırtıyı bir gün önce duyar.
+                    if (ListenVein != null && ListenVein() && _graced.Add((m, x, y))) continue;
                     t.Creaking = false;
-                    if (!m.IsLoose(x, y, dist)) continue;
+                    _graced.Remove((m, x, y));
                     Collapse(m, x, y, collapsed);
                 }
                 if (collapsed.Count > 0) CaveIn?.Invoke(m, collapsed);
 
                 int creaks = 0;
                 foreach (var (x, y, t) in m.All())
-                    if (m.IsLoose(x, y, dist) && _rng.NextDouble() < (table?.CreakChance ?? 0.1)) { t.Creaking = true; creaks++; }
+                    if (!t.Creaking && m.IsLoose(x, y, dist) && _rng.NextDouble() < (table?.CreakChance ?? 0.1) * (CreakFactor != null ? CreakFactor() : 1.0)) { t.Creaking = true; creaks++; }
                 if (creaks > 0) Creaked?.Invoke(m, creaks);
             }
         }

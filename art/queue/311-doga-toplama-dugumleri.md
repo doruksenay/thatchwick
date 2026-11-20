@@ -1,7 +1,7 @@
 ---
 id: "311"
 title: Toplama düğümleri (çalı, mantar, fındık, ot, yabani kovan, kuru dal)
-status: review
+status: accepted
 claimed_at: 2026-11-18T09:18Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -46,3 +46,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 ## Notlar
 - Kış düğümü yok (`forageSeasons`'ta Winter bulunmaz, kuru dal hariç).
 - 2026-11-18 (tamir oturumu, 0 gen): stil kapısı bitki ailesinde yanlış ayarlıydı (palette 3 yeşil, aile kilidi kurulmamış). Reddedilen adayların doygunluk düzeltilmiş hâlleri `art/results/311-duzeltme/`, karşılaştırma `art/results/311-duzeltme-once-sonra.png`, ayrıntı `art/results/bitki-duzeltme.md`. Durum değişmedi; kabul/red kararı kullanıcının.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

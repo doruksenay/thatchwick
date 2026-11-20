@@ -174,6 +174,15 @@ namespace Thatchwick.Core.Life
             return arrived;
         }
 
+        /// <summary>Adlı köylünün rolü; adlı köylü değilse null.</summary>
+        public string RoleOf(Character c)
+        {
+            if (c == null) return null;
+            foreach (var s in _states.Values)
+                if (s.CharacterId == c.Id && _content.Villagers.TryGet(s.DefId, out var d)) return d.Role;
+            return null;
+        }
+
         public bool HasRole(string role)
         {
             foreach (var s in _states.Values)

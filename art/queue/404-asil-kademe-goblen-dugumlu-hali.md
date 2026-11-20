@@ -1,7 +1,7 @@
 ---
 id: "404"
 title: "Asil ve Tüccar kademe: goblenler, sancak, düğümlü halılar, kanopili yataklar, taht, oymalı sandık (10)"
-status: review
+status: accepted
 claimed_at: 2026-11-18T19:17Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 27 §5.4, §7 (18.11.2026)
 priority: 20
@@ -57,3 +57,4 @@ Duvar eşyaları **306 ile aynı** (`sw_ne`; 3 kenarlık goblen 380'deki geniş 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

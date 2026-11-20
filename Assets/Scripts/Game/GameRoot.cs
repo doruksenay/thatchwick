@@ -53,6 +53,8 @@ namespace Thatchwick.Game
             public Vector3 LastPos;
             // Animasyon partisi 1: son adım (toz için), iş vuruşu ve işin simgesi (parçacık türü).
             public int LastStep;
+            public GridPos LastTile;      // adım sesi: kapı eşiği geçişi için önceki karo
+            public bool HasLastTile;
             public float LastBeat;
             public object WorkJob;
             public string WorkIcon;
@@ -189,6 +191,7 @@ namespace Thatchwick.Game
         private Population _population;
         private AppearanceCatalog _appearanceCatalog;
         private CharacterCreator _creator;
+        private CharacterCreator _mirror;   // Ayna: açıkken oyun durur, diğer paneller çizilmez
         private Household _household;
         private BuildMode _buildMode;
         private WallView _walls;
@@ -207,6 +210,58 @@ namespace Thatchwick.Game
         private VivariumView _vivView;      // cam bahçe yakın görünümü (belge 47)
         private readonly FishingView _fishingView = new FishingView();   // balık tutma mini oyunu (belge 50)
         private double _fishOrderUntil = -1;   // oyuncunun kendi verdiği balık/kavanoz işi bu güne dek geçerli (mini oyun)
+
+        private Thatchwick.Core.Life.TrespassService _trespass;
+        private float _trespassTick;
+        private readonly Dictionary<int, int> _usingItem = new Dictionary<int, int>();
+
+        /// <summary>
+        /// Başkasının evindeki eşyayı kullanma (kullanıcı 20.11.2026): hane üyesi köylünün yatağında uyurken ya da evindeki
+        /// eşyayı kullanırken ev sahibi içerideyse ya da gelirse söylenir ya da kaldırır (Core.Life.TrespassService).
+        /// Kaldırılan dışarı çıkar. Yarım saniyede bir bakılır.
+        /// </summary>
+        private void UpdateTrespass(float dt)
+        {
+            _trespassTick -= dt;
+            if (_trespassTick > 0f || _life == null || _family == null) return;
+            _trespassTick = 0.5f;
+            if (_trespass == null)
+                _trespass = new Thatchwick.Core.Life.TrespassService(_world.Map)
+                {
+                    HomeOf = c => _life.Homes.HomeOf(c),
+                    Affection = (a, b) => _family.Affection(a, b),
+                    AddAffection = (a, b, d) => _family.SetAffection(a, b, _family.Affection(a, b) + d),
+                };
+            var villagers = new List<Character>();
+            foreach (var a in _actors) if (a.Character.IsVillager && !a.Character.IsDead) villagers.Add(a.Character);
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (c.IsVillager || c.IsDead) continue;
+                var job = a.Runner.Queue.Current;
+                int itemId = job != null && job.Kind == JobKind.UseItem ? job.ItemId : 0;
+                if (_usingItem.TryGetValue(c.Id, out var prev) && prev != itemId) { _trespass.Done(c, prev); _usingItem.Remove(c.Id); }
+                if (itemId == 0) continue;
+                _usingItem[c.Id] = itemId;
+                var item = _world.GetItem(itemId);
+                if (item == null) continue;
+                var inter = item.Def.Interactions.Find(i => i.Id == job.InteractionId);
+                var r = _trespass.Check(c, item, inter, villagers);
+                if (r == null) continue;
+                string line = Thatchwick.Core.Life.VivText.Resolve(GameLocalization.Current, r.Line, id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id);
+                ShowMessage(line, 5f);
+                if (!r.KickedOut) continue;
+                a.Runner.Cancel();
+                var b = _trespass.BuildingAt(item.Position);
+                if (b != null)
+                {
+                    var door = b.DoorInside;
+                    var outside = char.ToUpperInvariant(b.Door) == 'N' ? new GridPos(door.X, door.Y - 1) : char.ToUpperInvariant(b.Door) == 'S' ? new GridPos(door.X, door.Y + 1)
+                                : char.ToUpperInvariant(b.Door) == 'W' ? new GridPos(door.X - 1, door.Y) : new GridPos(door.X + 1, door.Y);
+                    a.Runner.Command(Job.MoveTo(outside));
+                }
+            }
+        }
 
         private float _ambTick;
         private string _ambBed = "-", _ambWeather = "-", _ambMusic = "-";
@@ -265,6 +320,58 @@ namespace Thatchwick.Game
         private Dynasty _dynasty = new Dynasty();
         private Actor _selected;          // haritaya dokununca komut alan kişi (aile içi iş verme)
         private bool _dynastyEnded;
+        // Kritik an (doğum, ölüm): oyuncu olayı kaçırmasın diye hız kısa süre 1x'e iner (GameClock.EnterCriticalMoment).
+        private const float CriticalMomentSeconds = 8f;
+        private GameClock _criticalClock;      // kilidi tutan saat (yeni oyunda saat değişirse eski kilit bırakılmaz)
+        private float _criticalUntil;
+
+        // ---- Ayna (belge 01 ve 14): görünüş ve ad değiştirme; bedeli elmas, ergenliğe geçişte bir kez ücretsiz ----
+        private void OpenMirror(Character c)
+        {
+            if (c == null || c.IsDead || _mirror != null) return;
+            _mirror = new CharacterCreator(_appearanceCatalog, c, seed: 11 + c.Id)
+            {
+                Content = _content,
+                DiamondBalance = () => _account != null ? _account.Diamonds : 0,
+                HasHouseMirror = () => Thatchwick.Core.Build.DecorSystem.HasMirror(_world)
+            };
+        }
+
+        private void UpdateMirror()
+        {
+            if (_mirror == null || (!_mirror.Finished && !_mirror.Cancelled)) return;
+            var m = _mirror;
+            _mirror = null;
+            if (m.Finished)
+            {
+                var c = m.MirrorTarget;
+                bool ok = Thatchwick.Core.Customization.MirrorRules.Apply(c, m.Draft.Appearance, m.Draft.Name, _appearanceCatalog,
+                    cost => _account != null && _account.TrySpendDiamonds(cost), Thatchwick.Core.Build.DecorSystem.HasMirror(_world), out var error);
+                if (ok)
+                {
+                    var actor = _actors.Find(a => a.Character == c);
+                    if (actor != null) { actor.LookDay = -1; actor.LastSprite = null; }
+                    ShowMessage(GameLocalization.T("ui.mirror.done", ("name", c.Name)));
+                    SaveNow(quiet: true);
+                }
+                else ShowMessage(GameLocalization.T("ui.mirror.failed", ("reason", error)));
+            }
+            m.Release();
+        }
+
+        private void HoldCriticalMoment()
+        {
+            if (_clock == null) return;
+            if (_criticalClock != _clock) { _clock.EnterCriticalMoment(); _criticalClock = _clock; }
+            _criticalUntil = Time.unscaledTime + CriticalMomentSeconds;
+        }
+
+        private void ReleaseCriticalMoment()
+        {
+            if (_criticalClock == null || Time.unscaledTime < _criticalUntil) return;
+            if (_criticalClock.IsCriticalMoment) _criticalClock.ExitCriticalMoment();
+            _criticalClock = null;
+        }
         private int _stallId;
         private PlacementDebugOverlay _placementDebug;            // F3, yalnızca editör ve geliştirme derlemesi (yerleşim sistemi, Aşama A)
         private Thatchwick.Core.Layout.LayoutPlan _layoutPlan;   // şehir planı (arsalar, oda türleri): doğrulayıcı ve debug katmanı
@@ -334,7 +441,7 @@ namespace Thatchwick.Game
         /// <summary>Yeniden kurulan GameRoot bu kaydı yükler (Yükle düğmesi / Devam et).</summary>
         public static SaveData PendingLoad;
         private long _lastSavedDay = -1;
-        private static string SavePath => System.IO.Path.Combine(Application.persistentDataPath, "thatchwick_save.json");
+        private static string SavePath => SlotPath(SaveSlot);   // etkin kayıt yuvası (GameRootMenu.cs)
         // Menüde "devam et"/"Yükle" yalnızca okunabilir bir kayıt varken görünür; Awake'te ve her başarılı kayıttan sonra güncellenir.
         private bool _hasSave;
 
@@ -357,11 +464,10 @@ namespace Thatchwick.Game
         }
 
         private const string AdultPackPref = "pack_adult";
-        private static bool AdultPackAllowed => !Application.isMobilePlatform;
 
         private void ToggleAdultPack()
         {
-            if (!AdultPackAllowed) return;
+            if (!AdultPackAvailable) return;
             bool adult = Thatchwick.Core.Content.ContentPacks.Adult;
             Thatchwick.Core.Content.ContentPacks.Adult = !adult;
             PlayerPrefs.SetInt(AdultPackPref, adult ? 0 : 1);
@@ -404,6 +510,7 @@ namespace Thatchwick.Game
         {
             var panels = new List<Ui.HudBar.Item>
             {
+                new Ui.HudBar.Item { Text = () => T("ui.menu.settings"), On = () => _settingsOpen, Click = () => _settingsOpen = !_settingsOpen },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.build"), On = () => _buildMode.Active, Click = ToggleBuild },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.market"), On = () => _marketPanel.Active, Click = ToggleMarket },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.storage"), On = () => _storagePanel.Active, Click = () => _storagePanel.Toggle() },
@@ -425,14 +532,31 @@ namespace Thatchwick.Game
                     Text = () => T("ui.hud.akce", ("amount", HudAkce)), Width = 80f,
                     Tint = () => Time.unscaledTime < _akceFlashUntil ? (_akceFlashUp ? new Color(0.25f, 0.5f, 0.2f) : new Color(0.7f, 0.2f, 0.15f)) : (Color?)null
                 },
+                new Ui.HudBar.Item { Text = () => T("ui.diamonds.balance", ("count", _account != null ? _account.Diamonds : 0)), Tooltip = () => T("ui.diamonds.tip") },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)), Tooltip = HudReputationTip, Width = 110f },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.labels"), On = () => _labelsAll, Click = () => _labelsAll = !_labelsAll },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.save"), Click = () => SaveNow(quiet: false) },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.adult_pack"), On = () => Thatchwick.Core.Content.ContentPacks.Adult, Click = ToggleAdultPack, Visible = () => AdultPackAllowed },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.adult_pack"), On = () => Thatchwick.Core.Content.ContentPacks.Adult, Click = ToggleAdultPack, Visible = () => AdultPackAvailable },
                 new Ui.HudBar.Item { Text = () => T(_hudExpanded ? "ui.hud.detail_open" : "ui.hud.detail_closed"), On = () => _hudExpanded, Click = () => _hudExpanded = !_hudExpanded },
             };
             return new Ui.HudBar(host, HudDateText, HudStatusText, () => Time.unscaledTime < _messageUntil ? _message : null,
                 GameClock.AllowedSpeeds, () => _clock.RequestedSpeed, speed => _clock.SetSpeed(speed), panels, info);
+        }
+
+        /// <summary>
+        /// +18 paketi bu derlemede var mı (karar 20.11.2026): yalnızca bilgisayar (Steam) derlemesinde; Android ve iOS'ta
+        /// hiç sunulmaz, ayarı da görünmez. Steamworks bağlanınca buraya ek paket (DLC) sahipliği denetimi de eklenir.
+        /// </summary>
+        private static bool AdultPackAvailable
+        {
+            get
+            {
+#if UNITY_ANDROID || UNITY_IOS
+                return false;
+#else
+                return !Application.isMobilePlatform;
+#endif
+            }
         }
 
         private void Awake()
@@ -440,10 +564,13 @@ namespace Thatchwick.Game
             // Kare hızı açıkça sabit: mobilde 30 (pil), masaüstünde 60. Oyun hızı kareden bağımsızdır (Time.deltaTime).
             Application.targetFrameRate = Application.isMobilePlatform ? 30 : 60;
             // +18 paketi yalnızca masaüstünde (Steam) açılabilir; mobilde hiç yoktur (karar 20.11.2026, belge 49).
-            Thatchwick.Core.Content.ContentPacks.Adult = AdultPackAllowed && PlayerPrefs.GetInt(AdultPackPref, 0) == 1;   // +18 paketi (şarap, bahis)
+            Thatchwick.Core.Content.ContentPacks.AdultAllowed = AdultPackAvailable;
+            Thatchwick.Core.Content.ContentPacks.Adult = AdultPackAvailable && PlayerPrefs.GetInt(AdultPackPref, 0) == 1;   // +18 paketi (şarap, bahis)
             WaitPendingWrite();   // önceki sahnenin arka plan kaydı bitmeden kayıt okunmasın
             IsoArt.Reset();
             _content = ContentLoader.Load(out var contentErrors);
+            _content.Clothing = ContentLoader.LoadClothing(_content, out var clothingErrors);
+            contentErrors.AddRange(clothingErrors);
             _layouts = ContentLoader.LoadLayouts(_content, out var layoutErrors);   // oda/bina şablonları (belge 44)
             foreach (var e in layoutErrors) Debug.LogWarning($"Yerleşim şablonu: {e}");
             foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");
@@ -603,6 +730,7 @@ namespace Thatchwick.Game
             if (loaded != null) _market.RestoreState(loaded.MarketDemand, _clock.TotalDays, _clock.Season, loaded.MarketTakenOffers);
             else _market.Tick(0, _clock.TotalDays, _clock.Season);
             _market.OfferAccepted += o => _account.Record(o.IsContract ? "contract" : "barter", _clock.DayIndex);
+            _market.OfferAccepted += o => { if (o.Reputation > 0 && _life != null) _life.Upbringing.Reputation.Add(o.Reputation, o.Label ?? "sipariş"); };
             _marketPanel = new MarketPanel(_market, _household, _storage, _content, _world,
                 () => _player?.Character, () => _player?.Runner, _stallId);
             _plants.PlantDied += (def, pos) =>
@@ -654,11 +782,15 @@ namespace Thatchwick.Game
                 AccountXp = () => _account.Xp
             };
             _life.Home.ServantWalks = true;   // hizmetkâr sabahları eve yürür, işleri kendisi yapar (belge 45)
+            // Giyim uyumu (belge 48 §12.3): köylünün yorumu başında konuşma balonu olarak çıkar.
+            _life.ClothingRemark += (villager, target, key) => Say(villager, GameLocalization.T(key));
             // Kilitler beceride (karar 28-4): hanenin o becerideki en iyi seviyesi.
             _life.SkillLocks = true;
             _buildService.SkillLevel = _life.BestSkill;
             _animals.SkillLevel = _life.BestSkill;
             _life.Attach(_family);
+            _market.SpecialContracts = _life.MasterOrders;   // pazar günü usta siparişi (belge 45)
+            _marketPanel.SouthTrip = _life.SouthTrip;        // Güney Yamaçları seferi (Arabacılık 6)
             _life.Attach(_plants);
             _life.Attach(_heat);
             _life.Attach(_market);
@@ -668,7 +800,7 @@ namespace Thatchwick.Game
             _life.Attach(_storage);   // sandığa demir kuşak: depo (belge 45)
             _life.Attach(_animals);   // attan düşen binici yaralanır, at ürkünce bildirim (Project belgesi 29)
             // Kurt savunması dünyadan okunur: çitli ağıl ve açık havada yanan ateş (belge 31-4).
-            if (_life.Wolves != null) { _life.Wolves.Fenced = () => WildWorld.HasPen(_world.Map); _life.Wolves.HasFire = () => WildWorld.HasOutdoorFire(_world); _life.Wolves.ExtraDefense = () => _life.Upbringing.Companions.WolfDefenseBonus(); }   // Sürü Dili (belge 31-8)
+            if (_life.Wolves != null) { _life.Wolves.Fenced = () => WildWorld.HasPen(_world.Map); _life.Wolves.HasFire = () => WildWorld.HasOutdoorFire(_world); _life.Wolves.ExtraDefense = () => _life.Upbringing.Companions.WolfDefenseBonus() + (_life.BestSkill(SkillType.Hunting) >= 7 ? 1 : 0) + (_life.BestSkill(SkillType.Hunting) >= Thatchwick.Core.Animals.Hunting.WatchLevel ? 1 : 0); }   // Sürü Dili (belge 31-8)
             _life.AttachWild(_world.Map);   // haritada dolaşan yaban hayvanları
             // Miras: kurucu (köydeki soy), yadigâr envantere girmez, satılınca geçmişi silinir, komşu haneye giden köylü olur.
             _life.FounderId = () => _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
@@ -711,13 +843,20 @@ namespace Thatchwick.Game
             {
                 Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays, Upbringing = _life.Upbringing, House = _household,
                 TimedDuties = _life.Duties, Roaming = _life.Roaming, ItemName = id => _content.Items.TryGet(id, out var idf) ? idf.DisplayName : id,
-                AskRoam = AskRoamPermission
+                AskRoam = AskRoamPermission, Life = _life, Content = _content
             };
+            _familyPanel.OpenMirror = OpenMirror;
+            _familyPanel.PortraitOf = c => { var pa = _actors.Find(x => x.Character == c); return Portraits.SpriteFor(c, pa != null ? LookFor(pa) : null); };
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
             _life.Suitors.AppearanceCatalog = _appearanceCatalog;
+            GameLocalization.ContentName = id =>
+                id == null ? null
+                : _content.Items.TryGet(id, out var itemDef) ? itemDef.DisplayName
+                : _content.Traits.TryGet(id, out var traitDef) ? traitDef.DisplayName : null;
+            _life.Goals.Completed += _ => _account?.OnGoalCompleted();   // elmas: hanedan hedefi (karar 20.11.2026)
             LayeredCharacterArt.Catalog = _appearanceCatalog;
             // Eski kayıt: tam saç stili kimlikleri modüllere (kütle + ön + eklenti), eski kirli sakal dokuya (belge 43b).
             foreach (var member in _population.Members)
@@ -757,6 +896,7 @@ namespace Thatchwick.Game
                 _selected = _player;
                 _input.enabled = true;
                 ShowMessage(loaded.Warnings.Count > 0 ? $"Kayıt yüklendi ({loaded.Warnings.Count} uyarı, konsola bak)" : "Kayıt yüklendi");
+                AttachAudio();   // ses bağlantıları (GameRootAudio.cs)
                 return;
             }
 
@@ -782,6 +922,8 @@ namespace Thatchwick.Game
             _namingSettlement = true;                       // önce yerleşimin adı, sonra karakter
             _settlementDraft = Settlement.DefaultName;
             _input.enabled = false;
+            OpenTitle();     // başlık ekranı: yuva seç, devam et ya da yeni oyun (GameRootMenu.cs)
+            AttachAudio();   // ses bağlantıları (GameRootAudio.cs)
         }
 
         /// <summary>
@@ -1266,6 +1408,7 @@ namespace Thatchwick.Game
         private void OnFamilyEvent(Character actor, Character target, SocialAction action, string message)
         {
             ShowMessage(message);
+            SpeakSocial(actor, target, action, message);
             switch (action)
             {
                 case SocialAction.Feed: _account.Record("feed", _clock.DayIndex); break;
@@ -1280,6 +1423,7 @@ namespace Thatchwick.Game
         {
             ShowMessage(c.CauseOfDeath == DeathCause.Cold ? $"{c.Name} donarak öldü"
                 : c.CauseOfDeath == DeathCause.Starvation ? $"{c.Name} açlıktan öldü" : $"{c.Name} hayatını kaybetti");
+            if (!c.IsVillager) { HoldCriticalMoment(); Sfx(Thatchwick.Core.Audio.SoundKeys.StingDeath); }
             var result = _dynasty.OnDeath(c, _population.Members, _clock.TotalDays, _life.TradeOf(c));
             if (result == null) { if (_selected != null && _selected.Character == c) _selected = _player; return; }
             if (result.DynastyEnded) { _dynastyEnded = true; ShowMessage(result.Message, 6f); return; }
@@ -1340,6 +1484,7 @@ namespace Thatchwick.Game
         private void OnBabyBorn(Character baby, Character mother, int? fatherId)
         {
             CreateActorFor(baby);
+            if (mother != null && !mother.IsVillager) { HoldCriticalMoment(); Sfx(Thatchwick.Core.Audio.SoundKeys.StingBirth); }
             MoodEvents.OnBirth(mother, fatherId.HasValue ? _population.Find(fatherId.Value) : null);
             ShowMessage($"{mother.Name} doğurdu: {baby.Name}");
         }
@@ -1623,6 +1768,7 @@ namespace Thatchwick.Game
 
         private void FinishCreation()
         {
+            _title = false;
             var draft = _creator.Draft;
             var character = draft.CreateCharacter(1, new GridPos(31, 31), true, _appearanceCatalog, _rng);
             _creator.Release();
@@ -1902,6 +2048,14 @@ namespace Thatchwick.Game
             _animals.Recovered += a => ShowMessage($"{a.Name} iyileşti");
             _animals.Dismounted += (a, riderId) => ShowMessage($"{_population.Find(riderId)?.Name} attan indi ({a.Name} kapıda bekliyor)");
             _animalCare = new AnimalCare(_animals, _household);
+            _animalCare.Day = () => _clock.DayIndex;
+            AnimalContests.ExtraScore = (k, an, h) => AnimalContests.SkillBonus(k, an, h, _animalCare.Prepared.Contains(an.Id), _household.Count(LifeSystems.RaceSaddleId) > 0);
+            AnimalContests.AfterRun = an => _animalCare.Prepared.Remove(an.Id);
+            _animals.BroodBonus = () => { foreach (var it in _world.Items) if (it.Def.Id == "item.brood_basket" && !it.IsDecor) return 0.10; return 0.0; };
+            _animals.ExtraRiskFactor = () => _life.BestSkill(SkillType.Medicine) >= 8 ? 0.5 : 1.0;   // salgın önleme (belge 45)
+            _animals.LineageUpBonus = () => _life.BestSkill(SkillType.AnimalHusbandry) >= 7 ? 0.15 : 0.0;   // soy kütüğü (belge 45)
+            // Aynı ustalık genetikte "iyi ebeveynin değeri geçsin" şansına da eklenir (belge 48; çekirdek +%10'da keser).
+            _animals.GeneBonus = () => _life.BestSkill(SkillType.AnimalHusbandry) >= 7 ? 0.10 : 0.0;
             _life?.Attach(_animals, _animalCare);   // can yoldaşı bağı (belge 31-8)
             _animalCare.Done += (c, a, act) =>
             {
@@ -1911,6 +2065,10 @@ namespace Thatchwick.Game
                     case AnimalAction.Saddle: ShowMessage($"{a.Name} eyerlendi"); break;
                     case AnimalAction.Unsaddle: ShowMessage($"{a.Name}: eyer çıkarıldı"); break;
                     case AnimalAction.Brush: ShowMessage($"{c.Name} {a.Name} tımar etti (dostluk {a.Friendship:0})"); _account.Record("brush", _clock.DayIndex); break;
+                    case AnimalAction.Train: ShowMessage(GameLocalization.T("ui.animal.trained", ("who", c.Name), ("animal", a.Name), ("level", a.Level), ("friend", (int)a.Friendship))); break;
+                    case AnimalAction.Trick: ShowMessage(GameLocalization.T("ui.animal.tricked", ("who", c.Name), ("animal", a.Name), ("friend", (int)a.Friendship))); break;
+                    case AnimalAction.Treat: ShowMessage(GameLocalization.T(a.IsSick ? "ui.animal.treated_sick" : "ui.animal.treated_well", ("who", c.Name), ("animal", a.Name))); break;
+                    case AnimalAction.PrepContest: ShowMessage(GameLocalization.T("ui.animal.prepared", ("animal", a.Name), ("points", (int)AnimalCare.PrepScore))); break;
                     default: ShowMessage($"{c.Name} {a.Name} sevdi (dostluk {a.Friendship:0})"); _account.Record("pet_animal", _clock.DayIndex); break;
                 }
                 if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
@@ -1962,6 +2120,7 @@ namespace Thatchwick.Game
             };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
             {
+                PriorityWeight = d => _life.DutyWeight(d),   // görev öncelikleri (Kâhyalık 2)
                 WorkHours = () => HourOfDay >= 7.0 && HourOfDay < 19.0,
                 Now = () => _clock.TotalDays,
                 TileWork = _farmWork,
@@ -2126,6 +2285,17 @@ namespace Thatchwick.Game
             // İkinci dalga beceriler: hanenin en iyisi düzeneklere, depoya, söküme ve yollara etki eder.
             _automation.EngineeringLevel = () => _life.BestSkill(SkillType.Engineering);
             _storage.CartingLevel = () => _life.BestSkill(SkillType.Carting);
+            _storage.ExtraCapacity = _life.CartStorageBonus;
+            _buildMode.FertilityAt = p => _plants.FertilityAt(p);                                       // verim katmanı (Toprak bakımı 8)
+            _buildMode.FertilityOpen = () => _life.BestSkill(SkillType.SoilCare) >= 8;
+            _buildService.OrderSkill = () => _life.BestSkill(SkillType.Trade);                         // tüccara sipariş (Ticaret 4)
+            _life.PlantSeed = (seed, tile) => _buildService.Plant(seed, tile, out _).Ok;   // toplu ek (Çiftçilik 5)
+            _buildService.GreenhouseSkill = () => _life.BestSkill(SkillType.Farming);
+            var mementoRng = new System.Random(Thatchwick.Core.Seeds.Derive(_seed, 455, _rngEpoch));
+            _buildService.MementoRoll = () => mementoRng.NextDouble() < BuildService.MementoChance;
+            _mines.ListenVein = () => _life.BestSkill(SkillType.Mining) >= 9;
+            _mines.CreakFactor = _life.MineCreakFactor;          // el arabası, at arabası, kızak (belge 45)
+            _market.ContractFactor = _life.ContractRewardFactor;      // sözleşme (Okuryazarlık 7)
             _buildService.SalvageLevel = () => _life.BestSkill(SkillType.Salvage);
             _buildService.Salvaged += list =>
             {
@@ -2169,6 +2339,13 @@ namespace Thatchwick.Game
                 });
             }
             Opt(a.Species.Rideable ? AnimalAction.Brush : AnimalAction.Pet, a.Species.Rideable ? "Tımar et" : "Sev");
+            // Beceri işleri (belge 45): seviyesi tutmayanda menüde görünmez.
+            var sk = c.Character.Skills;
+            if (sk.GetLevel(SkillType.AnimalHusbandry) >= AnimalCare.TrainLevel || (a.Species.Id.Contains("dog") && sk.GetLevel(SkillType.Hunting) >= AnimalCare.HoundTrainLevel))
+                Opt(AnimalAction.Train, a.Species.Id.Contains("dog") && sk.GetLevel(SkillType.Hunting) >= AnimalCare.HoundTrainLevel ? GameLocalization.T("ui.animal.train_hound") : GameLocalization.T("ui.animal.train"));
+            if (a.Species.Rideable && sk.GetLevel(SkillType.Riding) >= AnimalCare.TrickLevel) Opt(AnimalAction.Trick, GameLocalization.T("ui.animal.trick"));
+            if (a.IsSick && sk.GetLevel(SkillType.Medicine) >= AnimalCare.TreatLevel) Opt(AnimalAction.Treat, GameLocalization.T("ui.animal.treat"));
+            if (sk.GetLevel(SkillType.AnimalHusbandry) >= AnimalCare.PrepLevel) Opt(AnimalAction.PrepContest, GameLocalization.T("ui.animal.prep"));
             if (a.Species.Rideable)
             {
                 if (a.Saddle == null) Opt(AnimalAction.Saddle, "Eyerle");
@@ -2267,6 +2444,10 @@ namespace Thatchwick.Game
             if (kb != null && kb.escapeKey.wasPressedThisFrame && _vivView != null && _vivView.Active) _vivView.Close();
             _fishingView.Update(Time.unscaledDeltaTime);
             UpdateAmbience(Time.unscaledDeltaTime);
+            ReleaseCriticalMoment();
+            UpdateMirror();
+            UpdateAudio();
+            UpdateTrespass(Time.unscaledDeltaTime);
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.iKey.wasPressedThisFrame) ToggleRequests();
@@ -2298,7 +2479,7 @@ namespace Thatchwick.Game
 
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
-            (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
+            _mirror != null || _settingsOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
             || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
             || (_homePanel != null && _homePanel.Active) || (_vivView != null && _vivView.Active) || (_familyPanel != null && _familyPanel.Active)
             || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
@@ -2463,7 +2644,7 @@ namespace Thatchwick.Game
                     var c = a.Character;
                     if (c.IsVillager || c.IsDead) continue;
                     var room = _world.Map.Rooms.RoomAt(c.Position);
-                    if (room == null || !room.IsIndoor) c.Soak((float)(gameDays * RainSoakPerDay));
+                    if (room == null || !room.IsIndoor) c.SoakRain((float)(gameDays * RainSoakPerDay));   // giysi koruması (belge 48 §12.1)
                 }
             _population.Tick(gameDays);
             _life.Tick(gameDays);
@@ -2570,6 +2751,7 @@ namespace Thatchwick.Game
                 if (stepIdx != actor.LastStep)
                 {
                     actor.LastStep = stepIdx;
+                    if (_animals?.MountOf(actor.Character.Id) == null) PlayStep(actor, pos);
                     if (!framed) squash = 0.04f;   // ayak yere basınca kısa ezilme (kare animasyonunda gerekmez)
                     if (_juice != null && Random01() < 0.45f && _animals?.MountOf(actor.Character.Id) == null)
                         _juice.Emit(Juice.Kind.Dust, pos + new Vector3(0f, 0.02f, 0f), 1, sortOrder - 1);
@@ -2594,6 +2776,7 @@ namespace Thatchwick.Game
                     if (beats && cyc < actor.LastBeat)   // döngü başında işe göre parçacık
                     {
                         var at = pos + new Vector3(0f, 0.2f, 0f);
+                        PlayWorkBeat(actor, icon, pos);
                         if (icon == "chop") _juice.Emit(Juice.Kind.Chip, at, 3, sortOrder + 1);
                         else if (icon == "farm") _juice.Emit(Juice.Kind.Soil, pos, 2, sortOrder + 1);
                         else if (icon == "cook") _juice.Emit(Juice.Kind.Steam, pos + new Vector3(0f, 0.6f, 0f), 1, sortOrder + 1);
@@ -2609,6 +2792,7 @@ namespace Thatchwick.Game
                     if (beat < actor.LastBeat && _juice != null)                  // yeni vuruş
                     {
                         var at = pos + new Vector3(0f, 0.2f, 0f);
+                        PlayWorkBeat(actor, icon, pos);
                         switch (icon)
                         {
                             case "chop": _juice.Emit(Juice.Kind.Chip, at, 3, sortOrder + 1); break;
@@ -2830,7 +3014,7 @@ namespace Thatchwick.Game
 
             if (_creator != null)
             {
-                { var prevCreatorSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { if (_namingSettlement) DrawSettlementNaming(); else _creator.OnGUI(); } finally { GUI.skin = prevCreatorSkin; } }   // 391 tema (belge 33)
+                { var prevCreatorSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { if (_title) DrawTitle(); else if (_namingSettlement) DrawSettlementNaming(); else _creator.OnGUI(); } finally { GUI.skin = prevCreatorSkin; } }   // 391 tema (belge 33)
                 if (Time.unscaledTime < _messageUntil)
                 {
                     float ms = HudScale;
@@ -2838,12 +3022,19 @@ namespace Thatchwick.Game
                     GUI.Label(new Rect(8f, Screen.height / ms - 96f, Screen.width / ms - 260f, 40f), _message);
                     GUI.matrix = Matrix4x4.identity;
                 }
-                if (_hasSave)
+                if (_hasSave && !_title)
                 {
                     float cs = HudScale;
                     GUI.matrix = Matrix4x4.Scale(new Vector3(cs, cs, 1f));
                     if (GUI.Button(new Rect(Screen.width / cs - 238f, Screen.height / cs - 52f, 230f, 44f), "Kayıtlı oyuna devam et")) LoadSave();
                 }
+                return;
+            }
+
+            if (_mirror != null)
+            {
+                var prevMirrorSkin = GUI.skin; GUI.skin = UiSkin.Skin;
+                try { _mirror.OnGUI(); } finally { GUI.skin = prevMirrorSkin; GUI.matrix = Matrix4x4.identity; }
                 return;
             }
 
@@ -2869,6 +3060,7 @@ namespace Thatchwick.Game
             { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
             DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
+            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); } finally { GUI.skin = prevMenuSkin; } }
 
             // Sol panel (görsel analiz, 18.11.2026): varsayılan küçük; ihtiyaç listesi, beceriler ve ayarlar "Ayrıntı" (Tab) altında.
             // UI Toolkit HUD açıkken (F4) küçük bölüm orada çizilir; IMGUI yalnızca açılmış "Ayrıntı" alanını çizer.
@@ -2956,8 +3148,9 @@ namespace Thatchwick.Game
                 int newAcc = GUILayout.Toolbar(acc, new[] { "Kapalı", "Seyrek", "Normal" });
                 if (newAcc != acc || _life.Injuries.Setting == AccidentSetting.NotSet) _life.Injuries.Setting = (AccidentSetting)(newAcc + 1);
                 GUILayout.EndHorizontal();
-                if (GUILayout.Button("Yeni oyun (yeni karakter yaratılınca eski kaydın üzerine yazılır)"))
+                if (GUILayout.Button(GameLocalization.T("ui.menu.to_title")))
                 {
+                    SaveNow(quiet: true);
                     enabled = false;
                     new GameObject("GameRoot").AddComponent<GameRoot>();
                     Destroy(gameObject);
@@ -2996,6 +3189,7 @@ namespace Thatchwick.Game
             if (status != null) GUILayout.Label(status);
 
             GUILayout.BeginHorizontal();
+            if (HudToggle(T("ui.menu.settings"), _settingsOpen)) _settingsOpen = !_settingsOpen;
             if (HudToggle(T("ui.hud.build"), _buildMode.Active)) ToggleBuild();
             if (HudToggle(T("ui.hud.market"), _marketPanel.Active)) ToggleMarket();
             if (HudToggle(T("ui.hud.storage"), _storagePanel.Active)) _storagePanel.Toggle();
@@ -3012,10 +3206,11 @@ namespace Thatchwick.Game
             if (Time.unscaledTime < _akceFlashUntil) GUI.contentColor = _akceFlashUp ? new Color(0.6f, 1f, 0.55f) : new Color(1f, 0.55f, 0.5f);
             GUILayout.Label(T("ui.hud.akce", ("amount", HudAkce)), GUILayout.Width(80f));
             GUI.contentColor = akceColor;
+            GUILayout.Label(new GUIContent(T("ui.diamonds.balance", ("count", _account.Diamonds)), T("ui.diamonds.tip")), GUILayout.ExpandWidth(false));
             GUILayout.Label(new GUIContent(T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)), HudReputationTip()), GUILayout.Width(110f));
             if (HudToggle(T("ui.hud.labels"), _labelsAll)) _labelsAll = !_labelsAll;
             if (GUILayout.Button(T("ui.hud.save"))) SaveNow(quiet: false);
-            if (AdultPackAllowed)
+            if (AdultPackAvailable)
             {
                 bool adult = Thatchwick.Core.Content.ContentPacks.Adult;
                 if (GUILayout.Toggle(adult, " " + T("ui.hud.adult_pack")) != adult) ToggleAdultPack();

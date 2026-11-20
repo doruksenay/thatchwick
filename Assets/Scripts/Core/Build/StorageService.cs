@@ -40,6 +40,8 @@ namespace Thatchwick.Core.Build
 
         /// <summary>Eşyanın ek depo kapasitesi (sandığa demir kuşak, belge 45); null ise yok.</summary>
         public Func<ItemInstance, int> ExtraStorage { get; set; }
+        /// <summary>Hane genelinde ek depo (el arabası, at arabası, kızak; belge 45 Arabacılık); null ise yok.</summary>
+        public Func<int> ExtraCapacity { get; set; }
 
         public int Capacity
         {
@@ -49,6 +51,7 @@ namespace Thatchwick.Core.Build
                 foreach (var item in _world.Items)
                     if (!item.IsDecor) cap += item.Def.Storage + (ExtraStorage != null ? ExtraStorage(item) : 0);
                 // Arabacılık: düzenli istif ve taşıma, seviye başına %3 fazla yer.
+                if (ExtraCapacity != null) cap += ExtraCapacity();
                 if (CartingLevel != null) cap = (int)(cap * SkillNames.Factor(CartingLevel(), 0.03));
                 return cap;
             }

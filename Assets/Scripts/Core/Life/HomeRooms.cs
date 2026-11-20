@@ -14,13 +14,46 @@ namespace Thatchwick.Core.Life
         Kitchen = 2,
         Bedroom = 3,
         Workshop = 4,
-        Pantry = 5
+        Pantry = 5,
+        /// <summary>Sera: pencereli, ışıklı zemin kat odası (PlantSystem.IsGreenhouse) içinde bitki ya da seraya ait eşya; yatak ve ocak yok.</summary>
+        Greenhouse = 6
     }
 
     public sealed partial class HomeLife
     {
         /// <summary>Düzenli odanın işi hızlandırması (mutfakta yemek, atölyede zanaat; yatak odasında dinlenme).</summary>
         public const double TidySpeed = 1.1;
+
+        // ---- sera (belge 45c ek) ----
+        /// <summary>Seraya ait eşya etiketi (saksılar, çiçek tarhı, cam bahçe, fidan rafı...).</summary>
+        public const string GreenhouseTag = "greenhouse", GreenhouseWorkTag = "greenhouse_work";
+        /// <summary>Bakımlı sera: en az 3 seraya ait eşya, biri fidan rafı ya da saksı tezgâhı.</summary>
+        public const int TidyGreenhouseItems = 3;
+        /// <summary>Seraya ait her eşya güzelliğe +1 (en çok +5).</summary>
+        public const int GreenhouseBeautyCap = 5;
+
+        /// <summary>Oda sera koşulunu sağlıyor mu (PlantSystem.IsGreenhouse); null ise sera odası tanınmaz.</summary>
+        public Func<Room, bool> IsGreenhouseRoom { get; set; }
+
+        private readonly Dictionary<int, (double at, double factor)> _greenhouseGrowth = new Dictionary<int, (double, double)>();
+
+        /// <summary>Seradaki büyüme çarpanı: bakımlı serada ×1,1. Bir oyun saatine yakın önbellekli (her bitkide oda taranmasın).</summary>
+        public double GreenhouseGrowth(Room room)
+        {
+            if (room == null) return 1.0;
+            if (_greenhouseGrowth.TryGetValue(room.Id, out var c) && Now - c.at < 0.05) return c.factor;
+            var (kind, tidy) = Classify(room);
+            double f = kind == RoomKind.Greenhouse && tidy ? TidySpeed : 1.0;
+            _greenhouseGrowth[room.Id] = (Now, f);
+            return f;
+        }
+
+        /// <summary>Seraya ait eşyaların güzellik katkısı (sera değilse 0).</summary>
+        public int GreenhouseBeauty(Room room)
+        {
+            var info = Inspect(room);
+            return info.Kind == RoomKind.Greenhouse ? Math.Min(GreenhouseBeautyCap, info.GreenhouseItems) : 0;
+        }
 
         public static string RoomKindName(RoomKind k)
         {
@@ -30,6 +63,7 @@ namespace Thatchwick.Core.Life
                 case RoomKind.Bedroom: return "Yatak odası";
                 case RoomKind.Workshop: return "Atölye";
                 case RoomKind.Pantry: return "Kiler";
+                case RoomKind.Greenhouse: return "Sera";
                 case RoomKind.Living: return "Oturma odası";
                 default: return "Oda";
             }
@@ -43,6 +77,7 @@ namespace Thatchwick.Core.Life
                 case RoomKind.Kitchen: return "Düzenli mutfak: yemek %10 hızlı ve öğretici";
                 case RoomKind.Bedroom: return "Huzurlu yatak odası: uyku %10 dinlendirici";
                 case RoomKind.Workshop: return "Düzenli atölye: zanaat %10 hızlı";
+                case RoomKind.Greenhouse: return "Bakımlı sera: ekin ve fidan %10 hızlı büyür";
                 default: return null;
             }
         }
@@ -62,6 +97,10 @@ namespace Thatchwick.Core.Life
                     if (info.WallItems < 2 && !(info.WallItems >= 1 && info.Storage >= 1)) return "Düzenli atölye için alet askısı ve raf (ya da sandık) koy.";
                     if (info.Light == 0) return "Düzenli atölye için bir ışık koy.";
                     return null;
+                case RoomKind.Greenhouse:
+                    if (info.GreenhouseWork == 0) return "Bakımlı sera için bir fidan rafı ya da saksı tezgâhı koy.";
+                    if (info.GreenhouseItems < TidyGreenhouseItems) return $"Bakımlı sera için seraya ait en az {TidyGreenhouseItems} eşya koy (saksı, çiçek tarhı, cam bahçe).";
+                    return null;
                 case RoomKind.Bedroom:
                     if (info.Storage == 0) return "Huzurlu yatak odası için bir sandık ya da dolap koy.";
                     if (!info.SoftFloorOrCurtain) return "Huzurlu yatak odası için halı ser ya da pencereye perde as.";
@@ -74,6 +113,7 @@ namespace Thatchwick.Core.Life
         {
             public RoomKind Kind;
             public int Beds, Stoves, Stations, Pantries, Shelves, WallItems, Storage, SurfaceDecor, Light;
+            public int Plants, GreenhouseItems, GreenhouseWork;
             public bool SoftFloorOrCurtain;
         }
 
@@ -105,6 +145,9 @@ namespace Thatchwick.Core.Life
                 if (RoomOf(it) != room) continue;
                 var d = it.Def;
                 if (it.GivesLight) info.Light++;
+                if (d.HasTag(GreenhouseTag)) info.GreenhouseItems++;
+                if (d.HasTag(GreenhouseWorkTag)) info.GreenhouseWork++;
+                if (it.IsPlant) { info.Plants++; continue; }
                 if (it.IsDecor) { info.SurfaceDecor++; continue; }
                 if (it.IsWallMounted)
                 {
@@ -122,6 +165,7 @@ namespace Thatchwick.Core.Life
             }
             if (info.Beds > 0) info.Kind = RoomKind.Bedroom;
             else if (info.Stoves > 0) info.Kind = RoomKind.Kitchen;
+            else if ((info.Plants > 0 || info.GreenhouseItems > 0) && IsGreenhouseRoom != null && IsGreenhouseRoom(room)) info.Kind = RoomKind.Greenhouse;
             else if (info.Stations > 0) info.Kind = RoomKind.Workshop;
             else if (info.Pantries > 0) info.Kind = RoomKind.Pantry;
             else info.Kind = RoomKind.Living;
@@ -138,6 +182,7 @@ namespace Thatchwick.Core.Life
                 case RoomKind.Kitchen: tidy = info.Shelves >= 1 && info.SurfaceDecor >= 2 && info.Light >= 1; break;
                 case RoomKind.Workshop: tidy = (info.WallItems >= 2 || (info.WallItems >= 1 && info.Storage >= 1)) && info.Light >= 1; break;
                 case RoomKind.Bedroom: tidy = info.Storage >= 1 && info.SoftFloorOrCurtain; break;
+                case RoomKind.Greenhouse: tidy = info.GreenhouseWork >= 1 && info.GreenhouseItems >= TidyGreenhouseItems; break;
             }
             return (info.Kind, tidy);
         }
@@ -165,6 +210,7 @@ namespace Thatchwick.Core.Life
                 case RoomKind.Bedroom: return "Yatak odasının";
                 case RoomKind.Workshop: return "Atölyenin";
                 case RoomKind.Pantry: return "Kilerin";
+                case RoomKind.Greenhouse: return "Seranın";
                 default: return "Odanın";
             }
         }

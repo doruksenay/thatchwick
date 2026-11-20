@@ -1,12 +1,13 @@
 ---
 id: "477b"
-title: "Ürün ikonları: beceri tamamlama 2 (18)"
-status: pending
+title: "Ürün ikonları: beceri tamamlama 2 (17)"
+status: review
+claimed_at: 2026-11-20T10:51Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("geliştirmeyi tamamla"), Project belgesi 45 bölüm 9
 priority: 40
 family: arayuz
 style_gate: false
-cost_est: 18
+cost_est: 17
 cost_max: 36
 depends_on: ["420a"]
 max_attempts: 1
@@ -17,7 +18,6 @@ outputs:
   - Assets/Art/Iso/_aday/icon_item_bait.png
   - Assets/Art/Iso/_aday/icon_item_fishing_net.png
   - Assets/Art/Iso/_aday/icon_item_fish_oil.png
-  - Assets/Art/Iso/_aday/icon_item_legend_fish.png
   - Assets/Art/Iso/_aday/icon_item_cart_wheel.png
   - Assets/Art/Iso/_aday/icon_item_hinge.png
   - Assets/Art/Iso/_aday/icon_item_tin_brooch.png
@@ -32,7 +32,7 @@ outputs:
   - Assets/Art/Iso/_aday/icon_item_harness.png
 created: 2026-11-20
 ---
-# 477b Ürün ikonları: beceri tamamlama 2/4 (18)
+# 477b Ürün ikonları: beceri tamamlama 2/4 (17)
 
 ## Amaç
 Belge 45 bölüm 9: beceri seviyeleriyle açılan yeni tarif ve kaynakların envanter, pazar ve seviye kartı ikonları. Kod ikonu ada göre bulur (`IsoArt.ItemIcon`: `icon_item_<id>`); gelene kadar boşluk çizer.
@@ -45,7 +45,6 @@ Belge 45 bölüm 9: beceri seviyeleriyle açılan yeni tarif ve kaynakların env
 - `item.bait` (Balık yemi): `a small clay dish of dough fishing bait balls`
 - `item.fishing_net` (Büyük ağ): `a folded brown knotted fishing net with cork floats`
 - `item.fish_oil` (Balık yağı): `a small clay oil flask with amber fish oil`
-- `item.legend_fish` (Göllerin efsane balığı): `a huge golden-scaled pike lying on a wooden board`
 - `item.cart_wheel` (Araba tekerleği): `a spoked wooden cart wheel with an iron rim`
 - `item.hinge` (Menteşe): `two black forged iron strap hinges`
 - `item.tin_brooch` (Cam taşlı kalay broş): `a round tin brooch set with green glass stones`

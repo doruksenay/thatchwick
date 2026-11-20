@@ -1,0 +1,3617 @@
+{
+  "_aciklama": "Giysi kataloğu (belge 48 §5, belge 51 §2). Her model items.json'da bir eşyadır (category clothing). Yaş: ages; açık kesim kesim seçeneklerinde (kayık ve derin yaka, yüksek yırtmaç) ve kolsuz üstün gömleksiz giyilişinde.",
+  "models": [
+    {
+      "id": "linen_undershirt",
+      "item": "item.linen_shirt",
+      "slot": "body",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long",
+          "rolled"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "standing",
+          "closed"
+        ],
+        "length": [
+          "hip",
+          "knee_below"
+        ]
+      },
+      "childSize": true
+    },
+    {
+      "id": "tunic",
+      "item": "item.tunic",
+      "slot": "body",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long",
+          "rolled"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat"
+        ],
+        "length": [
+          "hip",
+          "knee_above",
+          "knee_below"
+        ]
+      },
+      "childSize": true
+    },
+    {
+      "id": "work_tunic",
+      "item": "item.cl_work_tunic",
+      "slot": "body",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long",
+          "rolled"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat"
+        ],
+        "length": [
+          "hip",
+          "knee_above",
+          "knee_below"
+        ]
+      },
+      "childSize": true
+    },
+    {
+      "id": "long_tunic",
+      "item": "item.cl_long_tunic",
+      "slot": "body",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long",
+          "rolled"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat"
+        ],
+        "length": [
+          "hip",
+          "knee_above",
+          "knee_below"
+        ]
+      },
+      "childSize": true
+    },
+    {
+      "id": "riding_tunic",
+      "item": "item.cl_riding_tunic",
+      "slot": "body",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long",
+          "rolled"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat"
+        ],
+        "length": [
+          "hip",
+          "knee_above",
+          "knee_below"
+        ]
+      },
+      "childSize": true
+    },
+    {
+      "id": "embroidered_shirt",
+      "item": "item.cl_embroidered_shirt",
+      "slot": "body",
+      "tier": "Z",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long",
+          "rolled"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "standing",
+          "closed"
+        ],
+        "length": [
+          "hip",
+          "knee_below"
+        ]
+      },
+      "childSize": true
+    },
+    {
+      "id": "buttoned_jacket",
+      "item": "item.cl_buttoned_jacket",
+      "slot": "body",
+      "tier": "T",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "fine_wool",
+      "skill": "Tailoring",
+      "level": 7,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "late",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "buttons"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "silk_shirt",
+      "item": "item.cl_silk_shirt",
+      "slot": "body",
+      "tier": "T",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "silk",
+      "skill": "Tailoring",
+      "level": 7,
+      "acquire": [
+        "craft",
+        "order",
+        "merchant"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long",
+          "rolled"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "standing",
+          "closed"
+        ],
+        "length": [
+          "hip",
+          "knee_below"
+        ]
+      },
+      "childSize": true
+    },
+    {
+      "id": "quilted_jacket",
+      "item": "item.cl_quilted_jacket",
+      "slot": "body",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 5,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "winter"
+      ],
+      "flags": [
+        "padding"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "plain_entari",
+      "item": "item.cl_plain_entari",
+      "slot": "body",
+      "tier": "K",
+      "style": "Y",
+      "layer": "C",
+      "family": 2,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "deep"
+        ],
+        "length": [
+          "ankle",
+          "floor"
+        ],
+        "slit": [
+          "none",
+          "side",
+          "front",
+          "high"
+        ]
+      }
+    },
+    {
+      "id": "summer_entari",
+      "item": "item.cl_summer_entari",
+      "slot": "body",
+      "tier": "K",
+      "style": "Y",
+      "layer": "C",
+      "family": 2,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "deep"
+        ],
+        "length": [
+          "ankle",
+          "floor"
+        ],
+        "slit": [
+          "none",
+          "side",
+          "front",
+          "high"
+        ]
+      }
+    },
+    {
+      "id": "three_skirts",
+      "item": "item.cl_three_skirts",
+      "slot": "body",
+      "tier": "Z",
+      "style": "Y",
+      "layer": "C",
+      "family": 2,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "deep"
+        ],
+        "length": [
+          "ankle",
+          "floor"
+        ],
+        "slit": [
+          "none",
+          "side",
+          "front",
+          "high"
+        ]
+      }
+    },
+    {
+      "id": "kaftan",
+      "item": "item.cl_kaftan",
+      "slot": "body",
+      "tier": "T",
+      "style": "Y",
+      "layer": "C",
+      "family": 2,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 5,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "deep"
+        ],
+        "length": [
+          "ankle",
+          "floor"
+        ],
+        "slit": [
+          "none",
+          "side",
+          "front",
+          "high"
+        ]
+      }
+    },
+    {
+      "id": "aba",
+      "item": "item.cl_aba",
+      "slot": "body",
+      "tier": "K",
+      "style": "O",
+      "layer": "C",
+      "family": 2,
+      "material": "felt",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "winter"
+      ]
+    },
+    {
+      "id": "feast_entari",
+      "item": "item.cl_feast_entari",
+      "slot": "body",
+      "tier": "T",
+      "style": "Y",
+      "layer": "C",
+      "family": 2,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "fest"
+      ],
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "deep"
+        ],
+        "length": [
+          "ankle",
+          "floor"
+        ],
+        "slit": [
+          "none",
+          "side",
+          "front",
+          "high"
+        ]
+      },
+      "flags": [
+        "embroidered"
+      ]
+    },
+    {
+      "id": "wedding_kaftan",
+      "item": "item.cl_wedding_kaftan",
+      "slot": "body",
+      "tier": "A",
+      "style": "O",
+      "layer": "C",
+      "family": 2,
+      "material": "silk",
+      "skill": "Tailoring",
+      "level": 9,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "wedding",
+        "fest"
+      ],
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "deep"
+        ],
+        "length": [
+          "ankle",
+          "floor"
+        ],
+        "slit": [
+          "none",
+          "side",
+          "front",
+          "high"
+        ]
+      },
+      "flags": [
+        "silver",
+        "embroidered",
+        "reputation"
+      ]
+    },
+    {
+      "id": "felt_vest",
+      "item": "item.cl_felt_vest",
+      "slot": "work",
+      "tier": "K",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "felt",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "sleeveless"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "leather_vest",
+      "item": "item.leather_vest",
+      "slot": "work",
+      "tier": "Z",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 7,
+      "acquire": [
+        "craft",
+        "shop:riza"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "sleeveless"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "fur_vest",
+      "item": "item.cl_fur_vest",
+      "slot": "work",
+      "tier": "T",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "fur",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "winter"
+      ],
+      "flags": [
+        "sleeveless"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "sleeveless_overgown",
+      "item": "item.cl_sleeveless_overgown",
+      "slot": "work",
+      "tier": "T",
+      "style": "Ç",
+      "layer": "C",
+      "family": 2,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 5,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "sleeveless"
+      ]
+    },
+    {
+      "id": "cloth_apron",
+      "item": "item.cl_cloth_apron",
+      "slot": "work",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "apron"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "leather_apron",
+      "item": "item.cl_leather_apron",
+      "slot": "work",
+      "tier": "Z",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 3,
+      "acquire": [
+        "craft",
+        "shop:riza"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "spark"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "linen_drawers",
+      "item": "item.cl_linen_drawers",
+      "slot": "legs",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "wool_hose",
+      "item": "item.cl_wool_hose",
+      "slot": "legs",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "leg_wraps",
+      "item": "item.cl_leg_wraps",
+      "slot": "legs",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "laced_trousers",
+      "item": "item.cl_laced_trousers",
+      "slot": "legs",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "late",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "salvar",
+      "item": "item.cl_salvar",
+      "slot": "legs",
+      "tier": "Z",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "pilot"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "riding_leggings",
+      "item": "item.cl_riding_leggings",
+      "slot": "legs",
+      "tier": "Z",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 5,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "long_wool_skirt",
+      "item": "item.cl_long_wool_skirt",
+      "slot": "legs",
+      "tier": "K",
+      "style": "O",
+      "layer": "C",
+      "family": 2,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "length": [
+          "ankle",
+          "floor"
+        ]
+      }
+    },
+    {
+      "id": "linen_skirt",
+      "item": "item.cl_linen_skirt",
+      "slot": "legs",
+      "tier": "K",
+      "style": "O",
+      "layer": "C",
+      "family": 2,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "length": [
+          "ankle",
+          "floor"
+        ]
+      }
+    },
+    {
+      "id": "tucked_skirt",
+      "item": "item.cl_tucked_skirt",
+      "slot": "legs",
+      "tier": "K",
+      "style": "Y",
+      "layer": "C",
+      "family": 2,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "length": [
+          "ankle",
+          "floor"
+        ]
+      }
+    },
+    {
+      "id": "pleated_skirt",
+      "item": "item.cl_pleated_skirt",
+      "slot": "legs",
+      "tier": "T",
+      "style": "O",
+      "layer": "C",
+      "family": 2,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "late",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "fest"
+      ],
+      "cuts": {
+        "length": [
+          "ankle",
+          "floor"
+        ]
+      }
+    },
+    {
+      "id": "carik",
+      "item": "item.cl_carik",
+      "slot": "feet",
+      "tier": "K",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "shop:riza"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "low_shoes",
+      "item": "item.cl_low_shoes",
+      "slot": "feet",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "shop:riza"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "ankle_shoes",
+      "item": "item.cl_ankle_shoes",
+      "slot": "feet",
+      "tier": "Z",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "half_boots",
+      "item": "item.cl_half_boots",
+      "slot": "feet",
+      "tier": "Z",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 6,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "mud"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "riding_boots",
+      "item": "item.cl_riding_boots",
+      "slot": "feet",
+      "tier": "T",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "mud"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "fur_boots",
+      "item": "item.cl_fur_boots",
+      "slot": "feet",
+      "tier": "T",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "fur",
+      "skill": "Leatherwork",
+      "level": 7,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "winter",
+        "mud"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "felt_boots",
+      "item": "item.cl_felt_boots",
+      "slot": "feet",
+      "tier": "K",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "felt",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "winter"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "knit_slippers",
+      "item": "item.cl_knit_slippers",
+      "slot": "feet",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "knit",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "knit"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "clogs",
+      "item": "item.cl_clogs",
+      "slot": "feet",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "wood",
+      "skill": "Carpentry",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "soft_mest",
+      "item": "item.cl_soft_mest",
+      "slot": "feet",
+      "tier": "A",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 9,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "late",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "linen_kerchief",
+      "item": "item.cl_linen_kerchief",
+      "slot": "head",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full",
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "long_veil",
+      "item": "item.cl_long_veil",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full",
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "chin_wimple",
+      "item": "item.cl_chin_wimple",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full"
+    },
+    {
+      "id": "yemeni",
+      "item": "item.cl_yemeni",
+      "slot": "head",
+      "tier": "K",
+      "style": "Y",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full",
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "turban_wrap",
+      "item": "item.cl_turban_wrap",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Y",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft",
+        "merchant"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full",
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "hair_net",
+      "item": "item.cl_hair_net",
+      "slot": "head",
+      "tier": "T",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "silk",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top"
+    },
+    {
+      "id": "baby_bonnet",
+      "item": "item.cl_baby_bonnet",
+      "slot": "head",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Baby"
+      ],
+      "adultCut": false,
+      "cover": "full",
+      "flags": [
+        "child_drawn"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "linen_coif",
+      "item": "item.cl_linen_coif",
+      "slot": "head",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "flags": [
+        "wave1",
+        "child_drawn"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "wool_cap",
+      "item": "item.cl_wool_cap",
+      "slot": "head",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top"
+    },
+    {
+      "id": "knit_beret",
+      "item": "item.cl_knit_beret",
+      "slot": "head",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "knit",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "flags": [
+        "wave1",
+        "knit",
+        "child_drawn"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "felt_kulah",
+      "item": "item.cl_felt_kulah",
+      "slot": "head",
+      "tier": "K",
+      "style": "Y",
+      "layer": "B",
+      "family": 0,
+      "material": "felt",
+      "skill": "Weaving",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "bork",
+      "item": "item.cl_bork",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Y",
+      "layer": "B",
+      "family": 0,
+      "material": "felt",
+      "skill": "Tailoring",
+      "level": 5,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top"
+    },
+    {
+      "id": "fur_kalpak",
+      "item": "item.cl_fur_kalpak",
+      "slot": "head",
+      "tier": "T",
+      "style": "Y",
+      "layer": "B",
+      "family": 0,
+      "material": "fur",
+      "skill": "Leatherwork",
+      "level": 6,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "functions": [
+        "winter"
+      ],
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "bag_hood",
+      "item": "item.cl_bag_hood",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top"
+    },
+    {
+      "id": "caped_hood",
+      "item": "item.cl_caped_hood",
+      "slot": "head",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full",
+      "functions": [
+        "rain"
+      ],
+      "flags": [
+        "wave1",
+        "child_drawn"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "liripipe_hood",
+      "item": "item.cl_liripipe_hood",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full"
+    },
+    {
+      "id": "fur_hood",
+      "item": "item.cl_fur_hood",
+      "slot": "head",
+      "tier": "T",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "fur",
+      "skill": "Leatherwork",
+      "level": 6,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full",
+      "functions": [
+        "winter"
+      ],
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "chaperon",
+      "item": "item.cl_chaperon",
+      "slot": "head",
+      "tier": "T",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "fine_wool",
+      "skill": "Tailoring",
+      "level": 7,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "late",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top"
+    },
+    {
+      "id": "wide_straw_hat",
+      "item": "item.cl_wide_straw_hat",
+      "slot": "head",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "straw",
+      "skill": "Weaving",
+      "level": 1,
+      "acquire": [
+        "craft",
+        "shop:kerem"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "functions": [
+        "sun"
+      ],
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "straw_hat",
+      "item": "item.cl_straw_hat",
+      "slot": "head",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "straw",
+      "skill": "Weaving",
+      "level": 1,
+      "acquire": [
+        "craft",
+        "shop:kerem"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "functions": [
+        "sun"
+      ],
+      "flags": [
+        "wave1",
+        "child_drawn"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "pilgrim_hat",
+      "item": "item.cl_pilgrim_hat",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "felt",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "functions": [
+        "rain"
+      ],
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "rolled_brim_hat",
+      "item": "item.cl_rolled_brim_hat",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "feathered_hat",
+      "item": "item.cl_feathered_hat",
+      "slot": "head",
+      "tier": "T",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "flags": [
+        "feather"
+      ]
+    },
+    {
+      "id": "fur_hat",
+      "item": "item.cl_fur_hat",
+      "slot": "head",
+      "tier": "A",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "fur",
+      "skill": "Leatherwork",
+      "level": 8,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "functions": [
+        "winter"
+      ]
+    },
+    {
+      "id": "hunter_hat",
+      "item": "item.cl_hunter_hat",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 5,
+      "acquire": [
+        "craft",
+        "reward"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "flags": [
+        "feather"
+      ]
+    },
+    {
+      "id": "flower_crown",
+      "item": "item.cl_flower_crown",
+      "slot": "head",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "flower",
+      "skill": "Horticulture",
+      "level": 6,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "none",
+      "functions": [
+        "fest"
+      ],
+      "flags": [
+        "wave1",
+        "child_drawn",
+        "wilts"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "hair_band",
+      "item": "item.cl_hair_band",
+      "slot": "head",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "none"
+    },
+    {
+      "id": "bridal_crown",
+      "item": "item.cl_bridal_crown",
+      "slot": "head",
+      "tier": "T",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "silver",
+      "skill": "Smithing",
+      "level": 9,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "none",
+      "functions": [
+        "wedding"
+      ]
+    },
+    {
+      "id": "wheat_crown",
+      "item": "item.cl_wheat_crown",
+      "slot": "head",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "straw",
+      "skill": "Foraging",
+      "level": 1,
+      "acquire": [
+        "reward"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "none",
+      "functions": [
+        "fest"
+      ],
+      "flags": [
+        "rewardonly"
+      ]
+    },
+    {
+      "id": "beekeeper_veil",
+      "item": "item.cl_beekeeper_veil",
+      "slot": "head",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full",
+      "functions": [
+        "bee"
+      ],
+      "flags": [
+        "wave1"
+      ]
+    },
+    {
+      "id": "smith_cap",
+      "item": "item.cl_smith_cap",
+      "slot": "head",
+      "tier": "Z",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "top",
+      "functions": [
+        "spark"
+      ]
+    },
+    {
+      "id": "oiled_fisher_hood",
+      "item": "item.cl_oiled_fisher_hood",
+      "slot": "head",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "cover": "full",
+      "functions": [
+        "rain"
+      ],
+      "flags": [
+        "oil"
+      ]
+    },
+    {
+      "id": "short_cloak",
+      "item": "item.cl_short_cloak",
+      "slot": "outer",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false
+    },
+    {
+      "id": "long_cloak",
+      "item": "item.cl_long_cloak",
+      "slot": "outer",
+      "tier": "Z",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false
+    },
+    {
+      "id": "hooded_cloak",
+      "item": "item.cl_hooded_cloak",
+      "slot": "outer",
+      "tier": "Z",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "rain"
+      ]
+    },
+    {
+      "id": "brooch_cloak",
+      "item": "item.cl_brooch_cloak",
+      "slot": "outer",
+      "tier": "T",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "fine_wool",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false
+    },
+    {
+      "id": "fur_collar_cloak",
+      "item": "item.cl_fur_collar_cloak",
+      "slot": "outer",
+      "tier": "T",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "fur_trim"
+      ]
+    },
+    {
+      "id": "fur_lined_cloak",
+      "item": "item.cl_fur_lined_cloak",
+      "slot": "outer",
+      "tier": "A",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "fur",
+      "skill": "Tailoring",
+      "level": 8,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "winter"
+      ]
+    },
+    {
+      "id": "kepenek",
+      "item": "item.cl_kepenek",
+      "slot": "outer",
+      "tier": "K",
+      "style": "Y",
+      "layer": "B",
+      "family": 0,
+      "material": "felt",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft",
+        "shop:murat"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "rain"
+      ]
+    },
+    {
+      "id": "oiled_cloak",
+      "item": "item.cl_oiled_cloak",
+      "slot": "outer",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "rain"
+      ],
+      "flags": [
+        "oil"
+      ]
+    },
+    {
+      "id": "sheepskin_mantle",
+      "item": "item.cl_sheepskin_mantle",
+      "slot": "outer",
+      "tier": "K",
+      "style": "Y",
+      "layer": "B",
+      "family": 0,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false
+    },
+    {
+      "id": "wool_shawl",
+      "item": "item.cl_wool_shawl",
+      "slot": "outer",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false
+    },
+    {
+      "id": "silk_shawl",
+      "item": "item.cl_silk_shawl",
+      "slot": "outer",
+      "tier": "T",
+      "style": "Y",
+      "layer": "B",
+      "family": 0,
+      "material": "silk",
+      "skill": "Tailoring",
+      "level": 5,
+      "acquire": [
+        "craft",
+        "merchant"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false
+    },
+    {
+      "id": "crest_cloak",
+      "item": "item.cl_crest_cloak",
+      "slot": "outer",
+      "tier": "A",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "fine_wool",
+      "skill": "Tailoring",
+      "level": 9,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "status"
+      ],
+      "flags": [
+        "crest"
+      ]
+    },
+    {
+      "id": "feast_cloak",
+      "item": "item.cl_feast_cloak",
+      "slot": "outer",
+      "tier": "T",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "fest"
+      ],
+      "flags": [
+        "embroidered"
+      ]
+    },
+    {
+      "id": "child_cloak",
+      "item": "item.cl_child_cloak",
+      "slot": "outer",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "flags": [
+        "child_drawn"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "knit_scarf",
+      "item": "item.cl_knit_scarf",
+      "slot": "neck",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "knit",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft",
+        "reward"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "knit"
+      ]
+    },
+    {
+      "id": "fur_neckpiece",
+      "item": "item.cl_fur_neckpiece",
+      "slot": "neck",
+      "tier": "T",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "fur",
+      "skill": "Leatherwork",
+      "level": 6,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "winter"
+      ]
+    },
+    {
+      "id": "embroidered_collar",
+      "item": "item.cl_embroidered_collar",
+      "slot": "neck",
+      "tier": "Z",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 6,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "embroidered"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "neck_wrap",
+      "item": "item.cl_neck_wrap",
+      "slot": "neck",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false
+    },
+    {
+      "id": "knit_mitts",
+      "item": "item.cl_knit_mitts",
+      "slot": "hands",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "knit",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "knit"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "work_gloves",
+      "item": "item.cl_work_gloves",
+      "slot": "hands",
+      "tier": "Z",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "thorns"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "fur_gloves",
+      "item": "item.cl_fur_gloves",
+      "slot": "hands",
+      "tier": "T",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "fur",
+      "skill": "Leatherwork",
+      "level": 7,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "winter"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "rope_sash",
+      "item": "item.cl_rope_sash",
+      "slot": "waist",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "woven_sash",
+      "item": "item.cl_woven_sash",
+      "slot": "waist",
+      "tier": "Z",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Weaving",
+      "level": 4,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "leather_belt",
+      "item": "item.cl_leather_belt",
+      "slot": "waist",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "shop:riza"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child",
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "buckled_belt",
+      "item": "item.cl_buckled_belt",
+      "slot": "waist",
+      "tier": "Z",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "flags": [
+        "buckle"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "silver_belt",
+      "item": "item.cl_silver_belt",
+      "slot": "waist",
+      "tier": "A",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "silver",
+      "skill": "Smithing",
+      "level": 9,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "belt_pouch",
+      "item": "item.cl_belt_pouch",
+      "slot": "waist",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false
+    },
+    {
+      "id": "shoulder_bag",
+      "item": "item.cl_shoulder_bag",
+      "slot": "waist",
+      "tier": "Z",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "leather",
+      "skill": "Leatherwork",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Teen",
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false
+    },
+    {
+      "id": "swaddle",
+      "item": "item.cl_swaddle",
+      "slot": "body",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft",
+        "elif",
+        "dowry"
+      ],
+      "period": "ok",
+      "ages": [
+        "Baby"
+      ],
+      "adultCut": false,
+      "flags": [
+        "swaddle"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "baby_smock",
+      "item": "item.cl_baby_smock",
+      "slot": "body",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Baby"
+      ],
+      "adultCut": false,
+      "flags": [
+        "walker"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "baby_booties",
+      "item": "item.cl_baby_booties",
+      "slot": "feet",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "knit",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Baby"
+      ],
+      "adultCut": false,
+      "flags": [
+        "walker",
+        "knit"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "baby_blanket",
+      "item": "item.cl_baby_blanket",
+      "slot": "outer",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Weaving",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Baby"
+      ],
+      "adultCut": false,
+      "functions": [
+        "warm2"
+      ]
+    },
+    {
+      "id": "baby_bib",
+      "item": "item.cl_baby_bib",
+      "slot": "neck",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Baby"
+      ],
+      "adultCut": false,
+      "functions": [
+        "bib"
+      ],
+      "flags": [
+        "walker"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "child_shirt",
+      "item": "item.cl_child_shirt",
+      "slot": "body",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long",
+          "rolled"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "standing",
+          "closed"
+        ],
+        "length": [
+          "hip",
+          "knee_below"
+        ]
+      },
+      "childSize": true
+    },
+    {
+      "id": "child_tunic",
+      "item": "item.cl_child_tunic",
+      "slot": "body",
+      "tier": "K",
+      "style": "Ç",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long",
+          "rolled"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat"
+        ],
+        "length": [
+          "hip",
+          "knee_above",
+          "knee_below"
+        ]
+      },
+      "childSize": true
+    },
+    {
+      "id": "child_entari",
+      "item": "item.cl_child_entari",
+      "slot": "body",
+      "tier": "K",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "pinafore_entari",
+      "item": "item.cl_pinafore_entari",
+      "slot": "body",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "child_felt_vest",
+      "item": "item.cl_child_felt_vest",
+      "slot": "work",
+      "tier": "K",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "felt",
+      "skill": "Tailoring",
+      "level": 3,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "functions": [
+        "winter"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "first_feast_suit",
+      "item": "item.cl_first_feast_suit",
+      "slot": "body",
+      "tier": "Z",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft",
+        "order"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "functions": [
+        "fest"
+      ],
+      "flags": [
+        "embroidered",
+        "first_feast"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "child_drawers",
+      "item": "item.cl_child_drawers",
+      "slot": "legs",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "child_hose",
+      "item": "item.cl_child_hose",
+      "slot": "legs",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "child_skirt",
+      "item": "item.cl_child_skirt",
+      "slot": "legs",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "childSize": true
+    },
+    {
+      "id": "child_salvar",
+      "item": "item.cl_child_salvar",
+      "slot": "legs",
+      "tier": "K",
+      "style": "Y",
+      "layer": "A",
+      "family": 1,
+      "material": "linen",
+      "skill": "Tailoring",
+      "level": 2,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "flags": [
+        "pilot"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "small_shawl",
+      "item": "item.cl_small_shawl",
+      "slot": "outer",
+      "tier": "K",
+      "style": "O",
+      "layer": "B",
+      "family": 0,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "Child"
+      ],
+      "adultCut": false,
+      "flags": [
+        "child_drawn",
+        "knit"
+      ],
+      "childSize": true
+    },
+    {
+      "id": "maternity_entari",
+      "item": "item.cl_maternity_entari",
+      "slot": "body",
+      "tier": "K",
+      "style": "O",
+      "layer": "C",
+      "family": 2,
+      "material": "wool",
+      "skill": "Tailoring",
+      "level": 4,
+      "acquire": [
+        "craft",
+        "elif"
+      ],
+      "period": "ok",
+      "ages": [
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "maternity"
+      ],
+      "cuts": {
+        "sleeve": [
+          "short",
+          "elbow",
+          "long"
+        ],
+        "collar": [
+          "round",
+          "slit",
+          "boat",
+          "deep"
+        ],
+        "length": [
+          "ankle",
+          "floor"
+        ],
+        "slit": [
+          "none",
+          "side",
+          "front",
+          "high"
+        ]
+      },
+      "flags": [
+        "maternity"
+      ]
+    },
+    {
+      "id": "belly_band",
+      "item": "item.cl_belly_band",
+      "slot": "waist",
+      "tier": "K",
+      "style": "O",
+      "layer": "A",
+      "family": 1,
+      "material": "knit",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ],
+      "period": "ok",
+      "ages": [
+        "YoungAdult",
+        "Adult",
+        "Elder"
+      ],
+      "adultCut": false,
+      "functions": [
+        "maternity",
+        "warm2"
+      ],
+      "flags": [
+        "maternity",
+        "knit"
+      ],
+      "childSize": true
+    }
+  ],
+  "jewelry": [
+    {
+      "id": "earring",
+      "item": "item.jw_earring",
+      "place": "ear",
+      "skill": "Smithing",
+      "level": 7,
+      "acquire": [
+        "craft",
+        "shop:orhan",
+        "merchant"
+      ]
+    },
+    {
+      "id": "nose_ring",
+      "item": "item.jw_nose_ring",
+      "place": "nose",
+      "skill": "Smithing",
+      "level": 7,
+      "acquire": [
+        "craft"
+      ]
+    },
+    {
+      "id": "cord_necklace",
+      "item": "item.jw_cord_necklace",
+      "place": "neck",
+      "skill": "Tailoring",
+      "level": 1,
+      "acquire": [
+        "craft"
+      ]
+    },
+    {
+      "id": "glass_beads",
+      "item": "item.jw_glass_beads",
+      "place": "neck",
+      "skill": "Pottery",
+      "level": 6,
+      "acquire": [
+        "craft",
+        "shop:ayse"
+      ]
+    },
+    {
+      "id": "brooch",
+      "item": "item.jw_brooch",
+      "place": "brooch",
+      "skill": "Smithing",
+      "level": 3,
+      "acquire": [
+        "craft",
+        "shop:orhan"
+      ]
+    },
+    {
+      "id": "ring",
+      "item": "item.jw_ring",
+      "place": "hand",
+      "skill": "Smithing",
+      "level": 7,
+      "acquire": [
+        "craft"
+      ]
+    },
+    {
+      "id": "seal_ring",
+      "item": "item.jw_seal_ring",
+      "place": "hand",
+      "skill": "Smithing",
+      "level": 8,
+      "acquire": [
+        "craft",
+        "order"
+      ]
+    },
+    {
+      "id": "bracelet",
+      "item": "item.jw_bracelet",
+      "place": "wrist",
+      "skill": "Smithing",
+      "level": 7,
+      "acquire": [
+        "craft",
+        "merchant"
+      ]
+    },
+    {
+      "id": "evil_eye",
+      "item": "item.jw_evil_eye",
+      "place": "charm",
+      "skill": "Pottery",
+      "level": 7,
+      "acquire": [
+        "craft",
+        "shop:ayse"
+      ]
+    }
+  ]
+}

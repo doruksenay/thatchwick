@@ -152,6 +152,8 @@ namespace Thatchwick.Core.Content
         // ---- ev bakımı ve otomasyon (belge 45) ----
         /// <summary>Ev bakımı işi (HomeActions: candle, strew, whitewash, waterPot, harvestPot, upgrade); kuralları Life.HomeLife'ta.</summary>
         public string HomeAction { get; set; }
+        /// <summary>Beceri işi (belge 45): LifeSystems.SkillWorkBlocker / OnSkillWorkApplied çalıştırır (inspect_field, prune, graft...).</summary>
+        public string SkillWork { get; set; }
         /// <summary>HomeAction upgrade ise yapılan yükseltmenin kimliği.</summary>
         public string UpgradeId { get; set; }
 

@@ -278,6 +278,9 @@ namespace Thatchwick.Core.Work
         /// görevli, işi en çok / görevlisi en az olan göreve gider (eşitlikte tarla, hayvan, maden, ev sırası); hiç iş yoksa
         /// görevsiz kalır. Oyuncunun karakteri ve kâhyanın kendisi atanmaz. (karakter, eski görev, yeni görev) listesi döner.
         /// </summary>
+        /// <summary>Görev önceliği çarpanı (belge 45, Kâhyalık 2 "Öncelik sırala"); null ise hepsi 1.</summary>
+        public Func<DutyKind, double> PriorityWeight { get; set; }
+
         public List<(Character who, DutyKind from, DutyKind to)> AutoAssign(IEnumerable<Character> members)
         {
             var changes = new List<(Character, DutyKind, DutyKind)>();
@@ -307,7 +310,7 @@ namespace Thatchwick.Core.Work
                     foreach (var k in kinds)
                     {
                         if (pending[k] <= 0 || !CanTakeDuty(c, k)) continue;
-                        double score = pending[k] / (double)(assigned[k] + 1);
+                        double score = pending[k] / (double)(assigned[k] + 1) * (PriorityWeight != null ? PriorityWeight(k) : 1.0);
                         if (score > bestScore) { bestScore = score; pick = k; }
                     }
                 if (pick != DutyKind.None) { assigned[pick]++; given++; }

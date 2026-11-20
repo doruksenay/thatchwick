@@ -1,7 +1,7 @@
 ---
 id: "353"
 title: Su işleri eşyaları: çeşme, yalak-lüle, akarsulu hela, sarnıç, yağmur fıçısı, su terazisi
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:08Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 worker: batch            # 2026-11-18 toplu işçi pilotu (Claude'suz); bulut ajanı almaz
@@ -155,3 +155,4 @@ Tarifin makine okunur hâli (`tools/art/batch_worker.py`). Tablodaki değerlerle
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 - 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

@@ -1,7 +1,7 @@
 ---
 id: "323"
 title: Katlar: merdivenler ve kat zemin parçaları (el merdiveni, 2 merdiven, 2 taş merdiven, üst kat döşemesi, bodrum zemini)
-status: review
+status: accepted
 claimed_at: 2026-11-19T12:02Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -61,3 +61,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
   - zemin 64x32, yükseklik 0: ayak izi y -8-23, tuval dışına çıkıyor.
 - Tahmin yürütmemek için durdu. Karar gerekli: tuvalleri genişlet (1x1 için 80, 2x1 için 112, 301'deki gibi) ve zeminleri `create_isometric_tile` ile üret (64x32 zemin için `create_map_object` kılavuzu uygun değil).
 - Tuvaller kararlaştırılınca iş `pending`e alınabilir.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

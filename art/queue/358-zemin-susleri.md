@@ -1,7 +1,7 @@
 ---
 id: "358"
 title: Zemin süsleri (çiçek, yonca, çakıl, ot öbeği, eğrelti, yaprak, köstebek tepeciği)
-status: review
+status: rejected
 claimed_at: 2026-11-18T13:10Z
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: bitki
@@ -57,3 +57,4 @@ Görsel analiz (Project `26-gorsel-analiz.md`, P1 madde 8): çimenin üç varyan
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 - 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.
+- 2026-11-20: kullanıcı reddetti (sohbette toplu inceleme). Neden: zemin süsleri kaba: çakıl gri kareler, yonca blok blok, ot öbeği koyu. Yeniden: 358b.

@@ -301,6 +301,8 @@ namespace Thatchwick.Core.Characters
         public double GainSkillXp(SkillType skill, double xp)
         {
             if (IsDead) return 0;
+            // Beceri başına ölçek (süre tablosu, belge 45 bölüm 4); doygunluk gibi yalnızca tempo açıkken (hane üyeleri).
+            if (Skills.PacingEnabled) xp *= SkillPacing.XpScale(skill);
             // Belge 45 karar 4: XP bonusları toplanır (ruh hali ve moodlet'ler, Okuryazarlık, yetiştirme: çocukluk izi,
             // can yoldaşı, çıraklık, aile tarifi; dal ve özellik hızı), toplam en çok +%100. Eksiler (yas, bunalım)
             // çarpan olarak kalır. Yatkınlık ayrı çarpandır.
@@ -362,6 +364,18 @@ namespace Thatchwick.Core.Characters
         {
             if (IsDead || amount <= 0f) return;
             Wetness = Math.Min(1f, Math.Max(Wetness, amount));
+        }
+
+        /// <summary>Giysilerin soğuğa dayanıklılığı (belge 48 §12.1; ClothingService günceller).</summary>
+        public float ClothingColdResist { get; set; }
+        /// <summary>Giysilerin yağmurda ıslanmayı azaltması (0-1).</summary>
+        public float RainGuard { get; set; }
+
+        /// <summary>Yağmurda ıslanır: giysi koruması kadar az (kepenek, yağmurluk ıslaklık biriktirmez).</summary>
+        public void SoakRain(float amount)
+        {
+            float f = 1f - Math.Max(0f, Math.Min(1f, RainGuard));
+            if (f > 0f) Soak(amount * f);
         }
 
         /// <summary>Kurulanır (havlu): ıslaklık hemen gider.</summary>
@@ -518,7 +532,7 @@ namespace Thatchwick.Core.Characters
             if (cold > 0f)
             {
                 // Sıcak çorba gibi yemek etkileri de soğuğa dayanıklılık verir (toplam en çok %90).
-                float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f) + AthleticColdResist);
+                float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f) + AthleticColdResist + ClothingColdResist);
                 // Islak giysi soğukta ısıyı iki kat hızlı kaçırır.
                 Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - resist) * (1f + Wetness));
             }

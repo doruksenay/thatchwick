@@ -65,8 +65,12 @@ namespace Thatchwick.Game
             Items, Room, Wall, HalfWall, Door, Window, EraseEdge, Fence, Gate, Railing,
             Finish, FinishRoom, Floor, FloorRoom, FloorErase, Roof,
             PushWall, MoveRoom, CopyRoom, Eyedropper, Demolish,
-            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture, RoadPath, RoadGravel, RoadPaved, RoadErase, Pond, Conduit
+            Plot, ZoneStorage, ZoneErase, LevelBuild, LevelRemove, ZonePasture, RoadPath, RoadGravel, RoadPaved, RoadErase, Pond, Conduit,
+            Template
         }
+        // Hazır oda şablonları (Adım 43; life.json "templates"): seç, sol alt köşe karosuna dokun; tek adımda geri alınır.
+        private RoomTemplateService _templates;
+        private string _templateId;
         private Tool _tool = Tool.Items;
         private GridPos? _roomCorner;
         // Araç başına seçili parça (malzeme, kapı/pencere stili, zemin, çatı, kaplama); null = varsayılan / çıplak.
@@ -84,6 +88,10 @@ namespace Thatchwick.Game
         private GridPos? _conduitStart;                           // su yolu hattının ilk karosu
         private int? _pendingLevel;
         private bool _showRooms;
+        private bool _showFertility;
+        /// <summary>Verim katmanı (belge 45, Toprak bakımı 8): karonun verimi (0-1) ve katmanın açık olup olmadığı.</summary>
+        public System.Func<GridPos, float> FertilityAt { get; set; }
+        public System.Func<bool> FertilityOpen { get; set; }
         private WallView _walls;
         private int _mode = 1;               // 0 İnşa, 1 Eşya (satın al), 2 Envanter (29-menu-yapisi)
         private int _buildGroup;             // İnşa sekmesinde seçili araç grubu
@@ -395,6 +403,7 @@ namespace Thatchwick.Game
                 case Tool.RoadErase: r = _svc.PaintRoad(tile, RoadType.None); break;
                 case Tool.Conduit: ConduitTap(tile); return;
                 case Tool.Room: BuildRoomTap(tile); return;
+                case Tool.Template: TemplateTap(tile); return;
                 default: return;
             }
             _status = r.Ok ? "Tamam." : r.Reason;
@@ -542,6 +551,28 @@ namespace Thatchwick.Game
         }
 
         // Oda aracı: iki köşe karosuna dokun; çevresine duvar, içine tahta zemin.
+        private void TemplateTap(GridPos tile)
+        {
+            if (_templateId == null) { _status = GameLocalization.T("ui.build.template.pick_first"); return; }
+            if (_templates == null) _templates = new RoomTemplateService(_svc, _world, _house, _content);
+            var quote = _templates.Quote(_templateId, tile);
+            var r = _templates.Build(_templateId, tile, out _);
+            _status = r.Ok ? GameLocalization.T("ui.build.template.built", ("cost", quote.Akce)) : r.Reason;
+            if (r.Ok) Activity?.Invoke("template");
+            RefreshOverlay();
+        }
+
+        private void DrawTemplateList()
+        {
+            GUILayout.Label(GameLocalization.T("ui.build.template.header"), _wrap);
+            foreach (var t in _content.Templates.All)
+            {
+                bool on = _templateId == t.Id;
+                string label = GameLocalization.T("ui.build.template.row", ("name", t.DisplayName), ("w", t.Width), ("h", t.Height));
+                if (GUILayout.Toggle(on, label, GUI.skin.button) != on) { var id = on ? null : t.Id; _deferred = () => { _templateId = id; _status = ""; }; }
+            }
+        }
+
         private void BuildRoomTap(GridPos tile)
         {
             if (!_roomCorner.HasValue)
@@ -682,6 +713,20 @@ namespace Thatchwick.Game
                     c.a = 0.3f;
                     foreach (var t in room.Tiles) Diamond(t, c, -8000, 1f);
                 }
+            }
+            if (_showFertility && FertilityAt != null && FertilityOpen != null && FertilityOpen())
+            {
+                var map = _world.Map;
+                for (int y = 0; y < map.Height; y++)
+                    for (int x = 0; x < map.Width; x++)
+                    {
+                        var t = new GridPos(x, y, _view.ViewLevel);
+                        if (!map.IsOwned(t) || map.GetFloor(t) != FloorType.Dirt) continue;
+                        float f = Mathf.Clamp01(FertilityAt(t));
+                        var c = Color.Lerp(new Color(0.9f, 0.25f, 0.15f), new Color(0.25f, 0.85f, 0.25f), f);
+                        c.a = 0.35f;
+                        Diamond(t, c, -8001, 1f);
+                    }
             }
             if (_roomCorner.HasValue) Diamond(_roomCorner.Value, new Color(0.3f, 0.7f, 1f, 0.7f), 6000, 1f);
             if (_lineStart.HasValue)
@@ -860,6 +905,12 @@ namespace Thatchwick.Game
             GUILayout.BeginHorizontal();
             _headerRow = true; ToolButton("Damlalık", Tool.Eyedropper); ToolButton("Balyoz", Tool.Demolish); _headerRow = false;
             if (GUILayout.Toggle(_showRooms, UiSkin.C("Odalar", "top_rooms"), GUI.skin.button, GUILayout.Width(HeaderW)) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
+            // Verim katmanı düğmesi her karede çizilir; Toprak bakımı 8 yoksa pasif (IMGUI yerleşimi sabit kalsın).
+            bool fertOpen = FertilityAt != null && FertilityOpen != null && FertilityOpen();
+            GUI.enabled = fertOpen;
+            if (GUILayout.Toggle(_showFertility && fertOpen, new GUIContent(GameLocalization.T("ui.build.fertility"), fertOpen ? GameLocalization.T("ui.build.fertility_tip") : GameLocalization.T("ui.build.fertility_locked")), GUI.skin.button, GUILayout.Width(HeaderW)) != (_showFertility && fertOpen))
+            { _showFertility = !_showFertility; RefreshOverlay(); }
+            GUI.enabled = true;
             // Düğme her karede çizilir (koşullu denetim IMGUI yerleşimini bozar); boş yığında pasif.
             GUI.enabled = _svc.CanUndo;
             if (GUILayout.Button(new GUIContent("Geri al", UiSkin.Icon("top_undo"), _svc.CanUndo ? _svc.UndoLabel : null), GUILayout.Width(HeaderW))) _deferred = () => { var u = _svc.Undo(); _status = u.Ok ? "Geri alındı." : u.Reason; RefreshOverlay(); };
@@ -895,7 +946,7 @@ namespace Thatchwick.Game
         private static readonly (string name, (string label, Tool tool)[] tools)[] BuildGroups =
         {
             ("Duvar", new[] { ("Oda", Tool.Room), ("Duvar", Tool.Wall), ("Yarım duvar", Tool.HalfWall), ("Kapı", Tool.Door),
-                ("Pencere", Tool.Window), ("Kaldır", Tool.EraseEdge), ("Duvar it", Tool.PushWall), ("Oda taşı", Tool.MoveRoom), ("Oda kopyala", Tool.CopyRoom) }),
+                ("Pencere", Tool.Window), ("Kaldır", Tool.EraseEdge), ("Duvar it", Tool.PushWall), ("Oda taşı", Tool.MoveRoom), ("Oda kopyala", Tool.CopyRoom), ("Hazır oda", Tool.Template) }),
             ("Zemin", new[] { ("Zemin", Tool.Floor), ("Oda zemini", Tool.FloorRoom), ("Duvar kapl.", Tool.Finish), ("Oda kapl.", Tool.FinishRoom),
                 ("Çatı", Tool.Roof), ("Çim", Tool.FloorErase) }),
             ("Bahçe", new[] { ("Çit", Tool.Fence), ("Çit kapısı", Tool.Gate), ("Korkuluk", Tool.Railing), ("Gölet kaz", Tool.Pond),
@@ -962,6 +1013,7 @@ namespace Thatchwick.Game
             switch (_tool)
             {
                 case Tool.Room: return "İki köşe karosuna dokun: seçili malzemeyle duvar, seçili zeminle döşeme.";
+                case Tool.Template: return GameLocalization.T("ui.build.template.help");
                 case Tool.Wall:
                 case Tool.HalfWall:
                 case Tool.Fence:
@@ -1045,6 +1097,7 @@ namespace Thatchwick.Game
             if ((_tool == Tool.MoveRoom || _tool == Tool.CopyRoom || _tool == Tool.Demolish) && (_roomPick.HasValue || _roomCorner.HasValue))
                 if (GUILayout.Button("Vazgeç")) { _roomPick = null; _roomCorner = null; RefreshOverlay(); }
             if (_lineStart.HasValue && GUILayout.Button("Çizgiden vazgeç")) { _lineStart = null; RefreshOverlay(); }
+            if (_tool == Tool.Template) DrawTemplateList();
 
             var kind = KindFor(_tool);
             if (!kind.HasValue) return;
@@ -1140,6 +1193,7 @@ namespace Thatchwick.Game
         {
             switch (t)
             {
+                case Tool.Template: return "tool_room";
                 case Tool.Room: return "tool_room"; case Tool.Wall: return "tool_wall"; case Tool.HalfWall: return "tool_halfwall";
                 case Tool.Door: return "tool_door"; case Tool.Window: return "tool_window"; case Tool.EraseEdge: return "tool_erase_edge";
                 case Tool.Fence: return "tool_fence"; case Tool.Gate: return "tool_gate"; case Tool.Railing: return "tool_railing";
@@ -1285,6 +1339,29 @@ namespace Thatchwick.Game
             }
 
             GUILayout.Label(ItemCatalog.Describe(sel.Def), _wrap);
+            // Varyantlar (Adım 43, belge 45): aynı yerde, aynı yönde başka modele geçiş; fiyat farkı ödenir ya da iade edilir.
+            var variants = _svc.VariantsOf(sel.Def);
+            if (variants.Count > 0)
+            {
+                GUILayout.Label(GameLocalization.T("ui.build.variants"));
+                foreach (var v in variants)
+                {
+                    int vdiff = v.Price - sel.Def.Price;
+                    string vlabel = vdiff > 0 ? GameLocalization.T("ui.build.variant.more", ("name", v.DisplayName), ("cost", vdiff))
+                        : vdiff < 0 ? GameLocalization.T("ui.build.variant.less", ("name", v.DisplayName)) : v.DisplayName;
+                    if (GUILayout.Button(vlabel))
+                    {
+                        int id = sel.Id; string vid = v.Id;
+                        _deferred = () =>
+                        {
+                            var r = _svc.SwapVariant(id, vid, out var replaced);
+                            if (r.Ok && replaced != null) { _selectedId = replaced.Id; Activity?.Invoke("variant"); }
+                            _status = r.Ok ? GameLocalization.T("ui.build.variant.done") : r.Reason;
+                            RefreshOverlay();
+                        };
+                    }
+                }
+            }
             var finishes = BuildParts.FinishesFor(_content, sel.Def);
             if (finishes.Count > 0)
             {

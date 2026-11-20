@@ -441,12 +441,12 @@ namespace Thatchwick.Core.Tests
             // Satın alma menüsü: her kategoride en az 5 eşya, her eşya bilinen bir kategoride, kartı boş değil.
             foreach (var (id, _) in ItemCatalog.Categories)
                 Assert.True(ItemCatalog.InCategory(db, id).Count >= 5, $"{id}: {ItemCatalog.InCategory(db, id).Count} eşya");
-            var known = new HashSet<string>(ItemCatalog.Categories.Select(c => c.id)) { "resource", "plant", "village", "memorial", "forage", "utility", "structure" };
+            var known = new HashSet<string>(ItemCatalog.Categories.Select(c => c.id)) { "resource", "plant", "village", "memorial", "forage", "utility", "structure", "clothing" };
             foreach (var d in db.Items.All) Assert.True(known.Contains(d.Category), $"{d.Id}: kategori {d.Category}");
             Assert.StartsWith("Enerji +70 (Dinlenmiş)", ItemCatalog.Describe(db.Items.Get("item.bed_frame")));
             Assert.Contains("Işık", ItemCatalog.Describe(db.Items.Get("item.torch_wall")));
             Assert.Contains("Duvara asılır", ItemCatalog.Describe(db.Items.Get("item.torch_wall")));
-            Assert.Contains("54 tarif", ItemCatalog.Describe(db.Items.Get("item.workbench")));   // su işleri (boru, fıçı, hela, hızar, dink, çekiç) + havluluk + oyuncak ve defter (belge 30, 34) + D3 (iki ayna, kutu yatak) + D3b (çeyiz sandığı, 5 mevsim süsü, saman süsü) + av yayı, kement, örme çit (31) + belge 45 (pencere oturağı, kiriş, kasnak, sergi rafı ve dolabı, giysi sırığı, güvercinlik, şaka çeşmesi, Cezerî otomatı, su saati, kartal rahle)
+            Assert.Contains("74 tarif", ItemCatalog.Describe(db.Items.Get("item.workbench")));   // + belge 45 beceri tamamlama: kereste, teker, Çatkı ve Yörük takımları, hund, bocurgat, davul, arabalar (15)   // su işleri (boru, fıçı, hela, hızar, dink, çekiç) + havluluk + oyuncak ve defter (belge 30, 34) + D3 (iki ayna, kutu yatak) + D3b (çeyiz sandığı, 5 mevsim süsü, saman süsü) + av yayı, kement, örme çit (31) + belge 45 (pencere oturağı, kiriş, kasnak, sergi rafı ve dolabı, giysi sırığı, güvercinlik, şaka çeşmesi, Cezerî otomatı, su saati, kartal rahle)
         }
     }
 }

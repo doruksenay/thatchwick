@@ -1,7 +1,7 @@
 ---
 id: "389"
 title: Çatkı Evi mobilyası (9)
-status: review
+status: accepted
 claimed_at: 2026-11-18T13:22Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
@@ -55,3 +55,4 @@ Yöntem, ortak ayarlar, ayak izi kılavuzu, ikinci deneme kuralı, teslim (`cp -
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

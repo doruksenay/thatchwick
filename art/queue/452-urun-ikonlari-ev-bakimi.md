@@ -1,7 +1,7 @@
 ---
 id: "452"
 title: "Ürün ikonları: tüy, kabuk, çakıl (4)"
-status: review
+status: accepted
 claimed_at: 2026-11-19T21:27Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 19.11.2026 ("bunların hepsini yapalım", varyant çeşitliliği), Project belgesi 45
 priority: 50
@@ -40,3 +40,4 @@ Belge 45: kuş tüyü yatak malzemesi, göl kıyısı koleksiyonu.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

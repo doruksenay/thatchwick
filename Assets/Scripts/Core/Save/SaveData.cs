@@ -311,6 +311,8 @@ namespace Thatchwick.Core.Save
         public KeyInt[] counters;
         public long workDay = -1;
         public int workToday;
+        public int diamonds;             // elmas bakiyesi (eski kayıtta yok)
+        public bool diamondsSeeded;      // false: elmastan önceki kayıt; bakiye seviye ve rozetlerden bir kez hesaplanır
     }
 
     [Serializable]

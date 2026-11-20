@@ -1,7 +1,7 @@
 ---
 id: "312"
 title: Saklama eşyaları (tuzlama fıçısı, kök mahzeni)
-status: review
+status: accepted
 claimed_at: 2026-11-18T09:30Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -35,3 +35,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 
 ## Doğrulama
 301 tablosu. Ek: kök mahzeninde kapı kesin görünür mü (etkileşim noktası), fıçıda sıvı/yiyecek yok mu.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

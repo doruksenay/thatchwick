@@ -1,7 +1,7 @@
 ---
 id: "338"
 title: Ahır ve kümes eşyaları (12)
-status: review
+status: accepted
 claimed_at: 2026-11-18T11:50Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -42,3 +42,4 @@ Ayrıntılı yöntem **301'deki ile aynıdır** (`create_map_object` stil eşlem
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 - 2026-11-18: yeniden `pending` (Claude, kurtarma): 2026-11-18T09:53Z sahiplenmesinden sonuç gelmedi.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
