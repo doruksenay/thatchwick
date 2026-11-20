@@ -4,7 +4,7 @@ title: Çalışırken ıslık
 kind: sfx
 family: voice
 freq: B
-status: blocked
+status: ready
 approved_by: user
 depends_on:
 - s140
@@ -13,7 +13,7 @@ key: whistle.tune
 generate: 16
 keep: 10
 duration_s: 3.0
-cost_max: 900
+cost_max: 2150
 axes:
   tune:
   - slow lilting folk phrase
@@ -23,6 +23,7 @@ axes:
   whistler:
   - soft airy whistle
   - clear bright whistle
-error: tahmin 1920 kredi > cost_max 900
+cost_max_eski: 900
+not_cost_max: '20.11.2026: kullanıcı onayıyla tahmine göre yükseltildi'
 ---
 A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments.

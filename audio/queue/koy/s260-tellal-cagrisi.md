@@ -4,7 +4,7 @@ title: Tellalın çağrısı (çan ve sözsüz bağırış)
 kind: sfx
 family: voice
 freq: C
-status: blocked
+status: ready
 approved_by: user
 depends_on:
 - s140
@@ -13,7 +13,7 @@ key: village.crier
 generate: 8
 keep: 4
 duration_s: 3.0
-cost_max: 900
+cost_max: 1100
 axes:
   bell:
   - three slow rings of a brass handbell first
@@ -21,6 +21,7 @@ axes:
   call:
   - a long rising call
   - two short calls then a long one
-error: tahmin 960 kredi > cost_max 900
+cost_max_eski: 900
+not_cost_max: '20.11.2026: kullanıcı onayıyla tahmine göre yükseltildi'
 ---
 A medieval town crier in a small stone-paved village square: a brass handbell rings, then a middle-aged man with a strong chest voice calls out loudly to gather people, in wordless village gibberish, no real words, slight echo off the houses. No music, no crowd, no modern sounds.
