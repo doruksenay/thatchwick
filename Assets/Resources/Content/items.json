@@ -9600,8 +9600,7 @@
         "alongX": "iso_wall_item_tapestry_sw_ne",
         "pivotX": 24.0,
         "pivotY": 32.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35458,8 +35457,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 72,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35764,8 +35762,7 @@
         "pivotY": 20.0,
         "pxW": 64,
         "pxH": 104,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35975,8 +35972,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 64,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
