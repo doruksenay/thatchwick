@@ -123,6 +123,7 @@ namespace Thatchwick.Core.Life
                 };
                 c.SetAge(def.Age);
                 c.SetTraits(def.Traits);
+                GiveSkills(c, def);
                 _population.Add(c);
                 LifeRules.Recompute(c, _content, _population.Village);
                 _states[def.Id] = new VillagerState { DefId = def.Id, CharacterId = c.Id };
@@ -169,6 +170,7 @@ namespace Thatchwick.Core.Life
                 c.SetAge(SuccessorAgeMin + _rng.NextDouble() * (SuccessorAgeMax - SuccessorAgeMin));
                 c.SetTraits(def.Traits);
                 c.LifespanDays = c.AgeConfig.RollLifespan(_rng) + LifeRules.LifespanBonus(_content, c.TraitIds);
+                GiveSkills(c, def);
                 _population.Add(c);
                 LifeRules.Recompute(c, _content, _population.Village);
 
@@ -177,8 +179,59 @@ namespace Thatchwick.Core.Life
                 state.LastGiftDay = -1;
                 arrived.Add(c);
                 SuccessorArrived?.Invoke(c, def);
+                BringFamily(c, def);   // dönen listede yalnızca halefler; aile FamilyMemberArrived ile
             }
             return arrived;
+        }
+
+        /// <summary>Tanımdaki başlangıç beceri seviyeleri (çalgıcı Müzik 3).</summary>
+        private static void GiveSkills(Character c, VillagerDef def)
+        {
+            foreach (var kv in def.SkillLevels)
+                if (c.Skills.GetLevel(kv.Key) < kv.Value) c.Skills.AddXp(kv.Key, SkillRules.XpForLevel(kv.Value), SkillRules.MaxLevel);
+        }
+
+        /// <summary>
+        /// Halef ailesiyle mi gelir (belge 66g karar 1: "ailesiyle ya da tek başına taşınsın"): bu olasılıkla eşi ve 0-2 çocuğu da
+        /// köye yerleşir; hepsi halefin hanesine girer (NeighborHouseService.EnsureHouses).
+        /// </summary>
+        public double FamilyChance { get; set; } = 0.5;
+        /// <summary>Halefle gelen aile üyesi (eş ya da çocuk): oyun katmanı görünüm ve sahne nesnesi verir.</summary>
+        public event Action<Character, Character> FamilyMemberArrived;
+
+        private void BringFamily(Character head, VillagerDef def)
+        {
+            if (_rng.NextDouble() >= FamilyChance) return;
+            var cfg = head.AgeConfig;
+            var spouseSex = head.Sex == Sex.Male ? Sex.Female : Sex.Male;
+            var spouse = NewcomerLike(head, spouseSex, def, head.AgeDays - 3 + _rng.NextDouble() * 6);
+            spouse.SpouseId = head.Id;
+            head.SpouseId = spouse.Id;
+            FamilyMemberArrived?.Invoke(spouse, head);
+            int kids = _rng.Next(3);
+            // Çocuk yaşı: anne babadan en az bir kuşak (24 gün) genç, en büyüğü ergen.
+            double oldest = Math.Min(cfg.YoungAdultStartDay - 0.5, Math.Min(head.AgeDays, spouse.AgeDays) - 24);
+            for (int i = 0; i < kids && oldest > cfg.ChildStartDay; i++)
+            {
+                var sex = _rng.Next(2) == 0 ? Sex.Female : Sex.Male;
+                var child = NewcomerLike(head, sex, def, cfg.ChildStartDay + _rng.NextDouble() * (oldest - cfg.ChildStartDay));
+                child.BirthFatherId = head.Sex == Sex.Male ? head.Id : spouse.Id;
+                child.BirthMotherId = head.Sex == Sex.Female ? head.Id : spouse.Id;
+                FamilyMemberArrived?.Invoke(child, head);
+            }
+        }
+
+        private Character NewcomerLike(Character head, Sex sex, VillagerDef def, double age)
+        {
+            string name = _population.NameFor(sex, def.Id);
+            if (string.IsNullOrWhiteSpace(name)) name = def.Name;
+            var c = new Character(_population.NextId(), name, head.Position) { Sex = sex, IsVillager = true, CanStarve = false };
+            c.SetAge(Math.Max(1.0, age));
+            if (_content.Traits.Count > 0) c.SetTraits(LifeRules.RollTraits(_content, _rng, 1 + _rng.Next(2)));
+            c.LifespanDays = Math.Max(c.AgeDays + 20, c.AgeConfig.RollLifespan(_rng) + LifeRules.LifespanBonus(_content, c.TraitIds));
+            _population.Add(c);
+            LifeRules.Recompute(c, _content, _population.Village);
+            return c;
         }
 
         /// <summary>Adlı köylünün rolü; adlı köylü değilse null.</summary>

@@ -1403,7 +1403,7 @@ namespace Thatchwick.Core.Life
             CookingTick(gameDays);
             Trees.Tick();   // mevsimin son akşamı Bereket Sofrası (belge 52)
             RelationsTick(gameDays);   // gönül yolu sahneleri, kararlar, köyün sosyal ağı (belge 67)
-            Living.Tick(gameDays);   // köylülerin öğünleri, kileri, alımı (belge 66f)
+            VillageTick(gameDays);   // köylülerin öğünleri, kileri, alımı; ölen ustanın yerine hemen halef (belge 66f, 66g)
 
             long day = Clock.DayIndex;
             if (day != _lastDay)
@@ -1600,7 +1600,7 @@ namespace Thatchwick.Core.Life
             // Komşu hanedanlar: hanesizleri yerleştir, ölen başın yerine varis, köyde düğün; dükkân yetişkin varise hemen geçer.
             Houses.OnNewDay();
             Homes.AssignAll();
-            Villagers.ReplaceDeparted(inheritOnly: true);
+            Villagers.ReplaceDeparted();   // varis yoksa halef hemen gelir (belge 66g karar 1)
             var founder = FounderId != null ? FounderId() : null;
             if (founder.HasValue) Legacy.CheckDescendants(founder.Value, Clock.TotalDays);
             Upbringing.OnNewDay();

@@ -57,8 +57,22 @@ namespace Thatchwick.Core.Life
         public const double ShoppingFrom = 0.34, ProduceFrom = 0.22;
         /// <summary>Çağrılan usta bu kadar gün (≈2 saat) dükkânında ya da yardımda kalır.</summary>
         public const double CallDays = 0.09;
-        /// <summary>Uzun süre aç ya da üşüyen köylü (gün) yardım ricası çıkarır; aynı köylü haftada en çok bir kez.</summary>
-        public const double HardshipDays = 0.5, HardshipRepeatDays = 7;
+        /// <summary>
+        /// Uzun süre aç ya da üşüyen köylü (gün) yardım ricası çıkarır. Seyrek (belge 66g karar 4): aynı köylü iki haftada en çok
+        /// bir kez, bütün köyde de üç günde en çok bir rica.
+        /// </summary>
+        public const double HardshipDays = 0.5, HardshipRepeatDays = 14, HardshipVillageGapDays = 3;
+        private double _lastHardshipAny = double.MinValue;
+
+        /// <summary>Çalgıcı (belge 66g karar 1): akşam meyhanede çalar, Pazar öğlenden.</summary>
+        public const string RoleMusician = "musician";
+        /// <summary>Ebe doğuma çağrıldıysa bu kadar gün (doğuma dek) evin önünde bekler.</summary>
+        public const double MidwifeCallDays = 1.0;
+        /// <summary>Ebe yanındayken doğum: annenin doğum sonrası toparlanmasının bu payı gider (belge 66g karar 2).</summary>
+        public const double MidwifeRecoveryShare = 0.5;
+        public const string MidwifeBabyMood = "mood.village.midwife_hands", MidwifeMotherMood = "mood.village.midwife_help";
+        /// <summary>Ebenin yardıma geldiği yer (oyuncunun evinin önü).</summary>
+        public const string FarmhouseKey = "farmhouse";
         /// <summary>Kilerde bir malın tutulabileceği en çok adet (kendi ürünü birikmesin).</summary>
         public const int PantryCap = 12;
 
@@ -256,6 +270,7 @@ namespace Thatchwick.Core.Life
             if (RestDay)
             {
                 if (innkeeper) return baseLoc;                       // meyhane öğlenden açık
+                if (def != null && def.Role == RoleMusician && frac >= VillagerService.InnOpens && frac < 0.95 && TavernOpen()) return VillagerFreeWill.Tavern;
                 if (frac < RestDayWake || frac >= VillagerService.SquareUntil) return home;
                 if (frac >= DinnerFrom && frac < DinnerTo) return home;
                 if (wet) return adult && frac >= VillagerService.InnOpens && salt % 3 == 0 && TavernOpen() ? VillagerFreeWill.Tavern : home;
@@ -268,6 +283,8 @@ namespace Thatchwick.Core.Life
             }
 
             if (innkeeper) return baseLoc;
+            // Çalgıcı: gündüz evinde ya da meydanda, akşam meyhanede çalar.
+            if (def != null && def.Role == RoleMusician && _villagers.DefOf(c) != null && frac >= DinnerFrom && frac < 0.95 && TavernOpen()) return VillagerFreeWill.Tavern;
             // Öğle: işyerindeki usta bazı günler meyhanede yer; ihtiyacı kritikse öğle arasını öne alır (belge 66f §A.2).
             if (work != null && baseLoc == work && adult)
             {
@@ -412,7 +429,7 @@ namespace Thatchwick.Core.Life
             }
             var st = S(master);
             st.CalledTo = helpAt ?? WorkOf(master) ?? HomeOf(master);
-            st.CalledUntil = _clock.TotalDays + CallDays;
+            st.CalledUntil = _clock.TotalDays + (helpAt == FarmhouseKey ? MidwifeCallDays : CallDays);
             message = LocText.Of(helpAt != null ? "village.call.coming_help" : "village.call.coming", ("name", master.Name));
             Bubble?.Invoke(master, LocText.Of("village.call.bubble"));
             return true;
@@ -707,6 +724,10 @@ namespace Thatchwick.Core.Life
             double frac = _clock.DayFraction;
             var weather = Weather != null ? Weather() : WeatherType.Clear;
             bool festival = FestivalToday != null && FestivalToday();
+            _musicAtTavern = false;
+            foreach (var c in Villagers())
+                if (c.Stage >= AgeStage.Teen && c.Skills.GetLevel(SkillType.Music) >= 1 && PlaceFor(c, frac, weather, festival) == VillagerFreeWill.Tavern
+                    && (AtPlace == null || AtPlace(c, VillagerFreeWill.Tavern))) { _musicAtTavern = true; break; }
             foreach (var c in Villagers())
             {
                 Watch(c);
@@ -737,6 +758,8 @@ namespace Thatchwick.Core.Life
                     if (EatHome(c, home, salt)) st.Meals |= 1;
                 if ((st.Meals & 4) == 0 && frac >= DinnerFrom && frac < DinnerTo + 0.1 && (atHome || IsInnkeeperAtWork(c, place)))
                     if (EatHome(c, home, salt)) st.Meals |= 4;
+                if ((st.Meals & 4) == 0 && frac >= DinnerFrom && frac < DinnerTo + 0.1 && atTavern && IsMusician(c))
+                    if (EatAtTavern(c) || EatHome(c, home, salt)) st.Meals |= 4;   // çalgıcı akşamını meyhanede yer
                 // Öğle: işte azık ya da meyhanede yemek; yoksul aşevinde; kritik açlıkta öne alınır.
                 if ((st.Meals & 2) == 0 && ((frac >= LunchFrom && frac < LunchTo + 0.05) || (critical && frac >= BreakfastTo && frac < DinnerFrom)))
                 {
@@ -758,7 +781,7 @@ namespace Thatchwick.Core.Life
             {
                 c.Needs.Restore(NeedType.Social, 160f * perDay);
                 c.Needs.Restore(NeedType.Fun, (atTavern ? 120f : 70f) * perDay);
-                if (atTavern && c.Skills.GetLevel(SkillType.Music) >= 2) c.Needs.Restore(NeedType.Fun, 60f * perDay);   // çalgı çalan
+                if (atTavern && _musicAtTavern) c.Needs.Restore(NeedType.Fun, 60f * perDay);   // çalgı çalınıyor: herkes daha çok eğlenir
             }
             else if (atHome && HouseMates(c, home)) c.Needs.Restore(NeedType.Social, 50f * perDay);   // evde hane sohbeti
             else if (place != null && place.StartsWith("work:", StringComparison.Ordinal)) c.Needs.Restore(NeedType.Social, 40f * perDay);   // müşteri ile laflamak
@@ -769,6 +792,36 @@ namespace Thatchwick.Core.Life
         private static bool Night(double frac) => frac < VillagerService.HomeUntil || frac >= VillagerService.SquareUntil;
 
         private bool CharityOpen(double frac) => frac >= BreakfastTo && frac < DinnerTo;
+
+        private bool _musicAtTavern;
+
+        /// <summary>Meyhanede şu an çalgı çalınıyor mu (son adımda).</summary>
+        public bool MusicAtTavern => _musicAtTavern;
+
+        public bool IsMusician(Character c) => _villagers.DefOf(c)?.Role == RoleMusician;
+
+        /// <summary>
+        /// Doğum (belge 66g karar 2): çağrılan ebe evin önündeyse annenin doğum sonrası toparlanması yarıya iner, bebeğe ve anneye
+        /// iç ses gelir; ebe işini bitirip döner.
+        /// </summary>
+        public bool OnBirth(Character baby, Character mother)
+        {
+            if (baby == null || mother == null || mother.IsVillager) return false;
+            foreach (var c in _population.Members)
+            {
+                if (c.IsDead || !c.IsVillager || !_state.TryGetValue(c.Id, out var st)) continue;
+                if (st.CalledTo != FarmhouseKey || _clock.TotalDays >= st.CalledUntil) continue;
+                if (AtPlace != null && !AtPlace(c, FarmhouseKey)) continue;
+                mother.ShortenPostpartum(MidwifeRecoveryShare);
+                baby.AddMoodlet(MidwifeBabyMood, Text(LocText.Of("village.mood.midwife_hands")), 5, 3.0);
+                mother.AddMoodlet(MidwifeMotherMood, Text(LocText.Of("village.mood.midwife_help")), 6, 2.0);
+                Bubble?.Invoke(c, LocText.Of("village.midwife.bubble"));
+                Notice?.Invoke(LocText.Of("village.n.midwife", ("name", c.Name), ("baby", baby.Name)), mother.Id);
+                st.CalledUntil = _clock.TotalDays;   // işi bitti, programına döner
+                return true;
+            }
+            return false;
+        }
 
         private bool IsInnkeeperAtWork(Character c, string place)
         {
@@ -813,7 +866,9 @@ namespace Thatchwick.Core.Life
             bool hard = c.Needs.Get(NeedType.Hunger) <= NeedSet.CriticalThreshold || c.Needs.Get(NeedType.Warmth) <= NeedSet.CriticalThreshold;
             st.HardshipDays = hard ? st.HardshipDays + dt : 0;
             if (st.HardshipDays < HardshipDays || Requests == null || _clock.TotalDays - st.LastHardshipRequest < HardshipRepeatDays) return;
+            if (_clock.TotalDays - _lastHardshipAny < HardshipVillageGapDays) return;
             st.LastHardshipRequest = _clock.TotalDays;
+            _lastHardshipAny = _clock.TotalDays;
             st.HardshipDays = 0;
             bool cold = c.Needs.Get(NeedType.Warmth) <= NeedSet.CriticalThreshold;
             string item = cold ? "item.firewood" : "item.bread";

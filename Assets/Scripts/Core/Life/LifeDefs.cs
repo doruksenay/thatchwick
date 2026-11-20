@@ -115,6 +115,8 @@ namespace Thatchwick.Core.Life
         /// <summary>Hanenin sonraki kuşaklarına verilecek adlar (belge 61b §5).</summary>
         public List<string> MaleNames { get; set; } = new List<string>();
         public List<string> FemaleNames { get; set; } = new List<string>();
+        /// <summary>Başlangıç beceri seviyeleri (çalgıcı Müzik 3); halef de aynı ustalıkla gelir.</summary>
+        public List<KeyValuePair<SkillType, int>> SkillLevels { get; set; } = new List<KeyValuePair<SkillType, int>>();
     }
 
     public sealed class FestivalDef : IContentDef
