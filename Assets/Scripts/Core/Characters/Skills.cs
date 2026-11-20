@@ -334,6 +334,9 @@ namespace Thatchwick.Core.Characters
         internal void RestoreToday(SkillType skill, double xp) { if (xp > 0) _today[skill] = xp; }
         internal void RestoreUsed(SkillType skill) { _usedThisSeason.Add(skill); }
 
+        /// <summary>Bu mevsim kullanılmış say (yaşlıya ders: paslanmayı önler; belge 45, Öğretmenlik 9).</summary>
+        public void MarkUsedThisSeason(SkillType skill) => _usedThisSeason.Add(skill);
+
         /// <summary>Gece: günlük sayaçlar sıfırlanır.</summary>
         public void NewDay() => _today.Clear();
 

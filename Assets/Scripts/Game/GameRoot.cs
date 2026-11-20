@@ -452,6 +452,7 @@ namespace Thatchwick.Game
             if (loaded != null) _market.RestoreState(loaded.MarketDemand, _clock.TotalDays, _clock.Season, loaded.MarketTakenOffers);
             else _market.Tick(0, _clock.TotalDays, _clock.Season);
             _market.OfferAccepted += o => _account.Record(o.IsContract ? "contract" : "barter", _clock.DayIndex);
+            _market.OfferAccepted += o => { if (o.Reputation > 0 && _life != null) _life.Upbringing.Reputation.Add(o.Reputation, o.Label ?? "sipariş"); };
             _marketPanel = new MarketPanel(_market, _household, _storage, _content, _world,
                 () => _player?.Character, () => _player?.Runner, _stallId);
             _plants.PlantDied += (def, pos) =>
@@ -508,6 +509,7 @@ namespace Thatchwick.Game
             _buildService.SkillLevel = _life.BestSkill;
             _animals.SkillLevel = _life.BestSkill;
             _life.Attach(_family);
+            _market.SpecialContracts = _life.MasterOrders;   // pazar günü usta siparişi (belge 45)
             _life.Attach(_plants);
             _life.Attach(_heat);
             _life.Attach(_market);

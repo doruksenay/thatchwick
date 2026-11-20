@@ -104,6 +104,7 @@ namespace Thatchwick.Core.Life
         {
             Content = content ?? throw new ArgumentNullException(nameof(content));
             World = world ?? throw new ArgumentNullException(nameof(world));
+            _masteryRng = new Random(seed != 0 ? Seeds.Derive(seed, 61) : 61);
             House = house ?? throw new ArgumentNullException(nameof(house));
             Population = population ?? throw new ArgumentNullException(nameof(population));
             Clock = clock ?? throw new ArgumentNullException(nameof(clock));
@@ -470,7 +471,15 @@ namespace Thatchwick.Core.Life
         }
 
         public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction);
-        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus());
+        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus() + PersuadeBonus());
+
+        /// <summary>Gönül kazanma 8 "İkna et": hanede ikna edici biri varsa o gün satış %5 iyi (belge 45).</summary>
+        public const double PersuadeSellBonus = 0.05;
+        private double PersuadeBonus()
+        {
+            foreach (var c in Household()) if (c.Mood.Has(Thatchwick.Core.Mood.MoodCatalog.Persuasive)) return PersuadeSellBonus;
+            return 0.0;
+        }
         // Yapı ve eşya indirimi yalnızca dallardan ve özelliklerden gelir. Ev düzenleme indirim vermez; oda konforu verir
         // (belge 45 karar 7: MoodService.ArrangementComfort, RoomMoodSystem.TidyHarmonyLevel).
         public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount));
@@ -566,6 +575,18 @@ namespace Thatchwick.Core.Life
             family.JoinedHousehold += c => Upbringing.Weddings?.OnGroomJoined(c, id => Content.Items.Contains(id));   // damat tarafı (34-D2)
             Villagers.Family = family;
             family.ExtraProposalCheck = Villagers.ProposalCheck;
+            // Beceri sosyal işleri (belge 45): itibar, yara, şenlik, hava, görücü, köylü rolü.
+            family.Today = () => Clock.TotalDays;
+            family.AddReputation = (n, why) => Upbringing.Reputation.Add(n, why);
+            family.Injuries = Injuries;
+            family.IsFestivalDay = () => Festivals.TodaysFestival() != null;
+            family.ForecastText = () => Weather.ForecastText(Clock.TotalDays);
+            family.RoleOf = Villagers.RoleOf;
+            family.OnMatchmake = single =>
+            {
+                var suitor = Suitors.SpawnVillager(single.Sex == Characters.Sex.Female ? Characters.Sex.Male : Characters.Sex.Female);
+                if (suitor != null) Say($"Görücü haberi yayıldı: {suitor.Name} köye geldi.", NoticeLevel.Info, single.Id);
+            };
             family.Happened += (actor, target, action, msg) =>
             {
                 if (action != SocialAction.Propose) return;
@@ -582,11 +603,46 @@ namespace Thatchwick.Core.Life
             runner.Refused += (c, text) => Say($"{c.Name}: \"{text}\"", NoticeLevel.Info, c.Id, transient: true);
             runner.ItemBonus = (it, i) => HomeLife.Combine(Legacy.BonusFor(it, i), Home.BonusFor(it, i));
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
+            runner.InteractionCompleted += OnMasterCraft;
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
             // Üşüyen ocağı kendisi yakar (Denge 41): ısı sistemi bağlıysa envanterden kütük atar.
             runner.Stoke = item => _heat != null && _heat.TryStoke(item.Id, House);
             runner.HasFirewood = () => _heat != null && House.Count(FirewoodId) > 0;
         }
+        // ---- ustalık (belge 45 ortak basamak Sv 10) ----
+        private readonly Random _masteryRng;
+        private readonly Dictionary<int, long> _masterworkDay = new Dictionary<int, long>();
+
+        /// <summary>Usta bir tarifi bitirince %25 ustalık eseri: bir fazla ürün, "Ustalık eseri" moodlet'i, kronik, itibar (günde bir).</summary>
+        public void OnMasterCraft(Character c, InteractionDef interaction)
+        {
+            if (c == null || c.IsVillager || !Progress.Mastery.IsMasterCraft(c, interaction)) return;
+            if (_masteryRng.NextDouble() >= Progress.Mastery.MasterworkChance) return;
+            var product = interaction.Produce[0].ItemId;
+            House.AddItem(product, 1);
+            c.AddMoodlet(Thatchwick.Core.Mood.MoodCatalog.MasterWork);
+            string name = Content.Items.TryGet(product, out var d) ? d.DisplayName : product;
+            Say($"{Progress.Mastery.DisplayName(c)} bir ustalık eseri çıkardı: {name} ({c.Name} imzalı).", NoticeLevel.Info, c.Id);
+            long today = Clock.DayIndex;
+            if (!_masterworkDay.TryGetValue(c.Id, out var last) || last != today)
+            {
+                _masterworkDay[c.Id] = today;
+                Upbringing.Reputation.Add(Progress.Mastery.MasterworkReputation, "ustalık eseri");
+            }
+        }
+
+        /// <summary>Pazar günü usta siparişleri: hanede usta olan her beceri için bir sipariş (Market.SpecialContracts).</summary>
+        public IEnumerable<(string item, int count, int reward, string label, int reputation)> MasterOrders(long day)
+        {
+            if (!Festivals.IsMarketDay(day)) yield break;
+            var skills = new List<SkillType>();
+            foreach (var c in Household())
+                foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
+                    if (c.Skills.GetLevel(s) >= Progress.Mastery.MasterLevel && !skills.Contains(s)) skills.Add(s);
+            foreach (var o in Progress.Mastery.Orders(Content, skills, day))
+                yield return (o.item, o.count, o.reward, $"Usta siparişi: {SkillNames.Name(o.skill)}", Progress.Mastery.OrderReputation);
+        }
+
         /// <summary>Hayvanlar: can yoldaşı bağı (yakınlık, bakım, ölüm), kalite ve binicilik bonusu.</summary>
         public void Attach(Thatchwick.Core.Animals.AnimalSystem animals, Thatchwick.Core.Animals.AnimalCare care)
         {

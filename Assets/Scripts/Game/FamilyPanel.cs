@@ -100,7 +100,7 @@ namespace Thatchwick.Game
             string mood = c.MoodEnabled ? $", {Thatchwick.Core.Mood.MoodRules.Name(c.Mood.Status)}" : "";
             string state = c.IsDead ? "öldü" : $"{StageName(c.Stage)} {c.AgeDays:0}g, Açlık {c.Needs.Get(NeedType.Hunger):0}{mood}{(c.IsPregnant ? ", hamile" : "")}";
             GUILayout.BeginHorizontal();
-            UiSkin.Wrap($"{c.Name}{head} ({state}{spouse})", UiSkin.FamilyTextW);
+            UiSkin.Wrap($"{Thatchwick.Core.Progress.Mastery.DisplayName(c)}{head} ({state}{spouse})", UiSkin.FamilyTextW);   // usta unvanı (belge 45)
             if (CanTakeCommands(c) && c != actor && GUILayout.Button("Seç", GUILayout.Width(40f))) { _select(c); _status = $"{c.Name} seçildi."; }
             GUILayout.EndHorizontal();
             // Hanedan geçmişi: kişinin hayat notları ("Neşeli bir soydan geldi ama zor bir çocukluk geçirdi.").
@@ -146,6 +146,7 @@ namespace Thatchwick.Game
                     Action(actor, c, SocialAction.Propose, "Evlen");
             }
             GUILayout.EndHorizontal();
+            DrawSkillSocials(actor, c);
         }
 
         // Çocukluk eşyaları, can yoldaşı, çıraklık (belge 30, 31-8, 34-D1).
@@ -316,6 +317,20 @@ namespace Thatchwick.Game
                 GUI.enabled = true;
             }
             GUILayout.EndHorizontal();
+        }
+
+        // Beceri seviyesiyle açılan sosyal işler (belge 45): yalnızca açılmış ve bu kişiye uygun olanlar, satır satır.
+        private void DrawSkillSocials(Character actor, Character target)
+        {
+            int n = 0;
+            foreach (var d in FamilyService.UnlockedSocials(actor))
+            {
+                if (_family.CanDo(actor, target, d.Action) != null) continue;
+                if (n % 3 == 0) { if (n > 0) GUILayout.EndHorizontal(); GUILayout.BeginHorizontal(); GUILayout.Space(12f); }
+                Action(actor, target, d.Action, d.Label);
+                n++;
+            }
+            if (n > 0) GUILayout.EndHorizontal();
         }
 
         private void Action(Character actor, Character target, SocialAction action, string label)

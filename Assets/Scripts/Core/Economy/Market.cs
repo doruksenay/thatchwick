@@ -43,6 +43,10 @@ namespace Thatchwick.Core.Economy
         public int RewardAkce { get; internal set; }
         public bool Taken { get; internal set; }
         public bool IsContract => GetItem == null;
+        /// <summary>Özel sipariş adı ("Usta siparişi: Demircilik"); sıradan teklifte null.</summary>
+        public string Label { get; internal set; }
+        /// <summary>Teslimde kazanılan itibar (usta siparişi).</summary>
+        public int Reputation { get; internal set; }
     }
 
     /// <summary>
@@ -243,7 +247,7 @@ namespace Thatchwick.Core.Economy
         }
 
         public string Describe(TradeOffer o) => o.IsContract
-            ? $"Köy işi: {o.GiveCount} {Name(o.GiveItem)} teslim et → {o.RewardAkce} akçe"
+            ? $"{o.Label ?? "Köy işi"}: {o.GiveCount} {Name(o.GiveItem)} teslim et → {o.RewardAkce} akçe" + (o.Reputation > 0 ? $", itibar +{o.Reputation}" : "")
             : $"Tüccar: {o.GiveCount} {Name(o.GiveItem)} ver → {o.GetCount} {Name(o.GetItem)} al";
 
         /// <summary>Pazardan alınabilir mi? "craftonly" etiketli mal (işlenmiş eyer) yalnızca yapılır, satılabilir ama alınmaz.</summary>
@@ -280,6 +284,20 @@ namespace Thatchwick.Core.Economy
                 }
                 _offers.Add(offer);
             }
+            // Pazar günü usta siparişleri (belge 45 ortak basamak Sv 10).
+            if (SpecialContracts != null)
+            {
+                int k = 0;
+                foreach (var sc in SpecialContracts(day))
+                    _offers.Add(new TradeOffer
+                    {
+                        Id = (int)(day * 100 + 50 + k++), GiveItem = sc.item, GiveCount = sc.count, RewardAkce = sc.reward,
+                        Label = sc.label, Reputation = sc.reputation
+                    });
+            }
         }
+
+        /// <summary>Günün özel siparişleri (usta siparişi); null ise yok.</summary>
+        public Func<long, IEnumerable<(string item, int count, int reward, string label, int reputation)>> SpecialContracts { get; set; }
     }
 }
