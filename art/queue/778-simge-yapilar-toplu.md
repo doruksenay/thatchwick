@@ -1,5 +1,5 @@
 ---
-id: "753"
+id: "778"
 title: "Simge yapılar (619'un toplu işçiyle yeniden çalışması; 9 eşya)"
 status: pending
 approved_by: user        # kullanıcı 21.11 00:09 "devam et harita oluşturmaya"; 619 kararıyla aynı onay (belge 64a)
@@ -24,7 +24,7 @@ outputs:
   - Assets/Art/Iso/_aday/iso_item_beacon_fire_place_se.png
 created: 2026-11-21
 ---
-# 753 Simge yapılar (toplu işçi)
+# 778 Simge yapılar (toplu işçi)
 
 ## Amaç
 Belge 64 §3 Katman 2: her bölgede bir benzersiz yer. 619 aynı listeyle bloklandı (bulut ajanında kılavuz ve maske
