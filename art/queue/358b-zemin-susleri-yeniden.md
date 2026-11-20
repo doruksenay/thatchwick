@@ -1,7 +1,7 @@
 ---
 id: "358b"
 title: "Zemin süsleri yeniden (çiçek, yonca, çakıl, ot öbeği, eğrelti, yaprak, köstebek tepeciği)"
-status: running
+status: review
 claimed_at: 2026-11-20T11:11Z
 approved_by: user        # kullanıcı kararı 2026-11-20: 358 reddedildi, yeniden üretim
 family: bitki
