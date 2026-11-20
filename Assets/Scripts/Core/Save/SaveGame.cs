@@ -428,6 +428,8 @@ namespace Thatchwick.Core.Save
                 brow = a.BrowId, browColor = a.BrowColor.ToHex(), browOwn = a.BrowFollowsHair ? 0 : 1,
                 nose = a.NoseId, mouth = a.MouthId, ears = a.EarsId,
                 bangs = a.BangsId, mustache = a.MustacheId, beard = a.BeardId,
+                hairExtra = a.HairExtraId, hairOrnament = a.HairOrnamentId, hairOrnamentColor = a.HairOrnamentColor.ToHex(),
+                sideburns = a.SideburnsId, stubble = a.StubbleLevel, lashes = a.LashesId,
                 pattern = a.PatternId, bottom = a.BottomId, shoes = a.ShoesId, outer = a.OuterId, outerColor = a.OuterColor.ToHex(),
                 voice = (int)a.Voice, voicePitch = a.VoicePitch, laugh = a.LaughId,
                 marks = marks.ToArray(),
@@ -802,6 +804,12 @@ namespace Thatchwick.Core.Save
                 a.MustacheId = string.IsNullOrEmpty(s.mustache) ? Appearance.None : s.mustache;
                 a.BeardId = string.IsNullOrEmpty(s.beard) ? Appearance.None : s.beard;
             }
+            if (!string.IsNullOrEmpty(s.hairExtra)) a.HairExtraId = s.hairExtra;
+            if (!string.IsNullOrEmpty(s.hairOrnament)) a.HairOrnamentId = s.hairOrnament;
+            if (Rgb.TryParseHex(s.hairOrnamentColor, out c)) a.HairOrnamentColor = c;
+            if (!string.IsNullOrEmpty(s.sideburns)) a.SideburnsId = s.sideburns;
+            if (!string.IsNullOrEmpty(s.lashes)) a.LashesId = s.lashes;
+            a.StubbleLevel = Math.Max(0, Math.Min(Appearance.MaxStubble, s.stubble));
             if (!string.IsNullOrEmpty(s.pattern)) a.PatternId = s.pattern;
             if (!string.IsNullOrEmpty(s.bottom)) a.BottomId = s.bottom;
             if (!string.IsNullOrEmpty(s.shoes)) a.ShoesId = s.shoes;
