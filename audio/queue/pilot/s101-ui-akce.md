@@ -4,7 +4,7 @@ title: Akçe kazanma (pilot)
 kind: sfx
 family: ui
 freq: B
-status: ready
+status: claimed
 approved_by: auto
 depends_on: []
 key: ui.coin
@@ -15,5 +15,7 @@ cost_max: 300
 pilot_onayi_bekliyordu:
 - s100
 not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T14:19:58Z'
 ---
 A few small old copper coins dropping into a cloth purse, short and pleasant.
