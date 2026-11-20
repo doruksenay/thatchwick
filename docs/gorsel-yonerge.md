@@ -60,6 +60,9 @@ Her görselin boyu tek bir insana göre ayarlanır. Ölçü **ayak noktasının 
 - Klipler: `walk` (yürür), `ride` (eyerli, binicili), `pull` (arabaya koşulu); 4 çapraz yön. Binici karesi `iso_char_<gövde>_r84_ride_<yön>_<NN>` (84x112 tuval, pivot 42,2).
 - Eski görsel silinmez: iş `accepted` olunca `python tools/art/archive_superseded.py --job <id> --apply` iş dosyasının `supersedes:` listesini `Assets/Art/Iso/_arsiv/` altına taşır (`git mv`, .meta ile). Oyun ve kütüphane `_arsiv/`i okumaz.
 
+### Ağaç stili (kullanıcı kararı 21.11.2026)
+Bütün ağaçlar, korular ve ağaç ikonları **kabarık kümeli taç** stilindedir: taç çok sayıda küçük yuvarlak yaprak kümesi, her kümede sol üst vurgu ve sağ alt koyu ton, kümeler arasında koyu boşluk; çamda katmanlı dokulu iğne yapraklı dallar. Çapalar: olgun meşe (`iso_tree_oak_grown_se`), dut, genç çam, koru b; 772 kabul edilince yerlerini 772'nin `_v2` görselleri alır. Yasak: düz renkli geometrik koni, parlak limon yeşili çizgi film koni, yumuşak gradyanlı tek taç lekesi, taçsız iri yapraklı "botanik" çizim. Yeni ağaç türü eklenirken türün eski görseli değil bu çapalar referanstır (iş 772).
+
 ## Adlandırma
 `iso_<tür>_<ad>_<yön>.png` (ör. `iso_char_villager_se.png`, `iso_item_bed_straw.png`, `iso_ground_grass_a.png`).
 Yönler: se, sw, nw, ne. Çok karolu nesne: `_2x1` eki.
