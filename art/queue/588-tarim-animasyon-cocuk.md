@@ -1,7 +1,7 @@
 ---
 id: "588"
 title: "Tarım animasyonları, çocuklar: eğilip toplama, sulama, ekim (24)"
-status: running
+status: review
 claimed_at: 2026-11-20T17:01Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("Çocuk gövdesi için eğilme, sulama ve ekim kareleri üretilsin mi?" → "evet üretsin"), Project belgesi 59b
 priority: 45
