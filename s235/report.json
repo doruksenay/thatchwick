@@ -2,129 +2,129 @@
   "job": "s235",
   "kind": "sfx",
   "family": "voice",
-  "created": "2026-11-20T18:32:05Z",
+  "created": "2026-11-20T18:57:17Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 2.88,
+          "duration_s": 2.99,
           "lufs": -20.0,
-          "true_peak_db": -12.5,
-          "rms_db": -22.3,
+          "true_peak_db": -8.5,
+          "rms_db": -22.1,
           "flags": [],
           "pass": true,
-          "prompt": "A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments. Details: cheerful little skipping phrase, soft breathy whistle.",
+          "prompt": "Cozy medieval village life game, human vocal sound: gentle, warm and friendly, never harsh, shrill or aggressive. No words in any real language, no music. A happy villager whistling a bouncy, upbeat little folk tune while working: major key, lively and playful, sunny and cozy. Not sad, not slow, not shrill, no instruments. Details: playful, cheeky little ditty, bright, cheerful whistle.",
           "duration": 3.2800316111702386,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 2.657,
+          "duration_s": 2.476,
           "lufs": -20.0,
-          "true_peak_db": -11.9,
-          "rms_db": -21.7,
+          "true_peak_db": -6.5,
+          "rms_db": -21.2,
           "flags": [],
           "pass": true,
-          "prompt": "A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments. Details: slow lilting lullaby-like phrase, gentle mellow whistle.",
+          "prompt": "Cozy medieval village life game, human vocal sound: gentle, warm and friendly, never harsh, shrill or aggressive. No words in any real language, no music. A happy villager whistling a bouncy, upbeat little folk tune while working: major key, lively and playful, sunny and cozy. Not sad, not slow, not shrill, no instruments. Details: sunny, upbeat skipping phrase going up at the end, warm, round whistle.",
           "duration": 2.822840812729077,
           "model": "eleven_text_to_sound_v3"
         },
         "c3": {
-          "duration_s": 2.579,
+          "duration_s": 3.0,
           "lufs": -20.0,
-          "true_peak_db": -13.3,
-          "rms_db": -21.6,
+          "true_peak_db": -4.6,
+          "rms_db": -20.9,
           "flags": [],
           "pass": true,
-          "prompt": "A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments. Details: cheerful little skipping phrase, gentle mellow whistle.",
+          "prompt": "Cozy medieval village life game, human vocal sound: gentle, warm and friendly, never harsh, shrill or aggressive. No words in any real language, no music. A happy villager whistling a bouncy, upbeat little folk tune while working: major key, lively and playful, sunny and cozy. Not sad, not slow, not shrill, no instruments. Details: playful, cheeky little ditty, warm, round whistle.",
           "duration": 3.026586804508599,
           "model": "eleven_text_to_sound_v3"
         },
         "c4": {
-          "duration_s": 2.73,
+          "duration_s": 2.807,
           "lufs": -20.0,
-          "true_peak_db": -12.0,
-          "rms_db": -21.6,
+          "true_peak_db": -4.9,
+          "rms_db": -21.1,
           "flags": [],
           "pass": true,
-          "prompt": "A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments. Details: slow lilting lullaby-like phrase, soft breathy whistle.",
+          "prompt": "Cozy medieval village life game, human vocal sound: gentle, warm and friendly, never harsh, shrill or aggressive. No words in any real language, no music. A happy villager whistling a bouncy, upbeat little folk tune while working: major key, lively and playful, sunny and cozy. Not sad, not slow, not shrill, no instruments. Details: sunny, upbeat skipping phrase going up at the end, bright, cheerful whistle.",
           "duration": 2.9859295420506493,
           "model": "eleven_text_to_sound_v3"
         },
         "c5": {
-          "duration_s": 2.656,
+          "duration_s": 2.646,
           "lufs": -20.0,
-          "true_peak_db": -11.8,
-          "rms_db": -21.7,
-          "flags": [
-            "c2 ile neredeyse aynı (0.0158)"
-          ],
-          "pass": true,
-          "prompt": "A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments. Details: cheerful little skipping phrase, soft breathy whistle.",
-          "duration": 3.157987957048685,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
-        },
-        "c6": {
-          "duration_s": 2.545,
-          "lufs": -20.0,
-          "true_peak_db": -12.8,
-          "rms_db": -22.5,
+          "true_peak_db": -5.0,
+          "rms_db": -21.1,
           "flags": [],
           "pass": true,
-          "prompt": "A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments. Details: slow lilting lullaby-like phrase, gentle mellow whistle.",
+          "prompt": "Cozy medieval village life game, human vocal sound: gentle, warm and friendly, never harsh, shrill or aggressive. No words in any real language, no music. A happy villager whistling a bouncy, upbeat little folk tune while working: major key, lively and playful, sunny and cozy. Not sad, not slow, not shrill, no instruments. Details: bouncy, happy little jig phrase, bright, cheerful whistle.",
+          "duration": 3.157987957048685,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 2.86,
+          "lufs": -20.0,
+          "true_peak_db": -9.9,
+          "rms_db": -22.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, human vocal sound: gentle, warm and friendly, never harsh, shrill or aggressive. No words in any real language, no music. A happy villager whistling a bouncy, upbeat little folk tune while working: major key, lively and playful, sunny and cozy. Not sad, not slow, not shrill, no instruments. Details: bouncy, happy little jig phrase, warm, round whistle.",
           "duration": 3.133823765896687,
           "model": "eleven_text_to_sound_v3"
         },
         "c7": {
-          "duration_s": 2.266,
+          "duration_s": 2.949,
           "lufs": -20.0,
-          "true_peak_db": -12.7,
-          "rms_db": -21.5,
+          "true_peak_db": -9.0,
+          "rms_db": -21.3,
           "flags": [],
           "pass": true,
-          "prompt": "A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments. Details: cheerful little skipping phrase, gentle mellow whistle.",
+          "prompt": "Cozy medieval village life game, human vocal sound: gentle, warm and friendly, never harsh, shrill or aggressive. No words in any real language, no music. A happy villager whistling a bouncy, upbeat little folk tune while working: major key, lively and playful, sunny and cozy. Not sad, not slow, not shrill, no instruments. Details: playful, cheeky little ditty, bright, cheerful whistle.",
           "duration": 3.145289806868245,
           "model": "eleven_text_to_sound_v3"
         },
         "c8": {
-          "duration_s": 3.01,
+          "duration_s": 3.127,
           "lufs": -20.0,
-          "true_peak_db": -12.3,
-          "rms_db": -21.4,
-          "flags": [],
+          "true_peak_db": -6.4,
+          "rms_db": -21.3,
+          "flags": [
+            "c4 ile neredeyse aynı (0.0185)"
+          ],
           "pass": true,
-          "prompt": "A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments. Details: slow lilting lullaby-like phrase, soft breathy whistle.",
+          "prompt": "Cozy medieval village life game, human vocal sound: gentle, warm and friendly, never harsh, shrill or aggressive. No words in any real language, no music. A happy villager whistling a bouncy, upbeat little folk tune while working: major key, lively and playful, sunny and cozy. Not sad, not slow, not shrill, no instruments. Details: sunny, upbeat skipping phrase going up at the end, warm, round whistle.",
           "duration": 3.2785104940576977,
-          "model": "eleven_text_to_sound_v3"
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
         }
       },
       "set": {
         "pairs_dup": [
           [
-            "c2",
-            "c5",
-            0.0158
+            "c4",
+            "c8",
+            0.0185
           ]
         ],
         "nearest": {
-          "c1": 0.0287,
-          "c2": 0.0158,
-          "c3": 0.029,
-          "c4": 0.0217,
-          "c5": 0.0158,
-          "c6": 0.0218,
-          "c7": 0.0217,
-          "c8": 0.0259
+          "c1": 0.0229,
+          "c2": 0.0309,
+          "c3": 0.0229,
+          "c4": 0.0185,
+          "c5": 0.0303,
+          "c6": 0.023,
+          "c7": 0.0146,
+          "c8": 0.0146
         },
         "ref_distance": {
-          "c1": 0.1252,
-          "c2": 0.1156,
-          "c3": 0.1395,
-          "c4": 0.1159,
-          "c5": 0.1515,
-          "c6": 0.1372,
-          "c7": 0.1505,
-          "c8": 0.1461
+          "c1": 0.0768,
+          "c2": 0.0901,
+          "c3": 0.0784,
+          "c4": 0.0641,
+          "c5": 0.0844,
+          "c6": 0.0897,
+          "c7": 0.0736,
+          "c8": 0.0738
         }
       }
     }
