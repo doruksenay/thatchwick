@@ -26,7 +26,7 @@ Tester raporu 66 §1.2: meyve ağaçları 58-80 px (insan 76 px); bazı türlerd
 `item.tree_olive` → `iso_plant_olive`). Eşyası olmayan türler (badem, kayısı, incir, limon, şeftali...) eşya eklenince aynı tabloyla ve **772 stil çapasıyla** üretilir; eski görselleri (botanik ya da yumuşak taç) referans alınmaz.
 
 ## Tarif
-**772 tarifi ve stil çapası** (2026-11-21 kullanıcı kararı: bütün ağaçlar kabarık kümeli taç stilinde). Türün eski görseli **stil referansı değildir**: elma, kiraz, erik eski hâliyle yumuşak düz gölgeli tek taç lekesi, zeytin koyu düz leke; yalnızca meyve rengi için bakılır. Stil referansı 772'nin yeni elması, olgun meşesi ve dut. Elma 772 pilotunda üretildi, bu işte yok. Farklar:
+**772 tarifi ve stil çapası** (2026-11-21 kullanıcı kararı: bütün ağaçlar kabarık kümeli taç stilinde). Türün eski görseli **stil referansı değildir**: elma, kiraz, erik eski hâliyle yumuşak düz gölgeli tek taç lekesi, zeytin koyu düz leke; yalnızca meyve rengi için bakılır. Stil referansı 772'nin kabul edilen yeni elması (`iso_tree_apple_{young,grown,fruit}_se_v2`) ve olgun meşesi; araç stil görseli almıyorsa en azından `color_image` = `iso_tree_apple_grown_se_v2`, meyve rengi açıklamada. Elma 772 pilotunda üretildi, bu işte yok. Farklar:
 - **Tuval 96x136, pivot (48, 24)**.
 - Meyveli evre olgunun **aynı gövde ve taçla** düzenlenmiş hali: önce olgun üretilir, meyveli `edit_image_pro_flash` ile olgun
   görselden (`same tree, 10-14 visible ripe fruits on the crown`); taç ve gövde piksel piksel aynı kalır.
