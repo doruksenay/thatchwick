@@ -155,6 +155,9 @@ namespace Thatchwick.Game
             return GetCentered(h % 4 == 0 ? "iso_ground_water_b" : "iso_ground_water_a") ?? GetCentered("iso_ground_water_a");
         }
 
+        /// <summary>Kıyı karosu (346): kara (çamur ve saz) karonun sağ üst kenarında, yani +x komşusu yönünde. Sol üst (+y) için aynalanır.</summary>
+        public static Sprite Shore() => GetCentered("iso_ground_water_shore");
+
         /// <summary>Kumsal karosu (484): iso_ground_beach_a/b; yoksa null (oyun katmanı toprağı kum rengine boyar).</summary>
         public static Sprite Beach(int x, int y)
         {
@@ -460,6 +463,8 @@ namespace Thatchwick.Game
             ["wild.boar"] = ("iso_wild_boar_cand", 24f, 10f),
             ["wild.rat"] = ("iso_wild_rat_cand", 24f, 10f),
             ["wild.bear"] = ("iso_wild_bear_cand", 24f, 10f),
+            ["wild.gull"] = ("iso_wild_gull_cand", 24f, 10f),     // iş 485
+            ["wild.crab"] = ("iso_wild_crab_cand", 24f, 10f),     // iş 485
         };
 
         // Genetik gövdeleri (belge 48 §11, işler 484-487): tip başına nötr renkli tek gövde; renk paletle (tint) gelir.

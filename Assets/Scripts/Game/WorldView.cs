@@ -234,10 +234,20 @@ namespace Thatchwick.Game
                     // Gerçek karo yalnızca varsayılan stilde (stil seçilmiş zemin, görseli gelene kadar renkle çizilir).
                     // Deniz kıyısı (belge 50): deniz suyu ve kumsal kendi karosunu arar; yoksa göl suyu ve toprak tonlanır.
                     bool sea = Thatchwick.Core.World.Regions.IsSea(Map, p);
-                    bool seaTint = false, beachTint = false;
+                    bool seaTint = false, beachTint = false, flip = false;
                     Sprite real;
                     if (terrainBlocked) real = null;
-                    else if (floor == FloorType.Water) real = IsoArt.Water(x, y, Map.IsFilled(p), Map.FrozenAt(p), sea, out seaTint);
+                    else if (floor == FloorType.Water)
+                    {
+                        real = IsoArt.Water(x, y, Map.IsFilled(p), Map.FrozenAt(p), sea, out seaTint);
+                        // Kıyı karosu: arkadaki (+x ya da +y) komşu karaysa çamurlu kıyı ve saz; önden bakan kenarlarda karo yok.
+                        if (real != null && !sea && Map.IsFilled(p) && !Map.FrozenAt(p))
+                        {
+                            bool landX = IsLand(x + 1, y), landY = IsLand(x, y + 1);
+                            var shore = landX || landY ? IsoArt.Shore() : null;
+                            if (shore != null) { real = shore; flip = !landX; }
+                        }
+                    }
                     else if (sea && floor == FloorType.Dirt && Map.GetFloorStyle(p) == null)
                     {
                         real = IsoArt.Beach(x, y);
@@ -246,6 +256,7 @@ namespace Thatchwick.Game
                     else real = Map.GetFloorStyle(p) != null ? IsoArt.FloorPart(Map.GetFloorStyle(p), x, y)
                         : IsoArt.Ground(floor, x, y) ?? IsoArt.FloorPart(Content != null ? BuildParts.DefaultFloor(Content, floor)?.Id : null, x, y);
                     sr.sprite = real != null ? real : SpriteMaterials.Diamond;
+                    sr.flipX = flip;
                     var styled = real == null ? StyleColor(p, floor) : null;
                     if (real != null) sr.color = seaTint ? new Color(0.78f, 0.9f, 1f) : beachTint ? new Color(1.0f, 0.93f, 0.72f) : Color.white;
                     else if (sea && floor == FloorType.Dirt) sr.color = ((x + y) & 1) == 0 ? new Color32(214, 196, 150, 255) : new Color32(206, 188, 142, 255);
@@ -470,6 +481,9 @@ namespace Thatchwick.Game
         }
 
         /// <summary>Karonun merkezinin dünya konumu (kat yüksekliği dahil).</summary>
+        /// <summary>Kıyı karosu için: komşu karo kara mı (harita içinde ve su değil).</summary>
+        private bool IsLand(int x, int y) => x >= 0 && y >= 0 && x < Map.Width && y < Map.Height && Map.GetFloor(new GridPos(x, y, 0)) != FloorType.Water;
+
         public Vector3 TileToWorld(GridPos p) => Iso.GridToWorld(p.X + 0.5f, p.Y + 0.5f, p.Z);
 
         /// <summary>Dünya noktasının ViewLevel katındaki karosu (dokunma bu katta çözülür).</summary>

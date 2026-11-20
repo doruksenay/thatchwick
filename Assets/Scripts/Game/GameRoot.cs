@@ -211,6 +211,43 @@ namespace Thatchwick.Game
         private readonly FishingView _fishingView = new FishingView();   // balık tutma mini oyunu (belge 50)
         private double _fishOrderUntil = -1;   // oyuncunun kendi verdiği balık/kavanoz işi bu güne dek geçerli (mini oyun)
 
+        private float _ambTick;
+        private string _ambBed = "-", _ambWeather = "-", _ambMusic = "-";
+
+        /// <summary>
+        /// Ortam sesi ve müzik bağlamı (Project 45b, belge 50): yarım saniyede bir oyuncu karakterinin yerine (bölge, içeri,
+        /// yer altı), saate, mevsime ve havaya bakar; yalnızca değişince yöneticilere söyler. Ses dosyası yoksa sessiz geçer.
+        /// </summary>
+        private void UpdateAmbience(float dt)
+        {
+            _ambTick -= dt;
+            if (_ambTick > 0f || _clock == null || _life == null) return;
+            _ambTick = 0.5f;
+            var c = Commander?.Character;
+            if (c == null) return;
+            var pos = c.Position;
+            bool underground = pos.Z < 0;
+            bool indoor = !underground && _world.Map.Rooms.RoomAt(pos) != null;
+            string region = Thatchwick.Core.World.Regions.At(pos)?.Id;
+            float hour = (float)(_clock.DayFraction * 24.0);
+            int season = (int)_clock.Season;
+            int weather = (int)_life.Weather.Today(_clock.TotalDays);
+            var amb = Thatchwick.Game.Audio.AmbienceDirector.Instance;
+            if (amb == null) return;
+            amb.SetContext(new Thatchwick.Core.Audio.AmbienceContext
+            {
+                Hour = hour, Season = season, Indoor = indoor || underground,
+                Weather = weather == 1 ? Thatchwick.Core.Audio.AmbWeather.Rain : weather == 3 ? Thatchwick.Core.Audio.AmbWeather.Storm
+                        : weather == 2 ? Thatchwick.Core.Audio.AmbWeather.Snow : Thatchwick.Core.Audio.AmbWeather.Clear,
+            });
+            string bed = Thatchwick.Core.Audio.AmbiencePicker.Bed(region, indoor, underground, hour);
+            if (bed != _ambBed) { _ambBed = bed; amb.SetBed(bed); }
+            string wb = Thatchwick.Core.Audio.AmbiencePicker.WeatherBed(weather, underground);
+            if (wb != _ambWeather) { _ambWeather = wb; amb.SetWeatherBed(wb); }
+            string music = Thatchwick.Core.Audio.AmbiencePicker.MusicContext(season, hour);
+            if (music != _ambMusic) { _ambMusic = music; Thatchwick.Game.Audio.MusicDirector.Instance?.SetContext(music); }
+        }
+
         /// <summary>Balığı oyuncu mu tutuyor: komuta edilen karakter ve oyuncunun kendi verdiği iş (aile görevi ve hizmetkâr kendiliğinden tutar).</summary>
         private bool PlayerFishing(Character c) => Commander != null && c == Commander.Character && _clock != null && _clock.TotalDays <= _fishOrderUntil;
 
@@ -2671,6 +2708,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.eKey.wasPressedThisFrame) _homePanel?.Toggle();
             if (kb != null && kb.escapeKey.wasPressedThisFrame && _vivView != null && _vivView.Active) _vivView.Close();
             _fishingView.Update(Time.unscaledDeltaTime);
+            UpdateAmbience(Time.unscaledDeltaTime);
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.iKey.wasPressedThisFrame) ToggleRequests();

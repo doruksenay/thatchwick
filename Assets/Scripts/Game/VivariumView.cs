@@ -5,6 +5,7 @@ using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Life;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
 
@@ -96,7 +97,7 @@ namespace Thatchwick.Game
             GUI.Box(rect, GUIContent.none);
             float side = Mathf.Min(300f, rect.width * 0.38f);
             var tank = new Rect(rect.x + 10f, rect.y + 34f, rect.width - side - 30f, rect.height - 44f);
-            GUI.Label(new Rect(rect.x + 12f, rect.y + 6f, tank.width, 24f), GameLocalization.Current.ToUpper(_item.Def.DisplayName) + "  ·  " + (_home.VivSummary(_item) ?? ""));
+            GUI.Label(new Rect(rect.x + 12f, rect.y + 6f, tank.width, 24f), GameLocalization.Current.ToUpper(_item.Def.DisplayName) + "  ·  " + (L(_home.VivSummary(_item)) ?? ""));
             if (GUI.Button(new Rect(rect.xMax - 70f, rect.y + 6f, 60f, 24f), T("ui.common.close"))) { Close(); GUI.color = prev; return; }
             DrawTank(tank);
             GUILayout.BeginArea(new Rect(tank.xMax + 12f, rect.y + 34f, side, rect.height - 44f));
@@ -477,6 +478,10 @@ namespace Thatchwick.Game
 
         // ---------- yan sütun ----------
 
+        /// <summary>Core'un cam bahçe metnini çözer: "item." argümanları o anki dildeki eşya adına çevrilir.</summary>
+        private string L(LocText t) => VivText.Resolve(GameLocalization.Current, t, Name);
+        private string L(LocText? t) => t.HasValue ? L(t.Value) : null;
+
         private static string T(string key) => GameLocalization.T(key);
         private static string T(string key, params (string name, object value)[] args) => GameLocalization.T(key, args);
 
@@ -490,14 +495,14 @@ namespace Thatchwick.Game
                 GUILayout.Label(T("ui.viv.pick_ground"));
                 foreach (var need in HomeLife.HabitatNeeds)
                 {
-                    GUILayout.Label(HomeLife.HabitatName(need.Habitat) + (need.Water != null ? "  ·  " + T("ui.viv.plus_water", ("water", Name(need.Water)), ("have", _house.Count(need.Water))) : ""));
+                    GUILayout.Label(L(HomeLife.HabitatName(need.Habitat)) + (need.Water != null ? "  ·  " + T("ui.viv.plus_water", ("water", Name(need.Water)), ("have", _house.Count(need.Water))) : ""));
                     foreach (var sub in need.Substrates)
                     {
-                        string why = _home.HabitatBlocker(_item, need.Habitat, sub);
+                        string why = L(_home.HabitatBlocker(_item, need.Habitat, sub));
                         var prevEnabled = GUI.enabled;
                         GUI.enabled = why == null;
                         if (GUILayout.Button("  " + T("ui.viv.ground_with", ("item", Name(sub)), ("have", _house.Count(sub)))))
-                            _status = _home.SetHabitat(_item, need.Habitat, sub) ?? T("ui.viv.ground_ready");
+                            _status = L(_home.SetHabitat(_item, need.Habitat, sub)) ?? T("ui.viv.ground_ready");
                         GUI.enabled = prevEnabled;
                     }
                 }
@@ -508,10 +513,10 @@ namespace Thatchwick.Game
                 bool water = HomeLife.IsWater(v.Habitat);
                 string w = HomeLife.WaterFor(v.Habitat);
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button(water ? T("ui.viv.refresh_water", ("water", Name(w)), ("have", _house.Count(w))) : T("ui.viv.mist"))) _status = _home.Mist(_item) ?? T("ui.viv.done");
+                if (GUILayout.Button(water ? T("ui.viv.refresh_water", ("water", Name(w)), ("have", _house.Count(w))) : T("ui.viv.mist"))) _status = L(_home.Mist(_item)) ?? T("ui.viv.done");
                 var watch = _item.Def.Interactions.Find(i => i.Id == "watch_viv");
                 if (watch != null && GUILayout.Button(T("ui.viv.watch"))) Use?.Invoke(_item, watch.Id);
-                if (v.Entries.Count == 0 && GUILayout.Button(T("ui.viv.empty"))) _status = _home.EmptyViv(_item) ?? T("ui.viv.done");
+                if (v.Entries.Count == 0 && GUILayout.Button(T("ui.viv.empty"))) _status = L(_home.EmptyViv(_item)) ?? T("ui.viv.done");
                 GUILayout.EndHorizontal();
                 var (lo, hi) = HomeLife.MoistRange(v.Habitat);
                 GUILayout.Label(T(water ? "ui.viv.freshness" : "ui.viv.moisture", ("value", Mathf.RoundToInt((float)v.Moisture)), ("lo", (int)lo), ("hi", (int)hi))
@@ -532,7 +537,7 @@ namespace Thatchwick.Game
                     : s.IsPlant ? T("ui.viv.state_plant", ("health", Mathf.RoundToInt((float)e.Health)))
                     : T("ui.viv.state_creature", ("health", Mathf.RoundToInt((float)e.Health)), ("hunger", Mathf.RoundToInt((float)e.Hunger)));
                 string need = s.IsCreature ? _home.UnmetNeed(v, s) : null;
-                GUILayout.Label($"{Name(e.Item)} · {state}{(need != null ? " · " + T("ui.viv.wants", ("need", HomeLife.NeedName(need))) : "")}");
+                GUILayout.Label($"{Name(e.Item)} · {state}{(need != null ? " · " + T("ui.viv.wants", ("need", L(HomeLife.NeedName(need)))) : "")}");
                 if (!s.IsCreature)
                 {
                     if (GUILayout.Button("<", GUILayout.Width(24f))) _home.MoveInViv(_item, i, -0.06);
@@ -556,7 +561,7 @@ namespace Thatchwick.Game
                         if (k != kind) continue;
                         if (!header) { GUILayout.Space(4f); GUILayout.Label(T(title)); header = true; }
                         shown++;
-                        string why = _home.CanAddToViv(_item, d.Id);
+                        string why = L(_home.CanAddToViv(_item, d.Id));
                         GUILayout.BeginHorizontal();
                         GUILayout.Label($"{d.DisplayName} ×{_house.Count(d.Id)}");
                         var prevEnabled = GUI.enabled;
@@ -564,7 +569,7 @@ namespace Thatchwick.Game
                         if (GUILayout.Button(T("ui.viv.put"), GUILayout.Width(48f)))
                         {
                             var warn = _home.AddWarnings(_item, d.Id);
-                            if (warn.Count > 0 && _pending != d.Id) { _pending = d.Id; _status = string.Join(" ", warn) + " " + T("ui.viv.press_again"); }
+                            if (warn.Count > 0 && _pending != d.Id) { _pending = d.Id; _status = string.Join(" ", warn.ConvertAll(L)) + " " + T("ui.viv.press_again"); }
                             else { _pending = null; _status = _home.AddToViv(_item, d.Id) ? T("ui.viv.added", ("item", d.DisplayName)) : T("ui.viv.not_added"); }
                         }
                         GUI.enabled = prevEnabled;
@@ -579,7 +584,7 @@ namespace Thatchwick.Game
             {
                 GUILayout.Space(4f);
                 GUILayout.Label(T("ui.viv.recent"));
-                for (int i = v.Log.Count - 1; i >= 0; i--) GUILayout.Label("· " + v.Log[i]);
+                for (int i = v.Log.Count - 1; i >= 0; i--) GUILayout.Label("· " + L(v.Log[i]));
             }
             GUILayout.EndScrollView();
         }

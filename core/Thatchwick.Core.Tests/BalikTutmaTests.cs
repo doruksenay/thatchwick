@@ -228,5 +228,24 @@ namespace Thatchwick.Core.Tests
             Assert.NotNull(fw.CanDo(c, sea, TileAction.CutIce));
             Assert.Null(fw.CanDo(c, lake, TileAction.CutIce));
         }
+
+        [Fact]
+        public void KiyiCanlilari_YalnizcaKiyida()
+        {
+            Assert.DoesNotContain(Thatchwick.Core.Animals.WildRoamers.Candidates(Season.Summer, false), sp => sp.Id == "wild.gull" || sp.Id == "wild.crab");
+            Assert.DoesNotContain(Thatchwick.Core.Animals.WildRoamers.Candidates(Season.Summer, false, "farm"), sp => sp.Id == "wild.gull");
+            var coast = Thatchwick.Core.Animals.WildRoamers.Candidates(Season.Summer, false, "coast");
+            Assert.Contains(coast, sp => sp.Id == "wild.gull");
+            Assert.Contains(coast, sp => sp.Id == "wild.crab");
+            Assert.DoesNotContain(coast, sp => sp.Id == "wild.rabbit");
+
+            var map = new GridMap(Regions.WorldWidth, Regions.WorldHeight);
+            Regions.BuildTerrain(map);
+            Regions.Apply(map);
+            var roam = new Thatchwick.Core.Animals.WildRoamers(map, 5);
+            var gull = roam.Arrive(Thatchwick.Core.Animals.WildCatalog.Get("wild.gull"), 0);
+            Assert.NotNull(gull);
+            Assert.True(Regions.Coast.Contains(gull.Position), gull.Position.ToString());
+        }
     }
 }

@@ -56,12 +56,14 @@ namespace Thatchwick.Core.Animals
         public static bool IsNight(double dayFraction) => dayFraction < 0.22 || dayFraction > 0.85;
 
         /// <summary>Şu an haritaya gelebilecek türler (kurt ve ayı hariç).</summary>
-        public static List<WildSpecies> Candidates(Season season, bool night)
+        public static List<WildSpecies> Candidates(Season season, bool night, string regionId = null)
         {
             var list = new List<WildSpecies>();
             foreach (var s in WildCatalog.All)
             {
                 if (s.Id == "wild.wolf" || s.Id == "wild.bear") continue;
+                // Kıyı türü yalnızca kıyıda; öteki türler kıyıda görülmez (bölgesiz haritada kıyı türü yok).
+                if (s.Regions != null ? regionId == null || Array.IndexOf(s.Regions, regionId) < 0 : regionId == "coast") continue;
                 if (s.Seasons != null && Array.IndexOf(s.Seasons, season) < 0) continue;
                 if (s.Night != night) continue;
                 list.Add(s);
@@ -76,8 +78,9 @@ namespace Thatchwick.Core.Animals
             // Gelen
             if (_visitors.Count < MaxVisitors && _rng.NextDouble() < ArrivalsPerDay * gameDays)
             {
-                var c = Candidates(season, night);
-                if (c.Count > 0) Arrive(c[_rng.Next(c.Count)], now, season == Season.Spring && _rng.NextDouble() < 0.3);
+                var area = SpawnRegion();
+                var c = Candidates(season, night, area?.Id);
+                if (c.Count > 0) Arrive(c[_rng.Next(c.Count)], now, season == Season.Spring && _rng.NextDouble() < 0.3, area);
             }
             // Dolaşan
             for (int i = _visitors.Count - 1; i >= 0; i--)
@@ -98,9 +101,11 @@ namespace Thatchwick.Core.Animals
         }
 
         /// <summary>Gelen ziyaretçi (test ve sahne için de kullanılır).</summary>
-        public WildVisitor Arrive(WildSpecies s, double now, bool young = false)
+        public WildVisitor Arrive(WildSpecies s, double now, bool young = false, Region area = null)
         {
-            var pos = EdgeTile();
+            if (area == null && s.Regions != null && Regions.IsRegional(_map))
+                foreach (var r in Regions.All) if (Array.IndexOf(s.Regions, r.Id) >= 0 && Regions.Exists(_map, r)) { area = r; break; }
+            var pos = EdgeTile(area);
             if (!pos.HasValue) return null;
             var v = new WildVisitor { Id = _nextId++, Species = s, Position = pos.Value, LeaveAt = now + StayDaysMin + _rng.NextDouble() * (StayDaysMax - StayDaysMin), Young = young };
             _visitors.Add(v);
@@ -223,19 +228,20 @@ namespace Thatchwick.Core.Animals
             return p.X <= a.X || p.Y <= a.Y || p.X >= a.X + a.W - 1 || p.Y >= a.Y + a.H - 1;
         }
 
-        private RectI SpawnArea()
+        /// <summary>Gelen hayvanın bölgesi (bölgesiz haritada null). Orman en sık; kıyı (varsa) gölle eşit.</summary>
+        private Region SpawnRegion()
         {
-            if (!Regions.IsRegional(_map)) return new RectI(0, 0, _map.Width, _map.Height);
+            if (!Regions.IsRegional(_map)) return null;
             var pool = new List<Region> { Regions.Farm, Regions.Farm, Regions.Road };
-            foreach (var r in new[] { Regions.Forest, Regions.Forest, Regions.Forest, Regions.Lake, Regions.Marsh, Regions.Hill, Regions.Slopes })
+            foreach (var r in new[] { Regions.Forest, Regions.Forest, Regions.Forest, Regions.Lake, Regions.Marsh, Regions.Hill, Regions.Slopes, Regions.Coast })
                 if (Regions.Exists(_map, r)) pool.Add(r);
-            var pick = pool[_rng.Next(pool.Count)];
-            return new RectI(pick.X, pick.Y, pick.W, pick.H);
+            return pool[_rng.Next(pool.Count)];
         }
 
-        private GridPos? EdgeTile()
+        private GridPos? EdgeTile(Region area = null)
         {
-            var a = SpawnArea();
+            area = area ?? SpawnRegion();
+            var a = area != null ? new RectI(area.X, area.Y, area.W, area.H) : new RectI(0, 0, _map.Width, _map.Height);
             for (int guard = 0; guard < 40; guard++)
             {
                 int side = _rng.Next(4);

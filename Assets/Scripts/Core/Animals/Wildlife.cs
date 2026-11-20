@@ -22,6 +22,8 @@ namespace Thatchwick.Core.Animals
         public double Shyness;           // 0-1: sevme zorluğu
         public string Meat, Hide;        // av ürünleri (yoksa null)
         public bool Adoptable;           // öksüz yavrusu sahiplenilebilir
+        /// <summary>Yalnızca bu bölgelerde görülür (Regions kimliği). null: deniz kıyısı dışındaki her yer (belge 50).</summary>
+        public string[] Regions;
     }
 
     /// <summary>Yaban türleri kataloğu (1.0 listesi, belge 31-7.1).</summary>
@@ -47,6 +49,9 @@ namespace Thatchwick.Core.Animals
             new WildSpecies { Id = "wild.wolf", Name = "Kurt", Group = WildGroup.Dangerous, Habitat = "derin orman", Seasons = AutWin, Night = true, Huntable = true, Shyness = 1.0, Hide = "item.hide" },
             new WildSpecies { Id = "wild.boar", Name = "Yaban domuzu", Group = WildGroup.Dangerous, Habitat = "orman kenarı", Night = true, Huntable = true, Trappable = true, Shyness = 0.9, Meat = "item.game_meat", Hide = "item.hide" },
             new WildSpecies { Id = "wild.rat", Name = "Fare", Group = WildGroup.Dangerous, Habitat = "ambar", Shyness = 0.5 },
+            // Deniz kıyısı (belge 50): yalnızca kıyı bölgesinde gezer.
+            new WildSpecies { Id = "wild.gull", Name = "Martı", Habitat = "kıyı", Regions = new[] { "coast" }, Shyness = 0.6 },
+            new WildSpecies { Id = "wild.crab", Name = "Yengeç", Habitat = "kıyı", Regions = new[] { "coast" }, Seasons = SprSumAut, Shyness = 0.4 },
             new WildSpecies { Id = "wild.bear", Name = "Boz ayı", Group = WildGroup.Dangerous, Habitat = "derin orman", Seasons = SprSumAut, Shyness = 1.0 },
         };
 
