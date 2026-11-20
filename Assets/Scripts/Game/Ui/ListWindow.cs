@@ -58,6 +58,8 @@ namespace Thatchwick.Game.Ui
             public readonly List<List<Act>> TabRows = new List<List<Act>>();
             public readonly List<Row> Rows = new List<Row>();
             public readonly List<Act> Footer = new List<Act>();
+            /// <summary>Satırların yerine (ya da üstüne) çizilen özel görünüm: soy ağacı gibi.</summary>
+            public VisualElement Custom;
 
             public List<Act> AddTabRow()
             {
@@ -69,7 +71,7 @@ namespace Thatchwick.Game.Ui
 
         private static readonly Color Dim = new Color(0.45f, 0.4f, 0.36f);
 
-        private readonly VisualElement _overlay, _tabs, _list, _footer;
+        private readonly VisualElement _overlay, _tabs, _list, _footer, _custom;
         private readonly Label _title, _info, _status, _page;
         private readonly KitButton _prev, _next;
         private readonly VisualElement _pager;
@@ -108,6 +110,9 @@ namespace Thatchwick.Game.Ui
             _info = UiHost.Text();
             _info.style.fontSize = 11;
             panel.Add(_info);
+
+            _custom = new VisualElement();
+            panel.Add(_custom);
 
             _list = new VisualElement();
             panel.Add(_list);
@@ -174,6 +179,10 @@ namespace Thatchwick.Game.Ui
                 foreach (var tab in tabRow) line.Add(Button(tab, resetPage: true));
                 _tabs.Add(line);
             }
+
+            _custom.Clear();
+            if (model.Custom != null) _custom.Add(model.Custom);
+            Show(_custom, model.Custom != null);
 
             int pages = Math.Max(1, (model.Rows.Count + _pageSize - 1) / _pageSize);
             _pageIndex = Mathf.Clamp(_pageIndex, 0, pages - 1);

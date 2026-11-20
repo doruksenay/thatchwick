@@ -118,6 +118,14 @@ namespace Thatchwick.Game
                 var next = _life.Festivals.NextFestival(out int days);
                 line2 = (_life.Festivals.IsMarketDayToday ? GameLocalization.T("ui.village.market_day_today") : "") + (next != null ? $"Sıradaki şenlik: {next.DisplayName} ({days} gün)" : "");
             }
+            // Yıldönümü takvimde (67d): 3 gün içinde olan ilk yıldönümü.
+            var anniv = _life.Relations?.UpcomingAnniversaries(3);
+            if (anniv != null && anniv.Count > 0)
+            {
+                var (aa, ab, adays, _) = anniv[0];
+                string when = adays == 0 ? GameLocalization.T("ui.rel.anniv.today") : GameLocalization.T("ui.rel.anniv.in", ("n", adays));
+                line2 += (line2.Length > 0 ? " · " : "") + GameLocalization.T("ui.rel.anniv.hud", ("a", aa.Name), ("b", ab.Name), ("when", when));
+            }
             line2 = $"Soy Mührü {_life.Legacy.Seals}" + (line2.Length > 0 ? " · " + line2 : "");
             if (_forecast == null || Time.unscaledTime >= _forecastUntil)
             {

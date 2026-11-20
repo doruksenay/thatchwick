@@ -15,7 +15,12 @@ namespace Thatchwick.Game.Ui
     /// </summary>
     public sealed class RelationsPanel
     {
-        private enum Tab { People, Talk, Rep, Council, Decide }
+        private enum Tab { People, Tree, Talk, Rep, Council, Decide }
+
+        /// <summary>Kişi satırında en çok bu kadar iş düğmesi; fazlası "Daha fazla" ile açılır.</summary>
+        private const int ActsShown = 5;
+        private readonly HashSet<int> _expanded = new HashSet<int>();
+        private int _treeFocus;
 
         private readonly LifeSystems _life;
         private readonly Func<UiHost> _host;
@@ -69,6 +74,7 @@ namespace Thatchwick.Game.Ui
             var tabs = m.AddTabRow();
             void TabAct(Tab t, string key) => tabs.Add(new ListWindow.Act(T(key), () => { _tab = t; _status = null; }, _tab == t));
             TabAct(Tab.People, "ui.rel.tab.people");
+            TabAct(Tab.Tree, "ui.rel.tab.tree");
             TabAct(Tab.Talk, "ui.rel.tab.talk");
             TabAct(Tab.Rep, "ui.rel.tab.rep");
             TabAct(Tab.Council, "ui.rel.tab.council");
@@ -89,6 +95,7 @@ namespace Thatchwick.Game.Ui
             switch (_tab)
             {
                 case Tab.People: People(m, who); break;
+                case Tab.Tree: Tree(m, who); break;
                 case Tab.Talk: Talk(m); break;
                 case Tab.Rep: Rep(m, who, members); break;
                 case Tab.Council: Council(m, who); break;
@@ -145,7 +152,13 @@ namespace Thatchwick.Game.Ui
             int w = rel.Warmth(who.Id, c.Id);
             if (w >= 0 && who.SpouseId == c.Id) parts.Add(T("ui.rel.warmth", ("n", w)));
             var feels = new List<string>();
-            foreach (var x in rel.Feelings(who.Id, c.Id)) feels.Add(R(LocText.Of(RelationRules.Feelings[x.Kind].Key)));
+            double today = _life.Clock.TotalDays;
+            foreach (var x in rel.Feelings(who.Id, c.Id))
+            {
+                string name = R(LocText.Of(RelationRules.Feelings[x.Kind].Key));
+                double left = x.UntilDay - today;
+                feels.Add(left > 0 && left < 999 ? T("ui.rel.feel_days", ("name", name), ("n", (int)Math.Ceiling(left))) : name);
+            }
             if (feels.Count > 0) parts.Add(T("ui.rel.feels", ("list", string.Join(", ", feels))));
             int known = rel.KnownPrefs(who.Id, c.Id);
             if (c.Stage >= AgeStage.YoungAdult)
@@ -165,19 +178,49 @@ namespace Thatchwick.Game.Ui
                 var cc = c;
                 row.Actions.Add(new ListWindow.Act(T("ui.rel.dyn.choose", ("d", R(RelationRules.DynamicText(next)))), () => rel.ChooseDynamic(who, cc, next)));
             }
-            int shown = 0;
-            foreach (var act in RelationActs)
+            // İşler: hepsi yapılabilir; kalabalıksa ilk 5'i ve "Daha fazla" (açılınca hepsi ve "Daha az").
+            var acts = new List<SocialAction>();
+            foreach (var act in RelationActs) if (_life.Relations.CanDo(who, c, act) == null) acts.Add(act);
+            bool open = _expanded.Contains(c.Id);
+            int limit = open || acts.Count <= ActsShown + 1 ? acts.Count : ActsShown;
+            for (int i = 0; i < limit; i++)
             {
-                if (shown >= 6 || _life.Relations.CanDo(who, c, act) != null) continue;
-                var a = act; var target = c;
-                row.Actions.Add(new ListWindow.Act(T("rel.act." + RelationRules.Snake(act.ToString())), () =>
+                var a = acts[i]; var target = c;
+                row.Actions.Add(new ListWindow.Act(T("rel.act." + RelationRules.Snake(a.ToString())), () =>
                 {
                     RunnerOf?.Invoke(who)?.Command(Job.Social(target.Id, a));
                     _status = who.Name + " → " + target.Name + ": " + T("rel.act." + RelationRules.Snake(a.ToString()));
                 }));
-                shown++;
             }
+            int id = c.Id;
+            if (limit < acts.Count) row.Actions.Add(new ListWindow.Act(T("ui.rel.more", ("n", acts.Count - limit)), () => _expanded.Add(id)));
+            else if (open) row.Actions.Add(new ListWindow.Act(T("ui.rel.less"), () => _expanded.Remove(id)));
             return row;
+        }
+
+        // ---- soy ağacı ----
+
+        private void Tree(ListWindow.Model m, Character who)
+        {
+            if (who == null) { m.Info = T("ui.rel.none"); return; }
+            var people = new List<Character>(_life.Population.Members);
+            var focus = people.Find(c => c.Id == _treeFocus) ?? who;
+            m.Info = T("ui.rel.tree.info");
+            if (focus != who)
+            {
+                var row = new ListWindow.Row(focus.Name);
+                row.Actions.Add(new ListWindow.Act(T("ui.rel.tree.reset"), () => _treeFocus = 0));
+                m.Rows.Add(row);
+            }
+            var rel = _life.Relations;
+            m.Custom = FamilyTreeView.Build(new FamilyTreeView.Options
+            {
+                Focus = focus,
+                People = people,
+                Sub = c => c == who ? null : R(RelationRules.StageText(RelationRules.StageOf(rel.Friendship(who.Id, c.Id)))),
+                Pick = c => { _treeFocus = c.Id; _window?.Refresh(); },
+                More = n => T("ui.rel.tree.more", ("n", n))
+            });
         }
 
         private void ChatRow(ListWindow.Model m, Character who)
@@ -306,6 +349,15 @@ namespace Thatchwick.Game.Ui
                     ("days", Math.Max(0, (int)Math.Ceiling(e.StartDay - _life.Clock.TotalDays)))));
             }
             if (coming.Count > 0) m.Rows.Add(new ListWindow.Row(T("ui.rel.events", ("list", string.Join("; ", coming)))) { Header = true });
+            // Yıldönümleri (takvim, 67d): bir mevsim içinde gelecekler.
+            m.Rows.Add(new ListWindow.Row(T("ui.rel.anniv.title")) { Header = true });
+            var anniv = rel.UpcomingAnniversaries(_life.Clock.Config.DaysPerSeason);
+            if (anniv.Count == 0) m.Rows.Add(new ListWindow.Row(T("ui.rel.anniv.none")));
+            foreach (var (a, b, days, year) in anniv)
+            {
+                string when = days == 0 ? T("ui.rel.anniv.today") : T("ui.rel.anniv.in", ("n", days));
+                m.Rows.Add(new ListWindow.Row(T("ui.rel.anniv.row", ("a", a.Name), ("b", b.Name), ("year", Math.Max(1, year)), ("when", when))) { Marked = days == 0 });
+            }
         }
     }
 }

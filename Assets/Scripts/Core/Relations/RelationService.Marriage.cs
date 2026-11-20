@@ -32,6 +32,33 @@ namespace Thatchwick.Core.Relations
         public Func<int> DaysPerYear { get; set; } = () => 40;
         /// <summary>Kişi gece evinin dışında mı (T10).</summary>
         public Func<Character, bool> AwayAtNight { get; set; }
+        /// <summary>Gece içkili mi (+18 paketi): sarhoş eve gelme tetiği (T10'un +18 hâli, karar 67d).</summary>
+        public Func<Character, bool> Tipsy { get; set; } = _ => false;
+
+        public const double ConfideChance = 0.15, ConfideGapDays = 3;
+        private readonly Dictionary<int, double> _lastConfide = new Dictionary<int, double>();
+
+        /// <summary>
+        /// Eşler sohbet edince bazen biri öbürüne bir sırrını açar (T8'in kaynağı): bilgi yalnız ikisinde kalır. Eşi o sırrı
+        /// yakın dostuna anlatırsa sırrı açan kırılır. Dönen: açıldıysa sır.
+        /// </summary>
+        public Fact MaybeConfide(Character a, Character b, double? roll = null)
+        {
+            if (a == null || b == null || a.SpouseId != b.Id || Knowledge == null) return null;
+            if (_lastConfide.TryGetValue(a.Id, out var last) && Today() - last < ConfideGapDays) return null;
+            if ((roll ?? _rng.NextDouble()) >= ConfideChance) return null;
+            if (Knowledge.SecretsOf(a.Id) >= 3) return null;
+            _lastConfide[a.Id] = Today();
+            var f = Knowledge.RecordSecret(a, b, _rng.Next(KnowledgeService.Secrets.Length));
+            if (f != null)
+            {
+                Cue?.Invoke(a, "gossip", 3f);
+                AddWarmth(a.Id, b.Id, 3);
+                AddFeeling(b.Id, a.Id, FeelingKind.Trusts);
+                if (IsHousehold(a) || IsHousehold(b)) Notice?.Invoke(LocText.Of("rel.n.confided", ("a", a.Name), ("b", b.Name)), a.Id);
+            }
+            return f;
+        }
         /// <summary>İhanetten ayrılan, doğduğu haneye döner (köylü olur).</summary>
         public Action<Character> SendToBirthHouse { get; set; }
 
@@ -67,6 +94,7 @@ namespace Thatchwick.Core.Relations
             {
                 case SpouseTrigger.Infidelity: return 40;
                 case SpouseTrigger.SoldHeirloom: case SpouseTrigger.SpentDowry: case SpouseTrigger.Gambling: return 20;
+                case SpouseTrigger.DrunkHome:
                 case SpouseTrigger.NeglectedChild: case SpouseTrigger.InLawQuarrel: case SpouseTrigger.SpilledSecret: case SpouseTrigger.Flirting: return 12;
                 default: return 6;   // yıldönümü, iş yükü, gece dışarıda, pislik
             }
@@ -126,6 +154,26 @@ namespace Thatchwick.Core.Relations
         // ---- yıldönümü ----
 
         private int YearOf(PairState p, double now) => p.MarriedDay < 0 ? -1 : (int)Math.Floor((now - p.MarriedDay) / Math.Max(1, DaysPerYear()));
+
+        /// <summary>Takvim için: hanedeki evli çiftlerin yaklaşan yıldönümleri (çift, kaç gün sonra, kaçıncı yıl).</summary>
+        public List<(Character a, Character b, int days, int year)> UpcomingAnniversaries(int withinDays)
+        {
+            var list = new List<(Character, Character, int, int)>();
+            double now = Today(), perYear = Math.Max(1, DaysPerYear());
+            foreach (var p in _pairs.Values)
+            {
+                if (p.MarriedDay < 0) continue;
+                var a = _population.Find(p.A); var b = _population.Find(p.B);
+                if (a == null || b == null || a.IsDead || b.IsDead || a.SpouseId != b.Id || (!IsHousehold(a) && !IsHousehold(b))) continue;
+                int year = (int)Math.Floor((now - p.MarriedDay) / perYear) + 1;
+                double day = p.MarriedDay + year * perYear;
+                if (p.AnniversaryYear >= year - 1 && AnniversaryDue(p)) { list.Add((a, b, 0, year - 1)); continue; }
+                int days = (int)Math.Ceiling(Math.Floor(day) - Math.Floor(now));
+                if (days >= 0 && days <= withinDays) list.Add((a, b, days, year));
+            }
+            list.Sort((x, y) => x.Item3.CompareTo(y.Item3));
+            return list;
+        }
 
         public bool AnniversaryDue(PairState p)
         {
@@ -188,11 +236,14 @@ namespace Thatchwick.Core.Relations
             _choreStreak[k] = streak;
             if (Math.Abs(streak) >= ChoreStreakDays) { _choreStreak[k] = 0; ReportTrigger(SpouseTrigger.UnfairChores, streak > 0 ? b : a); }
 
-            // Gece dışarıda (T10): biri evdeyken öbürü gece evin dışında.
-            if (AwayAtNight != null && a.Stage >= AgeStage.YoungAdult && b.Stage >= AgeStage.YoungAdult)
+            // Gece dışarıda (T10): biri evdeyken öbürü gece evin dışında (iş, şenlik ve düğün sayılmaz; hook ayırır).
+            // +18 paketinde içkili eve gelen ayrı tetik: sarhoş eve geldi (karar 67d).
+            if (a.Stage >= AgeStage.YoungAdult && b.Stage >= AgeStage.YoungAdult)
             {
-                bool aw = AwayAtNight(a), bw = AwayAtNight(b);
-                if (aw != bw && _rng.NextDouble() < 0.5) ReportTrigger(SpouseTrigger.OutAllNight, aw ? a : b);
+                bool aw = AwayAtNight != null && AwayAtNight(a), bw = AwayAtNight != null && AwayAtNight(b);
+                bool at = Tipsy(a), bt = Tipsy(b);
+                if (at != bt && _rng.NextDouble() < 0.6) ReportTrigger(SpouseTrigger.DrunkHome, at ? a : b);
+                else if (aw != bw && _rng.NextDouble() < 0.5) ReportTrigger(SpouseTrigger.OutAllNight, aw ? a : b);
             }
 
             // İhanet ayrılığı: "İhanete uğramış" + Sıcaklık 10'un altında 7 gün, ya da ikinci ihanet.

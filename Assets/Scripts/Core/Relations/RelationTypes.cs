@@ -37,7 +37,9 @@ namespace Thatchwick.Core.Relations
     public enum SpouseTrigger
     {
         Infidelity = 1, SoldHeirloom = 2, SpentDowry = 3, NeglectedChild = 4, ForgotAnniversary = 5, UnfairChores = 6,
-        InLawQuarrel = 7, SpilledSecret = 8, Flirting = 9, OutAllNight = 10, Gambling = 11, Mess = 12
+        InLawQuarrel = 7, SpilledSecret = 8, Flirting = 9, OutAllNight = 10, Gambling = 11, Mess = 12,
+        /// <summary>Sarhoş eve geldi: T10'un +18 paketindeki hâli (karar 67d).</summary>
+        DrunkHome = 13
     }
 
     /// <summary>İtibarın dört yönü (67b §7.3).</summary>
