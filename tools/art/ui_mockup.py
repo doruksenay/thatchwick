@@ -282,9 +282,14 @@ def _asset(name):
 
 
 def nine_slice(im, w, h, c):
-    """9-slice: köşeler olduğu gibi, kenar ve orta döşenerek (germe yok; piksel ızgarası bozulmaz)."""
+    """9-slice: köşeler olduğu gibi, kenar ve orta döşenerek (germe yok; piksel ızgarası bozulmaz).
+    c: tek sayı (dört kenar aynı) ya da [sol, sağ, üst, alt]; 0 o yönde kenar yok demektir."""
     W, H = im.size
-    c = max(1, min(c, W // 2 - 1, H // 2 - 1))
+    if isinstance(c, int):
+        c = max(1, min(c, W // 2 - 1, H // 2 - 1))
+        l = r = t = b = c
+    else:
+        l, r, t, b = c
     out = Image.new("RGBA", (w, h), (0, 0, 0, 0))
 
     def tile(src, box):
@@ -296,23 +301,19 @@ def nine_slice(im, w, h, c):
                 piece = src.crop((0, 0, min(src.width, bx + bw - xx), min(src.height, by + bh - yy)))
                 out.alpha_composite(piece, (xx, yy))
 
-    mid_w, mid_h = W - 2 * c, H - 2 * c
-    parts = {
-        "tl": im.crop((0, 0, c, c)), "tr": im.crop((W - c, 0, W, c)),
-        "bl": im.crop((0, H - c, c, H)), "br": im.crop((W - c, H - c, W, H)),
-        "t": im.crop((c, 0, W - c, c)), "b": im.crop((c, H - c, W - c, H)),
-        "l": im.crop((0, c, c, H - c)), "r": im.crop((W - c, c, W, H - c)),
-        "m": im.crop((c, c, W - c, H - c)),
-    }
-    tile(parts["m"], (c, c, w - 2 * c, h - 2 * c))
-    tile(parts["t"], (c, 0, w - 2 * c, c))
-    tile(parts["b"], (c, h - c, w - 2 * c, c))
-    tile(parts["l"], (0, c, c, h - 2 * c))
-    tile(parts["r"], (w - c, c, c, h - 2 * c))
-    out.alpha_composite(parts["tl"], (0, 0))
-    out.alpha_composite(parts["tr"], (w - c, 0))
-    out.alpha_composite(parts["bl"], (0, h - c))
-    out.alpha_composite(parts["br"], (w - c, h - c))
+    def put(box_src, box_dst):
+        tile(im.crop(box_src), box_dst)
+
+    mw, mh = w - l - r, h - t - b
+    put((l, t, W - r, H - b), (l, t, mw, mh))
+    put((l, 0, W - r, t), (l, 0, mw, t))
+    put((l, H - b, W - r, H), (l, h - b, mw, b))
+    put((0, t, l, H - b), (0, t, l, mh))
+    put((W - r, t, W, H - b), (w - r, t, r, mh))
+    put((0, 0, l, t), (0, 0, l, t))
+    put((W - r, 0, W, t), (w - r, 0, r, t))
+    put((0, H - b, l, H), (0, h - b, l, b))
+    put((W - r, H - b, W, H), (w - r, h - b, r, b))
     return out
 
 
@@ -376,15 +377,18 @@ def cmd_hud(screen, yon, scene, out, scale):
             rx, ry, rw, rh = el["bar"]
             for i, (icon, _label, val) in enumerate(el["needs"]):
                 yy = by + i * el["row"]
-                _piece(base, yon, {"piece": icon, "box": [bx, yy, 16, 16]}, missing_pieces)
-                _piece(base, yon, {"piece": "bar", "slice": 3, "box": [bx + rx, yy + rh // 2 + 2, rw, rh]}, missing_pieces)
+                isz = el.get("icon_size", 16)
+                fx, fy = el.get("fill_inset", [2, 1])
+                by0 = yy + el.get("bar_dy", rh // 2 + 2)
+                _piece(base, yon, {"piece": icon, "box": [bx, yy, isz, isz]}, missing_pieces)
+                _piece(base, yon, {"piece": "bar", "slice": el.get("bar_slice", 3), "box": [bx + rx, by0, rw, rh]}, missing_pieces)
                 fill = next(n for t, n in NEED_FILL if val > t)
-                inner = max(0, int((rw - 4) * val / 100))
+                inner = max(0, int((rw - 2 * fx) * val / 100))
                 fp = _asset(f"ui_hud2_{yon}_{fill}")
                 if fp and inner:
                     f_im = Image.open(fp).convert("RGBA")
-                    f_im = f_im.resize((inner, rh - 2), Image.NEAREST)
-                    base.alpha_composite(f_im, (bx + rx + 2, yy + rh // 2 + 3))
+                    f_im = f_im.resize((inner, el.get("fill_h", rh - 2)), Image.NEAREST)
+                    base.alpha_composite(f_im, (bx + rx + fx, by0 + fy))
                 elif not fp:
                     missing_pieces.add(f"ui_hud2_{yon}_{fill}")
         if "text" in el:
