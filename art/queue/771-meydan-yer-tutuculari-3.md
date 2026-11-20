@@ -1,7 +1,8 @@
 ---
 id: "771"
 title: "Köy meydanında hâlâ kutu çizilen eşyalar (3. deneme)"
-status: pending
+status: running
+claimed_at: 2026-11-20T23:21Z
 approved_by: user        # otomatik akış; kullanıcı 21.11.2026 (Project belgesi 66, 66b)
 priority: 10
 family: esya
