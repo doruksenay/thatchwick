@@ -27,6 +27,10 @@ WORK = ROOT / ".audio_work"          # adaylar (git dışı)
 STATUSES = ("ready", "claimed", "review", "accepted", "rejected", "blocked", "done")
 RUNNABLE_APPROVALS = ("auto", "kullanici", "kullanıcı", "user")
 DONE_STATES = ("accepted", "done")
+# Bağımlılık için incelemede (review) beklemek yeterli; PixelLab kuyruğuyla aynı kural (CLAUDE.md).
+# İstisna: voice_design kabul edilmeden ses kimliği oluşmaz, ona bağlı işler kabulü bekler.
+DEP_OK_STATES = ("review",) + DONE_STATES
+NEEDS_ACCEPT_KINDS = ("voice_design",)
 
 
 def now_iso() -> str:
@@ -132,7 +136,10 @@ def job_by_id(job_id: str) -> Job | None:
 def deps_satisfied(job: Job, by_id: dict[str, Job]) -> bool:
     for dep in job.get("depends_on") or []:
         d = by_id.get(str(dep))
-        if d is None or d.get("status") not in DONE_STATES:
+        if d is None:
+            return False
+        ok = DONE_STATES if d.get("kind") in NEEDS_ACCEPT_KINDS else DEP_OK_STATES
+        if d.get("status") not in ok:  # rejected, ready, claimed, blocked: bekle
             return False
     return True
 

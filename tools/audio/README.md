@@ -20,6 +20,7 @@ Yoklayıcıyı Görev Zamanlayıcı'ya kurmak (15 dakikada bir): `tools\audio-po
    - Adayları üretir, son işlemden (kırpma, LUFS, döngü, OGG) ve kapıdan geçirir.
    - Adaylar `.audio_work\<id>\` klasörüne ve masaüstündeki `ses\adaylar` klasörüne yazılır.
    - İş `review` durumuna geçer.
+   - `depends_on` için `review` yeterlidir: pilot incelemeye düşünce bağlı işler başlar (PixelLab kuyruğuyla aynı). İstisna: ses tasarımına (`voice_design`) bağlı işler kabulü bekler, çünkü ses kimliği kabulde oluşur. `rejected` olan işe bağlı işler durur.
 3. **İnceleme:** `tools\audio-review.cmd`. Tarayıcıda `localhost:8765` açılır.
    - Dinle; "Oyundaki gibi çal" ile 24 kez art arda, oyundaki rastgelelikle duy.
    - Seç; Kabul, Yeniden üret ya da Ret.
