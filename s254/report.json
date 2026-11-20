@@ -1,0 +1,118 @@
+{
+  "job": "s254",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:11:22Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.558,
+          "lufs": -27.9,
+          "true_peak_db": -1.0,
+          "rms_db": -26.4,
+          "note": "tepe sınırında, yükseklik -27.9 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: leather shoe.",
+          "duration": 0.5960608667513306,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.52,
+          "lufs": -18.0,
+          "true_peak_db": -3.2,
+          "rms_db": -21.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: bare foot.",
+          "duration": 0.5544270380435583,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.495,
+          "lufs": -20.0,
+          "true_peak_db": -1.0,
+          "rms_db": -23.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0091)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: leather shoe.",
+          "duration": 0.545810494099203,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.503,
+          "lufs": -23.1,
+          "true_peak_db": -1.0,
+          "rms_db": -25.4,
+          "note": "tepe sınırında, yükseklik -23.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0339)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: bare foot.",
+          "duration": 0.6441618552891244,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.519,
+          "lufs": -24.1,
+          "true_peak_db": -1.0,
+          "rms_db": -25.4,
+          "note": "tepe sınırında, yükseklik -24.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: leather shoe.",
+          "duration": 0.5666148723233562,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 0.543,
+          "lufs": -18.0,
+          "true_peak_db": -2.3,
+          "rms_db": -21.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0307)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: bare foot.",
+          "duration": 0.5645115186551695,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0091
+          ],
+          [
+            "c1",
+            "c4",
+            0.0339
+          ],
+          [
+            "c1",
+            "c6",
+            0.0307
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0091,
+          "c2": 0.0441,
+          "c3": 0.0091,
+          "c4": 0.0187,
+          "c5": 0.0187,
+          "c6": 0.0298
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

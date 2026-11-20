@@ -1,0 +1,110 @@
+{
+  "job": "s256",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:11:36Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.92,
+          "lufs": -19.7,
+          "true_peak_db": -1.0,
+          "rms_db": -21.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: loose sand.",
+          "duration": 0.9382399049747354,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.993,
+          "lufs": -22.5,
+          "true_peak_db": -1.0,
+          "rms_db": -23.7,
+          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: dry garden soil.",
+          "duration": 1.0046135985819957,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.92,
+          "lufs": -19.9,
+          "true_peak_db": -1.0,
+          "rms_db": -19.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: loose sand.",
+          "duration": 0.9577369661677034,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 1.08,
+          "lufs": -22.5,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: dry garden soil.",
+          "duration": 1.0812093209712246,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 1.074,
+          "lufs": -19.3,
+          "true_peak_db": -1.0,
+          "rms_db": -21.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0322)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: loose sand.",
+          "duration": 1.082665080273491,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.04,
+          "lufs": -24.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.7,
+          "note": "tepe sınırında, yükseklik -24.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0256)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: dry garden soil.",
+          "duration": 1.0500229840349438,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c5",
+            0.0322
+          ],
+          [
+            "c1",
+            "c6",
+            0.0256
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0256,
+          "c2": 0.0353,
+          "c3": 0.0367,
+          "c4": 0.0648,
+          "c5": 0.0322,
+          "c6": 0.0256
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}
