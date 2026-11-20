@@ -1,7 +1,7 @@
 ---
 id: "553"
 title: "Yaban bitkileri 1/3: orman (9)"
-status: running
+status: review
 claimed_at: 2026-11-20T14:48Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 30
@@ -54,3 +54,6 @@ Yöntem **373 ile aynı**: tuval 80x72, 1x1 kılavuz + maske, pivot 40,24; 373't
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+## Sorular
+- 2026-11-20 şerit 0: chanterelle, sloe, wild_pear iki denemede de biçim tutmadı (blok/ağaç/fidan), teslim edilmedi; ayrıntı results/553. Öneri: ayrı tarif.
