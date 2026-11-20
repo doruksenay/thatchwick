@@ -1,7 +1,8 @@
 ---
 id: "612"
 title: "Köy meydanı onarımı: 7 yapının yıkık ve onarılmış hâli, iki iskele katmanı"
-status: pending
+status: running
+claimed_at: 2026-11-20T14:26Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("köy meydanının onarımı ... bu olsun"), Project belgesi 64c
 priority: 15
 family: yapi
