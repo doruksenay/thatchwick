@@ -1,7 +1,7 @@
 ---
 id: "351b"
 title: "Su yolu karoları yeniden: toprak ark, taş ark, ahşap oluk (kuru ve sulu)"
-status: running
+status: review
 claimed_at: 2026-11-20T10:18Z
 approved_by: user        # kullanıcı kararı 2026-11-20: 351 reddedildi, yeniden üretim
 priority: 20
@@ -38,3 +38,4 @@ created: 2026-11-20
 - Raporda 351'in reddedilen çıktısıyla yan yana sayfası (`art/results/351b-yanyana.png`) olmalı.
 
 ## Notlar
+- 2026-11-20: 12/18 parça teslim; stone arm_ne ile flume arm_ne/arm_se üretilemedi. Kuru karoların zemini 002'den açık. Ayrıntı: art/results/351b-su-yolu-ark-oluk-yeniden.md
