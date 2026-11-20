@@ -26,7 +26,7 @@ namespace Thatchwick.Game
         private float FxScale => _fxLevel <= 0 ? 0f : _fxLevel == 1 ? 0.5f : 1f;
 
         private float _wetGround, _wetGroundShown = -1f;
-        private float _flyBuzzAt;
+        private float _flyBuzzAt, _splashDebt;
         private readonly Dictionary<int, float> _catDig = new Dictionary<int, float>();          // kedi → eşelemenin bittiği an
         private readonly Dictionary<int, Vector3> _cartHome = new Dictionary<int, Vector3>();    // araba eşyası → avludaki yeri
         private readonly HashSet<int> _wetTinted = new HashSet<int>();
@@ -246,8 +246,9 @@ namespace Thatchwick.Game
             float level = raining && _weatherFx != null ? _weatherFx.Level : 0f;
             if (level > 0.05f)
             {
-                int tries = Mathf.Clamp(Mathf.RoundToInt(level * scale * (weather == WeatherType.Storm ? 5f : 3f)), 1, 5);
-                for (int i = 0; i < tries; i++)
+                // Kare hızından bağımsız: saniyede 28 (fırtınada 45) karo denenir; parçacık havuzu (220) duman ve sürüyle ortak.
+                _splashDebt = Mathf.Min(6f, _splashDebt + dt * level * scale * (weather == WeatherType.Storm ? 45f : 28f));
+                for (; _splashDebt >= 1f; _splashDebt -= 1f)
                 {
                     if (!RandomVisibleTile(out var tile, out var world) || IsShelteredAt(world)) continue;
                     world += new Vector3((Random01() - 0.5f) * 0.6f, (Random01() - 0.5f) * 0.3f, 0f);
