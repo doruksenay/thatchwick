@@ -1,5 +1,5 @@
 ---
-id: "570"
+id: "589"
 title: "Zincir pozları, mutfak 1/2: karıştır, doğra, tat, kepçe, yoğur (40)"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
@@ -20,7 +20,7 @@ outputs:
   - art/results/570-*.md
 created: 2026-11-20
 ---
-# 570 Zincir pozları, mutfak 1/2: karıştır, doğra, tat, kepçe, yoğur (40)
+# 589 Zincir pozları, mutfak 1/2: karıştır, doğra, tat, kepçe, yoğur (40)
 
 ## Amaç
 İzlenen eylem zincirlerinin (Project belgesi 60) adım pozları. Kod pozu adla arar (`life.json` → `chains[].steps[].pose`, `GameRoot.StepFrameFor`); kare gelene kadar en yakın eldeki poza ya da etkileşimin eski simgesine düşer. Kare gelince kod değişmeden oynar.
