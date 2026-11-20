@@ -29,6 +29,8 @@ namespace Thatchwick.Core.Family
         // ---- kancalar ----
         public Func<double> Today { get; set; } = () => 0;
         public Action<int, string> AddReputation { get; set; }
+        /// <summary>Mektup yazıldı (yazan, alan): mühür yüzüğü itibarı gibi dış etkiler buraya bağlanır.</summary>
+        public Action<Character, Character> LetterWritten { get; set; }
         public InjurySystem Injuries { get; set; }
         public Func<bool> IsFestivalDay { get; set; } = () => false;
         public Func<string> ForecastText { get; set; } = () => "";
@@ -328,6 +330,7 @@ namespace Thatchwick.Core.Family
                 case SocialAction.WriteLetter:
                     Affect(actor, target, 8);
                     target.AddMoodlet(MoodCatalog.GotLetter);
+                    LetterWritten?.Invoke(actor, target);
                     return $"{actor.Name}, {target.Name}'e bir mektup yazdı";
                 default:
                     return null;

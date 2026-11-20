@@ -287,6 +287,7 @@ namespace Thatchwick.Core.Life
                     if (!House.TryTakeItem(SealingWaxId)) House.TryTakeItem("item.parchment");
                     SetSkillFlag("contract", Today);
                     Say($"{c.Name} sözleşme yazdı: bugün köy işlerinin ödülü %15 fazla.", NoticeLevel.Info, c.Id);
+                    SealBonus(c, "seal.rep.contract", "seal.n.contract");
                     break;
                 case "stock_pond":
                     SetSkillFlag("stock:" + item.Id, Today + StockedPondDays);

@@ -261,6 +261,33 @@ namespace Thatchwick.Core.Tests
             Assert.False(life.JewelryToInventory(heirloom));                      // yadigâr satılmaz
         }
 
+        /// <summary>Mühür yüzüğü (belge 48 §5.7): mühürlü mektup itibar +2 getirir; reis değişince yüzük yeni reise geçer.</summary>
+        [Fact]
+        public void MuhurYuzugu_MektuptaItibar_ReisDegisinceGecer()
+        {
+            var (life, house, pop, w) = Life();
+            var head = Person(1, 60); var heir = Person(2, 30); var friend = Person(3, 30);
+            pop.Add(head); pop.Add(heir); pop.Add(friend);
+            var family = new Thatchwick.Core.Family.FamilyService(pop, house, Db());
+            life.Attach(family);
+            int rep = life.Upbringing.Reputation.Points;
+            family.LetterWritten(head, friend);
+            Assert.Equal(rep, life.Upbringing.Reputation.Points);               // mühür yok: ek itibar yok
+
+            var seal = life.Clothing.CreateJewelry("seal_ring", 2);
+            Assert.Equal(EquipError.None, life.Clothing.WearJewelry(head, seal));
+            family.LetterWritten(head, friend);
+            Assert.Equal(rep + LifeSystems.SealReputation, life.Upbringing.Reputation.Points);
+
+            var dynasty = new Thatchwick.Core.Family.Dynasty();
+            dynasty.Found(heir, 0);
+            life.OnSuccession(dynasty, heir);
+            Assert.Equal(heir.Id, seal.OwnerId);
+            Assert.True(seal.Heirloom);
+            Assert.True(life.Clothing.HasSeal(heir));
+            Assert.False(life.Clothing.HasSeal(head));
+        }
+
         [Fact]
         public void NazarBoncugu_KazaOlasiliginiDusurur()
         {
@@ -296,7 +323,15 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(0.9, s.AccidentFactor(c));
             Assert.True(s.JewelryJoy(c) <= ClothingService.MaxJewelryJoy);
             s.UpdateMoods(c, false);
-            Assert.True(c.Mood.Has(ClothingService.JewelryMood));
+            // Tek ruh hali (keyif 3: "Göz alıcı takılar"); eski "mood.jewelry" artık eklenmez, üst üste binmez.
+            Assert.True(c.Mood.Has(ClothingService.JewelryFineMood));
+            Assert.False(c.Mood.Has(ClothingService.JewelryJoyMood));
+            Assert.False(c.Mood.Has(ClothingService.JewelryMood));
+            int before = c.Mood.Total;
+            s.TakeOffJewelry(c, s.JewelryOwnedBy(c).First(i => s.JewelryOf(i).Kind == "cord_necklace"));
+            s.UpdateMoods(c, false);
+            Assert.True(c.Mood.Has(ClothingService.JewelryJoyMood));     // keyif 1 kaldı (hızma)
+            Assert.Equal(before - 2, c.Mood.Total);                      // +4 yerine +2
         }
 
         [Fact]

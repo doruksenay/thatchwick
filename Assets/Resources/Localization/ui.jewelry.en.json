@@ -1,0 +1,7 @@
+{
+  "seal.n.contract": "{name} sealed the contract with the signet ring (reputation +{rep}).",
+  "seal.n.letter": "{name} sealed the letter with the signet ring (reputation +{rep}).",
+  "seal.n.passed": "The signet ring passes to {name}, the new head of the household.",
+  "seal.rep.contract": "sealed contract",
+  "seal.rep.letter": "sealed letter"
+}
