@@ -1,7 +1,7 @@
 ---
 id: "470"
 title: "Cam bahçe kapları: küçük ve büyük (2)"
-status: running
+status: failed
 claimed_at: 2026-11-20T07:19Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe), Project belgesi 47
 priority: 20
