@@ -49190,6 +49190,39 @@
       ]
     },
     {
+      "id": "item.handkerchief_red",
+      "displayName": "İşlemeli mendil (kırmızı)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "gift",
+        "shop_tailor"
+      ]
+    },
+    {
+      "id": "item.handkerchief_blue",
+      "displayName": "İşlemeli mendil (mavi)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "gift",
+        "shop_tailor"
+      ]
+    },
+    {
+      "id": "item.handkerchief_white",
+      "displayName": "İşlemeli mendil (beyaz)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "gift",
+        "shop_tailor"
+      ]
+    },
+    {
       "id": "item.landmark_lightning_oak",
       "displayName": "Yıldırım çarpmış meşe",
       "width": 2,
@@ -61953,6 +61986,63 @@
       "skillXp": 6,
       "displayName": "Yıkama taşı yont",
       "minLevel": 1
+    },
+    {
+      "id": "handkerchief_red",
+      "station": "item.sewing_table",
+      "produces": "item.handkerchief_red",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Tailoring",
+      "skillXp": 6,
+      "displayName": "İşlemeli mendil dik (kırmızı)"
+    },
+    {
+      "id": "handkerchief_blue",
+      "station": "item.sewing_table",
+      "produces": "item.handkerchief_blue",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Tailoring",
+      "skillXp": 6,
+      "displayName": "İşlemeli mendil dik (mavi)"
+    },
+    {
+      "id": "handkerchief_white",
+      "station": "item.sewing_table",
+      "produces": "item.handkerchief_white",
+      "materials": [
+        {
+          "item": "item.linen",
+          "count": 1
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Tailoring",
+      "skillXp": 6,
+      "displayName": "İşlemeli mendil dik (beyaz)"
     }
   ],
   "animals": [

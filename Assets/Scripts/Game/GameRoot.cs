@@ -210,6 +210,14 @@ namespace Thatchwick.Game
             ["reap"] = "hoe", ["thresh"] = "hoe", ["bend"] = "sow", ["milk"] = "care",
             ["sit_eat"] = "eat", ["reach"] = "craft_hand", ["carry"] = "work", ["pour"] = "water", ["kindle"] = "work", ["wash"] = "care",
             ["admire"] = "idle", ["wake_stretch"] = "idle", ["warm_hands"] = "idle", ["sit"] = "idle",
+            // İlişki sistemi pozları (işler 737-741, 747-749): kareler gelene kadar en yakın eldeki poz.
+            ["argue"] = "social", ["fight_ready"] = "social", ["brawl"] = "social", ["fight_win"] = "social", ["fight_lose"] = "sit",
+            ["sulk"] = "idle", ["apologize"] = "social", ["cane_threat"] = "social", ["scoff"] = "social", ["gossip"] = "social",
+            ["laugh"] = "fun", ["laugh_smile"] = "social", ["laugh_big"] = "fun", ["giggle"] = "social", ["listen_nod"] = "social",
+            ["listen_arms"] = "idle", ["shrug"] = "social", ["tell_story"] = "social", ["gasp"] = "social", ["clap"] = "fun", ["think"] = "idle",
+            ["kiss"] = "love", ["kiss_cheek"] = "love", ["hold_hands"] = "love", ["offer_handkerchief"] = "care", ["serve_coffee"] = "care",
+            ["drink_grimace"] = "drink", ["put_ring"] = "love", ["cut_ribbon"] = "craft_hand", ["henna"] = "care", ["halay"] = "fun",
+            ["procession"] = "fun", ["throw_jar"] = "work",
         };
 
         /// <summary>Boşta hareket türü → poz (belge 60b §4.1). Karesi yoksa karakter yalnızca balonla tepki verir.</summary>
@@ -579,6 +587,8 @@ namespace Thatchwick.Game
         private const string ToolkitHudPref = "ui.toolkit_hud";
         private Ui.UiHost _ui;
         private Ui.HudBar _hudBar;
+        /// <summary>Alttaki karakter kartı (Project belgesi 68): F4'ten bağımsız, UI Toolkit kurulabildiyse hep o çizer.</summary>
+        private Ui.CharacterCard _characterCard;
         private bool _toolkitHud;
         private bool _toolkitHudRestored;
         private const float HudWidth = 340f;
@@ -594,6 +604,22 @@ namespace Thatchwick.Game
             _toolkitHud = on && _hudBar != null;
             if (_hudBar != null) _hudBar.Visible = _toolkitHud;
             PlayerPrefs.SetInt(ToolkitHudPref, _toolkitHud ? 1 : 0);
+        }
+
+        private void UpdateCharacterCard()
+        {
+            if (_statusHud == null) return;
+            if (_characterCard == null)
+            {
+                var host = EnsureUi();
+                if (host == null) return;   // UI Toolkit yoksa IMGUI alt çubuğu kalır
+                _characterCard = new Ui.CharacterCard(host, _life, _content, () => Commander?.Character,
+                    c => _actors.Find(a => a.Character == c)?.Runner);
+                _statusHud.BottomInToolkit = true;
+            }
+            // Yapı modunda ve sağ panellerde IMGUI alt çubuğu da çizilmiyordu (belge 65 A4, 66 §1.6); tam ekran pencerede de gizli.
+            bool show = !SidePanelOpen && !_dynastyEnded && !AchievementsVisible && !UiWindowOpen;
+            _characterCard.Refresh(show);
         }
 
         private string HudDateText() => T("ui.hud.date", ("year", _clock.YearIndex + 1), ("season", SeasonName(_clock.Season)),
@@ -617,6 +643,7 @@ namespace Thatchwick.Game
                 new Ui.HudBar.Item { Text = () => T("ui.hud.storage"), On = () => _storagePanel.Active, Click = () => _storagePanel.Toggle() },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.mine"), On = () => _minePanel.Active, Click = () => _minePanel.Toggle() },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.carts"), On = () => _cartPanel != null && _cartPanel.Active, Click = () => _cartPanel?.Toggle() },
+                new Ui.HudBar.Item { Text = () => T("ui.rel.hud"), On = () => _relationsPanel != null && _relationsPanel.Active, Click = ToggleRelations },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.family"), On = () => _familyPanel.Active, Click = ToggleFamily },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.village"), On = () => _villagePanel.Active, Click = ToggleVillage },
                 new Ui.HudBar.Item
@@ -1713,7 +1740,8 @@ namespace Thatchwick.Game
                     WaterNetworkAccess = () => _water != null ? _water.AllWaterAccess() : WaterNetwork.WaterAccess(_world),
                     PipedWater = it => _water != null && _water.IsSupplied(it),
                     WalkSpeed = () => _animals.RideSpeed(character.Id), DutyProvider = _duties.Next,
-                    DutySpeed = () => SkillNames.Factor(_life.BestSkill(SkillType.Stewardship), 0.03)
+                    DutySpeed = () => SkillNames.Factor(_life.BestSkill(SkillType.Stewardship), 0.03),
+                    HourOfDay = () => _clock != null ? _clock.DayFraction * 24.0 : 12.0   // gece yatma eşiği (belge 65c B2)
                 },
                 View = go.transform,
                 Renderer = sr,
@@ -1763,7 +1791,7 @@ namespace Thatchwick.Game
             if (_dynastyEnded) return true;
             if (_menuOpen && _menuRect.Contains(guiPos)) return true;
             if (AchievementsVisible || UiWindowOpen) return true;   // tam ekran pencere: dünyaya dokunma geçmez
-            if (_toolkitHud && _ui != null && _ui.IsPointerOver(screenPos)) return true;
+            if ((_toolkitHud || (_characterCard != null && _characterCard.Visible)) && _ui != null && _ui.IsPointerOver(screenPos)) return true;
             return HudRect.Contains(guiPos);
         }
 
@@ -2641,6 +2669,7 @@ namespace Thatchwick.Game
             _minePanel.Opened += PlaceMineInWorld;
             _minePanel.GoDown += SendDownMine;
             InitYard();   // sinek, azar, arabalar paneli (belge 57-57e)
+            InitRelations();   // ilişki paneli, kısa pozlar, kavga bulutu (belge 67)
             _buildService.DeepShaftOpened += p => { _mines.OpenShaft(p); _floorsDirty = true; };
             _buildService.ProtectedItem = it => _life.Legacy.HeirloomOf(it.Id) != null && MineSystem.InTreasureRoom(_world, it);
             _view.RockArt = MineRockArt;
@@ -2939,6 +2968,7 @@ namespace Thatchwick.Game
                 ShowMessage(T(_toolkitHud ? "ui.hud.toolkit_on" : "ui.hud.toolkit_off"));
             }
             if (_toolkitHud) _hudBar.Refresh();
+            UpdateCharacterCard();
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
@@ -3444,6 +3474,11 @@ namespace Thatchwick.Game
             var sceneFrame = sceneKey != null ? ActionFrameFor(actor, sceneKey, seed) : null;
             if (sceneFrame == null && !moving && actor.Character.Stage != AgeStage.Baby) sceneFrame = IdleFrameFor(actor, seed);
             var real = rideFrame ?? walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
+            // Kavga (belge 67a §5.2): toz bulutu kavgayı başlatanın yerine çizilir, hedef bulutun içinde kaybolur.
+            bool brawlHidden = false;
+            var brawl = moving ? null : BrawlFrame(actor, seed, ref brawlHidden, pos, Iso.SortOrder(pos.y, 1, level));
+            if (brawl != null) real = brawl;
+            if (brawlHidden) actor.Renderer.enabled = false;
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
@@ -3861,6 +3896,7 @@ namespace Thatchwick.Game
             if (HudToggle(T("ui.hud.storage"), _storagePanel.Active)) _storagePanel.Toggle();
             if (HudToggle(T("ui.hud.mine"), _minePanel.Active)) _minePanel.Toggle();
             if (_cartPanel != null && HudToggle(T("ui.hud.carts"), _cartPanel.Active)) _cartPanel.Toggle();
+            if (_relationsPanel != null && HudToggle(T("ui.rel.hud"), _relationsPanel.Active)) ToggleRelations();
             if (HudToggle(T("ui.hud.family"), _familyPanel.Active)) ToggleFamily();
             if (HudToggle(T("ui.hud.village"), _villagePanel.Active)) ToggleVillage();
             { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? T("ui.hud.requests_unread", ("count", unread)) : T("ui.hud.requests"), _requestPanel.Active)) ToggleRequests(); }

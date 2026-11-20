@@ -109,6 +109,33 @@ namespace Thatchwick.Core.Life
 
         public NeighborHouse HouseOf(Character c) => c != null && _houseOf.TryGetValue(c.Id, out var id) ? Get(id) : null;
 
+        /// <summary>İlişki sistemi (67d): köylü bir hane üyesinin kur yaptığı kişi mi; nişanlıysa ya da sevgilisi varsa da.</summary>
+        public Func<Character, bool> Courted { get; set; }
+        /// <summary>İlişki sistemi bağlıysa rastgele köy evliliği yerine nişan (düğün birkaç gün sonra).</summary>
+        public Action<Character, Character> Engage { get; set; }
+
+        /// <summary>
+        /// İhanet ayrılığı (67b §6): kişi doğduğu haneye (anne ya da babasının hanesi) döner; yoksa kendi hanesini kurar.
+        /// </summary>
+        public NeighborHouse ReturnToBirthHouse(Character c)
+        {
+            if (c == null) return null;
+            EnsureHouses();
+            NeighborHouse target = null;
+            foreach (var pid in new[] { c.BirthMotherId, c.BirthFatherId })
+            {
+                if (!pid.HasValue) continue;
+                var parent = _population.Find(pid.Value);
+                var h = parent != null ? HouseOf(parent) : null;
+                if (h != null && !h.Extinct) { target = h; break; }
+            }
+            var from = HouseOf(c);
+            if (target == null) target = Found(c, null);
+            else Join(target, c);
+            if (from != null && from != target) AfterLeave(from);
+            return target;
+        }
+
         public NeighborHouse HouseOfDef(string defId)
         {
             foreach (var h in _houses) if (!h.Extinct && h.DefId == defId) return h;
@@ -296,6 +323,8 @@ namespace Thatchwick.Core.Life
                 singles.Add(c);
             }
             if (singles.Count < 2 || _rng.NextDouble() >= VillageMarriageChance) return null;
+            if (Courted != null) singles.RemoveAll(c => Courted(c));
+            if (singles.Count < 2) return null;
             var a = singles[_rng.Next(singles.Count)];
             var options = new List<Character>();
             foreach (var b in singles)
@@ -303,6 +332,8 @@ namespace Thatchwick.Core.Life
                     options.Add(b);
             if (options.Count == 0) return null;
             var mate = options[_rng.Next(options.Count)];
+            // İlişki sistemi bağlıysa köy evliliği nişan ve düğünle olur (67c, oyuncu düğüne davet edilir).
+            if (Engage != null) { Engage(a, mate); return null; }
             Marry(a, mate);
             return (a, mate);
         }

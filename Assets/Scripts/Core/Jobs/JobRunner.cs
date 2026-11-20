@@ -24,6 +24,22 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Otonom karakter, ihtiyacı bu değerin altına düşünce kendiliğinden iş arar.</summary>
         public const float AutonomyThreshold = 30f;
 
+        /// <summary>Gece (<see cref="BedtimeHour"/>–<see cref="WakeHour"/>) enerji bu değerin altındaysa otonom karakter yatar (belge 65c B2).</summary>
+        public const float NightSleepThreshold = 70f;
+        public const double BedtimeHour = 21.0;
+        public const double WakeHour = 5.0;
+
+        /// <summary>Günün saati (0–24). Verilirse enerji eşiği saate göre değişir: gece yatılır, gündüz yalnızca çok yorgunken uyunur.</summary>
+        public Func<double> HourOfDay { get; set; }
+
+        /// <summary>Otonominin bu ihtiyaç için iş aradığı eşik.</summary>
+        public float AutonomyThresholdFor(NeedType need)
+        {
+            if (need != NeedType.Energy || HourOfDay == null) return AutonomyThreshold;
+            double h = HourOfDay();
+            return h >= BedtimeHour || h < WakeHour ? NightSleepThreshold : AutonomyThreshold;
+        }
+
         private const int MaxIterations = 64;
 
         /// <summary>Otonom karakter ulaşamadığı eşyayı bu kadar oyun günü boyunca yeniden denemez.</summary>
@@ -481,6 +497,23 @@ namespace Thatchwick.Core.Jobs
 
         public bool IsIdle => Queue.Current == null;
 
+        /// <summary>Kişi bu kadar oyun günü yerinde durur (iş seçmez); <see cref="Hold"/>.</summary>
+        public double HoldDays { get; private set; }
+
+        /// <summary>
+        /// Yerinde tut (Project belgesi 67): kavganın öbür tarafı, gönül yolu sahnesi, muhabbet halkası. Kişinin işi varsa iş
+        /// iptal edilmez (sahne sırasında oyuncu emri gelebilir); boştayken otonomi yeni iş seçmez.
+        /// </summary>
+        public void Hold(double days)
+        {
+            if (days > HoldDays) HoldDays = days;
+        }
+
+        public void ReleaseHold() => HoldDays = 0;
+
+        /// <summary>Sosyal iş başladı (hedefin yanına varıldı): (yapan, hedef, iş).</summary>
+        public event Action<Character, Character, SocialAction> SocialStarted;
+
         /// <summary>Mevcut işi ve kuyruğu bırakıp yeni bir işi tek iş olarak başlatır (oyuncu komutu).</summary>
         public bool Command(Job job)
         {
@@ -535,6 +568,14 @@ namespace Thatchwick.Core.Jobs
 
             _elapsedDays += gameDays;
             SyncBreakdown();
+            // Yerinde tutulan (kavganın öbür tarafı, sahne, muhabbet halkası; Project belgesi 67): elindeki işi bırakmaz ama
+            // yürümez ve yeni iş seçmez. Oyuncu emri tutmayı bozar.
+            if (HoldDays > 0 && Queue.Current == null)
+            {
+                HoldDays = Math.Max(0, HoldDays - gameDays);
+                return;
+            }
+            if (HoldDays > 0) HoldDays = Math.Max(0, HoldDays - gameDays);
             if (Autonomous) InterruptForToilet();
             double budget = gameDays;
             for (int guard = 0; guard < MaxIterations && budget > 1e-12; guard++)
@@ -803,6 +844,7 @@ namespace Thatchwick.Core.Jobs
                 if (!IsNear(_character.Position, target.Position)) { _path = null; return used; }
                 _using = true;
                 BeginJobChain("social:" + job.Action);
+                SocialStarted?.Invoke(_character, target, job.Action);
             }
 
             // Birlikte iş (belge 60b §3): yardım, öteki işini sürdürdükçe sürer; iş bitince ya da bırakılınca biter.
@@ -1318,7 +1360,7 @@ namespace Thatchwick.Core.Jobs
 
             _needOrder.Clear();
             foreach (var need in AllNeeds)
-                if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
+                if (_character.Needs.Get(need) < AutonomyThresholdFor(need)) _needOrder.Add(need);
             if (_needOrder.Count == 0) return TryStartRoutine() || TryStartDuty() || TryStartChore();
             _needOrder.Sort((a, b) =>
             {

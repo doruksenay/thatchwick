@@ -42,6 +42,11 @@ namespace Thatchwick.Core.Life
         private readonly Dictionary<string, VillagerState> _states = new Dictionary<string, VillagerState>(StringComparer.Ordinal);
 
         public FamilyService Family { get; set; }
+        /// <summary>İlişki sistemi (67d): romantik çift başına burada, olaylar çifte bağlı.</summary>
+        public Thatchwick.Core.Relations.RelationService Relations { get; set; }
+
+        private static bool CanRomanceIgnoringStatus(Character a, Character b) =>
+            a != null && b != null && FamilyService.IsAdultAge(a) && FamilyService.IsAdultAge(b) && a.Sex != b.Sex && !FamilyService.AreCloseRelatives(a, b);
 
         /// <summary>(köylü, olay, ödül metni)</summary>
         public event Action<Character, VillagerEventDef> EventTriggered;
@@ -285,7 +290,18 @@ namespace Thatchwick.Core.Life
             if (court > 0) gain = (int)Math.Ceiling(gain * (1.0 + court));
             int aff = Family.Affection(giver.Id, v.Id) + gain;
             Family.SetAffection(giver.Id, v.Id, aff);
-            if (CanRomance(giver, v)) s.Romance = Math.Min(MaxRomance, s.Romance + (int)Math.Ceiling(RomanceFor(taste) * (1.0 + court)));
+            // Romantik çift başına (67 H1): ilişki sistemi bağlıysa hediyeyi veren ile köylü arasında tutulur.
+            int romance = (int)Math.Ceiling(RomanceFor(taste) * (1.0 + court));
+            if (Relations != null)
+            {
+                if (taste == GiftTaste.Dislike) Relations.AddRomance(giver.Id, v.Id, -3);
+                else if (CanRomance(giver, v)) Relations.AddRomance(giver.Id, v.Id, romance);
+                Relations.Met(giver.Id, v.Id);
+                Relations.Council?.OnGift(giver, v, liked);
+                // Eşi ya da nişanlısı varken başkasına sevilen hediye kıskançlık doğurabilir (Stardew; 67c T9).
+                if (liked && Relations.PartnerOf(giver) != null && Relations.PartnerOf(giver) != v && CanRomanceIgnoringStatus(giver, v)) Relations.ReportTrigger(Thatchwick.Core.Relations.SpouseTrigger.Flirting, giver, Relations.PartnerNear(giver));
+            }
+            else if (CanRomance(giver, v)) s.Romance = Math.Min(MaxRomance, s.Romance + romance);
             v.AddMoodlet("mood.gift", "Hediye aldı", taste == GiftTaste.Dislike ? -4 : 5, 0.6);
             v.Needs.Restore(NeedType.Fun, taste == GiftTaste.Love ? 20f : taste == GiftTaste.Like ? 10f : 0f);
 
@@ -305,6 +321,7 @@ namespace Thatchwick.Core.Life
         /// <summary>FamilyService.ExtraProposalCheck: adlı köylüyle evlenmek için romantik yakınlık da 100 olmalı.</summary>
         public string ProposalCheck(Character actor, Character target)
         {
+            if (Relations != null) return Relations.ProposalCheck(actor, target);
             foreach (var c in new[] { actor, target })
             {
                 var s = StateOf(c);
@@ -354,6 +371,23 @@ namespace Thatchwick.Core.Life
 
         // ---- olaylar ----
 
+        /// <summary>Olay yaşandı (köylü, olayı yaşayan hane üyesi, olay): 67 H3.</summary>
+        public event Action<Character, Character, VillagerEventDef> EventTriggeredFor;
+
+        /// <summary>Bu köylüyle yakınlığı en yüksek hane üyesi; yoksa null.</summary>
+        public Character BestFriendOf(Character villager)
+        {
+            if (Family == null || villager == null) return null;
+            Character best = null; int bestAff = int.MinValue;
+            foreach (var m in _population.Members)
+            {
+                if (m.IsVillager || m.IsDead || m == villager) continue;
+                int a = Family.Affection(m.Id, villager.Id);
+                if (a > bestAff) { best = m; bestAff = a; }
+            }
+            return best;
+        }
+
         /// <summary>Hane üyelerinin bu köylüyle en yüksek yakınlığı.</summary>
         public int BestAffection(Character villager)
         {
@@ -376,6 +410,7 @@ namespace Thatchwick.Core.Life
                 var c = _population.Find(s.CharacterId);
                 if (c == null || c.IsDead || !_content.Villagers.TryGet(s.DefId, out var def)) continue;
                 int aff = BestAffection(c);
+                var friend = BestFriendOf(c);
                 foreach (var e in def.Events)
                 {
                     if (s.EventsSeen.Contains(e.Id) || aff < e.MinAffection) continue;
@@ -384,6 +419,8 @@ namespace Thatchwick.Core.Life
                     if (!string.IsNullOrEmpty(e.RewardItem)) _house.AddItem(e.RewardItem, Math.Max(1, e.RewardCount));
                     happened.Add((c, e));
                     EventTriggered?.Invoke(c, e);
+                    // Olay, yakınlığı eşiği geçen hane üyesine bağlanır (67 H3): bildirim onun adıyla.
+                    if (friend != null) EventTriggeredFor?.Invoke(c, friend, e);
                 }
             }
             return happened;

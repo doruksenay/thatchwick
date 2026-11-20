@@ -79,8 +79,15 @@ namespace Thatchwick.Core.Cooking
         private double Frac => Now() - Math.Floor(Now());
 
         /// <summary>Gönüllü: romantik yakınlığı 50 ve üstü olan köylü (evli değil).</summary>
+        /// <summary>İlişki sistemi (67d): sevgili/nişanlı çift ve çift başına romantik; bağlıysa köylü başına sayının yerine geçer.</summary>
+        public Func<Character, Character, bool> IsCouple { get; set; }
+        public Action<Character, Character, int> AddPairRomance { get; set; }
+        /// <summary>Eşler ve nişanlılar için baş başa vakit sıcaklığı ısıtır.</summary>
+        public Action<Character, Character, int> Warm { get; set; }
+
         public bool IsSweetheart(Character a, Character b)
         {
+            if (IsCouple != null) return a != null && b != null && !a.SpouseId.HasValue && !b.SpouseId.HasValue && IsCouple(a, b);
             if (a == null || b == null || a.SpouseId.HasValue || b.SpouseId.HasValue) return false;
             var villager = b.IsVillager ? b : a.IsVillager ? a : null;
             return villager != null && RomanceOf != null && RomanceOf(villager) >= SweetheartRomance;
@@ -229,14 +236,22 @@ namespace Thatchwick.Core.Cooking
             if (romantic && action != SocialAction.InviteDinner)
             {
                 foreach (var c in both) c.AddMoodlet("cook.together", Text(LocText.Of("cook.mood.together")), action == SocialAction.Picnic ? 5 : 3, 1.0);
-                var villager = target.IsVillager ? target : actor.IsVillager ? actor : null;
-                if (villager != null) AddRomance?.Invoke(villager, romance);
+                if (AddPairRomance != null) { AddPairRomance(actor, target, romance); Warm?.Invoke(actor, target, action == SocialAction.Picnic ? 15 : 8); }
+                else
+                {
+                    var villager = target.IsVillager ? target : actor.IsVillager ? actor : null;
+                    if (villager != null) AddRomance?.Invoke(villager, romance);
+                }
             }
             else if (action == SocialAction.Picnic || action == SocialAction.EveningWalk)
             {
                 // Piknik ve yürüyüş, hediyeden sonra ikinci romantik yakınlık kaynağı (62-S9): uygun köylüyle yakınlık artar.
-                var villager = target.IsVillager ? target : null;
-                if (villager != null && RomanceOf != null && RomanceOf(villager) >= 0) AddRomance?.Invoke(villager, romance / 2);
+                if (AddPairRomance != null) AddPairRomance(actor, target, romance / 2);
+                else
+                {
+                    var villager = target.IsVillager ? target : null;
+                    if (villager != null && RomanceOf != null && RomanceOf(villager) >= 0) AddRomance?.Invoke(villager, romance / 2);
+                }
             }
             Happened?.Invoke(actor, target, action);
         }

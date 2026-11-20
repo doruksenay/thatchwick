@@ -114,6 +114,8 @@ namespace Thatchwick.Core.Save
         public string[] coffeeHabits;
         /// <summary>Yemek, sofra, mezbaha, mutfak görevi, rutin ve baş başa etkinlikler (belge 58-62). Eski kayıtta null.</summary>
         public CookingSave cooking;
+        /// <summary>İlişki sistemi (belge 67); eski kayıtta null: romantik köylü başına sayıdan taşınır.</summary>
+        public Thatchwick.Core.Relations.RelationsSave relations;
         public string[] olives;         // zeytin ağaçları (32-7): "itemId:dikimGünü:yadigâr:diken"   // kahve alışkanlığı (belge 32-6): "id:sonGün:seri:alışkanlık"
         public string[] contests;
         /// <summary>Bekleyen at yarışı bahsi (RaceBets.Export); yoksa null.</summary>

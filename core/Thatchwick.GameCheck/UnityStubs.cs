@@ -167,11 +167,12 @@ namespace UnityEngine.UIElements {
  public enum Align{Auto,FlexStart,Center,FlexEnd,Stretch} public enum Position{Relative,Absolute} public enum WhiteSpace{Normal,NoWrap}
  public enum PickingMode{Position,Ignore} public enum TrickleDown{NoTrickleDown,TrickleDown}
  public enum PanelScaleMode{ConstantPixelSize,ConstantPhysicalSize,ScaleWithScreenSize} public enum PanelScreenMatchMode{MatchWidthOrHeight,Shrink,Expand}
- public struct StyleLength{public static implicit operator StyleLength(float v)=>default; public static implicit operator StyleLength(StyleKeyword k)=>default;}
+ public struct Length{public static Length Percent(float v)=>default;} public enum Overflow{Visible,Hidden}
+ public struct StyleLength{public static implicit operator StyleLength(float v)=>default; public static implicit operator StyleLength(StyleKeyword k)=>default; public static implicit operator StyleLength(Length l)=>default;}
  public struct StyleFloat{public static implicit operator StyleFloat(float v)=>default;}
  public struct StyleInt{public static implicit operator StyleInt(int v)=>default;}
  public struct StyleColor{public StyleColor(Color c){} public StyleColor(StyleKeyword k){} public static implicit operator StyleColor(Color v)=>default;}
- public struct StyleBackground{public StyleBackground(Texture2D t){} public static implicit operator StyleBackground(StyleKeyword k)=>default;}
+ public struct StyleBackground{public StyleBackground(Texture2D t){} public StyleBackground(Sprite s){} public static implicit operator StyleBackground(StyleKeyword k)=>default;}
  public struct FontDefinition{public static FontDefinition FromFont(Font f)=>default;}
  public struct StyleFontDefinition{public StyleFontDefinition(FontDefinition f){}}
  public struct StyleEnum<T> where T:struct,IConvertible{public static implicit operator StyleEnum<T>(T v)=>default; public static bool operator==(StyleEnum<T> a,StyleEnum<T> b)=>true; public static bool operator!=(StyleEnum<T> a,StyleEnum<T> b)=>false; public override bool Equals(object o)=>true; public override int GetHashCode()=>0;}
@@ -184,12 +185,14 @@ namespace UnityEngine.UIElements {
   StyleFloat flexGrow{get;set;} StyleColor color{get;set;} StyleColor backgroundColor{get;set;} StyleBackground backgroundImage{get;set;}
   StyleInt unitySliceLeft{get;set;} StyleInt unitySliceRight{get;set;} StyleInt unitySliceTop{get;set;} StyleInt unitySliceBottom{get;set;}
   StyleEnum<DisplayStyle> display{get;set;} StyleEnum<FlexDirection> flexDirection{get;set;} StyleEnum<Wrap> flexWrap{get;set;} StyleEnum<Align> alignItems{get;set;}
-  StyleEnum<Position> position{get;set;} StyleEnum<WhiteSpace> whiteSpace{get;set;} StyleEnum<TextAnchor> unityTextAlign{get;set;} StyleFontDefinition unityFontDefinition{get;set;}}
+  StyleEnum<Position> position{get;set;} StyleEnum<WhiteSpace> whiteSpace{get;set;} StyleEnum<TextAnchor> unityTextAlign{get;set;} StyleFontDefinition unityFontDefinition{get;set;}
+  StyleFloat opacity{get;set;} StyleFloat flexShrink{get;set;} StyleEnum<Overflow> overflow{get;set;} StyleEnum<FontStyle> unityFontStyleAndWeight{get;set;} StyleColor unityBackgroundImageTintColor{get;set;}
+  StyleColor borderLeftColor{get;set;} StyleColor borderRightColor{get;set;} StyleColor borderTopColor{get;set;} StyleColor borderBottomColor{get;set;}}
  public enum Justify{FlexStart,Center,FlexEnd,SpaceBetween,SpaceAround,SpaceEvenly}
  public interface IPanel{VisualElement Pick(Vector2 p);}
- public abstract class EventBase{} public class PointerEnterEvent:EventBase{} public class PointerLeaveEvent:EventBase{} public class PointerDownEvent:EventBase{} public class PointerUpEvent:EventBase{}
+ public abstract class EventBase{public void StopPropagation(){}} public class PointerEnterEvent:EventBase{} public class PointerLeaveEvent:EventBase{} public class PointerDownEvent:EventBase{} public class PointerUpEvent:EventBase{}
  public delegate void EventCallback<in T>(T evt);
- public class VisualElement{public IStyle style=>null; public IPanel panel=>null; public PickingMode pickingMode; public string tooltip; public Rect worldBound=>default;
+ public class VisualElement{public IStyle style=>null; public IPanel panel=>null; public PickingMode pickingMode; public string tooltip; public Rect worldBound=>default; public VisualElement parent=>null; public VisualElement this[int i]=>null;
   public void Add(VisualElement e){} public void Clear(){} public void RegisterCallback<T>(EventCallback<T> cb,TrickleDown t=TrickleDown.NoTrickleDown) where T:EventBase{}}
  public class TextElement:VisualElement{public virtual string text{get;set;}}
  public class Label:TextElement{public Label(){} public Label(string t){}}

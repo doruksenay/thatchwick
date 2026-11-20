@@ -558,7 +558,10 @@ namespace Thatchwick.Core.Characters
 
             // Özellik ve dallardan gelen ihtiyaç azalma çarpanları.
             Needs.SetDecayMultiplier(NeedType.Hunger, Modifiers.HungerDecay * (MoodEnabled ? Mood.HungerDecayFactor() : 1f));
-            Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f) * AthleticEnergyFactor);
+            // Uyurken enerji azalmaz (belge 65c B2): uyku enerjiyi bitişte tek seferde verir; eskiden uyku boyunca azalma
+            // sürdüğü için 8 saatlik uyku net ~40 kazandırıyordu ve karakter gündüz yeniden yatıyordu.
+            Needs.SetDecayMultiplier(NeedType.Energy, Asleep ? 0f
+                : Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f) * AthleticEnergyFactor);
             Needs.SetDecayMultiplier(NeedType.Social, Modifiers.SocialDecay);
             Needs.SetDecayMultiplier(NeedType.Fun, Modifiers.FunDecay);
             Needs.SetDecayMultiplier(NeedType.Bladder, (Asleep ? SleepBladderFactor : 1f) * BladderFactor);

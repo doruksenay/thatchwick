@@ -1,14 +1,13 @@
 ---
 id: "737"
 title: "Kıyı karosu yeniden: elmasa oturan su-kara kenarı (346 kıyı karosunun ara düzeltmesi)"
-status: blocked
-claimed_at: 2026-11-20T20:30Z
-approved_by: user        # kullanıcı onayı 2026-11-20 (sohbet: "kıyı karosu ve çim tonu için PixelLab işi hazırla"; belge 65b B1)
+status: pending
+approved_by: user        # kullanıcı 21.11 00:51 "bunları yap" (maliyet 10 gen/çağrı kabul); ilk onay 2026-11-20 (sohbet: "kıyı karosu ve çim tonu için PixelLab işi hazırla"; belge 65b B1)
 priority: 10
 family: zemin
 style_gate: false
-cost_est: 4
-cost_max: 8
+cost_est: 10
+cost_max: 20
 depends_on: []
 max_attempts: 1
 pixellab: true
@@ -30,7 +29,7 @@ kıyıyı düzeltir. 617 kabul edilince bu karo emekliye ayrılabilir.
 ## Tarif
 - Araç: `create_tiles_pro`, isometric 64 px, `tile_view_angle=30`, `tile_depth_ratio=0`, `outline_mode=segmentation`,
   stil modu; `style_images` = `iso_ground_water_a`, `iso_ground_grass_a`, `iso_ground_dirt_a` (346 ve 004e ile aynı aile).
-- Tek karo, iki çeşit (a = `_v2`, b = `_v2_b`), farklı tohum.
+- Tek karo, iki çeşit (a = `_v2`, b = `_v2_b`). Tek `create_tiles_pro` çağrısı 16 hücre verir (10 gen): iki çeşit aynı sayfadan seçilir, ikinci çağrı yalnızca biri tutmazsa.
 - Açıklama: "isometric pond edge tile: calm shallow pond water (same muted blue-green and soft ripples as the reference
   water tile) meeting a narrow damp muddy bank along ONE edge only, the upper-right edge of the diamond; a thin strip of
   grass at the very edge matching the reference grass tile; a few short reed tufts lying flat on the mud, inside the
@@ -57,7 +56,7 @@ kıyıyı düzeltir. 617 kabul edilince bu karo emekliye ayrılabilir.
   çiziliyor; 617 gelince dual-grid bunu çözer.
 
 ## Sorular
-- Çağrı yapılmadı. `create_tiles_pro` açıklaması (ve 346 gerçek maliyeti): tek çağrı 10 generation (64 px, 16 hücreli sayfa; kaç karo istendiği fiyatı düşürmez). `cost_est: 4` / `cost_max: 8` aşılıyor, `art/budget.md` maliyet sapması kuralı (2 kat) gereği durdum.
+- Çağrı yapılmadı. `create_tiles_pro` açıklaması (ve 346 gerçek maliyeti): tek çağrı 10 generation (64 px, 16 hücreli sayfa; kaç karo istendiği fiyatı düşürmez). `cost_est: 10` / `cost_max: 20` aşılıyor, `art/budget.md` maliyet sapması kuralı (2 kat) gereği durdum.
 - Çözüm: `cost_max`'ı en az 10'a çıkarmak (ör. `cost_est: 10`, `cost_max: 15`); a ve b çeşitleri zaten tek çağrıdan çıkar. Bakiye 809,6 (get_balance, 2026-11-20), bütçe sorunu yok.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
