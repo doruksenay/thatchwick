@@ -18,6 +18,18 @@ namespace Thatchwick.Core.Characters
 
         public IReadOnlyList<Character> Members => _members;
         public Func<Sex, string> NameGenerator { get; set; }
+        /// <summary>Köylü hanesinin ad listesinden ad (cinsiyet, köylü tanımı kimliği); yoksa NameGenerator (belge 61b §5).</summary>
+        public Func<Sex, string, string> HouseholdNameGenerator { get; set; }
+        /// <summary>Doğan bebeğin hangi köylü hanesine ait olduğu (anne, baba kimliği → köylü tanımı kimliği ya da null).</summary>
+        public Func<Character, int?, string> BirthHousehold { get; set; }
+
+        /// <summary>Bir haneye uygun yeni ad: önce hanenin listesi, sonra genel havuz.</summary>
+        public string NameFor(Sex sex, string householdId)
+        {
+            string name = householdId != null && HouseholdNameGenerator != null ? HouseholdNameGenerator(sex, householdId) : null;
+            if (string.IsNullOrWhiteSpace(name) && NameGenerator != null) name = NameGenerator(sex);
+            return name;
+        }
         /// <summary>Verilirse bebeğin görünümü ebeveynlerinden türetilir; yoksa varsayılan görünüm kalır.</summary>
         public AppearanceCatalog AppearanceCatalog { get; set; }
 
@@ -122,7 +134,8 @@ namespace Thatchwick.Core.Characters
         private void OnGaveBirth(Character mother, int? fatherId)
         {
             var sex = _rng.Next(2) == 0 ? Sex.Female : Sex.Male;
-            string name = NameGenerator != null ? NameGenerator(sex) : (sex == Sex.Female ? "Kız" : "Oğlan");
+            string name = NameFor(sex, BirthHousehold?.Invoke(mother, fatherId));
+            if (string.IsNullOrWhiteSpace(name)) name = sex == Sex.Female ? "Kız" : "Oğlan";
             if (string.IsNullOrWhiteSpace(name)) name = "Bebek";
 
             var father0 = fatherId.HasValue ? Find(fatherId.Value) : null;

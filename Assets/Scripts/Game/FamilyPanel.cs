@@ -103,7 +103,9 @@ namespace Thatchwick.Game
             if (actor != null && actor.MoodEnabled)
             {
                 UiSkin.Wrap($"Ruh hali: {Thatchwick.Core.Mood.MoodRules.Name(actor.Mood.Status)} ({actor.Mood.Total})", UiSkin.FamilyTextW);
-                foreach (var m in actor.Mood.Active)
+                if (actor.Mood.Active.Count > 0)
+                    UiSkin.Wrap(GameLocalization.R(Thatchwick.Core.Mood.MoodRules.InnerVoicesHeader(actor.Mood.Active)), UiSkin.FamilyTextW);
+                foreach (var m in Thatchwick.Core.Mood.MoodRules.InnerVoicesOrdered(actor.Mood.Active))
                 {
                     string left = m.Def.IsCondition ? "" : $", {m.RemainingDays:0.0} gün";
                     UiSkin.Wrap($"  {(m.Def.Value > 0 ? "+" : "")}{m.Def.Value} {m.Def.DisplayName}{left}: {m.Def.Description}", UiSkin.FamilyTextW);

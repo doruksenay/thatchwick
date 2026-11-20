@@ -333,7 +333,7 @@ namespace Thatchwick.Core.Mining
             var t = m?.Get(x, y);
             if (t == null || !t.IsOpen) return "Işık açık bir karoya konur.";
             if (!LightOf(itemId, out _, out _)) return "Bu ışık olmaz.";
-            if (_house.Count(itemId) <= 0) return "Envanterde yok.";
+            if (_house.Count(itemId) <= 0) return Localization.CoreText.T("ui.common.not_held");
             return null;
         }
 

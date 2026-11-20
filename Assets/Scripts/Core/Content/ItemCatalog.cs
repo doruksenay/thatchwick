@@ -15,7 +15,7 @@ namespace Thatchwick.Core.Content
         public static readonly (string id, string name)[] Categories =
         {
             ("seating", "Oturma"), ("sleep", "Uyku"), ("surfaces", "Masa"), ("heat_light", "Isı ve ışık"),
-            ("kitchen", "Mutfak"), ("storage", "Depo"), ("work", "İş"), ("hygiene", "Hijyen"),
+            ("kitchen", "Mutfak"), ("storage", "Depo"), ("work", "İş"), ("hygiene", "Temizlik"),
             ("decor", "Süs (masa)"), ("decor_wall", "Süs (yer, duvar)"), ("ceiling", "Tavan"), ("rug", "Halı"), ("garden", "Bahçe"), ("barn", "Ahır ve kümes"), ("farm", "Tarım düzenekleri"), ("kids", "Çocuk"), ("structure", "Merdiven ve yapı")
         };
 
@@ -70,8 +70,8 @@ namespace Thatchwick.Core.Content
                 case NeedType.Hunger: return "Açlık";
                 case NeedType.Energy: return "Enerji";
                 case NeedType.Warmth: return "Isınma";
-                case NeedType.Fun: return "Keyif";
-                default: return "Hijyen";
+                case NeedType.Fun: return Localization.CoreText.T("ui.need.fun");
+                default: return "Temizlik";
             }
         }
 

@@ -112,6 +112,9 @@ namespace Thatchwick.Core.Life
         public string Home { get; set; }
         public string Work { get; set; }
         public List<VillagerEventDef> Events { get; set; } = new List<VillagerEventDef>();
+        /// <summary>Hanenin sonraki kuşaklarına verilecek adlar (belge 61b §5).</summary>
+        public List<string> MaleNames { get; set; } = new List<string>();
+        public List<string> FemaleNames { get; set; } = new List<string>();
     }
 
     public sealed class FestivalDef : IContentDef

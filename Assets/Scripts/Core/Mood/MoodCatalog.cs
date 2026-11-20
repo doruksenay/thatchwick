@@ -80,8 +80,8 @@ namespace Thatchwick.Core.Mood
             m.SkillSpeed[SkillType.Woodcutting] = -0.20f; m.SkillSpeed[SkillType.Farming] = -0.20f; c.Register(m);
             m = M(Cold, "Üşüyor", -15, 0, "Elleri donuyor: marangozluk ve yemek %20 yavaş.");
             m.SkillSpeed[SkillType.Carpentry] = -0.20f; m.SkillSpeed[SkillType.Cooking] = -0.20f; c.Register(m);
-            m = M(Bored, "Sıkılmış", -10, 0, "Canı sıkkın: tüm becerilerde %15 az XP."); m.AllXp = -0.15f; c.Register(m);
-            m = M(Dirty, "Kirli", -10, 0, "Yıkanmalı: yemek becerisinde %20 az XP, sohbette yakınlık yarı."); m.SkillXp[SkillType.Cooking] = -0.20f; c.Register(m);
+            m = M(Bored, "Sıkılmış", -10, 0, "Canı sıkkın: tüm becerilerde %15 az tecrübe."); m.AllXp = -0.15f; c.Register(m);   // loc-yok: MoodCatalog metinleri henüz anahtara taşınmadı; yalnızca XP -> tecrübe (61b §8)
+            m = M(Dirty, "Kirli", -10, 0, "Yıkanmalı: yemek becerisinde %20 az tecrübe, sohbette yakınlık yarı."); m.SkillXp[SkillType.Cooking] = -0.20f; c.Register(m);   // loc-yok: MoodCatalog metinleri henüz anahtara taşınmadı; yalnızca XP -> tecrübe (61b §8)
 
             m = M(Lonely, "Yalnız", -10, 0, "Kimseyle konuşmadı: sohbet ve şenlik iyi gelir."); m.AllXp = -0.10f; c.Register(m);
 
@@ -91,12 +91,12 @@ namespace Thatchwick.Core.Mood
             m = M(Rested, "Dinlenmiş", 10, 0.6, "İyi uyudu: odunculuk ve çiftçilik %15 hızlı.");
             m.SkillSpeed[SkillType.Woodcutting] = 0.15f; m.SkillSpeed[SkillType.Farming] = 0.15f; c.Register(m);
             c.Register(M(Clean, "Tertemiz", 10, 1.0, "Yıkandı, kendini iyi hissediyor."));
-            m = M(Inspired, "İlham dolu", 15, 1.0, "Okudu ya da güzel bir şey gördü: marangozlukta %30 fazla XP."); m.SkillXp[SkillType.Carpentry] = 0.30f; c.Register(m);
-            m = M(HadFun, "Eğlendi", 10, 0.5, "Oyun oynadı: tüm becerilerde %5 fazla XP."); m.AllXp = 0.05f; c.Register(m);
+            m = M(Inspired, "İlham dolu", 15, 1.0, "Okudu ya da güzel bir şey gördü: marangozlukta %30 fazla tecrübe."); m.SkillXp[SkillType.Carpentry] = 0.30f; c.Register(m);   // loc-yok: MoodCatalog metinleri henüz anahtara taşınmadı; yalnızca XP -> tecrübe (61b §8)
+            m = M(HadFun, "Eğlendi", 10, 0.5, "Oyun oynadı: tüm becerilerde %5 fazla tecrübe."); m.AllXp = 0.05f; c.Register(m);   // loc-yok: MoodCatalog metinleri henüz anahtara taşınmadı; yalnızca XP -> tecrübe (61b §8)
             c.Register(M(NiceChat, "Güzel sohbet", 5, 0.5, "Biriyle hoş bir sohbet etti."));
             c.Register(M(Newlywed, "Yeni evli", 25, 6.0, "Evlendi."));
             c.Register(M(NewBaby, "Bebeğimiz oldu", 20, 5.0, "Aileye yeni bir bebek katıldı."));
-            m = M(Grief, "Yas", -30, 8.0, "Yakınını kaybetti: tüm becerilerde %20 az XP, işler %10 yavaş."); m.AllXp = -0.20f; m.AllSpeed = -0.10f; c.Register(m);
+            m = M(Grief, "Yas", -30, 8.0, "Yakınını kaybetti: tüm becerilerde %20 az tecrübe, işler %10 yavaş."); m.AllXp = -0.20f; m.AllSpeed = -0.10f; c.Register(m);   // loc-yok: MoodCatalog metinleri henüz anahtara taşınmadı; yalnızca XP -> tecrübe (61b §8)
             c.Register(M(Harmony, "Uyumlu ev", 10, 0.5, "Odadaki eşyalar aynı takımdan ya da aynı tarzdan (4+)."));
             c.Register(M(HarmonyFine, "Özenli ev", 15, 0.5, "Odada hem aynı takımdan hem aynı tarzdan 4+ eşya var."));
             // Ev düzenleme 5+ olan hanede uyum moodlet'leri x1,5 (belge 45 karar 7, 9.5).
@@ -105,12 +105,12 @@ namespace Thatchwick.Core.Mood
             c.Register(M(BrightRoom, "Aydınlık oda", 5, 0.3, "Odada kandil, meşale ya da lamba var."));
             // Beceri sosyal işleri ve ustalık (belge 45).
             c.Register(M(Complimented, "İltifat aldı", 6, 0.5, "Biri güzel sözler söyledi."));
-            c.Register(M(Unburdened, "İçini döktü", 8, 1.0, "Derdini anlattı, hafifledi."));
+            c.Register(M(Unburdened, "Dertleşti", 8, 1.0, "Derdini anlattı, hafifledi."));   // loc-yok: MoodCatalog adları henüz anahtara taşınmadı; yalnızca yeniden adlandırma (61b §7.9)
             c.Register(M(Hopeful, "Umutlu", 6, 2.0, "Görücü çıkıldı; talip bekleniyor."));
             c.Register(M(Persuasive, "İkna edici", 5, 1.0, "Bugün pazarlıkta dili tatlı: satışlar %5 iyi."));
             c.Register(M(FestivalSpeech, "Şenlikte söz aldık", 8, 1.0, "Hanenin sözü şenlikte dinlendi."));
             c.Register(M(Lulled, "Ninniyle uyudu", 8, 0.5, "Ninni dinledi."));
-            m = M(NewSong, "Yeni türkü", 6, 2.0, "Yeni bir türkü öğrendi: müzikte %20 fazla XP."); m.SkillXp[SkillType.Music] = 0.20f; c.Register(m);
+            m = M(NewSong, "Yeni türkü", 6, 2.0, "Yeni bir türkü öğrendi: müzikte %20 fazla tecrübe."); m.SkillXp[SkillType.Music] = 0.20f; c.Register(m);   // loc-yok: MoodCatalog metinleri henüz anahtara taşınmadı; yalnızca XP -> tecrübe (61b §8)
             c.Register(M(PlayedTavern, "Meyhanede çaldı", 6, 1.0, "Meyhanede çaldı, alkış aldı."));
             c.Register(M(Composed, "Yeni ezgi", 10, 2.0, "Yeni bir ezgi doğdu."));
             c.Register(M(FirstSteps, "İlk adımlar", 12, 1.0, "Bebek ilk adımlarını attı."));
@@ -138,7 +138,7 @@ namespace Thatchwick.Core.Mood
             c.Register(M(Thoughtful, "Düşünceli", 3, 1.0, "Barışın kıymetini düşündü."));
             c.Register(M(LetDown, "Hayal kırıklığı", -2, 0.25, "Kurbağayı öptü. Hiçbir şey olmadı."));
             c.Register(M(ScarecrowChat, "Korkulukla dertleşti", 2, 0.25, "Derdini korkuluğa anlattı."));
-            m = M(GoodHarvest, "Bereketli hasat", 10, 1.0, "Ürün topladı: çiftçilikte %20 fazla XP."); m.SkillXp[SkillType.Farming] = 0.20f; c.Register(m);
+            m = M(GoodHarvest, "Bereketli hasat", 10, 1.0, "Ürün topladı: çiftçilikte %20 fazla tecrübe."); m.SkillXp[SkillType.Farming] = 0.20f; c.Register(m);   // loc-yok: MoodCatalog metinleri henüz anahtara taşınmadı; yalnızca XP -> tecrübe (61b §8)
             m = M(Proud, "Gururlu", 15, 1.0, "Kendi elleriyle bir eşya yaptı: marangozluk %10 hızlı."); m.SkillSpeed[SkillType.Carpentry] = 0.10f; c.Register(m);
             c.Register(M(PetLove, "Hayvan dostu", 10, 0.5, "Evcil hayvanıyla oynadı."));
             c.Register(M(AnimalDied, "Hayvanımız öldü", -10, 2.0, "Bir hayvan açlıktan ya da yaşlılıktan öldü."));
@@ -147,23 +147,23 @@ namespace Thatchwick.Core.Mood
             c.Register(M(CropFrozen, "Ekin dondu", -10, 2.0, "Hasat edilmemiş ekin kışta dondu."));
             // İksirler (otacılık).
             m = M(PotionVigor, "Dinç", 8, 1.0, "Dinçlik iksiri içti: bütün işler %15 hızlı."); m.AllSpeed = 0.15f; c.Register(m);
-            m = M(PotionFocus, "Odaklanmış", 6, 1.0, "Zihin iksiri içti: bütün becerilerde %30 fazla XP."); m.AllXp = 0.30f; c.Register(m);
+            m = M(PotionFocus, "Odaklanmış", 6, 1.0, "Zihin iksiri içti: bütün becerilerde %30 fazla tecrübe."); m.AllXp = 0.30f; c.Register(m);   // loc-yok: MoodCatalog metinleri henüz anahtara taşınmadı; yalnızca XP -> tecrübe (61b §8)
             c.Register(M(PotionCalm, "Huzurlu", 15, 1.0, "Huzur şerbeti içti: içi rahat."));
             c.Register(M(NewFoal, "Yavru sevinci", 8, 1.0, "Ahırda bir yavru doğdu."));
             // Sofra çeşidi.
             c.Register(M(SameMeal, "Hep aynı yemek", -3, 1.0, "Üç öğündür aynı şeyi yiyor."));
             c.Register(M(VariedTable, "Zengin sofra", 4, 1.0, "Son üç öğünü birbirinden farklıydı."));
-            m = M(InjuredAxe, "Yaralı", -10, 3.0, "Baltayla kendini kesti: odunculuk ve marangozluk %20 yavaş.");
+            m = M(InjuredAxe, "Balta yarası", -10, 3.0, "Baltayla kendini kesti: odunculuk ve marangozluk %20 yavaş.");   // loc-yok: MoodCatalog adları henüz anahtara taşınmadı; yalnızca yeniden adlandırma (61b §7.9)
             m.SkillSpeed[SkillType.Woodcutting] = -0.20f; m.SkillSpeed[SkillType.Carpentry] = -0.20f; c.Register(m);
-            m = M(InjuredBurn, "Yaralı", -10, 3.0, "Elini yaktı: yemek ve ocak işleri %20 yavaş.");
+            m = M(InjuredBurn, "Yanık", -10, 3.0, "Elini yaktı: yemek ve ocak işleri %20 yavaş.");   // loc-yok: MoodCatalog adları henüz anahtara taşınmadı; yalnızca yeniden adlandırma (61b §7.9)
             m.SkillSpeed[SkillType.Cooking] = -0.20f; m.SkillSpeed[SkillType.Smithing] = -0.20f; m.SkillSpeed[SkillType.Baking] = -0.20f; c.Register(m);
-            m = M(InjuredAnimal, "Yaralı", -10, 3.0, "Bir hayvan ısırdı: hayvancılık ve binicilik %20 yavaş.");
+            m = M(InjuredAnimal, "Hayvan ısırığı", -10, 3.0, "Bir hayvan ısırdı: hayvancılık ve binicilik %20 yavaş.");   // loc-yok: MoodCatalog adları henüz anahtara taşınmadı; yalnızca yeniden adlandırma (61b §7.9)
             m.SkillSpeed[SkillType.AnimalHusbandry] = -0.20f; m.SkillSpeed[SkillType.Riding] = -0.20f; c.Register(m);
-            m = M(InjuredSickle, "Yaralı", -8, 2.0, "Orakla elini kesti: çiftçilik %20 yavaş.");
+            m = M(InjuredSickle, "Orak kesiği", -8, 2.0, "Orakla elini kesti: çiftçilik %20 yavaş.");   // loc-yok: MoodCatalog adları henüz anahtara taşınmadı; yalnızca yeniden adlandırma (61b §7.9)
             m.SkillSpeed[SkillType.Farming] = -0.20f; c.Register(m);
-            m = M(InjuredFall, "Yaralı", -8, 2.0, "Düşüp yaralandı: bütün işler %10 yavaş."); m.AllSpeed = -0.10f; c.Register(m);
+            m = M(InjuredFall, "Düşme yarası", -8, 2.0, "Düşüp yaralandı: bütün işler %10 yavaş."); m.AllSpeed = -0.10f; c.Register(m);   // loc-yok: MoodCatalog adları henüz anahtara taşınmadı; yalnızca yeniden adlandırma (61b §7.9)
             // Madencilik (23. belge 6.3, 7.1): göçük yaralar, öldürmez.
-            m = M(InjuredCaveIn, "Yaralı", -10, 4.0, "Göçük altında kaldı: madencilik %30, bütün işler %10 yavaş.");
+            m = M(InjuredCaveIn, "Göçük yarası", -10, 4.0, "Göçük altında kaldı: madencilik %30, bütün işler %10 yavaş.");   // loc-yok: MoodCatalog adları henüz anahtara taşınmadı; yalnızca yeniden adlandırma (61b §7.9)
             m.SkillSpeed[SkillType.Mining] = -0.30f; m.AllSpeed = -0.10f; c.Register(m);
             c.Register(M(CaveInSurvived, "Göçükten kurtuldu", -15, 2.0, "Az kalsın taşın altında kalıyordu."));
             c.Register(M(VeinFound, "Damar buldu!", 10, 1.0, "Kayanın içinden bir kalıntı ya da parlak bir taş çıktı."));

@@ -17,6 +17,21 @@ namespace Thatchwick.Core.Content
             return Enum.IsDefined(typeof(Season), season);
         }
 
+        /// <summary>Ad listesi: boş ya da yinelenen ad içerik hatasıdır (belge 61b §5).</summary>
+        private static List<string> CleanNames(string[] names, string where, List<string> errors)
+        {
+            var list = new List<string>();
+            if (names == null) return list;
+            foreach (var n in names)
+            {
+                var t = n?.Trim();
+                if (string.IsNullOrEmpty(t)) { errors.Add($"{where}: boş ad."); continue; }
+                if (list.Contains(t)) { errors.Add($"{where}: '{t}' iki kez yazılmış."); continue; }
+                list.Add(t);
+            }
+            return list;
+        }
+
         private static float Mult(float v) => v <= 0f ? 1f : v;
 
         /// <summary>DTO'daki etkileri çarpan nesnesine çevirir (0 = değişiklik yok).</summary>
@@ -134,7 +149,9 @@ namespace Thatchwick.Core.Content
                         Traits = v.traits != null ? new List<string>(v.traits) : new List<string>(),
                         Loves = v.loves != null ? new List<string>(v.loves) : new List<string>(),
                         Likes = v.likes != null ? new List<string>(v.likes) : new List<string>(),
-                        Dislikes = v.dislikes != null ? new List<string>(v.dislikes) : new List<string>()
+                        Dislikes = v.dislikes != null ? new List<string>(v.dislikes) : new List<string>(),
+                        MaleNames = CleanNames(v.maleNames, v.id + ".maleNames", errors),
+                        FemaleNames = CleanNames(v.femaleNames, v.id + ".femaleNames", errors)
                     };
                     if (v.events != null)
                         foreach (var e in v.events)
@@ -145,6 +162,12 @@ namespace Thatchwick.Core.Content
                             });
                     Register(() => db.Villagers.Register(def), errors);
                 }
+
+            if (file.namePool != null)
+            {
+                db.MaleNamePool.Clear(); db.MaleNamePool.AddRange(CleanNames(file.namePool.maleNames, "namePool.maleNames", errors));
+                db.FemaleNamePool.Clear(); db.FemaleNamePool.AddRange(CleanNames(file.namePool.femaleNames, "namePool.femaleNames", errors));
+            }
 
             if (file.festivals != null)
                 foreach (var f in file.festivals)

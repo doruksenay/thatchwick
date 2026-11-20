@@ -64,7 +64,7 @@ namespace Thatchwick.Core.Characters
                 case SkillType.Trade: return "Ticaret";
                 case SkillType.Herbalism: return "Aktarlık";
                 case SkillType.Engineering: return "Mühendislik";
-                case SkillType.Salvage: return "Geri kazanım";
+                case SkillType.Salvage: return Localization.CoreText.T("ui.skill.salvage");
                 case SkillType.Masonry: return "Taş ustalığı";
                 case SkillType.Mining: return "Madencilik";
                 case SkillType.Smithing: return "Demircilik";

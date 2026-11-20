@@ -433,7 +433,7 @@ namespace Thatchwick.Core.Layout
         {
             var map = ctx.Map;
             var placed = new List<ItemInstance>();
-            var rep = new FurnishReport { Room = "Şehir meydanı" };
+            var rep = new FurnishReport { Room = "Köy meydanı" };   // loc-yok: yerleşim raporu (geliştirici)
             var c = new GridPos(Regions.Town.X + Regions.PlazaCX, Regions.Town.Y + Regions.PlazaCY);
             // Kuyu ortada; yanında kova ve leğen.
             var well = PutOnStone(ctx, "item.well", c, placed);

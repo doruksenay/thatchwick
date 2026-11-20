@@ -583,7 +583,7 @@ namespace Thatchwick.Core.Life
             if (HasClothing && heir != null && Clothing.PassSeal(null, heir) > 0)   // mühür yüzüğü yeni reise geçer (belge 48 §5.7)
                 Say(LocText.Of("seal.n.passed", ("name", heir.Name)), NoticeLevel.Info, heir.Id);
             foreach (var h in Legacy.Heirlooms)
-                if (h.Level > 1) { Say($"Yadigârlar bir nesil daha hanede: bonuslar güçlendi.", NoticeLevel.Info); break; }
+                if (h.Level > 1) { Say(Localization.CoreText.T("ui.legacy.heirlooms_stronger"), NoticeLevel.Info); break; }
         }
 
         /// <summary>

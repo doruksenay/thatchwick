@@ -686,7 +686,7 @@
         },
         {
           "id": "make_saute_mushroom",
-          "displayName": "Mantar sote yap",
+          "displayName": "Mantar kavurması yap",
           "durationDays": 0.15,
           "skill": "Cooking",
           "skillXp": 12,
@@ -948,7 +948,7 @@
         },
         {
           "id": "make_wrap_fish",
-          "displayName": "Füme balık dürüm yap",
+          "displayName": "Tütsülü balık dürümü yap",
           "durationDays": 0.15,
           "skill": "Cooking",
           "skillXp": 8,
@@ -1333,7 +1333,7 @@
         },
         {
           "id": "brew_linden",
-          "displayName": "Ihlamur çayı demle ve iç",
+          "displayName": "Ihlamur demle ve iç",
           "need": "Fun",
           "restore": 15,
           "durationDays": 0.05,
@@ -1346,7 +1346,7 @@
         },
         {
           "id": "brew_sage",
-          "displayName": "Adaçayı çayı demle ve iç",
+          "displayName": "Adaçayı demle ve iç",
           "need": "Fun",
           "restore": 15,
           "durationDays": 0.05,
@@ -1979,26 +1979,26 @@
         },
         {
           "id": "eat_smoked_meat",
-          "displayName": "Füme et ye",
+          "displayName": "Tütsülü et ye",
           "need": "Hunger",
           "restore": 80,
           "durationDays": 0.06,
           "consume": "item.smoked_meat",
           "moodId": "mood.meal",
-          "moodText": "Füme lezzeti",
+          "moodText": "Tütsü lezzeti",
           "moodValue": 6,
           "moodDays": 1.0,
           "bladder": 4
         },
         {
           "id": "eat_smoked_poultry",
-          "displayName": "Füme tavuk ye",
+          "displayName": "Tütsülü tavuk ye",
           "need": "Hunger",
           "restore": 65,
           "durationDays": 0.06,
           "consume": "item.smoked_poultry",
           "moodId": "mood.meal",
-          "moodText": "Füme lezzeti",
+          "moodText": "Tütsü lezzeti",
           "moodValue": 5,
           "moodDays": 1.0,
           "bladder": 4
@@ -2032,13 +2032,13 @@
         },
         {
           "id": "eat_smoked_cheese",
-          "displayName": "Füme peynir ye",
+          "displayName": "Tütsülü peynir ye",
           "need": "Hunger",
           "restore": 50,
           "durationDays": 0.06,
           "consume": "item.smoked_cheese",
           "moodId": "mood.meal",
-          "moodText": "Füme lezzeti",
+          "moodText": "Tütsü lezzeti",
           "moodValue": 4,
           "moodDays": 1.0,
           "bladder": 4
@@ -2196,13 +2196,13 @@
         },
         {
           "id": "eat_smoked_fish",
-          "displayName": "Füme balık ye",
+          "displayName": "Tütsülü balık ye",
           "need": "Hunger",
           "restore": 60,
           "durationDays": 0.048,
           "consume": "item.smoked_fish",
           "moodId": "mood.meal",
-          "moodText": "Füme lezzeti",
+          "moodText": "Tütsü lezzeti",
           "moodValue": 5,
           "moodDays": 1.0,
           "bladder": 4
@@ -2355,7 +2355,7 @@
         },
         {
           "id": "eat_saute_mushroom",
-          "displayName": "Mantar sote ye",
+          "displayName": "Mantar kavurması ye",
           "need": "Hunger",
           "restore": 45,
           "durationDays": 0.048,
@@ -2466,7 +2466,7 @@
         },
         {
           "id": "eat_wrap_fish",
-          "displayName": "Füme balık dürüm ye",
+          "displayName": "Tütsülü balık dürümü ye",
           "need": "Hunger",
           "restore": 60,
           "durationDays": 0.048,
@@ -2499,7 +2499,7 @@
         },
         {
           "id": "eat_tart_apple",
-          "displayName": "Elmalı tart ye",
+          "displayName": "Elmalı çörek ye",
           "need": "Hunger",
           "restore": 50,
           "durationDays": 0.048,
@@ -4755,7 +4755,7 @@
         },
         {
           "id": "graft",
-          "displayName": "Aşıla (envanterdeki fidanla)",
+          "displayName": "Aşıla (eldeki fidanla)",
           "durationDays": 0.08,
           "skill": "Horticulture",
           "skillXp": 12,
@@ -5337,7 +5337,7 @@
     },
     {
       "id": "item.bench_long",
-      "displayName": "Uzun bank",
+      "displayName": "Uzun sıra",
       "category": "seating",
       "price": 14,
       "width": 2,
@@ -5520,7 +5520,7 @@
     },
     {
       "id": "item.bed_frame",
-      "displayName": "Tahta karyola",
+      "displayName": "Tahta kerevet",
       "category": "sleep",
       "price": 70,
       "width": 2,
@@ -6171,7 +6171,7 @@
     },
     {
       "id": "item.fireplace_large",
-      "displayName": "Büyük taş şömine",
+      "displayName": "Davlumbazlı büyük ocak",
       "category": "heat_light",
       "price": 90,
       "width": 2,
@@ -6749,7 +6749,7 @@
         },
         {
           "id": "make_saute_mushroom",
-          "displayName": "Mantar sote yap",
+          "displayName": "Mantar kavurması yap",
           "durationDays": 0.15,
           "skill": "Cooking",
           "skillXp": 12,
@@ -7011,7 +7011,7 @@
         },
         {
           "id": "make_wrap_fish",
-          "displayName": "Füme balık dürüm yap",
+          "displayName": "Tütsülü balık dürümü yap",
           "durationDays": 0.15,
           "skill": "Cooking",
           "skillXp": 8,
@@ -7396,7 +7396,7 @@
         },
         {
           "id": "brew_linden",
-          "displayName": "Ihlamur çayı demle ve iç",
+          "displayName": "Ihlamur demle ve iç",
           "need": "Fun",
           "restore": 15,
           "durationDays": 0.05,
@@ -7409,7 +7409,7 @@
         },
         {
           "id": "brew_sage",
-          "displayName": "Adaçayı çayı demle ve iç",
+          "displayName": "Adaçayı demle ve iç",
           "need": "Fun",
           "restore": 15,
           "durationDays": 0.05,
@@ -7827,7 +7827,7 @@
     },
     {
       "id": "item.sconce_brass",
-      "displayName": "Pirinç aplik",
+      "displayName": "Pirinç duvar şamdanı",
       "category": "heat_light",
       "price": 55,
       "placement": "Wall",
@@ -7997,7 +7997,7 @@
         },
         {
           "id": "make_tart_apple",
-          "displayName": "Elmalı tart pişir (fırın)",
+          "displayName": "Elmalı çörek pişir (fırın)",
           "durationDays": 0.25,
           "skill": "Baking",
           "skillXp": 28,
@@ -9191,7 +9191,7 @@
     },
     {
       "id": "item.barrel_tub",
-      "displayName": "Fıçı küvet",
+      "displayName": "Fıçı yıkanma teknesi",
       "category": "hygiene",
       "price": 40,
       "level": 4,
@@ -9244,7 +9244,7 @@
     },
     {
       "id": "item.wooden_tub",
-      "displayName": "Ahşap küvet",
+      "displayName": "Ahşap yıkanma teknesi",
       "category": "hygiene",
       "price": 90,
       "width": 2,
@@ -9338,7 +9338,7 @@
     },
     {
       "id": "item.morris_board",
-      "displayName": "Değirmen oyunu",
+      "displayName": "Dokuztaş",
       "category": "decor",
       "price": 12,
       "placement": "Surface",
@@ -9670,7 +9670,7 @@
     },
     {
       "id": "item.rug_hide",
-      "displayName": "Post",
+      "displayName": "Yer postu",
       "width": 1,
       "height": 2,
       "placement": "Rug",
@@ -9842,7 +9842,7 @@
     },
     {
       "id": "item.garden_bench",
-      "displayName": "Bahçe bankı",
+      "displayName": "Bahçe sırası",
       "category": "garden",
       "price": 30,
       "width": 2,
@@ -10533,7 +10533,7 @@
     },
     {
       "id": "item.copper_tub",
-      "displayName": "Bakır küvet",
+      "displayName": "Bakır yıkanma teknesi",
       "category": "hygiene",
       "price": 160,
       "width": 2,
@@ -10695,7 +10695,7 @@
     },
     {
       "id": "item.bench_wood",
-      "displayName": "Ahşap bank",
+      "displayName": "Ahşap sıra",
       "width": 2,
       "height": 1,
       "price": 14,
@@ -13242,7 +13242,7 @@
     },
     {
       "id": "item.root_cellar",
-      "displayName": "Kök mahzeni",
+      "displayName": "Toprak kiler",
       "width": 2,
       "height": 2,
       "price": 60,
@@ -16751,7 +16751,7 @@
         },
         {
           "id": "graft",
-          "displayName": "Aşıla (envanterdeki fidanla)",
+          "displayName": "Aşıla (eldeki fidanla)",
           "durationDays": 0.08,
           "skill": "Horticulture",
           "skillXp": 12,
@@ -16879,7 +16879,7 @@
         },
         {
           "id": "graft",
-          "displayName": "Aşıla (envanterdeki fidanla)",
+          "displayName": "Aşıla (eldeki fidanla)",
           "durationDays": 0.08,
           "skill": "Horticulture",
           "skillXp": 12,
@@ -17007,7 +17007,7 @@
         },
         {
           "id": "graft",
-          "displayName": "Aşıla (envanterdeki fidanla)",
+          "displayName": "Aşıla (eldeki fidanla)",
           "durationDays": 0.08,
           "skill": "Horticulture",
           "skillXp": 12,
@@ -17136,7 +17136,7 @@
         },
         {
           "id": "graft",
-          "displayName": "Aşıla (envanterdeki fidanla)",
+          "displayName": "Aşıla (eldeki fidanla)",
           "durationDays": 0.08,
           "skill": "Horticulture",
           "skillXp": 12,
@@ -18780,7 +18780,7 @@
     },
     {
       "id": "item.smoked_meat",
-      "displayName": "Füme et",
+      "displayName": "Tütsülü et",
       "placement": "Resource",
       "price": 16,
       "category": "resource",
@@ -18791,7 +18791,7 @@
     },
     {
       "id": "item.smoked_poultry",
-      "displayName": "Füme tavuk",
+      "displayName": "Tütsülü tavuk",
       "placement": "Resource",
       "price": 11,
       "category": "resource",
@@ -18825,7 +18825,7 @@
     },
     {
       "id": "item.smoked_cheese",
-      "displayName": "Füme peynir",
+      "displayName": "Tütsülü peynir",
       "placement": "Resource",
       "price": 12,
       "category": "resource",
@@ -20044,7 +20044,7 @@
     },
     {
       "id": "item.tanning_rack",
-      "displayName": "Tabak germesi",
+      "displayName": "Sepi çerçevesi",
       "category": "work",
       "price": 35,
       "width": 2,
@@ -20527,7 +20527,7 @@
     },
     {
       "id": "item.smoked_fish",
-      "displayName": "Füme balık",
+      "displayName": "Tütsülü balık",
       "placement": "Resource",
       "category": "resource",
       "price": 16,
@@ -20637,7 +20637,7 @@
         },
         {
           "id": "stock_pond",
-          "displayName": "Göleti stokla (2 sazan)",
+          "displayName": "Gölete balık sal (2 sazan)",
           "durationDays": 0.08,
           "skill": "Fishing",
           "skillXp": 6,
@@ -20813,7 +20813,7 @@
     },
     {
       "id": "item.fish_trap",
-      "displayName": "Balık sepeti (tuzak)",
+      "displayName": "Sepet tuzak",
       "category": "farm",
       "price": 25,
       "level": 3,
@@ -20908,7 +20908,7 @@
     },
     {
       "id": "item.potion_warmth",
-      "displayName": "Isıtan tentür",
+      "displayName": "Isıtan iksir",
       "placement": "Resource",
       "category": "resource",
       "price": 12,
@@ -20984,7 +20984,7 @@
         },
         {
           "id": "drink_warmth",
-          "displayName": "Isıtan tentür iç",
+          "displayName": "Isıtan iksir iç",
           "need": "Warmth",
           "restore": 60,
           "durationDays": 0.02,
@@ -21105,7 +21105,7 @@
     },
     {
       "id": "item.iron_bloom",
-      "displayName": "Demir çiçeği",
+      "displayName": "Ham demir",
       "placement": "Resource",
       "category": "resource",
       "price": 8
@@ -21471,7 +21471,7 @@
     },
     {
       "id": "item.pelt",
-      "displayName": "Post (av)",
+      "displayName": "Ham post",
       "placement": "Resource",
       "category": "resource",
       "price": 10,
@@ -21501,7 +21501,7 @@
     },
     {
       "id": "item.quarry",
-      "displayName": "Taş ocağı",
+      "displayName": "Taşlık",
       "category": "farm",
       "price": 50,
       "level": 2,
@@ -22061,7 +22061,7 @@
     },
     {
       "id": "item.saute_mushroom",
-      "displayName": "Mantar sote",
+      "displayName": "Mantar kavurması",
       "placement": "Resource",
       "category": "resource",
       "price": 4,
@@ -22168,7 +22168,7 @@
     },
     {
       "id": "item.wrap_fish",
-      "displayName": "Füme balık dürüm",
+      "displayName": "Tütsülü balık dürümü",
       "placement": "Resource",
       "category": "resource",
       "price": 6,
@@ -22204,7 +22204,7 @@
     },
     {
       "id": "item.tart_apple",
-      "displayName": "Elmalı tart",
+      "displayName": "Elmalı çörek",
       "placement": "Resource",
       "category": "resource",
       "price": 5,
@@ -22342,7 +22342,7 @@
     },
     {
       "id": "item.feed_mixer",
-      "displayName": "Yem karıştırıcı",
+      "displayName": "Yem teknesi",
       "category": "farm",
       "price": 60,
       "level": 1,
@@ -22421,7 +22421,7 @@
     },
     {
       "id": "item.bloomery",
-      "displayName": "Çiçek ocağı",
+      "displayName": "Ham demir ocağı",
       "category": "work",
       "price": 40,
       "width": 2,
@@ -22643,7 +22643,7 @@
     },
     {
       "id": "item.drain_pit",
-      "displayName": "Dren çukuru",
+      "displayName": "Süzme çukuru",
       "category": "farm",
       "price": 8,
       "level": 2,
@@ -25363,7 +25363,7 @@
     },
     {
       "id": "item.applique_hanging",
-      "displayName": "Aplike duvar örtüsü",
+      "displayName": "Kırkyama duvar örtüsü",
       "category": "decor_wall",
       "price": 38,
       "level": 5,
@@ -26767,7 +26767,7 @@
     },
     {
       "id": "item.rush_mat_hall",
-      "displayName": "Salon hasırı",
+      "displayName": "Baş oda hasırı",
       "width": 3,
       "height": 2,
       "placement": "Rug",
@@ -27858,7 +27858,7 @@
     },
     {
       "id": "item.settle_bench",
-      "displayName": "Sırtlı bank",
+      "displayName": "Arkalıklı sıra",
       "category": "seating",
       "price": 30,
       "width": 2,
@@ -27913,7 +27913,7 @@
     },
     {
       "id": "item.chest_bench",
-      "displayName": "Sandık-bank",
+      "displayName": "Sandıklı sıra",
       "category": "seating",
       "price": 26,
       "width": 2,
@@ -27995,7 +27995,7 @@
     },
     {
       "id": "item.trestle_table",
-      "displayName": "Sehpa masa",
+      "displayName": "Ayaklı sehpa",
       "category": "surfaces",
       "price": 24,
       "width": 3,
@@ -28223,7 +28223,7 @@
     },
     {
       "id": "item.x_chair",
-      "displayName": "Katlanır X sandalye",
+      "displayName": "Katlanır makas sandalye",
       "category": "seating",
       "price": 70,
       "level": 10,
@@ -29509,7 +29509,7 @@
     },
     {
       "id": "item.juggling_balls",
-      "displayName": "Jonglör topları",
+      "displayName": "Hokkabaz topları",
       "category": "kids",
       "price": 5,
       "placement": "Surface",
@@ -29627,7 +29627,7 @@
     },
     {
       "id": "item.glass",
-      "displayName": "Orman camı",
+      "displayName": "Yeşil cam",
       "placement": "Resource",
       "category": "resource",
       "price": 14,
@@ -30134,7 +30134,7 @@
     },
     {
       "id": "item.box_bed",
-      "displayName": "Kutu yatak",
+      "displayName": "Dolap yatak",
       "category": "sleep",
       "price": 90,
       "width": 2,
@@ -30494,7 +30494,7 @@
     },
     {
       "id": "item.tapestry_hunt",
-      "displayName": "Av sahnesi goblen",
+      "displayName": "Av sahneli duvar halısı",
       "category": "decor_wall",
       "price": 260,
       "level": 12,
@@ -30518,7 +30518,7 @@
     },
     {
       "id": "item.tapestry_garden",
-      "displayName": "Bahçe goblen",
+      "displayName": "Bahçeli duvar halısı",
       "category": "decor_wall",
       "price": 240,
       "level": 12,
@@ -30670,7 +30670,7 @@
     },
     {
       "id": "item.canopy_bed",
-      "displayName": "Kanopili yatak",
+      "displayName": "Sayvanlı yatak",
       "category": "sleep",
       "price": 160,
       "width": 2,
@@ -30771,7 +30771,7 @@
     },
     {
       "id": "item.canopy_bed_curtained",
-      "displayName": "Perdeli kanopili yatak",
+      "displayName": "Perdeli sayvanlı yatak",
       "category": "sleep",
       "price": 260,
       "width": 2,
@@ -32143,7 +32143,7 @@
     },
     {
       "id": "item.notice_board",
-      "displayName": "İlan tahtası",
+      "displayName": "Duvar ilan tahtası",
       "category": "decor_wall",
       "price": 10,
       "level": 2,
@@ -32292,7 +32292,7 @@
     },
     {
       "id": "item.lattice_screen",
-      "displayName": "Kafes paravan",
+      "displayName": "Kafes bölme",
       "category": "decor",
       "price": 48,
       "level": 9,
@@ -32754,7 +32754,7 @@
       "interactions": [
         {
           "id": "pick",
-          "displayName": "Kahve kirazı topla",
+          "displayName": "Kahve meyvesi topla",
           "durationDays": 0.07,
           "skill": "Horticulture",
           "skillXp": 12,
@@ -32794,7 +32794,7 @@
     },
     {
       "id": "item.coffee_cherry",
-      "displayName": "Kahve kirazı",
+      "displayName": "Kahve meyvesi",
       "placement": "Resource",
       "category": "resource",
       "price": 4,
@@ -32805,7 +32805,7 @@
     },
     {
       "id": "item.coffee_dried",
-      "displayName": "Kuru kahve kirazı",
+      "displayName": "Kuru kahve meyvesi",
       "placement": "Resource",
       "category": "resource",
       "price": 5
@@ -33012,7 +33012,7 @@
         },
         {
           "id": "graft",
-          "displayName": "Aşıla (envanterdeki fidanla)",
+          "displayName": "Aşıla (eldeki fidanla)",
           "durationDays": 0.08,
           "skill": "Horticulture",
           "skillXp": 12,
@@ -33753,7 +33753,7 @@
         },
         {
           "id": "graft",
-          "displayName": "Aşıla (envanterdeki fidanla)",
+          "displayName": "Aşıla (eldeki fidanla)",
           "durationDays": 0.08,
           "skill": "Horticulture",
           "skillXp": 12,
@@ -33967,7 +33967,7 @@
     },
     {
       "id": "item.show_rosette",
-      "displayName": "Hasat sergisi rozeti",
+      "displayName": "Hasat sergisi nişanı",
       "category": "decor_wall",
       "price": 0,
       "placement": "Wall",
@@ -34710,7 +34710,7 @@
     },
     {
       "id": "item.jazari_peacock",
-      "displayName": "Tavus kuşlu el yıkama otomatı",
+      "displayName": "Tavus kuşlu el yıkama düzeneği",
       "category": "decor_wall",
       "price": 480,
       "styleSet": "Asil",
@@ -35250,7 +35250,7 @@
     },
     {
       "id": "item.scroll_rack",
-      "displayName": "Rulo rafı",
+      "displayName": "Tomar rafı",
       "width": 1,
       "height": 1,
       "price": 24,
@@ -35275,7 +35275,7 @@
     },
     {
       "id": "item.scroll_chest",
-      "displayName": "Rulo sandığı",
+      "displayName": "Tomar sandığı",
       "width": 1,
       "height": 1,
       "price": 20,
@@ -35458,7 +35458,7 @@
     },
     {
       "id": "item.fish_basket",
-      "displayName": "Balık sepeti",
+      "displayName": "Balık küfesi",
       "width": 1,
       "height": 1,
       "price": 6,
@@ -35640,7 +35640,7 @@
     },
     {
       "id": "item.notice_post",
-      "displayName": "İlan tahtası",
+      "displayName": "İlan panosu",
       "width": 1,
       "height": 1,
       "price": 0,
@@ -36057,7 +36057,7 @@
     },
     {
       "id": "item.pot_rose",
-      "displayName": "Gül saksısı (eczacı gülü)",
+      "displayName": "Gül saksısı (aktar gülü)",
       "placement": "Floor",
       "price": 20,
       "beauty": 4,
@@ -38138,7 +38138,7 @@
     },
     {
       "id": "item.forage_tidepool",
-      "displayName": "Gelgit çukuru",
+      "displayName": "Kaya gölcüğü",
       "category": "forage",
       "forageSeasons": [
         "Spring",
@@ -39876,7 +39876,7 @@
     },
     {
       "id": "item.tin_brooch",
-      "displayName": "Cam taşlı kalay broş",
+      "displayName": "Cam taşlı kalay yaka iğnesi",
       "placement": "Resource",
       "category": "resource",
       "price": 60,
@@ -39886,7 +39886,7 @@
     },
     {
       "id": "item.tunic",
-      "displayName": "Kaba yün tunik",
+      "displayName": "Kaba yün göynek",
       "placement": "Resource",
       "category": "clothing",
       "price": 22,
@@ -40117,7 +40117,7 @@
     },
     {
       "id": "item.hund_rail",
-      "displayName": "Hund rayı (maden arabası)",
+      "displayName": "Maden rayı ve arabası",
       "placement": "Resource",
       "category": "resource",
       "price": 30,
@@ -40613,7 +40613,7 @@
     },
     {
       "id": "item.lichen",
-      "displayName": "Taş likeni",
+      "displayName": "Taş yosunu",
       "placement": "Resource",
       "category": "resource",
       "price": 3,
@@ -40623,7 +40623,7 @@
     },
     {
       "id": "item.copperas",
-      "displayName": "Karaboya",
+      "displayName": "Zaç",
       "placement": "Resource",
       "category": "resource",
       "price": 5,
@@ -40684,7 +40684,7 @@
     },
     {
       "id": "item.dye_lichen",
-      "displayName": "Liken moru",
+      "displayName": "Taş yosunu moru",
       "placement": "Resource",
       "category": "resource",
       "price": 7,
@@ -42172,7 +42172,7 @@
     },
     {
       "id": "item.forage_lichen",
-      "displayName": "Likenli kaya",
+      "displayName": "Yosunlu kaya",
       "category": "forage",
       "forageSeasons": [
         "Spring",
@@ -42184,7 +42184,7 @@
       "interactions": [
         {
           "id": "gather",
-          "displayName": "Liken kazı",
+          "displayName": "Taş yosunu kazı",
           "durationDays": 0.04,
           "skill": "Foraging",
           "skillXp": 6,
@@ -42377,7 +42377,7 @@
     },
     {
       "id": "item.cl_work_tunic",
-      "displayName": "Kısa kollu iş tuniği",
+      "displayName": "Kısa kollu işlik",
       "placement": "Resource",
       "category": "clothing",
       "price": 22,
@@ -42388,7 +42388,7 @@
     },
     {
       "id": "item.cl_long_tunic",
-      "displayName": "Uzun kollu tunik",
+      "displayName": "Uzun kollu göynek",
       "placement": "Resource",
       "category": "clothing",
       "price": 35,
@@ -42398,7 +42398,7 @@
     },
     {
       "id": "item.cl_riding_tunic",
-      "displayName": "Yırtmaçlı binici tuniği",
+      "displayName": "Yırtmaçlı binici göyneği",
       "placement": "Resource",
       "category": "clothing",
       "price": 35,
@@ -42418,7 +42418,7 @@
     },
     {
       "id": "item.cl_buttoned_jacket",
-      "displayName": "Düğmeli dar ceket",
+      "displayName": "Düğmeli cepken",
       "placement": "Resource",
       "category": "clothing",
       "price": 74,
@@ -42438,7 +42438,7 @@
     },
     {
       "id": "item.cl_quilted_jacket",
-      "displayName": "Kapitone kışlık ceket",
+      "displayName": "Dolgulu kışlık hırka",
       "placement": "Resource",
       "category": "clothing",
       "price": 35,
@@ -42604,7 +42604,7 @@
     },
     {
       "id": "item.cl_laced_trousers",
-      "displayName": "Dar pantolon",
+      "displayName": "Dar çakşır",
       "placement": "Resource",
       "category": "clothing",
       "price": 26,
@@ -42665,7 +42665,7 @@
     },
     {
       "id": "item.cl_pleated_skirt",
-      "displayName": "Pileli bayram eteği",
+      "displayName": "Kırmalı bayram eteği",
       "placement": "Resource",
       "category": "clothing",
       "price": 42,
@@ -42831,7 +42831,7 @@
     },
     {
       "id": "item.cl_hair_net",
-      "displayName": "Saç filesi",
+      "displayName": "Saç ağı",
       "placement": "Resource",
       "category": "clothing",
       "price": 69,
@@ -42871,7 +42871,7 @@
     },
     {
       "id": "item.cl_knit_beret",
-      "displayName": "Örgü bere",
+      "displayName": "Örgü takke",
       "placement": "Resource",
       "category": "clothing",
       "price": 10,
@@ -42921,7 +42921,7 @@
     },
     {
       "id": "item.cl_caped_hood",
-      "displayName": "Pelerinli kapüşon",
+      "displayName": "Pelerinli kukuleta",
       "placement": "Resource",
       "category": "clothing",
       "price": 12,
@@ -42932,7 +42932,7 @@
     },
     {
       "id": "item.cl_liripipe_hood",
-      "displayName": "Uzun uçlu kapüşon",
+      "displayName": "Uzun uçlu kukuleta",
       "placement": "Resource",
       "category": "clothing",
       "price": 19,
@@ -42942,7 +42942,7 @@
     },
     {
       "id": "item.cl_fur_hood",
-      "displayName": "Kürk kapüşon",
+      "displayName": "Kürk kukuleta",
       "placement": "Resource",
       "category": "clothing",
       "price": 56,
@@ -42952,7 +42952,7 @@
     },
     {
       "id": "item.cl_chaperon",
-      "displayName": "Sarma şaperon",
+      "displayName": "Sarma başlık",
       "placement": "Resource",
       "category": "clothing",
       "price": 41,
@@ -42962,7 +42962,7 @@
     },
     {
       "id": "item.cl_wide_straw_hat",
-      "displayName": "Geniş kenarlı hasır şapka",
+      "displayName": "Geniş kenarlı hasır başlık",
       "placement": "Resource",
       "category": "clothing",
       "price": 6,
@@ -42973,7 +42973,7 @@
     },
     {
       "id": "item.cl_straw_hat",
-      "displayName": "Düz hasır şapka",
+      "displayName": "Düz hasır başlık",
       "placement": "Resource",
       "category": "clothing",
       "price": 6,
@@ -42984,7 +42984,7 @@
     },
     {
       "id": "item.cl_pilgrim_hat",
-      "displayName": "Geniş kenarlı keçe şapka",
+      "displayName": "Geniş kenarlı keçe başlık",
       "placement": "Resource",
       "category": "clothing",
       "price": 21,
@@ -42994,7 +42994,7 @@
     },
     {
       "id": "item.cl_rolled_brim_hat",
-      "displayName": "Kıvrık kenarlı yün şapka",
+      "displayName": "Kıvrık kenarlı yün başlık",
       "placement": "Resource",
       "category": "clothing",
       "price": 19,
@@ -43004,7 +43004,7 @@
     },
     {
       "id": "item.cl_feathered_hat",
-      "displayName": "Tüylü şapka",
+      "displayName": "Tüylü başlık",
       "placement": "Resource",
       "category": "clothing",
       "price": 31,
@@ -43015,7 +43015,7 @@
     },
     {
       "id": "item.cl_fur_hat",
-      "displayName": "Kürk şapka",
+      "displayName": "Kürk başlık",
       "placement": "Resource",
       "category": "clothing",
       "price": 97,
@@ -43025,7 +43025,7 @@
     },
     {
       "id": "item.cl_hunter_hat",
-      "displayName": "Avcı şapkası",
+      "displayName": "Avcı başlığı",
       "placement": "Resource",
       "category": "clothing",
       "price": 19,
@@ -43045,7 +43045,7 @@
     },
     {
       "id": "item.cl_hair_band",
-      "displayName": "Saç bandı",
+      "displayName": "Saç bağı",
       "placement": "Resource",
       "category": "clothing",
       "price": 19,
@@ -43128,7 +43128,7 @@
     },
     {
       "id": "item.cl_hooded_cloak",
-      "displayName": "Kapüşonlu yol pelerini",
+      "displayName": "Kukuletalı yol pelerini",
       "placement": "Resource",
       "category": "clothing",
       "price": 45,
@@ -43454,7 +43454,7 @@
     },
     {
       "id": "item.cl_child_tunic",
-      "displayName": "Çocuk tuniği",
+      "displayName": "Çocuk göyneği",
       "placement": "Resource",
       "category": "clothing",
       "price": 13,
@@ -43599,7 +43599,7 @@
     },
     {
       "id": "item.jw_cord_necklace",
-      "displayName": "İp kolye",
+      "displayName": "İp gerdanlık",
       "placement": "Resource",
       "category": "clothing",
       "price": 15,
@@ -43622,7 +43622,7 @@
     },
     {
       "id": "item.jw_brooch",
-      "displayName": "Broş",
+      "displayName": "Yaka iğnesi",
       "placement": "Resource",
       "category": "clothing",
       "price": 21,
@@ -43852,7 +43852,7 @@
     },
     {
       "id": "item.warming_tincture",
-      "displayName": "Isıtan tentür",
+      "displayName": "Isıtan damla",
       "placement": "Resource",
       "category": "resource",
       "price": 8,
@@ -48639,7 +48639,7 @@
       ],
       "durationDays": 0.1,
       "skillXp": 10,
-      "displayName": "Deri tabakla",
+      "displayName": "Deri sepile",
       "skill": "Leatherwork"
     },
     {
@@ -48745,7 +48745,7 @@
       "durationDays": 0.1,
       "skill": "Leatherwork",
       "skillXp": 12,
-      "displayName": "Post sermesi yap"
+      "displayName": "Yer postu yap"
     },
     {
       "id": "yarn",
@@ -48916,7 +48916,7 @@
       "durationDays": 0.1,
       "skill": "Herbalism",
       "skillXp": 12,
-      "displayName": "Isıtan tentür yap"
+      "displayName": "Isıtan iksir yap"
     },
     {
       "id": "potion_calm",
@@ -49017,7 +49017,7 @@
       "durationDays": 0.12,
       "skill": "Smithing",
       "skillXp": 10,
-      "displayName": "Demir çiçeğini döv"
+      "displayName": "Ham demiri döv"
     },
     {
       "id": "nails_forge",
@@ -49203,7 +49203,7 @@
       "durationDays": 0.12,
       "skill": "Leatherwork",
       "skillXp": 12,
-      "displayName": "Kürk tabakla",
+      "displayName": "Kürk sepile",
       "minLevel": 6
     },
     {
@@ -49442,7 +49442,7 @@
       "durationDays": 0.3,
       "skill": "Engineering",
       "skillXp": 15,
-      "displayName": "Yem karıştırıcı yap",
+      "displayName": "Yem teknesi yap",
       "minLevel": 1
     },
     {
@@ -50252,7 +50252,7 @@
       "durationDays": 0.06,
       "skill": "Leatherwork",
       "skillXp": 6,
-      "displayName": "Jonglör topu dik"
+      "displayName": "Hokkabaz topu dik"
     },
     {
       "id": "tallow_candle",
@@ -50693,7 +50693,7 @@
       "durationDays": 0.4,
       "skill": "Carpentry",
       "skillXp": 40,
-      "displayName": "Kutu yatak yap",
+      "displayName": "Dolap yatak yap",
       "minLevel": 5
     },
     {
@@ -51120,7 +51120,7 @@
       "durationDays": 0.8,
       "skill": "Cooking",
       "skillXp": 6,
-      "displayName": "Kahve kirazı kurut",
+      "displayName": "Kahve meyvesi kurut",
       "count": 3
     },
     {
@@ -52342,7 +52342,7 @@
       "durationDays": 0.09,
       "skill": "Tailoring",
       "skillXp": 10,
-      "displayName": "Kaba yün tunik dik",
+      "displayName": "Kaba yün göynek dik",
       "minLevel": 2
     },
     {
@@ -52770,7 +52770,7 @@
       "durationDays": 0.2,
       "skill": "Engineering",
       "skillXp": 20,
-      "displayName": "Hund rayı kur",
+      "displayName": "Maden rayı kur",
       "minLevel": 6
     },
     {
@@ -53366,7 +53366,7 @@
       "durationDays": 0.1,
       "skill": "Mining",
       "skillXp": 6,
-      "displayName": "Karaboya çıkar",
+      "displayName": "Zaç çıkar",
       "count": 2,
       "minLevel": 3
     },
@@ -53419,7 +53419,7 @@
       "durationDays": 0.1,
       "skill": "Weaving",
       "skillXp": 8,
-      "displayName": "Liken mayala",
+      "displayName": "Taş yosunu mayala",
       "minLevel": 3
     },
     {
@@ -53677,7 +53677,7 @@
       "durationDays": 0.09,
       "skill": "Tailoring",
       "skillXp": 10,
-      "displayName": "Kısa kollu iş tuniği dik",
+      "displayName": "Kısa kollu işlik dik",
       "minLevel": 2
     },
     {
@@ -53697,7 +53697,7 @@
       "durationDays": 0.11,
       "skill": "Tailoring",
       "skillXp": 13,
-      "displayName": "Uzun kollu tunik dik",
+      "displayName": "Uzun kollu göynek dik",
       "minLevel": 3
     },
     {
@@ -53717,7 +53717,7 @@
       "durationDays": 0.13,
       "skill": "Tailoring",
       "skillXp": 16,
-      "displayName": "Yırtmaçlı binici tuniği dik",
+      "displayName": "Yırtmaçlı binici göyneği dik",
       "minLevel": 4
     },
     {
@@ -53761,7 +53761,7 @@
       "durationDays": 0.19,
       "skill": "Tailoring",
       "skillXp": 25,
-      "displayName": "Düğmeli dar ceket dik",
+      "displayName": "Düğmeli cepken dik",
       "minLevel": 7
     },
     {
@@ -53805,7 +53805,7 @@
       "durationDays": 0.15,
       "skill": "Tailoring",
       "skillXp": 19,
-      "displayName": "Kapitone kışlık ceket dik",
+      "displayName": "Dolgulu kışlık hırka dik",
       "minLevel": 5
     },
     {
@@ -54115,7 +54115,7 @@
       "durationDays": 0.13,
       "skill": "Tailoring",
       "skillXp": 16,
-      "displayName": "Dar pantolon dik",
+      "displayName": "Dar çakşır dik",
       "minLevel": 4
     },
     {
@@ -54231,7 +54231,7 @@
       "durationDays": 0.17,
       "skill": "Tailoring",
       "skillXp": 22,
-      "displayName": "Pileli bayram eteği dik",
+      "displayName": "Kırmalı bayram eteği dik",
       "minLevel": 6
     },
     {
@@ -54517,7 +54517,7 @@
       "durationDays": 0.17,
       "skill": "Tailoring",
       "skillXp": 22,
-      "displayName": "Saç filesi dik",
+      "displayName": "Saç ağı dik",
       "minLevel": 6
     },
     {
@@ -54591,7 +54591,7 @@
       "durationDays": 0.07,
       "skill": "Tailoring",
       "skillXp": 7,
-      "displayName": "Örgü bere dik"
+      "displayName": "Örgü takke dik"
     },
     {
       "id": "cl_felt_kulah",
@@ -54682,7 +54682,7 @@
       "durationDays": 0.11,
       "skill": "Tailoring",
       "skillXp": 13,
-      "displayName": "Pelerinli kapüşon dik",
+      "displayName": "Pelerinli kukuleta dik",
       "minLevel": 3
     },
     {
@@ -54702,7 +54702,7 @@
       "durationDays": 0.13,
       "skill": "Tailoring",
       "skillXp": 16,
-      "displayName": "Uzun uçlu kapüşon dik",
+      "displayName": "Uzun uçlu kukuleta dik",
       "minLevel": 4
     },
     {
@@ -54722,7 +54722,7 @@
       "durationDays": 0.17,
       "skill": "Leatherwork",
       "skillXp": 22,
-      "displayName": "Kürk kapüşon yap",
+      "displayName": "Kürk kukuleta yap",
       "minLevel": 6
     },
     {
@@ -54742,7 +54742,7 @@
       "durationDays": 0.19,
       "skill": "Tailoring",
       "skillXp": 25,
-      "displayName": "Sarma şaperon dik",
+      "displayName": "Sarma başlık dik",
       "minLevel": 7
     },
     {
@@ -54758,7 +54758,7 @@
       "durationDays": 0.07,
       "skill": "Weaving",
       "skillXp": 7,
-      "displayName": "Geniş kenarlı hasır şapka yap"
+      "displayName": "Geniş kenarlı hasır başlık yap"
     },
     {
       "id": "cl_straw_hat",
@@ -54773,7 +54773,7 @@
       "durationDays": 0.07,
       "skill": "Weaving",
       "skillXp": 7,
-      "displayName": "Düz hasır şapka yap"
+      "displayName": "Düz hasır başlık yap"
     },
     {
       "id": "cl_pilgrim_hat",
@@ -54788,7 +54788,7 @@
       "durationDays": 0.13,
       "skill": "Tailoring",
       "skillXp": 16,
-      "displayName": "Geniş kenarlı keçe şapka dik",
+      "displayName": "Geniş kenarlı keçe başlık dik",
       "minLevel": 4
     },
     {
@@ -54808,7 +54808,7 @@
       "durationDays": 0.11,
       "skill": "Tailoring",
       "skillXp": 13,
-      "displayName": "Kıvrık kenarlı yün şapka dik",
+      "displayName": "Kıvrık kenarlı yün başlık dik",
       "minLevel": 3
     },
     {
@@ -54832,7 +54832,7 @@
       "durationDays": 0.17,
       "skill": "Tailoring",
       "skillXp": 22,
-      "displayName": "Tüylü şapka dik",
+      "displayName": "Tüylü başlık dik",
       "minLevel": 6
     },
     {
@@ -54852,7 +54852,7 @@
       "durationDays": 0.21,
       "skill": "Leatherwork",
       "skillXp": 28,
-      "displayName": "Kürk şapka yap",
+      "displayName": "Kürk başlık yap",
       "minLevel": 8
     },
     {
@@ -54876,7 +54876,7 @@
       "durationDays": 0.15,
       "skill": "Tailoring",
       "skillXp": 19,
-      "displayName": "Avcı şapkası dik",
+      "displayName": "Avcı başlığı dik",
       "minLevel": 5
     },
     {
@@ -54912,7 +54912,7 @@
       "durationDays": 0.09,
       "skill": "Tailoring",
       "skillXp": 10,
-      "displayName": "Saç bandı dik",
+      "displayName": "Saç bağı dik",
       "minLevel": 2
     },
     {
@@ -55052,7 +55052,7 @@
       "durationDays": 0.13,
       "skill": "Tailoring",
       "skillXp": 16,
-      "displayName": "Kapüşonlu yol pelerini dik",
+      "displayName": "Kukuletalı yol pelerini dik",
       "minLevel": 4
     },
     {
@@ -55655,7 +55655,7 @@
       "durationDays": 0.09,
       "skill": "Tailoring",
       "skillXp": 10,
-      "displayName": "Çocuk tuniği dik",
+      "displayName": "Çocuk göyneği dik",
       "minLevel": 2
     },
     {
@@ -55916,7 +55916,7 @@
       "durationDays": 0.12,
       "skill": "Tailoring",
       "skillXp": 7,
-      "displayName": "İp kolye yap"
+      "displayName": "İp gerdanlık yap"
     },
     {
       "id": "jw_glass_beads",
@@ -55951,7 +55951,7 @@
       "durationDays": 0.12,
       "skill": "Smithing",
       "skillXp": 9,
-      "displayName": "Broş yap",
+      "displayName": "Yaka iğnesi yap",
       "minLevel": 3
     },
     {
@@ -56361,7 +56361,7 @@
       "durationDays": 0.1,
       "skill": "Herbalism",
       "skillXp": 10,
-      "displayName": "Isıtan tentür yap",
+      "displayName": "Isıtan damla yap",
       "minLevel": 4
     },
     {
@@ -61278,7 +61278,7 @@
     },
     {
       "id": "finish_panel",
-      "displayName": "Ahşap lambri",
+      "displayName": "Ahşap kaplama",
       "kind": "wallFinish",
       "price": 4,
       "color": "#8C5E36",
@@ -61548,7 +61548,7 @@
     },
     {
       "id": "floor_herringbone",
-      "displayName": "Balıksırtı parke",
+      "displayName": "Balıksırtı döşeme",
       "kind": "floor",
       "price": 6,
       "color": "#9C6B3E",
@@ -61613,7 +61613,7 @@
     },
     {
       "id": "roof_shingle",
-      "displayName": "Ahşap şindıl",
+      "displayName": "Ahşap pul çatı",
       "kind": "roof",
       "price": 1,
       "color": "#7E5C3A",
@@ -61713,7 +61713,7 @@
     },
     {
       "id": "cloth_madder",
-      "displayName": "Kök boya kırmızısı",
+      "displayName": "Kökboya kırmızısı",
       "kind": "itemFinish",
       "price": 0,
       "color": "#A2392F",
@@ -61848,7 +61848,7 @@
     },
     {
       "id": "finish_stencil",
-      "displayName": "Şablon boya (çiçek)",
+      "displayName": "Kalıp boya (çiçek)",
       "kind": "wallFinish",
       "price": 4,
       "color": "#D8C49A",
@@ -62004,7 +62004,7 @@
     },
     {
       "id": "stone_green",
-      "displayName": "Yeşil serpantin",
+      "displayName": "Yeşil damarlı taş",
       "kind": "itemFinish",
       "price": 0,
       "group": "stone",
@@ -62279,7 +62279,7 @@
     },
     {
       "id": "finish_red_band",
-      "displayName": "Kırmızı bantlı sıva",
+      "displayName": "Kırmızı kuşaklı sıva",
       "kind": "wallFinish",
       "price": 4,
       "color": "#C9A48E",
@@ -62291,7 +62291,7 @@
     },
     {
       "id": "finish_black_panel",
-      "displayName": "Kara lambri",
+      "displayName": "Kara ahşap kaplama",
       "kind": "wallFinish",
       "price": 6,
       "color": "#3A2E26",
@@ -62431,7 +62431,7 @@
     },
     {
       "id": "railing_parapet",
-      "displayName": "Taş parapet",
+      "displayName": "Taş korkuluk",
       "kind": "railing",
       "price": 9,
       "color": "#8F8B80",
@@ -62474,7 +62474,7 @@
     },
     {
       "id": "floor_terracotta",
-      "displayName": "Pişmiş toprak karo",
+      "displayName": "Pişmiş toprak döşeme",
       "kind": "floor",
       "price": 4,
       "color": "#B0613E",
@@ -62579,7 +62579,7 @@
     {
       "id": "eff_fisher",
       "displayName": "Balıkçı sofrası",
-      "description": "Balıkçılıkta %15 fazla XP.",
+      "description": "Balıkçılıkta %15 fazla tecrübe.",
       "value": 3,
       "days": 1.0,
       "skillXp": [
@@ -62621,7 +62621,7 @@
     {
       "id": "eff_forager",
       "displayName": "Orman sofrası",
-      "description": "Toplayıcılıkta %15 fazla XP.",
+      "description": "Toplayıcılıkta %15 fazla tecrübe.",
       "value": 3,
       "days": 1.0,
       "skillXp": [
@@ -62657,7 +62657,7 @@
     {
       "id": "eff_host",
       "displayName": "Misafir ikramı",
-      "description": "Gönül kazanmada %20 fazla XP.",
+      "description": "Gönül kazanmada %20 fazla tecrübe.",
       "value": 10,
       "days": 1.0,
       "skillXp": [
@@ -62677,7 +62677,7 @@
     {
       "id": "eff_hunter",
       "displayName": "Av sofrası",
-      "description": "Avcılıkta %15 fazla XP, soğuktan %10 az etkilenir.",
+      "description": "Avcılıkta %15 fazla tecrübe, soğuktan %10 az etkilenir.",
       "value": 4,
       "days": 1.0,
       "coldResist": 0.1,
@@ -62931,14 +62931,14 @@
     },
     {
       "id": "eff_comfy",
-      "displayName": "Rahatım",
+      "displayName": "Giysim rahat",
       "description": "Gebelik giysisi rahat ettiriyor.",
       "value": 3,
       "days": 0.1
     },
     {
       "id": "eff_comfy_plus",
-      "displayName": "Rahatım",
+      "displayName": "Giysim pek rahat",
       "description": "Gebelik entarisi ve karın kuşağı: çok rahat.",
       "value": 4,
       "days": 0.1

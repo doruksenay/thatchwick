@@ -111,7 +111,7 @@ namespace Thatchwick.Core.Mood
         {
             string sign = average >= 0 ? "+" : "";
             string toward = average >= UpbringingCheerfulAt ? "Neşeli büyüyor"
-                : average <= UpbringingGloomyAt ? "Kasvetli büyüyor"
+                : average <= UpbringingGloomyAt ? Localization.CoreText.T("ui.mood.upbringing.pessimist")
                 : "ebeveyninden bir huy alacak";
             return days <= 0 ? "Yetişme: henüz ölçülmedi" : $"Yetişme: {sign}{average:0} ({toward})";
         }

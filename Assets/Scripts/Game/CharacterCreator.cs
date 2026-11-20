@@ -101,11 +101,14 @@ namespace Thatchwick.Game
         {
             _catalog = catalog;
             _rng = new System.Random(seed);
-            _draft = CharacterDraft.CreateRandom(catalog, _rng, "Aldric");
+            _draft = CharacterDraft.CreateRandom(catalog, _rng, "");
             _draft.SetSex(Sex.Male, catalog);
             _draft.Appearance = catalog.Randomize(_rng, Sex.Male);
             _ink = catalog.InkColors.Count > 0 ? catalog.InkColors[0] : new Rgb(40, 50, 90);
         }
+
+        /// <summary>Varsayılan ad genel ad havuzundan gelir (belge 61b §5); oyuncu değiştirebilir.</summary>
+        public void SetDefaultName(string name) { if (!string.IsNullOrWhiteSpace(name)) _draft.Name = name; }
 
         public void Release()
         {

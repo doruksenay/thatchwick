@@ -247,7 +247,7 @@ namespace Thatchwick.Core.Layout
                 plan.Sites.Add(site);
             }
             // Meydan ve hayvan pazarının ağılı (binasız arsalar)
-            plan.Sites.Add(new Site { Id = "square", Name = "Şehir meydanı", Kind = "plaza", Building = new RectI(0, 0, 0, 0), Plot = Regions.PlazaRect });
+            plan.Sites.Add(new Site { Id = "square", Name = "Köy meydanı", Kind = "plaza", Building = new RectI(0, 0, 0, 0), Plot = Regions.PlazaRect });   // loc-yok: yerleşim planı adı (geliştirici)
             plan.Sites.Add(new Site { Id = "animals", Name = "Hayvan pazarı", Kind = "pen", Trade = "animals", Building = new RectI(0, 0, 0, 0), Plot = Grow(Regions.PenRect, 1) });
             // Çiftlik evi
             var farm = new RectI(StarterWorld.HouseX0, StarterWorld.HouseY0, StarterWorld.HouseX1 - StarterWorld.HouseX0 + 1, StarterWorld.HouseY1 - StarterWorld.HouseY0 + 1);

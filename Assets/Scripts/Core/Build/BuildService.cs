@@ -324,7 +324,7 @@ namespace Thatchwick.Core.Build
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.Price <= 0) return PlacementCheck.Fail("Bu eşya satılmıyor.");
             if (def.IsRetired) return PlacementCheck.Fail(ItemCatalog.RetiredText(def));
-            if (ShopOnly(def)) return PlacementCheck.Fail($"{def.StyleSet} takımı yalnızca şehirdeki dükkânlarda satılır.");
+            if (ShopOnly(def)) return PlacementCheck.Fail(Localization.CoreText.T("ui.build.shop_only_fail", ("set", def.StyleSet)));
             if (!IsUnlocked(def)) return PlacementCheck.Fail(LockText(def));
             if (OrderSkill != null && OrderSkill() < OrderLevel) return PlacementCheck.Fail($"Tüccara sipariş için Ticaret {OrderLevel} gerekli.");
             if (!_house.TrySpend(PriceFor(def))) return PlacementCheck.Fail("Akçe yetmiyor.");
@@ -339,7 +339,7 @@ namespace Thatchwick.Core.Build
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.IsKeepsake) return PlacementCheck.Fail(KeepsakeNoSell);
-            if (!_house.TryTake(itemId, TakePolicy.Lowest, out var key)) return PlacementCheck.Fail("Envanterde yok.");
+            if (!_house.TryTake(itemId, TakePolicy.Lowest, out var key)) return PlacementCheck.Fail(Localization.CoreText.T("ui.common.not_held"));
             return FinishInventorySale(def, key);
         }
 
@@ -357,7 +357,7 @@ namespace Thatchwick.Core.Build
         {
             if (!_content.Items.TryGet(key.Id, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
             if (def.IsKeepsake) return PlacementCheck.Fail(KeepsakeNoSell);
-            if (!_house.TryTakeKey(key)) return PlacementCheck.Fail("Envanterde yok.");
+            if (!_house.TryTakeKey(key)) return PlacementCheck.Fail(Localization.CoreText.T("ui.common.not_held"));
             return FinishInventorySale(def, key);
         }
 
@@ -547,7 +547,7 @@ namespace Thatchwick.Core.Build
 
         public PlacementCheck CanPlaceFromInventory(string itemId, GridPos position, int rotation)
         {
-            if (_house.Count(itemId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
+            if (_house.Count(itemId) <= 0) return PlacementCheck.Fail(Localization.CoreText.T("ui.common.not_held"));
             var def = _content.Items.Get(itemId);
             if (def.Placement == ItemPlacement.Wall) return PlacementCheck.Fail("Bu eşya duvara asılır.");
             if (def.IsCeiling)
@@ -628,7 +628,7 @@ namespace Thatchwick.Core.Build
         /// <summary>Duvar eşyasının karonun bir kenarına asılıp asılamayacağı (envanter, arsa, duvar).</summary>
         public PlacementCheck CanPlaceWallFromInventory(string itemId, GridPos tile, int side, int band = -1)
         {
-            if (_house.Count(itemId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
+            if (_house.Count(itemId) <= 0) return PlacementCheck.Fail(Localization.CoreText.T("ui.common.not_held"));
             var def = _content.Items.Get(itemId);
             foreach (var (t, _) in WallSides.Segments(tile, Footprint.Normalize(side), Math.Max(1, def.WallWidth)))
                 if (!OwnsForItems(t)) return PlacementCheck.Fail(NotOwned);
@@ -659,7 +659,7 @@ namespace Thatchwick.Core.Build
         public PlacementCheck PlaceDecorFromInventory(string itemId, int surfaceItemId, string slotId, out ItemInstance placed)
         {
             placed = null;
-            if (_house.Count(itemId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
+            if (_house.Count(itemId) <= 0) return PlacementCheck.Fail(Localization.CoreText.T("ui.common.not_held"));
             var def = _content.Items.Get(itemId);
             var check = _world.CanPlaceOnSurface(def, surfaceItemId, slotId);
             if (!check.Ok) return check;
@@ -936,7 +936,7 @@ namespace Thatchwick.Core.Build
         {
             planted = null;
             if (!_content.Items.TryGet(seedId, out var seed) || seed.PlantsAs == null) return PlacementCheck.Fail("Bu dikilemez.");
-            if (_house.Count(seedId) <= 0) return PlacementCheck.Fail("Envanterde yok.");
+            if (_house.Count(seedId) <= 0) return PlacementCheck.Fail(Localization.CoreText.T("ui.common.not_held"));
             var map = _world.Map;
             if (!map.InBounds(tile)) return PlacementCheck.Fail("Harita dışı.");
             if (!map.IsOwned(tile)) return PlacementCheck.Fail(NotOwned);

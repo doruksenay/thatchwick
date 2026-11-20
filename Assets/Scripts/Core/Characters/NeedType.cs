@@ -32,8 +32,8 @@ namespace Thatchwick.Core.Characters
                 case NeedType.Hunger: return "Açlık";
                 case NeedType.Energy: return "Enerji";
                 case NeedType.Warmth: return "Isınma";
-                case NeedType.Fun: return "Keyif";
-                case NeedType.Hygiene: return "Hijyen";
+                case NeedType.Fun: return Localization.CoreText.T("ui.need.fun");
+                case NeedType.Hygiene: return "Temizlik";
                 case NeedType.Bladder: return "Tuvalet";
                 default: return "Sosyal";
             }

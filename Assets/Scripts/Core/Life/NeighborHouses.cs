@@ -96,6 +96,7 @@ namespace Thatchwick.Core.Life
             _rng = new Random(seed);
             _villagers.Inheritor = InheritorFor;
             _population.BabyBorn += OnBabyBorn;
+            if (_population.BirthHousehold == null) _population.BirthHousehold = BirthHouseholdOf;
         }
 
         private double Now => Today != null ? Today() : 0;
@@ -218,6 +219,14 @@ namespace Thatchwick.Core.Life
         {
             var c = _population.Find(id);
             return c != null && !c.IsDead;
+        }
+
+        /// <summary>Bebek bir köylü hanesine doğuyorsa o hanenin köylü tanımı (ad listesi için; belge 61b §5).</summary>
+        private string BirthHouseholdOf(Character mother, int? fatherId)
+        {
+            var father = fatherId.HasValue ? _population.Find(fatherId.Value) : null;
+            var h = HouseOf(father) ?? HouseOf(mother);
+            return h != null && !string.IsNullOrEmpty(h.DefId) ? h.DefId : null;
         }
 
         private void OnBabyBorn(Character baby, Character mother, int? fatherId)

@@ -27,6 +27,7 @@ namespace Thatchwick.Core.Content
         public GroupDto[] groups;               // malzeme grupları (belge 58 §5.1)
         public SpiceDto[] spices;               // ek baharatlar (belge 58 §5.2)
         public TalkDto[] talk;                  // birlikte iş, koku ve boşta konuşma satırları (belge 60b §3, life.json)
+        public NamePoolDto namePool;            // genel ad havuzu (belge 61b §5, life.json)
 
         /// <summary>Başka bir içerik dosyasının bölümlerini bunun sonuna ekler (items.json + life.json birleşimi).</summary>
         public void Merge(ContentFileDto other)
@@ -50,6 +51,7 @@ namespace Thatchwick.Core.Content
             groups = Concat(groups, other.groups);
             spices = Concat(spices, other.spices);
             talk = Concat(talk, other.talk);
+            if (other.namePool != null) namePool = other.namePool;
         }
 
         private static T[] Concat<T>(T[] a, T[] b)

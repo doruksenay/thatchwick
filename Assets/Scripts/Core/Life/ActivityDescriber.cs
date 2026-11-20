@@ -130,7 +130,7 @@ namespace Thatchwick.Core.Life
                         case AnimalAction.Unsaddle: info.Text = "Eyeri çıkarıyor"; break;
                         case AnimalAction.Mount: info.Icon = "walk"; info.Text = "Ata biniyor"; break;
                         case AnimalAction.Train: info.Text = "Hayvanı eğitiyor"; break;
-                        case AnimalAction.Trick: info.Text = "Ata numara öğretiyor"; break;
+                        case AnimalAction.Trick: info.Text = Localization.CoreText.T("ui.activity.horse_trick"); break;
                         case AnimalAction.Treat: info.Text = "Hasta hayvana bakıyor"; break;
                         case AnimalAction.PrepContest: info.Text = "Hayvanı yarışmaya hazırlıyor"; break;
                         case AnimalAction.TalkLikeHuman: info.Icon = "love"; info.Text = "Hayvanla insan gibi konuşmayı deniyor"; break;
