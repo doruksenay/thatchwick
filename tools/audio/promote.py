@@ -95,6 +95,46 @@ def picked(job: Job, report: dict) -> dict[str, list[str]]:
     return {k: v for k, v in out.items() if v}
 
 
+def sequence_combos(sel: dict[str, list[str]], layer_names: list[str], limit: int) -> list[list[str]]:
+    """Sıralı katmanlardan (ör. kepçe + dökülüş) dengeli birleşimler: her seçilen aday en az bir kez kullanılır."""
+    import itertools
+    pools = [sel.get(L, []) for L in layer_names]
+    if not all(pools):
+        raise ValueError("sıralı katmanın her parçasından en az bir aday seçilmeli")
+    combos = list(itertools.product(*pools))
+    n = max(max(len(p) for p in pools), min(limit, len(combos)))
+    # çapraz sırayla al: (a1,b1), (a2,b2)… önce, kalanlar sonra
+    first = [tuple(p[i % len(p)] for p in pools) for i in range(max(len(p) for p in pools))]
+    out = list(dict.fromkeys(first + combos))
+    return [list(c) for c in out[:n]]
+
+
+def place_sequence(job: Job, sel, layer_names, key, group_dir, manifest, fam) -> list[str]:
+    """sequence: true ise katmanlar üst üste değil art arda çalar; her birleşim tek dosya olur."""
+    import numpy as np
+    gap = float(job.get("sequence_gap_s", 0.12))
+    clips = []
+    for i, combo in enumerate(sequence_combos(sel, layer_names, int(job.get("keep", 4)) * 2)):
+        parts = []
+        for j, cname in enumerate(combo):
+            a = post.decode(WORK / job.id / "cand" / f"{cname}.ogg")
+            if j:
+                parts.append(np.zeros((int(post.SR * gap),) + a.shape[1:], dtype=a.dtype))
+            parts.append(a)
+        out_name = f"{safe(key)}_{i + 1}"
+        dst = group_dir / f"{out_name}.ogg"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        post.encode_ogg(np.concatenate(parts), dst, q=int(fam.get("vorbis_q", 4)))
+        rel = str(dst.relative_to(ROOT)).replace("\\", "/")
+        manifest["files"] = [f for f in manifest["files"] if f["path"] != rel]
+        manifest["files"].append({"path": rel, "job": job.id, "candidate": "+".join(combo), "kind": job.get("kind"),
+                                  "prompt": " | ".join(L.get("prompt", "") for L in job.get("layers") or []),
+                                  "model": job.get("model"), "date": now_iso(), "credits_job": job.get("credits_spent"),
+                                  "license": "ElevenLabs ücretli plan ticari lisans"})
+        clips.append(str(dst.relative_to(ROOT / "Assets" / "Resources")).replace("\\", "/").rsplit(".", 1)[0])
+    return clips
+
+
 def promote_voice_design(job: Job, mock: bool) -> None:
     pick = job.get("pick") or []
     if len(pick) != 1:
@@ -176,7 +216,9 @@ def promote_job(job: Job, mock: bool) -> list[str]:
     else:
         e = base_entry(job, key, fam)
         layer_names = [L["name"] for L in (job.get("layers") or [])]
-        if len(layer_names) > 1:
+        if len(layer_names) > 1 and job.get("sequence"):
+            e["clips"] = place_sequence(job, sel, layer_names, key, group_dir, manifest, fam)
+        elif len(layer_names) > 1:
             for L in layer_names:
                 names = sel.get(L, [])
                 e["layers"].append({"name": L, "clips": [place(n, f"{safe(key)}__{L}_{i + 1}") for i, n in enumerate(names)]})
