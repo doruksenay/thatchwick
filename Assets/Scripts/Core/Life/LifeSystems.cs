@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
-using Thatchwick.Core.Localization;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Economy;
 using Thatchwick.Core.Family;

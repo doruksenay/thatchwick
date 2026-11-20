@@ -165,7 +165,7 @@ namespace Thatchwick.Core.Layout
         }
 
         /// <summary>Karo kaplayan yer eşyası mı (halı ve dekor değil).</summary>
-        internal static bool Occupies(ItemInstance it) => !it.IsDecor && !it.IsWallMounted && !it.IsCeiling && !it.IsRug;
+        public static bool Occupies(ItemInstance it) => !it.IsDecor && !it.IsWallMounted && !it.IsCeiling && !it.IsRug;
 
         // ---------- çakışma ve sınır ----------
 

@@ -5,7 +5,6 @@ using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Family;
-using Thatchwick.Core.Localization;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.Work;
 
