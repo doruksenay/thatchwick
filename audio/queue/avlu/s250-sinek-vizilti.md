@@ -4,7 +4,7 @@ title: Sinek vızıltısı (yığın, dolu hela, kokan ahır)
 kind: sfx
 family: foley
 freq: B
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 key: yard.flies
@@ -25,5 +25,7 @@ inceleme_notlari:
   not: arkada bir tık tık sesi var hepsinde ve cozy değil
 yeniden_sayisi: 1
 prompt_influence: 0.7
+claimed_by: ip-10-0-138-220
+claimed_at: '2026-11-20T18:32:25Z'
 ---
 One or two lazy flies drowsily buzzing around on a warm summer afternoon, soft and slightly comic, quiet and mellow, drifting closer and away. Only the buzz: no clicking, no ticking, no tapping, no background noise.
