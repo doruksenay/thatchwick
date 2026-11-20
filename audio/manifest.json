@@ -1330,6 +1330,149 @@
       "date": "2026-11-20T17:08:27Z",
       "credits_job": 0,
       "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Voice/voice/treehouse_kids_1.ogg",
+      "job": "s223",
+      "candidate": "c1",
+      "kind": "sfx",
+      "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: excited playful shouting without words, three children.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Voice/voice/treehouse_kids_2.ogg",
+      "job": "s223",
+      "candidate": "c2",
+      "kind": "sfx",
+      "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: excited playful shouting without words, two children.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Voice/voice/treehouse_kids_3.ogg",
+      "job": "s223",
+      "candidate": "c3",
+      "kind": "sfx",
+      "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: happy giggling, two children.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Voice/voice/treehouse_kids_4.ogg",
+      "job": "s223",
+      "candidate": "c4",
+      "kind": "sfx",
+      "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: happy giggling, three children.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Sfx/foley/yard_cat_dig_1.ogg",
+      "job": "s256",
+      "candidate": "c2",
+      "kind": "sfx",
+      "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Tiny, soft, muffled pitter-patter of small paws gently patting and brushing soft crumbly earth, very quiet and cute, like fingertips softly patting a pillow of dirt. Cozy and calm. No scratching, no claws, no harsh scraping, nothing loud or sharp. Details: soft crumbly garden soil.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Sfx/tools/fish_reel_1.ogg",
+      "job": "s202",
+      "candidate": "c6",
+      "kind": "sfx",
+      "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Sfx/tools/fish_reel_2.ogg",
+      "job": "s202",
+      "candidate": "c8",
+      "kind": "sfx",
+      "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Sfx/tools/fish_reel_3.ogg",
+      "job": "s202",
+      "candidate": "c13",
+      "kind": "sfx",
+      "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: strong tension.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Sfx/tools/fish_reel_4.ogg",
+      "job": "s202",
+      "candidate": "c14",
+      "kind": "sfx",
+      "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Sfx/foley/jar_scoop_1.ogg",
+      "job": "s205",
+      "candidate": "c3",
+      "kind": "sfx",
+      "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: clear shallow pond edge.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Sfx/foley/jar_scoop_2.ogg",
+      "job": "s205",
+      "candidate": "c6",
+      "kind": "sfx",
+      "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: shallow clear stream.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Sfx/foley/jar_scoop_3.ogg",
+      "job": "s205",
+      "candidate": "c7",
+      "kind": "sfx",
+      "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: clear shallow pond edge.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:11Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
+    },
+    {
+      "path": "Assets/Resources/Audio/Ambience/ambience/amb_farm_day_1.ogg",
+      "job": "s130",
+      "candidate": "c2",
+      "kind": "ambience",
+      "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). A bright, cheerful, sunny spring morning on a cozy little medieval farm. Lively, happy birdsong, bees humming over flowers, warm and pleasant, a feeling of a lovely day. Gentle and even. No wind, no rain, no gloom, no drone, no hiss. Details: a bright morning chorus with a distant cuckoo.",
+      "model": "eleven_text_to_sound_v3",
+      "date": "2026-11-20T17:27:12Z",
+      "credits_job": 0,
+      "license": "ElevenLabs ücretli plan ticari lisans"
     }
   ]
 }

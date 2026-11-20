@@ -38,6 +38,40 @@
       "syllables": []
     },
     {
+      "key": "amb.farm.day",
+      "group": "Ambience",
+      "family": "ambience",
+      "freq": "C",
+      "loop": false,
+      "clips": [
+        "Audio/Ambience/ambience/amb_farm_day_1"
+      ],
+      "layers": [],
+      "pitchVar": 0.0,
+      "volVarDb": 0.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 60.0,
+      "maxVoices": 2,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
       "key": "fish.bite",
       "group": "Sfx",
       "family": "foley",
@@ -181,6 +215,43 @@
       "syllables": []
     },
     {
+      "key": "fish.reel",
+      "group": "Sfx",
+      "family": "tools",
+      "freq": "A",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/tools/fish_reel_1",
+        "Audio/Sfx/tools/fish_reel_2",
+        "Audio/Sfx/tools/fish_reel_3",
+        "Audio/Sfx/tools/fish_reel_4"
+      ],
+      "layers": [],
+      "pitchVar": 0.05,
+      "volVarDb": 2.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 80.0,
+      "maxVoices": 3,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
       "key": "inn.dishes",
       "group": "Sfx",
       "family": "foley",
@@ -228,6 +299,42 @@
         "Audio/Sfx/foley/inn_donate_2",
         "Audio/Sfx/foley/inn_donate_3",
         "Audio/Sfx/foley/inn_donate_4"
+      ],
+      "layers": [],
+      "pitchVar": 0.04,
+      "volVarDb": 1.5,
+      "timingJitterMs": 15.0,
+      "cooldownMs": 30.0,
+      "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
+      "key": "jar.scoop",
+      "group": "Sfx",
+      "family": "foley",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/foley/jar_scoop_1",
+        "Audio/Sfx/foley/jar_scoop_2",
+        "Audio/Sfx/foley/jar_scoop_3"
       ],
       "layers": [],
       "pitchVar": 0.04,
@@ -619,6 +726,43 @@
       "syllables": []
     },
     {
+      "key": "treehouse.kids",
+      "group": "Voice",
+      "family": "voice",
+      "freq": "B",
+      "loop": false,
+      "clips": [
+        "Audio/Voice/voice/treehouse_kids_1",
+        "Audio/Voice/voice/treehouse_kids_2",
+        "Audio/Voice/voice/treehouse_kids_3",
+        "Audio/Voice/voice/treehouse_kids_4"
+      ],
+      "layers": [],
+      "pitchVar": 0.0,
+      "volVarDb": 1.0,
+      "timingJitterMs": 0.0,
+      "cooldownMs": 0.0,
+      "maxVoices": 6,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
       "key": "treehouse.ladder",
       "group": "Sfx",
       "family": "foley",
@@ -878,6 +1022,40 @@
       "syllables": []
     },
     {
+      "key": "yard.cat_dig",
+      "group": "Sfx",
+      "family": "foley",
+      "freq": "C",
+      "loop": false,
+      "clips": [
+        "Audio/Sfx/foley/yard_cat_dig_1"
+      ],
+      "layers": [],
+      "pitchVar": 0.04,
+      "volVarDb": 1.5,
+      "timingJitterMs": 15.0,
+      "cooldownMs": 30.0,
+      "maxVoices": 4,
+      "volumeDb": 0.0,
+      "context": "",
+      "spotOf": "",
+      "spotIntervalMin": 0.0,
+      "spotIntervalMax": 0.0,
+      "todWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seasonWeights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "syllables": []
+    },
+    {
       "key": "yard.shovel",
       "group": "Sfx",
       "family": "tools",
@@ -950,5 +1128,5 @@
       "syllables": []
     }
   ],
-  "updated": "2026-11-20T17:08:27Z"
+  "updated": "2026-11-20T17:27:12Z"
 }

@@ -4,7 +4,7 @@ title: Ağaç evde oynayan çocuklar (boğuk gülüşme)
 kind: sfx
 family: voice
 freq: B
-status: accepted
+status: done
 approved_by: user
 depends_on:
 - s140
@@ -33,5 +33,6 @@ pick:
 - c3
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T17:27:11Z'
 ---
 Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds.
