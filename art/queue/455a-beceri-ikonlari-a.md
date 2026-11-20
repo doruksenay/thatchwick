@@ -1,7 +1,8 @@
 ---
 id: "455a"
 title: Beceri ikonları A (18)
-status: pending
+status: running
+claimed_at: 2026-11-20T07:02Z
 approved_by: user
 priority: 20
 family: arayuz
