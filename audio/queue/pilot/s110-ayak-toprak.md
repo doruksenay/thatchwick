@@ -5,7 +5,7 @@ kind: sfx
 family: foley
 freq: A
 pilot: true
-status: ready
+status: claimed
 approved_by: auto
 key: step.dirt
 generate: 8
@@ -22,5 +22,7 @@ axes:
   ground:
   - packed dry earth
   - earth with small pebbles
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T09:53:15Z'
 ---
 One single footstep on a dirt village path, heel then toe, only one step.
