@@ -68,3 +68,50 @@ metinleri `ui.*.json` anahtarlarına geçer.
 4. Atlas: menüden kur; eşya, duvar, karakter ve hayvan görsellerinde kenar taşması var mı.
 5. F4: yeni HUD görünüyor mu, yazı tipi doğru mu, düğmeler tıklanıyor mu, HUD üstüne tıklama dünyaya geçmiyor mu.
 6. Profiler: kare başı GC, `GameRoot.Update` ve `OnGUI` süreleri (önce/sonra).
+
+---
+
+# İkinci tur (20.11.2026): ölçümlü düzeltmeler
+
+İkinci inceleme gerçek başlangıç dünyasında ölçüm yaparak ilerledi. Ölçüm aracı repoda: `tools/offline-tests/bench.sh`
+(Release derlemesi; 1.494 eşya, 30 karakter, 3x hız, 2 oyun günü, saniyede 10 adım). Sayılar bu sunucunun
+masaüstü işlemcisinden; telefonda birkaç kat büyür. Tekrarlar arasında ±%15 oynar.
+
+| Ölçüm | Önce | Sonra |
+|---|---|---|
+| Çekirdek simülasyon, gerçek saniye başına | 16-17 ms | 5-6 ms |
+| Karakterler (otonomi), adım başına | 0,86 ms | 0,16 ms |
+| Isı, adım başına | 0,44 ms | 0,008 ms |
+| Bellek ayırma | 519 KB/sn | 95 KB/sn |
+| Yol bulma, 108 karoluk yol | 14-23 ms, 1,1 MB | 8-11 ms, 4 KB |
+| Yol bulma, 167 karoluk yol | 20-28 ms, 2,8 MB | 19-24 ms, 13 KB |
+| Bir duvar parçası değişince oda haritası | 8-9 ms | 4-5 ms |
+| Kayıt dosyası | 1.695 KB | 824 KB |
+
+## Yapılanlar
+
+- **Otonomi:** `WorldState.NeedItemsFor(need)` ve `ItemDef.AutonomyInteractions(need)`. Arama yalnızca o ihtiyacı
+  giderebilecek eşyaları gezer; sıra korunduğu için seçim aynıdır. Bekleme süresi gerçek zamana bağlı (1,5 sn).
+- **Isı:** oda sınırları oda haritası değişince bir kez çıkarılır; adım yalnızca iç odalar üzerinden yürür. Yalıtım
+  katsayıları harita ya da eşya değişince yenilenir. `IsiOnbellekTests` eski uygulamayla karşılaştırır.
+- **Kenarlar:** `GridMap` kenar türlerini düz dizilerde de tutar; `GetEdge`, `CanStep` ve oda tespiti sözlük yerine
+  diziden okur. `OdaHaritasiHizliTests` gerçek dünyada ve rastgele haritalarda eski uygulamayla karşılaştırır.
+- **Yol bulma:** düğüm nesnesi yerine karo indeksli diziler; yollar aynı. Süre kazancı sınırlı kaldı (aşağıda).
+- **Kayıt (sürüm 3):** karo dizileri koşu uzunluğuyla (`TileRle`), sıcaklık oda başına. Sürüm 1-2 kayıtları okunur.
+- **Otomatik kayıt:** gün dönümünden 3 sn sonra (günlük işlerle aynı kareye binmez).
+- **Hata yalıtımı:** `SimGuard`; her sistem ve her karakter kendi korumasında. Günlük:
+  `persistentDataPath/thatchwick_errors.log`.
+- **Metne bağlı mantık:** tilki ve yaban domuzu uyarı düzeyi sonuçtan; stil seti kimlik sabitleri (`ItemCatalog`).
+- **Arayüz alan dosyaları:** `ui.<alan>.<dil>.json`. Yeni metin kendi alan dosyasına yazılır (çakışmayı azaltır).
+- **Testler:** `tools/offline-tests/run.sh` CI ile aynı xunit kurallarında; `XunitShim.cs` gerçek xunit'te olmayan
+  imza içermez.
+
+## Çözülmeyenler
+
+- **Uzun yollarda süre:** asıl maliyet genişletilen düğüm sayısı. Yol tercihli kestirim (her karo kaldırım hızında
+  varsayılır) aramayı haritanın büyük bölümüne yayıyor. Kalıcı çözüm bölge geçitleri üzerinden iki aşamalı arama ya
+  da aramayı adımlara yaymak; ikisi de `JobRunner`'daki 14 çağrı yerini etkiler.
+- **Gün dönümü:** günlük işler tek adımda ~30-50 ms (masaüstü). Kayıt ayrıldı ama günlük işler yayılmadı; sıraları
+  birbirine bağlı ve testler tek adımda bitmesini bekliyor.
+- **Yeni dünya kurulumu ~1 sn:** süre yerleşim kurallarında (oda döşeme, doğrulama); oda tespiti ve yol bulma değil.
+- **Oda haritası:** hâlâ bütün dünya yeniden hesaplanıyor (4-5 ms); yalnızca değişen odaları güncellemek ayrı iş.

@@ -790,7 +790,7 @@ namespace Thatchwick.Game
                     * Thatchwick.Core.Build.DecorSystem.EdgeInsulation(_world, e),
                 RoofLossFactor = t => BuildParts.Resolve(_content, BuildPartKind.Roof, _world.Map.GetRoofStyle(t) == GridMap.NoRoof ? null : _world.Map.GetRoofStyle(t))?.HeatLoss ?? 1f
             };
-            if (loaded != null) _heat.RestoreTemperatures(loaded.Temperatures);
+            if (loaded != null) SaveGame.RestoreHeat(loaded, _heat);
             _buildService = new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level, HousingResidents = _animals.Residents, Plants = _plants };
             _shopPanel = new ShopPanel(_market, _buildService, _household, _content, _world, () => _player?.Character, () => _player?.Runner,
                 () => HourOfDay, () => _clock.DayIndex, ShopOwner,
@@ -2669,12 +2669,22 @@ namespace Thatchwick.Game
             for (int i = 0; i < steps; i++)
             {
                 double gameDays = _clock.Advance(_stepper.StepSeconds);
-                if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true, background: true); }
+                // Otomatik kayıt gün dönümünün kendi adımında alınmaz: günlük işler (hasat, köy, istekler) zaten o adımı
+                // uzatır; kayıt birkaç saniye sonraya bırakılır ki ikisi aynı karede üst üste binmesin.
+                if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; _autosaveAt = Time.unscaledTime + AutosaveDelaySeconds; }
                 SimulateTick(gameDays);
                 if (!enabled || _creator != null) break;   // adım içinde oyun yeniden kuruldu (yeni oyun, yükleme)
             }
+            if (_autosaveAt > 0f && Time.unscaledTime >= _autosaveAt && enabled && _creator == null)
+            {
+                _autosaveAt = 0f;
+                SaveNow(quiet: true, background: true);
+            }
             RenderFrame(_stepper.Alpha);
         }
+
+        private const float AutosaveDelaySeconds = 3f;
+        private float _autosaveAt;
 
         private readonly Thatchwick.Core.Time.FixedStepper _stepper = new Thatchwick.Core.Time.FixedStepper();
 
@@ -2813,12 +2823,44 @@ namespace Thatchwick.Game
         /// <summary>Bir simülasyon adımı (sabit adım; görünüm çizmez). Görünüm <see cref="RenderFrame"/>'de.</summary>
         private void SimulateTick(double gameDays)
         {
-            _heat.Tick(gameDays, _clock.TotalDays);
-            _plants.Tick(gameDays, _clock.Season);
-            _market.Tick(gameDays, _clock.TotalDays, _clock.Season);
-            _animals.Tick(gameDays);
-            _mines.Tick(gameDays);
-            _roomMood.Tick(gameDays, _population.Members);
+            // Her sistem kendi korumasında (SimGuard): biri hata verirse günlüğe yazılır, diğerleri ve sonraki adımlar sürer.
+            _simDays = gameDays;
+            if (_simSteps == null) BuildSimSteps();
+            foreach (var (name, step) in _simSteps) _simGuard.Run(name, step);
+        }
+
+        private double _simDays;
+        private (string name, System.Action step)[] _simSteps;
+        private SimGuard _simGuard;
+
+        /// <summary>Otonominin başarısız aramadan sonra beklediği gerçek süre (saniye); oyun hızından bağımsız.</summary>
+        private const double AutonomyRetrySeconds = 1.5;
+
+        private void BuildSimSteps()
+        {
+            _simGuard = new SimGuard(() => $"gün {_clock.TotalDays:0.00}");
+            _simGuard.FirstFailure += system => ShowMessage(T("ui.sim.error", ("system", system)), 6f);
+            _simSteps = new (string, System.Action)[]
+            {
+                ("heat", () => _heat.Tick(_simDays, _clock.TotalDays)),
+                ("plants", () => _plants.Tick(_simDays, _clock.Season)),
+                ("market", () => _market.Tick(_simDays, _clock.TotalDays, _clock.Season)),
+                ("animals", () => _animals.Tick(_simDays)),
+                ("mines", () => _mines.Tick(_simDays)),
+                ("roomMood", () => _roomMood.Tick(_simDays, _population.Members)),
+                ("itemViews", SimItemViews),
+                ("ambient", SimAmbient),
+                ("population", () => _population.Tick(_simDays)),
+                ("life", () => _life.Tick(_simDays)),
+                ("schedules", SimSchedules),
+                ("actors", SimActors),
+                ("animalViews", SimAnimalViews),
+                ("commander", SimCommander),
+            };
+        }
+
+        private void SimItemViews()
+        {
             foreach (var pv in _items.Plants.Values)
             {
                 if (pv.View == null) continue;
@@ -2832,6 +2874,10 @@ namespace Thatchwick.Game
             }
             foreach (var (heatItem, heatView) in _items.Heat.Values)
                 if (heatView != null) { var lit = IsoArt.Item(heatItem, out _); if (lit != null && heatView.sprite != lit) heatView.sprite = lit; }
+        }
+
+        private void SimAmbient()
+        {
             foreach (var a in _actors)
             {
                 if (a.Character.Away) continue;   // süreli görevde: sıcaklığı görev servisi verir (belge 47 §3)
@@ -2846,36 +2892,61 @@ namespace Thatchwick.Game
                     var c = a.Character;
                     if (c.IsVillager || c.IsDead) continue;
                     var room = _world.Map.Rooms.RoomAt(c.Position);
-                    if (room == null || !room.IsIndoor) c.SoakRain((float)(gameDays * RainSoakPerDay));   // giysi koruması (belge 48 §12.1)
+                    if (room == null || !room.IsIndoor) c.SoakRain((float)(_simDays * RainSoakPerDay));   // giysi koruması (belge 48 §12.1)
                 }
-            _population.Tick(gameDays);
-            _life.Tick(gameDays);
-            _scheduleTimer += gameDays;
+        }
+
+        private void SimSchedules()
+        {
+            _scheduleTimer += _simDays;
             if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); GatherForFeast(); }
-            foreach (var actor in _actors.ToArray())
+        }
+
+        private readonly List<Actor> _actorScratch = new List<Actor>();
+
+        private void SimActors()
+        {
+            double gameDays = _simDays;
+            // Bekleme süresi gerçek zamana bağlanır: 3x hızda ve hızlı gecede oyun günü cinsinden sabit süre kısalırdı.
+            double retry = System.Math.Max(JobRunner.AutonomyRetryDays, AutonomyRetrySeconds * _clock.EffectiveMultiplier / _clock.Config.RealSecondsPerGameDay);
+            _actorScratch.Clear();
+            _actorScratch.AddRange(_actors);   // döngü içinde ölen çıkarılır (eskiden her adımda ToArray)
+            foreach (var actor in _actorScratch)
             {
-                if (actor.Character.IsDead)
-                {
-                    // Ölen yaşamaz: sahneden kalkar, yerinde mezarı (GraveService) durur.
-                    if (actor.View != null) Destroy(actor.View.gameObject);
-                    _actors.Remove(actor);
-                    _villagerLocation.Remove(actor.Character.Id);
-                    if (_selected == actor) _selected = _player == actor ? null : _player;
-                    if (_maud == actor) _maud = null;
-                    continue;
-                }
-                // Süreli görevdeki karakter haritada yok: işi görev servisi yürütür, görünümü saklanır.
-                if (actor.Character.Away)
-                {
-                    if (actor.View != null && actor.View.gameObject.activeSelf) actor.View.gameObject.SetActive(false);
-                    continue;
-                }
-                if (actor.View != null && !actor.View.gameObject.activeSelf && (_region == null || _region.Contains(actor.Character.Position)))
-                    actor.View.gameObject.SetActive(true);
-                if (actor.Character.Stage != AgeStage.Baby) actor.Runner.Tick(gameDays);   // bebek iş yapmaz; büyükler besler
-                TickIdleShow(actor, gameDays);
-                PushSimPosition(actor);
+                // Karakter başına koruma: tek bir karakterin işi hata verirse diğerleri yürümeye devam eder.
+                try { SimActor(actor, gameDays, retry); }
+                catch (System.Exception ex) { _simGuard.Report("actor:" + actor.Character?.Name, ex); }
             }
+        }
+
+        private void SimActor(Actor actor, double gameDays, double retry)
+        {
+            if (actor.Character.IsDead)
+            {
+                // Ölen yaşamaz: sahneden kalkar, yerinde mezarı (GraveService) durur.
+                if (actor.View != null) Destroy(actor.View.gameObject);
+                _actors.Remove(actor);
+                _villagerLocation.Remove(actor.Character.Id);
+                if (_selected == actor) _selected = _player == actor ? null : _player;
+                if (_maud == actor) _maud = null;
+                return;
+            }
+            // Süreli görevdeki karakter haritada yok: işi görev servisi yürütür, görünümü saklanır.
+            if (actor.Character.Away)
+            {
+                if (actor.View != null && actor.View.gameObject.activeSelf) actor.View.gameObject.SetActive(false);
+                return;
+            }
+            if (actor.View != null && !actor.View.gameObject.activeSelf && (_region == null || _region.Contains(actor.Character.Position)))
+                actor.View.gameObject.SetActive(true);
+            actor.Runner.AutonomyRetry = retry;
+            if (actor.Character.Stage != AgeStage.Baby) actor.Runner.Tick(gameDays);   // bebek iş yapmaz; büyükler besler
+            TickIdleShow(actor, gameDays);
+            PushSimPosition(actor);
+        }
+
+        private void SimAnimalViews()
+        {
             if (_animalViews == null)
             {
                 _animalViews = new AnimalViews(transform, _view, LookOf, RiderView);
@@ -2886,7 +2957,10 @@ namespace Thatchwick.Game
             }
             _animalViews.Sync(_animals, _life?.Roamers);
             _animalViews.SyncWalkers(_life?.Walkers);
+        }
 
+        private void SimCommander()
+        {
             if (Commander == null) return;
             var failure = Commander.Runner.LastFailure;
             if (failure != _lastFailure)

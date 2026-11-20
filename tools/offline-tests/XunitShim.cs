@@ -64,6 +64,14 @@ namespace Xunit
     {
         public static int Main(string[] args)
         {
+            if (args.Length > 0 && args[0] == "--bench")
+            {
+                // Performans ölçümü (test değil): tools/offline-tests/bench.sh
+                var bench = typeof(Runner).Assembly.GetType("Thatchwick.Core.Tests.Bench");
+                if (bench == null) { Console.WriteLine("Bench sınıfı bu derlemede yok."); return 1; }
+                bench.GetMethod("Run", BindingFlags.Public | BindingFlags.Static).Invoke(null, null);
+                return 0;
+            }
             string filter = args.Length > 0 ? args[0] : null;
             int pass = 0, fail = 0, skip = 0;
             foreach (var t in typeof(Runner).Assembly.GetTypes().OrderBy(t => t.FullName))

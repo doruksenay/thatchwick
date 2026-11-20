@@ -46,17 +46,18 @@ namespace Thatchwick.Core.Characters
             if (c == null) throw new ArgumentNullException(nameof(c));
             if (_members.Contains(c)) return;
             _members.Add(c);
+            if (!_byId.ContainsKey(c.Id)) _byId[c.Id] = c;   // aynı kimlikte ilk eklenen geçerli (eski doğrusal aramayla aynı)
             c.GaveBirth += OnGaveBirth;
             c.Died += OnMemberDied;
             if (c.Id >= _nextId) _nextId = c.Id + 1;
             MemberAdded?.Invoke(c);
         }
 
-        public Character Find(int id)
-        {
-            foreach (var c in _members) if (c.Id == id) return c;
-            return null;
-        }
+        // Kimliğe göre dizin: ölüler listeden hiç çıkmadığı için (soy ağacı, mezar) üye sayısı nesiller boyunca büyür;
+        // Find her çağrıda bütün listeyi geziyordu.
+        private readonly Dictionary<int, Character> _byId = new Dictionary<int, Character>();
+
+        public Character Find(int id) => _byId.TryGetValue(id, out var c) ? c : null;
 
         /// <summary>Tüm karakterlerin biyolojisini ilerletir (ihtiyaç, yaş, hamilelik, ölüm).</summary>
         public void Tick(double gameDays)

@@ -18,7 +18,8 @@ namespace Thatchwick.Core.Save
         public HouseholdSave household;
         public CharacterSave[] characters;
         public AccountSave account;
-        public float[] temperatures;
+        public float[] temperatures;         // sürüm 2'ye kadar: karo başına sıcaklık (artık yazılmaz)
+        public float[] roomTemperatures;     // sürüm 3: iç oda başına (x, y, z, sıcaklık) dörtlüleri
         public KeyFloat[] marketDemand;
         public int[] marketTakenOffers;
         public AffectionSave[] affection;
@@ -97,6 +98,34 @@ namespace Thatchwick.Core.Save
         public RoadSave[] roads;             // yollar, patikalar ve çimdeki izler (eski kayıtta yok)
         public ConduitSave[] conduits;       // su yolları: ark, oluk, boru (eski kayıtta yok)
         public PondSave[] ponds;             // göletler: su seviyesi, kaynak, böcek, balıklar (eski kayıtta yok)
+
+        // Sürüm 3: dört karo dizisi koşu uzunluğuyla (TileRle) yazılır; diziler dosyada boş kalır. Eski kayıtlarda bu
+        // alanlar yoktur ve diziler doludur; Unpack ikisini de okur.
+        public string terrainBlockedRle;
+        public string floorRle;
+        public string ownedRle;
+        public string zoneRle;
+
+        /// <summary>Dizileri sıkıştırılmış metne çevirir ve boşaltır (dosyaya yazmadan önce).</summary>
+        public void Pack()
+        {
+            if (terrainBlocked != null && terrainBlocked.Length > 0) { terrainBlockedRle = TileRle.Encode(terrainBlocked); terrainBlocked = null; }
+            if (floor != null && floor.Length > 0) { floorRle = TileRle.Encode(floor); floor = null; }
+            if (owned != null && owned.Length > 0) { ownedRle = TileRle.Encode(owned); owned = null; }
+            if (zone != null && zone.Length > 0) { zoneRle = TileRle.Encode(zone); zone = null; }
+        }
+
+        /// <summary>Sıkıştırılmış metinleri dizilere açar (yüklemeden önce). Dizisi dolu eski kayıtta bir şey yapmaz.</summary>
+        public void Unpack()
+        {
+            if (width <= 0 || height <= 0 || width > SaveGame.MaxMapSide || height > SaveGame.MaxMapSide) return;
+            int n = width * height;
+            if ((terrainBlocked == null || terrainBlocked.Length == 0) && !string.IsNullOrEmpty(terrainBlockedRle)) terrainBlocked = TileRle.DecodeBools(terrainBlockedRle, n);
+            if ((floor == null || floor.Length == 0) && !string.IsNullOrEmpty(floorRle)) floor = TileRle.Decode(floorRle, n);
+            if ((owned == null || owned.Length == 0) && !string.IsNullOrEmpty(ownedRle)) owned = TileRle.DecodeBools(ownedRle, n);
+            if ((zone == null || zone.Length == 0) && !string.IsNullOrEmpty(zoneRle)) zone = TileRle.Decode(zoneRle, n);
+            terrainBlockedRle = floorRle = ownedRle = zoneRle = null;
+        }
     }
 
     /// <summary>Bir gölet (x,y: göletin bir karosu).</summary>

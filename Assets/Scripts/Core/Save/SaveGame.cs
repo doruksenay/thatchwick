@@ -26,6 +26,8 @@ namespace Thatchwick.Core.Save
         public List<Character> Characters = new List<Character>();
         public AccountProgress Account;
         public float[] Temperatures;
+        /// <summary>İç oda başına (x, y, z, sıcaklık) dörtlüleri (sürüm 3); eski kayıtta null.</summary>
+        public float[] RoomTemperatures;
         public List<KeyValuePair<string, double>> MarketDemand = new List<KeyValuePair<string, double>>();
         public List<int> MarketTakenOffers = new List<int>();
         public List<(int a, int b, int value)> Affection = new List<(int, int, int)>();
@@ -99,7 +101,7 @@ namespace Thatchwick.Core.Save
             return stored.ItemId.Length > 0;
         }
 
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 3;
         /// <summary>Haritanın kayıt biçimi (eşyalar hariç; eşyaların kapattığı karolar engel sayılmaz).</summary>
         public static MapSave CaptureMap(WorldState world)
         {
@@ -175,6 +177,8 @@ namespace Thatchwick.Core.Save
         public static bool WidenMap(SaveData data, MapSave fresh)
         {
             var old = data?.map;
+            old?.Unpack();
+            fresh?.Unpack();
             if (old == null || fresh == null || fresh.height != old.height || fresh.width <= old.width) return false;
             int ow = old.width, fw = fresh.width;
             for (int y = 0; y < old.height; y++)
@@ -305,7 +309,7 @@ namespace Thatchwick.Core.Save
                 };
             }
 
-            data.temperatures = heat?.ExportTemperatures();
+            data.roomTemperatures = heat?.ExportRoomTemperatures();   // oda başına; karo başına dizi artık yazılmaz
             if (market != null)
             {
                 var demand = new List<KeyFloat>();
@@ -356,6 +360,7 @@ namespace Thatchwick.Core.Save
             }
             data.life = life?.Export();
             data.mines = mines?.Export().ToArray();
+            data.map?.Pack();   // karo dizileri sıkıştırılmış metne (dosya ~450 KB küçülür)
             return data;
         }
 
@@ -485,6 +490,14 @@ namespace Thatchwick.Core.Save
         /// <summary>Kayıttaki kazı yerlerini kazı motoruna geri koyar.</summary>
         public static void RestoreMines(LoadedGame loaded, Mining.MineSystem mines) => mines.Restore(loaded.Mines);
 
+        /// <summary>Kayıttaki sıcaklıkları ısı sistemine geri koyar (eski karo dizisi ya da oda başına değerler).</summary>
+        public static void RestoreHeat(LoadedGame loaded, HeatSystem heat)
+        {
+            if (loaded == null || heat == null) return;
+            heat.RestoreTemperatures(loaded.Temperatures);
+            heat.RestoreRoomTemperatures(loaded.RoomTemperatures);
+        }
+
         /// <summary>Kayıttaki toprak verimini çiftçilik sistemine geri koyar.</summary>
         public static void RestoreSoil(LoadedGame loaded, PlantSystem plants)
         {
@@ -532,6 +545,7 @@ namespace Thatchwick.Core.Save
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             SaveMigrator.Upgrade(data);
+            data.map?.Unpack();
             if (data.map == null || data.map.width <= 0 || data.map.height <= 0) throw new InvalidOperationException("Kayıtta harita yok.");
             // Bozuk ya da elle oynanmış dosya devasa bir dizi ayırtmasın.
             if (data.map.width > MaxMapSide || data.map.height > MaxMapSide)
@@ -723,6 +737,7 @@ namespace Thatchwick.Core.Save
 
             result.Life = data.life;
             result.Temperatures = data.temperatures;
+            result.RoomTemperatures = data.roomTemperatures;
             if (data.marketDemand != null) foreach (var kv in data.marketDemand) if (kv != null) result.MarketDemand.Add(new KeyValuePair<string, double>(kv.key, kv.value));
             if (data.marketTakenOffers != null) result.MarketTakenOffers.AddRange(data.marketTakenOffers);
             if (data.affection != null) foreach (var a in data.affection) if (a != null) result.Affection.Add((a.a, a.b, a.value));
@@ -936,6 +951,8 @@ namespace Thatchwick.Core.Save
                     }
                 data.version = 2;
             }
+            // 2 → 3: karo dizileri sıkıştırılmış metinde, sıcaklık oda başına. Yükleyici iki biçimi de okur; alan dönüşümü yok.
+            if (data.version == 2) data.version = 3;
         }
     }
 }

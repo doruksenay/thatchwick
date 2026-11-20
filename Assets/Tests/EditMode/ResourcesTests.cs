@@ -18,6 +18,10 @@ namespace Thatchwick.EditTests
 
         [TestCase("Localization/ui.en")]
         [TestCase("Localization/ui.tr")]
+        [TestCase("Localization/ui.build.en")]
+        [TestCase("Localization/ui.build.tr")]
+        [TestCase("Localization/ui.system.en")]
+        [TestCase("Localization/ui.system.tr")]
         [TestCase("Localization/content.en")]
         [TestCase("Content/items")]
         [TestCase("Content/life")]

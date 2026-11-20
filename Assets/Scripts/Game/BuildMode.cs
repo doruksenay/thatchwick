@@ -1560,7 +1560,18 @@ namespace Thatchwick.Game
         }
 
         private static readonly string[] RoomFilterNames = BuildRoomFilterNames();
-        private static readonly string[] SetFilterNames = BuildSetFilterNames();
+        // Dil değişince yeniden kurulur (adlar ui.styleset.* anahtarlarından gelir).
+        private static string[] _setFilterNames;
+        private static string _setFilterLanguage;
+        private static string[] SetFilterNames
+        {
+            get
+            {
+                string lang = GameLocalization.Current.Language;
+                if (_setFilterNames == null || _setFilterLanguage != lang) { _setFilterNames = BuildSetFilterNames(); _setFilterLanguage = lang; }
+                return _setFilterNames;
+            }
+        }
         private static readonly string[] ThemeFilterNames = BuildThemeFilterNames();
 
         private static string[] BuildThemeFilterNames()
@@ -1579,11 +1590,18 @@ namespace Thatchwick.Game
             return n;
         }
 
+        /// <summary>Stil setinin görünen adı (kimlik çevrilmez; ad ui.styleset.* anahtarından gelir).</summary>
+        private static string StyleSetName(string set)
+        {
+            string key = ItemCatalog.StyleSetKey(set);
+            return key != null ? GameLocalization.T(key) : set;
+        }
+
         private static string[] BuildSetFilterNames()
         {
             var n = new string[ItemCatalog.StyleSets.Length + 1];
-            n[0] = "Her takım";
-            for (int i = 0; i < ItemCatalog.StyleSets.Length; i++) n[i + 1] = ItemCatalog.StyleSets[i];
+            n[0] = GameLocalization.T("ui.build.all_sets");
+            for (int i = 0; i < ItemCatalog.StyleSets.Length; i++) n[i + 1] = StyleSetName(ItemCatalog.StyleSets[i]);
             return n;
         }
 
@@ -1855,7 +1873,7 @@ namespace Thatchwick.Game
         private void DrawCard(ItemDef def)
         {
             GUILayout.BeginVertical(GUI.skin.box);
-            string set = string.IsNullOrEmpty(def.StyleSet) ? "" : $" · {def.StyleSet}";
+            string set = string.IsNullOrEmpty(def.StyleSet) ? "" : $" · {StyleSetName(def.StyleSet)}";
             GUILayout.Label($"{def.DisplayName} ({def.Width}x{def.Height}){set}");
             string info = ItemCatalog.Describe(def, null, _content);
             if (info.Length > 0) GUILayout.Label(info, _wrap);
@@ -1870,7 +1888,7 @@ namespace Thatchwick.Game
             // Katalog sipariş verir, marangoz ertesi sabah getirir; üst setler yalnızca şehir dükkânlarında (belge 18, 42).
             bool shopOnly = BuildService.ShopOnly(def);
             GUI.enabled = unlocked && !shopOnly;
-            if (shopOnly) GUILayout.Label($"{def.StyleSet} takımı: yalnızca şehirdeki dükkânda.", _wrap);
+            if (shopOnly) GUILayout.Label(GameLocalization.T("ui.build.shop_only", ("set", StyleSetName(def.StyleSet))), _wrap);
             else if (GUILayout.Button(unlocked ? $"Sipariş ver {def.Price}" : _svc.LockText(def)))
                 _deferred = () =>
                 {

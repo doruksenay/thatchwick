@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Thatchwick.Core.World
@@ -58,62 +59,80 @@ namespace Thatchwick.Core.World
 
         public static RoomMap Compute(GridMap map)
         {
-            int plane = map.Width * map.Height;
+            // Bütün dünya taranır (her duvar değişiminde yeniden): iç döngü karo ve kenar bilgisini doğrudan dizilerden okur,
+            // kuyruk karo indeksidir. Karo sırası (Room.Tiles) ve sonuç eski uygulamayla aynıdır (performans incelemesi 20.11.2026).
+            int w = map.Width, h = map.Height, plane = w * h;
             var byTile = new Room[plane * GridMap.LevelCount];
             var rooms = new List<Room>();
-            var queue = new Queue<GridPos>();
+            var queue = _queue ?? (_queue = new int[1024]);
+            int levels = GridMap.LevelCount;
 
-            for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
+            for (int zi = 0; zi < levels; zi++)
             {
-                for (int y = 0; y < map.Height; y++)
+                int z = zi + GridMap.MinLevel, levelBase = zi * plane;
+                for (int y = 0; y < h; y++)
                 {
-                    for (int x = 0; x < map.Width; x++)
+                    for (int x = 0; x < w; x++)
                     {
-                        var start = new GridPos(x, y, z);
-                        if (!map.HasTile(start) || byTile[Slot(map, start)] != null) continue;
+                        int si = levelBase + y * w + x;
+                        if (!map.ExistsRaw(si) || byTile[si] != null) continue;
 
                         var room = new Room(rooms.Count) { IsIndoor = true, Level = z };
                         rooms.Add(room);
-                        byTile[Slot(map, start)] = room;
-                        queue.Enqueue(start);
-                        var doorEdges = new HashSet<Edge>();
-                        var windowEdges = new HashSet<Edge>();
+                        byTile[si] = room;
+                        int head = 0, tail = 0;
+                        queue[tail++] = si;
+                        // Kapı ve pencere kümeleri yalnızca gerekince kurulur (çoğu bölgede yoktur).
+                        HashSet<Edge> doorEdges = null, windowEdges = null;
 
-                        while (queue.Count > 0)
+                        while (head < tail)
                         {
-                            var cur = queue.Dequeue();
-                            room.Tiles.Add(cur);
-                            foreach (var d in Dirs)
+                            int ci = queue[head++];
+                            int cx = (ci - levelBase) % w, cy = (ci - levelBase) / w;
+                            room.Tiles.Add(new GridPos(cx, cy, z));
+                            for (int d = 0; d < 4; d++)
                             {
-                                var next = cur + d;
-                                var edge = GridMap.EdgeBetween(cur, next);
-                                var kind = map.GetEdge(edge);
-                                if (!map.InBounds(next) || !map.HasTile(next))
+                                // Sıra: +x, -x, +y, -y (eski Dirs dizisiyle aynı).
+                                int nx = cx, ny = cy;
+                                EdgeKind kind;
+                                Edge edge;
+                                switch (d)
+                                {
+                                    case 0: nx = cx + 1; kind = map.EdgeVRaw(cx + 1, cy, zi); edge = new Edge(cx + 1, cy, EdgeAxis.Vertical, z); break;
+                                    case 1: nx = cx - 1; kind = map.EdgeVRaw(cx, cy, zi); edge = new Edge(cx, cy, EdgeAxis.Vertical, z); break;
+                                    case 2: ny = cy + 1; kind = map.EdgeHRaw(cx, cy + 1, zi); edge = new Edge(cx, cy + 1, EdgeAxis.Horizontal, z); break;
+                                    default: ny = cy - 1; kind = map.EdgeHRaw(cx, cy, zi); edge = new Edge(cx, cy, EdgeAxis.Horizontal, z); break;
+                                }
+                                bool inPlane = nx >= 0 && ny >= 0 && nx < w && ny < h;
+                                int ni = levelBase + ny * w + nx;
+                                if (!inPlane || !map.ExistsRaw(ni))
                                 {
                                     // Harita kenarı ya da karo olmayan yan: zemin ve üst katta açık çıkış sayılır
                                     // (balkon); bodrumda kaya olduğu için kapalıdır. Üst kattaki boşluğun altı bir iç
                                     // odaysa (merdiven boşluğu) dışarı açılmaz.
-                                    bool openToBelowRoom = z > 0 && map.InBounds(next) && byTile[Slot(map, next.OnLevel(z - 1))] is Room below && below.IsIndoor;
+                                    bool openToBelowRoom = z > 0 && inPlane && byTile[ni - plane] is Room below && below.IsIndoor;
                                     if (!EdgeKinds.IsRoomBoundary(kind) && !openToBelowRoom) { if (z >= 0) room.IsIndoor = false; }
-                                    else if (kind == EdgeKind.Door) doorEdges.Add(edge);
+                                    else if (kind == EdgeKind.Door) (doorEdges ?? (doorEdges = new HashSet<Edge>())).Add(edge);
                                     continue;
                                 }
-                                if (kind == EdgeKind.Door) { doorEdges.Add(edge); continue; }
-                                if (kind == EdgeKind.Window) { windowEdges.Add(edge); continue; }
+                                if (kind == EdgeKind.Door) { (doorEdges ?? (doorEdges = new HashSet<Edge>())).Add(edge); continue; }
+                                if (kind == EdgeKind.Window) { (windowEdges ?? (windowEdges = new HashSet<Edge>())).Add(edge); continue; }
                                 if (EdgeKinds.IsRoomBoundary(kind)) continue;     // çit, yarım duvar, korkuluk odayı bölmez
-                                int ni = Slot(map, next);
                                 if (byTile[ni] != null) continue;
                                 byTile[ni] = room;
-                                queue.Enqueue(next);
+                                if (tail == queue.Length) { Array.Resize(ref queue, queue.Length * 2); _queue = queue; }
+                                queue[tail++] = ni;
                             }
                         }
-                        room.DoorCount = doorEdges.Count;
-                        room.WindowCount = windowEdges.Count;
+                        room.DoorCount = doorEdges?.Count ?? 0;
+                        room.WindowCount = windowEdges?.Count ?? 0;
                     }
                 }
             }
             return new RoomMap(map.Width, map.Height, byTile, rooms);
         }
+
+        [ThreadStatic] private static int[] _queue;
 
         private static int Slot(GridMap map, GridPos p) => ((p.Z - GridMap.MinLevel) * map.Height + p.Y) * map.Width + p.X;
     }
