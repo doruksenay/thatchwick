@@ -1,7 +1,7 @@
 ---
 id: "575"
 title: "Zincir pozları, yıkanma (peştamallı): yıkan, kurulan (16)"
-status: running
+status: failed
 claimed_at: 2026-11-20T16:43Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 40
