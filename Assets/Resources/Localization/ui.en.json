@@ -1394,8 +1394,6 @@
   "ui.hud.requests_unread": "Requests (I) •{count}",
   "ui.hud.save": "Save",
   "ui.hud.storage": "Pantry (K)",
-  "ui.hud.toolkit_off": "Old HUD on (F4 switches to the new one)",
-  "ui.hud.toolkit_on": "New HUD on (F4 switches back)",
   "ui.hud.village": "Village (V)",
   "ui.label.snare_empty": "{item} (empty)",
   "ui.label.snare_full": "{item} (caught something: collect it)",

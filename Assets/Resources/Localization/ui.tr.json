@@ -1394,8 +1394,6 @@
   "ui.hud.requests_unread": "İstekler (I) •{count}",
   "ui.hud.save": "Kaydet",
   "ui.hud.storage": "Kiler (K)",
-  "ui.hud.toolkit_off": "Eski HUD açık (F4 yenisine geçer)",
-  "ui.hud.toolkit_on": "Yeni HUD açık (F4 eskiye döner)",
   "ui.hud.village": "Köy (V)",
   "ui.label.snare_empty": "{item} (boş)",
   "ui.label.snare_full": "{item} (av düştü: topla)",

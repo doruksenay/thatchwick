@@ -192,12 +192,12 @@ namespace UnityEngine.UIElements {
  public interface IPanel{VisualElement Pick(Vector2 p);}
  public abstract class EventBase{public void StopPropagation(){}} public class PointerEnterEvent:EventBase{} public class PointerLeaveEvent:EventBase{} public class PointerDownEvent:EventBase{} public class PointerUpEvent:EventBase{}
  public delegate void EventCallback<in T>(T evt);
- public class VisualElement{public IStyle style=>null; public IPanel panel=>null; public PickingMode pickingMode; public string tooltip; public Rect worldBound=>default; public VisualElement parent=>null; public VisualElement this[int i]=>null;
+ public class VisualElement{public object userData; public IStyle style=>null; public IPanel panel=>null; public PickingMode pickingMode; public string tooltip; public Rect worldBound=>default; public VisualElement parent=>null; public VisualElement this[int i]=>null;
   public void Add(VisualElement e){} public void Clear(){} public void RegisterCallback<T>(EventCallback<T> cb,TrickleDown t=TrickleDown.NoTrickleDown) where T:EventBase{}}
  public class TextElement:VisualElement{public virtual string text{get;set;}}
  public class Label:TextElement{public Label(){} public Label(string t){}}
  public class Button:TextElement{public Button(){} public Button(Action a){} public event Action clicked;}
- public class PanelSettings:ScriptableObject{public PanelScaleMode scaleMode; public Vector2Int referenceResolution; public PanelScreenMatchMode screenMatchMode; public float match; public float sortingOrder;}
+ public class PanelSettings:ScriptableObject{public PanelScaleMode scaleMode; public float scale; public Vector2Int referenceResolution; public PanelScreenMatchMode screenMatchMode; public float match; public float sortingOrder;}
  public class UIDocument:MonoBehaviour{public PanelSettings panelSettings; public VisualElement rootVisualElement=>null;}
  public static class RuntimePanelUtils{public static Vector2 ScreenToPanel(IPanel p,Vector2 s)=>s;}
 }
