@@ -274,12 +274,7 @@ namespace Thatchwick.Game
 
         // ---- terzi ----
 
-        private string MakerDisplayName(string maker)
-        {
-            var v = _life.Villagers.CharacterOf("villager." + maker);
-            if (v != null) return v.Name;
-            return maker == "riza" ? "Rıza" : maker == "orhan" ? "Orhan" : "Elif";
-        }
+        private string MakerDisplayName(string maker) => _life.MakerName(maker);
 
         private void FillTailor(Ui.ListWindow.Model model, Character c)
         {

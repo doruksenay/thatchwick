@@ -381,7 +381,8 @@ namespace Thatchwick.Core.Life
             return t;
         }
 
-        private string MakerName(string maker)
+        /// <summary>Ustanın adı (elif, riza, orhan): köylü yaşıyorsa onun adı.</summary>
+        public string MakerName(string maker)
         {
             var c = Villagers.CharacterOf("villager." + maker);
             return c?.Name ?? (maker == "riza" ? "Rıza" : maker == "orhan" ? "Orhan" : "Elif");
