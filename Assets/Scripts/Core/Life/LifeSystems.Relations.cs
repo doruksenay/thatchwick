@@ -105,10 +105,12 @@ namespace Thatchwick.Core.Life
             Relations.NearHome = (c, host) => c != null && host != null && c.Position.Z == host.Position.Z
                 && Math.Abs(c.Position.X - host.Position.X) + Math.Abs(c.Position.Y - host.Position.Y) <= 10;
             Relations.DaysPerYear = () => Clock.Config.DaysPerSeason * 4;
-            Relations.AwayAtNight = c =>
+            Relations.AwayAtNight = AwayAtNight;
+            Relations.Tipsy = c => c != null && Thatchwick.Core.Content.ContentPacks.Adult && c.Mood.Has(DrinkMood);
+            Relations.Flee = (c, danger) =>
             {
-                var home = HouseholdHome?.Invoke();
-                return home.HasValue && !c.IsVillager && Math.Abs(c.Position.X - home.Value.X) + Math.Abs(c.Position.Y - home.Value.Y) > 14;
+                var spot = FleeSpot(c.Position, danger);
+                if (spot.HasValue && _runnersById.TryGetValue(c.Id, out var r)) { r.Command(Job.MoveTo(spot.Value)); r.Hold(0.02); }
             };
             Relations.SendToBirthHouse = c =>
             {
@@ -127,6 +129,7 @@ namespace Thatchwick.Core.Life
 
             Chats.IsFree = c => !_runnersById.TryGetValue(c.Id, out var r) || r.IsIdle || r.HoldDays > 0;
             Chats.IsGathering = IsGatheringSpot;
+            Chats.MinAt = p => NearMeal(p) ? 2 : GroupChatService.MinMembers;
 
             Council.Heads = CouncilHeads;
             Council.PlayerReputation = () => Upbringing.Reputation.Points;
@@ -209,6 +212,7 @@ namespace Thatchwick.Core.Life
             if (c != null) _runnersById[c.Id] = runner;
             runner.SocialStarted += (a, t, action) => Relations.OnSocialStarted(a, t, action);
             runner.WorkDone += (who, skill, id) => { if (who != null && who.Duty != DutyKind.None) Relations.NoteChore(who); };
+            runner.ItemUsed += (who, item, it) => { if (who != null && !who.IsVillager && it != null && it.Need == NeedType.Hunger && item != null) NoteMeal(who, item.Position); };
         }
 
         /// <summary>Karakterin iş yürütücüsü (oyun katmanı köylüler için de kaydeder).</summary>
@@ -312,6 +316,85 @@ namespace Thatchwick.Core.Life
             Relations.OnGoodsLeft(id, count, OwnedCount(id), Seller());
         }
 
+        // ---- sofra sonrası muhabbet ----
+
+        /// <summary>Yemekten sonra sofrada kalınan süre (oyun günü) ve sofra çevresi (karo).</summary>
+        public const double MealChatDays = 0.05;
+        public const int MealChatRange = 4;
+        private readonly List<(int who, GridPos at, double day)> _meals = new List<(int, GridPos, double)>();
+
+        /// <summary>Hane üyesi yemeğini bitirdi: aynı sofrada az önce yiyen başka biri varsa ikisi de biraz oturur (muhabbet kurulur).</summary>
+        internal void NoteMeal(Character who, GridPos at)
+        {
+            double now = Clock.TotalDays;
+            _meals.RemoveAll(m => now - m.day > MealChatDays || m.who == who.Id);
+            _meals.Add((who.Id, at, now));
+            int diners = 0;
+            foreach (var m in _meals) if (NearTiles(m.at, at, MealChatRange)) diners++;
+            if (diners < 2) return;
+            foreach (var m in _meals)
+                if (NearTiles(m.at, at, MealChatRange) && _runnersById.TryGetValue(m.who, out var r) && r.IsIdle) r.Hold(MealChatDays * 0.6);
+        }
+
+        private static bool NearTiles(GridPos a, GridPos b, int range) => a.Z == b.Z && Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y) <= range;
+
+        /// <summary>Az önce iki ya da daha çok kişinin yemek yediği sofranın çevresi mi.</summary>
+        internal bool NearMeal(GridPos pos)
+        {
+            double now = Clock.TotalDays;
+            int n = 0;
+            foreach (var m in _meals) if (now - m.day <= MealChatDays && NearTiles(m.at, pos, MealChatRange)) n++;
+            return n >= 2;
+        }
+
+        // ---- gece dışarıda (T10) ----
+
+        public const string DrinkMood = "mood.drink";
+
+        /// <summary>
+        /// Gece evden uzakta mı: iş için uzakta olan (görevde, bir işin başında), şenlik gecesi, sürmekte olan bir düğün ya da
+        /// nişan sahnesindeki ve hane evine yakın olan sayılmaz.
+        /// </summary>
+        internal bool AwayAtNight(Character c)
+        {
+            if (c == null || c.IsVillager || c.Away) return false;
+            var home = HouseholdHome?.Invoke();
+            if (!home.HasValue || NearTiles(c.Position, home.Value, 14)) return false;
+            if (Festivals.TodaysFestival() != null) return false;
+            foreach (var e in Relations.Events) if (e.Started && !e.Done && e.Guests.Contains(c.Id)) return false;
+            if (_runnersById.TryGetValue(c.Id, out var r) && IsNightWork(r.Queue.Current)) return false;
+            return true;
+        }
+
+        /// <summary>Gece işi: hayvan ya da tarla işi, beceri işleyen bir eşya işi (eğlence ve içki sayılmaz).</summary>
+        private bool IsNightWork(Job job)
+        {
+            if (job == null) return false;
+            if (job.Kind == JobKind.Animal || job.Kind == JobKind.Tile) return true;
+            if (job.Kind != JobKind.UseItem) return false;
+            var item = World.GetItem(job.ItemId);
+            if (item?.Def == null) return false;
+            foreach (var it in item.Def.Interactions)
+                if (it.Id == job.InteractionId) return it.Skill.HasValue && it.Need != NeedType.Fun;
+            return false;
+        }
+
+        /// <summary>Kavgadan kaçış yeri: tehlikenin tersine 6 karo, yoksa yakınında boş bir karo.</summary>
+        private GridPos? FleeSpot(GridPos from, GridPos danger)
+        {
+            int dx = Math.Sign(from.X - danger.X), dy = Math.Sign(from.Y - danger.Y);
+            if (dx == 0 && dy == 0) dx = 1;
+            var map = World.Map;
+            for (int dist = 6; dist >= 3; dist--)
+                for (int jitter = 0; jitter <= 2; jitter++)
+                    foreach (int s in new[] { jitter, -jitter })
+                    {
+                        var p = new GridPos(from.X + dx * dist + (dy != 0 ? s : 0), from.Y + dy * dist + (dx != 0 ? s : 0), from.Z);
+                        if (map.InBounds(p) && map.IsWalkable(p)) return p;
+                    }
+            return null;
+        }
+
         public Character HouseholdHead()
         {
             Character best = null;
@@ -360,6 +443,7 @@ namespace Thatchwick.Core.Life
         private bool IsGatheringSpot(GridPos pos)
         {
             if (ExtraGathering != null && ExtraGathering(pos)) return true;
+            if (NearMeal(pos)) return true;
             var sq = SquarePosition?.Invoke();
             bool nearSquare = sq.HasValue && pos.Z == sq.Value.Z && Math.Abs(pos.X - sq.Value.X) + Math.Abs(pos.Y - sq.Value.Y) <= 12;
             if (Festivals.TodaysFestival() != null) return true;

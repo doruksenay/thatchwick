@@ -218,6 +218,7 @@ namespace Thatchwick.Core.Family
                         Relations.Introduce(actor, target);
                         Relations.Nudge(actor.Id, target.Id, 0.05);
                         Relations.LearnPref(actor.Id, target.Id);
+                        Relations.MaybeConfide(actor, target);   // eşler: bazen sır açılır (T8'in kaynağı)
                     }
                     int now = Math.Min(100, Affection(actor.Id, target.Id) + gain);
                     actor.Needs.Restore(NeedType.Fun, ChatFun);

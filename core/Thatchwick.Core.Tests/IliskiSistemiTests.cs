@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
@@ -392,6 +393,97 @@ namespace Thatchwick.Core.Tests
             var save = r.Rel.Export();
             r.Rel.Import(save);
             Assert.Equal(3, r.Rel.DowryCount(w.Id, "item.felt"));
+        }
+
+        [Fact]
+        public void Sir_EseAcilir_YayilirsaT8()
+        {
+            var r = NewRig();
+            var h = Add(r, "Kerem", Sex.Male, 40); var w = Add(r, "Aslı", Sex.Female, 38, x: 6);
+            h.SpouseId = w.Id; w.SpouseId = h.Id;
+            var friend = Add(r, "Elif", Sex.Female, 38, x: 7);
+            var secret = r.Rel.MaybeConfide(h, w, roll: 0.0);
+            Assert.NotNull(secret);
+            Assert.True(secret.Secret);
+            Assert.True(r.Life.Knowledge.Knows(w.Id, secret));
+            Assert.False(r.Life.Knowledge.Knows(friend.Id, secret));
+            Assert.Null(r.Rel.MaybeConfide(h, w, roll: 0.0));   // 3 gün aralık
+            // Yakın dost değilse sır anlatılmaz.
+            r.Life.Knowledge.TellBest(w, friend, false, quiet: true);
+            Assert.False(r.Life.Knowledge.Knows(friend.Id, secret));
+            r.Family.SetAffection(w.Id, friend.Id, 60);
+            r.Life.Knowledge.TellBest(w, friend, false, quiet: true);
+            Assert.True(r.Life.Knowledge.Knows(friend.Id, secret));
+            var issue = r.Rel.PendingIssue(w.Id, h.Id);
+            Assert.NotNull(issue);
+            Assert.Equal(SpouseTrigger.SpilledSecret, issue.Trigger);
+            Assert.Equal(w.Id, issue.Offender);
+        }
+
+        [Fact]
+        public void GeceDisarida_IsVeGorevSayilmaz_SarhoslukAyriTetik()
+        {
+            var r = NewRig();
+            r.Life.HouseholdHome = () => new GridPos(0, 0);
+            var h = Add(r, "Kerem", Sex.Male, 40, x: 19, y: 19);
+            Assert.True(r.Life.AwayAtNight(h));
+            h.Away = true;
+            Assert.False(r.Life.AwayAtNight(h));   // görevde (yolculuk, ırgatlık)
+            h.Away = false;
+            var near = Add(r, "Aslı", Sex.Female, 38, x: 2, y: 2);
+            Assert.False(r.Life.AwayAtNight(near));
+            // Sarhoş eve gelme: yalnız +18 paketinde ve içkiliyken.
+            near.AddMoodlet(LifeSystems.DrinkMood, "x", 4, 0.5);
+            bool adult = Thatchwick.Core.Content.ContentPacks.Adult;
+            Assert.Equal(adult, r.Rel.Tipsy(near));
+            Assert.Equal("rel.trig.drunk_home", RelationRules.TriggerText(SpouseTrigger.DrunkHome).Key);
+        }
+
+        [Fact]
+        public void SofraSonrasi_MuhabbetYeri()
+        {
+            var r = NewRig();
+            var a = Add(r, "Kerem", Sex.Male, 40); var b = Add(r, "Aslı", Sex.Female, 38, x: 6);
+            var table = new GridPos(5, 6);
+            r.Life.NoteMeal(a, table);
+            Assert.False(r.Life.NearMeal(new GridPos(5, 5)));   // tek kişi: sofra muhabbeti yok
+            r.Life.NoteMeal(b, table);
+            Assert.True(r.Life.NearMeal(new GridPos(5, 5)));
+            Assert.Equal(2, r.Life.Chats.MinAt(new GridPos(5, 5)));
+            Assert.False(r.Life.NearMeal(new GridPos(15, 15)));
+            r.Clock.Restore(LifeSystems.MealChatDays + 0.01, 1);
+            Assert.False(r.Life.NearMeal(new GridPos(5, 5)));   // sofra dağıldı
+        }
+
+        [Fact]
+        public void Yildonumu_TakvimdeGorunur()
+        {
+            var r = NewRig();
+            var a = Add(r, "Ali", Sex.Male, 40); var b = Add(r, "Ayşe", Sex.Female, 40);
+            a.SpouseId = b.Id; b.SpouseId = a.Id;
+            r.Rel.OnNewDay(0);
+            int year = r.Rel.DaysPerYear();
+            Assert.Empty(r.Rel.UpcomingAnniversaries(3));
+            r.Clock.Restore(year - 2, 1);
+            var list = r.Rel.UpcomingAnniversaries(3);
+            Assert.Single(list);
+            Assert.Equal(2, list[0].days);
+            Assert.Equal(1, list[0].year);
+        }
+
+        [Fact]
+        public void Kavga_CocuklarKacar()
+        {
+            var r = NewRig();
+            var a = Add(r, "Ali", Sex.Male, 40); var b = Add(r, "Veli", Sex.Male, 40, x: 6);
+            var kid = Add(r, "Can", Sex.Male, 15, x: 7);
+            var fled = new List<Character>();
+            r.Rel.Flee = (c, danger) => fled.Add(c);
+            r.Rel.OnSocialStarted(a, b, SocialAction.Fight);
+            Assert.Contains(kid, fled);
+            fled.Clear();
+            r.Rel.OnSocialStarted(a, b, SocialAction.Argue);
+            Assert.Empty(fled);
         }
     }
 }

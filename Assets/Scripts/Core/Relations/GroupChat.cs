@@ -61,6 +61,8 @@ namespace Thatchwick.Core.Relations
         /// <summary>Kişiyi halkada tut (oyun günü).</summary>
         public Action<Character, double> Hold { get; set; }
         public Action<Character, GridPos> FaceTo { get; set; }
+        /// <summary>Bu yerde halka için en az kaç kişi gerekir (sofra başında 2; başka yerde 3).</summary>
+        public Func<GridPos, int> MinAt { get; set; }
 
         public IReadOnlyList<ChatCircle> Circles => _circles;
 
@@ -107,7 +109,7 @@ namespace Thatchwick.Core.Relations
                     foreach (var g in group) if (Relations != null && Relations.IsSulking(g.Id, o.Id)) sulk = true;
                     if (!sulk) group.Add(o);
                 }
-                if (group.Count < MinMembers) continue;
+                if (group.Count < (MinAt?.Invoke(seed.Position) ?? MinMembers)) continue;
                 foreach (var g in group) used.Add(g.Id);
                 Create(group, now);
             }

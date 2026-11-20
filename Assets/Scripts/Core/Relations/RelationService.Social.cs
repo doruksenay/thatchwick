@@ -4,6 +4,7 @@ using Thatchwick.Core.Characters;
 using Thatchwick.Core.Family;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Localization;
+using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Relations
 {
@@ -187,8 +188,19 @@ namespace Thatchwick.Core.Relations
         }
 
         /// <summary>İş başladı (JobRunner): kavga ve tartışmada öbür taraf durur ve döner.</summary>
+        /// <summary>Kavgadan kaçan çocuk: tehlikenin olduğu karodan uzağa yürüt (oyun katmanı yürünebilir yeri bulur).</summary>
+        public Action<Character, GridPos> Flee { get; set; }
+
         public void OnSocialStarted(Character actor, Character target, SocialAction action)
         {
+            // Kavga başladı: yakındaki çocuklar korkup kaçar (67a §5.2); ergen itişmesinde kaçmazlar.
+            if (action == SocialAction.Fight && actor != null && target != null && !Teen(actor) && !Teen(target))
+                foreach (var c in Witnesses(actor, target))
+                    if (c.Stage == AgeStage.Child && !c.IsPlayerControlled)
+                    {
+                        Cue?.Invoke(c, "gasp", 1.5f);
+                        Flee?.Invoke(c, actor.Position);
+                    }
             if (action == SocialAction.Fight || action == SocialAction.Argue || action == SocialAction.AskHand || action == SocialAction.GiveHandkerchief
                 || action == SocialAction.Kiss || action == SocialAction.Hug || action == SocialAction.HoldHands)
                 Hold?.Invoke(target, Duration(action) + 0.005);

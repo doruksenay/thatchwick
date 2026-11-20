@@ -26,6 +26,8 @@ namespace Thatchwick.Core.Relations
         public int Value;
         public bool Truth = true;
         public bool Secret;
+        /// <summary>Sırrın türü (rel.secret.N): eşe açılan sırlar (T8).</summary>
+        public int Variant;
         /// <summary>Söylentiyi çıkaran (yalan ortaya çıkınca).</summary>
         public int Source;
         /// <summary>Aldatmada aldatılan eş (dedikodu eşe ulaşınca tetik).</summary>
@@ -130,6 +132,31 @@ namespace Thatchwick.Core.Relations
             if (witnesses != null) foreach (var w in witnesses) if (w != null && !w.IsDead) Learn(w, f, null);
             ApplyReputation(f);
             return f;
+        }
+
+        /// <summary>Sır türleri (rel.secret.N.d) ve itibar etkileri: eşe açılır, yayılırsa T8.</summary>
+        public static readonly (RepFacet facet, int value)[] Secrets =
+        {
+            (RepFacet.Word, -2), (RepFacet.Word, -3), (RepFacet.Peace, -1), (RepFacet.Peace, -2), (RepFacet.Craft, -1), (RepFacet.Generous, -1)
+        };
+
+        /// <summary>Kişi eşine bir sırrını açar: yalnız ikisi bilir. Eşi başkasına anlatırsa T8 (eşinin sırrını yaydı).</summary>
+        public Fact RecordSecret(Character subject, Character confidant, int variant)
+        {
+            if (subject == null || confidant == null) return null;
+            variant = Math.Max(0, Math.Min(Secrets.Length - 1, variant));
+            var (facet, value) = Secrets[variant];
+            var f = Record(FactKind.Secret, subject, null, facet, value, new[] { confidant }, secret: true);
+            if (f != null) { f.Variant = variant; f.Memory = false; }
+            return f;
+        }
+
+        /// <summary>Bu kişinin eşine açtığı sırlardan biri (yayılmamış).</summary>
+        public int SecretsOf(int subject)
+        {
+            int n = 0;
+            foreach (var f in _facts) if (f.Kind == FactKind.Secret && f.Subject == subject && !f.Debunked) n++;
+            return n;
         }
 
         /// <summary>İki hane arasında küslük ya da dostluk bağı (bilgi): iki tarafın hanesi de bilir.</summary>
@@ -315,6 +342,7 @@ namespace Thatchwick.Core.Relations
         public LocText Describe(Fact f)
         {
             var subject = _population.Find(f.Subject); var other = _population.Find(f.Other);
+            if (f.Kind == FactKind.Secret) return LocText.Of("rel.secret." + f.Variant + ".d", ("a", subject?.Name ?? ""));
             return LocText.Of("rel.fact." + RelationRules.Snake(f.Kind.ToString()) + ".d", ("a", subject?.Name ?? ""), ("b", other?.Name ?? ""),
                 ("house", f.SubjectHouse > 0 ? HouseName(f.SubjectHouse) : ""));
         }
@@ -465,7 +493,7 @@ namespace Thatchwick.Core.Relations
                 facts.Add(new FactSave
                 {
                     id = f.Id, kind = (int)f.Kind, subject = f.Subject, other = f.Other, subjectHouse = f.SubjectHouse, otherHouse = f.OtherHouse,
-                    facet = (int)f.Facet, value = f.Value, truth = f.Truth, secret = f.Secret, source = f.Source, partner = f.Partner, day = f.Day,
+                    facet = (int)f.Facet, value = f.Value, truth = f.Truth, secret = f.Secret, variant = f.Variant, source = f.Source, partner = f.Partner, day = f.Day,
                     applied = f.Applied, memory = f.Memory, debunked = f.Debunked
                 });
             var knows = new List<KnowsSave>();
@@ -488,7 +516,7 @@ namespace Thatchwick.Core.Relations
                         _facts.Add(new Fact
                         {
                             Id = x.id, Kind = (FactKind)x.kind, Subject = x.subject, Other = x.other, SubjectHouse = x.subjectHouse, OtherHouse = x.otherHouse,
-                            Facet = (RepFacet)x.facet, Value = x.value, Truth = x.truth, Secret = x.secret, Source = x.source, Partner = x.partner, Day = x.day,
+                            Facet = (RepFacet)x.facet, Value = x.value, Truth = x.truth, Secret = x.secret, Variant = x.variant, Source = x.source, Partner = x.partner, Day = x.day,
                             Applied = x.applied, Memory = x.memory, Debunked = x.debunked
                         });
             if (s.knows != null) foreach (var k in s.knows) if (k?.facts != null) Set(k.character).UnionWith(k.facts);
@@ -501,6 +529,7 @@ namespace Thatchwick.Core.Relations
     {
         public int id, kind, subject, other, subjectHouse, otherHouse, facet, value, source, partner, applied;
         public bool truth, secret, memory, debunked;
+        public int variant;
         public double day;
     }
 
