@@ -4,7 +4,7 @@ title: Çalışırken ıslık
 kind: sfx
 family: voice
 freq: B
-status: review
+status: ready
 approved_by: user
 depends_on:
 - s140
@@ -16,24 +16,22 @@ duration_s: 3.0
 cost_max: 1100
 axes:
   tune:
-  - slow lilting lullaby-like phrase
-  - cheerful little skipping phrase
+  - bouncy, happy little jig phrase
+  - sunny, upbeat skipping phrase going up at the end
+  - playful, cheeky little ditty
   whistler:
-  - soft breathy whistle
-  - gentle mellow whistle
+  - warm, round whistle
+  - bright, cheerful whistle
 cost_max_eski: 900
 not_cost_max: '20.11.2026: kullanıcı onayıyla tahmine göre yükseltildi'
 inceleme_notlari:
 - tarih: '2026-11-20'
   karar: yeniden
   not: beğenmedim cozy değil
-yeniden_sayisi: 1
+- tarih: '2026-11-20'
+  karar: yeniden
+  not: daha cozy ve enerjik bir ıslık melodisi istiyorum, bunlar karamsar
+yeniden_sayisi: 2
 prompt_influence: 0.7
-claimed_by: ip-10-0-138-220
-claimed_at: '2026-11-20T18:31:55Z'
-candidates: 8
-passed: 8
-credits_spent: 0
-generated_at: '2026-11-20T18:32:07Z'
 ---
-A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments.
+A cheerful, energetic villager happily whistling a bouncy, upbeat little folk tune to himself while working, major key, sunny and playful, lively rhythm, feel-good and cozy. Not sad, not slow, not melancholic, not minor key, not shrill, no echo, no instruments.

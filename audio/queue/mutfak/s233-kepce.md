@@ -45,5 +45,7 @@ candidates: 12
 passed: 12
 credits_spent: 96
 generated_at: '2026-11-20T18:31:52Z'
+sequence: true
+not_sira: '20.11.2026: kepçe ve dökülüş art arda çalar (PR #121); PR birleşmeden kabul edilmez.'
 ---
 Kepçe iki katman: kepçenin kazana değip alması ve kâseye kısa dökülüş. Oyunda birlikte çalar (5. tur; 3. tur katı, 4. tur fazla sıvıydı).
