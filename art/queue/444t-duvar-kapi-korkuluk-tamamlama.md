@@ -1,7 +1,7 @@
 ---
 id: "444t"
 title: "Duvar, kapı, korkuluk ve çit tamamlama (eksikler ve 2 yeniden)"
-status: running
+status: review
 claimed_at: 2026-11-20T10:40Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette yapı incelemesi: "önerini uygula")
 priority: 15
@@ -63,3 +63,4 @@ Her parça kendi kaynak işinin tarifini aynen kullanır (iki eksen, aynı tuval
 Kaynak işlerin doğrulaması. Yan yana sayfası: `art/results/444t-yanyana.png`. Her parça kendi ailesinin kabul edilmiş bir örneğiyle yan yana (örneğin kara korkuluk, `railing_wood` ile).
 
 ## Notlar
+- 2026-11-20 işçi: 12/24 dosya teslim (_aday); 6 stil/renk nedeniyle red (art/444t-red: mural, star_tile, door_blue); 6 bütçe tavanı nedeniyle yapılmadı (railing_red, railing_green, railing_iron_red). Rapor: art/results/444t-duvar-kapi-korkuluk-tamamlama.md
