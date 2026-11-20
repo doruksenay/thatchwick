@@ -1,7 +1,7 @@
 ---
 id: "301c"
 title: Pazar tezgâhı, kazan ve toprak bardak (301b reddedildi)
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:28Z
 priority: 10            # üçü de başlangıç haritasında
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 2: 301b ret, yeniden üretim)
@@ -49,3 +49,4 @@ Yöntem **301 ile aynı** (referanssız kılavuz, `create_map_object` stil eşle
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

@@ -40,6 +40,10 @@ namespace Thatchwick.Core.Life
         /// Günlük: yeni dikilen zeytinleri kaydeder (dikeni hane reisi sayar), kesilenleri siler,
         /// yaşı dolanı yadigâr yapar. Yadigâr olan ağaçların açıklamalarını döner.
         /// </summary>
+        /// <summary>Son "yadigâr ağaç" haberi ve dikenin adı (kroniğe anahtarlı yazmak için; SavedText).</summary>
+        public string LastHeirloomNote { get; private set; }
+        public string LastHeirloomPlanter { get; private set; }
+
         public List<string> OnNewDay(int today, WorldState world, string headName)
         {
             var news = new List<string>();
@@ -56,7 +60,9 @@ namespace Thatchwick.Core.Life
                 if (!t.Heirloom && today - t.PlantedDay >= HeirloomDays)
                 {
                     t.Heirloom = true;
-                    news.Add($"{t.Planter}'in diktiği zeytin artık yadigâr ağaç; yaşlandıkça daha çok verir.");
+                    LastHeirloomPlanter = t.Planter;
+                    LastHeirloomNote = $"{t.Planter}'in diktiği zeytin artık yadigâr ağaç; yaşlandıkça daha çok verir.";
+                    news.Add(LastHeirloomNote);
                 }
             }
             var gone = new List<int>();

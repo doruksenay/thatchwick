@@ -227,7 +227,7 @@ namespace Thatchwick.Core.Tests
             var results = book.RunFestival("festival.fair", 0, id => horse, id => h, x.House);
             Assert.Single(results);
             Assert.False(book.IsRegistered(horse));
-            Assert.Contains(results[0].Summary, h.Chronicle);
+            Assert.Contains(results[0].SavedSummary, h.Chronicle);
         }
     }
 }

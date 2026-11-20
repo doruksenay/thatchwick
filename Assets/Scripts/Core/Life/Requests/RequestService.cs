@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
@@ -130,6 +131,12 @@ namespace Thatchwick.Core.Life.Requests
         private static LocText L(string key, params (string name, object value)[] args) => LocText.Of(key, args);
         private static LocText SkillText(SkillType s) => LocText.Of("skill." + s);
         private static LocText RegionText(string id) => LocText.Of("region." + id);
+        /// <summary>
+        /// Kroniğe anahtarlı yazılan (SavedText) notta istek başlığı: anahtarlı başlık tablo anahtarı olarak saklanır ve
+        /// gösterilirken seçili dilde çözülür; anahtarsız (eski kayıt, argümanlı) başlık o anki metniyle yazılır.
+        /// </summary>
+        private object SavedTitle(LocText title) =>
+            title.Key != null && title.Args.Length == 0 && title.Count == null ? (object)SavedText.Key(title.Key) : Resolve(title);
         /// <summary>Teslim eden, verenin yanında mı? (oyun katmanı; null: her zaman yakın)</summary>
         public Func<Character, Character, bool> Near { get; set; }
 
@@ -973,7 +980,7 @@ namespace Thatchwick.Core.Life.Requests
             r.VowedDay = Now();
             var note = L("core.req.chr.vowed", ("name", vower.Name), ("title", r.Title));
             Chronicle?.Invoke(note);
-            vower.AddChronicle(Resolve(note));
+            vower.AddChronicle(SavedText.Encode("core.chronicle.vow_made", ("name", vower.Name), ("title", SavedTitle(r.Title))));
             message = note;
             return r;
         }
@@ -1368,8 +1375,10 @@ namespace Thatchwick.Core.Life.Requests
                     ? L("core.req.chr.vow_done_by", ("title", r.Title), ("first", r.VowedByName), ("last", who))
                     : L("core.req.chr.vow_done", ("title", r.Title));
                 Chronicle?.Invoke(note);
-                string noteText = Resolve(note);
-                foreach (var m in Household()) m.AddChronicle(noteText);
+                string savedNote = r.VowedByName != null && who != r.VowedByName
+                    ? SavedText.Encode("core.chronicle.vow_finished_by", ("title", SavedTitle(r.Title)), ("starter", r.VowedByName), ("finisher", who))
+                    : SavedText.Encode("core.chronicle.vow_done", ("title", SavedTitle(r.Title)));
+                foreach (var m in Household()) m.AddChronicle(savedNote);
             }
             Complete(r, by, r.Reward);
             return true;

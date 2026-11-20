@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Animals;
@@ -448,6 +449,7 @@ namespace Thatchwick.Core.Life
             };
             c.StageChanged += (ch, before, after) =>
             {
+                OnClothingStageChanged(ch, before, after);
                 if (after == AgeStage.Elder && before != AgeStage.Elder) { OnBecameElder(ch); return; }
                 if (after != AgeStage.YoungAdult || before == AgeStage.YoungAdult) return;
                 OnGrownUp(ch);
@@ -461,6 +463,7 @@ namespace Thatchwick.Core.Life
                     Say($"{c.Name}, {LifeRules.TradeName(skill)} becerisinde {after}. seviyeye ulaştı: meslek dalı seçebilir.", NoticeLevel.Info, c.Id);
                 }
                 Goals.Update();
+                if (after >= 10 && before < 10) OnClothingMastery(c, skill);
             };
         }
 
@@ -795,6 +798,8 @@ namespace Thatchwick.Core.Life
         public void Attach(PlantSystem plants)
         {
             _plants = plants;
+            // Güney Yamaçları (belge 32): zeytin yalnızca orada, kahve orada ya da ılık serada büyür.
+            plants.IsSouth = p => Thatchwick.Core.World.Regions.Slopes.Contains(p);
             plants.GrowthMultiplier = GrowthMultiplier;
             Home.IsGreenhouseRoom = plants.IsGreenhouse;          // sera oda tipi
             plants.GreenhouseGrowth = Home.GreenhouseGrowth;
@@ -898,7 +903,7 @@ namespace Thatchwick.Core.Life
             effects.AppliedOn += OnInteractionAppliedOn;
             effects.AppliedOn += Home.OnApplied;
             effects.AppliedOn += OnSkillWorkApplied;   // beceri işleri ve pasifleri (belge 45)
-            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i);
+            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i);
             Home.Effects = effects;
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
         }
@@ -916,6 +921,8 @@ namespace Thatchwick.Core.Life
             if (coffee) Coffee.OnCoffee(c, Clock.TotalDays);
             if (interaction.Id == FortuneInteraction) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
             if (IsHoneyHarvest(interaction)) TrySting(c);   // petek kesmede sokma OnInteractionAppliedOn'da
+            OnClothingCrafted(c, interaction);
+            OnClothingWork(c, interaction);
         }
 
         // ---- Bağbozumu (belge 32-8.3) ----
@@ -950,7 +957,7 @@ namespace Thatchwick.Core.Life
                 {
                     House.AddAkce(VintagePrize);
                     string text = $"En iyi üzüm yarışmasını {grower.Name} kazandı! +{VintagePrize} akçe.";
-                    grower.AddChronicle(text);
+                    grower.AddChronicle(SavedText.Encode("core.chronicle.vintage_won", ("name", grower.Name), ("akce", VintagePrize)));
                     notes.Add(text);
                 }
                 else notes.Add("En iyi üzüm yarışmasında bu yıl komşunun salkımı seçildi.");
@@ -1015,7 +1022,7 @@ namespace Thatchwick.Core.Life
         public bool TrySting(Character c, double? roll = null)
         {
             if (c == null || c.IsDead || c.Skills.GetLevel(SkillType.AnimalHusbandry) >= BeeSafeLevel) return false;
-            if ((roll ?? _beeRng.NextDouble()) >= BeeStingChance) return false;
+            if ((roll ?? _beeRng.NextDouble()) >= BeeStingChance * Clothing.HazardFactor(c, "bee")) return false;   // arıcı başlığı −%75
             return Injuries.InjureById(c, "bee_sting") != null;
         }
         /// <summary>Kıyıdan balık: ilk balık hatırası.</summary>
@@ -1125,6 +1132,7 @@ namespace Thatchwick.Core.Life
                 Mood.Update(Population.Members);
                 Watcher.Update(Population.Members, day: Clock.TotalDays);
                 Breakdowns.Update(step);
+                UpdateClothing();
             }
 
             Spoilage.Tick(gameDays);
@@ -1236,7 +1244,9 @@ namespace Thatchwick.Core.Life
             foreach (var note in Olives.OnNewDay((int)Clock.TotalDays, World, HeadName()))
             {
                 Say(note, NoticeLevel.Info);
-                foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddChronicle(note);
+                string savedNote = note == Olives.LastHeirloomNote && Olives.LastHeirloomPlanter != null
+                    ? SavedText.Encode("core.chronicle.olive_heirloom", ("planter", Olives.LastHeirloomPlanter)) : note;
+                foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddChronicle(savedNote);
             }
             var grow = Adoptions.OnGrowUp((int)Clock.TotalDays, Clock.Season);
             if (grow == "returned") Say("Büyüttüğün karaca artık yetişkin; bir sabah ormana döndü.", NoticeLevel.Info);
@@ -1282,6 +1292,7 @@ namespace Thatchwick.Core.Life
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
             AnimalDay(day);   // hüner etkileri, çekirge, perhiz (belge 48)
             DailyHealing();
+            DailyClothing();
             Injuries.DailyUpdate();
             Decor.RemindFreeMirror();
             Home.OnNewDay();
@@ -1352,7 +1363,9 @@ namespace Thatchwick.Core.Life
                 locustDry = Locusts.DryDays,
                 locustIncoming = Locusts.Incoming,
                 skillFlags = ExportSkillFlags(),
-                roomNames = ExportRoomNames()
+                roomNames = ExportRoomNames(),
+                clothing = _clothing?.Export(),
+                tailor = _tailor?.Export()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1398,6 +1411,8 @@ namespace Thatchwick.Core.Life
             QualityBook.Import(data.quality);
             Shows.Import(data.produceShows);
             Aging.Import(data.quality?.aging);
+            Clothing.Import(data.clothing);
+            Tailor.Import(data.tailor);
             UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;

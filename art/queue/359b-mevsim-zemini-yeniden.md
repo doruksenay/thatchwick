@@ -1,7 +1,8 @@
 ---
 id: "359b"
 title: "Mevsim zemini yeniden (sonbahar çimeni, karlı çimen, karlı toprak)"
-status: pending
+status: review
+claimed_at: 2026-11-20T11:15Z
 approved_by: user        # kullanıcı kararı 2026-11-20: 359 reddedildi, yeniden üretim
 family: zemin
 style_gate: false

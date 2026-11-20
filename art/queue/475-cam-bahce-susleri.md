@@ -1,7 +1,7 @@
 ---
 id: "475"
 title: "Cam bahçe süsleri: taş, kabuk, odun, mercan (10)"
-status: review
+status: accepted
 claimed_at: 2026-11-20T07:44Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe: balık, taş, yosun, kabuk), Project belgesi 47
 priority: 20
@@ -55,3 +55,4 @@ Kod görseli adla bulur (`IsoArt.Get("viv_<ad>")`), gelene kadar renkli şekil �
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

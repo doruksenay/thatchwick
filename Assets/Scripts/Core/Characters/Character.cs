@@ -366,6 +366,18 @@ namespace Thatchwick.Core.Characters
             Wetness = Math.Min(1f, Math.Max(Wetness, amount));
         }
 
+        /// <summary>Giysilerin soğuğa dayanıklılığı (belge 48 §12.1; ClothingService günceller).</summary>
+        public float ClothingColdResist { get; set; }
+        /// <summary>Giysilerin yağmurda ıslanmayı azaltması (0-1).</summary>
+        public float RainGuard { get; set; }
+
+        /// <summary>Yağmurda ıslanır: giysi koruması kadar az (kepenek, yağmurluk ıslaklık biriktirmez).</summary>
+        public void SoakRain(float amount)
+        {
+            float f = 1f - Math.Max(0f, Math.Min(1f, RainGuard));
+            if (f > 0f) Soak(amount * f);
+        }
+
         /// <summary>Kurulanır (havlu): ıslaklık hemen gider.</summary>
         public void Dry() { Wetness = 0f; _wetColdDays = 0; }
 
@@ -520,7 +532,7 @@ namespace Thatchwick.Core.Characters
             if (cold > 0f)
             {
                 // Sıcak çorba gibi yemek etkileri de soğuğa dayanıklılık verir (toplam en çok %90).
-                float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f) + AthleticColdResist);
+                float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f) + AthleticColdResist + ClothingColdResist);
                 // Islak giysi soğukta ısıyı iki kat hızlı kaçırır.
                 Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - resist) * (1f + Wetness));
             }

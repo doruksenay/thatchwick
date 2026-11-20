@@ -281,7 +281,7 @@ namespace Thatchwick.Core.Tests
             Assert.False(k.Req.CanVow("adak.fountain", child).IsEmpty);
             var v = k.Req.Vow("adak.fountain", k.Ali, out var msg);
             Assert.NotNull(v);
-            Assert.Contains(k.Ali.Chronicle, n => n.Contains("core.req.chr.vowed"));
+            Assert.Contains(k.Ali.Chronicle, n => n.StartsWith("@@core.chronicle.vow_made"));   // kroniğe anahtarlı yazılır (SavedText)
             k.House.AddItem("item.stone", 10);
             k.House.AddItem("item.limestone", 6);
             Assert.True(k.Req.Deliver(v.Id, k.Ali, false, out msg), msg.ToString());

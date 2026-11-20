@@ -1,7 +1,7 @@
 ---
 id: "313"
 title: Mezar taşı + festival süsleri (flama, şenlik direği, şenlik ateşi, kış feneri)
-status: review
+status: accepted
 claimed_at: 2026-11-18T09:34Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -43,3 +43,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 
 ## Doğrulama
 301 tablosu + bonfire/lantern için sıcak renk oranı (alev dışında kırmızı kayma ⚠), mezarda yazı olmaması.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
