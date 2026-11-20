@@ -17,11 +17,25 @@ Bağlam sıkışırsa buradan devam et. Özet ve karar bekleyenler: Project belg
 - **G Maden:** `MineGen` v2 (bantlı kaya, yönlü damar, nem alanı, doğal kovuk, 6 hazır mekân). `MadenUretimiV2Tests`.
 - **Görsel işleri:** 612-621.
 
+## Yapılanlar (20.11.2026, parti 2)
+- **Köy meydanı taslakta** (`maps/town`): eğri sokaklar, kenarı düzensiz taş meydan, kumlu kıyılı ırmak, kapıdan sokağa
+  patikalar (kapı önünde iki karo düz çıkış), atölye kapılarında ve sokak kenarında aşınmış toprak, ince kenar bandı.
+  Bina planı C#'ta kalır (`Regions.TownBuildings`); `draw.py town()` onu okur.
+- **Dikdörtgen olmayan binalar:** `TownBuilding.WithAnnex` (ek yapı, ortak duvarda iç kapı). Meyhane mutfak kanadı, pazar
+  ambarı, demirci kömürlüğü, marangoz kereste sundurması, değirmen un ambarı. Kit, döşeme (`annex_*` oda şablonları),
+  izinsiz girme, bitki örtüsü ve avlu bölgeleri eki tanır.
+- **Yaban bölgeleri ve çiftlik taslakta:** taban kod çiziminden (`dotnet run --project tools/map-preview -- out=art/preview/_base export`),
+  `draw.py` patikaları yuvarlar ve kıvırır, kıyıyı girintiler ve kumlar, kenar bandı ve tepede kaya sırtı ekler; kıyıda kumsal
+  kum zemin. `RegionsWild.Draft`: taslak varsa arazi oradan, eski koordinatlı eşya patikaya ya da suya düşerse konmaz.
+  Çiftlikte yalnızca yol ve bant (ev, gölet, tarla kodda).
+- **Maden:** kaya karoları 360/361 görsellerinin üst yüzüyle (`IsoArt.RockTop`, 620 çeşitleri b/c otomatik); hazır mekân ve
+  kovuk süsleri (`MineMap.Props`, 7 eşya, 621 görselleri pending).
+- **Zemin:** çayır, koyu çim ve çakıl öbekleri (612); dual-grid geçiş katmanı (613-617 gelince çizilir).
+- **Eksik görsel işleri:** 730-734 (34 eşya + çalı + ahşap bodrum merdiveni); eşlemeleri `items.json`'da pending.
+
 ## Kalanlar (sıra)
-1. Köy meydanı taslağa: eğri yollar, bina biçimleri (L, sundurma), `TownBuildings` → `markers.json`.
-2. Yaban haritaları ve çiftlik çevresi taslağa (`draw.py` bölge fonksiyonları), kum zemini, simge yapı eşyaları (619 sonrası).
-3. Geçiş setlerinin (613-617) çizimi: `WorldView` dual-grid katmanı yol setindeki gibi.
-4. Zemin yamaları ve aşınma haritası (görünüm; Core'da saf fonksiyon).
-5. Öbek (vignette) sistemi `layouts.json`.
-6. Unity: editör "Harita önizlemesi al" komutu; ekran görüntüsüyle kontrol.
-7. Kaya varyantları (620) ve hazır mekân eşyaları (621) bağlama (maden M1/M4 ile).
+1. Öbek (vignette) sistemi `layouts.json`; dükkânda başrol eşyanın kapıdan görünmesi.
+2. Unity: editör "Harita önizlemesi al" komutu.
+3. Simge yapı eşyaları (619 görselleri gelince markers.json items).
+4. Kayıt: harita düzeni kimliği (eski bölgeli kayıt engeli).
+5. Ulu ağaç görselleri (492a-c): tuval kararı kullanıcıda (492a Sorular); o zamana kadar büyütülmüş tür ağacı.

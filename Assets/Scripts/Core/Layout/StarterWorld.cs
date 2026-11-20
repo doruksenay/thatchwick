@@ -39,8 +39,12 @@ namespace Thatchwick.Core.Layout
 
             BuildStarterHouse(map);
             // Çiftlik yolu doğu kenarına, şehir geçidine kadar uzar; şehir haritası kurulur (belge 39).
-            for (int x = 73; x <= 95; x++) map.SetRoad(new GridPos(x, 40), RoadType.Path);
-            map.SetRoad(new GridPos(94, 41), RoadType.Path); map.SetRoad(new GridPos(95, 41), RoadType.Path);
+            // Taslak varsa (maps/farm, belge 64a) kıvrılan çiftlik yolu ve kenar bandı oradan; ev, gölet ve tarla burada.
+            if (!Regions.FarmDraft(map))
+            {
+                for (int x = 73; x <= 95; x++) map.SetRoad(new GridPos(x, 40), RoadType.Path);
+                map.SetRoad(new GridPos(94, 41), RoadType.Path); map.SetRoad(new GridPos(95, 41), RoadType.Path);
+            }
             Regions.BuildTerrain(map);
             TownBuilder.BuildFloors(map, layouts);   // dükkânların üst katı, bodrumu, han odaları (belge 44 C)
             BuildingKits.ApplyTerrain(map, layouts);  // bina kimlik kartları: cephe, zemin, çatı, iç kaplama (belge 64 §5)

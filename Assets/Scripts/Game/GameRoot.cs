@@ -835,6 +835,7 @@ namespace Thatchwick.Game
             if (loaded != null) SaveGame.RestoreSoil(loaded, _plants);
             _plants.FamilyOf = id => _content.Items.TryGet(id, out var cd) ? cd.CropFamily : null;   // nöbet aileye bakar
             _mines = new MineSystem(_world, _household, Thatchwick.Core.Seeds.Derive(_seed, 53, 0));   // kazı katı tohumdan: yüklemede aynı
+            _mines.PropDef = id => _content.Items.TryGet(id, out var pd) ? pd : null;   // hazır mekân süsleri (621)
             if (loaded != null) SaveGame.RestoreMines(loaded, _mines);
             _mines.ActionTimeScale = _clock.Config.ActionTimeScale;   // ekran dışı vardiya elle kazıyla aynı hızda (belge 58d M0.3)
             PlaceMineInWorld();
@@ -2633,6 +2634,7 @@ namespace Thatchwick.Game
             InitYard();   // sinek, azar, arabalar paneli (belge 57-57e)
             _buildService.DeepShaftOpened += p => { _mines.OpenShaft(p); _floorsDirty = true; };
             _buildService.ProtectedItem = it => _life.Legacy.HeirloomOf(it.Id) != null && MineSystem.InTreasureRoom(_world, it);
+            _view.RockArt = MineRockArt;
             _view.RockTint = p =>
             {
                 var m = _mines.SiteAt(p, out int lx, out int ly);
@@ -2651,6 +2653,34 @@ namespace Thatchwick.Game
                     default: return new Color32(90, 88, 86, 255);
                 }
             };
+        }
+
+        /// <summary>Kaya karosunun görseli (360, 361, 620): tür ya da görülmüş damar; sis, gıcırtı ve işaret renkle.</summary>
+        private (string art, Color tint)? MineRockArt(GridPos p)
+        {
+            var m = _mines.SiteAt(p, out int lx, out int ly);
+            var t = m?.Get(lx, ly);
+            if (t == null || t.IsOpen) return null;
+            string kind;
+            switch (t.Rock)
+            {
+                case RockKind.Soil: kind = "soil"; break;
+                case RockKind.Soft: kind = "soft"; break;
+                case RockKind.Stone: kind = "stone"; break;
+                case RockKind.Hard: kind = "hard"; break;
+                case RockKind.Bedrock: kind = "bedrock"; break;
+                case RockKind.Rubble: kind = "rubble"; break;
+                default: return null;
+            }
+            if (t.Cracked) kind = "cracked";
+            bool seen = m.TouchesOpen(lx, ly);
+            string art = t.Ore != null && t.VeinSeen && seen ? "iso_rock_vein_" + t.Ore.Replace("item.", "") : "iso_rock_" + kind;
+            Color tint = !seen ? new Color(0.32f, 0.3f, 0.3f)                       // görünmeyen kaya (sis)
+                : t.Creaking ? new Color(1f, 0.55f, 0.5f)
+                : t.Marked ? new Color(1f, 0.92f, 0.62f)
+                : t.Ore != null && !t.VeinSeen ? new Color(0.93f, 0.88f, 1f)        // damar izi: hafif mor
+                : Color.white;
+            return (art, tint);
         }
 
         /// <summary>Tepedeki maden ağzının dünya karosu (kat 0); bölgesiz eski kayıtta null.</summary>

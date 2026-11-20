@@ -34872,7 +34872,16 @@
       ],
       "trades": [
         "general"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_shop_counter_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 88,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.anvil",
@@ -34920,7 +34929,15 @@
       "trades": [
         "smithy"
       ],
-      "lockSkill": "Engineering"
+      "lockSkill": "Engineering",
+      "art": {
+        "alongX": "iso_item_bellows_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 80,
+        "mirror": true
+      }
     },
     {
       "id": "item.quench_tub",
@@ -34941,7 +34958,16 @@
       ],
       "trades": [
         "smithy"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_quench_tub_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.iron_pile",
@@ -34962,7 +34988,16 @@
       ],
       "trades": [
         "smithy"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_iron_pile_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.lumber_pile",
@@ -34982,7 +35017,16 @@
       ],
       "trades": [
         "carpenter"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_lumber_pile_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.unfinished_furniture",
@@ -35006,7 +35050,16 @@
       ],
       "trades": [
         "carpenter"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_unfinished_furniture_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.kneading_trough",
@@ -35061,7 +35114,16 @@
       "trades": [
         "general",
         "mill"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_flour_sack_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.grain_sack",
@@ -35085,7 +35147,16 @@
       "trades": [
         "general",
         "mill"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_grain_sack_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.bread_rack",
@@ -35384,7 +35455,16 @@
       ],
       "trades": [
         "tailor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_garment_stand_se",
+        "pivotX": 32.0,
+        "pivotY": 20.0,
+        "pxW": 64,
+        "pxH": 104,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.yarn_basket",
@@ -35404,7 +35484,16 @@
       ],
       "trades": [
         "tailor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_yarn_basket_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.clay_trough",
@@ -35425,7 +35514,16 @@
       ],
       "trades": [
         "potter"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_clay_trough_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.pot_drying_rack",
@@ -35449,7 +35547,15 @@
       ],
       "tags": [
         "greenhouse"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_pot_drying_rack_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 112,
+        "mirror": true
+      }
     },
     {
       "id": "item.fish_basket",
@@ -35472,7 +35578,16 @@
       ],
       "trades": [
         "fisher"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_fish_basket_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.hide_rack",
@@ -35493,7 +35608,15 @@
       ],
       "trades": [
         "saddler"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_hide_rack_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 80,
+        "mirror": true
+      }
     },
     {
       "id": "item.stone_blocks",
@@ -35514,7 +35637,16 @@
       ],
       "trades": [
         "mason"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_stone_blocks_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 80,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.wicker_basket",
@@ -35537,7 +35669,16 @@
       ],
       "trades": [
         "general"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_wicker_basket_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.bedside_stand",
@@ -35593,7 +35734,16 @@
           "skillXp": 1
         }
       ],
-      "washPlace": "tub"
+      "washPlace": "tub",
+      "art": {
+        "alongX": "iso_item_wash_tub_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.shop_sign",
@@ -35612,7 +35762,16 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_shop_sign_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "pxW": 64,
+        "pxH": 112,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.signpost",
@@ -35631,7 +35790,15 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_signpost_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.notice_post",
@@ -35659,7 +35826,16 @@
           "restore": 3,
           "durationDays": 0.02
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_notice_post_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "pxW": 64,
+        "pxH": 112,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.clothes_line",
@@ -35676,7 +35852,16 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_clothes_line_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.hitching_post",
@@ -35693,7 +35878,16 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_hitching_post_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.cloth_drying_line",
@@ -35715,7 +35909,16 @@
       ],
       "trades": [
         "tailor"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_cloth_drying_line_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.net_drying_rack",
@@ -35737,7 +35940,16 @@
       ],
       "trades": [
         "fisher"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_item_net_drying_rack_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.pottery_display",
@@ -35759,7 +35971,16 @@
       ],
       "trades": [
         "potter"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_pottery_display_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.smith_display",
@@ -35781,7 +36002,16 @@
       ],
       "trades": [
         "smithy"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_smith_display_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.flower_clump",
@@ -35822,7 +36052,16 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_shrub_v2_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.reeds",
@@ -35885,7 +36124,16 @@
         "raf"
       ],
       "beauty": 1,
-      "level": 3
+      "level": 3,
+      "art": {
+        "alongX": "iso_item_ink_quill_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.wax_seal",
@@ -35899,7 +36147,16 @@
         "raf"
       ],
       "beauty": 1,
-      "level": 3
+      "level": 3,
+      "art": {
+        "alongX": "iso_item_wax_seal_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.letter_box",
@@ -35913,7 +36170,16 @@
         "raf"
       ],
       "beauty": 1,
-      "level": 3
+      "level": 3,
+      "art": {
+        "alongX": "iso_item_letter_box_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.shears_chalk",
@@ -35927,7 +36193,16 @@
         "raf"
       ],
       "beauty": 1,
-      "level": 3
+      "level": 3,
+      "art": {
+        "alongX": "iso_item_shears_chalk_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.chisel_rack",
@@ -48155,6 +48430,209 @@
       "tags": [
         "writing",
         "merchantonly"
+      ]
+    },
+    {
+      "id": "item.mine_rotten_prop",
+      "displayName": "Çürümüş maden direği",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_rotten_prop_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 112,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_old_chest",
+      "displayName": "Unutulmuş maden sandığı",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_old_mine_chest_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_broken_barrow",
+      "displayName": "Devrik el arabası",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongY": "iso_item_broken_barrow_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 72,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_crystal_cluster",
+      "displayName": "Kristal öbeği",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_crystal_cluster_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_crystal_small",
+      "displayName": "Küçük kristaller",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_crystal_cluster_small_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_pool_stones",
+      "displayName": "Islak kıyı taşları",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_pool_edge_stones_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_old_lamp_niche",
+      "displayName": "Eski kandil oyuğu",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_old_lamp_niche_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
       ]
     }
   ],

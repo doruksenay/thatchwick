@@ -209,7 +209,384 @@ def _water_x(cv, y):
     raise ValueError(f'satır {y}: su yok')
 
 
-REGIONS = {'road': road}
+# ---------------------------------------------------------------- köy meydanı
+def _town_buildings():
+    """Regions.cs TownBuildings'ten bina dikdörtgenleri, kapılar ve ekler (yerel). Tek doğruluk kaynağı C# planı."""
+    import re
+    src = open(os.path.join(ROOT, 'Assets', 'Scripts', 'Core', 'World', 'Regions.cs'), encoding='utf-8').read()
+    out = []
+    pat = re.compile(r'new TownBuilding\("([^"]+)", "[^"]*", "\w+", (\d+), (\d+), (\d+), (\d+), \'(\w)\', (\d+),[^\n]*?(?:\.WithAnnex\((\d+), (\d+), (\d+), (\d+), (\d+), (\d+), "[^"]+"\))?[,;]?\s*(?://[^\n]*)?\n')
+    for m in pat.finditer(src):
+        bid = m.group(1)
+        x, y, w, h = map(int, m.group(2, 3, 4, 5))
+        door, at = m.group(6), int(m.group(7))
+        annex = tuple(map(int, m.group(8, 9, 10, 11))) if m.group(8) else None
+        out.append({'id': bid, 'x': x, 'y': y, 'w': w, 'h': h, 'door': door, 'at': at, 'annex': annex})
+    assert len(out) >= 18, f'bina sayısı {len(out)}'
+    return out
+
+
+def _river_x(y):
+    return 50 + round(2.0 * math.sin(y / 8.0))
+
+
+def _in_plaza(x, y):
+    dx, dy = abs(x - 30), abs(y - 26)
+    return dx <= 7 and dy <= 5 and dx + dy <= 10
+
+
+def town():
+    """Köy meydanı (64x52 yerel). Bina planı ve geçitler C#'ta (Regions.TownBuildings, PortalPairs); taslak araziyi çizer:
+    ırmak (kıyısında kum ve sazlık cepleri), iki köprü, kenarı düzensiz taş meydan, eğri sokaklar, kapılardan sokağa
+    patikalar, atölye kapılarında ve sokak kenarlarında aşınmış toprak, ince kenar bandı."""
+    W, H = 64, 52
+    cv = Canvas(W, H)
+    bs = _town_buildings()
+    inside = set()
+    for b in bs:
+        for yy in range(b['y'], b['y'] + b['h']):
+            for xx in range(b['x'], b['x'] + b['w']):
+                inside.add((xx, yy))
+        if b['annex']:
+            ax, ay, aw, ah = b['annex']
+            for yy in range(ay, ay + ah):
+                for xx in range(ax, ax + aw):
+                    inside.add((xx, yy))
+    pen = {(x, y) for x in range(55, 63) for y in range(4, 13)}
+    blocked = inside | pen
+
+    # Irmak: 3 karo, yer yer 4 (dış kıvrımda), kıyıda kum cepleri
+    water = set()
+    bridges = {26, 27, 44, 45}
+    for y in range(H):
+        c = _river_x(y)
+        cols = [c - 1, c, c + 1]
+        if y not in bridges and noise(y / 3.0, 5, 71) > 0.62:
+            cols.append(c + 2 if math.cos(y / 8.0) > 0 else c - 2)
+        for x in cols:
+            if (x, y) not in blocked:
+                cv.set(x, y, 'water'); water.add((x, y))
+    # Meydan: sekizgen + düzensiz kenar (kapıların önü açık kalır: tabela ve kapı önü yeri)
+    door_front = set()
+    for b in bs:
+        d, at = b['door'], b['at']
+        o = {'N': (at, b['y'] - 1), 'S': (at, b['y'] + b['h']), 'W': (b['x'] - 1, at), 'E': (b['x'] + b['w'], at)}[d]
+        door_front |= {(o[0] + ddx, o[1] + ddy) for ddx in range(-2, 3) for ddy in range(-2, 3)}
+    for y in range(H):
+        for x in range(W):
+            if (x, y) in blocked or (x, y) in water:
+                continue
+            if _in_plaza(x, y):
+                cv.set(x, y, 'stone')
+            else:
+                dx, dy = abs(x - 30), abs(y - 26)
+                over = max(dx - 7, dy - 5, dx + dy - 10)
+                if over <= 2 and (x, y) not in door_front and noise(x / 1.7, y / 1.7, 81) > 0.35 + 0.25 * over:
+                    cv.set(x, y, 'stone')
+    roads = set()
+
+    def road(pts, width, salt, wob=0.3):
+        stroke(cv, pts, width, 'path', salt=salt, wobble=wob, over=('grass', 'dirt', 'water'), mark=roads)
+
+    road([(-0.5, 19.0), (4.5, 19.0), (9.0, 20.2), (13.0, 22.0), (17.0, 23.8), (21.0, 25.2), (24.5, 25.6)], 2.3, 101)
+    road([(31.0, 23.0), (31.3, 18.0), (31.6, 13.5), (30.4, 10.0), (29.2, 5.0), (29.0, -0.5)], 2.3, 103)
+    road([(31.0, 30.0), (31.5, 34.0), (32.7, 38.5), (33.8, 43.5), (34.0, 51.5)], 2.3, 105)
+    road([(36.0, 27.0), (42.0, 27.2), (47.0, 27.0), (53.0, 27.0), (58.0, 26.8), (64.5, 27.0)], 2.2, 107, wob=0.2)
+    road([(13.0, 21.5), (13.2, 27.0), (12.7, 34.0), (13.0, 40.0), (12.6, 44.5)], 2.1, 109)
+    road([(34.0, 46.6), (40.0, 46.8), (46.0, 46.4), (48.5, 45.5), (52.0, 45.2), (56.5, 45.5)], 1.3, 111, wob=0.2)
+    # Köprüler: yolun suyu kestiği yerler
+    for (x, y) in list(roads):
+        if (x, y) in water:
+            cv.set(x, y, 'bridge')
+    for (x, y) in list(roads):
+        if (x, y) in blocked:
+            cv.set(x, y, 'grass'); roads.discard((x, y))
+    # Geçit karoları kesin yol
+    for (x, y) in [(0, 18), (0, 19), (1, 18), (1, 19), (28, 0), (29, 0), (28, 1), (29, 1), (33, 51), (34, 51), (33, 50), (34, 50), (63, 26), (63, 27), (62, 26), (62, 27)]:
+        if cv.get(x, y) not in ('bridge', 'water'):
+            cv.set(x, y, 'path'); roads.add((x, y))
+    connect4(cv)
+    roads = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('path', 'bridge')}
+
+    # Kapılardan sokağa patika (en kısa yol, binaların ve suyun içinden geçmez)
+    from collections import deque
+    doors = []
+    for b in bs:
+        d, at = b['door'], b['at']
+        out = {'N': (at, b['y'] - 1), 'S': (at, b['y'] + b['h']), 'W': (b['x'] - 1, at), 'E': (b['x'] + b['w'], at)}[d]
+        step = {'N': (0, -1), 'S': (0, 1), 'W': (-1, 0), 'E': (1, 0)}[d]
+        doors.append((b['id'], out, step))
+    for bid, start, step in doors:
+        # Kapıdan iki karo dümdüz çıkış (tabela ve kapı önü yeri), sonra en yakın yola.
+        stub = set()
+        if start in roads:
+            continue
+        for k in (0, 1):
+            t = (start[0] + step[0] * k, start[1] + step[1] * k)
+            if t in blocked or t in water or cv.get(*t) is None:
+                break
+            if t in roads:
+                break
+            if cv.get(*t) not in ('stone', 'bridge'):
+                cv.set(t[0], t[1], 'path')
+            stub.add(t)
+            start = t
+        if any((start[0] + a, start[1] + c) in roads for a, c in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+            roads |= stub
+            continue
+
+        prev = {start: None}
+        q = deque([start])
+        goal = None
+        while q:
+            cur = q.popleft()
+            if cur in roads and cur != start:
+                goal = cur; break
+            for ddx, ddy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                n = (cur[0] + ddx, cur[1] + ddy)
+                if n in prev or not (0 <= n[0] < W and 0 <= n[1] < H) or n in blocked or n in water:
+                    continue
+                if _in_plaza(*n):
+                    prev[n] = cur; goal = n; q.clear(); break
+                prev[n] = cur; q.append(n)
+        assert goal is not None, f'{bid}: kapıdan yola ulaşılamıyor'
+        cur = goal
+        while cur is not None:
+            if cv.get(*cur) not in ('stone', 'bridge'):
+                cv.set(cur[0], cur[1], 'path')
+            roads.add(cur)
+            cur = prev[cur]
+        roads |= stub
+    # Aşınmış toprak: atölye kapıları önünde öbek, sokak kenarında yer yer
+    work = {'smithy', 'carpenter', 'mason', 'potter', 'saddler', 'mill', 'animals_hut'}
+    for bid, (ox, oy), _ in doors:
+        if bid not in work:
+            continue
+        for yy in range(oy - 3, oy + 4):
+            for xx in range(ox - 3, ox + 4):
+                r = math.hypot(xx - ox, yy - oy)
+                if r <= 1.4 + 1.6 * noise(xx / 1.5, yy / 1.5, 91) and cv.get(xx, yy) == 'grass' and (xx, yy) not in blocked:
+                    cv.set(xx, yy, 'dirt')
+    for (x, y) in list(roads):
+        for ddx, ddy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            n = (x + ddx, y + ddy)
+            if cv.get(*n) == 'grass' and n not in blocked and noise(n[0] / 2.2, n[1] / 2.2, 93) > 0.66:
+                cv.set(n[0], n[1], 'dirt')
+    # Kıyı: suya değen çimde kum cepleri ve sazlık yeri
+    for (x, y) in list(water):
+        for ddx, ddy in ((1, 0), (-1, 0)):
+            n = (x + ddx, y)
+            if cv.get(*n) == 'grass' and n not in blocked and noise(n[0] / 2.0, n[1] / 2.5, 95) > 0.58:
+                cv.set(n[0], n[1], 'sand')
+    # İnce kenar bandı (yol, ırmak, bina ve ağıl çevresi açık)
+    keep = near(roads, 2) | near(water, 1) | near(blocked, 2)
+    band(cv, (0.6, 2.4), salt=97, sides='NSEW', keep=keep)
+
+    markers = {
+        'ponds': [
+            {'x': _river_x(0), 'y': 0, 'fish': [{'id': 'item.fish_trout', 'n': 6}, {'id': 'item.fish_pike', 'n': 2}, {'id': 'item.fish_carp', 'n': 3}, {'id': 'item.fish_perch', 'n': 4}]},
+            {'x': _river_x(35), 'y': 35, 'fish': [{'id': 'item.fish_trout', 'n': 4}, {'id': 'item.fish_carp', 'n': 4}, {'id': 'item.fish_eel', 'n': 2}, {'id': 'item.fish_salmon', 'n': 2}, {'id': 'item.fish_perch', 'n': 2}]},
+            {'x': _river_x(51), 'y': 51, 'fish': [{'id': 'item.fish_trout', 'n': 2}, {'id': 'item.fish_crayfish', 'n': 4}, {'id': 'item.mussel', 'n': 3}]},
+        ],
+        'items': [],
+        'keep': [],
+    }
+    return cv, markers
+
+
+# ---------------------------------------------------------------- yaban bölgeleri ve çiftlik
+# Taban: kod çizimiyle kurulan arazi (dotnet run --project tools/map-preview -- out=art/preview/_base export). Taslak bunun
+# üstüne: köşeleri yuvarlanmış patikalar (RegionsWild.cs Trail noktalarından), girintili su kıyısı ve kum, kenar bandı.
+WILD_FN = {'forest': 'ForestMap', 'lake': 'LakeMap', 'marsh': 'MarshMap', 'hill': 'HillMap', 'slopes': 'SlopesMap', 'coast': 'CoastMap'}
+BASE_DIR = os.path.join(ROOT, 'art', 'preview', '_base')
+
+
+def _base(region):
+    path = os.path.join(BASE_DIR, f'base-{region}.json')
+    if not os.path.exists(path):
+        raise SystemExit(f'{path} yok: önce `dotnet run --project tools/map-preview -- out=art/preview/_base export`')
+    return json.load(open(path, encoding='utf-8'))
+
+
+def _wild_src(fn):
+    import re
+    src = open(os.path.join(ROOT, 'Assets', 'Scripts', 'Core', 'World', 'RegionsWild.cs'), encoding='utf-8').read()
+    consts = {'MineMouthX': 28, 'MineMouthY': 34}
+    m = re.search(r'private static void ' + fn + r'\(Painter p\)\s*\{(.*?)\n        \}', src, re.S)
+    body = m.group(1)
+    if 'pierTop' in body:
+        consts['pierTop'] = 19 + round(1.5 * math.sin(20 / 3.2) + 0.8 * math.sin(20 / 7.0)) - 1
+
+    def ev(e):
+        return int(eval(e, {}, consts))
+    trails = []
+    for t in re.finditer(r'Trail\(p, keep, (\d+), ([^;]*)\);', body):
+        w, rest = int(t.group(1)), t.group(2)
+        if rest.strip() == 'LakeToCoast':
+            pts = [(24, 7), (5, 7), (5, 31)]
+        else:
+            pts = [(ev(a), ev(b)) for a, b in re.findall(r'\(([^(),]+(?:\([^)]*\))?[^(),]*), ([^(),]+)\)', rest)]
+        trails.append((w, pts))
+    ponds = []
+    for a, b in re.findall(r'p\.PondAt\(([^,]+), ([^,]+),', body):
+        try:
+            ponds.append((ev(a), ev(b)))
+        except NameError:
+            pass   # döngüdeki göletler (sazlık): taban suyu zaten yerinde
+    return trails, ponds
+
+
+def _meander(pts, salt, amp=0.9, step=4.0):
+    """Uzun düz parçaları gürültüyle kıvrar: her ~step karoda dik yönde ±amp sapma (uçlar ve köşeler yerinde)."""
+    out = [pts[0]]
+    for i in range(len(pts) - 1):
+        (ax, ay), (bx, by) = pts[i], pts[i + 1]
+        L = math.hypot(bx - ax, by - ay)
+        n = int(L // step)
+        nx, ny = (-(by - ay) / L, (bx - ax) / L) if L else (0, 0)
+        for k in range(1, n):
+            t = k / n
+            off = (noise((ax + bx) * 0.37 + k * 1.3, (ay + by) * 0.21, salt) - 0.5) * 2 * amp * math.sin(math.pi * t)
+            out.append((ax + (bx - ax) * t + nx * off, ay + (by - ay) * t + ny * off))
+        out.append((bx, by))
+    return out
+
+
+def _rounded(pts, r=2.6):
+    """Köşeleri yuvarlanmış çoklu çizgi (kontrol noktaları yoğun)."""
+    out = [pts[0]]
+    for i in range(1, len(pts) - 1):
+        a, b, c = pts[i - 1], pts[i], pts[i + 1]
+        la, lc = math.hypot(b[0] - a[0], b[1] - a[1]), math.hypot(c[0] - b[0], c[1] - b[1])
+        rr = min(r, la / 2, lc / 2)
+        p0 = (b[0] + (a[0] - b[0]) * rr / max(la, 1e-6), b[1] + (a[1] - b[1]) * rr / max(la, 1e-6))
+        p2 = (b[0] + (c[0] - b[0]) * rr / max(lc, 1e-6), b[1] + (c[1] - b[1]) * rr / max(lc, 1e-6))
+        out.append(p0)
+        for k in range(1, 6):
+            t = k / 6
+            out.append(((1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * b[0] + t * t * p2[0], (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * b[1] + t * t * p2[1]))
+        out.append(p2)
+    out.append(pts[-1])
+    return out
+
+
+def _brush(cv, pts, width, kind, salt, over, mark):
+    """Yoğun noktalı çizgi boyunca fırça (catmull yok: yuvarlanmış köşe korunur)."""
+    dist = 0.0
+    dense = []
+    for i in range(len(pts) - 1):
+        (ax, ay), (bx, by) = pts[i], pts[i + 1]
+        n = max(1, int(math.hypot(bx - ax, by - ay) * 3))
+        for k in range(n):
+            dense.append((ax + (bx - ax) * k / n, ay + (by - ay) * k / n))
+    dense.append(pts[-1])
+    for i, (x, y) in enumerate(dense):
+        if i:
+            dist += math.hypot(x - dense[i - 1][0], y - dense[i - 1][1])
+        r = width / 2 + (noise(dist / 3.0, 0, salt) - 0.5) * 0.4
+        for yy in range(math.floor(y - r - 1), math.ceil(y + r + 1)):
+            for xx in range(math.floor(x - r - 1), math.ceil(x + r + 1)):
+                if (xx + 0.5 - x) ** 2 + (yy + 0.5 - y) ** 2 <= r * r and cv.get(xx, yy) in over:
+                    cv.set(xx, yy, kind)
+                    mark.add((xx, yy))
+
+
+WILD_OPTS = {
+    # band: (derinlik aralığı, kenarlar) listesi; restroke: patikalar yeniden çizilir; shore: kum olasılığı eşiği (düşük = çok kum)
+    'forest': {'band': [((2.5, 5.5), 'NEW'), ((1.5, 3.0), 'S')], 'restroke': True, 'shore': 0.62, 'grow': 0.72, 'salt': 211},
+    'lake': {'band': [((1.5, 3.5), 'NEW'), ((1.0, 2.2), 'S')], 'restroke': True, 'shore': 0.42, 'grow': 0.7, 'salt': 223},
+    'marsh': {'band': [((1.0, 2.8), 'NSE')], 'restroke': False, 'shore': 0.7, 'grow': 0.6, 'salt': 227},
+    'hill': {'band': [((2.0, 4.5), 'NW'), ((1.0, 2.5), 'S')], 'rock': [((1.5, 3.5), 'E')], 'restroke': True, 'shore': 1.0, 'grow': 1.0, 'salt': 229},
+    'slopes': {'band': [((1.0, 2.5), 'EW')], 'restroke': False, 'shore': 1.0, 'grow': 1.0, 'salt': 233},
+    'coast': {'band': [((1.5, 3.5), 'NEW')], 'beach': True, 'restroke': True, 'shore': 1.0, 'grow': 1.0, 'salt': 239},
+}
+BASE_KIND = {'.': 'grass', '=': 'path', '~': 'water', 'b': 'bridge', 'S': 'stone', 'd': 'dirt', 's': 'sand', '#': 'grass'}
+
+
+def wild(region):
+    b = _base(region)
+    W, H = b['w'], b['h']
+    o = WILD_OPTS[region]
+    salt = o['salt']
+    cv = Canvas(W, H)
+    for y, row in enumerate(b['rows']):
+        for x, ch in enumerate(row):
+            cv.set(x, y, BASE_KIND[ch])
+    if o.get('beach'):
+        for y in range(H):
+            for x in range(W):
+                if cv.get(x, y) == 'dirt':
+                    cv.set(x, y, 'sand')   # kumsal: eski kod çiziminde toprak (FloorType.Sand sonradan geldi)
+    trails, ponds = _wild_src(WILD_FN[region])
+    roads = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('path', 'bridge')}
+    edge_paths = {(x, y) for (x, y) in roads if x <= 2 or y <= 2 or x >= W - 3 or y >= H - 3}
+    if o['restroke'] and trails:
+        # Eski L patikaları sil (köprü ve kenardaki geçit ağızları kalır), köşeleri yuvarlanmış hâliyle yeniden çiz.
+        for (x, y) in list(roads):
+            if cv.get(x, y) == 'path' and (x, y) not in edge_paths:
+                cv.set(x, y, 'grass')
+        roads = {p for p in roads if cv.get(*p) in ('path', 'bridge')}
+        for i, (w, pts) in enumerate(trails):
+            cpts = [(px + w / 2, py + w / 2) for (px, py) in pts]
+            _brush(cv, _rounded(_meander(cpts, salt + 70 + i, amp=1.7 if w >= 2 else 1.3), 3.2), w + 0.25, 'path', salt + i, over=('grass', 'dirt', 'sand'), mark=roads)
+        connect4(cv)
+        roads = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('path', 'bridge')}
+    water = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) == 'water'}
+    fixed = near(roads, 1) | {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('stone', 'bridge')}
+    # Su kıyısı: yer yer bir karo içeri taşar (girintili kıyı), kıyı çiminde kum
+    for (x, y) in list(water):
+        for ddx, ddy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            n = (x + ddx, y + ddy)
+            if cv.get(*n) in ('grass', 'dirt') and n not in fixed and noise(n[0] / 1.8, n[1] / 1.8, salt + 50) > o['grow']:
+                cv.set(n[0], n[1], 'water')
+    water = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) == 'water'}
+    for (x, y) in water:
+        for ddx in (-1, 0, 1):
+            for ddy in (-1, 0, 1):
+                n = (x + ddx, y + ddy)
+                if cv.get(*n) == 'grass' and n not in fixed and noise(n[0] / 2.0, n[1] / 2.0, salt + 60) > o['shore']:
+                    cv.set(n[0], n[1], 'sand')
+    for (px, py) in ponds:
+        if cv.get(px, py) not in ('water',):
+            cv.set(px, py, 'water')
+    # Kenar bandı ve kaya sırtı (patika, su, taş ve geçit çevresi açık)
+    open_ = near(roads, 2) | near(water, 1) | near({p for p in fixed if cv.get(*p) == 'stone'}, 1) | near(edge_paths, 3)
+    for k, (depth, sides) in enumerate(o['band']):
+        band(cv, depth, salt=salt + 10 + k, sides=sides, keep=open_)
+    for k, (depth, sides) in enumerate(o.get('rock', [])):
+        before = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) == 'band'}
+        band(cv, depth, salt=salt + 30 + k, sides=sides, keep=open_)
+        for y in range(H):
+            for x in range(W):
+                if cv.get(x, y) == 'band' and (x, y) not in before:
+                    cv.set(x, y, 'rock')
+    return cv, {'ponds': [], 'items': [], 'keep': []}
+
+
+def farm():
+    """Çiftlik (96x72 yerel): oyuncunun arazisi; yalnızca kuzey, batı ve güney kenarda ince bant ve doğu geçidine kıvrılan
+    çiftlik yolu. Ev, gölet ve tarla kod çizimiyle kalır (StarterWorld)."""
+    b = _base('farm')
+    W, H = b['w'], b['h']
+    cv = Canvas(W, H)
+    for y, row in enumerate(b['rows']):
+        for x, ch in enumerate(row):
+            cv.set(x, y, BASE_KIND[ch])
+    roads = set()
+    for (x, y) in [(x, y) for y in range(H) for x in range(W) if cv.get(x, y) == 'path' and x >= 70]:
+        cv.set(x, y, 'grass')
+    _brush(cv, _rounded([(73.5, 40.5), (78.0, 40.8), (83.0, 39.6), (88.0, 39.9), (92.5, 41.0), (96.0, 41.0)], 3.0), 2.2, 'path', 251, over=('grass', 'dirt'), mark=roads)
+    for (x, y) in [(94, 40), (95, 40), (94, 41), (95, 41)]:
+        cv.set(x, y, 'path'); roads.add((x, y))
+    connect4(cv)
+    water = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) == 'water'}
+    built = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('stone', 'bridge', 'dirt')}
+    keep = near(roads, 2) | near(water, 2) | near(built, 2)
+    band(cv, (1.0, 3.0), salt=257, sides='NWS', keep=keep)
+    return cv, {'ponds': [], 'items': [], 'keep': []}
+
+
+REGIONS = {'road': road, 'town': town, 'farm': farm, **{k: (lambda k=k: wild(k)) for k in WILD_FN}}
 
 
 def main():

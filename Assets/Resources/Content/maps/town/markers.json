@@ -1,0 +1,72 @@
+{
+  "ponds": [
+    {
+      "x": 50,
+      "y": 0,
+      "fish": [
+        {
+          "id": "item.fish_trout",
+          "n": 6
+        },
+        {
+          "id": "item.fish_pike",
+          "n": 2
+        },
+        {
+          "id": "item.fish_carp",
+          "n": 3
+        },
+        {
+          "id": "item.fish_perch",
+          "n": 4
+        }
+      ]
+    },
+    {
+      "x": 48,
+      "y": 35,
+      "fish": [
+        {
+          "id": "item.fish_trout",
+          "n": 4
+        },
+        {
+          "id": "item.fish_carp",
+          "n": 4
+        },
+        {
+          "id": "item.fish_eel",
+          "n": 2
+        },
+        {
+          "id": "item.fish_salmon",
+          "n": 2
+        },
+        {
+          "id": "item.fish_perch",
+          "n": 2
+        }
+      ]
+    },
+    {
+      "x": 50,
+      "y": 51,
+      "fish": [
+        {
+          "id": "item.fish_trout",
+          "n": 2
+        },
+        {
+          "id": "item.fish_crayfish",
+          "n": 4
+        },
+        {
+          "id": "item.mussel",
+          "n": 3
+        }
+      ]
+    }
+  ],
+  "items": [],
+  "keep": []
+}

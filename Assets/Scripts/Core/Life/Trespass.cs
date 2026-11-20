@@ -52,7 +52,7 @@ namespace Thatchwick.Core.Life
         {
             if (!Regions.IsRegional(_map)) return null;
             foreach (var b in Regions.TownBuildings)
-                if (p.X >= b.X0 && p.X <= b.X1 && p.Y >= b.Y0 && p.Y <= b.Y1) return b;
+                if (b.Covers(p) || (p.X >= b.X0 && p.X <= b.X1 && p.Y >= b.Y0 && p.Y <= b.Y1)) return b;
             return null;
         }
 
