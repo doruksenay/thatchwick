@@ -1,7 +1,8 @@
 ---
 id: "346"
 title: Su karoları: gölet suyu (iki değişke), kuru gölet çukuru, buz, kıyı
-status: pending
+status: running
+claimed_at: 2026-11-20T08:00Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 priority: 10
 family: zemin
