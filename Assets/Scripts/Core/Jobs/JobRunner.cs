@@ -97,6 +97,8 @@ namespace Thatchwick.Core.Jobs
 
         /// <summary>Karo işleri (çapala). Yoksa bu işler başlamaz.</summary>
         public ITileWork TileWork { get; set; }
+        /// <summary>Sıkışmış karaktere gidecek tuvalet yokken açıkta tuvalet için karo (avlu sistemi verir); null ise kaza beklenir.</summary>
+        public Func<Character, GridPos?> OpenReliefSpot { get; set; }
 
         /// <summary>Bir etkileşim başarıyla bitince (kaza sistemi, istatistik). Etkiler uygulandıktan sonra çağrılır.</summary>
         public event Action<Character, InteractionDef> InteractionCompleted;
@@ -1021,7 +1023,15 @@ namespace Thatchwick.Core.Jobs
             }
             _toiletCheckUntil = _elapsedDays + 0.05;                        // tuvalet yoksa her an aramasın
             FindBestFor(NeedType.Bladder, out var item, out var inter);
-            if (item == null) return;
+            if (item == null)
+            {
+                // Hela, lazımlık ve siper yok: açıkta, uygun bir karoya (belge 57b §2).
+                var spot = OpenReliefSpot?.Invoke(_character);
+                if (!spot.HasValue || TileWork == null) return;
+                Queue.InsertFront(Job.OnTile(spot.Value, TileAction.Relieve).WithReason(NeedType.Bladder));
+                ResetJobState();
+                return;
+            }
             Queue.InsertFront(Job.UseItem(item.Id, inter.Id).WithReason(NeedType.Bladder));
             ResetJobState();
         }
@@ -1054,7 +1064,15 @@ namespace Thatchwick.Core.Jobs
         private bool TryStartNeedItem(NeedType need)
         {
             FindBestFor(need, out var bestItem, out var bestInteraction);
-            if (bestItem == null) return false;
+            if (bestItem == null)
+            {
+                // Sıkışmış ve gidecek yer yok: açıkta tuvalet (belge 57b §2).
+                if (need != NeedType.Bladder || TileWork == null || _character.Needs.Get(NeedType.Bladder) >= BladderInterrupt) return false;
+                var spot = OpenReliefSpot?.Invoke(_character);
+                if (!spot.HasValue) return false;
+                ResetJobState();
+                return Queue.TryEnqueue(Job.OnTile(spot.Value, TileAction.Relieve).WithReason(NeedType.Bladder));
+            }
 
             ResetJobState();
             var job = Job.UseItem(bestItem.Id, bestInteraction.Id).WithReason(need);
