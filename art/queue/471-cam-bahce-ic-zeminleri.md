@@ -1,7 +1,8 @@
 ---
 id: "471"
 title: "Cam bahçe iç zeminleri: toprak, kum, tuzlu su (3)"
-status: pending
+status: running
+claimed_at: 2026-11-20T07:19Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe), Project belgesi 47
 priority: 20
 family: esya
