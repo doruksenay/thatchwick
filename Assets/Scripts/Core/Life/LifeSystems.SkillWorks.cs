@@ -151,6 +151,9 @@ namespace Thatchwick.Core.Life
         {
             switch (i.SkillWork)
             {
+                case "wash_all":
+                    WashAllClothes(c);
+                    break;
                 case "inspect_field":
                 {
                     var s = _plants?.Summary() ?? default;

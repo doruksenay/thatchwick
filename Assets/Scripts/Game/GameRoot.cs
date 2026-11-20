@@ -411,6 +411,8 @@ namespace Thatchwick.Game
             WaitPendingWrite();   // önceki sahnenin arka plan kaydı bitmeden kayıt okunmasın
             IsoArt.Reset();
             _content = ContentLoader.Load(out var contentErrors);
+            _content.Clothing = ContentLoader.LoadClothing(_content, out var clothingErrors);
+            contentErrors.AddRange(clothingErrors);
             _layouts = ContentLoader.LoadLayouts(_content, out var layoutErrors);   // oda/bina şablonları (belge 44)
             foreach (var e in layoutErrors) Debug.LogWarning($"Yerleşim şablonu: {e}");
             foreach (var e in contentErrors) Debug.LogError($"İçerik hatası: {e}");
@@ -621,6 +623,8 @@ namespace Thatchwick.Game
                 AccountXp = () => _account.Xp
             };
             _life.Home.ServantWalks = true;   // hizmetkâr sabahları eve yürür, işleri kendisi yapar (belge 45)
+            // Giyim uyumu (belge 48 §12.3): köylünün yorumu başında konuşma balonu olarak çıkar.
+            _life.ClothingRemark += (villager, target, key) => Say(villager, GameLocalization.T(key));
             // Kilitler beceride (karar 28-4): hanenin o becerideki en iyi seviyesi.
             _life.SkillLocks = true;
             _buildService.SkillLevel = _life.BestSkill;
@@ -2980,7 +2984,7 @@ namespace Thatchwick.Game
                     var c = a.Character;
                     if (c.IsVillager || c.IsDead) continue;
                     var room = _world.Map.Rooms.RoomAt(c.Position);
-                    if (room == null || !room.IsIndoor) c.Soak((float)(gameDays * RainSoakPerDay));
+                    if (room == null || !room.IsIndoor) c.SoakRain((float)(gameDays * RainSoakPerDay));   // giysi koruması (belge 48 §12.1)
                 }
             _population.Tick(gameDays);
             _life.Tick(gameDays);

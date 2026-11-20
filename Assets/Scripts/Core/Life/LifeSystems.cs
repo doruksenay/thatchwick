@@ -427,6 +427,7 @@ namespace Thatchwick.Core.Life
             };
             c.StageChanged += (ch, before, after) =>
             {
+                OnClothingStageChanged(ch, before, after);
                 if (after == AgeStage.Elder && before != AgeStage.Elder) { OnBecameElder(ch); return; }
                 if (after != AgeStage.YoungAdult || before == AgeStage.YoungAdult) return;
                 OnGrownUp(ch);
@@ -856,6 +857,8 @@ namespace Thatchwick.Core.Life
             if (coffee) Coffee.OnCoffee(c, Clock.TotalDays);
             if (interaction.Id == FortuneInteraction) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
             if (IsHoneyHarvest(interaction)) TrySting(c);   // petek kesmede sokma OnInteractionAppliedOn'da
+            OnClothingCrafted(c, interaction);
+            OnClothingWork(c, interaction);
         }
 
         // ---- Bağbozumu (belge 32-8.3) ----
@@ -955,7 +958,7 @@ namespace Thatchwick.Core.Life
         public bool TrySting(Character c, double? roll = null)
         {
             if (c == null || c.IsDead || c.Skills.GetLevel(SkillType.AnimalHusbandry) >= BeeSafeLevel) return false;
-            if ((roll ?? _beeRng.NextDouble()) >= BeeStingChance) return false;
+            if ((roll ?? _beeRng.NextDouble()) >= BeeStingChance * Clothing.HazardFactor(c, "bee")) return false;   // arıcı başlığı −%75
             return Injuries.InjureById(c, "bee_sting") != null;
         }
         /// <summary>Kıyıdan balık: ilk balık hatırası.</summary>
@@ -1065,6 +1068,7 @@ namespace Thatchwick.Core.Life
                 Mood.Update(Population.Members);
                 Watcher.Update(Population.Members, day: Clock.TotalDays);
                 Breakdowns.Update(step);
+                UpdateClothing();
             }
 
             Spoilage.Tick(gameDays);
@@ -1162,6 +1166,7 @@ namespace Thatchwick.Core.Life
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
             AnimalDay(day);   // hüner etkileri, çekirge, perhiz (belge 48)
             DailyHealing();
+            DailyClothing();
             Injuries.DailyUpdate();
             Decor.RemindFreeMirror();
             Home.OnNewDay();
@@ -1230,7 +1235,8 @@ namespace Thatchwick.Core.Life
                 locustDry = Locusts.DryDays,
                 locustIncoming = Locusts.Incoming,
                 skillFlags = ExportSkillFlags(),
-                roomNames = ExportRoomNames()
+                roomNames = ExportRoomNames(),
+                clothing = _clothing?.Export()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1273,6 +1279,7 @@ namespace Thatchwick.Core.Life
             Duties.Import(data.timedDuties);
             Roaming.Import(data.roaming);
             Requests.Import(data.requests);
+            Clothing.Import(data.clothing);
             UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;

@@ -23,6 +23,8 @@ namespace Thatchwick.Core.Content
         public List<SkillUnlockDef> SkillUnlocks { get; } = new List<SkillUnlockDef>();
         /// <summary>Etkileşimlerin başvurduğu moodlet kataloğu (doğrulama için).</summary>
         public Mood.MoodCatalog Moods { get; set; } = Mood.MoodCatalog.Default;
+        /// <summary>Giysi kataloğu (clothing.json; belge 48). Yüklenmezse boş.</summary>
+        public Clothing.ClothingCatalog Clothing { get; set; } = new Clothing.ClothingCatalog();
 
         /// <summary>
         /// İçerik hatalarını okunur metin olarak döner (boşsa içerik geçerli).
