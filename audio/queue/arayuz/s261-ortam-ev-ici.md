@@ -4,7 +4,7 @@ title: Ev içi ortam yatağı
 kind: ambience
 family: ambience
 freq: C
-status: claimed
+status: review
 approved_by: user
 depends_on: []
 note: 'Tester raporu 65 B6 ve 66: oyun her açılışta "eksik ses anahtarı amb.interior" yazıyor. Cozy yön (Project 45c): yumuşak, sıcak.'
@@ -20,5 +20,9 @@ axes:
   - cozy stone and timber house interior, very low room tone, distant birds through a shuttered window
 claimed_by: runnervm0hi8g
 claimed_at: '2026-11-20T22:01:00Z'
+candidates: 3
+passed: 3
+credits_spent: 441
+generated_at: '2026-11-20T22:01:15Z'
 ---
 A quiet, cozy medieval cottage room: soft crackle of a small hearth fire and faint creak of wooden beams. Calm and still. No wind howling, no rain.
