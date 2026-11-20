@@ -574,11 +574,56 @@ def wild(region):
             for x in range(W):
                 if cv.get(x, y) == 'band' and (x, y) not in before:
                     cv.set(x, y, 'rock')
+    markers = {'ponds': [], 'items': [], 'keep': []}
+    lm = LANDMARKS.get(region)
+    if lm:
+        place_landmark(cv, roads, markers, *lm)
     # Kaya sırtı patikaya değmez (2x1 devrik kütük yola taşmasın).
     for (x, y) in near(roads, 2):
         if cv.get(x, y) == 'rock':
             cv.set(x, y, 'dirt' if region == 'hill' else 'grass')
-    return cv, {'ponds': [], 'items': [], 'keep': []}
+    return cv, markers
+
+
+# Simge yapılar (belge 64 §3, iş 753): bölge -> (eşya, ayak izi w, h, tercih edilen yer, kural).
+# kural: 'open' çimde patikadan 2-4 karo uzakta görünür yer; 'shore' suya değen kara; 'water_edge' bir ucu suda.
+LANDMARKS = {
+    'forest': ('item.landmark_lightning_oak', 2, 2, (8, 22), 'open'),
+    'lake': ('item.landmark_sunken_boat', 2, 1, (14, 26), 'shore'),
+    'marsh': ('item.landmark_broken_boardwalk', 2, 1, (26, 8), 'shore'),
+    'hill': ('item.landmark_watchtower_ruin', 2, 2, (8, 8), 'open'),
+    'slopes': ('item.landmark_vineyard_house_ruin', 2, 2, (4, 2), 'open'),
+    'coast': ('item.landmark_beacon_fire_place', 1, 1, (40, 10), 'open'),
+}
+
+
+def place_landmark(cv, roads, markers, item_id, w, h, pref, rule):
+    """Tercih edilen yere en yakın uygun yeri arar: ayak izi ve bir karoluk çevresi çim ya da kum, patikaya 2-5 karo,
+    banttan uzak. Bulursa markers'a eşyayı ve 2 karoluk açık alanı (keep) yazar."""
+    best = None
+    for y in range(1, cv.h - h - 1):
+        for x in range(1, cv.w - w - 1):
+            cells = [(x + i, y + j) for i in range(w) for j in range(h)]
+            ring = [(x + i, y + j) for i in range(-1, w + 1) for j in range(-1, h + 1)]
+            if any(cv.get(*c) not in ('grass', 'sand') for c in cells):
+                continue
+            if any(cv.get(*c) in ('band', 'rock', 'path', 'bridge', 'stone') for c in ring):
+                continue
+            dr = min((abs(cx - rx) + abs(cy - ry) for (cx, cy) in cells for (rx, ry) in roads), default=99)
+            if rule == 'open' and not (2 <= dr <= 6):
+                continue
+            wet = sum(1 for c in ring if cv.get(*c) == 'water')
+            if rule == 'shore' and wet == 0:
+                continue
+            score = abs(x - pref[0]) + abs(y - pref[1])
+            if best is None or score < best[0]:
+                best = (score, x, y)
+    if best is None:
+        print(f'  simge yapı yeri bulunamadı: {item_id}')
+        return
+    _, x, y = best
+    markers['items'].append({'id': item_id, 'x': x, 'y': y, 'rot': 0, 'grown': False})
+    markers['keep'].append({'x0': x - 2, 'y0': y - 2, 'x1': x + w + 1, 'y1': y + h + 1})
 
 
 def farm():
