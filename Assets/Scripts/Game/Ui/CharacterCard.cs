@@ -85,7 +85,7 @@ namespace Thatchwick.Game.Ui
             // HUD v2 (belge 66 §5 S6): sarmaşıklı meşe çerçeve (774 hud_window, dokuz dilim). Doku yoksa kit paneli kalır.
             if (HudArt.Tex(HudArt.Window) != null)
             {
-                HudArt.Apply(_card, HudArt.Window, HudArt.WindowSlice, Color.clear);
+                HudArt.Apply(_card, HudArt.Window, Color.clear);
                 HudArt.Pad(_card, 28, 28, 24, 26);
                 _card.style.width = Width + 44f;
             }
@@ -190,6 +190,9 @@ namespace Thatchwick.Game.Ui
             foreach (var k in keys)
             {
                 if (string.IsNullOrEmpty(k)) continue;
+                // HUD v2 ikonları (812, meşe): ihtiyaç ikonlarında önce onlar ("need_bladder" dosyası "need_toilet").
+                var hud = HudArt.Icon(k == "need_bladder" ? "need_toilet" : k);
+                if (hud.Ok) { e.style.backgroundImage = new StyleBackground(hud.Tex); return true; }
                 var sprite = IsoArt.Get("ui_icon_" + k + "_32", 16f, 16f) ?? IsoArt.Get("ui_icon_" + k, 8f, 8f);
                 if (sprite != null) { e.style.backgroundImage = new StyleBackground(sprite); return true; }
                 var tex = UiSkin.Icon(k);
