@@ -43,11 +43,30 @@ def prompt_of(job: Job) -> str:
     return " ".join(l.strip() for l in lines).strip()
 
 
-def full_prompt(fam: dict, text: str, extra: str = "") -> str:
-    parts = [fam.get("prefix", "").strip(), text.strip()]
-    if extra:
-        parts.append(extra)
-    return " ".join(p for p in parts if p)
+SFX_PROMPT_MAX = 450  # ElevenLabs sound-generation metin sınırı (20.11.2026: 481 karakterle 400 döndü)
+
+
+def full_prompt(fam: dict, text: str, extra: str = "", limit: int = SFX_PROMPT_MAX) -> str:
+    """Aile ön eki + iş tarifi + eksen ayrıntısı. Sınırı aşarsa önce iş tarifi cümle sınırından kısaltılır,
+    sonra gerekirse ön ekin son cümleleri düşer; eksen ayrıntısı korunur (çeşitlilik ondan gelir)."""
+    prefix, text = fam.get("prefix", "").strip(), text.strip()
+
+    def join(*ps):
+        return " ".join(p for p in ps if p)
+
+    out = join(prefix, text, extra)
+    if len(out) <= limit:
+        return out
+    room = limit - len(join(prefix, "", extra)) - 1
+    if room > 40:
+        cut = text[:room]
+        dot = max(cut.rfind(". "), cut.rfind("; "))
+        text = cut[:dot + 1] if dot > 30 else cut.rsplit(" ", 1)[0]
+        out = join(prefix, text, extra)
+    while len(out) > limit and ". " in prefix:
+        prefix = prefix.rsplit(". ", 1)[0] + "."
+        out = join(prefix, text, extra)
+    return out[:limit]
 
 
 def axis_variants(axes: dict | None, n: int, seed: int) -> list[str]:

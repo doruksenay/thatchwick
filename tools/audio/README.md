@@ -26,6 +26,7 @@ Yoklayıcıyı Görev Zamanlayıcı'ya kurmak (15 dakikada bir): `tools\audio-po
    - Seç; Kabul, Yeniden üret ya da Ret.
 4. **Yükseltme:** `python tools\audio\promote.py --git` (yoklayıcı bunu da yapar).
    - Seçilenler `Assets\Resources\Audio\<Grup>\<aile>\` altına girer.
+   - `sequence: true` olan katmanlı işte (ör. kepçe: alma + dökülüş) katmanlar üst üste değil art arda çalınır: her birleşim tek dosyaya yazılır (`sequence_gap_s`, varsayılan 0,12 sn). Oyun kodu değişmez, anahtar düz klip listesi olur.
    - `soundbank.json` ve `audio\manifest.json` güncellenir.
    - Kayıpsız ana kopyalar masaüstündeki `ses\masters` klasörüne gider.
 5. **Unity:** projeyi aç. Yeni `.ogg` ve `.meta` dosyalarını commit et.
