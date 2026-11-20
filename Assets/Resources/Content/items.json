@@ -2583,6 +2583,19 @@
           "durationDays": 0.03,
           "consume": "item.pomegranate_sherbet",
           "bladder": 12
+        },
+        {
+          "id": "eat_walnut",
+          "displayName": "Ceviz kır ve ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.05,
+          "consume": "item.walnut",
+          "moodId": "mood.meal",
+          "moodText": "Taze ceviz",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 3
         }
       ],
       "price": 25,
@@ -37076,6 +37089,1120 @@
         "aging_aid",
         "potion"
       ]
+    },
+    {
+      "id": "item.great_oak",
+      "displayName": "Ulu meşe",
+      "category": "village",
+      "price": 0,
+      "width": 2,
+      "height": 2,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "tags": [
+        "great_tree",
+        "kiosk5"
+      ],
+      "interactions": [
+        {
+          "id": "found_nest",
+          "displayName": "Ağaç ev kur: Dal Yuvası",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_nest",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_lookout",
+          "displayName": "Ağaç ev kur: Gözcü Kulesi",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_lookout",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_fort",
+          "displayName": "Ağaç ev kur: Tahta Kale",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_fort",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_hut",
+          "displayName": "Ağaç ev kur: Saz Damlı Kulübe",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_hut",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_kiosk",
+          "displayName": "Ağaç ev kur: Ağaç Köşkü",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_kiosk",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "displayName": "Ağaç evin yapımına devam et",
+          "durationDays": 0.15,
+          "treeAction": "build",
+          "skill": "Carpentry",
+          "skillXp": 20
+        },
+        {
+          "id": "repair",
+          "displayName": "Ağaç evi onar",
+          "durationDays": 0.1,
+          "treeAction": "repair",
+          "skill": "Carpentry",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 2
+            },
+            {
+              "item": "item.nails",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "play",
+          "displayName": "Ağaç evde oyna",
+          "durationDays": 0.12,
+          "treeAction": "play",
+          "need": "Fun",
+          "restore": 40,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 15
+            }
+          ]
+        },
+        {
+          "id": "lookout",
+          "displayName": "Gözcülük oyna",
+          "durationDays": 0.1,
+          "treeAction": "lookout",
+          "need": "Fun",
+          "restore": 30,
+          "skill": "WeatherLore",
+          "skillXp": 4
+        },
+        {
+          "id": "siege",
+          "displayName": "Kale kuşatması oyna",
+          "durationDays": 0.12,
+          "treeAction": "siege",
+          "need": "Fun",
+          "restore": 45,
+          "skill": "Athletics",
+          "skillXp": 4,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 20
+            }
+          ]
+        },
+        {
+          "id": "sleep",
+          "displayName": "Kulübede uyu",
+          "durationDays": 0.3,
+          "treeAction": "sleep",
+          "need": "Energy",
+          "restore": 70
+        },
+        {
+          "id": "stash",
+          "displayName": "Hazine sakla",
+          "durationDays": 0.04,
+          "treeAction": "stash"
+        },
+        {
+          "id": "dig",
+          "displayName": "Hazine ara",
+          "durationDays": 0.05,
+          "treeAction": "dig"
+        },
+        {
+          "id": "inn_toggle",
+          "displayName": "Köşkte aşevi aç ya da kapat",
+          "durationDays": 0.02,
+          "treeAction": "innToggle"
+        },
+        {
+          "id": "call_down",
+          "displayName": "Küsen çocuğu aşağı çağır",
+          "durationDays": 0.05,
+          "treeAction": "callDown",
+          "skill": "Parenting",
+          "skillXp": 4
+        },
+        {
+          "id": "carve",
+          "displayName": "Adını gövdeye kazı",
+          "durationDays": 0.04,
+          "treeAction": "carve"
+        },
+        {
+          "id": "gather",
+          "displayName": "Mazı ve kabuk topla",
+          "durationDays": 0.06,
+          "treeAction": "gather",
+          "skill": "Foraging",
+          "skillXp": 5,
+          "produce": [
+            {
+              "item": "item.oak_gall",
+              "count": 2,
+              "seasons": [
+                "Summer",
+                "Autumn"
+              ]
+            },
+            {
+              "item": "item.viv_bark",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        },
+        {
+          "id": "shade",
+          "displayName": "Gölgesinde otur",
+          "durationDays": 0.08,
+          "treeAction": "shade",
+          "need": "Fun",
+          "restore": 15,
+          "extraRestore": [
+            {
+              "need": "Energy",
+              "amount": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.great_linden",
+      "displayName": "Ulu ıhlamur",
+      "category": "village",
+      "price": 0,
+      "width": 2,
+      "height": 2,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "tags": [
+        "great_tree"
+      ],
+      "interactions": [
+        {
+          "id": "found_nest",
+          "displayName": "Ağaç ev kur: Dal Yuvası",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_nest",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_lookout",
+          "displayName": "Ağaç ev kur: Gözcü Kulesi",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_lookout",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_fort",
+          "displayName": "Ağaç ev kur: Tahta Kale",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_fort",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_hut",
+          "displayName": "Ağaç ev kur: Saz Damlı Kulübe",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_hut",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_kiosk",
+          "displayName": "Ağaç ev kur: Ağaç Köşkü",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_kiosk",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "displayName": "Ağaç evin yapımına devam et",
+          "durationDays": 0.15,
+          "treeAction": "build",
+          "skill": "Carpentry",
+          "skillXp": 20
+        },
+        {
+          "id": "repair",
+          "displayName": "Ağaç evi onar",
+          "durationDays": 0.1,
+          "treeAction": "repair",
+          "skill": "Carpentry",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 2
+            },
+            {
+              "item": "item.nails",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "play",
+          "displayName": "Ağaç evde oyna",
+          "durationDays": 0.12,
+          "treeAction": "play",
+          "need": "Fun",
+          "restore": 40,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 15
+            }
+          ]
+        },
+        {
+          "id": "lookout",
+          "displayName": "Gözcülük oyna",
+          "durationDays": 0.1,
+          "treeAction": "lookout",
+          "need": "Fun",
+          "restore": 30,
+          "skill": "WeatherLore",
+          "skillXp": 4
+        },
+        {
+          "id": "siege",
+          "displayName": "Kale kuşatması oyna",
+          "durationDays": 0.12,
+          "treeAction": "siege",
+          "need": "Fun",
+          "restore": 45,
+          "skill": "Athletics",
+          "skillXp": 4,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 20
+            }
+          ]
+        },
+        {
+          "id": "sleep",
+          "displayName": "Kulübede uyu",
+          "durationDays": 0.3,
+          "treeAction": "sleep",
+          "need": "Energy",
+          "restore": 70
+        },
+        {
+          "id": "stash",
+          "displayName": "Hazine sakla",
+          "durationDays": 0.04,
+          "treeAction": "stash"
+        },
+        {
+          "id": "dig",
+          "displayName": "Hazine ara",
+          "durationDays": 0.05,
+          "treeAction": "dig"
+        },
+        {
+          "id": "inn_toggle",
+          "displayName": "Köşkte aşevi aç ya da kapat",
+          "durationDays": 0.02,
+          "treeAction": "innToggle"
+        },
+        {
+          "id": "call_down",
+          "displayName": "Küsen çocuğu aşağı çağır",
+          "durationDays": 0.05,
+          "treeAction": "callDown",
+          "skill": "Parenting",
+          "skillXp": 4
+        },
+        {
+          "id": "carve",
+          "displayName": "Adını gövdeye kazı",
+          "durationDays": 0.04,
+          "treeAction": "carve"
+        },
+        {
+          "id": "gather",
+          "displayName": "Ihlamur çiçeği topla",
+          "durationDays": 0.06,
+          "treeAction": "gather",
+          "skill": "Foraging",
+          "skillXp": 5,
+          "produce": [
+            {
+              "item": "item.linden",
+              "count": 3,
+              "seasons": [
+                "Summer"
+              ]
+            },
+            {
+              "item": "item.viv_moss",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        },
+        {
+          "id": "shade",
+          "displayName": "Gölgesinde otur",
+          "durationDays": 0.08,
+          "treeAction": "shade",
+          "need": "Fun",
+          "restore": 15,
+          "extraRestore": [
+            {
+              "need": "Energy",
+              "amount": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.great_walnut",
+      "displayName": "Ulu ceviz",
+      "category": "village",
+      "price": 0,
+      "width": 2,
+      "height": 2,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "tags": [
+        "great_tree"
+      ],
+      "interactions": [
+        {
+          "id": "found_nest",
+          "displayName": "Ağaç ev kur: Dal Yuvası",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_nest",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_lookout",
+          "displayName": "Ağaç ev kur: Gözcü Kulesi",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_lookout",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_fort",
+          "displayName": "Ağaç ev kur: Tahta Kale",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_fort",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_hut",
+          "displayName": "Ağaç ev kur: Saz Damlı Kulübe",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_hut",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_kiosk",
+          "displayName": "Ağaç ev kur: Ağaç Köşkü",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_kiosk",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "displayName": "Ağaç evin yapımına devam et",
+          "durationDays": 0.15,
+          "treeAction": "build",
+          "skill": "Carpentry",
+          "skillXp": 20
+        },
+        {
+          "id": "repair",
+          "displayName": "Ağaç evi onar",
+          "durationDays": 0.1,
+          "treeAction": "repair",
+          "skill": "Carpentry",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 2
+            },
+            {
+              "item": "item.nails",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "play",
+          "displayName": "Ağaç evde oyna",
+          "durationDays": 0.12,
+          "treeAction": "play",
+          "need": "Fun",
+          "restore": 40,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 15
+            }
+          ]
+        },
+        {
+          "id": "lookout",
+          "displayName": "Gözcülük oyna",
+          "durationDays": 0.1,
+          "treeAction": "lookout",
+          "need": "Fun",
+          "restore": 30,
+          "skill": "WeatherLore",
+          "skillXp": 4
+        },
+        {
+          "id": "siege",
+          "displayName": "Kale kuşatması oyna",
+          "durationDays": 0.12,
+          "treeAction": "siege",
+          "need": "Fun",
+          "restore": 45,
+          "skill": "Athletics",
+          "skillXp": 4,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 20
+            }
+          ]
+        },
+        {
+          "id": "sleep",
+          "displayName": "Kulübede uyu",
+          "durationDays": 0.3,
+          "treeAction": "sleep",
+          "need": "Energy",
+          "restore": 70
+        },
+        {
+          "id": "stash",
+          "displayName": "Hazine sakla",
+          "durationDays": 0.04,
+          "treeAction": "stash"
+        },
+        {
+          "id": "dig",
+          "displayName": "Hazine ara",
+          "durationDays": 0.05,
+          "treeAction": "dig"
+        },
+        {
+          "id": "inn_toggle",
+          "displayName": "Köşkte aşevi aç ya da kapat",
+          "durationDays": 0.02,
+          "treeAction": "innToggle"
+        },
+        {
+          "id": "call_down",
+          "displayName": "Küsen çocuğu aşağı çağır",
+          "durationDays": 0.05,
+          "treeAction": "callDown",
+          "skill": "Parenting",
+          "skillXp": 4
+        },
+        {
+          "id": "carve",
+          "displayName": "Adını gövdeye kazı",
+          "durationDays": 0.04,
+          "treeAction": "carve"
+        },
+        {
+          "id": "gather",
+          "displayName": "Ceviz topla",
+          "durationDays": 0.06,
+          "treeAction": "gather",
+          "skill": "Foraging",
+          "skillXp": 5,
+          "produce": [
+            {
+              "item": "item.walnut",
+              "count": 3,
+              "seasons": [
+                "Autumn"
+              ]
+            },
+            {
+              "item": "item.viv_bark",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        },
+        {
+          "id": "shade",
+          "displayName": "Gölgesinde otur",
+          "durationDays": 0.08,
+          "treeAction": "shade",
+          "need": "Fun",
+          "restore": 15,
+          "extraRestore": [
+            {
+              "need": "Energy",
+              "amount": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.great_chestnut",
+      "displayName": "Ulu kestane",
+      "category": "village",
+      "price": 0,
+      "width": 2,
+      "height": 2,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "tags": [
+        "great_tree"
+      ],
+      "interactions": [
+        {
+          "id": "found_nest",
+          "displayName": "Ağaç ev kur: Dal Yuvası",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_nest",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_lookout",
+          "displayName": "Ağaç ev kur: Gözcü Kulesi",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_lookout",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_fort",
+          "displayName": "Ağaç ev kur: Tahta Kale",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_fort",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_hut",
+          "displayName": "Ağaç ev kur: Saz Damlı Kulübe",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_hut",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "found_kiosk",
+          "displayName": "Ağaç ev kur: Ağaç Köşkü",
+          "durationDays": 0.12,
+          "treeAction": "found",
+          "skill": "Carpentry",
+          "skillXp": 20,
+          "materials": [
+            {
+              "item": "item.th_kit_kiosk",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "displayName": "Ağaç evin yapımına devam et",
+          "durationDays": 0.15,
+          "treeAction": "build",
+          "skill": "Carpentry",
+          "skillXp": 20
+        },
+        {
+          "id": "repair",
+          "displayName": "Ağaç evi onar",
+          "durationDays": 0.1,
+          "treeAction": "repair",
+          "skill": "Carpentry",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 2
+            },
+            {
+              "item": "item.nails",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "play",
+          "displayName": "Ağaç evde oyna",
+          "durationDays": 0.12,
+          "treeAction": "play",
+          "need": "Fun",
+          "restore": 40,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 15
+            }
+          ]
+        },
+        {
+          "id": "lookout",
+          "displayName": "Gözcülük oyna",
+          "durationDays": 0.1,
+          "treeAction": "lookout",
+          "need": "Fun",
+          "restore": 30,
+          "skill": "WeatherLore",
+          "skillXp": 4
+        },
+        {
+          "id": "siege",
+          "displayName": "Kale kuşatması oyna",
+          "durationDays": 0.12,
+          "treeAction": "siege",
+          "need": "Fun",
+          "restore": 45,
+          "skill": "Athletics",
+          "skillXp": 4,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 20
+            }
+          ]
+        },
+        {
+          "id": "sleep",
+          "displayName": "Kulübede uyu",
+          "durationDays": 0.3,
+          "treeAction": "sleep",
+          "need": "Energy",
+          "restore": 70
+        },
+        {
+          "id": "stash",
+          "displayName": "Hazine sakla",
+          "durationDays": 0.04,
+          "treeAction": "stash"
+        },
+        {
+          "id": "dig",
+          "displayName": "Hazine ara",
+          "durationDays": 0.05,
+          "treeAction": "dig"
+        },
+        {
+          "id": "inn_toggle",
+          "displayName": "Köşkte aşevi aç ya da kapat",
+          "durationDays": 0.02,
+          "treeAction": "innToggle"
+        },
+        {
+          "id": "call_down",
+          "displayName": "Küsen çocuğu aşağı çağır",
+          "durationDays": 0.05,
+          "treeAction": "callDown",
+          "skill": "Parenting",
+          "skillXp": 4
+        },
+        {
+          "id": "carve",
+          "displayName": "Adını gövdeye kazı",
+          "durationDays": 0.04,
+          "treeAction": "carve"
+        },
+        {
+          "id": "gather",
+          "displayName": "Kestane topla",
+          "durationDays": 0.06,
+          "treeAction": "gather",
+          "skill": "Foraging",
+          "skillXp": 5,
+          "produce": [
+            {
+              "item": "item.chestnut",
+              "count": 4,
+              "seasons": [
+                "Autumn"
+              ]
+            },
+            {
+              "item": "item.viv_moss",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        },
+        {
+          "id": "shade",
+          "displayName": "Gölgesinde otur",
+          "durationDays": 0.08,
+          "treeAction": "shade",
+          "need": "Fun",
+          "restore": 15,
+          "extraRestore": [
+            {
+              "need": "Energy",
+              "amount": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "item.great_plane",
+      "displayName": "Ulu çınar",
+      "category": "village",
+      "price": 0,
+      "width": 3,
+      "height": 3,
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "tags": [
+        "great_tree",
+        "kiosk5",
+        "inn_kiosk"
+      ],
+      "interactions": [
+        {
+          "id": "carve",
+          "displayName": "Adını gövdeye kazı",
+          "durationDays": 0.04,
+          "treeAction": "carve"
+        },
+        {
+          "id": "gather",
+          "displayName": "Kabuk ve yosun topla",
+          "durationDays": 0.06,
+          "treeAction": "gather",
+          "skill": "Foraging",
+          "skillXp": 5,
+          "produce": [
+            {
+              "item": "item.viv_bark",
+              "count": 1
+            },
+            {
+              "item": "item.viv_moss",
+              "count": 1,
+              "chance": 0.5
+            }
+          ]
+        },
+        {
+          "id": "shade",
+          "displayName": "Gölgesinde otur",
+          "durationDays": 0.08,
+          "treeAction": "shade",
+          "need": "Fun",
+          "restore": 15,
+          "extraRestore": [
+            {
+              "need": "Energy",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "id": "inn_soup",
+          "displayName": "Aşevinde çorba iç (5 akçe)",
+          "durationDays": 0.06,
+          "treeAction": "dine",
+          "need": "Hunger",
+          "restore": 45
+        },
+        {
+          "id": "inn_eat",
+          "displayName": "Aşevinde yahni ye (8 akçe)",
+          "durationDays": 0.08,
+          "treeAction": "dine",
+          "need": "Hunger",
+          "restore": 70,
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "inn_roast",
+          "displayName": "Aşevinde ziyafet çek (14 akçe)",
+          "durationDays": 0.1,
+          "treeAction": "dine",
+          "need": "Hunger",
+          "restore": 90,
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 20
+            },
+            {
+              "need": "Social",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "inn_charity",
+          "displayName": "Hayır sofrasına otur",
+          "durationDays": 0.08,
+          "treeAction": "charity",
+          "need": "Hunger",
+          "restore": 45
+        },
+        {
+          "id": "donate_10",
+          "displayName": "Aşevine bağış yap (10 akçe)",
+          "durationDays": 0.02,
+          "treeAction": "donate"
+        },
+        {
+          "id": "donate_50",
+          "displayName": "Aşevine bağış yap (50 akçe)",
+          "durationDays": 0.02,
+          "treeAction": "donate"
+        },
+        {
+          "id": "donate_100",
+          "displayName": "Aşevine bağış yap (100 akçe)",
+          "durationDays": 0.02,
+          "treeAction": "donate"
+        },
+        {
+          "id": "donate_food",
+          "displayName": "Aşevine yiyecek bağışla (en çok 5)",
+          "durationDays": 0.03,
+          "treeAction": "donateFood"
+        }
+      ]
+    },
+    {
+      "id": "item.walnut",
+      "displayName": "Ceviz",
+      "placement": "Resource",
+      "price": 3,
+      "category": "resource",
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 60
+    },
+    {
+      "id": "item.th_kit_nest",
+      "displayName": "Dal Yuvası iskeleti",
+      "placement": "Resource",
+      "price": 30,
+      "category": "resource",
+      "tags": [
+        "craft",
+        "treehouse_kit"
+      ]
+    },
+    {
+      "id": "item.th_kit_lookout",
+      "displayName": "Gözcü Kulesi iskeleti",
+      "placement": "Resource",
+      "price": 52,
+      "category": "resource",
+      "tags": [
+        "craft",
+        "treehouse_kit"
+      ]
+    },
+    {
+      "id": "item.th_kit_fort",
+      "displayName": "Tahta Kale iskeleti",
+      "placement": "Resource",
+      "price": 80,
+      "category": "resource",
+      "tags": [
+        "craft",
+        "treehouse_kit"
+      ]
+    },
+    {
+      "id": "item.th_kit_hut",
+      "displayName": "Saz Damlı Kulübe iskeleti",
+      "placement": "Resource",
+      "price": 75,
+      "category": "resource",
+      "tags": [
+        "craft",
+        "treehouse_kit"
+      ]
+    },
+    {
+      "id": "item.th_kit_kiosk",
+      "displayName": "Ağaç Köşkü iskeleti",
+      "placement": "Resource",
+      "price": 120,
+      "category": "resource",
+      "tags": [
+        "craft",
+        "treehouse_kit"
+      ]
     }
   ],
   "recipes": [
@@ -45223,6 +46350,133 @@
       "skillXp": 12,
       "displayName": "Okuma taşı yap",
       "minLevel": 6
+    },
+    {
+      "id": "th_kit_nest",
+      "station": "item.workbench",
+      "produces": "item.th_kit_nest",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 8
+        },
+        {
+          "item": "item.nails",
+          "count": 4
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 2
+        }
+      ],
+      "minLevel": 2,
+      "durationDays": 0.2,
+      "skillXp": 30,
+      "displayName": "Ağaç ev iskeleti: Dal Yuvası"
+    },
+    {
+      "id": "th_kit_lookout",
+      "station": "item.workbench",
+      "produces": "item.th_kit_lookout",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 14
+        },
+        {
+          "item": "item.nails",
+          "count": 6
+        },
+        {
+          "item": "item.linen_yarn",
+          "count": 2
+        },
+        {
+          "item": "item.log",
+          "count": 2
+        }
+      ],
+      "minLevel": 4,
+      "durationDays": 0.3,
+      "skillXp": 45,
+      "displayName": "Ağaç ev iskeleti: Gözcü Kulesi"
+    },
+    {
+      "id": "th_kit_fort",
+      "station": "item.workbench",
+      "produces": "item.th_kit_fort",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 18
+        },
+        {
+          "item": "item.nails",
+          "count": 8
+        },
+        {
+          "item": "item.cloth",
+          "count": 1
+        }
+      ],
+      "minLevel": 5,
+      "durationDays": 0.35,
+      "skillXp": 55,
+      "displayName": "Ağaç ev iskeleti: Tahta Kale"
+    },
+    {
+      "id": "th_kit_hut",
+      "station": "item.workbench",
+      "produces": "item.th_kit_hut",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 16
+        },
+        {
+          "item": "item.nails",
+          "count": 8
+        },
+        {
+          "item": "item.straw",
+          "count": 6
+        },
+        {
+          "item": "item.linen",
+          "count": 2
+        }
+      ],
+      "minLevel": 6,
+      "durationDays": 0.4,
+      "skillXp": 65,
+      "displayName": "Ağaç ev iskeleti: Saz Damlı Kulübe"
+    },
+    {
+      "id": "th_kit_kiosk",
+      "station": "item.workbench",
+      "produces": "item.th_kit_kiosk",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 24
+        },
+        {
+          "item": "item.nails",
+          "count": 12
+        },
+        {
+          "item": "item.roof_tiles",
+          "count": 6
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "minLevel": 8,
+      "durationDays": 0.5,
+      "skillXp": 90,
+      "displayName": "Ağaç ev iskeleti: Ağaç Köşkü"
     }
   ],
   "animals": [

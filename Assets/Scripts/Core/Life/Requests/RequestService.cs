@@ -474,6 +474,21 @@ namespace Thatchwick.Core.Life.Requests
             return Post(r);
         }
 
+        /// <summary>
+        /// Sistemik iş ricası (belge 52: "Bize ağaç ev yapar mısın?"): veren köylü, bir işi N kez yapmayı ister (ActId;
+        /// sayım OnWork ile). Aynı veren için açık rica varsa asılmaz.
+        /// </summary>
+        public Request PostActFavor(Character giver, string id, string title, string text, string actId, string objectiveText, int count, double days, int akce)
+        {
+            if (giver == null || giver.IsDead || HasOpenTemplate(id + ":" + giver.Id)) return null;
+            var r = NewRequest(RequestKind.Favor, id + ":" + giver.Id, title, text, giver);
+            r.Days = days;
+            r.Deadline = Now() + days;
+            r.Objectives.Add(new Objective { Kind = ObjectiveKind.Act, ActId = actId, Count = Math.Max(1, count), Text = objectiveText });
+            r.Reward = new Reward { Akce = Math.Max(3, Math.Min(FavorAkceMax, akce)), Affinity = FavorAffinity, Memory = HouseMemory.Favor * 2 };
+            return Post(r);
+        }
+
         // ================================================================== üretim: siparişler
 
         private static readonly Dictionary<SkillType, string> SkillRole = new Dictionary<SkillType, string>
