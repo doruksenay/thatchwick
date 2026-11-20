@@ -1,5 +1,5 @@
 ---
-id: "612"
+id: "702"
 title: Gübre ve ahır düzenekleri (gübre yığını, gübrelik, şerbet fıçısı, saman kıyıcı, gübre kapağı, akıtma oluğu, ağıl çiti, kırlangıç yuvası)
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -21,7 +21,7 @@ outputs:
   - Assets/Art/Iso/iso_item_swallow_nest_se.png
 created: 2026-11-20
 ---
-# 612 Gübre ve ahır düzenekleri (gübre yığını, gübrelik, şerbet fıçısı, saman kıyıcı, gübre kapağı, akıtma oluğu, ağıl çiti, kırlangıç yuvası)
+# 702 Gübre ve ahır düzenekleri (gübre yığını, gübrelik, şerbet fıçısı, saman kıyıcı, gübre kapağı, akıtma oluğu, ağıl çiti, kırlangıç yuvası)
 
 ## Amaç
 Belge 57 §4, 57d §4: ahır temizliğinin ve gübre zincirinin eşyaları.

@@ -103,7 +103,8 @@ namespace Thatchwick.Game
                 if (frame != null) { if (v.R.sprite != frame) v.R.sprite = frame; v.T.localScale = Vector3.one; }
                 else
                 {
-                    var cube = SpriteMaterials.Cube(w.Kind == OddWalkerKind.JohanWick ? new Color(0.25f, 0.25f, 0.28f) : new Color(0.6f, 0.62f, 0.66f));
+                    var cube = SpriteMaterials.Cube(w.Kind == OddWalkerKind.JohanWick ? new Color(0.25f, 0.25f, 0.28f)
+                        : w.Kind == OddWalkerKind.Crier ? new Color(0.62f, 0.2f, 0.18f) : new Color(0.6f, 0.62f, 0.66f));
                     if (v.R.sprite != cube) v.R.sprite = cube;
                     v.T.localScale = new Vector3(0.35f, 0.7f, 1f);
                 }
@@ -123,8 +124,19 @@ namespace Thatchwick.Game
             }
         }
 
+        /// <summary>Hayvanın ekrandaki yeri (dile gelen hayvanın balonu için); görünmüyorsa false.</summary>
+        public bool TryGetPosition(int animalId, out Vector3 position)
+        {
+            position = default;
+            if (!_animals.TryGetValue(animalId, out var v) || v.T == null || !v.R.enabled) return false;
+            position = v.T.position;
+            return true;
+        }
+
         private static string WalkerSet(OddWalkerKind kind) =>
-            kind == OddWalkerKind.JohanWick ? "iso_char_johan_wick_r84" : "iso_char_horseless_knight_r84";
+            kind == OddWalkerKind.JohanWick ? "iso_char_johan_wick_r84"
+            : kind == OddWalkerKind.Crier ? "iso_char_crier_r84"          // tellal (asset işi 592)
+            : "iso_char_horseless_knight_r84";
 
         /// <summary>Simülasyon adımı: haritada yürüyen easter egg ziyaretçileri (Johan Wick, atsız şövalye).</summary>
         public void SyncWalkers(OddWalkers walkers)

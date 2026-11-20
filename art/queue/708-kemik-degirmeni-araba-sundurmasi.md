@@ -1,5 +1,5 @@
 ---
-id: "618"
+id: "708"
 title: Kemik değirmeni ve araba sundurması
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -15,7 +15,7 @@ outputs:
   - Assets/Art/Iso/iso_item_cart_shed_2x1_se.png
 created: 2026-11-20
 ---
-# 618 Kemik değirmeni ve araba sundurması
+# 708 Kemik değirmeni ve araba sundurması
 
 ## Amaç
 items.json `item.bone_mill` (kemik öğütme istasyonu, belge 57c) ve `item.cart_shed` (altındaki araba yağmurda yıpranmaz, belge 57e §2.2).

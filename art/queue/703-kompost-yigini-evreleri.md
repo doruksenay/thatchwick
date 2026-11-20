@@ -1,5 +1,5 @@
 ---
-id: "613"
+id: "703"
 title: Kompost yığını evreleri (boş, dolu, sıcak, hazır)
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -16,7 +16,7 @@ outputs:
   - Assets/Art/Iso/iso_item_compost_heap_ready_se.png
 created: 2026-11-20
 ---
-# 613 Kompost yığını evreleri (boş, dolu, sıcak, hazır)
+# 703 Kompost yığını evreleri (boş, dolu, sıcak, hazır)
 
 ## Amaç
 Belge 57b §3: kompost artık süreç. Yığının doluluğu ve hazır olması bakınca anlaşılmalı; sıcak evrede kod buhar parçacığı çıkarır.

@@ -9,7 +9,8 @@ namespace Thatchwick.Core.Life
     // Easter egg sahneleri (Project belgesi 55, kullanıcı 20.11.2026): haritada görünen ziyaretçiler, hayvan pozları,
     // karakter gösterileri ve kedinin yere düşürdüğü eşya. Kurallar ve durum burada; çizim oyun katmanında.
 
-    public enum OddWalkerKind { JohanWick = 0, HorselessKnight = 1 }
+    /// <summary>Crier: tellal (karar 20.11.2026); easter egg değil, her sabah yeni ilan varsa panonun yanında durur.</summary>
+    public enum OddWalkerKind { JohanWick = 0, HorselessKnight = 1, Crier = 2 }
 
     /// <summary>
     /// Haritada yürüyen easter egg ziyaretçisi. Nüfusa girmez (evlenmez, yaşlanmaz, hane sayılmaz); yaban ziyaretçileri gibi
@@ -52,6 +53,13 @@ namespace Thatchwick.Core.Life
         }
 
         public OddWalker Find(OddWalkerKind kind) { foreach (var w in _walkers) if (w.Kind == kind && !w.Gone) return w; return null; }
+
+        /// <summary>Bu karoda (ya da adım attığı karoda) duran ziyaretçi; oyuncu dokununca adı görünür.</summary>
+        public OddWalker At(GridPos tile)
+        {
+            foreach (var w in _walkers) if (!w.Gone && (w.Position == tile || w.NextTile == tile)) return w;
+            return null;
+        }
 
         public void Walk(OddWalker w, List<GridPos> path)
         {
@@ -170,6 +178,7 @@ namespace Thatchwick.Core.Life
 
         // ---- yere düşen süs ----
         public IEnumerable<KnockedItem> Knocked => _knocked.Values;
+        public bool HasKnocked => _knocked.Count > 0;
         public bool IsKnocked(int itemId) => _knocked.ContainsKey(itemId);
         public KnockedItem KnockedOf(int itemId) => _knocked.TryGetValue(itemId, out var k) ? k : null;
 

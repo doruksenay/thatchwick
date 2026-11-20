@@ -230,6 +230,37 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(0.14, s.TradeBonus(plain), 6);    // bakır 0,04 + taşlı altın 0,10
         }
 
+        /// <summary>Satın alınan takı envanterden takılır; çekmecedeki takı satılmak üzere envantere döner; ölenin takısı yadigâr kalır.</summary>
+        [Fact]
+        public void Taki_EnvanterdenTakilir_CekmecedenEnvantereDoner_OlenlerinkiYadigarKalir()
+        {
+            var (life, house, pop, w) = Life();
+            var c = Person();
+            pop.Add(c);
+            house.AddItem("item.jw_bracelet", 2);                                 // tüccardan alınmış
+            Assert.Contains(life.JewelryInInventory(), kv => kv.Key == "item.jw_bracelet" && kv.Value == 2);
+            Assert.Equal(EquipError.None, life.WearJewelryFromInventory(c, "item.jw_bracelet"));
+            Assert.Equal(1, house.Count("item.jw_bracelet"));
+            Assert.Single(life.Clothing.JewelryOwnedBy(c));
+            Assert.Equal(EquipError.Missing, life.WearJewelryFromInventory(c, "item.bread"));   // takı değil
+
+            var worn = life.Clothing.JewelryOwnedBy(c).First();
+            Assert.False(life.JewelryToInventory(worn));                          // takılıyken envantere konmaz
+            life.Clothing.TakeOffJewelry(c, worn);
+            Assert.True(life.JewelryToInventory(worn));
+            Assert.Equal(2, house.Count("item.jw_bracelet"));
+            Assert.Empty(life.Clothing.UnwornJewelry());
+
+            Assert.Equal(EquipError.None, life.WearJewelryFromInventory(c, "item.jw_bracelet"));
+            Assert.Equal(1, life.Clothing.ReleaseJewelry(c));                     // öldü: takı çekmeceye, yadigâr
+            var heirloom = life.Clothing.UnwornJewelry().Single();
+            Assert.True(heirloom.Heirloom);
+            Assert.Equal(c.Name, heirloom.HeirloomNote);
+            Assert.Empty(life.Clothing.JewelryOwnedBy(c));
+            Assert.Equal(0.0, life.Clothing.TradeBonus(c), 6);
+            Assert.False(life.JewelryToInventory(heirloom));                      // yadigâr satılmaz
+        }
+
         [Fact]
         public void NazarBoncugu_KazaOlasiliginiDusurur()
         {

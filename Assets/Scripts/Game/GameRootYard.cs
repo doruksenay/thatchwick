@@ -59,7 +59,7 @@ namespace Thatchwick.Game
             };
             _life.CatBuried += cat =>
             {
-                // Kedi birkaç saniye eşeler (kareler gelene kadar toprak savrulur; art/queue 614).
+                // Kedi birkaç saniye eşeler (kareler gelene kadar toprak savrulur; art/queue 704).
                 _catDig[cat.Id] = Time.time + 2.4f;
                 Sfx(SoundKeys.YardCatDig, TileCenter(cat.Position), cat.Id, 0.7f);
             };
@@ -339,7 +339,7 @@ namespace Thatchwick.Game
         /// <summary>
         /// Arabaların seferi (belge 57e §2.2 "görünür"): sabah köy yoluna doğru çekilir, gözden kaybolur, akşam döner.
         /// Geçici çizim: araba eşyasının görünümü düz çizgide kaydırılır (yol bulma yok, koşulu hayvan çizilmez);
-        /// yürüyüş kareleri ve koşum art/queue 617'den sonra bağlanır.
+        /// yürüyüş kareleri ve koşum art/queue 707'den sonra bağlanır.
         /// </summary>
         private void UpdateCartViews()
         {

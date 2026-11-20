@@ -526,13 +526,14 @@ namespace Thatchwick.Core.Build
                     var tile = new GridPos(position.X + dx, position.Y + dy, position.Z);
                     if (OwnsForItems(tile)) continue;
                     if (def.IsSnare && Thatchwick.Core.Animals.WildRoamers.IsSnareGround(_world.Map, tile)) continue;   // kement yabana da kurulur
-                    return PlacementCheck.Fail(def.IsSnare ? SnareGround : NotOwned);
+                    return def.IsSnare ? PlacementCheck.Fail(SnareGround) : PlacementCheck.Fail(NotOwned);
                 }
             return PlacementCheck.Success;
         }
 
-        public const string SnareGround = "Kement kendi arsana ya da yabana (orman, göl, sazlık, tepe) kurulur.";
-        public static readonly string SnareLimit = $"En çok {Thatchwick.Core.Animals.WildRoamers.MaxSnares} kement kurulabilir.";
+        public static readonly Thatchwick.Core.Localization.LocText SnareGround = Thatchwick.Core.Localization.LocText.Of("build.err.snare_ground");
+        public static readonly Thatchwick.Core.Localization.LocText SnareLimit =
+            Thatchwick.Core.Localization.LocText.Of("build.err.snare_limit", ("n", Thatchwick.Core.Animals.WildRoamers.MaxSnares));
 
         /// <summary>Haritaya kurulu kementler.</summary>
         public int PlacedSnares()

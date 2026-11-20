@@ -1,5 +1,5 @@
 ---
-id: "619"
+id: "709"
 title: Su birikintisi, çamur ve kıyı köpüğü çıkartmaları
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -18,7 +18,7 @@ outputs:
   - Assets/Art/Iso/iso_decal_shore_foam_b.png
 created: 2026-11-20
 ---
-# 619 Su birikintisi, çamur ve kıyı köpüğü çıkartmaları
+# 709 Su birikintisi, çamur ve kıyı köpüğü çıkartmaları
 
 ## Amaç
 Belge 57 §9-10: yağmurda yerde su birikintisi ve çamur, su kıyısında köpük. Kodda sıçrama, saçak damlası, ıslak zemin tonu ve su parıltısı var; bu çıkartmalar gelince birikinti ve köpük bağlanır.
