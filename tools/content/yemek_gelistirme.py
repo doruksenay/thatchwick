@@ -350,7 +350,7 @@ for it in items:
 # ---------------------------------------------------------------------------------------------------------------------
 put_item({"id": "item.slaughter_hook", "displayName": "Kesim kancası", "width": 1, "height": 1, "price": 30, "category": "barn", "level": 4, "styleSet": "Köylü",
           "site": "indoor", "belongs": ["storehouse", "barn"], "anywhere": True, "tags": ["slaughterhook"], "interactions": []}, "Slaughter hook")
-put_item({"id": "item.meat_locker", "displayName": "Et dolabı", "width": 1, "height": 1, "price": 35, "category": "barn", "level": 4, "styleSet": "Köylü",
+put_item({"id": "item.meat_locker", "displayName": "Et dolabı", "width": 2, "height": 1, "price": 35, "category": "barn", "level": 4, "styleSet": "Köylü",
           "site": "indoor", "belongs": ["storehouse", "barn"], "anywhere": True, "tall": True, "tags": ["meatstore"], "interactions": []}, "Meat locker")
 put_item({"id": "item.ice_trough", "displayName": "Buz teknesi", "width": 1, "height": 1, "price": 25, "category": "barn", "level": 5, "styleSet": "Köylü",
           "site": "indoor", "belongs": ["storehouse", "barn", "cellar"], "anywhere": True, "tags": ["meatcooler"]}, "Ice trough")
@@ -382,7 +382,8 @@ for t in TABLES:
     tag(tid, "diningtable")
     act(tid, {"id": "eat_serving", "displayName": "Sofradan ye", "need": "Hunger", "restore": 55, "durationDays": 0.05, "bladder": 4, "meal": "eatServing"}, "Eat at the table")
     act(tid, {"id": "clear_table", "displayName": "Sofrayı topla", "durationDays": 0.03, "skill": "Decorating", "skillXp": 1, "meal": "clearTable"}, "Clear the table")
-    act(tid, {"id": "feed_scrap", "displayName": "Köpeğe bir lokma ver", "need": "Fun", "restore": 6, "durationDays": 0.01, "meal": "feedScrap"}, "Give the dog a scrap")
+    # İhtiyaç doyurmaz: karakter kendi başına seçmesin (köpek her öğün dilenmeye alışır); yalnızca oyuncu emriyle.
+    act(tid, {"id": "feed_scrap", "displayName": "Köpeğe bir lokma ver", "durationDays": 0.01, "skill": "AnimalHusbandry", "skillXp": 1, "meal": "feedScrap"}, "Give the dog a scrap")
 for w in ("basin_ewer", "wash_tub", "water_bucket"):
     act("item." + w, {"id": "wash_dishes", "displayName": "Bulaşık yıka", "durationDays": 0.04, "skill": "Decorating", "skillXp": 1, "meal": "washDishes"}, "Wash the dishes")
 for f in ("pantry_shelf", "aumbry", "root_cellar", "storage_jar", "ice_box", "granary"):

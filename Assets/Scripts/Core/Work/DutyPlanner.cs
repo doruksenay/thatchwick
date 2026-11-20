@@ -140,7 +140,8 @@ namespace Thatchwick.Core.Work
         public Job Next(Character c)
         {
             if (!CanTakeDuty(c, c.Duty) || c.Duty == DutyKind.None) return null;
-            if (c.Duty == DutyKind.House ? (HouseHours ?? WorkHours) != null && !(HouseHours ?? WorkHours)() : WorkHours != null && !WorkHours()) return null;
+            // Ev ve Mutfak görevi akşam da sürer (mum yakmak, akşam öğünü).
+            if (c.Duty == DutyKind.House || c.Duty == DutyKind.Kitchen ? (HouseHours ?? WorkHours) != null && !(HouseHours ?? WorkHours)() : WorkHours != null && !WorkHours()) return null;
             double now = Now?.Invoke() ?? 0;
             Expire(now);
 

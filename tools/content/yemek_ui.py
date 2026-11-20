@@ -223,6 +223,12 @@ TEXT = {
     "cook.ui.stall.close": ("Tezgâhı şimdi kapat", "Close the stall now"),
     "cook.ui.stall.nothing": ("Satılacak pişmiş yemek yok.", "No cooked food to sell."),
     "cook.ui.stall.open_all": ("Tezgâhı aç ({name})", "Open the stall ({name})"),
+    "cook.ui.soc.help": ("Yardım et", "Lend a hand"),
+    "cook.ui.soc.picnic": ("Pikniğe çağır", "Invite to a picnic"),
+    "cook.ui.soc.walk": ("Akşam yürüyüşü", "Evening walk"),
+    "cook.ui.soc.fish": ("Birlikte balık tut", "Fish together"),
+    "cook.ui.soc.fireside": ("Ateş başında otur", "Sit by the fire"),
+    "cook.ui.soc.dinner": ("Yemeğe davet et", "Invite to dinner"),
     # ---- Tuhaflıklar ----
     "ui.oddity.name.cat_thief": ("Kedinin balığı", "The cat's fish"),
 }

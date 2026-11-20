@@ -3439,9 +3439,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ],
@@ -4964,9 +4964,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ],
@@ -5146,9 +5146,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ],
@@ -5244,9 +5244,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ],
@@ -25708,9 +25708,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ],
@@ -25981,9 +25981,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ],
@@ -26418,9 +26418,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ],
@@ -29431,9 +29431,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ],
@@ -29521,9 +29521,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ],
@@ -37263,9 +37263,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ]
@@ -37361,9 +37361,9 @@
         {
           "id": "feed_scrap",
           "displayName": "Köpeğe bir lokma ver",
-          "need": "Fun",
-          "restore": 6,
           "durationDays": 0.01,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
           "meal": "feedScrap"
         }
       ]
@@ -44810,7 +44810,7 @@
     {
       "id": "item.meat_locker",
       "displayName": "Et dolabı",
-      "width": 1,
+      "width": 2,
       "height": 1,
       "price": 35,
       "category": "barn",

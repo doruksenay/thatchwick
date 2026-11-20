@@ -43,6 +43,7 @@ namespace Thatchwick.Core.Life
         private long _autumnReminder = -1;
         /// <summary>Sofra, mezbaha ve konuşma sistemlerinin güncelleme adımı (oyun günü).</summary>
         public const double CookingStepDays = 0.002;
+        public const double RequestRecipeChance = 0.2;
 
         private void InitCooking(int seed)
         {
@@ -108,6 +109,13 @@ namespace Thatchwick.Core.Life
             Social.DogBegs += (dog, table) => PetScene?.Invoke(dog, table, "beg");
             Social.Imitated += OnImitated;
             Outings.Notice += (t, c) => Say(t, NoticeLevel.Info, c?.Id ?? 0);
+            // İstek ödülü olarak tarif (58 §4, 46): tamamlanan isteklerin beşte birinde hanenin en iyi aşçısı bir tarif öğrenir.
+            Requests.Completed += r =>
+            {
+                if (_cookRng.NextDouble() >= RequestRecipeChance) return;
+                var cook = Household().Where(m => !m.IsDead && m.Stage >= AgeStage.Teen).OrderByDescending(m => m.Skills.GetLevel(SkillType.Cooking)).FirstOrDefault();
+                if (cook != null) Recipes.GrantUnknown(cook, LearnKind.Request, _cookRng);
+            };
         }
 
         private IReadOnlyList<string> GroupMembersOf(string id)

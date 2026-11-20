@@ -147,7 +147,6 @@ namespace Thatchwick.Core.Life
             House = house ?? throw new ArgumentNullException(nameof(house));
             Population = population ?? throw new ArgumentNullException(nameof(population));
             Clock = clock ?? throw new ArgumentNullException(nameof(clock));
-            InitCooking(seed);
 
             Mood = new MoodService(world) { Content = content, ArrangerLevel = () => BestSkill(SkillType.Decorating) };
             Decor = new Thatchwick.Core.Build.DecorSystem(world, content, seed != 0 ? Seeds.Derive(seed, 14) : 97)
@@ -316,6 +315,7 @@ namespace Thatchwick.Core.Life
                 Resolve = t => Text(t)
             };
             Duties.Finished += Requests.OnDutyFinished;
+            InitCooking(seed);   // yemek, sofra, mezbaha, rutin (belge 58-62); istekler ve köylüler kurulduktan sonra
             Trees = new TreehouseSystem(world, content, house, population, clock, seed != 0 ? Seeds.Derive(seed, 52) : 52)
             {
                 Notify = (text, id) => Say(text, NoticeLevel.Info, id),
