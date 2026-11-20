@@ -599,7 +599,8 @@ namespace Thatchwick.Core.Animals
                     foreach (var home in HousingAround(helper))
                         foreach (var kv in TakeStock(home))
                         {
-                            int added = storage != null ? storage.AddUpTo(kv.Key, kv.Value) : AddAll(house, kv.Key, kv.Value);
+                            var key = ItemKey.FromStockKey(kv.Key);   // barınak yığını kaliteyi taşır (53)
+                            int added = storage != null ? storage.AddUpTo(key, kv.Value) : AddAll(house, key, kv.Value);
                             PutStock(home, kv.Key, kv.Value - added);
                             report.Collected += added;
                         }
@@ -618,7 +619,7 @@ namespace Thatchwick.Core.Animals
             return report;
         }
 
-        private static int AddAll(Household house, string id, int count) { house.AddItem(id, count); return count; }
+        private static int AddAll(Household house, ItemKey key, int count) { house.Add(key, count); return count; }
 
         // Yardımcı eşyanın (toplama sandığı, yem oluğu) odasındaki barınaklar.
         private List<ItemInstance> HousingAround(ItemInstance helper)

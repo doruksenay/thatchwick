@@ -705,6 +705,7 @@ namespace Thatchwick.Core.Jobs
                 Finish();
                 // Etkiler en sonda: eşyayı kaldırabilir (kesilen ağaç) ve dünyayı değiştirir.
                 if (interaction.HasEffects) Effects?.Apply(_character, item, interaction);
+                if (interaction.HasEffects && Effects is Work.InteractionEffects fx) ApplyEatenQuality(fx, interaction, restore, fx.LastConsumedQuality);
                 InteractionCompleted?.Invoke(_character, interaction);
                 ItemUsed?.Invoke(_character, item, interaction);
                 if (IsWork(interaction)) WorkDone?.Invoke(_character, interaction.Skill, interaction.Id);
@@ -811,6 +812,23 @@ namespace Thatchwick.Core.Jobs
             return f < 0.1 ? 0.1 : f;
         }
 
+        /// <summary>
+        /// Kaliteli yiyecek ve içecek (53 §4.5): açlık doyumu ×1,1 / 1,25 / 1,4 / 1,5; pişmiş yemekte sofra ruh hali; yemek
+        /// etkisinin (moodlet) süresi uzar.
+        /// </summary>
+        private void ApplyEatenQuality(Work.InteractionEffects fx, InteractionDef interaction, float restore, int quality)
+        {
+            if (quality <= 0 || interaction.ConsumeItem == null) return;
+            double satiety = ItemQuality.SatietyFactor(quality);
+            if (interaction.RestoresNeed && satiety > 1.0) _character.Needs.Restore(interaction.Need, (float)(restore * (satiety - 1.0)));
+            if (interaction.Need == NeedType.Hunger && fx.Content.Items.TryGet(interaction.ConsumeItem, out var food) && food.HasTag("cooked"))
+                _character.AddMoodlet(ItemQuality.MealMood(quality));
+            if (interaction.Moodlet != null && _character.MoodEnabled) _character.Mood.Extend(interaction.Moodlet, ItemQuality.EffectFactor(quality));
+        }
+
+        /// <summary>İş süresi çarpanı (ustalık eseri denemesi iki kat sürer, 53 §4.6); null ise 1.</summary>
+        public Func<Character, ItemInstance, InteractionDef, double> DurationFactor { get; set; }
+
         /// <summary>Beceri seviyesi işi hızlandırır: seviye başına %5, en çok yarı süre. Hız çarpanı bölünür.</summary>
         public double EffectiveDuration(InteractionDef interaction, ItemInstance item = null)
         {
@@ -821,6 +839,7 @@ namespace Thatchwick.Core.Jobs
                 duration *= Math.Max(0.5, 1.0 - 0.05 * (level - 1));
             }
             if (!IsRest(interaction)) duration *= Scale;
+            if (DurationFactor != null) duration *= Math.Max(0.1, DurationFactor(_character, item, interaction));
             return duration / SpeedFactor(interaction, item);
         }
 

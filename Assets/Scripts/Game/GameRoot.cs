@@ -696,6 +696,10 @@ namespace Thatchwick.Game
                 AccountLevel = () => _account.Level,
                 AccountXp = () => _account.Xp
             };
+            // Core anahtarlı metin döndürür; bildirim akışı düz metin tuttuğu için seçili dilde burada çözülür (belge 21).
+            GameLocalization.ItemName = id => _content.Items.TryGet(id, out var itemDef) ? itemDef.DisplayName : id;
+            _life.Text = GameLocalization.R;
+            _life.AttachEffects(_effects);   // kalite: tezgâh seçimleri, ustalık eseri, aile tarifi (belge 53)
             _life.Home.ServantWalks = true;   // hizmetkâr sabahları eve yürür, işleri kendisi yapar (belge 45)
             _life.Trees.Attach();   // kasaba çınarının aşevi, köşk merdivenleri (belge 52; kayıtta Restore yeniden kurar)
             _life.Trees.FeastHeld += r => TreeSfx(Thatchwick.Core.Audio.SoundKeys.StingFeast);
@@ -1567,7 +1571,8 @@ namespace Thatchwick.Game
         {
             if (c == null || !_regional || !Thatchwick.Core.Upbringing.ChildRoaming.IsMinor(c)) return null;
             var region = Thatchwick.Core.World.Regions.At(target);
-            return _life.Roaming.Blocker(c, region, HourOfDay, _clock.DayIndex, AccompaniedByElder(c));
+            var why = _life.Roaming.Blocker(c, region, HourOfDay, _clock.DayIndex, AccompaniedByElder(c));
+            return why.IsEmpty ? null : GameLocalization.R(why);
         }
 
         /// <summary>Aile panelindeki "İzin iste": çocuk annesine (yoksa evdeki bir yetişkine) kasabaya gitmeyi sorar.</summary>
@@ -1582,9 +1587,61 @@ namespace Thatchwick.Game
                     if (!m.IsDead && !m.IsVillager && !m.Away && m.Stage >= AgeStage.YoungAdult) { adult = m; break; }
             }
             _life.Roaming.AskPermission(child, adult, Thatchwick.Core.Upbringing.RoamPermission.Town, HourOfDay, _clock.DayIndex,
-                _life.Weather.Today(_clock.TotalDays), out var reply);
+                _life.Weather.Today(_clock.TotalDays), out var replyKey);
+            string reply = GameLocalization.R(replyKey);
             Say(adult, reply);
             return reply;
+        }
+
+        /// <summary>
+        /// Eşyanın menü başlığı: ad; yapılan eşyada kalite adı (rozet rengiyle değil, sözle: menü düz metin), ustalık eserinde yazı
+        /// (belge 53 §4.6: "Ali yaptı, 3. yıl"). Kalite kelimesi eşyanın adına eklenmez; ayraçla yanında durur.
+        /// </summary>
+        private string ItemTitle(ItemInstance item)
+        {
+            string title = item.Def.DisplayName;
+            if (item.Def.HasQuality && item.Quality > 0) title += " · " + UiSkin.QualityName(item.Quality);
+            if (item.Maker > 0)
+            {
+                var ins = _life.QualityBook.Inscription(item.Maker);
+                if (!ins.IsEmpty) title += " · " + GameLocalization.R(ins);
+            }
+            return title;
+        }
+
+        /// <summary>Tezgâhın kalite seçimleri (belge 53 §4.6-4.7): "En iyi malzemeyi kullan" ve "Ustalık eseri dene".</summary>
+        private void AddQualityOptions(ItemInstance item)
+        {
+            var book = _life?.QualityBook;
+            if (book == null || item.IsDecor) return;
+            bool any = false;
+            foreach (var _ in Thatchwick.Core.Life.QualityBook.QualityRecipes(item.Def, _content)) { any = true; break; }
+            if (!any) return;
+            var station = item.Def;
+            bool best = book.BestIngredientsAt(station, _content);
+            _menuOptions.Add(new MenuOption
+            {
+                Label = GameLocalization.T(best ? "ui.quality.best_on" : "ui.quality.best_off"),
+                Run = () => { book.SetBestIngredientsAt(station, _content, !best); ShowMessage(GameLocalization.T(!best ? "ui.quality.best_set" : "ui.quality.best_unset")); }
+            });
+            var c = Commander?.Character;
+            bool queued = book.MasterworkQueuedAt(station, _content);
+            string blocked = null;
+            if (!queued)
+            {
+                foreach (var i in Thatchwick.Core.Life.QualityBook.QualityRecipes(station, _content))
+                {
+                    var why = book.AttemptBlocker(c, i, _clock.DayIndex);
+                    blocked = why.IsEmpty ? null : GameLocalization.R(why);
+                    if (blocked == null) break;
+                }
+            }
+            _menuOptions.Add(new MenuOption
+            {
+                Label = GameLocalization.T(queued ? "ui.quality.masterwork_cancel" : "ui.quality.masterwork_try"),
+                Blocked = blocked,
+                Run = () => { book.QueueMasterworkAt(station, _content, !queued); ShowMessage(GameLocalization.T(!queued ? "ui.quality.masterwork_queued" : "ui.quality.masterwork_unqueued")); }
+            });
         }
 
         /// <summary>Karakterin başında 4 saniyelik konuşma balonu.</summary>
@@ -1617,7 +1674,7 @@ namespace Thatchwick.Game
                 }
                 var ev = _life.Roaming.Observe(c, region, HourOfDay, _clock.DayIndex, _clock.TotalDays, weather, AccompaniedByElder(c), villagers);
                 if (ev == null) continue;
-                Say(ev.Villager, ev.Line);
+                Say(ev.Villager, GameLocalization.R(ev.Line));
                 _life.ApplyGaze(ev);
                 if (ev.Escort)
                 {
@@ -2194,11 +2251,13 @@ namespace Thatchwick.Game
             }
             foreach (var item in items)
             {
-                if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell || item.Def.WaterGate) && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
+                string shown = ItemTitle(item);
+                if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell || item.Def.WaterGate) && !names.Contains(shown)) names.Add(shown);
                 foreach (var it in item.Def.Interactions)
                     if (!it.Hidden && (_life == null || _life.Trees.Shows(item, it)))   // ağaç evin durumuna göre (belge 52)
                         _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
                 if (_life != null && Thatchwick.Core.Life.GreatTrees.IsGreatTree(item.Def)) AddTreehouseOptions(item);   // belge 52
+                AddQualityOptions(item);
                 if (item.Def.WaterGate)
                 {
                     var gate = item;
@@ -2425,7 +2484,7 @@ namespace Thatchwick.Game
             _farmWork.FishBite += (c, tile, fish) => StartFishing(c, fish, false, (ok, perfect) => _farmWork.CompleteFish(c, tile, fish, ok, perfect));
             _effects.FishBite += (c, item, fish, count) => StartFishing(c, fish, false, (ok, perfect) =>
             {
-                if (ok) { _effects.GrantFish(c, fish, count); if (perfect) c.GainSkillXp(SkillType.Fishing, FarmWork.PerfectXp); }
+                if (ok) { _effects.GrantFish(c, fish, count, perfect); if (perfect) c.GainSkillXp(SkillType.Fishing, FarmWork.PerfectXp); }
                 ShowMessage(ok ? GameLocalization.T("ui.fishing.caught", ("fish", _content.Items.Get(fish).DisplayName)) : GameLocalization.T("ui.fishing.escaped"));
             });
             _life.Home.CatchBite += (c, id) => StartFishing(c, id, true, (ok, perfect) =>
@@ -3498,7 +3557,7 @@ namespace Thatchwick.Game
             if (HudToggle("Ocak (M)", _minePanel.Active)) _minePanel.Toggle();
             if (HudToggle("Aile (F)", _familyPanel.Active)) ToggleFamily();
             if (HudToggle("Köy (V)", _villagePanel.Active)) ToggleVillage();
-            { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? $"İstekler (I) •{unread}" : "İstekler (I)", _requestPanel.Active)) ToggleRequests(); }
+            { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? GameLocalization.T("ui.req.hud_unread", ("n", unread)) : GameLocalization.T("ui.req.hud"), _requestPanel.Active)) ToggleRequests(); }
             if (_keepsakePanel != null && HudToggle("Hatıra (J)", _keepsakePanel.Active)) _keepsakePanel.Toggle();
             if (_homePanel != null && HudToggle("Ev (E)", _homePanel.Active)) _homePanel.Toggle();
             GUILayout.EndHorizontal();

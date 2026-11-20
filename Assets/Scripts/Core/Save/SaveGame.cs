@@ -63,7 +63,10 @@ namespace Thatchwick.Core.Save
             var list = new List<string>();
             foreach (var c in it.Contents)
             {
-                if (c.Age > 0 || c.Own)   // doldurulan dekor: "kimlik|durum|yaş|kendi"
+                if (c.Quality > 0 || c.Maker > 0)   // kaliteli (53): "kimlik|durum|yaş|kendi|kalite|eser"
+                    list.Add(c.ItemId + "|" + (int)c.Condition + "|" + c.Age.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) + "|" + (c.Own ? 1 : 0)
+                             + "|" + c.Quality + "|" + c.Maker);
+                else if (c.Age > 0 || c.Own)   // doldurulan dekor: "kimlik|durum|yaş|kendi"
                     list.Add(c.ItemId + "|" + (int)c.Condition + "|" + c.Age.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) + "|" + (c.Own ? 1 : 0));
                 else list.Add(c.Condition == ItemCondition.Sound ? c.ItemId : c.ItemId + "|" + (int)c.Condition);
             }
@@ -75,8 +78,7 @@ namespace Thatchwick.Core.Save
             stored = default;
             if (string.IsNullOrWhiteSpace(entry)) return false;
             int bar = entry.IndexOf('|');
-            if (bar < 0) { stored = new StoredItem(entry.Trim(), ItemCondition.Sound); return true; }
-            var parts = entry.Split('|');
+            var parts = bar < 0 ? new[] { entry, "0" } : entry.Split('|');
             int.TryParse(parts[1], out int c);
             stored = new StoredItem(parts[0].Trim(), ParseCondition(c));
             if (parts.Length >= 4)
@@ -85,6 +87,15 @@ namespace Thatchwick.Core.Save
                 stored.Age = Math.Max(0, age);
                 stored.Own = parts[3].Trim() == "1";
             }
+            if (parts.Length >= 6)
+            {
+                int.TryParse(parts[4], out int q);
+                int.TryParse(parts[5], out int m);
+                stored.Quality = ItemQuality.Clamp(q);
+                stored.Maker = Math.Max(0, m);
+            }
+            var alias = ItemQuality.Resolve(stored.ItemId);   // eski ayrı kimlik (karar 3)
+            if (alias.quality > 0) { stored.ItemId = alias.id; stored.Quality = Math.Max(stored.Quality, alias.quality); }
             return stored.ItemId.Length > 0;
         }
 
@@ -235,7 +246,7 @@ namespace Thatchwick.Core.Save
                         feedStock = it.FeedStock, stock = stock, finish = it.FinishId, accent = it.AccentId, toggled = it.Toggled, fill = it.Fill,
                         watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays,
                         band = it.IsWallMounted ? it.WallBand : -1, layer = it.IsRug ? it.LayerOrder : 0, condition = (int)it.Condition,
-                        tarnish = it.TarnishDays, contents = ContentsOf(it)
+                        tarnish = it.TarnishDays, contents = ContentsOf(it), quality = it.Quality, maker = it.Maker, embellished = it.Embellished
                     });
                 }
             data.items = items.ToArray();
@@ -257,8 +268,11 @@ namespace Thatchwick.Core.Save
             foreach (var kv in house.RepairedList()) rep.Add(new KeyInt { key = kv.Key, value = kv.Value });
             var bought = new List<KeyInt>();
             foreach (var kv in house.BoughtList()) bought.Add(new KeyInt { key = kv.Key, value = kv.Value });
+            var stacks = new List<StackSave>();
+            foreach (var kv in house.AllStacks())
+                stacks.Add(new StackSave { id = kv.Key.Id, q = kv.Key.Quality, c = (int)kv.Key.Condition, b = kv.Key.Bought, m = kv.Key.Maker, n = kv.Value });
             data.household = new HouseholdSave { akce = house.Akce, inventory = inv.ToArray(), damaged = dmg.ToArray(), repaired = rep.ToArray(), bought = bought.ToArray(),
-                shopUnlocks = new List<string>(house.ShopUnlocks).ToArray() };
+                shopUnlocks = new List<string>(house.ShopUnlocks).ToArray(), stacks = stacks.ToArray() };
             var orders = new List<KeyInt>();
             foreach (var kv in house.Orders) orders.Add(new KeyInt { key = kv.Key, value = kv.Value });
             data.household.orders = orders.ToArray();
@@ -625,10 +639,13 @@ namespace Thatchwick.Core.Save
                         restored.Toggled = s.toggled;
                         restored.Fill = Math.Max(0, s.fill);
                     restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));
-                    if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(kv.key)) restored.SetStock(kv.key, kv.value);
+                    if (s.stock != null) foreach (var kv in s.stock) if (kv != null && kv.value > 0 && content.Items.Contains(ItemKey.FromStockKey(kv.key).Id)) restored.SetStock(kv.key, kv.value);
                     int band = s.band;
                     if (restored.IsWallMounted && band < 0) band = world.FirstFreeBand(def, pos, s.rotation, restored.Id);
                     world.RestoreDecorState(restored, band, s.layer, ParseCondition(s.condition), s.tarnish);
+                    restored.Quality = def.HasQuality ? ItemQuality.Clamp(s.quality) : 0;
+                    restored.Maker = Math.Max(0, s.maker);
+                    restored.Embellished = s.embellished;
                     if (s.contents != null)
                         foreach (var entry in s.contents)
                             if (TryParseStored(entry, out var stored) && content.Items.Contains(stored.ItemId)) restored.Contents.Add(stored);
@@ -636,17 +653,34 @@ namespace Thatchwick.Core.Save
 
             var hs = data.household ?? new HouseholdSave();
             var house = new Household(Math.Max(0, hs.akce));
-            if (hs.inventory != null)
-                foreach (var kv in hs.inventory)
+            if (hs.stacks != null)
+            {
+                foreach (var st in hs.stacks)
                 {
-                    if (kv == null || kv.value <= 0) continue;
-                    if (!content.Items.Contains(kv.key)) { result.Warnings.Add($"Envanterde bilinmeyen eşya, atlandı: {kv.key}"); continue; }
-                    house.AddItem(kv.key, kv.value);
+                    if (st == null || st.n <= 0 || string.IsNullOrEmpty(st.id)) continue;
+                    var (id, aq) = ItemQuality.Resolve(st.id);   // eski ayrı kimlik kaliteye döner (karar 3)
+                    if (!content.Items.TryGet(id, out var sd)) { result.Warnings.Add($"Envanterde bilinmeyen eşya, atlandı: {st.id}"); continue; }
+                    int q = sd.HasQuality ? Math.Max(aq, ItemQuality.Clamp(st.q)) : 0;
+                    house.Add(new ItemKey(id, q, ParseCondition(st.c), st.b, st.m), st.n);
                 }
-            foreach (var def in returned) house.AddItem(def.Id);
-            if (hs.damaged != null) foreach (var kv in hs.damaged) if (kv != null && content.Items.Contains(kv.key)) house.RestoreCondition(kv.key, kv.value, ItemCondition.Damaged);
-            if (hs.repaired != null) foreach (var kv in hs.repaired) if (kv != null && content.Items.Contains(kv.key)) house.RestoreCondition(kv.key, kv.value, ItemCondition.Repaired);
-            if (hs.bought != null) foreach (var kv in hs.bought) if (kv != null && content.Items.Contains(kv.key)) house.MarkBought(kv.key, kv.value);
+                foreach (var def in returned) house.AddItem(def.Id);
+            }
+            else
+            {
+                // Eski kayıt: kimlik × adet, yanında hasar ve pazar sayaçları (hepsi Sıradan; eski ayrı kimlik kaliteye döner).
+                if (hs.inventory != null)
+                    foreach (var kv in hs.inventory)
+                    {
+                        if (kv == null || kv.value <= 0) continue;
+                        var (id, aq) = ItemQuality.Resolve(kv.key);
+                        if (!content.Items.Contains(id)) { result.Warnings.Add($"Envanterde bilinmeyen eşya, atlandı: {kv.key}"); continue; }
+                        house.AddItem(id, kv.value, aq);
+                    }
+                foreach (var def in returned) house.AddItem(def.Id);
+                if (hs.damaged != null) foreach (var kv in hs.damaged) if (kv != null && content.Items.Contains(kv.key)) house.RestoreCondition(kv.key, kv.value, ItemCondition.Damaged);
+                if (hs.repaired != null) foreach (var kv in hs.repaired) if (kv != null && content.Items.Contains(kv.key)) house.RestoreCondition(kv.key, kv.value, ItemCondition.Repaired);
+                if (hs.bought != null) foreach (var kv in hs.bought) if (kv != null && content.Items.Contains(kv.key)) house.MarkBought(kv.key, kv.value);
+            }
             if (hs.shopUnlocks != null) foreach (var k in hs.shopUnlocks) house.UnlockShop(k);
             if (hs.orders != null) foreach (var kv in hs.orders) if (kv != null && content.Items.Contains(kv.key)) house.AddOrder(kv.key, kv.value);
             result.Household = house;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Life;
 using Thatchwick.Core.Time;
@@ -40,7 +41,6 @@ namespace Thatchwick.Core.Work
     public sealed class TimedDutyPlace
     {
         public string Id;
-        public string Name;
         public TimedDutyKind Kind;
         public SkillType Skill;
         public int MinLevel = 1;
@@ -71,8 +71,8 @@ namespace Thatchwick.Core.Work
         public bool Repeat;
         /// <summary>Bağlı istek (RequestService); 0 ise yok.</summary>
         public int RequestId;
-        /// <summary>Köy işi (Errand) için görünen ad.</summary>
-        public string Label;
+        /// <summary>Köy işi (Errand) için görünen ad (anahtarlı; istek başlığı).</summary>
+        public LocText Label;
     }
 
     /// <summary>Süren görev.</summary>
@@ -88,8 +88,9 @@ namespace Thatchwick.Core.Work
         public bool Playing;
         public World.GridPos StartPos;
         public readonly Dictionary<string, double> Gains = new Dictionary<string, double>();
+        /// <summary>Azık: anahtar <see cref="Content.ItemKey.Token"/> ("item.bread", "item.bread#2!"), değer adet. Kalite ve kaynak korunur.</summary>
         public readonly Dictionary<string, int> Packed = new Dictionary<string, int>();
-        public readonly List<string> Events = new List<string>();
+        public readonly List<LocText> Events = new List<LocText>();
         public double Xp;
         public TimedDutyEnd End;
         public double ElapsedHours => WorkedHours + BreakHours + PlayedHours;
@@ -101,14 +102,14 @@ namespace Thatchwick.Core.Work
         public int CharacterId;
         public string CharacterName;
         public TimedDutyKind Kind;
-        public string PlaceName;
+        public string PlaceId;
         public TimedDutyEnd End;
         public readonly List<KeyValuePair<string, int>> Items = new List<KeyValuePair<string, int>>();
         public double Xp;
-        public readonly List<string> Notes = new List<string>();
+        public readonly List<LocText> Notes = new List<LocText>();
         public int RequestId;
         public double Hours;
-        public string Summary;
+        public LocText Summary;
     }
 
     /// <summary>
@@ -165,8 +166,12 @@ namespace Thatchwick.Core.Work
         public Thatchwick.Core.Upbringing.ToyHabitSystem Toys { get; set; }
         /// <summary>Yaralanma (göçük): InjurySystem.InjureById.</summary>
         public Action<Character, string> Injure { get; set; }
-        /// <summary>Bildirim (metin, karakter).</summary>
-        public Action<string, int> Notify { get; set; }
+        /// <summary>Bildirim (anahtarlı metin, karakter).</summary>
+        public Action<LocText, int> Notify { get; set; }
+        /// <summary>Anahtarlı metni çözer (moodlet gibi düz metin bekleyen eski API'ler için; oyun katmanı verir).</summary>
+        public Func<LocText, string> Resolve { get; set; } = t => t.Literal ?? t.Key ?? "";
+
+        private static LocText L(string key, params (string name, object value)[] args) => LocText.Of(key, args);
 
         /// <summary>Görev bitti, ürünler eve kondu.</summary>
         public event Action<TimedDutyResult> Finished;
@@ -187,24 +192,24 @@ namespace Thatchwick.Core.Work
 
         public static readonly TimedDutyPlace[] Places =
         {
-            new TimedDutyPlace { Id = "mine:gallery", Name = "Ocak, galeri katı", Kind = TimedDutyKind.Mine, Skill = SkillType.Mining, Tool = "pickaxe", BaseRate = 2.2, Underground = true },
-            new TimedDutyPlace { Id = "mine:plot", Name = "Arsa kazısı", Kind = TimedDutyKind.Mine, Skill = SkillType.Mining, MinLevel = 2, Tool = "pickaxe", BaseRate = 2.0, Underground = true },
-            new TimedDutyPlace { Id = "fish:pond", Name = "Çiftlik göleti", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, Tool = "rod", BaseRate = 1.0, ChildSafe = false },
-            new TimedDutyPlace { Id = "fish:stream", Name = "Dere", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, Tool = "rod", BaseRate = 1.0 },
-            new TimedDutyPlace { Id = "fish:river", Name = "Irmak", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, Tool = "rod", BaseRate = 1.1 },
-            new TimedDutyPlace { Id = "fish:lake", Name = "Göl", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, MinLevel = 2, Tool = "rod", BaseRate = 1.0 },
-            new TimedDutyPlace { Id = "fish:marsh", Name = "Sazlık", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, MinLevel = 3, Tool = "rod", BaseRate = 0.9 },
-            new TimedDutyPlace { Id = "forest:forest", Name = "Orman", Kind = TimedDutyKind.Forest, Skill = SkillType.Woodcutting, Tool = "axe", BaseRate = 1.6 },
-            new TimedDutyPlace { Id = "forest:hill", Name = "Tepe (çamlık)", Kind = TimedDutyKind.Forest, Skill = SkillType.Woodcutting, MinLevel = 2, Tool = "axe", BaseRate = 1.5 },
-            new TimedDutyPlace { Id = "forest:river", Name = "Irmak kenarı (söğütlük)", Kind = TimedDutyKind.Forest, Skill = SkillType.Woodcutting, Tool = "axe", BaseRate = 1.4 },
-            new TimedDutyPlace { Id = "forage:meadow", Name = "Çayır ve köy yolu", Kind = TimedDutyKind.Forage, Skill = SkillType.Foraging, BaseRate = 3.0, ChildSafe = true },
-            new TimedDutyPlace { Id = "forage:forest", Name = "Orman", Kind = TimedDutyKind.Forage, Skill = SkillType.Foraging, BaseRate = 3.0 },
-            new TimedDutyPlace { Id = "forage:river", Name = "Irmak kıyısı", Kind = TimedDutyKind.Forage, Skill = SkillType.Foraging, BaseRate = 2.6 },
-            new TimedDutyPlace { Id = "traps:forest", Name = "Orman (kement tuzakları)", Kind = TimedDutyKind.Traps, Skill = SkillType.Hunting, NeedsItem = "item.snare", BaseRate = 0.5 },
-            new TimedDutyPlace { Id = "traps:marsh", Name = "Sazlık (kerevit tuzakları)", Kind = TimedDutyKind.Traps, Skill = SkillType.Fishing, MinLevel = 5, NeedsItem = "item.fish_trap", BaseRate = 0.8 },
-            new TimedDutyPlace { Id = "clay:river", Name = "Irmak yatağı (kil)", Kind = TimedDutyKind.Clay, Skill = SkillType.Mining, BaseRate = 2.5 },
-            new TimedDutyPlace { Id = "clay:shore", Name = "Kumsal (kum)", Kind = TimedDutyKind.Clay, Skill = SkillType.Mining, BaseRate = 2.5 },
-            new TimedDutyPlace { Id = "errand:village", Name = "Köy", Kind = TimedDutyKind.Errand, Skill = SkillType.Athletics, BaseRate = 0 },
+            new TimedDutyPlace { Id = "mine:gallery", Kind = TimedDutyKind.Mine, Skill = SkillType.Mining, Tool = "pickaxe", BaseRate = 2.2, Underground = true },
+            new TimedDutyPlace { Id = "mine:plot", Kind = TimedDutyKind.Mine, Skill = SkillType.Mining, MinLevel = 2, Tool = "pickaxe", BaseRate = 2.0, Underground = true },
+            new TimedDutyPlace { Id = "fish:pond", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, Tool = "rod", BaseRate = 1.0, ChildSafe = false },
+            new TimedDutyPlace { Id = "fish:stream", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, Tool = "rod", BaseRate = 1.0 },
+            new TimedDutyPlace { Id = "fish:river", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, Tool = "rod", BaseRate = 1.1 },
+            new TimedDutyPlace { Id = "fish:lake", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, MinLevel = 2, Tool = "rod", BaseRate = 1.0 },
+            new TimedDutyPlace { Id = "fish:marsh", Kind = TimedDutyKind.Fish, Skill = SkillType.Fishing, MinLevel = 3, Tool = "rod", BaseRate = 0.9 },
+            new TimedDutyPlace { Id = "forest:forest", Kind = TimedDutyKind.Forest, Skill = SkillType.Woodcutting, Tool = "axe", BaseRate = 1.6 },
+            new TimedDutyPlace { Id = "forest:hill", Kind = TimedDutyKind.Forest, Skill = SkillType.Woodcutting, MinLevel = 2, Tool = "axe", BaseRate = 1.5 },
+            new TimedDutyPlace { Id = "forest:river", Kind = TimedDutyKind.Forest, Skill = SkillType.Woodcutting, Tool = "axe", BaseRate = 1.4 },
+            new TimedDutyPlace { Id = "forage:meadow", Kind = TimedDutyKind.Forage, Skill = SkillType.Foraging, BaseRate = 3.0, ChildSafe = true },
+            new TimedDutyPlace { Id = "forage:forest", Kind = TimedDutyKind.Forage, Skill = SkillType.Foraging, BaseRate = 3.0 },
+            new TimedDutyPlace { Id = "forage:river", Kind = TimedDutyKind.Forage, Skill = SkillType.Foraging, BaseRate = 2.6 },
+            new TimedDutyPlace { Id = "traps:forest", Kind = TimedDutyKind.Traps, Skill = SkillType.Hunting, NeedsItem = "item.snare", BaseRate = 0.5 },
+            new TimedDutyPlace { Id = "traps:marsh", Kind = TimedDutyKind.Traps, Skill = SkillType.Fishing, MinLevel = 5, NeedsItem = "item.fish_trap", BaseRate = 0.8 },
+            new TimedDutyPlace { Id = "clay:river", Kind = TimedDutyKind.Clay, Skill = SkillType.Mining, BaseRate = 2.5 },
+            new TimedDutyPlace { Id = "clay:shore", Kind = TimedDutyKind.Clay, Skill = SkillType.Mining, BaseRate = 2.5 },
+            new TimedDutyPlace { Id = "errand:village", Kind = TimedDutyKind.Errand, Skill = SkillType.Athletics, BaseRate = 0 },
         };
 
         public static TimedDutyPlace Place(string id)
@@ -213,20 +218,11 @@ namespace Thatchwick.Core.Work
             return null;
         }
 
-        public static string KindName(TimedDutyKind k)
-        {
-            switch (k)
-            {
-                case TimedDutyKind.Mine: return "Maden";
-                case TimedDutyKind.Fish: return "Balık";
-                case TimedDutyKind.Forest: return "Orman (odun)";
-                case TimedDutyKind.Forage: return "Toplama";
-                case TimedDutyKind.Traps: return "Tuzak";
-                case TimedDutyKind.Clay: return "Kil ve kum";
-                case TimedDutyKind.Errand: return "Köy işi";
-                default: return "Görev";
-            }
-        }
+        /// <summary>Görev türünün adı (anahtarlı).</summary>
+        public static LocText KindText(TimedDutyKind k) => LocText.Of("duty.kind." + k.ToString().ToLowerInvariant());
+
+        /// <summary>Yerin adı (anahtarlı): "duty.place.mine.gallery".</summary>
+        public static LocText PlaceText(string placeId) => LocText.Of("duty.place." + (placeId ?? "").Replace(':', '.'));
 
         // ---- kim, nereye, ne kadar (belge 47 §3.6) ----
 
@@ -253,32 +249,31 @@ namespace Thatchwick.Core.Work
             return null;
         }
 
-        /// <summary>Görevin başlayamama nedeni; başlayabiliyorsa null.</summary>
-        public string CanStart(Character c, TimedDutyOrder order)
+        /// <summary>Görevin başlayamama nedeni; başlayabiliyorsa boş.</summary>
+        public LocText CanStart(Character c, TimedDutyOrder order)
         {
-            if (c == null || c.IsDead) return "Kişi yok.";
-            if (c.IsVillager) return "Yalnızca hane üyeleri göreve gider.";
-            if (IsAway(c.Id)) return $"{c.Name} zaten görevde.";
+            if (c == null || c.IsDead) return L("duty.err.nobody");
+            if (c.IsVillager) return L("duty.err.household_only");
+            if (IsAway(c.Id)) return L("duty.err.away", ("name", c.Name));
             var place = Place(order?.PlaceId);
-            if (place == null) return "Yer seçilmedi.";
-            if (place.Kind != order.Kind) return "Yer bu işe uymuyor.";
+            if (place == null) return L("duty.err.no_place");
+            if (place.Kind != order.Kind) return L("duty.err.wrong_place");
             double max = MaxHours(c, order.Kind);
             if (max <= 0)
-                return c.Stage == AgeStage.Baby ? "Bebek göreve gönderilemez." : c.Stage == AgeStage.Child ? "Çocuk yalnızca yakına toplamaya gidebilir." : $"{c.Name} bu işe gidemez.";
-            if (c.Stage == AgeStage.Child && !place.ChildSafe) return "Çocuk yalnızca çayıra ve köy yoluna toplamaya gidebilir.";
-            if (c.IsPregnant && (order.Kind == TimedDutyKind.Mine || order.Kind == TimedDutyKind.Traps)) return "Hamile biri madene ya da tuzağa gönderilmez.";
+                return c.Stage == AgeStage.Baby ? L("duty.err.baby") : c.Stage == AgeStage.Child ? L("duty.err.child") : L("duty.err.cannot", ("name", c.Name));
+            if (c.Stage == AgeStage.Child && !place.ChildSafe) return L("duty.err.child_place");
+            if (c.IsPregnant && (order.Kind == TimedDutyKind.Mine || order.Kind == TimedDutyKind.Traps)) return L("duty.err.pregnant");
             double hours = HoursFor(order);
-            if (hours > max + 1e-9) return $"{c.Name} bu yaşta en çok {max:0} saat gidebilir.";
-            if (hours < 0.5) return "Akşam oldu; yarın sabah gönder.";
+            if (hours > max + 1e-9) return L("duty.err.max_hours", ("name", c.Name), ("hours", (int)Math.Round(max)));
+            if (hours < 0.5) return L("duty.err.evening");
             if (place.Kind != TimedDutyKind.Errand && c.Skills.GetLevel(place.Skill) < place.MinLevel)
-                return $"{SkillNames.Name(place.Skill)} {place.MinLevel} gerekli.";
-            if (place.NeedsItem != null && _house.Count(place.NeedsItem) <= 0)
-                return $"{(_content.Items.TryGet(place.NeedsItem, out var nd) ? nd.DisplayName : place.NeedsItem)} gerekli.";
-            if (PlaceOpen != null && !PlaceOpen(place.Id)) return $"{place.Name} henüz açılmadı.";
+                return L("duty.err.skill", ("skill", LocText.Of("skill." + place.Skill)), ("level", place.MinLevel));
+            if (place.NeedsItem != null && _house.Count(place.NeedsItem) <= 0) return L("duty.err.item", ("item", place.NeedsItem));
+            if (PlaceOpen != null && !PlaceOpen(place.Id)) return L("duty.err.closed", ("place", PlaceText(place.Id)));
             if (order.Kind == TimedDutyKind.Fish && SeasonNow() == Season.Winter && c.Skills.GetLevel(SkillType.Fishing) < 7)
-                return "Kışın buz deliği açmak için Balıkçılık 7 gerekli.";
-            if (c.Needs.Get(NeedType.Energy) < TiredReturn + 5) return $"{c.Name} çok yorgun; önce uyusun.";
-            return null;
+                return L("duty.err.ice");
+            if (c.Needs.Get(NeedType.Energy) < TiredReturn + 5) return L("duty.err.tired", ("name", c.Name));
+            return default;
         }
 
         /// <summary>Görev kaç oyun saati sürer ("akşama kadar" ise şimdiden 19.00'a kadar).</summary>
@@ -424,19 +419,21 @@ namespace Thatchwick.Core.Work
         // ---- başlat, işle, bitir ----
 
         /// <summary>Görevi başlatır: azığı envanterden alır, karakteri haritadan çıkarır. Başlayamazsa null ve nedeni.</summary>
-        public TimedDuty Start(TimedDutyOrder order, out string reason, List<KeyValuePair<string, int>> food = null)
+        public TimedDuty Start(TimedDutyOrder order, out LocText reason, List<KeyValuePair<string, int>> food = null)
         {
             var c = _population.Find(order.CharacterId);
             reason = CanStart(c, order);
-            if (reason != null) return null;
+            if (!reason.IsEmpty) return null;
             double hours = Math.Min(HoursFor(order), MaxHours(c, order.Kind));
             var duty = new TimedDuty { Id = _nextId++, Order = order, StartDay = Now(), PlannedHours = hours, StartPos = c.Position };
+            // Azık en düşük kaliteden alınır (belge 53 §4.7); anahtar kaliteyi ve kaynağı taşır ("item.bread#2"), artan eve öyle döner.
             foreach (var kv in food ?? SuggestFood(c, hours))
-            {
-                int took = 0;
-                for (int i = 0; i < kv.Value; i++) if (_house.TryTakeItem(kv.Key)) took++;
-                if (took > 0) duty.Packed[kv.Key] = (duty.Packed.TryGetValue(kv.Key, out int n) ? n : 0) + took;
-            }
+                for (int i = 0; i < kv.Value; i++)
+                {
+                    if (!_house.TryTake(kv.Key, TakePolicy.Lowest, out var taken)) break;
+                    string token = taken.Token();
+                    duty.Packed[token] = (duty.Packed.TryGetValue(token, out int n) ? n : 0) + 1;
+                }
             c.Away = true;
             c.Asleep = false;
             _active.Add(duty);
@@ -520,7 +517,7 @@ namespace Thatchwick.Core.Work
                 {
                     d.Playing = true;
                     string toy = ToyFor(c);
-                    d.Events.Add(toy != null ? $"Yarısında sıkıldı, {ToyName(toy)} oynadı." : "Yarısında sıkıldı; dal toplayıp kendi oyununu kurdu.");
+                    d.Events.Add(toy != null ? L("duty.ev.bored_toy", ("toy", toy)) : L("duty.ev.bored"));
                     return TimedDutyEnd.Running;
                 }
             }
@@ -538,14 +535,14 @@ namespace Thatchwick.Core.Work
             if (place != null && place.Kind == TimedDutyKind.Mine && Roll(CaveInPerHour * (c.Skills.GetLevel(SkillType.Mining) >= 9 ? 0.5 : 1.0), hours))
             {
                 Injure?.Invoke(c, "cave_in");
-                d.Events.Add("Göçükte yaralandı; erken döndü.");
+                d.Events.Add(L("duty.ev.cave_in"));
                 return TimedDutyEnd.Danger;
             }
             if (place != null && (place.Id == "forest:forest" || place.Id == "traps:forest" || place.Id == "forage:forest"))
             {
                 bool wolves = SeasonNow() == Season.Winter && c.Skills.GetLevel(SkillType.Hunting) < 7 && (Dogs == null || Dogs() <= 0);
-                if (wolves && Roll(WolfPerHour, hours)) { d.Events.Add("Kurt izi gördü, akşam olmadan döndü."); return TimedDutyEnd.Danger; }
-                if (Roll(BearPerHour, hours)) { d.Events.Add("Uzakta bir ayı gördü; yolunu değiştirip döndü."); return TimedDutyEnd.Danger; }
+                if (wolves && Roll(WolfPerHour, hours)) { d.Events.Add(L("duty.ev.wolf")); return TimedDutyEnd.Danger; }
+                if (Roll(BearPerHour, hours)) { d.Events.Add(L("duty.ev.bear")); return TimedDutyEnd.Danger; }
             }
             if (d.Order.TargetItem != null && d.Order.TargetCount > 0 && GainOf(d, d.Order.TargetItem) >= d.Order.TargetCount) return TimedDutyEnd.Target;
             return d.ElapsedHours >= d.PlannedHours - 1e-9 ? TimedDutyEnd.Done : TimedDutyEnd.Running;
@@ -577,11 +574,13 @@ namespace Thatchwick.Core.Work
 
         private bool EatPacked(TimedDuty d, Character c)
         {
+            // Kaliteli azık daha çok doyurur (53 §4.5); en çok doyuranı yer.
             string best = null; float bestValue = 0;
             foreach (var kv in d.Packed)
             {
                 if (kv.Value <= 0) continue;
-                float v = MealValue(kv.Key);
+                var key = ItemKey.FromToken(kv.Key);
+                float v = (float)(MealValue(key.Id) * ItemQuality.SatietyFactor(key.Quality));
                 if (v > bestValue) { best = kv.Key; bestValue = v; }
             }
             if (best == null) return false;
@@ -600,7 +599,6 @@ namespace Thatchwick.Core.Work
             return null;
         }
 
-        private string ToyName(string id) => _content.Items.TryGet(id, out var d) ? d.DisplayName.ToLowerInvariant() + "la" : "oyuncağıyla";
 
         private void PlayToy(TimedDuty d, Character c, double hours)
         {
@@ -617,23 +615,27 @@ namespace Thatchwick.Core.Work
             var place = Place(d.Order.PlaceId);
             var r = new TimedDutyResult
             {
-                CharacterId = d.Order.CharacterId, CharacterName = c?.Name ?? "?", Kind = d.Order.Kind, PlaceName = place?.Name ?? d.Order.PlaceId,
+                CharacterId = d.Order.CharacterId, CharacterName = c?.Name ?? "?", Kind = d.Order.Kind, PlaceId = d.Order.PlaceId,
                 End = end, Xp = d.Xp, RequestId = d.Order.RequestId, Hours = d.ElapsedHours
             };
+            // Kalite (47 §3.3, 53 §4.3): elle toplamanın dağılımı, bir basamak düşük.
+            int level = c != null && place != null && place.Kind != TimedDutyKind.Errand ? c.Skills.GetLevel(place.Skill) : 1;
             foreach (var kv in Whole(d.Gains))
             {
-                _house.AddItem(kv.Key, kv.Value);
+                bool graded = _content.Items.TryGet(kv.Key, out var gd) && gd.HasQuality;
+                for (int u = 0; u < kv.Value; u++)
+                    _house.AddItem(kv.Key, 1, graded ? Math.Max(0, ItemQuality.Gathered(level, _rng) - 1) : 0);
                 r.Items.Add(kv);
             }
-            foreach (var kv in d.Packed) if (kv.Value > 0) _house.AddItem(kv.Key, kv.Value);   // artan azık eve döner
+            foreach (var kv in d.Packed) if (kv.Value > 0) _house.Add(ItemKey.FromToken(kv.Key), kv.Value);   // artan azık kalitesiyle eve döner
             r.Notes.AddRange(d.Events);
             if (c != null)
             {
                 c.Away = false;
                 c.Position = d.StartPos;
                 if (end != TimedDutyEnd.Died && place != null && place.Kind == TimedDutyKind.Mine && c.MoodEnabled)
-                    c.AddMoodlet("mood.dusty", "Tozlu", -3, 0.5);
-                if (end == TimedDutyEnd.Tired && c.MoodEnabled) c.AddMoodlet("mood.duty_tired", "Yorgun döndü", -3, 0.5);
+                    c.AddMoodlet("mood.dusty", Resolve(L("duty.mood.dusty")), -3, 0.5);
+                if (end == TimedDutyEnd.Tired && c.MoodEnabled) c.AddMoodlet("mood.duty_tired", Resolve(L("duty.mood.tired")), -3, 0.5);
             }
             r.Summary = Summarize(r);
             LastResult = r;
@@ -666,25 +668,18 @@ namespace Thatchwick.Core.Work
             return result;
         }
 
-        public string Summarize(TimedDutyResult r)
+        public LocText Summarize(TimedDutyResult r)
         {
-            var parts = new List<string>();
-            foreach (var kv in r.Items) parts.Add($"{kv.Value} {(_content.Items.TryGet(kv.Key, out var d) ? d.DisplayName.ToLowerInvariant() : kv.Key)}");
-            string what = parts.Count > 0 ? string.Join(", ", parts) : "eli boş";
-            string why;
-            switch (r.End)
+            LocText what = L("duty.sum.nothing");
+            for (int i = 0; i < r.Items.Count; i++)
             {
-                case TimedDutyEnd.Hungry: why = "Aç kaldı, erken döndü"; break;
-                case TimedDutyEnd.Tired: why = "Yorgun düştü, erken döndü"; break;
-                case TimedDutyEnd.Cold: why = "Üşüdü, erken döndü"; break;
-                case TimedDutyEnd.Recalled: why = "Geri çağrıldı"; break;
-                case TimedDutyEnd.Danger: why = "Tehlike yüzünden erken döndü"; break;
-                case TimedDutyEnd.Target: why = "Hedefi doldurup döndü"; break;
-                case TimedDutyEnd.Died: why = "Dönemedi"; break;
-                default: why = "Döndü"; break;
+                var part = L("duty.sum.item", ("n", r.Items[i].Value), ("item", r.Items[i].Key));
+                what = i == 0 ? part : L("core.req.list", ("a", what), ("b", part));
             }
-            string notes = r.Notes.Count > 0 ? " " + string.Join(" ", r.Notes) : "";
-            return $"{r.CharacterName} ({KindName(r.Kind)}, {r.PlaceName}): {why}. Getirdi: {what}.{notes}";
+            var text = L("duty.sum", ("name", r.CharacterName), ("kind", KindText(r.Kind)), ("place", PlaceText(r.PlaceId)),
+                ("why", L("duty.end." + r.End.ToString().ToLowerInvariant())), ("what", what));
+            foreach (var note in r.Notes) text = L("duty.sum.note", ("a", text), ("b", note));
+            return text;
         }
 
         // "Her gün tekrarla": ertesi gün aynı saatte kendiliğinden yeniden çıkar.
@@ -704,7 +699,7 @@ namespace Thatchwick.Core.Work
                 if (c == null || c.IsDead || c.IsVillager) { StopRepeat(id); continue; }
                 if (IsAway(id)) continue;
                 var copy = new TimedDutyOrder { CharacterId = id, Kind = order.Kind, PlaceId = order.PlaceId, Hours = order.Hours, TargetItem = order.TargetItem, TargetCount = order.TargetCount, Repeat = false };
-                if (Start(copy, out var why) == null) Notify?.Invoke($"{c.Name} bugün göreve çıkamadı: {why}", id);
+                if (Start(copy, out var why) == null) Notify?.Invoke(L("duty.n.repeat_failed", ("name", c.Name), ("why", why)), id);
             }
         }
 
@@ -719,9 +714,9 @@ namespace Thatchwick.Core.Work
                 var ds = new TimedDutySave
                 {
                     id = d.Id, characterId = d.Order.CharacterId, kind = (int)d.Order.Kind, place = d.Order.PlaceId, hours = d.Order.Hours,
-                    targetItem = d.Order.TargetItem, targetCount = d.Order.TargetCount, requestId = d.Order.RequestId, label = d.Order.Label,
+                    targetItem = d.Order.TargetItem, targetCount = d.Order.TargetCount, requestId = d.Order.RequestId, label = LocCodec.Encode(d.Order.Label),
                     startDay = d.StartDay, plannedHours = d.PlannedHours, workedHours = d.WorkedHours, breakHours = d.BreakHours, playedHours = d.PlayedHours,
-                    playing = d.Playing, x = d.StartPos.X, y = d.StartPos.Y, z = d.StartPos.Z, xp = d.Xp, events = d.Events.ToArray()
+                    playing = d.Playing, x = d.StartPos.X, y = d.StartPos.Y, z = d.StartPos.Z, xp = d.Xp, events = d.Events.ConvertAll(LocCodec.Encode).ToArray()
                 };
                 var gk = new List<string>(); var gv = new List<double>();
                 foreach (var kv in d.Gains) { gk.Add(kv.Key); gv.Add(kv.Value); }
@@ -753,13 +748,13 @@ namespace Thatchwick.Core.Work
                 foreach (var ds in s.active)
                 {
                     if (ds == null) continue;
-                    var order = new TimedDutyOrder { CharacterId = ds.characterId, Kind = (TimedDutyKind)ds.kind, PlaceId = ds.place, Hours = ds.hours, TargetItem = ds.targetItem, TargetCount = ds.targetCount, RequestId = ds.requestId, Label = ds.label };
+                    var order = new TimedDutyOrder { CharacterId = ds.characterId, Kind = (TimedDutyKind)ds.kind, PlaceId = ds.place, Hours = ds.hours, TargetItem = ds.targetItem, TargetCount = ds.targetCount, RequestId = ds.requestId, Label = LocCodec.Decode(ds.label) };
                     var d = new TimedDuty
                     {
                         Id = ds.id, Order = order, StartDay = ds.startDay, PlannedHours = ds.plannedHours, WorkedHours = ds.workedHours, BreakHours = ds.breakHours,
                         PlayedHours = ds.playedHours, Playing = ds.playing, StartPos = new World.GridPos(ds.x, ds.y, ds.z), Xp = ds.xp
                     };
-                    if (ds.events != null) d.Events.AddRange(ds.events);
+                    if (ds.events != null) foreach (var e in ds.events) d.Events.Add(LocCodec.Decode(e));
                     if (ds.gainItems != null) for (int i = 0; i < ds.gainItems.Length && i < (ds.gainAmounts?.Length ?? 0); i++) d.Gains[ds.gainItems[i]] = ds.gainAmounts[i];
                     if (ds.packedItems != null) for (int i = 0; i < ds.packedItems.Length && i < (ds.packedCounts?.Length ?? 0); i++) d.Packed[ds.packedItems[i]] = ds.packedCounts[i];
                     _active.Add(d);
