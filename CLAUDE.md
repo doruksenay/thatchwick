@@ -24,7 +24,7 @@ Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, 
 
 ## Dallar ve main (kullanıcı kararı 2026-11-20)
 - Kod (`Assets/Scripts`, `Assets/Resources`, `core`, `tools`, `.github`, `Packages`, `ProjectSettings`) `main`'e doğrudan push edilmez: dal + PR. PR, "Core tests" yeşil olmadan birleştirilmez; kod PR'ını kullanıcı birleştirir.
-- Kırmızı PR birleştirilmez, kullanıcı istese bile önce nedenini söyle: 20.11.2026'da kırmızı birleşen iki PR `main`'i ve sonraki bütün PR'ları kırdı. `main` kırmızıysa önce o düzeltilir.
+- Kırmızı PR birleştirilmez; kullanıcı istese bile önce nedenini söyle. `main` kırmızıysa önce o düzeltilir (kırmızı `main` sonraki bütün PR'ları da kırmızı gösterir).
 - Doğrudan `main`'e push yalnızca asset/ses iş dosyaları ve işçi çıktıları içindir (`art/`, `audio/`, `Assets/Art/Iso/`, `Assets/Resources/Audio/`) ve `YAPILACAKLAR.md`.
 - `main`'e zorla push (`--force`) ve `main`'i silme yok.
 
