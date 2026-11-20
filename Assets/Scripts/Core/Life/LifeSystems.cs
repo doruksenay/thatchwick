@@ -577,6 +577,8 @@ namespace Thatchwick.Core.Life
         {
             Legacy.OnSuccession(dynasty, heir, Clock.TotalDays);
             Upbringing.OnSuccession();
+            if (HasClothing && heir != null && Clothing.PassSeal(null, heir) > 0)   // mühür yüzüğü yeni reise geçer (belge 48 §5.7)
+                Say(LocText.Of("seal.n.passed", ("name", heir.Name)), NoticeLevel.Info, heir.Id);
             foreach (var h in Legacy.Heirlooms)
                 if (h.Level > 1) { Say($"Yadigârlar bir nesil daha hanede: bonuslar güçlendi.", NoticeLevel.Info); break; }
         }
@@ -741,6 +743,7 @@ namespace Thatchwick.Core.Life
             // Beceri sosyal işleri (belge 45): itibar, yara, şenlik, hava, görücü, köylü rolü.
             family.Today = () => Clock.TotalDays;
             family.AddReputation = (n, why) => Upbringing.Reputation.Add(n, why);
+            family.LetterWritten = (writer, _) => SealBonus(writer, "seal.rep.letter", "seal.n.letter");
             family.Injuries = Injuries;
             family.IsFestivalDay = () => Festivals.TodaysFestival() != null;
             family.ForecastText = () => Weather.ForecastText(Clock.TotalDays);

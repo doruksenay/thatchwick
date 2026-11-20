@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
@@ -42,6 +43,16 @@ namespace Thatchwick.Core.Life
         }
         private double JewelryCourtBonus(Character c) => HasClothing && c != null ? Clothing.CourtBonus(c) : 0.0;
         private double JewelryLuck(Character c) => HasClothing && c != null ? Clothing.AccidentFactor(c) : 1.0;
+
+        /// <summary>Mühür yüzüğünün itibarı (belge 48 §5.7): mühürlü mektup ve sözleşme hanenin itibarını artırır.</summary>
+        public const int SealReputation = 2;
+
+        private void SealBonus(Character c, string reasonKey, string noticeKey)
+        {
+            if (!HasClothing || c == null || !Clothing.HasSeal(c)) return;
+            Upbringing.Reputation.Add(SealReputation, Text(LocText.Of(reasonKey)));
+            Say(LocText.Of(noticeKey, ("name", c.Name), ("rep", SealReputation)), NoticeLevel.Info, c.Id);
+        }
 
         /// <summary>
         /// Envanterdeki takıyı (dükkândan ya da tüccardan alınan) karaktere takar. Takılamıyorsa eşya envanterde kalır.

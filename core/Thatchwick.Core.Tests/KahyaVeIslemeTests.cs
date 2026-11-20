@@ -121,6 +121,32 @@ namespace Thatchwick.Core.Tests
 
         // ---------- kâhya ----------
 
+        /// <summary>Kemente düşen avı Hayvanlar görevlisi kendiliğinden toplar (karar 20.11.2026).</summary>
+        [Fact]
+        public void HayvanGorevlisi_KementeDusenAviToplar()
+        {
+            var db = Db();
+            var w = World();
+            var house = new Household(0);
+            var animals = new AnimalSystem(w, db) { DiseaseEnabled = false };
+            var fx = new InteractionEffects(w, house, db);
+            var planner = new DutyPlanner(w, animals, fx, null);
+            var snare = w.PlaceItem(db.Items.Get("item.snare"), new GridPos(6, 6));
+            var keeper = Adult(1); keeper.Duty = DutyKind.Animals;
+            int before = planner.Pending(DutyKind.Animals);
+            Assert.Null(planner.Next(keeper));                                  // boş tuzak iş değildir
+
+            AnimalSystem.PutStock(snare, "item.game_meat", 1);
+            Assert.Equal(before + 1, planner.Pending(DutyKind.Animals));
+            var job = planner.Next(keeper);
+            Assert.NotNull(job);
+            Assert.Equal(snare.Id, job.ItemId);
+            Assert.Equal("check_snare", job.InteractionId);
+            fx.Apply(keeper, snare, db.Items.Get("item.snare").Interactions.Single(i => i.Id == "check_snare"));
+            Assert.True(house.Count("item.game_meat") >= 1);
+            Assert.Null(planner.Next(keeper));
+        }
+
         [Fact]
         public void Kahya_BekleyenIseGoreDagitir_OyuncuyuVeKendiniAtamaz()
         {
