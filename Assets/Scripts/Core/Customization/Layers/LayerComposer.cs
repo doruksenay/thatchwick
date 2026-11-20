@@ -10,6 +10,10 @@ namespace Thatchwick.Core.Customization.Layers
     public sealed class LayerLook
     {
         public Rgb[] Skin, Main, Trim, Bottom, Leather, Iris, IrisRight, Hair, Brow, Facial, Hat, Ornament;
+        /// <summary>Kesim maskesi bölgeleri: kolsuz üstün altındaki gömlek ve önlük (null ise Main ve Trim).</summary>
+        public Rgb[] Under, Apron;
+        /// <summary>Gövde giysisinin malzemesi (doku betiği; boş = düz).</summary>
+        public string Material = "";
         public string EyePattern = FacePatterns.DefaultEye;
         public string BrowPattern = FacePatterns.DefaultBrow;
         public string ClothPattern = "plain";
@@ -133,8 +137,17 @@ namespace Thatchwick.Core.Customization.Layers
                 switch (r)
                 {
                     case Region.Outline: img.Px[i] = outline; continue;
-                    case Region.Main: c = look.Main[PatternShade(look.ClothPattern, x - anchor.HeadX, y - anchor.HeadY, shade)]; break;
+                    case Region.Main:
+                    {
+                        int ps = PatternShade(look.ClothPattern, x - anchor.HeadX, y - anchor.HeadY, shade);
+                        if (!string.IsNullOrEmpty(look.Material))
+                            ps = ClothingMasks.MaterialShade(look.Material, x, y, ps, body.RegionAt(x - 1, y) == Region.Outline || body.RegionAt(x + 1, y) == Region.Outline);
+                        c = look.Main[ps];
+                        break;
+                    }
                     case Region.Trim: c = look.Trim[shade]; break;
+                    case Region.Under: c = (look.Under ?? look.Main)[shade]; break;
+                    case Region.Apron: c = (look.Apron ?? look.Trim)[shade]; break;
                     case Region.Bottom: c = look.Bottom[Math.Max(0, shade - 1)]; break;
                     case Region.Shoes:
                     case Region.Belt: c = look.Leather[shade]; break;
