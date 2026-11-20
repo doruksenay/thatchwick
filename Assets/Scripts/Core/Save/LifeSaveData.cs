@@ -46,6 +46,8 @@ namespace Thatchwick.Core.Save
         public Thatchwick.Core.Upbringing.ChildRoamingSave roaming;
         /// <summary>İstekler, hane hafızası, adaklar ve rakip hane itibarı (belge 46). Eski kayıtta null.</summary>
         public Thatchwick.Core.Life.Requests.RequestSave requests;
+        /// <summary>Ulu ağaçlardaki ağaç evler, aşevi kasası ve Bereket Sofrası (belge 52). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Life.TreehouseSave treehouses;
         public GraveSave[] graves;
         public int weatherSeed;
         /// <summary>Günlük işlerin (OnNewDay) yapıldığı son gün; eski kayıtta -1.</summary>

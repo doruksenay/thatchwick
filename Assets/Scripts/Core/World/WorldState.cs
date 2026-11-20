@@ -154,10 +154,25 @@ namespace Thatchwick.Core.World
             }
         }
 
+        /// <summary>
+        /// Eşyaya bağlı olmayan sabit kat bağlantıları (ağaç köşkünün ip merdiveni, belge 52). RebuildLinks bunları da
+        /// yeniden kurar. Kayda yazılmaz; sahibi sistem yüklemeden sonra yeniden ekler.
+        /// </summary>
+        public readonly List<KeyValuePair<GridPos, GridPos>> FixedLinks = new List<KeyValuePair<GridPos, GridPos>>();
+
+        /// <summary>Sabit bağlantı ekler ve hemen kurar (aynısı varsa eklemez).</summary>
+        public void AddFixedLink(GridPos a, GridPos b)
+        {
+            foreach (var l in FixedLinks) if (l.Key.Equals(a) && l.Value.Equals(b)) return;
+            FixedLinks.Add(new KeyValuePair<GridPos, GridPos>(a, b));
+            if (Map.InBounds(a) && Map.InBounds(b)) Map.AddLink(a, b);
+        }
+
         /// <summary>Tüm merdiven eşyalarına göre kat bağlantılarını baştan kurar.</summary>
         public void RebuildLinks()
         {
             Map.ClearLinks();
+            foreach (var l in FixedLinks) if (Map.InBounds(l.Key) && Map.InBounds(l.Value)) Map.AddLink(l.Key, l.Value);
             foreach (var item in _items)
             {
                 if (!item.Def.IsStairs || item.IsDecor) continue;

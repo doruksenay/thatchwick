@@ -71,6 +71,8 @@ namespace Thatchwick.Core.Life
         public Thatchwick.Core.Upbringing.ChildRoaming Roaming { get; } = new Thatchwick.Core.Upbringing.ChildRoaming();
         /// <summary>İstekler (belge 46): ilan panosu, ricalar, siparişler, Mevsim Defteri, çağrılar, hikâyeler, vasiyet ve adak.</summary>
         public Thatchwick.Core.Life.Requests.RequestService Requests { get; }
+        /// <summary>Ulu ağaçlar, ağaç evler, köşk, Çınar Aşevi ve Bereket Sofrası (belge 52).</summary>
+        public TreehouseSystem Trees { get; }
 
         /// <summary>
         /// Köyün gözü olayını uygular (belge 47 §7.3): itibar, hane hafızası eksisi ve gece eve getirilen çocuğun ebeveynine
@@ -289,6 +291,26 @@ namespace Thatchwick.Core.Life
                 Chronicle = text => Ledger.Note(text)
             };
             Duties.Finished += Requests.OnDutyFinished;
+            Trees = new TreehouseSystem(world, content, house, population, clock, seed != 0 ? Seeds.Derive(seed, 52) : 52)
+            {
+                Notify = (text, id) => Say(text, NoticeLevel.Info, id),
+                Warn = (text, id) => Say(text, NoticeLevel.Warning, id),
+                Chronicle = text => Ledger.Note(text),
+                AddReputation = (n, why) => Upbringing.Reputation.Add(n, why),
+                AddAffection = (a, b, d) => { if (_family != null) _family.SetAffection(a, b, _family.Affection(a, b) + d); },
+                AddMemory = (v, d, why) => Requests.Memory.Add(v, d, why),
+                WeatherToday = () => Weather.Today(Clock.TotalDays),
+                Forecast = () => Weather.ForecastText(Clock.TotalDays),
+                WolvesComing = () => Wolves != null && Wolves.RaidInDays >= 0 && Wolves.RaidInDays <= 2,
+                HouseholdName = () => { var head = HeadName(); return head != null ? $"{head} hanesi" : "Hane"; },
+                Neighbors = () =>
+                {
+                    var list = new List<(int, string)>();
+                    foreach (var h in Houses.Houses) list.Add((h.Id, h.Name));
+                    return list;
+                },
+                GrantKeepsake = (id, label, cid) => Keepsakes.Grant(id, label, cid)
+            };
             population.MemberDied += c => Requests.OnDied(c);
             population.BabyBorn += (baby, mother, father) => Requests.OnBabyBorn(baby, mother);
             Houses.VillagersMarried += (a, b) => Requests.OnVillageWedding(a, b);
@@ -679,6 +701,7 @@ namespace Thatchwick.Core.Life
             runner.ActionTimeScale = Clock.Config.ActionTimeScale;   // belge 47: işler gerçek zamanda sabit
             runner.SpeedProvider = WorkSpeedFor;
             runner.SquarePosition = () => SquarePosition?.Invoke();
+            runner.Refuge = Trees.RefugeFor;   // bunalımdaki çocuk ağaç eve küser (belge 52)
             runner.Refused += (c, text) => Say($"{c.Name}: \"{text}\"", NoticeLevel.Info, c.Id, transient: true);
             runner.ItemBonus = (it, i) => HomeLife.Combine(Legacy.BonusFor(it, i), Home.BonusFor(it, i));
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
@@ -825,7 +848,12 @@ namespace Thatchwick.Core.Life
             market.IsFairDay = () => Festivals.TodaysFestival() != null;
             market.CalendarFactor = def => FastingCalendar.PriceFactor(def, IsFasting);   // perhiz günleri (belge 48 §9.4)
         }
-        public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; Home.Build = build; }
+        public void Attach(Thatchwick.Core.Build.BuildService build)
+        {
+            build.Discount = BuildDiscount; Home.Build = build;
+            build.ExtraOwned = Trees.ExtraOwned;   // hanenin ağaç köşkü: içine eşya konur (belge 52)
+            build.Shell = Trees.IsShell;
+        }
         /// <summary>Depo: sandığa demir kuşak kapasite verir (belge 45).</summary>
         public void Attach(Thatchwick.Core.Build.StorageService storage) { storage.ExtraStorage = Home.ExtraStorage; }
         /// <summary>Doldurulan dekora giren yiyecek envanterdeki en eski partinin yaşını taşır.</summary>
@@ -838,7 +866,8 @@ namespace Thatchwick.Core.Life
             effects.AppliedOn += OnInteractionAppliedOn;
             effects.AppliedOn += Home.OnApplied;
             effects.AppliedOn += OnSkillWorkApplied;   // beceri işleri ve pasifleri (belge 45)
-            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i);
+            effects.AppliedOn += Trees.OnApplied;      // ulu ağaç ve ağaç ev (belge 52)
+            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? Trees.CanStart(c, it, i);
             Home.Effects = effects;
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
         }
@@ -1077,6 +1106,7 @@ namespace Thatchwick.Core.Life
             Roamers?.Tick(gameDays, Clock.TotalDays, Clock.Season, Clock.DayFraction);
             Coffee.Tick(Clock.TotalDays, Population.Members);
             BurnLamps(gameDays);
+            Trees.Tick();   // mevsimin son akşamı Bereket Sofrası (belge 52)
 
             long day = Clock.DayIndex;
             if (day != _lastDay)
@@ -1180,6 +1210,7 @@ namespace Thatchwick.Core.Life
             if (founder.HasValue) Legacy.CheckDescendants(founder.Value, Clock.TotalDays);
             Upbringing.OnNewDay();
             Requests.OnNewDay();
+            Trees.OnNewDay();
             NewDay?.Invoke(day);
         }
 
@@ -1226,6 +1257,7 @@ namespace Thatchwick.Core.Life
                 timedDuties = Duties.Export(),
                 roaming = Roaming.Export(),
                 requests = Requests.Export(),
+                treehouses = Trees.Export(),
                 creatureBook = Book.Export(),
                 locustDry = Locusts.DryDays,
                 locustIncoming = Locusts.Incoming,
@@ -1245,7 +1277,7 @@ namespace Thatchwick.Core.Life
 
         public void Restore(LifeSaveData data)
         {
-            if (data == null) { Home.Import(null); Population.RecomputeAll(); return; }
+            if (data == null) { Home.Import(null); Trees.Import(null); Population.RecomputeAll(); return; }
             Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
             Festivals.CelebratedDay = data.festivalCelebratedDay;
             Upbringing.Import(data.upbringing);
@@ -1273,6 +1305,7 @@ namespace Thatchwick.Core.Life
             Duties.Import(data.timedDuties);
             Roaming.Import(data.roaming);
             Requests.Import(data.requests);
+            Trees.Import(data.treehouses);
             UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;

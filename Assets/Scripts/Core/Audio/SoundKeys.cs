@@ -82,6 +82,15 @@ namespace Thatchwick.Core.Audio
         public const string FishEscape = "fish.escape";       // C foley
         public const string JarScoop = "jar.scoop";           // B foley
 
+        // Ulu ağaçlar ve ağaç evler, Çınar Aşevi, Bereket Sofrası (belge 52)
+        public const string TreehouseBuild = "treehouse.build";   // B tools
+        public const string TreehouseLadder = "treehouse.ladder"; // B foley
+        public const string TreehouseCreak = "treehouse.creak";   // C foley
+        public const string TreehouseKids = "treehouse.kids";     // B voice
+        public const string InnDishes = "inn.dishes";             // B foley
+        public const string InnDonate = "inn.donate";             // B foley
+        public const string StingFeast = "sting.feast";           // C stinger
+
         // Olay vuruşları
         public const string StingLevelUp = "sting.levelup";   // C stinger
         public const string StingBirth = "sting.birth";       // C stinger
