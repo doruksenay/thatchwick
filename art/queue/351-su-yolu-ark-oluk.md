@@ -1,7 +1,7 @@
 ---
 id: "351"
 title: Su yolu karoları: toprak ark, taş ark, ahşap oluk (kuru ve sulu)
-status: review
+status: rejected
 claimed_at: 2026-11-18T12:07Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
@@ -47,3 +47,4 @@ Motor bağlantısı `WorldView` su yolu çiziminde (şimdilik renk); kabulden so
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 - 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.
+- 2026-11-20: kullanıcı reddetti (sohbette toplu inceleme). Neden: ark karoları kazılmış su yolu değil kütük ve masa gibi okunuyor, taş ark zemini fazla turuncu. Yeniden: 351b.

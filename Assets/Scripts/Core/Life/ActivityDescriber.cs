@@ -106,7 +106,8 @@ namespace Thatchwick.Core.Life
                         case SocialAction.Chat: info.Text = "Sohbet ediyor"; break;
                         case SocialAction.TellStory: info.Text = "Masal anlatıyor"; break;
                         case SocialAction.Propose: info.Icon = "love"; info.Text = "Evlenme teklif ediyor"; break;
-                        default: info.Icon = "love"; info.Text = "Çocuk istiyor"; break;
+                        case SocialAction.TryForBaby: info.Icon = "love"; info.Text = "Çocuk istiyor"; break;
+                        default: info.Text = (Thatchwick.Core.Family.FamilyService.SkillSocial(job.Action)?.Label ?? "Sosyal iş") + " (beceri)"; break;
                     }
                     break;
                 case JobKind.Animal:
@@ -117,6 +118,10 @@ namespace Thatchwick.Core.Life
                         case AnimalAction.Saddle: info.Text = "Eyerliyor"; break;
                         case AnimalAction.Unsaddle: info.Text = "Eyeri çıkarıyor"; break;
                         case AnimalAction.Mount: info.Icon = "walk"; info.Text = "Ata biniyor"; break;
+                        case AnimalAction.Train: info.Text = "Hayvanı eğitiyor"; break;
+                        case AnimalAction.Trick: info.Text = "Ata numara öğretiyor"; break;
+                        case AnimalAction.Treat: info.Text = "Hasta hayvana bakıyor"; break;
+                        case AnimalAction.PrepContest: info.Text = "Hayvanı yarışmaya hazırlıyor"; break;
                         default: info.Icon = "love"; info.Text = "Hayvanı seviyor"; break;
                     }
                     break;

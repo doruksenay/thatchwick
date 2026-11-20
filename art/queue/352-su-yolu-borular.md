@@ -1,7 +1,7 @@
 ---
 id: "352"
 title: Su yolu karoları: kütük boru, künk, kurşun boru (yapı modu görünümü)
-status: review
+status: accepted
 claimed_at: 2026-11-18T18:22Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 priority: 20
@@ -33,3 +33,4 @@ Gömülü borular toprağın ve döşemenin altından geçer, eve girer; yalnız
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

@@ -109,6 +109,9 @@ namespace Thatchwick.Core.Work
         public event Action<Content.ItemDef, GridPos, PlantLoss> PlantLost;
 
         /// <summary>Pencereli, geniş ışıklı iç mekân: ekin bu odada büyür (ısı ayrıca gerekir).</summary>
+        /// <summary>Sera odasının büyüme çarpanı (HomeLife: bakımlı sera ×1,1); null ise 1.</summary>
+        public Func<Room, double> GreenhouseGrowth { get; set; }
+
         public bool IsGreenhouse(Room room) =>
             room != null && room.IsIndoor && room.Level == 0
             && room.WindowCount >= Config.GreenhouseMinWindows
@@ -395,6 +398,7 @@ namespace Thatchwick.Core.Work
                     float warm = WarmthFactor(item.Position);
                     if (warm <= 0f) continue;
                     rate *= warm;
+                    if (GreenhouseGrowth != null) rate *= GreenhouseGrowth(room);   // bakımlı sera ×1,1
                 }
                 else if (!CanGrow(item.Def, season)) continue;   // bu bitki bu mevsimde büyümez
 

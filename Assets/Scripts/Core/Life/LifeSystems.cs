@@ -132,6 +132,7 @@ namespace Thatchwick.Core.Life
         {
             Content = content ?? throw new ArgumentNullException(nameof(content));
             World = world ?? throw new ArgumentNullException(nameof(world));
+            _masteryRng = new Random(seed != 0 ? Seeds.Derive(seed, 61) : 61);
             House = house ?? throw new ArgumentNullException(nameof(house));
             Population = population ?? throw new ArgumentNullException(nameof(population));
             Clock = clock ?? throw new ArgumentNullException(nameof(clock));
@@ -300,6 +301,10 @@ namespace Thatchwick.Core.Life
             Keepsakes.DowryScale = () => Suitors.LastWasNotable ? 2 : 1;
             Upbringing.Weddings.GiftScale = () => Suitors.LastWasNotable ? 2 : 1;
             Merchant.AddReputation = (n, why) => Upbringing.Reputation.Add(n, why);
+            // Beceri pasifleri (belge 45): Cazibe 10 itibar ×1,1; Ebeveynlik 8 çocukluk izi ×1,25; Mühendislik 10 değirmen projesi %40 ucuz.
+            Upbringing.Reputation.GainFactor = () => BestSkill(SkillType.Charm) >= Progress.Mastery.MasterLevel ? 1.1 : 1.0;
+            Upbringing.Toys.GainFactor = () => BestSkill(SkillType.Parenting) >= 8 ? 1.25 : 1.0;
+            Projects.AkceFactor = id => id == "project.mill" && BestSkill(SkillType.Engineering) >= Progress.Mastery.MasterLevel ? 0.6 : 1.0;
             Thatchwick.Core.Upbringing.ToyNames.Lookup = id => content.Items.TryGet(id, out var td) ? td.DisplayName : null;
             Breakdowns.Started += (c, kind) => { if (!c.IsVillager) Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Breakdown, "bunalım"); };
             Spoilage.Spoiled += (id, n) =>
@@ -553,8 +558,16 @@ namespace Thatchwick.Core.Life
             return best == float.MinValue ? pick(new LifeModifiers()) : best;
         }
 
-        public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction);
-        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus());
+        public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction + SkillSpoilReduction());
+        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus() + PersuadeBonus() + TradeCartBonus());
+
+        /// <summary>Gönül kazanma 8 "İkna et": hanede ikna edici biri varsa o gün satış %5 iyi (belge 45).</summary>
+        public const double PersuadeSellBonus = 0.05;
+        private double PersuadeBonus()
+        {
+            foreach (var c in Household()) if (c.Mood.Has(Thatchwick.Core.Mood.MoodCatalog.Persuasive)) return PersuadeSellBonus;
+            return 0.0;
+        }
         // Yapı ve eşya indirimi yalnızca dallardan ve özelliklerden gelir. Ev düzenleme indirim vermez; oda konforu verir
         // (belge 45 karar 7: MoodService.ArrangementComfort, RoomMoodSystem.TidyHarmonyLevel).
         public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount));
@@ -581,7 +594,7 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Hava bilgisi: kaç gün ilerisi görülür (1. seviye yarın, 4. seviye 2 gün, 7. seviye 3 gün, 10. seviye 4 gün).</summary>
-        public int ForecastDays => 1 + (BestSkill(SkillType.WeatherLore) - 1) / 3;
+        public int ForecastDays => 1 + (BestSkill(SkillType.WeatherLore) - 1) / 3 + AlmanacBonusDays();
 
         /// <summary>Önümüzdeki günlerin havası (hava bilgisi seviyesine göre).</summary>
         public List<WeatherType> WeatherAhead(int days)
@@ -622,6 +635,7 @@ namespace Thatchwick.Core.Life
             var room = World.Map.Rooms.RoomAt(c.Position);
             bool outdoors = room == null || !room.IsIndoor;
             if (outdoors) f *= WeatherSystem.OutdoorWorkSpeed(Weather.Today(Clock.TotalDays));
+            f *= SkillWorkSpeed(c, interaction);   // yönlü devir, ağaca tırman (belge 45)
             return f;
         }
 
@@ -652,6 +666,18 @@ namespace Thatchwick.Core.Life
             Requests.Family = family;
             family.Chatted += (a, b) => { Requests.OnTalk(a, b); Requests.OnTalk(b, a); };
             family.ExtraProposalCheck = Villagers.ProposalCheck;
+            // Beceri sosyal işleri (belge 45): itibar, yara, şenlik, hava, görücü, köylü rolü.
+            family.Today = () => Clock.TotalDays;
+            family.AddReputation = (n, why) => Upbringing.Reputation.Add(n, why);
+            family.Injuries = Injuries;
+            family.IsFestivalDay = () => Festivals.TodaysFestival() != null;
+            family.ForecastText = () => Weather.ForecastText(Clock.TotalDays);
+            family.RoleOf = Villagers.RoleOf;
+            family.OnMatchmake = single =>
+            {
+                var suitor = Suitors.SpawnVillager(single.Sex == Characters.Sex.Female ? Characters.Sex.Male : Characters.Sex.Female);
+                if (suitor != null) Say($"Görücü haberi yayıldı: {suitor.Name} köye geldi.", NoticeLevel.Info, single.Id);
+            };
             family.Happened += (actor, target, action, msg) =>
             {
                 if (action != SocialAction.Propose) return;
@@ -669,6 +695,7 @@ namespace Thatchwick.Core.Life
             runner.Refused += (c, text) => Say($"{c.Name}: \"{text}\"", NoticeLevel.Info, c.Id, transient: true);
             runner.ItemBonus = (it, i) => HomeLife.Combine(Legacy.BonusFor(it, i), Home.BonusFor(it, i));
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
+            runner.InteractionCompleted += OnMasterCraft;
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
             runner.ItemUsed += (c, item, interaction) => { if (interaction.Id == ReadBoardInteraction) ReadBoard(c); };
             runner.WorkDone += Requests.OnWork;
@@ -676,6 +703,41 @@ namespace Thatchwick.Core.Life
             runner.Stoke = item => _heat != null && _heat.TryStoke(item.Id, House);
             runner.HasFirewood = () => _heat != null && House.Count(FirewoodId) > 0;
         }
+        // ---- ustalık (belge 45 ortak basamak Sv 10) ----
+        private readonly Random _masteryRng;
+        private readonly Dictionary<int, long> _masterworkDay = new Dictionary<int, long>();
+
+        /// <summary>Usta bir tarifi bitirince %25 ustalık eseri: bir fazla ürün, "Ustalık eseri" moodlet'i, kronik, itibar (günde bir).</summary>
+        public void OnMasterCraft(Character c, InteractionDef interaction)
+        {
+            if (c == null || c.IsVillager || !Progress.Mastery.IsMasterCraft(c, interaction)) return;
+            if (_masteryRng.NextDouble() >= Progress.Mastery.MasterworkChance) return;
+            var product = interaction.Produce[0].ItemId;
+            House.AddItem(product, 1);
+            c.AddMoodlet(Thatchwick.Core.Mood.MoodCatalog.MasterWork);
+            string name = Content.Items.TryGet(product, out var d) ? d.DisplayName : product;
+            Say($"{Progress.Mastery.DisplayName(c)} bir ustalık eseri çıkardı: {name} ({c.Name} imzalı).", NoticeLevel.Info, c.Id);
+            long today = Clock.DayIndex;
+            if (!_masterworkDay.TryGetValue(c.Id, out var last) || last != today)
+            {
+                _masterworkDay[c.Id] = today;
+                Upbringing.Reputation.Add(Progress.Mastery.MasterworkReputation, "ustalık eseri");
+            }
+        }
+
+        /// <summary>Pazar günü usta siparişleri: hanede usta olan her beceri için bir sipariş (Market.SpecialContracts).</summary>
+        public IEnumerable<(string item, int count, int reward, string label, int reputation)> MasterOrders(long day)
+        {
+            if (!Festivals.IsMarketDay(day)) yield break;
+            var skills = new List<SkillType>();
+            foreach (var c in Household())
+                foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
+                    if (c.Skills.GetLevel(s) >= Progress.Mastery.MasterLevel && !skills.Contains(s)) skills.Add(s);
+            foreach (var o in Progress.Mastery.Orders(Content, skills, day))
+                yield return (o.item, o.count, o.reward, $"Usta siparişi: {SkillNames.Name(o.skill)}", Progress.Mastery.OrderReputation);
+            foreach (var o in TradeOrders(day)) yield return o;
+        }
+
         /// <summary>Hayvanlar: can yoldaşı bağı (yakınlık, bakım, ölüm), kalite ve binicilik bonusu.</summary>
         public void Attach(Thatchwick.Core.Animals.AnimalSystem animals, Thatchwick.Core.Animals.AnimalCare care)
         {
@@ -687,6 +749,8 @@ namespace Thatchwick.Core.Life
         {
             _plants = plants;
             plants.GrowthMultiplier = GrowthMultiplier;
+            Home.IsGreenhouseRoom = plants.IsGreenhouse;          // sera oda tipi
+            plants.GreenhouseGrowth = Home.GreenhouseGrowth;
             if (_heat != null) plants.TemperatureAt = _heat.TemperatureAt;   // sera ısısı
         }
         public void Attach(HeatSystem heat)
@@ -769,6 +833,9 @@ namespace Thatchwick.Core.Life
         public void Attach(Market market)
         {
             market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; Merchant.BuyFactor = () => market.TradeBuyFactor;
+            market.HouseTradeLevel = () => BestSkill(SkillType.Trade);              // tezgâh, toptan, takas (belge 45)
+            _market = market;
+            market.IsFairDay = () => Festivals.TodaysFestival() != null;
             market.CalendarFactor = def => FastingCalendar.PriceFactor(def, IsFasting);   // perhiz günleri (belge 48 §9.4)
         }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; Home.Build = build; }
@@ -783,7 +850,8 @@ namespace Thatchwick.Core.Life
             effects.Applied += (c, interaction, _) => OnInteractionApplied(c, interaction);
             effects.AppliedOn += OnInteractionAppliedOn;
             effects.AppliedOn += Home.OnApplied;
-            effects.ExtraBlocker = Home.CanStart;
+            effects.AppliedOn += OnSkillWorkApplied;   // beceri işleri ve pasifleri (belge 45)
+            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i);
             Home.Effects = effects;
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
         }
@@ -1053,6 +1121,7 @@ namespace Thatchwick.Core.Life
             if (tomorrow != WeatherType.Clear) Say(Weather.ForecastText(Clock.TotalDays), tomorrow == WeatherType.Storm ? NoticeLevel.Warning : NoticeLevel.Info);
 
             Ledger.Tick(day);
+            SkillDaily(day);   // beceri pasifleri (belge 45)
             Wolves?.OnNewDay(Clock.Season, (int)(day % Clock.Config.DaysPerSeason), Clock.Config.DaysPerSeason);
             var orphan = Adoptions.OnNewDay(Clock.Season);
             if (orphan != null) Say($"Tarlanın kenarında öksüz bir {orphan.Name.ToLowerInvariant()} yavrusu bulundu. Sahiplenmek ister misin?", NoticeLevel.Info);
@@ -1172,7 +1241,9 @@ namespace Thatchwick.Core.Life
                 requests = Requests.Export(),
                 creatureBook = Book.Export(),
                 locustDry = Locusts.DryDays,
-                locustIncoming = Locusts.Incoming
+                locustIncoming = Locusts.Incoming,
+                skillFlags = ExportSkillFlags(),
+                roomNames = ExportRoomNames()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1191,6 +1262,8 @@ namespace Thatchwick.Core.Life
             Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
             Festivals.CelebratedDay = data.festivalCelebratedDay;
             Upbringing.Import(data.upbringing);
+            ImportSkillFlags(data.skillFlags);
+            ImportRoomNames(data.roomNames);
             Merchant.Import(data.merchant);
             Journal.Import(data.natureJournal);
             Book.Import(data.creatureBook);

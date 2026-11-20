@@ -140,18 +140,18 @@ namespace Thatchwick.Core.Tests
             var c = Person(); c.Skills.PacingEnabled = true;
             double threshold = SkillPacing.DailyThreshold(1, Aptitude.None);   // 1. seviye aralığı 50 → 20
             Assert.Equal(20.0, threshold, 6);
-            c.GainSkillXp(SkillType.Farming, 10);
-            Assert.False(c.Skills.IsSaturated(SkillType.Farming));
-            c.GainSkillXp(SkillType.Farming, 30);   // 10 tam + 20 x 0,25
-            Assert.Equal(25.0, c.Skills.GetXp(SkillType.Farming), 6);
-            Assert.True(c.Skills.IsSaturated(SkillType.Farming));
-            // Başka beceri etkilenmez.
-            c.GainSkillXp(SkillType.Fishing, 15);
-            Assert.Equal(15.0, c.Skills.GetXp(SkillType.Fishing), 6);
+            c.GainSkillXp(SkillType.Cooking, 10);
+            Assert.False(c.Skills.IsSaturated(SkillType.Cooking));
+            c.GainSkillXp(SkillType.Cooking, 30);   // 10 tam + 20 x 0,25
+            Assert.Equal(25.0, c.Skills.GetXp(SkillType.Cooking), 6);
+            Assert.True(c.Skills.IsSaturated(SkillType.Cooking));
+            // Başka beceri etkilenmez. (Yemek: XP ölçeği 1, belge 45 bölüm 4)
+            c.GainSkillXp(SkillType.Fishing, 15);   // Balıkçılık XP ölçeği 4,6: 69 ham → 20 tam + 49 x 0,25
+            Assert.Equal(20.0 + (15 * SkillPacing.XpScale(SkillType.Fishing) - 20.0) * 0.25, c.Skills.GetXp(SkillType.Fishing), 4);
             // Gece sıfırlanır.
             c.Skills.NewDay();
-            c.GainSkillXp(SkillType.Farming, 10);
-            Assert.Equal(35.0, c.Skills.GetXp(SkillType.Farming), 6);
+            c.GainSkillXp(SkillType.Cooking, 10);
+            Assert.Equal(35.0, c.Skills.GetXp(SkillType.Cooking), 6);
         }
 
         [Fact]
@@ -198,15 +198,15 @@ namespace Thatchwick.Core.Tests
         {
             var c = Person(); c.Skills.PacingEnabled = true;
             c.Skills.RestoreXp(SkillType.Carpentry, SkillRules.XpForLevel(5) + 100);
-            c.Skills.RestoreXp(SkillType.Farming, SkillRules.XpForLevel(5) + 100);
-            c.GainSkillXp(SkillType.Farming, 1);   // mevsimde bir kez çalıştı
+            c.Skills.RestoreXp(SkillType.Cooking, SkillRules.XpForLevel(5) + 100);
+            c.GainSkillXp(SkillType.Cooking, 1);   // mevsimde bir kez çalıştı
             var decayed = c.Skills.OnSeasonEnd(elder: true);
             Assert.Equal(new[] { SkillType.Carpentry }, decayed.ToArray());
             Assert.Equal(SkillRules.XpForLevel(5) + 75, c.Skills.GetXp(SkillType.Carpentry), 6);
-            Assert.Equal(SkillRules.XpForLevel(5) + 101, c.Skills.GetXp(SkillType.Farming), 6);
-            // Kullanım kaydı sıfırlandı: ertesi mevsim çalışmazsa çiftçilik de geriler, ama seviye hiç düşmez.
+            Assert.Equal(SkillRules.XpForLevel(5) + 101, c.Skills.GetXp(SkillType.Cooking), 6);
+            // Kullanım kaydı sıfırlandı: ertesi mevsim çalışmazsa yemek de geriler, ama seviye hiç düşmez.
             for (int i = 0; i < 30; i++) c.Skills.OnSeasonEnd(elder: true);
-            Assert.Equal(5, c.Skills.GetLevel(SkillType.Farming));
+            Assert.Equal(5, c.Skills.GetLevel(SkillType.Cooking));
             Assert.Equal(5, c.Skills.GetLevel(SkillType.Carpentry));
         }
 

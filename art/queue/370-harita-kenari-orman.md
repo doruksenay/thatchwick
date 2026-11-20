@@ -1,7 +1,7 @@
 ---
 id: "370"
 title: Harita kenarı ormanı (ağaç öbekleri ve çalılık şeritleri)
-status: review
+status: accepted
 claimed_at: 2026-11-18T13:10Z
 approved_by: user        # otomatik akış; kullanıcı onayı sohbette 2026-11-18 ("yap bunu", görsel analiz partisi)
 family: bitki
@@ -53,3 +53,4 @@ Yöntem **301 ile aynı** (referanssız kılavuz, `create_map_object` stil eşle
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

@@ -257,6 +257,52 @@ namespace Thatchwick.Core.Characters
         /// </summary>
         public const double MaxXpBonus = 1.0;
 
+        /// <summary>
+        /// Beceri başına XP ölçeği (belge 45 bölüm 4, SkillTempo süre tablosu, 20.11.2026): içerikteki işlerin ham XP'si
+        /// becerilere göre çok farklıydı (Yemek 20 gün, Kâhyalık 300+ gün). Ölçek, tek işe odaklı bir yetişkinin 1 → 10
+        /// süresini ana becerilerde ~20, destek becerilerinde ~24 oyun gününe getirir (yatkında ~13 / 16).
+        /// </summary>
+        private static readonly Dictionary<SkillType, float> _xpScale = new Dictionary<SkillType, float>
+        {
+            { SkillType.Cooking, 1.0f },
+            { SkillType.Farming, 1.3f },
+            { SkillType.Carpentry, 1.3f },
+            { SkillType.Riding, 1.6f },
+            { SkillType.WeatherLore, 1.5f },
+            { SkillType.Horticulture, 2.25f },
+            { SkillType.Engineering, 2.3f },
+            { SkillType.Pottery, 2.3f },
+            { SkillType.Chandlery, 2.3f },
+            { SkillType.Woodcutting, 2.4f },
+            { SkillType.AnimalHusbandry, 2.6f },
+            { SkillType.Leatherwork, 2.6f },
+            { SkillType.Herbalism, 2.6f },
+            { SkillType.Smithing, 2.9f },
+            { SkillType.Brewing, 2.9f },
+            { SkillType.Foraging, 2.9f },
+            { SkillType.Hunting, 2.9f },
+            { SkillType.Weaving, 3.2f },
+            { SkillType.Teaching, 3.2f },
+            { SkillType.Medicine, 3.2f },
+            { SkillType.Baking, 3.4f },
+            { SkillType.Masonry, 3.9f },
+            { SkillType.Mining, 3.9f },
+            { SkillType.SoilCare, 3.9f },
+            { SkillType.Parenting, 3.9f },
+            { SkillType.Literacy, 3.0f },
+            { SkillType.Fishing, 4.6f },
+            { SkillType.Charm, 4.8f },
+            { SkillType.Athletics, 4.8f },
+            { SkillType.Trade, 6.4f },
+            { SkillType.Salvage, 6.4f },
+            { SkillType.Music, 6.4f },
+            { SkillType.Decorating, 7.5f },
+            { SkillType.Carting, 10.0f },
+            { SkillType.Stewardship, 15.0f },
+        };
+
+        public static double XpScale(SkillType s) => _xpScale.TryGetValue(s, out var v) ? v : 1.0;
+
         public static double XpMultiplier(Aptitude a) => a == Aptitude.Major ? 2.0 : a == Aptitude.Minor ? 1.5 : 1.0;
 
         public static string AptitudeName(Aptitude a) => a == Aptitude.Major ? "Çok yatkın" : a == Aptitude.Minor ? "Yatkın" : "";
@@ -333,6 +379,9 @@ namespace Thatchwick.Core.Characters
 
         internal void RestoreToday(SkillType skill, double xp) { if (xp > 0) _today[skill] = xp; }
         internal void RestoreUsed(SkillType skill) { _usedThisSeason.Add(skill); }
+
+        /// <summary>Bu mevsim kullanılmış say (yaşlıya ders: paslanmayı önler; belge 45, Öğretmenlik 9).</summary>
+        public void MarkUsedThisSeason(SkillType skill) => _usedThisSeason.Add(skill);
 
         /// <summary>Gece: günlük sayaçlar sıfırlanır.</summary>
         public void NewDay() => _today.Clear();

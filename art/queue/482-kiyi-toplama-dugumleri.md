@@ -1,7 +1,7 @@
 ---
 id: "482"
 title: "Deniz kıyısı toplama düğümleri (3)"
-status: review
+status: rejected
 claimed_at: 2026-11-20T09:48Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe her şey doğadan, deniz kıyısı, balık tutma oyunu), Project belgeleri 47 ve 50
 priority: 20
@@ -40,3 +40,4 @@ Kod görseli adla bulur; dosya adı değişmesin. Gelene kadar yer tutucu çizil
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı reddetti (sohbette toplu inceleme). Neden: gelgit havuzu mor taş kutu gibi, doğal görünmüyor. Yeniden: 482b.

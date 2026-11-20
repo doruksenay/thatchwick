@@ -211,6 +211,58 @@ namespace Thatchwick.Game
         private readonly FishingView _fishingView = new FishingView();   // balık tutma mini oyunu (belge 50)
         private double _fishOrderUntil = -1;   // oyuncunun kendi verdiği balık/kavanoz işi bu güne dek geçerli (mini oyun)
 
+        private Thatchwick.Core.Life.TrespassService _trespass;
+        private float _trespassTick;
+        private readonly Dictionary<int, int> _usingItem = new Dictionary<int, int>();
+
+        /// <summary>
+        /// Başkasının evindeki eşyayı kullanma (kullanıcı 20.11.2026): hane üyesi köylünün yatağında uyurken ya da evindeki
+        /// eşyayı kullanırken ev sahibi içerideyse ya da gelirse söylenir ya da kaldırır (Core.Life.TrespassService).
+        /// Kaldırılan dışarı çıkar. Yarım saniyede bir bakılır.
+        /// </summary>
+        private void UpdateTrespass(float dt)
+        {
+            _trespassTick -= dt;
+            if (_trespassTick > 0f || _life == null || _family == null) return;
+            _trespassTick = 0.5f;
+            if (_trespass == null)
+                _trespass = new Thatchwick.Core.Life.TrespassService(_world.Map)
+                {
+                    HomeOf = c => _life.Homes.HomeOf(c),
+                    Affection = (a, b) => _family.Affection(a, b),
+                    AddAffection = (a, b, d) => _family.SetAffection(a, b, _family.Affection(a, b) + d),
+                };
+            var villagers = new List<Character>();
+            foreach (var a in _actors) if (a.Character.IsVillager && !a.Character.IsDead) villagers.Add(a.Character);
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (c.IsVillager || c.IsDead) continue;
+                var job = a.Runner.Queue.Current;
+                int itemId = job != null && job.Kind == JobKind.UseItem ? job.ItemId : 0;
+                if (_usingItem.TryGetValue(c.Id, out var prev) && prev != itemId) { _trespass.Done(c, prev); _usingItem.Remove(c.Id); }
+                if (itemId == 0) continue;
+                _usingItem[c.Id] = itemId;
+                var item = _world.GetItem(itemId);
+                if (item == null) continue;
+                var inter = item.Def.Interactions.Find(i => i.Id == job.InteractionId);
+                var r = _trespass.Check(c, item, inter, villagers);
+                if (r == null) continue;
+                string line = Thatchwick.Core.Life.VivText.Resolve(GameLocalization.Current, r.Line, id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id);
+                ShowMessage(line, 5f);
+                if (!r.KickedOut) continue;
+                a.Runner.Cancel();
+                var b = _trespass.BuildingAt(item.Position);
+                if (b != null)
+                {
+                    var door = b.DoorInside;
+                    var outside = char.ToUpperInvariant(b.Door) == 'N' ? new GridPos(door.X, door.Y - 1) : char.ToUpperInvariant(b.Door) == 'S' ? new GridPos(door.X, door.Y + 1)
+                                : char.ToUpperInvariant(b.Door) == 'W' ? new GridPos(door.X - 1, door.Y) : new GridPos(door.X + 1, door.Y);
+                    a.Runner.Command(Job.MoveTo(outside));
+                }
+            }
+        }
+
         private float _ambTick;
         private string _ambBed = "-", _ambWeather = "-", _ambMusic = "-";
 
@@ -517,6 +569,7 @@ namespace Thatchwick.Game
             if (loaded != null) _market.RestoreState(loaded.MarketDemand, _clock.TotalDays, _clock.Season, loaded.MarketTakenOffers);
             else _market.Tick(0, _clock.TotalDays, _clock.Season);
             _market.OfferAccepted += o => _account.Record(o.IsContract ? "contract" : "barter", _clock.DayIndex);
+            _market.OfferAccepted += o => { if (o.Reputation > 0 && _life != null) _life.Upbringing.Reputation.Add(o.Reputation, o.Label ?? "sipariş"); };
             _marketPanel = new MarketPanel(_market, _household, _storage, _content, _world,
                 () => _player?.Character, () => _player?.Runner, _stallId);
             _plants.PlantDied += (def, pos) =>
@@ -576,6 +629,8 @@ namespace Thatchwick.Game
             _buildService.SkillLevel = _life.BestSkill;
             _animals.SkillLevel = _life.BestSkill;
             _life.Attach(_family);
+            _market.SpecialContracts = _life.MasterOrders;   // pazar günü usta siparişi (belge 45)
+            _marketPanel.SouthTrip = _life.SouthTrip;        // Güney Yamaçları seferi (Arabacılık 6)
             _life.Attach(_plants);
             _life.Attach(_heat);
             _life.Attach(_market);
@@ -585,7 +640,7 @@ namespace Thatchwick.Game
             _life.Attach(_storage);   // sandığa demir kuşak: depo (belge 45)
             _life.Attach(_animals);   // attan düşen binici yaralanır, at ürkünce bildirim (Project belgesi 29)
             // Kurt savunması dünyadan okunur: çitli ağıl ve açık havada yanan ateş (belge 31-4).
-            if (_life.Wolves != null) { _life.Wolves.Fenced = () => WildWorld.HasPen(_world.Map); _life.Wolves.HasFire = () => WildWorld.HasOutdoorFire(_world); _life.Wolves.ExtraDefense = () => _life.Upbringing.Companions.WolfDefenseBonus(); }   // Sürü Dili (belge 31-8)
+            if (_life.Wolves != null) { _life.Wolves.Fenced = () => WildWorld.HasPen(_world.Map); _life.Wolves.HasFire = () => WildWorld.HasOutdoorFire(_world); _life.Wolves.ExtraDefense = () => _life.Upbringing.Companions.WolfDefenseBonus() + (_life.BestSkill(SkillType.Hunting) >= 7 ? 1 : 0) + (_life.BestSkill(SkillType.Hunting) >= Thatchwick.Core.Animals.Hunting.WatchLevel ? 1 : 0); }   // Sürü Dili (belge 31-8)
             _life.AttachWild(_world.Map);   // haritada dolaşan yaban hayvanları
             // Miras: kurucu (köydeki soy), yadigâr envantere girmez, satılınca geçmişi silinir, komşu haneye giden köylü olur.
             _life.FounderId = () => _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
@@ -628,7 +683,7 @@ namespace Thatchwick.Game
             {
                 Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays, Upbringing = _life.Upbringing, House = _household,
                 TimedDuties = _life.Duties, Roaming = _life.Roaming, ItemName = id => _content.Items.TryGet(id, out var idf) ? idf.DisplayName : id,
-                AskRoam = AskRoamPermission
+                AskRoam = AskRoamPermission, Life = _life, Content = _content
             };
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
@@ -2225,6 +2280,12 @@ namespace Thatchwick.Game
             _animals.Recovered += a => ShowMessage($"{a.Name} iyileşti");
             _animals.Dismounted += (a, riderId) => ShowMessage($"{_population.Find(riderId)?.Name} attan indi ({a.Name} kapıda bekliyor)");
             _animalCare = new AnimalCare(_animals, _household);
+            _animalCare.Day = () => _clock.DayIndex;
+            AnimalContests.ExtraScore = (k, an, h) => AnimalContests.SkillBonus(k, an, h, _animalCare.Prepared.Contains(an.Id), _household.Count(LifeSystems.RaceSaddleId) > 0);
+            AnimalContests.AfterRun = an => _animalCare.Prepared.Remove(an.Id);
+            _animals.BroodBonus = () => { foreach (var it in _world.Items) if (it.Def.Id == "item.brood_basket" && !it.IsDecor) return 0.10; return 0.0; };
+            _animals.ExtraRiskFactor = () => _life.BestSkill(SkillType.Medicine) >= 8 ? 0.5 : 1.0;   // salgın önleme (belge 45)
+            _animals.LineageUpBonus = () => _life.BestSkill(SkillType.AnimalHusbandry) >= 7 ? 0.15 : 0.0;   // soy kütüğü (belge 45)
             _life?.Attach(_animals, _animalCare);   // can yoldaşı bağı (belge 31-8)
             _animalCare.Done += (c, a, act) =>
             {
@@ -2234,6 +2295,10 @@ namespace Thatchwick.Game
                     case AnimalAction.Saddle: ShowMessage($"{a.Name} eyerlendi"); break;
                     case AnimalAction.Unsaddle: ShowMessage($"{a.Name}: eyer çıkarıldı"); break;
                     case AnimalAction.Brush: ShowMessage($"{c.Name} {a.Name} tımar etti (dostluk {a.Friendship:0})"); _account.Record("brush", _clock.DayIndex); break;
+                    case AnimalAction.Train: ShowMessage(GameLocalization.T("ui.animal.trained", ("who", c.Name), ("animal", a.Name), ("level", a.Level), ("friend", (int)a.Friendship))); break;
+                    case AnimalAction.Trick: ShowMessage(GameLocalization.T("ui.animal.tricked", ("who", c.Name), ("animal", a.Name), ("friend", (int)a.Friendship))); break;
+                    case AnimalAction.Treat: ShowMessage(GameLocalization.T(a.IsSick ? "ui.animal.treated_sick" : "ui.animal.treated_well", ("who", c.Name), ("animal", a.Name))); break;
+                    case AnimalAction.PrepContest: ShowMessage(GameLocalization.T("ui.animal.prepared", ("animal", a.Name), ("points", (int)AnimalCare.PrepScore))); break;
                     default: ShowMessage($"{c.Name} {a.Name} sevdi (dostluk {a.Friendship:0})"); _account.Record("pet_animal", _clock.DayIndex); break;
                 }
                 if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
@@ -2285,6 +2350,7 @@ namespace Thatchwick.Game
             };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
             {
+                PriorityWeight = d => _life.DutyWeight(d),   // görev öncelikleri (Kâhyalık 2)
                 WorkHours = () => HourOfDay >= 7.0 && HourOfDay < 19.0,
                 Now = () => _clock.TotalDays,
                 TileWork = _farmWork,
@@ -2449,6 +2515,17 @@ namespace Thatchwick.Game
             // İkinci dalga beceriler: hanenin en iyisi düzeneklere, depoya, söküme ve yollara etki eder.
             _automation.EngineeringLevel = () => _life.BestSkill(SkillType.Engineering);
             _storage.CartingLevel = () => _life.BestSkill(SkillType.Carting);
+            _storage.ExtraCapacity = _life.CartStorageBonus;
+            _buildMode.FertilityAt = p => _plants.FertilityAt(p);                                       // verim katmanı (Toprak bakımı 8)
+            _buildMode.FertilityOpen = () => _life.BestSkill(SkillType.SoilCare) >= 8;
+            _buildService.OrderSkill = () => _life.BestSkill(SkillType.Trade);                         // tüccara sipariş (Ticaret 4)
+            _life.PlantSeed = (seed, tile) => _buildService.Plant(seed, tile, out _).Ok;   // toplu ek (Çiftçilik 5)
+            _buildService.GreenhouseSkill = () => _life.BestSkill(SkillType.Farming);
+            var mementoRng = new System.Random(Thatchwick.Core.Seeds.Derive(_seed, 455, _rngEpoch));
+            _buildService.MementoRoll = () => mementoRng.NextDouble() < BuildService.MementoChance;
+            _mines.ListenVein = () => _life.BestSkill(SkillType.Mining) >= 9;
+            _mines.CreakFactor = _life.MineCreakFactor;          // el arabası, at arabası, kızak (belge 45)
+            _market.ContractFactor = _life.ContractRewardFactor;      // sözleşme (Okuryazarlık 7)
             _buildService.SalvageLevel = () => _life.BestSkill(SkillType.Salvage);
             _buildService.Salvaged += list =>
             {
@@ -2492,6 +2569,13 @@ namespace Thatchwick.Game
                 });
             }
             Opt(a.Species.Rideable ? AnimalAction.Brush : AnimalAction.Pet, a.Species.Rideable ? "Tımar et" : "Sev");
+            // Beceri işleri (belge 45): seviyesi tutmayanda menüde görünmez.
+            var sk = c.Character.Skills;
+            if (sk.GetLevel(SkillType.AnimalHusbandry) >= AnimalCare.TrainLevel || (a.Species.Id.Contains("dog") && sk.GetLevel(SkillType.Hunting) >= AnimalCare.HoundTrainLevel))
+                Opt(AnimalAction.Train, a.Species.Id.Contains("dog") && sk.GetLevel(SkillType.Hunting) >= AnimalCare.HoundTrainLevel ? GameLocalization.T("ui.animal.train_hound") : GameLocalization.T("ui.animal.train"));
+            if (a.Species.Rideable && sk.GetLevel(SkillType.Riding) >= AnimalCare.TrickLevel) Opt(AnimalAction.Trick, GameLocalization.T("ui.animal.trick"));
+            if (a.IsSick && sk.GetLevel(SkillType.Medicine) >= AnimalCare.TreatLevel) Opt(AnimalAction.Treat, GameLocalization.T("ui.animal.treat"));
+            if (sk.GetLevel(SkillType.AnimalHusbandry) >= AnimalCare.PrepLevel) Opt(AnimalAction.PrepContest, GameLocalization.T("ui.animal.prep"));
             if (a.Species.Rideable)
             {
                 if (a.Saddle == null) Opt(AnimalAction.Saddle, "Eyerle");
@@ -2714,6 +2798,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.escapeKey.wasPressedThisFrame && _vivView != null && _vivView.Active) _vivView.Close();
             _fishingView.Update(Time.unscaledDeltaTime);
             UpdateAmbience(Time.unscaledDeltaTime);
+            UpdateTrespass(Time.unscaledDeltaTime);
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.iKey.wasPressedThisFrame) ToggleRequests();

@@ -1,7 +1,7 @@
 ---
 id: "491"
 title: "Midye, inci, kırmız, çuha, kürk, gübre, çekirge, sülük ikonları (9)"
-status: running
+status: review
 claimed_at: 2026-11-20T10:14Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (hayvan genetiği ve tür genişletme, tek PR), Project belgeleri 48 ve 48b
 priority: 30

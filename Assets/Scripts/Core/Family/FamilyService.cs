@@ -13,7 +13,7 @@ namespace Thatchwick.Core.Family
     /// Yakınlık 0-100; evlenme için 100 gerekir. Yakın akraba (ebeveyn-çocuk, kardeş) evlenemez.
     /// Haneye dışarıdan evlenen köylü katılır.
     /// </summary>
-    public sealed class FamilyService : ISocialEffects
+    public sealed partial class FamilyService : ISocialEffects
     {
         public const float BabyCareThreshold = 45f;
         /// <summary>Açlığı bu değerin üstündeki bebek tok sayılır: ikinci bir bakıcı aynı bebeğe boşuna yiyecek harcamaz.</summary>
@@ -134,7 +134,7 @@ namespace Thatchwick.Core.Family
                     if (!woman.CanConceive) return $"{woman.Name} şu an hamile kalamaz.";
                     return null;
                 default:
-                    return "Bilinmeyen iş.";
+                    return CanDoSkill(actor, target, action);
             }
         }
 
@@ -146,7 +146,7 @@ namespace Thatchwick.Core.Family
                 case SocialAction.Chat: return 0.08;
                 case SocialAction.Propose: return 0.05;
                 case SocialAction.TellStory: return 0.08;
-                default: return 0.1;
+                default: return SkillDuration(action);
             }
         }
 
@@ -169,6 +169,9 @@ namespace Thatchwick.Core.Family
                     int gain = actor.Mood.Has(MoodCatalog.Dirty) || target.Mood.Has(MoodCatalog.Dirty) ? ChatAffection / 2 : ChatAffection;
                     // Gönül kazanma: seviye başına %5 daha çok yakınlık.
                     gain = (int)Math.Round(gain * SkillNames.Factor(actor.Skills.GetLevel(SkillType.Charm), 0.05));
+                    // Belge 45 ortak basamak Sv 3: iki taraf da bir becerinin 3+ seviyesindeyse o konuda konuşurlar (+%50).
+                    var topic = SharedTopic(actor, target);
+                    if (topic.HasValue) { gain = (int)Math.Round(gain * TopicAffectionFactor); actor.GainSkillXp(topic.Value, TopicXp); target.GainSkillXp(topic.Value, TopicXp); }
                     actor.GainSkillXp(SkillType.Charm, 4);
                     target.GainSkillXp(SkillType.Charm, 2);
                     int now = Math.Min(100, Affection(actor.Id, target.Id) + gain);
@@ -195,7 +198,9 @@ namespace Thatchwick.Core.Family
                     }
                     msg = now >= MarriageAffection && !actor.SpouseId.HasValue && !target.SpouseId.HasValue && IsAdultAge(actor) && IsAdultAge(target)
                         ? $"{actor.Name} ve {target.Name} çok yakınlaştı; evlenme teklif edilebilir"
-                        : $"{actor.Name} ve {target.Name} sohbet etti (yakınlık {now})";
+                        : topic.HasValue
+                            ? $"{actor.Name} ve {target.Name} {SkillNames.Name(topic.Value).ToLowerInvariant()} üzerine konuştu (yakınlık {now})"
+                            : $"{actor.Name} ve {target.Name} sohbet etti (yakınlık {now})";
                     break;
                 case SocialAction.TellStory:
                     // Sözlü masal: çocuğun keyfi ve sosyali dolar; anlatanın ebeveynlik ve gönül becerisi büyür.
@@ -233,7 +238,9 @@ namespace Thatchwick.Core.Family
                     msg = ok ? $"{woman.Name} hamile!" : $"{actor.Name} ve {target.Name} bu sefer olmadı; yine denenebilir";
                     break;
                 default:
-                    return;
+                    msg = ApplySkill(actor, target, action);
+                    if (msg == null) return;
+                    break;
             }
             Happened?.Invoke(actor, target, action, msg);
         }

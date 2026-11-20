@@ -145,7 +145,15 @@ namespace Thatchwick.Core.Upbringing
             bool childNear = false;
             foreach (var m in near) if (m.Stage == AgeStage.Child || m.Stage == AgeStage.Teen) childNear = true;
             var show = Toys.PickIdleShow(c, _rng, childNear);
-            if (show == null) return null;
+            if (show == null)
+            {
+                // Belge 45 ortak basamak Sv 7: oyuncağı olmayan usta becerisini sergiler.
+                var skill = Progress.Mastery.ShowcaseSkill(c);
+                if (skill == null) return null;
+                var sk = new ToyShow { Performer = c, Kind = ShowKind.Show, Text = Progress.Mastery.ShowText(c, skill.Value) };
+                sk.Watchers = Progress.Mastery.ApplyShowcase(c, skill.Value, near);
+                return sk;
+            }
             Toys.ApplyShow(show, near, Today());
             return show;
         }

@@ -1,7 +1,7 @@
 ---
 id: "377"
 title: Ağaçlar devam (olgun meşe, olgun huş, genç söğüt, genç erik)
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:31Z
 priority: 10            # başlangıç haritasındaki 14 ağaç meşe
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 1: "Kabul + eksikler için iş")
@@ -50,3 +50,4 @@ Farklar:
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

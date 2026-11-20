@@ -39,6 +39,9 @@ namespace Thatchwick.Game
         public UpbringingSystems Upbringing { get; set; }
         /// <summary>Boş defter ve onarım tahtası için.</summary>
         public Household House { get; set; }
+        /// <summary>Hane beceri panosu, kâhyalık ayarları (belge 45); null ise bölüm görünmez.</summary>
+        public Thatchwick.Core.Life.LifeSystems Life { get; set; }
+        private bool _boardOpen;
 
         /// <summary>Süreli görevler (belge 47 §3); null ise "Göreve gönder" görünmez.</summary>
         public TimedDutyService TimedDuties { get; set; }
@@ -102,6 +105,7 @@ namespace Thatchwick.Game
             _scroll = GUILayout.BeginScrollView(_scroll);
             UiSkin.Wrap("— Hane —", UiSkin.FamilyTextW);
             foreach (var c in _population.Members) if (!c.IsVillager) DrawRow(c, actor);
+            DrawSkillBoard();
             DrawRecipes(actor);
             UiSkin.Wrap("— Köylüler (pazar çevresi) —", UiSkin.FamilyTextW);
             foreach (var c in _population.Members) if (c.IsVillager) DrawRow(c, actor);
@@ -116,7 +120,7 @@ namespace Thatchwick.Game
             string mood = c.MoodEnabled ? $", {Thatchwick.Core.Mood.MoodRules.Name(c.Mood.Status)}" : "";
             string state = c.IsDead ? "öldü" : $"{StageName(c.Stage)} {c.AgeDays:0}g, Açlık {c.Needs.Get(NeedType.Hunger):0}{mood}{(c.IsPregnant ? ", hamile" : "")}";
             GUILayout.BeginHorizontal();
-            UiSkin.Wrap($"{c.Name}{head} ({state}{spouse})", UiSkin.FamilyTextW);
+            UiSkin.Wrap($"{Thatchwick.Core.Progress.Mastery.DisplayName(c)}{head} ({state}{spouse})", UiSkin.FamilyTextW);   // usta unvanı (belge 45)
             if (CanTakeCommands(c) && c != actor && GUILayout.Button("Seç", GUILayout.Width(40f))) { _select(c); _status = $"{c.Name} seçildi."; }
             GUILayout.EndHorizontal();
             // Hanedan geçmişi: kişinin hayat notları ("Neşeli bir soydan geldi ama zor bir çocukluk geçirdi.").
@@ -164,6 +168,7 @@ namespace Thatchwick.Game
                     Action(actor, c, SocialAction.Propose, "Evlen");
             }
             GUILayout.EndHorizontal();
+            DrawSkillSocials(actor, c);
         }
 
         // Süreli görev (belge 47 §3.7): tür → yer → süre → azık → başlat; görevdeyken ilerleme ve "Geri çağır".
@@ -466,6 +471,104 @@ namespace Thatchwick.Game
                 GUI.enabled = true;
             }
             GUILayout.EndHorizontal();
+        }
+
+        // Beceri seviyesiyle açılan sosyal işler (belge 45): yalnızca açılmış ve bu kişiye uygun olanlar, satır satır.
+        // ---------- hane beceri panosu ve "tek usta" uyarısı (belge 45, 7. bölüm madde 8) ----------
+
+        /// <summary>Bir beceride hanede bu seviyede ve üstünde tek kişi varsa "tek usta" uyarısı verilir.</summary>
+        public const int SoleMasterLevel = 5;
+
+        /// <summary>Hanenin beceri tablosu: her becerinin en iyisi; tek ustası olan beceriler uyarı alır.</summary>
+        public static List<(SkillType skill, Character best, int level, int holders)> SkillTable(IEnumerable<Character> household)
+        {
+            var rows = new List<(SkillType, Character, int, int)>();
+            var members = new List<Character>();
+            foreach (var m in household) if (!m.IsDead && !m.IsVillager) members.Add(m);
+            foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
+            {
+                Character best = null; int lv = 1, holders = 0;
+                foreach (var m in members)
+                {
+                    int l = m.Skills.GetLevel(s);
+                    if (l >= SoleMasterLevel) holders++;
+                    if (l > lv) { lv = l; best = m; }
+                }
+                if (best != null) rows.Add((s, best, lv, holders));
+            }
+            rows.Sort((a, b) => b.Item3.CompareTo(a.Item3));
+            return rows;
+        }
+
+        private void DrawSkillBoard()
+        {
+            if (Life == null) return;
+            if (GUILayout.Button(_boardOpen ? GameLocalization.T("ui.family.skill_board_close") : GameLocalization.T("ui.family.skill_board"))) _boardOpen = !_boardOpen;
+            var table = SkillTable(_population.Members);
+            // Tek usta uyarısı her zaman görünür: bilgi tek kişide kalırsa ölümüyle kaybolur.
+            foreach (var r in table)
+                if (r.holders == 1 && (r.best.Stage == AgeStage.Elder || r.level >= 7))
+                    UiSkin.Wrap(GameLocalization.T("ui.family.sole_master", ("skill", SkillNames.Name(r.skill)), ("name", r.best.Name), ("level", r.level)), UiSkin.FamilyTextW);
+            if (!_boardOpen) return;
+            foreach (var r in table)
+            {
+                string mark = r.holders == 1 ? " !" : "";
+                UiSkin.Wrap(new GUIContent($"{SkillNames.Name(r.skill)} {r.level} · {r.best.Name}{mark}",
+                    Thatchwick.Core.Progress.UnlockGate.LevelSummary(Content, r.skill, Math.Min(10, r.level + 1))), UiSkin.FamilyTextW);
+            }
+            DrawStewardship();
+        }
+
+        /// <summary>İçerik veritabanı (seviye özeti ipucu); null ise ipucu boş.</summary>
+        public Thatchwick.Core.Content.ContentDatabase Content { get; set; }
+
+        private static readonly DutyKind[] PriorityKinds = { DutyKind.Farm, DutyKind.Animals, DutyKind.Mine, DutyKind.House };
+        private static readonly string[] PriorityNames = { "ui.family.priority.low", "ui.family.priority.mid", "ui.family.priority.high" };
+
+        // Kâhyalık: öncelik (2), ırgat (3), haftalık plan (4), yarıcılık (5); kiler düzeni (6) ve imece (7) pasif ve kürsüde.
+        private void DrawStewardship()
+        {
+            int lv = Life.BestSkill(SkillType.Stewardship);
+            if (lv < 2) { UiSkin.Wrap(GameLocalization.T("ui.family.priority_locked"), UiSkin.FamilyTextW); return; }
+            UiSkin.Wrap(GameLocalization.T("ui.family.priorities"), UiSkin.FamilyTextW);
+            foreach (var k in PriorityKinds)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(DutyPlanner.DutyName(k), GUILayout.Width(90f));
+                int p = Life.DutyPriority(k);
+                for (int i = 0; i < 3; i++)
+                    if (GUILayout.Toggle(p == i, GameLocalization.T(PriorityNames[i]), GUI.skin.button, GUILayout.Width(60f)) && p != i) Life.SetDutyPriority(k, i);
+                GUILayout.EndHorizontal();
+            }
+            if (lv >= 3)
+            {
+                bool hired = GUILayout.Toggle(Life.HiredHand, GameLocalization.T(lv >= 9 ? "ui.family.hired_two" : "ui.family.hired", ("wage", Thatchwick.Core.Life.LifeSystems.HiredWage)));
+                if (hired != Life.HiredHand) Life.HiredHand = hired;
+            }
+            if (lv >= 4 && GUILayout.Button(GameLocalization.T("ui.family.weekly_plan"))) _status = Life.WeeklyPlanText();
+            if (lv >= 5)
+            {
+                bool share = GUILayout.Toggle(Life.Sharecrop, GameLocalization.T("ui.family.sharecrop"));
+                if (share != Life.Sharecrop) Life.Sharecrop = share;
+            }
+            if (lv >= Thatchwick.Core.Life.LifeSystems.SalesRouteLevel)
+            {
+                bool route = GUILayout.Toggle(Life.SalesRoute, GameLocalization.T("ui.family.sales_route", ("keep", Thatchwick.Core.Life.LifeSystems.SalesRouteKeep)));
+                if (route != Life.SalesRoute) Life.SalesRoute = route;
+            }
+        }
+
+        private void DrawSkillSocials(Character actor, Character target)
+        {
+            int n = 0;
+            foreach (var d in FamilyService.UnlockedSocials(actor))
+            {
+                if (_family.CanDo(actor, target, d.Action) != null) continue;
+                if (n % 3 == 0) { if (n > 0) GUILayout.EndHorizontal(); GUILayout.BeginHorizontal(); GUILayout.Space(12f); }
+                Action(actor, target, d.Action, d.Label);
+                n++;
+            }
+            if (n > 0) GUILayout.EndHorizontal();
         }
 
         private void Action(Character actor, Character target, SocialAction action, string label)

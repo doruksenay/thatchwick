@@ -1,7 +1,7 @@
 ---
 id: "002"
 title: Çimen b, c ve toprak a, b
-status: review
+status: accepted
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: zemin
 style_gate: false
@@ -39,3 +39,4 @@ Adlar `outputs` listesindeki gibi. Pivot elmas merkezi (32,16).
 BLOKE (2026-11-08, Unity/geliştirme sohbeti): 002 işi zemin oturumunda yürüyor: adaylar _aday altında, seçimler yapıldı (çimen b=bc_cand1, c=bc_cand4, toprak a=dirt_cand6, toprak b=dirt_cand1 + en çok 3 piksellik delik doldurma). Çift harcama olmasın diye bloke. Zemin oturumu bitince kullanıcı durumu accepted/rejected yapar ya da pending'e geri alır.
 
 OTOMATİK AKIŞ: çıktılar zemin oturumunda teslim edilmişti (Assets'te var); `blocked` yerine `review`. Kabul ya da red kullanıcının.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

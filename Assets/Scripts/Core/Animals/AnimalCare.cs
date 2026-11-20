@@ -353,7 +353,10 @@ namespace Thatchwick.Core.Animals
         /// <summary>Yavru annesinin dostluğunun bu oranıyla doğar.</summary>
         public const float InheritFriendship = 0.5f;
 
-        public double BreedChance(int husbandryLevel) => BreedBaseChance + BreedPerLevel * Math.Max(0, husbandryLevel - 1);
+        public double BreedChance(int husbandryLevel) => BreedBaseChance + BreedPerLevel * Math.Max(0, husbandryLevel - 1) + (BroodBonus != null ? BroodBonus() : 0.0);
+
+        /// <summary>Kuluçka sepeti (Hayvancılık 6, belge 45): yerleştirilmişse yavru şansı +%10; null ise yok.</summary>
+        public Func<double> BroodBonus { get; set; }
 
         /// <summary>Bir dişi gebe kaldı (anne, babanın kimliği).</summary>
         public event Action<Animal, int> Conceived;
@@ -872,6 +875,18 @@ namespace Thatchwick.Core.Animals
         private readonly AnimalSystem _animals;
         private readonly Household _house;
 
+        // ---- beceri işleri (belge 45) ----
+        public const int TrainLevel = 5, HoundTrainLevel = 8, TrickLevel = 7, TreatLevel = 4, PrepLevel = 9;
+        public const double PrepScore = 8;
+        /// <summary>Yarışa hazırlanmış hayvanlar (ilk yarışmada +8 puan; yarışma kullanınca düşer).</summary>
+        public HashSet<int> Prepared { get; } = new HashSet<int>();
+        /// <summary>Bugünün sayacı (gün); bağlanmamışsa günlük sınır uygulanmaz.</summary>
+        public Func<long> Day { get; set; }
+        private long Today => Day != null ? Day() : -1;
+        private readonly HashSet<(int, AnimalAction, long)> _done = new HashSet<(int, AnimalAction, long)>();
+        private readonly Random _rng = new Random(4517);
+        private bool DoneToday(int id, AnimalAction act) => Today >= 0 && _done.Contains((id, act, Today));
+
         public AnimalCare(AnimalSystem animals, Household house)
         {
             _animals = animals ?? throw new ArgumentNullException(nameof(animals));
@@ -899,6 +914,24 @@ namespace Thatchwick.Core.Animals
                 case AnimalAction.Saddle: return _animals.SaddleBlocker(a, _house);
                 case AnimalAction.Unsaddle: return a.Saddle == null ? "Eyer yok." : a.RiderId != 0 ? "Önce in." : null;
                 case AnimalAction.Mount: return _animals.MountBlocker(actor.Id, a);
+                case AnimalAction.Train:
+                {
+                    bool hound = a.Species.Id.Contains("dog");
+                    bool can = actor.Skills.GetLevel(SkillType.AnimalHusbandry) >= TrainLevel || (hound && actor.Skills.GetLevel(SkillType.Hunting) >= HoundTrainLevel);
+                    if (!can) return hound ? $"Hayvancılık {TrainLevel} ya da Avcılık {HoundTrainLevel} gerekli." : $"Hayvancılık {TrainLevel} gerekli.";
+                    return DoneToday(a.Id, action) ? $"{a.Name} bugün eğitildi." : null;
+                }
+                case AnimalAction.Trick:
+                    if (!a.Species.Rideable) return "Yalnızca binek hayvanına.";
+                    if (actor.Skills.GetLevel(SkillType.Riding) < TrickLevel) return $"Binicilik {TrickLevel} gerekli.";
+                    return DoneToday(a.Id, action) ? $"{a.Name} bugün çalıştı." : null;
+                case AnimalAction.Treat:
+                    if (actor.Skills.GetLevel(SkillType.Medicine) < TreatLevel) return $"Hekimlik {TreatLevel} gerekli.";
+                    if (!a.IsSick) return $"{a.Name} hasta değil.";
+                    return DoneToday(a.Id, action) ? $"{a.Name} bugün muayene edildi." : null;
+                case AnimalAction.PrepContest:
+                    if (actor.Skills.GetLevel(SkillType.AnimalHusbandry) < PrepLevel) return $"Hayvancılık {PrepLevel} gerekli.";
+                    return Prepared.Contains(a.Id) ? $"{a.Name} yarışmaya hazır." : null;
                 default: return "Bilinmeyen iş.";
             }
         }
@@ -911,6 +944,9 @@ namespace Thatchwick.Core.Animals
                 case AnimalAction.Saddle: return 0.03;
                 case AnimalAction.Unsaddle: return 0.02;
                 case AnimalAction.Mount: return 0.01;
+                case AnimalAction.Train: case AnimalAction.Trick: return 0.08;
+                case AnimalAction.Treat: return 0.06;
+                case AnimalAction.PrepContest: return 0.1;
                 default: return 0.02;
             }
         }
@@ -928,6 +964,30 @@ namespace Thatchwick.Core.Animals
                 case AnimalAction.Saddle: ok = _animals.SaddleUp(a, _house); break;
                 case AnimalAction.Unsaddle: ok = _animals.Unsaddle(a, _house); break;
                 case AnimalAction.Mount: ok = _animals.Mount(actor.Id, a); break;
+                case AnimalAction.Train:
+                    _done.Add((a.Id, action, Today));
+                    _animals.AddAnimalXp(a, 15);
+                    a.Friendship = Math.Min(100f, a.Friendship + 4f);
+                    if (a.Species.Id.Contains("dog")) actor.GainSkillXp(SkillType.Hunting, 6);
+                    ok = true; break;
+                case AnimalAction.Trick:
+                    _done.Add((a.Id, action, Today));
+                    _animals.AddAnimalXp(a, 12);
+                    a.Friendship = Math.Min(100f, a.Friendship + 3f);
+                    actor.Needs.Restore(Thatchwick.Core.Characters.NeedType.Fun, 15f);
+                    ok = true; break;
+                case AnimalAction.Treat:
+                {
+                    _done.Add((a.Id, action, Today));
+                    int med = actor.Skills.GetLevel(SkillType.Medicine);
+                    if (_rng.NextDouble() < Math.Min(0.95, 0.4 + 0.07 * med)) _animals.Cure(a);
+                    actor.GainSkillXp(SkillType.Medicine, 10);
+                    ok = true; break;
+                }
+                case AnimalAction.PrepContest:
+                    Prepared.Add(a.Id);
+                    _animals.AddAnimalXp(a, 5);
+                    ok = true; break;
                 default: ok = false; break;
             }
             if (ok)
@@ -939,6 +999,9 @@ namespace Thatchwick.Core.Animals
                     case AnimalAction.Brush: actor.GainSkillXp(SkillType.Riding, 5); actor.GainSkillXp(SkillType.AnimalHusbandry, 2); break;
                     case AnimalAction.Saddle: actor.GainSkillXp(SkillType.Riding, 2); break;
                     case AnimalAction.Mount: actor.GainSkillXp(SkillType.Riding, 1); break;
+                    case AnimalAction.Train: actor.GainSkillXp(SkillType.AnimalHusbandry, 8); break;
+                    case AnimalAction.Trick: actor.GainSkillXp(SkillType.Riding, 10); break;
+                    case AnimalAction.PrepContest: actor.GainSkillXp(SkillType.AnimalHusbandry, 10); break;
                 }
                 Done?.Invoke(actor, a, action);
             }

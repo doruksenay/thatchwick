@@ -1,7 +1,7 @@
 ---
 id: "322"
 title: Toplama düğümleri ikinci set (yabani sarımsak, ısırgan, mürver, yaban çileği, kestane, kuşburnu, kozalak, su teresi)
-status: review
+status: rejected
 claimed_at: 2026-11-18T09:35Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -49,3 +49,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 ## Notlar
 - Kış düğümleri için karlı zemin kabul edilmediyse çimen/toprak zemini üzerinde doğrulanır; kar kaplaması ayrı iş.
 - 2026-11-18 (tamir oturumu, 0 gen): stil kapısı bitki ailesinde yanlış ayarlıydı (palette 3 yeşil, aile kilidi kurulmamış). Reddedilen adayların doygunluk düzeltilmiş hâlleri `art/results/322-duzeltme/`, karşılaştırma `art/results/322-duzeltme-once-sonra.png`, ayrıntı `art/results/bitki-duzeltme.md`. Durum değişmedi; kabul/red kararı kullanıcının.
+- 2026-11-20: kullanıcı reddetti (sohbette toplu inceleme). Neden: mürver beyaz zambak gibi (küçük krem çiçek şemsiyeleri olmalı), kestane deniz kestanesi gibi (378 v2 geçerli). Yeniden: 322b.

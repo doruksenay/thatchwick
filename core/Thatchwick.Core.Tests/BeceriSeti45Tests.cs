@@ -140,9 +140,10 @@ namespace Thatchwick.Core.Tests
             var db = ContentFilesTests.LoadDb(out _);
             var mining2 = UnlockGate.NewAtLevel(db, SkillType.Mining, 2, 20);
             Assert.Contains(mining2, t => t.Contains("Demir cevheri"));
-            // Planlanmış satır kartta yok, şeritte "(yakında)".
-            Assert.DoesNotContain(UnlockGate.NewAtLevel(db, SkillType.Medicine, 2, 20), t => t.Contains("Muayene"));
-            Assert.Contains("(yakında)", UnlockGate.LevelSummary(db, SkillType.Medicine, 2));
+            // Beceri tamamlama (belge 45): tablonun bütün satırları oyunda; planlanmış satır kalmadı.
+            Assert.Contains(UnlockGate.NewAtLevel(db, SkillType.Medicine, 2, 20), t => t.Contains("Muayene"));
+            Assert.DoesNotContain("(yakında)", UnlockGate.LevelSummary(db, SkillType.Medicine, 2));
+            Assert.DoesNotContain(db.SkillUnlocks, u => u.Planned);
         }
 
         // ---------- baş üstü çubuk (bölüm 10) ----------

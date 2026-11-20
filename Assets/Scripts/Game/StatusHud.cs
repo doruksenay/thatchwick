@@ -343,7 +343,27 @@ namespace Thatchwick.Game
                     Who = c, Skill = skill, Level = to, Items = UnlockGate.NewAtLevel(_content, skill, to), Until = Time.unscaledTime + LevelCardSeconds
                 });
                 if (_levelCards.Count > MaxLevelCards) _levelCards.RemoveAt(0);
+                PlaySound?.Invoke(LevelUpSound, c.Id);   // seviye stinger'ı (ses hattı 45b; AudioService bağlanınca çalar)
             };
+        }
+
+        /// <summary>Ses çalma (anahtar, varlık kimliği); varsayılan AudioService (yoksa sessiz). Sınamada değiştirilebilir.</summary>
+        public static System.Action<string, int> PlaySound { get; set; } = (key, id) => { var a = Audio.AudioService.Instance; if (a != null) a.Play(key, null, id); };
+        /// <summary>Seviye atlama stinger'ı (SoundKeys.StingLevelUp, C sınıfı).</summary>
+        public const string LevelUpSound = Thatchwick.Core.Audio.SoundKeys.StingLevelUp;
+
+        // 455c çerçeveleri: Resources/UI/ui_skill_card_frame (9-dilim, kenar 12) ve ui_skill_bar_frame (3-dilim, kenar 3).
+        // Dosya yoksa (inceleme sürüyor) düz kutu ve düz şerit çizilir.
+        private static GUIStyle _cardFrame, _barFrame;
+        private static bool _framesLoaded;
+        private static void LoadFrames()
+        {
+            if (_framesLoaded) return;
+            _framesLoaded = true;
+            var card = Resources.Load<Texture2D>("UI/ui_skill_card_frame");
+            if (card != null) _cardFrame = new GUIStyle { normal = { background = card }, border = new RectOffset(12, 12, 12, 12), padding = new RectOffset(10, 10, 8, 8) };
+            var bar = Resources.Load<Texture2D>("UI/ui_skill_bar_frame");
+            if (bar != null) _barFrame = new GUIStyle { normal = { background = bar }, border = new RectOffset(3, 3, 3, 3) };
         }
 
         /// <summary>Beceri ikonu: Resources/UI/Icons/ui_icon_skill_&lt;beceri&gt; (art/queue 455a-c); yoksa yalnızca yazı.</summary>
@@ -375,6 +395,8 @@ namespace Thatchwick.Game
                 GUI.color = tired ? new Color(0.6f, 0.6f, 0.65f, 0.8f) : new Color(0.55f, 0.16f, 0.2f);   // nakış bordosu
                 GUI.DrawTexture(new Rect(r.x, r.y, r.width * (float)c.Skills.LevelProgress(f.Skill), r.height), Texture2D.whiteTexture);
                 GUI.color = prev;
+                LoadFrames();
+                if (_barFrame != null && Event.current.type == EventType.Repaint) _barFrame.Draw(new Rect(r.x - 1f, r.y - 1f, r.width + 2f, r.height + 2f), false, false, false, false);
             }
             if (now < f.LevelUntil && f.LevelTo > 0)
             {
@@ -395,7 +417,8 @@ namespace Thatchwick.Game
                 float hgt = 38f + 15f * Mathf.Max(1, k.Items.Count);
                 var rect = new Rect(w - 248f, y, 240f, hgt);
                 _rects.Add(rect);
-                GUILayout.BeginArea(rect, GUI.skin.box);
+                LoadFrames();
+                GUILayout.BeginArea(rect, _cardFrame ?? GUI.skin.box);
                 if (GUILayout.Button(UiSkin.C($"{k.Who.Name}: {SkillNames.Name(k.Skill)} {k.Level}!", SkillIconKey(k.Skill)), _small)) { OpenSkills?.Invoke(k.Who, k.Skill); k.Until = 0f; }
                 if (k.Items.Count == 0) GUILayout.Label("Ustalık arttı: işler daha hızlı.", _small);
                 else

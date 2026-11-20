@@ -399,6 +399,8 @@ namespace Thatchwick.Core.Work
         /// Ders: her öğrenci okuryazarlık ve öğretmenin en iyi becerisinden XP alır (öğretmenlik seviyesiyle artar).
         /// Öğretmenlik ve okuryazarlık "en iyi beceri" sayılmaz.
         /// </summary>
+        public const int SecondSubjectLevel = 4;
+
         private int Teach(Character teacher)
         {
             int level = teacher.Skills.GetLevel(SkillType.Teaching);
@@ -409,11 +411,21 @@ namespace Thatchwick.Core.Work
                 double xp = teacher.Skills.GetXp(s);
                 if (xp > bestXp) { bestXp = xp; best = s; }
             }
+            // Öğretmenlik 4 (belge 45): aynı derste ikinci konu (öğretmenin ikinci en iyi becerisi).
+            SkillType second = best; double secondXp = -1;
+            if (level >= SecondSubjectLevel)
+                foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
+                {
+                    if (s == SkillType.Teaching || s == SkillType.Literacy || s == best) continue;
+                    double xp = teacher.Skills.GetXp(s);
+                    if (xp > secondXp) { secondXp = xp; second = s; }
+                }
             var pupils = Pupils(teacher);
             foreach (var p in pupils)
             {
                 p.GainSkillXp(SkillType.Literacy, 8 + 2 * level);
                 p.GainSkillXp(best, 5 + 2 * level);
+                if (second != best) p.GainSkillXp(second, 3 + level);
             }
             return pupils.Count;
         }
