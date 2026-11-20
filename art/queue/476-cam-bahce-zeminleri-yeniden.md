@@ -1,7 +1,8 @@
 ---
 id: "476"
 title: "Cam bahçe iç zeminleri: kum, tuzlu su, tatlı su (3)"
-status: pending
+status: running
+claimed_at: 2026-11-20T07:44Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe: balık), Project belgesi 47
 priority: 20
 family: zemin
