@@ -1,7 +1,7 @@
 ---
 id: "600"
 title: "Mutfak, pişirme kapları: tencere, kazan, sac, tava, güveç, şiş, tepsi, sacayağı (12)"
-status: running
+status: review
 claimed_at: 2026-11-20T15:16Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (63a-K10: "mutfak eşyaları hemen girebilir: olur"), Project belgeleri 63, 63a
 priority: 30
