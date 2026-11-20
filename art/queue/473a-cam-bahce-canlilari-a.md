@@ -1,7 +1,7 @@
 ---
 id: "473a"
 title: "Cam bahçe canlıları A (8)"
-status: running
+status: review
 claimed_at: 2026-11-20T07:23Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe), Project belgesi 47
 priority: 20
