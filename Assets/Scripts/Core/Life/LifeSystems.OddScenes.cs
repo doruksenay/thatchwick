@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Animals;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Localization;
 using Thatchwick.Core.World;
 
@@ -35,8 +36,18 @@ namespace Thatchwick.Core.Life
         /// <summary>Sahneyi bugünün verilen saatine erteler (saat geçtiyse sıradaki adımda oynar). Kayda yazılmaz.</summary>
         private void AtDayTime(double dayFraction, Action run) => _sceneQueue.Add((Math.Floor(Clock.TotalDays) + dayFraction, run));
 
+        public const string KnightFlag = "walker.knight";
+
+        private void QueueKnight() => AtDayTime(KnightArrives, () =>
+        {
+            OddEvents.Clear(KnightFlag);
+            StartKnightWalk();   // köy yolunu bir uçtan öbürüne yürür; yol yoksa yalnızca satır
+            Odd(OddityEvents.HorselessKnight);
+        });
+
         internal void OddScenesTick(double gameDays)
         {
+            FollowMovedSurfaces();
             if (_sceneQueue.Count > 0)
             {
                 double now = Clock.TotalDays;
@@ -276,6 +287,58 @@ namespace Thatchwick.Core.Life
             var item = World.GetItem(k.ItemId);
             OddityLine?.Invoke(LocText.Of("core.oddity.ev.alex_decor.put_back", ("who", c?.Name ?? ""), ("item", item?.Def.Id ?? "")), c?.Id ?? 0);
             return true;
+        }
+
+        /// <summary>Masa ya da raf taşındıysa yerdeki süs de yeni yerin yanına geçer (eski karoda sahipsiz kalmasın).</summary>
+        private void FollowMovedSurfaces()
+        {
+            if (!Scenes.HasKnocked) return;
+            List<(int id, GridPos to)> moved = null;
+            foreach (var k in Scenes.Knocked)
+            {
+                var it = World.GetItem(k.ItemId);
+                var parent = it != null && it.IsDecor ? World.GetItem(it.ParentId.Value) : null;
+                if (parent == null) continue;
+                bool near = false;
+                foreach (var t in parent.OccupiedTiles())
+                    if (t.Z == k.Floor.Z && Math.Abs(t.X - k.Floor.X) + Math.Abs(t.Y - k.Floor.Y) <= 1) { near = true; break; }
+                if (near) continue;
+                var floor = StandNear(parent.Position, allowSelf: false);
+                if (floor.HasValue) (moved ?? (moved = new List<(int, GridPos)>())).Add((k.ItemId, floor.Value));
+            }
+            if (moved == null) return;
+            foreach (var (id, to) in moved) { Scenes.Knock(id, to); World.NotifyChanged(id); }
+        }
+
+        // ---- boşta inisiyatif: yakındaki karakter süsü kendisi kaldırır (Sims gibi) ----
+
+        /// <summary>Boştaki karakterin yerdeki süsü fark edeceği uzaklık (karo) ve bir denemenin süresi (oyun günü).</summary>
+        public const int TidyRadius = 8;
+        public const double TidyClaimDays = 0.08;
+        private readonly Dictionary<int, (int who, double until)> _tidyClaims = new Dictionary<int, (int, double)>();
+
+        /// <summary>
+        /// Boştaki hane üyesi için "yerine koy" işi: aynı katta, <see cref="TidyRadius"/> karo içinde yere düşmüş süs varsa
+        /// en yakını. Çocuk ve bebek toplamaz, hizmetkâr toplar. Bir süsü aynı anda tek kişi üstlenir; ulaşamazsa
+        /// <see cref="TidyClaimDays"/> sonra yeniden denenir. Oyuncu her zaman kendisi de tıklayıp yaptırabilir.
+        /// </summary>
+        public Job TidyJobFor(Character c)
+        {
+            if (c == null || !Scenes.HasKnocked || c.IsDead || c.Away || c.Stage < AgeStage.Teen) return null;
+            if (c.IsVillager && c.Id != (Home?.Servant?.Id ?? 0)) return null;
+            double now = Clock.TotalDays;
+            KnockedItem best = null; int bestDist = int.MaxValue;
+            foreach (var k in Scenes.Knocked)
+            {
+                if (k.Floor.Z != c.Position.Z) continue;
+                int d = Math.Max(Math.Abs(k.Floor.X - c.Position.X), Math.Abs(k.Floor.Y - c.Position.Y));
+                if (d > TidyRadius || d >= bestDist) continue;
+                if (_tidyClaims.TryGetValue(k.ItemId, out var claim) && now < claim.until) continue;
+                best = k; bestDist = d;
+            }
+            if (best == null) return null;
+            _tidyClaims[best.ItemId] = (c.Id, now + TidyClaimDays);
+            return Job.OnTile(best.Floor, TileAction.PutBack);
         }
 
         private void PruneKnocked() => Scenes.Prune(id => { var it = World.GetItem(id); return it != null && it.IsDecor; });

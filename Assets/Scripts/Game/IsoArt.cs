@@ -593,10 +593,17 @@ namespace Thatchwick.Game
             int diag = direction % 2 == 1 ? direction : (direction + 7) % 8;
             string prefix = set + "_" + key + "_" + Directions[diag] + "_";
             int n = FrameCount(prefix, closingFrame: false);
-            if (n <= 0) { prefix = set + "_" + key + "_se_"; n = FrameCount(prefix, closingFrame: false); }
+            // Bu yönün karesi yoksa eldeki en yakın çapraz yön (510: Johan'ın sevmesi yalnızca ne geldi): se, sonra ötekiler.
+            for (int i = 0; n <= 0 && i < ActionFallback.Length; i++)
+            {
+                prefix = set + "_" + key + "_" + ActionFallback[i] + "_";
+                n = FrameCount(prefix, closingFrame: false);
+            }
             if (n <= 0) return null;
             return Get(prefix + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n).ToString("00"), R84PivotX, R84PivotY);
         }
+
+        private static readonly string[] ActionFallback = { "se", "sw", "ne", "nw" };
 
         public static Sprite Animal(string speciesId, int direction)
         {
