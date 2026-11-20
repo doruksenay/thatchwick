@@ -1,7 +1,7 @@
 ---
 id: "009"
 title: Karakter katman sistemi fizibilite raporu
-status: review
+status: accepted
 approved_by: auto
 family: karakter
 style_gate: false
@@ -33,3 +33,4 @@ Raporda sayılar ölçülmüş olmalı (piksel sayıları, bölge sayıları), t
 
 ## Notlar
 Çıktı yalnızca `art/results/009-katman-fizibilite.md`. `Assets/` altına dosya koyma.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

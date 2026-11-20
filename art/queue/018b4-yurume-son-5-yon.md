@@ -1,7 +1,7 @@
 ---
 id: "018b4"
 title: Yürüme seti, son 5 yön (sekmesiz)
-status: review
+status: accepted
 claimed_at: 2026-11-19T12:09Z
 approved_by: user        # kullanıcı 19.11.2026: "uygula dediklerini"
 priority: 10
@@ -33,3 +33,4 @@ created: 2026-11-19
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
