@@ -438,3 +438,20 @@ görseli yok. Ayna yalnızca sol↔sağ (se↔sw); duvar eşyasında öbür duva
 | item.kilim_hanging | 1x1 | 96x64 | 48,32 | sw/ne | sol↔sağ | duvar: ayna öbür duvar için |
 | item.large_mirror | 1x1 | 96x64 | 48,32 | sw/ne | sol↔sağ | duvar: ayna öbür duvar için |
 
+
+## main ile birleştirme (20.11.2026)
+
+Aşamalar ayrı bir oturumda yapıldı; o arada main'e görsel parti 3, belge 45 (ev bakımı) ve eski kayıt göçü geldi.
+İki birleştirme commit'i (f1c37f1, 6ecfcd9), sonra main'e itildi.
+
+- IsoArt: eşya görselleri yine items.json'dan (ItemFacing). Main'in ağaç ve ekin evreleri (Trees/Crops), yol karoları,
+  ikinci renk maskesi korundu; `ItemAccent` artık eşyanın kendi görsel adını ItemFacing'ten alır (`<ad>_accent`).
+- items.json: main'in sürümü alındı, `tools/layout/item_meta.py` yeniden çalıştırıldı (253 → 261 görselli eşya).
+  Main'deki eski tablo görseli henüz depoya gelmemiş eşyaları bilerek eşlemişti ("dosya yoksa küp"); bunlar
+  `art.pending: true` ile korunur, dosya gelince kendiliğinden çizilir. Bitki evreleri items.json'a yazılmaz.
+- Eski kayıt genişletme (96/208 → 428): main'deki el koordinatlı `PlaceRegionItems` yerine
+  `StarterWorld.PlaceFrom`: yeni bölgelerin eşyaları yeni oyunun şablon ve kurallarıyla, aynı tohumla; eski alana ve
+  oyuncunun eşyalarına dokunulmaz (test: `EskiKayitGocu_YeniBolgeler_YeniOyunlaAyni_EskiAlanaDokunmaz`).
+- Kayıt yükleme: `Regions.Apply` + `Places(map)` (dükkân sahipleri üst katta) + şehir planı.
+
+Sonuç: 1011 test geçti, GameCheck derleniyor; rapor 77/77 şablon kusursuz, tohum 1, 2, 77, 12345'te ihlal 0.
