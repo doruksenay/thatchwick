@@ -1,7 +1,7 @@
 ---
 id: "832"
 title: "Zincir pozu tamamlama 2: erkek güneybatı yoğurma, yön metniyle (1 klip)"
-status: running
+status: review
 claimed_at: 2026-11-20T23:30Z
 approved_by: user        # kullanıcı 21.11.2026: 796 "başka yöntemle bir deneme daha" (seçmeli liste)
 priority: 5
