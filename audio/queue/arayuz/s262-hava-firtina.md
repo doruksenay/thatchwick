@@ -4,7 +4,7 @@ title: Fırtına havası (ortam)
 kind: ambience
 family: weather
 freq: C
-status: claimed
+status: review
 approved_by: user
 depends_on: []
 note: 'Tester raporu 66: eksik ses anahtarı weather.storm. Cozy yön: korkutucu değil, uzak gök gürültüsü ve sağanak; içeriden dinleniyor hissi.'
@@ -20,5 +20,9 @@ axes:
   - storm rain dripping from eaves, muffled thunder far over the hills
 claimed_by: runnervm0hi8g
 claimed_at: '2026-11-20T22:01:19Z'
+candidates: 3
+passed: 3
+credits_spent: 0
+generated_at: '2026-11-20T22:01:32Z'
 ---
 A gentle summer storm heard from inside a warm cottage: steady heavy rain on the roof with soft distant rolling thunder. Soothing, not frightening, no sharp thunder cracks.
