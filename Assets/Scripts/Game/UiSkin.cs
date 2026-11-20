@@ -43,6 +43,9 @@ namespace Thatchwick.Game
 
         private static Texture2D Tex(string n) => Resources.Load<Texture2D>("UI/ui_kit_" + n);
 
+        /// <summary>Arayüz kiti dokusu (panel, btn, btn_hover, btn_press, btn_sel ...): UI Toolkit görünümleri de aynı kiti kullanır.</summary>
+        public static Texture2D KitTexture(string name) => Tex(name);
+
         // Menü ikonları (392-394, 399a/b): Resources/UI/Icons/ui_icon_<anahtar>. Yoksa null (düğme yazıyla kalır).
         private static readonly System.Collections.Generic.Dictionary<string, Texture2D> _icons = new System.Collections.Generic.Dictionary<string, Texture2D>();
         // Projede Play'e girerken alan yeniden yüklenmiyor (Enter Play Mode Options): önbellekler her Play'de sıfırlanır,
