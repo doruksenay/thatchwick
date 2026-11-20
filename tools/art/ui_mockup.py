@@ -317,7 +317,8 @@ def nine_slice(im, w, h, c):
 
 
 def _piece(base, yon, el, missing_pieces):
-    name = f"ui_hud2_{yon}_{el['piece']}"
+    # 'src': parçayı başka bir yönün çıktısından al (karma yön; ör. düğmeler ilmekten).
+    name = f"ui_hud2_{el.get('src', yon)}_{el['piece']}"
     path = _asset(name)
     x, y, w, h = el["box"]
     if path is None:

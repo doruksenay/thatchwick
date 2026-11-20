@@ -1640,7 +1640,7 @@
     }
   },
   "hud_v2": {
-    "_aciklama": "Yeni HUD düzeni (Project belgesi 66 §3). Oyunun yerel çözünürlüğü 480x270 (16:9); masaüstünde 2x, telefonda 3x. Parça adları ui_hud2_<yon>_<piece>.png; 'slice' olanlar 9-slice (köşe px). 'yon' altındaki listeler o yön için aynı id'li öğenin yerini alır. Karakter kartı oyunda yalnızca karaktere dokununca açılır (karar S1); önizlemede açık gösterilir.",
+    "_aciklama": "Yeni HUD düzeni (Project belgesi 66 §3). Oyunun yerel çözünürlüğü 480x270 (16:9); masaüstünde 2x, telefonda 3x. Parça adları ui_hud2_<yon>_<piece>.png; 'slice' olanlar 9-slice (köşe px). 'yon' altındaki listeler o yön için aynı id'li öğenin yerini alır. Karakter kartı oyunda yalnızca karaktere dokununca açılır (karar S1); önizlemede açık gösterilir. Öğedeki 'src' parçayı başka bir yönün dosyasından alır (karma yön, kullanıcı kararı 2026-11-21: meşe paneller ve kart, ilmek düğmeler ve rozet).",
     "size": [
       480,
       270
@@ -2066,6 +2066,115 @@
             26,
             12,
             12
+          ]
+        }
+      ],
+      "karma": [
+        {
+          "id": "card",
+          "piece": "card",
+          "box": [
+            4,
+            122,
+            132,
+            112
+          ]
+        },
+        {
+          "id": "card_name",
+          "text": "Selcan",
+          "box": [
+            14,
+            129,
+            104,
+            10
+          ],
+          "size": 8
+        },
+        {
+          "id": "needs",
+          "needs": [
+            [
+              "need_hunger",
+              "Açlık",
+              93
+            ],
+            [
+              "need_energy",
+              "Enerji",
+              71
+            ],
+            [
+              "need_warmth",
+              "Isınma",
+              64
+            ],
+            [
+              "need_fun",
+              "Eğlence",
+              42
+            ],
+            [
+              "need_hygiene",
+              "Temizlik",
+              28
+            ],
+            [
+              "need_social",
+              "Sosyal",
+              55
+            ],
+            [
+              "need_toilet",
+              "Tuvalet",
+              12
+            ]
+          ],
+          "box": [
+            14,
+            141,
+            108,
+            89
+          ],
+          "row": 12,
+          "bar": [
+            20,
+            4,
+            84,
+            8
+          ]
+        },
+        {
+          "id": "btn_build",
+          "piece": "btn_build",
+          "src": "ilmek",
+          "box": [
+            404,
+            234,
+            32,
+            32
+          ]
+        },
+        {
+          "id": "btn_book",
+          "piece": "btn_book",
+          "src": "ilmek",
+          "box": [
+            440,
+            234,
+            32,
+            32
+          ]
+        },
+        {
+          "id": "badge",
+          "piece": "badge",
+          "src": "ilmek",
+          "box": [
+            462,
+            230,
+            14,
+            14
           ]
         }
       ]
