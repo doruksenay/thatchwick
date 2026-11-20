@@ -4,7 +4,7 @@ title: Cam kavanozu suya daldırma
 kind: sfx
 family: foley
 freq: B
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 key: jar.scoop
@@ -28,5 +28,7 @@ inceleme_notlari:
   not: su sesi aşırı derin, diğer seslerle tutarsız
 yeniden_sayisi: 2
 prompt_influence: 0.7
+claimed_by: ip-10-0-139-217
+claimed_at: '2026-11-20T17:08:51Z'
 ---
 A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble.
