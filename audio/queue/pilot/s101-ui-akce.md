@@ -4,7 +4,7 @@ title: Akçe kazanma (pilot)
 kind: sfx
 family: ui
 freq: B
-status: accepted
+status: done
 approved_by: auto
 depends_on: []
 key: ui.coin
@@ -25,5 +25,6 @@ pick:
 - c3
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T16:44:14Z'
 ---
 A few small old copper coins dropping into a cloth purse, short and pleasant.

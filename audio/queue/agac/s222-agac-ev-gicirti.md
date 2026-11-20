@@ -4,7 +4,7 @@ title: Eskiyen ağaç ev gıcırtısı
 kind: sfx
 family: foley
 freq: C
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 note: 'Belge 52: ağaç ev gıcırdıyor ya da harap oldu uyarısı.'
@@ -30,5 +30,6 @@ pick:
 - c3
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T16:44:13Z'
 ---
 A slow, worried creak of old treehouse planks moving in the wind, a loose board knocking once.

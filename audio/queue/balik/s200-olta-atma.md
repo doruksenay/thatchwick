@@ -4,7 +4,7 @@ title: Olta atma (balık tutma)
 kind: sfx
 family: tools
 freq: B
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 key: fish.cast
@@ -34,5 +34,6 @@ pick:
 - c3
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T16:44:14Z'
 ---
 A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant.

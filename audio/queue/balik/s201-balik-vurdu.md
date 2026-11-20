@@ -4,7 +4,7 @@ title: Balık vurdu (şamandıra batar)
 kind: sfx
 family: foley
 freq: B
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 key: fish.bite
@@ -25,5 +25,6 @@ pick:
 - c3
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T16:44:14Z'
 ---
 A cork float suddenly pulled under the water surface: a quick small gulp and splash.

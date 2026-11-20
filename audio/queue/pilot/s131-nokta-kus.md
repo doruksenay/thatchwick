@@ -5,7 +5,7 @@ kind: spot
 family: spots
 freq: B
 pilot: true
-status: accepted
+status: done
 approved_by: auto
 key: spot.bird.song
 spot_of: amb.farm.day
@@ -44,5 +44,6 @@ pick:
 - c3
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T16:44:15Z'
 ---
 One short song phrase of a single small songbird, a little distant.

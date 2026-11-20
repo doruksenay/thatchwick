@@ -938,6 +938,10 @@ namespace Thatchwick.Core.Content
                 if (a.rotations != null) foreach (var r in a.rotations) if (r >= 0 && r <= 3 && !art.Rotations.Contains(r)) art.Rotations.Add(r);
                 if (art.HasAny || art.Lit != null) item.Art = art;
                 if (art.HasFaces && item.FrontUse == null) errors.Add($"{dto.id}: yön görseli var ama ön yüzü (front) yok.");
+                // Ön yüzü olan eşyanın görseli hangi yöne baktığını söylemeli (n/e/s/w); yalnızca eksen görseli (alongX/Y) yetmez:
+                // oyun yönü bilmeden aynalar ve çalışma tarafı duvara dönebilir (belge 64b, dokuma tezgâhı).
+                if (item.FrontUse != null && !art.HasFaces && (art.AlongX != null || art.AlongY != null))
+                    errors.Add($"{dto.id}: ön yüzü ({item.FrontUse}) var ama görselin baktığı yön tanımsız; alongX/alongY yerine n/e/s/w yaz.");
             }
         }
 

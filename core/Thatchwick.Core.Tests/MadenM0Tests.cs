@@ -38,6 +38,9 @@ namespace Thatchwick.Core.Tests
             {
                 var ins = inputs.ToList();
                 if (Exempt.Contains(name)) return;
+                // Mutfak takımı tarifleri (63a, "kit_*"): satış için değil kullanım için dövülen aletler; fiyatları kap kademesine göre
+                // belirli ve külçe değerinin altında kalması bilerek. Madencilik ilkesi (külçe işleme kazancı) bunlara uygulanmaz.
+                if (name.Contains("/craft:kit_", StringComparison.Ordinal)) return;
                 double inV = ins.Sum(x => Price(x.id) * x.n), outV = outputs.Sum(x => Price(x.id) * x.n);
                 if (inV <= 0) return;
                 bool mining = ins.Any(x => MiningInputs.Contains(x.id));

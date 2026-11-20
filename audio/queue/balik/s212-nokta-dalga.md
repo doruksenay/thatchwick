@@ -4,7 +4,7 @@ title: Nokta sesi, kıyıya vuran dalga
 kind: spot
 family: spots
 freq: B
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 key: spot.wave
@@ -42,5 +42,6 @@ pick:
 - c4
 karar_zamani: '2026-11-20'
 inceleme_notu: dalgalar kuvvetli gibi geliyor, hafif vuran dalga değil
+promoted_at: '2026-11-20T16:44:14Z'
 ---
 A single slightly larger wave breaking on the sand and drawing back over pebbles.

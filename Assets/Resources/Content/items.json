@@ -5456,7 +5456,14 @@
       ],
       "trades": [
         "carpenter"
-      ]
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_chair_painted_sw"
+      }
     },
     {
       "id": "item.mattress_straw",
@@ -7688,7 +7695,14 @@
       "belongs": [
         "living"
       ],
-      "cookFire": true
+      "cookFire": true,
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_fireplace_large_2x1_sw"
+      }
     },
     {
       "id": "item.candlestick",
@@ -8604,11 +8618,11 @@
         "general"
       ],
       "art": {
-        "alongY": "iso_item_pantry_shelf_2x1_se_nw",
         "pivotX": 56.0,
         "pivotY": 32.0,
         "mirror": true,
-        "pending": true
+        "pending": true,
+        "w": "iso_item_pantry_shelf_2x1_se_nw"
       },
       "tags": [
         "foodpoint"
@@ -8738,7 +8752,14 @@
         "pantry",
         "cellar",
         "storehouse"
-      ]
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_chest_iron_2x1_sw"
+      }
     },
     {
       "id": "item.treasure_chest",
@@ -8963,11 +8984,11 @@
         "mason"
       ],
       "art": {
-        "alongY": "iso_item_workbench_2x1_se_nw",
         "pivotX": 56.0,
         "pivotY": 32.0,
         "mirror": true,
-        "pending": true
+        "pending": true,
+        "w": "iso_item_workbench_2x1_se_nw"
       }
     },
     {
@@ -10709,7 +10730,14 @@
       "trades": [
         "tavern",
         "carpenter"
-      ]
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_bench_wood_2x1_sw"
+      }
     },
     {
       "id": "item.game_table",
@@ -20315,10 +20343,10 @@
         "tailor"
       ],
       "art": {
-        "alongX": "iso_item_spinning_wheel_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "mirror": true
+        "mirror": true,
+        "w": "iso_item_spinning_wheel_se"
       }
     },
     {
@@ -20361,10 +20389,10 @@
         "tailor"
       ],
       "art": {
-        "alongX": "iso_item_loom_2x1_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "mirror": true
+        "mirror": true,
+        "w": "iso_item_loom_2x1_se"
       }
     },
     {
@@ -20859,7 +20887,14 @@
       ],
       "trades": [
         "herb"
-      ]
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_alembic_2x1_sw"
+      }
     },
     {
       "id": "item.potion_energy",
@@ -20997,10 +21032,10 @@
         "herb"
       ],
       "art": {
-        "alongX": "iso_item_potion_shelf_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "mirror": true
+        "mirror": true,
+        "w": "iso_item_potion_shelf_se"
       }
     },
     {
@@ -21552,10 +21587,10 @@
         "smithy"
       ],
       "art": {
-        "alongX": "iso_item_forge_2x2_se",
         "pivotX": 72.0,
         "pivotY": 40.0,
-        "mirror": true
+        "mirror": true,
+        "w": "iso_item_forge_2x2_se"
       }
     },
     {
@@ -21582,10 +21617,10 @@
         "potter"
       ],
       "art": {
-        "alongX": "iso_item_pottery_wheel_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "mirror": true
+        "mirror": true,
+        "w": "iso_item_pottery_wheel_se"
       }
     },
     {
@@ -21682,10 +21717,10 @@
         "workshop"
       ],
       "art": {
-        "alongX": "iso_item_chandler_table_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "mirror": true
+        "mirror": true,
+        "w": "iso_item_chandler_table_se"
       }
     },
     {
@@ -22220,10 +22255,10 @@
         "mason"
       ],
       "art": {
-        "alongX": "iso_item_stonecutter_2x1_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "mirror": true
+        "mirror": true,
+        "w": "iso_item_stonecutter_2x1_se"
       }
     },
     {
@@ -22911,10 +22946,10 @@
         "potter"
       ],
       "art": {
-        "alongX": "iso_item_kiln_2x2_se",
         "pivotX": 72.0,
         "pivotY": 40.0,
-        "mirror": true
+        "mirror": true,
+        "n": "iso_item_kiln_2x2_se"
       }
     },
     {
@@ -29808,7 +29843,14 @@
       "belongs": [
         "outdoor",
         "workshop"
-      ]
+      ],
+      "art": {
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_glass_furnace_2x2_sw"
+      }
     },
     {
       "id": "item.glass_bench",
@@ -29832,7 +29874,14 @@
         "outdoor",
         "living",
         "workshop"
-      ]
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_glass_bench_2x1_sw"
+      }
     },
     {
       "id": "item.glass_bottle",
@@ -30842,7 +30891,14 @@
       "belongs": [
         "living",
         "dining"
-      ]
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_throne_chair_sw"
+      }
     },
     {
       "id": "item.carved_chest",
@@ -32322,7 +32378,14 @@
       "belongs": [
         "living",
         "dining"
-      ]
+      ],
+      "art": {
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_cushioned_divan_3x1_sw"
+      }
     },
     {
       "id": "item.caravan_rug",
@@ -32439,7 +32502,14 @@
       "site": "indoor",
       "belongs": [
         "kitchen"
-      ]
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_spice_chest_sw"
+      }
     },
     {
       "id": "item.mussel_shell",
@@ -34824,7 +34894,11 @@
       ],
       "trades": [
         "smithy"
-      ]
+      ],
+      "art": {
+        "w": "iso_item_anvil_se",
+        "mirror": true
+      }
     },
     {
       "id": "item.bellows",
@@ -34956,7 +35030,14 @@
       ],
       "tags": [
         "preptable"
-      ]
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_kneading_trough_2x1_sw"
+      }
     },
     {
       "id": "item.flour_sack",
@@ -35025,7 +35106,14 @@
       ],
       "trades": [
         "mill"
-      ]
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_bread_rack_sw"
+      }
     },
     {
       "id": "item.writing_lectern",
@@ -35149,7 +35237,11 @@
             "item.cherry_tart"
           ]
         }
-      ]
+      ],
+      "art": {
+        "w": "iso_item_writing_lectern_se",
+        "mirror": true
+      }
     },
     {
       "id": "item.scroll_rack",
@@ -35170,7 +35262,11 @@
       ],
       "trades": [
         "scribe"
-      ]
+      ],
+      "art": {
+        "n": "iso_item_scroll_rack_se",
+        "mirror": true
+      }
     },
     {
       "id": "item.scroll_chest",
@@ -35191,7 +35287,11 @@
       ],
       "trades": [
         "scribe"
-      ]
+      ],
+      "art": {
+        "w": "iso_item_scroll_chest_se",
+        "mirror": true
+      }
     },
     {
       "id": "item.cutting_table",
@@ -35228,7 +35328,14 @@
       ],
       "trades": [
         "tailor"
-      ]
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_cutting_table_2x1_sw"
+      }
     },
     {
       "id": "item.cloth_bolt_shelf",
@@ -35249,7 +35356,14 @@
       ],
       "trades": [
         "tailor"
-      ]
+      ],
+      "art": {
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_cloth_bolt_shelf_2x1_sw"
+      }
     },
     {
       "id": "item.garment_stand",
@@ -35443,7 +35557,14 @@
       "belongs": [
         "bedroom",
         "inn_room"
-      ]
+      ],
+      "art": {
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true,
+        "w": "iso_item_bedside_stand_sw"
+      }
     },
     {
       "id": "item.wash_tub",
@@ -42107,11 +42228,11 @@
       ],
       "lockSkill": "Tailoring",
       "art": {
-        "alongX": "iso_item_sewing_table_se",
         "pivotX": 32.0,
         "pivotY": 20.0,
         "mirror": true,
-        "pending": true
+        "pending": true,
+        "w": "iso_item_sewing_table_sw"
       }
     },
     {

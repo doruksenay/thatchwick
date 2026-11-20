@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Harita önizlemesi (belge 64): yeni oyunun dünyasını Unity'siz kurar ve çizim listesini JSON'a döker.
+       render.py bu listeyi gerçek görsellerle izometrik PNG'ye çevirir. Çalıştırma: tools/map-preview/run.sh -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>CS0649;CS0169;CS0414;CS0067;CS0162;CS0168;CS0219</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Assets/Scripts/Core/**/*.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="PreviewExtras.cs" />
+  </ItemGroup>
+</Project>

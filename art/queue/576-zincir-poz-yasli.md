@@ -1,7 +1,7 @@
 ---
 id: "576"
 title: "Zincir pozları, yaşlılar: otur, sofrada ye, uyu, yüzünü yıka (32)"
-status: running
+status: review
 claimed_at: 2026-11-20T16:28Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 40
@@ -47,6 +47,9 @@ created: 2026-11-20
 
 ## Doğrulama
 018a ölçütleri her klip için; ayak satırı sabit, karakterin giysisi ve saçı durma karesiyle aynı. Elde tutulan nesne (bıçak, kepçe, kürek) okunur ama küçük olmalı: oyunda taşınan eşya ayrıca el çapasına çizilir. Klip başına GIF `art/results/` altına.
+
+## Sorular
+- Kısmi teslim (rapor: `art/results/576-zincir-poz-yasli.md`): `wash` 8/8 klip teslim edildi; `sit`, `sit_eat`, `lie_sleep` (24 klip) teslim edilmedi, çünkü durma karesi hem başlangıç hem bitiş verilince karakter ayakta kaldı (oturma/yatma yok). 32 gen harcandı, yeniden denenmedi. Bu üç poz için başka yöntem (yalnızca başlangıç karesi, skeleton-v3 ya da oturan/yatan karakter durumu) gerekir; kullanıcı kararı bekleniyor.
 
 ## Notlar
 - Giysi katmanları (43c, 509 planı): bu kareler gövde setidir; giysi ailelerine aktarım 509'daki toplu parti yöntemiyle ayrı iştir.
