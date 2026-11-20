@@ -661,6 +661,8 @@ namespace Thatchwick.Core.Life
         {
             _plants = plants;
             plants.GrowthMultiplier = GrowthMultiplier;
+            Home.IsGreenhouseRoom = plants.IsGreenhouse;          // sera oda tipi
+            plants.GreenhouseGrowth = Home.GreenhouseGrowth;
             if (_heat != null) plants.TemperatureAt = _heat.TemperatureAt;   // sera ısısı
         }
         public void Attach(HeatSystem heat)

@@ -881,7 +881,7 @@ namespace Thatchwick.Game
             // Verim katmanı düğmesi her karede çizilir; Toprak bakımı 8 yoksa pasif (IMGUI yerleşimi sabit kalsın).
             bool fertOpen = FertilityAt != null && FertilityOpen != null && FertilityOpen();
             GUI.enabled = fertOpen;
-            if (GUILayout.Toggle(_showFertility && fertOpen, new GUIContent("Verim", fertOpen ? "Toprağın verimi: kırmızı yorgun, yeşil verimli" : "Toprak bakımı 8 gerekli"), GUI.skin.button, GUILayout.Width(HeaderW)) != (_showFertility && fertOpen))
+            if (GUILayout.Toggle(_showFertility && fertOpen, new GUIContent(GameLocalization.T("ui.build.fertility"), fertOpen ? GameLocalization.T("ui.build.fertility_tip") : GameLocalization.T("ui.build.fertility_locked")), GUI.skin.button, GUILayout.Width(HeaderW)) != (_showFertility && fertOpen))
             { _showFertility = !_showFertility; RefreshOverlay(); }
             GUI.enabled = true;
             // Düğme her karede çizilir (koşullu denetim IMGUI yerleşimini bozar); boş yığında pasif.

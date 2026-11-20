@@ -113,7 +113,7 @@ namespace Thatchwick.Game
                     GUILayout.BeginHorizontal();
                     if (!_nameEdits.TryGetValue(room.Id, out var edit)) edit = given ?? "";
                     _nameEdits[room.Id] = GUILayout.TextField(edit, 24, GUILayout.Width(150f));
-                    if (GUILayout.Button("Ad koy", GUILayout.Width(60f))) _status = _life.SetRoomName(room, _nameEdits[room.Id]) ?? "Odanın adı kondu.";
+                    if (GUILayout.Button(GameLocalization.T("ui.home.name_room"), GUILayout.Width(60f))) _status = _life.SetRoomName(room, _nameEdits[room.Id]) ?? GameLocalization.T("ui.home.room_named");
                     GUILayout.EndHorizontal();
                 }
                 var beauty = _life.Mood.BeautyOf(room);

@@ -353,16 +353,16 @@ namespace Thatchwick.Game
         private void DrawSkillBoard()
         {
             if (Life == null) return;
-            if (GUILayout.Button(_boardOpen ? "— Beceri panosu (kapat) —" : "— Beceri panosu —")) _boardOpen = !_boardOpen;
+            if (GUILayout.Button(_boardOpen ? GameLocalization.T("ui.family.skill_board_close") : GameLocalization.T("ui.family.skill_board"))) _boardOpen = !_boardOpen;
             var table = SkillTable(_population.Members);
             // Tek usta uyarısı her zaman görünür: bilgi tek kişide kalırsa ölümüyle kaybolur.
             foreach (var r in table)
                 if (r.holders == 1 && (r.best.Stage == AgeStage.Elder || r.level >= 7))
-                    UiSkin.Wrap($"⚠ Tek usta: {SkillNames.Name(r.skill)} yalnızca {r.best.Name}'de ({r.level}); bir çırak yetiştir.", UiSkin.FamilyTextW);
+                    UiSkin.Wrap(GameLocalization.T("ui.family.sole_master", ("skill", SkillNames.Name(r.skill)), ("name", r.best.Name), ("level", r.level)), UiSkin.FamilyTextW);
             if (!_boardOpen) return;
             foreach (var r in table)
             {
-                string mark = r.holders == 1 ? " ⚠" : "";
+                string mark = r.holders == 1 ? " !" : "";
                 UiSkin.Wrap(new GUIContent($"{SkillNames.Name(r.skill)} {r.level} · {r.best.Name}{mark}",
                     Thatchwick.Core.Progress.UnlockGate.LevelSummary(Content, r.skill, Math.Min(10, r.level + 1))), UiSkin.FamilyTextW);
             }
@@ -373,37 +373,37 @@ namespace Thatchwick.Game
         public Thatchwick.Core.Content.ContentDatabase Content { get; set; }
 
         private static readonly DutyKind[] PriorityKinds = { DutyKind.Farm, DutyKind.Animals, DutyKind.Mine, DutyKind.House };
-        private static readonly string[] PriorityNames = { "düşük", "orta", "yüksek" };
+        private static readonly string[] PriorityNames = { "ui.family.priority.low", "ui.family.priority.mid", "ui.family.priority.high" };
 
         // Kâhyalık: öncelik (2), ırgat (3), haftalık plan (4), yarıcılık (5); kiler düzeni (6) ve imece (7) pasif ve kürsüde.
         private void DrawStewardship()
         {
             int lv = Life.BestSkill(SkillType.Stewardship);
-            if (lv < 2) { UiSkin.Wrap("Kâhyalık 2'de görev öncelikleri açılır.", UiSkin.FamilyTextW); return; }
-            UiSkin.Wrap("— Kâhya: görev öncelikleri —", UiSkin.FamilyTextW);
+            if (lv < 2) { UiSkin.Wrap(GameLocalization.T("ui.family.priority_locked"), UiSkin.FamilyTextW); return; }
+            UiSkin.Wrap(GameLocalization.T("ui.family.priorities"), UiSkin.FamilyTextW);
             foreach (var k in PriorityKinds)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(DutyPlanner.DutyName(k), GUILayout.Width(90f));
                 int p = Life.DutyPriority(k);
                 for (int i = 0; i < 3; i++)
-                    if (GUILayout.Toggle(p == i, PriorityNames[i], GUI.skin.button, GUILayout.Width(60f)) && p != i) Life.SetDutyPriority(k, i);
+                    if (GUILayout.Toggle(p == i, GameLocalization.T(PriorityNames[i]), GUI.skin.button, GUILayout.Width(60f)) && p != i) Life.SetDutyPriority(k, i);
                 GUILayout.EndHorizontal();
             }
             if (lv >= 3)
             {
-                bool hired = GUILayout.Toggle(Life.HiredHand, $"Irgat tut ({Thatchwick.Core.Life.LifeSystems.HiredWage} akçe/gün{(lv >= 9 ? ", iki ırgat" : "")}: susuz ekini sular)");
+                bool hired = GUILayout.Toggle(Life.HiredHand, GameLocalization.T(lv >= 9 ? "ui.family.hired_two" : "ui.family.hired", ("wage", Thatchwick.Core.Life.LifeSystems.HiredWage)));
                 if (hired != Life.HiredHand) Life.HiredHand = hired;
             }
-            if (lv >= 4 && GUILayout.Button("Haftalık plan")) _status = Life.WeeklyPlanText();
+            if (lv >= 4 && GUILayout.Button(GameLocalization.T("ui.family.weekly_plan"))) _status = Life.WeeklyPlanText();
             if (lv >= 5)
             {
-                bool share = GUILayout.Toggle(Life.Sharecrop, "Yarıcılık anlaşması (üç günde bir yarıcı payı)");
+                bool share = GUILayout.Toggle(Life.Sharecrop, GameLocalization.T("ui.family.sharecrop"));
                 if (share != Life.Sharecrop) Life.Sharecrop = share;
             }
             if (lv >= Thatchwick.Core.Life.LifeSystems.SalesRouteLevel)
             {
-                bool route = GUILayout.Toggle(Life.SalesRoute, $"Haftalık satış rotası (pazar günü ham maddede {Thatchwick.Core.Life.LifeSystems.SalesRouteKeep}'nin üstü satılır)");
+                bool route = GUILayout.Toggle(Life.SalesRoute, GameLocalization.T("ui.family.sales_route", ("keep", Thatchwick.Core.Life.LifeSystems.SalesRouteKeep)));
                 if (route != Life.SalesRoute) Life.SalesRoute = route;
             }
         }

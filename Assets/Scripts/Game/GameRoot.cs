@@ -1974,10 +1974,10 @@ namespace Thatchwick.Game
                     case AnimalAction.Saddle: ShowMessage($"{a.Name} eyerlendi"); break;
                     case AnimalAction.Unsaddle: ShowMessage($"{a.Name}: eyer çıkarıldı"); break;
                     case AnimalAction.Brush: ShowMessage($"{c.Name} {a.Name} tımar etti (dostluk {a.Friendship:0})"); _account.Record("brush", _clock.DayIndex); break;
-                    case AnimalAction.Train: ShowMessage($"{c.Name} {a.Name} eğitti (seviye {a.Level}, dostluk {a.Friendship:0})"); break;
-                    case AnimalAction.Trick: ShowMessage($"{c.Name} {a.Name} ile numara çalıştı (dostluk {a.Friendship:0})"); break;
-                    case AnimalAction.Treat: ShowMessage(a.IsSick ? $"{c.Name} {a.Name} baktı; henüz iyileşmedi." : $"{c.Name} {a.Name} iyileştirdi."); break;
-                    case AnimalAction.PrepContest: ShowMessage($"{a.Name} yarışmaya hazırlandı (ilk yarışmada +{AnimalCare.PrepScore:0} puan)."); break;
+                    case AnimalAction.Train: ShowMessage(GameLocalization.T("ui.animal.trained", ("who", c.Name), ("animal", a.Name), ("level", a.Level), ("friend", (int)a.Friendship))); break;
+                    case AnimalAction.Trick: ShowMessage(GameLocalization.T("ui.animal.tricked", ("who", c.Name), ("animal", a.Name), ("friend", (int)a.Friendship))); break;
+                    case AnimalAction.Treat: ShowMessage(GameLocalization.T(a.IsSick ? "ui.animal.treated_sick" : "ui.animal.treated_well", ("who", c.Name), ("animal", a.Name))); break;
+                    case AnimalAction.PrepContest: ShowMessage(GameLocalization.T("ui.animal.prepared", ("animal", a.Name), ("points", (int)AnimalCare.PrepScore))); break;
                     default: ShowMessage($"{c.Name} {a.Name} sevdi (dostluk {a.Friendship:0})"); _account.Record("pet_animal", _clock.DayIndex); break;
                 }
                 if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
@@ -2236,10 +2236,10 @@ namespace Thatchwick.Game
             // Beceri işleri (belge 45): seviyesi tutmayanda menüde görünmez.
             var sk = c.Character.Skills;
             if (sk.GetLevel(SkillType.AnimalHusbandry) >= AnimalCare.TrainLevel || (a.Species.Id.Contains("dog") && sk.GetLevel(SkillType.Hunting) >= AnimalCare.HoundTrainLevel))
-                Opt(AnimalAction.Train, a.Species.Id.Contains("dog") && sk.GetLevel(SkillType.Hunting) >= AnimalCare.HoundTrainLevel ? "Av köpeği eğit" : "Eğit");
-            if (a.Species.Rideable && sk.GetLevel(SkillType.Riding) >= AnimalCare.TrickLevel) Opt(AnimalAction.Trick, "Numara öğret");
-            if (a.IsSick && sk.GetLevel(SkillType.Medicine) >= AnimalCare.TreatLevel) Opt(AnimalAction.Treat, "Hasta hayvana bak");
-            if (sk.GetLevel(SkillType.AnimalHusbandry) >= AnimalCare.PrepLevel) Opt(AnimalAction.PrepContest, "Yarışa hazırla");
+                Opt(AnimalAction.Train, a.Species.Id.Contains("dog") && sk.GetLevel(SkillType.Hunting) >= AnimalCare.HoundTrainLevel ? GameLocalization.T("ui.animal.train_hound") : GameLocalization.T("ui.animal.train"));
+            if (a.Species.Rideable && sk.GetLevel(SkillType.Riding) >= AnimalCare.TrickLevel) Opt(AnimalAction.Trick, GameLocalization.T("ui.animal.trick"));
+            if (a.IsSick && sk.GetLevel(SkillType.Medicine) >= AnimalCare.TreatLevel) Opt(AnimalAction.Treat, GameLocalization.T("ui.animal.treat"));
+            if (sk.GetLevel(SkillType.AnimalHusbandry) >= AnimalCare.PrepLevel) Opt(AnimalAction.PrepContest, GameLocalization.T("ui.animal.prep"));
             if (a.Species.Rideable)
             {
                 if (a.Saddle == null) Opt(AnimalAction.Saddle, "Eyerle");

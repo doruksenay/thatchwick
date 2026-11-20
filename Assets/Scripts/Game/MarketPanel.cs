@@ -131,12 +131,12 @@ namespace Thatchwick.Game
             DrawMerchant();
             UiSkin.Wrap(_market.Season == Thatchwick.Core.Time.Season.Winter ? "— Mallar (kış: yakıt ve yiyecek pahalı) —" : "— Mallar —", UiSkin.MarketTextW);
             UiSkin.Wrap($"Pazarlık (ticaret becerisi): satış x{_market.TradeSellFactor:0.00} · alış x{_market.TradeBuyFactor:0.00}"
-                + (_market.HaggledToday ? " · bugün pazarlık tuttu" : "") + (_market.StallToday ? " · tezgâh kurulu" : ""), UiSkin.MarketTextW);
+                + (_market.HaggledToday ? " · " + GameLocalization.T("ui.market.haggled") : "") + (_market.StallToday ? " · " + GameLocalization.T("ui.market.stall_up") : ""), UiSkin.MarketTextW);
             // Ticaret basamakları (belge 45): pazarlık (2), tezgâh (5), güney seferi (Arabacılık 6).
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(new GUIContent("Pazarlık et", $"Ticaret {Market.HaggleLevel}: günde bir; tutarsa bugünkü alışlar %10 ucuz"), GUILayout.Width(96f))) _status = _market.Haggle();
-            if (GUILayout.Button(new GUIContent("Tezgâh kur", $"Ticaret {Market.StallLevel}: bugünkü satışlar %10 pahalı (panayırda Ticaret {Market.FairLevel} ile %25)"), GUILayout.Width(96f))) _status = _market.SetUpStall();
-            if (SouthTrip != null && GUILayout.Button(new GUIContent("Güney seferi", "Arabacılık 6 ve çekili araba: haftada bir güney malı (zeytinyağı, kahve, nar, safran, defne) ucuza, ertesi sabah"), GUILayout.Width(100f))) _status = SouthTrip();
+            if (GUILayout.Button(new GUIContent(GameLocalization.T("ui.market.haggle"), GameLocalization.T("ui.market.haggle_tip", ("level", Market.HaggleLevel))), GUILayout.Width(96f))) _status = _market.Haggle();
+            if (GUILayout.Button(new GUIContent(GameLocalization.T("ui.market.stall"), GameLocalization.T("ui.market.stall_tip", ("level", Market.StallLevel), ("fair", Market.FairLevel))), GUILayout.Width(96f))) _status = _market.SetUpStall();
+            if (SouthTrip != null && GUILayout.Button(new GUIContent(GameLocalization.T("ui.market.south_trip"), GameLocalization.T("ui.market.south_trip_tip")), GUILayout.Width(100f))) _status = SouthTrip();
             GUILayout.EndHorizontal();
             foreach (var g in _market.Goods())
             {
@@ -145,8 +145,8 @@ namespace Thatchwick.Game
                 GUILayout.Label($"{g.DisplayName} ({_house.Count(g.Id)})", GUILayout.Width(120f));
                 int sellNow = _market.SellPrice(g.Id);
                 var yday = _market.YesterdaySellPrice(g.Id);   // dünkü fiyat (Ticaret 3)
-                string trend = yday == null ? "" : sellNow > yday ? "▲" : sellNow < yday ? "▼" : "=";
-                if (GUILayout.Button(new GUIContent($"Sat {sellNow}{trend}", yday != null ? $"Dün {yday}" : null), GUILayout.Width(58f))) Report(_market.Sell(g.Id, 1), g);
+                string trend = yday == null ? "" : sellNow > yday ? "+" : sellNow < yday ? "-" : "=";
+                if (GUILayout.Button(new GUIContent(GameLocalization.T("ui.market.sell", ("price", sellNow)) + trend, yday != null ? GameLocalization.T("ui.market.yesterday", ("price", yday.Value)) : null), GUILayout.Width(58f))) Report(_market.Sell(g.Id, 1), g);
                 if (GUILayout.Button("Sat 5", GUILayout.Width(44f))) Report(_market.Sell(g.Id, 5), g);
                 if (!_market.IsBuyable(g.Id)) GUILayout.Label("yalnızca yapılır", GUILayout.Width(90f));
                 else if (GUILayout.Button($"Al {_market.BuyPrice(g.Id)}", GUILayout.Width(48f)))

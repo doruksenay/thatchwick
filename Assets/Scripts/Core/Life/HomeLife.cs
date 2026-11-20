@@ -324,6 +324,7 @@ namespace Thatchwick.Core.Life
             }
             foreach (var it in _world.Items)
                 if (IsStrewnFresh(it) && RoomOf(it) == room) { plus += FreshRoomBeauty; break; }
+            plus += GreenhouseBeauty(room);   // seraya ait saksılar ve bitkiler (sera odası)
             return (plus, minus);
         }
 

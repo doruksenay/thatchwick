@@ -2813,7 +2813,10 @@
         "pivotY": 7.0,
         "mirror": true
       },
-      "lockSkill": "Pottery"
+      "lockSkill": "Pottery",
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.clay_cup",
@@ -5807,6 +5810,9 @@
         "living",
         "bedroom",
         "inn_room"
+      ],
+      "tags": [
+        "greenhouse"
       ]
     },
     {
@@ -19510,7 +19516,10 @@
       ],
       "potHerb": "item.herb",
       "potGrowDays": 3,
-      "finishGroup": "clay"
+      "finishGroup": "clay",
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.herb_pot_rosemary",
@@ -19549,7 +19558,10 @@
         "pxW": 32,
         "pxH": 40,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.herb_pot_thyme",
@@ -19588,7 +19600,10 @@
         "pxW": 32,
         "pxH": 40,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.yarn_spindle",
@@ -28390,6 +28405,9 @@
       ],
       "trades": [
         "potter"
+      ],
+      "tags": [
+        "greenhouse"
       ]
     },
     {
@@ -28904,6 +28922,9 @@
         "bedroom",
         "inn_room",
         "kitchen"
+      ],
+      "tags": [
+        "greenhouse"
       ]
     },
     {
@@ -28948,6 +28969,9 @@
         "bedroom",
         "inn_room",
         "kitchen"
+      ],
+      "tags": [
+        "greenhouse"
       ]
     },
     {
@@ -28993,6 +29017,9 @@
         "bedroom",
         "inn_room",
         "kitchen"
+      ],
+      "tags": [
+        "greenhouse"
       ]
     },
     {
@@ -29030,7 +29057,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.pot_narcissus",
@@ -29067,7 +29097,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.pot_violet",
@@ -29105,7 +29138,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.pot_cyclamen",
@@ -29145,7 +29181,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.pot_snowdrop",
@@ -29183,7 +29222,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.pot_crocus",
@@ -29221,7 +29263,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.pot_lavender",
@@ -29267,7 +29312,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.pot_mint",
@@ -29310,7 +29358,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.pot_chamomile",
@@ -29355,7 +29406,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.ivy_wall",
@@ -29399,6 +29453,9 @@
         "bedroom",
         "inn_room",
         "kitchen"
+      ],
+      "tags": [
+        "greenhouse"
       ]
     },
     {
@@ -29435,7 +29492,10 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "tags": [
+        "greenhouse"
+      ]
     },
     {
       "id": "item.water_garden",
@@ -29529,6 +29589,9 @@
         "bedroom",
         "inn_room",
         "kitchen"
+      ],
+      "tags": [
+        "greenhouse"
       ]
     },
     {
@@ -30246,7 +30309,8 @@
       "tags": [
         "glass",
         "craftonly",
-        "vivarium"
+        "vivarium",
+        "greenhouse"
       ],
       "art": {
         "alongX": "iso_item_glass_garden_se",
@@ -30294,7 +30358,8 @@
       "tags": [
         "glass",
         "craftonly",
-        "vivarium"
+        "vivarium",
+        "greenhouse"
       ],
       "art": {
         "alongX": "iso_item_glass_garden_large_se",
@@ -30963,7 +31028,7 @@
         "outdoor"
       ],
       "beauty": 5,
-      "site": "outdoor",
+      "site": "any",
       "belongs": [
         "outdoor"
       ],
@@ -30979,6 +31044,9 @@
           "skillWork": "stroll",
           "minLevel": 6
         }
+      ],
+      "tags": [
+        "greenhouse"
       ]
     },
     {
@@ -32128,6 +32196,59 @@
       "tags": [
         "tool"
       ]
+    },
+    {
+      "id": "item.seedling_rack",
+      "displayName": "Fidan rafı",
+      "category": "garden",
+      "price": 25,
+      "level": 3,
+      "lockSkill": "Horticulture",
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "workshop"
+      ],
+      "finishGroup": "wood",
+      "site": "indoor",
+      "tags": [
+        "greenhouse",
+        "greenhouse_work"
+      ],
+      "beauty": 3,
+      "interactions": [
+        {
+          "id": "tend_seedlings",
+          "displayName": "Fidelere bak",
+          "need": "Fun",
+          "restore": 12,
+          "durationDays": 0.05,
+          "skill": "Horticulture",
+          "skillXp": 4
+        }
+      ]
+    },
+    {
+      "id": "item.potting_bench",
+      "displayName": "Saksı tezgâhı",
+      "category": "garden",
+      "price": 35,
+      "level": 4,
+      "lockSkill": "Horticulture",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "workshop"
+      ],
+      "finishGroup": "wood",
+      "site": "indoor",
+      "width": 2,
+      "height": 1,
+      "tags": [
+        "greenhouse",
+        "greenhouse_work"
+      ],
+      "beauty": 1
     }
   ],
   "recipes": [
@@ -37080,6 +37201,78 @@
       "skillXp": 4,
       "displayName": "Örtülü araba yap",
       "minLevel": 9
+    },
+    {
+      "id": "pot_lavender",
+      "station": "item.potting_bench",
+      "produces": "item.pot_lavender",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 1
+        },
+        {
+          "item": "item.compost",
+          "count": 1
+        },
+        {
+          "item": "item.lavender",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Horticulture",
+      "skillXp": 6,
+      "displayName": "Lavanta saksıla",
+      "minLevel": 4
+    },
+    {
+      "id": "herb_pot_thyme",
+      "station": "item.potting_bench",
+      "produces": "item.herb_pot_thyme",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 1
+        },
+        {
+          "item": "item.compost",
+          "count": 1
+        },
+        {
+          "item": "item.thyme",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Horticulture",
+      "skillXp": 6,
+      "displayName": "Kekik saksıla",
+      "minLevel": 4
+    },
+    {
+      "id": "pot_mint",
+      "station": "item.potting_bench",
+      "produces": "item.pot_mint",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 1
+        },
+        {
+          "item": "item.compost",
+          "count": 1
+        },
+        {
+          "item": "item.mint",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Horticulture",
+      "skillXp": 6,
+      "displayName": "Nane saksıla",
+      "minLevel": 4
     }
   ],
   "animals": [

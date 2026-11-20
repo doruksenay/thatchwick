@@ -266,6 +266,37 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(RoomKind.Bedroom, k2.Home.Classify(k2.Room).kind);
         }
 
+        [Fact]
+        public void OdaTuru_Sera_AitEsyaGuzellik_BakimliSeraBuyumeHizli()
+        {
+            var k = Make();
+            var room = k.Room;
+            k.Home.IsGreenhouseRoom = r => r == room;   // pencere koşulu PlantSystem'de ayrıca sınanır
+            k.World.PlaceItem(k.D("item.pot_bay"), new GridPos(3, 4));
+            var (kind, tidy) = k.Home.Classify(room);
+            Assert.Equal(RoomKind.Greenhouse, kind);
+            Assert.False(tidy);
+            Assert.Contains("fidan rafı", k.Home.TidyHint(room));
+            Assert.Equal(1, k.Home.GreenhouseBeauty(room));
+            Assert.Equal(1.0, k.Home.GreenhouseGrowth(room), 6);
+
+            k.World.PlaceItem(k.D("item.seedling_rack"), new GridPos(4, 4));
+            k.World.PlaceItem(k.D("item.pot_myrtle"), new GridPos(5, 4));
+            (kind, tidy) = k.Home.Classify(room);
+            Assert.True(tidy, k.Home.TidyHint(room));
+            Assert.Equal(3, k.Home.GreenhouseBeauty(room));
+            At(k, 0.5);
+            Assert.Equal(HomeLife.TidySpeed, k.Home.GreenhouseGrowth(room), 6);
+            Assert.StartsWith("Sera · düzenli", k.Home.RoomSummary(room));
+            Assert.True(k.Home.RoomBeautyExtra(room).plus >= 3);
+
+            // Sera koşulu (pencere ve ışık) yoksa saksılı oda oturma odasıdır.
+            var k2 = Make();
+            k2.Home.IsGreenhouseRoom = r => false;
+            k2.World.PlaceItem(k2.D("item.pot_bay"), new GridPos(3, 4));
+            Assert.Equal(RoomKind.Living, k2.Home.Classify(k2.Room).kind);
+        }
+
         // ---------- ev görevi ve hizmetkâr ----------
 
         [Fact]
