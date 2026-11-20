@@ -211,6 +211,34 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void Azik_KalitesiVeKaynagiylaEveDoner_KayittaKorunur()
+        {
+            var k = Make();
+            Person(k, 1, 40);
+            k.House.AddItem("item.bread", 2, ItemQuality.Superior);
+            k.House.Add(new ItemKey("item.cheese", ItemQuality.Fine, ItemCondition.Sound, bought: true), 2);
+            var food = new List<KeyValuePair<string, int>> { new KeyValuePair<string, int>("item.bread", 2), new KeyValuePair<string, int>("item.cheese", 2) };
+            var d = k.Duties.Start(new TimedDutyOrder { CharacterId = 1, Kind = TimedDutyKind.Forage, PlaceId = "forage:meadow", Hours = 4 }, out var why, food);
+            Assert.True(why.IsEmpty, why.ToString());
+            Assert.Equal(2, d.Packed["item.bread#2"]);
+            Assert.Equal(2, d.Packed["item.cheese#1!"]);
+            Assert.Equal(0, k.House.Count("item.bread") + k.House.Count("item.cheese"));
+
+            // Kayıt gidiş-dönüş: azık anahtarı kaliteyi taşır.
+            var k2 = Make();
+            Person(k2, 1, 40);
+            k2.Duties.Import(k.Duties.Export());
+            k2.Duties.Recall(1);
+            int bread = k2.House.Count("item.bread"), cheese = k2.House.Count("item.cheese");
+            Assert.True(bread + cheese >= 3);                                  // görevde bir öğün yenmiş olabilir
+            Assert.Equal(bread, k2.House.Count("item.bread", ItemQuality.Superior));
+            Assert.Equal(cheese, k2.House.Count("item.cheese", ItemQuality.Fine));
+            Assert.Equal(cheese, k2.House.BoughtCount("item.cheese"));         // pazar malı pazar malı kalır
+            Assert.Equal(new ItemKey("item.cheese", 1, ItemCondition.Damaged, true, 4), ItemKey.FromToken(new ItemKey("item.cheese", 1, ItemCondition.Damaged, true, 4).Token()));
+            Assert.Equal("item.bread", new ItemKey("item.bread").Token());
+        }
+
+        [Fact]
         public void KisinBalik_BuzDeligiIster()
         {
             var k = Make();

@@ -69,6 +69,46 @@ namespace Thatchwick.Core.Content
         /// </summary>
         public static string StockKey(string id, int quality) => quality <= 0 ? id : id + "#" + ItemQuality.Clamp(quality);
 
+        /// <summary>
+        /// Anahtarın tam dizgisi (azık gibi dizgi anahtarlı depolar ve kayıt): kimlik, sonra yalnızca varsayılan olmayan
+        /// alanlar: "#kalite", "!" (pazardan), "^durum", "~eser". Sıradan, sağlam, kendi ürünü eşyada yalnızca kimlik;
+        /// eski kayıtlardaki düz kimlik böylece değişmeden okunur.
+        /// </summary>
+        public string Token()
+        {
+            var s = Id ?? "";
+            if (Quality > 0) s += "#" + Quality;
+            if (Bought) s += "!";
+            if (Condition != ItemCondition.Sound) s += "^" + (int)Condition;
+            if (Maker > 0) s += "~" + Maker;
+            return s;
+        }
+
+        public static ItemKey FromToken(string token)
+        {
+            if (string.IsNullOrEmpty(token)) return default;
+            int cut = token.IndexOfAny(new[] { '#', '!', '^', '~' });
+            if (cut <= 0) return new ItemKey(token);
+            string id = token.Substring(0, cut);
+            int q = 0, m = 0; bool b = false; var c = ItemCondition.Sound;
+            int i = cut;
+            while (i < token.Length)
+            {
+                char tag = token[i++];
+                int start = i;
+                while (i < token.Length && char.IsDigit(token[i])) i++;
+                int.TryParse(token.Substring(start, i - start), out int n);
+                switch (tag)
+                {
+                    case '#': q = n; break;
+                    case '!': b = true; break;
+                    case '^': c = Enum.IsDefined(typeof(ItemCondition), n) ? (ItemCondition)n : ItemCondition.Sound; break;
+                    case '~': m = n; break;
+                }
+            }
+            return new ItemKey(id, q, c, b, m);
+        }
+
         public static ItemKey FromStockKey(string key)
         {
             if (key == null) return default;
