@@ -23,7 +23,7 @@ created: 2026-11-20
 Belge 52 §2: ırmak kıyısında ulu ıhlamur (Pitchford türü, 17. yüzyıl ağaç evinin ağacı), köy yolunda ulu ceviz, ormanda ulu kestane.
 
 ## Tarif
-**492a ile aynı yöntem ve ölçü** (2x2, 192x256, pivot (96, 40), 210-240 px, mevsimler aynı gövdeyle). Stil referansı 492a'nın yaz görseli.
+**492a ile aynı yöntem ve ölçü** (2x2, 160x224, pivot (80, 36), 190-215 px; kullanıcı kararı 2026-11-20 21:16: seçenek (b) "Stil eşlemeyle 160x224 ... bu olsun"; mevsimler aynı gövdeyle). Stil referansı 492a'nın yaz görseli.
 
 | Tür | Yaz açıklaması | Mevsim farkı |
 |---|---|---|

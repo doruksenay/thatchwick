@@ -22,7 +22,7 @@ Belge 52 §2 ve §5.4: şehir meydanının güneydoğusundaki ulu çınar. Tacı
 
 ## Tarif
 492a yöntemi, farkları:
-- **Ayak izi 3x3, tuval 256x320, pivot (128, 56)**, yükseklik 270-300 px.
+- **Ayak izi 3x3, tuval 192x192, pivot (96, 48)**, yükseklik 170-185 px (kullanıcı kararı 2026-11-20 21:16: seçenek (b) "Stil eşlemeyle 160x224 ... bu olsun". Stil eşlemenin en büyük tuvali 192x192: çınar 3x3 ayak izini doldurur, boyu 2x2 ulu ağaçlarla aynı kalır; taç yayvan ve geniş çizilsin, yükseklik yerine genişlikle "ulu" okunsun).
 - Yaz açıklaması: `ancient colossal oriental plane tree, enormous pale mottled trunk with patches of peeling cream and grey-green bark, very broad dome crown of large maple-like leaves, isometric view, no ground`.
 - Mevsimler: ilkbahar açık yeşil; yaz koyu yeşil; güz pas turuncusu; kış çıplak dallarda asılı kalmış top meyveler.
 - Maliyet ≈ 4 gen.
