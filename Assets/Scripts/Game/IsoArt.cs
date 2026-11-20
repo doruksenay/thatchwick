@@ -275,7 +275,12 @@ namespace Thatchwick.Game
         }
 
         /// <summary>Kıyı karosu (346): kara (çamur ve saz) karonun sağ üst kenarında, yani +x komşusu yönünde. Sol üst (+y) için aynalanır.</summary>
-        public static Sprite Shore() => GetCentered("iso_ground_water_shore");
+        /// <summary>
+        /// Kıyı karosu: 737'nin elmasa oturan iki çeşidi (konuma göre). Eski 346 karosu elmasa oturmuyor ve su kenarında siyah
+        /// çizgi bırakıyordu (65b B1): artık kullanılmaz; yeni karo yoksa düz su karosu kalır (null).
+        /// </summary>
+        public static Sprite Shore(int x = 0, int y = 0) =>
+            ((TileHash(x, y) & 1) == 0 ? GetCentered("iso_ground_water_shore_v2_b") : null) ?? GetCentered("iso_ground_water_shore_v2");
 
         /// <summary>Zemin çıkartması (birikinti, çamur, kıyı köpüğü, yabani ot; art/queue 709-710): karo ortasına oturur.</summary>
         public static Sprite Decal(string name) => GetCentered(name);

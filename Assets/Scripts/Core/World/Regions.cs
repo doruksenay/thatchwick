@@ -308,6 +308,17 @@ namespace Thatchwick.Core.World
                 for (int x = 0; x < data.W; x++)
                 {
                     var t = data.At(x, y);
+                    // Kaya sırtı zemini çevresine uyar: kumsalda kum, taşlıkta toprak, yoksa çim (üstüne EdgeBand iri kaya koyar).
+                    if (t == MapTerrain.Rock)
+                    {
+                        int sand = 0, dirt = 0;
+                        foreach (var (dx, dy) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+                        {
+                            var n = data.At(x + dx, y + dy);
+                            if (n == MapTerrain.Sand) sand++; else if (n == MapTerrain.Dirt) dirt++;
+                        }
+                        t = sand > 0 ? MapTerrain.Sand : dirt > 1 ? MapTerrain.Dirt : MapTerrain.Rock;
+                    }
                     var f = t == MapTerrain.Dirt ? FloorType.Dirt : t == MapTerrain.Sand ? FloorType.Sand : t == MapTerrain.Stone ? FloorType.Stone
                         : t == MapTerrain.Water || t == MapTerrain.DeepWater ? FloorType.Water : t == MapTerrain.Bridge ? FloorType.Wood : FloorType.Grass;
                     p.Floor(x, y, x, y, f);
@@ -381,6 +392,7 @@ namespace Thatchwick.Core.World
             var b = new Painter(null, Town.X, Town.Y); TownMap(b);
             a.Items.AddRange(b.Items);
             a.Items.AddRange(WildItems());
+            DataItems(Farm, a.Items);   // çiftliğin doğal süsleri (markers.json; ev ve tarla çevresi boş)
             return a.Items;
         }
 

@@ -303,7 +303,7 @@ namespace Thatchwick.Game
                         if (real != null && !sea && Map.IsFilled(p) && !Map.FrozenAt(p))
                         {
                             bool landX = IsLand(x + 1, y), landY = IsLand(x, y + 1);
-                            var shore = landX || landY ? IsoArt.Shore() : null;
+                            var shore = landX || landY ? IsoArt.Shore(x, y) : null;
                             if (shore != null) { real = shore; flip = !landX; }
                         }
                     }

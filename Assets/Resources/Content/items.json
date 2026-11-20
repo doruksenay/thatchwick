@@ -30092,7 +30092,16 @@
       ],
       "gathers": [
         "item.sand"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_forage_sand_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "pending": true
+      }
     },
     {
       "id": "item.sieve",

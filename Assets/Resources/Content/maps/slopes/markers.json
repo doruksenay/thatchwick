@@ -7,6 +7,55 @@
       "y": 2,
       "rot": 0,
       "grown": false
+    },
+    {
+      "id": "item.hay_bale",
+      "x": 19,
+      "y": 12,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.barrel",
+      "x": 21,
+      "y": 10,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 3,
+      "y": 7,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.hay_bale",
+      "x": 4,
+      "y": 15,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.hay_bale",
+      "x": 14,
+      "y": 19,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.hay_bale",
+      "x": 10,
+      "y": 22,
+      "rot": 0,
+      "grown": false
+    },
+    {
+      "id": "item.boulder_round",
+      "x": 10,
+      "y": 19,
+      "rot": 0,
+      "grown": false
     }
   ],
   "keep": [
