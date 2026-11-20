@@ -237,7 +237,7 @@ Sabit tohum: oda tohumu = Seeds.Derive(oyun tohumu, bina:kat:oda); aynı tohum a
 - Üst kat ve bodrum bina şablonundan: üst katta zemin kattaki kapı/pencere hizasında pencere, bodrumda düz duvar ve taş zemin;
   merdivenler ön duvarlara (batı/kuzey) dayalı, girişi ve inişi bina içinde, kapıdan uzak; üst kat merdiven boşluğu açık.
 - Han üst katı: inişin sırası koridor, iki yanında dört oda (3 kiralık han odası + Şerife'nin odası), her odanın koridora kapısı.
-- Tek katlı kalanlar: demirci, taşçı (Ek tablosu). Hayvan pazarı ağıl olarak kaldı (kulübe eklenmedi, bkz. kalanlar).
+- Tek katlı kalanlar: demirci, taşçı (Ek tablosu). Hayvan pazarı: ağıl + tek katlı kulübe (20.11.2026'da eklendi).
 - Sahiplerin evi üst katta: `Regions.Places(map)`; Kerem, Hatice, Zeynep ve Ayşe'nin `home` anahtarı life.json'da dükkânın
   üst katına alındı. Üst katı olmayan eski haritada eski evine düşer (test). NPC yol bulma merdivenle (test: meydandan her
   sahibin üst kattaki evine yol var). `NearestWalkable` artık katı koruyor.
@@ -455,3 +455,27 @@ Aşamalar ayrı bir oturumda yapıldı; o arada main'e görsel parti 3, belge 45
 - Kayıt yükleme: `Regions.Apply` + `Places(map)` (dükkân sahipleri üst katta) + şehir planı.
 
 Sonuç: 1011 test geçti, GameCheck derleniyor; rapor 77/77 şablon kusursuz, tohum 1, 2, 77, 12345'te ihlal 0.
+
+## Kod eksiklerinin kapanışı (20.11.2026)
+
+- **Hayvan pazarı kulübesi** (Ek tablosu, tek katlı): `Regions.TownBuildings` "animals_hut" (yerel 54-57 x 14-16, kapı doğuda,
+  ağıldan inen patikaya açılır); şablon `shed_animals` (oda türü "barn": ot tınazı, tuz yalağı, eyer sehpası, isteğe bağlı
+  sağım taburesi, ahır feneri, hayvan çanı). Meslek etiketi ağılla aynı ("animals"; `TownBuilding.Trade`). Tabelası var.
+  Ağıl kapısından inen patika balıkçı binasının içinden geçiyordu (balıkçı D'de bir karo doğuya alınınca); artık doğusundan
+  dolanıyor. Eski kayıtlar: haritaları kayıttan gelir, kulübe yalnızca yeni oyunda (ve genişletilen kayıtlarda yeni bölgede değil;
+  şehir eski kayıtta zaten vardı).
+- **Pazar tezgâhı**: pazar Kerem'in genel dükkânına taşındı (main, belge 42); tezgâh meydandan kaldırıldı, genel dükkânın
+  önünde mal sergisi olarak duruyor (`layouts.json` `yard_general`, "front" çapası).
+- **Ayna kuralı**: 248 eşya görseli tek tek incelendi (temas sayfaları). Aynası anlam değiştiren iki eşya `NO_MIRROR`:
+  güneş saati (gölge çubuğu ve saat dizisi ters döner) ve kûfi halı (yazı). Bunlar yalnızca çizilmiş yönlerinde durur.
+  `item_meta.py` artık listeyi elle korunan görsellere de uyguluyor. Kalan görseller sol/sağ simetrik ya da aynası aynı
+  nesnenin öbür yandan görünüşü (sandık kilidi, kağnı oku, su çarkı yer değiştirir, anlam değişmez).
+- **Yaban haritası eşyaları** (`RegionsWild.cs`): ormandaki açıklıkta yolun üstündeki tomruk (zaten "kaynak", yere eşya olarak
+  konamıyordu) yerine kuru dal yığını; patikaya taşan bank kaldırıldı (dış bank kuralı: yola bakar, sırtı duvar/çite; açıklıkta
+  ikisi de yok); yabani sarımsak patikadan alındı; iskeledeki yere konmuş balık sepeti (yüzey eşyası) iskele ucundaki kütük
+  sehpanın üstünde.
+
+Sonuç: yeni oyunda konamayan eşya 4 → 0, 79/79 şablon kusursuz, tohum 1, 2, 5, 77, 12345'te ihlal 0; 1032 test geçti.
+Yeni testler: `YeniOyun_HicbirBaslangicEsyasiDusmez`, `PazarTezgahi_MeydandaDegil_KeremDukkanininOnunde`,
+`HayvanPazari_TekKatliKulube_AgilYaninda_KapisiYolAginda`, `AynaListesi_YaziVeYonTasiyanEsyaAynalanmaz`.
+Kalan (görsel/akşam): Unity'de ekran görüntüsüyle kontrol; 431/432/433 görselleri; kurutma askısı görseli.

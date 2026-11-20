@@ -198,6 +198,62 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void YeniOyun_HicbirBaslangicEsyasiDusmez()
+        {
+            // Elle koordinatlı kalan yaban haritası eşyaları dahil: her eşya konur ya da günlüğe düşer; günlük boş olmalı.
+            var db = ContentFilesTests.LoadDb(out _);
+            var lay = YerlesimSablonTests.LoadLayouts(db, out _);
+            var w = new WorldState(StarterWorld.BuildMap(lay));
+            var log = new List<string>();
+            StarterWorld.Place(w, db, lay, 1, log.Add);
+            Assert.True(log.Count == 0, string.Join("\n", log));
+        }
+
+        [Fact]
+        public void PazarTezgahi_MeydandaDegil_KeremDukkanininOnunde()
+        {
+            var (w, res) = Town(1);
+            var stalls = w.Items.Where(i => i.Def.Id == "item.market_stall").ToList();
+            Assert.Single(stalls);
+            Assert.False(Regions.PlazaRect.Contains(stalls[0].Position));
+            var general = Regions.TownBuildingById("general");
+            Assert.True(OutdoorBuilder.Dist(general.Rect, stalls[0].Position) <= 4, $"{stalls[0].Position}");
+        }
+
+        [Fact]
+        public void HayvanPazari_TekKatliKulube_AgilYaninda_KapisiYolAginda()
+        {
+            var (w, res) = Town(1);
+            var hut = Regions.TownBuildingById("animals_hut");
+            Assert.NotNull(hut);
+            Assert.False(w.Map.HasTile(new GridPos(hut.X0, hut.Y0, 1)));    // üst kat yok
+            Assert.False(w.Map.HasTile(new GridPos(hut.X0, hut.Y0, -1)));   // bodrum yok
+            Assert.True(OutdoorBuilder.Dist(Regions.PenRect, new GridPos(hut.X1, hut.Y0)) <= 4);
+            var site = res.Plan.Get("animals_hut");
+            Assert.Equal("animals", site.Trade);
+            var inside = w.Items.Where(i => hut.Rect.Contains(i.Position) && i.Position.Z == 0).Select(i => i.Def.Id).ToList();
+            Assert.Contains("item.hay_bale", inside);
+            Assert.Contains("item.saddle_rack", inside);
+            Assert.True(OutdoorRules.Walkway(w.Map, new GridPos(hut.X1 + 1, hut.DoorInside.Y)));
+        }
+
+        [Fact]
+        public void AynaListesi_YaziVeYonTasiyanEsyaAynalanmaz()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            foreach (var id in new[] { "item.sundial", "item.rug_kufic" })
+            {
+                Assert.True(db.Items.TryGet(id, out var d), id);
+                Assert.False(d.Art.Mirror, id);
+                foreach (var r in ItemFacing.ValidRotations(d))
+                {
+                    Assert.True(ItemFacing.TryView(d, r, false, out _, out bool flip), $"{id} {r}");
+                    Assert.False(flip, $"{id} dönüş {r} aynalanıyor");
+                }
+            }
+        }
+
+        [Fact]
         public void Sehir_MeydanKuyusuOrtada_TabelalarVar_AgaclarBinadanUzak()
         {
             var (w, res) = Town(1);

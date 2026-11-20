@@ -2553,18 +2553,18 @@
         "ocak",
         "pencere"
       ],
-      "art": {
-        "alongX": "iso_item_flower_pot_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "mirror": true
-      },
       "livePlant": true,
       "bloomSeasons": [
         "Spring",
         "Summer"
       ],
-      "potGrowDays": 3
+      "potGrowDays": 3,
+      "art": {
+        "alongX": "iso_item_flower_pot_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.clay_cup",
@@ -20098,7 +20098,7 @@
         "pivotY": 64.0,
         "pxW": 240,
         "pxH": 128,
-        "mirror": true
+        "mirror": false
       },
       "site": "indoor",
       "belongs": [
@@ -23478,7 +23478,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 72,
-        "mirror": true
+        "mirror": false
       },
       "site": "outdoor",
       "belongs": [
@@ -24741,6 +24741,9 @@
           "homeAction": "harvestPot"
         }
       ],
+      "styleTheme": "Çatkı",
+      "potHerb": "item.herb",
+      "level": 2,
       "art": {
         "alongX": "iso_item_pot_bay_se",
         "pivotX": 40.0,
@@ -24748,9 +24751,13 @@
         "pending": true,
         "mirror": true
       },
-      "styleTheme": "Çatkı",
-      "potHerb": "item.herb",
-      "level": 2
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.pot_myrtle",
@@ -24775,6 +24782,12 @@
           "homeAction": "waterPot"
         }
       ],
+      "styleTheme": "Yörük",
+      "livePlant": true,
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "level": 2,
       "art": {
         "alongX": "iso_item_pot_myrtle_se",
         "pivotX": 40.0,
@@ -24782,12 +24795,13 @@
         "pending": true,
         "mirror": true
       },
-      "styleTheme": "Yörük",
-      "livePlant": true,
-      "bloomSeasons": [
-        "Summer"
-      ],
-      "level": 2
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.pot_rose",
@@ -24812,6 +24826,13 @@
           "homeAction": "waterPot"
         }
       ],
+      "styleTheme": "Çatkı",
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "level": 3,
       "art": {
         "alongX": "iso_item_pot_rose_se",
         "pivotX": 40.0,
@@ -24819,13 +24840,13 @@
         "pending": true,
         "mirror": true
       },
-      "styleTheme": "Çatkı",
-      "livePlant": true,
-      "bloomSeasons": [
-        "Spring",
-        "Summer"
-      ],
-      "level": 3
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.pot_lily",
@@ -24850,19 +24871,19 @@
           "homeAction": "waterPot"
         }
       ],
+      "livePlant": true,
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "decorSize": "M",
+      "weight": 3,
       "art": {
         "alongX": "iso_item_pot_lily_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "livePlant": true,
-      "bloomSeasons": [
-        "Summer"
-      ],
-      "decorSize": "M",
-      "weight": 3
+      }
     },
     {
       "id": "item.pot_narcissus",
@@ -24887,19 +24908,19 @@
           "homeAction": "waterPot"
         }
       ],
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring"
+      ],
+      "decorSize": "S",
+      "weight": 2,
       "art": {
         "alongX": "iso_item_pot_narcissus_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "livePlant": true,
-      "bloomSeasons": [
-        "Spring"
-      ],
-      "decorSize": "S",
-      "weight": 2
+      }
     },
     {
       "id": "item.pot_violet",
@@ -24924,20 +24945,20 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_violet_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "livePlant": true,
       "bloomSeasons": [
         "Spring"
       ],
       "shadePlant": true,
       "decorSize": "S",
-      "weight": 2
+      "weight": 2,
+      "art": {
+        "alongX": "iso_item_pot_violet_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_cyclamen",
@@ -24962,13 +24983,6 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_cyclamen_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "styleTheme": "Yörük",
       "livePlant": true,
       "bloomSeasons": [
@@ -24977,7 +24991,14 @@
       ],
       "shadePlant": true,
       "decorSize": "S",
-      "weight": 2
+      "weight": 2,
+      "art": {
+        "alongX": "iso_item_pot_cyclamen_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_snowdrop",
@@ -25002,20 +25023,20 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_snowdrop_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "livePlant": true,
       "bloomSeasons": [
         "Winter"
       ],
       "shadePlant": true,
       "decorSize": "S",
-      "weight": 2
+      "weight": 2,
+      "art": {
+        "alongX": "iso_item_pot_snowdrop_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_crocus",
@@ -25040,20 +25061,20 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_crocus_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "livePlant": true,
       "bloomSeasons": [
         "Spring",
         "Autumn"
       ],
       "decorSize": "S",
-      "weight": 2
+      "weight": 2,
+      "art": {
+        "alongX": "iso_item_pot_crocus_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_lavender",
@@ -25086,20 +25107,20 @@
           "homeAction": "harvestPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_lavender_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "styleTheme": "Çatkı",
       "potHerb": "item.herb",
       "bloomSeasons": [
         "Summer"
       ],
       "decorSize": "M",
-      "weight": 3
+      "weight": 3,
+      "art": {
+        "alongX": "iso_item_pot_lavender_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_mint",
@@ -25132,17 +25153,17 @@
           "homeAction": "harvestPot"
         }
       ],
+      "potHerb": "item.mint",
+      "thirst": 1.3,
+      "decorSize": "S",
+      "weight": 2,
       "art": {
         "alongX": "iso_item_pot_mint_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "potHerb": "item.mint",
-      "thirst": 1.3,
-      "decorSize": "S",
-      "weight": 2
+      }
     },
     {
       "id": "item.pot_chamomile",
@@ -25175,19 +25196,19 @@
           "homeAction": "harvestPot"
         }
       ],
+      "potHerb": "item.chamomile",
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "decorSize": "S",
+      "weight": 2,
       "art": {
         "alongX": "iso_item_pot_chamomile_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "potHerb": "item.chamomile",
-      "bloomSeasons": [
-        "Summer"
-      ],
-      "decorSize": "S",
-      "weight": 2
+      }
     },
     {
       "id": "item.ivy_wall",
@@ -25212,6 +25233,12 @@
           "homeAction": "waterPot"
         }
       ],
+      "livePlant": true,
+      "shadePlant": true,
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
       "art": {
         "alongX": "iso_wall_item_ivy_wall_sw_ne",
         "pivotX": 24.0,
@@ -25219,11 +25246,12 @@
         "pending": true,
         "mirror": true
       },
-      "livePlant": true,
-      "shadePlant": true,
-      "wallBands": [
-        "orta",
-        "üst"
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
       ]
     },
     {
@@ -25249,18 +25277,18 @@
           "homeAction": "waterPot"
         }
       ],
+      "livePlant": true,
+      "shadePlant": true,
+      "thirst": 1.5,
+      "decorSize": "M",
+      "weight": 4,
       "art": {
         "alongX": "iso_item_fern_trough_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "livePlant": true,
-      "shadePlant": true,
-      "thirst": 1.5,
-      "decorSize": "M",
-      "weight": 4
+      }
     },
     {
       "id": "item.water_garden",
@@ -25285,13 +25313,6 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_water_garden_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "pending": true,
-        "mirror": true
-      },
       "styleTheme": "Kervan",
       "livePlant": true,
       "bloomSeasons": [
@@ -25299,7 +25320,21 @@
       ],
       "thirst": 0.4,
       "level": 4,
-      "finishGroup": "stone"
+      "finishGroup": "stone",
+      "art": {
+        "alongX": "iso_item_water_garden_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.window_flower_box",
@@ -25324,13 +25359,6 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_wall_item_window_flower_box_sw_ne",
-        "pivotX": 24.0,
-        "pivotY": 24.0,
-        "pending": true,
-        "mirror": true
-      },
       "styleTheme": "Çatkı",
       "livePlant": true,
       "bloomSeasons": [
@@ -25340,6 +25368,20 @@
       "window": true,
       "wallBands": [
         "alt"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_window_flower_box_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
       ]
     },
     {
@@ -25359,13 +25401,6 @@
         "living",
         "bedroom"
       ],
-      "art": {
-        "alongX": "iso_item_censer_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "interactions": [
         {
           "id": "burn_herbs",
@@ -25379,7 +25414,14 @@
           "moodValue": 4,
           "moodDays": 0.5
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_censer_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.birdbath",
@@ -25396,13 +25438,6 @@
       "levels": [
         0
       ],
-      "art": {
-        "alongX": "iso_item_birdbath_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "pending": true,
-        "mirror": true
-      },
       "interactions": [
         {
           "id": "watch_birds",
@@ -25415,6 +25450,17 @@
           "moodValue": 3,
           "moodDays": 0.5
         }
+      ],
+      "art": {
+        "alongX": "iso_item_birdbath_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
       ]
     }
   ],

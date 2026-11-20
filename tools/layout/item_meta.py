@@ -93,8 +93,11 @@ FRONT = {
 FRONT_OF = {f"item.{n}": use for use, names in FRONT.items() for n in names.split()}
 # Yalnızca bu dönüşler (görsel tek yöne çıkar): merdivenler ve kiler kapağı arkaya doğru yükselir (dönüş 1 = +x, aynası 0 = +y).
 ONLY_ROT = {f"item.{n}": [0, 1] for n in "stairs_up stairs_down stairs_up_stone stairs_down_stone cellar_hatch ladder".split()}
-# Sol/sağ simetrik olmayan (aynası yanlış görünür) eşya yok sayıldı; şüpheliler sonda listelenir.
-NO_MIRROR = set()
+# Sol/sağ aynası yanlış görünen eşyalar (görseller tek tek incelendi, 20.11.2026): yazı ve yön anlamı taşıyanlar.
+# Güneş saati: gölge çubuğu ve saat dizisi aynada ters döner; kûfi halı: yazı aynada okunmaz. Bunlar yalnızca çizilmiş
+# yönlerinde durur (ötekiler için ayrı görsel gerekir). Geri kalan 246 görsel sol/sağ simetrik ya da aynası aynı nesnenin
+# öbür yandan görünüşü olarak kabul edilebilir (sandık kilidi, kağnı oku, su çarkı yan yana değişir; anlam değişmez).
+NO_MIRROR = {"item.sundial", "item.rug_kufic"}
 
 # ---------------------------------------------------------------- iç/dış
 OUTDOOR_CATS = {"plant", "forage", "farm", "garden"}
@@ -374,6 +377,8 @@ def main():
         # görsel: items.json'da zaten varsa korunur (elle düzeltilmiş olabilir)
         a = None if kept_art else art.get(iid)
         if kept_art:
+            if "mirror" in kept_art or iid in NO_MIRROR:
+                kept_art["mirror"] = iid not in NO_MIRROR   # ayna listesi elle korunan görselde de geçerli
             d["art"] = kept_art
         if a:
             a = dict(a)

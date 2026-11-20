@@ -211,7 +211,7 @@ namespace Thatchwick.Core.Layout
                 var t = cat?.Building(b.Template);
                 var site = new Site
                 {
-                    Id = b.Id, Name = b.Name, Kind = b.Kind, Trade = b.Kind == "house" ? null : b.Id, Owner = b.Owner, Building = b.Rect,
+                    Id = b.Id, Name = b.Name, Kind = b.Kind, Trade = b.Kind == "house" ? null : b.Trade ?? b.Id, Owner = b.Owner, Building = b.Rect,
                     Plot = Grow(b.Rect, 2), DoorDir = Facing.FromChar(b.Door), DoorInside = b.DoorInside, MinLevel = 0, MaxLevel = 0,
                 };
                 string groundType = cat?.Room(t?.Ground)?.Type ?? (b.Kind == "house" ? "living|bedroom|kitchen|dining" : "shop");
