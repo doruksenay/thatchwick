@@ -1,7 +1,7 @@
 ---
 id: "540"
 title: "Yeni ekinler 1/7: mercimek, nohut, darı, pirinç, haşhaş (15)"
-status: running
+status: review
 claimed_at: 2026-11-20T13:21Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 20
@@ -64,6 +64,9 @@ Project belgesi 59 §5: ilk dalga tarla ekinleri. Üç evre: filiz, gelişmiş b
 ## Notlar
 - Kod evreleri adla bulur (`IsoArt.Crops`: `iso_crop_<ad>_1/_2/_3_se`); gelene kadar renkli şekil çizer.
 - Sararmış (mevsimi geçmiş) ekin için ayrı kare yok: kod olgun kareyi sarıya boyar.
+
+## Sonuç (işçi)
+9/15 teslim (`_aday/`). Taban plakası yüzünden teslim edilmeyen 6: lentil_2, lentil_3, millet_3, poppy_2, rice_1, rice_2. 26 gen. Ayrıntı: `art/results/540-tarim-ekinler-bakliyat-tahil.md`.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
