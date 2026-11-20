@@ -1,7 +1,8 @@
 ---
 id: "612e"
 title: "Köy meydanı: değirmen çarkı, köprü, ortak ocağın yıkık hâli (maskeli)"
-status: pending
+status: running
+claimed_at: 2026-11-20T18:57Z
 approved_by: user        # kullanıcı kararı 2026-11-20: yıkık hâller maskeli düzenlemeyle (Project belgesi 64c §3)
 priority: 15
 family: yapi
