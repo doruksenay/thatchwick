@@ -1,7 +1,7 @@
 ---
 id: "592t"
 title: "Tellal (84 px, 8 yön durma)"
-status: running
+status: review
 claimed_at: 2026-11-20T17:00Z
 approved_by: user        # otomatik akış (CLAUDE.md, 2026-11-17); kullanıcı 20.11.2026 sohbet: tellal kararı "Pano + tellal", "assetleri de sıraya ekle"
 priority: 40
