@@ -1,7 +1,8 @@
 ---
 id: "492a2"
 title: "Ulu meşe, dört mevsim (pilot, yeniden: ağaç evsiz, mevsimler düzenlemeyle)"
-status: pending
+status: running
+claimed_at: 2026-11-20T23:20Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 21.11.2026: "bulgularının tamamını tek prda yap" (Project belgesi 66b)
 priority: 10
 family: bitki
