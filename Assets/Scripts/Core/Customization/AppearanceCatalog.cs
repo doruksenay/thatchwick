@@ -639,9 +639,9 @@ namespace Thatchwick.Core.Customization
 
             foreach (var h in new[] { "#F3D9C0", "#E8C39E", "#D9A877", "#C68E5F", "#A9703F", "#8A5A35", "#6B4226", "#4B2E1C" })
                 c.SkinTones.Add(Rgb.FromHex(h));
-            foreach (var h in new[] { "#1C1A19", "#3B2A1D", "#5A3A22", "#7A4B25", "#A0662F", "#C28A3C", "#D9B45A", "#E8D28A", "#A5471F", "#8C8C8C", "#D4D4D4", "#5E3A55" })
+            foreach (var h in new[] { "#1C1A19", "#3B2A1D", "#5A3A22", "#7A4B25", "#A0662F", "#C28A3C", "#D9B45A", "#E8D28A", "#A5471F", "#8C8C8C", "#D4D4D4" })   // mor saç yalnızca boya/kınayla (karar 20.11.2026, belge 65)
                 c.HairColors.Add(Rgb.FromHex(h));
-            foreach (var h in new[] { "#4B3621", "#6B4A2B", "#2F5D8C", "#3E7C59", "#7A8F3A", "#6C6C6C", "#9A4F8E" })
+            foreach (var h in new[] { "#4B3621", "#6B4A2B", "#2F5D8C", "#3E7C59", "#7A8F3A", "#6C6C6C" })   // mor göz kaldırıldı (belge 65)
                 c.EyeColors.Add(Rgb.FromHex(h));
             foreach (var h in new[] { "#A06E46", "#8C6A4A", "#C9B28A", "#E6DCC3", "#6E7F3F", "#4F6B3A", "#3F5F8A", "#2E4A6B", "#8A3A32", "#B4533C", "#6A3E6E", "#C2A23B", "#464646", "#B9B9B9" })
                 c.ClothColors.Add(Rgb.FromHex(h));

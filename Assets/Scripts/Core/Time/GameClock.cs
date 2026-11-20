@@ -40,6 +40,17 @@ namespace Thatchwick.Core.Time
         /// <summary>Hanede uyanık kimse yok (oyun katmanı her karede günceller). Kritik anda etkisizdir.</summary>
         public bool FastNight { get; set; }
 
+        /// <summary>Yeni oyun 1. günün bu saatinde başlar (karar 20.11.2026, belge 65: 00:00'da karanlıkta başlıyordu).</summary>
+        public const double NewGameStartHour = 6.0;
+
+        /// <summary>Yeni oyunun saati: 1. gün, <see cref="NewGameStartHour"/>.</summary>
+        public static GameClock ForNewGame(TimeConfig config = null)
+        {
+            var clock = new GameClock(config);
+            clock.TotalDays = NewGameStartHour / 24.0;
+            return clock;
+        }
+
         /// <summary>Yapı modu, katalog, menü ya da konuşma açık: zaman durur (belge 47, karar 4).</summary>
         public bool Paused { get; set; }
 

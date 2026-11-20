@@ -737,7 +737,7 @@ namespace Thatchwick.Game
                 map = BuildDemoMap();
                 Places = Thatchwick.Core.World.Regions.Places(map);   // dükkân sahipleri üst katta (belge 44 C)
                 _world = new WorldState(map);
-                _clock = new GameClock();
+                _clock = GameClock.ForNewGame();   // 1. gün 06:00 (belge 65)
                 PlaceDemoItems();
                 _world.Map.RestrictOwnership(4, 4, 67, 67); // başlangıç arsası: 64x64
             }
