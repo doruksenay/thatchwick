@@ -47228,8 +47228,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 112,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       },
       "site": "outdoor",
       "belongs": [
@@ -49216,7 +49215,6 @@
         "pivotY": 40.0,
         "pxW": 160,
         "pxH": 192,
-        "pending": true,
         "mirror": true
       }
     },
@@ -49246,7 +49244,6 @@
         "pivotY": 40.0,
         "pxW": 160,
         "pxH": 144,
-        "pending": true,
         "mirror": true
       }
     },
@@ -49276,7 +49273,6 @@
         "pivotY": 32.0,
         "pxW": 112,
         "pxH": 80,
-        "pending": true,
         "mirror": true
       }
     },
@@ -49306,7 +49302,6 @@
         "pivotY": 32.0,
         "pxW": 112,
         "pxH": 72,
-        "pending": true,
         "mirror": true
       }
     },
@@ -49336,7 +49331,6 @@
         "pivotY": 40.0,
         "pxW": 160,
         "pxH": 224,
-        "pending": true,
         "mirror": true
       }
     },
@@ -49396,7 +49390,6 @@
         "pivotY": 40.0,
         "pxW": 160,
         "pxH": 160,
-        "pending": true,
         "mirror": true
       }
     },
@@ -49426,7 +49419,6 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 96,
-        "pending": true,
         "mirror": true
       }
     }
