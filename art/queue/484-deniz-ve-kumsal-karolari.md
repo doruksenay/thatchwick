@@ -1,7 +1,7 @@
 ---
 id: "484d"
 title: "Deniz ve kumsal karoları (4)"
-status: running
+status: blocked
 claimed_at: 2026-11-20T23:09Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 20.11.2026 "üretilecek asset varsa kuyruğa at" (deniz kıyısı, belge 50)
 priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
@@ -42,6 +42,9 @@ Deniz karoları birbirine ve 346 su karolarına, kumsal karoları toprak ve çim
 ## Notlar
 - 2026-11-21 (tester raporu 66): iş numarası çift kullanılıyordu, `queue_ready.py` bu işi hiç görmüyordu; numara "484d" yapıldı.
 Dosya adları kodda sabit; değişmesin.
+
+## Sorular
+- `create_tiles_pro` aracı açıklaması: bağımsız karolar için çağrı başına 10 generation (64px'te 10 ya da 15), 16 hücrelik sayfa tek fiyat. `cost_est: 4` ve `cost_max: 8` ile uyuşmuyor (en az 10 > cost_max 8, tahminin 2,5 katı). Maliyet kuralı gereği çağrı yapılmadı, harcama 0. Öneri: `cost_est: 10`, `cost_max: 15` yapılıp iş `pending`'e alınsın (tek çağrıyla 4 numaralı istek, 346 gibi). Bakiye 9983.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
