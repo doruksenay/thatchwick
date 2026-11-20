@@ -5,7 +5,7 @@ kind: spot
 family: spots
 freq: B
 pilot: true
-status: ready
+status: claimed
 approved_by: auto
 key: spot.bird.song
 spot_of: amb.farm.day
@@ -32,5 +32,7 @@ axes:
   - blackbird
   - chaffinch
   - song thrush
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T09:54:12Z'
 ---
 One short song phrase of a single small songbird, a little distant.
