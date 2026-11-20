@@ -16,8 +16,9 @@ namespace Thatchwick.Game
     /// </summary>
     public sealed class CharacterCreator
     {
+        private static string L(string key) => GameLocalization.T(key);
         private enum Tab { Identity, Personality, Voice, Body, Face, Hair, Marks, Clothes }
-        private static readonly string[] TabLabels = { "Kimlik", "Kişilik", "Ses", "Beden", "Yüz", "Saç", "İz ve süs", "Kıyafet" };
+        private static string[] TabLabels => new[] { L("ui.creator.tab.identity"), L("ui.creator.tab.personality"), L("ui.creator.tab.voice"), L("ui.creator.tab.body"), L("ui.creator.tab.face"), L("ui.creator.tab.hair"), L("ui.creator.tab.marks"), L("ui.creator.tab.clothes") };
         // Görünüm sekmeleri (zar ve kilit bunlarda anlamlı).
         private static readonly Tab[] LookTabs = { Tab.Voice, Tab.Body, Tab.Face, Tab.Hair, Tab.Marks, Tab.Clothes };
 
@@ -48,13 +49,13 @@ namespace Thatchwick.Game
         public bool Finished { get; private set; }
         public CharacterDraft Draft => _draft;
 
-        private static readonly string[] SexLabels = { "Kadın", "Erkek" };
-        private static readonly string[] StageLabels = { "Genç yetişkin (32 gün)", "Yetişkin (45 gün)" };
-        private static readonly string[] BuildLabels = { "İnce", "Orta", "Gürbüz", "Dolgun" };
-        private static readonly string[] FrameLabels = { "Erkeksi", "Arada", "Kadınsı" };
-        private static readonly string[] VoiceLabels = { "Kalın", "Sıcak", "Berrak", "İnce" };
-        private static readonly string[] AccidentLabels = { "Kapalı", "Seyrek", "Normal" };
-        private static readonly string[] FocusLabels = { "Yok", "Çiftçilik", "Odunculuk", "Yemek", "Marangozluk" };
+        private static string[] SexLabels => new[] { L("ui.creator.sex.female"), L("ui.creator.sex.male") };
+        private static string[] StageLabels => new[] { L("ui.creator.stage.young"), L("ui.creator.stage.adult") };
+        private static string[] BuildLabels => new[] { L("ui.creator.build.slim"), L("ui.creator.build.medium"), L("ui.creator.build.sturdy"), L("ui.creator.build.plump") };
+        private static string[] FrameLabels => new[] { L("ui.creator.frame.masc"), L("ui.creator.frame.mid"), L("ui.creator.frame.fem") };
+        private static string[] VoiceLabels => new[] { L("ui.creator.voice.deep"), L("ui.creator.voice.warm"), L("ui.creator.voice.clear"), L("ui.creator.voice.thin") };
+        private static string[] AccidentLabels => new[] { L("ui.creator.acc.off"), L("ui.creator.acc.rare"), L("ui.creator.acc.normal") };
+        private static string[] FocusLabels => new[] { L("ui.creator.focus.none"), L("ui.creator.focus.farming"), L("ui.creator.focus.woodcutting"), L("ui.creator.focus.cooking"), L("ui.creator.focus.carpentry") };
 
         // ---- Ayna kipi (belge 01 ve 14): var olan karakterin görünüşünü ve adını değiştirir ----
         private readonly Character _mirrorTarget;
@@ -141,7 +142,7 @@ namespace Thatchwick.Game
             GUI.Box(panel, GUIContent.none);
 
             GUILayout.BeginArea(new Rect(panel.x + 10f, panel.y + 8f, panel.width - 20f, panel.height - 16f));
-            GUILayout.Label(IsMirror ? GameLocalization.T("ui.mirror.title", ("name", _mirrorTarget.Name)) : "Karakter yarat", _titleStyle);
+            GUILayout.Label(IsMirror ? GameLocalization.T("ui.mirror.title", ("name", _mirrorTarget.Name)) : L("ui.creator.title"), _titleStyle);
             GUILayout.BeginHorizontal();
             DrawPreviewColumn();
             DrawOptionsColumn(ph);
@@ -199,16 +200,16 @@ namespace Thatchwick.Game
             GUI.DrawTexture(r, _preview.texture, ScaleMode.StretchToFill, true);
 
             GUILayout.Space(4f);
-            GUILayout.Label($"{_draft.Name} · {(_draft.Sex == Sex.Female ? "Kadın" : "Erkek")} · {AgeStages.Name(_draft.StartStage)}", _smallStyle);
+            GUILayout.Label($"{_draft.Name} · {(_draft.Sex == Sex.Female ? L("ui.creator.sex.female") : L("ui.creator.sex.male"))} · {AgeStages.Name(_draft.StartStage)}", _smallStyle);
             if (!IsMirror) GUILayout.Label(_draft.EffectiveDynastyName, _smallStyle);
 
             GUILayout.BeginHorizontal();
-            if (!IsMirror && GUILayout.Button("Zar at (hepsi)")) RandomizeAll();
+            if (!IsMirror && GUILayout.Button(L("ui.creator.roll_all"))) RandomizeAll();
             GUI.enabled = _undo.Count > 0;
-            if (GUILayout.Button("Geri al", GUILayout.Width(70f))) Undo();
+            if (GUILayout.Button(L("ui.creator.undo"), GUILayout.Width(70f))) Undo();
             GUI.enabled = true;
             GUILayout.EndHorizontal();
-            GUILayout.Label(_locked.Count > 0 ? "Kilitli sekmeler zarda korunur." : "Sekmeyi kilitlersen zar onu değiştirmez.", _smallStyle);
+            GUILayout.Label(_locked.Count > 0 ? L("ui.creator.locked_note") : L("ui.creator.lock_hint"), _smallStyle);
             GUILayout.EndVertical();
         }
 
@@ -233,9 +234,9 @@ namespace Thatchwick.Game
             if (LookTabs.Contains(_tab))
             {
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Bu sekmeye zar at", GUILayout.Width(150f))) RandomizeTab(_tab);
+                if (GUILayout.Button(L("ui.creator.roll_tab"), GUILayout.Width(150f))) RandomizeTab(_tab);
                 bool locked = _locked.Contains(_tab);
-                bool nowLocked = GUILayout.Toggle(locked, " Kilitle");
+                bool nowLocked = GUILayout.Toggle(locked, " " + L("ui.creator.lock"));
                 if (nowLocked != locked) { if (nowLocked) _locked.Add(_tab); else _locked.Remove(_tab); }
                 GUILayout.EndHorizontal();
             }
@@ -264,7 +265,7 @@ namespace Thatchwick.Game
             }
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Başla", GUILayout.Height(30f)))
+            if (GUILayout.Button(L("ui.creator.start"), GUILayout.Height(30f)))
             {
                 _errors = _draft.ValidateNewGame(_catalog);
                 if (Content != null) _errors.AddRange(_draft.ValidateTraits(Content));
@@ -280,7 +281,7 @@ namespace Thatchwick.Game
         private void DrawMirrorIdentity()
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("İsim", GUILayout.Width(100f));
+            GUILayout.Label(L("ui.creator.name"), GUILayout.Width(100f));
             _draft.Name = GUILayout.TextField(_draft.Name ?? "", CharacterDraft.MaxNameLength);
             GUILayout.EndHorizontal();
             GUILayout.Label("   " + GameLocalization.T("ui.mirror.rename_note", ("cost", MirrorRules.RenameDiamonds)), _smallStyle);
@@ -318,44 +319,44 @@ namespace Thatchwick.Game
         private void DrawIdentity()
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("İsim", GUILayout.Width(100f));
+            GUILayout.Label(L("ui.creator.name"), GUILayout.Width(100f));
             _draft.Name = GUILayout.TextField(_draft.Name ?? "", CharacterDraft.MaxNameLength);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Hanedan", GUILayout.Width(100f));
+            GUILayout.Label(L("ui.creator.dynasty"), GUILayout.Width(100f));
             _draft.DynastyName = GUILayout.TextField(_draft.DynastyName ?? "", CharacterDraft.MaxDynastyLength);
             GUILayout.EndHorizontal();
-            GUILayout.Label("   Boş bırakırsan: " + _draft.EffectiveDynastyName, _smallStyle);
+            GUILayout.Label("   " + GameLocalization.T("ui.creator.dynasty_blank", ("name", _draft.EffectiveDynastyName)), _smallStyle);
 
             int sexIndex = _draft.Sex == Sex.Female ? 0 : 1;
-            int newSex = Row("Cinsiyet", () => GUILayout.Toolbar(sexIndex, SexLabels));
+            int newSex = Row(L("ui.creator.sex"), () => GUILayout.Toolbar(sexIndex, SexLabels));
             if (newSex != sexIndex) _draft.SetSex(newSex == 0 ? Sex.Female : Sex.Male, _catalog);
-            GUILayout.Label("   Bütün saç, sakal ve kıyafetler herkese açık. Hamilelik yalnızca kadında.", _smallStyle);
+            GUILayout.Label("   " + L("ui.creator.gender_note"), _smallStyle);
 
             int stageIndex = _draft.StartStage == AgeStage.YoungAdult ? 0 : 1;
-            int newStage = Row("Başlangıç", () => GUILayout.Toolbar(stageIndex, StageLabels));
+            int newStage = Row(L("ui.creator.start_stage"), () => GUILayout.Toolbar(stageIndex, StageLabels));
             _draft.StartStage = newStage == 0 ? AgeStage.YoungAdult : AgeStage.Adult;
 
-            _draft.BirthSeason = Row("Doğum mevsimi", () => GUILayout.Toolbar(Mathf.Clamp(_draft.BirthSeason, 0, 3), Likes.SeasonNames));
+            _draft.BirthSeason = Row(L("ui.creator.birth_season"), () => GUILayout.Toolbar(Mathf.Clamp(_draft.BirthSeason, 0, 3), Likes.SeasonNames));
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Doğum günü", GUILayout.Width(100f));
+            GUILayout.Label(L("ui.creator.birth_day"), GUILayout.Width(100f));
             if (GUILayout.Button("<", GUILayout.Width(28f))) _draft.BirthDayOfSeason = (_draft.BirthDayOfSeason - 1 + DaysPerSeason) % DaysPerSeason;
-            GUILayout.Label($"{_draft.BirthDayOfSeason + 1}. gün", _centerStyle, GUILayout.Width(80f));
+            GUILayout.Label(GameLocalization.T("ui.creator.day_n", ("n", _draft.BirthDayOfSeason + 1)), _centerStyle, GUILayout.Width(80f));
             if (GUILayout.Button(">", GUILayout.Width(28f))) _draft.BirthDayOfSeason = (_draft.BirthDayOfSeason + 1) % DaysPerSeason;
             GUILayout.EndHorizontal();
 
-            Section("Kazalar");
+            Section(L("ui.creator.accidents_sec"));
             int acc = _draft.Accidents == AccidentSetting.NotSet ? -1 : (int)_draft.Accidents - 1;
-            int newAcc = Row("Kaza ayarı", () => GUILayout.Toolbar(acc, AccidentLabels));
+            int newAcc = Row(L("ui.creator.accident"), () => GUILayout.Toolbar(acc, AccidentLabels));
             if (newAcc >= 0) _draft.Accidents = (AccidentSetting)(newAcc + 1);
             string accText;
             switch (_draft.Accidents)
             {
-                case AccidentSetting.Off: accText = "Kaza ve yara izi olmaz."; break;
-                case AccidentSetting.Rare: accText = "Ara sıra küçük kazalar. Usta olan ve daha önce yaralanan daha az kaza geçirir; iz kalması gittikçe azalır."; break;
-                case AccidentSetting.Normal: accText = "Riskli işlerde kaza olur; iyileşen yara iz bırakabilir. Usta ve hekim riski azaltır."; break;
-                default: accText = "Seç: yeni oyunda zorunlu. Ayarlar menüsünden sonra değiştirilebilir."; break;
+                case AccidentSetting.Off: accText = L("ui.creator.acc_off_text"); break;
+                case AccidentSetting.Rare: accText = L("ui.creator.acc_rare_text"); break;
+                case AccidentSetting.Normal: accText = L("ui.creator.acc_normal_text"); break;
+                default: accText = L("ui.creator.acc_pick_text"); break;
             }
             GUILayout.Label("   " + accText, _smallStyle);
         }
@@ -363,12 +364,12 @@ namespace Thatchwick.Game
         private void DrawPersonality()
         {
             int focusIndex = _draft.SkillFocus.HasValue ? 1 + (int)_draft.SkillFocus.Value : 0;
-            int newFocus = Row("Beceri eğilimi", () => GUILayout.Toolbar(Mathf.Min(focusIndex, FocusLabels.Length - 1), FocusLabels));
+            int newFocus = Row(L("ui.creator.focus"), () => GUILayout.Toolbar(Mathf.Min(focusIndex, FocusLabels.Length - 1), FocusLabels));
             _draft.SkillFocus = newFocus == 0 ? (SkillType?)null : (SkillType)(newFocus - 1);
-            GUILayout.Label("   Eğilim seçilen beceriyle seviye 2 başlatır.", _smallStyle);
+            GUILayout.Label("   " + L("ui.creator.focus_note"), _smallStyle);
 
             // Yatkınlık (28 karar 1, 45 karar 3): en çok 1 beceri; o becerilerde XP x1,5 ve günlük doygunluk eşiği yüksek.
-            Section($"Yatkınlıklar ({_draft.Aptitudes.Count}/{CharacterDraft.MaxFounderAptitudes})");
+            Section(GameLocalization.T("ui.creator.aptitudes", ("n", _draft.Aptitudes.Count), ("max", CharacterDraft.MaxFounderAptitudes)));
             var all = (SkillType[])System.Enum.GetValues(typeof(SkillType));
             for (int i = 0; i < all.Length; i += 4)
             {
@@ -380,11 +381,11 @@ namespace Thatchwick.Game
                 }
                 GUILayout.EndHorizontal();
             }
-            GUILayout.Label("   Seçmezsen yatkınlık yok; çocuklar ana babadan miras alabilir.", _smallStyle);
+            GUILayout.Label(L("ui.creator.aptitude_note"), _smallStyle);
 
             if (Content != null && Content.Traits.Count > 0)
             {
-                Section($"Özellikler ({_draft.TraitIds.Count}/{Character.MaxTraits})");
+                Section(GameLocalization.T("ui.creator.traits", ("n", _draft.TraitIds.Count), ("max", Character.MaxTraits)));
                 foreach (var t in Content.Traits.All)
                 {
                     bool on = _draft.TraitIds.Contains(t.Id);
@@ -395,62 +396,62 @@ namespace Thatchwick.Game
                     if (now != on)
                         _traitStatus = _draft.ToggleTrait(Content, t.Id, out var why) ? "" : why;
                 }
-                GUILayout.Label(_traitStatus.Length > 0 ? _traitStatus : "   Hiç seçmezsen rastgele verilir.", _smallStyle);
+                GUILayout.Label(_traitStatus.Length > 0 ? _traitStatus : L("ui.creator.traits_note"), _smallStyle);
             }
 
-            Section("Sevdikleri");
+            Section(L("ui.creator.likes"));
             var foods = FoodNames();
             if (foods.Count > 0)
             {
-                _draft.LikedFood = TextCycle("Sevdiği yemek", foods, _draft.LikedFood, true);
-                _draft.DislikedFood = TextCycle("Sevmediği", foods, _draft.DislikedFood, true);
+                _draft.LikedFood = TextCycle(L("ui.creator.liked_food"), foods, _draft.LikedFood, true);
+                _draft.DislikedFood = TextCycle(L("ui.creator.disliked_food"), foods, _draft.DislikedFood, true);
             }
-            _draft.LikedColor = TextCycle("Sevdiği renk", Likes.Colors.ToList(), _draft.LikedColor, true);
-            _draft.LikedHobby = TextCycle("Uğraşı", Likes.Hobbies.ToList(), _draft.LikedHobby, true);
-            GUILayout.Label("   Sevdiği yemek ve uğraş keyif verir; sevmediği yemek keyfini kaçırır.", _smallStyle);
+            _draft.LikedColor = TextCycle(L("ui.creator.liked_color"), Likes.Colors.ToList(), _draft.LikedColor, true);
+            _draft.LikedHobby = TextCycle(L("ui.creator.hobby"), Likes.Hobbies.ToList(), _draft.LikedHobby, true);
+            GUILayout.Label(L("ui.creator.likes_note"), _smallStyle);
         }
 
         private void DrawVoice()
         {
             var a = _draft.Appearance;
-            a.Voice = (VoiceTimbre)Row("Tını", () => GUILayout.Toolbar((int)a.Voice, VoiceLabels));
+            a.Voice = (VoiceTimbre)Row(L("ui.creator.timbre"), () => GUILayout.Toolbar((int)a.Voice, VoiceLabels));
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"Perde {(a.VoicePitch > 0 ? "+" : "")}{a.VoicePitch}", GUILayout.Width(100f));
+            GUILayout.Label(GameLocalization.T("ui.creator.pitch", ("n", (a.VoicePitch > 0 ? "+" : "") + a.VoicePitch)), GUILayout.Width(100f));
             a.VoicePitch = Mathf.RoundToInt(GUILayout.HorizontalSlider(a.VoicePitch, Appearance.MinPitch, Appearance.MaxPitch, GUILayout.Width(200f)));
             GUILayout.EndHorizontal();
-            a.LaughId = OptionRow("Gülüş", _catalog.Laughs, a.LaughId);
-            GUILayout.Label("   Sesler daha sonra eklenecek; seçimin kaydedilir ve geldiğinde kullanılır.", _smallStyle);
+            a.LaughId = OptionRow(L("ui.creator.laugh"), _catalog.Laughs, a.LaughId);
+            GUILayout.Label(L("ui.creator.voice_note"), _smallStyle);
         }
 
         private void DrawBody()
         {
             var a = _draft.Appearance;
-            a.Build = (BodyBuild)Row("Beden", () => GUILayout.Toolbar((int)a.Build, BuildLabels));
-            a.Frame = (BodyFrame)Row("Çerçeve", () => GUILayout.Toolbar((int)a.Frame, FrameLabels));
-            GUILayout.Label("   Beden yapısı yaşamla değişir (yemek ve iş); Ayna'da seçilmez.", _smallStyle);
-            a.SkinColor = ColorRow("skin", "Ten", a.SkinColor, _catalog.SkinTones, false);
+            a.Build = (BodyBuild)Row(L("ui.creator.build"), () => GUILayout.Toolbar((int)a.Build, BuildLabels));
+            a.Frame = (BodyFrame)Row(L("ui.creator.frame"), () => GUILayout.Toolbar((int)a.Frame, FrameLabels));
+            GUILayout.Label(L("ui.creator.build_note"), _smallStyle);
+            a.SkinColor = ColorRow("skin", L("ui.creator.skin"), a.SkinColor, _catalog.SkinTones, false);
         }
 
         private void DrawFace()
         {
             var a = _draft.Appearance;
-            a.FaceShapeId = OptionRow("Yüz şekli", _catalog.FaceShapes, a.FaceShapeId);
-            a.EyeShapeId = OptionRow("Göz şekli", _catalog.EyeShapes, a.EyeShapeId);
-            a.EyeColor = ColorRow("eye", "Göz rengi", a.EyeColor, _catalog.EyeColors, true);
+            a.FaceShapeId = OptionRow(L("ui.creator.face_shape"), _catalog.FaceShapes, a.FaceShapeId);
+            a.EyeShapeId = OptionRow(L("ui.creator.eye_shape"), _catalog.EyeShapes, a.EyeShapeId);
+            a.EyeColor = ColorRow("eye", L("ui.creator.eye_color"), a.EyeColor, _catalog.EyeColors, true);
             bool hetero = a.EyeColorRight.HasValue;
-            bool nowHetero = GUILayout.Toggle(hetero, " İki göz farklı renk");
+            bool nowHetero = GUILayout.Toggle(hetero, " " + L("ui.creator.heterochromia"));
             if (nowHetero && !hetero) a.EyeColorRight = _catalog.EyeColors.FirstOrDefault(e => e != a.EyeColor);
             if (!nowHetero) a.EyeColorRight = null;
             if (a.EyeColorRight.HasValue)
-                a.EyeColorRight = ColorRow("eyeR", "Sağ göz", a.EyeColorRight.Value, _catalog.EyeColors, true);
-            a.BrowId = OptionRow("Kaş", _catalog.Brows, a.BrowId);
-            a.BrowFollowsHair = GUILayout.Toggle(a.BrowFollowsHair, " Kaş rengi saçla aynı");
-            if (!a.BrowFollowsHair) a.BrowColor = ColorRow("brow", "Kaş rengi", a.BrowColor, _catalog.HairColors, true);
-            a.NoseId = OptionRow("Burun", _catalog.Noses, a.NoseId);
-            a.MouthId = OptionRow("Ağız", _catalog.Mouths, a.MouthId);
-            a.EarsId = OptionRow("Kulak", _catalog.Ears, a.EarsId);
-            a.LashesId = OptionRow("Kirpik", _catalog.Lashes, a.LashesId);
-            GUILayout.Label("   Ten, göz, yüz, burun ve kulak çocuklara geçer; sonradan Ayna'da değişmez.", _smallStyle);
+                a.EyeColorRight = ColorRow("eyeR", L("ui.creator.right_eye"), a.EyeColorRight.Value, _catalog.EyeColors, true);
+            a.BrowId = OptionRow(L("ui.creator.brow"), _catalog.Brows, a.BrowId);
+            a.BrowFollowsHair = GUILayout.Toggle(a.BrowFollowsHair, " " + L("ui.creator.brow_follows"));
+            if (!a.BrowFollowsHair) a.BrowColor = ColorRow("brow", L("ui.creator.brow_color"), a.BrowColor, _catalog.HairColors, true);
+            a.NoseId = OptionRow(L("ui.creator.nose"), _catalog.Noses, a.NoseId);
+            a.MouthId = OptionRow(L("ui.creator.mouth"), _catalog.Mouths, a.MouthId);
+            a.EarsId = OptionRow(L("ui.creator.ears"), _catalog.Ears, a.EarsId);
+            a.LashesId = OptionRow(L("ui.creator.lashes"), _catalog.Lashes, a.LashesId);
+            GUILayout.Label(L("ui.creator.face_note"), _smallStyle);
         }
 
         private void DrawHair()
@@ -458,52 +459,52 @@ namespace Thatchwick.Game
             var a = _draft.Appearance;
             // Modüler saç (belge 43b): önce hazır stil; "Ayrıntılı" kütle, ön, eklenti ve süsü ayrı açar.
             PresetRow(a);
-            _hairDetailed = GUILayout.Toggle(_hairDetailed, " Ayrıntılı (kütle, ön, eklenti, süs)");
+            _hairDetailed = GUILayout.Toggle(_hairDetailed, L("ui.creator.hair_detailed"));
             if (_hairDetailed)
             {
-                a.HairStyleId = OptionRow("Saç boyu", _catalog.HairStyles, a.HairStyleId);
+                a.HairStyleId = OptionRow(L("ui.creator.hair_style"), _catalog.HairStyles, a.HairStyleId);
                 _catalog.FitHair(a);
-                a.BangsId = OptionRow("Saçın önü", _catalog.FittingModules(_catalog.Bangs, a.HairStyleId).ToList(), a.BangsId);
-                a.HairExtraId = OptionRow("Toplama", _catalog.FittingModules(_catalog.HairExtras, a.HairStyleId).ToList(), a.HairExtraId);
+                a.BangsId = OptionRow(L("ui.creator.bangs"), _catalog.FittingModules(_catalog.Bangs, a.HairStyleId).ToList(), a.BangsId);
+                a.HairExtraId = OptionRow(L("ui.creator.hair_extra"), _catalog.FittingModules(_catalog.HairExtras, a.HairStyleId).ToList(), a.HairExtraId);
             }
-            a.HairOrnamentId = OptionRow("Saç süsü", _catalog.FittingModules(_catalog.HairOrnaments, a.HairStyleId).ToList(), a.HairOrnamentId);
+            a.HairOrnamentId = OptionRow(L("ui.creator.hair_ornament"), _catalog.FittingModules(_catalog.HairOrnaments, a.HairStyleId).ToList(), a.HairOrnamentId);
             if (a.HairOrnamentId != Appearance.None)
-                a.HairOrnamentColor = ColorRow("orn", "Süs rengi", a.HairOrnamentColor, _catalog.ClothColors, true);
-            a.HairColor = ColorRow("hair", "Saç rengi", a.HairColor, _catalog.HairColors, true);
-            a.MustacheId = OptionRow("Bıyık", _catalog.Mustaches, a.MustacheId);
-            a.BeardId = OptionRow("Sakal", _catalog.Beards, a.BeardId);
-            a.SideburnsId = OptionRow("Favori", _catalog.Sideburns, a.SideburnsId);
-            a.StubbleLevel = Row("Kirli sakal", () => GUILayout.Toolbar(a.StubbleLevel, StubbleLabels));
+                a.HairOrnamentColor = ColorRow("orn", L("ui.creator.ornament_color"), a.HairOrnamentColor, _catalog.ClothColors, true);
+            a.HairColor = ColorRow("hair", L("ui.creator.hair_color"), a.HairColor, _catalog.HairColors, true);
+            a.MustacheId = OptionRow(L("ui.creator.mustache"), _catalog.Mustaches, a.MustacheId);
+            a.BeardId = OptionRow(L("ui.creator.beard"), _catalog.Beards, a.BeardId);
+            a.SideburnsId = OptionRow(L("ui.creator.sideburns"), _catalog.Sideburns, a.SideburnsId);
+            a.StubbleLevel = Row(L("ui.creator.stubble"), () => GUILayout.Toolbar(a.StubbleLevel, StubbleLabels));
             if (a.MustacheId != Appearance.None || a.BeardId != Appearance.None || a.SideburnsId != Appearance.None || a.StubbleLevel > 0)
             {
                 bool same = a.FacialHairColor == a.HairColor;
-                bool nowSame = GUILayout.Toggle(same, " Sakal rengi saçla aynı");
+                bool nowSame = GUILayout.Toggle(same, " " + L("ui.creator.beard_same"));
                 if (nowSame) a.FacialHairColor = a.HairColor;
                 else
                 {
                     if (same) a.FacialHairColor = _catalog.HairColors.FirstOrDefault(h => h != a.HairColor);
-                    a.FacialHairColor = ColorRow("beard", "Sakal rengi", a.FacialHairColor, _catalog.HairColors, true);
+                    a.FacialHairColor = ColorRow("beard", L("ui.creator.beard_color"), a.FacialHairColor, _catalog.HairColors, true);
                 }
             }
-            GUILayout.Label("   Özel renk boya sayılır, çocuklara geçmez.", _smallStyle);
+            GUILayout.Label(L("ui.creator.custom_color_note"), _smallStyle);
         }
 
         private void DrawMarks()
         {
             var a = _draft.Appearance;
 
-            Section($"Ten detayları ({MarkRules.Count(a.Marks, MarkKind.SkinDetail)}/{MarkRules.MaxSkinDetails})");
+            Section(GameLocalization.T("ui.creator.skin_details", ("n", MarkRules.Count(a.Marks, MarkKind.SkinDetail)), ("max", MarkRules.MaxSkinDetails)));
             ToggleMarks(MarkKind.SkinDetail, _catalog.SkinDetails, MarkRules.MaxSkinDetails, o => FirstTag(o.Tag, "face"));
 
             int chosenScars = a.Marks.Count(m => m.Kind == MarkKind.Scar && m.Source == MarkSource.Chosen);
-            Section($"Yara izleri ({chosenScars}/{MarkRules.MaxChosenScars})");
+            Section(GameLocalization.T("ui.creator.scars", ("n", chosenScars), ("max", MarkRules.MaxChosenScars)));
             ListMarks(MarkKind.Scar, _catalog.ScarPatterns, _catalog.ScarZones);
             if (chosenScars < MarkRules.MaxChosenScars && _catalog.ScarPatterns.Count > 0 && _catalog.ScarZones.Count > 0)
             {
                 GUILayout.BeginHorizontal();
                 _scarPattern = Cycle(_catalog.ScarPatterns, _scarPattern, 100f);
                 _scarZone = Cycle(_catalog.ScarZones, _scarZone, 100f);
-                if (GUILayout.Button("Ekle", GUILayout.Width(50f)))
+                if (GUILayout.Button(L("ui.creator.add"), GUILayout.Width(50f)))
                 {
                     string zone = _catalog.ScarZones[_scarZone].Id;
                     a.Marks.RemoveAll(m => m.Kind == MarkKind.Scar && m.Source == MarkSource.Chosen && m.Zone == zone);
@@ -511,29 +512,29 @@ namespace Thatchwick.Game
                 }
                 GUILayout.EndHorizontal();
             }
-            GUILayout.Label("   Oyunda kazadan da iz kalabilir; çok yaralanan karakterin izi giderek azalır.", _smallStyle);
+            GUILayout.Label(L("ui.creator.scars_note"), _smallStyle);
 
-            Section("Dövmeler (bölge başına bir)");
+            Section(L("ui.creator.tattoos"));
             ListMarks(MarkKind.Tattoo, _catalog.TattooPatterns, _catalog.TattooZones);
             if (_catalog.TattooPatterns.Count > 0 && _catalog.TattooZones.Count > 0)
             {
                 GUILayout.BeginHorizontal();
                 _tattooPattern = Cycle(_catalog.TattooPatterns, _tattooPattern, 100f);
                 _tattooZone = Cycle(_catalog.TattooZones, _tattooZone, 100f);
-                if (GUILayout.Button("Ekle", GUILayout.Width(50f)))
+                if (GUILayout.Button(L("ui.creator.add"), GUILayout.Width(50f)))
                 {
                     string zone = _catalog.TattooZones[_tattooZone].Id;
                     a.Marks.RemoveAll(m => m.Kind == MarkKind.Tattoo && m.Zone == zone);
                     a.Marks.Add(new Mark { Kind = MarkKind.Tattoo, Id = _catalog.TattooPatterns[_tattooPattern].Id, Zone = zone, Color = _ink });
                 }
                 GUILayout.EndHorizontal();
-                if (_catalog.InkColors.Count > 0) _ink = ColorRow("ink", "Mürekkep", _ink, _catalog.InkColors, false);
+                if (_catalog.InkColors.Count > 0) _ink = ColorRow("ink", L("ui.creator.ink"), _ink, _catalog.InkColors, false);
             }
 
-            Section($"Takılar ({MarkRules.Count(a.Marks, MarkKind.Jewelry)}/{MarkRules.MaxJewelry})");
+            Section(GameLocalization.T("ui.creator.jewelry", ("n", MarkRules.Count(a.Marks, MarkKind.Jewelry)), ("max", MarkRules.MaxJewelry)));
             ToggleMarks(MarkKind.Jewelry, _catalog.Jewelry, MarkRules.MaxJewelry, o => FirstTag(o.Tag, "ear"));
 
-            Section($"Makyaj ({MarkRules.Count(a.Marks, MarkKind.Makeup)}/{MarkRules.MaxMakeup})");
+            Section(GameLocalization.T("ui.creator.makeup", ("n", MarkRules.Count(a.Marks, MarkKind.Makeup)), ("max", MarkRules.MaxMakeup)));
             ToggleMarks(MarkKind.Makeup, _catalog.Makeup, MarkRules.MaxMakeup, _ => "face");
             foreach (var m in a.Marks.Where(x => x.Kind == MarkKind.Makeup).ToList())
                 if (_catalog.MakeupColors.Count > 0) m.Color = ColorRow("mk_" + m.Id, Label(_catalog.Makeup, m.Id), m.Color, _catalog.MakeupColors, false);
@@ -542,16 +543,16 @@ namespace Thatchwick.Game
         private void DrawClothes()
         {
             var a = _draft.Appearance;
-            a.OutfitId = OptionRow("Üst", _catalog.Outfits, a.OutfitId);
-            a.PatternId = OptionRow("Desen", _catalog.Patterns, a.PatternId);
-            a.OutfitColor = ColorRow("outfit", "Ana renk", a.OutfitColor, _catalog.ClothColors, true);
-            a.TrimColor = ColorRow("trim", "Kenar", a.TrimColor, _catalog.ClothColors, true);
-            a.BottomId = OptionRow("Alt", _catalog.Bottoms, a.BottomId);
-            a.ShoesId = OptionRow("Ayakkabı", _catalog.Shoes, a.ShoesId);
-            a.OuterId = OptionRow("Dış giysi", _catalog.Outers, a.OuterId);
-            if (a.OuterId != Appearance.None) a.OuterColor = ColorRow("outer", "Dış renk", a.OuterColor, _catalog.ClothColors, true);
-            a.HatId = OptionRow("Başlık", _catalog.Hats, a.HatId);
-            if (a.HatId != Appearance.None) a.HatColor = ColorRow("hat", "Başlık rengi", a.HatColor, _catalog.ClothColors, true);
+            a.OutfitId = OptionRow(L("ui.creator.top"), _catalog.Outfits, a.OutfitId);
+            a.PatternId = OptionRow(L("ui.creator.pattern"), _catalog.Patterns, a.PatternId);
+            a.OutfitColor = ColorRow("outfit", L("ui.creator.main_color"), a.OutfitColor, _catalog.ClothColors, true);
+            a.TrimColor = ColorRow("trim", L("ui.creator.trim"), a.TrimColor, _catalog.ClothColors, true);
+            a.BottomId = OptionRow(L("ui.creator.bottom"), _catalog.Bottoms, a.BottomId);
+            a.ShoesId = OptionRow(L("ui.creator.shoes"), _catalog.Shoes, a.ShoesId);
+            a.OuterId = OptionRow(L("ui.creator.outer"), _catalog.Outers, a.OuterId);
+            if (a.OuterId != Appearance.None) a.OuterColor = ColorRow("outer", L("ui.creator.outer_color"), a.OuterColor, _catalog.ClothColors, true);
+            a.HatId = OptionRow(L("ui.creator.hat"), _catalog.Hats, a.HatId);
+            if (a.HatId != Appearance.None) a.HatColor = ColorRow("hat", L("ui.creator.hat_color"), a.HatColor, _catalog.ClothColors, true);
         }
 
         // ---- zar ve geri al ----
@@ -697,15 +698,15 @@ namespace Thatchwick.Game
                 GUILayout.Label($"   {Label(patterns, m.Id)} · {Label(zones, m.Zone)}", GUILayout.Width(220f));
                 if (kind == MarkKind.Scar)
                 {
-                    string[] fades = { "Taze", "Solmuş", "Eski" };
+                    string[] fades = { L("ui.creator.fade.fresh"), L("ui.creator.fade.faded"), L("ui.creator.fade.old") };
                     m.Fade = GUILayout.Toolbar(m.Fade, fades, GUILayout.Width(150f));
                 }
-                if (GUILayout.Button("Kaldır", GUILayout.Width(60f))) a.Marks.Remove(m);
+                if (GUILayout.Button(L("ui.creator.remove"), GUILayout.Width(60f))) a.Marks.Remove(m);
                 GUILayout.EndHorizontal();
             }
         }
 
-        private static readonly string[] StubbleLabels = { "Yok", "Hafif", "Orta", "Sık" };
+        private static string[] StubbleLabels => new[] { L("ui.creator.stubble.none"), L("ui.creator.stubble.light"), L("ui.creator.stubble.medium"), L("ui.creator.stubble.dense") };
         private bool _hairDetailed;
         private List<OptionDef> _presetOptions;
 
@@ -720,14 +721,14 @@ namespace Thatchwick.Game
             {
                 // Ayrıntılı modda yapılmış birleşim hazır stillerde yoksa "Özel" görünür; oklar ilk hazır stile döner.
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("Saç", GUILayout.Width(100f));
+                GUILayout.Label(L("ui.creator.hair"), GUILayout.Width(100f));
                 if (GUILayout.Button("<", GUILayout.Width(28f))) _catalog.ApplyPreset(a, _catalog.HairPresets[_catalog.HairPresets.Count - 1]);
-                GUILayout.Label("Özel", _centerStyle, GUILayout.Width(130f));
+                GUILayout.Label(L("ui.creator.custom"), _centerStyle, GUILayout.Width(130f));
                 if (GUILayout.Button(">", GUILayout.Width(28f))) _catalog.ApplyPreset(a, _catalog.HairPresets[0]);
                 GUILayout.EndHorizontal();
                 return;
             }
-            string chosen = OptionRow("Saç", _presetOptions, current.Id);
+            string chosen = OptionRow(L("ui.creator.hair"), _presetOptions, current.Id);
             if (chosen != current.Id) _catalog.ApplyPreset(a, _catalog.HairPresets.First(p => p.Id == chosen));
         }
 
@@ -774,7 +775,7 @@ namespace Thatchwick.Game
             if (allowCustom)
             {
                 bool open = _customOpen.Contains(id);
-                bool newOpen = GUILayout.Toggle(open, $" Özel renk ({current.ToHex()})");
+                bool newOpen = GUILayout.Toggle(open, " " + GameLocalization.T("ui.creator.custom_color", ("hex", current.ToHex())));
                 if (newOpen != open)
                 {
                     if (newOpen) _customOpen.Add(id); else _customOpen.Remove(id);
