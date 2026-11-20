@@ -74,7 +74,7 @@ namespace Thatchwick.Game
             return p != null && _shop != null && _areas.TryGetValue(_shop.Id, out var r) && r.Contains(p.Position);
         }
 
-        private void WalkIn()
+        public void WalkIn()
         {
             var p = _player(); var runner = _runner();
             if (p == null || runner == null || !_areas.TryGetValue(_shop.Id, out var r)) return;

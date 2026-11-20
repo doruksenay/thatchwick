@@ -266,5 +266,42 @@ namespace Thatchwick.Core.Tests
             Assert.Contains(w.Items, i => i.Def.Id == "item.hearth_stone" && i.Position.Z == 0 && i.Position.X >= StarterWorld.HouseX0 && i.Position.X <= StarterWorld.HouseX1 && i.Position.Y >= 26 && i.Position.Y <= 32);
             Assert.Equal(3, w.Items.Count(i => i.Def.Id == "item.bed_straw" && i.Position.Z == 1 && i.Position.X >= 28 && i.Position.X <= 36 && i.Position.Y >= 26 && i.Position.Y <= 32));
         }
+
+        [Fact]
+        public void EskiKayitGocu_YeniBolgeler_YeniOyunlaAyni_EskiAlanaDokunmaz()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var lay = LoadLayouts(db, out _);
+            const int minX = Regions.LegacyWorldWidth;
+            var full = new WorldState(StarterWorld.BuildMap(lay));
+            StarterWorld.Place(full, db, lay, 7);
+            var want = new List<string>();
+            foreach (var it in full.Items)
+            {
+                var root = it.IsDecor ? full.GetItem(it.ParentId.Value) : it;
+                bool after = root.Position.X >= minX;
+                foreach (var t in root.OccupiedTiles()) if (t.X < minX) after = false;
+                if (after) want.Add($"{it.Def.Id}@{root.Position}/{it.Rotation}/{it.SlotId}");
+            }
+
+            // eski kayıt: eski alanda oyuncunun eşyası var, yeni bölgeler boş
+            var old = new WorldState(StarterWorld.BuildMap(lay));
+            db.Items.TryGet("item.chest_wood", out var chest);
+            var mine = old.PlaceItem(chest, new GridPos(40, 20));
+            int n = StarterWorld.PlaceFrom(old, db, lay, 7, minX);
+
+            Assert.True(n > 0);
+            Assert.NotNull(old.GetItem(mine.Id));
+            var got = new List<string>();
+            foreach (var it in old.Items)
+            {
+                if (it.Id == mine.Id) continue;
+                var root = it.IsDecor ? old.GetItem(it.ParentId.Value) : it;
+                Assert.True(root.Position.X >= minX, $"eski alana eşya kondu: {it.Def.Id} {root.Position}");
+                got.Add($"{it.Def.Id}@{root.Position}/{it.Rotation}/{it.SlotId}");
+            }
+            want.Sort(); got.Sort();
+            Assert.Equal(want, got);
+        }
     }
 }

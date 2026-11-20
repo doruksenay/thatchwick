@@ -87,25 +87,10 @@ namespace Thatchwick.Core.Save
         }
 
         public const int CurrentVersion = 2;
-        /// <summary>Kayıttan kabul edilen en büyük harita kenarı (oyun haritası 48x32).</summary>
-        public const int MaxMapSide = 256;
-
-        public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
-            AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null,
-            AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null, int seed = 0, int rngEpoch = 0,
-            Mining.MineSystem mines = null)
+        /// <summary>Haritanın kayıt biçimi (eşyalar hariç; eşyaların kapattığı karolar engel sayılmaz).</summary>
+        public static MapSave CaptureMap(WorldState world)
         {
             var map = world.Map;
-            var data = new SaveData
-            {
-                version = CurrentVersion,
-                savedAtUtc = DateTime.UtcNow.ToString("o"),
-                totalDays = clock.TotalDays,
-                speed = clock.RequestedSpeed,
-                seed = seed,
-                rngEpoch = rngEpoch
-            };
-
             // Harita: eşyaların kapattığı karolar arazi engeli sayılmaz (yüklenince eşyalar yeniden kapatır).
             var itemTiles = new HashSet<GridPos>();
             foreach (var it in world.Items) foreach (var t in it.OccupiedTiles()) itemTiles.Add(t);
@@ -167,7 +152,65 @@ namespace Thatchwick.Core.Save
                 ponds.Add(new PondSave { x = p.Anchor.X, y = p.Anchor.Y, level = p.Level, spring = p.Spring, insects = p.Insects, filledDays = p.FilledDays, fishIds = ids.ToArray(), fishCounts = counts.ToArray() });
             }
             m.ponds = ponds.ToArray();
-            data.map = m;
+            return m;
+        }
+
+        /// <summary>
+        /// Eski, dar bir dünya kaydını yeni dünyanın genişliğine açar (aynı yükseklik): eski genişlik içindeki her şey
+        /// kayıttan, dışındaki her şey (yeni bölgeler) 'fresh' haritadan gelir. Eşyalara dokunmaz.
+        /// </summary>
+        public static bool WidenMap(SaveData data, MapSave fresh)
+        {
+            var old = data?.map;
+            if (old == null || fresh == null || fresh.height != old.height || fresh.width <= old.width) return false;
+            int ow = old.width, fw = fresh.width;
+            for (int y = 0; y < old.height; y++)
+                for (int x = 0; x < ow; x++)
+                {
+                    int oi = y * ow + x, fi = y * fw + x;
+                    if (old.terrainBlocked != null && oi < old.terrainBlocked.Length) fresh.terrainBlocked[fi] = old.terrainBlocked[oi];
+                    if (old.floor != null && oi < old.floor.Length) fresh.floor[fi] = old.floor[oi];
+                    if (old.owned != null && oi < old.owned.Length) fresh.owned[fi] = old.owned[oi];
+                    if (old.zone != null && oi < old.zone.Length) fresh.zone[fi] = old.zone[oi];
+                }
+            fresh.edges = Merge(old.edges, fresh.edges, e => e.x > ow);
+            fresh.levelTiles = Merge(old.levelTiles, fresh.levelTiles, t => t.x >= ow);
+            fresh.styles = Merge(old.styles, fresh.styles, t => t.x >= ow);
+            fresh.roads = Merge(old.roads, fresh.roads, t => t.x >= ow);
+            fresh.conduits = Merge(old.conduits, fresh.conduits, t => t.x >= ow);
+            fresh.ponds = Merge(old.ponds, fresh.ponds, t => t.x >= ow);
+            data.map = fresh;
+            return true;
+        }
+
+        private static T[] Merge<T>(T[] old, T[] fresh, Func<T, bool> keepFresh)
+        {
+            var list = new List<T>();
+            if (old != null) list.AddRange(old);
+            if (fresh != null) foreach (var t in fresh) if (keepFresh(t)) list.Add(t);
+            return list.ToArray();
+        }
+
+        /// <summary>Kayıttan kabul edilen en büyük harita kenarı (oyun haritası 48x32).</summary>
+        public const int MaxMapSide = 512;   // dünya 428x72 (bölgeler, belge 38)
+
+        public static SaveData Capture(GameClock clock, WorldState world, Household house, IEnumerable<Character> characters,
+            AccountProgress account, HeatSystem heat, Market market, FamilyService family = null, Dynasty dynasty = null,
+            AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null, int seed = 0, int rngEpoch = 0,
+            Mining.MineSystem mines = null)
+        {
+            var map = world.Map;
+            var data = new SaveData
+            {
+                version = CurrentVersion,
+                savedAtUtc = DateTime.UtcNow.ToString("o"),
+                totalDays = clock.TotalDays,
+                speed = clock.RequestedSpeed,
+                seed = seed,
+                rngEpoch = rngEpoch
+            };
+
+            data.map = CaptureMap(world);
 
             // Eşyalar: önce yer eşyaları, sonra dekorlar (yüklerken üstündeki eşya hazır olsun).
             var items = new List<ItemSave>();

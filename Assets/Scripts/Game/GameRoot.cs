@@ -284,7 +284,7 @@ namespace Thatchwick.Game
             LoadedGame loaded = null;
             if (PendingLoad != null)
             {
-                try { loaded = SaveGame.Load(PendingLoad, _content); }
+                try { WidenOldSave(PendingLoad); loaded = SaveGame.Load(PendingLoad, _content); }
                 catch (System.Exception ex)
                 {
                     // Yeni oyun başlar; ama bozuk kayıt ilk otomatik kayıtla silinmesin diye kenara kopyalanır.
@@ -309,11 +309,25 @@ namespace Thatchwick.Game
                 _world = loaded.World;
                 map = _world.Map;
                 Places = map.Width <= LegacyMapWidth ? LegacyPlaces : Places;   // eski kayıt: eski küçük harita
-                if (Thatchwick.Core.World.Regions.IsRegional(map)) { Thatchwick.Core.World.Regions.ApplyPortals(map); Places = Thatchwick.Core.World.Regions.Places(map); _layoutPlan = Thatchwick.Core.Layout.TownBuilder.Plan(map, _layouts); }
-                ClearLegacyObstacles(map);
+                if (Thatchwick.Core.World.Regions.IsRegional(map))
+                {
+                    // Bölgeler arası boşluklar engelli kalmalı: eski test engeli temizliği bölgeli haritada çalışmaz
+                    // (eski sürüm boşlukları açıyordu; Apply onları yeniden kapatır, geçitleri kurar).
+                    Thatchwick.Core.World.Regions.Apply(map);
+                    Places = Thatchwick.Core.World.Regions.Places(map);
+                    _layoutPlan = Thatchwick.Core.Layout.TownBuilder.Plan(map, _layouts);
+                }
+                else ClearLegacyObstacles(map);
                 _clock = loaded.Clock;
                 _lastSavedDay = _clock.DayIndex;
                 foreach (var item in _world.Items) if (item.Def.Id == "item.market_stall") _stallId = item.Id;
+                if (_widenedFrom > 0)
+                {
+                    // Eski kayıt yeni dünyaya açıldı: eklenen bölgelerin eşyaları (dükkânlar, ağaçlar, toplama düğümleri).
+                    PlaceRegionItems(_widenedFrom);
+                    ShowMessage("Dünya genişledi: köy yolu, şehir ve yaban haritaları eklendi.", 8f);
+                    _widenedFrom = 0;
+                }
             }
             else
             {
@@ -444,6 +458,12 @@ namespace Thatchwick.Game
                 () => HourOfDay, () => _clock.DayIndex, ShopOwner,
                 Thatchwick.Core.World.Regions.IsRegional(_world.Map) ? Thatchwick.Core.World.Regions.ShopAreas() : null)
             { Animals = _animals, AccountLevel = () => _account.Level };
+            if (Thatchwick.Core.World.Regions.IsRegional(_world.Map))
+            {
+                // Pazar (P) artık meydandaki tezgâhta değil, Kerem'in genel dükkânında: içeride, açık ve sahibi tezgâhta olmalı.
+                _marketPanel.ShopGate = GeneralShopGate;
+                _marketPanel.WalkToShop = () => { var g = Thatchwick.Core.Economy.Shops.Get("general"); if (g != null) { _shopPanel.Open(g); _shopPanel.WalkIn(); _shopPanel.Close(); } };
+            }
             _buildMode = new BuildMode(_world, _household, _buildService, _content, _view, _input, transform, _walls, _animals);
             _buildMode.Activity += a => _account.Record(a, _clock.DayIndex);
 
@@ -591,6 +611,33 @@ namespace Thatchwick.Game
             _layoutPlan = res.Plan;
             int bad = 0; foreach (var r in res.Reports) if (!r.Ok) bad++;
             Debug.Log($"Yerleşim: {res.Reports.Count} oda şablondan döşendi, doğrulayıcıdan geçmeyen {bad}.");
+        }
+
+        // Köy yolu, şehir ve yaban haritalarının eşyaları minX sütunundan itibaren (eski kayıt genişletilince yalnızca yeni
+        // bölgeler): yeni oyundaki şablon ve kurallarla, aynı tohumla (StarterWorld.PlaceFrom). Eski alana dokunulmaz.
+        private void PlaceRegionItems(int minX)
+        {
+            int n = Thatchwick.Core.Layout.StarterWorld.PlaceFrom(_world, _content, _layouts, _seed, minX, msg => Debug.LogWarning(msg));
+            foreach (var item in _world.Items) if (item.Def.Id == "item.market_stall") _stallId = item.Id;
+            _layoutPlan = Thatchwick.Core.Layout.TownBuilder.Plan(_world.Map, _layouts);
+            Debug.Log($"Kayıt genişletildi: yeni bölgelere {n} eşya kondu.");
+        }
+
+        private static int _widenedFrom;
+
+        /// <summary>
+        /// Eski kayıt göçü: 96x72 (köy çiftlikte) ve 208x72 (yalnızca çiftlik, köy yolu, şehir) kayıtlar bugünkü dünyaya
+        /// (428x72) açılır. Eski alan olduğu gibi kalır; dışındaki bölgeler yeni oyundaki gibi çizilir. 48x32 kayıtlar
+        /// başka bir yerleşimde olduğu için kendi küçük haritalarıyla açılmaya devam eder.
+        /// </summary>
+        private void WidenOldSave(SaveData data)
+        {
+            var m = data?.map;
+            if (m == null || m.height != MapHeight || m.width >= MapWidth) return;
+            if (m.width != 96 && m.width != Thatchwick.Core.World.Regions.LegacyWorldWidth) return;
+            int from = m.width;
+            var fresh = SaveGame.CaptureMap(new WorldState(BuildDemoMap()));
+            if (SaveGame.WidenMap(data, fresh)) { _widenedFrom = from; Debug.Log($"Kayıt: {from}x{MapHeight} dünya {MapWidth}x{MapHeight} boyutuna açıldı."); }
         }
 
         private const float RegionFadeSeconds = 0.7f;
@@ -1206,6 +1253,8 @@ namespace Thatchwick.Game
                         def = _life.Villagers.DefOf(_population.Find(anchor.SpouseId.Value));
                     if (def == null) continue;
                 }
+                if (_life.Villagers.PlaceAvailable == null)
+                    _life.Villagers.PlaceAvailable = k => Places.TryGetValue(k, out var pp) && _world.Map.InBounds(pp) && !_world.Map.IsBlocked(pp);
                 string where = _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival);
                 if (_villagerLocation.TryGetValue(c.Id, out var last) && last == where) continue;
                 _villagerLocation[c.Id] = where;
@@ -1483,6 +1532,19 @@ namespace Thatchwick.Game
             return null;
         }
 
+        private string GeneralShopGate()
+        {
+            var shop = Thatchwick.Core.Economy.Shops.Get("general");
+            var areas = Thatchwick.Core.World.Regions.ShopAreas();
+            if (shop == null || !areas.TryGetValue("general", out var area)) return null;
+            var p = _player?.Character;
+            if (p == null || !area.Contains(p.Position)) return "Alışveriş için Kerem'in genel dükkânında olmalısın (şehir meydanının yanında).";
+            if (!shop.IsOpenAt(HourOfDay, _clock.DayIndex)) return $"Genel dükkân kapalı. Saatler: {shop.HoursText}.";
+            var owner = ShopOwner(shop);
+            if (owner == null || !area.Contains(owner.Position)) return "Kerem şu an tezgâhta değil; biraz bekle.";
+            return null;
+        }
+
         private void ToggleMarket()
         {
             if (_buildMode.Active) _buildMode.Toggle();
@@ -1602,6 +1664,14 @@ namespace Thatchwick.Game
             CollectOptions(world);
             // Şehirde bir dükkânın içine dokunmak dükkân panelini açar (yürüme ve eşya menüsü yine çalışır).
             if (_shopPanel != null) { var shopHere = _shopPanel.ShopAt(tile); if (shopHere != null) _shopPanel.Open(shopHere); }
+            // Tepedeki maden ağzına dokunmak ocak panelini açar (M tuşu da çalışır).
+            if (_regional && _minePanel != null && !_minePanel.Active)
+            {
+                var hill = Thatchwick.Core.World.Regions.Hill;
+                int mx = hill.X + Thatchwick.Core.World.Regions.MineMouthX, my = hill.Y + Thatchwick.Core.World.Regions.MineMouthY;
+                if (System.Math.Abs(tile.X - mx) <= 2 && System.Math.Abs(tile.Y - my) <= 2 && Thatchwick.Core.World.Regions.Exists(_world.Map, hill))
+                { _minePanel.Toggle(); ShowMessage("Aile ocağı"); }
+            }
             // Çapa kipi: boş çime dokunmak orayı çapalar, yıpranmış yola dokunmak onarır (sıraya eklenir).
             if (_hoeMode && _menuOptions.Count == 0)
             {

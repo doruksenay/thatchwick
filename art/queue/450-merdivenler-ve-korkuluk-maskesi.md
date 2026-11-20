@@ -1,7 +1,8 @@
 ---
 id: "450"
 title: "Merdivenler ve korkuluk maskesi (4 + 4 maske)"
-status: pending
+status: review
+claimed_at: 2026-11-19T21:26Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 19.11.2026 ("bunların hepsini yapalım", varyant çeşitliliği), Project belgesi 45
 priority: 20
 family: esya

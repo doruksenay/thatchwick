@@ -2,14 +2,14 @@
 id: "018c"
 title: Etkileşim animasyonları: boşta, odun, çapa, ekim, sulama
 status: running
-claimed_at: 2026-11-18T18:54Z
+claimed_at: 2026-11-20T06:39Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50
 family: karakter
 style_gate: false
 cost_est: 40
 cost_max: 52
-depends_on: ["018a"]
+depends_on: ["018a3"]
 max_attempts: 1
 pixellab: true
 outputs:

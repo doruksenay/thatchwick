@@ -116,6 +116,49 @@ namespace Thatchwick.Core.Layout
             return res;
         }
 
+        /// <summary>
+        /// Eski kayıt göçü (dünya genişledi): minX sütunundan itibaren yeni bölgelerin eşyaları, yeni oyunla aynı şablon,
+        /// kural ve tohumla. Yeni oyun ayrı bir dünyada kurulur; ayak izinin tamamı minX'ten sonra olan eşyalar (üstlerindeki
+        /// dekorla) gerçek dünyaya kopyalanır. Eski alana ve oyuncunun eşyalarına dokunulmaz. Dönen değer konan eşya sayısı.
+        /// </summary>
+        public static int PlaceFrom(WorldState world, ContentDatabase content, LayoutCatalog layouts, int seed, int minX, Action<string> log = null)
+        {
+            var scratch = new WorldState(BuildMap(layouts));
+            Place(scratch, content, layouts, seed);
+            var ids = new Dictionary<int, int>();
+            int n = 0;
+            foreach (var it in new List<ItemInstance>(scratch.Items))
+            {
+                if (it.IsDecor || !After(it, minX)) continue;
+                ItemInstance made = null;
+                try
+                {
+                    if (it.IsWallMounted) made = world.PlaceOnWall(it.Def, it.Position, it.Rotation, it.WallBand);
+                    else if (it.IsCeiling) made = world.PlaceOnCeiling(it.Def, it.Position);
+                    else made = world.PlaceItem(it.Def, it.Position, it.Rotation);
+                }
+                catch (Exception ex) { log?.Invoke($"Göç: eşya konamadı {it.Def.Id} {it.Position}: {ex.Message}"); }
+                if (made == null) continue;
+                if (it.IsPlant && it.IsGrown) PlantSystem.SetGrown(made);
+                ids[it.Id] = made.Id;
+                n++;
+            }
+            foreach (var it in new List<ItemInstance>(scratch.Items))
+            {
+                if (!it.IsDecor || !ids.TryGetValue(it.ParentId.Value, out var parent)) continue;
+                try { world.PlaceOnSurface(it.Def, parent, it.SlotId); n++; }
+                catch (Exception ex) { log?.Invoke($"Göç: dekor konamadı {it.Def.Id}: {ex.Message}"); }
+            }
+            return n;
+        }
+
+        private static bool After(ItemInstance it, int minX)
+        {
+            if (it.Position.X < minX) return false;
+            foreach (var t in it.OccupiedTiles()) if (t.X < minX) return false;
+            return true;
+        }
+
         private static void DropInvalid(WorldState world, ContentDatabase content, LayoutPlan plan, List<ItemInstance> items, Action<string> log)
         {
             if (items.Count == 0) return;

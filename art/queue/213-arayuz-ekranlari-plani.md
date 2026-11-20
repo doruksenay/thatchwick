@@ -1,8 +1,8 @@
 ---
 id: "213"
 title: Arayüz ekranları planı (kalan ekranlar için yerleşim + iş dosyası yazar)
-status: running
-claimed_at: 2026-11-19T12:03Z
+status: review
+claimed_at: 2026-11-20T00:39Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
 style_gate: false
@@ -55,6 +55,9 @@ Plan işi: PixelLab çağrılmaz. 210'da seçilen yönle oyunun karakter dışı
 ## Doğrulama
 - Her yeni ekran için `ui_mockup.py pieces <ekran>` ve `mockup <ekran> --placeholder` hatasız çalışıyor mu? Placeholder önizlemeleri `art/results/213-<ekran>-yerlesim-x2.png`.
 - `queue_ready.py --all` ayrıştırıyor mu? `cost_max <= 60`.
+
+## Sorular
+- (işçi, 2026-11-20, bulut) `tools/art` altına yazmak bulut işçisinde yasak (değişiklik main yerine PR'a gider); bu yüzden 11 ekran yerleşimi `tools/art/ui_layouts.json` yerine `art/results/213-ui_layouts-ek.json` dosyasına yazıldı. Doğrulama, ek anahtarlar birleştirilmiş geçici kopyayla (`art/tmp`) yapıldı: 11 ekranda `pieces` ve `mockup --placeholder` hatasız. Öneri: kod oturumu bu anahtarları `tools/art/ui_layouts.json`'a birleştirsin; 213a-d işleri ilk adımda aynısını yapar (yerel işçi).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

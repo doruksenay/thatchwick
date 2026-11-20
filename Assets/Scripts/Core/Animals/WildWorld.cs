@@ -201,17 +201,40 @@ namespace Thatchwick.Core.Animals
             if (r.Hide != null && r.HideCount > 0) house.AddItem(r.Hide, r.HideCount);
         }
 
-        private bool IsEdge(GridPos p) => p.X <= 0 || p.Y <= 0 || p.X >= _map.Width - 1 || p.Y >= _map.Height - 1;
+        // Bölgeli dünyada (çiftlik, köy yolu, şehir ve yaban haritaları) hayvan kendi bölgesinin kenarından girer ve çıkar;
+        // ızgaranın kenarı ya da bölgeler arasındaki kapalı boşluk kullanılmaz. Şehre yaban hayvanı girmez; orman en sık.
+        private RectI AreaOf(GridPos p)
+        {
+            if (Regions.IsRegional(_map)) { var r = Regions.At(p); if (r != null) return new RectI(r.X, r.Y, r.W, r.H); }
+            return new RectI(0, 0, _map.Width, _map.Height);
+        }
+
+        private bool IsEdge(GridPos p)
+        {
+            var a = AreaOf(p);
+            return p.X <= a.X || p.Y <= a.Y || p.X >= a.X + a.W - 1 || p.Y >= a.Y + a.H - 1;
+        }
+
+        private RectI SpawnArea()
+        {
+            if (!Regions.IsRegional(_map)) return new RectI(0, 0, _map.Width, _map.Height);
+            var pool = new List<Region> { Regions.Farm, Regions.Farm, Regions.Road };
+            foreach (var r in new[] { Regions.Forest, Regions.Forest, Regions.Forest, Regions.Lake, Regions.Marsh, Regions.Hill, Regions.Slopes })
+                if (Regions.Exists(_map, r)) pool.Add(r);
+            var pick = pool[_rng.Next(pool.Count)];
+            return new RectI(pick.X, pick.Y, pick.W, pick.H);
+        }
 
         private GridPos? EdgeTile()
         {
+            var a = SpawnArea();
             for (int guard = 0; guard < 40; guard++)
             {
                 int side = _rng.Next(4);
-                int x = side == 0 ? 0 : side == 1 ? _map.Width - 1 : _rng.Next(_map.Width);
-                int y = side == 2 ? 0 : side == 3 ? _map.Height - 1 : _rng.Next(_map.Height);
+                int x = side == 0 ? a.X : side == 1 ? a.X + a.W - 1 : a.X + _rng.Next(a.W);
+                int y = side == 2 ? a.Y : side == 3 ? a.Y + a.H - 1 : a.Y + _rng.Next(a.H);
                 var p = new GridPos(x, y);
-                if (_map.IsWalkable(p)) return p;
+                if (_map.IsWalkable(p) && !_map.IsPortal(p)) return p;
             }
             return null;
         }
@@ -227,7 +250,8 @@ namespace Thatchwick.Core.Animals
                 var n = v.Position + d;
                 if (!_map.InBounds(n) || !_map.CanStep(v.Position, n)) continue;
                 options.Add(n);
-                int edge = Math.Min(Math.Min(n.X, n.Y), Math.Min(_map.Width - 1 - n.X, _map.Height - 1 - n.Y));
+                var ar = AreaOf(v.Position);
+                int edge = Math.Min(Math.Min(n.X - ar.X, n.Y - ar.Y), Math.Min(ar.X + ar.W - 1 - n.X, ar.Y + ar.H - 1 - n.Y));
                 if (edge < bestEdge) { bestEdge = edge; best = n; }
             }
             if (options.Count == 0) return null;
