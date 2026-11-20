@@ -59,3 +59,5 @@ Kısmi sonuç: 8 görsel teslim (kuyu, kiler, çark, çan kulesi, pazar yeri, k�
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+kullanıcı kararı (2026-11-20, kısmi kabul): onarılmış well, cellar, belltower, market_hall KABUL. millwheel (su çarkı değil, rampalı kulübe), bridge (üstünde araba çizili), scaffold_small (içinde taş bina, katman değil) ve scaffold_large (içi beyaz dolu) RED. Yeniden üretim 612c; yıkık hâller maskeli düzenlemeyle 612d ve 612e.
