@@ -4,7 +4,7 @@ title: Pisliğe basma
 kind: sfx
 family: foley
 freq: C
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 key: yard.step_in_it
@@ -16,5 +16,7 @@ axes:
   shoe:
   - leather shoe
   - bare foot
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T14:11:14Z'
 ---
 A single soft, wet squelch underfoot on grass. Short and comic, not disgusting.
