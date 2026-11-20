@@ -1,7 +1,8 @@
 ---
 id: "318t"
 title: "Bitki tamamlama: eksik parçalar ve tepeden çizilen 3 ekin (9 sprite)"
-status: pending
+status: running
+claimed_at: 2026-11-20T10:26Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette toplu inceleme: "önerini uygula")
 priority: 20
 family: bitki
