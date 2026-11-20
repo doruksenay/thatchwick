@@ -77,6 +77,8 @@ namespace Thatchwick.Game
             ["cook"] = new[] { "cook" },
             ["craft"] = new[] { "craft_hammer", "craft_hand" },
             ["chop"] = new[] { "chop" },
+            ["sow"] = new[] { "sow", "hoe" },     // 018c
+            ["water"] = new[] { "water" },
             ["farm"] = new[] { "hoe", "sow" },
             ["work"] = new[] { "work" },
             // 018e (kabul 19.11.2026): sosyal, bakım, sevgi, eğlence, balık; maden üçlüsü.
@@ -91,7 +93,7 @@ namespace Thatchwick.Game
         };
 
         /// <summary>
-        /// Eşyasız eylem yerinde mi yapılıyor: sosyal, hayvan ve karo işleri (sohbet, besleme, tımar, kazı, balık) eşya
+        /// Eşyasız eylem yerinde mi yapılıyor: sosyal, hayvan ve karo işleri (sohbet, besleme, tımar, kazı, balık, ekim) eşya
         /// kullanmaz; karakter hedefe varıp durduğunda eylem karesi oynar. Yürürken yürüme karesi kalır.
         /// </summary>
         private static bool IsPerformingInPlace(Actor actor)
@@ -205,6 +207,7 @@ namespace Thatchwick.Game
         private MinePanel _minePanel;
         private KeepsakePanel _keepsakePanel;
         private HomePanel _homePanel;
+        private VivariumView _vivView;      // cam bahçe yakın görünümü (belge 47)
         private bool _buntingShown;
         private FamilyService _family;
         private FamilyPanel _familyPanel;
@@ -551,6 +554,13 @@ namespace Thatchwick.Game
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
             _life.Suitors.AppearanceCatalog = _appearanceCatalog;
+            LayeredCharacterArt.Catalog = _appearanceCatalog;
+            // Eski kayıt: tam saç stili kimlikleri modüllere (kütle + ön + eklenti), eski kirli sakal dokuya (belge 43b).
+            foreach (var member in _population.Members)
+            {
+                _appearanceCatalog.MigrateLegacy(member.Appearance);
+                _appearanceCatalog.FitHair(member.Appearance);
+            }
             // Ölen adlı köylünün (demirci ...) halefi mevsim başında gelir: görünüm ve sahne nesnesi burada verilir.
             _life.Villagers.PlaceResolver = key => ResolvePlace(key);
             _life.Villagers.SuccessorArrived += (c, def) =>
@@ -995,6 +1005,16 @@ namespace Thatchwick.Game
                 if (item.BurntOut) c = Color.Lerp(c, new Color(0.45f, 0.42f, 0.4f), 0.35f);                // bitmiş mum
                 if (home.IsStrewnStale(item)) c = Color.Lerp(c, new Color(0.55f, 0.5f, 0.38f), 0.3f);       // bayat ot serpmesi
                 else if (home.IsStrewnFresh(item)) c = Color.Lerp(c, new Color(0.75f, 0.9f, 0.6f), 0.2f);  // taze ot
+                if (item.Def.IsVivarium)   // cam bahçe dünyada zeminine göre renk alır (içi yakın görünümde, belge 47)
+                {
+                    var viv = home.VivOf(item);
+                    if (viv?.Habitat != null)
+                    {
+                        var hc = viv.Habitat == HomeLife.Salt ? new Color(0.45f, 0.65f, 0.75f) : viv.Habitat == HomeLife.Fresh ? new Color(0.5f, 0.7f, 0.55f)
+                               : viv.Habitat == HomeLife.Dry ? new Color(0.9f, 0.8f, 0.6f) : new Color(0.45f, 0.65f, 0.4f);
+                        c = Color.Lerp(c, hc, viv.Entries.Count > 0 ? 0.3f : 0.15f);
+                    }
+                }
             }
             return c;
         }
@@ -1417,6 +1437,7 @@ namespace Thatchwick.Game
             if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_homePanel != null && _homePanel.Active && _homePanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_vivView != null && _vivView.Active && _vivView.PanelRect(s).Contains(guiPos)) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
@@ -1694,8 +1715,13 @@ namespace Thatchwick.Game
 
             if (_buildMode.Active) { _menuOpen = false; _buildMode.OnTap(world); return; }
             if (_menuOpen) { _menuOpen = false; return; }   // menü dışına dokunmak menüyü kapatır
+            if (_vivView != null && _vivView.Active) { _vivView.Close(); return; }   // cam bahçe görünümü dışına dokunmak kapatır
 
             CollectOptions(world);
+            // Cam bahçeye dokunmak: kamera ona kayar, içi büyük ekranda açılır (belge 47).
+            if (_vivView != null)
+                foreach (var o in _menuOptions)
+                    if (o.Item != null && o.Item.Def.IsVivarium) { _vivView.Open(o.Item, new Vector2(world.x, world.y)); return; }
             // Şehirde bir dükkânın içine dokunmak dükkân panelini açar (yürüme ve eşya menüsü yine çalışır).
             if (_shopPanel != null) { var shopHere = _shopPanel.ShopAt(tile); if (shopHere != null) _shopPanel.Open(shopHere); }
             // Tepedeki maden ağzına dokunmak ocak panelini açar (M tuşu da çalışır).
@@ -2096,6 +2122,16 @@ namespace Thatchwick.Game
             _keepsakePanel = new KeepsakePanel(_life.Keepsakes, _world, _clock);
             _homePanel = new HomePanel(_life, _world, _content, _household, () => Commander?.Character);
             _homePanel.Message += m => ShowMessage(m, 3f);
+            _vivView = new VivariumView(_life.Home, _content, _household, _clock, _input, () => Commander?.Character);
+            _vivView.Message += m => ShowMessage(m, 3f);
+            _vivView.Use += (item, inter) =>
+            {
+                if (Commander == null) return;
+                var def = item.Def.Interactions.Find(i => i.Id == inter);
+                string why = def != null ? Commander.Runner.WhyCannotStart(item, def) : "Yok.";
+                if (why != null) { ShowMessage(why); return; }
+                RunOption(new MenuOption { Item = item, Interaction = def });
+            };
             _minePanel = new MinePanel(_mines, _household, _content)
             {
                 Actor = () => Commander?.Character,
@@ -2409,6 +2445,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.mKey.wasPressedThisFrame) _minePanel.Toggle();
             if (kb != null && kb.jKey.wasPressedThisFrame) _keepsakePanel?.Toggle();
             if (kb != null && kb.eKey.wasPressedThisFrame) _homePanel?.Toggle();
+            if (kb != null && kb.escapeKey.wasPressedThisFrame && _vivView != null && _vivView.Active) _vivView.Close();
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
@@ -2915,6 +2952,7 @@ namespace Thatchwick.Game
             _minePanel.OnGUI(s);
             _keepsakePanel?.OnGUI(s);
             _homePanel?.OnGUI(s);
+            _vivView?.OnGUI(s);
             _familyPanel.OnGUI(s);
             _villagePanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }
             DrawBalloons(s);

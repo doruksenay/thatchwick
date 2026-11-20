@@ -2,7 +2,7 @@
 id: "432"
 title: "Yerleşim: dış mekân, bahçe ve bitki örtüsü (13 eşya)"
 status: pending
-approved_by: pending     # yerleşim görevi (belge 44): kullanıcı onayı bekler
+approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 family: esya
 style_gate: false
 cost_est: 14

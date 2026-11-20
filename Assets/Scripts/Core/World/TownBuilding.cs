@@ -8,6 +8,8 @@ namespace Thatchwick.Core.World
     {
         public readonly string Id, Name, Kind, Owner;
         public string Template;
+        /// <summary>Meslek etiketi (eşyaların "trades" alanı); boşsa Id. Ev için kullanılmaz.</summary>
+        public string Trade;
         public readonly int X, Y, W, H, DoorAt;
         public readonly char Door;
         public readonly FloorType Floor;

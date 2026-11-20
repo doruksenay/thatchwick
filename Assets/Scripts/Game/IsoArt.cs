@@ -36,6 +36,7 @@ namespace Thatchwick.Game
         /// <summary>Kayıt (Play'den çıkınca sprite'lar yok edilir; sözlükteki "sahte null" ayıklanır).</summary>
         public static void Reset()
         {
+            LayeredCharacterArt.Reset();
             _textures = null;
             Sprites.Clear();
             IconCache.Clear();
@@ -45,6 +46,14 @@ namespace Thatchwick.Game
         }
 
         /// <summary>Adı verilen görselden, pivotu piksel (x soldan, y alttan) olan sprite; görsel yoksa null.</summary>
+        /// <summary>Kütüphanedeki doku (yoksa null). Katmanlı karakter (LayeredCharacterArt) bölge haritalarını buradan okur.</summary>
+        public static Texture2D Texture(string name)
+        {
+            if (!Enabled || string.IsNullOrEmpty(name)) return null;
+            EnsureLoaded();
+            return _textures.TryGetValue(name, out var tex) ? tex : null;
+        }
+
         public static Sprite Get(string name, float pivotX, float pivotY)
         {
             if (!Enabled || string.IsNullOrEmpty(name)) return null;
@@ -464,6 +473,9 @@ namespace Thatchwick.Game
 
         public static Sprite Character(Character c, int direction)
         {
+            // Katmanlı karakter (belge 43): manken görselleri varsa görünüm (saç, sakal, renkler, beden) gerçekten çizilir.
+            var layered = LayeredCharacterArt.Frame(c, "idle", Directions[direction], 0);
+            if (layered != null) return layered;
             string r64 = ChildR64(c);
             if (r64 != null)
             {
@@ -503,6 +515,8 @@ namespace Thatchwick.Game
         public static Sprite CharacterWalk(Character c, int direction, float cycle)
         {
             if (!Enabled) return null;
+            int ln = LayeredCharacterArt.FrameCount(c, "walk2", Directions[direction]);
+            if (ln > 0) return LayeredCharacterArt.Frame(c, "walk2", Directions[direction], Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * ln) % ln);
             // Kabul edilen yürüme "walk2" (018b2/018b3; yaşlı 015a, çocuk 015c). Eski "walk" (018b) reddedildi:
             // zıplıyor; ona düşülmez. Bu yönün walk2 karesi yoksa null: durma görseli + kod sallantısı.
             string r64 = ChildR64(c);
@@ -532,6 +546,20 @@ namespace Thatchwick.Game
         public static Sprite CharacterAction(Character c, string key, int direction, float cycle, out string prefix, out int frame)
         {
             prefix = null; frame = 0;
+            {
+                int ld = direction % 2 == 1 ? direction : (direction + 7) % 8;
+                int ln = string.IsNullOrEmpty(key) ? 0 : LayeredCharacterArt.FrameCount(c, key, Directions[ld]);
+                if (ln > 0)
+                {
+                    // El konumu (HandAnchors) 84 px etkileşim karelerinin adına bağlı: aynı kare öneki verilir.
+                    frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * ln) % ln;
+                    string r84Prefix = AdultR84(c);
+                    prefix = r84Prefix != null ? r84Prefix + "_" + key + "_" + Directions[ld] + "_" : null;
+                    var lf = LayeredCharacterArt.Frame(c, key, Directions[ld], frame);
+                    if (lf != null) return lf;
+                    prefix = null; frame = 0;
+                }
+            }
             string r84 = AdultR84(c);
             if (r84 == null || !Enabled || string.IsNullOrEmpty(key)) return null;
             int diag = direction % 2 == 1 ? direction : (direction + 7) % 8;   // e(0)→se(7), n(2)→ne(1), w(4)→nw(3), s(6)→sw(5)

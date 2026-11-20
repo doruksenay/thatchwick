@@ -2,7 +2,7 @@
 id: "347"
 title: Buğday, çavdar, yulaf, keten ekin evreleri ve el değirmeni
 status: pending
-approved_by: pending     # kullanıcı kararı bekliyor (dönem tutarlılığı, 2026-11-17); "user" yapınca işçi alır
+approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 priority: 20
 family: bitki
 style_gate: false

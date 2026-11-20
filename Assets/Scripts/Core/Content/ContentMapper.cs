@@ -141,6 +141,42 @@ namespace Thatchwick.Core.Content
                 item.PotHerb = string.IsNullOrWhiteSpace(dto.potHerb) ? null : dto.potHerb.Trim();
                 item.PotGrowDays = dto.potGrowDays > 0f ? dto.potGrowDays : 3f;
                 item.LivePlant = dto.livePlant;
+                item.VivCreatures = Math.Max(0, dto.vivCreatures);
+                item.VivPlants = Math.Max(0, dto.vivPlants);
+                item.VivDecor = Math.Max(0, dto.vivDecor);
+                if (dto.viv != null)
+                {
+                    var v = dto.viv;
+                    var vd = new VivDef
+                    {
+                        IsPlant = v.kind == "plant", IsDecor = v.kind == "decor", Beauty = v.beauty > 0f ? v.beauty : 1f,
+                        Move = string.IsNullOrWhiteSpace(v.move) ? (v.kind == "plant" ? "sway" : v.kind == "decor" ? "static" : "crawl") : v.move,
+                        LifeDays = Math.Max(0f, v.lifeDays), Breeds = v.breeds, Becomes = string.IsNullOrWhiteSpace(v.becomes) ? null : v.becomes,
+                        BecomeDays = Math.Max(0f, v.becomeDays), Solitary = v.solitary, Color = v.color
+                    };
+                    if (v.kind != "plant" && v.kind != "creature" && v.kind != "decor") errors.Add($"{dto.id}: cam bahçe türü 'plant', 'creature' ya da 'decor' olmalı.");
+                    if (v.habitats != null)
+                        foreach (var h in v.habitats)
+                            if (h == "nemli" || h == "kuru" || h == "tuzlu" || h == "tatli") vd.Habitats.Add(h);
+                            else errors.Add($"{dto.id}: bilinmeyen cam bahçe zemini '{h}'.");
+                    if (vd.Habitats.Count == 0 && !vd.IsDecor) errors.Add($"{dto.id}: cam bahçe türünün habitatı yok.");
+                    if (v.needs != null) vd.Needs.AddRange(v.needs);
+                    if (v.eats != null) vd.Eats.AddRange(v.eats);
+                    if (v.tags != null) vd.Tags.AddRange(v.tags);
+                    if (v.avoid != null) vd.Avoid.AddRange(v.avoid);
+                    item.Viv = vd;
+                }
+                if (dto.catches != null)
+                    foreach (var c in dto.catches)
+                    {
+                        if (c == null || string.IsNullOrWhiteSpace(c.item)) continue;
+                        var cd = new CatchDef { Item = c.item, Chance = c.chance > 0 ? c.chance : 1f, Night = c.night, Rain = c.rain };
+                        if (c.seasons != null)
+                            foreach (var ss in c.seasons)
+                                if (LifeContentMapper.TryParseSeason(ss, out var cs)) cd.Seasons.Add(cs);
+                                else errors.Add($"{dto.id}: bilinmeyen yakalama mevsimi '{ss}'.");
+                        item.Catches.Add(cd);
+                    }
                 item.ShadePlant = dto.shadePlant;
                 item.Thirst = dto.thirst > 0f ? dto.thirst : 1f;
                 if (dto.bloomSeasons != null)
@@ -313,6 +349,9 @@ namespace Thatchwick.Core.Content
                 }
 
                 ApplyUpgrades(item, dto.upgrades, errors);
+                // Cam bahçe (belge 47): yakalanacak türü olan toplama yerine "Cam kavanozla yakala".
+                if (item.Catches.Count > 0)
+                    item.Interactions.Add(new InteractionDef { Id = "catch", DisplayName = "Cam kavanozla yakala", DurationDays = 0.05, Skill = SkillType.Foraging, SkillXp = 3f, HomeAction = "catch" });
                 // Mevsim süsü: mevsimi geçince ev görevlisi kaldırır (belge 45).
                 if (item.IsSeasonal)
                     item.Interactions.Add(new InteractionDef { Id = "stow_wilted", DisplayName = "Kaldır (mevsimi geçti)", DurationDays = 0.02, HomeAction = "stow" });

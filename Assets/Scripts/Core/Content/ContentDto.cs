@@ -194,6 +194,11 @@ namespace Thatchwick.Core.Content
         public string potHerb;       // canlı saksı: hasatta verdiği ot
         public float potGrowDays;    // canlı saksı: olgunlaşma günü (0 = 3)
         public bool livePlant;       // canlı süs bitkisi (ot vermez, çiçek açar)
+        public VivDto viv;           // cam bahçe türü: bitki ya da canlı (belge 47)
+        public CatchDto[] catches;   // bu toplama yerinde cam kavanozla yakalanabilenler (belge 47)
+        public int vivCreatures;     // cam bahçe: en çok canlı
+        public int vivPlants;        // cam bahçe: en çok bitki
+        public int vivDecor;         // cam bahçe: en çok süs (taş, kabuk)
         public string[] bloomSeasons; // çiçek açtığı mevsimler
         public bool shadePlant;      // gölge sever (eğrelti, yosun, sarmaşık)
         public float thirst;         // susama çarpanı (0 = 1; su teknesi 0,4)
@@ -256,6 +261,37 @@ namespace Thatchwick.Core.Content
         public string young, grown, fruit;   // bitki evreleri
         public int[] rotations;              // yalnızca bu dönüşler (merdiven: görsel tek yöne çıkar); boş = görsele göre
         public bool pending;                 // görsel eşlendi ama dosya henüz depoda yok (gelene kadar yer tutucu)
+    }
+
+    /// <summary>Cam bahçe türü (belge 47): bitki ya da canlı.</summary>
+    [Serializable]
+    public sealed class VivDto
+    {
+        public string kind;          // plant | creature | decor (taş, kabuk, kabuk parçası: canlı değil, süs ve sığınak)
+        public string[] habitats;    // nemli | kuru | tuzlu | tatli; süste boş = her zemin
+        public string[] eats;        // yediği türler; "*plant" her bitki, "*flower" çiçekli bitki
+        public string[] tags;        // flower, cleaner, pest, toxic, glow, sings, shade, sun; süste hide (sığınak), bask (güneşlenme taşı), shell (boş kabuk)
+        public string[] needs;       // canlının istediği süs etiketi (kertenkele bask, keşiş yengeci shell); yoksa hastalanır
+        public float beauty;         // süsün güzelliği (0 = 1)
+        public string move;          // crawl | hop | fly | static | swim | burrow | sway
+        public float lifeDays;       // ömür (gün); 0 = sınırsız (bitki)
+        public bool breeds;          // iki tane ve tokken çoğalır
+        public string becomes;       // dönüşür (tırtıl → kelebek)
+        public float becomeDays;
+        public string[] avoid;       // bir arada olamaz (eklenemez)
+        public bool solitary;        // aynı türden ikincisi olmaz
+        public string color;         // görsel gelene kadar yer tutucu renk
+    }
+
+    /// <summary>Toplama yerinde yakalanan canlı ya da fidan (belge 47).</summary>
+    [Serializable]
+    public sealed class CatchDto
+    {
+        public string item;
+        public float chance;
+        public string[] seasons;
+        public bool night;           // yalnızca gece (ateş böceği)
+        public bool rain;            // yalnızca yağmurlu günde (salyangoz)
     }
 
     /// <summary>Eşya yükseltmesi (belge 45 §6): yerinde yapılır, malzeme harcar; etkisi eşyaya kalır.</summary>

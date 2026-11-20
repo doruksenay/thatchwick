@@ -13,7 +13,7 @@ namespace Thatchwick.Core.Life
     public static class HomeActions
     {
         public const string Candle = "candle", Strew = "strew", Whitewash = "whitewash", WaterPot = "waterPot",
-            HarvestPot = "harvestPot", Upgrade = "upgrade", Stow = "stow";
+            HarvestPot = "harvestPot", Upgrade = "upgrade", Stow = "stow", Catch = "catch", Mist = "mist";
     }
 
     /// <summary>Bir eşya örneğinin ev bakımı durumu (yükseltmeler, desen, canlı saksı, ot serpmesi).</summary>
@@ -191,6 +191,7 @@ namespace Thatchwick.Core.Life
             }
 
             ServantTick();
+            VivariumTick(gameDays);
             _moodAccum += gameDays;
             if (_moodAccum >= 0.05)
             {
@@ -210,6 +211,7 @@ namespace Thatchwick.Core.Life
             Dovecotes();
             ServantDay();
             CheckCollections();
+            VivariumDay();
         }
 
         /// <summary>Dünyadan kalkan eşyaların durumu silinir (envantere alınan yükseltilmiş eşya yükseltmesini kaybeder).</summary>
@@ -229,12 +231,15 @@ namespace Thatchwick.Core.Life
             var fresh = new HashSet<string>(StringComparer.Ordinal);
             foreach (var it in _world.Items)
                 if (IsStrewnFresh(it)) { var r = RoomOf(it); if (r != null && r.IsIndoor) fresh.Add(RoomKey(r)); }
-            if (fresh.Count == 0) return;
+            var singing = SingingRooms();
+            if (fresh.Count == 0 && singing.Count == 0) return;
             foreach (var c in Members())
             {
                 if (c.IsDead || !c.MoodEnabled || c.IsVillager) continue;
                 var room = _world.Map.Rooms.RoomAt(c.Position);
-                if (room != null && fresh.Contains(RoomKey(room))) c.AddMoodlet(FreshRoomMoodId, "Ferah oda", FreshRoomMood, 0.15);
+                if (room == null) continue;
+                if (fresh.Contains(RoomKey(room))) c.AddMoodlet(FreshRoomMoodId, "Ferah oda", FreshRoomMood, 0.15);
+                if (singing.Contains(RoomKey(room))) c.AddMoodlet(CricketMoodId, "Cırcır böceği ötüyor", CricketMood, 0.15);
             }
         }
 
@@ -258,7 +263,9 @@ namespace Thatchwick.Core.Life
             if (room == null) return 0;
             int n = 0;
             foreach (var it in _world.Items)
-                if (it.GivesLight && RoomOf(it) == room) n += it.Def.EffectiveLightPower;
+                if (RoomOf(it) != room) continue;
+                else if (it.GivesLight) n += it.Def.EffectiveLightPower;
+                else n += VivLight(it);   // gece ateş böcekli cam bahçe
             return n;
         }
 
@@ -460,6 +467,7 @@ namespace Thatchwick.Core.Life
             foreach (var d in UpgradeDefs(item)) b += d.Beauty;
             b += PatternBeauty(item);
             b += CollectionBeauty(item);
+            b += VivBeauty(item);
             if (PotWilted(item)) b += -item.Def.Beauty + WiltedPotBeauty;
             else if (item.Def.LivePlant && PotGrown(item)) b += GrownPlantBeauty + (InBloom(item) ? BloomBeauty : 0);
             return b;
@@ -524,6 +532,16 @@ namespace Thatchwick.Core.Life
                     return UpgradeBlocker(item, i.UpgradeId);
                 case HomeActions.Stow:
                     return DecorSystem.IsWilted(item, _clock.Season) ? null : "Bu süs daha taze.";
+                case HomeActions.Catch:
+                    return CatchBlocker(item);
+                case HomeActions.Mist:
+                {
+                    var v = VivOf(item);
+                    if (v?.Habitat == null) return "Önce zemini seç (cam bahçeye yakından bak).";
+                    if (IsWater(v.Habitat)) return v.Moisture > 70 ? "Su hâlâ taze." : v.Habitat == Fresh || _house.Count(SeaWaterItem) > 0 ? null : "Suyu tazelemek için envanterde tuz olmalı.";
+                    double target = v.Habitat == Dry ? 30 : 85;
+                    return v.Moisture >= target - 5 ? (v.Habitat == Dry ? "Kum yeterince nemli." : "Toprak zaten nemli.") : null;
+                }
             }
             return null;
         }
@@ -566,6 +584,12 @@ namespace Thatchwick.Core.Life
                 }
                 case HomeActions.Upgrade:
                     ApplyUpgrade(item, i.UpgradeId);
+                    break;
+                case HomeActions.Catch:
+                    Catch(item);
+                    break;
+                case HomeActions.Mist:
+                    Mist(item);
                     break;
                 case HomeActions.Stow:
                     if (_world.GetItem(item.Id) != null)
@@ -616,6 +640,8 @@ namespace Thatchwick.Core.Life
                 { var i = Find(def, x => x.HomeAction == HomeActions.Stow); if (i != null) list.Add((it, i)); }
                 if (IsStrewable(it) && !IsStrewnFresh(it))
                 { var i = Find(def, x => x.HomeAction == HomeActions.Strew); if (i != null) list.Add((it, i)); }
+                if (def.IsVivarium && NeedsMist(it))
+                { var i = Find(def, x => x.HomeAction == HomeActions.Mist); if (i != null) list.Add((it, i)); }
                 if (!it.IsDecor && def.HeatOutput > 0f && SootOf(RoomOf(it)) >= SootWarnAt)
                 { var i = Find(def, x => x.HomeAction == HomeActions.Whitewash); if (i != null) list.Add((it, i)); }
             }

@@ -1028,6 +1028,41 @@
       ]
     },
     {
+      "id": "shed_animals",
+      "type": "barn",
+      "steps": [
+        {
+          "item": "item.hay_bale",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.salt_lick",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.saddle_rack",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.milking_stool",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.barn_lantern",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.animal_bell",
+          "optional": true,
+          "chance": 0.5,
+          "anchor": "wall"
+        }
+      ]
+    },
+    {
       "id": "archive",
       "type": "storehouse",
       "steps": [
@@ -1131,7 +1166,7 @@
       "upper": "home_upper",
       "cellar": "storehouse",
       "cellarType": "storehouse",
-      "garden": "garden_shop"
+      "garden": "yard_general"
     },
     {
       "id": "scribe",
@@ -1198,6 +1233,10 @@
       "id": "mason",
       "ground": "shop_mason",
       "garden": "yard_mason"
+    },
+    {
+      "id": "animals_hut",
+      "ground": "shed_animals"
     },
     {
       "id": "cottage",
@@ -1276,6 +1315,51 @@
       "id": "garden_shop",
       "enclosure": "none",
       "steps": [
+        {
+          "item": "item.rain_barrel",
+          "optional": true,
+          "chance": 0.6,
+          "anchor": "corner"
+        },
+        {
+          "item": "item.woodshed",
+          "optional": true,
+          "chance": 0.5,
+          "anchor": "side"
+        },
+        {
+          "any": [
+            "item.tree_apple",
+            "item.tree_pear",
+            "item.tree_plum",
+            "item.tree_cherry"
+          ],
+          "optional": true,
+          "chance": 0.6,
+          "anchor": "open"
+        },
+        {
+          "item": "item.garden_bench",
+          "optional": true,
+          "chance": 0.5,
+          "anchor": "wallBase"
+        },
+        {
+          "item": "item.flower_clump",
+          "count": 2,
+          "optional": true,
+          "anchor": "wallBase"
+        }
+      ]
+    },
+    {
+      "id": "yard_general",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.market_stall",
+          "anchor": "front"
+        },
         {
           "item": "item.rain_barrel",
           "optional": true,

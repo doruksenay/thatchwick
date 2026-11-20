@@ -95,6 +95,7 @@ namespace Thatchwick.Core.Life
                     if (item == null || inter == null) { info.Icon = "idle"; info.Text = "Bir işe hazırlanıyor"; break; }
                     info.Text = $"{inter.DisplayName} ({item.Def.DisplayName})";
                     info.Icon = inter.RestoresNeed ? NeedIcon(inter.Need) : SkillIcon(inter.Skill);
+                    if (inter.Id == "water" || inter.Id == "water_pot") info.Icon = "water";   // 018c sulama
                     if (!job.Reason.HasValue && inter.RestoresNeed) info.Need = inter.Need;
                     break;
                 case JobKind.Social:
@@ -132,7 +133,10 @@ namespace Thatchwick.Core.Life
                         case TileAction.Support: info.Icon = "mine_support"; info.Text = "Destek kuruyor"; break;
                         case TileAction.Bail: info.Icon = "mine_bucket"; info.Text = "Kovayla su boşaltıyor"; break;
                         case TileAction.Light: info.Text = "Kandil yakıyor"; break;
-                        default: info.Text = "Çapalıyor"; break;
+                        case TileAction.Sow: info.Icon = "sow"; info.Text = "Ekiyor"; break;
+                        case TileAction.Till: info.Icon = "farm"; info.Text = "Çapalıyor"; break;
+                        case TileAction.Stock: info.Text = "Gölete balık bırakıyor"; break;
+                        default: info.Text = "Çalışıyor"; break;
                     }
                     break;
                 case JobKind.Breakdown:

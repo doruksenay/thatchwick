@@ -2,7 +2,7 @@
 id: "343"
 title: Taş ocağı, demir ocağı, çömlekçi çarkı, küp, mayalama fıçısı, mum tezgâhı, av pususu, rüzgâr fırıldağı, yazı tahtası, kopuz
 status: pending
-approved_by: pending     # kullanıcı kararı bekliyor (ikinci dalga beceriler, 2026-11-17); "user" yapınca işçi alır
+approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 worker: batch            # 2026-11-18: toplu işçi biçimine çevrildi (Claude'suz); onay hâlâ kullanıcıda
 priority: 20
 family: esya

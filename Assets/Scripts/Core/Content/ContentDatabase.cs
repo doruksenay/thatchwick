@@ -267,6 +267,16 @@ namespace Thatchwick.Core.Content
             foreach (var item in Items.All)
                 if (item.FinishGroup != null && !finishGroups.Contains(item.FinishGroup))
                     errors.Add($"{item.Id}: '{item.FinishGroup}' kaplama grubunda hiç kaplama yok.");
+            // Cam bahçe (belge 47): yakalanan, yenen ve dönüşülen türler var olmalı.
+            foreach (var item in Items.All)
+            {
+                foreach (var c in item.Catches)
+                    if (!Items.TryGet(c.Item, out var cd) || cd.Viv == null) errors.Add($"{item.Id}: yakalanan '{c.Item}' bir cam bahçe türü değil.");
+                if (item.Viv == null) continue;
+                foreach (var e in item.Viv.Eats)
+                    if (!e.StartsWith("*") && (!Items.TryGet(e, out var ed) || ed.Viv == null)) errors.Add($"{item.Id}: yediği '{e}' bir cam bahçe türü değil.");
+                if (item.Viv.Becomes != null && (!Items.TryGet(item.Viv.Becomes, out var bd) || bd.Viv == null)) errors.Add($"{item.Id}: dönüştüğü '{item.Viv.Becomes}' yok.");
+            }
             foreach (var item in Items.All)
                 if (item.AccentGroup != null && !finishGroups.Contains(item.AccentGroup))
                     errors.Add($"{item.Id}: '{item.AccentGroup}' ikinci kaplama grubunda hiç kaplama yok.");

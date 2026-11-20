@@ -477,8 +477,9 @@ namespace Thatchwick.Core.Layout
                 foreach (var q in ItemFacing.InteractionCells(placed[placed.Count - 1])) ctx.Reserved.Add(q);
                 benches++;
             }
-            // Bekçi ateşi, ilan tahtası ve Kerem'in pazar tezgâhı meydanın kenarında (yolu ve kuyunun önünü kapatmadan).
-            foreach (var id in new[] { "item.notice_post", "item.bonfire", "item.market_stall" })
+            // Bekçi ateşi ve ilan tahtası meydanın kenarında (yolu ve kuyunun önünü kapatmadan). Pazar tezgâhı meydanda değil:
+            // pazar Kerem'in genel dükkânında (belge 42), tezgâh dükkânın önünde mal sergisi olur (layouts.json yard_general).
+            foreach (var id in new[] { "item.notice_post", "item.bonfire" })
             {
                 if (!ctx.Content.Items.TryGet(id, out var def)) continue;
                 var cands = new List<(GridPos, int, double)>();

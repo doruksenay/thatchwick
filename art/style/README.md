@@ -34,3 +34,9 @@ Aile türevleri pilota `depends_on` ile bağlıdır, pilot kabul edilmeden başl
 - `python tools/art/style.py sheet --family <aile> --out art/results/NNN-yanyana.png <png>...`: referanslar (R) ve yeni görseller (Y) 4 kat büyütülmüş, alt kenarları aynı çizgide. Kabul kararı buna bakılarak verilir.
 
 PNG'ler Git LFS'te. Yerelde `git lfs pull` yapılmadıysa betikler "cannot identify image" hatası verir.
+
+## 4. Karakter rampaları (palet kilidi, 20.11.2026)
+Karakter katmanları (manken, saç, sakal, başlık, portre parçası) renk değiştirilebilir olmak zorunda; bu yüzden 64 renklik genel paletten ayrı, rampa tabanlı bir kilit var (belge 43 §4.5).
+- `python tools/art/ramps.py build`: `appearance.json`'daki ten, saç, göz ve kumaş renklerinden 4 tonluk rampalar → `Assets/Resources/Content/character_ramps.json`. Formül `RampMath.cs` ile aynı; testler ikisini karşılaştırır.
+- `python tools/art/ramps.py check --ref hair|cloth|body <png>...`: parça referans rampada mı (opak piksellerin %85'i). KALDI teslim edilmez.
+- Anahtar renkler (manken bölgeleri) birbirinden en az 25 uzaklıkta; `build` bunu denetler.
