@@ -1,7 +1,7 @@
 ---
 id: "006"
 title: Söndürülmüş ocak taşı
-status: review
+status: accepted
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: esya
 style_gate: false
@@ -36,3 +36,4 @@ Ateş efekti (animasyon) sonraki tur.
 BLOKE (2026-11-08, Unity/geliştirme sohbeti): 006 işi zemin oturumunda 1 kez denendi (alev çizdi); inpaint_image_pro_flash ile deneme onaylı. Çift harcama olmasın diye bloke. Zemin oturumu bitince kullanıcı durumu accepted/rejected yapar ya da pending'e geri alır.
 
 OTOMATİK AKIŞ: çıktılar zemin oturumunda teslim edilmişti (Assets'te var); `blocked` yerine `review`. Kabul ya da red kullanıcının.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

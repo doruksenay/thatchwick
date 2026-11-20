@@ -108,7 +108,7 @@ namespace Thatchwick.Core.Tests
             var note = LifeRules.ApplyChildhoodAptitude(c);
             Assert.NotNull(note);
             Assert.Equal(Aptitude.Minor, c.Skills.GetAptitude(SkillType.Fishing));
-            Assert.Contains(note, c.Chronicle);
+            Assert.Contains(c.Chronicle, n => n.StartsWith("@@core.chronicle.aptitude_"));   // kroniğe anahtarlı yazılır (SavedText)
             // Zaten yatkınsa çok yatkına çıkar; çok yatkınsa değişmez.
             Assert.NotNull(LifeRules.ApplyChildhoodAptitude(c));
             Assert.Equal(Aptitude.Major, c.Skills.GetAptitude(SkillType.Fishing));

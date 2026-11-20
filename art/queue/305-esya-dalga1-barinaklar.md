@@ -1,7 +1,7 @@
 ---
 id: "305"
 title: Dalga 1: hayvan barınakları (kümes 2x2, ahır 3x2, kulübe, kedi sepeti, arı kovanı)
-status: review
+status: accepted
 claimed_at: 2026-11-18T11:31Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -57,3 +57,4 @@ Yöntem, ortak ayarlar, ortak açıklama eki, ikinci deneme kuralı, renk sını
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 - 2026-11-18: yeniden `pending` (Claude, kurtarma): 2026-11-18T09:02Z sahiplenmesinden sonuç gelmedi.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

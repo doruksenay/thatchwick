@@ -1,7 +1,8 @@
 ---
 id: "479"
 title: "Sera eşyaları: fidan rafı ve saksı tezgâhı (2)"
-status: pending
+status: review
+claimed_at: 2026-11-20T11:06Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("sera oda tipi: bunu yapalım")
 priority: 40
 family: esya

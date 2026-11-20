@@ -52,6 +52,12 @@ namespace Thatchwick.Game
         /// <summary>Çocuk annesinden kasabaya gitmek için izin ister; dönen metin cevaptır (oyun katmanı saati ve havayı verir).</summary>
         public Func<Character, string> AskRoam { get; set; }
 
+        /// <summary>Ayna'yı açar (görünüş ve ad değiştirme); null ise düğme görünmez.</summary>
+        public Action<Character> OpenMirror { get; set; }
+        /// <summary>Portre karesi (geçici: dünya karakterinden baş kırpımı); null ise portre çizilmez.</summary>
+        public Func<Character, Sprite> PortraitOf { get; set; }
+        private const float PortraitSize = 40f;
+
         // "Göreve gönder" formu (tek kişi için açılır).
         private int _dutyFor;
         private TimedDutyKind _dutyKind = TimedDutyKind.Mine;
@@ -120,11 +126,16 @@ namespace Thatchwick.Game
             string mood = c.MoodEnabled ? $", {Thatchwick.Core.Mood.MoodRules.Name(c.Mood.Status)}" : "";
             string state = c.IsDead ? "öldü" : $"{StageName(c.Stage)} {c.AgeDays:0}g, Açlık {c.Needs.Get(NeedType.Hunger):0}{mood}{(c.IsPregnant ? ", hamile" : "")}";
             GUILayout.BeginHorizontal();
-            UiSkin.Wrap($"{Thatchwick.Core.Progress.Mastery.DisplayName(c)}{head} ({state}{spouse})", UiSkin.FamilyTextW);   // usta unvanı (belge 45)
+            bool portrait = PortraitOf != null && !c.IsVillager && !c.IsDead;
+            if (portrait) Portraits.Draw(GUILayoutUtility.GetRect(PortraitSize, PortraitSize, GUILayout.Width(PortraitSize), GUILayout.Height(PortraitSize)), PortraitOf(c));
+            UiSkin.Wrap($"{Thatchwick.Core.Progress.Mastery.DisplayName(c)}{head} ({state}{spouse})", UiSkin.FamilyTextW - (portrait ? PortraitSize + 4f : 0f));   // usta unvanı (belge 45)
             if (CanTakeCommands(c) && c != actor && GUILayout.Button("Seç", GUILayout.Width(40f))) { _select(c); _status = $"{c.Name} seçildi."; }
             GUILayout.EndHorizontal();
+            if (OpenMirror != null && !c.IsVillager && !c.IsDead && c.Stage != AgeStage.Baby
+                && GUILayout.Button(GameLocalization.T(c.FreeMirrorAvailable ? "ui.mirror.open_free" : "ui.mirror.open"), GUILayout.Width(c.FreeMirrorAvailable ? 120f : 60f)))
+                OpenMirror(c);
             // Hanedan geçmişi: kişinin hayat notları ("Neşeli bir soydan geldi ama zor bir çocukluk geçirdi.").
-            if (!c.IsVillager) foreach (var note in c.Chronicle) UiSkin.Wrap("    · " + note, UiSkin.FamilyTextW);
+            if (!c.IsVillager) foreach (var note in c.Chronicle) UiSkin.Wrap("    · " + GameLocalization.Saved(note), UiSkin.FamilyTextW);
 
             // Görev (otomasyonun işçi tarafı): ihtiyaçları iyiyken gündüz kendiliğinden tarlaya ya da hayvanlara bakar.
             if (!c.IsVillager && DutyPlanner.CanTakeDuty(c))

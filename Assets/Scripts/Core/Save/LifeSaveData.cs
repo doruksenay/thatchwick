@@ -40,6 +40,8 @@ namespace Thatchwick.Core.Save
     [Serializable]
     public sealed class LifeSaveData
     {
+        /// <summary>Giysiler, dolaplar ve takımlar (belge 48). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Clothing.ClothingSave clothing;
         /// <summary>Süreli görevler ve "her gün tekrarla" planları (belge 47 §3). Eski kayıtta null.</summary>
         public Thatchwick.Core.Work.TimedDutyServiceSave timedDuties;
         /// <summary>Çocukların gezme izni (belge 47 §7.2). Eski kayıtta null.</summary>

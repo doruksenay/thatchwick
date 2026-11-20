@@ -1,7 +1,7 @@
 ---
 id: "422k"
 title: "Kahve çalısı evreleri ve cezve (iso)"
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:50Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 32
 family: esya
@@ -40,3 +40,4 @@ created: 2026-11-19
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

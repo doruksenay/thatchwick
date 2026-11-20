@@ -56,6 +56,46 @@ namespace Thatchwick.Game
         private static readonly string[] AccidentLabels = { "Kapalı", "Seyrek", "Normal" };
         private static readonly string[] FocusLabels = { "Yok", "Çiftçilik", "Odunculuk", "Yemek", "Marangozluk" };
 
+        // ---- Ayna kipi (belge 01 ve 14): var olan karakterin görünüşünü ve adını değiştirir ----
+        private readonly Character _mirrorTarget;
+        private readonly Appearance _mirrorOriginal;
+        private static readonly Tab[] MirrorTabs = { Tab.Identity, Tab.Voice, Tab.Face, Tab.Hair, Tab.Marks, Tab.Clothes };
+        public bool IsMirror => _mirrorTarget != null;
+        public Character MirrorTarget => _mirrorTarget;
+        /// <summary>Ayna kipinde "Vazgeç" seçildi.</summary>
+        public bool Cancelled { get; private set; }
+        /// <summary>Elmas bakiyesi (Ayna kipi).</summary>
+        public Func<int> DiamondBalance { get; set; }
+        /// <summary>Evde ayna var mı (Ayna kipi; karar 18.11.2026).</summary>
+        public Func<bool> HasHouseMirror { get; set; }
+
+        /// <summary>Ayna: verilen karakterin görünüşü taslağa kopyalanır; genetik alanlar ve beden yapısı değişmez.</summary>
+        public CharacterCreator(AppearanceCatalog catalog, Character target, int seed = 1)
+        {
+            _catalog = catalog;
+            _rng = new System.Random(seed);
+            _mirrorTarget = target;
+            _mirrorOriginal = target.Appearance.Clone();
+            _draft = CharacterDraft.CreateRandom(catalog, _rng, target.Name);
+            _draft.SetSex(target.Sex, catalog);
+            _draft.StartStage = target.Stage;
+            _draft.Appearance = target.Appearance.Clone();
+            _ink = catalog.InkColors.Count > 0 ? catalog.InkColors[0] : new Rgb(40, 50, 90);
+            _tab = Tab.Hair;
+        }
+
+        /// <summary>Ayna'nın değiştiremediği alanlar her karede aslına döner (zar ve sekmeler bunlara dokunsa da).</summary>
+        private void KeepMirrorLocks()
+        {
+            var a = _draft.Appearance; var o = _mirrorOriginal;
+            a.SkinColor = o.SkinColor; a.EyeColor = o.EyeColor; a.EyeColorRight = o.EyeColorRight;
+            a.FaceShapeId = o.FaceShapeId; a.EyeShapeId = o.EyeShapeId; a.NoseId = o.NoseId; a.EarsId = o.EarsId;
+            a.Build = o.Build; a.Frame = o.Frame; a.HeightPercent = o.HeightPercent;
+        }
+
+        private MirrorQuote MirrorQuoteNow() =>
+            MirrorRules.Quote(_mirrorTarget, _draft.Appearance, _draft.Name, _catalog, HasHouseMirror == null || HasHouseMirror());
+
         public CharacterCreator(AppearanceCatalog catalog, int seed = 1)
         {
             _catalog = catalog;
@@ -101,7 +141,7 @@ namespace Thatchwick.Game
             GUI.Box(panel, GUIContent.none);
 
             GUILayout.BeginArea(new Rect(panel.x + 10f, panel.y + 8f, panel.width - 20f, panel.height - 16f));
-            GUILayout.Label("Karakter yarat", _titleStyle);
+            GUILayout.Label(IsMirror ? GameLocalization.T("ui.mirror.title", ("name", _mirrorTarget.Name)) : "Karakter yarat", _titleStyle);
             GUILayout.BeginHorizontal();
             DrawPreviewColumn();
             DrawOptionsColumn(ph);
@@ -160,10 +200,10 @@ namespace Thatchwick.Game
 
             GUILayout.Space(4f);
             GUILayout.Label($"{_draft.Name} · {(_draft.Sex == Sex.Female ? "Kadın" : "Erkek")} · {AgeStages.Name(_draft.StartStage)}", _smallStyle);
-            GUILayout.Label(_draft.EffectiveDynastyName, _smallStyle);
+            if (!IsMirror) GUILayout.Label(_draft.EffectiveDynastyName, _smallStyle);
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Zar at (hepsi)")) RandomizeAll();
+            if (!IsMirror && GUILayout.Button("Zar at (hepsi)")) RandomizeAll();
             GUI.enabled = _undo.Count > 0;
             if (GUILayout.Button("Geri al", GUILayout.Width(70f))) Undo();
             GUI.enabled = true;
@@ -177,9 +217,18 @@ namespace Thatchwick.Game
             GUILayout.BeginVertical();
 
             // Sekmeler: iki sıra.
-            int t = (int)_tab;
-            t = GUILayout.SelectionGrid(t, TabLabels, 4);
-            if (t != (int)_tab) { _tab = (Tab)t; _scroll = Vector2.zero; }
+            if (IsMirror)
+            {
+                int mi = Mathf.Max(0, System.Array.IndexOf(MirrorTabs, _tab));
+                int mn = GUILayout.SelectionGrid(mi, MirrorTabs.Select(x => TabLabels[(int)x]).ToArray(), 3);
+                if (mn != mi || _tab != MirrorTabs[mn]) { _tab = MirrorTabs[mn]; _scroll = Vector2.zero; }
+            }
+            else
+            {
+                int t = (int)_tab;
+                t = GUILayout.SelectionGrid(t, TabLabels, 4);
+                if (t != (int)_tab) { _tab = (Tab)t; _scroll = Vector2.zero; }
+            }
 
             if (LookTabs.Contains(_tab))
             {
@@ -194,7 +243,7 @@ namespace Thatchwick.Game
             _scroll = GUILayout.BeginScrollView(_scroll, GUILayout.Height(Mathf.Max(200f, panelHeight - 170f)));
             switch (_tab)
             {
-                case Tab.Identity: DrawIdentity(); break;
+                case Tab.Identity: if (IsMirror) DrawMirrorIdentity(); else DrawIdentity(); break;
                 case Tab.Personality: DrawPersonality(); break;
                 case Tab.Voice: DrawVoice(); break;
                 case Tab.Body: DrawBody(); break;
@@ -204,6 +253,7 @@ namespace Thatchwick.Game
                 case Tab.Clothes: DrawClothes(); break;
             }
             GUILayout.EndScrollView();
+            if (IsMirror) { KeepMirrorLocks(); DrawMirrorFooter(); GUILayout.EndVertical(); return; }
 
             foreach (var e in _errors)
             {
@@ -223,6 +273,44 @@ namespace Thatchwick.Game
             }
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
+        }
+
+        // ---- Ayna kipi ----
+
+        private void DrawMirrorIdentity()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("İsim", GUILayout.Width(100f));
+            _draft.Name = GUILayout.TextField(_draft.Name ?? "", CharacterDraft.MaxNameLength);
+            GUILayout.EndHorizontal();
+            GUILayout.Label("   " + GameLocalization.T("ui.mirror.rename_note", ("cost", MirrorRules.RenameDiamonds)), _smallStyle);
+            GUILayout.Label("   " + GameLocalization.T("ui.mirror.locked_note"), _smallStyle);
+        }
+
+        private void DrawMirrorFooter()
+        {
+            var q = MirrorQuoteNow();
+            int balance = DiamondBalance != null ? DiamondBalance() : 0;
+            bool nameOk = (_draft.Name ?? "").Trim().Length >= CharacterDraft.MinNameLength;
+            bool changed = q.Diamonds > 0 || q.UsesFreeMirror;
+            var prev = GUI.color;
+            GUI.color = new Color(1f, 0.5f, 0.5f);
+            foreach (var e in q.Errors) GUILayout.Label("• " + e, _smallStyle);
+            if (!nameOk) GUILayout.Label("• " + GameLocalization.T("ui.mirror.name_short"), _smallStyle);
+            if (q.CanApply && q.Diamonds > balance) GUILayout.Label("• " + GameLocalization.T("ui.mirror.not_enough"), _smallStyle);
+            GUI.color = prev;
+
+            string price = !changed ? GameLocalization.T("ui.mirror.no_change")
+                : q.Diamonds > 0 ? GameLocalization.T("ui.mirror.cost", ("cost", q.Diamonds), ("balance", balance))
+                : GameLocalization.T("ui.mirror.free");
+            GUILayout.Label(price);
+
+            GUILayout.BeginHorizontal();
+            GUI.enabled = changed && q.CanApply && nameOk && q.Diamonds <= balance;
+            if (GUILayout.Button(GameLocalization.T("ui.mirror.apply"), GUILayout.Height(30f))) Finished = true;
+            GUI.enabled = true;
+            if (GUILayout.Button(GameLocalization.T("ui.mirror.cancel"), GUILayout.Height(30f), GUILayout.Width(110f))) Cancelled = true;
+            GUILayout.EndHorizontal();
         }
 
         // ---- sekmeler ----

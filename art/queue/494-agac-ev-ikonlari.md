@@ -1,7 +1,8 @@
 ---
 id: "494"
 title: "Ürün ikonları: ağaç ev iskeletleri (5) ve ceviz"
-status: pending
+status: review
+claimed_at: 2026-11-20T11:11Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026, Project belgesi 52
 priority: 40
 family: arayuz
