@@ -1,22 +1,22 @@
 ---
-id: "834"
+id: "884"
 title: "Koşu, yetişkin, 8 yön (16)"
 status: pending
-approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 830 açılınca çalışır
+approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 880 açılınca çalışır
 priority: 50
 family: karakter
 style_gate: false
 cost_est: 16
 cost_max: 24
-depends_on: ["830"]
+depends_on: ["880"]
 max_attempts: 1
 pixellab: true
 outputs:
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_run_<yön>_<NN>.png
-  - art/results/834-*.md
+  - art/results/884-*.md
 created: 2026-11-21
 ---
-# 834 Koşu, yetişkin, 8 yön (16)
+# 884 Koşu, yetişkin, 8 yön (16)
 
 ## Amaç
 Koşu (69, karar S3): acil durum (kavgadan kaçış, ebe çağrısı), oyuncu emriyle uzun yol (14+ karo), çocuk oyunu. Hız `RunRules` (yürümenin 1,6 katı, Atletizm ile çarpılır); kare `IsoArt.CharacterGait(..., "run")`.
@@ -35,7 +35,7 @@ Koşu (69, karar S3): acil durum (kavgadan kaçış, ebe çağrısı), oyuncu em
 018a ölçütleri her klip için; ayak satırı sabit, giysi ve saç durma karesiyle aynı. Koşuda kafa farkı ≤ 5 px; ayak satırı sabit, iki ayak aynı anda yerden kesilen kare olabilir. Klip başına GIF `art/results/` altına.
 
 ## Notlar
-- **Kapı:** 830 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
+- **Kapı:** 880 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
 - Kod hazır (PR: animasyon çeşitliliği kod katmanı): kare gelince kod değişmeden oynar; gelene kadar kodla çeşit (tempo, salınım, parçacık) oynar.
 - Giysi katmanları (43c, 509): bu kareler gövde setidir; giysi ailelerine aktarım ayrı iştir.
 

@@ -1,24 +1,24 @@
 ---
-id: "832"
+id: "882"
 title: "Hâl durmaları 2/2: gergin, kederli, hırçın (24)"
 status: pending
-approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 830 açılınca çalışır
+approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 880 açılınca çalışır
 priority: 50
 family: karakter
 style_gate: false
 cost_est: 24
 cost_max: 32
-depends_on: ["830"]
+depends_on: ["880"]
 max_attempts: 1
 pixellab: true
 outputs:
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_idle_tense_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_idle_sad_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_idle_cross_{se,sw,nw,ne}_<NN>.png
-  - art/results/832-*.md
+  - art/results/882-*.md
 created: 2026-11-21
 ---
-# 832 Hâl durmaları 2/2: gergin, kederli, hırçın (24)
+# 882 Hâl durmaları 2/2: gergin, kederli, hırçın (24)
 
 ## Amaç
 Hâl durmaları (69 §3.1, karar S1), olumsuz hâller. Kederli ve hırçın durma kozy tona uygun, abartısız olmalı.
@@ -39,7 +39,7 @@ Hâl durmaları (69 §3.1, karar S1), olumsuz hâller. Kederli ve hırçın durm
 018a ölçütleri her klip için; ayak satırı sabit, giysi ve saç durma karesiyle aynı. Durma hareketi küçük kalmalı; ilk ve son kare durma karesine oturur. Klip başına GIF `art/results/` altına.
 
 ## Notlar
-- **Kapı:** 830 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
+- **Kapı:** 880 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
 - Kod hazır (PR: animasyon çeşitliliği kod katmanı): kare gelince kod değişmeden oynar; gelene kadar kodla çeşit (tempo, salınım, parçacık) oynar.
 - Giysi katmanları (43c, 509): bu kareler gövde setidir; giysi ailelerine aktarım ayrı iştir.
 

@@ -1,23 +1,23 @@
 ---
-id: "838"
+id: "888"
 title: "Çocuk: kıpır kıpır durma ve koşu (24)"
 status: pending
-approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 830 açılınca çalışır
+approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 880 açılınca çalışır
 priority: 50
 family: karakter
 style_gate: false
 cost_est: 24
 cost_max: 32
-depends_on: ["830", "577"]
+depends_on: ["880", "577"]
 max_attempts: 1
 pixellab: true
 outputs:
   - Assets/Art/Iso/_aday/anim/iso_char_{boy,girl}_r64_idle_fidget_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{boy,girl}_r64_run_<yön>_<NN>.png
-  - art/results/838-*.md
+  - art/results/888-*.md
 created: 2026-11-21
 ---
-# 838 Çocuk: kıpır kıpır durma ve koşu (24)
+# 888 Çocuk: kıpır kıpır durma ve koşu (24)
 
 ## Amaç
 Çocuk çeşitleri (69 §6, karar S4: çocukta kıpır durma ve koşu 1.0'da). Çocuk boştayken `idle_fidget` oynar (`AnimStyleRules.IdleKey`); oyunda ve kavgadan kaçarken koşar (`RunRules`).
@@ -37,7 +37,7 @@ created: 2026-11-21
 018a ölçütleri her klip için; ayak satırı sabit, giysi ve saç durma karesiyle aynı. `idle_fidget` 4 çapraz yön; `run` 8 yön, 018b2 ayak hizalama yöntemiyle. Klip başına GIF `art/results/` altına.
 
 ## Notlar
-- **Kapı:** 830 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
+- **Kapı:** 880 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
 - Kod hazır (PR: animasyon çeşitliliği kod katmanı): kare gelince kod değişmeden oynar; gelene kadar kodla çeşit (tempo, salınım, parçacık) oynar.
 - Giysi katmanları (43c, 509): bu kareler gövde setidir; giysi ailelerine aktarım ayrı iştir.
 

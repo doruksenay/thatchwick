@@ -1,14 +1,14 @@
 ---
-id: "831"
+id: "881"
 title: "Hâl durmaları 1/2: huzurlu, neşeli, şevkli, gururlu (32)"
 status: pending
-approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 830 açılınca çalışır
+approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 880 açılınca çalışır
 priority: 50
 family: karakter
 style_gate: false
 cost_est: 32
 cost_max: 42
-depends_on: ["830"]
+depends_on: ["880"]
 max_attempts: 1
 pixellab: true
 outputs:
@@ -16,10 +16,10 @@ outputs:
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_idle_cheerful_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_idle_eager_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_idle_proud_{se,sw,nw,ne}_<NN>.png
-  - art/results/831-*.md
+  - art/results/881-*.md
 created: 2026-11-21
 ---
-# 831 Hâl durmaları 1/2: huzurlu, neşeli, şevkli, gururlu (32)
+# 881 Hâl durmaları 1/2: huzurlu, neşeli, şevkli, gururlu (32)
 
 ## Amaç
 Hâl durmaları (Project belgesi 69 §3.1, karar S1: 7 hâlin her birine ayrı durma). Karakter boştayken baskın hâline göre oynar (`AnimStyleRules.IdleKey`, `GameRoot.HalIdleFrame`). Sakin hâl bugünkü durmayı kullanır.
@@ -41,7 +41,7 @@ Hâl durmaları (Project belgesi 69 §3.1, karar S1: 7 hâlin her birine ayrı d
 018a ölçütleri her klip için; ayak satırı sabit, giysi ve saç durma karesiyle aynı. Durma hareketi küçük kalmalı (gövde 2 px'ten fazla kaymaz); ilk ve son kare durma karesine oturur, döngü dikişsiz. Klip başına GIF `art/results/` altına.
 
 ## Notlar
-- **Kapı:** 830 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
+- **Kapı:** 880 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
 - Kod hazır (PR: animasyon çeşitliliği kod katmanı): kare gelince kod değişmeden oynar; gelene kadar kodla çeşit (tempo, salınım, parçacık) oynar.
 - Giysi katmanları (43c, 509): bu kareler gövde setidir; giysi ailelerine aktarım ayrı iştir.
 

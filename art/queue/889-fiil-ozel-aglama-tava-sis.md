@@ -1,24 +1,24 @@
 ---
-id: "839"
+id: "889"
 title: "Fiile özel: ağlama, tava sallama, şiş çevirme (24)"
 status: pending
-approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 830 açılınca çalışır
+approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 880 açılınca çalışır
 priority: 50
 family: karakter
 style_gate: false
 cost_est: 24
 cost_max: 32
-depends_on: ["830"]
+depends_on: ["880"]
 max_attempts: 1
 pixellab: true
 outputs:
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_cry_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_toss_pan_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_turn_spit_{se,sw,nw,ne}_<NN>.png
-  - art/results/839-*.md
+  - art/results/889-*.md
 created: 2026-11-21
 ---
-# 839 Fiile özel: ağlama, tava sallama, şiş çevirme (24)
+# 889 Fiile özel: ağlama, tava sallama, şiş çevirme (24)
 
 ## Amaç
 69 §5'teki fiile özel pozlardan kuyrukta (602-609) olmayan üçü. `cry`: yas ve Kederli bunalım (69 §5.11). `toss_pan`, `turn_spit`: kızartma ve ızgara yöntemi (63 §2.3); kazanda karıştırmadan ayırt edilsin diye.
@@ -39,7 +39,7 @@ created: 2026-11-21
 018a ölçütleri her klip için; ayak satırı sabit, giysi ve saç durma karesiyle aynı. Ağlamada yüz ellerle kapalı; gözyaşı damlası çizilmez (kod parçacık gösterebilir). Elde tava ve şiş küçük okunur. Klip başına GIF `art/results/` altına.
 
 ## Notlar
-- **Kapı:** 830 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
+- **Kapı:** 880 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
 - Kod hazır (PR: animasyon çeşitliliği kod katmanı): kare gelince kod değişmeden oynar; gelene kadar kodla çeşit (tempo, salınım, parçacık) oynar.
 - Giysi katmanları (43c, 509): bu kareler gövde setidir; giysi ailelerine aktarım ayrı iştir.
 

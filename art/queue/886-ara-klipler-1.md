@@ -1,14 +1,14 @@
 ---
-id: "836"
+id: "886"
 title: "Ara klipler 1/2: alın teri, bel, esneme, baş kaşıma, silkelenme, karın (48)"
 status: pending
-approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 830 açılınca çalışır
+approved_by: user        # kullanıcı 21.11.2026: "şimdi yazılsın" (Project belgesi 69 §8 S7); kapı 880 açılınca çalışır
 priority: 50
 family: karakter
 style_gate: false
 cost_est: 48
 cost_max: 58
-depends_on: ["830"]
+depends_on: ["880"]
 max_attempts: 1
 pixellab: true
 outputs:
@@ -18,10 +18,10 @@ outputs:
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_ix_scratch_head_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_ix_shake_off_{se,sw,nw,ne}_<NN>.png
   - Assets/Art/Iso/_aday/anim/iso_char_{man,woman}_r84_ix_hold_belly_{se,sw,nw,ne}_<NN>.png
-  - art/results/836-*.md
+  - art/results/886-*.md
 created: 2026-11-21
 ---
-# 836 Ara klipler 1/2: alın teri, bel, esneme, baş kaşıma, silkelenme, karın (48)
+# 886 Ara klipler 1/2: alın teri, bel, esneme, baş kaşıma, silkelenme, karın (48)
 
 ## Amaç
 Ara klipler (69 §4, kod: `InterjectionPicker`, `GameRoot.UpdateInterjection`): uzun işin, durmanın ve yürüyüş duraklarının arasına nedenine göre giren tek seferlik hareket (sıcakta alın teri, açken karın, iş bitince küçük sevinç...). Klip yaklaşık 1,2 sn oynar; kare yokken kod küçük sıçrama ve parçacık gösterir.
@@ -45,7 +45,7 @@ Ara klipler (69 §4, kod: `InterjectionPicker`, `GameRoot.UpdateInterjection`): 
 018a ölçütleri her klip için; ayak satırı sabit, giysi ve saç durma karesiyle aynı. Tek seferlik: ilk ve son kare durma karesine oturur (döngü değil). Klip başına GIF `art/results/` altına.
 
 ## Notlar
-- **Kapı:** 830 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
+- **Kapı:** 880 (ilk poz dalgası Unity'de görülünce kullanıcı `accepted` yapar). Kapı açılmadan çalışmaz (69 §8 S7).
 - Kod hazır (PR: animasyon çeşitliliği kod katmanı): kare gelince kod değişmeden oynar; gelene kadar kodla çeşit (tempo, salınım, parçacık) oynar.
 - Giysi katmanları (43c, 509): bu kareler gövde setidir; giysi ailelerine aktarım ayrı iştir.
 
