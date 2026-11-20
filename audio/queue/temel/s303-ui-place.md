@@ -4,7 +4,7 @@ title: Eşya yerleştirme
 kind: sfx
 family: ui
 freq: A
-status: claimed
+status: review
 approved_by: user
 depends_on: []
 note: 'Temel ses havuzu: oyun her açılışta eksik ses anahtarı yazıyordu (tools/audio/gaps.py, Project 66b). Kullanıcı 21.11.2026: hepsi cozy yönde. 45c dersleri: istenmeyen arka plan sesi açıkça yasaklanır, adım ve vuruş sayısı yazılır.'
@@ -16,5 +16,9 @@ axes:
   - clay cup
 claimed_by: runnervm0hi8g
 claimed_at: '2026-11-20T21:55:27Z'
+candidates: 16
+passed: 16
+credits_spent: 281
+generated_at: '2026-11-20T21:55:47Z'
 ---
 Setting a small wooden object down on a wooden table, one soft satisfying tock.
