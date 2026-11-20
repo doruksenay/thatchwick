@@ -25,5 +25,8 @@ namespace Thatchwick.Editor
 
         [MenuItem("Thatchwick/Denge/Kış: 15 gün - tarla görevli (gün 28'den)")]
         private static void Winter15() => Run(15, BalanceRunner.Scenario.FarmDuty, 28);
+
+        [MenuItem("Thatchwick/Denge/Yaşlı hane: 30 gün (belge 51)")]
+        private static void Elder30() => Run(30, BalanceRunner.Scenario.ElderHousehold);
     }
 }

@@ -723,7 +723,7 @@ namespace Thatchwick.Core.Jobs
             // Ata binen daha hızlı gider (merdivende de; basitlik için).
             // Atletizm: yaya yürüyüşte seviye başına %2 (binekteyken binek hızı belirler).
             double ride = WalkSpeed?.Invoke() ?? 1.0;
-            double tilesPerDay = TilesPerDayScaled * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor : 1.0);
+            double tilesPerDay = TilesPerDayScaled * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor * _character.WalkFactor : 1.0);
             while (_pathIndex < _path.Count && budget - used > 0)
             {
                 // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.

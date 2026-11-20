@@ -89,8 +89,17 @@ namespace Thatchwick.Core.Characters
             return true;
         }
 
-        /// <summary>Beceri işinin hız çarpanı (ruh hali kapalıysa 1).</summary>
-        public double WorkSpeed(SkillType skill) => MoodEnabled ? Mood.SpeedMultiplier(skill) : 1.0;
+        /// <summary>Beceri işinin hız çarpanı (ruh hali kapalıysa 1); yaşlılık sıkıntıları (belge 51 §3) ayrıca çarpar.</summary>
+        public double WorkSpeed(SkillType skill) => (MoodEnabled ? Mood.SpeedMultiplier(skill) : 1.0) * (ConditionSpeed?.Invoke(skill) ?? 1.0);
+
+        /// <summary>Yaşlılık sıkıntılarının iş hızı çarpanı (null = 1).</summary>
+        public Func<SkillType, double> ConditionSpeed { get; set; }
+        /// <summary>Yaşlılık sıkıntılarının XP çarpanı (eksi; null = 1).</summary>
+        public Func<SkillType, double> ConditionXp { get; set; }
+        /// <summary>Yürüme çarpanı (dizi tutmayan yaşlı; 1 = etkisiz).</summary>
+        public double WalkFactor { get; set; } = 1.0;
+        /// <summary>Isınma ihtiyacı çarpanı ("Kanım çekildi" ×1,3; 1 = etkisiz).</summary>
+        public float WarmthNeedFactor { get; set; } = 1f;
 
         private void UpdateNeedMoodlets(MoodCatalog catalog)
         {
@@ -316,6 +325,7 @@ namespace Thatchwick.Core.Characters
             // Okuryazarlık: bütün becerilerde seviye başına %2 fazla XP (kendisi hariç).
             if (skill != SkillType.Literacy) Pool(SkillNames.Factor(Skills.GetLevel(SkillType.Literacy), 0.02));
             if (ExtraXpFactor != null) Pool(ExtraXpFactor(skill));
+            if (ConditionXp != null) Pool(ConditionXp(skill));
             Pool(Modifiers.SkillRate(skill));
             xp *= penalty * (1.0 + Math.Min(bonus, SkillPacing.MaxXpBonus));
             // Yatkınlık (Project belgesi 28): XP x1,5 / x2 ve o işi yaparken küçük keyif.
@@ -534,7 +544,7 @@ namespace Thatchwick.Core.Characters
                 // Sıcak çorba gibi yemek etkileri de soğuğa dayanıklılık verir (toplam en çok %90).
                 float resist = Math.Min(0.9f, Modifiers.ColdResist + (MoodEnabled ? Mood.ColdResist() : 0f) + AthleticColdResist + ClothingColdResist);
                 // Islak giysi soğukta ısıyı iki kat hızlı kaçırır.
-                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - resist) * (1f + Wetness));
+                Needs.SetDecayPerDay(NeedType.Warmth, cold * WarmthLossPerDegreeDay * (1f - resist) * (1f + Wetness) * WarmthNeedFactor);
             }
             else
             {

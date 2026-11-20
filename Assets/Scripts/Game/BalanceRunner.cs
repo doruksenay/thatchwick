@@ -29,7 +29,9 @@ namespace Thatchwick.Game
             /// <summary>Görev yok: hane yalnızca ihtiyaç otonomisiyle yaşar (oyuncu hiç oynamıyor).</summary>
             Idle,
             /// <summary>Oyuncu dışındaki yetişkinler "Tarla" görevinde (ekin, sulama, odun).</summary>
-            FarmDuty
+            FarmDuty,
+            /// <summary>Yaşlı hane (belge 51 §3): bütün hane üyeleri yaşlı başlar; sıkıntılar normal ayarda.</summary>
+            ElderHousehold
         }
 
         public const double Step = 0.02;
@@ -124,10 +126,24 @@ namespace Thatchwick.Game
             if (_scenario == Scenario.FarmDuty)
                 foreach (var c in pop.Members)
                     if (!c.IsVillager && !c.IsDead && Thatchwick.Core.Work.DutyPlanner.CanTakeDuty(c)) c.Duty = DutyKind.Farm;
+            var life0 = Get<LifeSystems>(_root, "_life");
+            if (_scenario == Scenario.ElderHousehold)
+                foreach (var c in pop.Members)
+                    if (!c.IsVillager && !c.IsDead)
+                    {
+                        c.SetAge(Thatchwick.Core.Characters.AgeConfig.Default.ElderStartDay + 0.5);
+                        life0?.OnBecameElder(c);
+                    }
             _report = new BalanceReport { Scenario = $"{ScenarioName(_scenario)}, {_days:0} gün, başlangıç günü {clock.TotalDays:0}" };
+            if (life0 != null)
+            {
+                _report.AgingConditions = c => { int n = 0; foreach (var _ in life0.Ailments.Conditions(c)) n++; return n; };
+                _report.TailorSpend = () => life0.TailorSpent;
+                _report.ClothUsed = () => life0.ClothUsed;
+            }
         }
 
-        public static string ScenarioName(Scenario s) => s == Scenario.FarmDuty ? "tarla görevli" : "görevsiz";
+        public static string ScenarioName(Scenario s) => s == Scenario.FarmDuty ? "tarla görevli" : s == Scenario.ElderHousehold ? "yaşlı hane" : "görevsiz";
 
         private void TakeSample()
         {
