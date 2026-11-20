@@ -6,10 +6,11 @@ namespace Thatchwick.Core.Tests
     public class GameClockTests
     {
         [Fact]
-        public void BirOyunGunu_1xHizda_AltiGercekDakikadir()
+        public void BirOyunGunu_1xHizda_OnIkiGercekDakikadir()
         {
+            // Belge 47 (20.11.2026): gün 6 → 12 gerçek dakika.
             var clock = new GameClock();
-            clock.Advance(360);
+            clock.Advance(720);
             Assert.Equal(1.0, clock.TotalDays, 6);
             Assert.Equal(1, clock.DayIndex);
         }
@@ -46,7 +47,7 @@ namespace Thatchwick.Core.Tests
         {
             var clock = new GameClock();
             clock.SetSpeed(speed);
-            clock.Advance(360);
+            clock.Advance(720);
             Assert.Equal(expectedDays, clock.TotalDays, 6);
         }
 
@@ -67,7 +68,7 @@ namespace Thatchwick.Core.Tests
             clock.EnterCriticalMoment();
             Assert.Equal(1, clock.EffectiveSpeed);
             Assert.Equal(3, clock.RequestedSpeed);
-            clock.Advance(360);
+            clock.Advance(720);
             Assert.Equal(1.0, clock.TotalDays, 6);
 
             clock.ExitCriticalMoment();

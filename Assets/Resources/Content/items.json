@@ -748,6 +748,15 @@
           "bladder": 4
         },
         {
+          "id": "eat_miner_ration",
+          "displayName": "Azık ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.06,
+          "consume": "item.miner_ration",
+          "bladder": 4
+        },
+        {
           "id": "eat_brined_cheese",
           "displayName": "Beyaz peynir ye",
           "need": "Hunger",
@@ -24851,6 +24860,15 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "read_board",
+          "displayName": "İlanları oku",
+          "need": "Fun",
+          "restore": 3,
+          "durationDays": 0.02
+        }
       ]
     },
     {
@@ -26972,6 +26990,161 @@
         "color": "#C23B32",
         "beauty": 3
       }
+    },
+    {
+      "id": "item.miner_ration",
+      "displayName": "Azık heybesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked",
+        "packed"
+      ],
+      "spoilDays": 5
+    },
+    {
+      "id": "item.defter_spring_ribbon",
+      "displayName": "Defter kurdelesi (ilkbahar)",
+      "category": "decor_wall",
+      "price": 0,
+      "styleSet": "Köylü",
+      "seasonal": [
+        "Spring"
+      ],
+      "beauty": 5,
+      "placement": "Wall",
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "material": "cloth",
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "interactions": [],
+      "tags": [
+        "craftonly",
+        "seasonset"
+      ],
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen",
+        "bedroom",
+        "inn_room"
+      ]
+    },
+    {
+      "id": "item.defter_summer_sheaf",
+      "displayName": "Başak demeti (yaz)",
+      "category": "decor_wall",
+      "price": 0,
+      "styleSet": "Köylü",
+      "seasonal": [
+        "Summer"
+      ],
+      "beauty": 5,
+      "placement": "Wall",
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "material": "wood",
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "interactions": [],
+      "tags": [
+        "craftonly",
+        "seasonset"
+      ],
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen",
+        "bedroom",
+        "inn_room"
+      ]
+    },
+    {
+      "id": "item.defter_autumn_basket",
+      "displayName": "Hasat sepeti süsü (sonbahar)",
+      "category": "decor",
+      "price": 0,
+      "styleSet": "Köylü",
+      "seasonal": [
+        "Autumn"
+      ],
+      "beauty": 5,
+      "placement": "Surface",
+      "decorSize": "S",
+      "weight": 1,
+      "material": "wood",
+      "fitsOn": [
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "interactions": [],
+      "tags": [
+        "craftonly",
+        "seasonset"
+      ],
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen",
+        "bedroom",
+        "inn_room"
+      ]
+    },
+    {
+      "id": "item.defter_winter_lantern",
+      "displayName": "Kış Gecesi feneri (kış)",
+      "category": "decor",
+      "price": 0,
+      "styleSet": "Köylü",
+      "seasonal": [
+        "Winter"
+      ],
+      "beauty": 5,
+      "placement": "Surface",
+      "decorSize": "S",
+      "weight": 1,
+      "material": "metal",
+      "fitsOn": [
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "interactions": [],
+      "tags": [
+        "craftonly",
+        "seasonset"
+      ],
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen",
+        "bedroom",
+        "inn_room"
+      ]
     }
   ],
   "recipes": [
@@ -30710,6 +30883,25 @@
       "durationDays": 0.6,
       "skillXp": 50,
       "requiresBranch": "branch.pot_b"
+    },
+    {
+      "id": "miner_ration",
+      "station": "item.cooking_pot",
+      "produces": "item.miner_ration",
+      "materials": [
+        {
+          "item": "item.bread",
+          "count": 1
+        },
+        {
+          "item": "item.cheese",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.03,
+      "skill": "Cooking",
+      "skillXp": 4,
+      "displayName": "Azık heybesi hazırla"
     }
   ],
   "animals": [

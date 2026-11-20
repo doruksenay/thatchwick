@@ -254,6 +254,11 @@ namespace Thatchwick.Game
         private BuildService _buildService;
         private StatusHud _statusHud;
         private VillagePanel _villagePanel;
+        private RequestPanel _requestPanel;
+        // Köylü konuşma balonu (köyün gözü, belge 47 §7.3): karakter → (söz, gerçek zamanda bitiş).
+        private readonly Dictionary<int, (string text, float until)> _speech = new Dictionary<int, (string, float)>();
+        // Hane üyesinin son bölgesi (istek "git ve bul" hedefi için).
+        private readonly Dictionary<int, string> _lastRegion = new Dictionary<int, string>();
         private readonly Dictionary<int, string> _villagerLocation = new Dictionary<int, string>();
         private double _scheduleTimer;
 
@@ -542,10 +547,29 @@ namespace Thatchwick.Game
             _statusHud = new StatusHud(_life, _content, () => Commander?.Character, c => _actors.Find(a => a.Character == c)?.Runner, () => _plants.Summary());
             _statusHud.OpenSkills = (c, skill) => { _hudExpanded = true; _skillStripFor = c.Id; };
             _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
+            _requestPanel = new RequestPanel(_life, () => Commander?.Character)
+            {
+                ShowOnMap = c => ShowMessage($"{c.Name} şu an: {Thatchwick.Core.World.Regions.At(c.Position)?.Name ?? "köyde"}")
+            };
+            // İstek teslimi elden: verenin 3 karo yakınında olmalı (yoksa ulak).
+            _life.Requests.Near = (a, b) => a != null && b != null && a.Position.Z == b.Position.Z
+                && System.Math.Abs(a.Position.X - b.Position.X) + System.Math.Abs(a.Position.Y - b.Position.Y) <= 3;
+            // Süreli görev yerleri: bölge haritada varsa açık; aile ocağı açıldıysa arsa madeni.
+            _life.Duties.PlaceOpen = DutyPlaceOpen;
+            _life.Duties.Dogs = () =>
+            {
+                int n = 0;
+                foreach (var an in _animals.Animals) if (!an.IsDead && an.Species.Id.Contains("dog")) n++;
+                return n;
+            };
 
             _familyPanel = new FamilyPanel(_population, _family, _dynasty, () => Commander?.Character,
                 c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner)
-            { Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays, Upbringing = _life.Upbringing, House = _household };
+            {
+                Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays, Upbringing = _life.Upbringing, House = _household,
+                TimedDuties = _life.Duties, Roaming = _life.Roaming, ItemName = id => _content.Items.TryGet(id, out var idf) ? idf.DisplayName : id,
+                AskRoam = AskRoamPermission
+            };
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
@@ -578,6 +602,7 @@ namespace Thatchwick.Game
                 foreach (var (a, b, v) in loaded.Affection) _family.SetAffection(a, b, v);
                 _life.Restore(loaded.Life);
                 SpawnNamedVillagers();
+                MoveVillagersOffPlot();
                 if (loaded.Dynasty != null)
                 {
                     _dynasty.Restore(loaded.Dynasty.HeadId, loaded.Dynasty.History, loaded.Dynasty.Ended);
@@ -593,7 +618,9 @@ namespace Thatchwick.Game
             }
 
             // Maud (NPC) rastgele görünümle hemen oluşur; oyuncunun karakteri yaratma ekranından gelir.
-            var maud = new Character(2, "Maud", new GridPos(33, 31), false) { Sex = Sex.Female };
+            // Köylüler oyuncunun arsasında yaşamaz (belge 47 §8): Maud meydanda başlar, VillageHomes ona bir ev verir.
+            var maudPos = Places.ContainsKey("square") && _regional ? NearestWalkable(Places["square"], 8) : new GridPos(33, 31);
+            var maud = new Character(2, "Maud", maudPos, false) { Sex = Sex.Female };
             GiveRandomLook(maud);
             maud.SetAge(36);
             maud.LifespanDays = maud.AgeConfig.RollLifespan(_rng);
@@ -1227,6 +1254,13 @@ namespace Thatchwick.Game
 
         private GridPos ResolvePlace(string key, int jitterSeed = 0)
         {
+            // Hanın kiralık odaları (VillageHomes): ayrı yer anahtarı yok; meyhanenin içinde, oda numarasına göre kaydırılır.
+            if (Thatchwick.Core.Life.VillageHomes.IsInn(key) && !Places.ContainsKey(key))
+            {
+                int room = key.Length > 4 && char.IsDigit(key[4]) ? key[4] - '0' : 0;
+                key = Places.ContainsKey("home:tavern") ? "home:tavern" : "square";
+                if (jitterSeed == 0) jitterSeed = room * 3 + 1;
+            }
             if (string.IsNullOrEmpty(key) || !Places.TryGetValue(key, out var basePos)) basePos = Places["square"];
             if (jitterSeed != 0) basePos = new GridPos(basePos.X + (jitterSeed % 5) - 2, basePos.Y + (jitterSeed / 5 % 3) - 1, basePos.Z);
             return NearestWalkable(basePos);
@@ -1274,6 +1308,143 @@ namespace Thatchwick.Game
                 if (a.Character != null && !a.Character.IsDead && a.Runner?.NextTile is GridPos next) yield return next;
         }
 
+        // ---- belge 46-47: süreli görev yerleri, küçüklerin gezmesi, köyün gözü, istek bölgeleri ----
+
+        private bool HasRequestFrom(int villagerId)
+        {
+            foreach (var r in _life.Requests.All)
+                if (r.IsOpen && r.GiverId == villagerId && r.Kind != Thatchwick.Core.Life.Requests.RequestKind.Seasonal) return true;
+            return false;
+        }
+
+        /// <summary>Süreli görev yeri açık mı: bölge haritada olmalı; arsa madeni aile ocağı açılınca.</summary>
+        private bool DutyPlaceOpen(string placeId)
+        {
+            Thatchwick.Core.World.Region region = null;
+            switch (placeId)
+            {
+                case "mine:plot": return _mines != null && _mines.Get(MineSystem.PlotId) != null;
+                case "mine:gallery": case "forest:hill": region = Thatchwick.Core.World.Regions.Hill; break;
+                case "forest:forest": case "forage:forest": case "traps:forest": region = Thatchwick.Core.World.Regions.Forest; break;
+                case "fish:river": case "fish:lake": case "forest:river": case "forage:river": case "clay:river": case "clay:shore":
+                    region = Thatchwick.Core.World.Regions.Lake; break;
+                case "fish:marsh": case "traps:marsh": region = Thatchwick.Core.World.Regions.Marsh; break;
+                default: return true;   // gölet, dere, çayır, köy işi
+            }
+            return _regional && Thatchwick.Core.World.Regions.Exists(_world.Map, region);
+        }
+
+        private bool AccompaniedByElder(Character child)
+        {
+            foreach (var m in _population.Members)
+            {
+                if (m == child || m.IsDead || m.IsVillager || m.Away || m.Stage < AgeStage.Teen) continue;
+                if (m.Position.Z == child.Position.Z && System.Math.Abs(m.Position.X - child.Position.X) + System.Math.Abs(m.Position.Y - child.Position.Y) <= 6) return true;
+            }
+            return false;
+        }
+
+        /// <summary>Küçük bu karoya kendi başına gidebilir mi? Gidemezse nedeni (karakterin ağzından).</summary>
+        private string RoamBlocker(Character c, GridPos target)
+        {
+            if (c == null || !_regional || !Thatchwick.Core.Upbringing.ChildRoaming.IsMinor(c)) return null;
+            var region = Thatchwick.Core.World.Regions.At(target);
+            return _life.Roaming.Blocker(c, region, HourOfDay, _clock.DayIndex, AccompaniedByElder(c));
+        }
+
+        /// <summary>Aile panelindeki "İzin iste": çocuk annesine (yoksa evdeki bir yetişkine) kasabaya gitmeyi sorar.</summary>
+        private string AskRoamPermission(Character child)
+        {
+            if (child == null) return "";
+            Character adult = child.BirthMotherId.HasValue ? _population.Find(child.BirthMotherId.Value) : null;
+            if (adult == null || adult.IsDead || adult.Away)
+            {
+                adult = null;
+                foreach (var m in _population.Members)
+                    if (!m.IsDead && !m.IsVillager && !m.Away && m.Stage >= AgeStage.YoungAdult) { adult = m; break; }
+            }
+            _life.Roaming.AskPermission(child, adult, Thatchwick.Core.Upbringing.RoamPermission.Town, HourOfDay, _clock.DayIndex,
+                _life.Weather.Today(_clock.TotalDays), out var reply);
+            Say(adult, reply);
+            return reply;
+        }
+
+        /// <summary>Karakterin başında 4 saniyelik konuşma balonu.</summary>
+        private void Say(Character c, string text)
+        {
+            if (c == null || string.IsNullOrEmpty(text)) return;
+            int colon = text.IndexOf(": ", System.StringComparison.Ordinal);
+            _speech[c.Id] = (colon > 0 && colon < 24 ? text.Substring(colon + 2) : text, Time.unscaledTime + 4f);
+        }
+
+        /// <summary>
+        /// Köyün gözü (belge 47 §7.3): tek gezen küçük yakındaki köylünün dikkatini çeker; köylü söylenir ("Bu çocuk neden tek başına
+        /// geziyor?"), itibar ve hane hafızası düşer; gece ya da fırtınada köylü çocuğu eve getirir.
+        /// </summary>
+        private void WatchChildren()
+        {
+            if (!_regional) return;
+            var weather = _life.Weather.Today(_clock.TotalDays);
+            List<Character> villagers = null;
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (c.IsDead || c.IsVillager || c.Away || !Thatchwick.Core.Upbringing.ChildRoaming.IsMinor(c)) continue;
+                var region = Thatchwick.Core.World.Regions.At(c.Position);
+                if (region == null || region.Id == Thatchwick.Core.World.Regions.Farm.Id) continue;
+                if (villagers == null)
+                {
+                    villagers = new List<Character>();
+                    foreach (var v in _actors) if (v.Character.IsVillager && !v.Character.IsDead) villagers.Add(v.Character);
+                }
+                var ev = _life.Roaming.Observe(c, region, HourOfDay, _clock.DayIndex, _clock.TotalDays, weather, AccompaniedByElder(c), villagers);
+                if (ev == null) continue;
+                Say(ev.Villager, ev.Line);
+                _life.ApplyGaze(ev);
+                if (ev.Escort)
+                {
+                    a.Runner.Cancel();
+                    a.Runner.Command(Job.MoveTo(NearestWalkable(new GridPos(33, 31))));   // çiftlik evinin önü
+                }
+            }
+        }
+
+        /// <summary>Hane üyesi bölge değiştirdi: isteklerdeki "git ve bul" hedefi (kaybolan kuzu, yayla anısı).</summary>
+        private void TrackRegions()
+        {
+            if (!_regional) return;
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (c.IsDead || c.IsVillager || c.Away) continue;
+                var region = Thatchwick.Core.World.Regions.At(c.Position);
+                if (region == null) continue;
+                if (_lastRegion.TryGetValue(c.Id, out var last) && last == region.Id) continue;
+                _lastRegion[c.Id] = region.Id;
+                _life.Requests.OnVisit(c, region.Id);
+            }
+        }
+
+        /// <summary>Eski kayıt: oyuncunun arsasında takılı kalmış köylüler (Maud ...) evlerine taşınır (belge 47 §8).</summary>
+        private void MoveVillagersOffPlot()
+        {
+            if (!_regional) return;
+            int moved = 0;
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (c.IsDead || !Thatchwick.Core.Life.VillageHomes.OnPlayerPlot(c)) continue;
+                if (c.Id == _life.Home.ServantId) continue;   // hizmetkâr sabahları evde çalışır
+                var def = _life.Villagers.DefOf(c);
+                string key = def != null ? def.Home : _life.Homes.HomeOf(c) ?? "square";
+                a.Runner.Cancel();
+                c.Position = ResolvePlace(key, c.Id);
+                _villagerLocation.Remove(c.Id);
+                moved++;
+            }
+            if (moved > 0) Debug.Log($"Kayıt: {moved} köylü arsadan evine taşındı.");
+        }
+
         // Köylüler gün saatine, havaya ve şenliğe göre evinden işine, meydana yürür.
         private void UpdateVillagerSchedules()
         {
@@ -1301,11 +1472,13 @@ namespace Thatchwick.Game
                     def = anchor != null && !anchor.IsDead ? _life.Villagers.DefOf(anchor) : null;
                     if (def == null && anchor != null && !anchor.IsDead && anchor.SpouseId.HasValue)
                         def = _life.Villagers.DefOf(_population.Find(anchor.SpouseId.Value));
-                    if (def == null) continue;
                 }
                 if (_life.Villagers.PlaceAvailable == null)
                     _life.Villagers.PlaceAvailable = k => Places.TryGetValue(k, out var pp) && _world.Map.InBounds(pp) && !_world.Map.IsBlocked(pp);
-                string where = _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival);
+                // Adsız köylü (Maud, komşu hane üyesi): kendi hanesinin evi ya da handaki oda; asla oyuncunun arsası değil (belge 47 §8).
+                string where = def != null ? _life.Villagers.LocationFor(def, _clock.DayFraction, weather, festival)
+                                           : _life.Homes.LocationFor(c, _clock.DayFraction, weather, festival);
+                if (string.IsNullOrEmpty(where)) continue;
                 if (_villagerLocation.TryGetValue(c.Id, out var last) && last == where) continue;
                 _villagerLocation[c.Id] = where;
                 a.Runner.Command(Job.MoveTo(ResolvePlace(where, where == "square" ? c.Id : 0)));
@@ -1437,6 +1610,7 @@ namespace Thatchwick.Game
             if (_vivView != null && _vivView.Active && _vivView.PanelRect(s).Contains(guiPos)) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_requestPanel != null && _requestPanel.Active && _requestPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
             if (_dynastyEnded) return true;
             if (_menuOpen && _menuRect.Contains(guiPos)) return true;
@@ -1565,6 +1739,7 @@ namespace Thatchwick.Game
         // Yapı modu ve pazar paneli aynı yeri kullanır: biri açılınca diğeri kapanır.
         private void ToggleBuild()
         {
+            if (_requestPanel.Active) _requestPanel.Close();
             if (_marketPanel.Active) _marketPanel.Close();
             if (_familyPanel.Active) _familyPanel.Close();
             if (_villagePanel.Active) _villagePanel.Close();
@@ -1602,6 +1777,7 @@ namespace Thatchwick.Game
             if (_buildMode.Active) _buildMode.Toggle();
             if (_familyPanel.Active) _familyPanel.Close();
             if (_villagePanel.Active) _villagePanel.Close();
+            if (_requestPanel.Active) _requestPanel.Close();
             _marketPanel.Toggle();
         }
 
@@ -1610,7 +1786,18 @@ namespace Thatchwick.Game
             if (_buildMode.Active) _buildMode.Toggle();
             if (_marketPanel.Active) _marketPanel.Close();
             if (_familyPanel.Active) _familyPanel.Close();
+            if (_requestPanel.Active) _requestPanel.Close();
             _villagePanel.Toggle();
+        }
+
+        /// <summary>İstekler defteri (I; belge 46 §12).</summary>
+        private void ToggleRequests()
+        {
+            if (_buildMode.Active) _buildMode.Toggle();
+            if (_marketPanel.Active) _marketPanel.Close();
+            if (_familyPanel.Active) _familyPanel.Close();
+            if (_villagePanel.Active) _villagePanel.Close();
+            _requestPanel.Toggle();
         }
 
         /// <summary>Gerçek görseller ile yer tutucu çizimler arasında geçiş (karşılaştırma için).</summary>
@@ -1629,6 +1816,7 @@ namespace Thatchwick.Game
             if (_buildMode.Active) _buildMode.Toggle();
             if (_marketPanel.Active) _marketPanel.Close();
             if (_villagePanel.Active) _villagePanel.Close();
+            if (_requestPanel.Active) _requestPanel.Close();
             _familyPanel.Toggle();
         }
 
@@ -1713,6 +1901,8 @@ namespace Thatchwick.Game
             if (_buildMode.Active) { _menuOpen = false; _buildMode.OnTap(world); return; }
             if (_menuOpen) { _menuOpen = false; return; }   // menü dışına dokunmak menüyü kapatır
             if (_vivView != null && _vivView.Active) { _vivView.Close(); return; }   // cam bahçe görünümü dışına dokunmak kapatır
+            // Küçükler tüm köyü kendi başına gezemez (belge 47 §7.2): izin yoksa karakter itiraz eder.
+            { string roamWhy = RoamBlocker(Commander?.Character, tile); if (roamWhy != null) { ShowMessage($"{Commander.Character.Name}: \"{roamWhy}\" (Aile → İzin iste)"); return; } }
 
             CollectOptions(world);
             // Cam bahçeye dokunmak: kamera ona kayar, içi büyük ekranda açılır (belge 47).
@@ -2416,6 +2606,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.escapeKey.wasPressedThisFrame && _vivView != null && _vivView.Active) _vivView.Close();
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
+            if (kb != null && kb.iKey.wasPressedThisFrame) ToggleRequests();
             if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
             if (kb != null && kb.lKey.wasPressedThisFrame) _labelsAll = !_labelsAll;
             if (kb != null && kb.tabKey.wasPressedThisFrame) _hudExpanded = !_hudExpanded;
@@ -2425,10 +2616,36 @@ namespace Thatchwick.Game
 
             float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
 
+            // Belge 47: yapı modu, katalog ve menüler açıkken zaman durur; hanede uyanık kimse yokken gece ×4 akar.
+            _clock.Paused = MenuOpen();
+            _clock.FastNight = HouseholdAsleep();
+
             // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
             double gameDays = _clock.Advance(dt);
             if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true, background: true); }
             Simulate(gameDays);
+        }
+
+        /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
+        private bool MenuOpen() =>
+            (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
+            || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
+            || (_homePanel != null && _homePanel.Active) || (_vivView != null && _vivView.Active) || (_familyPanel != null && _familyPanel.Active)
+            || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
+
+        /// <summary>Hanede uyanık kimse yok mu (bebekler sayılmaz): hızlı gece (belge 47 karar 3).</summary>
+        private bool HouseholdAsleep()
+        {
+            if (_population == null) return false;
+            int sleepers = 0;
+            foreach (var c in _population.Members)
+            {
+                if (c.IsDead || c.IsVillager || c.Stage == AgeStage.Baby) continue;
+                if (c.Away) continue;   // süreli görevde olan evde değil
+                if (!c.Asleep) return false;
+                sleepers++;
+            }
+            return sleepers > 0;
         }
 
         // Aynı karede kaç eşya ya da duvar değişirse değişsin (kışın donan ekinler, oda kurma, sabah çıkan yabani bitkiler)
@@ -2560,7 +2777,10 @@ namespace Thatchwick.Game
             foreach (var (heatItem, heatView) in _heatViews)
                 if (heatView != null) { var lit = IsoArt.Item(heatItem, out _); if (lit != null && heatView.sprite != lit) heatView.sprite = lit; }
             foreach (var a in _actors)
+            {
+                if (a.Character.Away) continue;   // süreli görevde: sıcaklığı görev servisi verir (belge 47 §3)
                 a.Character.AmbientTemperature = a.Character.IsVillager ? 15f : _heat.TemperatureAt(a.Character.Position);
+            }
             // Su donar: dondurucu soğukta gölet buz tutar (üstünden yürünür, buz kesilir, delikten balık tutulur).
             _world.Map.WaterFrozen = _heat.OutdoorTemperature <= FrozenBelow;
             // Yağmurda açık havadaki ıslanır (yalnızca hane; köylüler damda sayılır).
@@ -2575,7 +2795,7 @@ namespace Thatchwick.Game
             _population.Tick(gameDays);
             _life.Tick(gameDays);
             _scheduleTimer += gameDays;
-            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); }
+            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); }
             foreach (var actor in _actors.ToArray())
             {
                 if (actor.Character.IsDead)
@@ -2588,6 +2808,14 @@ namespace Thatchwick.Game
                     if (_maud == actor) _maud = null;
                     continue;
                 }
+                // Süreli görevdeki karakter haritada yok: işi görev servisi yürütür, görünümü saklanır.
+                if (actor.Character.Away)
+                {
+                    if (actor.View != null && actor.View.gameObject.activeSelf) actor.View.gameObject.SetActive(false);
+                    continue;
+                }
+                if (actor.View != null && !actor.View.gameObject.activeSelf && (_region == null || _region.Contains(actor.Character.Position)))
+                    actor.View.gameObject.SetActive(true);
                 if (actor.Character.Stage != AgeStage.Baby) actor.Runner.Tick(gameDays);   // bebek iş yapmaz; büyükler besler
                 TickIdleShow(actor, gameDays);
                 UpdateView(actor);
@@ -2922,7 +3150,8 @@ namespace Thatchwick.Game
             _homePanel?.OnGUI(s);
             _vivView?.OnGUI(s);
             _familyPanel.OnGUI(s);
-            _villagePanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }
+            _villagePanel.OnGUI(s);
+            _requestPanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }
             DrawBalloons(s);
             _statusHud.LeftInset = HudRect.xMax;
             { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
@@ -2942,6 +3171,8 @@ namespace Thatchwick.Game
             }
             GUI.color = prevColor;
             GUILayout.EndHorizontal();
+            if (_clock.Paused) GUILayout.Label("Zaman durdu (menü açık)");
+            else if (_clock.IsFastNightActive) GUILayout.Label($"Herkes uyuyor: gece ×{GameClock.FastNightMultiplier:0} hızlı");
 
             GUILayout.BeginHorizontal();
             if (HudToggle("Yapı (B)", _buildMode.Active)) ToggleBuild();
@@ -2950,6 +3181,7 @@ namespace Thatchwick.Game
             if (HudToggle("Ocak (M)", _minePanel.Active)) _minePanel.Toggle();
             if (HudToggle("Aile (F)", _familyPanel.Active)) ToggleFamily();
             if (HudToggle("Köy (V)", _villagePanel.Active)) ToggleVillage();
+            { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? $"İstekler (I) •{unread}" : "İstekler (I)", _requestPanel.Active)) ToggleRequests(); }
             if (_keepsakePanel != null && HudToggle("Hatıra (J)", _keepsakePanel.Active)) _keepsakePanel.Toggle();
             if (_homePanel != null && HudToggle("Ev (E)", _homePanel.Active)) _homePanel.Toggle();
             GUILayout.EndHorizontal();
@@ -3091,8 +3323,30 @@ namespace Thatchwick.Game
             if (cam == null) return;
             foreach (var actor in _actors)
             {
-                if (actor.Character.IsDead || actor.Character.IsVillager || actor.View == null) continue;
+                if (actor.Character.IsDead || actor.View == null || !actor.View.gameObject.activeSelf) continue;
                 var sp = cam.WorldToScreenPoint(actor.View.position + new Vector3(0f, 1.7f, 0f));
+                if (_speech.TryGetValue(actor.Character.Id, out var line))
+                {
+                    if (Time.unscaledTime > line.until) _speech.Remove(actor.Character.Id);
+                    else
+                    {
+                        var size = GUI.skin.box.CalcSize(new GUIContent(line.text));
+                        float w = Mathf.Min(size.x + 8f, 240f);
+                        float h = GUI.skin.box.CalcHeight(new GUIContent(line.text), w);
+                        GUI.Box(new Rect(sp.x / guiScale - w / 2f, (Screen.height - sp.y) / guiScale - h - 22f, w, h), line.text);
+                    }
+                }
+                if (actor.Character.IsVillager)
+                {
+                    // Baş üstü işaret (belge 46 §10): bu köylünün askıda ya da üstlenilmiş bir isteği var.
+                    if (HasRequestFrom(actor.Character.Id))
+                    {
+                        var mark = UiSkin.Icon("request_marker");
+                        var r = new Rect(sp.x / guiScale - 8f, (Screen.height - sp.y) / guiScale - 20f, 16f, 16f);
+                        if (mark != null) GUI.DrawTexture(r, mark); else GUI.Label(r, "!");
+                    }
+                    continue;
+                }
                 _statusHud.DrawBalloon(guiScale, sp, actor.Character, actor.Runner);
             }
         }

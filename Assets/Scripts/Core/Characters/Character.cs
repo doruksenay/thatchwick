@@ -347,6 +347,12 @@ namespace Thatchwick.Core.Characters
 
         /// <summary>Yatakta uyuyor (JobRunner): tuvalet uykuda yavaş dolar.</summary>
         public bool Asleep { get; set; }
+
+        /// <summary>
+        /// Süreli görevde (belge 47 §3): haritadan çıktı, madende ya da gölde çalışıyor. Sahnede çizilmez, iş koşucusu işlemez;
+        /// ihtiyaçlarını Work.TimedDutyService yürütür (azıktan yer).
+        /// </summary>
+        public bool Away { get; set; }
         public const float SleepBladderFactor = 0.35f;
         // Islak ve soğukta geçen süre (üşütme için).
         private double _wetColdDays;

@@ -16,8 +16,8 @@ namespace Thatchwick.Core.Economy
         /// <summary>Satılan her birim o kaynağın talebini bu oranda düşürür.</summary>
         public double DemandDropPerUnit = 0.05;
         public double MinDemand = 0.3;
-        /// <summary>Talep günde bu kadar toparlanır (en çok 1).</summary>
-        public double DemandRecoveryPerDay = 0.15;
+        /// <summary>Talep günde bu kadar toparlanır (en çok 1). Belge 47: bir güne iki kat iş sığdığı için 0,15 → 0,25.</summary>
+        public double DemandRecoveryPerDay = 0.25;
         public int OffersPerDay = 3;
         /// <summary>Kış talebi: yakıt ve yiyecek daha değerli.</summary>
         public double WinterFuelMultiplier = 1.5, WinterFoodMultiplier = 1.3;
