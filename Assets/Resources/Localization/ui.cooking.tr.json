@@ -3,7 +3,6 @@
   "cook.block.help_baby": "Bebek yardım edemez.",
   "cook.block.help_no_work": "{name} şu an yardım edilecek bir iş yapmıyor.",
   "cook.block.help_taken": "{name} zaten yardım alıyor.",
-  "cook.block.no_dishes": "Yıkanacak bulaşık yok.",
   "cook.block.no_dog": "Köpek yok.",
   "cook.block.no_serving": "Sofrada yemek yok.",
   "cook.block.no_spice": "{item} yok.",

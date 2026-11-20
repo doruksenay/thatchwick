@@ -260,7 +260,7 @@ namespace Thatchwick.Game
                 if (GUILayout.Button("+", GUILayout.Width(28f))) _life.Kitchen.SetTarget(d.Id, target + 5);
                 GUILayout.EndHorizontal();
             }
-            GUILayout.Label(T("cook.ui.pantry.dishes", ("n", _life.Meals.Sink)));
+            GUILayout.Label(T("cook.ui.pantry.dishes", ("n", _life.KitchenTools.DirtyPieces)));
         }
 
         // ---- kesim listesi (60b §2) ----

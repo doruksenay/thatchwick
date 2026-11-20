@@ -81,6 +81,8 @@ namespace Thatchwick.Core.Content
         public string moodlet;          // boş = "proud"
         public string requiresBranch;   // yalnızca bu dalı seçmiş karakter yapar (D3: Camcı)
         public bool adultPack;          // +18 paketi (şarap): paket kapalıysa görünmez
+        public string cook;             // pişirme yöntemi (63 §2.3)
+        public string[] needTools;      // ek gerekenler
         public string dish;             // yemek sınıfı (soup, meat, fish...): boşsa yemek değil, işleme tarifi
         public string learn;            // öğrenme yolu: basic | level | villager:<id>:<yakınlık> | treatise | request | family
         public string serve;            // servis kabı ve görünüm: "pot:soup"; boşsa sınıfa göre
@@ -205,6 +207,10 @@ namespace Thatchwick.Core.Content
         public int fillCount;        // doldurulan dekorun aldığı adet
         public bool window;          // yalnızca pencere kenarına asılır (pencere içi tahtası, perde)
         public float insulation;     // asıldığı kenarın ısı kaybı çarpanı (0 = etkisiz)
+        public string equip;         // mutfak rolü (63, 63a): vessel:boil|fry|stew|grill|bake, tool:knife|board|spoon|ladle|pin|peel|colander, tableware, basket
+        public int equipTier;        // kabın kademesi 1-3
+        public bool cookFire;        // üstünde pişirilen ateş: yakıt harcar
+        public string washPlace;     // bulaşık yıkama yeri: tub, spout, stone
         public string requiresNear;  // üretim için yakında olması gereken istasyon (D3 tamamlama)
         public int nearRadius;       // requiresNear için en çok karo (0 = 4)
         public string shopUnlock;    // craftonly eşya bu kilitle katalogda da satılır (glassworks)
@@ -457,6 +463,9 @@ namespace Thatchwick.Core.Content
         public bool eatContents;            // doldurulan dekordan bir tane yer (açlık)
         public string skillWork;   // beceri işi (belge 45): LifeSystems.OnSkillWorkApplied
         public string chain;       // eylem zinciri kimliği (belge 60); boşsa zincirlerin eşleme kuralı bağlar
+        public string cook;        // pişirme yöntemi (63 §2.3): boil, fry, stew, grill, bake, ember, raw
+        public string[] needTools; // ek gerekenler: tool:knife, tool:pin, tool:peel, vessel:bake
+        public bool washDishes;    // bulaşık yıkar (63a §4)
         public string dish;        // yemek sınıfı (RecipeDto.dish ile aynı)
         public string learn;       // öğrenme yolu (RecipeDto.learn ile aynı)
         public string serve;       // servis kabı ve görünüm

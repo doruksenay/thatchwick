@@ -187,7 +187,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(errors.Count == 0, string.Join("\n", errors));
             Assert.True(db.Chains.Count >= 40);
 
-            Assert.Equal("cook_pot", Find(db, "item.cooking_pot", "cook_stew").ChainDef.Id);
+            Assert.Equal("cook_pot", Find(db, "item.hearth_stone", "cook_stew").ChainDef.Id);
             Assert.Equal("eat", Find(db, "item.cooking_pot", "eat_apple").ChainDef.Id);
             Assert.Equal("drink", Find(db, "item.cooking_pot", "drink_milk").ChainDef.Id);
             Assert.Equal("bake", db.Items.Get("item.stone_oven").Interactions.First(i => i.Skill == SkillType.Baking && i.Produce.Count > 0).ChainDef.Id);

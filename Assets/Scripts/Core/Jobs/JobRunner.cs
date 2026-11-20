@@ -191,7 +191,7 @@ namespace Thatchwick.Core.Jobs
         private int _stepIndex = -1;
 
         /// <summary>Sürmekte olan işin şu anki zincir adımı; iş zincirsizse ya da karakter henüz yürüyorsa null.</summary>
-        public ActionStepDef CurrentStep => _using && _steps != null && _stepIndex >= 0 && _stepIndex < _steps.Count ? _steps[_stepIndex] : null;
+        public ActionStepDef CurrentStep => _legStep ?? (_using && _steps != null && _stepIndex >= 0 && _stepIndex < _steps.Count ? _steps[_stepIndex] : null);
 
         /// <summary>Bu iş için oynayacak adımlar (koşulu tutmayanlar ayıklanmış); zincir yoksa boş.</summary>
         public IReadOnlyList<ActionStepDef> ActiveSteps => _steps ?? (IReadOnlyList<ActionStepDef>)Array.Empty<ActionStepDef>();
@@ -276,6 +276,10 @@ namespace Thatchwick.Core.Jobs
                     return _character.Stage == AgeStage.Elder;
                 case ChainConditions.Fire:
                     return item != null && item.Def.HeatOutput > 0f;
+                case ChainConditions.Unlit:
+                    return _kindled;
+                case ChainConditions.NoBoard:
+                    return _prepFlags != null && Array.IndexOf(_prepFlags, ChainConditions.NoBoard) >= 0;
                 default:
                     return false;
             }
@@ -372,11 +376,108 @@ namespace Thatchwick.Core.Jobs
 
         private void ClearChain()
         {
-            _steps = null; _stepEnds = null; _stepIndex = -1; _carriedWater = false;
+            _steps = null; _stepEnds = null; _stepIndex = -1; _carriedWater = false; _kindled = false; _prepFlags = null;
             _chainItem = null; _chainInteraction = null; _stepWalking = false; _displaced = false; _closingOut = false;
             ReleaseReserved();
         }
         private bool _carriedWater;
+        private bool _kindled;
+        private string[] _prepFlags;
+
+        // ---- Ayak işleri: ara duraklar (Project belgeleri 63, 63a) ----
+
+        /// <summary>
+        /// Eşya işinin ara durakları (kabı al, su doldur, yerine koy). Null dönerse iş doğrudan eşyada yapılır.
+        /// İş başlarken bir kez sorulur.
+        /// </summary>
+        public Func<Character, ItemInstance, InteractionDef, Errand> Errands { get; set; }
+
+        /// <summary>
+        /// Eşyanın başına varınca, iş başlamadan hemen önce (ateşi yak, yakıtı düş). Başarısızsa nedenini döner; ateş bu iş
+        /// için yeni tutuşturulduysa <c>kindled</c> true olur (zincirin "tutuştur" adımı oynar). Ek bayraklar zincir
+        /// koşullarına geçer (<see cref="ChainConditions"/>).
+        /// </summary>
+        public Func<Character, ItemInstance, InteractionDef, UsePrep> PrepareUse { get; set; }
+
+        private Errand _errand;
+        private bool _errandAsked, _errandReady, _returning;
+        private int _stopIndex;
+        private double _stopPause;
+        private bool _atStop;
+        private ActionStepDef _legStep;
+
+        /// <summary>Karakter şu an bir ara durakta duruyor mu (uzanıp alıyor, yerine koyuyor).</summary>
+        public bool IsAtStop => _atStop;
+        /// <summary>İş bitti, karakter aldıklarını yerine götürüyor.</summary>
+        public bool IsReturning => _returning;
+
+        /// <summary>Yürürken elde taşınan eşya (kazan, sepet, bıçak); yoksa null. Görünüm el çapasına çizer.</summary>
+        public string HeldItemId
+        {
+            get
+            {
+                if (_errand == null || _using) return null;
+                if (_returning) return _stopIndex < _errand.After.Count ? _errand.After[_stopIndex].Carry : null;
+                if (!_errandReady) return _stopIndex < _errand.Before.Count ? _errand.Before[_stopIndex].Carry : null;
+                return _errand.CarryToMain;
+            }
+        }
+
+        // Sıradaki durağa yürür, orada kısa bir an durur. Durak bittiyse sıradakine geçer. Ulaşılamayan durak atlanır
+        // (iş yine yapılır; eşya "elinin altında" sayılır). Harcanan oyun gününü döner.
+        private double AdvanceStops(List<JobStop> stops, double budget)
+        {
+            var stop = stops[_stopIndex];
+            if (!_atStop)
+            {
+                if (_path == null)
+                {
+                    _path = stop.At != null ? PathToAdjacent(stop.At)
+                        : stop.Goals != null && stop.Goals.Count > 0 ? Pathfinder.FindPathToAny(_world.Map, _character.Position, new HashSet<GridPos>(stop.Goals)) : null;
+                    if (_path == null) { EndStop(stop, reached: false); return 0; }
+                    _pathIndex = 1;
+                    _stepFraction = 0;
+                    _legStep = stop.StepId != null ? new ActionStepDef { Id = stop.StepId, Pose = stop.Pose, Sfx = stop.Sfx, Held = stop.Carry } : null;
+                }
+                double walked = Walk(budget);
+                if (_path == null) return walked;                 // yol kapandı: yeniden hesaplanır
+                if (_pathIndex < _path.Count) return walked;
+                _atStop = true;
+                _stopPause = 0;
+                if (_legStep != null) StepChanged?.Invoke(_character, _legStep);
+                return walked;
+            }
+            double need = Math.Max(0, stop.PauseDays) * Scale - _stopPause;
+            if (budget >= need) { EndStop(stop, reached: true); return need; }
+            _stopPause += budget;
+            return budget;
+        }
+
+        private void EndStop(JobStop stop, bool reached)
+        {
+            if (reached) stop.OnDone?.Invoke(_character);
+            _atStop = false;
+            _stopPause = 0;
+            _legStep = null;
+            _path = null;
+            _stopIndex++;
+        }
+
+        private void EndErrand()
+        {
+            var e = _errand;
+            _errand = null;
+            _errandAsked = false; _errandReady = false; _returning = false;
+            _stopIndex = 0; _stopPause = 0; _atStop = false; _legStep = null;
+            e?.OnEnd?.Invoke();
+        }
+
+        // İş bitti: aldıklarını yerine götürür, sonra iş kuyruktan düşer.
+        private double AdvanceReturn(double budget)
+        {
+            if (_errand == null || _stopIndex >= _errand.After.Count) { Finish(); return 0; }
+            return AdvanceStops(_errand.After, budget);
+        }
 
         public bool IsIdle => Queue.Current == null;
 
@@ -838,6 +939,7 @@ namespace Thatchwick.Core.Jobs
 
         private double AdvanceUse(Job job, double budget)
         {
+            if (_returning) return AdvanceReturn(budget);
             var item = _world.GetItem(job.ItemId);
             InteractionDef interaction = item == null ? null : FindInteraction(item.Def, job.InteractionId);
             if (interaction == null) { Fail("Eşya ya da etkileşim bulunamadı."); return 0; }
@@ -847,6 +949,15 @@ namespace Thatchwick.Core.Jobs
             {
                 string blocked = StartBlocker(item, interaction);
                 if (blocked != null) { Fail(blocked); return 0; }
+            }
+
+            // Ayak işleri (63, 63a): önce kabı, aleti, sepeti alır; su doldurur. Sonra eşyaya yürür.
+            if (!_using && !_errandReady)
+            {
+                if (!_errandAsked) { _errandAsked = true; _errand = Errands?.Invoke(_character, item, interaction); _stopIndex = 0; }
+                if (_errand != null && _stopIndex < _errand.Before.Count) return AdvanceStops(_errand.Before, budget);
+                _errandReady = true;
+                _stopIndex = 0;
             }
 
             // Banyo ve leğen: önce en yakın sudan (kuyu, gölet, dere) bir kova su getirilir; her banyoya bir sefer.
@@ -900,6 +1011,13 @@ namespace Thatchwick.Core.Jobs
                     TopUpFire(item);
                     if (!item.IsLit) { Fail("Ocak sönük, odun kalmadı."); return used; }
                 }
+                if (PrepareUse != null)
+                {
+                    var prep = PrepareUse(_character, item, interaction);
+                    if (prep.Fail != null) { Fail(prep.Fail); return used; }
+                    _kindled = prep.Kindled;
+                    _prepFlags = prep.Flags;
+                }
                 BeginChain(item, interaction);
             }
             if (_stepWalking)
@@ -947,7 +1065,8 @@ namespace Thatchwick.Core.Jobs
                     _character.GainSkillXp(interaction.Skill.Value, interaction.SkillXp * bonus.Xp);
                 if (interaction.Moodlet != null) _character.AddMoodlet(interaction.Moodlet);
                 var reserved = _reserved; _reserved = null;
-                Finish();
+                // Yerine koyulacak bir şey varsa iş kuyrukta kalır: karakter önce onları götürür (AdvanceReturn).
+                if (_errand != null && _errand.After.Count > 0) BeginReturn(); else Finish();
                 // Etkiler en sonda: eşyayı kaldırabilir (kesilen ağaç) ve dünyayı değiştirir.
                 if (reserved != null && Effects is Work.InteractionEffects afx) afx.ApplyReserved(_character, item, interaction, reserved);
                 else if (interaction.HasEffects) Effects?.Apply(_character, item, interaction);
@@ -1419,6 +1538,33 @@ namespace Thatchwick.Core.Jobs
             }
         }
 
+        private void BeginReturn()
+        {
+            _character.Asleep = false;
+            _using = false;
+            _useProgress = 0;
+            _hasWater = false; _fetching = false;
+            _path = null; _pathIndex = 0; _stepFraction = 0;
+            ClearChain();
+            _returning = true;
+            _returnJob = Queue.Current;
+            _stopIndex = 0; _stopPause = 0; _atStop = false; _legStep = null;
+            LastFailure = null;
+        }
+
+        // Dönüş yolundaki iş bitmiş sayılır: araya başka iş girerse (tuvalet, açlık) ya da iptal edilirse kuyruktan düşer,
+        // yeniden yapılmaz.
+        private Job _returnJob;
+
+        private void DropReturnJob()
+        {
+            var job = _returnJob;
+            _returnJob = null;
+            if (job == null) return;
+            for (int i = 0; i < Queue.Count; i++)
+                if (ReferenceEquals(Queue.Jobs[i], job)) { Queue.RemoveAt(i); return; }
+        }
+
         private void Finish()
         {
             Queue.RemoveCurrent();
@@ -1533,6 +1679,19 @@ namespace Thatchwick.Core.Jobs
             _using = false;
             _useProgress = 0;
             ClearChain();
+            DropReturnJob();
+            EndErrand();
         }
+    }
+
+    /// <summary>İşe başlamadan önceki hazırlığın sonucu (<see cref="JobRunner.PrepareUse"/>).</summary>
+    public struct UsePrep
+    {
+        /// <summary>Başlanamıyorsa nedeni; yoksa null.</summary>
+        public string Fail;
+        /// <summary>Ateş bu iş için yeni tutuşturuldu.</summary>
+        public bool Kindled;
+        /// <summary>Zincir koşullarına geçen ek bayraklar (ör. kesme tahtası yok).</summary>
+        public string[] Flags;
     }
 }

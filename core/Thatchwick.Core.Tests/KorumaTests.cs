@@ -39,6 +39,11 @@ namespace Thatchwick.Core.Tests
             ["recipe.cook_paste_stew.name"] = Tomato,
             ["recipe.seed_tomato.name"] = Tomato,
             ["recipe.tomato_puree.name"] = Tomato,
+            // Aynı tariflerin büyük şöminedeki ikizleri (belge 63a: kazan tarifleri taş ocakta ve şöminede).
+            ["recipe.cook_cabbage_paste__fire.name"] = Tomato,
+            ["recipe.cook_paste_pilaf__fire.name"] = Tomato,
+            ["recipe.cook_paste_stew__fire.name"] = Tomato,
+            ["recipe.tomato_puree__fire.name"] = Tomato,
         };
         private const string Tomato = "domates, salça için bilinçli dönem istisnası (Project belgesi 60a-E1)";
 

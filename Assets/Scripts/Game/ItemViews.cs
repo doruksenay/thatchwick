@@ -268,6 +268,7 @@ namespace Thatchwick.Game
         private void BuildItemViewBody(ItemInstance item)
         {
                 if (!_view.IsLevelVisible(item.Position.Z)) return;   // görünmeyen katın eşyası çizilmez
+                if (item.TakenBy != 0) return;   // mutfak aleti karakterin elinde (63a): yerinde çizilmez
                 int level = item.Position.Z;
                 var color = ItemColor(item.Def.Id);
                 if (item.IsWallMounted)

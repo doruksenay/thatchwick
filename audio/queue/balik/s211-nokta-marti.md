@@ -4,7 +4,7 @@ title: Nokta sesi, martı
 kind: spot
 family: spots
 freq: B
-status: review
+status: accepted
 approved_by: user
 depends_on: []
 key: spot.gull
@@ -39,5 +39,11 @@ candidates: 4
 passed: 4
 credits_spent: 0
 generated_at: '2026-11-20T14:21:28Z'
+pick:
+- c1
+- c2
+- c3
+- c4
+karar_zamani: '2026-11-20'
 ---
 One short call of a single gull, a little distant over the sea.

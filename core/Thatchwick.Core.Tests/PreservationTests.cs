@@ -200,7 +200,7 @@ namespace Thatchwick.Core.Tests
             var house = new Household();
             var fx = new InteractionEffects(w, house, db, 1);
             var barrel = w.PlaceItem(db.Items.Get("item.salting_barrel"), new GridPos(4, 4));
-            var pot = w.PlaceItem(db.Items.Get("item.cooking_pot"), new GridPos(8, 4));
+            var pot = w.PlaceItem(db.Items.Get("item.hearth_stone"), new GridPos(8, 4));   // pişirme ocakta (63a)
             var c = Cook();
             house.AddItem("item.carrot", 3); house.AddItem("item.salt", 1);
             Run(fx, c, barrel, "pickle_carrot");

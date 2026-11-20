@@ -384,8 +384,8 @@ for t in TABLES:
     act(tid, {"id": "clear_table", "displayName": "Sofrayı topla", "durationDays": 0.03, "skill": "Decorating", "skillXp": 1, "meal": "clearTable"}, "Clear the table")
     # İhtiyaç doyurmaz: karakter kendi başına seçmesin (köpek her öğün dilenmeye alışır); yalnızca oyuncu emriyle.
     act(tid, {"id": "feed_scrap", "displayName": "Köpeğe bir lokma ver", "durationDays": 0.01, "skill": "AnimalHusbandry", "skillXp": 1, "meal": "feedScrap"}, "Give the dog a scrap")
-for w in ("basin_ewer", "wash_tub", "water_bucket"):
-    act("item." + w, {"id": "wash_dishes", "displayName": "Bulaşık yıka", "durationDays": 0.04, "skill": "Decorating", "skillXp": 1, "meal": "washDishes"}, "Wash the dishes")
+# Bulaşık yıkama işi burada yazılmaz: bulaşık mutfak aletlerinin sistemindedir (belge 63a §4; tools/content/mutfak_aletleri.py,
+# bulaşık leğeni, yalak, çamaşır leğeni ve yıkama taşı). Sofradan kalkan tabaklar oraya kirli tabak olarak girer.
 for f in ("pantry_shelf", "aumbry", "root_cellar", "storage_jar", "ice_box", "granary"):
     tag("item." + f, "foodpoint")
 for p in ("prep_counter", "kneading_trough"):

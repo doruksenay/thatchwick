@@ -222,7 +222,7 @@ namespace Thatchwick.Core.Tests
         {
             var w = new WorldState(new GridMap(12, 12));
             var h = new Household();
-            var pot = w.PlaceItem(db.Items.Get("item.cooking_pot"), new GridPos(5, 5));
+            var pot = w.PlaceItem(db.Items.Get("item.hearth_stone"), new GridPos(5, 5));   // pişirme ocakta (63a)
             return (w, h, pot, pot.Def.Interactions.First(i => i.Id == "cook_stew"));
         }
 

@@ -66,6 +66,8 @@ namespace Thatchwick.Game
             public SpriteRenderer Held;
             public string HeldItem;
             public bool HeldBehind;
+            // Taşınan eşya (63a): kancadan alınan kazan, bıçak, bulaşık sepeti; göğüs hizasında çizilir.
+            public SpriteRenderer Carry;
             // Sabit adımlı simülasyon: son iki adımın konumu (karede ara değer).
             public SmoothPosition Sim;
         }
@@ -121,6 +123,36 @@ namespace Thatchwick.Game
         /// Yemek: yenen yiyeceğin ikonu varsa ve boş elli kareler (eat3) ile el konumları (HandAnchors) yazılmışsa boş elli kareyi
         /// döndürür ve yiyeceği o karedeki elin üstüne çizer. Olmazsa null (eski, ekmeği çizili kareler oynar).
         /// </summary>
+        /// <summary>Taşınan eşyanın göğüs hizasındaki yeri (yerel birim). "carry" karesinin el çapası gelince oradan okunacak.</summary>
+        private static readonly Vector3 CarryOffset = new Vector3(0.08f, 0.62f, 0f);
+        private const float CarryScale = 0.55f;
+
+        /// <summary>
+        /// Ayak işinde elde taşınan eşyayı çizer (Project belgeleri 63, 63a): kancadan alınan kazan, bıçak, bulaşık sepeti.
+        /// Eşyanın ikonu yoksa hiçbir şey çizilmez; dünyadaki yerinde de çizilmediği için "elde" sayılır.
+        /// </summary>
+        private void UpdateCarry(Actor actor)
+        {
+            string id = actor.Runner.HeldItemId;
+            var sprite = id != null ? IsoArt.HeldItem(id) : null;
+            if (sprite == null)
+            {
+                if (actor.Carry != null) actor.Carry.enabled = false;
+                return;
+            }
+            if (actor.Carry == null)
+            {
+                var go = new GameObject("Carry");
+                go.transform.SetParent(actor.View, false);
+                actor.Carry = go.AddComponent<SpriteRenderer>();
+            }
+            actor.Carry.sprite = sprite;
+            bool left = actor.Direction >= 3 && actor.Direction <= 5;   // batıya bakarken (kb, b, gb) eşya öbür kolda
+            actor.Carry.transform.localPosition = new Vector3(left ? -CarryOffset.x : CarryOffset.x, CarryOffset.y, 0f);
+            actor.Carry.transform.localScale = new Vector3(CarryScale, CarryScale, 1f);
+            actor.Carry.enabled = actor.Renderer.enabled;
+        }
+
         private Sprite UpdateHeld(Actor actor, string icon, int seed)
         {
             Sprite frame = null;
@@ -2306,10 +2338,29 @@ namespace Thatchwick.Game
                 if (GUILayout.Button(label)) { RunOption(o); _menuOpen = false; }
                 GUI.enabled = true;
                 if (o.Interaction != null) DrawRecipeIcons(o.Interaction);
+                if (o.Interaction != null && o.Item != null && o.Blocked == null && o.Interaction.Cook != null) DrawKitchenLine(o.Item, o.Interaction);
             }
             if (GUILayout.Button("Buraya yürü")) { Commander.Runner.Command(Job.MoveTo(_menuTile)); _menuOpen = false; }
             GUILayout.EndScrollView();
             GUILayout.EndArea();
+        }
+
+        /// <summary>Tarif kartının "Gerekenler" satırı (63 §2.5, 63a §5.3): hangi kap, ekipman puanı, kabın izin verdiği en iyi kalite.</summary>
+        private void DrawKitchenLine(ItemInstance item, InteractionDef interaction)
+        {
+            if (_life == null || Commander == null) return;
+            var use = _life.KitchenTools.Preview(Commander.Character, item, interaction, out string missing);
+            if (use == null || missing != null) return;
+            string vessel = use.Vessel != null ? use.Vessel.DisplayName : GameLocalization.T("ui.kitchen.no_vessel");
+            string best = ItemQuality.Badge(KitchenQuality.MaxQuality(use.Cap));
+            string line = GameLocalization.T("ui.kitchen.line", ("vessel", vessel), ("score", use.Score.ToString()), ("cap", use.Cap.ToString()), ("best", best));
+            if (use.MissingHelpers.Count > 0)
+            {
+                var names = new System.Collections.Generic.List<string>();
+                foreach (var t in use.MissingHelpers) names.Add(GameLocalization.T(Equip.ToolKey(t)));
+                line += " · " + GameLocalization.T("ui.kitchen.helpers_missing", ("tools", string.Join(", ", names)));
+            }
+            GUILayout.Label(line);
         }
 
         // Çiftlik ve hayvancılık: barınak odası konforu, otlak, binek, mekanizmalar, görevli aile üyeleri.
@@ -2438,7 +2489,7 @@ namespace Thatchwick.Game
                 Now = () => _clock.TotalDays,
                 TileWork = _farmWork,
                 Mines = _mines,
-                HouseChores = _life.Home.Chores,                                      // ev görevi (belge 45)
+                HouseChores = () => System.Linq.Enumerable.Concat(_life.Home.Chores(), _life.KitchenTools.WashChores()),   // ev görevi (belge 45) + bulaşık (63a §4.6)
                 YardChores = _life.YardChores,                                        // kompost, ahır temizliği, yığın toplama (belge 57)
                 HouseHours = () => HourOfDay >= 7.0 && HourOfDay < 22.0              // mum yakmak akşam işi
             };
@@ -3176,7 +3227,7 @@ namespace Thatchwick.Game
                         _juice.Emit(Juice.Kind.Dust, pos + new Vector3(0f, 0.02f, 0f), 1, sortOrder - 1);
                 }
             }
-            else if ((actor.Runner.IsUsingItem || IsPerformingInPlace(actor)) && actor.Character.Stage != AgeStage.Baby)
+            else if ((actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && actor.Character.Stage != AgeStage.Baby)
             {
                 var job = actor.Runner.Queue.Current;
                 if (!ReferenceEquals(job, actor.WorkJob))
@@ -3240,6 +3291,7 @@ namespace Thatchwick.Game
                 if (Juice.BreathOffset(seed) > 0f) squash = -0.018f;
             }
             if (!(actor.Runner.IsUsingItem && !moving) && actor.Held != null) actor.Held.enabled = false;
+            UpdateCarry(actor);
             actor.View.position = pos + new Vector3(0f, bob, 0f);
             // Merdivende yarıdan sonra hedef katın bandına geçer; iki kattan biri görünürse karakter görünür.
             int fromLevel = actor.Character.Position.Z;
@@ -3254,12 +3306,13 @@ namespace Thatchwick.Game
             string sceneKey = moving || actor.Character.Stage == AgeStage.Baby ? null : _life.Scenes.CharacterSceneOf(actor.Character.Id);
             var sceneFrame = sceneKey != null ? ActionFrameFor(actor, sceneKey, seed) : null;
             if (sceneFrame == null && !moving && actor.Character.Stage != AgeStage.Baby) sceneFrame = IdleFrameFor(actor, seed);
-            var real = walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
+            var real = walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
             actor.Renderer.sortingOrder = Iso.SortOrder(pos.y, 1, level);
             if (actor.Held != null && actor.Held.enabled) actor.Held.sortingOrder = actor.Renderer.sortingOrder + (actor.HeldBehind ? -1 : 1);
+            if (actor.Carry != null && actor.Carry.enabled) actor.Carry.sortingOrder = actor.Renderer.sortingOrder + 1;
             if (actor.Shadow != null)
             {
                 actor.Shadow.enabled = actor.Renderer.enabled;

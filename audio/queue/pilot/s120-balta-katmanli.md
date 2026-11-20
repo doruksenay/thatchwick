@@ -5,7 +5,7 @@ kind: sfx
 family: tools
 freq: A
 pilot: true
-status: review
+status: accepted
 approved_by: auto
 key: work.chop
 note: '45a bölüm 6: katmanlı ile tek dosya karşılaştırması. İkisinden yalnız biri kabul edilir; diğeri ret.'
@@ -35,5 +35,13 @@ candidates: 12
 passed: 12
 credits_spent: 80
 generated_at: '2026-11-20T09:53:50Z'
+pick:
+- impact_c1
+- impact_c2
+- crack_c1
+- crack_c4
+- chips_c3
+- chips_c4
+karar_zamani: '2026-11-20'
 ---
 Axe chopping wood, built from three layers that play together.
