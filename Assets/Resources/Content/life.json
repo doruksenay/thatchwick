@@ -3188,7 +3188,7 @@
     {"skill": "Salvage", "level": 3, "kind": "interaction", "text": "Ayıklama: söküm her malzemeden bir fazla"},
     {"skill": "Salvage", "level": 4, "kind": "passive", "text": "Çivi ve menteşe geri kazanılır"},
     {"skill": "Salvage", "level": 5, "kind": "feature", "text": "Dal seçimi"},
-    {"skill": "Salvage", "level": 6, "kind": "interaction", "text": "Kırık aleti kurtar (hasarlı eşya da malzeme verir)"},
+    {"skill": "Salvage", "level": 6, "kind": "interaction", "text": "Kırık aleti kurtar (hasarlı eşyadan yarı malzeme)"},
     {"skill": "Salvage", "level": 7, "kind": "passive", "text": "Yıkık eşyadan tam malzeme"},
     {"skill": "Salvage", "level": 8, "kind": "recipe", "text": "Yamalı yorgan"},
     {"skill": "Salvage", "level": 9, "kind": "passive", "text": "Eski eşyada hatıra bulma şansı"},

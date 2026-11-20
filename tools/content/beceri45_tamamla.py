@@ -547,7 +547,7 @@ RETEXT = {
     ("Weaving", 5, "Giysi dik"): "Giysi dik (cepken)",
     ("Mining", 9, "Damarı dinle"): "Damarı dinle: çatırtı bir gün önceden duyulur",
     ("Salvage", 3, "Ayıkla (toplu söküm)"): "Ayıklama: söküm her malzemeden bir fazla",
-    ("Salvage", 6, "Kırık aleti kurtar"): "Kırık aleti kurtar (hasarlı eşya da malzeme verir)",
+    ("Salvage", 6, "Kırık aleti kurtar"): "Kırık aleti kurtar (hasarlı eşyadan yarı malzeme)",
     ("Salvage", 7, "Yıkık eşyadan malzeme"): "Yıkık eşyadan tam malzeme",
     ("Teaching", 4, "Aynı anda iki öğrenci"): "Aynı derste iki konu",
     ("Teaching", 8, "Aile tarifini yazmak hızlanır"): "Tarif yazılınca okuyabilen herkes öğrenir",

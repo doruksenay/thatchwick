@@ -388,9 +388,10 @@ namespace Thatchwick.Core.Build
                 {
                     if (it.Def.IsKeepsake) continue;
                     var part = SalvageOf(it.Def, salvageLevel);
-                    // Yıkık eşyadan malzeme (Geri kazanım 7): hasarlı eşya da tam pay verir (önce yarısı).
+                    // Hasarlı eşya: Geri kazanım 6'da yarı pay ("kırık aleti kurtar"), 7'de tam pay ("yıkık eşyadan malzeme"); öncesinde malzeme çıkmaz.
                     if (it.Condition == ItemCondition.Damaged && salvageLevel < SalvageBrokenLevel)
-                        for (int k = 0; k < part.Count; k++) part[k] = new KeyValuePair<string, int>(part[k].Key, part[k].Value / 2);
+                        for (int k = 0; k < part.Count; k++)
+                            part[k] = new KeyValuePair<string, int>(part[k].Key, salvageLevel >= SalvageRescueLevel ? part[k].Value / 2 : 0);
                     part.RemoveAll(kv => kv.Value <= 0);
                     salvage.AddRange(part);
                     // Hatıra (Geri kazanım 9): eski eşyanın içinden bir hatıra çıkabilir.
@@ -425,7 +426,7 @@ namespace Thatchwick.Core.Build
         public static double SalvageFraction(int level) => level <= 0 ? 0 : 0.10 + 0.05 * (level - 1);
 
         // Geri kazanım basamakları (belge 45).
-        public const int SalvageAkceLevel = 2, SalvageSortLevel = 3, SalvageNailLevel = 4, SalvageBrokenLevel = 7, SalvageMementoLevel = 9;
+        public const int SalvageAkceLevel = 2, SalvageSortLevel = 3, SalvageNailLevel = 4, SalvageRescueLevel = 6, SalvageBrokenLevel = 7, SalvageMementoLevel = 9;
         public const double SalvageAkceFactor = 1.10, MementoChance = 0.05;
         public const string MementoId = "item.old_keepsake";
         /// <summary>Hatıra zarı (tohumlu rastgele); null ise hatıra çıkmaz.</summary>
