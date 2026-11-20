@@ -1,7 +1,8 @@
 ---
 id: "593"
 title: "Takı ruh hali ikonları (2)"
-status: pending
+status: running
+claimed_at: 2026-11-20T13:54Z
 approved_by: user        # otomatik akış (CLAUDE.md, 2026-11-17); kullanıcı 20.11.2026 sohbet: "assetleri de sıraya ekle"
 priority: 35
 family: arayuz
