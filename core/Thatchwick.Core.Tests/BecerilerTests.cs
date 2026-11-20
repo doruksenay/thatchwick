@@ -61,7 +61,7 @@ namespace Thatchwick.Core.Tests
                 {
                     string n = i.DisplayName.ToLowerInvariant();
                     if (n.Contains("pişir") || n.Contains("haşla") || n.Contains("kızart") || n.Contains("tüttür") || n.Contains("tuzla"))
-                        Assert.True((i.Skill == SkillType.Cooking || i.Skill == SkillType.Baking || i.Skill == SkillType.Pottery) && i.SkillXp > 0, $"{d.Id}.{i.Id} yemek XP'si vermiyor");
+                        Assert.True((i.Skill == SkillType.Cooking || i.Skill == SkillType.Baking || i.Skill == SkillType.Pottery || i.Skill == SkillType.Brewing) && i.SkillXp > 0, $"{d.Id}.{i.Id} yemek XP'si vermiyor");
                 }
             var w = new WorldState(new GridMap(8, 8));
             var h = new Household();

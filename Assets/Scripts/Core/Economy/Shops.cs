@@ -96,7 +96,7 @@ namespace Thatchwick.Core.Economy
             new ShopDef { Id = "scribe", Name = "Kâtip ve ulak", WorkKey = "work:scribe", OpenHour = 9, CloseHour = 16, ClosedDay = 5,
                 Blurb = "Kitap, mürekkep, parşömen; soy ve miras kayıtları.",
                 Goods = ScribeGoods, Wares = d => Cat(d, "memorial") || IdHas(d, "book", "hourglass", "family_tree") },
-            new ShopDef { Id = "herb", Name = "Otacı ve ebe", WorkKey = "work:herb", OpenHour = 8, CloseHour = 18,
+            new ShopDef { Id = "herb", Name = "Aktar ve ebe", WorkKey = "work:herb", OpenHour = 8, CloseHour = 18,
                 Blurb = "İksir, merhem, ot; doğumda ebelik.",
                 Goods = HerbGoods, Wares = d => IdHas(d, "herb_pot", "herb_bundle", "drying_rack", "potion_shelf", "mortar") },
             new ShopDef { Id = "potter", Name = "Çömlekçi", WorkKey = "work:pottery", OpenHour = 8, CloseHour = 17, ClosedDay = 6,

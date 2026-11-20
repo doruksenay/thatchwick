@@ -154,6 +154,13 @@ namespace Thatchwick.Core.Economy
 
         private void TradeXp(double xp) { if (xp > 0) Trader?.Invoke()?.GainSkillXp(SkillType.Trade, xp); }
 
+        /// <summary>
+        /// Ticaret XP'si (belge 45, 5.3): işlem başına sabit + değerin karekökü. Eski kural (satışta kazancın %30'u)
+        /// geç oyunda Ticaret'i en hızlı beceri yapıyordu. 10 akçe ≈ 6,7 XP, 100 ≈ 17, 1000 ≈ 49.
+        /// </summary>
+        public static double SaleXp(int earned) => earned > 0 ? 2.0 + 1.5 * Math.Sqrt(earned) : 0.0;
+        public static double PurchaseXp(int cost) => cost > 0 ? 1.0 + 0.5 * Math.Sqrt(cost) : 0.0;
+
         public int BuyPrice(string itemId)
         {
             var def = _content.Items.Get(itemId);
@@ -193,7 +200,7 @@ namespace Thatchwick.Core.Economy
             if (!_house.TrySpend(cost)) return PlacementCheck.Fail("Akçe yetmiyor.");
             _house.AddItem(itemId, count);
             _house.MarkBought(itemId, count);   // pazar malı: "Kendi emeğimiz" eki almaz (27 §9)
-            TradeXp(cost * 0.1);
+            TradeXp(PurchaseXp(cost));
             Trader?.Invoke()?.GainSkillXp(SkillType.Carting, 0.5 * count);    // malı taşımak arabacılık
             return PlacementCheck.Success;
         }
@@ -211,7 +218,7 @@ namespace Thatchwick.Core.Economy
                 if (_content.Items.TryGet(itemId, out var sd) && sd.HasTag("raw")) _rawSold[itemId] = RawSoldThisWeek(itemId) + 1;
             }
             if (earned > 0) _house.AddAkce(earned);
-            TradeXp(earned * 0.3);
+            TradeXp(SaleXp(earned));
             if (earned > 0) Trader?.Invoke()?.GainSkillXp(SkillType.Carting, 0.5 * count);
             return earned;
         }
@@ -230,7 +237,7 @@ namespace Thatchwick.Core.Economy
             if (offer.IsContract) _house.AddAkce(offer.RewardAkce);
             else { _house.AddItem(offer.GetItem, offer.GetCount); _house.MarkBought(offer.GetItem, offer.GetCount); }
             offer.Taken = true;
-            TradeXp(10 + offer.RewardAkce * 0.2);
+            TradeXp(10 + 1.5 * Math.Sqrt(Math.Max(0, offer.RewardAkce)));
             OfferAccepted?.Invoke(offer);
             return PlacementCheck.Success;
         }

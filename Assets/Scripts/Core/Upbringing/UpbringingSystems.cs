@@ -350,9 +350,13 @@ namespace Thatchwick.Core.Upbringing
         /// <summary>Hane başına yeni biri geçti (D3: itibarın yarısı kalır).</summary>
         public void OnSuccession() => Reputation.OnSuccession();
 
-        /// <summary>Karakterin bu sistemlerden gelen toplam beceri XP çarpanı.</summary>
+        /// <summary>
+        /// Karakterin bu sistemlerden gelen toplam beceri XP çarpanı. Bonuslar toplanır (belge 45 karar 4):
+        /// 1 + (çocukluk izi − 1) + (can yoldaşı − 1) + (çıraklık − 1) + (aile tarifi − 1). Tavanı Character.GainSkillXp uygular.
+        /// </summary>
         public double XpFactor(Character c, SkillType skill) =>
-            Toys.XpFactor(c.Id, skill) * Companions.XpFactor(c.Id, skill) * Apprentices.XpFactor(c.Id, skill) * Recipes.XpFactor(c.Id, skill);
+            1.0 + (Toys.XpFactor(c.Id, skill) - 1.0) + (Companions.XpFactor(c.Id, skill) - 1.0)
+                + (Apprentices.XpFactor(c.Id, skill) - 1.0) + (Recipes.XpFactor(c.Id, skill) - 1.0);
 
         private readonly HashSet<int> _watched = new HashSet<int>();
 

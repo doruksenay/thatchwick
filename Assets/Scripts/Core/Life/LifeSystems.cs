@@ -108,7 +108,7 @@ namespace Thatchwick.Core.Life
             Population = population ?? throw new ArgumentNullException(nameof(population));
             Clock = clock ?? throw new ArgumentNullException(nameof(clock));
 
-            Mood = new MoodService(world) { Content = content };
+            Mood = new MoodService(world) { Content = content, ArrangerLevel = () => BestSkill(SkillType.Decorating) };
             Decor = new Thatchwick.Core.Build.DecorSystem(world, content, seed != 0 ? Seeds.Derive(seed, 14) : 97)
             {
                 Members = () => Population.Members,
@@ -471,8 +471,9 @@ namespace Thatchwick.Core.Life
 
         public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction);
         public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus());
-        // Ev düzenleme: hanenin en iyi süslemecisi seviye başına %2 indirim (10. seviyede %18) dallarla toplanır.
-        public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount) + 0.02f * Math.Max(0, BestSkill(SkillType.Decorating) - 1));
+        // Yapı ve eşya indirimi yalnızca dallardan ve özelliklerden gelir. Ev düzenleme indirim vermez; oda konforu verir
+        // (belge 45 karar 7: MoodService.ArrangementComfort, RoomMoodSystem.TidyHarmonyLevel).
+        public float BuildDiscount() => Math.Min(0.5f, BestOf(m => m.BuildDiscount));
 
         /// <summary>Alet yükseltmesini köy demircisi olmadan yapabilmek için hanedeki demircinin seviyesi.</summary>
         public const int SmithSelfLevel = 5;

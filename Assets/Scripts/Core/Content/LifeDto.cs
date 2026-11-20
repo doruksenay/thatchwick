@@ -42,6 +42,21 @@ namespace Thatchwick.Core.Content
         public ModifierDto effects;
     }
 
+    /// <summary>
+    /// Beceri seviyesinde açılan şey (belge 45, 9. bölüm): seviye kartında ve beceri panelinin 1-10 şeridinde gösterilir.
+    /// planned = tasarımda var, oyunda henüz yok (gösterilir ama "yakında" diye).
+    /// </summary>
+    [Serializable]
+    public sealed class SkillUnlockDto
+    {
+        public string skill;
+        public int level;
+        public string kind;        // interaction | recipe | passive | feature
+        public string text;
+        public bool planned;
+        public bool adultPack;
+    }
+
     [Serializable]
     public sealed class BranchDto
     {

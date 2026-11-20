@@ -45,7 +45,7 @@ namespace Thatchwick.Core.Life
                 foreach (var d in _content.Items.All) if (d.HasTag("relic")) relics.Items.Add(d.Id);
                 Add(relics);
                 Add(new CollectionDef { Id = "col.shore", Name = "Göl kıyısı", Items = { "item.mussel_shell", "item.snail_shell", "item.river_pebble", "item.heron_feather" } });
-                Add(new CollectionDef { Id = "col.herbs", Name = "Otacının çekmecesi", Items = { "item.herb", "item.tea_mint", "item.tea_chamomile", "item.tea_sage" } });
+                Add(new CollectionDef { Id = "col.herbs", Name = "Aktarın çekmecesi", Items = { "item.herb", "item.tea_mint", "item.tea_chamomile", "item.tea_sage" } });
                 return _collections;
 
                 void Add(CollectionDef c)

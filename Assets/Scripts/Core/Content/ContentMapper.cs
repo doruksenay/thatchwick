@@ -14,7 +14,7 @@ namespace Thatchwick.Core.Content
 
             var errors = new List<string>();
             bool hasLife = file != null && (file.traits != null || file.branches != null || file.projects != null || file.villagers != null
-                || file.festivals != null || file.goals != null || file.tools != null || file.templates != null);
+                || file.festivals != null || file.goals != null || file.tools != null || file.templates != null || file.skillUnlocks != null);
             if (file == null || (file.items == null && !hasLife))
             {
                 errors.Add("İçerik dosyası boş ya da okunamadı.");
@@ -467,6 +467,8 @@ namespace Thatchwick.Core.Content
                     AdultPack = r.adultPack
                 };
                 interaction.Produce.Add(new ProduceDef { ItemId = r.produces, Count = r.count <= 0 ? 1 : r.count, Chance = 1f });
+                // Kilit becerisi: eşyayı üreten ilk tarifin becerisi (belge 45, 3.1).
+                if (db.Items.TryGet(r.produces, out var made) && !made.CraftSkill.HasValue) made.CraftSkill = skill;
                 AddMaterials(interaction, r.materials);
                 if (interaction.Consume.Count == 0) errors.Add($"tarif {r.id}: malzeme yok.");
                 station.Interactions.Add(interaction);

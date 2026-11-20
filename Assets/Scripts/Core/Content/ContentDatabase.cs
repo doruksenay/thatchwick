@@ -19,6 +19,8 @@ namespace Thatchwick.Core.Content
         public ContentRegistry<AnimalSpeciesDef> Animals { get; } = new ContentRegistry<AnimalSpeciesDef>();
         /// <summary>Yapı modu malzeme ve parça kataloğu (duvar, kapı, pencere, zemin, çatı, kaplama).</summary>
         public ContentRegistry<BuildPartDef> Parts { get; } = new ContentRegistry<BuildPartDef>();
+        /// <summary>Beceri seviyesi → açılan tablosu (belge 45; life.json "skillUnlocks").</summary>
+        public List<SkillUnlockDef> SkillUnlocks { get; } = new List<SkillUnlockDef>();
         /// <summary>Etkileşimlerin başvurduğu moodlet kataloğu (doğrulama için).</summary>
         public Mood.MoodCatalog Moods { get; set; } = Mood.MoodCatalog.Default;
 

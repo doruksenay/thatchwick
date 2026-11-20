@@ -122,7 +122,7 @@ namespace Thatchwick.Core.Economy
         public MerchantOrder PlaceOrder(long day)
         {
             var pool = new List<string>();
-            foreach (var id in OrderPool) if (_content.Items.TryGet(id, out var d) && d.Price > 0) pool.Add(id);
+            foreach (var id in OrderPool) if (!ContentPacks.IsHiddenAlcohol(id) && _content.Items.TryGet(id, out var d) && d.Price > 0) pool.Add(id);
             if (pool.Count == 0) return null;
             var item = _content.Items.Get(pool[_rng.Next(pool.Count)]);
             int count = Math.Max(3, Math.Min(12, 120 / Math.Max(1, item.Price)));

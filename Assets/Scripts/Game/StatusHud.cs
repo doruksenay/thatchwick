@@ -6,6 +6,7 @@ using Thatchwick.Core.Content;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Life;
 using Thatchwick.Core.Mood;
+using Thatchwick.Core.Progress;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Game
@@ -96,6 +97,7 @@ namespace Thatchwick.Game
             DrawLogButton(w, h);
             if (_logOpen) DrawLog(w, h);
             if (_card != null) DrawCard(w, h);
+            DrawLevelCards(w);
         }
 
         // ---- üst şerit: tarih, hava, tahmin, şenlik, kış göstergesi ----
@@ -287,13 +289,123 @@ namespace Thatchwick.Game
         {
             if (c.IsDead || screenPoint.z < 0f) return;
             EnsureStyles();
-            var info = ActivityDescriber.Describe(c, runner, _life.World);
-            if (info.Icon == "idle" && string.IsNullOrEmpty(info.Reason)) return;   // boştakiler için balon çizilmez
             float x = screenPoint.x / guiScale;
             float y = (Screen.height - screenPoint.y) / guiScale;
-            string text = info.Full;
-            float width = Mathf.Clamp(text.Length * 6.2f + 12f, 60f, 260f);
-            GUI.Box(new Rect(x - width * 0.5f, y - 46f, width, 20f), text, _balloon);
+            var info = ActivityDescriber.Describe(c, runner, _life.World);
+            if (!(info.Icon == "idle" && string.IsNullOrEmpty(info.Reason)))   // boştakiler için balon çizilmez
+            {
+                string text = info.Full;
+                float width = Mathf.Clamp(text.Length * 6.2f + 12f, 60f, 260f);
+                GUI.Box(new Rect(x - width * 0.5f, y - 46f, width, 20f), text, _balloon);
+            }
+            DrawSkillFlash(x, y, c);
+        }
+
+        // ---- beceri çubuğu ve seviye kartı (Project belgesi 45 bölüm 10) ----
+        // XP gelirken balonun altında 3 sn beceri çubuğu; seviye atlayınca baş üstünde "Beceri N!" ve köşede kart.
+        // Görseller (ikon, çerçeve) art/queue 45x işinden gelene kadar düz renkli yer tutucu. Ses hattı henüz yok.
+
+        public const float SkillBarSeconds = 3f, LevelTextSeconds = 2.5f, LevelCardSeconds = 7f;
+        /// <summary>Bundan küçük XP (yürürken Atletizm) çubuk açmaz; yoksa yürüyen herkesin başında çubuk olurdu.</summary>
+        public const double MinBarXp = 0.25;
+        public const int MaxLevelCards = 3;
+
+        private sealed class SkillFlash { public SkillType Skill; public float Until; public int LevelTo; public float LevelUntil; }
+        private sealed class LevelCard { public Character Who; public SkillType Skill; public int Level; public List<string> Items; public float Until; }
+        private readonly Dictionary<int, SkillFlash> _flash = new Dictionary<int, SkillFlash>();
+        private readonly List<LevelCard> _levelCards = new List<LevelCard>();
+        private GUIStyle _levelUp;
+
+        /// <summary>Kartı tıklayınca: o karakterin beceri şeridini açar (GameRoot bağlar).</summary>
+        public Action<Character, SkillType> OpenSkills { get; set; }
+
+        /// <summary>Karakterin XP ve seviye olaylarını dinler (GameRoot.CreateActorFor).</summary>
+        public void Watch(Character c)
+        {
+            if (c == null) return;
+            c.Skills.XpGained += (skill, xp) =>
+            {
+                if (xp < MinBarXp) return;
+                var f = Flash(c.Id);
+                f.Skill = skill;
+                f.Until = Time.unscaledTime + SkillBarSeconds;
+            };
+            c.Skills.LevelChanged += (skill, from, to) =>
+            {
+                if (to <= from || c.IsVillager) return;
+                var f = Flash(c.Id);
+                f.Skill = skill;
+                f.Until = Time.unscaledTime + SkillBarSeconds;
+                f.LevelTo = to;
+                f.LevelUntil = Time.unscaledTime + LevelTextSeconds;
+                _levelCards.Add(new LevelCard
+                {
+                    Who = c, Skill = skill, Level = to, Items = UnlockGate.NewAtLevel(_content, skill, to), Until = Time.unscaledTime + LevelCardSeconds
+                });
+                if (_levelCards.Count > MaxLevelCards) _levelCards.RemoveAt(0);
+            };
+        }
+
+        /// <summary>Beceri ikonu: Resources/UI/Icons/ui_icon_skill_&lt;beceri&gt; (art/queue 455a-c); yoksa yalnızca yazı.</summary>
+        public static string SkillIconKey(SkillType s) => "skill_" + s.ToString().ToLowerInvariant();
+
+        private SkillFlash Flash(int id)
+        {
+            if (!_flash.TryGetValue(id, out var f)) _flash[id] = f = new SkillFlash();
+            return f;
+        }
+
+        private void DrawSkillFlash(float x, float y, Character c)
+        {
+            if (!_flash.TryGetValue(c.Id, out var f)) return;
+            float now = Time.unscaledTime;
+            if (now < f.Until)
+            {
+                const float bw = 110f;
+                int level = c.Skills.GetLevel(f.Skill);
+                var apt = c.Skills.GetAptitude(f.Skill);
+                bool tired = c.Skills.IsSaturated(f.Skill);
+                string label = $"{SkillNames.Name(f.Skill)} {level}{(apt == Aptitude.Major ? " ★★" : apt == Aptitude.Minor ? " ★" : "")}{(tired ? " ☾" : "")}";
+                var prev = GUI.color;
+                GUI.color = tired ? new Color(1f, 1f, 1f, 0.55f) : Color.white;
+                GUI.Label(new Rect(x - bw * 0.5f, y - 26f, bw, 14f), UiSkin.C(label, SkillIconKey(f.Skill)), _small);
+                var r = new Rect(x - bw * 0.5f, y - 13f, bw, 5f);
+                GUI.color = new Color(0f, 0f, 0f, 0.55f);
+                GUI.DrawTexture(r, Texture2D.whiteTexture);
+                GUI.color = tired ? new Color(0.6f, 0.6f, 0.65f, 0.8f) : new Color(0.55f, 0.16f, 0.2f);   // nakış bordosu
+                GUI.DrawTexture(new Rect(r.x, r.y, r.width * (float)c.Skills.LevelProgress(f.Skill), r.height), Texture2D.whiteTexture);
+                GUI.color = prev;
+            }
+            if (now < f.LevelUntil && f.LevelTo > 0)
+            {
+                if (_levelUp == null) _levelUp = new GUIStyle(_small) { fontSize = 14, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter, normal = { textColor = new Color(1f, 0.85f, 0.35f) } };
+                float rise = (LevelTextSeconds - (f.LevelUntil - now)) * 8f;
+                GUI.Label(new Rect(x - 90f, y - 72f - rise, 180f, 20f), $"{SkillNames.Name(f.Skill)} {f.LevelTo}!", _levelUp);
+            }
+        }
+
+        private void DrawLevelCards(float w)
+        {
+            float now = Time.unscaledTime;
+            _levelCards.RemoveAll(k => now >= k.Until || k.Who == null || k.Who.IsDead);
+            float y = 96f;
+            for (int i = _levelCards.Count - 1; i >= 0; i--)
+            {
+                var k = _levelCards[i];
+                float hgt = 38f + 15f * Mathf.Max(1, k.Items.Count);
+                var rect = new Rect(w - 248f, y, 240f, hgt);
+                _rects.Add(rect);
+                GUILayout.BeginArea(rect, GUI.skin.box);
+                if (GUILayout.Button(UiSkin.C($"{k.Who.Name}: {SkillNames.Name(k.Skill)} {k.Level}!", SkillIconKey(k.Skill)), _small)) { OpenSkills?.Invoke(k.Who, k.Skill); k.Until = 0f; }
+                if (k.Items.Count == 0) GUILayout.Label("Ustalık arttı: işler daha hızlı.", _small);
+                else
+                {
+                    GUILayout.Label("Yeni:", _small);
+                    foreach (var t in k.Items) GUILayout.Label("· " + t, _small);
+                }
+                GUILayout.EndArea();
+                y += hgt + 4f;
+            }
         }
     }
 }

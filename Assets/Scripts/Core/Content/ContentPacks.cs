@@ -8,5 +8,11 @@ namespace Thatchwick.Core.Content
     public static class ContentPacks
     {
         public static bool Adult { get; set; }
+
+        /// <summary>Alkollü içkiler: yalnızca +18 paketiyle yapılır ve istenir (belge 45 karar 5, belge 00 §9).</summary>
+        public static readonly string[] AlcoholItems = { "item.ale", "item.cider", "item.mead", "item.wine_new", "item.wine_aged" };
+
+        /// <summary>Bu eşya paket yokken oyunda istenmemeli mi (sipariş, düğün listesi).</summary>
+        public static bool IsHiddenAlcohol(string itemId) => !Adult && System.Array.IndexOf(AlcoholItems, itemId) >= 0;
     }
 }

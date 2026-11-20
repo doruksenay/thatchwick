@@ -301,11 +301,21 @@ namespace Thatchwick.Core.Characters
         public double GainSkillXp(SkillType skill, double xp)
         {
             if (IsDead) return 0;
-            if (MoodEnabled) xp *= Mood.XpMultiplier(skill);
+            // Belge 45 karar 4: XP bonusları toplanır (ruh hali ve moodlet'ler, Okuryazarlık, yetiştirme: çocukluk izi,
+            // can yoldaşı, çıraklık, aile tarifi; dal ve özellik hızı), toplam en çok +%100. Eksiler (yas, bunalım)
+            // çarpan olarak kalır. Yatkınlık ayrı çarpandır.
+            double bonus = 0.0, penalty = 1.0;
+            void Pool(double f)
+            {
+                if (f > 1.0) bonus += f - 1.0;
+                else if (f < 1.0) penalty *= Math.Max(0.0, f);
+            }
+            if (MoodEnabled) Pool(Mood.XpMultiplier(skill));
             // Okuryazarlık: bütün becerilerde seviye başına %2 fazla XP (kendisi hariç).
-            if (skill != SkillType.Literacy) xp *= SkillNames.Factor(Skills.GetLevel(SkillType.Literacy), 0.02);
-            if (ExtraXpFactor != null) xp *= ExtraXpFactor(skill);
-            xp *= Modifiers.SkillRate(skill);
+            if (skill != SkillType.Literacy) Pool(SkillNames.Factor(Skills.GetLevel(SkillType.Literacy), 0.02));
+            if (ExtraXpFactor != null) Pool(ExtraXpFactor(skill));
+            Pool(Modifiers.SkillRate(skill));
+            xp *= penalty * (1.0 + Math.Min(bonus, SkillPacing.MaxXpBonus));
             // Yatkınlık (Project belgesi 28): XP x1,5 / x2 ve o işi yaparken küçük keyif.
             var aptitude = Skills.GetAptitude(skill);
             if (aptitude != Aptitude.None)

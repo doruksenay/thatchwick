@@ -22,6 +22,7 @@ namespace Thatchwick.Core.Content
         public RoomTemplateDto[] templates;
         public BuildPartDto[] buildParts;   // yapı modu malzeme ve parça kataloğu (duvar, kapı, pencere, zemin, çatı, kaplama)
         public EffectDto[] effects;         // yemek ve içki etkileri (moodlet olarak kaydedilir; etkileşimin "moodlet" alanından verilir)
+        public SkillUnlockDto[] skillUnlocks;   // beceri seviyesi → açılan (belge 45, life.json)
 
         /// <summary>Başka bir içerik dosyasının bölümlerini bunun sonuna ekler (items.json + life.json birleşimi).</summary>
         public void Merge(ContentFileDto other)
@@ -40,6 +41,7 @@ namespace Thatchwick.Core.Content
             templates = Concat(templates, other.templates);
             buildParts = Concat(buildParts, other.buildParts);
             effects = Concat(effects, other.effects);
+            skillUnlocks = Concat(skillUnlocks, other.skillUnlocks);
         }
 
         private static T[] Concat<T>(T[] a, T[] b)

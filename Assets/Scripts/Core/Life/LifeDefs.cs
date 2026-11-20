@@ -32,6 +32,18 @@ namespace Thatchwick.Core.Life
         public LifeModifiers Effects { get; set; } = new LifeModifiers();
     }
 
+    /// <summary>Beceri seviyesinde açılan şey (belge 45, 9. bölüm). Planned = tasarımda var, oyunda henüz yok.</summary>
+    public sealed class SkillUnlockDef
+    {
+        public SkillType Skill { get; set; }
+        public int Level { get; set; }
+        /// <summary>interaction (yeni düğme), recipe (tarif/eşya), passive (sistem etkisi), feature (diğer).</summary>
+        public string Kind { get; set; }
+        public string Text { get; set; }
+        public bool Planned { get; set; }
+        public bool AdultPack { get; set; }
+    }
+
     /// <summary>Tamamlanan köy projelerinin köy geneline etkisi.</summary>
     public sealed class VillageEffects
     {

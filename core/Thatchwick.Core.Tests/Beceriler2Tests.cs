@@ -185,7 +185,9 @@ namespace Thatchwick.Core.Tests
             head.GainSkillXp(SkillType.Smithing, SkillRules.XpForLevel(5));
             Assert.Equal(4, life.ForecastDays);
             Assert.Equal(4, life.WeatherAhead(life.ForecastDays).Count);
-            Assert.Equal(0.18, (double)life.BuildDiscount(), 3);
+            // Belge 45 karar 7: Ev düzenleme indirim vermez, oda konforu verir (4, 7, 10'da +1).
+            Assert.Equal(0.0, (double)life.BuildDiscount(), 3);
+            Assert.Equal(3, MoodService.ArrangementComfort(life.BestSkill(SkillType.Decorating)));
             Assert.True(life.BestSkill(SkillType.Smithing) >= LifeSystems.SmithSelfLevel, "smith");
 
             // Hekim: soğuktan yaralı birini iyileştirir.
