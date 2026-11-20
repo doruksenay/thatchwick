@@ -1,14 +1,13 @@
 ---
 id: "484d"
 title: "Deniz ve kumsal karoları (4)"
-status: blocked
-claimed_at: 2026-11-20T23:09Z
+status: pending
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 20.11.2026 "üretilecek asset varsa kuyruğa at" (deniz kıyısı, belge 50)
 priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
 family: zemin
 style_gate: false
-cost_est: 4
-cost_max: 8
+cost_est: 10
+cost_max: 15     # kullanıcı 21.11.2026: işçinin önerisiyle (create_tiles_pro çağrı başına 10)
 depends_on: ["346"]
 max_attempts: 2
 pixellab: true
@@ -48,3 +47,4 @@ Dosya adları kodda sabit; değişmesin.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- **Cevap (kullanıcı 21.11.2026):** öneri uygulandı; `cost_est: 10`, `cost_max: 15`, iş yeniden `pending`.
