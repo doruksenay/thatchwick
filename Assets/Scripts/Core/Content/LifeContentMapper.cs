@@ -214,6 +214,13 @@ namespace Thatchwick.Core.Content
                         MaleNames = CleanNames(v.maleNames, v.id + ".maleNames", errors),
                         FemaleNames = CleanNames(v.femaleNames, v.id + ".femaleNames", errors)
                     };
+                    if (v.skills != null)
+                        foreach (var sk in v.skills)
+                        {
+                            if (sk == null) continue;
+                            if (!Enum.TryParse(sk.skill, true, out SkillType st) || !Enum.IsDefined(typeof(SkillType), st)) { errors.Add($"{v.id}: bilinmeyen beceri '{sk.skill}'."); continue; }
+                            def.SkillLevels.Add(new KeyValuePair<SkillType, int>(st, Math.Max(1, Math.Min(SkillRules.MaxLevel, sk.level))));
+                        }
                     if (v.events != null)
                         foreach (var e in v.events)
                             if (e != null) def.Events.Add(new VillagerEventDef

@@ -230,6 +230,12 @@ namespace Thatchwick.Core.Characters
         internal double PregnancyLeft => _pregnancyLeft;
         internal double PostpartumLeft => _postpartumLeft;
 
+        /// <summary>Ebe doğumda yanındaydı (belge 66g karar 2): doğum sonrası toparlanma kısalır.</summary>
+        public void ShortenPostpartum(double share)
+        {
+            if (_postpartumLeft > 0 && share > 0) _postpartumLeft *= 1.0 - Math.Min(1.0, share);
+        }
+
         /// <summary>Kayıttan yükleme: biyolojik iç durumu olduğu gibi geri koyar (olay tetiklemez).</summary>
         internal void RestoreBiology(double ageDays, double lifespan, bool dead, DeathCause cause, bool pregnant, int? fatherId,
             double pregnancyLeft, double postpartumLeft, double freezeDays, double starveDays)

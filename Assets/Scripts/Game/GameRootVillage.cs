@@ -29,7 +29,7 @@ namespace Thatchwick.Game
         // Kapıda yapılacak iş (teselli, ortak kayıp, çağırma): komutan kapıya varınca yapılır.
         private enum DoorAction { None, Console, ShareLoss, Call }
         /// <summary>Çağrılan ebenin yardıma geldiği yer: oyuncunun evinin önü (belge 66e karar 9).</summary>
-        private const string FarmhouseKey = "farmhouse";
+        private const string FarmhouseKey = LivingVillage.FarmhouseKey;
         private int _doorVillager;
         private DoorAction _doorAction;
 
@@ -40,6 +40,8 @@ namespace Thatchwick.Game
             lv.FullSimulation = c => _region == null || _region.Contains(c.Position);
             lv.AtPlace = (c, key) => NearPlace(c, key);
             _shopPanel.Village = lv;
+            // Ölen ustanın halefi ailesiyle gelebilir (belge 66g karar 1): eş ve çocuklar da sahneye çıkar.
+            _life.Villagers.FamilyMemberArrived += (member, head) => { GiveRandomLook(member); CreateActorFor(member); };
             _villagePanel.Door = (v, action) => VillageDoor(v, action);
         }
 

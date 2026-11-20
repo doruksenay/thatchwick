@@ -32,7 +32,16 @@ namespace Thatchwick.Core.Life
             Living.Bubble += (c, t) => Bubble?.Invoke(c, t);
             Breakdowns.VillagerDays = () => (Content.VillageLife.BreakdownMinDays, Content.VillageLife.BreakdownMaxDays);
             Breakdowns.Started += (c, kind) => { if (c.IsVillager) Living.OnBreakdownStarted(c); };
-            Population.MemberDied += c => Living.OnDeath(c);
+            Population.MemberDied += c =>
+            {
+                Living.OnDeath(c);
+                if (c.IsVillager && Villagers.IsNamed(c)) _replaceDeparted = true;   // halef bir sonraki adımda (ölüm döngüsünün dışında)
+            };
+            Villagers.FamilyMemberArrived += (member, head) =>
+            {
+                if (member.SpouseId == head.Id) Say(LocText.Of("village.n.family_arrived", ("name", head.Name), ("spouse", member.Name)), NoticeLevel.Info, head.Id);
+            };
+            Population.BabyBorn += (baby, mother, father) => Living.OnBirth(baby, mother);
             Living.Import(null);   // yeni oyun: kilerler dolu başlar (kayıt yüklenirse Restore yeniden kurar)
         }
 
@@ -45,6 +54,20 @@ namespace Thatchwick.Core.Life
                 var refusal = Living.HaggleRefusal(Living.OwnerOf(Shops.Get("general")));
                 return refusal.HasValue ? Text(refusal.Value) : null;
             };
+        }
+
+        private bool _replaceDeparted;
+
+        private void VillageTick(double gameDays)
+        {
+            if (_replaceDeparted)
+            {
+                _replaceDeparted = false;
+                // Ölen adlı köylünün dükkânı boş kalmaz (belge 66g karar 1): önce hanesinden varis, yoksa dışarıdan halef,
+                // tek başına ya da ailesiyle hemen taşınır.
+                if (Villagers.ReplaceDeparted().Count > 0) { Houses.EnsureHouses(); Homes.AssignAll(); }
+            }
+            Living.Tick(gameDays);
         }
 
         private IEnumerable<(int id, string name, double day)> RecentGraves()

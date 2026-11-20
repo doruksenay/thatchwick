@@ -127,6 +127,14 @@ namespace Thatchwick.Core.Content
         public VillagerEventDto[] events;
         public string[] maleNames;     // hanenin sonraki kuşaklarına verilecek adlar (belge 61b §5)
         public string[] femaleNames;
+        public VillagerSkillDto[] skills;   // başlangıç beceri seviyeleri (çalgıcı: Müzik 3; belge 66g)
+    }
+
+    [Serializable]
+    public sealed class VillagerSkillDto
+    {
+        public string skill;
+        public int level;
     }
 
     /// <summary>Genel ad havuzu: oyuncu hanesi, talipler, adsız komşular (belge 61b §5).</summary>

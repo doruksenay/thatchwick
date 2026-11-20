@@ -64,6 +64,7 @@ namespace Thatchwick.Core.Tests
             Assert.Empty(errors);
             foreach (var v in db.Villagers.All)
             {
+                if (string.IsNullOrEmpty(v.Work)) continue;   // işyeri olmayan (çalgıcı) meyhanede çalar
                 var steps = db.VillageLife.WorkFor(v.Role);
                 Assert.True(steps != null && steps.Count >= 2, $"{v.Role}: iş döngüsü yok");
             }
@@ -508,6 +509,106 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(k.Village.HomeOf(orhan), k.Village.PlaceFor(orhan));
             At(k, 4, 0.40);
             Assert.Equal(ShopClosure.None, k.Village.ClosureOf(Shops.Get("smithy"), orhan));
+        }
+
+        // ---- 66g kararları ----
+
+        [Fact]
+        public void Calgici_MuzikUcleBaslar_AksamMeyhanedeCalar_PazarOglenden()
+        {
+            var k = Make();
+            var ozan = k.Villager("villager.ozan");
+            Assert.NotNull(ozan);
+            Assert.Equal(3, ozan.Skills.GetLevel(SkillType.Music));
+            Assert.True(k.Village.IsMusician(ozan));
+            At(k, 2, 0.80);
+            Assert.Equal(VillagerFreeWill.Tavern, k.Village.PlaceFor(ozan));
+            At(k, 2, 0.30);
+            Assert.NotEqual(VillagerFreeWill.Tavern, k.Village.PlaceFor(ozan));   // gündüz meyhane kapalı
+            At(k, 6, 0.60);
+            Assert.Equal(VillagerFreeWill.Tavern, k.Village.PlaceFor(ozan));      // Pazar öğlenden
+            At(k, 2, 0.80);
+            Step(k);
+            Assert.True(k.Village.MusicAtTavern);
+        }
+
+        [Fact]
+        public void UstaOlunce_HalefHemenGelir_AilesiyleTasinabilir()
+        {
+            var k = Make();
+            k.Life.Villagers.FamilyChance = 1.0;
+            var arrivedFamily = new List<Character>();
+            k.Life.Villagers.FamilyMemberArrived += (m, head) => arrivedFamily.Add(m);
+            var orhan = k.Villager("villager.orhan");
+            At(k, 2, 0.40);
+            Kill(orhan);
+            k.Life.Tick(0.001);
+            var successor = k.Villager("villager.orhan");
+            Assert.NotNull(successor);
+            Assert.NotSame(orhan, successor);
+            Assert.False(successor.IsDead);
+            Assert.True(successor.IsVillager);
+            Assert.NotEmpty(arrivedFamily);
+            var spouse = arrivedFamily[0];
+            Assert.Equal(successor.Id, spouse.SpouseId);
+            Assert.Equal(spouse.Id, successor.SpouseId);
+            Assert.Same(k.Life.Houses.HouseOf(successor), k.Life.Houses.HouseOf(spouse));
+            foreach (var kid in arrivedFamily.Skip(1))
+            {
+                Assert.True(kid.Stage <= AgeStage.Teen);
+                Assert.Same(k.Life.Houses.HouseOf(successor), k.Life.Houses.HouseOf(kid));
+            }
+            // Tek başına da gelebilir.
+            var k2 = Make();
+            k2.Life.Villagers.FamilyChance = 0.0;
+            int fam = 0;
+            k2.Life.Villagers.FamilyMemberArrived += (m, h) => fam++;
+            Kill(k2.Villager("villager.hasan"));
+            k2.Life.Tick(0.001);
+            Assert.False(k2.Villager("villager.hasan").IsDead);
+            Assert.Equal(0, fam);
+        }
+
+        [Fact]
+        public void Ebe_DogumdaYanindaysa_ToparlanmaKisalir_BebegeIcSes()
+        {
+            var k = Make();
+            var zeynep = k.Villager("villager.zeynep");
+            var mother = new Character(300, "Fatma", new GridPos(0, 0), true) { Sex = Sex.Female, MoodEnabled = true };   // loc-yok: test adı
+            mother.SetAge(35);
+            k.Pop.Add(mother);
+            var baby = new Character(301, "Bebek", new GridPos(0, 0), true) { MoodEnabled = true };   // loc-yok: test adı
+            k.Pop.Add(baby);
+            mother.RestoreBiology(mother.AgeDays, mother.LifespanDays, false, DeathCause.None, false, null, 0, 10.0, 0, 0);
+            Assert.False(k.Village.OnBirth(baby, mother));   // ebe çağrılmadı
+            Assert.Equal(10.0, mother.PostpartumLeft, 6);
+            At(k, 3, 0.40);
+            Assert.True(k.Village.Call(k.Ali, zeynep, true, out _, LivingVillage.FarmhouseKey));
+            Assert.Equal(LivingVillage.FarmhouseKey, k.Village.PlaceFor(zeynep));
+            Assert.True(k.Village.OnBirth(baby, mother));
+            Assert.Equal(5.0, mother.PostpartumLeft, 6);
+            Assert.True(baby.Mood.Has(LivingVillage.MidwifeBabyMood));
+            Assert.True(mother.Mood.Has(LivingVillage.MidwifeMotherMood));
+            Assert.NotEqual(LivingVillage.FarmhouseKey, k.Village.PlaceFor(zeynep));   // işi bitti, döner
+        }
+
+        [Fact]
+        public void YardimRicasi_Seyrek_KoylubasinaIkiHafta_KoydeUcGun()
+        {
+            var k = Make();
+            var villagers = k.Pop.Members.Where(m => m.IsVillager && m.Stage >= AgeStage.YoungAdult).Take(3).ToList();
+            int posted = 0;
+            var before = k.Life.Requests.Open(Thatchwick.Core.Life.Requests.RequestKind.Favor).Count();
+            for (int i = 0; i < 4 * 288; i++)   // 4 gün
+            {
+                k.Clock.Restore(2.0 + i / 288.0, 1);
+                foreach (var c in villagers) { c.Needs.Set(NeedType.Hunger, 0f); c.Needs.Set(NeedType.Warmth, 0f); }
+                foreach (var c in k.Pop.Members.Where(m => m.IsVillager)) k.Village.AddToPantry(k.Village.HomeOf(c), "item.bread", -50);
+                k.Village.Tick(1.0 / 288);
+            }
+            posted = k.Life.Requests.Open(Thatchwick.Core.Life.Requests.RequestKind.Favor).Count() - before;
+            Assert.InRange(posted, 1, 2);   // 4 günde köyde en çok iki rica (üç günde bir)
+            Assert.Equal(14, LivingVillage.HardshipRepeatDays);
         }
     }
 }

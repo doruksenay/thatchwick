@@ -2563,6 +2563,55 @@
           "rewardAkce": 40
         }
       ]
+    },
+    {
+      "id": "villager.ozan",
+      "name": "Ozan",
+      "maleNames": ["Ilgaz", "Tarhan", "Aytaç"],
+      "femaleNames": ["Ezgi", "Türkan", "Ayten"],
+      "sex": "Male",
+      "age": 34,
+      "role": "musician",
+      "roleName": "Çalgıcı",
+      "traits": [
+        "trait.cheerful",
+        "trait.sociable"
+      ],
+      "loves": [
+        "item.honey"
+      ],
+      "likes": [
+        "tag:drink",
+        "tag:cooked"
+      ],
+      "dislikes": [
+        "item.nettle"
+      ],
+      "home": "home:2",
+      "work": "",
+      "skills": [
+        {"skill": "Music", "level": 3}
+      ],
+      "events": [
+        {
+          "id": "ozan_1",
+          "minAffection": 30,
+          "text": "Ozan meyhanede yeni yaktığı bir türküyü ilk kez senin için çaldı.",
+          "rewardAkce": 10
+        },
+        {
+          "id": "ozan_2",
+          "minAffection": 60,
+          "text": "Ozan sana dedesinden kalma bir türküyü öğretti; artık sen de mırıldanıyorsun.",
+          "rewardAkce": 15
+        },
+        {
+          "id": "ozan_3",
+          "minAffection": 100,
+          "text": "Ozan senin hanen için bir türkü yaktı; köyde herkes söylüyor.",
+          "rewardAkce": 40
+        }
+      ]
     }
   ],
   "goals": [
