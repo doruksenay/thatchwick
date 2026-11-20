@@ -1,7 +1,8 @@
 ---
 id: "617g"
 title: "Geçiş seti: çim ↔ su (16 maske x 2 çeşit)"
-status: pending
+status: running
+claimed_at: 2026-11-20T23:54Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
 priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
 family: zemin
