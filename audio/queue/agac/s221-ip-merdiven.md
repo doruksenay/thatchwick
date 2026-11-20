@@ -4,7 +4,7 @@ title: İp merdivenden tırmanma
 kind: sfx
 family: foley
 freq: B
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 note: 'Belge 52: gözcülük, kulübede uyku, hazine.'
@@ -29,5 +29,7 @@ inceleme_notlari:
   not: hepsi çok sık, bu kadar hızlı merdivenden çıkılamaz
 yeniden_sayisi: 1
 prompt_influence: 0.7
+claimed_by: runnervmccnms
+claimed_at: '2026-11-20T16:47:47Z'
 ---
 Someone climbing slowly up into a treehouse: four separate, deliberate steps about one every half second, each a soft knock of a wooden rung with a short rope creak between. Calm pace, not hurried, no scrambling.
