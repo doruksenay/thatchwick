@@ -1,7 +1,8 @@
 ---
 id: "747"
 title: "Gönül yolu pozları 1: öp, yanaktan öp, el tut, mendil uzat, kahve ikram et, tuzlu kahveyi iç (48)"
-status: pending
+status: running
+claimed_at: 2026-11-20T21:07Z
 approved_by: user        # kullanıcı 20.11.2026 ("gönül yolu ... asset'leri şimdi kuyruğa alınsın: alınsın"); Project belgeleri 67b §3, 67c
 priority: 40
 family: karakter
