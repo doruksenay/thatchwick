@@ -11,6 +11,9 @@ Masaüstü kopyası: yerel (bulutta yapılamaz).
 - 1. tur 9 çağrı (3'ü ilk denemede hız sınırı hatası verdi, hiçbiri üretilmedi/ücret yok; 30 sn sonra bir kez yeniden gönderildi). 2. tur (max_attempts 2): un çuvalı, tahıl çuvalı, balık sepeti, hasır sepet yeniden = 4 çağrı. Toplam 13 generation (cost_max 24, cost_est 12 içinde).
 - get_balance: iş başı 1058,6; iş sonu 1031,6 (paralel şeritler de harcıyor; bu işin payı 13).
 
+## ÖNEMLİ DÜZELTME: 5/9 teslim
+`iso_item_fish_basket_se.png` ve `iso_item_shears_chalk_se.png` `Assets/Art/Iso/_aday/` altında zaten vardı (başka işten, git'te kayıtlı). `cp -n` üzerine yazmadı: benim sürümlerim TESLİM EDİLMEDİ, `732-red/fish_basket_var_olan_dosya_var.png` ve `shears_chalk_var_olan_dosya_var.png` olarak duruyor. Yan yana sayfasında bu ikisi benim üretimlerim (var olan dosyalar değil). Aşağıdaki tablolarda "teslim" yazan balık sepeti ve makas bu nedenle fiilen teslim sayılmaz; tarif adlarının çakışması kod oturumuna sorudur (var olan dosya aynı eşya mı?). Teslim edilenler: un çuvalı, hokka, mühür, mektup kutusu, keski rafı. Başlıktaki "7/9" yerine 5/9.
+
 ## Sonuç özeti
 | # | Eşya | Durum | Not |
 |---|---|---|---|
