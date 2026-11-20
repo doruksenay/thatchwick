@@ -31,5 +31,7 @@
   "kitchen.vessel.stew": "a casserole",
   "ui.kitchen.helpers_missing": "missing helpers: {tools} (slower, lower quality)",
   "ui.kitchen.line": "{vessel} · equipment {score}/10 · up to {cap} ({best})",
-  "ui.kitchen.no_vessel": "no pot needed"
+  "ui.kitchen.no_vessel": "no pot needed",
+  "kitchen.n.tub_placed": "A washing tub was set beside the hearth.",
+  "kitchen.n.tub_given": "A washing tub is in your inventory: place it near the hearth in build mode."
 }

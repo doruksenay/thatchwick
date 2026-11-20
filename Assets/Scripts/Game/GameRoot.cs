@@ -1061,6 +1061,8 @@ namespace Thatchwick.Game
                 _appearanceCatalog.FitHair(member.Appearance);
             }
             // Ölen adlı köylünün (demirci ...) halefi mevsim başında gelir: görünüm ve sahne nesnesi burada verilir.
+            // Pişirirken ocağa odun atmak da "Ocağı yak" sayılır (63e bulgu 3; elle beslemede de aynı kayıt yazılır).
+            _life.KitchenTools.Stoked += (c, it) => _account.Record("fire", _clock.DayIndex, isWork: false);
             _life.Villagers.PlaceResolver = key => ResolvePlace(key);
             _life.Villagers.SuccessorArrived += (c, def) =>
             {
@@ -1095,6 +1097,8 @@ namespace Thatchwick.Game
                 AttachAudio();   // ses bağlantıları (GameRootAudio.cs)
                 return;
             }
+
+            _life.KitchenTools.EnsureWashPlace(announce: false);   // başlangıç evinde yıkama yeri yoksa ocağın yanına leğen (63e bulgu 1)
 
             // Maud (NPC) rastgele görünümle hemen oluşur; oyuncunun karakteri yaratma ekranından gelir.
             // Köylüler oyuncunun arsasında yaşamaz (belge 47 §8): Maud meydanda başlar, VillageHomes ona bir ev verir.

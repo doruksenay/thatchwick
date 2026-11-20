@@ -178,7 +178,9 @@ namespace Thatchwick.Core.Tests
             Assert.True(r.Command(Job.UseItem(k.Hearth.Id, "cook_pea_soup")));
 
             bool sawTaken = false, carriedPot = false, sawPutBack = false, kindled = false;
-            r.StepChanged += (_, st) => { if (st.Id == "put_back") sawPutBack = true; if (st.Id == "kindle") kindled = true; };
+            bool chopped = false, stoked = false;
+            k.K.Stoked += (_, __) => stoked = true;
+            r.StepChanged += (_, st) => { if (st.Id == "put_back") sawPutBack = true; if (st.Id == "kindle") kindled = true; if (st.Id.StartsWith("chop")) chopped = true; };
             for (int i = 0; i < 4000 && !r.IsIdle; i++)
             {
                 r.Tick(0.0005);
@@ -190,6 +192,8 @@ namespace Thatchwick.Core.Tests
             Assert.True(carriedPot, "kazan elde taşınmadı");
             Assert.True(kindled, "ateş tutuşturulmadı");
             Assert.True(sawPutBack, "yerine konmadı");
+            Assert.False(chopped, "bezelye çorbasında doğrama oynadı");   // 63e bulgu 4
+            Assert.True(stoked, "Stoked olayı gelmedi");                  // 63e bulgu 3: "Ocağı yak" rehber adımı
             Assert.Equal(0, k.Pot.TakenBy);
             Assert.Equal(2, k.H.Count("item.soup_pea"));
             Assert.True(k.H.Count("item.firewood") < 4, "yakıt harcanmadı");
@@ -343,6 +347,80 @@ namespace Thatchwick.Core.Tests
             StartingKit.Apply(k.H);
             var c = Person(1, 1, new GridPos(4, 4));
             Assert.Null(k.Fx.CanStart(c, k.Hearth, k.At(k.Hearth, "cook")));   // şalgam pişir ve ye: kil tencere + bıçak
+        }
+
+        // ---- Unity testi bulguları (63e) ----
+
+        [Fact]
+        public void BicakliYemek_DogramaBayragiAlir_BicaksizAlmaz()
+        {
+            var db = Db();
+            var k = Make(db);
+            var c = Person(1, 3, new GridPos(3, 3));
+            Veg(k.H);
+            k.H.AddItem("item.pea", 3);
+            var stew = k.K.Prepare(c, k.Hearth, k.At(k.Hearth, "cook"));   // şalgam: bıçakla doğranır
+            Assert.Contains(ChainConditions.Knife, stew.Flags ?? new string[0]);
+            var pea = k.K.Prepare(c, k.Hearth, k.At(k.Hearth, "cook_pea_soup"));
+            Assert.DoesNotContain(ChainConditions.Knife, pea.Flags ?? new string[0]);
+            Assert.DoesNotContain(ChainConditions.NoBoard, pea.Flags ?? new string[0]);   // doğranacak yoksa dizinde de doğramaz
+            k.K.Enforce = false;
+            Assert.Contains(ChainConditions.Knife, k.K.Prepare(c, k.Hearth, k.At(k.Hearth, "cook")).Flags);   // kural kapalı: eskisi gibi
+        }
+
+        [Fact]
+        public void YikamaYeri_YoksaOcaginYaninaLegenKonur_BirKezlik()
+        {
+            var db = Db();
+            var k = Make(db);
+            Assert.False(k.K.HasWashPlace());
+            var tub = k.K.EnsureWashPlace();
+            Assert.NotNull(tub);
+            Assert.Equal(KitchenSystem.WashTubId, tub.Def.Id);
+            Assert.True(System.Math.Max(System.Math.Abs(tub.Position.X - k.Hearth.Position.X), System.Math.Abs(tub.Position.Y - k.Hearth.Position.Y)) <= KitchenSystem.WashTubRadius);
+            Assert.True(k.K.HasWashPlace());
+            Assert.Null(k.K.EnsureWashPlace());
+            Assert.Equal(1, k.W.Items.Count(it => it.Def.Id == KitchenSystem.WashTubId));
+
+            // Ocak yoksa leğen envantere girer, ikinci çağrı ikinci leğen vermez.
+            var map = new GridMap(8, 8);
+            var house = new Household();
+            var bare = new KitchenSystem(new WorldState(map), house, db);
+            Assert.Null(bare.EnsureWashPlace());
+            Assert.Equal(1, house.Count(KitchenSystem.WashTubId));
+            bare.EnsureWashPlace();
+            Assert.Equal(1, house.Count(KitchenSystem.WashTubId));
+        }
+
+        [Fact]
+        public void EskiKayit_LegenAlir()
+        {
+            var db = Db();
+            var k = Make(db, pot: false, knife: false);
+            k.K.Restore(null);
+            Assert.True(k.K.HasWashPlace() || k.H.Count(KitchenSystem.WashTubId) > 0);
+        }
+
+        [Fact]
+        public void EnvanterdekiAlet_GenelDepodanAlinir_OdunlukVeFicidanDegil()
+        {
+            var db = Db();
+            var k = Make(db, pot: false);
+            k.H.AddItem("item.cooking_pot", 1);
+            var barrel = k.W.PlaceItem(db.Items.Get("item.barrel"), new GridPos(4, 2));
+            Assert.NotNull(barrel);
+            var chest = k.W.PlaceItem(db.Items.Get("item.chest_wood"), new GridPos(12, 12));
+            Assert.NotNull(chest);
+            Assert.False(KitchenSystem.IsToolStore(barrel.Def));
+            Assert.False(KitchenSystem.IsToolStore(db.Items.Get("item.woodshed")));
+            Assert.False(KitchenSystem.IsToolStore(db.Items.Get("item.firewood_basket")));
+            Assert.True(KitchenSystem.IsToolStore(chest.Def));
+            var c = Person(1, 3, new GridPos(3, 3));
+            k.H.AddItem("item.pea", 3);
+            var e = k.K.ErrandFor(c, k.Hearth, k.At(k.Hearth, "cook_pea_soup"));
+            Assert.NotNull(e);
+            Assert.Contains(e.Before, st => st.At != null && st.At.Id == chest.Id);
+            Assert.DoesNotContain(e.Before, st => st.At != null && st.At.Id == barrel.Id);
         }
     }
 }
