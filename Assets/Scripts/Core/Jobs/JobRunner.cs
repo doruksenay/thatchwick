@@ -295,7 +295,9 @@ namespace Thatchwick.Core.Jobs
                 case ChainConditions.Unlit:
                     return _kindled;
                 case ChainConditions.NoBoard:
-                    return _prepFlags != null && Array.IndexOf(_prepFlags, ChainConditions.NoBoard) >= 0;
+                    return _prepFlags != null && Array.IndexOf(_prepFlags, when) >= 0;
+                case ChainConditions.Knife:   // mutfak kuralı bağlı değilse eskisi gibi doğrar
+                    return PrepareUse == null || (_prepFlags != null && Array.IndexOf(_prepFlags, when) >= 0);
                 default:
                     return false;
             }

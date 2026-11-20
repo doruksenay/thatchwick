@@ -154,10 +154,12 @@ namespace Thatchwick.Core.Content
         public const string Unlit = "unlit";
         /// <summary>Kesme tahtası ya da hazırlık yüzeyi yok: dizinde doğrar (63 §2.5).</summary>
         public const string NoBoard = "noBoard";
+        /// <summary>Bu yemek bıçakla hazırlanıyor (tarifte doğranacak malzeme var): doğrama adımları (63e bulgu 4).</summary>
+        public const string Knife = "knife";
         /// <summary>Çocuk ve yaşlı: kendi kareleriyle oynanan adımlar (60a-Z2).</summary>
         public const string Child = "child", Elder = "elder";
 
-        public static readonly string[] All = { SkillLow, SkillHigh, MoodGood, MoodBad, CarriedWater, Fire, Unlit, NoBoard, Child, Elder };
+        public static readonly string[] All = { SkillLow, SkillHigh, MoodGood, MoodBad, CarriedWater, Fire, Unlit, NoBoard, Knife, Child, Elder };
 
         public static bool IsKnown(string when) => Array.IndexOf(All, when) >= 0;
 

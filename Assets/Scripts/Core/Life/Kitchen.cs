@@ -115,6 +115,8 @@ namespace Thatchwick.Core.Life
         /// <summary>Bir kütüğün yanma süresi (oyun günü; HeatConfig.BurnDaysPerLog). Yakıt payları kütük cinsinden yazılır.</summary>
         public double DaysPerLog { get; set; } = 0.5;
         public event Action<Character, LocText> Notice;
+        /// <summary>Karakter pişirmek için ocağa odun attı (sönüğü tutuşturdu ya da besledi): "Ocağı yak" rehber adımı.</summary>
+        public event Action<Character, ItemInstance> Stoked;
         /// <summary>Anahtarlı metni oyuncunun diline çevirir (LifeSystems.Text); yoksa anahtar döner (testler).</summary>
         public Func<LocText, string> Text { get; set; } = t => t.Literal ?? t.Key ?? "";
 
@@ -452,14 +454,24 @@ namespace Thatchwick.Core.Life
             }
             if (best != null) return best;
             if (_house.Count(defId) <= 0) return null;
+            // Envanterdeki alet ve kap genel depodan alınır (sandık, raf, dolap, kiler rafı); odun sepeti, odunluk, fıçı,
+            // tohum sandığı ve ambar sayılmaz (Unity testi 63e, bulgu 2). Mutfak dolabı ve rafları aynı uzaklıkta öne geçer.
             foreach (var it in _world.Items)
             {
-                if (it.IsDecor || it.Def.Storage <= 0 || it.Def.Placement == ItemPlacement.Wall || !_world.Map.IsOwned(it.Position)) continue;
-                int d = Distance(it.Position, from);
+                if (it.IsDecor || !IsToolStore(it.Def) || !_world.Map.IsOwned(it.Position)) continue;
+                int d = Distance(it.Position, from) * 2 + (Array.IndexOf(KitchenStores, it.Def.Id) >= 0 ? 0 : 1);
                 if (d < bestD) { bestD = d; best = it; }
             }
             return best;
         }
+
+        /// <summary>Mutfak aletinin durabileceği depo eşyaları; önce mutfak dolabı ve rafları.</summary>
+        public static readonly string[] KitchenStores = { "item.aumbry", "item.pantry_shelf", "item.shelf_wood", "item.spice_chest" };
+        public static readonly string[] GeneralStores =
+            { "item.chest_wood", "item.chest_iron", "item.chest_bench", "item.carved_chest", "item.catki_chest", "item.yoruk_chest", "item.bed_end_chest" };
+
+        public static bool IsToolStore(ItemDef d) =>
+            d != null && d.Storage > 0 && d.Placement != ItemPlacement.Wall && (Array.IndexOf(KitchenStores, d.Id) >= 0 || Array.IndexOf(GeneralStores, d.Id) >= 0);
 
         private ItemInstance NearestWater(ItemInstance near)
         {
@@ -500,18 +512,25 @@ namespace Thatchwick.Core.Life
         public UsePrep Prepare(Character c, ItemInstance station, InteractionDef i)
         {
             var prep = new UsePrep();
-            if (!Enforce || i == null || i.Cook == null || Exempt(c)) return prep;
+            if (i == null || i.Cook == null) return prep;
+            if (!Enforce || Exempt(c)) { prep.Flags = new[] { ChainConditions.Knife }; return prep; }   // alet kuralı yok: eskisi gibi doğrar
             var use = UseFor(c, station, i);
-            if (use != null && use.MissingHelpers.Contains(Equip.Board)) prep.Flags = new[] { ChainConditions.NoBoard };
+            var flags = new List<string>();
+            if (use != null && use.UsesKnife && use.MissingHelpers.Contains(Equip.Board)) flags.Add(ChainConditions.NoBoard);   // doğranacak bir şey yoksa dizinde de doğramaz
+            if (use != null && use.UsesKnife) flags.Add(ChainConditions.Knife);   // bıçaksız yemekte doğrama adımı oynamaz (63e bulgu 4)
+            if (flags.Count > 0) prep.Flags = flags.ToArray();
             double need = FuelNeed(station, i);
             if (need <= 0) return prep;
             bool wasLit = station.IsLit;
+            int logs = 0;
             for (int guard = 0; guard < 8 && station.FuelDays + 1e-9 < need; guard++)
             {
                 bool added = Stoke != null ? Stoke(station) : _house.TryTakeItem(FirewoodId);
                 if (!added) break;
+                logs++;
                 if (Stoke == null) station.FuelDays += DaysPerLog;
             }
+            if (logs > 0) Stoked?.Invoke(c, station);
             if (station.FuelDays + 1e-9 < need) { prep.Fail = Text(LocText.Of("kitchen.block.no_wood")); return prep; }
             station.FuelDays = Math.Max(0, station.FuelDays - need);
             prep.Kindled = !wasLit;
@@ -696,6 +715,75 @@ namespace Thatchwick.Core.Life
 
         private void Give(string id) { if (_content.Items.Contains(id) && Owned(id) <= 0) _house.AddItem(id, 1); }
 
+        public const string WashTubId = "item.dish_tub";
+        /// <summary>Leğenin aranacağı yarıçap: ocaktan en çok bu kadar karo.</summary>
+        public const int WashTubRadius = 4;
+
+        /// <summary>Arsada bulaşık yıkanacak bir yer (leğen, yalak, çamaşır leğeni, kıyı taşı) var mı.</summary>
+        public bool HasWashPlace()
+        {
+            foreach (var it in _world.Items)
+                if (!it.IsDecor && it.Def.WashPlace != null && _world.Map.IsOwned(it.Position)) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Yıkama yeri güvencesi (Unity testi 63e, bulgu 1): arsada hiç yıkama yeri yoksa ocağın yanına bir bulaşık leğeni
+        /// konur; uygun karo bulunamazsa leğen envantere girer ve oyuncuya yapı modunda yerleştirmesi söylenir. Yeni oyunda
+        /// leğen başlangıç evinin mutfak şablonundan gelir; bu yol leğensiz eski kayıtlar ve şablonun koyamadığı durum içindir.
+        /// Koyduğu leğeni döner; bir şey yapmadıysa null.
+        /// </summary>
+        public ItemInstance EnsureWashPlace(bool announce = true)
+        {
+            if (!Enforce || HasWashPlace() || !_content.Items.TryGet(WashTubId, out var tub)) return null;
+            if (_house.Count(WashTubId) > 0) return null;   // envanterde bekliyor: oyuncu yerleştirecek
+            ItemInstance fire = null;
+            foreach (var it in _world.Items)
+                if (!it.IsDecor && it.Def.CookFire && _world.Map.IsOwned(it.Position)) { fire = it; break; }
+            if (fire != null)
+            {
+                for (int r = 1; r <= WashTubRadius; r++)
+                    for (int dy = -r; dy <= r; dy++)
+                        for (int dx = -r; dx <= r; dx++)
+                        {
+                            if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != r) continue;
+                            var p = new GridPos(fire.Position.X + dx, fire.Position.Y + dy, fire.Position.Z);
+                            if (!_world.Map.IsOwned(p) || !LeavesWayOpen(p)) continue;
+                            if (!_world.CanPlaceFloor(tub, p, 0).Ok) continue;
+                            var placed = _world.PlaceItem(tub, p);
+                            if (placed == null) continue;
+                            if (announce) Notice?.Invoke(null, LocText.Of("kitchen.n.tub_placed"));
+                            return placed;
+                        }
+            }
+            _house.AddItem(WashTubId, 1);
+            if (announce) Notice?.Invoke(null, LocText.Of("kitchen.n.tub_given"));
+            return null;
+        }
+
+        // Leğen yolu kapatmasın: karo yürünebilir ve en az iki yanı yürünebilir kalır; eşyaların önü (ocak, sandık) tıkanmaz.
+        private bool LeavesWayOpen(GridPos p)
+        {
+            if (!_world.Map.IsWalkable(p)) return false;
+            int open = 0;
+            foreach (var n in new[] { new GridPos(p.X + 1, p.Y, p.Z), new GridPos(p.X - 1, p.Y, p.Z), new GridPos(p.X, p.Y + 1, p.Z), new GridPos(p.X, p.Y - 1, p.Z) })
+            {
+                if (_world.Map.IsWalkable(n)) open++;
+            }
+            if (open < 2) return false;
+            // Etkileşimli bir eşyanın tek boş yanını kapatma.
+            foreach (var it in _world.Items)
+            {
+                if (it.IsDecor || it.Position.Z != p.Z || it.Def.Interactions.Count == 0) continue;
+                if (Math.Abs(it.Position.X - p.X) + Math.Abs(it.Position.Y - p.Y) != 1) continue;
+                int free = 0;
+                foreach (var n in new[] { new GridPos(it.Position.X + 1, it.Position.Y, p.Z), new GridPos(it.Position.X - 1, it.Position.Y, p.Z), new GridPos(it.Position.X, it.Position.Y + 1, p.Z), new GridPos(it.Position.X, it.Position.Y - 1, p.Z) })
+                    if (!n.Equals(p) && _world.Map.IsWalkable(n)) free++;
+                if (free == 0) return false;
+            }
+            return true;
+        }
+
         // ---- kayıt ----
 
         public KitchenSave Export()
@@ -710,7 +798,7 @@ namespace Thatchwick.Core.Life
         {
             _dirty.Clear(); _inUse.Clear(); _reserved.Clear(); _lastUse.Clear();
             _dirtyTableware = 0; _dirtySince = -1; _sparkleUntil = 0; _knifeUses = 0;
-            if (save == null || save.version < 1) { GrantLegacyKit(); return; }
+            if (save == null || save.version < 1) { GrantLegacyKit(); EnsureWashPlace(); return; }
             if (save.dirty != null)
                 foreach (var s in save.dirty)
                 {
@@ -723,6 +811,7 @@ namespace Thatchwick.Core.Life
             _dirtySince = save.dirtySince;
             _sparkleUntil = save.sparkleUntil;
             _knifeUses = Math.Max(0, save.knifeUses);
+            EnsureWashPlace();   // leğensiz kayıt (63e bulgu 1)
         }
     }
 }

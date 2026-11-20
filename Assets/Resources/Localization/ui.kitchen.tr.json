@@ -31,5 +31,7 @@
   "kitchen.vessel.stew": "güveç çömleği",
   "ui.kitchen.helpers_missing": "eksik yardımcı: {tools} (yavaş, kalite düşer)",
   "ui.kitchen.line": "{vessel} · ekipman {score}/10 · en çok {cap} ({best})",
-  "ui.kitchen.no_vessel": "kap gerekmez"
+  "ui.kitchen.no_vessel": "kap gerekmez",
+  "kitchen.n.tub_placed": "Ocağın yanına bir bulaşık leğeni kondu.",
+  "kitchen.n.tub_given": "Bulaşık leğeni eşyalarının arasında: yapı modunda ocağın yakınına koy."
 }

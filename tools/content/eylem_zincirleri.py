@@ -234,7 +234,7 @@ CHAINS = [
         S("kindle", "kindle", 1, when="unlit", sfx="fire.kindle"),
         S("gather", "reach", 1, held="consume"),
         S("chop_on_knee", "chop_knife", 1, when="noBoard", sfx="kitchen.chop"),
-        S("chop_food", "chop_knife", 2, sfx="kitchen.chop"),
+        S("chop_food", "chop_knife", 2, when="knife", sfx="kitchen.chop"),
         FUMBLE,
         S("stir", "stir", 4, sfx="kitchen.stir"),
         WHISTLE,
