@@ -513,6 +513,69 @@ namespace Thatchwick.Game
             return Get("iso_animal_" + body + "_cand_" + dir, b.px, b.py) ?? Get("iso_animal_" + body + "_cand_se", b.px, b.py);
         }
 
+        /// <summary>
+        /// Easter egg pozu (belge 55; işler 513-514): "howl" (köpek ulur), "box" (kedi kutuda), "stare" (öküz bakar).
+        /// Kareler yalnızca se ve sw yönünde; batıya bakan yönler sw'ye, ötekiler se'ye düşer. Önce tipin gövdesi
+        /// (iso_animal_&lt;gövde&gt;_&lt;poz&gt;_&lt;yön&gt;), sonra türün karesi; yoksa null (olağan görsel kalır).
+        /// Kare dizisi varsa (…_&lt;yön&gt;_00, _01 …) döngü oynar; yoksa tek poz karesi çizilir.
+        /// </summary>
+        public static Sprite AnimalPose(string body, string speciesId, string pose, int direction, float cycle)
+        {
+            if (string.IsNullOrEmpty(pose) || !Enabled) return null;
+            string dir = direction >= 3 && direction <= 6 ? "sw" : "se";
+            if (body != null && Bodies.TryGetValue(body, out var b))
+            {
+                var s = PoseFrame("iso_animal_" + body + "_" + pose + "_", dir, b.px, b.py, cycle);
+                if (s != null) return s;
+            }
+            if (speciesId == null || !Animals.TryGetValue(speciesId, out var a)) return null;
+            string set = a.set.EndsWith("_cand", System.StringComparison.Ordinal) ? a.set.Substring(0, a.set.Length - 5) : a.set;
+            return PoseFrame(set + "_" + pose + "_", dir, a.px, a.py, cycle);
+        }
+
+        private static Sprite PoseFrame(string stem, string dir, float px, float py, float cycle)
+        {
+            foreach (var d in dir == "se" ? new[] { "se" } : new[] { dir, "se" })
+            {
+                string prefix = stem + d + "_";
+                int n = FrameCount(prefix, closingFrame: false);
+                if (n > 0) return Get(prefix + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n).ToString("00"), px, py);
+                var still = Get(stem + d, px, py);
+                if (still != null) return still;
+            }
+            return null;
+        }
+
+        /// <summary>Kurbağanın başında beliren minik taç (iş 495; 16x16, pivot alt orta).</summary>
+        public static Sprite TinyCrown => Get("iso_fx_tiny_crown", 8f, 0f);
+
+        // ---- nüfusa girmeyen ziyaretçiler (Johan Wick, atsız şövalye; iş 496 ve 510) ----
+
+        public static Sprite SetIdle(string set, int direction) =>
+            Get(set + "_idle_" + Directions[direction], R84PivotX, R84PivotY) ?? Get(set + "_idle_se", R84PivotX, R84PivotY);
+
+        /// <summary>Takımın yürüme karesi (walk2); bu yönün karesi yoksa null (durma görseli + kod sallantısı).</summary>
+        public static Sprite SetWalk(string set, int direction, float cycle)
+        {
+            if (!Enabled) return null;
+            string prefix = set + "_walk2_" + Directions[direction] + "_";
+            int n = WalkFrameCount(prefix);
+            if (n <= 0) return null;
+            return Get(prefix + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n).ToString("00"), R84PivotX, R84PivotY);
+        }
+
+        /// <summary>Takımın yerinde hareket karesi ("pet", "wreck"): çapraz 4 yön, yoksa se, o da yoksa null.</summary>
+        public static Sprite SetAction(string set, string key, int direction, float cycle)
+        {
+            if (!Enabled || string.IsNullOrEmpty(key)) return null;
+            int diag = direction % 2 == 1 ? direction : (direction + 7) % 8;
+            string prefix = set + "_" + key + "_" + Directions[diag] + "_";
+            int n = FrameCount(prefix, closingFrame: false);
+            if (n <= 0) { prefix = set + "_" + key + "_se_"; n = FrameCount(prefix, closingFrame: false); }
+            if (n <= 0) return null;
+            return Get(prefix + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n).ToString("00"), R84PivotX, R84PivotY);
+        }
+
         public static Sprite Animal(string speciesId, int direction)
         {
             if (!Animals.TryGetValue(speciesId, out var a)) return null;
@@ -637,8 +700,18 @@ namespace Thatchwick.Game
                 }
             }
             string r84 = AdultR84(c);
-            if (r84 == null || !Enabled || string.IsNullOrEmpty(key)) return null;
+            if (!Enabled || string.IsNullOrEmpty(key)) return null;
             int diag = direction % 2 == 1 ? direction : (direction + 7) % 8;   // e(0)→se(7), n(2)→ne(1), w(4)→nw(3), s(6)→sw(5)
+            if (r84 == null)
+            {
+                // Çocuk (64 px): yalnızca kendi kareleri varsa (iş 512: topaç, uluma, yerden alma). El konumu verilmez.
+                if (c.Stage != AgeStage.Child) return null;
+                string p64 = ChildR64(c) + "_" + key + "_" + Directions[diag] + "_";
+                int n64 = FrameCount(p64, closingFrame: false);
+                if (n64 <= 0) { p64 = ChildR64(c) + "_" + key + "_se_"; n64 = FrameCount(p64, closingFrame: false); }
+                if (n64 <= 0) return null;
+                return Get(p64 + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n64) % n64).ToString("00"), R64PivotX, R64PivotY);
+            }
             prefix = r84 + "_" + key + "_" + Directions[diag] + "_";
             int n = FrameCount(prefix, closingFrame: false);
             if (n <= 0)
