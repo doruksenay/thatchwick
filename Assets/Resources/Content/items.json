@@ -33540,7 +33540,8 @@
       "category": "clothing",
       "price": 22,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -33550,7 +33551,8 @@
       "category": "clothing",
       "price": 22,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -33611,7 +33613,8 @@
       "category": "clothing",
       "price": 37,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_saddler"
       ]
     },
     {
@@ -34150,7 +34153,8 @@
       "category": "resource",
       "price": 14,
       "tags": [
-        "fiber"
+        "fiber",
+        "merchantonly"
       ]
     },
     {
@@ -34220,7 +34224,8 @@
       "category": "resource",
       "price": 6,
       "tags": [
-        "dye_mordant"
+        "dye_mordant",
+        "shop_tailor"
       ]
     },
     {
@@ -34340,7 +34345,8 @@
       "category": "resource",
       "price": 2,
       "tags": [
-        "trim"
+        "trim",
+        "shop_tailor"
       ]
     },
     {
@@ -34350,7 +34356,8 @@
       "category": "resource",
       "price": 1,
       "tags": [
-        "trim"
+        "trim",
+        "shop_tailor"
       ]
     },
     {
@@ -34360,7 +34367,8 @@
       "category": "resource",
       "price": 6,
       "tags": [
-        "trim"
+        "trim",
+        "shop_smithy"
       ]
     },
     {
@@ -34370,7 +34378,8 @@
       "category": "resource",
       "price": 3,
       "tags": [
-        "trim"
+        "trim",
+        "shop_pottery"
       ]
     },
     {
@@ -35580,7 +35589,8 @@
       "category": "clothing",
       "price": 22,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -35650,7 +35660,8 @@
       "category": "clothing",
       "price": 22,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -35660,7 +35671,8 @@
       "category": "clothing",
       "price": 22,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -35750,7 +35762,8 @@
       "category": "clothing",
       "price": 18,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -35760,7 +35773,8 @@
       "category": "clothing",
       "price": 37,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_saddler"
       ]
     },
     {
@@ -35770,7 +35784,8 @@
       "category": "clothing",
       "price": 16,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -35780,7 +35795,8 @@
       "category": "clothing",
       "price": 16,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -35830,7 +35846,8 @@
       "category": "clothing",
       "price": 16,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -35870,7 +35887,8 @@
       "category": "clothing",
       "price": 18,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_saddler"
       ]
     },
     {
@@ -35880,7 +35898,8 @@
       "category": "clothing",
       "price": 18,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_saddler"
       ]
     },
     {
@@ -35970,7 +35989,8 @@
       "category": "clothing",
       "price": 12,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -35980,7 +36000,8 @@
       "category": "clothing",
       "price": 19,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36000,7 +36021,8 @@
       "category": "clothing",
       "price": 12,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36010,7 +36032,8 @@
       "category": "clothing",
       "price": 19,
       "tags": [
-        "clothing"
+        "clothing",
+        "merchantonly"
       ]
     },
     {
@@ -36110,7 +36133,8 @@
       "category": "clothing",
       "price": 12,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36150,7 +36174,8 @@
       "category": "clothing",
       "price": 6,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_market"
       ]
     },
     {
@@ -36160,7 +36185,8 @@
       "category": "clothing",
       "price": 6,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_market"
       ]
     },
     {
@@ -36190,7 +36216,8 @@
       "category": "clothing",
       "price": 31,
       "tags": [
-        "clothing"
+        "clothing",
+        "merchantonly"
       ]
     },
     {
@@ -36291,7 +36318,8 @@
       "category": "clothing",
       "price": 28,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36301,7 +36329,8 @@
       "category": "clothing",
       "price": 45,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36351,7 +36380,8 @@
       "category": "clothing",
       "price": 31,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_pasture"
       ]
     },
     {
@@ -36391,7 +36421,8 @@
       "category": "clothing",
       "price": 160,
       "tags": [
-        "clothing"
+        "clothing",
+        "merchantonly"
       ]
     },
     {
@@ -36521,7 +36552,8 @@
       "category": "clothing",
       "price": 10,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_saddler"
       ]
     },
     {
@@ -36571,7 +36603,8 @@
       "category": "clothing",
       "price": 13,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36581,7 +36614,8 @@
       "category": "clothing",
       "price": 13,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36621,7 +36655,8 @@
       "category": "clothing",
       "price": 13,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36631,7 +36666,8 @@
       "category": "clothing",
       "price": 13,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36641,7 +36677,8 @@
       "category": "clothing",
       "price": 13,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36731,7 +36768,8 @@
       "category": "clothing",
       "price": 22,
       "tags": [
-        "clothing"
+        "clothing",
+        "shop_tailor"
       ]
     },
     {
@@ -36785,7 +36823,8 @@
       "price": 30,
       "tags": [
         "clothing",
-        "jewelry"
+        "jewelry",
+        "shop_pottery"
       ]
     },
     {
@@ -36796,7 +36835,8 @@
       "price": 21,
       "tags": [
         "clothing",
-        "jewelry"
+        "jewelry",
+        "shop_smithy"
       ]
     },
     {
@@ -36840,7 +36880,8 @@
       "price": 33,
       "tags": [
         "clothing",
-        "jewelry"
+        "jewelry",
+        "shop_pottery"
       ]
     },
     {
@@ -36851,6 +36892,17 @@
       "price": 12,
       "tags": [
         "cloth"
+      ]
+    },
+    {
+      "id": "item.sewing_pattern",
+      "displayName": "Biçki kalıbı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "writing",
+        "shop_tailor"
       ]
     }
   ],
@@ -46927,6 +46979,20 @@
       "displayName": "Çay sohbeti",
       "description": "Birlikte çay içip sohbet etti.",
       "value": 5,
+      "days": 0.25
+    },
+    {
+      "id": "eff_hand_me_down",
+      "displayName": "Ablamın, ağabeyimin giysisi",
+      "description": "Büyüklerinden kalma giysiyi giyiyor.",
+      "value": 2,
+      "days": 0.1
+    },
+    {
+      "id": "eff_mastery_mark",
+      "displayName": "Ustalığımı taşıyorum",
+      "description": "Usta alametini giymiş, işinin başında.",
+      "value": 2,
       "days": 0.25
     }
   ]

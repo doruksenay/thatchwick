@@ -1,7 +1,7 @@
 ---
 id: "015c"
 title: Yürüme seti, çocuk erkek ve kız (64 px, walk2, 8 yön)
-status: review
+status: accepted
 claimed_at: 2026-11-19T12:54Z
 approved_by: user        # kullanıcı 19.11.2026: "Kodu yaz" (görsel parti 3; 014/015 yeni karaktere göre yeniden yazıldı)
 priority: 20
@@ -47,3 +47,4 @@ Eski 015c (K2 56 px boy_a, girl_a) 012'nin reddiyle geçersiz kaldı. Çocuklar 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

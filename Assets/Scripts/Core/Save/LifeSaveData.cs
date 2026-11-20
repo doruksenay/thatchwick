@@ -43,6 +43,8 @@ namespace Thatchwick.Core.Save
     {
         /// <summary>Giysiler, dolaplar ve takımlar (belge 48). Eski kayıtta null.</summary>
         public Thatchwick.Core.Clothing.ClothingSave clothing;
+        /// <summary>Ismarlamalar ve biçki kalıpları (belge 48 §10-11). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Clothing.TailorSave tailor;
         /// <summary>Süreli görevler ve "her gün tekrarla" planları (belge 47 §3). Eski kayıtta null.</summary>
         public Thatchwick.Core.Work.TimedDutyServiceSave timedDuties;
         /// <summary>Kalite defteri: tezgâh seçimleri, ustalık eserleri, mahzen partileri (belge 53). Eski kayıtta null.</summary>

@@ -1,7 +1,7 @@
 ---
 id: "021"
 title: Portre parça seti planı (iş dosyalarını yazar)
-status: review
+status: accepted
 claimed_at: 2026-11-18T08:03Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
@@ -57,3 +57,4 @@ Plan işi: PixelLab çağrılmaz. 020 portre pilotunun yöntemiyle karakter yara
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

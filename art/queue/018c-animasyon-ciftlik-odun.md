@@ -1,7 +1,7 @@
 ---
 id: "018c"
 title: Etkileşim animasyonları: boşta, odun, çapa, ekim, sulama
-status: review
+status: accepted
 claimed_at: 2026-11-20T06:39Z
 approved_by: user        # otomatik akış (art/budget.md); plan işi 018
 priority: 50
@@ -50,3 +50,4 @@ Etkileşim animasyonları (84 px erkek ve kadın). Anahtar eşlemesi: `art/resul
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
