@@ -4,7 +4,7 @@ title: Çalışırken ıslık
 kind: sfx
 family: voice
 freq: B
-status: claimed
+status: review
 approved_by: user
 depends_on:
 - s140
@@ -35,5 +35,9 @@ yeniden_sayisi: 2
 prompt_influence: 0.7
 claimed_by: runnervm0hi8g
 claimed_at: '2026-11-20T18:57:03Z'
+candidates: 8
+passed: 8
+credits_spent: 0
+generated_at: '2026-11-20T18:57:20Z'
 ---
 A happy villager whistling a bouncy, upbeat little folk tune while working: major key, lively and playful, sunny and cozy. Not sad, not slow, not shrill, no instruments.
