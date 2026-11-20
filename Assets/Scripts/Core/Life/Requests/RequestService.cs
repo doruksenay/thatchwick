@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
@@ -933,7 +934,7 @@ namespace Thatchwick.Core.Life.Requests
             r.VowedDay = Now();
             string note = $"{vower.Name} adak adadı: {r.Title}";
             Chronicle?.Invoke(note);
-            vower.AddChronicle(note);
+            vower.AddChronicle(SavedText.Encode("core.chronicle.vow_made", ("name", vower.Name), ("title", r.Title)));
             message = note + ".";
             return r;
         }
@@ -1326,7 +1327,10 @@ namespace Thatchwick.Core.Life.Requests
                     ? $"{r.Title}: {r.VowedByName} başlattı, {who} bitirdi."
                     : $"{r.Title}: adak yerine geldi.";
                 Chronicle?.Invoke(note);
-                foreach (var m in Household()) m.AddChronicle(note);
+                string savedNote = r.VowedByName != null && who != r.VowedByName
+                    ? SavedText.Encode("core.chronicle.vow_finished_by", ("title", r.Title), ("starter", r.VowedByName), ("finisher", who))
+                    : SavedText.Encode("core.chronicle.vow_done", ("title", r.Title));
+                foreach (var m in Household()) m.AddChronicle(savedNote);
             }
             Complete(r, by, r.Reward);
             return true;

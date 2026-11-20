@@ -7,7 +7,15 @@ namespace Thatchwick.Core.Content
     /// </summary>
     public static class ContentPacks
     {
-        public static bool Adult { get; set; }
+        public static bool Adult { get => _adult && AdultAllowed; set => _adult = value; }
+        private static bool _adult;
+
+        /// <summary>
+        /// Bu derlemede +18 paketi sunulabilir mi (karar 20.11.2026, belge 49): yalnızca Steam; telefonda asla.
+        /// Game katmanı açılışta platforma göre kurar. Kapalıyken <see cref="Adult"/> her zaman false döner,
+        /// kayıtlı ayar ne olursa olsun.
+        /// </summary>
+        public static bool AdultAllowed { get; set; } = true;
 
         /// <summary>Alkollü içkiler: yalnızca +18 paketiyle yapılır ve istenir (belge 45 karar 5, belge 00 §9).</summary>
         public static readonly string[] AlcoholItems = { "item.ale", "item.cider", "item.mead", "item.wine_new", "item.wine_aged" };
