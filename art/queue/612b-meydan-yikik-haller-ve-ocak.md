@@ -1,7 +1,8 @@
 ---
 id: "612b"
 title: "Köy meydanı: 7 yapının yıkık hâli ve ortak ocak (612 devamı)"
-status: pending
+status: running
+claimed_at: 2026-11-20T17:44Z
 approved_by: user        # otomatik akış (art/budget.md); 612'nin eksikleri, karar: kullanıcı 20.11.2026 (Project belgesi 64c §3)
 priority: 15
 family: yapi
