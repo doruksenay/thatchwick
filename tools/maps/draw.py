@@ -276,11 +276,12 @@ def town():
         for x in range(W):
             if (x, y) in blocked or (x, y) in water:
                 continue
-            if _in_plaza(x, y):
+            dx, dy = abs(x - 30), abs(y - 26)
+            # Taş meydan sekizgenden küçük (20.11: "çok boş"): kenarında çim halka, köşelerinde gölge ağaçları.
+            if dx <= 5 and dy <= 4 and dx + dy <= 8:
                 cv.set(x, y, 'stone')
             else:
-                dx, dy = abs(x - 30), abs(y - 26)
-                over = max(dx - 7, dy - 5, dx + dy - 10)
+                over = max(dx - 5, dy - 4, dx + dy - 8)
                 if over <= 1 and (x, y) not in door_front and noise(x / 1.7, y / 1.7, 81) > 0.45:
                     cv.set(x, y, 'stone')
     roads = set()
@@ -346,7 +347,7 @@ def town():
                 n = (cur[0] + ddx, cur[1] + ddy)
                 if n in prev or not (0 <= n[0] < W and 0 <= n[1] < H) or n in blocked or n in water:
                     continue
-                if _in_plaza(*n):
+                if abs(n[0] - 30) <= 5 and abs(n[1] - 26) <= 4 and abs(n[0] - 30) + abs(n[1] - 26) <= 8:   # taş meydanın çekirdeği
                     prev[n] = cur; goal = n; q.clear(); break
                 prev[n] = cur; q.append(n)
         assert goal is not None, f'{bid}: kapıdan yola ulaşılamıyor'

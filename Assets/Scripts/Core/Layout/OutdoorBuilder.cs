@@ -500,6 +500,30 @@ namespace Thatchwick.Core.Layout
             }
             // Bekçi ateşi ve ilan tahtası meydanın kenarında (yolu ve kuyunun önünü kapatmadan). Pazar tezgâhı meydanda değil:
             // pazar Kerem'in genel dükkânında (belge 42), tezgâh dükkânın önünde mal sergisi olur (layouts.json yard_general).
+            // Meydan süsü (kullanıcı 20.11: "dekore edilmeli"): güvercinlik ve güneş saati taş kenarda.
+            foreach (var id in new[] { "item.dovecote_village", "item.sundial" })
+            {
+                if (!ctx.Content.Items.TryGet(id, out var def)) continue;
+                var cands = new List<(GridPos, int, double)>();
+                foreach (var (p, _, _) in rim)
+                    if (!placed.Any(i => Math.Abs(i.Position.X - p.X) + Math.Abs(i.Position.Y - p.Y) < 3))
+                        foreach (var rot in ItemFacing.ValidRotations(def)) cands.Add((p, rot, ctx.Rng.NextDouble()));
+                TryOnStone(ctx, def, cands, placed);
+            }
+            // Gölge ağaçları: meydanın dört köşegeninde, taşın hemen dışındaki çimde birer ıhlamur/meşe.
+            var cx = Regions.Town.X + Regions.PlazaCX; var cy = Regions.Town.Y + Regions.PlazaCY;
+            foreach (var (dx, dy) in new[] { (-6, -5), (6, -5), (-6, 5), (6, 5) })
+            {
+                ItemInstance tree = null;
+                for (int r = 0; r <= 2 && tree == null; r++)
+                    foreach (var (ox, oy) in new[] { (0, 0), (Math.Sign(dx) * r, 0), (0, Math.Sign(dy) * r), (Math.Sign(dx) * r, Math.Sign(dy) * r) })
+                    {
+                        var p = new GridPos(cx + dx + ox, cy + dy + oy);
+                        if (!Open(ctx, p) || ctx.Reserved.Contains(p) || !BuildingClear(ctx, p, 3) || OutdoorRules.TouchesRoad(map, p)) continue;
+                        tree = Put(ctx, ctx.Rng.NextDouble() < 0.5 ? "item.tree_oak" : "item.tree_birch", p, 0, placed);
+                        if (tree != null) break;
+                    }
+            }
             foreach (var id in new[] { "item.notice_post", "item.bonfire" })
             {
                 if (!ctx.Content.Items.TryGet(id, out var def)) continue;
