@@ -2,85 +2,91 @@
   "job": "s254",
   "kind": "sfx",
   "family": "foley",
-  "created": "2026-11-20T14:11:22Z",
+  "created": "2026-11-20T16:49:22Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 0.558,
-          "lufs": -27.9,
+          "duration_s": 0.592,
+          "lufs": -22.1,
           "true_peak_db": -1.0,
-          "rms_db": -26.4,
-          "note": "tepe sınırında, yükseklik -27.9 (hedef -18)",
+          "rms_db": -24.0,
+          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: leather shoe.",
-          "duration": 0.5960608667513306,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A foot stepping squarely into a soft fresh cow pat in the yard: one squishy, wet, muddy squelch as the foot sinks in, slightly comic. Not a normal footstep. Details: leather shoe.",
+          "duration": 0.7947478223351075,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 0.52,
-          "lufs": -18.0,
-          "true_peak_db": -3.2,
-          "rms_db": -21.1,
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: bare foot.",
-          "duration": 0.5544270380435583,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c3": {
-          "duration_s": 0.495,
-          "lufs": -20.0,
+          "duration_s": 0.592,
+          "lufs": -26.7,
           "true_peak_db": -1.0,
-          "rms_db": -23.3,
+          "rms_db": -27.1,
+          "note": "tepe sınırında, yükseklik -26.7 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0091)"
+            "c1 ile neredeyse aynı (0.0199)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: leather shoe.",
-          "duration": 0.545810494099203,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A foot stepping squarely into a soft fresh cow pat in the yard: one squishy, wet, muddy squelch as the foot sinks in, slightly comic. Not a normal footstep. Details: bare foot.",
+          "duration": 0.7392360507247445,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.528,
+          "lufs": -29.1,
+          "true_peak_db": -1.0,
+          "rms_db": -30.1,
+          "note": "tepe sınırında, yükseklik -29.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0129)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A foot stepping squarely into a soft fresh cow pat in the yard: one squishy, wet, muddy squelch as the foot sinks in, slightly comic. Not a normal footstep. Details: leather shoe.",
+          "duration": 0.7277473254656041,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c4": {
-          "duration_s": 0.503,
-          "lufs": -23.1,
-          "true_peak_db": -1.0,
-          "rms_db": -25.4,
-          "note": "tepe sınırında, yükseklik -23.1 (hedef -18)",
-          "flags": [
-            "c1 ile neredeyse aynı (0.0339)"
-          ],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: bare foot.",
-          "duration": 0.6441618552891244,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
-        },
-        "c5": {
-          "duration_s": 0.519,
+          "duration_s": 0.791,
           "lufs": -24.1,
           "true_peak_db": -1.0,
-          "rms_db": -25.4,
+          "rms_db": -26.8,
           "note": "tepe sınırında, yükseklik -24.1 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: leather shoe.",
-          "duration": 0.5666148723233562,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A foot stepping squarely into a soft fresh cow pat in the yard: one squishy, wet, muddy squelch as the foot sinks in, slightly comic. Not a normal footstep. Details: bare foot.",
+          "duration": 0.8588824737188325,
           "model": "eleven_text_to_sound_v3"
         },
-        "c6": {
-          "duration_s": 0.543,
-          "lufs": -18.0,
-          "true_peak_db": -2.3,
-          "rms_db": -21.2,
+        "c5": {
+          "duration_s": 0.466,
+          "lufs": -27.1,
+          "true_peak_db": -1.0,
+          "rms_db": -27.9,
+          "note": "tepe sınırında, yükseklik -27.1 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0307)"
+            "c1 ile neredeyse aynı (0.0055)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A single soft, wet squelch underfoot on grass. Short and comic, not disgusting. Details: bare foot.",
-          "duration": 0.5645115186551695,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A foot stepping squarely into a soft fresh cow pat in the yard: one squishy, wet, muddy squelch as the foot sinks in, slightly comic. Not a normal footstep. Details: leather shoe.",
+          "duration": 0.7554864964311416,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.68,
+          "lufs": -27.3,
+          "true_peak_db": -1.0,
+          "rms_db": -27.9,
+          "note": "tepe sınırında, yükseklik -27.3 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0227)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A foot stepping squarely into a soft fresh cow pat in the yard: one squishy, wet, muddy squelch as the foot sinks in, slightly comic. Not a normal footstep. Details: bare foot.",
+          "duration": 0.7526820248735594,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         }
@@ -89,29 +95,41 @@
         "pairs_dup": [
           [
             "c1",
-            "c3",
-            0.0091
+            "c2",
+            0.0199
           ],
           [
             "c1",
-            "c4",
-            0.0339
+            "c3",
+            0.0129
+          ],
+          [
+            "c1",
+            "c5",
+            0.0055
           ],
           [
             "c1",
             "c6",
-            0.0307
+            0.0227
           ]
         ],
         "nearest": {
-          "c1": 0.0091,
-          "c2": 0.0441,
-          "c3": 0.0091,
-          "c4": 0.0187,
-          "c5": 0.0187,
-          "c6": 0.0298
+          "c1": 0.0055,
+          "c2": 0.0171,
+          "c3": 0.0084,
+          "c4": 0.0239,
+          "c5": 0.0055,
+          "c6": 0.0227
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "c1": 0.0079,
+          "c2": 0.0235,
+          "c3": 0.0163,
+          "c4": 0.0382,
+          "c5": 0.0085,
+          "c6": 0.0211
+        }
       }
     }
   }

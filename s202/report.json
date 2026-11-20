@@ -2,228 +2,209 @@
   "job": "s202",
   "kind": "sfx",
   "family": "tools",
-  "created": "2026-11-20T14:19:24Z",
+  "created": "2026-11-20T16:47:08Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 0.478,
-          "lufs": -23.0,
-          "true_peak_db": -1.0,
-          "rms_db": -27.0,
-          "note": "tepe sınırında, yükseklik -23.0 (hedef -18)",
+          "duration_s": 0.458,
+          "lufs": -18.0,
+          "true_peak_db": -3.0,
+          "rms_db": -21.2,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: strong tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: strong tension.",
           "duration": 0.3624662841921716,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 0.471,
-          "lufs": -25.3,
+          "duration_s": 0.418,
+          "lufs": -20.0,
           "true_peak_db": -1.0,
-          "rms_db": -28.4,
-          "note": "tepe sınırında, yükseklik -25.3 (hedef -18)",
+          "rms_db": -20.0,
           "flags": [
-            "c1 ile neredeyse aynı (0.0299)"
+            "c1 ile neredeyse aynı (0.0325)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: light tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
           "duration": 0.37503759915031804,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c3": {
-          "duration_s": 0.419,
-          "lufs": -29.0,
+          "duration_s": 0.445,
+          "lufs": -23.1,
           "true_peak_db": -1.0,
-          "rms_db": -29.0,
-          "flags": [
-            "c1 ile neredeyse aynı (0.0252)"
-          ],
+          "rms_db": -23.1,
+          "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: strong tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: strong tension.",
           "duration": 0.3779674490537871,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
+          "model": "eleven_text_to_sound_v3"
         },
         "c4": {
-          "duration_s": 0.368,
-          "lufs": -28.0,
+          "duration_s": 0.409,
+          "lufs": -23.9,
           "true_peak_db": -1.0,
-          "rms_db": -28.0,
+          "rms_db": -23.9,
           "flags": [
-            "c1 ile neredeyse aynı (0.0278)"
+            "c3 ile neredeyse aynı (0.0325)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: light tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
           "duration": 0.4061751289828925,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c5": {
-          "duration_s": 0.393,
-          "lufs": -29.5,
+          "duration_s": 0.41,
+          "lufs": -21.5,
           "true_peak_db": -1.0,
-          "rms_db": -29.5,
+          "rms_db": -21.5,
           "flags": [
-            "c1 ile neredeyse aynı (0.0181)"
+            "c1 ile neredeyse aynı (0.0302)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: strong tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: strong tension.",
           "duration": 0.4142817527856921,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c6": {
-          "duration_s": 0.48,
-          "lufs": -24.8,
-          "true_peak_db": -1.0,
-          "rms_db": -27.6,
-          "note": "tepe sınırında, yükseklik -24.8 (hedef -18)",
-          "flags": [
-            "c1 ile neredeyse aynı (0.0152)"
-          ],
-          "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: light tension.",
-          "duration": 0.41616286824637233,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
-        },
-        "c7": {
-          "duration_s": 0.412,
-          "lufs": -27.2,
-          "true_peak_db": -1.0,
-          "rms_db": -27.2,
+          "duration_s": 0.472,
+          "lufs": -18.0,
+          "true_peak_db": -2.9,
+          "rms_db": -21.8,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: strong tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
+          "duration": 0.41616286824637233,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 0.387,
+          "lufs": -23.1,
+          "true_peak_db": -1.0,
+          "rms_db": -23.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: strong tension.",
           "duration": 0.3972206896134629,
           "model": "eleven_text_to_sound_v3"
         },
         "c8": {
-          "duration_s": 0.462,
-          "lufs": -22.9,
+          "duration_s": 0.434,
+          "lufs": -25.0,
           "true_peak_db": -1.0,
-          "rms_db": -26.7,
-          "note": "tepe sınırında, yükseklik -22.9 (hedef -18)",
-          "flags": [
-            "c1 ile neredeyse aynı (0.0303)"
-          ],
+          "rms_db": -25.0,
+          "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: light tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
           "duration": 0.4167722940784742,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
+          "model": "eleven_text_to_sound_v3"
         },
         "c9": {
-          "duration_s": 0.48,
-          "lufs": -24.4,
+          "duration_s": 0.413,
+          "lufs": -26.7,
           "true_peak_db": -1.0,
-          "rms_db": -27.9,
-          "note": "tepe sınırında, yükseklik -24.4 (hedef -18)",
+          "rms_db": -26.7,
           "flags": [
-            "c1 ile neredeyse aynı (0.0273)"
+            "c1 ile neredeyse aynı (0.0236)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: strong tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: strong tension.",
           "duration": 0.4080228835566689,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c10": {
-          "duration_s": 0.393,
-          "lufs": -26.8,
+          "duration_s": 0.401,
+          "lufs": -18.5,
           "true_peak_db": -1.0,
-          "rms_db": -26.8,
+          "rms_db": -18.5,
           "flags": [
-            "c1 ile neredeyse aynı (0.0297)"
+            "c1 ile neredeyse aynı (0.0305)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: light tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
           "duration": 0.3739803832038896,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c11": {
-          "duration_s": 0.473,
-          "lufs": -22.5,
+          "duration_s": 0.335,
+          "lufs": -19.6,
           "true_peak_db": -1.0,
-          "rms_db": -26.3,
-          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
-          "flags": [
-            "c1 ile neredeyse aynı (0.0321)"
-          ],
-          "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: strong tension.",
-          "duration": 0.3799899193002122,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
-        },
-        "c12": {
-          "duration_s": 0.273,
-          "lufs": -27.2,
-          "true_peak_db": -1.0,
-          "rms_db": -27.2,
+          "rms_db": -19.6,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: light tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: strong tension.",
+          "duration": 0.3799899193002122,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c12": {
+          "duration_s": 0.474,
+          "lufs": -20.5,
+          "true_peak_db": -1.0,
+          "rms_db": -22.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
           "duration": 0.41629753973190176,
           "model": "eleven_text_to_sound_v3"
         },
         "c13": {
-          "duration_s": 0.393,
-          "lufs": -29.7,
-          "true_peak_db": -1.0,
-          "rms_db": -29.7,
+          "duration_s": 0.48,
+          "lufs": -18.0,
+          "true_peak_db": -1.4,
+          "rms_db": -21.9,
           "flags": [
-            "c1 ile neredeyse aynı (0.0307)"
+            "c1 ile neredeyse aynı (0.0338)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: strong tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: strong tension.",
           "duration": 0.3636376248954494,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c14": {
-          "duration_s": 0.475,
-          "lufs": -24.1,
+          "duration_s": 0.474,
+          "lufs": -19.3,
           "true_peak_db": -1.0,
-          "rms_db": -28.1,
-          "note": "tepe sınırında, yükseklik -24.1 (hedef -18)",
+          "rms_db": -23.3,
           "flags": [
-            "c1 ile neredeyse aynı (0.0294)"
+            "c1 ile neredeyse aynı (0.0283)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: light tension.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
           "duration": 0.3901331275605755,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c15": {
-          "duration_s": 0.422,
-          "lufs": -28.2,
+          "duration_s": 0.363,
+          "lufs": -23.0,
           "true_peak_db": -1.0,
-          "rms_db": -28.2,
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: strong tension.",
-          "duration": 0.43720647268618884,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c16": {
-          "duration_s": 0.36,
-          "lufs": -29.7,
-          "true_peak_db": -1.0,
-          "rms_db": -29.7,
+          "rms_db": -23.0,
           "flags": [
-            "c1 ile neredeyse aynı (0.0294)"
+            "c3 ile neredeyse aynı (0.0244)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water. Details: light tension.",
-          "duration": 0.40450160341009256,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: strong tension.",
+          "duration": 0.43720647268618884,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
+        },
+        "c16": {
+          "duration_s": 0.459,
+          "lufs": -20.2,
+          "true_peak_db": -1.0,
+          "rms_db": -22.9,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water. Details: light tension.",
+          "duration": 0.40450160341009256,
+          "model": "eleven_text_to_sound_v3"
         }
       },
       "set": {
@@ -231,83 +212,80 @@
           [
             "c1",
             "c2",
-            0.0299
-          ],
-          [
-            "c1",
-            "c3",
-            0.0252
-          ],
-          [
-            "c1",
-            "c4",
-            0.0278
+            0.0325
           ],
           [
             "c1",
             "c5",
-            0.0181
-          ],
-          [
-            "c1",
-            "c6",
-            0.0152
-          ],
-          [
-            "c1",
-            "c8",
-            0.0303
+            0.0302
           ],
           [
             "c1",
             "c9",
-            0.0273
+            0.0236
           ],
           [
             "c1",
             "c10",
-            0.0297
-          ],
-          [
-            "c1",
-            "c11",
-            0.0321
+            0.0305
           ],
           [
             "c1",
             "c13",
-            0.0307
+            0.0338
           ],
           [
             "c1",
             "c14",
-            0.0294
+            0.0283
           ],
           [
-            "c1",
-            "c16",
-            0.0294
+            "c3",
+            "c4",
+            0.0325
+          ],
+          [
+            "c3",
+            "c15",
+            0.0244
           ]
         ],
         "nearest": {
-          "c1": 0.0152,
-          "c2": 0.0141,
-          "c3": 0.0252,
-          "c4": 0.0175,
+          "c1": 0.0236,
+          "c2": 0.0266,
+          "c3": 0.0186,
+          "c4": 0.0273,
           "c5": 0.0181,
-          "c6": 0.0152,
-          "c7": 0.0268,
-          "c8": 0.0138,
-          "c9": 0.0107,
-          "c10": 0.0097,
-          "c11": 0.0141,
-          "c12": 0.0273,
-          "c13": 0.0228,
-          "c14": 0.0144,
-          "c15": 0.0097,
-          "c16": 0.0276
+          "c6": 0.0372,
+          "c7": 0.0355,
+          "c8": 0.0475,
+          "c9": 0.0181,
+          "c10": 0.0186,
+          "c11": 0.0181,
+          "c12": 0.0572,
+          "c13": 0.0181,
+          "c14": 0.0242,
+          "c15": 0.0244,
+          "c16": 0.0365
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "c1": 0.1647,
+          "c2": 0.1716,
+          "c3": 0.1144,
+          "c4": 0.118,
+          "c5": 0.1451,
+          "c6": 0.2656,
+          "c7": 0.1783,
+          "c8": 0.1547,
+          "c9": 0.159,
+          "c10": 0.1495,
+          "c11": 0.197,
+          "c12": 0.1879,
+          "c13": 0.1426,
+          "c14": 0.1566,
+          "c15": 0.1157,
+          "c16": 0.1837
+        }
       }
     }
   }

@@ -2,82 +2,79 @@
   "job": "s256",
   "kind": "sfx",
   "family": "foley",
-  "created": "2026-11-20T14:11:36Z",
+  "created": "2026-11-20T16:49:36Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 0.92,
-          "lufs": -19.7,
+          "duration_s": 1.212,
+          "lufs": -18.5,
           "true_peak_db": -1.0,
-          "rms_db": -21.2,
+          "rms_db": -20.9,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: loose sand.",
-          "duration": 0.9382399049747354,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: loose sand.",
+          "duration": 1.3135358669646295,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 0.993,
-          "lufs": -22.5,
+          "duration_s": 1.311,
+          "lufs": -18.5,
           "true_peak_db": -1.0,
-          "rms_db": -23.7,
-          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
+          "rms_db": -20.0,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: dry garden soil.",
-          "duration": 1.0046135985819957,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: dry garden soil.",
+          "duration": 1.4064590380147939,
           "model": "eleven_text_to_sound_v3"
         },
         "c3": {
-          "duration_s": 0.92,
-          "lufs": -19.9,
-          "true_peak_db": -1.0,
-          "rms_db": -19.4,
+          "duration_s": 1.252,
+          "lufs": -18.0,
+          "true_peak_db": -3.2,
+          "rms_db": -20.3,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: loose sand.",
-          "duration": 0.9577369661677034,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: loose sand.",
+          "duration": 1.3408317526347848,
           "model": "eleven_text_to_sound_v3"
         },
         "c4": {
-          "duration_s": 1.08,
-          "lufs": -22.5,
-          "true_peak_db": -1.0,
-          "rms_db": -24.2,
-          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
+          "duration_s": 1.48,
+          "lufs": -18.0,
+          "true_peak_db": -3.8,
+          "rms_db": -21.1,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: dry garden soil.",
-          "duration": 1.0812093209712246,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: dry garden soil.",
+          "duration": 1.5136930493597143,
           "model": "eleven_text_to_sound_v3"
         },
         "c5": {
-          "duration_s": 1.074,
-          "lufs": -19.3,
-          "true_peak_db": -1.0,
-          "rms_db": -21.6,
+          "duration_s": 1.452,
+          "lufs": -18.0,
+          "true_peak_db": -4.4,
+          "rms_db": -20.0,
           "flags": [
-            "c1 ile neredeyse aynı (0.0322)"
+            "c3 ile neredeyse aynı (0.0252)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: loose sand.",
-          "duration": 1.082665080273491,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: loose sand.",
+          "duration": 1.5157311123828872,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c6": {
-          "duration_s": 1.04,
-          "lufs": -24.8,
-          "true_peak_db": -1.0,
-          "rms_db": -25.7,
-          "note": "tepe sınırında, yükseklik -24.8 (hedef -18)",
+          "duration_s": 1.418,
+          "lufs": -18.0,
+          "true_peak_db": -2.3,
+          "rms_db": -20.1,
           "flags": [
-            "c1 ile neredeyse aynı (0.0256)"
+            "c1 ile neredeyse aynı (0.0323)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cat scratching loose soil with its paws, three or four quick light scrapes. Details: dry garden soil.",
-          "duration": 1.0500229840349438,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: dry garden soil.",
+          "duration": 1.4700321776489211,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         }
@@ -86,24 +83,31 @@
         "pairs_dup": [
           [
             "c1",
-            "c5",
-            0.0322
+            "c6",
+            0.0323
           ],
           [
-            "c1",
-            "c6",
-            0.0256
+            "c3",
+            "c5",
+            0.0252
           ]
         ],
         "nearest": {
-          "c1": 0.0256,
-          "c2": 0.0353,
-          "c3": 0.0367,
-          "c4": 0.0648,
-          "c5": 0.0322,
-          "c6": 0.0256
+          "c1": 0.0323,
+          "c2": 0.0263,
+          "c3": 0.0252,
+          "c4": 0.0551,
+          "c5": 0.0252,
+          "c6": 0.0263
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "c1": 0.1999,
+          "c2": 0.2048,
+          "c3": 0.2344,
+          "c4": 0.1272,
+          "c5": 0.2392,
+          "c6": 0.2413
+        }
       }
     }
   }

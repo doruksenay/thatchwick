@@ -2,116 +2,110 @@
   "job": "s233",
   "kind": "sfx",
   "family": "foley",
-  "created": "2026-11-20T14:23:21Z",
+  "created": "2026-11-20T16:48:36Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 0.8,
-          "lufs": -24.2,
+          "duration_s": 1.018,
+          "lufs": -19.8,
           "true_peak_db": -1.0,
-          "rms_db": -24.9,
-          "note": "tepe sınırında, yükseklik -24.2 (hedef -18)",
+          "rms_db": -22.5,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A ladle dipped into a pot and poured into a bowl: a short scoop, a thick pour and a light tap on the rim. Details: copper ladle, wooden bowl.",
-          "duration": 0.8211776861303418,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle scooping thick stew from a clay pot and pouring it into a bowl: a soft wet scoop and a thick, gloopy pour. Ends with the pour. No metal, no clink, no tapping, no coins. Details: wooden ladle, wooden bowl.",
+          "duration": 1.0949035815071224,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 0.92,
-          "lufs": -18.4,
-          "true_peak_db": -1.0,
-          "rms_db": -20.8,
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A ladle dipped into a pot and poured into a bowl: a short scoop, a thick pour and a light tap on the rim. Details: wooden ladle, wooden bowl.",
-          "duration": 0.932960311827437,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c3": {
-          "duration_s": 0.904,
-          "lufs": -21.4,
-          "true_peak_db": -1.0,
+          "duration_s": 1.173,
+          "lufs": -18.0,
+          "true_peak_db": -3.8,
           "rms_db": -22.2,
-          "note": "tepe sınırında, yükseklik -21.4 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0193)"
+            "c1 ile neredeyse aynı (0.0342)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A ladle dipped into a pot and poured into a bowl: a short scoop, a thick pour and a light tap on the rim. Details: copper ladle, clay bowl.",
-          "duration": 0.9737139024049385,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle scooping thick stew from a clay pot and pouring it into a bowl: a soft wet scoop and a thick, gloopy pour. Ends with the pour. No metal, no clink, no tapping, no coins. Details: wooden ladle, clay bowl.",
+          "duration": 1.2439470824365826,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.234,
+          "lufs": -18.0,
+          "true_peak_db": -2.7,
+          "rms_db": -23.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0326)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle scooping thick stew from a clay pot and pouring it into a bowl: a soft wet scoop and a thick, gloopy pour. Ends with the pour. No metal, no clink, no tapping, no coins. Details: wooden ladle, wooden bowl.",
+          "duration": 1.2982852032065846,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c4": {
-          "duration_s": 0.728,
-          "lufs": -25.4,
+          "duration_s": 0.994,
+          "lufs": -24.9,
           "true_peak_db": -1.0,
-          "rms_db": -25.2,
-          "note": "tepe sınırında, yükseklik -25.4 (hedef -18)",
+          "rms_db": -25.0,
+          "note": "tepe sınırında, yükseklik -24.9 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A ladle dipped into a pot and poured into a bowl: a short scoop, a thick pour and a light tap on the rim. Details: wooden ladle, clay bowl.",
-          "duration": 0.8447653260838933,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle scooping thick stew from a clay pot and pouring it into a bowl: a soft wet scoop and a thick, gloopy pour. Ends with the pour. No metal, no clink, no tapping, no coins. Details: wooden ladle, clay bowl.",
+          "duration": 1.1263537681118578,
           "model": "eleven_text_to_sound_v3"
         },
         "c5": {
-          "duration_s": 0.874,
-          "lufs": -23.3,
+          "duration_s": 1.124,
+          "lufs": -34.8,
           "true_peak_db": -1.0,
-          "rms_db": -23.5,
-          "note": "tepe sınırında, yükseklik -23.3 (hedef -18)",
-          "flags": [
-            "c1 ile neredeyse aynı (0.0096)"
-          ],
+          "rms_db": -32.7,
+          "note": "tepe sınırında, yükseklik -34.8 (hedef -18)",
+          "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A ladle dipped into a pot and poured into a bowl: a short scoop, a thick pour and a light tap on the rim. Details: copper ladle, wooden bowl.",
-          "duration": 0.9746886843510715,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle scooping thick stew from a clay pot and pouring it into a bowl: a soft wet scoop and a thick, gloopy pour. Ends with the pour. No metal, no clink, no tapping, no coins. Details: wooden ladle, wooden bowl.",
+          "duration": 1.2995849124680954,
+          "model": "eleven_text_to_sound_v3"
         },
         "c6": {
-          "duration_s": 0.64,
-          "lufs": -23.1,
+          "duration_s": 0.974,
+          "lufs": -18.7,
           "true_peak_db": -1.0,
-          "rms_db": -27.3,
-          "note": "tepe sınırında, yükseklik -23.1 (hedef -18)",
+          "rms_db": -21.9,
           "flags": [
-            "c1 ile neredeyse aynı (0.0186)"
+            "c1 ile neredeyse aynı (0.0292)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A ladle dipped into a pot and poured into a bowl: a short scoop, a thick pour and a light tap on the rim. Details: wooden ladle, wooden bowl.",
-          "duration": 0.8362216633337475,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle scooping thick stew from a clay pot and pouring it into a bowl: a soft wet scoop and a thick, gloopy pour. Ends with the pour. No metal, no clink, no tapping, no coins. Details: wooden ladle, clay bowl.",
+          "duration": 1.1149622177783298,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c7": {
-          "duration_s": 0.911,
-          "lufs": -27.1,
+          "duration_s": 1.116,
+          "lufs": -28.4,
           "true_peak_db": -1.0,
-          "rms_db": -26.5,
-          "note": "tepe sınırında, yükseklik -27.1 (hedef -18)",
-          "flags": [
-            "c1 ile neredeyse aynı (0.0136)"
-          ],
+          "rms_db": -29.7,
+          "note": "tepe sınırında, yükseklik -28.4 (hedef -18)",
+          "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A ladle dipped into a pot and poured into a bowl: a short scoop, a thick pour and a light tap on the rim. Details: copper ladle, clay bowl.",
-          "duration": 0.9740499963495448,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle scooping thick stew from a clay pot and pouring it into a bowl: a soft wet scoop and a thick, gloopy pour. Ends with the pour. No metal, no clink, no tapping, no coins. Details: wooden ladle, wooden bowl.",
+          "duration": 1.2987333284660596,
+          "model": "eleven_text_to_sound_v3"
         },
         "c8": {
-          "duration_s": 0.84,
-          "lufs": -19.8,
-          "true_peak_db": -1.0,
-          "rms_db": -21.4,
+          "duration_s": 1.096,
+          "lufs": -18.0,
+          "true_peak_db": -3.8,
+          "rms_db": -22.0,
           "flags": [
-            "c1 ile neredeyse aynı (0.0231)"
+            "c1 ile neredeyse aynı (0.031)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A ladle dipped into a pot and poured into a bowl: a short scoop, a thick pour and a light tap on the rim. Details: wooden ladle, clay bowl.",
-          "duration": 0.8671241208984706,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle scooping thick stew from a clay pot and pouring it into a bowl: a soft wet scoop and a thick, gloopy pour. Ends with the pour. No metal, no clink, no tapping, no coins. Details: wooden ladle, clay bowl.",
+          "duration": 1.156165494531294,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         }
@@ -120,41 +114,45 @@
         "pairs_dup": [
           [
             "c1",
-            "c3",
-            0.0193
+            "c2",
+            0.0342
           ],
           [
             "c1",
-            "c5",
-            0.0096
+            "c3",
+            0.0326
           ],
           [
             "c1",
             "c6",
-            0.0186
-          ],
-          [
-            "c1",
-            "c7",
-            0.0136
+            0.0292
           ],
           [
             "c1",
             "c8",
-            0.0231
+            0.031
           ]
         ],
         "nearest": {
-          "c1": 0.0096,
-          "c2": 0.0452,
-          "c3": 0.0088,
-          "c4": 0.0136,
-          "c5": 0.007,
-          "c6": 0.0161,
-          "c7": 0.007,
-          "c8": 0.0219
+          "c1": 0.0292,
+          "c2": 0.0117,
+          "c3": 0.025,
+          "c4": 0.0258,
+          "c5": 0.0443,
+          "c6": 0.0217,
+          "c7": 0.0443,
+          "c8": 0.0117
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "c1": 0.0849,
+          "c2": 0.0585,
+          "c3": 0.0846,
+          "c4": 0.0395,
+          "c5": 0.0405,
+          "c6": 0.0702,
+          "c7": 0.0772,
+          "c8": 0.0677
+        }
       }
     }
   }

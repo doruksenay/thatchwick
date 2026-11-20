@@ -2,115 +2,123 @@
   "job": "s220",
   "kind": "sfx",
   "family": "tools",
-  "created": "2026-11-20T14:21:54Z",
+  "created": "2026-11-20T16:47:42Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 1.406,
-          "lufs": -23.2,
+          "duration_s": 1.207,
+          "lufs": -23.8,
           "true_peak_db": -1.0,
-          "rms_db": -24.2,
-          "note": "tepe sınırında, yükseklik -23.2 (hedef -18)",
+          "rms_db": -26.2,
+          "note": "tepe sınırında, yükseklik -23.8 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: small iron hammer, on a plank platform with leaves rustling.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling. Details: small iron hammer, plank resting on a branch.",
           "duration": 1.5388886351543576,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 1.38,
-          "lufs": -25.8,
+          "duration_s": 1.313,
+          "lufs": -24.5,
           "true_peak_db": -1.0,
-          "rms_db": -26.8,
-          "note": "tepe sınırında, yükseklik -25.8 (hedef -18)",
+          "rms_db": -25.6,
+          "note": "tepe sınırında, yükseklik -24.5 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0256)"
+            "c1 ile neredeyse aynı (0.0046)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: small iron hammer, up in a tree, slightly hollow plank.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling. Details: small iron hammer, plank on a tree platform.",
           "duration": 1.6484758379084319,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c3": {
-          "duration_s": 1.557,
-          "lufs": -23.4,
+          "duration_s": 1.564,
+          "lufs": -24.9,
           "true_peak_db": -1.0,
-          "rms_db": -24.2,
-          "note": "tepe sınırında, yükseklik -23.4 (hedef -18)",
+          "rms_db": -26.0,
+          "note": "tepe sınırında, yükseklik -24.9 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0215)"
+            "c1 ile neredeyse aynı (0.0234)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: wooden mallet on a peg, on a plank platform with leaves rustling.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling. Details: heavier iron hammer, plank resting on a branch.",
           "duration": 1.7481609973316694,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c4": {
-          "duration_s": 1.468,
-          "lufs": -21.5,
+          "duration_s": 1.017,
+          "lufs": -23.5,
           "true_peak_db": -1.0,
-          "rms_db": -22.8,
-          "note": "tepe sınırında, yükseklik -21.5 (hedef -18)",
+          "rms_db": -24.9,
+          "note": "tepe sınırında, yükseklik -23.5 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0221)"
+            "c1 ile neredeyse aynı (0.0143)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: wooden mallet on a peg, up in a tree, slightly hollow plank.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling. Details: heavier iron hammer, plank on a tree platform.",
           "duration": 1.5094064396850504,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c5": {
-          "duration_s": 1.278,
-          "lufs": -21.9,
+          "duration_s": 1.052,
+          "lufs": -24.0,
           "true_peak_db": -1.0,
-          "rms_db": -23.3,
-          "note": "tepe sınırında, yükseklik -21.9 (hedef -18)",
+          "rms_db": -26.0,
+          "note": "tepe sınırında, yükseklik -24.0 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: small iron hammer, on a plank platform with leaves rustling.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling. Details: small iron hammer, plank resting on a branch.",
           "duration": 1.4458977147226049,
           "model": "eleven_text_to_sound_v3"
         },
         "c6": {
-          "duration_s": 1.475,
-          "lufs": -22.8,
+          "duration_s": 1.439,
+          "lufs": -23.0,
           "true_peak_db": -1.0,
-          "rms_db": -23.7,
-          "note": "tepe sınırında, yükseklik -22.8 (hedef -18)",
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: small iron hammer, up in a tree, slightly hollow plank.",
-          "duration": 1.6857689038880341,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c7": {
-          "duration_s": 1.298,
-          "lufs": -19.3,
-          "true_peak_db": -1.0,
-          "rms_db": -20.5,
+          "rms_db": -25.0,
+          "note": "tepe sınırında, yükseklik -23.0 (hedef -18)",
           "flags": [
-            "c6 ile neredeyse aynı (0.0302)"
+            "c1 ile neredeyse aynı (0.0073)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: wooden mallet on a peg, on a plank platform with leaves rustling.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling. Details: small iron hammer, plank on a tree platform.",
+          "duration": 1.6857689038880341,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.145,
+          "lufs": -24.6,
+          "true_peak_db": -1.0,
+          "rms_db": -25.6,
+          "note": "tepe sınırında, yükseklik -24.6 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0152)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling. Details: heavier iron hammer, plank resting on a branch.",
           "duration": 1.4727153385471183,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c8": {
-          "duration_s": 1.291,
-          "lufs": -19.3,
+          "duration_s": 1.016,
+          "lufs": -24.8,
           "true_peak_db": -1.0,
-          "rms_db": -20.8,
-          "flags": [],
+          "rms_db": -26.0,
+          "note": "tepe sınırında, yükseklik -24.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0283)"
+          ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: wooden mallet on a peg, up in a tree, slightly hollow plank.",
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Exactly three sharp, separate hammer strikes driving an iron nail into a wooden plank outdoors, about half a second apart, each a crisp metallic tap with a woody thud and silence between. Nothing continuous: no scraping, no sawing, no rustling. Details: heavier iron hammer, plank on a tree platform.",
           "duration": 1.461381737025863,
-          "model": "eleven_text_to_sound_v3"
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
         }
       },
       "set": {
@@ -118,35 +126,54 @@
           [
             "c1",
             "c2",
-            0.0256
+            0.0046
           ],
           [
             "c1",
             "c3",
-            0.0215
+            0.0234
           ],
           [
             "c1",
             "c4",
-            0.0221
+            0.0143
           ],
           [
+            "c1",
             "c6",
+            0.0073
+          ],
+          [
+            "c1",
             "c7",
-            0.0302
+            0.0152
+          ],
+          [
+            "c1",
+            "c8",
+            0.0283
           ]
         ],
         "nearest": {
-          "c1": 0.0215,
-          "c2": 0.0238,
-          "c3": 0.0215,
-          "c4": 0.0221,
-          "c5": 0.0238,
-          "c6": 0.0277,
-          "c7": 0.0302,
-          "c8": 0.0299
+          "c1": 0.0046,
+          "c2": 0.0046,
+          "c3": 0.0158,
+          "c4": 0.0119,
+          "c5": 0.0304,
+          "c6": 0.0073,
+          "c7": 0.0103,
+          "c8": 0.011
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "c1": 0.0469,
+          "c2": 0.0545,
+          "c3": 0.059,
+          "c4": 0.0378,
+          "c5": 0.0514,
+          "c6": 0.0471,
+          "c7": 0.0488,
+          "c8": 0.0649
+        }
       }
     }
   }

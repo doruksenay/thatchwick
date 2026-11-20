@@ -2,123 +2,117 @@
   "job": "s221",
   "kind": "sfx",
   "family": "foley",
-  "created": "2026-11-20T14:22:14Z",
+  "created": "2026-11-20T16:48:01Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 1.178,
-          "lufs": -26.3,
+          "duration_s": 2.128,
+          "lufs": -23.9,
           "true_peak_db": -1.0,
-          "rms_db": -25.5,
-          "note": "tepe sınırında, yükseklik -26.3 (hedef -18)",
+          "rms_db": -23.9,
+          "note": "tepe sınırında, yükseklik -23.9 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: simple plank steps nailed to a trunk, light child steps.",
-          "duration": 1.2656150218659359,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing slowly up into a treehouse: four separate, deliberate steps about one every half second, each a soft knock of a wooden rung with a short rope creak between. Calm pace, not hurried, no scrambling. Details: simple plank steps nailed to a trunk, careful adult steps.",
+          "duration": 2.2600268247606,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 1.17,
-          "lufs": -25.0,
+          "duration_s": 2.087,
+          "lufs": -25.3,
           "true_peak_db": -1.0,
-          "rms_db": -22.4,
-          "note": "tepe sınırında, yükseklik -25.0 (hedef -18)",
+          "rms_db": -25.0,
+          "note": "tepe sınırında, yükseklik -25.3 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0304)"
+            "c1 ile neredeyse aynı (0.0324)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: simple plank steps nailed to a trunk, quick scrambling steps.",
-          "duration": 1.3024870083943165,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing slowly up into a treehouse: four separate, deliberate steps about one every half second, each a soft knock of a wooden rung with a short rope creak between. Calm pace, not hurried, no scrambling. Details: simple plank steps nailed to a trunk, unhurried child steps.",
+          "duration": 2.3258696578469937,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c3": {
-          "duration_s": 1.313,
-          "lufs": -22.1,
+          "duration_s": 2.457,
+          "lufs": -30.2,
           "true_peak_db": -1.0,
-          "rms_db": -25.2,
-          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
+          "rms_db": -32.6,
+          "note": "tepe sınırında, yükseklik -30.2 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: rope ladder with wooden rungs, quick scrambling steps.",
-          "duration": 1.5005044044409312,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing slowly up into a treehouse: four separate, deliberate steps about one every half second, each a soft knock of a wooden rung with a short rope creak between. Calm pace, not hurried, no scrambling. Details: rope ladder with wooden rungs, unhurried child steps.",
+          "duration": 2.6794721507873778,
           "model": "eleven_text_to_sound_v3"
         },
         "c4": {
-          "duration_s": 1.204,
-          "lufs": -22.1,
+          "duration_s": 2.274,
+          "lufs": -27.6,
           "true_peak_db": -1.0,
-          "rms_db": -28.1,
-          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
-          "flags": [
-            "c3 ile neredeyse aynı (0.0254)"
-          ],
+          "rms_db": -30.0,
+          "note": "tepe sınırında, yükseklik -27.6 (hedef -18)",
+          "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: rope ladder with wooden rungs, light child steps.",
-          "duration": 1.3892025041083178,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing slowly up into a treehouse: four separate, deliberate steps about one every half second, each a soft knock of a wooden rung with a short rope creak between. Calm pace, not hurried, no scrambling. Details: rope ladder with wooden rungs, careful adult steps.",
+          "duration": 2.4807187573362817,
+          "model": "eleven_text_to_sound_v3"
         },
         "c5": {
-          "duration_s": 1.197,
-          "lufs": -25.4,
+          "duration_s": 2.221,
+          "lufs": -27.5,
           "true_peak_db": -1.0,
-          "rms_db": -26.1,
-          "note": "tepe sınırında, yükseklik -25.4 (hedef -18)",
+          "rms_db": -27.5,
+          "note": "tepe sınırında, yükseklik -27.5 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0073)"
+            "c1 ile neredeyse aynı (0.0315)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: simple plank steps nailed to a trunk, light child steps.",
-          "duration": 1.3020668223191978,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing slowly up into a treehouse: four separate, deliberate steps about one every half second, each a soft knock of a wooden rung with a short rope creak between. Calm pace, not hurried, no scrambling. Details: simple plank steps nailed to a trunk, careful adult steps.",
+          "duration": 2.3251193255699962,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c6": {
-          "duration_s": 1.253,
+          "duration_s": 2.184,
           "lufs": -25.8,
           "true_peak_db": -1.0,
-          "rms_db": -25.6,
+          "rms_db": -25.5,
           "note": "tepe sınırında, yükseklik -25.8 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0093)"
+            "c1 ile neredeyse aynı (0.019)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: simple plank steps nailed to a trunk, quick scrambling steps.",
-          "duration": 1.319730872371085,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing slowly up into a treehouse: four separate, deliberate steps about one every half second, each a soft knock of a wooden rung with a short rope creak between. Calm pace, not hurried, no scrambling. Details: simple plank steps nailed to a trunk, unhurried child steps.",
+          "duration": 2.3566622720912234,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c7": {
-          "duration_s": 1.303,
-          "lufs": -21.7,
+          "duration_s": 2.401,
+          "lufs": -23.5,
           "true_peak_db": -1.0,
-          "rms_db": -27.6,
-          "note": "tepe sınırında, yükseklik -21.7 (hedef -18)",
+          "rms_db": -24.9,
+          "note": "tepe sınırında, yükseklik -23.5 (hedef -18)",
           "flags": [
-            "c3 ile neredeyse aynı (0.0341)"
+            "c4 ile neredeyse aynı (0.0206)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: rope ladder with wooden rungs, quick scrambling steps.",
-          "duration": 1.4496834442247224,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing slowly up into a treehouse: four separate, deliberate steps about one every half second, each a soft knock of a wooden rung with a short rope creak between. Calm pace, not hurried, no scrambling. Details: rope ladder with wooden rungs, unhurried child steps.",
+          "duration": 2.588720436115576,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c8": {
-          "duration_s": 1.2,
-          "lufs": -25.0,
+          "duration_s": 2.071,
+          "lufs": -24.0,
           "true_peak_db": -1.0,
-          "rms_db": -26.5,
-          "note": "tepe sınırında, yükseklik -25.0 (hedef -18)",
-          "flags": [
-            "c3 ile neredeyse aynı (0.0348)"
-          ],
+          "rms_db": -25.0,
+          "note": "tepe sınırında, yükseklik -24.0 (hedef -18)",
+          "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: rope ladder with wooden rungs, light child steps.",
-          "duration": 1.269288779422818,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing slowly up into a treehouse: four separate, deliberate steps about one every half second, each a soft knock of a wooden rung with a short rope creak between. Calm pace, not hurried, no scrambling. Details: rope ladder with wooden rungs, careful adult steps.",
+          "duration": 2.2665871061121754,
+          "model": "eleven_text_to_sound_v3"
         }
       },
       "set": {
@@ -126,45 +120,44 @@
           [
             "c1",
             "c2",
-            0.0304
+            0.0324
           ],
           [
             "c1",
             "c5",
-            0.0073
+            0.0315
           ],
           [
             "c1",
             "c6",
-            0.0093
+            0.019
           ],
           [
-            "c3",
             "c4",
-            0.0254
-          ],
-          [
-            "c3",
             "c7",
-            0.0341
-          ],
-          [
-            "c3",
-            "c8",
-            0.0348
+            0.0206
           ]
         ],
         "nearest": {
-          "c1": 0.0073,
-          "c2": 0.0304,
-          "c3": 0.0254,
-          "c4": 0.0107,
-          "c5": 0.0073,
-          "c6": 0.0093,
-          "c7": 0.0334,
-          "c8": 0.0107
+          "c1": 0.019,
+          "c2": 0.0213,
+          "c3": 0.0356,
+          "c4": 0.0206,
+          "c5": 0.0266,
+          "c6": 0.019,
+          "c7": 0.0206,
+          "c8": 0.0216
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "c1": 0.0329,
+          "c2": 0.037,
+          "c3": 0.0257,
+          "c4": 0.0232,
+          "c5": 0.0438,
+          "c6": 0.0369,
+          "c7": 0.0162,
+          "c8": 0.0267
+        }
       }
     }
   }

@@ -1,0 +1,114 @@
+{
+  "job": "s223",
+  "kind": "sfx",
+  "family": "voice",
+  "created": "2026-11-20T16:48:20Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 2.32,
+          "lufs": -20.9,
+          "true_peak_db": -1.0,
+          "rms_db": -21.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: excited playful shouting without words, three children.",
+          "duration": 2.348478943882078,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 2.24,
+          "lufs": -20.7,
+          "true_peak_db": -1.0,
+          "rms_db": -21.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: excited playful shouting without words, two children.",
+          "duration": 2.2564329993903613,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 2.56,
+          "lufs": -20.0,
+          "true_peak_db": -1.1,
+          "rms_db": -20.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: happy giggling, two children.",
+          "duration": 2.5687624336721058,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 2.6,
+          "lufs": -20.0,
+          "true_peak_db": -3.9,
+          "rms_db": -21.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: happy giggling, three children.",
+          "duration": 2.6231712928503734,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 2.615,
+          "lufs": -20.0,
+          "true_peak_db": -1.4,
+          "rms_db": -21.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: excited playful shouting without words, three children.",
+          "duration": 2.652156839514454,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 2.44,
+          "lufs": -20.0,
+          "true_peak_db": -3.7,
+          "rms_db": -22.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: excited playful shouting without words, two children.",
+          "duration": 2.4479889788185885,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 2.52,
+          "lufs": -20.2,
+          "true_peak_db": -1.0,
+          "rms_db": -21.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: happy giggling, two children.",
+          "duration": 2.5393320858246264,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c8": {
+          "duration_s": 2.36,
+          "lufs": -20.0,
+          "true_peak_db": -4.6,
+          "rms_db": -21.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Children laughing and playing inside a small wooden treehouse, slightly muffled by the plank walls, footsteps on boards. No words, no music, no modern sounds. Details: happy giggling, three children.",
+          "duration": 2.377276581552038,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [],
+        "nearest": {
+          "c1": 0.0229,
+          "c2": 0.0207,
+          "c3": 0.0252,
+          "c4": 0.039,
+          "c5": 0.0336,
+          "c6": 0.0353,
+          "c7": 0.0336,
+          "c8": 0.0207
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

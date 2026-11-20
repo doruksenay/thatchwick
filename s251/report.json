@@ -2,110 +2,117 @@
   "job": "s251",
   "kind": "sfx",
   "family": "tools",
-  "created": "2026-11-20T14:23:43Z",
+  "created": "2026-11-20T16:48:58Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 0.564,
-          "lufs": -23.0,
+          "duration_s": 1.452,
+          "lufs": -24.6,
           "true_peak_db": -1.0,
-          "rms_db": -24.3,
-          "note": "tepe sınırında, yükseklik -23.0 (hedef -18)",
+          "rms_db": -29.1,
+          "note": "tepe sınırında, yükseklik -24.6 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A wooden shovel scraping once along the ground and lifting a soft, damp load. Details: straw-strewn floor.",
-          "duration": 1.017304198600214,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A shovel blade pushed along the ground with a long gritty scrape through loose muck and straw, then a heavy, wet load lifted and dumped onto a pile with a soft dull thud. No chopping, no knife-like taps. Details: wooden shovel, muddy yard floor.",
+          "duration": 1.6276867177603425,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 0.653,
-          "lufs": -25.5,
+          "duration_s": 1.457,
+          "lufs": -23.9,
           "true_peak_db": -1.0,
-          "rms_db": -28.0,
-          "note": "tepe sınırında, yükseklik -25.5 (hedef -18)",
+          "rms_db": -31.4,
+          "note": "tepe sınırında, yükseklik -23.9 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A wooden shovel scraping once along the ground and lifting a soft, damp load. Details: packed earth.",
-          "duration": 1.0861689520479192,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A shovel blade pushed along the ground with a long gritty scrape through loose muck and straw, then a heavy, wet load lifted and dumped onto a pile with a soft dull thud. No chopping, no knife-like taps. Details: iron-edged spade, muddy yard floor.",
+          "duration": 1.7378703232766708,
           "model": "eleven_text_to_sound_v3"
         },
         "c3": {
-          "duration_s": 0.713,
-          "lufs": -25.8,
+          "duration_s": 1.379,
+          "lufs": -30.0,
           "true_peak_db": -1.0,
-          "rms_db": -26.8,
-          "note": "tepe sınırında, yükseklik -25.8 (hedef -18)",
+          "rms_db": -29.3,
+          "note": "tepe sınırında, yükseklik -30.0 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0343)"
+            "c1 ile neredeyse aynı (0.0288)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A wooden shovel scraping once along the ground and lifting a soft, damp load. Details: straw-strewn floor.",
-          "duration": 1.042072573532486,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A shovel blade pushed along the ground with a long gritty scrape through loose muck and straw, then a heavy, wet load lifted and dumped onto a pile with a soft dull thud. No chopping, no knife-like taps. Details: iron-edged spade, packed earth with straw.",
+          "duration": 1.6673161176519777,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c4": {
-          "duration_s": 0.718,
-          "lufs": -25.0,
+          "duration_s": 1.139,
+          "lufs": -24.7,
           "true_peak_db": -1.0,
-          "rms_db": -27.5,
-          "note": "tepe sınırında, yükseklik -25.0 (hedef -18)",
-          "flags": [],
+          "rms_db": -30.8,
+          "note": "tepe sınırında, yükseklik -24.7 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0308)"
+          ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A wooden shovel scraping once along the ground and lifting a soft, damp load. Details: packed earth.",
-          "duration": 0.9510389658990075,
-          "model": "eleven_text_to_sound_v3"
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A shovel blade pushed along the ground with a long gritty scrape through loose muck and straw, then a heavy, wet load lifted and dumped onto a pile with a soft dull thud. No chopping, no knife-like taps. Details: wooden shovel, packed earth with straw.",
+          "duration": 1.5216623454384122,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
         },
         "c5": {
-          "duration_s": 0.56,
-          "lufs": -28.3,
+          "duration_s": 1.57,
+          "lufs": -24.4,
           "true_peak_db": -1.0,
-          "rms_db": -27.9,
-          "note": "tepe sınırında, yükseklik -28.3 (hedef -18)",
+          "rms_db": -30.1,
+          "note": "tepe sınırında, yükseklik -24.4 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A wooden shovel scraping once along the ground and lifting a soft, damp load. Details: straw-strewn floor.",
-          "duration": 1.047416465110211,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A shovel blade pushed along the ground with a long gritty scrape through loose muck and straw, then a heavy, wet load lifted and dumped onto a pile with a soft dull thud. No chopping, no knife-like taps. Details: wooden shovel, muddy yard floor.",
+          "duration": 1.6758663441763375,
           "model": "eleven_text_to_sound_v3"
         },
         "c6": {
-          "duration_s": 0.834,
-          "lufs": -18.0,
-          "true_peak_db": -1.7,
-          "rms_db": -20.3,
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A wooden shovel scraping once along the ground and lifting a soft, damp load. Details: packed earth.",
-          "duration": 1.0798368659393514,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c7": {
-          "duration_s": 0.505,
-          "lufs": -26.7,
+          "duration_s": 1.528,
+          "lufs": -20.4,
           "true_peak_db": -1.0,
           "rms_db": -28.0,
-          "note": "tepe sınırında, yükseklik -26.7 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0195)"
+            "c5 ile neredeyse aynı (0.0236)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A wooden shovel scraping once along the ground and lifting a soft, damp load. Details: straw-strewn floor.",
-          "duration": 1.0326740620659756,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A shovel blade pushed along the ground with a long gritty scrape through loose muck and straw, then a heavy, wet load lifted and dumped onto a pile with a soft dull thud. No chopping, no knife-like taps. Details: iron-edged spade, muddy yard floor.",
+          "duration": 1.7277389855029623,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.474,
+          "lufs": -22.3,
+          "true_peak_db": -1.0,
+          "rms_db": -27.8,
+          "note": "tepe sınırında, yükseklik -22.3 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0213)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A shovel blade pushed along the ground with a long gritty scrape through loose muck and straw, then a heavy, wet load lifted and dumped onto a pile with a soft dull thud. No chopping, no knife-like taps. Details: iron-edged spade, packed earth with straw.",
+          "duration": 1.652278499305561,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c8": {
-          "duration_s": 0.658,
-          "lufs": -18.6,
+          "duration_s": 1.352,
+          "lufs": -23.9,
           "true_peak_db": -1.0,
-          "rms_db": -20.2,
+          "rms_db": -28.5,
+          "note": "tepe sınırında, yükseklik -23.9 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.024)"
+            "c1 ile neredeyse aynı (0.0303)"
           ],
           "pass": true,
-          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A wooden shovel scraping once along the ground and lifting a soft, damp load. Details: packed earth.",
-          "duration": 0.9684233220252071,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A shovel blade pushed along the ground with a long gritty scrape through loose muck and straw, then a heavy, wet load lifted and dumped onto a pile with a soft dull thud. No chopping, no knife-like taps. Details: wooden shovel, packed earth with straw.",
+          "duration": 1.5494773152403314,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         }
@@ -115,30 +122,49 @@
           [
             "c1",
             "c3",
-            0.0343
+            0.0288
+          ],
+          [
+            "c1",
+            "c4",
+            0.0308
           ],
           [
             "c1",
             "c7",
-            0.0195
+            0.0213
           ],
           [
             "c1",
             "c8",
-            0.024
+            0.0303
+          ],
+          [
+            "c5",
+            "c6",
+            0.0236
           ]
         ],
         "nearest": {
-          "c1": 0.0195,
-          "c2": 0.0335,
-          "c3": 0.0174,
-          "c4": 0.0152,
-          "c5": 0.038,
-          "c6": 0.0353,
-          "c7": 0.0152,
-          "c8": 0.024
+          "c1": 0.0213,
+          "c2": 0.0361,
+          "c3": 0.0288,
+          "c4": 0.0107,
+          "c5": 0.0236,
+          "c6": 0.0236,
+          "c7": 0.0213,
+          "c8": 0.0107
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "c1": 0.1024,
+          "c2": 0.0649,
+          "c3": 0.0791,
+          "c4": 0.0791,
+          "c5": 0.0554,
+          "c6": 0.06,
+          "c7": 0.1008,
+          "c8": 0.069
+        }
       }
     }
   }
