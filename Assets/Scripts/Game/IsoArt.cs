@@ -19,18 +19,35 @@ namespace Thatchwick.Game
         public static bool Enabled = true;
 
         private static Dictionary<string, Texture2D> _textures;
+        // Bütün görseller: doku (atlas sayfası ya da kendi dokusu) ve içindeki piksel dikdörtgeni (performans incelemesi
+        // 20.11.2026). Atlastaki görseller aynı sayfayı paylaşır; SpriteRenderer'lar toplu (batch) çizilebilir.
+        private struct ArtRef { public Texture2D Tex; public Rect Rect; }
+        private static Dictionary<string, ArtRef> _art;
         private static readonly Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
 
-        public static int TextureCount { get { EnsureLoaded(); return _textures.Count; } }
+        public static int TextureCount { get { EnsureLoaded(); return _art.Count; } }
+
+        /// <summary>Görsel kütüphanede var mı (atlasta ya da kendi dokusuyla).</summary>
+        public static bool Has(string name) { EnsureLoaded(); return name != null && _art.ContainsKey(name); }
 
         private static void EnsureLoaded()
         {
             if (_textures != null) return;
             _textures = new Dictionary<string, Texture2D>();
+            _art = new Dictionary<string, ArtRef>();
             var lib = Resources.Load<IsoArtLibrary>("IsoArt/IsoArtLibrary");
             if (lib == null) { Debug.LogWarning("IsoArt: görsel kütüphanesi yok (Thatchwick > Görsel kütüphanesini yenile). Yer tutucular kullanılıyor."); return; }
             foreach (var e in lib.entries)
-                if (e != null && e.texture != null && !string.IsNullOrEmpty(e.name)) _textures[e.name] = e.texture;
+            {
+                if (e == null || string.IsNullOrEmpty(e.name)) continue;
+                if (e.atlas != null && e.rect.width > 0f && e.rect.height > 0f)
+                    _art[e.name] = new ArtRef { Tex = e.atlas, Rect = e.rect };
+                else if (e.texture != null)
+                {
+                    _textures[e.name] = e.texture;
+                    _art[e.name] = new ArtRef { Tex = e.texture, Rect = new Rect(0, 0, e.texture.width, e.texture.height) };
+                }
+            }
         }
 
         /// <summary>Kayıt (Play'den çıkınca sprite'lar yok edilir; sözlükteki "sahte null" ayıklanır).</summary>
@@ -38,6 +55,7 @@ namespace Thatchwick.Game
         {
             LayeredCharacterArt.Reset();
             _textures = null;
+            _art = null;
             Sprites.Clear();
             IconCache.Clear();
             IconMissing.Clear();
@@ -60,10 +78,12 @@ namespace Thatchwick.Game
             EnsureLoaded();
             string key = name + "|" + pivotX + "|" + pivotY;
             if (Sprites.TryGetValue(key, out var cached) && cached != null) return cached;
-            if (!_textures.TryGetValue(name, out var tex) || tex == null) return null;
+            if (!_art.TryGetValue(name, out var art) || art.Tex == null) return null;
+            var tex = art.Tex;
             tex.filterMode = FilterMode.Point;
-            var sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height),
-                new Vector2(pivotX / tex.width, pivotY / tex.height), Ppu);
+            // Pivot görselin kendi pikselleriyle verilir; atlasta da dikdörtgenin içine göre (Sprite.Create pivotu orana çevirir).
+            var sprite = Sprite.Create(tex, art.Rect,
+                new Vector2(pivotX / art.Rect.width, pivotY / art.Rect.height), Ppu);
             sprite.name = name;
             Sprites[key] = sprite;
             return sprite;
@@ -113,8 +133,8 @@ namespace Thatchwick.Game
         {
             if (!Enabled) return null;
             EnsureLoaded();
-            if (!_textures.TryGetValue(name, out var tex) || tex == null) return null;
-            return Get(name, tex.width * 0.5f, tex.height * 0.5f);
+            if (!_art.TryGetValue(name, out var art) || art.Tex == null) return null;
+            return Get(name, art.Rect.width * 0.5f, art.Rect.height * 0.5f);
         }
 
         // ---------------- zemin ----------------
@@ -342,7 +362,7 @@ namespace Thatchwick.Game
                 if (!Enabled) return false;
                 EnsureLoaded();
                 for (int v = 0; v < PathWangVariants; v++)
-                    if (_textures.ContainsKey($"iso_path_dirt_wang_03_{VariantLetters[v]}")) return true;
+                    if (_art.ContainsKey($"iso_path_dirt_wang_03_{VariantLetters[v]}")) return true;
                 return false;
             }
         }
@@ -657,7 +677,7 @@ namespace Thatchwick.Game
             if (FrameCounts.TryGetValue(prefix, out int n)) return n;
             EnsureLoaded();
             int count = 0;
-            while (count < 32 && _textures.ContainsKey(prefix + count.ToString("00"))) count++;
+            while (count < 32 && _art.ContainsKey(prefix + count.ToString("00"))) count++;
             // Yürüme: 9 kare teslim edildiyse son kare kapanıştır (ilk karenin tekrarı), 8 karelik döngü.
             n = closingFrame && count == 9 ? 8 : count;
             FrameCounts[prefix] = n;

@@ -212,6 +212,7 @@ namespace Thatchwick.Core.Save
             AnimalSystem animals = null, LifeSystems life = null, PlantSystem plants = null, int seed = 0, int rngEpoch = 0,
             Mining.MineSystem mines = null)
         {
+            life?.FlushCoarse();   // biriken seyrek adım (dekor, kandil) kayda girsin
             var map = world.Map;
             var data = new SaveData
             {

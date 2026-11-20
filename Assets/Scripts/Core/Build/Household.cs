@@ -73,6 +73,9 @@ namespace Thatchwick.Core.Build
             return true;
         }
 
+        /// <summary>Envanter adetleri her değiştiğinde artar; dinleyiciler (bozulma partileri) yalnızca değişince eşitler.</summary>
+        public int InventoryVersion { get; private set; }
+
         public int Count(string itemId) => itemId != null && _totals.TryGetValue(itemId, out int n) ? n : 0;
 
         /// <summary>En az bu kalitedeki adet.</summary>
@@ -147,6 +150,7 @@ namespace Thatchwick.Core.Build
             foreach (var st in list) if (st.Key.Equals(key)) { found = st; break; }
             if (found == null) { if (delta <= 0) return; found = new Stack { Key = key }; list.Add(found); }
             found.Count += delta;
+            InventoryVersion++;   // yığınların tek değişme noktası (ekleme, alma, kalite/durum değişimi)
             if (found.Count <= 0) list.Remove(found);
             int total = Count(key.Id) + delta;
             if (total <= 0 || list.Count == 0) { _totals.Remove(key.Id); if (list.Count == 0) _stacks.Remove(key.Id); }

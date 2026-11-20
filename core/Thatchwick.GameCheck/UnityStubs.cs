@@ -39,7 +39,7 @@ namespace UnityEngine {
  public static class Application{public static bool isEditor,isMobilePlatform,isPlaying,runInBackground; public static string persistentDataPath,dataPath; public static int targetFrameRate; public static SystemLanguage systemLanguage; public static void Quit(){}}
  public enum SystemLanguage{Afrikaans,Arabic,Basque,Belarusian,Bulgarian,Catalan,Chinese,Czech,Danish,Dutch,English,Estonian,Faroese,Finnish,French,German,Greek,Hebrew,Hungarian,Icelandic,Indonesian,Italian,Japanese,Korean,Latvian,Lithuanian,Norwegian,Polish,Portuguese,Romanian,Russian,SerboCroatian,Slovak,Slovenian,Spanish,Swedish,Thai,Turkish,Ukrainian,Vietnamese,ChineseSimplified,ChineseTraditional,Unknown}
  public static class JsonUtility{public static string ToJson(object o)=>"";public static string ToJson(object o,bool p)=>"";public static T FromJson<T>(string s)=>default;public static void FromJsonOverwrite(string s,object o){}}
- public static class Resources{public static T Load<T>(string p) where T:Object=>null; public static Object Load(string p)=>null; public static T[] LoadAll<T>(string p) where T:Object=>null;}
+ public static class Resources{public static T Load<T>(string p) where T:Object=>null; public static Object Load(string p)=>null; public static T[] LoadAll<T>(string p) where T:Object=>null; public static T GetBuiltinResource<T>(string p) where T:Object=>null;}
  public enum TextAnchor{UpperLeft,UpperCenter,UpperRight,MiddleLeft,MiddleCenter,MiddleRight,LowerLeft,LowerCenter,LowerRight}
  public enum FontStyle{Normal,Bold,Italic,BoldAndItalic}
  public enum ScaleMode{StretchToFill,ScaleAndCrop,ScaleToFit}
@@ -122,7 +122,7 @@ namespace UnityEngine.InputSystem {
  public class Mouse:Pointer{public static new Mouse current;public Vector2Control scroll=new Vector2Control(),delta=new Vector2Control(); public ButtonControl leftButton=new ButtonControl(),rightButton=new ButtonControl(),middleButton=new ButtonControl();}
  public class Touchscreen:Pointer{public static new Touchscreen current;public ReadOnlyArray<TouchControl> touches=new ReadOnlyArray<TouchControl>(); public TouchControl primaryTouch=new TouchControl();}
  public class Keyboard{public static Keyboard current; public KeyControl this[Key k]=>new KeyControl();
-  public KeyControl aKey,bKey,cKey,dKey,eKey,fKey,gKey,hKey,iKey,jKey,kKey,lKey,mKey,nKey,oKey,pKey,qKey,rKey,sKey,tKey,uKey,vKey,wKey,xKey,yKey,zKey,spaceKey,escapeKey,enterKey,tabKey,deleteKey,backspaceKey,leftShiftKey,leftCtrlKey,leftAltKey,rightAltKey,upArrowKey,downArrowKey,leftArrowKey,rightArrowKey,digit1Key,digit2Key,digit3Key,digit4Key,digit5Key,equalsKey,minusKey,numpadPlusKey,numpadMinusKey,f1Key,f2Key,f3Key,f5Key,f9Key;}
+  public KeyControl f4Key,aKey,bKey,cKey,dKey,eKey,fKey,gKey,hKey,iKey,jKey,kKey,lKey,mKey,nKey,oKey,pKey,qKey,rKey,sKey,tKey,uKey,vKey,wKey,xKey,yKey,zKey,spaceKey,escapeKey,enterKey,tabKey,deleteKey,backspaceKey,leftShiftKey,leftCtrlKey,leftAltKey,rightAltKey,upArrowKey,downArrowKey,leftArrowKey,rightArrowKey,digit1Key,digit2Key,digit3Key,digit4Key,digit5Key,equalsKey,minusKey,numpadPlusKey,numpadMinusKey,f1Key,f2Key,f3Key,f5Key,f9Key;}
 }
 // Ses (Project 45b): AudioSource, AudioClip, filtre ve mixer.
 namespace UnityEngine {
@@ -134,4 +134,55 @@ namespace UnityEngine.Audio {
  public class AudioMixerGroup:Object{}
  public class AudioMixerSnapshot:Object{public void TransitionTo(float t){}}
  public class AudioMixer:Object{public AudioMixerGroup[] FindMatchingGroups(string s)=>null; public AudioMixerSnapshot FindSnapshot(string s)=>null; public bool SetFloat(string n,float v)=>true;}
+}
+// Tilemap (zemin katmanı, GroundLayer).
+namespace UnityEngine {
+ public struct Vector3Int{public int x,y,z;public Vector3Int(int a,int b,int c){x=a;y=b;z=c;}}
+ public class GridLayout:Behaviour{public enum CellLayout{Rectangle,Hexagon,Isometric,IsometricZAsY} public CellLayout cellLayout; public Vector3 cellSize;}
+ public class Grid:GridLayout{}
+}
+namespace UnityEngine.Tilemaps {
+ public enum TileFlags{None=0,LockColor=1,LockTransform=2,InstantiateGameObjectRuntimeOnly=4,LockAll=3}
+ public class TileBase:ScriptableObject{}
+ public class Tile:TileBase{public enum ColliderType{None,Sprite,Grid} public Sprite sprite; public Color color; public TileFlags flags; public ColliderType colliderType; public Matrix4x4 transform;}
+ public struct TileChangeData{public Vector3Int position; public TileBase tile; public Color color; public Matrix4x4 transform; public TileChangeData(Vector3Int p,TileBase t,Color c,Matrix4x4 m){position=p;tile=t;color=c;transform=m;}}
+ public class Tilemap:GridLayout{public Vector3 tileAnchor; public void SetTile(Vector3Int p,TileBase t){} public void SetTiles(TileChangeData[] d,bool ignoreLockFlags){} public void SetColor(Vector3Int p,Color c){} public void SetTransformMatrix(Vector3Int p,Matrix4x4 m){} public void ClearAllTiles(){} public void RefreshAllTiles(){}}
+ public class TilemapRenderer:Renderer{public enum Mode{Chunk,Individual,SRPBatch} public Mode mode;}
+}
+// UI Toolkit (Ui/UiHost, Ui/HudBar): yalnızca kullanılan üyeler, Unity imzasıyla.
+namespace UnityEngine.UIElements {
+ using System;
+ public enum StyleKeyword{Undefined,Null,Auto,None,Initial}
+ public enum DisplayStyle{Flex,None} public enum FlexDirection{Column,ColumnReverse,Row,RowReverse} public enum Wrap{NoWrap,Wrap,WrapReverse}
+ public enum Align{Auto,FlexStart,Center,FlexEnd,Stretch} public enum Position{Relative,Absolute} public enum WhiteSpace{Normal,NoWrap}
+ public enum PickingMode{Position,Ignore} public enum TrickleDown{NoTrickleDown,TrickleDown}
+ public enum PanelScaleMode{ConstantPixelSize,ConstantPhysicalSize,ScaleWithScreenSize} public enum PanelScreenMatchMode{MatchWidthOrHeight,Shrink,Expand}
+ public struct StyleLength{public static implicit operator StyleLength(float v)=>default; public static implicit operator StyleLength(StyleKeyword k)=>default;}
+ public struct StyleFloat{public static implicit operator StyleFloat(float v)=>default;}
+ public struct StyleInt{public static implicit operator StyleInt(int v)=>default;}
+ public struct StyleColor{public StyleColor(Color c){} public StyleColor(StyleKeyword k){} public static implicit operator StyleColor(Color v)=>default;}
+ public struct StyleBackground{public StyleBackground(Texture2D t){} public static implicit operator StyleBackground(StyleKeyword k)=>default;}
+ public struct FontDefinition{public static FontDefinition FromFont(Font f)=>default;}
+ public struct StyleFontDefinition{public StyleFontDefinition(FontDefinition f){}}
+ public struct StyleEnum<T> where T:struct,IConvertible{public static implicit operator StyleEnum<T>(T v)=>default; public static bool operator==(StyleEnum<T> a,StyleEnum<T> b)=>true; public static bool operator!=(StyleEnum<T> a,StyleEnum<T> b)=>false; public override bool Equals(object o)=>true; public override int GetHashCode()=>0;}
+ public interface IStyle{
+  StyleLength left{get;set;} StyleLength top{get;set;} StyleLength width{get;set;} StyleLength height{get;set;} StyleLength fontSize{get;set;}
+  StyleLength paddingLeft{get;set;} StyleLength paddingRight{get;set;} StyleLength paddingTop{get;set;} StyleLength paddingBottom{get;set;}
+  StyleLength marginLeft{get;set;} StyleLength marginRight{get;set;} StyleLength marginTop{get;set;} StyleLength marginBottom{get;set;}
+  StyleFloat borderLeftWidth{get;set;} StyleFloat borderRightWidth{get;set;} StyleFloat borderTopWidth{get;set;} StyleFloat borderBottomWidth{get;set;}
+  StyleFloat flexGrow{get;set;} StyleColor color{get;set;} StyleColor backgroundColor{get;set;} StyleBackground backgroundImage{get;set;}
+  StyleInt unitySliceLeft{get;set;} StyleInt unitySliceRight{get;set;} StyleInt unitySliceTop{get;set;} StyleInt unitySliceBottom{get;set;}
+  StyleEnum<DisplayStyle> display{get;set;} StyleEnum<FlexDirection> flexDirection{get;set;} StyleEnum<Wrap> flexWrap{get;set;} StyleEnum<Align> alignItems{get;set;}
+  StyleEnum<Position> position{get;set;} StyleEnum<WhiteSpace> whiteSpace{get;set;} StyleEnum<TextAnchor> unityTextAlign{get;set;} StyleFontDefinition unityFontDefinition{get;set;}}
+ public interface IPanel{VisualElement Pick(Vector2 p);}
+ public abstract class EventBase{} public class PointerEnterEvent:EventBase{} public class PointerLeaveEvent:EventBase{} public class PointerDownEvent:EventBase{} public class PointerUpEvent:EventBase{}
+ public delegate void EventCallback<in T>(T evt);
+ public class VisualElement{public IStyle style=>null; public IPanel panel=>null; public PickingMode pickingMode; public string tooltip; public Rect worldBound=>default;
+  public void Add(VisualElement e){} public void RegisterCallback<T>(EventCallback<T> cb,TrickleDown t=TrickleDown.NoTrickleDown) where T:EventBase{}}
+ public class TextElement:VisualElement{public virtual string text{get;set;}}
+ public class Label:TextElement{public Label(){} public Label(string t){}}
+ public class Button:TextElement{public Button(){} public Button(Action a){} public event Action clicked;}
+ public class PanelSettings:ScriptableObject{public PanelScaleMode scaleMode; public Vector2Int referenceResolution; public PanelScreenMatchMode screenMatchMode; public float match; public float sortingOrder;}
+ public class UIDocument:MonoBehaviour{public PanelSettings panelSettings; public VisualElement rootVisualElement=>null;}
+ public static class RuntimePanelUtils{public static Vector2 ScreenToPanel(IPanel p,Vector2 s)=>s;}
 }

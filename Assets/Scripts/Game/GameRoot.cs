@@ -25,7 +25,7 @@ namespace Thatchwick.Game
     /// (dokununca yürür ya da eşyayı kullanır), otonom bir NPC ve oyun saati HUD'u.
     /// Sahneyi koddan kurar; GameBootstrap oyun başlayınca bunu otomatik oluşturur.
     /// </summary>
-    public sealed partial class GameRoot : MonoBehaviour
+    public sealed partial class GameRoot : MonoBehaviour, IItemViewContext
     {
         private const int MapWidth = Thatchwick.Core.World.Regions.WorldWidth;   // çiftlik (96x72, 64x64 arsa) + köy yolu + şehir (belge 39-40)
         private const int MapHeight = Thatchwick.Core.World.Regions.WorldHeight;
@@ -34,7 +34,6 @@ namespace Thatchwick.Game
         private bool _regional;
         private Thatchwick.Core.World.Region _region;
         private float _fadeUntil;
-        private const float MaxFrameSeconds = 0.1f;
 
         private sealed class Actor
         {
@@ -64,6 +63,8 @@ namespace Thatchwick.Game
             public SpriteRenderer Held;
             public string HeldItem;
             public bool HeldBehind;
+            // Sabit adımlı simülasyon: son iki adımın konumu (karede ara değer).
+            public SmoothPosition Sim;
         }
 
         /// <summary>Elde tutulan nesnenin ikona göre boyu: 32 px ikon yaklaşık 11 px görünür (84 px karakterde).</summary>
@@ -162,7 +163,6 @@ namespace Thatchwick.Game
         private GameClock _clock;
         private ContentDatabase _content;
         private readonly List<Actor> _actors = new List<Actor>();
-        private readonly Dictionary<int, Transform> _itemViews = new Dictionary<int, Transform>();
         private Actor _player;
         private Actor _maud;
         private string _lastFailure;
@@ -173,8 +173,6 @@ namespace Thatchwick.Game
         private WeatherFx _weatherFx;
         private Juice _juice;
         /// <summary>Son kurulumda görünen eşyalar: yeni gelen eşya "pop" ile belirir.</summary>
-        private readonly HashSet<int> _seenItemIds = new HashSet<int>();
-        private bool _seenItemsReady;
         /// <summary>HUD'da yuvarlanarak sayılan akçe ve son değişimin rengi.</summary>
         private float _akceShown = float.NaN;
         private float _akceFlashUntil;
@@ -189,7 +187,6 @@ namespace Thatchwick.Game
         private int _seed;
         private int _rngEpoch;
         // Dünya/harita değişince görünümler aynı karede en çok bir kez yeniden kurulur (LateUpdate).
-        private bool _itemsDirty;
         private bool _floorsDirty;
         private Population _population;
         private AppearanceCatalog _appearanceCatalog;
@@ -318,7 +315,6 @@ namespace Thatchwick.Game
             var game = new FishingGame(fishId, def?.FishDifficulty ?? 30, FishingGame.ParseBehavior(def?.FishBehavior), level, bonus, _rng.Next(), skipWait: jar);
             _fishingView.Start(game, GameLocalization.T(jar ? "ui.fishing.jar_title" : "ui.fishing.title"), def?.DisplayName ?? fishId, done, jar);
         }
-        private bool _buntingShown;
         private FamilyService _family;
         private FamilyPanel _familyPanel;
         private Dynasty _dynasty = new Dynasty();
@@ -380,13 +376,11 @@ namespace Thatchwick.Game
         private PlacementDebugOverlay _placementDebug;            // F3, yalnızca editör ve geliştirme derlemesi (yerleşim sistemi, Aşama A)
         private Thatchwick.Core.Layout.LayoutPlan _layoutPlan;   // şehir planı (arsalar, oda türleri): doğrulayıcı ve debug katmanı
         private Thatchwick.Core.Layout.LayoutCatalog _layouts;   // layouts.json
-        private readonly List<(ItemInstance item, Transform view, SpriteRenderer sr)> _plantViews = new List<(ItemInstance, Transform, SpriteRenderer)>();
-        private readonly List<(ItemInstance item, SpriteRenderer view)> _heatViews = new List<(ItemInstance, SpriteRenderer)>();
+        private ItemViews _items;   // eşya görünümleri (ItemViews.cs)
         private Vector2 _hudScroll;
         private AnimalSystem _animals;
         private RoomMoodSystem _roomMood;
-        private sealed class AnimalView { public Transform T; public SpriteRenderer R; public SpriteRenderer Shadow; public int Dir = IsoArt.DefaultDirection; }
-        private readonly Dictionary<int, AnimalView> _animalViews = new Dictionary<int, AnimalView>();
+        private AnimalViews _animalViews;   // hayvan ve yaban görünümleri (adımda eşitlenir, karede ara değerlenir)
 
         // Etkileşim menüsü (Sims'teki pasta menüsü gibi): eşyaya dokununca seçenekler listelenir.
         // Eşya etkileşimi ya da özel seçenek (hayvan işi, çapalama, çan): Label/Run doluysa özel seçenektir.
@@ -452,11 +446,102 @@ namespace Thatchwick.Game
         private bool _hasSave;
 
         private float HudScale => Mathf.Max(1f, Screen.height / 540f);
-        private Rect HudRect => new Rect(8f, 8f, 340f, _hudExpanded
-            ? Mathf.Min(560f, Screen.height / HudScale - 16f)
-            : (_clock != null && Time.unscaledTime < _messageUntil ? 112f : 88f));
+        private Rect HudRect
+        {
+            get
+            {
+                if (_toolkitHud && _hudBar != null)
+                {
+                    // Küçük HUD UI Toolkit'te; IMGUI yalnızca "Ayrıntı" alanını onun altına çizer.
+                    if (!_hudExpanded) return new Rect(8f, 8f, HudWidth, 0f);
+                    float top = _hudBar.Bottom + 4f;
+                    return new Rect(8f, top, HudWidth, Mathf.Max(60f, Mathf.Min(560f, Screen.height / HudScale - 8f - top)));
+                }
+                return new Rect(8f, 8f, HudWidth, _hudExpanded
+                    ? Mathf.Min(560f, Screen.height / HudScale - 16f)
+                    : (_clock != null && Time.unscaledTime < _messageUntil ? 112f : 88f));
+            }
+        }
 
         private const string AdultPackPref = "pack_adult";
+
+        private void ToggleAdultPack()
+        {
+            if (!AdultPackAvailable) return;
+            bool adult = Thatchwick.Core.Content.ContentPacks.Adult;
+            Thatchwick.Core.Content.ContentPacks.Adult = !adult;
+            PlayerPrefs.SetInt(AdultPackPref, adult ? 0 : 1);
+            PlayerPrefs.Save();
+        }
+
+        // ---------------- UI Toolkit HUD (IMGUI'den geçiş; F4 ile açılır, tercih saklanır) ----------------
+        private const string ToolkitHudPref = "ui.toolkit_hud";
+        private Ui.UiHost _ui;
+        private Ui.HudBar _hudBar;
+        private bool _toolkitHud;
+        private bool _toolkitHudRestored;
+        private const float HudWidth = 340f;
+
+        private void SetToolkitHud(bool on)
+        {
+            if (on && _hudBar == null)
+            {
+                _ui = new Ui.UiHost(transform);
+                if (!_ui.Ready) { _ui.Destroy(); _ui = null; on = false; }
+                else _hudBar = BuildHudBar(_ui);
+            }
+            _toolkitHud = on && _hudBar != null;
+            if (_hudBar != null) _hudBar.Visible = _toolkitHud;
+            PlayerPrefs.SetInt(ToolkitHudPref, _toolkitHud ? 1 : 0);
+        }
+
+        private string HudDateText() => T("ui.hud.date", ("year", _clock.YearIndex + 1), ("season", SeasonName(_clock.Season)),
+            ("day", _clock.DayOfSeason + 1), ("days", _clock.Config.DaysPerSeason));
+
+        private string HudStatusText() => _clock.Paused ? T("ui.hud.paused")
+            : _clock.IsFastNightActive ? T("ui.hud.fast_night", ("mult", GameClock.FastNightMultiplier.ToString("0"))) : null;
+
+        private int HudAkce => float.IsNaN(_akceShown) ? _household.Akce : Mathf.RoundToInt(_akceShown);
+
+        private string HudReputationTip() =>
+            $"{_life.Upbringing.Reputation.Points} · {_life.Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%";
+
+        private Ui.HudBar BuildHudBar(Ui.UiHost host)
+        {
+            var panels = new List<Ui.HudBar.Item>
+            {
+                new Ui.HudBar.Item { Text = () => T("ui.menu.settings"), On = () => _settingsOpen, Click = () => _settingsOpen = !_settingsOpen },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.build"), On = () => _buildMode.Active, Click = ToggleBuild },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.market"), On = () => _marketPanel.Active, Click = ToggleMarket },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.storage"), On = () => _storagePanel.Active, Click = () => _storagePanel.Toggle() },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.mine"), On = () => _minePanel.Active, Click = () => _minePanel.Toggle() },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.family"), On = () => _familyPanel.Active, Click = ToggleFamily },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.village"), On = () => _villagePanel.Active, Click = ToggleVillage },
+                new Ui.HudBar.Item
+                {
+                    Text = () => { int unread = _life.Requests.UnreadCount; return unread > 0 ? T("ui.hud.requests_unread", ("count", unread)) : T("ui.hud.requests"); },
+                    On = () => _requestPanel.Active, Click = ToggleRequests
+                },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.keepsakes"), On = () => _keepsakePanel != null && _keepsakePanel.Active, Click = () => _keepsakePanel?.Toggle(), Visible = () => _keepsakePanel != null },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.home"), On = () => _homePanel != null && _homePanel.Active, Click = () => _homePanel?.Toggle(), Visible = () => _homePanel != null },
+            };
+            var info = new List<Ui.HudBar.Item>
+            {
+                new Ui.HudBar.Item
+                {
+                    Text = () => T("ui.hud.akce", ("amount", HudAkce)), Width = 80f,
+                    Tint = () => Time.unscaledTime < _akceFlashUntil ? (_akceFlashUp ? new Color(0.25f, 0.5f, 0.2f) : new Color(0.7f, 0.2f, 0.15f)) : (Color?)null
+                },
+                new Ui.HudBar.Item { Text = () => T("ui.diamonds.balance", ("count", _account != null ? _account.Diamonds : 0)), Tooltip = () => T("ui.diamonds.tip") },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)), Tooltip = HudReputationTip, Width = 110f },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.labels"), On = () => _labelsAll, Click = () => _labelsAll = !_labelsAll },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.save"), Click = () => SaveNow(quiet: false) },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.adult_pack"), On = () => Thatchwick.Core.Content.ContentPacks.Adult, Click = ToggleAdultPack, Visible = () => AdultPackAvailable },
+                new Ui.HudBar.Item { Text = () => T(_hudExpanded ? "ui.hud.detail_open" : "ui.hud.detail_closed"), On = () => _hudExpanded, Click = () => _hudExpanded = !_hudExpanded },
+            };
+            return new Ui.HudBar(host, HudDateText, HudStatusText, () => Time.unscaledTime < _messageUntil ? _message : null,
+                GameClock.AllowedSpeeds, () => _clock.RequestedSpeed, speed => _clock.SetSpeed(speed), panels, info);
+        }
 
         /// <summary>
         /// +18 paketi bu derlemede var mı (karar 20.11.2026): yalnızca bilgisayar (Steam) derlemesinde; Android ve iOS'ta
@@ -478,6 +563,7 @@ namespace Thatchwick.Game
         {
             // Kare hızı açıkça sabit: mobilde 30 (pil), masaüstünde 60. Oyun hızı kareden bağımsızdır (Time.deltaTime).
             Application.targetFrameRate = Application.isMobilePlatform ? 30 : 60;
+            // +18 paketi yalnızca masaüstünde (Steam) açılabilir; mobilde hiç yoktur (karar 20.11.2026, belge 49).
             Thatchwick.Core.Content.ContentPacks.AdultAllowed = AdultPackAvailable;
             Thatchwick.Core.Content.ContentPacks.Adult = AdultPackAvailable && PlayerPrefs.GetInt(AdultPackPref, 0) == 1;   // +18 paketi (şarap, bahis)
             WaitPendingWrite();   // önceki sahnenin arka plan kaydı bitmeden kayıt okunmasın
@@ -561,11 +647,12 @@ namespace Thatchwick.Game
             if (_regional) { _region = farm; _view.Build(map, new RectInt(farm.X, farm.Y, farm.W, farm.H)); }
             else _view.Build(map);
 
-            RebuildItemViews();
-            _world.Changed += () => _itemsDirty = true;
-            _view.LevelChanged += () => _itemsDirty = true;   // görünen kat değişince eşyalar yeniden kurulur
+            _items = new ItemViews(this, transform);
+            _items.Rebuild();
+            _world.Changed += () => _items.MarkChanged();
+            _view.LevelChanged += MarkAllItemsDirty;   // görünen kat değişince eşyalar yeniden kurulur
             // Duvar değişince kesitte hangi duvarın alçaldığı değişebilir: asılı eşyalar yeniden çizilir (Yukarı'da gerekmez).
-            _world.Map.Changed += () => { if (_walls != null && _walls.Mode != WallMode.Up) _itemsDirty = true; };
+            _world.Map.Changed += () => { if (_walls != null && _walls.Mode != WallMode.Up) MarkAllItemsDirty(); };
 
             foreach (var item in _world.Items)
                 foreach (var tile in item.OccupiedTiles()) _view.ClearTerrainBlock(tile);
@@ -583,7 +670,7 @@ namespace Thatchwick.Game
             wallsGo.transform.SetParent(transform, false);
             _walls = wallsGo.AddComponent<WallView>();
             _walls.Init(map, _view, _content);
-            _walls.ModeChanged += () => _itemsDirty = true;   // Yukarı / Kesit / Aşağı: asılı eşyalar gizlenir ya da görünür
+            _walls.ModeChanged += MarkAllItemsDirty;   // Yukarı / Kesit / Aşağı: asılı eşyalar gizlenir ya da görünür
 
             var cam = Camera.main;
             if (cam == null)
@@ -930,18 +1017,6 @@ namespace Thatchwick.Game
         private const float RegionFadeSeconds = 0.7f;
 
         // Komşu bölgenin eşyaları kenardaki boşluğun üstünde görünmesin: yalnızca etkin bölgenin eşyaları çizilir.
-        private void HideOtherRegions()
-        {
-            if (_region == null) return;
-            // Eşya parçaları, gölgeler, süsler: dünya konumundan karoya çevrilip bölgeye bakılır.
-            foreach (var go in _itemObjects)
-            {
-                if (go == null) continue;
-                var g = Iso.WorldToGrid(go.transform.position, 0);
-                go.SetActive(_region.Contains(new GridPos(Mathf.FloorToInt(g.x), Mathf.FloorToInt(g.y))));
-            }
-        }
-
         private void HideOtherRegionActors()
         {
             if (_region == null) return;
@@ -968,7 +1043,9 @@ namespace Thatchwick.Game
             _walls?.Rebuild();   // duvar ve çatılar yalnızca etkin bölgede çizilir
             _input.SetBounds(Iso.RectBounds(r.X, r.Y, r.W, r.H));
             if (a.View != null) _input.JumpTo(a.View.position);
-            _itemsDirty = true;
+            MarkAllItemsDirty();
+            _items?.ResetPop();   // yeni bölgenin eşyaları "yeni geldi" diye zıplamasın
+            ResetSmoothing();
             _fadeUntil = Time.unscaledTime + RegionFadeSeconds;
             ShowMessage(r.Name);
         }
@@ -983,356 +1060,7 @@ namespace Thatchwick.Game
             _world.PlaceItem(def, pos);
         }
 
-        private static Color ItemColor(string id)
-        {
-            switch (id)
-            {
-                case "item.bed_straw": return new Color(0.75f, 0.6f, 0.35f);
-                case "item.hearth_stone": return new Color(0.85f, 0.35f, 0.2f);
-                case "item.cooking_pot": return new Color(0.55f, 0.55f, 0.6f);
-                case "item.crop_turnip": return new Color(0.45f, 0.7f, 0.35f);
-                case "item.market_stall": return new Color(0.75f, 0.35f, 0.3f);
-                case "item.chopping_block": return new Color(0.48f, 0.38f, 0.28f);
-                case "item.table_wood": return new Color(0.62f, 0.42f, 0.24f);
-                case "item.chair_wood": return new Color(0.7f, 0.5f, 0.3f);
-                case "item.chest_wood": return new Color(0.5f, 0.33f, 0.2f);
-                case "item.shelf_wood": return new Color(0.66f, 0.5f, 0.34f);
-                case "item.candle": return new Color(1f, 0.95f, 0.7f);
-                case "item.flower_pot": return new Color(0.85f, 0.4f, 0.5f);
-                case "item.clay_cup": return new Color(0.8f, 0.5f, 0.35f);
-                default: return new Color(0.6f, 0.45f, 0.3f);
-            }
-        }
 
-        private readonly List<GameObject> _itemObjects = new List<GameObject>();
-
-        // Eşya görünümlerini dünyadan yeniden kurar (yerleştirme/taşıma/satış sonrası). Yer tutucu küpler:
-        // çok karolu eşya karo başına bir küp, dekor küçük küp olarak yuvasında durur.
-        private void RebuildItemViews()
-        {
-            RebuildItemViewsCore();
-            // Yeni gelen eşya (satın alınan, konan, hasatla düşen) kısa bir ezilip esnemeyle belirir.
-            if (_juice != null && _seenItemsReady)
-                foreach (var kv in _itemViews)
-                    if (!_seenItemIds.Contains(kv.Key) && kv.Value != null)
-                    {
-                        _juice.Pop(kv.Value);
-                        _juice.Emit(Juice.Kind.Dust, kv.Value.position, 4, Iso.SortOrder(kv.Value.position.y, 2, 0));
-                    }
-            _seenItemIds.Clear();
-            foreach (var kv in _itemViews) _seenItemIds.Add(kv.Key);
-            _seenItemsReady = true;
-        }
-
-        // Şenlik hazırlığı (27 §9): yaklaşan şenlikte meydanda iki direk arasında renkli bayrak dizisi. Görsel gelene kadar elmaslar.
-        private static readonly Color[] BuntingColors =
-        {
-            new Color(0.78f, 0.22f, 0.18f), new Color(0.9f, 0.75f, 0.25f), new Color(0.22f, 0.4f, 0.7f), new Color(0.35f, 0.6f, 0.3f)
-        };
-
-        private void AddFestiveBunting()
-        {
-            _buntingShown = _life != null && _life.FestivePrep != null;
-            if (!_buntingShown || !_view.IsLevelVisible(0)) return;
-            var sq = Places["square"];
-            var a = Iso.GridToWorld(sq.X - 2.5f, sq.Y + 0.5f, 0) + new Vector3(0f, 1.1f, 0f);
-            var b = Iso.GridToWorld(sq.X + 3.5f, sq.Y + 0.5f, 0) + new Vector3(0f, 1.1f, 0f);
-            const int flags = 11;
-            for (int i = 0; i <= flags; i++)
-            {
-                float t = i / (float)flags;
-                var p = Vector3.Lerp(a, b, t) - new Vector3(0f, 0.35f * Mathf.Sin(t * Mathf.PI), 0f);   // sarkan ip
-                var go = new GameObject("festive_bunting");
-                go.transform.SetParent(transform, false);
-                go.transform.position = p;
-                go.transform.localScale = new Vector3(0.16f, i == 0 || i == flags ? 0.5f : 0.22f, 1f);
-                var sr = go.AddComponent<SpriteRenderer>();
-                sr.sprite = SpriteMaterials.Diamond;
-                sr.sharedMaterial = SpriteMaterials.Unlit;
-                sr.color = i == 0 || i == flags ? new Color(0.45f, 0.32f, 0.2f) : BuntingColors[i % BuntingColors.Length];
-                sr.sortingOrder = Iso.SortOrder(p.y - 1.1f, 3, 0);
-                _itemObjects.Add(go);
-            }
-        }
-
-        private void RebuildItemViewsCore()
-        {
-            foreach (var go in _itemObjects) if (go != null) Destroy(go);
-            _itemObjects.Clear();
-            AddFestiveBunting();
-            _itemViews.Clear();
-            _plantViews.Clear();
-            _heatViews.Clear();
-
-            foreach (var item in _world.Items)
-            {
-                if (!_view.IsLevelVisible(item.Position.Z)) continue;   // görünmeyen katın eşyası çizilmez
-                int level = item.Position.Z;
-                var color = ItemColor(item.Def.Id);
-                if (item.IsWallMounted)
-                {
-                    if (WallItemFacesAway(item) && !WallItemHidden(item)) continue;   // Yukarı'da ön duvarın iç yüzü: duvarın arkasında kalır
-                    if (WallItemHidden(item))
-                    {
-                        // Alçak duvar (Kesit'te ön duvar, Aşağı'da hepsi): eşya havada kalmasın; duvarın tepesinde küçük işaret.
-                        var mark = Iso.WallMountSpan(item.Position, item.Rotation, item.WallSpan, item.WallBand)
-                            - new Vector3(0f, Iso.BandHeight(item.WallBand) - LoweredWallTop, 0f);
-                        var msr = AddItemSprite(item, mark, color, 0.12f * Mathf.Max(1, item.WallSpan), Iso.WallMountOrder(item.Position, item.Rotation) + 1, SpriteMaterials.Diamond);
-                        msr.color = new Color(color.r, color.g, color.b, 0.75f);
-                        continue;
-                    }
-                    // Bantlı duvar (27): alt, orta, üst yükseklik; geniş eşya kenarlarının ortasında, genişliğince büyük.
-                    var wallArt = IsoArt.Item(item, out _);
-                    float wscale = (wallArt != null ? 1f : 0.3f) * (item.WallSpan > 1 && wallArt == null ? item.WallSpan : 1f);
-                    var wsr = AddItemSprite(item, Iso.WallMountSpan(item.Position, item.Rotation, item.WallSpan, item.WallBand), color, wscale,
-                        Iso.WallMountOrder(item.Position, item.Rotation) + item.WallBand, wallArt);
-                    wsr.color = ConditionTint(item, wallArt != null ? Color.white : color);
-                    continue;
-                }
-                if (item.IsCeiling)
-                {
-                    // Duvarlar Aşağı'dayken tavan eşyası da gizlenir (alçak duvarların üstünde havada kalmasın).
-                    if (_walls != null && _walls.Mode == WallMode.Down) continue;
-                    // Tavan ve kiriş (27): karonun ortasında, tavan yüksekliğinde; kat ya da çatı görünürken zaten çizilmez.
-                    var cpos = _view.TileToWorld(item.Position) + new Vector3(0f, Iso.CeilingHeight, 0f);
-                    var ceilArt = IsoArt.Item(item, out _);
-                    var csr = AddItemSprite(item, cpos, color, ceilArt != null ? 1f : 0.3f, Iso.SortOrder(_view.TileToWorld(item.Position).y, 3, level), ceilArt);
-                    csr.color = ConditionTint(item, ceilArt != null ? Color.white : color);
-                    continue;
-                }
-                if (item.IsDecor)
-                {
-                    var parent = _world.GetItem(item.ParentId.Value);
-                    if (parent == null || !parent.TryGetSlotPosition(item.SlotId, out float gx, out float gy)) continue;
-                    if (parent.IsWallMounted)
-                    {
-                        if (WallItemHidden(parent) || WallItemFacesAway(parent)) continue;   // gizli ya da duvar arkasındaki rafın üstündekiler
-                        var onShelf = IsoArt.Item(item, out _);
-                        var dsr = AddItemSprite(item, Iso.GridToWorld(gx, gy, level) + new Vector3(0f, Iso.BandHeight(parent.WallBand) + 0.1f, 0f), color,
-                            onShelf != null ? 1f : 0.25f, Iso.WallMountOrder(parent.Position, parent.Rotation) + parent.WallBand + 1, onShelf);
-                        dsr.color = ConditionTint(item, onShelf != null ? Color.white : color);
-                        continue;
-                    }
-                    if (parent.IsCeiling)
-                    {
-                        if (_walls != null && _walls.Mode == WallMode.Down) continue;
-                        // Kiriş kancasında asılı: kancanın biraz altında.
-                        var onHook = IsoArt.Item(item, out _);
-                        AddItemSprite(item, _view.TileToWorld(parent.Position) + new Vector3(0f, Iso.CeilingHeight - 0.35f, 0f), color,
-                            onHook != null ? 1f : 0.25f, Iso.SortOrder(_view.TileToWorld(parent.Position).y, 4, level), onHook);
-                        continue;
-                    }
-                    // Gerçek masanın üst yüzü yer tutucu küpten biraz yüksek.
-                    float topPx = IsoArt.Item(parent, out _) != null ? 27f : 24f;
-                    var slotDef = parent.Def.FindSlot(item.SlotId);
-                    if (slotDef != null && slotDef.IsCover)
-                    {
-                        // Masa ya da sedir örtüsü (27 D2): eşyanın bütün üstüne serili düz elmaslar, diğer dekorun altında.
-                        var coverColor = ConditionTint(item, color);
-                        // Tek karoluk yüzeyin (kütük sehpa) üstü karodan dar: örtü taşmasın.
-                        float coverScale = parent.Width * parent.Height <= 1 ? 0.62f : 0.95f;
-                        foreach (var t in parent.OccupiedTiles())
-                        {
-                            var cp = _view.TileToWorld(t) + new Vector3(0f, topPx / 32f - 0.02f, 0f);
-                            var csr2 = AddItemSprite(item, cp, coverColor, coverScale, Iso.SortOrder(_view.TileToWorld(t).y, 0, level) + 1, SpriteMaterials.Diamond);
-                            csr2.color = coverColor;
-                        }
-                        continue;
-                    }
-                    var pos = Iso.GridToWorld(gx, gy, level) + new Vector3(0f, topPx / 32f, 0f);
-                    var decorArt = IsoArt.Item(item, out _);
-                    var dsr2 = AddItemSprite(item, pos, color, decorArt != null ? 1f : 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy, level).y, 0, level) + 2, decorArt);
-                    if (item.Def.IsFillDecor) dsr2.color = FillTint(item, decorArt != null ? Color.white : color);
-                    continue;
-                }
-                if (item.IsRug)
-                {
-                    // Halı: yere serili düz elmaslar (zeminin hemen üstünde, eşyaların altında). Halılar üst üste serilir (27):
-                    // karodaki sırası çizim sırasını belirler. Döküntü yığını küçük, koyu bir leke.
-                    bool debris = item.Def.Id == Thatchwick.Core.Content.Decor.Debris;
-                    bool rugFlip = false;
-                    var rugArt = debris ? null : IsoArt.Item(item, out rugFlip);
-                    if (rugArt != null)
-                    {
-                        // Gerçek halı görseli (390): tek düz görsel, ayak izinin merkezinde; sırası en alttaki karoya göre.
-                        var rc = Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, level);
-                        int rugRank = 0;
-                        foreach (var tile in item.OccupiedTiles()) rugRank = Mathf.Max(rugRank, _world.RugsAt(tile).IndexOf(item));
-                        var rart = AddItemSprite(item, rc, Color.white, 1f, -9990 + Mathf.Clamp(rugRank, 0, 9) + level * Iso.LevelSortStep, rugArt);
-                        rart.color = ConditionTint(item, FinishTint(item, Color.white, 0.45f));
-                        rart.flipX = rugFlip;
-                        AddPatternOverlay(item, rc, -9990 + Mathf.Clamp(rugRank, 0, 9) + level * Iso.LevelSortStep);   // işlenmiş desen (belge 45)
-                        continue;
-                    }
-                    var rugColor = debris ? new Color(0.35f, 0.27f, 0.2f) : ConditionTint(item, FinishTint(item, ItemColor(item.Def.Id), 1f));
-                    foreach (var tile in item.OccupiedTiles())
-                    {
-                        int rank = _world.RugsAt(tile).IndexOf(item);
-                        var rsr = AddItemSprite(item, _view.TileToWorld(tile), rugColor, debris ? 0.55f : 0.92f,
-                            -9990 + Mathf.Clamp(rank, 0, 9) + level * Iso.LevelSortStep, SpriteMaterials.Diamond);
-                        rsr.color = rugColor;
-                    }
-                    continue;
-                }
-                if (Thatchwick.Core.Life.GreatTrees.IsGreatTree(item.Def)) { AddGreatTree(item, level); continue; }   // belge 52
-                bool flip = false;
-                var art = item.IsPlant ? null : IsoArt.Item(item, out flip);
-                if (art != null)
-                {
-                    // Tek görsel, ayak izinin merkezinde (pivot = taban elmasının merkezi).
-                    var center = Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, level);
-                    var sr = AddItemSprite(item, center, Color.white, 1f, Iso.SortOrder(center.y, 0, level), art);
-                    AddItemShadow(item, center, level);
-                    sr.color = ConditionTint(item, FinishTint(item, Color.white, 0.45f));   // kaplama: gerçek görsel gelene kadar hafif renk
-                    sr.flipX = flip;
-                    AddAccentOverlay(item, sr, center, level);                         // ikinci renk: korkuluk, minder, kulp (belge 45)
-                    if (item.Def.HeatOutput > 0f) _heatViews.Add((item, sr));
-                    continue;
-                }
-                if (item.IsPlant)
-                {
-                    var pos = _view.TileToWorld(item.Position);
-                    var plantArt = IsoArt.Plant(item, out bool staged);
-                    var psr = AddItemSprite(item, pos, plantArt != null ? Color.white : color, ViewScale(item, staged), Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
-                    var sway = SpriteMaterials.Sway;   // rüzgârda sallanma (vertex shader; yoksa düz)
-                    if (sway != null) psr.sharedMaterial = sway;
-                    // Ağaç gölgesi: ışık sol üstten, gölge taç boyunca sağ alta uzanır; büyüdükçe büyür.
-                    AddShadowObject(pos + new Vector3(0.18f, -0.06f, 0f) * PlantScale(item), 0.95f * PlantScale(item), level);
-                    _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform, psr));
-                    continue;
-                }
-                var tinted = FinishTint(item, color, 1f);
-                AddItemShadow(item, Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, level), level);
-                foreach (var tile in item.OccupiedTiles())
-                {
-                    var pos = _view.TileToWorld(tile);
-                    AddItemSprite(item, pos, tinted, 1f, Iso.SortOrder(pos.y, 0, level));
-                }
-            }
-        }
-
-        // Hasarlı eşya koyu ve soluk, onarılmış hafif soluk, kararmış ayna gri (27-ev-dekorasyonu).
-        /// <summary>Kesit modunda alçak duvarın tepesi (dünya birimi; SpriteMaterials.LowWallHeightPx / 32).</summary>
-        private const float LoweredWallTop = 0.34f;
-
-        // Duvar eşyası alçak duvarda mı (gizlenir): geniş eşyanın herhangi bir kenarı alçaksa hepsi.
-        private bool WallItemHidden(ItemInstance item)
-        {
-            if (_walls == null || !item.IsWallMounted) return false;
-            foreach (var seg in item.WallSegments()) if (_walls.IsLowered(seg.edge)) return true;
-            return false;
-        }
-
-        // Duvar eşyası kameraya bakmayan yüzde mi (ön duvarın oda içi yüzü): Yukarı modunda duvarın arkasında kalır, çizilmez.
-        // Kameraya bakan yüz kenarın A yüzüdür (WallView); eşya karosu B yüzündeyse arkaya bakar.
-        private static bool WallItemFacesAway(ItemInstance item)
-        {
-            if (!item.IsWallMounted) return false;
-            foreach (var seg in item.WallSegments()) if (seg.tile == seg.edge.SideB) return true;
-            return false;
-        }
-
-        // Doldurulan dekor (27 D2): boşken soluk, bayatta kahverengimsi, çürükte yeşilimsi (görsel gelene kadar).
-        private Color FillTint(ItemInstance item, Color baseColor)
-        {
-            var c = ConditionTint(item, baseColor);
-            if (!item.HasContents) return Color.Lerp(c, new Color(0.55f, 0.5f, 0.45f), 0.45f);
-            int f = Thatchwick.Core.Build.DecorSystem.WorstFreshness(item, _content);
-            if (f == Thatchwick.Core.Content.Decor.Rotten) return Color.Lerp(c, new Color(0.35f, 0.45f, 0.2f), 0.6f);
-            if (f == Thatchwick.Core.Content.Decor.Stale) return Color.Lerp(c, new Color(0.55f, 0.42f, 0.28f), 0.3f);
-            return c;
-        }
-
-        private Color ConditionTint(ItemInstance item, Color baseColor)
-        {
-            var c = baseColor;
-            if (item.Condition == Thatchwick.Core.Content.ItemCondition.Damaged) c = Color.Lerp(c, new Color(0.35f, 0.3f, 0.28f), 0.55f);
-            else if (item.Condition == Thatchwick.Core.Content.ItemCondition.Repaired) c = Color.Lerp(c, new Color(0.7f, 0.65f, 0.6f), 0.2f);
-            if (item.IsTarnished) c = Color.Lerp(c, new Color(0.4f, 0.42f, 0.38f), 0.5f);
-            if (_clock != null && Thatchwick.Core.Build.DecorSystem.IsWilted(item, _clock.Season))
-                c = Color.Lerp(c, new Color(0.5f, 0.38f, 0.22f), 0.55f);    // solmuş mevsim süsü (D3b): kurumuş kahverengi
-            var home = _life?.Home;
-            if (home != null)
-            {
-                if (home.PotWilted(item)) c = Color.Lerp(c, new Color(0.55f, 0.45f, 0.25f), 0.5f);          // solmuş saksı
-                if (item.BurntOut) c = Color.Lerp(c, new Color(0.45f, 0.42f, 0.4f), 0.35f);                // bitmiş mum
-                if (home.IsStrewnStale(item)) c = Color.Lerp(c, new Color(0.55f, 0.5f, 0.38f), 0.3f);       // bayat ot serpmesi
-                else if (home.IsStrewnFresh(item)) c = Color.Lerp(c, new Color(0.75f, 0.9f, 0.6f), 0.2f);  // taze ot
-                if (item.Def.IsVivarium)   // cam bahçe dünyada zeminine göre renk alır (içi yakın görünümde, belge 47)
-                {
-                    var viv = home.VivOf(item);
-                    if (viv?.Habitat != null)
-                    {
-                        var hc = viv.Habitat == HomeLife.Salt ? new Color(0.45f, 0.65f, 0.75f) : viv.Habitat == HomeLife.Fresh ? new Color(0.5f, 0.7f, 0.55f)
-                               : viv.Habitat == HomeLife.Dry ? new Color(0.9f, 0.8f, 0.6f) : new Color(0.45f, 0.65f, 0.4f);
-                        c = Color.Lerp(c, hc, viv.Entries.Count > 0 ? 0.3f : 0.15f);
-                    }
-                }
-            }
-            return c;
-        }
-
-        // İkinci renk (belge 45 §10): eşyanın "_accent" maske görseli varsa ikinci kaplamanın rengiyle üstüne çizilir.
-        // Maske yoksa (görsel işi bekliyor) ikinci renk yalnızca kartta görünür.
-        private void AddAccentOverlay(ItemInstance item, SpriteRenderer body, Vector3 center, int level)
-        {
-            if (string.IsNullOrEmpty(item.Def.AccentGroup)) return;
-            var mask = IsoArt.ItemAccent(item);
-            if (mask == null) return;
-            BuildPartDef part = null;
-            if (item.AccentId != null) _content.Parts.TryGet(item.AccentId, out part);
-            else foreach (var p in BuildParts.AccentsFor(_content, item.Def)) if (p.IsDefault) { part = p; break; }
-            if (part == null) return;
-            var asr = AddItemSprite(item, center, Color.white, 1f, body.sortingOrder + 1, mask);
-            asr.color = SpriteMaterials.PartColor(part, Color.white);
-            asr.flipX = body.flipX;
-        }
-
-        // İşlenmiş desen (belge 45 §8): halının üstüne 8x8 desen, yere serili elmas olarak (yarı saydam).
-        private readonly System.Collections.Generic.Dictionary<string, Sprite> _patternSprites = new System.Collections.Generic.Dictionary<string, Sprite>();
-        private void AddPatternOverlay(ItemInstance item, Vector3 center, int order)
-        {
-            var pat = _life?.Home?.PatternOn(item);
-            if (pat == null) return;
-            if (!_patternSprites.TryGetValue(pat.Cells, out var sprite) || sprite == null)
-            {
-                var tex = new Texture2D(8, 8) { filterMode = FilterMode.Point };
-                for (int y = 0; y < 8; y++)
-                    for (int x = 0; x < 8; x++)
-                    {
-                        int idx = Mathf.Clamp(pat.Cells[(7 - y) * 8 + x] - '0', 0, HomeLife.Palette.Length - 1);
-                        var col = HomePanel.Hex(HomeLife.Palette[idx].Hex);
-                        col.a = 0.8f;
-                        tex.SetPixel(x, y, col);
-                    }
-                tex.Apply();
-                sprite = Sprite.Create(tex, new Rect(0, 0, 8, 8), new Vector2(0.5f, 0.5f), 8f);
-                _patternSprites[pat.Cells] = sprite;
-            }
-            // Kare deseni izometrik elmasa çevir: 45° döndür, dikeyde yarıya bastır (üst nesne ölçeği).
-            var holder = new GameObject(item.Def.Id + "_desen");
-            holder.transform.SetParent(transform, false);
-            holder.transform.position = center + new Vector3(0f, 0f, -0.001f);   // halının hemen önünde
-            float span = Mathf.Min(item.Width, item.Height) * 0.62f;
-            holder.transform.localScale = new Vector3(1f, 0.5f, 1f);
-            var child = new GameObject("desen");
-            child.transform.SetParent(holder.transform, false);
-            child.transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
-            child.transform.localScale = new Vector3(span * 1.41f, span * 1.41f, 1f);
-            var sr = child.AddComponent<SpriteRenderer>();
-            sr.sprite = sprite;
-            sr.sharedMaterial = SpriteMaterials.Unlit;
-            sr.sortingOrder = order;
-            _itemObjects.Add(holder);
-        }
-
-        // Mobilya kaplamasının rengi (amount: 1 = tam kaplama rengi, küçük = beyaza karışık); kaplama yoksa baseColor.
-        private Color FinishTint(ItemInstance item, Color baseColor, float amount)
-        {
-            if (item.FinishId == null || !_content.Parts.TryGet(item.FinishId, out var part)) return baseColor;
-            var c = SpriteMaterials.PartColor(part, baseColor);
-            return amount >= 1f ? c : Color.Lerp(Color.white, c, amount);
-        }
 
         // Bitki etiketi: büyüme yüzdesi, ekinde sulu/susuz, meyve ağacında meyve durumu.
         private string PlantLabel(ItemInstance item)
@@ -1348,60 +1076,23 @@ namespace Thatchwick.Game
             return $"{name} (%{item.GrowthFraction * 100f:0}{extra})";
         }
 
-        private static float PlantScale(ItemInstance item) => 0.3f + 0.7f * item.GrowthFraction;
 
-        /// <summary>
-        /// Görünüm ölçeği: evre görseli varsa (genç ağaç, ekin evresi) küçültme yalnızca evre içinde hafif;
-        /// olgun görsel tek başınaysa büyüme oranıyla küçülür.
-        /// </summary>
-        private static float ViewScale(ItemInstance item, bool staged)
-        {
-            if (!staged) return PlantScale(item);
-            if (item.Def.IsCrop || item.IsGrown) return 1f;
-            return 0.75f + 0.25f * item.GrowthFraction;   // genç ağaç görseli fidandan ağaca büyür
-        }
+        private static int ShadowOrder(int level) => Shadows.Order(level);
+        private static SpriteRenderer NewShadow(Transform parent, Vector3 local, float size) => Shadows.Attach(parent, local, size);
 
-        // ---------------- gölgeler (görsel analiz, 18.11.2026) ----------------
+        /// <summary>Bütün (etkin bölgenin) eşya görünümleri bir sonraki LateUpdate'te baştan kurulur.</summary>
+        private void MarkAllItemsDirty() => _items?.MarkAll();
 
-        /// <summary>Gölgenin saydamlığı. Gölgeler zeminin ve halıların üstünde, eşyaların altında çizilir.</summary>
-        private const float ShadowAlpha = 0.26f;
-        private static int ShadowOrder(int level) => -9980 + level * Iso.LevelSortStep;
-
-        /// <summary>Karakter ve hayvanın altındaki gölge: onunla birlikte hareket eden çocuk nesne.</summary>
-        private static SpriteRenderer NewShadow(Transform parent, Vector3 local, float size)
-        {
-            var go = new GameObject("Shadow");
-            go.transform.SetParent(parent, false);
-            go.transform.localPosition = local;
-            go.transform.localScale = new Vector3(size, size, 1f);
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = SpriteMaterials.Shadow;
-            sr.sharedMaterial = SpriteMaterials.Unlit;
-            sr.color = new Color(0f, 0f, 0f, ShadowAlpha);
-            sr.sortingOrder = ShadowOrder(0);
-            return sr;
-        }
-
-        /// <summary>Eşyanın ayak izi kadar gölge (halılar ayrı çizilir, gölgesizdir).</summary>
-        private void AddItemShadow(ItemInstance item, Vector3 footprintCenter, int level)
-        {
-            float size = (item.Width + item.Height) * 0.5f * 0.92f;
-            AddShadowObject(footprintCenter + new Vector3(0.08f, -0.04f, 0f), size, level);
-        }
-
-        private void AddShadowObject(Vector3 pos, float size, int level)
-        {
-            var go = new GameObject("Shadow");
-            go.transform.SetParent(transform, false);
-            go.transform.position = pos;
-            go.transform.localScale = new Vector3(size, size, 1f);
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = SpriteMaterials.Shadow;
-            sr.sharedMaterial = SpriteMaterials.Unlit;
-            sr.color = new Color(0f, 0f, 0f, ShadowAlpha);
-            sr.sortingOrder = ShadowOrder(level);
-            _itemObjects.Add(go);
-        }
+        // ---- IItemViewContext ----
+        WorldState IItemViewContext.World => _world;
+        WorldView IItemViewContext.View => _view;
+        WallView IItemViewContext.Walls => _walls;
+        LifeSystems IItemViewContext.Life => _life;
+        ContentDatabase IItemViewContext.Content => _content;
+        GameClock IItemViewContext.Clock => _clock;
+        Juice IItemViewContext.Juice => _juice;
+        Region IItemViewContext.Region => _region;
+        GridPos IItemViewContext.SquarePlace => Places["square"];
 
         // ---------------- gün ışığı ----------------
 
@@ -1421,11 +1112,15 @@ namespace Thatchwick.Game
             _lights.Clear();
             if (_ambience.Night > 0.02f || _ambienceSnap)
             {
-                foreach (var item in _world.Items)
+                // Yalnızca kurulu (etkin bölgedeki, görünen kattaki) eşyalar: bütün dünya her karede taranmaz.
+                foreach (var kv in _items.Views)
                 {
+                    var item = _world.GetItem(kv.Key);
+                    var t = kv.Value;
+                    if (item == null || t == null) continue;
                     bool fire = item.Def.HeatOutput > 0f;
                     if (fire ? !item.IsLit : !LightItemIds.Contains(item.Def.Id)) continue;
-                    if (!_view.IsLevelVisible(item.Position.Z) || !_itemViews.TryGetValue(item.Id, out var t) || t == null) continue;
+                    if (!_view.IsLevelVisible(item.Position.Z)) continue;
                     _lights.Add(new Ambience.LightSource
                     {
                         Position = t.position + new Vector3(0f, fire ? 0.1f : 0.25f, 0f),
@@ -1439,20 +1134,6 @@ namespace Thatchwick.Game
             _ambienceSnap = false;
         }
 
-        private SpriteRenderer AddItemSprite(ItemInstance item, Vector3 pos, Color color, float scale, int order, Sprite sprite = null)
-        {
-            var go = new GameObject(item.Def.Id);
-            go.transform.SetParent(transform, false);
-            go.transform.position = pos;
-            go.transform.localScale = new Vector3(scale, scale, 1f);
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = sprite != null ? sprite : SpriteMaterials.Cube(color);
-            sr.sharedMaterial = SpriteMaterials.Unlit;
-            sr.sortingOrder = order;
-            _itemObjects.Add(go);
-            if (!_itemViews.ContainsKey(item.Id)) _itemViews[item.Id] = go.transform;
-            return sr;
-        }
 
         // En yakın yürünebilir karo; tercihen meydana yürüyerek ulaşılabilen (eşyaların arasına kapanmış bir cep değil).
         private GridPos NearestWalkable(GridPos near, int maxRadius = 4)
@@ -1903,6 +1584,7 @@ namespace Thatchwick.Game
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
             if (_dynastyEnded) return true;
             if (_menuOpen && _menuRect.Contains(guiPos)) return true;
+            if (_toolkitHud && _ui != null && _ui.IsPointerOver(screenPos)) return true;
             return HudRect.Contains(guiPos);
         }
 
@@ -2095,7 +1777,7 @@ namespace Thatchwick.Game
             IsoArt.Enabled = !IsoArt.Enabled;
             _view.RefreshFloors();
             _walls.Rebuild();
-            RebuildItemViews();
+            _items.Rebuild();
             foreach (var a in _actors) a.LastSprite = null;
             ShowMessage(IsoArt.Enabled ? $"Gerçek görseller ({IsoArt.TextureCount} dosya)" : "Yer tutucu çizimler");
         }
@@ -2531,8 +2213,8 @@ namespace Thatchwick.Game
             _world.Map.WearMultiplier = RoadWear();
             _life.NewDay += day =>
             {
-                if (day % _clock.Config.DaysPerSeason == 0) _itemsDirty = true;   // mevsim döndü: solan mevsim süsleri yeniden boyanır (D3b)
-                if ((_life.FestivePrep != null) != _buntingShown) _itemsDirty = true;   // şenlik yaklaştı ya da geçti: meydan bayrakları
+                if (day % _clock.Config.DaysPerSeason == 0) MarkAllItemsDirty();   // mevsim döndü: solan mevsim süsleri yeniden boyanır (D3b)
+                if ((_life.FestivePrep != null) != _items.BuntingShown) MarkAllItemsDirty();   // şenlik yaklaştı ya da geçti: meydan bayrakları
                 _world.Map.OnNewDayRoads();                                   // kullanılmayan patika çimlenir
                 _world.Map.WearMultiplier = RoadWear();                        // çamurlu günde çok, taş ustası varken az aşınır
                 _plants.Config.FallowRecovery = (float)(0.02 * SkillNames.Factor(_life.BestSkill(SkillType.SoilCare), 0.1));   // toprak bakımı
@@ -2800,148 +2482,12 @@ namespace Thatchwick.Game
                 });
         }
 
-        private sealed class WildView { public Transform T; public SpriteRenderer R; public int Dir = IsoArt.DefaultDirection; }
-        private readonly Dictionary<int, WildView> _wildViews = new Dictionary<int, WildView>();
-
-        // Yaban ziyaretçileri: görseli gelene kadar renkli yer tutucu küp.
-        private void UpdateWildViews()
-        {
-            var roam = _life?.Roamers;
-            if (roam == null) return;
-            var alive = new HashSet<int>();
-            foreach (var v in roam.Visitors)
-            {
-                alive.Add(v.Id);
-                if (!_wildViews.TryGetValue(v.Id, out var w))
-                {
-                    var go = new GameObject(v.Species.Name);
-                    go.transform.SetParent(transform, false);
-                    w = new WildView { T = go.transform, R = go.AddComponent<SpriteRenderer>() };
-                    w.R.sharedMaterial = SpriteMaterials.Unlit;
-                    _wildViews[v.Id] = w;
-                }
-                Vector3 pos = _view.TileToWorld(v.Position);
-                if (v.NextTile.HasValue)
-                {
-                    var to = _view.TileToWorld(v.NextTile.Value);
-                    w.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
-                    pos = Vector3.Lerp(pos, to, (float)v.StepProgress);
-                }
-                w.T.position = pos;
-                w.R.enabled = _view.IsLevelVisible(v.Position.Z);
-                var real = IsoArt.Animal(v.Species.Id, w.Dir);
-                float scale = v.Young ? 0.7f : 1f;
-                if (real != null) w.R.sprite = real;
-                else { w.R.sprite = SpriteMaterials.Cube(AnimalColor(v.Species.Id)); scale *= AnimalScale(v.Species.Id); }
-                w.T.localScale = new Vector3(scale, scale, 1f);
-                w.R.sortingOrder = Iso.SortOrder(pos.y, 1, v.Position.Z);
-            }
-            var gone = new List<int>();
-            foreach (var kv in _wildViews) if (!alive.Contains(kv.Key)) gone.Add(kv.Key);
-            foreach (var id in gone) { if (_wildViews[id].T != null) Destroy(_wildViews[id].T.gameObject); _wildViews.Remove(id); }
-        }
-
         private void OnAnimalDied(Animal a)
         {
             ShowMessage(a.CauseOfDeath == AnimalDeath.Starvation ? $"{a.Name} açlıktan öldü (barınağa yem koy)"
                 : a.CauseOfDeath == AnimalDeath.Sickness ? $"{a.Name} hastalıktan öldü (merhem sürülmedi)"
                 : $"{a.Name} yaşlılıktan öldü");
             foreach (var c in _population.Members) if (!c.IsVillager) c.AddMoodlet(MoodCatalog.AnimalDied);
-        }
-
-        private static Color AnimalColor(string id)
-        {
-            switch (id)
-            {
-                case "animal.chicken": return new Color(0.95f, 0.92f, 0.85f);
-                case "animal.duck": return new Color(0.55f, 0.7f, 0.45f);
-                case "animal.goat": return new Color(0.75f, 0.68f, 0.55f);
-                case "animal.sheep": return new Color(0.92f, 0.9f, 0.86f);
-                case "animal.cow": return new Color(0.55f, 0.4f, 0.3f);
-                case "animal.ox": return new Color(0.42f, 0.32f, 0.25f);
-                case "wild.rabbit": case "wild.squirrel": case "wild.roe_deer": return new Color(0.6f, 0.45f, 0.3f);
-                case "wild.fox": return new Color(0.85f, 0.45f, 0.15f);
-                case "wild.boar": case "wild.hedgehog": case "wild.rat": return new Color(0.35f, 0.3f, 0.27f);
-                case "wild.crow": case "wild.owl": case "wild.sparrow": case "wild.stork": return new Color(0.2f, 0.2f, 0.22f);
-                case "wild.frog": return new Color(0.4f, 0.6f, 0.3f);
-                case "wild.butterfly": return new Color(0.95f, 0.85f, 0.3f);
-                case "wild.firefly": return new Color(1f, 1f, 0.5f);
-                case "animal.horse": return new Color(0.45f, 0.3f, 0.2f);
-                case "animal.donkey": case "animal.mule": case "animal.hinny": return new Color(0.55f, 0.5f, 0.45f);
-                case "animal.goose": return new Color(0.93f, 0.93f, 0.9f);
-                case "animal.rabbit": return new Color(0.58f, 0.5f, 0.42f);
-                case "animal.pigeon": return new Color(0.55f, 0.57f, 0.62f);
-                case "animal.dog": return new Color(0.6f, 0.45f, 0.3f);
-                case "animal.cat": return new Color(0.85f, 0.55f, 0.25f);
-                default: return new Color(0.95f, 0.8f, 0.2f);
-            }
-        }
-
-        private static float AnimalScale(string id)
-        {
-            switch (id)
-            {
-                case "animal.chicken": case "animal.duck": case "animal.bees": return 0.22f;
-                case "animal.cat": return 0.26f;
-                case "animal.dog": return 0.3f;
-                case "animal.cow": case "animal.ox": return 0.5f;
-                case "wild.butterfly": case "wild.firefly": case "wild.sparrow": case "wild.frog": return 0.12f;
-                case "wild.rabbit": case "wild.squirrel": case "wild.hedgehog": case "wild.rat": case "wild.crow": return 0.18f;
-                case "wild.owl": case "wild.fox": case "wild.stork": return 0.26f;
-                case "wild.roe_deer": case "wild.boar": return 0.38f;
-                case "animal.horse": return 0.55f;
-                default: return 0.4f;
-            }
-        }
-
-        // Hayvan görünümleri: canlı hayvanlarla eşitlenir, yürüyüş ara değerlenir.
-        private void UpdateAnimalViews()
-        {
-            var alive = new HashSet<int>();
-            foreach (var a in _animals.Animals)
-            {
-                alive.Add(a.Id);
-                if (!_animalViews.TryGetValue(a.Id, out var v))
-                {
-                    var go = new GameObject(a.Name);
-                    go.transform.SetParent(transform, false);
-                    v = new AnimalView { T = go.transform, R = go.AddComponent<SpriteRenderer>() };
-                    v.R.sharedMaterial = SpriteMaterials.Unlit;
-                    v.Shadow = NewShadow(go.transform, new Vector3(0.06f, -0.03f, 0f), 0.6f);
-                    _animalViews[a.Id] = v;
-                }
-                Vector3 pos = _view.TileToWorld(a.Position);
-                var rider = a.RiderId != 0 ? _actors.Find(x => x.Character.Id == a.RiderId) : null;
-                if (rider != null && rider.View != null) pos = rider.View.position - new Vector3(0f, 0.02f, 0f);   // binicinin altında, onunla birlikte
-                else if (a.NextTile.HasValue)
-                {
-                    var to = _view.TileToWorld(a.NextTile.Value);
-                    v.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
-                    pos = Vector3.Lerp(pos, to, a.StepProgress);
-                }
-                v.T.position = pos;
-                v.R.enabled = _view.IsLevelVisible(a.Position.Z);
-                // Genetik (belge 48): tipin gövdesi + genden renk; gövde görseli yoksa türün görseli, o da yoksa genden renkli küp.
-                var look = LookOf(a);
-                Sprite real = look != null && look.Layers.Count > 0 ? IsoArt.AnimalBody(look.Layers[0], look.LongCoat, v.Dir) : null;
-                Color tint = Color.white;
-                if (real != null && look.TintHex != null && ColorUtility.TryParseHtmlString(look.TintHex, out var gene)) tint = Color.Lerp(Color.white, gene, 0.8f);
-                if (real == null) real = IsoArt.Animal(a.Species.Id, v.Dir);
-                float scale = a.IsMature ? 1f : 0.7f;
-                if (real != null) { v.R.sprite = real; v.R.color = tint; }
-                else
-                {
-                    Color cube = AnimalColor(a.Species.Id);
-                    if (look?.TintHex != null && ColorUtility.TryParseHtmlString(look.TintHex, out var gc)) cube = gc;
-                    v.R.sprite = SpriteMaterials.Cube(cube); v.R.color = Color.white; scale *= AnimalScale(a.Species.Id);
-                }
-                v.T.localScale = new Vector3(scale, scale, 1f);
-                v.R.sortingOrder = Iso.SortOrder(pos.y, 1, a.Position.Z);
-                if (v.Shadow != null) { v.Shadow.enabled = v.R.enabled && rider == null; v.Shadow.sortingOrder = ShadowOrder(a.Position.Z); }
-            }
-            var gone = new List<int>();
-            foreach (var kv in _animalViews) if (!alive.Contains(kv.Key)) gone.Add(kv.Key);
-            foreach (var id in gone) { if (_animalViews[id].T != null) Destroy(_animalViews[id].T.gameObject); _animalViews.Remove(id); }
         }
 
         // Play modundayken kod yeniden derlenirse (ör. git pull) private alanlar sıfırlanır
@@ -2965,6 +2511,12 @@ namespace Thatchwick.Game
                 return; // yaratma ekranı açıkken oyun saati ilerlemez
             }
 
+            if (!_toolkitHudRestored)
+            {
+                // Tercih: yeni HUD en son açık bırakıldıysa (F4) yine açılır. Yaratma ekranı bittikten sonra kurulur.
+                _toolkitHudRestored = true;
+                if (PlayerPrefs.GetInt(ToolkitHudPref, 0) == 1) SetToolkitHud(true);
+            }
             var kb = UnityEngine.InputSystem.Keyboard.current;
             if (kb != null && kb.bKey.wasPressedThisFrame) ToggleBuild();
             if (kb != null && kb.f3Key.wasPressedThisFrame && PlacementDebugOverlay.Allowed)
@@ -2972,6 +2524,12 @@ namespace Thatchwick.Game
                 if (_placementDebug == null) _placementDebug = new PlacementDebugOverlay(transform);
                 _placementDebug.Toggle();
             }
+            if (kb != null && kb.f4Key.wasPressedThisFrame)
+            {
+                SetToolkitHud(!_toolkitHud);
+                ShowMessage(T(_toolkitHud ? "ui.hud.toolkit_on" : "ui.hud.toolkit_off"));
+            }
+            if (_toolkitHud) _hudBar.Refresh();
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
             if (kb != null && kb.gKey.wasPressedThisFrame) ToggleArt();
@@ -2996,17 +2554,24 @@ namespace Thatchwick.Game
             // Canlı modda görünen kat, komut alan kişinin bulunduğu kata uyar; yapı modunda oyuncu seçer.
             if (_buildMode != null && !_buildMode.Active && Commander != null) _view.ViewLevel = Commander.Character.Position.Z;
 
-            float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
-
             // Belge 47: yapı modu, katalog ve menüler açıkken zaman durur; hanede uyanık kimse yokken gece ×4 akar.
             _clock.Paused = MenuOpen();
             _clock.FastNight = HouseholdAsleep();
 
-            // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
-            double gameDays = _clock.Advance(dt);
-            if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true, background: true); }
-            Simulate(gameDays);
+            // Sabit adımlı simülasyon (performans incelemesi 20.11.2026): mantık saniyede 10 adım işler, kare hızından
+            // bağımsızdır; görünüm iki adım arasını ara değerler. Hız çarpanı GameClock'ta uygulanır.
+            int steps = _stepper.Accumulate(Time.deltaTime);
+            for (int i = 0; i < steps; i++)
+            {
+                double gameDays = _clock.Advance(_stepper.StepSeconds);
+                if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true, background: true); }
+                SimulateTick(gameDays);
+                if (!enabled || _creator != null) break;   // adım içinde oyun yeniden kuruldu (yeni oyun, yükleme)
+            }
+            RenderFrame(_stepper.Alpha);
         }
+
+        private readonly Thatchwick.Core.Time.FixedStepper _stepper = new Thatchwick.Core.Time.FixedStepper();
 
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
@@ -3037,7 +2602,7 @@ namespace Thatchwick.Game
             if (_view == null || _world == null) return;
             if (_regional) UpdateRegion();
             if (_floorsDirty) { _floorsDirty = false; _view.RefreshFloors(); }
-            if (_itemsDirty) { _itemsDirty = false; RebuildItemViews(); if (_regional) HideOtherRegions(); if (_placementDebug != null) _placementDebug.Dirty = true; }
+            if (_items != null && _items.Apply() && _placementDebug != null) _placementDebug.Dirty = true;
             if (_placementDebug != null && _placementDebug.Visible && _placementDebug.Dirty)
                 _placementDebug.Rebuild(_world, _layoutPlan, _region != null ? new RectInt(_region.X, _region.Y, _region.W, _region.H) : (RectInt?)null,
                     _view.ViewLevel, (_selected ?? _player)?.Character?.Position);
@@ -3066,7 +2631,7 @@ namespace Thatchwick.Game
             Shader.SetGlobalFloat("_TwWind", building ? 0f : wind);
 
             // Yanan ocak: duman yükselir, arada kıvılcım. Yağmurda duman daha sık (ıslak odun).
-            foreach (var (heatItem, heatView) in _heatViews)
+            foreach (var (heatItem, heatView) in _items.Heat.Values)
             {
                 if (heatView == null || !heatItem.IsLit) continue;
                 var top = heatView.transform.position + new Vector3(0f, 0.55f, 0f);
@@ -3083,10 +2648,11 @@ namespace Thatchwick.Game
                 _juice.LeafColor = _clock.Season == Season.Autumn
                     ? (Random01() < 0.5f ? new Color(0.84f, 0.5f, 0.18f, 1f) : new Color(0.72f, 0.32f, 0.14f, 1f))
                     : new Color(0.42f, 0.6f, 0.26f, 1f);
-                foreach (var (plant, view, _) in _plantViews)
+                foreach (var pv in _items.Plants.Values)
                 {
+                    var plant = pv.Item; var view = pv.View;
                     if (view == null || plant.Def.IsCrop) continue;
-                    float s = PlantScale(plant);
+                    float s = ItemViews.PlantScale(plant);
                     if (s < 0.6f || Random01() >= dt * leafRate * s) continue;
                     _juice.Emit(Juice.Kind.Leaf, view.position + new Vector3(0f, 1.3f * s, 0f), 1, Iso.SortOrder(view.position.y, 3, plant.Position.Z));
                 }
@@ -3125,8 +2691,9 @@ namespace Thatchwick.Game
             for (double t = 0; t < days && !_dynastyEnded; t += step)
             {
                 _clock.Restore(_clock.TotalDays + step, _clock.RequestedSpeed);
-                Simulate(step);
+                SimulateTick(step);
             }
+            ResetSmoothing();
             _ambienceSnap = true;
             ShowMessage($"{days:0} gün ileri sarıldı");
         }
@@ -3137,7 +2704,8 @@ namespace Thatchwick.Game
         /// <summary>Yağmurda açık havada gün başına ıslaklık (yaklaşık iki saatte sırılsıklam).</summary>
         private const double RainSoakPerDay = 10.0;
 
-        private void Simulate(double gameDays)
+        /// <summary>Bir simülasyon adımı (sabit adım; görünüm çizmez). Görünüm <see cref="RenderFrame"/>'de.</summary>
+        private void SimulateTick(double gameDays)
         {
             _heat.Tick(gameDays, _clock.TotalDays);
             _plants.Tick(gameDays, _clock.Season);
@@ -3145,18 +2713,18 @@ namespace Thatchwick.Game
             _animals.Tick(gameDays);
             _mines.Tick(gameDays);
             _roomMood.Tick(gameDays, _population.Members);
-            UpdateAnimalViews();
-            UpdateWildViews();
-            foreach (var (plant, view, psr) in _plantViews)
+            foreach (var pv in _items.Plants.Values)
             {
-                if (view == null) continue;
+                if (pv.View == null) continue;
+                var plant = pv.Item;
                 // Evre değişince (ekin evresi, genç → olgun, meyve) görsel değişir.
                 var art = IsoArt.Plant(plant, out bool staged);
-                if (art != null && psr != null && psr.sprite != art) psr.sprite = art;
-                float s = ViewScale(plant, art != null && staged);
-                view.localScale = new Vector3(s, s, 1f);
+                if (art != null && pv.Sr != null && pv.Sr.sprite != art) pv.Sr.sprite = art;
+                float s = ItemViews.ViewScale(plant, art != null && staged);
+                pv.View.localScale = new Vector3(s, s, 1f);
+                if (pv.Shadow != null) { float g = 0.95f * ItemViews.PlantScale(plant); pv.Shadow.localScale = new Vector3(g, g, 1f); }
             }
-            foreach (var (heatItem, heatView) in _heatViews)
+            foreach (var (heatItem, heatView) in _items.Heat.Values)
                 if (heatView != null) { var lit = IsoArt.Item(heatItem, out _); if (lit != null && heatView.sprite != lit) heatView.sprite = lit; }
             foreach (var a in _actors)
             {
@@ -3200,8 +2768,10 @@ namespace Thatchwick.Game
                     actor.View.gameObject.SetActive(true);
                 if (actor.Character.Stage != AgeStage.Baby) actor.Runner.Tick(gameDays);   // bebek iş yapmaz; büyükler besler
                 TickIdleShow(actor, gameDays);
-                UpdateView(actor);
+                PushSimPosition(actor);
             }
+            if (_animalViews == null) _animalViews = new AnimalViews(transform, _view, LookOf, RiderView);
+            _animalViews.Sync(_animals, _life?.Roamers);
 
             if (Commander == null) return;
             var failure = Commander.Runner.LastFailure;
@@ -3212,8 +2782,32 @@ namespace Thatchwick.Game
             }
         }
 
-        // Karakteri bulunduğu karodan sonraki karoya doğru ara değerler (düzgün yürüme).
-        private void UpdateView(Actor actor)
+        /// <summary>Kare: karakterler ve hayvanlar iki simülasyon adımı arasında ara değerlenir.</summary>
+        private void RenderFrame(float alpha)
+        {
+            foreach (var actor in _actors)
+            {
+                if (actor.Character.IsDead || actor.Character.Away || actor.View == null) continue;
+                UpdateView(actor, alpha);
+            }
+            _animalViews?.Frame(alpha);
+        }
+
+        /// <summary>Bölge değişimi ya da ileri sarmada eski konumdan kayarak gelinmesin.</summary>
+        private void ResetSmoothing()
+        {
+            foreach (var actor in _actors) actor.Sim.Reset();
+            _animalViews?.ResetSmoothing();
+        }
+
+        private Transform RiderView(int characterId)
+        {
+            foreach (var a in _actors) if (a.Character.Id == characterId) return a.View;
+            return null;
+        }
+
+        // Adım: karakterin bulunduğu karodan sonraki karoya doğru konumu (düzgün yürüme) ve yönü.
+        private void PushSimPosition(Actor actor)
         {
             Vector3 pos = _view.TileToWorld(actor.Character.Position);
             var next = actor.Runner.NextTile;
@@ -3224,6 +2818,15 @@ namespace Thatchwick.Game
                 pos = Vector3.Lerp(pos, to, actor.Runner.StepProgress);
             }
             if (_animals != null && _animals.MountOf(actor.Character.Id) != null) pos += new Vector3(0f, 0.35f, 0f);   // at sırtında
+            actor.Sim.Push(pos);
+        }
+
+        // Kare: karakterin görünümü (ara değerli konum, adım sallantısı, kareler, gölge).
+        private void UpdateView(Actor actor, float alpha)
+        {
+            if (!actor.Sim.HasValue) PushSimPosition(actor);
+            Vector3 pos = actor.Sim.At(alpha);
+            var next = actor.Runner.NextTile;
             // Yürürken adım sallantısı: gövde iki piksel iner çıkar, gölge yerde kalır (gerçek yürüme animasyonu gelene kadar).
             bool moving = next.HasValue;
             float mdx = pos.x - actor.LastPos.x, mdy = pos.y - actor.LastPos.y;
@@ -3355,10 +2958,10 @@ namespace Thatchwick.Game
         {
             switch (s)
             {
-                case Season.Spring: return "İlkbahar";
-                case Season.Summer: return "Yaz";
-                case Season.Autumn: return "Sonbahar";
-                default: return "Kış";
+                case Season.Spring: return T("ui.season.spring");
+                case Season.Summer: return T("ui.season.summer");
+                case Season.Autumn: return T("ui.season.autumn");
+                default: return T("ui.season.winter");
             }
         }
 
@@ -3583,61 +3186,18 @@ namespace Thatchwick.Game
             _villagePanel.OnGUI(s);
             _requestPanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }
             DrawBalloons(s);
-            _statusHud.LeftInset = HudRect.xMax;
+            _statusHud.LeftInset = 8f + HudWidth;
             { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
             DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
             { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); } finally { GUI.skin = prevMenuSkin; } }
 
             // Sol panel (görsel analiz, 18.11.2026): varsayılan küçük; ihtiyaç listesi, beceriler ve ayarlar "Ayrıntı" (Tab) altında.
+            // UI Toolkit HUD açıkken (F4) küçük bölüm orada çizilir; IMGUI yalnızca açılmış "Ayrıntı" alanını çizer.
+            bool toolkitHud = _toolkitHud && _hudBar != null;
+            if (toolkitHud && !_hudExpanded) { DrawAnimalNaming(); return; }
             GUILayout.BeginArea(HudRect, GUI.skin.box);
-            GUILayout.BeginHorizontal();
-            GUILayout.Label($"Yıl {_clock.YearIndex + 1} · {SeasonName(_clock.Season)} · Gün {_clock.DayOfSeason + 1}/{_clock.Config.DaysPerSeason}");
-            GUILayout.FlexibleSpace();
-            var prevColor = GUI.color;
-            foreach (int speed in GameClock.AllowedSpeeds)
-            {
-                GUI.color = speed == _clock.RequestedSpeed ? new Color(1f, 0.9f, 0.55f) : prevColor;
-                if (GUILayout.Button($"{speed}x", GUILayout.Width(34f))) _clock.SetSpeed(speed);
-            }
-            GUI.color = prevColor;
-            GUILayout.EndHorizontal();
-            if (_clock.Paused) GUILayout.Label("Zaman durdu (menü açık)");
-            else if (_clock.IsFastNightActive) GUILayout.Label($"Herkes uyuyor: gece ×{GameClock.FastNightMultiplier:0} hızlı");
-
-            GUILayout.BeginHorizontal();
-            if (HudToggle(GameLocalization.T("ui.menu.settings"), _settingsOpen)) _settingsOpen = !_settingsOpen;
-            if (HudToggle("Yapı (B)", _buildMode.Active)) ToggleBuild();
-            if (HudToggle("Pazar (P)", _marketPanel.Active)) ToggleMarket();
-            if (HudToggle("Kiler (K)", _storagePanel.Active)) _storagePanel.Toggle();
-            if (HudToggle("Ocak (M)", _minePanel.Active)) _minePanel.Toggle();
-            if (HudToggle("Aile (F)", _familyPanel.Active)) ToggleFamily();
-            if (HudToggle("Köy (V)", _villagePanel.Active)) ToggleVillage();
-            { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? GameLocalization.T("ui.req.hud_unread", ("n", unread)) : GameLocalization.T("ui.req.hud"), _requestPanel.Active)) ToggleRequests(); }
-            if (_keepsakePanel != null && HudToggle("Hatıra (J)", _keepsakePanel.Active)) _keepsakePanel.Toggle();
-            if (_homePanel != null && HudToggle("Ev (E)", _homePanel.Active)) _homePanel.Toggle();
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            var akceColor = GUI.contentColor;
-            if (Time.unscaledTime < _akceFlashUntil) GUI.contentColor = _akceFlashUp ? new Color(0.6f, 1f, 0.55f) : new Color(1f, 0.55f, 0.5f);
-            GUILayout.Label($"Akçe {(float.IsNaN(_akceShown) ? _household.Akce : Mathf.RoundToInt(_akceShown))}", GUILayout.Width(80f));
-            GUI.contentColor = akceColor;
-            GUILayout.Label(new GUIContent(GameLocalization.T("ui.diamonds.balance", ("count", _account.Diamonds)), GameLocalization.T("ui.diamonds.tip")), GUILayout.ExpandWidth(false));
-            GUILayout.Label(new GUIContent($"İtibar: {_life.Upbringing.Reputation.TierName}", $"{_life.Upbringing.Reputation.Points} puan · satış {_life.Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%"), GUILayout.Width(110f));
-            if (HudToggle("Etiketler (L)", _labelsAll)) _labelsAll = !_labelsAll;
-            if (GUILayout.Button("Kaydet")) SaveNow(quiet: false);
-            bool adult = Thatchwick.Core.Content.ContentPacks.Adult;
-            if (AdultPackAvailable && GUILayout.Toggle(adult, " +18 paketi (şarap)") != adult)
-            {
-                Thatchwick.Core.Content.ContentPacks.Adult = !adult;
-                PlayerPrefs.SetInt(AdultPackPref, adult ? 0 : 1);
-                PlayerPrefs.Save();
-            }
-            if (HudToggle(_hudExpanded ? "Ayrıntı ▴" : "Ayrıntı ▾", _hudExpanded)) _hudExpanded = !_hudExpanded;
-            GUILayout.EndHorizontal();
-            if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
-
+            if (!toolkitHud) DrawCompactHud();
             if (_hudExpanded)
             {
                 _hudScroll = GUILayout.BeginScrollView(_hudScroll);
@@ -3739,6 +3299,55 @@ namespace Thatchwick.Game
             }
             GUILayout.EndArea();
             DrawAnimalNaming();   // yeni doğan köpek ve kedi adı (belge 48 §6.2)
+        }
+
+        /// <summary>Küçük HUD'un IMGUI sürümü (UI Toolkit HUD kapalıyken; aynı metin anahtarlarını kullanır).</summary>
+        private void DrawCompactHud()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(HudDateText());
+            GUILayout.FlexibleSpace();
+            var prevColor = GUI.color;
+            foreach (int speed in GameClock.AllowedSpeeds)
+            {
+                GUI.color = speed == _clock.RequestedSpeed ? new Color(1f, 0.9f, 0.55f) : prevColor;
+                if (GUILayout.Button($"{speed}x", GUILayout.Width(34f))) _clock.SetSpeed(speed);
+            }
+            GUI.color = prevColor;
+            GUILayout.EndHorizontal();
+            string status = HudStatusText();
+            if (status != null) GUILayout.Label(status);
+
+            GUILayout.BeginHorizontal();
+            if (HudToggle(T("ui.menu.settings"), _settingsOpen)) _settingsOpen = !_settingsOpen;
+            if (HudToggle(T("ui.hud.build"), _buildMode.Active)) ToggleBuild();
+            if (HudToggle(T("ui.hud.market"), _marketPanel.Active)) ToggleMarket();
+            if (HudToggle(T("ui.hud.storage"), _storagePanel.Active)) _storagePanel.Toggle();
+            if (HudToggle(T("ui.hud.mine"), _minePanel.Active)) _minePanel.Toggle();
+            if (HudToggle(T("ui.hud.family"), _familyPanel.Active)) ToggleFamily();
+            if (HudToggle(T("ui.hud.village"), _villagePanel.Active)) ToggleVillage();
+            { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? T("ui.hud.requests_unread", ("count", unread)) : T("ui.hud.requests"), _requestPanel.Active)) ToggleRequests(); }
+            if (_keepsakePanel != null && HudToggle(T("ui.hud.keepsakes"), _keepsakePanel.Active)) _keepsakePanel.Toggle();
+            if (_homePanel != null && HudToggle(T("ui.hud.home"), _homePanel.Active)) _homePanel.Toggle();
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            var akceColor = GUI.contentColor;
+            if (Time.unscaledTime < _akceFlashUntil) GUI.contentColor = _akceFlashUp ? new Color(0.6f, 1f, 0.55f) : new Color(1f, 0.55f, 0.5f);
+            GUILayout.Label(T("ui.hud.akce", ("amount", HudAkce)), GUILayout.Width(80f));
+            GUI.contentColor = akceColor;
+            GUILayout.Label(new GUIContent(T("ui.diamonds.balance", ("count", _account.Diamonds)), T("ui.diamonds.tip")), GUILayout.ExpandWidth(false));
+            GUILayout.Label(new GUIContent(T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)), HudReputationTip()), GUILayout.Width(110f));
+            if (HudToggle(T("ui.hud.labels"), _labelsAll)) _labelsAll = !_labelsAll;
+            if (GUILayout.Button(T("ui.hud.save"))) SaveNow(quiet: false);
+            if (AdultPackAvailable)
+            {
+                bool adult = Thatchwick.Core.Content.ContentPacks.Adult;
+                if (GUILayout.Toggle(adult, " " + T("ui.hud.adult_pack")) != adult) ToggleAdultPack();
+            }
+            if (HudToggle(T(_hudExpanded ? "ui.hud.detail_open" : "ui.hud.detail_closed"), _hudExpanded)) _hudExpanded = !_hudExpanded;
+            GUILayout.EndHorizontal();
+            if (Time.unscaledTime < _messageUntil) GUILayout.Label(_message);
         }
 
         /// <summary>Sol paneldeki aç-kapa düğmesi; açıkken vurgulu.</summary>

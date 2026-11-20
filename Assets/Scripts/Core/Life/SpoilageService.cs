@@ -212,18 +212,37 @@ namespace Thatchwick.Core.Life
             }
         }
 
+        // Bozulabilen tanımlar bir kez listelenir (866 tanımın her adımda taranmaması için).
+        private List<ItemDef> _spoilable;
+        private List<ItemDef> Spoilable()
+        {
+            if (_spoilable != null) return _spoilable;
+            _spoilable = new List<ItemDef>();
+            foreach (var def in _content.Items.All) if (def.SpoilDays > 0f) _spoilable.Add(def);
+            return _spoilable;
+        }
+
+        // Envanter son eşitlemeden beri değişmediyse partiler zaten tutarlıdır (yoklama yerine sürüm denetimi).
+        private int _reconciledVersion = -1;
+
+        private void ReconcileAll()
+        {
+            if (_house.InventoryVersion == _reconciledVersion) return;
+            foreach (var def in Spoilable()) Reconcile(def);
+            _reconciledVersion = _house.InventoryVersion;
+        }
+
         public void Tick(double gameDays)
         {
             if (gameDays < 0) throw new ArgumentOutOfRangeException(nameof(gameDays));
             Melt(gameDays);
-            foreach (var def in _content.Items.All) if (def.SpoilDays > 0f) Reconcile(def);
+            ReconcileAll();
             // Yerleşim her karede değil, ~15 oyun dakikasında bir yenilenir (yeni hasat da en geç o zaman yerleşir).
             _planAge += gameDays;
             if (_plan == null || _planAge >= PlanRefreshDays) { _plan = Plan(); _planAge = 0; }
             var plan = _plan;
-            foreach (var def in _content.Items.All)
+            foreach (var def in Spoilable())
             {
-                if (def.SpoilDays <= 0f) continue;
                 double rate = plan.RateOf(def.Id) * (plan.Rate.ContainsKey(def.Id) ? 1.0 : Extra());
                 int removed = 0;
                 for (int q = 0; q <= ItemQuality.Max; q++)
@@ -285,6 +304,7 @@ namespace Thatchwick.Core.Life
         public void Restore(IEnumerable<SpoilBatchSave> saved)
         {
             _batches.Clear();
+            _reconciledVersion = -1;
             if (saved == null) return;
             foreach (var s in saved)
             {

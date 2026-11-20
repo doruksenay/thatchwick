@@ -1177,6 +1177,20 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Ruh hali kaynaklarını yeniler (oyun hızından bağımsız, küçük adımlarla).</summary>
+        /// <summary>Seyrek sistemlerin (dekor, kandil) adımı: 1/96 gün ≈ 15 oyun dakikası.</summary>
+        public const double CoarseStepDays = 1.0 / 96.0;
+        private double _coarseAccumulator;
+
+        /// <summary>Biriken seyrek adımı hemen uygular (kayıttan önce; testler).</summary>
+        public void FlushCoarse()
+        {
+            if (_coarseAccumulator <= 0) return;
+            double coarse = _coarseAccumulator;
+            _coarseAccumulator = 0;
+            Decor.Tick(coarse);
+            BurnLamps(coarse);
+        }
+
         public void Tick(double gameDays)
         {
             _moodAccumulator += gameDays;
@@ -1198,12 +1212,20 @@ namespace Thatchwick.Core.Life
             Duties.Tick(gameDays);
             Requests.Tick();
             Festivals.Tick(Population.Members);
-            Decor.Tick(gameDays);
+            // Kararma, dekor içeriği yaşlanması ve kandil yağı dakika hassasiyeti istemez: bütün eşyaları taradıkları için
+            // biriktirilip ~15 oyun dakikasında bir uygulanır (sabit adımlı simülasyon, performans incelemesi 20.11.2026).
+            _coarseAccumulator += gameDays;
+            if (_coarseAccumulator >= CoarseStepDays)
+            {
+                double coarse = _coarseAccumulator;
+                _coarseAccumulator = 0;
+                Decor.Tick(coarse);
+                BurnLamps(coarse);
+            }
             Home.Tick(gameDays);
             Upbringing.Tick(gameDays);
             Roamers?.Tick(gameDays, Clock.TotalDays, Clock.Season, Clock.DayFraction);
             Coffee.Tick(Clock.TotalDays, Population.Members);
-            BurnLamps(gameDays);
             Trees.Tick();   // mevsimin son akşamı Bereket Sofrası (belge 52)
 
             long day = Clock.DayIndex;
