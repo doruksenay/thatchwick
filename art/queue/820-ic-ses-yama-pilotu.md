@@ -1,5 +1,5 @@
 ---
-id: "795"
+id: "820"
 title: "İç Sesler nakış yaması pilotu: boş yama, üç dikiş, kurdele, dört işlemeli ikon"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 21.11.2026 sohbet (yama dili A "nakış yaması", hâl katmanı A), Project belgesi 68a
@@ -18,7 +18,7 @@ outputs:
   - Assets/Art/Iso/_aday/ui_icon_voice_{good_meal,nice_chat,grief,inspired}.png
 created: 2026-11-21
 ---
-# 795 İç Sesler nakış yaması pilotu
+# 820 İç Sesler nakış yaması pilotu
 
 ## Amaç
 Alttaki karakter kartında her iç ses bir **nakış yaması** olarak görünecek (Project belgesi 68a, kullanıcı kararı 21.11.2026). Yamanın kumaş rengi iç sesin **hâlini** gösterir (Huzurlu, Neşeli, Şevkli, Gururlu, Gergin, Kederli, Hırçın), kenar dikişi gücünü (tek, çift, sırma), üstten solma kalan süreyi. Kod yamayı hâl rengine **palet değişimiyle** boyar; bu yüzden PixelLab yamayı tek, nötr keten renginde çizer.
@@ -47,7 +47,7 @@ Ortak ek: `, embroidered cloth patch, visible woven linen texture, cozy medieval
 ## Doğrulama
 - `python tools/art/style.py check --family arayuz <dosya> ...`; `inspired` ışık içerir: `--light`.
 - Yama tabanı palet değişimine uygun: keten tonları en çok 4 ton, kontur ayrı renk (kod konturu koyulaştırır, ketenleri hâl rengine eşler).
-- Önizleme `art/results/795-yama-pilotu-x4.png`: taban + üç dikiş üst üste, yedi hâl rengine boyanmış hâlleri (rapordaki betikle) ve dört ikon yamanın üstünde; krem (#F3EAD6) ve meşe çerçeve (ui_hud2_mese_window) zemininde.
+- Önizleme `art/results/820-yama-pilotu-x4.png`: taban + üç dikiş üst üste, yedi hâl rengine boyanmış hâlleri (rapordaki betikle) ve dört ikon yamanın üstünde; krem (#F3EAD6) ve meşe çerçeve (ui_hud2_mese_window) zemininde.
 - Göz kontrolü 3 kat ölçekte: 16x16 ikon yamanın üstünde okunuyor mu; dikiş üç gücü ayrı ayrı belli mi.
 
 ## Notlar
