@@ -1,7 +1,8 @@
 ---
 id: "468b"
 title: "Karakter yaratma ekranı ikonları (12)"
-status: pending
+status: running
+claimed_at: 2026-11-20T11:29Z
 approved_by: user
 family: arayuz
 style_gate: false
