@@ -32,6 +32,7 @@ namespace Thatchwick.Game.Audio
         public float FirstSilence = 4f;
 
         private MusicPlaylist _list;
+        private readonly AudioRandom _rng = new AudioRandom(System.Environment.TickCount);
         private AudioService _svc;
         private AudioSource _src;
         private string _context, _currentKey;
@@ -64,7 +65,7 @@ namespace Thatchwick.Game.Audio
             {
                 _fadingOut = true;
                 _target = 0f;
-                _silenceLeft = Random.Range(3f, 8f);
+                _silenceLeft = _rng.Range(3f, 8f);
             }
         }
 
@@ -109,7 +110,7 @@ namespace Thatchwick.Game.Audio
             if (_silenceLeft > 0 || _context == null) return;
             string key = _list.Next(_context);
             if (key == null || !_svc.Bank.TryGet(key, out var e) || e.clips.Length == 0) { _silenceLeft = 10f; return; }
-            var clip = _svc.Bank.Clip(e.clips[Random.Range(0, e.clips.Length)]);
+            var clip = _svc.Bank.Clip(e.clips[_rng.Range(0, e.clips.Length)]);
             if (clip == null) { _silenceLeft = 10f; return; }
             _src.clip = clip;
             _src.loop = false;

@@ -139,7 +139,7 @@ namespace Thatchwick.Game.Audio
             if (!Limiter.TryStart(e.key, Time.unscaledTime, firstClip.length / Mathf.Max(0.05f, pitch), e.maxVoices, e.cooldownMs, out float duck))
                 return false;
 
-            float vol = e.volumeDb + p.VolumeDb + duck + 20f * Mathf.Log10(Mathf.Max(0.0001f, volScale));
+            float vol = e.volumeDb + p.VolumeDb + duck + 20f * (float)System.Math.Log10(Mathf.Max(0.0001f, volScale));
             float delay = p.DelayMs / 1000f;
             Fire(firstClip, e, pitch, vol, pan, dist, delay);
             Record(e.key, first);

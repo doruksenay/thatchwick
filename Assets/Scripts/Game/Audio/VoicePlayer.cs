@@ -11,6 +11,8 @@ namespace Thatchwick.Game.Audio
     /// </summary>
     public static class VoicePlayer
     {
+        private static readonly AudioRandom Rng = new AudioRandom(System.Environment.TickCount);
+
         /// <param name="voice">Ses anahtarı, ör. "kalin_alcak" (audio/voices.json)</param>
         /// <param name="pitchSemitones">Karakter yaratmadaki perde + yaş kayması (çocuk tiz, yaşlı kalın)</param>
         /// <param name="characterId">Kişiye özgü konuşma profili için kimlik</param>
@@ -23,7 +25,7 @@ namespace Thatchwick.Game.Audio
             if (!svc.Bank.TryGet(SoundKeys.VoiceSyllables(voice), out var bank) || bank.clips.Length == 0) return 0f;
             var who = SpeakerProfile.FromSeed(AudioRandom.StableHash(characterId));
             var notes = GibberishComposer.Compose(bank.clips.Length, GibberishComposer.SyllablesFor(textLength), emotion,
-                                                  who, Random.Range(int.MinValue, int.MaxValue));
+                                                  who, (int)Rng.NextUInt());
             Pan(worldPos, out float pan, out float dist);
             float t = 0f;
             foreach (var n in notes)

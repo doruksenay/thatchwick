@@ -80,3 +80,9 @@ art/tmp*/
 # Yerleşim raporu aracı derleme çıktısı
 tools/layout-report/bin/
 tools/layout-report/obj/
+
+# Ses hattı (Project 45b)
+.audio_work/
+.audio_masters/
+.audio_work_indir/
+tools/audio-poll.log

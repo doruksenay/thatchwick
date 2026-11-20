@@ -1,0 +1,61 @@
+# Ses üretimi bulutta (Project 45, 45b). Ev bilgisayarı gerekmez.
+# Tetikleyiciler: audio/queue değişince (main'e push) ya da Actions sekmesinden "Run workflow".
+# Gerekli secret: ELEVENLABS_API_KEY (Settings > Secrets and variables > Actions).
+# Çıktı: işler "review" durumuna geçer (commit), adaylar "ses-adaylari-<no>" artifact'ında.
+name: Ses üretimi
+on:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "Tek iş kimliği (boş: hazır olanların hepsi)"
+        required: false
+        default: ""
+  push:
+    branches: [main]
+    paths: ["audio/queue/**"]
+concurrency:
+  group: ses-uretimi
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  uret:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 0
+      - name: ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Python paketleri
+        run: pip install -q -r tools/audio/requirements.txt
+      - name: Hazır işler
+        run: python tools/audio/worker.py --list --worker bulut
+      - name: Üret
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          AUDIO_MASTERS: ${{ runner.temp }}/masters
+          JOB: ${{ github.event.inputs.job }}
+        run: |
+          if [ -z "$ELEVENLABS_API_KEY" ]; then echo "::error::ELEVENLABS_API_KEY secret'ı yok"; exit 1; fi
+          git config user.name "ses-iscisi"
+          git config user.email "ses-iscisi@users.noreply.github.com"
+          if [ -n "$JOB" ]; then
+            python tools/audio/worker.py --job "$JOB" --git --worker bulut
+          else
+            python tools/audio/worker.py --once --git --worker bulut
+          fi
+      - name: Adayları sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ses-adaylari-${{ github.run_number }}
+          path: .audio_work/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
