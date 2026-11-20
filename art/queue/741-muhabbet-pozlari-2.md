@@ -1,7 +1,7 @@
 ---
 id: "741"
 title: "Muhabbet pozları 2: anlat, dedikodu fısılda, şaşır, alkışla, laf sok, düşün (48)"
-status: running
+status: review
 claimed_at: 2026-11-20T20:45Z
 approved_by: user        # kullanıcı 20.11.2026; Project belgeleri 67a §6, 67b
 priority: 40
