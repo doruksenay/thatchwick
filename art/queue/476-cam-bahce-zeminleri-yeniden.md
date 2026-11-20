@@ -1,7 +1,7 @@
 ---
 id: "476"
 title: "Cam bahçe iç zeminleri: kum, tuzlu su, tatlı su (3)"
-status: running
+status: failed
 claimed_at: 2026-11-20T07:44Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe: balık), Project belgesi 47
 priority: 20
@@ -37,6 +37,9 @@ Belge 47: yakın görünümün arka planı. 471'de kum ve tuzlu su palet nedeniy
 
 ## Notlar
 Kod `viv_bg_dry`, `viv_bg_salt`, `viv_bg_fresh` adlarını arar; yoksa düz renk çizer.
+
+## Sorular
+Üç çıktı da bitki ve çerçeve içeriyor (rapor: art/results/476-cam-bahce-zeminleri.md). Öneri: `viv_bg_moist` init_image (strength ~150) ile yalnızca zemin/su rengini değiştir, ya da "glass case" ifadesini at.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
