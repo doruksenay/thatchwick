@@ -1,7 +1,8 @@
 ---
 id: "618"
 title: "Yaşlılar: etkileşim kareleri 4 (maden: kazma, kova, destek)"
-status: pending
+status: running
+claimed_at: 2026-11-20T18:25Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("yaşlıların eylem kareleri: evet"), Project belgesi 55d
 priority: 60
 family: karakter
