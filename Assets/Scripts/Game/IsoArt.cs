@@ -106,6 +106,7 @@ namespace Thatchwick.Game
             ["item.jam_berry"] = "icon_item_jam_berry_v2",
             ["item.meat"] = "icon_item_meat_v2",
             ["item.serbet"] = "icon_item_serbet_v2",
+            ["item.salted_meat"] = "icon_item_salted_meat_v3", // 418p2: kesik uç ve tuz taneleri
         };
 
         private static readonly Dictionary<string, Texture2D> IconCache = new Dictionary<string, Texture2D>();
