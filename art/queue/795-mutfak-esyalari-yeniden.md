@@ -1,7 +1,7 @@
 ---
 id: "795"
 title: "Mutfak eşyaları yeniden: sac, bıçak, kesme tahtası, oklava tahtası, kevgir (_v2) ve ilk kez yıkama taşı, kirli ve temiz bulaşık sepeti (8)"
-status: review
+status: accepted   # kullanıcı 21.11.2026: 6 görsel kabul; sac (sapsız) ve kirli/temiz sepet 830'da yeniden
 claimed_at: 2026-11-20T23:08Z
 approved_by: user        # kullanıcı 21.11.2026: 600 "kabul + sac yeniden", 601 "kısmi kabul + kalanlar yeniden" (seçmeli liste)
 priority: 5          # kullanıcı 21.11 02:02: "işçiye ürettir" (mutfak işleri önce)
