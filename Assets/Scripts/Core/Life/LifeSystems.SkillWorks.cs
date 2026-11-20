@@ -44,7 +44,6 @@ namespace Thatchwick.Core.Life
         public const double PruneFruitShare = 0.30;
         public const int GraftBonus = 2;
         public const int StockedPondDays = 10;
-        public const double LegendFishChance = 0.04;
         public const double BadMushroomChance = 0.12;
         public const int ForestSecretEvery = 7;
         public const double BearingSpeed = 1.15, ClimbSpeed = 1.25;
@@ -72,7 +71,7 @@ namespace Thatchwick.Core.Life
         }
 
         // Ürün kimlikleri (items.json).
-        public const string BaitId = "item.bait", NetId = "item.fishing_net", LegendFishId = "item.legend_fish", TruffleId = "item.truffle",
+        public const string BaitId = "item.bait", NetId = "item.fishing_net", TruffleId = "item.truffle",
             AlmanacId = "item.folk_almanac", StormBellId = "item.storm_bell", RepellentId = "item.insect_repellent",
             CoveredCartId = "item.covered_cart", WheelbarrowId = "item.wheelbarrow", HorseCartId = "item.horse_cart", SledId = "item.sled",
             RaceSaddleId = "item.race_saddle", SealingWaxId = "item.sealing_wax", BadMushroomMood = "bad_mushroom";
@@ -457,15 +456,7 @@ namespace Thatchwick.Core.Life
             if (lv >= 4 && House.Count(NetId) > 0 && _masteryRng.NextDouble() < 0.4) extra++;                // büyük ağ
             if (SkillFlag("stock:" + pond.Id) > Today) extra++;                                                  // stoklu gölet
             if (extra > 0) House.AddItem(fish, extra);
-            if (lv >= Progress.Mastery.MasterLevel && SkillFlag("legend:" + pond.Id) < Clock.YearIndex + 1 && _masteryRng.NextDouble() < LegendFishChance && Content.Items.Contains(LegendFishId))
-            {
-                SetSkillFlag("legend:" + pond.Id, Clock.YearIndex + 1);
-                House.AddItem(LegendFishId, 1);
-                string note = $"{Progress.Mastery.DisplayName(c)} gölün efsane balığını tuttu!";
-                Say(note, NoticeLevel.Info, c.Id);
-                foreach (var m in Household()) m.AddChronicle(note);
-                Upbringing.Reputation.Add(5, "efsane balık");
-            }
+            // Efsane balık (Balıkçılık 10): LifeAnimals.AttachFishing (gölün efsanesi, yılda bir; belge 50).
         }
 
         /// <summary>İş hızına beceri pasifleri: yönlü devir (Odunculuk 4), ağaca tırman (Atletizm 4).</summary>

@@ -277,7 +277,7 @@ inter("item.pond", {"id": "ice_fish", "displayName": "Buz deliği aç, balık tu
 W("item.pond", "stock_pond", "Göleti stokla (2 sazan)", "Fishing", 8, dur=0.08, xp=12, materials=[{"item": "item.fish_carp", "count": 2}])
 recipe("seed_vetch", SEEDM, "item.seed_vetch", [("item.feed", 2)], "SoilCare", 7, "Fiğ tohumu ayır", count=2, dur=0.05)
 recipe("fish_meal", "item.mortar_pestle", "item.fish_meal", [("item.fish_carp", 2)], "Fishing", 9, "Balık unu döv", count=3, dur=0.1)
-res("item.legend_fish", "Göllerin efsane balığı", 120, ["food", "trophy"])
+# Efsane balık main'de (belge 50: fish_catfish_giant, fish_sturgeon_old, fish_pike_old).
 inter("item.pond", {"id": "swim", "displayName": "Yüz", "need": "Fun", "restore": 25, "durationDays": 0.08, "skill": "Athletics", "skillXp": 8, "minLevel": 6,
                     "wets": 1.0, "extraRestore": [{"need": "Hygiene", "amount": 15}]})
 
@@ -471,8 +471,7 @@ inter("item.alembic", {"id": "drink_saffron_remedy", "displayName": "Safranlı i
 # Yeni yiyecekler sofrada yenir (tencere başı; "Peynir ye" gibi).
 for food, nm, rest in [("item.truffle", "Yer mantarı", 30), ("item.aged_cheese", "Olgun peynir", 40), ("item.tulum_cheese", "Tulum peyniri", 40),
                        ("item.herb_cheese", "Otlu peynir", 38), ("item.wedding_dish", "Keşkek", 70), ("item.bazlama", "Bazlama", 35), ("item.yufka", "Yufka", 25),
-                       ("item.bread_sourdough", "Ekşi mayalı ekmek", 50), ("item.wedding_bread", "Düğün ekmeği", 55), ("item.pomegranate", "Nar", 20),
-                       ("item.legend_fish", "Efsane balık", 90)]:
+                       ("item.bread_sourdough", "Ekşi mayalı ekmek", 50), ("item.wedding_bread", "Düğün ekmeği", 55), ("item.pomegranate", "Nar", 20)]:
     inter("item.cooking_pot", {"id": "eat_" + food.split(".", 1)[1], "displayName": f"{nm} ye", "need": "Hunger", "restore": rest, "durationDays": 0.05,
                                "consume": food, "bladder": 4, "moodId": "mood.meal", "moodText": nm, "moodValue": 2 if rest >= 50 else 1, "moodDays": 1.0})
 inter("item.cooking_pot", {"id": "drink_pomegranate_sherbet", "displayName": "Nar şerbeti iç", "need": "Fun", "restore": 15, "durationDays": 0.03,

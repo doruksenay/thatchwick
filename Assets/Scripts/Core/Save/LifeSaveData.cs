@@ -79,6 +79,10 @@ namespace Thatchwick.Core.Save
         public NeighborHouseSave[] houses;
         // Yaban hayvanları (18.11.2026, belge 31). Eski kayıtta null / 0: defter boş, tehdit yok.
         public string[] natureJournal;
+        // Böcek ve balık defteri, çekirge (20.11.2026, belge 48 §9; eski kayıtta yok)
+        public string[] creatureBook;
+        public int locustDry;
+        public bool locustIncoming;
         public string[] adoptedWild;
         public string[] coffeeHabits;
         public string[] olives;         // zeytin ağaçları (32-7): "itemId:dikimGünü:yadigâr:diken"   // kahve alışkanlığı (belge 32-6): "id:sonGün:seri:alışkanlık"

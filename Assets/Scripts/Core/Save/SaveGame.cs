@@ -40,6 +40,8 @@ namespace Thatchwick.Core.Save
         /// <summary>Yenmiş otlak ve hayvan çanı; SaveGame.RestoreAnimals ile geri konur.</summary>
         public List<GrassSave> Pasture = new List<GrassSave>();
         public bool AnimalsHeld;
+        public string[] AnimalPedigree;
+        public AwayAnimalSave[] AnimalsAway;
         /// <summary>Kazı yerleri; MineSystem kurulunca SaveGame.RestoreMines ile geri konur.</summary>
         public List<Mining.MineSave> Mines = new List<Mining.MineSave>();
         /// <summary>Yüklenemeyen parçalar (ör. içerikten kaldırılmış eşya). Oyun yine açılır.</summary>
@@ -149,7 +151,7 @@ namespace Thatchwick.Core.Save
             {
                 var ids = new List<string>(); var counts = new List<int>();
                 foreach (var f in p.Fish) { ids.Add(f.Key); counts.Add(f.Value); }
-                ponds.Add(new PondSave { x = p.Anchor.X, y = p.Anchor.Y, level = p.Level, spring = p.Spring, insects = p.Insects, filledDays = p.FilledDays, fishIds = ids.ToArray(), fishCounts = counts.ToArray() });
+                ponds.Add(new PondSave { x = p.Anchor.X, y = p.Anchor.Y, level = p.Level, spring = p.Spring, insects = p.Insects, filledDays = p.FilledDays, fishIds = ids.ToArray(), fishCounts = counts.ToArray(), silt = p.Silt });
             }
             m.ponds = ponds.ToArray();
             return m;
@@ -315,10 +317,14 @@ namespace Thatchwick.Core.Save
                         sick = a.IsSick, sickDays = a.SickDays, coldDays = a.ColdDays,
                         sex = a.IsFemale ? 1 : 2, pregnant = a.PregnantDays, mother = a.MotherId, generation = a.Generation,
                         lineage = (int)a.Lineage, xp = a.Xp, legendDescent = a.LegendaryDescent, legendTitle = a.LegendaryTitle,
-                        stamina = a.Stamina, shy = a.ShyDays
+                        stamina = a.Stamina, shy = a.ShyDays,
+                        father = a.FatherId, genome = a.Genome?.Export(), deeds = ExportDeeds(a),
+                        sire = a.PregnancySireId, sireSpecies = a.PregnancySireSpecies, sireGenome = a.PregnancySireGenome?.Export()
                     });
                 }
                 data.animals = list.ToArray();
+                data.animalPedigree = animals.ExportPedigree();
+                data.animalsAway = animals.ExportAway();
                 var grass = new List<GrassSave>();
                 foreach (var kv in animals.ExportGrass()) grass.Add(new GrassSave { x = kv.Key.X, y = kv.Key.Y, grass = kv.Value });
                 grass.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
@@ -328,6 +334,15 @@ namespace Thatchwick.Core.Save
             data.life = life?.Export();
             data.mines = mines?.Export().ToArray();
             return data;
+        }
+
+        internal static string[] ExportDeeds(Animal a)
+        {
+            if (a.Deeds.Count == 0) return null;
+            var l = new List<string>();
+            foreach (var kv in a.Deeds) l.Add(kv.Key + ":" + kv.Value);
+            l.Sort(string.CompareOrdinal);
+            return l.ToArray();
         }
 
         private static KeyFloat[] CaptureAptitudes(Character c)
@@ -466,8 +481,11 @@ namespace Thatchwick.Core.Save
                 system.Restore(s.id, species, new GridPos(s.x, s.y), s.home, s.fullness, s.age, s.produce, s.hungryDays, s.friendship, s.petCooldown,
                     s.saddle, s.comfort >= 0f ? s.comfort : 50f, s.sick, s.sickDays, s.coldDays,
                     s.sex == 1 ? true : s.sex == 2 ? false : (bool?)null, s.pregnant, s.mother, s.generation,
-                    s.lineage, s.xp, s.legendDescent, s.legendTitle, s.stamina, s.shy);
+                    s.lineage, s.xp, s.legendDescent, s.legendTitle, s.stamina, s.shy,
+                    s.genome, s.father, s.deeds, s.sire, s.sireSpecies, s.sireGenome);
             }
+            system.ImportPedigree(loaded.AnimalPedigree);
+            system.ImportAway(loaded.AnimalsAway, content, loaded.Warnings);
             var grass = new List<KeyValuePair<GridPos, float>>();
             foreach (var g in loaded.Pasture) if (g != null) grass.Add(new KeyValuePair<GridPos, float>(new GridPos(g.x, g.y), g.grass));
             system.RestoreGrass(grass);
@@ -548,7 +566,7 @@ namespace Thatchwick.Core.Save
                     if (ps.fishIds != null && ps.fishCounts != null)
                         for (int i = 0; i < ps.fishIds.Length && i < ps.fishCounts.Length; i++)
                             if (ps.fishIds[i] != null && content.Items.Contains(ps.fishIds[i])) fish.Add(new KeyValuePair<string, int>(ps.fishIds[i], ps.fishCounts[i]));
-                    map.RestorePond(new GridPos(ps.x, ps.y), ps.level, ps.spring, ps.insects, ps.filledDays, fish);
+                    map.RestorePond(new GridPos(ps.x, ps.y), ps.level, ps.spring, ps.insects, ps.filledDays, fish, ps.silt);
                 }
             if (m.styles != null)
                 foreach (var st in m.styles)
@@ -674,6 +692,8 @@ namespace Thatchwick.Core.Save
             if (data.soil != null) result.Soil.AddRange(data.soil);
             if (data.pasture != null) result.Pasture.AddRange(data.pasture);
             result.AnimalsHeld = data.animalsHeld;
+            result.AnimalPedigree = data.animalPedigree;
+            result.AnimalsAway = data.animalsAway;
             if (data.mines != null) result.Mines.AddRange(data.mines);
             return result;
         }

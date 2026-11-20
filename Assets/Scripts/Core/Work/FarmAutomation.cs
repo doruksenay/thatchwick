@@ -380,6 +380,8 @@ namespace Thatchwick.Core.Work
         public event Action<Character, GridPos, string> Worked;
         /// <summary>Kıyıdan balık tutuldu (karakter, balık eşyası): ilk balık hatırası (D3b).</summary>
         public event Action<Character, string> FishCaught;
+        /// <summary>Efsane balık (belge 48 §9.4): karakter ve gölet için bu tutuşta çıkan efsane eşyası ya da null.</summary>
+        public Func<Character, Pond, string> LegendFishAt { get; set; }
 
         /// <summary>
         /// Oyuncu kendisi mi balık tutuyor (mini oyun, belge 50). True ise vuran balık hemen envantere girmez:
@@ -434,7 +436,14 @@ namespace Thatchwick.Core.Work
             }
             string note = "bu sefer bir şey çıkmadı";
             double chance = Math.Min(0.75, 0.2 + 0.6 * pond.FishTotal / Math.Max(1.0, pond.FishCapacity));
-            if (total == 0) note = "buradaki balıklar için ustalığı yetmiyor";
+            string legend = LegendFishAt?.Invoke(c, pond);
+            if (legend != null && Content.Items.Contains(legend))
+            {
+                House?.AddItem(legend, 1);
+                note = $"EFSANE: {Content.Items.Get(legend).DisplayName}!";
+                FishCaught?.Invoke(c, legend);
+            }
+            else if (total == 0) note = "buradaki balıklar için ustalığı yetmiyor";
             else if (_rng.NextDouble() < chance)
             {
                 int pick = _rng.Next(total);

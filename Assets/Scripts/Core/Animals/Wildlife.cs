@@ -22,6 +22,8 @@ namespace Thatchwick.Core.Animals
         public double Shyness;           // 0-1: sevme zorluğu
         public string Meat, Hide;        // av ürünleri (yoksa null)
         public bool Adoptable;           // öksüz yavrusu sahiplenilebilir
+        /// <summary>Yalnızca bu bölgelerde görülür (Regions kimliği). null: deniz kıyısı dışındaki her yer (belge 50).</summary>
+        public string[] Regions;
     }
 
     /// <summary>Yaban türleri kataloğu (1.0 listesi, belge 31-7.1).</summary>
@@ -47,6 +49,9 @@ namespace Thatchwick.Core.Animals
             new WildSpecies { Id = "wild.wolf", Name = "Kurt", Group = WildGroup.Dangerous, Habitat = "derin orman", Seasons = AutWin, Night = true, Huntable = true, Shyness = 1.0, Hide = "item.hide" },
             new WildSpecies { Id = "wild.boar", Name = "Yaban domuzu", Group = WildGroup.Dangerous, Habitat = "orman kenarı", Night = true, Huntable = true, Trappable = true, Shyness = 0.9, Meat = "item.game_meat", Hide = "item.hide" },
             new WildSpecies { Id = "wild.rat", Name = "Fare", Group = WildGroup.Dangerous, Habitat = "ambar", Shyness = 0.5 },
+            // Deniz kıyısı (belge 50): yalnızca kıyı bölgesinde gezer.
+            new WildSpecies { Id = "wild.gull", Name = "Martı", Habitat = "kıyı", Regions = new[] { "coast" }, Shyness = 0.6 },
+            new WildSpecies { Id = "wild.crab", Name = "Yengeç", Habitat = "kıyı", Regions = new[] { "coast" }, Seasons = SprSumAut, Shyness = 0.4 },
             new WildSpecies { Id = "wild.bear", Name = "Boz ayı", Group = WildGroup.Dangerous, Habitat = "derin orman", Seasons = SprSumAut, Shyness = 1.0 },
         };
 
@@ -195,7 +200,10 @@ namespace Thatchwick.Core.Animals
         public static int DogDefense(Animal dog)
         {
             if (dog == null || dog.IsDead || !dog.IsMature || dog.ShyDays > 0) return 0;
-            return dog.Level >= 5 ? 3 : dog.Level >= 3 ? 2 : 1;
+            // Genetik (belge 48): Doğuştan önder 3. seviyede kurt başı; Gece gözü ve yüksek Cesaret +1.
+            int leader = Genetics.GeneticsService.LeaderLevel(dog.Genome);
+            int baseDef = dog.Level >= leader ? 3 : dog.Level >= 3 ? 2 : 1;
+            return baseDef + Genetics.GeneticsService.DogDefenseBonus(dog.Genome);
         }
 
         public List<Animal> Dogs()
@@ -260,11 +268,15 @@ namespace Thatchwick.Core.Animals
             }
             if (r.Defense > 0)
                 foreach (var dog in Dogs())
-                    if (DogDefense(dog) > 0 && _rng.NextDouble() < DogInjuryChance)
+                    if (DogDefense(dog) > 0 && _rng.NextDouble() < DogInjuryChance * (AnimalSystem.HasGift(dog, Genetics.Gift.LongBreathDog) ? 0.5 : 1.0))
                     {
                         dog.ShyDays = DogRestDays;
                         r.InjuredDogs.Add(dog);
                     }
+            // Efsane yolu "Kurt Kıran" (belge 48 §6.4): kovulan her kurt savunan köpeklere sayılır.
+            if (r.Repelled && r.Defense > 0)
+                foreach (var dog in Dogs())
+                    if (DogDefense(dog) > 0) _animals.AddDeed(dog, Genetics.PetLegends.Wolves, r.Pack);
             Raided?.Invoke(r);
             return r;
         }
@@ -308,24 +320,24 @@ namespace Thatchwick.Core.Animals
         }
 
         /// <summary>Başarı şansı: yay %35 + Avcılık seviye başına %6 − ürkeklik x %20 (tazı +%15); tuzak %25 + %4/sv.</summary>
-        public static double Chance(WildSpecies s, HuntMethod m, int huntingLevel, bool houndHelps)
+        public static double Chance(WildSpecies s, HuntMethod m, int huntingLevel, bool houndHelps, double extra = 0)
         {
             if (s == null || !s.Huntable) return 0;
             if (m == HuntMethod.Trap && !s.Trappable) return 0;
             double c = m == HuntMethod.Bow
-                ? 0.35 + 0.06 * (huntingLevel - 1) - 0.20 * s.Shyness + (houndHelps ? (huntingLevel >= HoundMasterLevel ? 0.25 : 0.15) : 0)
+                ? 0.35 + 0.06 * (huntingLevel - 1) - 0.20 * s.Shyness + (houndHelps ? (huntingLevel >= HoundMasterLevel ? 0.25 : 0.15) + extra : 0)
                 : 0.25 + 0.04 * (huntingLevel - 1);
             return Math.Max(0.05, Math.Min(0.95, c));
         }
 
-        public static HuntResult Try(Random rng, string speciesId, HuntMethod m, Character hunter, bool houndHelps = false, bool motherWithYoung = false)
+        public static HuntResult Try(Random rng, string speciesId, HuntMethod m, Character hunter, bool houndHelps = false, bool motherWithYoung = false, double houndExtra = 0)
         {
             var s = WildCatalog.Get(speciesId);
             var r = new HuntResult { SpeciesId = speciesId };
             if (s == null || !s.Huntable) { r.Message = s != null && s.Id == "wild.bear" ? "Ayı avlanmaz; uzak dur." : "Bu avlanmaz."; return r; }
             int level = hunter != null ? hunter.Skills.GetLevel(SkillType.Hunting) : 1;
             if (level < MinLevel(speciesId)) { r.Message = $"{s.Name} avı için Avcılık {MinLevel(speciesId)} gerekli."; return r; }
-            double chance = Chance(s, m, level, houndHelps);
+            double chance = Chance(s, m, level, houndHelps, houndExtra);
             if (chance <= 0) { r.Message = "Bu yöntemle olmaz."; return r; }
             hunter?.GainSkillXp(SkillType.Hunting, 4);
             if (rng.NextDouble() >= chance) { r.Message = m == HuntMethod.Bow ? $"{s.Name} kaçtı." : "Tuzak boş."; return r; }

@@ -12,7 +12,11 @@ namespace Thatchwick.Core.Animals
         /// <summary>İnek güzellik yarışması (Hasat Şenliği).</summary>
         BeautyContest = 1,
         /// <summary>Öküz kütük çekme (Hasat Şenliği).</summary>
-        LogPull = 2
+        LogPull = 2,
+        /// <summary>Tazı koşusu (Hasat Şenliği; tazı ve kırma tazı, belge 48 §6.4).</summary>
+        HoundRace = 3,
+        /// <summary>Kedi güzellik yarışması (Yaz Panayırı, belge 48 §6.4).</summary>
+        CatShow = 4
     }
 
     public sealed class ContestResult
@@ -59,12 +63,16 @@ namespace Thatchwick.Core.Animals
             switch (kind)
             {
                 case ContestKind.HorseRace:
-                    if (!a.Species.Rideable) return "Yalnızca atlar yarışır.";
+                    if (!a.Species.Rideable || a.Species.Id != Genetics.GeneticsCatalog.Horse) return "Yalnızca atlar yarışır.";
                     if (a.Saddle == null) return "At eyerli olmalı.";
                     if (a.Level < MinRaceLevel) return $"At {MinRaceLevel}. seviyede olmalı.";
                     return null;
                 case ContestKind.BeautyContest:
                     return a.Species.Id == "animal.cow" && a.IsFemale && a.IsMature ? null : "Yalnızca erişkin inekler katılır.";
+                case ContestKind.HoundRace:
+                    return a.TypeId == "dog.sighthound" || a.TypeId == "dog.lurcher" ? (a.IsMature ? null : "Tazı daha yavru.") : "Yalnızca tazılar koşar.";
+                case ContestKind.CatShow:
+                    return a.Species.Id == Genetics.GeneticsCatalog.Cat && a.IsMature ? null : "Yalnızca erişkin kediler katılır.";
                 case ContestKind.LogPull:
                     // Öküz şimdilik sığırın erkeğidir (ayrı tür kararı: Project belgesi 29; içerik sonra).
                     return a.Species.Draft && !a.IsFemale && a.IsMature ? null : "Yalnızca erişkin öküz katılır.";
@@ -101,7 +109,16 @@ namespace Thatchwick.Core.Animals
             {
                 case ContestKind.HorseRace:
                     int riding = handler != null ? handler.Skills.GetLevel(SkillType.Riding) : 1;
-                    return 10 * (lineage + a.Level) + a.Stamina / 5.0 + 3 * riding + a.Friendship / 10.0;
+                    double race = 10 * (lineage + a.Level) + a.Stamina / 5.0 + 3 * riding + a.Friendship / 10.0;
+                    // Genom (belge 48): Hız istatistiği 5'in üstünde puan başına +3, Yarış Yüreği +%10.
+                    if (a.Genome != null) race += 3 * (a.Genome.Stat(Genetics.GeneStat.Speed) - 5);
+                    if (AnimalSystem.HasGift(a, Genetics.Gift.RaceHeart)) race *= 1.1;
+                    return race;
+                case ContestKind.HoundRace:
+                    return 10 * (lineage + a.Level) + 4 * (a.Genome?.Stat(Genetics.GeneStat.Speed) ?? 5) + a.Friendship / 10.0;
+                case ContestKind.CatShow:
+                    bool showy = a.TypeId == "cat.angora" || a.TypeId == "cat.van" || a.Genome?.RareCoat != null;
+                    return 8 * lineage + 4 * a.Level + a.Friendship * 0.4 + 2 * (a.Genome?.Stat(Genetics.GeneStat.Temper) ?? 5) + (showy ? 8 : 0);
                 case ContestKind.BeautyContest:
                     return 8 * lineage + 4 * a.Level + a.Comfort * 0.3 + a.Friendship * 0.4;
                 default:
@@ -170,7 +187,8 @@ namespace Thatchwick.Core.Animals
                 string title = TitleFor(kind, a);
                 if (title != null && AnimalProgress.GrantLegend(a, title)) r.LegendTitle = title;
             }
-            string what = kind == ContestKind.HorseRace ? "at yarışını" : kind == ContestKind.BeautyContest ? "güzellik yarışmasını" : "kütük çekmeyi";
+            string what = kind == ContestKind.HorseRace ? "at yarışını" : kind == ContestKind.BeautyContest ? "güzellik yarışmasını"
+                : kind == ContestKind.HoundRace ? "tazı koşusunu" : kind == ContestKind.CatShow ? "kedi güzellik yarışmasını" : "kütük çekmeyi";
             r.Summary = place == 1
                 ? $"{a.Name}, {what} kazandı!" + (r.LegendTitle != null ? $" Artık bir efsane: {r.LegendTitle}." : "")
                 : $"{a.Name}, {what} {place}. bitirdi.";
@@ -184,6 +202,8 @@ namespace Thatchwick.Core.Animals
                 case ContestKind.HorseRace: return "Panayır Rüzgârı";
                 case ContestKind.BeautyContest: return "Hasat Güzeli";
                 case ContestKind.LogPull: return "Demir Omuz";
+                case ContestKind.HoundRace: return "Rüzgâr Tazısı";
+                case ContestKind.CatShow: return "Panayır Güzeli";
                 default: return AnimalProgress.TitleFor(a.Species.Id);
             }
         }
@@ -220,6 +240,9 @@ namespace Thatchwick.Core.Animals
                 case ContestKind.HorseRace:
                     if (festivalId == "festival.fair") { mainEvent = true; return true; }
                     return festivalId == "festival.seed";   // köy koşusu
+                case ContestKind.CatShow:
+                    mainEvent = festivalId == "festival.fair";
+                    return mainEvent;
                 default:
                     if (festivalId == "festival.harvest") { mainEvent = true; return true; }
                     return false;

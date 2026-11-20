@@ -367,6 +367,7 @@ namespace Thatchwick.Core.Animals
         public string BreedBlocker(Animal a)
         {
             if (a == null || a.IsDead) return "Hayvan bulunamadı.";
+            if (a.Species.Sterile || a.IsSterile) return "Kısırdır; yavru vermez.";
             if (!a.Species.Breeds) return "Bu hayvan yavrulamaz.";
             if (!a.IsFemale) return null;
             if (a.IsPregnant) return $"Gebe; doğuma {Math.Ceiling(a.PregnantDays):0} gün.";
@@ -377,24 +378,36 @@ namespace Thatchwick.Core.Animals
             if (a.Comfort < BreedComfort) return "Barınağı rahat değil.";
             var home = _world.GetItem(a.HomeItemId);
             if (home == null) return "Barınağı yok.";
+            if (AtPetCap(a.Species)) return $"Hanede en çok {PetCap} {a.Species.DisplayName.ToLowerInvariant()} bakılır.";
             if (FindMate(a) == null) return $"Yanında erişkin {a.Species.MaleName ?? "erkek"} yok.";
             return FreeHomeNear(a.Species, home) == null ? "Barınakta yavruya yer yok." : null;
         }
 
-        // Aynı odadaki (dış barınakta aynı barınaktaki) sağlıklı erişkin erkek.
+        /// <summary>Evcil hayvanda (köpek, kedi) eş bu kadar karo yakındaki kulübe ya da sepette olabilir (dışarıdaki tek kişilik barınaklar).</summary>
+        public const int PetMateRadius = 10;
+
+        // Aynı odadaki (dış barınakta aynı barınaktaki) sağlıklı erişkin erkek; aynı tür önce, yoksa melez tarifi olan tür (belge 48 §3.5).
         private Animal FindMate(Animal female)
         {
             var home = _world.GetItem(female.HomeItemId);
             if (home == null) return null;
             var room = RoomOf(home);
+            Animal cross = null;
             foreach (var m in _animals)
             {
-                if (m.IsDead || m.IsFemale || m.IsSick || !m.IsMature || m.Species.Id != female.Species.Id) continue;
+                if (m.IsDead || m.IsFemale || m.IsSick || !m.IsMature || m.IsSterile || m.Species.MaleOnly || m.Species.Sterile) continue;
+                bool same = m.Species.Id == female.Species.Id;
+                if (!same && Genetics.GeneticsCatalog.CrossFor(female.Species.Id, m.Species.Id) == null) continue;
                 var mh = _world.GetItem(m.HomeItemId);
                 if (mh == null) continue;
-                if (room != null ? RoomOf(mh) == room : mh.Id == home.Id) return m;
+                bool near = room != null ? RoomOf(mh) == room : mh.Id == home.Id;
+                if (!near && female.Species.IsPet && same && mh.Position.Z == home.Position.Z
+                    && Math.Abs(mh.Position.X - home.Position.X) + Math.Abs(mh.Position.Y - home.Position.Y) <= PetMateRadius) near = true;
+                if (!near) continue;
+                if (same) return m;
+                if (cross == null) cross = m;
             }
-            return null;
+            return cross;
         }
 
         // Gün başı: gebelerin günü azalır, zamanı gelen doğurur; sonra her sürüde (tür + oda) bir dişi gebe kalabilir.
@@ -414,12 +427,16 @@ namespace Thatchwick.Core.Animals
             var groups = new Dictionary<string, List<Animal>>();
             foreach (var a in _animals)
             {
-                if (a.IsDead || !a.IsFemale || !a.Species.Breeds || a.IsPregnant || a.IsSick || !a.IsMature || a.Fullness < 60f) continue;
+                if (a.IsDead || !a.IsFemale || a.IsPregnant || a.IsSick || !a.IsMature || a.Fullness < 60f) continue;
+                bool miracle = a.Species.Sterile;   // dişi katır: nadir mucize tay (belge 48 §7.4)
+                if (!a.Species.Breeds && !miracle) continue;
+                if (a.IsSterile && !miracle) continue;
                 if (a.Friendship < BreedFriendship || a.Comfort < BreedComfort) continue;
+                if (AtPetCap(a.Species)) continue;
                 var home = _world.GetItem(a.HomeItemId);
                 if (home == null) continue;
                 var room = RoomOf(home);
-                string key = a.Species.Id + "|" + (room != null ? "r" + room.Tiles[0] : "h" + home.Id);
+                string key = a.Species.Id + "|" + (a.Species.IsPet ? "pet" : room != null ? "r" + room.Tiles[0] : "h" + home.Id);
                 if (!groups.TryGetValue(key, out var list)) { list = new List<Animal>(); groups[key] = list; }
                 list.Add(a);
             }
@@ -432,59 +449,121 @@ namespace Thatchwick.Core.Animals
                 var female = list[0];                                     // en dost dişi
                 var father = FindMate(female);
                 if (father == null) continue;
-                if (FreeHomeNear(female.Species, _world.GetItem(female.HomeItemId)) == null) continue;
-                if (_rng.NextDouble() >= chance) continue;
+                var cross = father.Species.Id != female.Species.Id ? Genetics.GeneticsCatalog.CrossFor(female.Species.Id, father.Species.Id) : null;
+                var childSpecies = female.Species;
+                if (female.Species.Sterile)
+                {
+                    // Mucize tay: katırla aygırdan at, eşek aygırından katır doğar; şans çok düşük.
+                    if (_geneRng.NextDouble() >= Genetics.GeneticsCatalog.MiracleFoalChance) continue;
+                    if (!_content.Animals.TryGet(father.Species.Id == Genetics.GeneticsCatalog.Donkey ? Genetics.GeneticsCatalog.Mule : father.Species.Id, out childSpecies)) continue;
+                }
+                else if (cross != null && !_content.Animals.TryGet(cross.Offspring, out childSpecies)) continue;
+                if (FreeHomeNear(childSpecies, _world.GetItem(female.HomeItemId)) == null) continue;
+                double c = cross != null ? chance * cross.ChanceFactor : chance;
+                if (!female.Species.Sterile && _rng.NextDouble() >= c) continue;
                 female.PregnantDays = Math.Max(1.0, Math.Ceiling(female.Species.GestationDays));
-                _fathers[female.Id] = father.Id;
+                female.PregnancySireId = father.Id;
+                female.PregnancySireSpecies = father.Species.Id;
+                female.PregnancySireGenome = father.Genome;
                 if (report != null) report.Conceived++;
                 Conceived?.Invoke(female, father.Id);
             }
             return births;
         }
 
-        // Babanın kimliği (kuşak hesabı için; kayda girmez, yoksa annenin kuşağı sayılır).
-        private readonly Dictionary<int, int> _fathers = new Dictionary<int, int>();
+        /// <summary>Yavrunun türü: babanın türü melez tarifindeyse melez (katır, bardo); dişi katırın mucize tayı babanın türü.</summary>
+        private AnimalSpeciesDef OffspringSpecies(Animal mother)
+        {
+            string sire = mother.PregnancySireSpecies;
+            if (mother.Species.Sterile)
+            {
+                string id = sire == Genetics.GeneticsCatalog.Donkey ? Genetics.GeneticsCatalog.Mule : sire ?? Genetics.GeneticsCatalog.Horse;
+                return _content.Animals.TryGet(id, out var m) ? m : mother.Species;
+            }
+            if (sire == null || sire == mother.Species.Id) return mother.Species;
+            var cross = Genetics.GeneticsCatalog.CrossFor(mother.Species.Id, sire);
+            return cross != null && _content.Animals.TryGet(cross.Offspring, out var d) ? d : mother.Species;
+        }
+
+        private readonly Dictionary<int, int> _tripDay = new Dictionary<int, int>();
+
+        /// <summary>Oyun günü (uzaktaki hayvanın ne zamandan beri gittiği için).</summary>
+        public Func<double> TodayNow { get; set; }
+
+        /// <summary>Genetik çarpanı: Hayvancılık dalının ek kademe şansı genetikte iyi ebeveyn şansına da eklenir (en çok +%10).</summary>
+        public Func<double> GeneBonus { get; set; }
 
         // Doğum: yavru sayısı türün aralığından, barınakta yer kadar. Yer yoksa doğum bekler (gün sonra yeniden).
         private int GiveBirth(Animal mother)
         {
             var home = _world.GetItem(mother.HomeItemId);
-            var nest = home != null ? FreeHomeNear(mother.Species, home) : null;
+            var childSpecies = OffspringSpecies(mother);
+            var nest = home != null ? FreeHomeNear(childSpecies, home) : null;
             if (nest == null) { mother.PregnantDays = 0.0001; BirthDelayed?.Invoke(mother); return 0; }
             mother.PregnantDays = 0;
-            int litter = mother.Species.LitterMin + _rng.Next(mother.Species.LitterMax - mother.Species.LitterMin + 1);
+            bool miracle = mother.Species.Sterile;
+            int litter = miracle ? 1 : childSpecies.LitterMin + _rng.Next(childSpecies.LitterMax - childSpecies.LitterMin + 1);
             int gen = mother.Generation;
-            Animal father = null;
-            if (_fathers.TryGetValue(mother.Id, out var fid)) { father = Get(fid); if (father != null) gen = Math.Max(gen, father.Generation); _fathers.Remove(mother.Id); }
+            Animal father = mother.PregnancySireId != 0 ? Get(mother.PregnancySireId) : null;
+            if (father != null) gen = Math.Max(gen, father.Generation);
+            int fatherId = mother.PregnancySireId;
+            var sireGenome = father?.Genome ?? mother.PregnancySireGenome;
+            double inbreeding = InbreedingOf(mother.Id, fatherId);
             int born = 0;
             for (int i = 0; i < litter; i++)
             {
-                nest = FreeHomeNear(mother.Species, home);
+                nest = FreeHomeNear(childSpecies, home);
                 if (nest == null) break;
-                var baby = Spawn(mother.Species, nest, _rng.NextDouble() < 0.5);
+                if (childSpecies.IsPet && AtPetCap(childSpecies)) break;
+                bool female = _rng.NextDouble() < 0.5;
+                var baby = Spawn(childSpecies, nest, female);
                 baby.MotherId = mother.Id;
+                baby.FatherId = fatherId;
                 baby.Generation = gen + 1;
                 // Soy kademesi (29): ebeveyn ortalaması, %15 bir üstü (Hayvancılık dalıyla artabilir), %10 bir altı.
                 baby.Lineage = AnimalProgress.InheritLineage(_rng, mother, father, LineageUpBonus?.Invoke() ?? 0.0, out var descent);
                 baby.LegendaryDescent = descent;
                 baby.Friendship = mother.Friendship * InheritFriendship;
                 baby.Fullness = 100f;
+                if (childSpecies.HasGenetics)
+                {
+                    // Genetik (belge 48 §3): görünüm, istatistik, hüner ve kusur iki ebeveynden.
+                    var ctx = new Genetics.BreedContext
+                    {
+                        Comfort = mother.Comfort, HusbandryBonus = Math.Max(0, Math.Min(0.10, GeneBonus?.Invoke() ?? 0)), Inbreeding = inbreeding,
+                        MotherLineage = mother.Lineage, FatherLineage = father?.Lineage ?? mother.Lineage, LegendaryDescent = descent
+                    };
+                    var motherGenome = mother.Genome ?? Genetics.GeneticsService.Random(mother.Species.Id, null, mother.Lineage, true, _geneRng);
+                    var genes = Genetics.GeneticsService.Breed(motherGenome, sireGenome, childSpecies.Id, female, baby.Lineage, ctx, _geneRng);
+                    baby.Genome = genes.Genome;
+                    if (genes.Genome != null && genes.Genome.Sterile && genes.RareEvent == "event.male_calico") baby.IsFemale = false;
+                    RecordPedigree(baby);
+                    if (miracle) GeneEvent?.Invoke(baby, "event.miracle_foal");
+                    if (genes.RareEvent != null) GeneEvent?.Invoke(baby, genes.RareEvent);
+                }
+                else RecordPedigree(baby);
                 born++;
                 Born?.Invoke(mother, baby);
             }
+            mother.PregnancySireId = 0;
+            mother.PregnancySireSpecies = null;
+            mother.PregnancySireGenome = null;
             return born;
         }
 
-        // Annenin barınağıyla aynı odadaki (dış barınakta kendisi) boş yeri olan barınak.
+        // Annenin barınağıyla aynı odadaki (dış barınakta kendisi) boş yeri olan barınak. Evcil hayvanda yakındaki herhangi bir boş kulübe/sepet.
         private ItemInstance FreeHomeNear(AnimalSpeciesDef species, ItemInstance home)
         {
+            if (home == null) return null;
             var room = RoomOf(home);
+            ItemInstance pet = null;
             foreach (var it in _world.Items)
             {
                 if (it.IsDecor || it.Def.HousingKind != species.Housing || Residents(it.Id) >= it.Def.HousingCapacity) continue;
                 if (room != null ? InRoom(room, it) : it.Id == home.Id) return it;
+                if (species.IsPet && pet == null) pet = it;
             }
-            return null;
+            return pet;
         }
 
         /// <summary>
@@ -510,6 +589,7 @@ namespace Thatchwick.Core.Animals
             }
             UpdateHealth(season, report);
             report.Births = Breed(report);
+            AwayDay(season, house, TodayNow?.Invoke() ?? 0);   // köy merası ve yayla (belge 48 §8.2)
             if (house == null) return report;
 
             foreach (var helper in new List<ItemInstance>(_world.Items))
@@ -600,7 +680,7 @@ namespace Thatchwick.Core.Animals
         {
             var a = MountOf(riderId);
             if (a == null) return 1.0;
-            double speed = a.Species.RideSpeed;
+            double speed = a.Species.RideSpeed * Genetics.GeneticsService.RideFactor(a.Genome);   // tip ve Hız geni (belge 48 §7.1)
             if (a.Saddle != null && _content.Items.TryGet(a.Saddle, out var s) && s.HasTag("fine")) speed *= 1.25;
             // Binicilik: seviye başına %3 (10. seviyede %27).
             var rider = FindCharacter?.Invoke(riderId);
@@ -625,6 +705,10 @@ namespace Thatchwick.Core.Animals
             if (a.RiderId != 0) return "Üstünde zaten biri var.";
             if (MountOf(riderId) != null) return "Zaten bir hayvanın üstündesin.";
             if (a.Friendship < MountFriendship) return $"{a.Name} sana henüz güvenmiyor (sev, tımar et).";
+            // Çocuk yalnız midilli ve eşeğe biner (belge 48 §7.1); bebek binmez.
+            var rider = FindCharacter?.Invoke(riderId);
+            if (rider != null && rider.Stage == AgeStage.Baby) return "Bebek binemez.";
+            if (rider != null && rider.Stage == AgeStage.Child && !a.ChildMount) return "Çocuk yalnız midilliye ya da eşeğe biner.";
             return null;
         }
 
@@ -634,6 +718,12 @@ namespace Thatchwick.Core.Animals
             a.RiderId = riderId;
             a.Path = null;
             a.NextTile = null;
+            // Katır ve bardo: günde bir binilen yol bir sefer sayılır (efsane yolu "Dağ Aşan", belge 48 §7.4).
+            if (Genetics.GeneticsCatalog.IsSterileHybrid(a.Species.Id))
+            {
+                int today = (int)Math.Floor(TodayNow?.Invoke() ?? 0);
+                if (!_tripDay.TryGetValue(a.Id, out int last) || last != today) { _tripDay[a.Id] = today; AddDeed(a, Genetics.PetLegends.Trips); }
+            }
             return true;
         }
 
@@ -765,7 +855,7 @@ namespace Thatchwick.Core.Animals
                 rider?.GainSkillXp(SkillType.Riding, 3);
                 return JumpOutcome.Cleared;
             }
-            a.ShyDays = HorseAbilities.ShyDaysAfterRefusal;
+            a.ShyDays = HorseAbilities.ShyDaysAfterRefusal * (HasGift(a, Genetics.Gift.Calm) ? 0.5 : 1.0);   // Sakin hüneri
             a.Galloping = false;
             a.Friendship = Math.Max(0f, a.Friendship - HorseAbilities.RefusalFriendshipLoss);
             if (_rng.NextDouble() < 0.5)

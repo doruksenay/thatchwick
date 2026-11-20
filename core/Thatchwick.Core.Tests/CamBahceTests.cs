@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Life;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
 
@@ -44,6 +46,13 @@ namespace Thatchwick.Core.Tests
             return k.World.PlaceOnSurface(k.D("item.glass_garden"), table.Id, table.Def.SurfaceSlots[0].Id);
         }
 
+        private static readonly Localizer Tr = new Localizer("tr", LocTable.Parse(File.ReadAllText(LocPath("ui.tr.json")), new List<string>()),
+            LocTable.Parse(File.ReadAllText(LocPath("ui.en.json")), new List<string>()));
+        private static string LocPath(string f) => Path.GetFullPath(Path.Combine(ContentFilesTests.ContentDir(), "..", "Localization", f));
+
+        /// <summary>Core'un cam bahçe metnini Türkçe çözer (oyundaki gibi).</summary>
+        private static string S(Kit k, LocText? t) => t.HasValue ? VivText.Resolve(Tr, t.Value, id => k.Db.Items.TryGet(id, out var d) ? d.DisplayName : id) : null;
+
         private static void Give(Kit k, params string[] ids) { foreach (var id in ids) k.House.AddItem(id, 1); }
 
         /// <summary>Zemin malzemesini (doğadan gelmiş say) verip zemini kurar.</summary>
@@ -76,8 +85,8 @@ namespace Thatchwick.Core.Tests
             var k = Make();
             var g = Garden(k);
             Give(k, "item.viv_moss");
-            Assert.Contains("zemini", k.Home.CanAddToViv(g, "item.viv_moss"));
-            Assert.Contains("doğadan", k.Home.SetHabitat(g, HomeLife.Moist));   // orman toprağı yok
+            Assert.Contains("zemini", S(k, k.Home.CanAddToViv(g, "item.viv_moss")));
+            Assert.Contains("doğadan", S(k, k.Home.SetHabitat(g, HomeLife.Moist)));   // orman toprağı yok
             Ground(k, g, HomeLife.Moist);
             Assert.Equal(0, k.House.Count("item.viv_forest_soil"));
             Assert.True(k.Home.AddToViv(g, "item.viv_moss"));
@@ -93,7 +102,7 @@ namespace Thatchwick.Core.Tests
             var k = Make();
             var g = Garden(k);
             Give(k, "item.salt", "item.viv_sea_sand");
-            Assert.Contains("deniz suyu", k.Home.SetHabitat(g, HomeLife.Salt));
+            Assert.Contains("deniz suyu", S(k, k.Home.SetHabitat(g, HomeLife.Salt)));
             Assert.NotNull(k.Home.SetHabitat(g, HomeLife.Salt, "item.sand"));   // göl kumu tuzlu suya olmaz
             Give(k, HomeLife.SeaWaterItem);
             Assert.Null(k.Home.SetHabitat(g, HomeLife.Salt));
@@ -133,9 +142,9 @@ namespace Thatchwick.Core.Tests
             Assert.NotNull(k.Home.CanAddToViv(g, "item.viv_lizard"));      // kertenkele kuru kum ister
             Assert.NotNull(k.Home.CanAddToViv(g, "item.viv_seaweed"));     // deniz yosunu tuzlu su ister
             Assert.True(k.Home.AddToViv(g, "item.viv_firefly"));
-            Assert.Contains("zehir", k.Home.CanAddToViv(g, "item.viv_frog"));
+            Assert.Contains("zehir", S(k, k.Home.CanAddToViv(g, "item.viv_frog")));
             Assert.True(k.Home.AddToViv(g, "item.viv_spider"));
-            Assert.Contains("İki", k.Home.CanAddToViv(g, "item.viv_spider"));
+            Assert.Contains("İki", S(k, k.Home.CanAddToViv(g, "item.viv_spider")));
         }
 
         [Fact]
@@ -146,7 +155,7 @@ namespace Thatchwick.Core.Tests
             Ground(k, g, HomeLife.Moist);
             for (int i = 0; i < 4; i++) Give(k, "item.viv_moss");
             for (int i = 0; i < 3; i++) Assert.True(k.Home.AddToViv(g, "item.viv_moss"));
-            Assert.Contains("Bitki yeri dolu", k.Home.CanAddToViv(g, "item.viv_moss"));
+            Assert.Contains("Bitki yeri dolu", S(k, k.Home.CanAddToViv(g, "item.viv_moss")));
             Give(k, "item.viv_worm");
             Assert.True(k.Home.AddToViv(g, "item.viv_worm"));
         }
@@ -160,7 +169,7 @@ namespace Thatchwick.Core.Tests
             Give(k, "item.viv_aphid", "item.viv_ladybird");
             k.Home.AddToViv(g, "item.viv_aphid");
             var w = k.Home.AddWarnings(g, "item.viv_ladybird");
-            Assert.Contains(w, s => s.Contains("yaprak biti yer"));
+            Assert.Contains(w, s => S(k, s).Contains("yaprak biti yer"));
         }
 
         [Fact]
@@ -176,7 +185,7 @@ namespace Thatchwick.Core.Tests
             for (int d = 0; d < 10; d++) { v.Moisture = 80; k.Home.VivariumDay(); }
             Assert.DoesNotContain(v.Entries, e => e.Item == "item.viv_aphid");
             Assert.Contains(v.Entries, e => e.Item == "item.viv_moss");
-            Assert.Contains(v.Log, s => s.Contains("yedi"));
+            Assert.Contains(v.Log, s => S(k, s).Contains("yedi"));
         }
 
         [Fact]
@@ -207,7 +216,7 @@ namespace Thatchwick.Core.Tests
             for (int d = 0; d < 15 && v.Entries.Count > 0; d++) { k.Home.VivariumTick(1); k.Home.VivariumDay(); }
             Assert.Empty(v.Entries);
             Assert.True(v.Mold > 0);
-            Assert.Contains(v.Log, s => s.Contains("kurudu") || s.Contains("öldü"));
+            Assert.Contains(v.Log, s => S(k, s).Contains("kurudu") || S(k, s).Contains("öldü"));
         }
 
         [Fact]
@@ -337,7 +346,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(k.Home.AddToViv(g, "item.viv_flat_stone"));
             Assert.True(k.Home.AddToViv(g, "item.river_pebble"));
             Assert.True(k.Home.AddToViv(g, "item.viv_mossy_stone"));
-            Assert.Contains("Süs yeri dolu", k.Home.CanAddToViv(g, "item.viv_bark"));
+            Assert.Contains("Süs yeri dolu", S(k, k.Home.CanAddToViv(g, "item.viv_bark")));
             var v = k.Home.VivOf(g);
             Assert.Equal(3, k.Home.CountDecor(v));
             Assert.Equal(0, k.Home.CountCreatures(v));
@@ -360,7 +369,7 @@ namespace Thatchwick.Core.Tests
             Give(k, "item.viv_hermit", "item.viv_seaweed", "item.viv_whelk");
             Ground(k, g, HomeLife.Salt);
             k.Home.AddToViv(g, "item.viv_seaweed");
-            Assert.Contains(k.Home.AddWarnings(g, "item.viv_hermit"), w => w.Contains("boş kabuk"));
+            Assert.Contains(k.Home.AddWarnings(g, "item.viv_hermit"), w => S(k, w).Contains("boş kabuk"));
             k.Home.AddToViv(g, "item.viv_hermit");
             var v = k.Home.VivOf(g);
             for (int d = 0; d < 2; d++) { v.Moisture = 90; k.Home.VivariumDay(); }
@@ -375,9 +384,9 @@ namespace Thatchwick.Core.Tests
             var dry = Garden(k2);
             Ground(k2, dry, HomeLife.Dry);
             Give(k2, "item.viv_lizard", "item.viv_flat_stone");
-            Assert.Contains(k2.Home.AddWarnings(dry, "item.viv_lizard"), w => w.Contains("güneşlenme taşı"));
+            Assert.Contains(k2.Home.AddWarnings(dry, "item.viv_lizard"), w => S(k2, w).Contains("güneşlenme taşı"));
             k2.Home.AddToViv(dry, "item.viv_flat_stone");
-            Assert.DoesNotContain(k2.Home.AddWarnings(dry, "item.viv_lizard"), w => w.Contains("güneşlenme taşı"));
+            Assert.DoesNotContain(k2.Home.AddWarnings(dry, "item.viv_lizard"), w => S(k2, w).Contains("güneşlenme taşı"));
         }
 
         [Fact]

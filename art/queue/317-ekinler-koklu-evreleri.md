@@ -1,7 +1,7 @@
 ---
 id: "317"
 title: Kök ekinleri evreleri (yaban havucu, havuç, soğan, sarımsak, pancar; 3 evre)
-status: running
+status: review
 claimed_at: 2026-11-20T09:56Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10

@@ -157,6 +157,12 @@ namespace Thatchwick.Core.Localization
                 if (o != null) o.displayName = f(ContentKeys.Look(group, o.id), o.displayName);
         }
 
+        /// <summary>
+        /// ContentMapper'ın koddan ürettiği etkileşim adları (kavanozla yakala, doldur, mevsimi geçen süsü kaldır, yükselt)
+        /// için çevirici: (anahtar, Türkçe metin) → seçili dildeki metin. Anahtarlar ui tablolarında (content.act.*).
+        /// </summary>
+        public static Func<string, string, string> Generated(Localizer loc) => (key, tr) => ShouldApply(loc) ? Pick(loc, key, tr) : tr;
+
         private static bool ShouldApply(Localizer loc) =>
             loc != null && loc.Language != Languages.Normalize(JsonLanguage);
 

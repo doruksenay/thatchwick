@@ -155,6 +155,9 @@ namespace Thatchwick.Game
             return GetCentered(h % 4 == 0 ? "iso_ground_water_b" : "iso_ground_water_a") ?? GetCentered("iso_ground_water_a");
         }
 
+        /// <summary>Kıyı karosu (346): kara (çamur ve saz) karonun sağ üst kenarında, yani +x komşusu yönünde. Sol üst (+y) için aynalanır.</summary>
+        public static Sprite Shore() => GetCentered("iso_ground_water_shore");
+
         /// <summary>Kumsal karosu (484): iso_ground_beach_a/b; yoksa null (oyun katmanı toprağı kum rengine boyar).</summary>
         public static Sprite Beach(int x, int y)
         {
@@ -463,7 +466,32 @@ namespace Thatchwick.Game
             ["wild.boar"] = ("iso_wild_boar_cand", 24f, 10f),
             ["wild.rat"] = ("iso_wild_rat_cand", 24f, 10f),
             ["wild.bear"] = ("iso_wild_bear_cand", 24f, 10f),
+            ["wild.gull"] = ("iso_wild_gull_cand", 24f, 10f),     // iş 485
+            ["wild.crab"] = ("iso_wild_crab_cand", 24f, 10f),     // iş 485
         };
+
+        // Genetik gövdeleri (belge 48 §11, işler 484-487): tip başına nötr renkli tek gövde; renk paletle (tint) gelir.
+        private static readonly Dictionary<string, (float px, float py)> Bodies = new Dictionary<string, (float, float)>
+        {
+            ["dog_shepherd"] = (21f, 4f), ["dog_sighthound"] = (21f, 4f), ["dog_scenthound"] = (19f, 4f), ["dog_tracker"] = (19f, 4f),
+            ["dog_mastiff"] = (21f, 4f), ["dog_waterdog"] = (19f, 4f), ["dog_lapdog"] = (16f, 2f),
+            ["cat_medium"] = (15f, 2f), ["cat_large"] = (15f, 2f), ["cat_slim"] = (15f, 2f),
+            ["horse_light"] = (28f, 12f), ["horse_medium"] = (28f, 12f), ["horse_heavy"] = (28f, 12f),
+            ["pony"] = (22f, 8f), ["donkey"] = (22f, 8f), ["mule"] = (28f, 12f), ["hinny"] = (24f, 10f),
+        };
+
+        /// <summary>Genetik gövde görseli: önce uzun tüylü eş (<c>_long</c>), sonra gövde; yoksa null (tür görseline düşülür).</summary>
+        public static Sprite AnimalBody(string body, bool longCoat, int direction)
+        {
+            if (body == null || !Bodies.TryGetValue(body, out var b)) return null;
+            string dir = Directions[direction];
+            if (longCoat)
+            {
+                var l = Get("iso_animal_" + body + "_long_cand_" + dir, b.px, b.py) ?? Get("iso_animal_" + body + "_long_cand_se", b.px, b.py);
+                if (l != null) return l;
+            }
+            return Get("iso_animal_" + body + "_cand_" + dir, b.px, b.py) ?? Get("iso_animal_" + body + "_cand_se", b.px, b.py);
+        }
 
         public static Sprite Animal(string speciesId, int direction)
         {

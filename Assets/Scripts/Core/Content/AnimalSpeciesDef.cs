@@ -59,6 +59,14 @@ namespace Thatchwick.Core.Content
         /// <summary>Üreyebilir mi (evcil hayvan ve arı hariç).</summary>
         /// <summary>Hep erkek (iğdiş öküz): üremez, satın alınan hep erkektir.</summary>
         public bool MaleOnly { get; set; }
-        public bool Breeds => !IsPet && Housing != "hive" && !MaleOnly;
+        /// <summary>Evcil hayvan da yavrular (köpek ve kedi; belge 31-2, 48 §6.1).</summary>
+        public bool PetBreeds { get; set; }
+        /// <summary>Kısır melez (katır, bardo): kendi türünden yavru vermez; dişide nadir "mucize tay" (belge 48 §7.4).</summary>
+        public bool Sterile { get; set; }
+        /// <summary>Sürü hayvanı: köy merasına ve yaylaya gönderilebilir (belge 48 §8.2).</summary>
+        public bool Herd { get; set; }
+        public bool Breeds => (!IsPet || PetBreeds) && Housing != "hive" && !MaleOnly && !Sterile;
+        /// <summary>Genomu var (köpek, kedi, at ailesi).</summary>
+        public bool HasGenetics => Thatchwick.Core.Animals.Genetics.GeneticsCatalog.HasGenetics(Id);
     }
 }

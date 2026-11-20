@@ -803,6 +803,7 @@ namespace Thatchwick.Core.Life
                 }
                 foreach (var d in r.InjuredDogs) Say($"{d.Name} kurtlarla boğuşurken yaralandı; birkaç gün dinlenecek.", NoticeLevel.Info);
             };
+            AttachAnimalGenetics(animals);   // genetik, mera ve yayla, böcek ve balık defteri (belge 48)
         }
 
         /// <summary>Kurt saldırısı; hayvan sistemi bağlanınca kurulur.</summary>
@@ -822,6 +823,7 @@ namespace Thatchwick.Core.Life
             market.HouseTradeLevel = () => BestSkill(SkillType.Trade);              // tezgâh, toptan, takas (belge 45)
             _market = market;
             market.IsFairDay = () => Festivals.TodaysFestival() != null;
+            market.CalendarFactor = def => FastingCalendar.PriceFactor(def, IsFasting);   // perhiz günleri (belge 48 §9.4)
         }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; Home.Build = build; }
         /// <summary>Depo: sandığa demir kuşak kapasite verir (belge 45).</summary>
@@ -964,6 +966,7 @@ namespace Thatchwick.Core.Life
             farm.JarBlocker = (tile, fill) => Home.WaterJarBlocker(tile, fill);
             farm.JarCatch = (c, tile) => Home.CatchAtWater(c, tile);
             farm.JarFill = tile => Home.FillAtWater(tile);
+            AttachFishing(farm);   // defter, efsane balık, inci (belge 48 §9.4)
         }
         private FamilyService _family;
 
@@ -1157,6 +1160,7 @@ namespace Thatchwick.Core.Life
             var report = Forecast.Report(Clock.TotalDays);
             if (report.Warnings.Count > 0)
                 Say(report.Warnings[0], report.HasDanger ? NoticeLevel.Danger : NoticeLevel.Warning);
+            AnimalDay(day);   // hüner etkileri, çekirge, perhiz (belge 48)
             DailyHealing();
             Injuries.DailyUpdate();
             Decor.RemindFreeMirror();
@@ -1222,6 +1226,9 @@ namespace Thatchwick.Core.Life
                 timedDuties = Duties.Export(),
                 roaming = Roaming.Export(),
                 requests = Requests.Export(),
+                creatureBook = Book.Export(),
+                locustDry = Locusts.DryDays,
+                locustIncoming = Locusts.Incoming,
                 skillFlags = ExportSkillFlags(),
                 roomNames = ExportRoomNames()
             };
@@ -1246,6 +1253,8 @@ namespace Thatchwick.Core.Life
             ImportRoomNames(data.roomNames);
             Merchant.Import(data.merchant);
             Journal.Import(data.natureJournal);
+            Book.Import(data.creatureBook);
+            Locusts.DryDays = data.locustDry; Locusts.Incoming = data.locustIncoming;
             Adoptions.Import(data.adoptedWild);
             Coffee.Import(data.coffeeHabits);
             Olives.Import(data.olives);

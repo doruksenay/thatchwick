@@ -7,6 +7,9 @@ namespace Thatchwick.Core.Content
     /// <summary>JSON şeklindeki (DTO) içeriği ContentDatabase'e kaydeder ve hataları toplar.</summary>
     public static class ContentMapper
     {
+        /// <summary>Koddan üretilen etkileşim adlarının çevirisi (oyun katmanı ContentLocalizer.Generated ile verir); yoksa Türkçe.</summary>
+        public static Func<string, string, string> GeneratedText { get; set; } = (key, tr) => tr;
+
         /// <summary>Hata listesini döner; boşsa içerik eksiksiz yüklendi. Hatalı kayıtlar atlanır, diğerleri yüklenir.</summary>
         public static List<string> Apply(ContentFileDto file, ContentDatabase db)
         {
@@ -355,12 +358,12 @@ namespace Thatchwick.Core.Content
                 ApplyUpgrades(item, dto.upgrades, errors);
                 // Cam bahçe (belge 47): yakalanacak türü olan toplama yerine "Cam kavanozla yakala".
                 if (item.Catches.Count > 0)
-                    item.Interactions.Add(new InteractionDef { Id = "catch", DisplayName = "Cam kavanozla yakala", DurationDays = 0.05, Skill = SkillType.Foraging, SkillXp = 3f, HomeAction = "catch" });
+                    item.Interactions.Add(new InteractionDef { Id = "catch", DisplayName = GeneratedText("content.act.catch", "Cam kavanozla yakala"), DurationDays = 0.05, Skill = SkillType.Foraging, SkillXp = 3f, HomeAction = "catch" });
                 if (item.Gathers.Count > 0)
-                    item.Interactions.Add(new InteractionDef { Id = "fill", DisplayName = "Kavanoza doldur", DurationDays = 0.03, Skill = SkillType.Foraging, SkillXp = 1f, HomeAction = "fill" });
+                    item.Interactions.Add(new InteractionDef { Id = "fill", DisplayName = GeneratedText("content.act.fill", "Kavanoza doldur"), DurationDays = 0.03, Skill = SkillType.Foraging, SkillXp = 1f, HomeAction = "fill" });
                 // Mevsim süsü: mevsimi geçince ev görevlisi kaldırır (belge 45).
                 if (item.IsSeasonal)
-                    item.Interactions.Add(new InteractionDef { Id = "stow_wilted", DisplayName = "Kaldır (mevsimi geçti)", DurationDays = 0.02, HomeAction = "stow" });
+                    item.Interactions.Add(new InteractionDef { Id = "stow_wilted", DisplayName = GeneratedText("content.act.stow_wilted", "Kaldır (mevsimi geçti)"), DurationDays = 0.02, HomeAction = "stow" });
 
                 try
                 {
@@ -480,7 +483,7 @@ namespace Thatchwick.Core.Content
                 var interaction = new InteractionDef
                 {
                     Id = "upgrade:" + def.Id,
-                    DisplayName = "Yükselt: " + def.DisplayName,
+                    DisplayName = GeneratedText("content.act.upgrade", "Yükselt: {item}").Replace("{item}", def.DisplayName),
                     DurationDays = u.durationDays > 0 ? u.durationDays : 0.1,
                     Skill = skill,
                     SkillXp = 6f,
@@ -602,7 +605,10 @@ namespace Thatchwick.Core.Content
                     Draft = a.draft,
                     FemaleName = string.IsNullOrWhiteSpace(a.femaleName) ? null : a.femaleName,
                     MaleName = string.IsNullOrWhiteSpace(a.maleName) ? null : a.maleName,
-                    MaleOnly = a.maleOnly
+                    MaleOnly = a.maleOnly,
+                    PetBreeds = a.petBreeds,
+                    Sterile = a.sterile,
+                    Herd = a.herd
                 };
                 try { db.Animals.Register(def); }
                 catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }

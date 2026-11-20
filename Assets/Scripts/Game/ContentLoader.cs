@@ -50,6 +50,7 @@ namespace Thatchwick.Game
 
             // Oyuncuya görünen adlar seçili dile çevrilir (Resources/Localization/content.<dil>.json).
             ContentLocalizer.Apply(file, GameLocalization.Current);
+            ContentMapper.GeneratedText = ContentLocalizer.Generated(GameLocalization.Current);
 
             errors = ContentMapper.Apply(file, db);
             errors.AddRange(loadErrors);

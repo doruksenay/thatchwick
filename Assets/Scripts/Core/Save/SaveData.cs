@@ -29,6 +29,8 @@ namespace Thatchwick.Core.Save
         public SoilSave[] soil;          // toprak verimi (eski kayıtta yok)
         public GrassSave[] pasture;      // yenmiş otlak (eski kayıtta yok)
         public Mining.MineSave[] mines;  // kazı yerleri: arsa kazısı ve ocak (eski kayıtta yok)
+        public string[] animalPedigree;  // soy kaydı "id:anne:baba:katsayı:tür" (ölen ve satılanlar dahil; eski kayıtta yok)
+        public AwayAnimalSave[] animalsAway; // köy merasında ve yaylada olan hayvanlar (belge 48 §8.2; eski kayıtta yok)
         public bool animalsHeld;         // hayvan çanı: barınakta tutuluyorlar (eski kayıtta false = salınmış)
         /// <summary>Oyunun ana rastgelelik tohumu (eski kayıtta 0) ve yükleme sayacı (bkz. Core.Seeds).</summary>
         public int seed;
@@ -62,6 +64,13 @@ namespace Thatchwick.Core.Save
         public string legendTitle;
         public float stamina = -1f;      // binek dayanıklılığı (eski kayıtta -1 = dolu)
         public double shy;               // ürkek gün
+        // Genetik (20.11.2026, Project belgesi 48). Eski kayıtta null: genom kimlikten türetilir.
+        public int father;               // babanın kimliği (0 = bilinmiyor)
+        public string[] genome;          // "t|tip", "l|lokus|a|b", "s|stat|değer", "g|hüner" ...
+        public string[] deeds;           // efsane yolu sayaçları "wolves:3"
+        public int sire;                 // gebeliğin babası
+        public string sireSpecies;
+        public string[] sireGenome;
     }
 
     /// <summary>Yenmiş otlak karosu (dolu karolar kaydedilmez).</summary>
@@ -92,7 +101,7 @@ namespace Thatchwick.Core.Save
 
     /// <summary>Bir gölet (x,y: göletin bir karosu).</summary>
     [Serializable]
-    public sealed class PondSave { public int x, y; public float level; public bool spring, insects; public double filledDays; public string[] fishIds; public int[] fishCounts; }
+    public sealed class PondSave { public int x, y; public float level; public bool spring, insects; public double filledDays; public string[] fishIds; public int[] fishCounts; public float silt; }
 
     [Serializable]
     public sealed class RoadSave { public int x, y, type; public float cond; public bool natural; public float trample; }
@@ -309,4 +318,14 @@ namespace Thatchwick.Core.Save
 
     [Serializable]
     public sealed class KeyFloat { public string key; public double value; }
+
+    /// <summary>Merada ya da yaylada olan hayvan: hayvan kaydı + nerede, ne zamandan beri, biriken ürün.</summary>
+    [Serializable]
+    public sealed class AwayAnimalSave
+    {
+        public AnimalSave animal;
+        public int place;          // 1 köy merası, 2 yayla
+        public double since;
+        public KeyInt[] stock;     // biriken ürün (süt, yün, peynir)
+    }
 }

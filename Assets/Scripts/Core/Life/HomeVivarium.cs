@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
 
@@ -35,8 +36,85 @@ namespace Thatchwick.Core.Life
         public double Moisture = 70;      // nemli ve kuru: nem; tuzlu ve tatlı su: suyun tazeliği
         public double Mold;               // ölü canlı ve fazla nemle birikir; temizleyiciler azaltır
         public readonly List<VivEntry> Entries = new List<VivEntry>();
-        public readonly List<string> Log = new List<string>();
-        public void Note(string s) { Log.Add(s); while (Log.Count > 8) Log.RemoveAt(0); }
+        /// <summary>Son olaylar: anahtarlı metin (dil kayda girmez). Eşya argümanları kimlik olarak taşınır (bkz. VivText).</summary>
+        public readonly List<LocText> Log = new List<LocText>();
+        public void Note(LocText t) { Log.Add(t); while (Log.Count > 8) Log.RemoveAt(0); }
+        public void Note(string key, params (string name, object value)[] args) => Note(LocText.Of(key, args));
+    }
+
+    /// <summary>
+    /// Cam bahçe metinleri (yerelleştirme kuralı, docs/yerellestirme.md): Core anahtar ve argüman verir, Game çözer.
+    /// "item." ile başlayan string argüman eşya kimliğidir; Game o anki dildeki eşya adına çevirir.
+    /// Kayıt için kodlanır: anahtar ve argümanlar (s: metin, n: sayı, #: argümansız iç anahtar).
+    /// </summary>
+    public static class VivText
+    {
+        public static LocText Habitat(string h) => LocText.Of("core.viv.habitat." + (h ?? "none"));
+
+        /// <summary>
+        /// Çözer: "item." argümanları eşya adına çevrilir; ad cümle başında değilse dilin kuralıyla küçük harfe iner
+        /// ("Uğur böceği, yaprak biti yer"). Game katmanı ve testler kullanır.
+        /// </summary>
+        public static string Resolve(Localizer loc, LocText t, Func<string, string> itemName)
+        {
+            if (t.IsEmpty) return "";
+            if (t.Literal != null) return t.Literal;
+            string template = loc.Get(t.Key);
+            var args = new (string name, object value)[t.Args.Length];
+            for (int i = 0; i < args.Length; i++)
+            {
+                var (n, val) = t.Args[i];
+                if (val is string str && str.StartsWith("item.", StringComparison.Ordinal))
+                {
+                    string name = itemName?.Invoke(str) ?? str;
+                    val = template.StartsWith("{" + n + "}", StringComparison.Ordinal) ? name : loc.ToLower(name);
+                }
+                args[i] = (n, val);
+            }
+            return loc.Fill(template, args);
+        }
+        public static LocText Need(string n) => LocText.Of("core.viv.need." + n);
+
+        private const char Sep = '\u001f', Eq = '\u001e';
+
+        public static string Encode(LocText t)
+        {
+            if (t.Literal != null) return "=" + t.Literal;
+            var sb = new System.Text.StringBuilder(t.Key ?? "");
+            foreach (var (name, value) in t.Args)
+            {
+                sb.Append(Sep).Append(name).Append(Eq);
+                switch (value)
+                {
+                    case LocText lt: sb.Append('#').Append(lt.Key); break;
+                    case string str: sb.Append('s').Append(str); break;
+                    case IFormattable f: sb.Append('n').Append(f.ToString(null, System.Globalization.CultureInfo.InvariantCulture)); break;
+                    default: sb.Append('s').Append(value); break;
+                }
+            }
+            return sb.ToString();
+        }
+
+        public static LocText Decode(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return LocText.Plain("");
+            if (s[0] == '=') return LocText.Plain(s.Substring(1));
+            var parts = s.Split(Sep);
+            if (parts[0].IndexOf(' ') >= 0 || parts[0].IndexOf('.') < 0) return LocText.Plain(s);   // eski kayıt: düz Türkçe metin
+            var args = new List<(string, object)>();
+            for (int i = 1; i < parts.Length; i++)
+            {
+                int k = parts[i].IndexOf(Eq);
+                if (k <= 0 || k + 1 >= parts[i].Length) continue;
+                string name = parts[i].Substring(0, k), raw = parts[i].Substring(k + 2);
+                char kind = parts[i][k + 1];
+                object val = kind == '#' ? (object)LocText.Of(raw)
+                    : kind == 'n' && double.TryParse(raw, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var d) ? d
+                    : raw;
+                args.Add((name, val));
+            }
+            return LocText.Of(parts[0], args.ToArray());
+        }
     }
 
     /// <summary>
@@ -92,7 +170,7 @@ namespace Thatchwick.Core.Life
             return v;
         }
 
-        public static string HabitatName(string h) => h == Moist ? "Nemli toprak" : h == Dry ? "Kuru kum" : h == Salt ? "Tuzlu su" : h == Fresh ? "Tatlı su" : "Boş";
+        public static LocText HabitatName(string h) => VivText.Habitat(h);
         private ItemDef Def(string id) => _content.Items.TryGet(id, out var d) ? d : null;
         private VivDef V(string id) => Def(id)?.Viv;
 
@@ -117,7 +195,7 @@ namespace Thatchwick.Core.Life
             return null;
         }
 
-        public static string NeedName(string n) => n == "bask" ? "güneşlenme taşı" : n == "shell" ? "boş kabuk" : n == "hide" ? "saklanma yeri" : n;
+        public static LocText NeedName(string n) => VivText.Need(n);
 
         /// <summary>Bitki ya da süsü tabanda kaydırır (yakın görünümde düzenleme).</summary>
         public void MoveInViv(ItemInstance item, int index, double delta)
@@ -138,24 +216,24 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Boş kabın zeminini seçer (toprak, kum ya da tuzlu su). Dolu kapta değişmez.</summary>
         /// <summary>Zemin kurulamıyorsa neden (eksik malzeme); kurulabiliyorsa null.</summary>
-        public string HabitatBlocker(ItemInstance item, string habitat, string substrate)
+        public LocText? HabitatBlocker(ItemInstance item, string habitat, string substrate)
         {
             var v = VivOf(item);
-            if (v == null) return "Bu bir cam bahçe değil.";
+            if (v == null) return LocText.Of("core.viv.err.not_viv");
             var need = NeedFor(habitat);
-            if (need == null) return "Bilinmeyen zemin.";
-            if (v.Habitat != null) return v.Entries.Count > 0 ? "İçinde canlı varken zemin değişmez; önce boşalt." : "Önce kabı boşalt.";
-            if (Array.IndexOf(need.Substrates, substrate) < 0) return $"{HabitatName(habitat)} için {Def(substrate)?.DisplayName ?? substrate} olmaz.";
-            if (_house.Count(substrate) <= 0) return $"Envanterde {Def(substrate)?.DisplayName.ToLowerInvariant() ?? substrate} yok; doğadan getir.";
-            if (need.Water != null && _house.Count(need.Water) <= 0) return $"Envanterde {Def(need.Water)?.DisplayName.ToLowerInvariant() ?? need.Water} yok; {(habitat == Salt ? "denizden" : "göl ya da dereden")} kavanozla doldur.";
+            if (need == null) return LocText.Of("core.viv.err.unknown_ground");
+            if (v.Habitat != null) return LocText.Of(v.Entries.Count > 0 ? "core.viv.err.ground_has_life" : "core.viv.err.empty_first");
+            if (Array.IndexOf(need.Substrates, substrate) < 0) return LocText.Of("core.viv.err.wrong_substrate", ("ground", HabitatName(habitat)), ("item", substrate));
+            if (_house.Count(substrate) <= 0) return LocText.Of("core.viv.err.no_substrate", ("item", substrate));
+            if (need.Water != null && _house.Count(need.Water) <= 0) return LocText.Of(habitat == Salt ? "core.viv.err.no_sea_water" : "core.viv.err.no_fresh_water", ("item", need.Water));
             return null;
         }
 
         /// <summary>Zemini kurar: malzeme (ve su zemininde 1 kavanoz su) envanterden harcanır. substrate null ise elde olan ilk uygun malzeme.</summary>
-        public string SetHabitat(ItemInstance item, string habitat, string substrate = null)
+        public LocText? SetHabitat(ItemInstance item, string habitat, string substrate = null)
         {
             var need = NeedFor(habitat);
-            if (need == null) return "Bilinmeyen zemin.";
+            if (need == null) return LocText.Of("core.viv.err.unknown_ground");
             if (substrate == null) { substrate = need.Substrates[0]; foreach (var s in need.Substrates) if (_house.Count(s) > 0) { substrate = s; break; } }
             var why = HabitatBlocker(item, habitat, substrate);
             if (why != null) return why;
@@ -163,67 +241,65 @@ namespace Thatchwick.Core.Life
             _house.TryTakeItem(substrate);
             if (need.Water != null) _house.TryTakeItem(need.Water);
             v.Habitat = habitat; v.Substrate = substrate; v.Moisture = habitat == Dry ? 25 : IsWater(habitat) ? 100 : 80; v.Mold = 0;
-            v.Note($"Zemin: {HabitatName(habitat)} ({Def(substrate)?.DisplayName.ToLowerInvariant()}).");
+            v.Note("core.viv.log.ground", ("ground", HabitatName(habitat)), ("item", substrate));
             _world.NotifyChanged();
             return null;
         }
 
         /// <summary>Boş kabın zeminini döker (malzeme geri gelmez); yeni zemin kurulabilir.</summary>
-        public string EmptyViv(ItemInstance item)
+        public LocText? EmptyViv(ItemInstance item)
         {
             var v = VivOf(item);
-            if (v == null || v.Habitat == null) return "Kap zaten boş.";
-            if (v.Entries.Count > 0) return "Önce içindekileri al ya da doğaya sal.";
+            if (v == null || v.Habitat == null) return LocText.Of("core.viv.err.already_empty");
+            if (v.Entries.Count > 0) return LocText.Of("core.viv.err.take_out_first");
             v.Habitat = null; v.Substrate = null; v.Mold = 0;
-            v.Note("Kap boşaltıldı.");
+            v.Note("core.viv.log.emptied");
             _world.NotifyChanged();
             return null;
         }
 
         /// <summary>Bu türün bu cam bahçeye eklenemeyeceği neden; eklenebiliyorsa null. "Oluşmaması gereken" kombinasyonlar burada.</summary>
-        public string CanAddToViv(ItemInstance item, string speciesId)
+        public LocText? CanAddToViv(ItemInstance item, string speciesId)
         {
             var v = VivOf(item);
-            if (v == null) return "Bu bir cam bahçe değil.";
+            if (v == null) return LocText.Of("core.viv.err.not_viv");
             var sd = Def(speciesId);
-            if (sd?.Viv == null) return "Bu bir cam bahçe canlısı ya da fidanı değil.";
+            if (sd?.Viv == null) return LocText.Of("core.viv.err.not_species");
             var s = sd.Viv;
-            if (v.Habitat == null) return "Önce zemini seç (toprak, kum ya da tuzlu su).";
-            if (!s.FitsHabitat(v.Habitat)) return $"{sd.DisplayName} {string.Join(" ya da ", s.Habitats.ConvertAll(HabitatName)).ToLowerInvariant()} ister; burası {HabitatName(v.Habitat).ToLowerInvariant()}.";
-            if (s.IsPlant && CountPlants(v) >= item.Def.VivPlants) return $"Bitki yeri dolu ({item.Def.VivPlants}).";
-            if (s.IsDecor && CountDecor(v) >= item.Def.VivDecor) return $"Süs yeri dolu ({item.Def.VivDecor}).";
-            if (s.IsCreature && CountCreatures(v) >= item.Def.VivCreatures) return $"Canlı yeri dolu ({item.Def.VivCreatures}).";
+            if (v.Habitat == null) return LocText.Of("core.viv.err.no_ground");
+            if (!s.FitsHabitat(v.Habitat))
+                return LocText.Of("core.viv.err.wrong_ground", ("item", speciesId), ("wants", HabitatName(s.Habitats[0])), ("here", HabitatName(v.Habitat)));
+            if (s.IsPlant && CountPlants(v) >= item.Def.VivPlants) return LocText.Of("core.viv.err.plants_full", ("max", item.Def.VivPlants));
+            if (s.IsDecor && CountDecor(v) >= item.Def.VivDecor) return LocText.Of("core.viv.err.decor_full", ("max", item.Def.VivDecor));
+            if (s.IsCreature && CountCreatures(v) >= item.Def.VivCreatures) return LocText.Of("core.viv.err.creatures_full", ("max", item.Def.VivCreatures));
             foreach (var e in v.Entries)
             {
                 var o = V(e.Item);
                 if (o == null) continue;
-                if (e.Item == speciesId && s.Solitary) return $"İki {sd.DisplayName.ToLowerInvariant()} bir arada durmaz; biri ötekini öldürür.";
+                if (e.Item == speciesId && s.Solitary) return LocText.Of("core.viv.err.solitary", ("item", speciesId));
                 if (s.Avoid.Contains(e.Item) || o.Avoid.Contains(speciesId))
-                    return Def(e.Item).DisplayName + " ile " + sd.DisplayName.ToLowerInvariant() + " bir arada olmaz" +
-                           ((s.Has("toxic") || o.Has("toxic")) ? ": ateş böceği kurbağa ve kertenkele için zehirlidir." : ".");
+                    return LocText.Of((s.Has("toxic") || o.Has("toxic")) ? "core.viv.err.toxic" : "core.viv.err.avoid", ("a", e.Item), ("b", speciesId));
             }
-            if (_house.Count(speciesId) <= 0) return $"Envanterde {sd.DisplayName.ToLowerInvariant()} yok.";
+            if (_house.Count(speciesId) <= 0) return LocText.Of("core.viv.err.none_in_inventory", ("item", speciesId));
             return null;
         }
 
         /// <summary>Eklemeden önce uyarı: kim kimi yer (eklenebilir ama sonucu oyuncu bilsin).</summary>
-        public List<string> AddWarnings(ItemInstance item, string speciesId)
+        public List<LocText> AddWarnings(ItemInstance item, string speciesId)
         {
-            var list = new List<string>();
+            var list = new List<LocText>();
             var v = VivOf(item);
             var s = V(speciesId);
             if (v == null || s == null) return list;
-            string name = Def(speciesId).DisplayName;
             foreach (var e in v.Entries)
             {
                 var o = V(e.Item);
                 if (o == null) continue;
-                string other = Def(e.Item).DisplayName;
-                if (s.Eats.Contains(e.Item)) list.Add($"{name}, {other.ToLowerInvariant()} yer.");
-                if (o.Eats.Contains(speciesId)) list.Add($"{other}, {name.ToLowerInvariant()} yer.");
+                if (s.Eats.Contains(e.Item)) list.Add(LocText.Of("core.viv.warn.eats", ("a", speciesId), ("b", e.Item)));
+                if (o.Eats.Contains(speciesId)) list.Add(LocText.Of("core.viv.warn.eats", ("a", e.Item), ("b", speciesId)));
             }
-            if (s.IsCreature && s.Eats.Count > 0 && !HasFoodFor(v, s, speciesId)) list.Add($"{name} için yiyecek yok; aç kalır.");
-            if (s.IsCreature) { var need = UnmetNeed(v, s); if (need != null) list.Add($"{name} {NeedName(need)} ister; yoksa hastalanır."); }
+            if (s.IsCreature && s.Eats.Count > 0 && !HasFoodFor(v, s, speciesId)) list.Add(LocText.Of("core.viv.warn.no_food", ("item", speciesId)));
+            if (s.IsCreature) { var need = UnmetNeed(v, s); if (need != null) list.Add(LocText.Of("core.viv.warn.need", ("item", speciesId), ("need", NeedName(need)))); }
             return list;
         }
 
@@ -235,7 +311,7 @@ namespace Thatchwick.Core.Life
             var entry = new VivEntry { Item = speciesId };
             if (!V(speciesId).IsCreature) entry.Pos = NextPos(v, _content);
             v.Entries.Add(entry);
-            v.Note($"{Def(speciesId).DisplayName} kondu.");
+            v.Note("core.viv.log.added", ("item", speciesId));
             _world.NotifyChanged();
             return true;
         }
@@ -247,39 +323,38 @@ namespace Thatchwick.Core.Life
             if (v == null || index < 0 || index >= v.Entries.Count) return;
             var e = v.Entries[index];
             v.Entries.RemoveAt(index);
-            string name = Def(e.Item)?.DisplayName ?? e.Item;
             if (release)
             {
-                v.Note($"{name} doğaya salındı.");
+                v.Note("core.viv.log.released", ("item", e.Item));
                 by?.AddMoodlet("mood.released", "Doğaya saldı", 3, 0.5);
                 if (V(e.Item)?.IsCreature != true) { _house.AddItem(e.Item, 1); }   // süs ve bitki salınmaz, geri alınır
             }
             else
             {
                 _house.AddItem(e.Item, 1);
-                v.Note($"{name} çıkarıldı.");
+                v.Note("core.viv.log.removed", ("item", e.Item));
             }
             _world.NotifyChanged();
         }
 
         /// <summary>Nemlendir (nemli ve kuru), tuzlu suda suyu tazele (1 tuz).</summary>
-        public string Mist(ItemInstance item)
+        public LocText? Mist(ItemInstance item)
         {
             var v = VivOf(item);
-            if (v?.Habitat == null) return "Önce zemini seç.";
+            if (v?.Habitat == null) return LocText.Of("core.viv.err.no_ground");
             if (IsWater(v.Habitat))
             {
-                if (v.Moisture > 70) return "Su hâlâ taze.";
+                if (v.Moisture > 70) return LocText.Of("core.viv.err.water_fresh");
                 string w = WaterFor(v.Habitat);
-                if (w != null && !_house.TryTakeItem(w)) return $"Suyu tazelemek için envanterde {Def(w)?.DisplayName.ToLowerInvariant()} olmalı.";
+                if (w != null && !_house.TryTakeItem(w)) return LocText.Of("core.viv.err.need_water", ("item", w));
                 v.Moisture = 100;
-                v.Note("Su tazelendi.");
+                v.Note("core.viv.log.water_changed");
                 return null;
             }
             double target = v.Habitat == Dry ? 30 : 85;
-            if (v.Moisture >= target - 5) return v.Habitat == Dry ? "Kum yeterince nemli; fazlası kertenkeleyi hasta eder." : "Toprak zaten nemli.";
+            if (v.Moisture >= target - 5) return LocText.Of(v.Habitat == Dry ? "core.viv.err.sand_moist" : "core.viv.err.soil_moist");
             v.Moisture = target;
-            v.Note("Nemlendirildi.");
+            v.Note("core.viv.log.misted");
             return null;
         }
 
@@ -331,15 +406,15 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Durum satırı: "Nemli toprak · 3 bitki, 4 canlı · nem 62 · dengede".</summary>
-        public string VivSummary(ItemInstance item)
+        public LocText? VivSummary(ItemInstance item)
         {
             var v = VivOf(item);
             if (v == null) return null;
-            if (v.Habitat == null) return "Boş cam bahçe: zemin seç.";
-            string m = IsWater(v.Habitat) ? $"su tazeliği {v.Moisture:0}" : $"nem {v.Moisture:0}";
-            int dec = CountDecor(v);
-            return $"{HabitatName(v.Habitat)} · {CountPlants(v)} bitki, {CountCreatures(v)} canlı{(dec > 0 ? $", {dec} süs" : "")} · {m}" + (v.Mold >= 20 ? $" · küf {v.Mold:0}" : "") +
-                   (IsBalanced(v) ? " · dengede" : v.Entries.Count >= 2 ? " · dengesiz" : "");
+            if (v.Habitat == null) return LocText.Of("core.viv.sum.empty");
+            string state = IsBalanced(v) ? "core.viv.sum.balanced" : v.Entries.Count >= 2 ? "core.viv.sum.unbalanced" : "core.viv.sum.none";
+            return LocText.Of(IsWater(v.Habitat) ? "core.viv.sum.water" : "core.viv.sum.soil",
+                ("ground", HabitatName(v.Habitat)), ("plants", CountPlants(v)), ("creatures", CountCreatures(v)), ("decor", CountDecor(v)),
+                ("value", (int)Math.Round(v.Moisture)), ("mold", (int)Math.Round(v.Mold)), ("state", LocText.Of(state)));
         }
 
         private double VivBeauty(ItemInstance item)
@@ -459,7 +534,7 @@ namespace Thatchwick.Core.Life
                         if (Rng.NextDouble() < (hides ? ShelteredPredationChance : PredationChance))
                         {
                             eaten.Add(f);
-                            v.Note($"{Def(e.Item).DisplayName}, {Def(f.Item).DisplayName.ToLowerInvariant()} yedi.");
+                            v.Note("core.viv.log.ate", ("a", e.Item), ("b", f.Item));
                             fed = true; break;
                         }
                     }
@@ -480,7 +555,7 @@ namespace Thatchwick.Core.Life
                 var s = V(e.Item);
                 if (s?.Becomes != null && e.Age >= s.BecomeDays && e.Health > 40)
                 {
-                    v.Note($"{Def(e.Item).DisplayName} {Def(s.Becomes).DisplayName.ToLowerInvariant()} oldu!");
+                    v.Note("core.viv.log.became", ("a", e.Item), ("b", s.Becomes));
                     Say($"Cam bahçede {Def(e.Item).DisplayName.ToLowerInvariant()} {Def(s.Becomes).DisplayName.ToLowerInvariant()} oldu.");
                     e.Item = s.Becomes; e.Age = 0; e.Hunger = 0;
                 }
@@ -494,8 +569,7 @@ namespace Thatchwick.Core.Life
                 if (s != null && s.IsDecor) continue;
                 bool old = s != null && s.IsCreature && s.LifeDays > 0 && e.Age >= s.LifeDays;
                 if (e.Health > 0 && !old) continue;
-                string name = Def(e.Item)?.DisplayName ?? e.Item;
-                v.Note(old ? $"{name} yaşlılıktan öldü." : s != null && s.IsPlant ? $"{name} kurudu." : $"{name} öldü.");
+                v.Note(old ? "core.viv.log.died_old" : s != null && s.IsPlant ? "core.viv.log.withered" : "core.viv.log.died", ("item", e.Item));
                 v.Entries.RemoveAt(i);
                 v.Mold = Math.Min(MoldMax, v.Mold + MoldPerDeath);
             }
@@ -514,7 +588,7 @@ namespace Thatchwick.Core.Life
                 if (Rng.NextDouble() < chance)
                 {
                     v.Entries.Add(new VivEntry { Item = kv.Key, Hunger = 30 });
-                    v.Note($"{Def(kv.Key).DisplayName} çoğaldı.");
+                    v.Note("core.viv.log.bred", ("item", kv.Key));
                 }
             }
         }
@@ -530,6 +604,9 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Kavanoza girmesi mini oyun ister mi (suda yüzen ya da dipte gezen canlı).</summary>
         public bool IsSwimmer(string id) { var s = V(id); return s != null && s.IsCreature && (s.Move == "swim" || s.Move == "bottom"); }
+
+        /// <summary>Kavanoza bir canlı girdi (eşya kimliği): böcek ve balık defteri (belge 48 §9).</summary>
+        public event Action<string> Caught;
 
         /// <summary>Yakalama başlama engeli: cam kavanoz gerekir; bu saat ve mevsimde bir şey yoksa söylenir.</summary>
         public string CatchBlocker(ItemInstance node)
@@ -576,6 +653,7 @@ namespace Thatchwick.Core.Life
         {
             _house.AddItem(id, 1);
             Say($"Cam kavanoza {Def(id).DisplayName.ToLowerInvariant()} yakalandı.");
+            Caught?.Invoke(id);   // böcek defteri (belge 48 §9)
         }
 
         /// <summary>Toplama yerinde kavanoza doldurulacak zemin malzemesi (orman toprağı, kum ...): kesin gelir.</summary>
@@ -678,7 +756,7 @@ namespace Thatchwick.Core.Life
                 if (v.Habitat == null && v.Entries.Count == 0) continue;
                 var e = new List<string>();
                 foreach (var x in v.Entries) e.Add(x.Encode());
-                list.Add(new HomeVivSave { id = kv.Key, habitat = v.Habitat, substrate = v.Substrate, moisture = v.Moisture, mold = v.Mold, entries = e.ToArray(), log = v.Log.ToArray() });
+                list.Add(new HomeVivSave { id = kv.Key, habitat = v.Habitat, substrate = v.Substrate, moisture = v.Moisture, mold = v.Mold, entries = e.ToArray(), log = v.Log.ConvertAll(VivText.Encode).ToArray() });
             }
             save.vivs = list.ToArray();
         }
@@ -692,7 +770,7 @@ namespace Thatchwick.Core.Life
                 if (s == null) continue;
                 var v = new Vivarium { Habitat = string.IsNullOrEmpty(s.habitat) ? null : s.habitat, Substrate = string.IsNullOrEmpty(s.substrate) ? null : s.substrate, Moisture = s.moisture, Mold = s.mold };
                 if (s.entries != null) foreach (var x in s.entries) { var e = VivEntry.Decode(x); if (e != null && Def(e.Item)?.Viv != null) v.Entries.Add(e); }
-                if (s.log != null) v.Log.AddRange(s.log);
+                if (s.log != null) foreach (var l in s.log) v.Log.Add(VivText.Decode(l));
                 _vivs[s.id] = v;
             }
         }

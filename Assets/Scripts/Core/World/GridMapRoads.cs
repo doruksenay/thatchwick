@@ -263,6 +263,16 @@ namespace Thatchwick.Core.World
         public double FilledDays { get; internal set; }
         /// <summary>Tür (eşya kimliği, ör. item.fish_carp) başına balık sayısı.</summary>
         public Dictionary<string, int> Fish { get; } = new Dictionary<string, int>();
+        /// <summary>
+        /// Çamur 0-100 (belge 48 §9.4, manastır usulü gölet): dolu gölette her gün birikir, balık üremesini yavaşlatır
+        /// (100'de üçte bir). "Göleti boşalt ve temizle" sıfırlar, çamur gübre olur.
+        /// </summary>
+        public float Silt { get; internal set; }
+        public const float SiltPerDay = 0.8f, SpringSiltPerDay = 0.4f, SiltPerManure = 20f;
+        /// <summary>Gölette doğan sazanın altın renkli çıkma şansı (renk mutasyonu); altın çift altın yavru verir.</summary>
+        public const double GoldenCarpChance = 0.005;
+        public const string Carp = "item.fish_carp", GoldenCarp = "item.fish_carp_gold";
+        public double BreedFactor => 1.0 - Math.Max(0f, Math.Min(100f, Silt)) / 150.0;
 
         public bool IsFilled => Spring || Level >= FilledLevel;
         public int FishCapacity => TilesList.Count * FishPerTile;
@@ -285,6 +295,20 @@ namespace Thatchwick.Core.World
 
     public sealed partial class GridMap
     {
+        /// <summary>
+        /// Göleti boşalt ve temizle (belge 48 §9.4): balıklar kovalara alınıp geri bırakılır, çamur sıfırlanır.
+        /// Dönen: çıkan gübre (çamur / 20). Kışın (buzda) yapılmaz; kaynaklı gölette de olur.
+        /// </summary>
+        public int CleanPond(GridPos tile)
+        {
+            var pond = PondAt(tile);
+            if (pond == null || !pond.IsFilled || _waterFrozen) return -1;
+            int manure = (int)Math.Floor(pond.Silt / Pond.SiltPerManure);
+            pond.Silt = 0f;
+            RoadsChanged?.Invoke();
+            return manure;
+        }
+
         private bool _pondsDirty = true;
         private List<Pond> _ponds = new List<Pond>();
         private int[] _pondIndex;           // düzlem karosu -> _ponds sırası (-1 yok)
@@ -319,10 +343,11 @@ namespace Thatchwick.Core.World
         }
 
         /// <summary>Kayıttan: bir karonun göletinin durumu.</summary>
-        public void RestorePond(GridPos anchor, float level, bool spring, bool insects, double filledDays, IEnumerable<KeyValuePair<string, int>> fish)
+        public void RestorePond(GridPos anchor, float level, bool spring, bool insects, double filledDays, IEnumerable<KeyValuePair<string, int>> fish, float silt = 0f)
         {
             var pond = PondAt(anchor);
             if (pond == null) return;
+            pond.Silt = Math.Max(0f, Math.Min(100f, silt));
             pond.Level = Math.Max(0f, Math.Min(1f, level));
             pond.Spring = spring;
             pond.Insects = insects;
@@ -427,6 +452,7 @@ namespace Thatchwick.Core.World
                     continue;
                 }
                 pond.FilledDays += 1;
+                pond.Silt = Math.Min(100f, pond.Silt + (pond.Spring ? Pond.SiltPerDay * 0.5f : Pond.SiltPerDay));
                 if (!pond.Insects && pond.FilledDays >= Pond.InsectDays && !_waterFrozen)
                 {
                     pond.Insects = true;
@@ -458,7 +484,13 @@ namespace Thatchwick.Core.World
                     if (breeds != null && !breeds(species)) continue;
                     int pairs = pond.Fish[species] / 2;
                     for (int i = 0; i < pairs && pond.FishTotal < pond.FishCapacity; i++)
-                        if (rng.NextDouble() < 0.3) { pond.AddFish(species); born++; }
+                        if (rng.NextDouble() < 0.3 * pond.BreedFactor)
+                        {
+                            bool golden = species == Pond.Carp && rng.NextDouble() < Pond.GoldenCarpChance;
+                            pond.AddFish(golden ? Pond.GoldenCarp : species);
+                            if (golden) notes.Add("Gölette altın renkli bir sazan yavrusu doğdu!");
+                            born++;
+                        }
                 }
                 if (born > 0) notes.Add($"Gölette {born} yavru balık oldu.");
             }

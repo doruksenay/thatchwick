@@ -271,7 +271,8 @@ namespace Thatchwick.Core.Content
             foreach (var item in Items.All)
             {
                 foreach (var c in item.Catches)
-                    if (!Items.TryGet(c.Item, out var cd) || cd.Viv == null) errors.Add($"{item.Id}: yakalanan '{c.Item}' bir cam bahçe türü değil.");
+                    // Cam bahçe türü ya da koleksiyon canlısı (böcek defteri, belge 48 §9: "critter" etiketli, cam bahçeye konmaz).
+                    if (!Items.TryGet(c.Item, out var cd) || (cd.Viv == null && !cd.HasTag("critter"))) errors.Add($"{item.Id}: yakalanan '{c.Item}' bir cam bahçe türü ya da canlı değil.");
                 foreach (var g in item.Gathers)
                     if (!Items.TryGet(g, out var gd) || !gd.HasTag("substrate")) errors.Add($"{item.Id}: doldurulan '{g}' bir zemin malzemesi değil.");
                 if (item.Viv == null) continue;

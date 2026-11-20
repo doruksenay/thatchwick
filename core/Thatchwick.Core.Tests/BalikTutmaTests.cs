@@ -60,7 +60,7 @@ namespace Thatchwick.Core.Tests
         {
             var low = new FishingGame("x", 30, FishBehavior.Smooth, 1);
             var high = new FishingGame("x", 30, FishBehavior.Smooth, 10, 0.1f);
-            Assert.Equal((double)FishingGame.BaseBar, (double)low.BarSize, 4);
+            Assert.Equal(FishingGame.BaseBar, low.BarSize, 1e-4f);
             Assert.True(high.BarSize > low.BarSize);
             Assert.True(high.BarSize <= FishingGame.MaxBar + 1e-4f);
         }
@@ -85,7 +85,7 @@ namespace Thatchwick.Core.Tests
             var a = Play(new FishingGame("t", 50, FishBehavior.Mixed, 4, 0f, 77));
             var b = Play(new FishingGame("t", 50, FishBehavior.Mixed, 4, 0f, 77));
             Assert.Equal(a.Phase, b.Phase);
-            Assert.Equal((double)a.Progress, (double)b.Progress, 5);
+            Assert.Equal(a.Progress, b.Progress, 1e-5f);
         }
 
         [Fact]
@@ -227,6 +227,25 @@ namespace Thatchwick.Core.Tests
             Assert.Null(fw.CanDo(c, sea, TileAction.Bathe));
             Assert.NotNull(fw.CanDo(c, sea, TileAction.CutIce));
             Assert.Null(fw.CanDo(c, lake, TileAction.CutIce));
+        }
+
+        [Fact]
+        public void KiyiCanlilari_YalnizcaKiyida()
+        {
+            Assert.DoesNotContain(Thatchwick.Core.Animals.WildRoamers.Candidates(Season.Summer, false), sp => sp.Id == "wild.gull" || sp.Id == "wild.crab");
+            Assert.DoesNotContain(Thatchwick.Core.Animals.WildRoamers.Candidates(Season.Summer, false, "farm"), sp => sp.Id == "wild.gull");
+            var coast = Thatchwick.Core.Animals.WildRoamers.Candidates(Season.Summer, false, "coast");
+            Assert.Contains(coast, sp => sp.Id == "wild.gull");
+            Assert.Contains(coast, sp => sp.Id == "wild.crab");
+            Assert.DoesNotContain(coast, sp => sp.Id == "wild.rabbit");
+
+            var map = new GridMap(Regions.WorldWidth, Regions.WorldHeight);
+            Regions.BuildTerrain(map);
+            Regions.Apply(map);
+            var roam = new Thatchwick.Core.Animals.WildRoamers(map, 5);
+            var gull = roam.Arrive(Thatchwick.Core.Animals.WildCatalog.Get("wild.gull"), 0);
+            Assert.NotNull(gull);
+            Assert.True(Regions.Coast.Contains(gull.Position), gull.Position.ToString());
         }
     }
 }
