@@ -1,7 +1,8 @@
 ---
 id: "738"
 title: "Çayır karoları yeniden: ana çimle aynı ton (612 çayırının düzeltmesi)"
-status: pending
+status: running
+claimed_at: 2026-11-20T20:30Z
 approved_by: user        # kullanıcı onayı 2026-11-20 (sohbet: "kıyı karosu ve çim tonu için PixelLab işi hazırla"; belge 65b B2)
 priority: 10
 family: zemin
