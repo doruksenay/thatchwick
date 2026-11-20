@@ -206,6 +206,11 @@ namespace Thatchwick.Core.Layout
                 if (def.HasTag("veg") && def.Art == null) continue;
                 if (step.With == "bed") { if (Bed(ctx, site, def, step, placed)) n++; continue; }
                 var cands = Candidates(ctx, site, def, step);
+                if (site.Spacing > 0 && step.With != Anchors.NearItem)
+                {
+                    var spaced = cands.Where(c => !TooClose(placed, c.p, site.Spacing)).ToList();
+                    if (spaced.Count > 0) cands = spaced;   // yer yoksa sıkışık yerleşim (zorunlu eşya düşmesin)
+                }
                 if (TryAt(ctx, def, cands, placed) != null) n++;
             }
             return n;
@@ -406,6 +411,8 @@ namespace Thatchwick.Core.Layout
             public HashSet<GridPos> Wide;     // su kıyısı vb. için daha geniş çevre (6 karo)
             public HashSet<GridPos> Pen;      // ağıl içi
             public string Name;
+            /// <summary>Bu bahçenin eşyaları arasında en az bu kadar boş karo (Chebyshev; 0 kapalı). "nearItem" adımları hariç.</summary>
+            public int Spacing;
         }
 
         private static TownSiteView View(Context ctx, TownBuilding b) => new TownSiteView
@@ -693,7 +700,7 @@ namespace Thatchwick.Core.Layout
             var view = new TownSiteView
             {
                 Building = house, DoorDir = Dir4.S, DoorOutside = new GridPos(StarterWorld.HouseDoorX, StarterWorld.HouseY1 + 1), Name = "Çiftlik evi",
-                Zone = FarmZone(ctx, house, 8), Wide = FarmZone(ctx, house, 10),
+                Zone = FarmZone(ctx, house, 8), Wide = FarmZone(ctx, house, 10), Spacing = 2,   // avlu eşyaları dip dibe durmasın (21.11)
             };
             RunGarden(ctx, view, "garden_farm", "Çiftlik avlusu");
             // Avlu masasının üstünde dokuz taş (eski başlangıç evinden).
@@ -701,6 +708,14 @@ namespace Thatchwick.Core.Layout
                 if (it.Def.Id == "item.stump_table" && view.Zone.Contains(it.Position) && ctx.Content.Items.TryGet("item.morris_board", out var board)
                     && ctx.World.CanPlaceOnSurface(board, it.Id, "a").Ok)
                 { ctx.World.PlaceOnSurface(board, it.Id, "a"); break; }
+        }
+
+        private static bool TooClose(List<ItemInstance> placed, GridPos p, int gap)
+        {
+            foreach (var it in placed)
+                foreach (var t in it.OccupiedTiles())
+                    if (Math.Max(Math.Abs(t.X - p.X), Math.Abs(t.Y - p.Y)) <= gap) return true;
+            return false;
         }
 
         private static HashSet<GridPos> FarmZone(Context ctx, RectI b, int reach)
