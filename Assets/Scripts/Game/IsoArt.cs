@@ -152,7 +152,6 @@ namespace Thatchwick.Game
         private static readonly string[] DirtTiles = { "iso_ground_dirt_a", "iso_ground_dirt_b" };
         private static readonly string[] SandTiles = { "iso_ground_sand_a", "iso_ground_sand_b", "iso_ground_sand_c" };
         private static readonly string[] MeadowTiles = { "iso_ground_meadow_a", "iso_ground_meadow_b", "iso_ground_meadow_c" };
-        private static readonly string[] DarkGrassTiles = { "iso_ground_grass_dark_a", "iso_ground_grass_dark_b" };
         private static readonly string[] GravelTiles = { "iso_ground_dirt_gravel_a", "iso_ground_dirt_gravel_b" };
 
         /// <summary>Yumuşak değer gürültüsü (0..1), ~7 karoluk öbekler: aynı konum her çizimde aynı.</summary>
@@ -204,8 +203,8 @@ namespace Thatchwick.Game
             switch (floor)
             {
                 case FloorType.Grass:
-                    if (patch > 0.70f) { var m = GetCentered(MeadowTiles[h % MeadowTiles.Length]); if (m != null) return m; }
-                    if (patch < 0.27f) { var d = GetCentered(DarkGrassTiles[h % DarkGrassTiles.Length]); if (d != null) return d; }
+                    if (patch > 0.74f) { var m = GetCentered(MeadowTiles[h % MeadowTiles.Length]); if (m != null) return m; }
+                    // Koyu çim öbekleri Unity'de kare leke gibi duruyordu (20.11 incelemesi): kullanılmıyor.
                     return GetCentered(GrassTiles[h % GrassTiles.Length]);
                 case FloorType.Dirt:
                     if (patch > 0.72f) { var g = GetCentered(GravelTiles[h % GravelTiles.Length]); if (g != null) return g; }
