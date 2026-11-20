@@ -1,7 +1,7 @@
 ---
 id: "810"
 title: "HUD meşe, dünya ölçeği: paneller ve sarmaşıklı kart"
-status: running
+status: review
 approved_by: user        # kullanıcı kararı 2026-11-21: saf meşe; HUD dünya ile aynı piksel boyutu (2x); üç iş toplam üst sınır 40
 priority: 1
 family: arayuz
