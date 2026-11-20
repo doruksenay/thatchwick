@@ -96,9 +96,11 @@ namespace Thatchwick.Core.World
             Keep(keep, 32, 7, 44, 17);
             p.PondAt(38, 12, F("item.fish_pike", 3), F("item.fish_crayfish", 5), F("item.fish_trout", 2));
 
-            // Açıklık (avcı dinlenme yeri): kütük sehpa ve bank
+            // Açıklık (avcı dinlenme yeri): kütük sehpa ve yanında kuru dal yığını (tomruk "item.log" bir kaynaktır, yere
+            // eşya olarak konmaz). Bank yok: dış mekân bankı yola bakmalı ve
+            // sırtı duvara ya da çite dayanmalı (belge 44 D); açıklıkta ikisi de yok. Yol (x30-31) açıklığın doğusundan geçer.
             Keep(keep, 24, 30, 33, 36);
-            p.I("item.stump_table", 27, 33); p.I("item.bench_wood", 28, 34); p.I("item.log", 31, 32);
+            p.I("item.stump_table", 27, 33); Node(p, keep, "item.forage_dry_branch", 25, 32);
 
             // Derin koru: kestane, fındık, kozalak
             Keep(keep, 3, 2, 11, 9);
@@ -108,7 +110,7 @@ namespace Thatchwick.Core.World
             Node(p, keep, "item.forage_hive", 17, 22);
             Node(p, keep, "item.forage_hive", 41, 30);
             foreach (var (x, y) in new[] { (22, 20), (27, 25), (9, 14), (36, 40), (44, 22) }) Node(p, keep, "item.forage_mushroom", x, y);
-            foreach (var (x, y) in new[] { (18, 34), (33, 20) }) Node(p, keep, "item.forage_wild_garlic", x, y);
+            foreach (var (x, y) in new[] { (18, 34), (32, 22) }) Node(p, keep, "item.forage_wild_garlic", x, y);   // gölgede, göl patikasının batısı
             foreach (var (x, y) in new[] { (22, 42), (14, 26) }) Node(p, keep, "item.forage_nettle", x, y);
             foreach (var (x, y) in new[] { (28, 44), (16, 38), (40, 36) }) Node(p, keep, "item.forage_berry_bush", x, y);
             foreach (var (x, y) in new[] { (6, 20), (2, 30), (44, 4) }) Node(p, keep, "item.forage_pinecone", x, y);
@@ -143,7 +145,7 @@ namespace Thatchwick.Core.World
             Trail(p, keep, 2, (24, 0), (24, 7), (44, 7), (44, 16), (47, 16));
             // İskele: göle yürüyen ahşap
             for (int y = 9; y <= 15; y++) for (int x = 24; x <= 25; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
-            p.I("item.fish_basket_decor", 24, 15); p.I("item.barrel", 25, 9);
+            p.I("item.stump_table", 24, 15); p.On("item.fish_basket_decor", 24, 15, "a"); p.I("item.barrel", 25, 9);   // iskele ucunda sehpa, üstünde balık sepeti
             p.PondAt(28, 20, F("item.fish_carp", 8), F("item.fish_pike", 4), F("item.fish_eel", 3), F("item.fish_trout", 2));
 
             foreach (var (x, y) in new[] { (17, 10), (21, 9), (30, 9), (34, 10), (13, 12) }) Node(p, keep, "item.forage_sand", x, y);

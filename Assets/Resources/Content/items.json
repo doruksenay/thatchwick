@@ -2553,18 +2553,18 @@
         "ocak",
         "pencere"
       ],
-      "art": {
-        "alongX": "iso_item_flower_pot_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "mirror": true
-      },
       "livePlant": true,
       "bloomSeasons": [
         "Spring",
         "Summer"
       ],
-      "potGrowDays": 3
+      "potGrowDays": 3,
+      "art": {
+        "alongX": "iso_item_flower_pot_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "mirror": true
+      }
     },
     {
       "id": "item.clay_cup",
@@ -7057,6 +7057,61 @@
           ]
         }
       ],
+      "catches": [
+        {
+          "item": "item.viv_moss",
+          "chance": 0.5
+        },
+        {
+          "item": "item.viv_fern",
+          "chance": 0.35,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_snail",
+          "chance": 0.5,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ],
+          "rain": true
+        },
+        {
+          "item": "item.viv_woodlouse",
+          "chance": 0.4
+        },
+        {
+          "item": "item.viv_worm",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_ground_beetle",
+          "chance": 0.2,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_firefly",
+          "chance": 0.6,
+          "seasons": [
+            "Summer"
+          ],
+          "night": true
+        }
+      ],
       "tags": [
         "rain_loving"
       ],
@@ -7134,6 +7189,55 @@
           ]
         }
       ],
+      "catches": [
+        {
+          "item": "item.viv_violet",
+          "chance": 0.4,
+          "seasons": [
+            "Spring"
+          ]
+        },
+        {
+          "item": "item.viv_ladybird",
+          "chance": 0.35,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_aphid",
+          "chance": 0.5,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_caterpillar",
+          "chance": 0.35,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_cricket",
+          "chance": 0.45,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_firefly",
+          "chance": 0.5,
+          "seasons": [
+            "Summer"
+          ],
+          "night": true
+        }
+      ],
       "art": {
         "alongX": "iso_forage_herbs_se",
         "pivotX": 40.0,
@@ -7198,6 +7302,34 @@
               "count": 2
             }
           ]
+        }
+      ],
+      "catches": [
+        {
+          "item": "item.viv_woodlouse",
+          "chance": 0.5
+        },
+        {
+          "item": "item.viv_spider",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_ground_beetle",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_moss",
+          "chance": 0.3
         }
       ],
       "art": {
@@ -9606,6 +9738,29 @@
               "item": "item.cress",
               "count": 2
             }
+          ]
+        }
+      ],
+      "catches": [
+        {
+          "item": "item.viv_water_moss",
+          "chance": 0.5
+        },
+        {
+          "item": "item.viv_frog",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_snail",
+          "chance": 0.4,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
           ]
         }
       ],
@@ -19320,6 +19475,41 @@
           ]
         }
       ],
+      "catches": [
+        {
+          "item": "item.viv_houseleek",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_ground_beetle",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_lizard",
+          "chance": 0.15,
+          "seasons": [
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_spider",
+          "chance": 0.2,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ]
+        }
+      ],
       "tags": [
         "shore"
       ],
@@ -20098,7 +20288,7 @@
         "pivotY": 64.0,
         "pxW": 240,
         "pxH": 128,
-        "mirror": true
+        "mirror": false
       },
       "site": "indoor",
       "belongs": [
@@ -22618,6 +22808,32 @@
           ]
         }
       ],
+      "catches": [
+        {
+          "item": "item.viv_ladybird",
+          "chance": 0.35,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_aphid",
+          "chance": 0.5,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_cricket",
+          "chance": 0.4,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ]
+        }
+      ],
       "art": {
         "alongX": "iso_forage_chamomile_se",
         "pivotX": 40.0,
@@ -22688,6 +22904,31 @@
           ]
         }
       ],
+      "catches": [
+        {
+          "item": "item.viv_thyme",
+          "chance": 0.4,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_cricket",
+          "chance": 0.4,
+          "seasons": [
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_lizard",
+          "chance": 0.15,
+          "seasons": [
+            "Summer"
+          ]
+        }
+      ],
       "art": {
         "alongX": "iso_forage_sage_se",
         "pivotX": 40.0,
@@ -22721,6 +22962,34 @@
               "count": 3
             }
           ]
+        }
+      ],
+      "catches": [
+        {
+          "item": "item.viv_caterpillar",
+          "chance": 0.3,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_aphid",
+          "chance": 0.4,
+          "seasons": [
+            "Spring",
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_snail",
+          "chance": 0.4,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ],
+          "rain": true
         }
       ],
       "art": {
@@ -23478,7 +23747,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 72,
-        "mirror": true
+        "mirror": false
       },
       "site": "outdoor",
       "belongs": [
@@ -24741,6 +25010,9 @@
           "homeAction": "harvestPot"
         }
       ],
+      "styleTheme": "Çatkı",
+      "potHerb": "item.herb",
+      "level": 2,
       "art": {
         "alongX": "iso_item_pot_bay_se",
         "pivotX": 40.0,
@@ -24748,9 +25020,13 @@
         "pending": true,
         "mirror": true
       },
-      "styleTheme": "Çatkı",
-      "potHerb": "item.herb",
-      "level": 2
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.pot_myrtle",
@@ -24775,6 +25051,12 @@
           "homeAction": "waterPot"
         }
       ],
+      "styleTheme": "Yörük",
+      "livePlant": true,
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "level": 2,
       "art": {
         "alongX": "iso_item_pot_myrtle_se",
         "pivotX": 40.0,
@@ -24782,12 +25064,13 @@
         "pending": true,
         "mirror": true
       },
-      "styleTheme": "Yörük",
-      "livePlant": true,
-      "bloomSeasons": [
-        "Summer"
-      ],
-      "level": 2
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.pot_rose",
@@ -24812,6 +25095,13 @@
           "homeAction": "waterPot"
         }
       ],
+      "styleTheme": "Çatkı",
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "level": 3,
       "art": {
         "alongX": "iso_item_pot_rose_se",
         "pivotX": 40.0,
@@ -24819,13 +25109,13 @@
         "pending": true,
         "mirror": true
       },
-      "styleTheme": "Çatkı",
-      "livePlant": true,
-      "bloomSeasons": [
-        "Spring",
-        "Summer"
-      ],
-      "level": 3
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.pot_lily",
@@ -24850,19 +25140,19 @@
           "homeAction": "waterPot"
         }
       ],
+      "livePlant": true,
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "decorSize": "M",
+      "weight": 3,
       "art": {
         "alongX": "iso_item_pot_lily_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "livePlant": true,
-      "bloomSeasons": [
-        "Summer"
-      ],
-      "decorSize": "M",
-      "weight": 3
+      }
     },
     {
       "id": "item.pot_narcissus",
@@ -24887,19 +25177,19 @@
           "homeAction": "waterPot"
         }
       ],
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring"
+      ],
+      "decorSize": "S",
+      "weight": 2,
       "art": {
         "alongX": "iso_item_pot_narcissus_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "livePlant": true,
-      "bloomSeasons": [
-        "Spring"
-      ],
-      "decorSize": "S",
-      "weight": 2
+      }
     },
     {
       "id": "item.pot_violet",
@@ -24924,20 +25214,20 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_violet_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "livePlant": true,
       "bloomSeasons": [
         "Spring"
       ],
       "shadePlant": true,
       "decorSize": "S",
-      "weight": 2
+      "weight": 2,
+      "art": {
+        "alongX": "iso_item_pot_violet_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_cyclamen",
@@ -24962,13 +25252,6 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_cyclamen_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "styleTheme": "Yörük",
       "livePlant": true,
       "bloomSeasons": [
@@ -24977,7 +25260,14 @@
       ],
       "shadePlant": true,
       "decorSize": "S",
-      "weight": 2
+      "weight": 2,
+      "art": {
+        "alongX": "iso_item_pot_cyclamen_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_snowdrop",
@@ -25002,20 +25292,20 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_snowdrop_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "livePlant": true,
       "bloomSeasons": [
         "Winter"
       ],
       "shadePlant": true,
       "decorSize": "S",
-      "weight": 2
+      "weight": 2,
+      "art": {
+        "alongX": "iso_item_pot_snowdrop_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_crocus",
@@ -25040,20 +25330,20 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_crocus_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "livePlant": true,
       "bloomSeasons": [
         "Spring",
         "Autumn"
       ],
       "decorSize": "S",
-      "weight": 2
+      "weight": 2,
+      "art": {
+        "alongX": "iso_item_pot_crocus_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_lavender",
@@ -25086,20 +25376,20 @@
           "homeAction": "harvestPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_pot_lavender_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "styleTheme": "Çatkı",
       "potHerb": "item.herb",
       "bloomSeasons": [
         "Summer"
       ],
       "decorSize": "M",
-      "weight": 3
+      "weight": 3,
+      "art": {
+        "alongX": "iso_item_pot_lavender_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.pot_mint",
@@ -25132,17 +25422,17 @@
           "homeAction": "harvestPot"
         }
       ],
+      "potHerb": "item.mint",
+      "thirst": 1.3,
+      "decorSize": "S",
+      "weight": 2,
       "art": {
         "alongX": "iso_item_pot_mint_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "potHerb": "item.mint",
-      "thirst": 1.3,
-      "decorSize": "S",
-      "weight": 2
+      }
     },
     {
       "id": "item.pot_chamomile",
@@ -25175,19 +25465,19 @@
           "homeAction": "harvestPot"
         }
       ],
+      "potHerb": "item.chamomile",
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "decorSize": "S",
+      "weight": 2,
       "art": {
         "alongX": "iso_item_pot_chamomile_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "potHerb": "item.chamomile",
-      "bloomSeasons": [
-        "Summer"
-      ],
-      "decorSize": "S",
-      "weight": 2
+      }
     },
     {
       "id": "item.ivy_wall",
@@ -25212,6 +25502,12 @@
           "homeAction": "waterPot"
         }
       ],
+      "livePlant": true,
+      "shadePlant": true,
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
       "art": {
         "alongX": "iso_wall_item_ivy_wall_sw_ne",
         "pivotX": 24.0,
@@ -25219,11 +25515,12 @@
         "pending": true,
         "mirror": true
       },
-      "livePlant": true,
-      "shadePlant": true,
-      "wallBands": [
-        "orta",
-        "üst"
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
       ]
     },
     {
@@ -25249,18 +25546,18 @@
           "homeAction": "waterPot"
         }
       ],
+      "livePlant": true,
+      "shadePlant": true,
+      "thirst": 1.5,
+      "decorSize": "M",
+      "weight": 4,
       "art": {
         "alongX": "iso_item_fern_trough_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      },
-      "livePlant": true,
-      "shadePlant": true,
-      "thirst": 1.5,
-      "decorSize": "M",
-      "weight": 4
+      }
     },
     {
       "id": "item.water_garden",
@@ -25285,13 +25582,6 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_item_water_garden_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "pending": true,
-        "mirror": true
-      },
       "styleTheme": "Kervan",
       "livePlant": true,
       "bloomSeasons": [
@@ -25299,7 +25589,21 @@
       ],
       "thirst": 0.4,
       "level": 4,
-      "finishGroup": "stone"
+      "finishGroup": "stone",
+      "art": {
+        "alongX": "iso_item_water_garden_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
+      ]
     },
     {
       "id": "item.window_flower_box",
@@ -25324,13 +25628,6 @@
           "homeAction": "waterPot"
         }
       ],
-      "art": {
-        "alongX": "iso_wall_item_window_flower_box_sw_ne",
-        "pivotX": 24.0,
-        "pivotY": 24.0,
-        "pending": true,
-        "mirror": true
-      },
       "styleTheme": "Çatkı",
       "livePlant": true,
       "bloomSeasons": [
@@ -25340,6 +25637,20 @@
       "window": true,
       "wallBands": [
         "alt"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_window_flower_box_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "kitchen"
       ]
     },
     {
@@ -25359,13 +25670,6 @@
         "living",
         "bedroom"
       ],
-      "art": {
-        "alongX": "iso_item_censer_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "interactions": [
         {
           "id": "burn_herbs",
@@ -25379,7 +25683,14 @@
           "moodValue": 4,
           "moodDays": 0.5
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_censer_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.birdbath",
@@ -25396,13 +25707,6 @@
       "levels": [
         0
       ],
-      "art": {
-        "alongX": "iso_item_birdbath_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "pending": true,
-        "mirror": true
-      },
       "interactions": [
         {
           "id": "watch_birds",
@@ -25415,6 +25719,706 @@
           "moodValue": 3,
           "moodDays": 0.5
         }
+      ],
+      "art": {
+        "alongX": "iso_item_birdbath_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.viv_moss",
+      "displayName": "Orman yosunu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#4F7A3A",
+        "tags": [
+          "shade"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_fern",
+      "displayName": "Eğrelti fidanı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#5E8C46",
+        "tags": [
+          "shade"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_violet",
+      "displayName": "Yabani menekşe fidanı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#7B5EA7",
+        "tags": [
+          "flower"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_water_moss",
+      "displayName": "Su yosunu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#3E6E4E",
+        "tags": [
+          "shade"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_houseleek",
+      "displayName": "Dam koruğu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "kuru"
+        ],
+        "color": "#7FA06A",
+        "tags": [
+          "sun"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_thyme",
+      "displayName": "Kekik fidanı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "kuru"
+        ],
+        "color": "#8C9B6A",
+        "tags": [
+          "sun",
+          "flower"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_seaweed",
+      "displayName": "Deniz yosunu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "tuzlu"
+        ],
+        "color": "#5C6B2E"
+      }
+    },
+    {
+      "id": "item.viv_sea_lettuce",
+      "displayName": "Deniz marulu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "tuzlu"
+        ],
+        "color": "#7DB04A"
+      }
+    },
+    {
+      "id": "item.viv_aphid",
+      "displayName": "Yaprak biti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli",
+          "kuru"
+        ],
+        "color": "#9CC25A",
+        "eats": [
+          "*plant"
+        ],
+        "tags": [
+          "pest"
+        ],
+        "move": "crawl",
+        "lifeDays": 8,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_ladybird",
+      "displayName": "Uğur böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli",
+          "kuru"
+        ],
+        "color": "#C8322A",
+        "eats": [
+          "item.viv_aphid"
+        ],
+        "move": "fly",
+        "lifeDays": 20,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_snail",
+      "displayName": "Bahçe salyangozu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#9B7B55",
+        "eats": [
+          "item.viv_moss",
+          "item.viv_fern",
+          "item.viv_violet",
+          "item.viv_water_moss"
+        ],
+        "tags": [
+          "cleaner"
+        ],
+        "move": "crawl",
+        "lifeDays": 30,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_worm",
+      "displayName": "Solucan",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#B5706A",
+        "tags": [
+          "cleaner"
+        ],
+        "move": "burrow",
+        "lifeDays": 30,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_woodlouse",
+      "displayName": "Tespih böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#6E6A66",
+        "tags": [
+          "cleaner"
+        ],
+        "move": "crawl",
+        "lifeDays": 25,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_firefly",
+      "displayName": "Ateş böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#E8E07A",
+        "tags": [
+          "glow",
+          "toxic"
+        ],
+        "move": "fly",
+        "lifeDays": 10,
+        "avoid": [
+          "item.viv_frog",
+          "item.viv_lizard"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_caterpillar",
+      "displayName": "Kelebek tırtılı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#8DAA3E",
+        "eats": [
+          "item.viv_violet"
+        ],
+        "move": "crawl",
+        "lifeDays": 12,
+        "becomes": "item.viv_butterfly",
+        "becomeDays": 4
+      }
+    },
+    {
+      "id": "item.viv_butterfly",
+      "displayName": "Kelebek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli",
+          "kuru"
+        ],
+        "color": "#E39A3B",
+        "eats": [
+          "*flower"
+        ],
+        "move": "fly",
+        "lifeDays": 10
+      }
+    },
+    {
+      "id": "item.viv_frog",
+      "displayName": "Kurbağa yavrusu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli"
+        ],
+        "color": "#5D8A3A",
+        "eats": [
+          "item.viv_aphid",
+          "item.viv_cricket",
+          "item.viv_woodlouse",
+          "item.viv_butterfly"
+        ],
+        "move": "hop",
+        "lifeDays": 40,
+        "avoid": [
+          "item.viv_firefly",
+          "item.viv_lizard"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_cricket",
+      "displayName": "Cırcır böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli",
+          "kuru"
+        ],
+        "color": "#5A4632",
+        "eats": [
+          "*plant"
+        ],
+        "tags": [
+          "sings"
+        ],
+        "move": "hop",
+        "lifeDays": 15,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_spider",
+      "displayName": "Bahçe örümceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli",
+          "kuru"
+        ],
+        "color": "#3B3430",
+        "eats": [
+          "item.viv_aphid",
+          "item.viv_cricket",
+          "item.viv_firefly",
+          "item.viv_butterfly",
+          "item.viv_ladybird"
+        ],
+        "move": "static",
+        "lifeDays": 30,
+        "solitary": true
+      }
+    },
+    {
+      "id": "item.viv_ground_beetle",
+      "displayName": "Toprak böceği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "nemli",
+          "kuru"
+        ],
+        "color": "#2E3A44",
+        "eats": [
+          "item.viv_snail",
+          "item.viv_worm",
+          "item.viv_caterpillar"
+        ],
+        "move": "crawl",
+        "lifeDays": 30
+      }
+    },
+    {
+      "id": "item.viv_lizard",
+      "displayName": "Kertenkele yavrusu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "kuru"
+        ],
+        "color": "#8A8A4A",
+        "eats": [
+          "item.viv_cricket",
+          "item.viv_aphid",
+          "item.viv_ground_beetle",
+          "item.viv_caterpillar"
+        ],
+        "move": "crawl",
+        "lifeDays": 40,
+        "avoid": [
+          "item.viv_firefly",
+          "item.viv_frog"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_periwinkle",
+      "displayName": "Deniz salyangozu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tuzlu"
+        ],
+        "color": "#5B5450",
+        "eats": [
+          "item.viv_seaweed",
+          "item.viv_sea_lettuce"
+        ],
+        "tags": [
+          "cleaner"
+        ],
+        "move": "crawl",
+        "lifeDays": 30,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_hermit",
+      "displayName": "Keşiş yengeci",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tuzlu"
+        ],
+        "color": "#C27A4A",
+        "tags": [
+          "cleaner"
+        ],
+        "move": "crawl",
+        "lifeDays": 40
+      }
+    },
+    {
+      "id": "item.viv_shrimp",
+      "displayName": "Kaya karidesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tuzlu"
+        ],
+        "color": "#D9A08A",
+        "eats": [
+          "item.viv_sea_lettuce"
+        ],
+        "move": "swim",
+        "lifeDays": 20,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.glass_garden",
+      "displayName": "Cam bahçe",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 0,
+      "decorSize": "M",
+      "weight": 4,
+      "styleSet": "Tüccar",
+      "material": "glass",
+      "beauty": 3,
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "vivCreatures": 4,
+      "vivPlants": 3,
+      "interactions": [
+        {
+          "id": "watch_viv",
+          "displayName": "Cam bahçeyi seyret",
+          "need": "Fun",
+          "restore": 22,
+          "durationDays": 0.06,
+          "moodId": "mood.vivarium",
+          "moodText": "Cam bahçeyi seyretti",
+          "moodValue": 4,
+          "moodDays": 0.5
+        },
+        {
+          "id": "mist",
+          "displayName": "Nemlendir / suyu tazele",
+          "durationDays": 0.02,
+          "homeAction": "mist"
+        }
+      ],
+      "tags": [
+        "glass",
+        "craftonly",
+        "vivarium"
+      ],
+      "art": {
+        "alongX": "iso_item_glass_garden_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.glass_garden_large",
+      "displayName": "Büyük cam bahçe",
+      "category": "decor_wall",
+      "price": 0,
+      "styleSet": "Asil",
+      "material": "glass",
+      "beauty": 6,
+      "rooms": [
+        "living"
+      ],
+      "vivCreatures": 8,
+      "vivPlants": 6,
+      "level": 6,
+      "finishGroup": "wood",
+      "interactions": [
+        {
+          "id": "watch_viv",
+          "displayName": "Cam bahçeyi seyret",
+          "need": "Fun",
+          "restore": 22,
+          "durationDays": 0.06,
+          "moodId": "mood.vivarium",
+          "moodText": "Cam bahçeyi seyretti",
+          "moodValue": 4,
+          "moodDays": 0.5
+        },
+        {
+          "id": "mist",
+          "displayName": "Nemlendir / suyu tazele",
+          "durationDays": 0.02,
+          "homeAction": "mist"
+        }
+      ],
+      "tags": [
+        "glass",
+        "craftonly",
+        "vivarium"
+      ],
+      "art": {
+        "alongX": "iso_item_glass_garden_large_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
       ]
     }
   ],
@@ -29111,6 +30115,49 @@
       "minLevel": 6,
       "durationDays": 0.5,
       "skillXp": 35
+    },
+    {
+      "id": "glass_garden",
+      "station": "item.glass_bench",
+      "produces": "item.glass_garden",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 3
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "skill": "Pottery",
+      "minLevel": 7,
+      "durationDays": 0.3,
+      "skillXp": 25
+    },
+    {
+      "id": "glass_garden_large",
+      "station": "item.glass_bench",
+      "produces": "item.glass_garden_large",
+      "materials": [
+        {
+          "item": "item.clear_glass",
+          "count": 4
+        },
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.lead",
+          "count": 1
+        }
+      ],
+      "skill": "Pottery",
+      "minLevel": 9,
+      "durationDays": 0.6,
+      "skillXp": 50,
+      "requiresBranch": "branch.pot_b"
     }
   ],
   "animals": [

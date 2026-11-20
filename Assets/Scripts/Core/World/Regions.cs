@@ -318,7 +318,8 @@ namespace Thatchwick.Core.World
 
             // ---- Hayvan pazarı (Murat): ırmağın ötesinde, kuzeydoğuda çitli ağıl (plan); içi kurallarla ----
             p.Fence(PenX0, PenY0, PenX1, PenY1, 'S', 58, true);
-            p.Path(1, (58, 13), (58, 26));
+            // Ağıl kapısından inen patika balıkçının doğusundan dolanır (balıkçı binası bir karo doğuya alınınca patikayı kesiyordu).
+            p.Path(1, (58, 13), (58, 17), (62, 17), (62, 26));
             // Dış donatı (meydan, tabelalar, avlular, bahçeler, ağaçlar) kurallarla: Core.Layout.OutdoorBuilder (belge 44 D).
         }
 
@@ -355,6 +356,10 @@ namespace Thatchwick.Core.World
             // Irmağın ötesi
             new TownBuilding("fisher", "Balıkçı", "shop", 55, 18, 6, 5, 'W', 20, FloorType.Wood, "home:fisher", (53, 20), (53, 26)),   // bir karo doğuya: kapı önü 2 karo kuru (belge 44 D)
             new TownBuilding("saddler", "Saraç ve tabakhane", "shop", 54, 34, 7, 6, 'N', 57, FloorType.Dirt, "home:saddler", (57, 28)),
+            // Hayvan pazarının tek katlı kulübesi (Ek tablosu): ağılın güneybatısında, ırmak ile ağıldan inen patika arasında;
+            // kapısı patikaya açılır. Murat
+            // köylü evi 4'te oturur; kulübe yem, tuz ve koşum deposu. Meslek etiketi ağılla aynı ("animals").
+            new TownBuilding("animals_hut", "Hayvan pazarı (kulübe)", "shop", 54, 14, 4, 3, 'E', 15, FloorType.Dirt, null) { Template = "animals_hut", Trade = "animals" },
             // Güney
             new TownBuilding("mason", "Taşçı", "shop", 20, 42, 7, 6, 'E', 44, FloorType.Stone, "home:mason", (33, 44)),
             // Köylü evleri: dağınık, kendi bahçeleriyle
