@@ -44,7 +44,8 @@ jobs:
             echo "Unity projesi henüz repoda yok; atlandı."
           fi
 
-  test:
+  # İş adı bilerek "test" değil: "test" Core tests'in denetim adıdır (main korumasında zorunlu denetim).
+  unity-test:
     needs: check-project
     if: needs.check-project.outputs.has_unity == 'true' && needs.check-project.outputs.has_license == 'true'
     runs-on: ubuntu-latest
