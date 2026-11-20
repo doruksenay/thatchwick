@@ -6,8 +6,7 @@ family: foley
 freq: B
 status: ready
 approved_by: user
-depends_on:
-- s110
+depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
 key: kitchen.ladle
 generate: 8
@@ -21,5 +20,8 @@ axes:
   bowl:
   - clay bowl
   - wooden bowl
+pilot_onayi_bekliyordu:
+- s110
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 A ladle dipped into a pot and poured into a bowl: a short scoop, a thick pour and a light tap on the rim.

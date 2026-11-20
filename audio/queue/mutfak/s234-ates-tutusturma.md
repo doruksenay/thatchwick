@@ -6,8 +6,7 @@ family: foley
 freq: B
 status: ready
 approved_by: user
-depends_on:
-- s110
+depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
 key: fire.kindle
 generate: 8
@@ -21,5 +20,8 @@ axes:
   catch:
   - two soft breaths and a small crackle
   - kindling catching quickly
+pilot_onayi_bekliyordu:
+- s110
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling.

@@ -6,8 +6,7 @@ family: tools
 freq: B
 status: ready
 approved_by: user
-depends_on:
-- s110
+depends_on: []
 key: fish.cast
 generate: 8
 keep: 4
@@ -20,5 +19,8 @@ axes:
   line:
   - horsehair line
   - linen line
+pilot_onayi_bekliyordu:
+- s110
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant.

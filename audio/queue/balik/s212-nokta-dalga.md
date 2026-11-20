@@ -6,8 +6,7 @@ family: spots
 freq: B
 status: ready
 approved_by: user
-depends_on:
-- s131
+depends_on: []
 key: spot.wave
 spot_of: amb.coast
 spot_interval_s:
@@ -27,5 +26,8 @@ generate: 4
 keep: 4
 duration_s: 3
 cost_max: 600
+pilot_onayi_bekliyordu:
+- s131
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 A single slightly larger wave breaking on the sand and drawing back over pebbles.

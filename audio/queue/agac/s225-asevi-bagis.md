@@ -6,8 +6,7 @@ family: foley
 freq: B
 status: ready
 approved_by: user
-depends_on:
-- s101
+depends_on: []
 note: 'Belge 52: aşevine bağış.'
 key: inn.donate
 generate: 8
@@ -21,5 +20,8 @@ axes:
   box:
   - dropped into a wooden alms box
   - dropped into a clay jar
+pilot_onayi_bekliyordu:
+- s101
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; s101 aynı turda üretilir (Project 45b)'
 ---
 Coins clinking as they drop into a wooden charity box, short and clean.

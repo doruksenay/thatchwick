@@ -6,8 +6,7 @@ family: tools
 freq: B
 status: ready
 approved_by: user
-depends_on:
-- s120
+depends_on: []
 note: 'Project belgesi 52: ulu ağaçta ağaç ev kurma, yapıma devam ve onarım.'
 key: treehouse.build
 generate: 8
@@ -21,5 +20,8 @@ axes:
   height:
   - up in a tree, slightly hollow plank
   - on a plank platform with leaves rustling
+pilot_onayi_bekliyordu:
+- s120
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak.

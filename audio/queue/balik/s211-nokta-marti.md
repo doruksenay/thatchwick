@@ -6,8 +6,7 @@ family: spots
 freq: B
 status: ready
 approved_by: user
-depends_on:
-- s131
+depends_on: []
 key: spot.gull
 spot_of: amb.coast
 spot_interval_s:
@@ -31,5 +30,8 @@ axes:
   bird:
   - herring gull
   - black-headed gull
+pilot_onayi_bekliyordu:
+- s131
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 One short call of a single gull, a little distant over the sea.

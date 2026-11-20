@@ -6,8 +6,7 @@ family: ambience
 freq: C
 status: ready
 approved_by: user
-depends_on:
-- s130
+depends_on: []
 key: amb.coast
 generate: 3
 keep: 3
@@ -18,5 +17,8 @@ axes:
   - gentle waves washing on a sandy beach
   - soft surf on pebbles and rocks
   - calm sea breeze with distant lapping water
+pilot_onayi_bekliyordu:
+- s130
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 A calm seashore beside a small medieval fishing place, steady and even, nothing stands out.

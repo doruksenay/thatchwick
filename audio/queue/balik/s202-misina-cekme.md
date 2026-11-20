@@ -6,8 +6,7 @@ family: tools
 freq: A
 status: ready
 approved_by: user
-depends_on:
-- s110
+depends_on: []
 key: fish.reel
 generate: 16
 keep: 8
@@ -17,5 +16,8 @@ axes:
   tension:
   - light tension
   - strong tension
+pilot_onayi_bekliyordu:
+- s110
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 A taut fishing line and wooden rod creaking under the pull of a fish, very short, no water.

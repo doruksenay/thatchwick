@@ -6,8 +6,7 @@ family: foley
 freq: C
 status: ready
 approved_by: user
-depends_on:
-- s110
+depends_on: []
 note: 'Belge 52: ağaç ev gıcırdıyor ya da harap oldu uyarısı.'
 key: treehouse.creak
 generate: 4
@@ -18,5 +17,8 @@ axes:
   wood:
   - old weathered planks swaying in wind
   - loose board and straining rope
+pilot_onayi_bekliyordu:
+- s110
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 A slow, worried creak of old treehouse planks moving in the wind, a loose board knocking once.

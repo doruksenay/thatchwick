@@ -6,8 +6,7 @@ family: foley
 freq: B
 status: ready
 approved_by: user
-depends_on:
-- s110
+depends_on: []
 note: 'Belge 52: Çınar Aşevi, ücretli yemek ve hayır sofrası.'
 key: inn.dishes
 generate: 8
@@ -18,5 +17,8 @@ axes:
   dish:
   - wooden spoon scraping a clay bowl
   - clay cup set down on a wooden table, ladle into a bowl
+pilot_onayi_bekliyordu:
+- s110
+not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
 ---
 A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices.
