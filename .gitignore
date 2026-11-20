@@ -64,7 +64,7 @@ Assets/mcp-pixellab-blob-*
 art/.worker.lock
 
 # Stil kilidi palet önizlemesi (tools/art/style.py palette --png)
-art/style/palette.png
+art/style/palette*.png
 
 # Python önbelleği (tools/art)
 __pycache__/
