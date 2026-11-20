@@ -10,6 +10,15 @@ Oyun artık **izometrik**. Eski "yüksek top-down / 3/4" testleri (Assets/Art/Te
 - Işık sol-üstten: üst yüz en açık, sol yüz orta, sağ yüz en koyu. **Gölge sprite'a pişirilmez** (oyun ekler).
 - Arka plan tamamen saydam. Düz, az tonlu pikselart; önceki test karakterleriyle aynı stil/palet ailesi.
 
+## Palet ve kontur kilidi (kullanıcı kararı 2026-11-20, Project belgesi 64c §1)
+1. **İki donmuş palet.** Dünya görselleri (zemin, yapı, eşya, bitki, hayvan) `art/style/palette.json`'daki 112 rengi; ikon ve arayüz görselleri (`icon_*`, `ui_*`, `arayuz` ailesi) `art/style/palette_arayuz.json`'daki 128 rengi kullanır. İkisi de kabul edilmiş işlerin çıktılarından üretildi ve **donduruldu**: elle düzenlenmez, kendiliğinden yeniden üretilmez.
+2. **Yeni renk yalnızca kullanıcı kararıyla.** Karar verilince `python tools/art/style.py palette --set dunya|arayuz --yeniden "<tarih, karar, gerekçe>"`; not dosyaya yazılır. Paletten kalan bir görseli geçirmek için palet değiştirilmez, görsel düzeltilir.
+3. **Karakterler** rampa kilidinde kalır (aşağıda "Katmanlı karakter"); `ramps.py check` bağlayıcıdır.
+4. **Kontur.** Dış kontur koyu ve **renkli**: nesnenin en koyu tonunun bir basamak koyusu; saf siyah (#000) kontur yok. İç çizgiler dış konturdan bir basamak açık. Zemin karoları kontursuz; duvar ve yapı parçalarında yalnızca dış kenarda kontur.
+5. **Doygunluk** aileye göre sınırlı (`style.py check`: aile referanslarının 1,5 katını aşan KALIR). Çim ve yaprak yeşili toprak tonuna yakın; limon yeşili yok.
+6. **Işık** sol üstten; alev ve ışık içeren görselde denetim `check --light` ile yapılır.
+7. **Kapı:** `style.py check`'ten KALAN görsel teslim edilmez. Kilitten önce kabul edilmiş görsellerin taraması: `art/results/palet-kilidi-tarama.md` (yeniden üretim kullanıcı onayıyla).
+
 ## Teslimat (Assets/Art/Iso/ altına)
 1. **Zemin seti**: çimen <-> toprak geçişli iso tileset, her karo 64x32 elmas, dikişsiz. + 2 çimen varyasyonu.
 2. **Köylü**: 1 karakter, 8 yön (en az 4: SE, SW, NW, NE). Boy yaklaşık 44-52 px. Ayak altı karo merkezinde.

@@ -3,11 +3,16 @@
 
 Tutarlılığın üç ayağı (art/style/README.md):
   1. Referanslar  art/style/references.json  (aile başına kabul edilmiş görseller; PixelLab stil eşlemesi bunları kullanır)
-  2. Ana palet    art/style/palette.json     (referanslardan çıkarılır; yeni görsel bu palete yakın olmalı)
+  2. Paletler     art/style/palette.json (dünya) ve art/style/palette_arayuz.json (ikon ve arayüz); ikisi de DONDURULMUŞ
+                  (kullanıcı kararı 2026-11-20, Project belgesi 64c). Kaynak: art/queue'da "accepted" işlerin çıktıları.
   3. Yan yana     art/results/NNN-*-yanyana.png (yeni çıktı, ailesinin referanslarıyla aynı ölçekte)
 
+Palet seçimi: dosya adı icon_ ya da ui_ ile başlıyorsa ya da aile "arayuz" ise arayüz paleti, değilse dünya paleti.
+Karakter katmanlarının asıl kilidi rampalardır (tools/art/ramps.py); burada dünya paletiyle kaba denetim yapılır.
+
 Kullanım:
-  python tools/art/style.py palette [--png]              # referanslardan art/style/palette.json üret (--png: önizleme)
+  python tools/art/style.py palette --set dunya|arayuz --yeniden "karar notu" [--png]
+                                                         # donmuş paleti yeniden üretir; yalnızca kullanıcı kararıyla
   python tools/art/style.py check <png>... [--family F] [--light]  # palet uyumu; eşik altıysa çıkış 1
                                                          # --light: alev/ışık pikselleri denetim dışı (ışık kaynağı kuralı)
   python tools/art/style.py sheet --family F --out X.png <png>...   # referanslar + yeni görseller, 4x, aynı taban çizgisi
@@ -27,10 +32,20 @@ from PIL import Image, ImageDraw
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 REFS = os.path.join(ROOT, "art", "style", "references.json")
+QUEUE = os.path.join(ROOT, "art", "queue")
 PALETTE_JSON = os.path.join(ROOT, "art", "style", "palette.json")
-PALETTE_PNG = os.path.join(ROOT, "art", "style", "palette.png")
+PALETTE_UI_JSON = os.path.join(ROOT, "art", "style", "palette_arayuz.json")
 
-PALETTE_SIZE = 64          # ana paletteki renk sayısı
+# Palet takımları (kullanıcı kararı 2026-11-20, Project belgesi 64c §1): dünya "yaklaşık 96" → 112 (96 renkte kabul
+# edilmiş kaynakların 16'sı kendi paletinden kalıyordu, 112'de 13'ü); ikon ve arayüz ayrı, daha doygun ve daha kalabalık.
+PALETTE_SETS = {
+    "dunya": {"json": PALETTE_JSON, "size": 112, "families": ("zemin", "yapi", "esya", "bitki", "hayvan")},
+    "arayuz": {"json": PALETTE_UI_JSON, "size": 128, "families": None},   # None: bütün ailelerin icon_/ui_ çıktıları
+}
+UI_PREFIXES = ("icon_", "ui_")
+SAMPLE_PER_IMAGE = 400     # palet üretiminde görsel başına en çok örnek piksel (büyük görsel paleti ezmesin)
+SAMPLE_SEED = 7            # aynı kabul listesi aynı paleti verir
+PALETTE_MIN_PER_SECTOR = 3 # ton dilimi başına en az renk (_stratified_palette)
 NEAR = 20.0                # bir pikselin palete "yakın" sayıldığı en büyük uzaklık (algısal ağırlıklı RGB)
 # Eşikler 2026-11-13'te ölçüldü: referanslar ortalama 1-6, aynı aileden kabul görmüş adaylar 4-12,
 # doygunluğu 1,8-2,2 kat artırılmış ya da tonu kaydırılmış kopyalar 11-12 uzaklık ve 1,4-1,9 kat doygunluk.
@@ -75,42 +90,142 @@ def dist(c1, c2):
     return math.sqrt((2 + rm / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rm) / 256) * db * db) / 3.0
 
 
-def build_palette(_args):
-    files = ref_files()
+def _expand(pattern):
+    """`a_{x,y}_b.png` → [`a_x_b.png`, `a_y_b.png`] (iş dosyası çıktı listesi biçimi)."""
+    import re
+    m = re.search(r"\{([^{}]*)\}", pattern)
+    if not m:
+        return [pattern]
+    out = []
+    for part in m.group(1).split(","):
+        out.extend(_expand(pattern[: m.start()] + part + pattern[m.end():]))
+    return out
+
+
+def accepted_job_files():
+    """art/queue'da status: accepted işlerin var olan PNG çıktıları, aileye göre."""
+    import glob
+    import re
+    out = {}
+    for path in sorted(glob.glob(os.path.join(QUEUE, "*.md"))):
+        with open(path, encoding="utf-8") as f:
+            parts = f.read().split("---")
+        if len(parts) < 3:
+            continue
+        head = parts[1]
+        st = re.search(r"^status:\s*(\w+)", head, re.M)
+        fam = re.search(r"^family:\s*(\w+)", head, re.M)
+        if not st or st.group(1) != "accepted" or not fam:
+            continue
+        for line in re.findall(r"^\s*-\s*(\S+\.png)", head, re.M):
+            for rel in _expand(line):
+                p = os.path.join(ROOT, rel)
+                if os.path.exists(p):
+                    out.setdefault(fam.group(1), set()).add(p)
+    return {k: sorted(v) for k, v in out.items()}
+
+
+def palette_sources(set_name):
+    jobs = accepted_job_files()
+    conf = PALETTE_SETS[set_name]
+    files = []
+    for fam, paths in jobs.items():
+        for p in paths:
+            ui = os.path.basename(p).startswith(UI_PREFIXES) or fam == "arayuz"
+            if set_name == "arayuz" and ui:
+                files.append(p)
+            elif set_name == "dunya" and not ui and fam in conf["families"]:
+                files.append(p)
+    return sorted(set(files))
+
+
+def build_palette(args):
+    conf = PALETTE_SETS[args.set]
+    if os.path.exists(conf["json"]):
+        with open(conf["json"], encoding="utf-8") as f:
+            if json.load(f).get("donduruldu") and not args.yeniden:
+                sys.exit(f"{os.path.relpath(conf['json'], ROOT)} donduruldu. Yeniden üretim yalnızca kullanıcı kararıyla: "
+                         f"--yeniden \"<tarih, karar ve gerekçe>\"")
+    files = palette_sources(args.set)
     if not files:
-        sys.exit("Referans bulunamadı (art/style/references.json).")
-    pixels = []
-    for p in files:
-        pixels.extend(opaque_pixels(p))
-    side = int(math.ceil(math.sqrt(len(pixels))))
-    canvas = Image.new("RGB", (side, side), pixels[0])
-    canvas.putdata(pixels + [pixels[-1]] * (side * side - len(pixels)))
-    q = canvas.quantize(colors=PALETTE_SIZE, method=Image.Quantize.MEDIANCUT)
-    pal = q.getpalette()[: PALETTE_SIZE * 3]
-    used = sorted(set(q.get_flattened_data() if hasattr(q, "get_flattened_data") else q.getdata()))
-    colors = sorted({tuple(pal[i * 3: i * 3 + 3]) for i in used}, key=lambda c: (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]))
+        sys.exit("Kabul edilmiş kaynak görsel bulunamadı (art/queue, status: accepted). PNG'ler Git LFS'te: git lfs pull.")
+    colors = _stratified_palette(files, conf["size"])
     data = {
-        "_aciklama": "art/style/references.json'daki görsellerden üretildi (tools/art/style.py palette). Elle düzenleme; referans değişince yeniden üret.",
-        "kaynak": [os.path.relpath(p, ROOT).replace("\\", "/") for p in files],
+        "_aciklama": "DONDURULDU. Elle düzenleme; yeni renk yalnızca kullanıcı kararıyla "
+                     "(tools/art/style.py palette --set " + args.set + " --yeniden \"karar\"). Bkz. docs/gorsel-yonerge.md.",
+        "takim": args.set,
+        "donduruldu": True,
+        "karar": args.yeniden or "",
+        "kaynak_sayisi": len(files),
         "yakinlik_esigi": NEAR,
         "renkler": ["#%02x%02x%02x" % c for c in colors],
     }
-    with open(PALETTE_JSON, "w", encoding="utf-8") as f:
+    with open(conf["json"], "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    sw = Image.new("RGB", (16 * 8, 16 * int(math.ceil(len(colors) / 8))), (51, 51, 51))
-    d = ImageDraw.Draw(sw)
-    for i, c in enumerate(colors):
-        x, y = (i % 8) * 16, (i // 8) * 16
-        d.rectangle([x, y, x + 15, y + 15], fill=c)
-    if getattr(_args, "png", False):
-        sw.save(PALETTE_PNG)   # önizleme; repoya commit edilmez (.gitignore)
-    print(f"{len(colors)} renk, {len(files)} referans -> {os.path.relpath(PALETTE_JSON, ROOT)}")
+        f.write("\n")
+    if args.png:   # önizleme; repoya commit edilmez (.gitignore)
+        sw = Image.new("RGB", (16 * 16, 16 * int(math.ceil(len(colors) / 16))), (51, 51, 51))
+        d = ImageDraw.Draw(sw)
+        for i, c in enumerate(colors):
+            x, y = (i % 16) * 16, (i // 16) * 16
+            d.rectangle([x, y, x + 15, y + 15], fill=c)
+        sw.save(conf["json"][:-5] + ".png")
+    print(f"{len(colors)} renk, {len(files)} kabul edilmiş görsel -> {os.path.relpath(conf['json'], ROOT)}")
 
 
-def load_palette():
-    with open(PALETTE_JSON, encoding="utf-8") as f:
+def _hue_sector(c):
+    import colorsys
+    h, sat, v = colorsys.rgb_to_hsv(*(x / 255 for x in c))
+    if sat < 0.15 or v < 0.18:
+        return "n%d" % min(3, int(v * 4))            # nötr: dört açıklık basamağı
+    return "h%d" % (int(h * 360 + 15) % 360 // 30)   # renkli: 12 ton dilimi (30°)
+
+
+def _stratified_palette(files, size):
+    """Ton dilimli median-cut. Düz median-cut azınlık tonları (su mavisi, çiçek pembesi) baskın kahvelerin içinde
+    eritiyordu: kabul edilmiş su karoları kendi paletinden kalıyordu (2026-11-20). Her dilime nüfusunun karekökü oranında
+    renk ayrılır, dolu her dilim en az PALETTE_MIN_PER_SECTOR renk alır."""
+    import random
+    rnd = random.Random(SAMPLE_SEED)
+    groups = {}
+    for p in files:
+        px = opaque_pixels(p)
+        for c in (rnd.sample(px, min(len(px), SAMPLE_PER_IMAGE)) if px else []):
+            groups.setdefault(_hue_sector(c), []).append(c)
+    weight = {k: math.sqrt(len(v)) for k, v in groups.items()}
+    total = sum(weight.values())
+    alloc = {k: max(PALETTE_MIN_PER_SECTOR, round(size * weight[k] / total)) for k in groups}
+    while sum(alloc.values()) > size:
+        alloc[max(alloc, key=lambda k: (alloc[k], k))] -= 1
+    colors = set()
+    for k in sorted(groups):
+        v = groups[k]
+        n = min(alloc[k], len(set(v)))
+        im = Image.new("RGB", (len(v), 1))
+        im.putdata(v)
+        pal = im.quantize(colors=n, method=Image.Quantize.MEDIANCUT).getpalette()[: n * 3]
+        colors.update(tuple(pal[i: i + 3]) for i in range(0, n * 3, 3))
+    return sorted(colors, key=lambda c: (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2], c))
+
+
+def palette_set_for(path, family=""):
+    if family == "arayuz" or os.path.basename(path).startswith(UI_PREFIXES):
+        return "arayuz"
+    return "dunya"
+
+
+def load_palette(set_name="dunya"):
+    with open(PALETTE_SETS[set_name]["json"], encoding="utf-8") as f:
         d = json.load(f)
     return [tuple(int(h[i: i + 2], 16) for i in (1, 3, 5)) for h in d["renkler"]]
+
+
+def _is_frozen(set_name):
+    path = PALETTE_SETS[set_name]["json"]
+    if not os.path.exists(path):
+        return False
+    with open(path, encoding="utf-8") as f:
+        return bool(json.load(f).get("donduruldu"))
 
 
 def is_light_pixel(c):
@@ -156,18 +271,24 @@ def mean_saturation(path, px=None):
 
 
 def check(args):
-    palette = load_palette()
+    palettes, caches = {}, {}
     refs = ref_files([args.family]) if args.family else []
     ref_sat = sum(mean_saturation(r) for r in refs) / len(refs) if refs else None
-    locked = (not args.family) or len(ref_files([args.family], only_accepted=True)) >= KILIT_ESIGI
+    # Donmuş paletler bütün ailelerin kabul edilmiş görsellerinden üretildiği için palet uyumu her ailede bağlayıcıdır
+    # (2026-11-20). Eski paletle (donmamış) aile kilidi kuralı sürer.
+    frozen = all(_is_frozen(n) for n in PALETTE_SETS)
+    locked = frozen or (not args.family) or len(ref_files([args.family], only_accepted=True)) >= KILIT_ESIGI
     if not locked:
         print(f"Not: '{args.family}' ailesinin kilidi kurulmadı (kabul referans < {KILIT_ESIGI}); palet uyumu yalnızca uyarı.")
-    cache, failed = {}, False
+    failed = False
     print("| Dosya | Palete yakın | Ortalama uzaklık | Doygunluk / aile | Sonuç | Bulgu |")
     print("|---|---|---|---|---|---|")
     for p in args.files:
         px, light = (light_split(p) if args.light else (None, 0.0))
-        ratio, mean = conformity(p, palette, cache, px)
+        pset = palette_set_for(p, args.family)
+        if pset not in palettes:
+            palettes[pset], caches[pset] = load_palette(pset), {}
+        ratio, mean = conformity(p, palettes[pset], caches[pset], px)
         sat = mean_saturation(p, px) / ref_sat if ref_sat else None
         notes, level = [], 0
         if args.light:
@@ -249,7 +370,9 @@ def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     pp = sub.add_parser("palette")
-    pp.add_argument("--png", action="store_true", help="art/style/palette.png önizlemesini de yaz")
+    pp.add_argument("--set", choices=sorted(PALETTE_SETS), required=True)
+    pp.add_argument("--yeniden", default="", help="donmuş paleti yeniden üret; kullanıcı kararının notu (tarih, gerekçe)")
+    pp.add_argument("--png", action="store_true", help="art/style/palette*.png önizlemesini de yaz")
     pp.set_defaults(fn=build_palette)
     c = sub.add_parser("check")
     c.add_argument("files", nargs="+")
