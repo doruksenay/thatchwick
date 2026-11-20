@@ -1,7 +1,7 @@
 ---
 id: "590t"
 title: "Boya düğümleri: cehri çalısı, ceviz kabukları, likenli kaya (3)"
-status: running
+status: review
 claimed_at: 2026-11-20T15:15Z
 approved_by: user        # otomatik akış (CLAUDE.md, 2026-11-17); kullanıcı 20.11.2026 sohbet: "assetleri de sıraya ekle"
 priority: 30
