@@ -1,7 +1,7 @@
 ---
 id: "738"
 title: "Çayır karoları yeniden: ana çimle aynı ton (612 çayırının düzeltmesi)"
-status: running
+status: blocked
 claimed_at: 2026-11-20T20:30Z
 approved_by: user        # kullanıcı onayı 2026-11-20 (sohbet: "kıyı karosu ve çim tonu için PixelLab işi hazırla"; belge 65b B2)
 priority: 10
@@ -53,6 +53,10 @@ Ton aynı olursa geçiş karosuna gerek kalmaz: çayır, çimin üstüne serpilm
 - Kabulden sonra kod işi (kod oturumu): `IsoArt.MeadowTiles` `iso_ground_meadow_v2_a/b/c`'yi kullansın (yoksa eskisine
   düşsün). 612 çayırı emekliye ayrılabilir.
 - `grass_dark` (612) kodda zaten kapalı ("kare leke gibi duruyordu"); ağaç altı gölgesi istenirse aynı ölçütle ayrı iş.
+
+## Sorular
+- `create_tiles_pro` bir çağrıyı karo sayısından bağımsız 10 generation fiyatlıyor (stil modu, 64x32 referans; araç açıklaması: "Numbering fewer tiles does not make a call cheaper"). `cost_est` 4 / `cost_max` 8, kural gereği 2 katı aşan sapma olduğundan çağrı yapılmadı (0 gen harcandı). Öneri: `cost_est: 10`, `cost_max: 12` yapılıp tek çağrıda 3 çeşit (ya da 16 numaralı karodan en iyi 3) üretilsin; 8 gen bütçesi içinde sığmaz.
+- Referans yüklemeleri (3 grass karosu, upload id'leri 3 gün geçerli) hazırdı; ücretsiz.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
