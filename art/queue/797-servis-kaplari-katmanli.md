@@ -1,7 +1,7 @@
 ---
 id: "797"
 title: "Servis kapları, katmanlı: boş kap ve dört doluluk katmanı (10 birleşim)"
-status: running
+status: review
 claimed_at: 2026-11-20T23:09Z
 approved_by: user        # kullanıcı 21.11.2026: 578-580 "4'ü kabul + düz kaplar katmanlı" (seçmeli liste)
 priority: 5          # kullanıcı 21.11 02:02: "işçiye ürettir" (mutfak işleri önce)
