@@ -1,7 +1,7 @@
 ---
 id: "485"
 title: "Yaban hayvanları: martı ve yengeç (2)"
-status: running
+status: review
 claimed_at: 2026-11-20T10:03Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 20.11.2026 "asset lazımsa queueya ekle" (deniz kıyısı canlıları, belge 50)
 priority: 20
