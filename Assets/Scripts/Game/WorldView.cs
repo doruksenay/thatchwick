@@ -26,11 +26,13 @@ namespace Thatchwick.Game
         /// <summary>Harita kenarındaki solan çim şeridinin derinliği (karo). Sert kenar yerine koyu ormana karışır.</summary>
         private const int FringeDepth = 7;
 
-        private struct FringeTile { public SpriteRenderer R; public int X, Y; public float T; }
+        private struct FringeTile { public int X, Y; public float T; }
         private FringeTile[] _fringe;
+        private GroundLayer _fringeLayer;
 
-        // Kat başına bir karo dizisi: dizin ((z - MinLevel) * H + y) * W + x.
-        private SpriteRenderer[] _tiles;
+        // Kat başına bir zemin katmanı (Tilemap; dizin z - MinLevel). Karo başına GameObject yok.
+        private GroundLayer[] _layers;
+        private readonly TileCell _cell = new TileCell();
 
         /// <summary>Yapı modunda sahipsiz karolar koyulaştırılır.</summary>
         public bool ShowPlot;
@@ -79,8 +81,6 @@ namespace Thatchwick.Game
         /// <summary>Bu katın nesneleri (eşya, duvar, karakter) şu an çizilmeli mi.</summary>
         public bool IsLevelVisible(int z) => _viewLevel < 0 ? z == _viewLevel : z >= 0 && z <= _viewLevel;
 
-        private int TileIndex(int x, int y, int z) => ((z - GridMap.MinLevel) * Map.Height + y) * Map.Width + x;
-
         /// <summary>Çizilen alan (etkin bölge). Karolar yalnızca bu dikdörtgende oluşturulur; diğer bölgeler ekran dışıdır.</summary>
         public RectInt Area => _area;
         private RectInt _area;
@@ -98,7 +98,6 @@ namespace Thatchwick.Game
         {
             Map = map;
             int plane = map.Width * map.Height;
-            _tiles = new SpriteRenderer[plane * GridMap.LevelCount];
             _terrainBlocked = new bool[plane];
             for (int y = 0; y < map.Height; y++)
                 for (int x = 0; x < map.Width; x++)
@@ -120,32 +119,15 @@ namespace Thatchwick.Game
         {
             foreach (var go in _spawned) if (go != null) Destroy(go);
             _spawned.Clear();
-            System.Array.Clear(_tiles, 0, _tiles.Length);
-            var diamond = SpriteMaterials.Diamond;
-            var material = SpriteMaterials.Unlit;
-
-            for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
+            if (_layers == null)
             {
-                for (int y = _area.yMin; y < _area.yMax; y++)
-                {
-                    for (int x = _area.xMin; x < _area.xMax; x++)
-                    {
-                        var p = new GridPos(x, y, z);
-                        var go = new GameObject(z == 0 ? $"Tile {x},{y}" : $"Tile {x},{y},{z}");
-                        go.transform.SetParent(transform, false);
-                        go.transform.position = TileToWorld(p);
-                        _spawned.Add(go);
-
-                        var sr = go.AddComponent<SpriteRenderer>();
-                        sr.sprite = diamond;
-                        sr.sharedMaterial = material;
-                        sr.sortingOrder = GroundSortOrder + z * Iso.LevelSortStep;
-                        _tiles[TileIndex(x, y, z)] = sr;
-                        if (z == 0) sr.color = _terrainBlocked[y * Map.Width + x] ? BlockedColor : (((x + y) & 1) == 0 ? GrassA : GrassB);
-                        else sr.enabled = false;
-                    }
-                }
+                _layers = new GroundLayer[GridMap.LevelCount];
+                for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
+                    _layers[z - GridMap.MinLevel] = new GroundLayer(transform, $"Ground {z}", new Vector3(0f, z * Iso.LevelHeight, 0f),
+                        GroundSortOrder + z * Iso.LevelSortStep, SpriteMaterials.Unlit);
+                _fringeLayer = new GroundLayer(transform, "Ground edge", Vector3.zero, GroundSortOrder - 1, SpriteMaterials.Unlit);
             }
+            foreach (var layer in _layers) layer.SetArea(_area);
             BuildFringe();
         }
 
@@ -167,17 +149,11 @@ namespace Thatchwick.Game
                     float jitter = ((h & 0xFF) / 255f - 0.5f) * 0.12f;
                     float t = Mathf.Clamp01((d - 0.5f) / FringeDepth + jitter);
 
-                    var go = new GameObject($"Edge {x},{y}");
-                    go.transform.SetParent(transform, false);
-                    go.transform.position = TileToWorld(new GridPos(x, y, 0));
-                    _spawned.Add(go);
-                    var sr = go.AddComponent<SpriteRenderer>();
-                    sr.sharedMaterial = SpriteMaterials.Unlit;
-                    sr.sortingOrder = GroundSortOrder - 1;
-                    list.Add(new FringeTile { R = sr, X = x, Y = y, T = t });
+                    list.Add(new FringeTile { X = x, Y = y, T = t });
                 }
             }
             _fringe = list.ToArray();
+            _fringeLayer.SetArea(new RectInt(_area.xMin - FringeDepth, _area.yMin - FringeDepth, _area.width + 2 * FringeDepth, _area.height + 2 * FringeDepth));
             RefreshFringe();
         }
 
@@ -185,17 +161,20 @@ namespace Thatchwick.Game
         {
             if (_fringe == null) return;
             bool visible = _viewLevel >= 0;
+            _fringeLayer.SetVisible(visible);
+            if (!visible) return;
             foreach (var f in _fringe)
             {
-                f.R.enabled = visible;
-                if (!visible) continue;
                 var real = IsoArt.Ground(FloorType.Grass, f.X, f.Y);
-                f.R.sprite = real != null ? real : SpriteMaterials.Diamond;
+                var cell = _cell.Reset();
+                cell.sprite = real != null ? real : SpriteMaterials.Diamond;
                 Color baseColor = real != null ? Color.white : (((f.X + f.Y) & 1) == 0 ? GrassA : GrassB);
                 float k = Mathf.Lerp(0.92f, 0.45f, f.T);
                 float a = 1f - f.T * f.T;
-                f.R.color = new Color(baseColor.r * k, baseColor.g * k, baseColor.b * k, a);
+                cell.color = new Color(baseColor.r * k, baseColor.g * k, baseColor.b * k, a);
+                _fringeLayer.Set(f.X, f.Y, cell);
             }
+            _fringeLayer.Flush();
         }
 
         /// <summary>Bu karo arazi engeli değil (üstündeki eşya engelliyordu); mavi boyanmaz.</summary>
@@ -207,7 +186,7 @@ namespace Thatchwick.Game
         /// <summary>Zemin kaplamalarını haritadan yeniden boyar (Grass dışındakiler döşeme rengi alır).</summary>
         public void RefreshFloors()
         {
-            if (Map == null || _tiles == null) return;
+            if (Map == null || _layers == null) return;
             for (int z = GridMap.MinLevel; z <= GridMap.MaxLevel; z++)
                 RefreshLevel(z);
             RefreshFringe();
@@ -217,16 +196,30 @@ namespace Thatchwick.Game
         {
             if (z == 0) { _pathWang = IsoArt.PathWangReady; RebuildPathLayer(IsLevelVisible(0)); }
             bool visible = IsLevelVisible(z);
+            var layer = _layers[z - GridMap.MinLevel];
+            // Görünmeyen kat bütünüyle gizlenir; karoları gezilmez (eskiden her karo tek tek kapatılırdı).
+            layer.SetVisible(visible);
+            if (!visible) return;
             for (int y = _area.yMin; y < _area.yMax; y++)
             {
                 for (int x = _area.xMin; x < _area.xMax; x++)
                 {
-                    var sr = _tiles[TileIndex(x, y, z)];
-                    if (sr == null) continue;
+                    var sr = _cell.Reset();
+                    PaintTile(sr, x, y, z, visible);
+                    layer.Set(x, y, sr);
+                }
+            }
+            layer.Flush();
+        }
+
+        // Bir karonun zemin görünümü (eski karo SpriteRenderer'ının yerine TileCell'e boyanır).
+        private void PaintTile(TileCell sr, int x, int y, int z, bool visible)
+        {
+                {
                     var p = new GridPos(x, y, z);
-                    if (z != 0) { RefreshUpperOrLower(sr, p, visible); continue; }
+                    if (z != 0) { RefreshUpperOrLower(sr, p, visible); return; }
                     sr.enabled = visible;
-                    if (!visible) continue;
+                    if (!visible) return;
 
                     var floor = Map.GetFloor(p);
                     bool terrainBlocked = _terrainBlocked[y * Map.Width + x];
@@ -358,7 +351,6 @@ namespace Thatchwick.Game
                         sr.color = new Color(c.r * 0.55f, c.g * 0.55f, c.b * 0.6f, 1f);
                     }
                 }
-            }
         }
 
         // Patika komşusu: yol, meydan taşı, köprü ya da kapıdan girilen döşeme (arada duvar yoksa). Harita kenarındaki
@@ -443,7 +435,7 @@ namespace Thatchwick.Game
 
         // Üst kat döşemesi ve bodrum: yer tutucu elmaslar. Kazılmamış toprak (bodrum görünümünde) koyu çizilir;
         // yapı modunda boş üst kat düzlemi çok soluk gösterilir ki dokunulacak yer görünsün.
-        private void RefreshUpperOrLower(SpriteRenderer sr, GridPos p, bool visible)
+        private void RefreshUpperOrLower(TileCell sr, GridPos p, bool visible)
         {
             bool has = Map.HasTile(p);
             bool isViewPlane = p.Z == _viewLevel;

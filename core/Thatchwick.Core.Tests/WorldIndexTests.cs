@@ -33,6 +33,39 @@ namespace Thatchwick.Core.Tests
             Assert.Null(world.GetItem(999999));
         }
 
+        [Fact]
+        public void DegisiklikIzleme_YalnizcaDokunulanEsyalar()
+        {
+            var world = new WorldState(new GridMap(16, 16));
+            var stool = new ItemDef { Id = "item.test_stool", DisplayName = "Tabure" };
+            var ids = new System.Collections.Generic.List<int>();
+            Assert.True(world.TakeChanges(ids));   // ilk kurulum: hepsi
+            var a = world.PlaceItem(stool, new GridPos(1, 1));
+            var b = world.PlaceItem(stool, new GridPos(3, 3));
+            ids.Clear();
+            Assert.False(world.TakeChanges(ids));
+            Assert.Equal(new[] { a.Id, b.Id }, ids.OrderBy(i => i).ToArray());
+
+            ids.Clear();
+            Assert.True(world.MoveItem(a.Id, new GridPos(5, 5), 0).Ok);
+            Assert.False(world.TakeChanges(ids));
+            Assert.Equal(new[] { a.Id }, ids.ToArray());
+
+            ids.Clear();
+            world.NotifyChanged(b.Id);
+            Assert.False(world.TakeChanges(ids));
+            Assert.Equal(new[] { b.Id }, ids.ToArray());
+
+            ids.Clear();
+            world.NotifyChanged();   // kaynağı belirsiz: hepsi
+            Assert.True(world.TakeChanges(ids));
+
+            ids.Clear();
+            world.RemoveItem(b.Id);
+            Assert.False(world.TakeChanges(ids));
+            Assert.Contains(b.Id, ids);
+        }
+
         private static void AssertConsistent(WorldState world)
         {
             foreach (var it in world.Items) Assert.Same(it, world.GetItem(it.Id));

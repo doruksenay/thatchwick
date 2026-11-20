@@ -31,7 +31,40 @@ namespace Thatchwick.Core.World
         public event Action Changed;
 
         /// <summary>Eşyanın görünüşü değişti (kaplama): görünüm yenilensin.</summary>
-        public void NotifyChanged() => OnChanged();
+        public void NotifyChanged() { _touchedAll = true; OnChanged(); }
+
+        /// <summary>Yalnızca bu eşyanın görünümü değişti (mum, desen, cam bahçe): görünüm yalnızca onu yeniden kurar.</summary>
+        public void NotifyChanged(int itemId) { Touch(itemId); OnChanged(); }
+
+        // ---- değişiklik izleme (görünüm farkı; performans incelemesi 20.11.2026) ----
+        // Changed yayınlanınca görünüm TakeChanges ile hangi eşyaların değiştiğini alır; yalnızca onları yeniden kurar.
+        // Kaynağı belirsiz değişiklik (NotifyChanged(), RaiseChanged, halı sırası, toplu kaydırma) "hepsi" sayılır.
+        private readonly HashSet<int> _touched = new HashSet<int>();
+        private bool _touchedAll = true;
+
+        private void Touch(int itemId) => _touched.Add(itemId);
+
+        // Eşya ve (yüzeyse) üstündeki dekorlar, (dekorsa) altındaki yüzey.
+        private void TouchWithFamily(ItemInstance item)
+        {
+            if (item == null) return;
+            _touched.Add(item.Id);
+            if (item.ParentId.HasValue) _touched.Add(item.ParentId.Value);
+            foreach (var other in _items) if (other.ParentId == item.Id) _touched.Add(other.Id);
+        }
+
+        /// <summary>
+        /// Son çağrıdan beri değişen eşya kimliklerini <paramref name="into"/>'ya yazar. Değişikliğin kaynağı belirsizse
+        /// (bütün görünüm yeniden kurulmalı) true döner.
+        /// </summary>
+        public bool TakeChanges(ICollection<int> into)
+        {
+            bool all = _touchedAll;
+            if (!all && into != null) foreach (var id in _touched) into.Add(id);
+            _touched.Clear();
+            _touchedAll = false;
+            return all;
+        }
 
         // ---- dizinler (performans incelemesi 20.11.2026) ----
         // Kimliğe göre sözlük her ekleme/çıkarmada güncel tutulur. Karo dizini (GetItemAt) tembel kurulur;
@@ -42,6 +75,8 @@ namespace Thatchwick.Core.World
 
         private void AddToIndex(ItemInstance item)
         {
+            _touched.Add(item.Id);
+            if (item.ParentId.HasValue) _touched.Add(item.ParentId.Value);
             _items.Add(item);
             _byId[item.Id] = item;
             _tileIndexValid = false;
@@ -50,6 +85,8 @@ namespace Thatchwick.Core.World
         private void RemoveFromIndex(ItemInstance item)
         {
             if (!_items.Remove(item)) return;
+            _touched.Add(item.Id);
+            if (item.ParentId.HasValue) _touched.Add(item.ParentId.Value);
             if (_byId.TryGetValue(item.Id, out var known) && ReferenceEquals(known, item)) _byId.Remove(item.Id);
             _tileIndexValid = false;
         }
@@ -257,7 +294,7 @@ namespace Thatchwick.Core.World
             var rug = GetItem(itemId);
             if (rug == null || !rug.IsRug) return false;
             rug.LayerOrder = NextLayer();
-            OnChanged();
+            _touchedAll = true; OnChanged();
             return true;
         }
 
@@ -269,7 +306,7 @@ namespace Thatchwick.Core.World
             int min = int.MaxValue;
             foreach (var it in _items) if (it.IsRug && it.LayerOrder < min) min = it.LayerOrder;
             rug.LayerOrder = min == int.MaxValue ? 0 : min - 1;
-            OnChanged();
+            _touchedAll = true; OnChanged();
             return true;
         }
 
@@ -291,7 +328,7 @@ namespace Thatchwick.Core.World
             }
             if (swap == null) return false;
             int tmp = rug.LayerOrder; rug.LayerOrder = swap.LayerOrder; swap.LayerOrder = tmp;
-            OnChanged();
+            _touchedAll = true; OnChanged();
             return true;
         }
 
@@ -471,6 +508,7 @@ namespace Thatchwick.Core.World
             if (!check.Ok) return check;
             item.Position = tile;
             _tileIndexValid = false;
+            TouchWithFamily(item);
             item.Rotation = Footprint.Normalize(side);
             item.WallBand = b;
             foreach (var child in _items)
@@ -544,6 +582,7 @@ namespace Thatchwick.Core.World
                 if (!cc.Ok) return cc;
                 item.Position = position;
                 _tileIndexValid = false;
+                TouchWithFamily(item);
                 foreach (var child in _items) if (child.ParentId == itemId) child.Position = position;
                 OnChanged();
                 return PlacementCheck.Success;
@@ -555,6 +594,7 @@ namespace Thatchwick.Core.World
             if (!item.IsRug) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
             item.Position = position;
             _tileIndexValid = false;
+            TouchWithFamily(item);
             item.Rotation = Footprint.Normalize(rotation);
             if (!item.IsRug) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
 
@@ -649,6 +689,7 @@ namespace Thatchwick.Core.World
             {
                 it.Position = new GridPos(it.Position.X + dx, it.Position.Y + dy, it.Position.Z);
                 _tileIndexValid = false;
+                TouchWithFamily(it);
                 if (Blocks(it)) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, true);
                 foreach (var child in _items) if (child.ParentId == it.Id) child.Position = it.Position;
                 stairs |= it.Def.IsStairs;
@@ -705,7 +746,7 @@ namespace Thatchwick.Core.World
         private static bool Blocks(ItemInstance item) => !item.IsRug && !item.IsDecor && !item.IsWallMounted && !item.IsCeiling;
 
         /// <summary>Dekor sistemi için olay yayını.</summary>
-        internal void RaiseChanged() => OnChanged();
+        internal void RaiseChanged() { _touchedAll = true; OnChanged(); }
 
         /// <summary>
         /// Kayıttan yükleme: eşyayı kimliğiyle olduğu gibi koyar. Yer eşyası karolarını kapatır; dekor,

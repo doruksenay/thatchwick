@@ -274,8 +274,9 @@ namespace Thatchwick.Game
         private PlacementDebugOverlay _placementDebug;            // F3, yalnızca editör ve geliştirme derlemesi (yerleşim sistemi, Aşama A)
         private Thatchwick.Core.Layout.LayoutPlan _layoutPlan;   // şehir planı (arsalar, oda türleri): doğrulayıcı ve debug katmanı
         private Thatchwick.Core.Layout.LayoutCatalog _layouts;   // layouts.json
-        private readonly List<(ItemInstance item, Transform view, SpriteRenderer sr)> _plantViews = new List<(ItemInstance, Transform, SpriteRenderer)>();
-        private readonly List<(ItemInstance item, SpriteRenderer view)> _heatViews = new List<(ItemInstance, SpriteRenderer)>();
+        private sealed class PlantView { public ItemInstance Item; public Transform View; public SpriteRenderer Sr; public Transform Shadow; }
+        private readonly Dictionary<int, PlantView> _plantViews = new Dictionary<int, PlantView>();
+        private readonly Dictionary<int, (ItemInstance item, SpriteRenderer view)> _heatViews = new Dictionary<int, (ItemInstance, SpriteRenderer)>();
         private Vector2 _hudScroll;
         private AnimalSystem _animals;
         private RoomMoodSystem _roomMood;
@@ -435,9 +436,9 @@ namespace Thatchwick.Game
 
             RebuildItemViews();
             _world.Changed += () => _itemsDirty = true;
-            _view.LevelChanged += () => _itemsDirty = true;   // görünen kat değişince eşyalar yeniden kurulur
+            _view.LevelChanged += MarkAllItemsDirty;   // görünen kat değişince eşyalar yeniden kurulur
             // Duvar değişince kesitte hangi duvarın alçaldığı değişebilir: asılı eşyalar yeniden çizilir (Yukarı'da gerekmez).
-            _world.Map.Changed += () => { if (_walls != null && _walls.Mode != WallMode.Up) _itemsDirty = true; };
+            _world.Map.Changed += () => { if (_walls != null && _walls.Mode != WallMode.Up) MarkAllItemsDirty(); };
 
             foreach (var item in _world.Items)
                 foreach (var tile in item.OccupiedTiles()) _view.ClearTerrainBlock(tile);
@@ -455,7 +456,7 @@ namespace Thatchwick.Game
             wallsGo.transform.SetParent(transform, false);
             _walls = wallsGo.AddComponent<WallView>();
             _walls.Init(map, _view, _content);
-            _walls.ModeChanged += () => _itemsDirty = true;   // Yukarı / Kesit / Aşağı: asılı eşyalar gizlenir ya da görünür
+            _walls.ModeChanged += MarkAllItemsDirty;   // Yukarı / Kesit / Aşağı: asılı eşyalar gizlenir ya da görünür
 
             var cam = Camera.main;
             if (cam == null)
@@ -807,7 +808,8 @@ namespace Thatchwick.Game
             _walls?.Rebuild();   // duvar ve çatılar yalnızca etkin bölgede çizilir
             _input.SetBounds(Iso.RectBounds(r.X, r.Y, r.W, r.H));
             if (a.View != null) _input.JumpTo(a.View.position);
-            _itemsDirty = true;
+            MarkAllItemsDirty();
+            _seenItemsReady = false;   // yeni bölgenin eşyaları "yeni geldi" diye zıplamasın
             ResetSmoothing();
             _fadeUntil = Time.unscaledTime + RegionFadeSeconds;
             ShowMessage(r.Name);
@@ -848,6 +850,13 @@ namespace Thatchwick.Game
 
         // Eşya görünümlerini dünyadan yeniden kurar (yerleştirme/taşıma/satış sonrası). Yer tutucu küpler:
         // çok karolu eşya karo başına bir küp, dekor küçük küp olarak yuvasında durur.
+        /// <summary>Bütün (etkin bölgenin) eşya görünümleri bir sonraki LateUpdate'te baştan kurulur.</summary>
+        private void MarkAllItemsDirty()
+        {
+            _itemsFullRebuild = true;
+            _itemsDirty = true;
+        }
+
         private void RebuildItemViews()
         {
             RebuildItemViewsCore();
@@ -899,19 +908,81 @@ namespace Thatchwick.Game
         {
             foreach (var go in _itemObjects) if (go != null) Destroy(go);
             _itemObjects.Clear();
+            foreach (var bucket in _itemBuckets.Values) foreach (var go in bucket) if (go != null) Destroy(go);
+            _itemBuckets.Clear();
             AddFestiveBunting();
             _itemViews.Clear();
             _plantViews.Clear();
             _heatViews.Clear();
 
             foreach (var item in _world.Items)
+                if (InActiveRegion(item)) BuildItemView(item);
+        }
+
+        /// <summary>Eşya etkin bölgede mi (bölgesiz dünyada hep). Diğer bölgelerin eşyası hiç kurulmaz.</summary>
+        private bool InActiveRegion(ItemInstance item) => _region == null || _region.Contains(item.Position);
+
+        // Eşya başına görünüm nesneleri: yalnızca değişen eşya yıkılıp yeniden kurulur (performans incelemesi 20.11.2026).
+        private readonly Dictionary<int, List<GameObject>> _itemBuckets = new Dictionary<int, List<GameObject>>();
+        private List<GameObject> _currentBucket;
+        private readonly List<int> _changedItems = new List<int>();
+        private bool _itemsFullRebuild = true;
+
+        private void TrackItemObject(GameObject go)
+        {
+            if (_currentBucket != null) _currentBucket.Add(go);
+            else _itemObjects.Add(go);
+        }
+
+        private void BuildItemView(ItemInstance item)
+        {
+            var bucket = new List<GameObject>();
+            _currentBucket = bucket;
+            try { BuildItemViewBody(item); }
+            finally { _currentBucket = null; }
+            if (bucket.Count > 0) _itemBuckets[item.Id] = bucket;
+        }
+
+        private void RemoveItemView(int id)
+        {
+            if (_itemBuckets.TryGetValue(id, out var bucket))
             {
-                if (!_view.IsLevelVisible(item.Position.Z)) continue;   // görünmeyen katın eşyası çizilmez
+                foreach (var go in bucket) if (go != null) Destroy(go);
+                _itemBuckets.Remove(id);
+            }
+            _itemViews.Remove(id);
+            _plantViews.Remove(id);
+            _heatViews.Remove(id);
+        }
+
+        /// <summary>Yalnızca değişen eşyaları yeniden kurar; yeni gelen eşya kısa bir esnemeyle belirir.</summary>
+        private void UpdateItemViews(List<int> ids)
+        {
+            foreach (var id in ids)
+            {
+                RemoveItemView(id);
+                var item = _world.GetItem(id);
+                if (item == null) { _seenItemIds.Remove(id); continue; }
+                if (!InActiveRegion(item)) continue;
+                BuildItemView(item);
+                if (_juice != null && _seenItemsReady && !_seenItemIds.Contains(id) && _itemViews.TryGetValue(id, out var t) && t != null)
+                {
+                    _juice.Pop(t);
+                    _juice.Emit(Juice.Kind.Dust, t.position, 4, Iso.SortOrder(t.position.y, 2, 0));
+                }
+                if (_itemViews.ContainsKey(id)) _seenItemIds.Add(id);
+            }
+        }
+
+        // Bir eşyanın görünüm nesneleri (eskiden RebuildItemViewsCore döngüsünün gövdesi).
+        private void BuildItemViewBody(ItemInstance item)
+        {
+                if (!_view.IsLevelVisible(item.Position.Z)) return;   // görünmeyen katın eşyası çizilmez
                 int level = item.Position.Z;
                 var color = ItemColor(item.Def.Id);
                 if (item.IsWallMounted)
                 {
-                    if (WallItemFacesAway(item) && !WallItemHidden(item)) continue;   // Yukarı'da ön duvarın iç yüzü: duvarın arkasında kalır
+                    if (WallItemFacesAway(item) && !WallItemHidden(item)) return;   // Yukarı'da ön duvarın iç yüzü: duvarın arkasında kalır
                     if (WallItemHidden(item))
                     {
                         // Alçak duvar (Kesit'te ön duvar, Aşağı'da hepsi): eşya havada kalmasın; duvarın tepesinde küçük işaret.
@@ -919,7 +990,7 @@ namespace Thatchwick.Game
                             - new Vector3(0f, Iso.BandHeight(item.WallBand) - LoweredWallTop, 0f);
                         var msr = AddItemSprite(item, mark, color, 0.12f * Mathf.Max(1, item.WallSpan), Iso.WallMountOrder(item.Position, item.Rotation) + 1, SpriteMaterials.Diamond);
                         msr.color = new Color(color.r, color.g, color.b, 0.75f);
-                        continue;
+                        return;
                     }
                     // Bantlı duvar (27): alt, orta, üst yükseklik; geniş eşya kenarlarının ortasında, genişliğince büyük.
                     var wallArt = IsoArt.Item(item, out _);
@@ -927,40 +998,40 @@ namespace Thatchwick.Game
                     var wsr = AddItemSprite(item, Iso.WallMountSpan(item.Position, item.Rotation, item.WallSpan, item.WallBand), color, wscale,
                         Iso.WallMountOrder(item.Position, item.Rotation) + item.WallBand, wallArt);
                     wsr.color = ConditionTint(item, wallArt != null ? Color.white : color);
-                    continue;
+                    return;
                 }
                 if (item.IsCeiling)
                 {
                     // Duvarlar Aşağı'dayken tavan eşyası da gizlenir (alçak duvarların üstünde havada kalmasın).
-                    if (_walls != null && _walls.Mode == WallMode.Down) continue;
+                    if (_walls != null && _walls.Mode == WallMode.Down) return;
                     // Tavan ve kiriş (27): karonun ortasında, tavan yüksekliğinde; kat ya da çatı görünürken zaten çizilmez.
                     var cpos = _view.TileToWorld(item.Position) + new Vector3(0f, Iso.CeilingHeight, 0f);
                     var ceilArt = IsoArt.Item(item, out _);
                     var csr = AddItemSprite(item, cpos, color, ceilArt != null ? 1f : 0.3f, Iso.SortOrder(_view.TileToWorld(item.Position).y, 3, level), ceilArt);
                     csr.color = ConditionTint(item, ceilArt != null ? Color.white : color);
-                    continue;
+                    return;
                 }
                 if (item.IsDecor)
                 {
                     var parent = _world.GetItem(item.ParentId.Value);
-                    if (parent == null || !parent.TryGetSlotPosition(item.SlotId, out float gx, out float gy)) continue;
+                    if (parent == null || !parent.TryGetSlotPosition(item.SlotId, out float gx, out float gy)) return;
                     if (parent.IsWallMounted)
                     {
-                        if (WallItemHidden(parent) || WallItemFacesAway(parent)) continue;   // gizli ya da duvar arkasındaki rafın üstündekiler
+                        if (WallItemHidden(parent) || WallItemFacesAway(parent)) return;   // gizli ya da duvar arkasındaki rafın üstündekiler
                         var onShelf = IsoArt.Item(item, out _);
                         var dsr = AddItemSprite(item, Iso.GridToWorld(gx, gy, level) + new Vector3(0f, Iso.BandHeight(parent.WallBand) + 0.1f, 0f), color,
                             onShelf != null ? 1f : 0.25f, Iso.WallMountOrder(parent.Position, parent.Rotation) + parent.WallBand + 1, onShelf);
                         dsr.color = ConditionTint(item, onShelf != null ? Color.white : color);
-                        continue;
+                        return;
                     }
                     if (parent.IsCeiling)
                     {
-                        if (_walls != null && _walls.Mode == WallMode.Down) continue;
+                        if (_walls != null && _walls.Mode == WallMode.Down) return;
                         // Kiriş kancasında asılı: kancanın biraz altında.
                         var onHook = IsoArt.Item(item, out _);
                         AddItemSprite(item, _view.TileToWorld(parent.Position) + new Vector3(0f, Iso.CeilingHeight - 0.35f, 0f), color,
                             onHook != null ? 1f : 0.25f, Iso.SortOrder(_view.TileToWorld(parent.Position).y, 4, level), onHook);
-                        continue;
+                        return;
                     }
                     // Gerçek masanın üst yüzü yer tutucu küpten biraz yüksek.
                     float topPx = IsoArt.Item(parent, out _) != null ? 27f : 24f;
@@ -977,13 +1048,13 @@ namespace Thatchwick.Game
                             var csr2 = AddItemSprite(item, cp, coverColor, coverScale, Iso.SortOrder(_view.TileToWorld(t).y, 0, level) + 1, SpriteMaterials.Diamond);
                             csr2.color = coverColor;
                         }
-                        continue;
+                        return;
                     }
                     var pos = Iso.GridToWorld(gx, gy, level) + new Vector3(0f, topPx / 32f, 0f);
                     var decorArt = IsoArt.Item(item, out _);
                     var dsr2 = AddItemSprite(item, pos, color, decorArt != null ? 1f : 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy, level).y, 0, level) + 2, decorArt);
                     if (item.Def.IsFillDecor) dsr2.color = FillTint(item, decorArt != null ? Color.white : color);
-                    continue;
+                    return;
                 }
                 if (item.IsRug)
                 {
@@ -1002,7 +1073,7 @@ namespace Thatchwick.Game
                         rart.color = ConditionTint(item, FinishTint(item, Color.white, 0.45f));
                         rart.flipX = rugFlip;
                         AddPatternOverlay(item, rc, -9990 + Mathf.Clamp(rugRank, 0, 9) + level * Iso.LevelSortStep);   // işlenmiş desen (belge 45)
-                        continue;
+                        return;
                     }
                     var rugColor = debris ? new Color(0.35f, 0.27f, 0.2f) : ConditionTint(item, FinishTint(item, ItemColor(item.Def.Id), 1f));
                     foreach (var tile in item.OccupiedTiles())
@@ -1012,7 +1083,7 @@ namespace Thatchwick.Game
                             -9990 + Mathf.Clamp(rank, 0, 9) + level * Iso.LevelSortStep, SpriteMaterials.Diamond);
                         rsr.color = rugColor;
                     }
-                    continue;
+                    return;
                 }
                 bool flip = false;
                 var art = item.IsPlant ? null : IsoArt.Item(item, out flip);
@@ -1025,8 +1096,8 @@ namespace Thatchwick.Game
                     sr.color = ConditionTint(item, FinishTint(item, Color.white, 0.45f));   // kaplama: gerçek görsel gelene kadar hafif renk
                     sr.flipX = flip;
                     AddAccentOverlay(item, sr, center, level);                         // ikinci renk: korkuluk, minder, kulp (belge 45)
-                    if (item.Def.HeatOutput > 0f) _heatViews.Add((item, sr));
-                    continue;
+                    if (item.Def.HeatOutput > 0f) _heatViews[item.Id] = (item, sr);
+                    return;
                 }
                 if (item.IsPlant)
                 {
@@ -1036,9 +1107,11 @@ namespace Thatchwick.Game
                     var sway = SpriteMaterials.Sway;   // rüzgârda sallanma (vertex shader; yoksa düz)
                     if (sway != null) psr.sharedMaterial = sway;
                     // Ağaç gölgesi: ışık sol üstten, gölge taç boyunca sağ alta uzanır; büyüdükçe büyür.
-                    AddShadowObject(pos + new Vector3(0.18f, -0.06f, 0f) * PlantScale(item), 0.95f * PlantScale(item), level);
-                    _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform, psr));
-                    continue;
+                    var plantShadow = AddShadowObject(pos + new Vector3(0.18f, -0.06f, 0f) * PlantScale(item), 0.95f * PlantScale(item), level);
+                    // Büyüme ölçeği bitkinin kendisine uygulanır (eskiden yanlışlıkla gölge nesnesine uygulanıyordu; tam yeniden kurulum
+                    // sık olduğu için fark edilmiyordu).
+                    _plantViews[item.Id] = new PlantView { Item = item, View = psr.transform, Sr = psr, Shadow = plantShadow };
+                    return;
                 }
                 var tinted = FinishTint(item, color, 1f);
                 AddItemShadow(item, Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, level), level);
@@ -1047,7 +1120,6 @@ namespace Thatchwick.Game
                     var pos = _view.TileToWorld(tile);
                     AddItemSprite(item, pos, tinted, 1f, Iso.SortOrder(pos.y, 0, level));
                 }
-            }
         }
 
         // Hasarlı eşya koyu ve soluk, onarılmış hafif soluk, kararmış ayna gri (27-ev-dekorasyonu).
@@ -1162,7 +1234,7 @@ namespace Thatchwick.Game
             sr.sprite = sprite;
             sr.sharedMaterial = SpriteMaterials.Unlit;
             sr.sortingOrder = order;
-            _itemObjects.Add(holder);
+            TrackItemObject(holder);
         }
 
         // Mobilya kaplamasının rengi (amount: 1 = tam kaplama rengi, küçük = beyaza karışık); kaplama yoksa baseColor.
@@ -1214,7 +1286,7 @@ namespace Thatchwick.Game
             AddShadowObject(footprintCenter + new Vector3(0.08f, -0.04f, 0f), size, level);
         }
 
-        private void AddShadowObject(Vector3 pos, float size, int level)
+        private Transform AddShadowObject(Vector3 pos, float size, int level)
         {
             var go = new GameObject("Shadow");
             go.transform.SetParent(transform, false);
@@ -1225,7 +1297,8 @@ namespace Thatchwick.Game
             sr.sharedMaterial = SpriteMaterials.Unlit;
             sr.color = new Color(0f, 0f, 0f, ShadowAlpha);
             sr.sortingOrder = ShadowOrder(level);
-            _itemObjects.Add(go);
+            TrackItemObject(go);
+            return go.transform;
         }
 
         // ---------------- gün ışığı ----------------
@@ -1246,11 +1319,15 @@ namespace Thatchwick.Game
             _lights.Clear();
             if (_ambience.Night > 0.02f || _ambienceSnap)
             {
-                foreach (var item in _world.Items)
+                // Yalnızca kurulu (etkin bölgedeki, görünen kattaki) eşyalar: bütün dünya her karede taranmaz.
+                foreach (var kv in _itemViews)
                 {
+                    var item = _world.GetItem(kv.Key);
+                    var t = kv.Value;
+                    if (item == null || t == null) continue;
                     bool fire = item.Def.HeatOutput > 0f;
                     if (fire ? !item.IsLit : !LightItemIds.Contains(item.Def.Id)) continue;
-                    if (!_view.IsLevelVisible(item.Position.Z) || !_itemViews.TryGetValue(item.Id, out var t) || t == null) continue;
+                    if (!_view.IsLevelVisible(item.Position.Z)) continue;
                     _lights.Add(new Ambience.LightSource
                     {
                         Position = t.position + new Vector3(0f, fire ? 0.1f : 0.25f, 0f),
@@ -1274,7 +1351,7 @@ namespace Thatchwick.Game
             sr.sprite = sprite != null ? sprite : SpriteMaterials.Cube(color);
             sr.sharedMaterial = SpriteMaterials.Unlit;
             sr.sortingOrder = order;
-            _itemObjects.Add(go);
+            TrackItemObject(go);
             if (!_itemViews.ContainsKey(item.Id)) _itemViews[item.Id] = go.transform;
             return sr;
         }
@@ -2277,8 +2354,8 @@ namespace Thatchwick.Game
             _world.Map.WearMultiplier = RoadWear();
             _life.NewDay += day =>
             {
-                if (day % _clock.Config.DaysPerSeason == 0) _itemsDirty = true;   // mevsim döndü: solan mevsim süsleri yeniden boyanır (D3b)
-                if ((_life.FestivePrep != null) != _buntingShown) _itemsDirty = true;   // şenlik yaklaştı ya da geçti: meydan bayrakları
+                if (day % _clock.Config.DaysPerSeason == 0) MarkAllItemsDirty();   // mevsim döndü: solan mevsim süsleri yeniden boyanır (D3b)
+                if ((_life.FestivePrep != null) != _buntingShown) MarkAllItemsDirty();   // şenlik yaklaştı ya da geçti: meydan bayrakları
                 _world.Map.OnNewDayRoads();                                   // kullanılmayan patika çimlenir
                 _world.Map.WearMultiplier = RoadWear();                        // çamurlu günde çok, taş ustası varken az aşınır
                 _plants.Config.FallowRecovery = (float)(0.02 * SkillNames.Factor(_life.BestSkill(SkillType.SoilCare), 0.1));   // toprak bakımı
@@ -2618,7 +2695,19 @@ namespace Thatchwick.Game
             if (_view == null || _world == null) return;
             if (_regional) UpdateRegion();
             if (_floorsDirty) { _floorsDirty = false; _view.RefreshFloors(); }
-            if (_itemsDirty) { _itemsDirty = false; RebuildItemViews(); if (_regional) HideOtherRegions(); if (_placementDebug != null) _placementDebug.Dirty = true; }
+            if (_itemsDirty)
+            {
+                _itemsDirty = false;
+                // Değişen eşyalar (WorldState.TakeChanges) yerinde güncellenir; kaynağı belirsiz değişiklik, kat, duvar kipi,
+                // bölge ya da mevsim değişimi bütün bölgeyi yeniden kurar. Halı sırası komşu halıları etkilediği için o da tam kurulum.
+                _changedItems.Clear();
+                bool full = _world.TakeChanges(_changedItems) | _itemsFullRebuild;
+                _itemsFullRebuild = false;
+                if (!full) foreach (var id in _changedItems) { var it = _world.GetItem(id); if (it != null && it.IsRug) { full = true; break; } }
+                if (full) RebuildItemViews(); else UpdateItemViews(_changedItems);
+                if (_regional) HideOtherRegions();
+                if (_placementDebug != null) _placementDebug.Dirty = true;
+            }
             if (_placementDebug != null && _placementDebug.Visible && _placementDebug.Dirty)
                 _placementDebug.Rebuild(_world, _layoutPlan, _region != null ? new RectInt(_region.X, _region.Y, _region.W, _region.H) : (RectInt?)null,
                     _view.ViewLevel, (_selected ?? _player)?.Character?.Position);
@@ -2647,7 +2736,7 @@ namespace Thatchwick.Game
             Shader.SetGlobalFloat("_TwWind", building ? 0f : wind);
 
             // Yanan ocak: duman yükselir, arada kıvılcım. Yağmurda duman daha sık (ıslak odun).
-            foreach (var (heatItem, heatView) in _heatViews)
+            foreach (var (heatItem, heatView) in _heatViews.Values)
             {
                 if (heatView == null || !heatItem.IsLit) continue;
                 var top = heatView.transform.position + new Vector3(0f, 0.55f, 0f);
@@ -2664,8 +2753,9 @@ namespace Thatchwick.Game
                 _juice.LeafColor = _clock.Season == Season.Autumn
                     ? (Random01() < 0.5f ? new Color(0.84f, 0.5f, 0.18f, 1f) : new Color(0.72f, 0.32f, 0.14f, 1f))
                     : new Color(0.42f, 0.6f, 0.26f, 1f);
-                foreach (var (plant, view, _) in _plantViews)
+                foreach (var pv in _plantViews.Values)
                 {
+                    var plant = pv.Item; var view = pv.View;
                     if (view == null || plant.Def.IsCrop) continue;
                     float s = PlantScale(plant);
                     if (s < 0.6f || Random01() >= dt * leafRate * s) continue;
@@ -2728,16 +2818,18 @@ namespace Thatchwick.Game
             _animals.Tick(gameDays);
             _mines.Tick(gameDays);
             _roomMood.Tick(gameDays, _population.Members);
-            foreach (var (plant, view, psr) in _plantViews)
+            foreach (var pv in _plantViews.Values)
             {
-                if (view == null) continue;
+                if (pv.View == null) continue;
+                var plant = pv.Item;
                 // Evre değişince (ekin evresi, genç → olgun, meyve) görsel değişir.
                 var art = IsoArt.Plant(plant, out bool staged);
-                if (art != null && psr != null && psr.sprite != art) psr.sprite = art;
+                if (art != null && pv.Sr != null && pv.Sr.sprite != art) pv.Sr.sprite = art;
                 float s = ViewScale(plant, art != null && staged);
-                view.localScale = new Vector3(s, s, 1f);
+                pv.View.localScale = new Vector3(s, s, 1f);
+                if (pv.Shadow != null) { float g = 0.95f * PlantScale(plant); pv.Shadow.localScale = new Vector3(g, g, 1f); }
             }
-            foreach (var (heatItem, heatView) in _heatViews)
+            foreach (var (heatItem, heatView) in _heatViews.Values)
                 if (heatView != null) { var lit = IsoArt.Item(heatItem, out _); if (lit != null && heatView.sprite != lit) heatView.sprite = lit; }
             foreach (var a in _actors)
             {

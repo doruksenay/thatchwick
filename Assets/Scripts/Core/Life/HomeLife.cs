@@ -445,7 +445,7 @@ namespace Thatchwick.Core.Life
             if (def.Replaces != null) s.Upgrades.Remove(def.Replaces);
             if (def.Requires != null && def.Replaces == null) { }   // zincir: önceki kalır (demir kuşak + kilit gibi)
             if (!s.Upgrades.Contains(upgradeId)) s.Upgrades.Add(upgradeId);
-            _world.NotifyChanged();
+            _world.NotifyChanged(item.Id);
         }
 
         private IEnumerable<UpgradeDef> UpgradeDefs(ItemInstance item)
@@ -558,7 +558,7 @@ namespace Thatchwick.Core.Life
                 case HomeActions.Candle:
                 {
                     string refill = CandleRefill(item.Def);
-                    if (refill != null && _house.TryTakeItem(refill)) { item.SetCandle(item.Def.BurnDays); _world.NotifyChanged(); }
+                    if (refill != null && _house.TryTakeItem(refill)) { item.SetCandle(item.Def.BurnDays); _world.NotifyChanged(item.Id); }
                     break;
                 }
                 case HomeActions.Strew:

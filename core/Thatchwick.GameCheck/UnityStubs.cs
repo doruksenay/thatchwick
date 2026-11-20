@@ -135,3 +135,17 @@ namespace UnityEngine.Audio {
  public class AudioMixerSnapshot:Object{public void TransitionTo(float t){}}
  public class AudioMixer:Object{public AudioMixerGroup[] FindMatchingGroups(string s)=>null; public AudioMixerSnapshot FindSnapshot(string s)=>null; public bool SetFloat(string n,float v)=>true;}
 }
+// Tilemap (zemin katmanı, GroundLayer).
+namespace UnityEngine {
+ public struct Vector3Int{public int x,y,z;public Vector3Int(int a,int b,int c){x=a;y=b;z=c;}}
+ public class GridLayout:Behaviour{public enum CellLayout{Rectangle,Hexagon,Isometric,IsometricZAsY} public CellLayout cellLayout; public Vector3 cellSize;}
+ public class Grid:GridLayout{}
+}
+namespace UnityEngine.Tilemaps {
+ public enum TileFlags{None=0,LockColor=1,LockTransform=2,InstantiateGameObjectRuntimeOnly=4,LockAll=3}
+ public class TileBase:ScriptableObject{}
+ public class Tile:TileBase{public enum ColliderType{None,Sprite,Grid} public Sprite sprite; public Color color; public TileFlags flags; public ColliderType colliderType; public Matrix4x4 transform;}
+ public struct TileChangeData{public Vector3Int position; public TileBase tile; public Color color; public Matrix4x4 transform; public TileChangeData(Vector3Int p,TileBase t,Color c,Matrix4x4 m){position=p;tile=t;color=c;transform=m;}}
+ public class Tilemap:GridLayout{public Vector3 tileAnchor; public void SetTile(Vector3Int p,TileBase t){} public void SetTiles(TileChangeData[] d,bool ignoreLockFlags){} public void SetColor(Vector3Int p,Color c){} public void SetTransformMatrix(Vector3Int p,Matrix4x4 m){} public void ClearAllTiles(){} public void RefreshAllTiles(){}}
+ public class TilemapRenderer:Renderer{public enum Mode{Chunk,Individual,SRPBatch} public Mode mode;}
+}
