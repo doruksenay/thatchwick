@@ -5,7 +5,7 @@ kind: sfx
 family: tools
 freq: A
 pilot: true
-status: ready
+status: claimed
 approved_by: auto
 key: work.chop
 note: '45a bölüm 6: s120 (katmanlı) ile karşılaştırma. Yalnız biri kabul edilir.'
@@ -22,5 +22,7 @@ axes:
   force:
   - firm swing
   - heavy swing
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T09:53:53Z'
 ---
 One single axe strike into a log on a chopping block, wood chips falling, one strike only.
