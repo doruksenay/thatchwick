@@ -4,7 +4,7 @@ title: Ateş tutuşturma ve üfleme
 kind: sfx
 family: foley
 freq: B
-status: claimed
+status: review
 approved_by: user
 depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
@@ -27,5 +27,9 @@ cost_max_eski: 500
 not_cost_max: '20.11.2026: kullanıcı onayıyla tahmine göre yükseltildi'
 claimed_by: runnervm0hi8g
 claimed_at: '2026-11-20T17:27:59Z'
+candidates: 8
+passed: 8
+credits_spent: 0
+generated_at: '2026-11-20T17:28:12Z'
 ---
 Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling.
