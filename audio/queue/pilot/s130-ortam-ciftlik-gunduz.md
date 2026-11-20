@@ -5,7 +5,7 @@ kind: ambience
 family: ambience
 freq: C
 pilot: true
-status: review
+status: ready
 approved_by: auto
 key: amb.farm.day
 generate: 3
@@ -14,20 +14,17 @@ duration_s: 20
 cost_max: 2600
 axes:
   layer:
-  - soft distant birdsong over still air
-  - faint insect hum and a far-off rooster
-  - quiet open meadow, a few distant birds
+  - cheerful songbirds close by, a blackbird and finches
+  - bees buzzing over flowers and lively bird chatter
+  - a bright morning chorus with a distant cuckoo
 inceleme_notlari:
 - tarih: '2026-11-20'
   karar: yeniden
   not: hepsinin arkasında rüzgâr uğultusu var, fırtınalı havaya benziyor; c3 yağmurlu gibi
-yeniden_sayisi: 1
+- tarih: '2026-11-20'
+  karar: yeniden
+  not: kasvetli buldum
+yeniden_sayisi: 2
 prompt_influence: 0.7
-claimed_by: runnervmccnms
-claimed_at: '2026-11-20T16:46:35Z'
-candidates: 3
-passed: 3
-credits_spent: 200
-generated_at: '2026-11-20T16:46:48Z'
 ---
-A calm, still, sunny spring day near a small medieval farm. Quiet open-air room tone with soft distant birdsong and a faint insect hum. No wind, no gusts, no rustling, no rain, no hiss, no storm; nothing stands out.
+A bright, cheerful, sunny spring morning on a cozy little medieval farm. Lively, happy birdsong, bees humming over flowers, warm and pleasant, a feeling of a lovely day. Gentle and even. No wind, no rain, no gloom, no drone, no hiss.
