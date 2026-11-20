@@ -243,6 +243,9 @@ namespace Thatchwick.Core.Jobs
 
         public bool IsUsingItem => _using;
 
+        /// <summary>Şu anki yürüyüş koşu mu (RunRules); yürümüyorsa son yürüyüşün değeri kalır, görünüm NextTile'a bakar.</summary>
+        public bool IsRunning { get; private set; }
+
         // ---- İzlenen eylem zinciri (Project belgesi 60) ----
         private List<ActionStepDef> _steps;
         private double[] _stepEnds;          // adımların bittiği yer, 0-1 arası birikimli pay
@@ -1180,7 +1183,12 @@ namespace Thatchwick.Core.Jobs
             // Ata binen daha hızlı gider (merdivende de; basitlik için).
             // Atletizm: yaya yürüyüşte seviye başına %2 (binekteyken binek hızı belirler).
             double ride = WalkSpeed?.Invoke() ?? 1.0;
-            double tilesPerDay = TilesPerDayScaled * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor * _character.WalkFactor : 1.0);
+            // Koşu (belge 69 S3): acil iş, çocuk oyunu, oyuncu emriyle uzun yol. Binekte değil.
+            // Yolun boyuna göre karar verilir (kalan değil): koşmaya başlayan varınca durur, yarı yolda yürümeye geçmez.
+            IsRunning = ride <= 1.0 && _pathIndex < _path.Count
+                && RunRules.ShouldRun(_character, Queue.Current, _path.Count - 1, RunRules.IsPlayerCommand(Queue.Current, Autonomous));
+            double tilesPerDay = TilesPerDayScaled * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor * _character.WalkFactor : 1.0)
+                * (IsRunning ? RunRules.RunSpeed : 1.0);
             while (_pathIndex < _path.Count && budget - used > 0)
             {
                 // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.

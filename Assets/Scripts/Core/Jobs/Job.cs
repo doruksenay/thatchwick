@@ -74,6 +74,15 @@ namespace Thatchwick.Core.Jobs
             return this;
         }
 
+        /// <summary>Acil iş (kavgadan kaçış, kurt, doğum haberi): yolda koşulur (RunRules, belge 69 S3).</summary>
+        public bool Hurry { get; private set; }
+
+        public Job AsHurry()
+        {
+            Hurry = true;
+            return this;
+        }
+
         /// <summary>Eylem balonunda nedenin yerine yazılan kısa not ("keyfi yerinde, pişirmeye hevesli"); yoksa null.</summary>
         public string Note { get; private set; }
 

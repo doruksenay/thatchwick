@@ -4153,8 +4153,7 @@
         "alongX": "iso_item_washing_stone_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       },
       "interactions": [
         {

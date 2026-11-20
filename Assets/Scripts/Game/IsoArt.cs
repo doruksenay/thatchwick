@@ -930,18 +930,34 @@ namespace Thatchwick.Game
         /// Kareler _00.._NN; son kare ilkine yakın kapanış karesiyse (018a: 08 ≈ 00) döngüde atlanır.
         /// Bu yönün karesi yoksa null: çağıran durma görseli + kodla sallantıya düşer.
         /// </summary>
-        public static Sprite CharacterWalk(Character c, int direction, float cycle)
+        public static Sprite CharacterWalk(Character c, int direction, float cycle) => CharacterWalk(c, "walk2", direction, cycle);
+
+        /// <summary>
+        /// Yürüyüş çeşidi (belge 69 §3.2: walk_happy, walk_heavy, run, walk_cane): 8 yönlü kendi kareleri varsa onlar, yoksa
+        /// olağan walk2. Kare adı walk2 ile aynı düzende: &lt;set&gt;_&lt;anahtar&gt;_&lt;yön&gt;_NN.
+        /// </summary>
+        public static Sprite CharacterGait(Character c, string key, int direction, float cycle)
+        {
+            if (!string.IsNullOrEmpty(key) && key != "walk2")
+            {
+                var f = CharacterWalk(c, key, direction, cycle);
+                if (f != null) return f;
+            }
+            return CharacterWalk(c, "walk2", direction, cycle);
+        }
+
+        private static Sprite CharacterWalk(Character c, string key, int direction, float cycle)
         {
             if (!Enabled) return null;
-            int ln = LayeredCharacterArt.FrameCount(c, "walk2", Directions[direction]);
-            if (ln > 0) return LayeredCharacterArt.Frame(c, "walk2", Directions[direction], Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * ln) % ln);
+            int ln = LayeredCharacterArt.FrameCount(c, key, Directions[direction]);
+            if (ln > 0) return LayeredCharacterArt.Frame(c, key, Directions[direction], Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * ln) % ln);
             // Kabul edilen yürüme "walk2" (018b2/018b3; yaşlı 015a, çocuk 015c). Eski "walk" (018b) reddedildi:
             // zıplıyor; ona düşülmez. Bu yönün walk2 karesi yoksa null: durma görseli + kod sallantısı.
             string r64 = ChildR64(c);
             string set = r64 ?? AdultR84(c);
             if (set == null) return null;
             float px = r64 != null ? R64PivotX : R84PivotX, py = r64 != null ? R64PivotY : R84PivotY;
-            string prefix = set + "_walk2_" + Directions[direction] + "_";
+            string prefix = set + "_" + key + "_" + Directions[direction] + "_";
             int n = WalkFrameCount(prefix);
             if (n <= 0) return null;
             int frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;

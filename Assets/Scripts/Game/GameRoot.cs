@@ -73,6 +73,8 @@ namespace Thatchwick.Game
             public SpriteRenderer Carry;
             // Sabit adımlı simülasyon: son iki adımın konumu (karede ara değer).
             public SmoothPosition Sim;
+            // Animasyon çeşitliliği (belge 69): tempo, döngü evresi, ara klip (GameRootAnimation).
+            public AnimState Anim = new AnimState();
         }
 
         /// <summary>Elde tutulan nesnenin ikona göre boyu: 32 px ikon yaklaşık 11 px görünür (84 px karakterde).</summary>
@@ -80,6 +82,9 @@ namespace Thatchwick.Game
 
         /// <summary>Etkileşim karesi döngüsü: 8 kare yaklaşık 0,9 saniyede (kişiye göre evre).</summary>
         private static float ActionCycle(int seed) => Mathf.Repeat(Time.time / 0.9f + seed * 0.17f, 1f);
+
+        /// <summary>Kişinin kendi temposuyla ilerleyen döngü evresi (belge 69 K1-K3); henüz başlamadıysa eski sabit döngü.</summary>
+        private static float CycleOf(Actor actor, int seed) => actor.Anim.Phase >= 0f ? actor.Anim.Phase : ActionCycle(seed);
 
         /// <summary>Eylem simgesi (ActivityDescriber) → 018c-e kare anahtarları, sırayla denenir.</summary>
         private static readonly Dictionary<string, string[]> ActionKeys = new Dictionary<string, string[]>
@@ -162,7 +167,7 @@ namespace Thatchwick.Game
             Sprite held = icon == "eat" ? IsoArt.HeldItem(actor.HeldItem) : null;
             if (held != null)
             {
-                var f = IsoArt.CharacterAction(actor.Character, "eat3", actor.Direction, ActionCycle(seed), out string prefix, out int index);
+                var f = IsoArt.CharacterAction(actor.Character, "eat3", actor.Direction, CycleOf(actor, seed), out string prefix, out int index);
                 // Bu yönün boş el karesi yoksa CharacterAction se'ye düşer; elde yiyecek ters yöne bakmasın diye o durumda eat2'ye dön.
                 bool ownDirection = prefix != null && prefix.EndsWith("_" + IsoArt.ActionDirection(actor.Direction) + "_");
                 if (f != null && ownDirection && HandAnchors.TryGet(prefix, index, out var a))
@@ -191,7 +196,7 @@ namespace Thatchwick.Game
         private Sprite StepFrameFor(Actor actor, ActionStepDef step, int seed)
         {
             if (step == null || step.Pose == null) return null;
-            float cyc = ActionCycle(seed);
+            float cyc = CycleOf(actor, seed);
             // Soyunuk adım (yıkanma): peştamallı kare seti varsa o oynar (60a-Z1; iş 574-575 "pestamal_" önekiyle üretir).
             var f = actor.Runner.IsUndressed ? IsoArt.CharacterAction(actor.Character, "pestamal_" + step.Pose, actor.Direction, cyc) : null;
             if (f == null) f = IsoArt.CharacterAction(actor.Character, step.Pose, actor.Direction, cyc);
@@ -246,7 +251,7 @@ namespace Thatchwick.Game
         private Sprite IdleFrameFor(Actor actor, int seed)
         {
             if (actor.IdlePose == null || Time.unscaledTime >= actor.IdlePoseUntil || !actor.Runner.IsIdle) return null;
-            float cyc = ActionCycle(seed);
+            float cyc = CycleOf(actor, seed);
             var f = IsoArt.CharacterAction(actor.Character, actor.IdlePose, actor.Direction, cyc);
             if (f == null && StepPoseStandIns.TryGetValue(actor.IdlePose, out var standIn) && standIn != "idle")
                 f = IsoArt.CharacterAction(actor.Character, standIn, actor.Direction, cyc);
@@ -256,7 +261,7 @@ namespace Thatchwick.Game
         private Sprite ActionFrameFor(Actor actor, string icon, int seed)
         {
             if (icon == null || !ActionKeys.TryGetValue(icon, out var keys)) return null;
-            float cyc = ActionCycle(seed);
+            float cyc = CycleOf(actor, seed);
             foreach (var k in keys)
             {
                 var f = IsoArt.CharacterAction(actor.Character, k, actor.Direction, cyc);
@@ -3505,12 +3510,16 @@ namespace Thatchwick.Game
             bool moving = next.HasValue;
             float mdx = pos.x - actor.LastPos.x, mdy = pos.y - actor.LastPos.y;
             float moved = Mathf.Sqrt(mdx * mdx + mdy * mdy);
-            if (moving && moved < 1f) actor.WalkPhase += moved / WalkStepUnits * Mathf.PI;
+            bool workingHere = !moving && (actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && actor.Character.Stage != AgeStage.Baby;
+            var style = StyleOf(actor, moving, workingHere);
+            AdvanceCycle(actor, style, actor.Character.Id);
+            // Adım sıklığı biçime göre (69 §3.2): Gergin kısa ve sık, Huzurlu ağır, bastonlu yavaş.
+            if (moving && moved < 1f) actor.WalkPhase += moved / WalkStepUnits * Mathf.PI * style.Cadence;
             else if (!moving) actor.WalkPhase = 0f;
             actor.LastPos = pos;
             // Gerçek yürüme kareleri varsa kodla sallantı gerekmez (kareler zaten iniş çıkışı taşır).
             bool framed = moving && IsoArt.CharacterWalk(actor.Character, actor.Direction, 0f) != null;
-            float bob = moving && !framed ? Mathf.Round(Mathf.Abs(Mathf.Sin(actor.WalkPhase)) * WalkBobPixels) / ArtPixelsPerUnit : 0f;
+            float bob = moving && !framed ? Mathf.Round(Mathf.Abs(Mathf.Sin(actor.WalkPhase)) * WalkBobPixels * style.Bob) / ArtPixelsPerUnit : 0f;
             // Animasyon partisi 1: adım tozu, boştayken nefes, eşyada çalışırken vuruş (kare animasyonu gelene kadar).
             float squash = 0f;   // + ezilme (geniş, alçak), - esneme
             int seed = actor.Character.Id;
@@ -3552,7 +3561,7 @@ namespace Thatchwick.Game
                 actor.ActionFrame = UpdateHeld(actor, icon, seed) ?? StepFrameFor(actor, step, seed) ?? ActionFrameFor(actor, icon, seed);
                 if (actor.ActionFrame != null && _juice != null)
                 {
-                    float cyc = ActionCycle(seed);
+                    float cyc = CycleOf(actor, seed);
                     if (beats && cyc < actor.LastBeat)   // döngü başında işe göre parçacık
                     {
                         var at = pos + new Vector3(0f, 0.2f, 0f);
@@ -3588,11 +3597,22 @@ namespace Thatchwick.Game
             else
             {
                 // Nefes: göğüs 1 px kabarır (dikey esneme); herkes kendi evresinde.
-                if (Juice.BreathOffset(seed) > 0f) squash = -0.018f;
+                if (Juice.BreathOffset(seed) > 0f) squash = -0.018f * Mathf.Max(0.5f, style.Bob);
             }
             if (!(actor.Runner.IsUsingItem && !moving) && actor.Held != null) actor.Held.enabled = false;
             UpdateCarry(actor);
-            actor.View.position = pos + new Vector3(0f, bob, 0f);
+            // Topallama ve yalpalama (69 §3.2, kod): adımda yana kayma.
+            float sway = 0f;
+            if (moving && style.Sway > 0f)
+            {
+                sway = style.Gait == Gait.Limp
+                    ? (Mathf.FloorToInt(actor.WalkPhase / Mathf.PI) % 2 == 0 ? -style.Sway : 0f)
+                    : Mathf.Round(Mathf.Sin(actor.WalkPhase * 0.5f) * style.Sway);
+                sway /= ArtPixelsPerUnit;
+            }
+            var ixFrame = UpdateInterjection(actor, moving, workingHere, pos, sortOrder, ref bob, ref squash, ref sway);
+            actor.View.position = pos + new Vector3(sway, bob, 0f);
+            StyleParticles(actor, style, workingHere, pos, sortOrder);
             // Merdivende yarıdan sonra hedef katın bandına geçer; iki kattan biri görünürse karakter görünür.
             int fromLevel = actor.Character.Position.Z;
             int toLevel = next.HasValue ? next.Value.Z : fromLevel;
@@ -3604,12 +3624,15 @@ namespace Thatchwick.Game
             // Binici (iş 787): atın üstünde oturma karesi; kare yoksa olağan görsel (yürüme dahil) kalır.
             var rideFrame = _animals != null && _animals.MountOf(actor.Character.Id) != null
                 ? IsoArt.CharacterAction(actor.Character, "ride", actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
-            var walkFrame = rideFrame == null && moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
+            var walkFrame = rideFrame == null && moving ? IsoArt.CharacterGait(actor.Character, AnimStyleRules.WalkKey(style.Gait), actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
             // Easter egg gösterisi (topaç şovu, uluma; belge 55): dururken kısa süre kendi karesini oynar.
             string sceneKey = moving || actor.Character.Stage == AgeStage.Baby ? null : _life.Scenes.CharacterSceneOf(actor.Character.Id);
             var sceneFrame = sceneKey != null ? ActionFrameFor(actor, sceneKey, seed) : null;
             if (sceneFrame == null && !moving && actor.Character.IsVillager && actor.Character.Stage != AgeStage.Baby) sceneFrame = VillagePoseFrame(actor, seed);   // iş döngüsü, öğün (belge 66f)
             if (sceneFrame == null && !moving && actor.Character.Stage != AgeStage.Baby) sceneFrame = IdleFrameFor(actor, seed);
+            // Ara klip (69 §4) iş ve durma karesinin önüne geçer; hâl durması (69 §3.1) yalnızca boştayken.
+            if (ixFrame != null && rideFrame == null) { walkFrame = moving ? ixFrame : walkFrame; if (!moving) sceneFrame = ixFrame; }
+            if (sceneFrame == null && !moving && actor.Runner.IsIdle && actor.Character.Stage != AgeStage.Baby) sceneFrame = HalIdleFrame(actor);
             var real = rideFrame ?? walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             // Kavga (belge 67a §5.2): toz bulutu kavgayı başlatanın yerine çizilir, hedef bulutun içinde kaybolur.
             bool brawlHidden = false;
