@@ -104,6 +104,8 @@ namespace Thatchwick.Core.Save
         public string[] coffeeHabits;
         public string[] olives;         // zeytin ağaçları (32-7): "itemId:dikimGünü:yadigâr:diken"   // kahve alışkanlığı (belge 32-6): "id:sonGün:seri:alışkanlık"
         public string[] contests;
+        /// <summary>Bekleyen at yarışı bahsi (RaceBets.Export); yoksa null.</summary>
+        public string raceBet;
         public int wolfRaidIn = -1;
         public int wolfHunted;
     }

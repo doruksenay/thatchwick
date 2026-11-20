@@ -900,7 +900,19 @@ namespace Thatchwick.Core.Life
             Contests.Finished += (r, a, h) => Say($"{h.Name}: {r.Summary}" + (r.PrizeAkce > 0 ? $" Ödül {r.PrizeAkce} akçe." : ""), r.Won ? NoticeLevel.Info : NoticeLevel.Info, h.Id);
             // Yarışmalar şenlik günü koşar (29-4.1).
             Festivals.Celebrated += (f, n) =>
-                Contests.RunFestival(f.Id, (int)(Clock.DayIndex / Clock.Config.DaysPerYear), id => FindAnimal(animals, id), Population.Find, House);
+            {
+                var card = RaceCardFor(f.Id, Clock.DayIndex);   // kart yarıştan önce kurulur (kayıtlar koşunca silinir)
+                var results = Contests.RunFestival(f.Id, (int)(Clock.DayIndex / Clock.Config.DaysPerYear), id => FindAnimal(animals, id), Population.Find, House);
+                if (card == null) return;
+                int winner = 0;
+                foreach (var e in _raceWinners) { winner = e; break; }
+                _raceWinners.Clear();
+                Bets.Resolve(card, winner, House);
+            };
+            Contests.Finished += (r, a, h) => { if (r.Kind == ContestKind.HorseRace && r.Won) _raceWinners.Add(a.Id); };
+            Bets.Settled += o => Say(o.Won
+                ? LocText.Of("bet.n.won", ("horse", o.Winner), ("stake", o.Bet.Stake), ("payout", o.Payout))
+                : LocText.Of("bet.n.lost", ("horse", o.Bet.RunnerName), ("winner", o.Winner), ("stake", o.Bet.Stake)), NoticeLevel.Info);
             Wolves.Raided += r =>
             {
                 if (r.Pack == 0) return;
@@ -928,6 +940,37 @@ namespace Thatchwick.Core.Life
         private int _wolfSeed = 113;
         /// <summary>Yarışma kayıtları ve şenlik günü simülasyonu (29-4).</summary>
         public ContestBook Contests { get; } = new ContestBook();
+        /// <summary>At yarışı bahisleri (+18 paketi; karar 20.11.2026).</summary>
+        public RaceBets Bets { get; } = new RaceBets();
+        private readonly List<int> _raceWinners = new List<int>();
+
+        private RaceCard RaceCardFor(string festivalId, long day)
+        {
+            if (!ContestBook.RunsAt(ContestKind.HorseRace, festivalId, out _)) return null;
+            var mine = new List<(Animal, Character)>();
+            if (_oddAnimals != null)
+                foreach (var e in Contests.Entries)
+                {
+                    if (e.Kind != ContestKind.HorseRace) continue;
+                    var a = FindAnimal(_oddAnimals, e.AnimalId); var h = Population.Find(e.HandlerId);
+                    if (a != null && h != null) mine.Add((a, h));
+                }
+            return Bets.Card(festivalId, day, (int)(day / Clock.Config.DaysPerYear), mine, new List<string>(RivalHouseNames()));
+        }
+
+        /// <summary>
+        /// Bahse açık yarış kartı: at yarışı olan şenliğin arifesinde ve yarış sabahı (kutlama başlayana dek). +18 paketi
+        /// kapalıysa ya da yakında yarış yoksa null.
+        /// </summary>
+        public RaceCard OpenRaceCard()
+        {
+            if (!ContentPacks.Adult) return null;
+            long today = Clock.DayIndex;
+            var f = Festivals.CelebratedDay != today ? Festivals.TodaysFestival() : null;
+            if (f != null && ContestBook.RunsAt(ContestKind.HorseRace, f.Id, out _)) return RaceCardFor(f.Id, today);
+            f = Festivals.FestivalOn(today + 1);
+            return f != null ? RaceCardFor(f.Id, today + 1) : null;
+        }
         private static Animal FindAnimal(AnimalSystem animals, int id) { foreach (var a in animals.Animals) if (a.Id == id) return a; return null; }
 
         public void Attach(Market market)
@@ -1382,6 +1425,9 @@ namespace Thatchwick.Core.Life
                     foreach (var r in Roamers.CheckSnares(Clock.Season, snares, BestAt(SkillType.Hunting)))
                         Say(LocText.Of("snare.n.caught", ("animal", WildCatalog.Get(r.SpeciesId)?.Name.ToLowerInvariant())), NoticeLevel.Info);
             }
+            if (ContentPacks.Adult && Bets.Current == null && OpenRaceCard() != null) Say(LocText.Of("bet.n.open"), NoticeLevel.Info);
+            int betRefund = Bets.RefundStale(day, House);
+            if (betRefund > 0) Say(LocText.Of("bet.n.refund", ("stake", betRefund)), NoticeLevel.Info);
             Villagers.PollEvents();
             Goals.Update();
             int season = (int)((day / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
@@ -1469,6 +1515,7 @@ namespace Thatchwick.Core.Life
                 coffeeHabits = Coffee.Export(),
                 olives = Olives.Export(),
                 contests = Contests.Export(),
+                raceBet = Bets.Export(),
                 wolfRaidIn = Wolves != null ? Wolves.RaidInDays : -1,
                 wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0,
                 keepsakes = Keepsakes.Export(),
@@ -1516,6 +1563,7 @@ namespace Thatchwick.Core.Life
             Coffee.Import(data.coffeeHabits);
             Olives.Import(data.olives);
             Contests.Import(data.contests);
+            Bets.Import(data.raceBet);
             Wolves?.Restore(data.wolfRaidIn, data.wolfHunted);
             Spoilage.Restore(data.spoilage);
             Tools.Restore(data.tools);

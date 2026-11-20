@@ -96,6 +96,69 @@ namespace Thatchwick.Core.Tests
             Assert.True((r.Journal.Get("wild.rabbit") & JournalMark.Hunted) != 0);
         }
 
+        /// <summary>At yarışı bahsi (+18 paketi; karar 20.11.2026): karttan at seçilir, tutan bahis şansa göre öder.</summary>
+        [Fact]
+        public void YarisBahsi_AtSecilir_TutanBahisOder()
+        {
+            bool pack = ContentPacks.Adult;
+            try
+            {
+                var house = new Household(100);
+                var bets = new RaceBets(7);
+                Assert.Null(bets.Card("festival.harvest", 10, 0, null, null));           // hasatta at yarışı yok
+                var card = bets.Card("festival.fair", 10, 0, null, new[] { "Demirciler" });
+                Assert.Equal(AnimalContests.Rivals, card.Runners.Count);
+                Assert.Same(card, bets.Card("festival.fair", 10, 0, null, new[] { "Demirciler" }));   // kart gün içinde sabit
+                Assert.Equal(1.0, card.Runners.Sum(r => r.Chance), 6);
+                Assert.True(card.Runners.Last().Chance > card.Runners.First().Chance);   // favori sonda
+                Assert.True(RaceBets.PayoutFor(card.Runners.First(), 10) > RaceBets.PayoutFor(card.Runners.Last(), 10));   // az şans çok öder
+
+                ContentPacks.Adult = false;
+                Assert.Equal("bet.err.pack", bets.Place(card, 0, 10, house).Key);
+                ContentPacks.Adult = true;
+                Assert.Equal("bet.err.stake", bets.Place(card, 0, 7, house).Key);
+                Assert.Equal("bet.err.akce", bets.Place(card, 0, 50, new Household(20)).Key);
+                Assert.True(bets.Place(card, 4, 10, house).IsEmpty);
+                Assert.Equal(90, house.Akce);
+                Assert.Equal("bet.err.already", bets.Place(card, 1, 5, house).Key);
+
+                // Kayıt: bahis yüklenir.
+                var loaded = new RaceBets(7);
+                loaded.Import(bets.Export());
+                Assert.Equal(card.Runners[4].Name, loaded.Current.RunnerName);
+                Assert.Equal(10, loaded.Current.Stake);
+                Assert.Equal(card.Runners[4].Chance, loaded.Current.Chance, 9);
+
+                // Yarışlar: kazanan hep rakiplerden biri; tutan bahis öder, tutmayan gider.
+                int won = 0, lost = 0, paid = 0;
+                for (int n = 0; n < 60; n++)
+                {
+                    var b = new RaceBets(100 + n);
+                    var h = new Household(10);
+                    var c = b.Card("festival.fair", 10, 0, null, null);
+                    Assert.True(b.Place(c, 4, 10, h).IsEmpty);
+                    BetOutcome outcome = null;
+                    b.Settled += o => outcome = o;
+                    string winner = b.Resolve(c, 0, h);
+                    Assert.Contains(winner, RaceBets.RivalHorses);
+                    Assert.NotNull(outcome);
+                    Assert.Null(b.Current);
+                    if (outcome.Won) { won++; paid = outcome.Payout; Assert.Equal(outcome.Payout, h.Akce); Assert.Equal(c.Runners[4].Name, winner); }
+                    else { lost++; Assert.Equal(0, h.Akce); }
+                }
+                Assert.True(won > 0 && lost > 0, $"kazanan {won}, kaybeden {lost}");
+                Assert.Equal(AnimalContests.BetPayout(10, card.Runners[4].Chance), paid);
+
+                // Yarış koşulmadan günü geçen bahis iade edilir.
+                var stale = new RaceBets(1); var purse = new Household(10);
+                Assert.True(stale.Place(stale.Card("festival.fair", 10, 0, null, null), 0, 5, purse).IsEmpty);
+                Assert.Equal(0, stale.RefundStale(10, purse));
+                Assert.Equal(5, stale.RefundStale(11, purse));
+                Assert.Equal(10, purse.Akce);
+            }
+            finally { ContentPacks.Adult = pack; }
+        }
+
         /// <summary>Kement haritaya kurulur (karar 20.11.2026): arsaya ya da yabana, en çok 3; av tuzakta bekler, biri toplar.</summary>
         [Fact]
         public void Kement_HaritayaKurulur_AvTuzaktaBekler()

@@ -312,3 +312,180 @@ namespace Thatchwick.Core.Animals
         }
     }
 }
+
+namespace Thatchwick.Core.Animals
+{
+    /// <summary>Yarış kartındaki bir at: hanenin kayıtlı atı (AnimalId > 0) ya da köyün rakip atlarından biri.</summary>
+    public sealed class RaceRunner
+    {
+        public string Name, Owner;
+        public double Score, Spread, Chance;
+        public int AnimalId;
+        public bool Mine => AnimalId > 0;
+    }
+
+    /// <summary>Bir at yarışının kartı: koşacak atlar ve bahisçilerin biçtiği şanslar.</summary>
+    public sealed class RaceCard
+    {
+        public string FestivalId;
+        public long Day;
+        public bool Main;
+        public readonly List<RaceRunner> Runners = new List<RaceRunner>();
+        internal string Key;
+    }
+
+    public sealed class RaceBet
+    {
+        public long Day;
+        public string FestivalId, RunnerName;
+        public int AnimalId, Stake;
+        /// <summary>Bahis yatırılırkenki şans; ödeme buna göre yapılır.</summary>
+        public double Chance;
+    }
+
+    public sealed class BetOutcome
+    {
+        public RaceBet Bet;
+        public string Winner;
+        public bool Won;
+        public int Payout;
+    }
+
+    /// <summary>
+    /// At yarışı bahsi (+18 paketi; karar 20.11.2026): yarış arifesinde ve yarış sabahı karttan bir at seçilir, akçe yatırılır.
+    /// Yarış şenlikte koşulunca kazanan at belli olur; tutan bahis <see cref="AnimalContests.BetPayout"/> kadar öder.
+    /// Yarış başına tek bahis. Hanenin atı yarışıyorsa kartta o da vardır ve sonuç onun gerçek yarış sonucuyla aynıdır.
+    /// </summary>
+    public sealed class RaceBets
+    {
+        public static readonly int[] Stakes = { 5, 10, 25, 50 };
+        public const int SimRuns = 2000;
+        /// <summary>Köyün rakip atları, zayıftan favoriye (<see cref="AnimalContests.RivalScores"/> sırası).</summary>
+        public static readonly string[] RivalHorses = { "Karayel", "Sarıkız", "Poyraz", "Kırçıl", "Yıldırım" };
+
+        private readonly Random _rng;
+        private RaceCard _card;
+
+        public RaceBet Current { get; private set; }
+        public event Action<BetOutcome> Settled;
+
+        public RaceBets(int seed = 163) { _rng = new Random(seed); }
+
+        /// <summary>Yarış kartı; bu şenlikte at yarışı yoksa null. Aynı gün ve aynı kayıtlar için aynı kart döner.</summary>
+        public RaceCard Card(string festivalId, long day, int year, IReadOnlyList<(Animal animal, Character handler)> mine, IReadOnlyList<string> owners)
+        {
+            if (!ContestBook.RunsAt(ContestKind.HorseRace, festivalId, out bool main)) return null;
+            string key = festivalId + ":" + day;
+            if (mine != null) foreach (var m in mine) if (m.animal != null) key += ":" + m.animal.Id;
+            if (_card != null && _card.Key == key) return _card;
+
+            var card = new RaceCard { FestivalId = festivalId, Day = day, Main = main, Key = key };
+            var rivals = AnimalContests.RivalScores(ContestKind.HorseRace, year);
+            if (mine != null)
+                foreach (var (a, h) in mine)
+                {
+                    if (a == null || h == null || AnimalContests.Blocker(ContestKind.HorseRace, a, h) != null) continue;
+                    AnimalContests.EstimateWinChance(ContestKind.HorseRace, a, h, year, out var adjusted);   // favori rakip gerekirse güçlenir
+                    for (int i = 0; i < rivals.Length; i++) rivals[i] = Math.Max(rivals[i], adjusted[i]);
+                    card.Runners.Add(new RaceRunner
+                    {
+                        Name = a.Name, Owner = h.Name, AnimalId = a.Id, Score = AnimalContests.Score(ContestKind.HorseRace, a, h),
+                        Spread = a.Lineage == AnimalLineage.Legendary ? AnimalContests.LegendRngSpread : AnimalContests.RngSpread
+                    });
+                }
+            for (int i = 0; i < rivals.Length; i++)
+                card.Runners.Add(new RaceRunner
+                {
+                    Name = RivalHorses[i % RivalHorses.Length], Owner = owners != null && owners.Count > 0 ? owners[i % owners.Count] : "",
+                    Score = rivals[i], Spread = AnimalContests.RngSpread
+                });
+
+            var rng = new Random(9173 + (int)(day % 100000) * 31);   // sabit tohum: kart her açılışta aynı
+            var wins = new int[card.Runners.Count];
+            for (int run = 0; run < SimRuns; run++) wins[Fastest(rng, card, false)]++;
+            for (int i = 0; i < wins.Length; i++) card.Runners[i].Chance = (double)wins[i] / SimRuns;
+            _card = card;
+            return card;
+        }
+
+        private static int Fastest(Random rng, RaceCard card, bool rivalsOnly)
+        {
+            int best = -1; double bestRun = double.MinValue;
+            for (int i = 0; i < card.Runners.Count; i++)
+            {
+                var r = card.Runners[i];
+                if (rivalsOnly && r.Mine) continue;
+                double run = r.Score * (1.0 + (rng.NextDouble() * 2 - 1) * r.Spread);
+                if (run > bestRun) { bestRun = run; best = i; }
+            }
+            return best;
+        }
+
+        /// <summary>Tutarsa ödenecek akçe.</summary>
+        public static int PayoutFor(RaceRunner runner, int stake) => runner == null ? 0 : AnimalContests.BetPayout(stake, runner.Chance);
+
+        /// <summary>Bahis yatırır; hata metni ya da boş (tamam).</summary>
+        public LocText Place(RaceCard card, int runner, int stake, Build.Household house)
+        {
+            if (!Thatchwick.Core.Content.ContentPacks.Adult) return LocText.Of("bet.err.pack");
+            if (card == null || runner < 0 || runner >= card.Runners.Count) return LocText.Of("bet.err.no_race");
+            if (Current != null) return LocText.Of("bet.err.already", ("horse", Current.RunnerName), ("stake", Current.Stake));
+            if (Array.IndexOf(Stakes, stake) < 0) return LocText.Of("bet.err.stake");
+            if (house == null || !house.TrySpend(stake)) return LocText.Of("bet.err.akce", ("stake", stake));
+            var r = card.Runners[runner];
+            Current = new RaceBet { Day = card.Day, FestivalId = card.FestivalId, RunnerName = r.Name, AnimalId = r.AnimalId, Stake = stake, Chance = r.Chance };
+            return default;
+        }
+
+        /// <summary>
+        /// Yarış koştu. winnerAnimalId: hanenin kazanan atı (kazanmadıysa 0); o zaman kazanan rakipler arasından çıkar.
+        /// Bahis varsa sonuçlanır, tutan bahsin ödemesi kasaya girer. Kazanan atın adı döner.
+        /// </summary>
+        public string Resolve(RaceCard card, int winnerAnimalId, Build.Household house)
+        {
+            if (card == null || card.Runners.Count == 0) return null;
+            RaceRunner winner = null;
+            if (winnerAnimalId > 0) winner = card.Runners.Find(r => r.AnimalId == winnerAnimalId);
+            if (winner == null)
+            {
+                int i = Fastest(_rng, card, rivalsOnly: true);
+                if (i < 0) return null;
+                winner = card.Runners[i];
+            }
+            _card = null;
+            var bet = Current;
+            if (bet == null || bet.Day != card.Day) return winner.Name;
+            Current = null;
+            bool won = bet.AnimalId == winner.AnimalId && bet.RunnerName == winner.Name;
+            var outcome = new BetOutcome { Bet = bet, Winner = winner.Name, Won = won, Payout = won ? AnimalContests.BetPayout(bet.Stake, bet.Chance) : 0 };
+            if (outcome.Payout > 0) house?.AddAkce(outcome.Payout);
+            Settled?.Invoke(outcome);
+            return winner.Name;
+        }
+
+        /// <summary>Yarışı koşulmadan günü geçen bahis (şenlik atlandıysa) iade edilir. İade edilen akçe döner.</summary>
+        public int RefundStale(long today, Build.Household house)
+        {
+            if (Current == null || Current.Day >= today) return 0;
+            int stake = Current.Stake;
+            Current = null;
+            house?.AddAkce(stake);
+            return stake;
+        }
+
+        public string Export() => Current == null ? null
+            : string.Join("|", Current.Day.ToString(System.Globalization.CultureInfo.InvariantCulture), Current.FestivalId, Current.AnimalId.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                Current.Stake.ToString(System.Globalization.CultureInfo.InvariantCulture), Current.Chance.ToString("R", System.Globalization.CultureInfo.InvariantCulture), Current.RunnerName);
+
+        public void Import(string data)
+        {
+            Current = null; _card = null;
+            var p = string.IsNullOrEmpty(data) ? null : data.Split(new[] { '|' }, 6);
+            if (p == null || p.Length != 6) return;
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            if (long.TryParse(p[0], System.Globalization.NumberStyles.Integer, inv, out long day) && int.TryParse(p[2], System.Globalization.NumberStyles.Integer, inv, out int animal)
+                && int.TryParse(p[3], System.Globalization.NumberStyles.Integer, inv, out int stake) && double.TryParse(p[4], System.Globalization.NumberStyles.Float, inv, out double chance) && stake > 0)
+                Current = new RaceBet { Day = day, FestivalId = p[1], AnimalId = animal, Stake = stake, Chance = chance, RunnerName = p[5] };
+        }
+    }
+}
