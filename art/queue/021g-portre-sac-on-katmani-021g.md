@@ -1,7 +1,7 @@
 ---
 id: "021g"
 title: Portre saç ön katmanı: long_curly ...
-status: review
+status: accepted
 claimed_at: 2026-11-18T08:22Z
 approved_by: user
 family: karakter
@@ -46,3 +46,4 @@ Her parça en çok 1 çağrı (tek deneme). Çıktılar `Assets/Art/Iso/_aday/` 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

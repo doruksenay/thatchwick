@@ -70,6 +70,10 @@ namespace Thatchwick.Core.Clothing
         public bool Gem { get; set; }
         /// <summary>Usta alameti ya da imzalı ustalık eseri.</summary>
         public string Mark { get; set; } = "";
+        /// <summary>Dikenin ustalık becerisi (yadigâr giyende o beceride +%5 XP).</summary>
+        public string MakerSkill { get; set; } = "";
+        /// <summary>Büyük kardeşten kaldı ("Ablamın, ağabeyimin giysisi").</summary>
+        public bool HandMeDown { get; set; }
 
         public bool Torn => !IsJewelry && Durability <= 0f;
         public bool IsDirty => !IsJewelry && Dirt >= DirtyAt;

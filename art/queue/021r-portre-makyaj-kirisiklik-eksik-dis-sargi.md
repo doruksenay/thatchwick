@@ -1,7 +1,7 @@
 ---
 id: "021r"
 title: Portre makyaj, kırışıklık, eksik diş, sargı
-status: review
+status: rejected
 claimed_at: 2026-11-18T08:37Z
 approved_by: pending     # kullanıcı kararı 2026-11-18: portre işleri sonraki döneme ya da paket yükseltmeye ertelendi; devam için user yap
 family: karakter
@@ -42,3 +42,4 @@ Her parça en çok 1 çağrı (tek deneme). Çıktılar `Assets/Art/Iso/_aday/` 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı reddetti (sohbette toplu inceleme). Neden: makyaj, kırışıklık ve sargı katmanları kaba ve bloklu; 18.12 karakter partisinde 467 (portre modüler planı) yeniden üretir, ayrı iş açılmadı.

@@ -1,7 +1,7 @@
 ---
 id: "018"
 title: Animasyon planı, 84 px gerçekçi karakter (yürüme + etkileşim; pilot ve set iş dosyalarını yazar)
-status: review
+status: accepted
 claimed_at: 2026-11-18T18:46Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: karakter
@@ -52,3 +52,4 @@ created: 2026-11-17
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 
 <!-- 2026-11-18 kullanıcı kararı (sohbet): 012 reddedildi; 012b kabul, taban 84 px. Plan buna göre yeniden yazıldı. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
