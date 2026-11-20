@@ -21,6 +21,10 @@ namespace Thatchwick.Core.Customization.Layers
         public const byte EyeWhite = 8;
         public const byte Iris = 9;
         public const byte Brow = 10;
+        /// <summary>Kesim maskesinin ürettiği bölgeler (belge 48 §4.1; manken görselinde yok): kolsuz üstün altındaki gömlek, önlük.</summary>
+        public const byte Under = 11;
+        public const byte Apron = 12;
+        /// <summary>Manken görselinden okunan bölge sayısı (Under ve Apron betikle gelir).</summary>
         public const byte Count = 11;
     }
 

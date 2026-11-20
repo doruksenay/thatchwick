@@ -38,3 +38,5 @@ Belge 43b §3'ün portre kısmı. 021 serisi (64 px, review) 14'ün eski sayıla
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+- 2026-11-20 (kullanıcı kararı, sohbette toplu inceleme): 021a–021k kabul edildi, yeniden kullanılır. 021l–021r (yara izi, dövme, makyaj, kırışıklık, sargı) reddedildi: kaba ve bloklu. Bu plan onları eksik sayıp yeniden yazmalı.

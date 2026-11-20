@@ -364,7 +364,11 @@ namespace Thatchwick.Core.Upbringing
         /// </summary>
         public double XpFactor(Character c, SkillType skill) =>
             1.0 + (Toys.XpFactor(c.Id, skill) - 1.0) + (Companions.XpFactor(c.Id, skill) - 1.0)
-                + (Apprentices.XpFactor(c.Id, skill) - 1.0) + (Recipes.XpFactor(c.Id, skill) - 1.0);
+                + (Apprentices.XpFactor(c.Id, skill) - 1.0) + (Recipes.XpFactor(c.Id, skill) - 1.0)
+                + (ExtraXp != null ? ExtraXp(c, skill) - 1.0 : 0.0);
+
+        /// <summary>Başka sistemlerden gelen ek XP çarpanı (yadigâr giysi, belge 48 §11.4); null ise yok.</summary>
+        public Func<Character, SkillType, double> ExtraXp { get; set; }
 
         private readonly HashSet<int> _watched = new HashSet<int>();
 

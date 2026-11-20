@@ -117,6 +117,7 @@ namespace Thatchwick.Core.Life
                 for (int n = 0; n < p.Count; n++)
                 {
                     if (!House.TryTakeItem(p.ItemId)) break;
+                    foreach (var mat in i.AllConsumed()) if (Content.Items.TryGet(mat.ItemId, out var md) && md.HasTag("cloth")) ClothUsed += mat.Count;
                     var skill = i.Skill ?? SkillType.Tailoring;
                     int lvl = c.Skills.GetLevel(skill);
                     int q = lvl >= 9 ? 3 : lvl >= 7 ? 2 : lvl >= 4 ? 1 : 0;
@@ -167,6 +168,89 @@ namespace Thatchwick.Core.Life
         private void DailyClothing()
         {
             foreach (var c in Household()) if (!c.IsDead) Clothing.DailyWear(c);
+            // Ulakla gelen ısmarlamalar
+            foreach (var o in Tailor.DueCourier(Clock.TotalDays))
+            {
+                var who = Population.Find(o.CustomerId);
+                var it = Tailor.Deliver(o, who, Clock.TotalDays, MakerName(o.Maker));
+                if (it != null) Say($"Ulak, {who?.Name ?? "haneye"} ısmarlanan giysiyi getirdi.", NoticeLevel.Info, who?.Id ?? 0);
+            }
+        }
+
+        private TailorOrders _tailor;
+        /// <summary>Terziye ısmarlama, hizmetler, biçki kalıpları, usta alametleri (belge 48 §10-11).</summary>
+        public TailorOrders Tailor => _tailor ?? (_tailor = CreateTailor());
+
+        private TailorOrders CreateTailor()
+        {
+            var t = new TailorOrders(Clothing);
+            Upbringing.ExtraXp = (c, s) => t.HeirloomXpFactor(c, s);
+            return t;
+        }
+
+        private string MakerName(string maker)
+        {
+            var c = Villagers.CharacterOf("villager." + maker);
+            return c?.Name ?? (maker == "riza" ? "Rıza" : maker == "orhan" ? "Orhan" : "Elif");
+        }
+
+        /// <summary>Isınlama yoğun dönemi: şenlikten önceki 3 gün (belge 48 §10.2).</summary>
+        public bool TailorBusy()
+        {
+            for (int d = 1; d <= TailorOrders.BusyDaysBeforeFestival; d++)
+                if (Festivals.FestivalOn(Clock.DayIndex + d) != null) return true;
+            return false;
+        }
+
+        /// <summary>Ismarlama verir: ücret akçeden düşer; malzemeyi oyuncu verirse işçilik.</summary>
+        public TailorOrder OrderClothing(Character customer, string modelId, ClothColor color, bool ownMaterials, bool courier = false, string cutsKey = "")
+        {
+            var m = Clothing.Catalog.Get(modelId);
+            if (m == null || customer == null) return null;
+            Content.Items.TryGet(m.ItemId, out var item);
+            double affinity = Villagers.CharacterOf("villager." + TailorOrders.MakerFor(m)) is Character maker ? Villagers.BestAffection(maker) : 0;
+            int matValue = item != null ? item.Price / 2 : 0;
+            int quote = Tailor.Quote(m, matValue, ownMaterials, affinity, courier);
+            if (House.Akce < quote) return null;
+            var o = Tailor.Place(customer, modelId, color, ownMaterials, matValue, affinity, HouseholdClothingTier, Clock.TotalDays, TailorBusy(), courier, cutsKey);
+            if (o == null) return null;
+            House.TrySpend(o.Fee);
+            TailorSpent += o.Fee;
+            return o;
+        }
+
+        /// <summary>Biçki kalıbını (eşya) okuyup öğrenir: kalıp harcanır, karakter o modeli diker; Okuryazarlık 3 ise deftere de yazar.</summary>
+        public bool UsePattern(Character c, string modelId)
+        {
+            var m = Clothing.Catalog.Get(modelId);
+            if (c == null || m == null || !TailorOrders.NeedsPattern(m) || Tailor.Knows(c, modelId)) return false;
+            if (!House.TryTakeItem("item.sewing_pattern")) return false;
+            Tailor.Learn(c, modelId);
+            Tailor.Write(c, modelId);
+            return true;
+        }
+
+        /// <summary>Denge raporu sayaçları (oturum içi): ısmarlamaya ödenen akçe, dikilen giysiye giden kumaş.</summary>
+        public int TailorSpent { get; private set; }
+        public int ClothUsed { get; private set; }
+
+        /// <summary>Kalıbı gereken giysi tarifinin engeli (belge 48 §11.2).</summary>
+        private string ClothingBlocker(Character c, ItemInstance it, InteractionDef i)
+        {
+            if (i == null || !i.IsCraft || Content.Clothing == null || Content.Clothing.Count == 0) return null;
+            foreach (var p in i.Produce)
+            {
+                var m = Content.Clothing.ByItem(p.ItemId);
+                if (m != null && !Tailor.Knows(c, m.Id)) return "Bu giysinin biçki kalıbı yok (bulunur, Elif'ten ya da tüccardan alınır).";
+            }
+            return null;
+        }
+
+        private void OnClothingMastery(Character c, SkillType skill)
+        {
+            if (c == null || c.IsVillager || Content.Clothing == null || Content.Clothing.Count == 0 || !TailorOrders.HasMastery(skill)) return;
+            var it = Tailor.GrantMastery(c, skill, Clock.TotalDays);
+            if (it != null) Say($"{c.Name} ustalığının alametini aldı: {Content.Items.Get(Clothing.ModelOf(it).ItemId)?.DisplayName}.", NoticeLevel.Info, c.Id);
         }
     }
 }

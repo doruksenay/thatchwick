@@ -47,7 +47,7 @@ namespace Thatchwick.Core.Clothing
 
         public const string NewClothes = "eff_new_clothes", SelfSewn = "eff_self_sewn", OurLabor = "eff_our_labor", FestiveDress = "eff_festive_dress",
             Patched = "eff_patched", Ancestors = "eff_ancestors", Confident = "eff_confident", Ashamed = "eff_ashamed_dress",
-            DirtyClothes = "eff_dirty_clothes", GrownUp = "eff_grown_up", Comfy = "eff_comfy", ComfyPlus = "eff_comfy_plus";
+            DirtyClothes = "eff_dirty_clothes", HandMeDownMood = "eff_hand_me_down", MasteryMood = "eff_mastery_mark", GrownUp = "eff_grown_up", Comfy = "eff_comfy", ComfyPlus = "eff_comfy_plus";
         public const string JewelryMood = "mood.jewelry";
 
         public ClothingCatalog Catalog { get; }
@@ -573,6 +573,7 @@ namespace Thatchwick.Core.Clothing
             if (it == null || sibling == null) return false;
             it.OwnerId = sibling.Id;
             it.Outgrown = false;
+            it.HandMeDown = true;
             return true;
         }
 
@@ -728,7 +729,7 @@ namespace Thatchwick.Core.Clothing
         public void UpdateMoods(Character c, bool festivalToday)
         {
             if (c == null || c.IsDead || !c.MoodEnabled) return;
-            bool self = false, labor = false, heir = false, dirty = false, maternity = false, band = false;
+            bool self = false, labor = false, heir = false, dirty = false, maternity = false, band = false, handed = false;
             foreach (var it in Worn(c))
             {
                 if (it.Diamond) continue;
@@ -736,6 +737,7 @@ namespace Thatchwick.Core.Clothing
                 if (it.OwnLabor) labor = true;
                 if (it.Heirloom) heir = true;
                 if (it.IsDirty) dirty = true;
+                if (it.HandMeDown && it.MakerId != c.Id) handed = true;
                 var m = ModelOf(it);
                 if (m != null && m.IsMaternity) { if (m.Slot == ClothingSlot.Body) maternity = true; else band = true; }
             }
@@ -743,6 +745,7 @@ namespace Thatchwick.Core.Clothing
             Condition(c, OurLabor, labor && !self);
             Condition(c, Ancestors, heir);
             Condition(c, DirtyClothes, dirty);
+            Condition(c, HandMeDownMood, handed);
             bool comfy = c.IsPregnant && maternity;
             Condition(c, ComfyPlus, comfy && band);
             Condition(c, Comfy, comfy && !band);
@@ -772,7 +775,7 @@ namespace Thatchwick.Core.Clothing
                     quality = i.Quality, durability = i.Durability, dirt = i.Dirt, patches = i.Patches, fixedDye = i.Fixed, wears = i.WearCount,
                     makerId = i.MakerId, maker = i.MakerName ?? "", madeDay = i.MadeDay, ownLabor = i.OwnLabor, heirloom = i.Heirloom,
                     heirloomNote = i.HeirloomNote ?? "", diamond = i.Diamond, outgrown = i.Outgrown, owner = i.OwnerId, everWorn = i.EverWorn,
-                    material = i.Material ?? "", step = i.JewelryStep, gem = i.Gem, mark = i.Mark ?? ""
+                    material = i.Material ?? "", step = i.JewelryStep, gem = i.Gem, mark = i.Mark ?? "", makerSkill = i.MakerSkill ?? "", handMeDown = i.HandMeDown
                 });
             s.items = items.ToArray();
             var ws = new List<WardrobeSave>();
@@ -806,7 +809,7 @@ namespace Thatchwick.Core.Clothing
                         Durability = d.durability, Dirt = d.dirt, Patches = d.patches, Fixed = d.fixedDye, WearCount = d.wears, MakerId = d.makerId,
                         MakerName = d.maker ?? "", MadeDay = d.madeDay, OwnLabor = d.ownLabor, Heirloom = d.heirloom, HeirloomNote = d.heirloomNote ?? "",
                         Diamond = d.diamond, Outgrown = d.outgrown, OwnerId = d.owner, EverWorn = d.everWorn, Material = d.material ?? "",
-                        JewelryStep = d.step, Gem = d.gem, Mark = d.mark ?? ""
+                        JewelryStep = d.step, Gem = d.gem, Mark = d.mark ?? "", MakerSkill = d.makerSkill ?? "", HandMeDown = d.handMeDown
                     };
                     if (ClothColor.TryParse(d.color, out var c)) i.Color = c;
                     if (ClothColor.TryParse(d.trim, out var t)) i.Trim = t;
@@ -871,6 +874,8 @@ namespace Thatchwick.Core.Clothing
         public int step;
         public bool gem;
         public string mark;
+        public string makerSkill;
+        public bool handMeDown;
     }
 
     [Serializable]

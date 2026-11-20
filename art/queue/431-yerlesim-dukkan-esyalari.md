@@ -1,7 +1,8 @@
 ---
 id: "431"
 title: "Yerleşim: dükkân ve ev eşyaları (Ek tablosu, 30 eşya)"
-status: pending
+status: review
+claimed_at: 2026-11-20T11:20Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 family: esya
 style_gate: false

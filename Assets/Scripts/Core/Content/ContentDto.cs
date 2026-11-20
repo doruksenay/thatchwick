@@ -426,6 +426,7 @@ namespace Thatchwick.Core.Content
         public string skillWork;   // beceri işi (belge 45): LifeSystems.OnSkillWorkApplied
         public string homeAction;           // ev bakımı (belge 45): candle, strew, whitewash, waterPot, harvestPot, upgrade
         public string upgrade;              // homeAction upgrade: yükseltme kimliği
+        public string treeAction;           // ulu ağaç ve ağaç ev (belge 52): found, build, repair, play, lookout, siege, sleep, stash, dig, carve, gather, shade, dine, charity, donate, innToggle
     }
 
     [Serializable]

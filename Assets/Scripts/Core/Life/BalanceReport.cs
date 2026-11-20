@@ -29,6 +29,9 @@ namespace Thatchwick.Core.Life
             public double StarveDays, FreezeDays;
             public int SkillLevels;
             public string Activity;
+            /// <summary>Yaşlılık sıkıntısı sayısı ve giysi soğuk direnci (belge 51, 48).</summary>
+            public int AgingConditions;
+            public float ClothingResist;
         }
 
         public sealed class Sample
@@ -39,11 +42,18 @@ namespace Thatchwick.Core.Life
             public int Akce;
             public double Food;
             public int Firewood;
+            /// <summary>Giysi ekonomisi: o güne dek ısmarlamaya ödenen ve dikilen giysiye giden kumaş (belge 48).</summary>
+            public int TailorSpend, ClothUsed;
             public List<MemberSample> Members = new List<MemberSample>();
         }
 
         private readonly List<Sample> _samples = new List<Sample>();
         public IReadOnlyList<Sample> Samples => _samples;
+        /// <summary>Yaşlılık sıkıntısı sayacı (LifeSystems.Aging); null ise 0.</summary>
+        public Func<Character, int> AgingConditions { get; set; }
+        /// <summary>Isınlama gideri ve kumaş tüketimi sayaçları; null ise 0.</summary>
+        public Func<int> TailorSpend { get; set; }
+        public Func<int> ClothUsed { get; set; }
         /// <summary>Senaryo adı (rapor başlığı).</summary>
         public string Scenario { get; set; } = "denge";
 
@@ -58,7 +68,8 @@ namespace Thatchwick.Core.Life
         public Sample Add(double day, string season, float outdoor, Household house, double food, int firewood,
             IEnumerable<Character> members, Func<Character, string> activity = null)
         {
-            var s = new Sample { Day = day, Season = season, Outdoor = outdoor, Akce = house?.Akce ?? 0, Food = food, Firewood = firewood };
+            var s = new Sample { Day = day, Season = season, Outdoor = outdoor, Akce = house?.Akce ?? 0, Food = food, Firewood = firewood,
+                TailorSpend = TailorSpend?.Invoke() ?? 0, ClothUsed = ClothUsed?.Invoke() ?? 0 };
             foreach (var c in members)
             {
                 if (c == null || c.IsVillager) continue;
@@ -68,7 +79,8 @@ namespace Thatchwick.Core.Life
                     Hunger = c.Needs.Get(NeedType.Hunger), Energy = c.Needs.Get(NeedType.Energy), Warmth = c.Needs.Get(NeedType.Warmth),
                     Hygiene = c.Needs.Get(NeedType.Hygiene), Fun = c.Needs.Get(NeedType.Fun),
                     Mood = c.Mood.Total, StarveDays = c.StarveDays, FreezeDays = c.FreezeDays,
-                    SkillLevels = SkillLevelTotal(c), Activity = c.IsDead ? "" : activity?.Invoke(c) ?? ""
+                    SkillLevels = SkillLevelTotal(c), Activity = c.IsDead ? "" : activity?.Invoke(c) ?? "",
+                    AgingConditions = AgingConditions?.Invoke(c) ?? 0, ClothingResist = c.ClothingColdResist
                 });
             }
             _samples.Add(s);
@@ -147,6 +159,11 @@ namespace Thatchwick.Core.Life
             sb.Append($"Yiyecek: {F(first.Food)} → {F(last.Food)} (en düşük {F(minFood)}, gün {F(minFoodDay)})\n");
             sb.Append($"Odun: {first.Firewood} → {last.Firewood} (en düşük {minWood}, gün {F(minWoodDay)})\n");
             sb.Append($"Akçe: {first.Akce} → {last.Akce} ({(last.Akce - first.Akce >= 0 ? "+" : "")}{last.Akce - first.Akce})\n");
+            int maxCond = 0; double resistSum = 0; int resistN = 0;
+            foreach (var smp in _samples) foreach (var m in smp.Members) { if (m.Dead) continue; maxCond = Math.Max(maxCond, m.AgingConditions); resistSum += m.ClothingResist; resistN++; }
+            if (maxCond > 0) sb.Append($"Yaşlılık: bir kişide en çok {maxCond} sıkıntı\n");
+            if (resistSum > 0) sb.Append($"Giysi: ort. soğuk direnci %{F(100 * resistSum / Math.Max(1, resistN))}\n");
+            if (last.TailorSpend > 0 || last.ClothUsed > 0) sb.Append($"Giysi ekonomisi: ısmarlama {last.TailorSpend - first.TailorSpend} akçe, kumaş {last.ClothUsed - first.ClothUsed}\n");
             foreach (var m0 in first.Members)
             {
                 MemberSample m1 = null;

@@ -1,7 +1,8 @@
 ---
 id: "433"
 title: "Yerleşim: oturma eşyalarının arkası dönük görünümü (12)"
-status: pending
+status: review
+claimed_at: 2026-11-20T11:28Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 family: esya
 style_gate: false

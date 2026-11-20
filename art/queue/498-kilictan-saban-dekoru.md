@@ -1,7 +1,8 @@
 ---
 id: "498"
 title: "Easter egg: Kılıçtan Saban masa üstü dekoru (1)"
-status: pending
+status: running
+claimed_at: 2026-11-20T11:42Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("ekle kodu"), Project belgesi 55 §4, kod PR #89
 priority: 50
 family: esya

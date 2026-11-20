@@ -1,7 +1,8 @@
 ---
 id: "357t"
 title: "Eşya düzeltmeleri (7 parça: kompost, 2 kaya, hela, adaçayı, boyalı kiriş, köy güvercinliği)"
-status: pending
+status: review
+claimed_at: 2026-11-20T11:20Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette eşya incelemesi: "kabul et, yalnız 7 parçayı düzelt")
 priority: 18
 family: esya

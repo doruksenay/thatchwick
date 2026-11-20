@@ -155,6 +155,10 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Şu an yürütülen işin nedeni (otonom ihtiyaç); oyuncu komutunda ya da boştayken null.</summary>
         public NeedType? CurrentReason => Queue.Current?.Reason;
 
+        /// <summary>Bunalımdaki çocuğun ya da ergenin küseceği yer (en yakın ağaç evin ip merdiveni, belge 52); null ise yok.</summary>
+        public Func<Character, GridPos?> Refuge { get; set; }
+        public const string RefugeNote = "ağaç eve küstü";
+
         /// <summary>Son başarısız işin nedeni (arayüzde gösterilir); yoksa null.</summary>
         public string LastFailure { get; private set; }
 
@@ -334,6 +338,14 @@ namespace Thatchwick.Core.Jobs
             GridPos? target = null;
             int itemId = 0;
             Job meal = null;
+            // Çocuk ve ergen ağlarken ya da kaçarken en yakın ağaç eve küser (belge 52).
+            bool minor = _character.Stage == AgeStage.Child || _character.Stage == AgeStage.Teen;
+            GridPos? refuge = minor && kind != BreakdownKind.Binge && Refuge != null ? Refuge(_character) : null;
+            if (refuge.HasValue)
+            {
+                Queue.InsertFront(Job.BreakdownAt(refuge, 0).WithNote(RefugeNote));
+                return;
+            }
             switch (kind)
             {
                 case BreakdownKind.Withdraw:
@@ -711,7 +723,7 @@ namespace Thatchwick.Core.Jobs
             // Ata binen daha hızlı gider (merdivende de; basitlik için).
             // Atletizm: yaya yürüyüşte seviye başına %2 (binekteyken binek hızı belirler).
             double ride = WalkSpeed?.Invoke() ?? 1.0;
-            double tilesPerDay = TilesPerDayScaled * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor : 1.0);
+            double tilesPerDay = TilesPerDayScaled * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor * _character.WalkFactor : 1.0);
             while (_pathIndex < _path.Count && budget - used > 0)
             {
                 // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.

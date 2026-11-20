@@ -1,7 +1,7 @@
 ---
 id: "011"
 title: Karakter boy testi 2 (K1 tekrar, hedef boylar)
-status: review
+status: accepted
 approved_by: user        # kullanıcı onayı 2026-11-08 (sohbet, seçenek b)
 family: karakter
 style_gate: false
@@ -88,3 +88,4 @@ created: 2026-11-08
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

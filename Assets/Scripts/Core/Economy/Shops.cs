@@ -50,18 +50,20 @@ namespace Thatchwick.Core.Economy
         private static bool IsSeed(ItemDef d) => d.Id.StartsWith("item.seed_") || d.Id.StartsWith("item.sapling_");
 
         // Uzman dükkânların mal süzgeçleri; hiçbirine girmeyen mallar genel dükkânda.
-        private static bool SmithGoods(ItemDef d) => Has(d, "metal", "tool") || IdHas(d, "nail", "iron", "ore", "horseshoe", "hinge", "charcoal");
-        private static bool CarpenterGoods(ItemDef d) => IdHas(d, "plank", "log", "beam", "withy", "resin", "shingle");
-        private static bool TavernGoods(ItemDef d) => Has(d, "cooked", "drink");
-        private static bool MillGoods(ItemDef d) => Has(d, "grain", "sheaf") || IdHas(d, "flour", "bread", "meal");
-        private static bool ScribeGoods(ItemDef d) => Has(d, "writing");
-        private static bool HerbGoods(ItemDef d) => Has(d, "potion") || IdHas(d, "herb", "nettle", "salve", "remedy");
-        private static bool PotterGoods(ItemDef d) => Has(d, "glass") || IdHas(d, "clay", "sand");
-        private static bool TailorGoods(ItemDef d) => Has(d, "cloth", "fiber", "dye") || IdHas(d, "wool", "yarn", "linen", "flax", "thread");
-        private static bool SaddlerGoods(ItemDef d) => Has(d, "leather", "hide", "saddle");
-        private static bool FisherGoods(ItemDef d) => Has(d, "fish") || IdHas(d, "fish", "bait", "crayfish", "eel", "mussel");
-        private static bool MasonGoods(ItemDef d) => Has(d, "stone") || IdHas(d, "lime", "mortar", "plaster", "slate", "brick", "tile");
-        private static bool AnimalGoods(ItemDef d) => Has(d, "feed", "straw") || IdHas(d, "hay", "feed", "fodder");
+        // Giysi ve takı yalnızca etiketli dükkânda (belge 48 §9): terzi hazır olarak çok basit giysi satar.
+        private static bool IsClothing(ItemDef d) => d.Category == "clothing";
+        private static bool SmithGoods(ItemDef d) => Has(d, "shop_smithy") || !IsClothing(d) && (Has(d, "metal", "tool") || IdHas(d, "nail", "iron", "ore", "horseshoe", "hinge", "charcoal"));
+        private static bool CarpenterGoods(ItemDef d) => !IsClothing(d) && (IdHas(d, "plank", "log", "beam", "withy", "resin", "shingle"));
+        private static bool TavernGoods(ItemDef d) => !IsClothing(d) && (Has(d, "cooked", "drink"));
+        private static bool MillGoods(ItemDef d) => !IsClothing(d) && (Has(d, "grain", "sheaf") || IdHas(d, "flour", "bread", "meal"));
+        private static bool ScribeGoods(ItemDef d) => !IsClothing(d) && (Has(d, "writing"));
+        private static bool HerbGoods(ItemDef d) => !IsClothing(d) && (Has(d, "potion") || IdHas(d, "herb", "nettle", "salve", "remedy"));
+        private static bool PotterGoods(ItemDef d) => Has(d, "shop_pottery") || !IsClothing(d) && Has(d, "glass") || !IsClothing(d) && IdHas(d, "clay", "sand");
+        private static bool TailorGoods(ItemDef d) => Has(d, "shop_tailor") || !IsClothing(d) && Has(d, "cloth", "fiber", "dye") || !IsClothing(d) && IdHas(d, "wool", "yarn", "linen", "flax", "thread");
+        private static bool SaddlerGoods(ItemDef d) => Has(d, "shop_saddler") || !IsClothing(d) && Has(d, "leather", "hide", "saddle");
+        private static bool FisherGoods(ItemDef d) => !IsClothing(d) && (Has(d, "fish") || IdHas(d, "fish", "bait", "crayfish", "eel", "mussel"));
+        private static bool MasonGoods(ItemDef d) => !IsClothing(d) && (Has(d, "stone") || IdHas(d, "lime", "mortar", "plaster", "slate", "brick", "tile"));
+        private static bool AnimalGoods(ItemDef d) => Has(d, "shop_pasture") || !IsClothing(d) && Has(d, "feed", "straw") || !IsClothing(d) && IdHas(d, "hay", "feed", "fodder");
 
         private static readonly Func<ItemDef, bool>[] Specialists =
         {
@@ -72,6 +74,7 @@ namespace Thatchwick.Core.Economy
         private static bool GeneralGoods(ItemDef d)
         {
             if (IsSeed(d)) return true;
+            if (IsClothing(d) && !Has(d, "shop_market")) return false;   // pazar yalnızca hasır şapka
             foreach (var f in Specialists) if (f(d)) return false;
             return true;
         }
