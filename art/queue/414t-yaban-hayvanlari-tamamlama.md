@@ -1,7 +1,8 @@
 ---
 id: "414t"
 title: "Yaban hayvanları tamamlama: kızıl tilki, karaca, kurt, yaban domuzu, ayı (8 yön)"
-status: pending
+status: running
+claimed_at: 2026-11-20T10:33Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette hayvan incelemesi)
 priority: 16
 family: hayvan
