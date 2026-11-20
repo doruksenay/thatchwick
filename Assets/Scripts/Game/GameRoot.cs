@@ -2369,6 +2369,16 @@ namespace Thatchwick.Game
                 Storage = _storage, Plants = _plants, Build = _buildService, Content = _content, TemperatureAt = p => _heat.TemperatureAt(p),
                 DraftAnimals = () => _life.FreeDraftAnimals()                 // düven: arabaya koşulmamış çeki hayvanı (at, öküz)
             };
+            // Döner kompost fıçısı: yakınında dönen çark ya da yel değirmeni varsa kendiliğinden döner. Su ağı taraması
+            // pahalı olduğu için sonuç eşya başına birkaç saniye saklanır.
+            var tumblerPower = new Dictionary<int, (bool on, float until)>();
+            _life.Compost.Powered = item =>
+            {
+                if (tumblerPower.TryGetValue(item.Id, out var hit) && Time.unscaledTime < hit.until) return hit.on;
+                bool on = _automation.HasPowerNearby(item);
+                tumblerPower[item.Id] = (on, Time.unscaledTime + 5f);
+                return on;
+            };
             _cart = new OxCart(_world, _household, _market, _content)
             {
                 DraftAnimals = _animals.DraftAnimals,

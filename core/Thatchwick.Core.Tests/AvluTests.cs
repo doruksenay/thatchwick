@@ -635,6 +635,27 @@ namespace Thatchwick.Core.Tests
             public InteractionEffects Effects; public PlantSystem Plants; public AnimalSystem Animals;
         }
 
+        /// <summary>Bağlanmamış kancalar (belge 62): çürük sepet kokar, yer olmadığı için bekleyen doğum oyuncuya bildirilir.</summary>
+        [Fact]
+        public void Kancalar_CurukSepetBagli_BekleyenDogumBildirilir()
+        {
+            var g = Whole();
+            Assert.NotNull(g.Life.Filth.IsRotten);
+
+            var notices = new List<string>();
+            g.Life.Notice += notices.Add;
+            var sty = g.World.PlaceItem(Db.Items.Get("item.pigsty"), new GridPos(5, 5));   // 3 yer, üçü dolu
+            var pig = Db.Animals.Get("animal.pig");
+            var sow = g.Animals.Restore(1, pig, new GridPos(4, 4), sty.Id, 100f, 10, 0, 0, friendship: 80f, comfort: 60f, female: true, pregnantDays: 1);
+            g.Animals.Restore(2, pig, new GridPos(4, 5), sty.Id, 100f, 10, 0, 0, female: false);
+            g.Animals.Restore(4, pig, new GridPos(5, 4), sty.Id, 100f, 10, 0, 0, female: true);
+            g.Animals.OnNewDay(Thatchwick.Core.Time.Season.Spring);
+            Assert.True(sow.IsPregnant);
+            Assert.Single(notices, n => n.Contains("animal.n.birth_delayed"));
+            g.Animals.OnNewDay(Thatchwick.Core.Time.Season.Spring);                        // ertesi sabah yine bekliyor: her gün yinelenmez
+            Assert.Single(notices, n => n.Contains("animal.n.birth_delayed"));
+        }
+
         private static Game Whole()
         {
             var g = new Game { World = World(), House = new Household(0), Pop = new Population(), Clock = new GameClock() };

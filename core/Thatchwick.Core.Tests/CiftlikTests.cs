@@ -377,7 +377,15 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(12, x.House.Count("item.feed"));
             Assert.Equal(12, made.Single(k => k.Key == "item.feed").Value);
 
+            // Döner kompost fıçısı güç istemez ama çarkın yanındaysa kendiliğinden döner (CompostService.Powered).
+            var tumbler = x.World.PlaceItem(x.Db.Items.Get("item.compost_tumbler"), new GridPos(7, 4));
+            Assert.False(auto.IsPowered(tumbler));                               // "güç gerekli" uyarısı çıkmaz
+            Assert.True(auto.HasPowerNearby(tumbler));
+            var farTumbler = x.World.PlaceItem(x.Db.Items.Get("item.compost_tumbler"), new GridPos(14, 12));
+            Assert.False(auto.HasPowerNearby(farTumbler));
+
             x.World.RemoveItem(canal.Id);                                        // çark durdu
+            Assert.False(auto.HasPowerNearby(tumbler));
             Assert.False(auto.IsPowered(mill));
             Assert.Empty(auto.OnNewDay());
             Assert.Equal(6, x.House.Count("item.barley"));
