@@ -447,7 +447,9 @@ namespace Thatchwick.Game
             var art = IsoArt.Get($"iso_greattree_{species}_{SeasonKey(_clock.Season)}_se", px, py)
                       ?? IsoArt.Get($"iso_greattree_{species}_summer_se", px, py);
             SpriteRenderer tree;
-            if (art != null) tree = AddItemSprite(item, center, Color.white, 1f, order, art);
+            bool standIn = false;
+            if (art == null && (art = IsoArt.TreeStandIn(species)) != null) standIn = true;   // ulu ağaç görseli gelene kadar büyütülmüş tür ağacı
+            if (art != null) tree = AddItemSprite(item, center, Color.white, standIn ? (big ? 1.9f : 1.6f) : 1f, order, art);
             else
             {
                 // Yer tutucu: büyük, koyu yeşil ağaç (eski ağaç kaplamasıyla), mevsime göre renk.

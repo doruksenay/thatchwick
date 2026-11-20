@@ -288,6 +288,10 @@ namespace Thatchwick.Game
             ["item.tree_birch"] = "iso_tree_birch",
             ["item.tree_pine"] = "iso_tree_pine",
             ["item.tree_willow"] = "iso_tree_willow",
+            // Yamaç bahçesi (422k): evre görselleri "iso_plant_" önekiyle geldi.
+            ["item.tree_olive"] = "iso_plant_olive",
+            ["item.vine_grape"] = "iso_plant_grape",
+            ["item.bush_coffee"] = "iso_plant_coffee",
         };
 
         /// <summary>Ekinler: evre görselleri "_1_se", "_2_se", "_3_se" (80x72, pivot 40,24). 310 kurtarma (371) ve 374.</summary>
@@ -310,6 +314,7 @@ namespace Thatchwick.Game
             ["item.crop_radish"] = "iso_crop_radish",
             ["item.crop_lettuce"] = "iso_crop_lettuce",
             ["item.crop_broad_bean"] = "iso_crop_broad_bean",
+            ["item.crop_tomato"] = "iso_crop_tomato",   // yalnızca salça için (Project belgesi 60a); şimdilik son evre görseli var
             ["item.crop_barley"] = "iso_crop_barley",
             ["item.crop_spinach"] = "iso_crop_spinach",
             ["item.crop_wheat"] = "iso_crop_wheat",
@@ -351,20 +356,36 @@ namespace Thatchwick.Game
             if (!Trees.TryGetValue(id, out var tree)) return null;
             if (!item.IsGrown)
             {
-                var young = Get(tree + "_young_se", 40f, 24f);
+                var young = GetPlant(tree + "_young_se");
                 if (young != null) { staged = true; return young; }
-                return Get(tree + "_grown_se", 40f, 24f);
+                return GetPlant(tree + "_grown_se");
             }
             staged = true;
             if (item.FruitReady)
             {
-                var fruit = Get(tree + "_fruit_se", 40f, 24f);
+                var fruit = GetPlant(tree + "_fruit_se");
                 if (fruit != null) return fruit;
             }
-            return Get(tree + "_grown_se", 40f, 24f) ?? Get(tree + "_young_se", 40f, 24f);
+            return GetPlant(tree + "_grown_se") ?? GetPlant(tree + "_young_se");
         }
 
         public static Sprite Plant(ItemInstance item) => Plant(item, out _);
+
+        /// <summary>
+        /// Ağaç ve bitki evresi: 80 px ve daha geniş görselde gövde x=40'ta (ağaç tuvali 96x112), daha dar görselde
+        /// (asma 64x80) gövde ortada.
+        /// </summary>
+        private static Sprite GetPlant(string name)
+        {
+            if (!Enabled || string.IsNullOrEmpty(name)) return null;
+            EnsureLoaded();
+            if (!_art.TryGetValue(name, out var art) || art.Tex == null) return null;
+            float w = art.Rect.width;
+            return Get(name, w < 80f ? w * 0.5f : 40f, 24f);
+        }
+
+        /// <summary>Ulu ağacın kendi görseli yokken türünün olgun ağaç görseli (belge 52; 492a-c gelene kadar).</summary>
+        public static Sprite TreeStandIn(string species) => GetPlant("iso_tree_" + species + "_grown_se") ?? GetPlant("iso_tree_oak_grown_se");
 
         // ---------------- yollar ----------------
 
