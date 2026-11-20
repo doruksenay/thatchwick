@@ -2,26 +2,26 @@
   "job": "s142",
   "kind": "voice_syllables",
   "family": "voice",
-  "created": "2026-11-20T16:46:24Z",
+  "created": "2026-11-20T18:55:23Z",
   "groups": {
     "syl_vu": {
       "candidates": {
         "syl_vu_t1": {
-          "duration_s": 0.517,
+          "duration_s": 0.559,
           "lufs": -20.0,
-          "true_peak_db": -9.6,
-          "rms_db": -20.1,
+          "true_peak_db": -10.4,
+          "rms_db": -19.7,
           "flags": [],
           "pass": true,
           "syllable": "vu"
         },
         "syl_vu_t2": {
-          "duration_s": 0.603,
+          "duration_s": 0.634,
           "lufs": -20.0,
-          "true_peak_db": -7.6,
-          "rms_db": -20.0,
+          "true_peak_db": -7.8,
+          "rms_db": -20.2,
           "flags": [
-            "syl_vu_t1 ile neredeyse aynı (0.0189)"
+            "syl_vu_t1 ile neredeyse aynı (0.0143)"
           ],
           "pass": true,
           "syllable": "vu",
@@ -33,32 +33,35 @@
           [
             "syl_vu_t1",
             "syl_vu_t2",
-            0.0189
+            0.0143
           ]
         ],
         "nearest": {
-          "syl_vu_t1": 0.0189,
-          "syl_vu_t2": 0.0189
+          "syl_vu_t1": 0.0143,
+          "syl_vu_t2": 0.0143
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_vu_t1": 0.0504,
+          "syl_vu_t2": 0.0336
+        }
       }
     },
     "syl_ra": {
       "candidates": {
         "syl_ra_t1": {
-          "duration_s": 0.588,
+          "duration_s": 0.622,
           "lufs": -20.0,
-          "true_peak_db": -6.6,
-          "rms_db": -20.6,
+          "true_peak_db": -7.6,
+          "rms_db": -21.4,
           "flags": [],
           "pass": true,
           "syllable": "ra"
         },
         "syl_ra_t2": {
-          "duration_s": 0.652,
+          "duration_s": 0.678,
           "lufs": -20.0,
-          "true_peak_db": -5.7,
-          "rms_db": -21.3,
+          "true_peak_db": -7.1,
+          "rms_db": -20.4,
           "flags": [],
           "pass": true,
           "syllable": "ra"
@@ -67,30 +70,33 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_ra_t1": 0.0247,
-          "syl_ra_t2": 0.0247
+          "syl_ra_t1": 0.0366,
+          "syl_ra_t2": 0.0366
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ra_t1": 0.0444,
+          "syl_ra_t2": 0.0373
+        }
       }
     },
     "syl_ru": {
       "candidates": {
         "syl_ru_t1": {
-          "duration_s": 0.496,
+          "duration_s": 0.565,
           "lufs": -20.0,
-          "true_peak_db": -9.5,
-          "rms_db": -19.9,
+          "true_peak_db": -9.2,
+          "rms_db": -20.2,
           "flags": [],
           "pass": true,
           "syllable": "ru"
         },
         "syl_ru_t2": {
-          "duration_s": 0.568,
+          "duration_s": 0.668,
           "lufs": -20.0,
-          "true_peak_db": -6.9,
-          "rms_db": -20.2,
+          "true_peak_db": -9.9,
+          "rms_db": -19.8,
           "flags": [
-            "syl_ru_t1 ile neredeyse aynı (0.0182)"
+            "syl_ru_t1 ile neredeyse aynı (0.0156)"
           ],
           "pass": true,
           "syllable": "ru",
@@ -102,62 +108,77 @@
           [
             "syl_ru_t1",
             "syl_ru_t2",
-            0.0182
+            0.0156
           ]
         ],
         "nearest": {
-          "syl_ru_t1": 0.0182,
-          "syl_ru_t2": 0.0182
+          "syl_ru_t1": 0.0156,
+          "syl_ru_t2": 0.0156
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ru_t1": 0.0576,
+          "syl_ru_t2": 0.0464
+        }
       }
     },
     "syl_pi": {
       "candidates": {
         "syl_pi_t1": {
-          "duration_s": 0.405,
+          "duration_s": 0.539,
           "lufs": -20.0,
-          "true_peak_db": -7.0,
-          "rms_db": -20.0,
+          "true_peak_db": -10.8,
+          "rms_db": -20.3,
           "flags": [],
           "pass": true,
           "syllable": "pi"
         },
         "syl_pi_t2": {
-          "duration_s": 0.49,
+          "duration_s": 0.593,
           "lufs": -20.0,
-          "true_peak_db": -5.0,
-          "rms_db": -20.3,
-          "flags": [],
+          "true_peak_db": -8.1,
+          "rms_db": -19.8,
+          "flags": [
+            "syl_pi_t1 ile neredeyse aynı (0.0189)"
+          ],
           "pass": true,
-          "syllable": "pi"
+          "syllable": "pi",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_pi_t1",
+            "syl_pi_t2",
+            0.0189
+          ]
+        ],
         "nearest": {
-          "syl_pi_t1": 0.0497,
-          "syl_pi_t2": 0.0497
+          "syl_pi_t1": 0.0189,
+          "syl_pi_t2": 0.0189
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_pi_t1": 0.0441,
+          "syl_pi_t2": 0.0602
+        }
       }
     },
     "syl_nu": {
       "candidates": {
         "syl_nu_t1": {
-          "duration_s": 0.499,
+          "duration_s": 0.603,
           "lufs": -20.0,
-          "true_peak_db": -7.6,
-          "rms_db": -20.0,
+          "true_peak_db": -9.9,
+          "rms_db": -20.2,
           "flags": [],
           "pass": true,
           "syllable": "nu"
         },
         "syl_nu_t2": {
-          "duration_s": 0.603,
+          "duration_s": 0.715,
           "lufs": -20.0,
-          "true_peak_db": -6.7,
-          "rms_db": -20.2,
+          "true_peak_db": -9.6,
+          "rms_db": -19.8,
           "flags": [],
           "pass": true,
           "syllable": "nu"
@@ -166,58 +187,73 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_nu_t1": 0.0267,
-          "syl_nu_t2": 0.0267
+          "syl_nu_t1": 0.0242,
+          "syl_nu_t2": 0.0242
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_nu_t1": 0.0551,
+          "syl_nu_t2": 0.0401
+        }
       }
     },
     "syl_gu": {
       "candidates": {
         "syl_gu_t1": {
-          "duration_s": 0.488,
+          "duration_s": 0.577,
           "lufs": -20.0,
-          "true_peak_db": -8.5,
-          "rms_db": -19.9,
+          "true_peak_db": -9.2,
+          "rms_db": -20.0,
           "flags": [],
           "pass": true,
           "syllable": "gu"
         },
         "syl_gu_t2": {
-          "duration_s": 0.569,
+          "duration_s": 0.703,
           "lufs": -20.0,
-          "true_peak_db": -6.6,
-          "rms_db": -20.0,
-          "flags": [],
+          "true_peak_db": -9.9,
+          "rms_db": -20.2,
+          "flags": [
+            "syl_gu_t1 ile neredeyse aynı (0.0183)"
+          ],
           "pass": true,
-          "syllable": "gu"
+          "syllable": "gu",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_gu_t1",
+            "syl_gu_t2",
+            0.0183
+          ]
+        ],
         "nearest": {
-          "syl_gu_t1": 0.0334,
-          "syl_gu_t2": 0.0334
+          "syl_gu_t1": 0.0183,
+          "syl_gu_t2": 0.0183
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_gu_t1": 0.0702,
+          "syl_gu_t2": 0.0498
+        }
       }
     },
     "syl_fu": {
       "candidates": {
         "syl_fu_t1": {
-          "duration_s": 0.569,
+          "duration_s": 0.72,
           "lufs": -20.0,
-          "true_peak_db": -8.0,
-          "rms_db": -20.5,
+          "true_peak_db": -9.3,
+          "rms_db": -20.9,
           "flags": [],
           "pass": true,
           "syllable": "fu"
         },
         "syl_fu_t2": {
-          "duration_s": 0.558,
+          "duration_s": 0.716,
           "lufs": -20.0,
-          "true_peak_db": -8.8,
-          "rms_db": -19.7,
+          "true_peak_db": -8.4,
+          "rms_db": -20.7,
           "flags": [],
           "pass": true,
           "syllable": "fu"
@@ -226,28 +262,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_fu_t1": 0.0578,
-          "syl_fu_t2": 0.0578
+          "syl_fu_t1": 0.0361,
+          "syl_fu_t2": 0.0361
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_fu_t1": 0.0555,
+          "syl_fu_t2": 0.0418
+        }
       }
     },
     "syl_mu": {
       "candidates": {
         "syl_mu_t1": {
-          "duration_s": 0.607,
+          "duration_s": 0.637,
           "lufs": -20.0,
-          "true_peak_db": -6.4,
-          "rms_db": -19.8,
+          "true_peak_db": -9.2,
+          "rms_db": -20.5,
           "flags": [],
           "pass": true,
           "syllable": "mu"
         },
         "syl_mu_t2": {
-          "duration_s": 0.626,
+          "duration_s": 0.763,
           "lufs": -20.0,
-          "true_peak_db": -7.1,
-          "rms_db": -20.6,
+          "true_peak_db": -9.9,
+          "rms_db": -19.5,
           "flags": [],
           "pass": true,
           "syllable": "mu"
@@ -256,27 +295,30 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_mu_t1": 0.0397,
-          "syl_mu_t2": 0.0397
+          "syl_mu_t1": 0.0216,
+          "syl_mu_t2": 0.0216
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_mu_t1": 0.0548,
+          "syl_mu_t2": 0.0536
+        }
       }
     },
     "syl_ku": {
       "candidates": {
         "syl_ku_t1": {
-          "duration_s": 0.511,
+          "duration_s": 0.555,
           "lufs": -20.0,
-          "true_peak_db": -9.9,
+          "true_peak_db": -10.7,
           "rms_db": -20.2,
           "flags": [],
           "pass": true,
           "syllable": "ku"
         },
         "syl_ku_t2": {
-          "duration_s": 0.351,
+          "duration_s": 0.427,
           "lufs": -20.0,
-          "true_peak_db": -9.7,
+          "true_peak_db": -8.6,
           "rms_db": -20.0,
           "flags": [],
           "pass": true,
@@ -286,30 +328,33 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_ku_t1": 0.0227,
-          "syl_ku_t2": 0.0227
+          "syl_ku_t1": 0.0283,
+          "syl_ku_t2": 0.0283
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ku_t1": 0.0502,
+          "syl_ku_t2": 0.0408
+        }
       }
     },
     "syl_mo": {
       "candidates": {
         "syl_mo_t1": {
-          "duration_s": 0.571,
+          "duration_s": 0.569,
           "lufs": -20.0,
-          "true_peak_db": -7.6,
-          "rms_db": -20.7,
+          "true_peak_db": -9.3,
+          "rms_db": -19.8,
           "flags": [],
           "pass": true,
           "syllable": "mo"
         },
         "syl_mo_t2": {
-          "duration_s": 0.501,
+          "duration_s": 0.655,
           "lufs": -20.0,
-          "true_peak_db": -9.3,
-          "rms_db": -20.2,
+          "true_peak_db": -9.9,
+          "rms_db": -20.1,
           "flags": [
-            "syl_mo_t1 ile neredeyse aynı (0.0187)"
+            "syl_mo_t1 ile neredeyse aynı (0.0169)"
           ],
           "pass": true,
           "syllable": "mo",
@@ -321,32 +366,35 @@
           [
             "syl_mo_t1",
             "syl_mo_t2",
-            0.0187
+            0.0169
           ]
         ],
         "nearest": {
-          "syl_mo_t1": 0.0187,
-          "syl_mo_t2": 0.0187
+          "syl_mo_t1": 0.0169,
+          "syl_mo_t2": 0.0169
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_mo_t1": 0.045,
+          "syl_mo_t2": 0.0364
+        }
       }
     },
     "syl_hi": {
       "candidates": {
         "syl_hi_t1": {
-          "duration_s": 0.54,
+          "duration_s": 0.451,
           "lufs": -20.0,
-          "true_peak_db": -8.5,
-          "rms_db": -21.0,
+          "true_peak_db": -10.7,
+          "rms_db": -19.6,
           "flags": [],
           "pass": true,
           "syllable": "hi"
         },
         "syl_hi_t2": {
-          "duration_s": 0.403,
+          "duration_s": 0.486,
           "lufs": -20.0,
-          "true_peak_db": -8.8,
-          "rms_db": -20.0,
+          "true_peak_db": -9.4,
+          "rms_db": -19.9,
           "flags": [],
           "pass": true,
           "syllable": "hi"
@@ -355,58 +403,73 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_hi_t1": 0.0387,
-          "syl_hi_t2": 0.0387
+          "syl_hi_t1": 0.0255,
+          "syl_hi_t2": 0.0255
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_hi_t1": 0.0583,
+          "syl_hi_t2": 0.0575
+        }
       }
     },
     "syl_zi": {
       "candidates": {
         "syl_zi_t1": {
-          "duration_s": 0.546,
+          "duration_s": 0.554,
           "lufs": -20.0,
-          "true_peak_db": -7.1,
-          "rms_db": -21.6,
+          "true_peak_db": -10.4,
+          "rms_db": -20.2,
           "flags": [],
           "pass": true,
           "syllable": "zi"
         },
         "syl_zi_t2": {
-          "duration_s": 0.533,
+          "duration_s": 0.579,
           "lufs": -20.0,
-          "true_peak_db": -9.4,
-          "rms_db": -21.0,
-          "flags": [],
+          "true_peak_db": -7.6,
+          "rms_db": -20.7,
+          "flags": [
+            "syl_zi_t1 ile neredeyse aynı (0.0151)"
+          ],
           "pass": true,
-          "syllable": "zi"
+          "syllable": "zi",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_zi_t1",
+            "syl_zi_t2",
+            0.0151
+          ]
+        ],
         "nearest": {
-          "syl_zi_t1": 0.0304,
-          "syl_zi_t2": 0.0304
+          "syl_zi_t1": 0.0151,
+          "syl_zi_t2": 0.0151
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_zi_t1": 0.0313,
+          "syl_zi_t2": 0.0308
+        }
       }
     },
     "syl_vi": {
       "candidates": {
         "syl_vi_t1": {
-          "duration_s": 0.509,
+          "duration_s": 0.536,
           "lufs": -20.0,
-          "true_peak_db": -7.4,
-          "rms_db": -20.6,
+          "true_peak_db": -10.4,
+          "rms_db": -20.3,
           "flags": [],
           "pass": true,
           "syllable": "vi"
         },
         "syl_vi_t2": {
-          "duration_s": 0.491,
+          "duration_s": 0.562,
           "lufs": -20.0,
-          "true_peak_db": -7.9,
-          "rms_db": -20.5,
+          "true_peak_db": -8.8,
+          "rms_db": -20.3,
           "flags": [],
           "pass": true,
           "syllable": "vi"
@@ -415,28 +478,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_vi_t1": 0.0238,
-          "syl_vi_t2": 0.0238
+          "syl_vi_t1": 0.0271,
+          "syl_vi_t2": 0.0271
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_vi_t1": 0.0401,
+          "syl_vi_t2": 0.0294
+        }
       }
     },
     "syl_ha": {
       "candidates": {
         "syl_ha_t1": {
-          "duration_s": 0.373,
+          "duration_s": 0.546,
           "lufs": -20.0,
-          "true_peak_db": -6.1,
-          "rms_db": -20.0,
+          "true_peak_db": -9.7,
+          "rms_db": -21.1,
           "flags": [],
           "pass": true,
           "syllable": "ha"
         },
         "syl_ha_t2": {
-          "duration_s": 0.408,
+          "duration_s": 0.565,
           "lufs": -20.0,
-          "true_peak_db": -7.5,
-          "rms_db": -20.0,
+          "true_peak_db": -7.9,
+          "rms_db": -21.2,
           "flags": [],
           "pass": true,
           "syllable": "ha"
@@ -445,57 +511,72 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_ha_t1": 0.0255,
-          "syl_ha_t2": 0.0255
+          "syl_ha_t1": 0.0217,
+          "syl_ha_t2": 0.0217
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ha_t1": 0.059,
+          "syl_ha_t2": 0.0577
+        }
       }
     },
     "syl_ga": {
       "candidates": {
         "syl_ga_t1": {
-          "duration_s": 0.45,
+          "duration_s": 0.518,
           "lufs": -20.0,
-          "true_peak_db": -5.9,
-          "rms_db": -20.0,
+          "true_peak_db": -8.0,
+          "rms_db": -20.3,
           "flags": [],
           "pass": true,
           "syllable": "ga"
         },
         "syl_ga_t2": {
-          "duration_s": 0.418,
+          "duration_s": 0.552,
           "lufs": -20.0,
-          "true_peak_db": -6.5,
-          "rms_db": -20.0,
-          "flags": [],
+          "true_peak_db": -7.0,
+          "rms_db": -19.5,
+          "flags": [
+            "syl_ga_t1 ile neredeyse aynı (0.0173)"
+          ],
           "pass": true,
-          "syllable": "ga"
+          "syllable": "ga",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_ga_t1",
+            "syl_ga_t2",
+            0.0173
+          ]
+        ],
         "nearest": {
-          "syl_ga_t1": 0.0288,
-          "syl_ga_t2": 0.0288
+          "syl_ga_t1": 0.0173,
+          "syl_ga_t2": 0.0173
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ga_t1": 0.0586,
+          "syl_ga_t2": 0.0664
+        }
       }
     },
     "syl_ni": {
       "candidates": {
         "syl_ni_t1": {
-          "duration_s": 0.515,
+          "duration_s": 0.512,
           "lufs": -20.0,
-          "true_peak_db": -8.8,
-          "rms_db": -20.0,
+          "true_peak_db": -11.7,
+          "rms_db": -19.8,
           "flags": [],
           "pass": true,
           "syllable": "ni"
         },
         "syl_ni_t2": {
-          "duration_s": 0.475,
+          "duration_s": 0.624,
           "lufs": -20.0,
-          "true_peak_db": -6.7,
+          "true_peak_db": -8.3,
           "rms_db": -19.8,
           "flags": [],
           "pass": true,
@@ -505,28 +586,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_ni_t1": 0.0266,
-          "syl_ni_t2": 0.0266
+          "syl_ni_t1": 0.0229,
+          "syl_ni_t2": 0.0229
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ni_t1": 0.0443,
+          "syl_ni_t2": 0.0457
+        }
       }
     },
     "syl_go": {
       "candidates": {
         "syl_go_t1": {
-          "duration_s": 0.469,
+          "duration_s": 0.525,
           "lufs": -20.0,
-          "true_peak_db": -9.0,
-          "rms_db": -19.9,
+          "true_peak_db": -9.4,
+          "rms_db": -20.1,
           "flags": [],
           "pass": true,
           "syllable": "go"
         },
         "syl_go_t2": {
-          "duration_s": 0.386,
+          "duration_s": 0.562,
           "lufs": -20.0,
           "true_peak_db": -9.3,
-          "rms_db": -20.0,
+          "rms_db": -19.8,
           "flags": [],
           "pass": true,
           "syllable": "go"
@@ -535,28 +619,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_go_t1": 0.0458,
-          "syl_go_t2": 0.0458
+          "syl_go_t1": 0.0339,
+          "syl_go_t2": 0.0339
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_go_t1": 0.0465,
+          "syl_go_t2": 0.062
+        }
       }
     },
     "syl_tu": {
       "candidates": {
         "syl_tu_t1": {
-          "duration_s": 0.357,
+          "duration_s": 0.533,
           "lufs": -20.0,
-          "true_peak_db": -9.0,
-          "rms_db": -20.0,
+          "true_peak_db": -7.8,
+          "rms_db": -20.2,
           "flags": [],
           "pass": true,
           "syllable": "tu"
         },
         "syl_tu_t2": {
-          "duration_s": 0.406,
+          "duration_s": 0.587,
           "lufs": -20.0,
-          "true_peak_db": -10.1,
-          "rms_db": -20.0,
+          "true_peak_db": -9.8,
+          "rms_db": -20.1,
           "flags": [],
           "pass": true,
           "syllable": "tu"
@@ -565,27 +652,30 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_tu_t1": 0.0471,
-          "syl_tu_t2": 0.0471
+          "syl_tu_t1": 0.036,
+          "syl_tu_t2": 0.036
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_tu_t1": 0.0473,
+          "syl_tu_t2": 0.0461
+        }
       }
     },
     "syl_mi": {
       "candidates": {
         "syl_mi_t1": {
-          "duration_s": 0.431,
+          "duration_s": 0.477,
           "lufs": -20.0,
-          "true_peak_db": -7.2,
-          "rms_db": -20.0,
+          "true_peak_db": -7.8,
+          "rms_db": -19.8,
           "flags": [],
           "pass": true,
           "syllable": "mi"
         },
         "syl_mi_t2": {
-          "duration_s": 0.464,
+          "duration_s": 0.644,
           "lufs": -20.0,
-          "true_peak_db": -10.4,
+          "true_peak_db": -9.5,
           "rms_db": -20.1,
           "flags": [],
           "pass": true,
@@ -595,58 +685,73 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_mi_t1": 0.0339,
-          "syl_mi_t2": 0.0339
+          "syl_mi_t1": 0.0255,
+          "syl_mi_t2": 0.0255
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_mi_t1": 0.0389,
+          "syl_mi_t2": 0.0406
+        }
       }
     },
     "syl_bu": {
       "candidates": {
         "syl_bu_t1": {
-          "duration_s": 0.465,
+          "duration_s": 0.553,
           "lufs": -20.0,
-          "true_peak_db": -7.2,
-          "rms_db": -19.7,
+          "true_peak_db": -7.9,
+          "rms_db": -20.1,
           "flags": [],
           "pass": true,
           "syllable": "bu"
         },
         "syl_bu_t2": {
-          "duration_s": 0.464,
+          "duration_s": 0.578,
           "lufs": -20.0,
-          "true_peak_db": -11.3,
-          "rms_db": -19.8,
-          "flags": [],
+          "true_peak_db": -8.9,
+          "rms_db": -20.2,
+          "flags": [
+            "syl_bu_t1 ile neredeyse aynı (0.0162)"
+          ],
           "pass": true,
-          "syllable": "bu"
+          "syllable": "bu",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_bu_t1",
+            "syl_bu_t2",
+            0.0162
+          ]
+        ],
         "nearest": {
-          "syl_bu_t1": 0.0416,
-          "syl_bu_t2": 0.0416
+          "syl_bu_t1": 0.0162,
+          "syl_bu_t2": 0.0162
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_bu_t1": 0.0752,
+          "syl_bu_t2": 0.0665
+        }
       }
     },
     "syl_ri": {
       "candidates": {
         "syl_ri_t1": {
-          "duration_s": 0.451,
+          "duration_s": 0.457,
           "lufs": -20.0,
-          "true_peak_db": -5.8,
-          "rms_db": -19.6,
+          "true_peak_db": -6.3,
+          "rms_db": -19.7,
           "flags": [],
           "pass": true,
           "syllable": "ri"
         },
         "syl_ri_t2": {
-          "duration_s": 0.442,
+          "duration_s": 0.538,
           "lufs": -20.0,
-          "true_peak_db": -8.1,
-          "rms_db": -20.0,
+          "true_peak_db": -9.3,
+          "rms_db": -20.2,
           "flags": [],
           "pass": true,
           "syllable": "ri"
@@ -655,28 +760,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_ri_t1": 0.0505,
-          "syl_ri_t2": 0.0505
+          "syl_ri_t1": 0.0204,
+          "syl_ri_t2": 0.0204
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ri_t1": 0.0299,
+          "syl_ri_t2": 0.0365
+        }
       }
     },
     "syl_ze": {
       "candidates": {
         "syl_ze_t1": {
-          "duration_s": 0.451,
+          "duration_s": 0.461,
           "lufs": -20.0,
-          "true_peak_db": -6.2,
-          "rms_db": -19.8,
+          "true_peak_db": -7.1,
+          "rms_db": -20.1,
           "flags": [],
           "pass": true,
           "syllable": "ze"
         },
         "syl_ze_t2": {
-          "duration_s": 0.494,
+          "duration_s": 0.531,
           "lufs": -20.0,
-          "true_peak_db": -8.9,
-          "rms_db": -20.2,
+          "true_peak_db": -8.1,
+          "rms_db": -20.3,
           "flags": [],
           "pass": true,
           "syllable": "ze"
@@ -685,28 +793,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_ze_t1": 0.099,
-          "syl_ze_t2": 0.099
+          "syl_ze_t1": 0.0275,
+          "syl_ze_t2": 0.0275
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ze_t1": 0.0425,
+          "syl_ze_t2": 0.0309
+        }
       }
     },
     "syl_na": {
       "candidates": {
         "syl_na_t1": {
-          "duration_s": 0.454,
+          "duration_s": 0.498,
           "lufs": -20.0,
-          "true_peak_db": -6.6,
-          "rms_db": -19.9,
+          "true_peak_db": -8.0,
+          "rms_db": -20.5,
           "flags": [],
           "pass": true,
           "syllable": "na"
         },
         "syl_na_t2": {
-          "duration_s": 0.49,
+          "duration_s": 0.564,
           "lufs": -20.0,
-          "true_peak_db": -6.7,
-          "rms_db": -20.3,
+          "true_peak_db": -7.8,
+          "rms_db": -20.8,
           "flags": [],
           "pass": true,
           "syllable": "na"
@@ -715,28 +826,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_na_t1": 0.0453,
-          "syl_na_t2": 0.0453
+          "syl_na_t1": 0.0225,
+          "syl_na_t2": 0.0225
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_na_t1": 0.041,
+          "syl_na_t2": 0.0409
+        }
       }
     },
     "syl_be": {
       "candidates": {
         "syl_be_t1": {
-          "duration_s": 0.443,
+          "duration_s": 0.596,
           "lufs": -20.0,
-          "true_peak_db": -5.9,
-          "rms_db": -20.0,
+          "true_peak_db": -7.4,
+          "rms_db": -20.6,
           "flags": [],
           "pass": true,
           "syllable": "be"
         },
         "syl_be_t2": {
-          "duration_s": 0.413,
+          "duration_s": 0.688,
           "lufs": -20.0,
-          "true_peak_db": -8.9,
-          "rms_db": -20.0,
+          "true_peak_db": -7.2,
+          "rms_db": -20.3,
           "flags": [],
           "pass": true,
           "syllable": "be"
@@ -745,57 +859,72 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_be_t1": 0.0289,
-          "syl_be_t2": 0.0289
+          "syl_be_t1": 0.0229,
+          "syl_be_t2": 0.0229
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_be_t1": 0.0535,
+          "syl_be_t2": 0.0485
+        }
       }
     },
     "syl_he": {
       "candidates": {
         "syl_he_t1": {
-          "duration_s": 0.37,
+          "duration_s": 0.473,
           "lufs": -20.0,
-          "true_peak_db": -5.9,
-          "rms_db": -20.0,
+          "true_peak_db": -10.3,
+          "rms_db": -19.9,
           "flags": [],
           "pass": true,
           "syllable": "he"
         },
         "syl_he_t2": {
-          "duration_s": 0.529,
+          "duration_s": 0.547,
           "lufs": -20.0,
           "true_peak_db": -8.7,
-          "rms_db": -21.0,
-          "flags": [],
+          "rms_db": -20.4,
+          "flags": [
+            "syl_he_t1 ile neredeyse aynı (0.0116)"
+          ],
           "pass": true,
-          "syllable": "he"
+          "syllable": "he",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_he_t1",
+            "syl_he_t2",
+            0.0116
+          ]
+        ],
         "nearest": {
-          "syl_he_t1": 0.0524,
-          "syl_he_t2": 0.0524
+          "syl_he_t1": 0.0116,
+          "syl_he_t2": 0.0116
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_he_t1": 0.0551,
+          "syl_he_t2": 0.0586
+        }
       }
     },
     "syl_ti": {
       "candidates": {
         "syl_ti_t1": {
-          "duration_s": 0.32,
+          "duration_s": 0.574,
           "lufs": -20.0,
-          "true_peak_db": -8.7,
+          "true_peak_db": -11.2,
           "rms_db": -20.0,
           "flags": [],
           "pass": true,
           "syllable": "ti"
         },
         "syl_ti_t2": {
-          "duration_s": 0.553,
+          "duration_s": 0.505,
           "lufs": -20.0,
-          "true_peak_db": -8.6,
+          "true_peak_db": -9.6,
           "rms_db": -20.3,
           "flags": [],
           "pass": true,
@@ -805,28 +934,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_ti_t1": 0.0577,
-          "syl_ti_t2": 0.0577
+          "syl_ti_t1": 0.0225,
+          "syl_ti_t2": 0.0225
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ti_t1": 0.0513,
+          "syl_ti_t2": 0.0571
+        }
       }
     },
     "syl_gan": {
       "candidates": {
         "syl_gan_t1": {
-          "duration_s": 0.382,
+          "duration_s": 0.602,
           "lufs": -20.0,
-          "true_peak_db": -8.7,
-          "rms_db": -20.0,
+          "true_peak_db": -9.8,
+          "rms_db": -20.2,
           "flags": [],
           "pass": true,
           "syllable": "gan"
         },
         "syl_gan_t2": {
-          "duration_s": 0.675,
+          "duration_s": 0.655,
           "lufs": -20.0,
-          "true_peak_db": -7.2,
-          "rms_db": -20.0,
+          "true_peak_db": -8.1,
+          "rms_db": -20.8,
           "flags": [],
           "pass": true,
           "syllable": "gan"
@@ -835,28 +967,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_gan_t1": 0.0406,
-          "syl_gan_t2": 0.0406
+          "syl_gan_t1": 0.038,
+          "syl_gan_t2": 0.038
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_gan_t1": 0.0544,
+          "syl_gan_t2": 0.043
+        }
       }
     },
     "syl_van": {
       "candidates": {
         "syl_van_t1": {
-          "duration_s": 0.439,
+          "duration_s": 0.684,
           "lufs": -20.0,
-          "true_peak_db": -7.8,
-          "rms_db": -20.0,
+          "true_peak_db": -8.1,
+          "rms_db": -20.5,
           "flags": [],
           "pass": true,
           "syllable": "van"
         },
         "syl_van_t2": {
-          "duration_s": 0.708,
+          "duration_s": 0.787,
           "lufs": -20.0,
-          "true_peak_db": -5.5,
-          "rms_db": -20.4,
+          "true_peak_db": -8.6,
+          "rms_db": -21.4,
           "flags": [],
           "pass": true,
           "syllable": "van"
@@ -865,28 +1000,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_van_t1": 0.0262,
-          "syl_van_t2": 0.0262
+          "syl_van_t1": 0.0377,
+          "syl_van_t2": 0.0377
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_van_t1": 0.0345,
+          "syl_van_t2": 0.0402
+        }
       }
     },
     "syl_mul": {
       "candidates": {
         "syl_mul_t1": {
-          "duration_s": 0.441,
+          "duration_s": 0.718,
           "lufs": -20.0,
-          "true_peak_db": -8.1,
-          "rms_db": -20.0,
+          "true_peak_db": -9.1,
+          "rms_db": -20.4,
           "flags": [],
           "pass": true,
           "syllable": "mul"
         },
         "syl_mul_t2": {
-          "duration_s": 0.667,
+          "duration_s": 0.769,
           "lufs": -20.0,
-          "true_peak_db": -8.5,
-          "rms_db": -20.0,
+          "true_peak_db": -9.1,
+          "rms_db": -20.5,
           "flags": [],
           "pass": true,
           "syllable": "mul"
@@ -895,28 +1033,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_mul_t1": 0.032,
-          "syl_mul_t2": 0.032
+          "syl_mul_t1": 0.0286,
+          "syl_mul_t2": 0.0286
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_mul_t1": 0.0493,
+          "syl_mul_t2": 0.0526
+        }
       }
     },
     "syl_zen": {
       "candidates": {
         "syl_zen_t1": {
-          "duration_s": 0.556,
+          "duration_s": 0.84,
           "lufs": -20.0,
-          "true_peak_db": -6.7,
-          "rms_db": -20.9,
+          "true_peak_db": -7.9,
+          "rms_db": -21.0,
           "flags": [],
           "pass": true,
           "syllable": "zen"
         },
         "syl_zen_t2": {
-          "duration_s": 0.757,
+          "duration_s": 0.76,
           "lufs": -20.0,
-          "true_peak_db": -6.0,
-          "rms_db": -20.4,
+          "true_peak_db": -7.4,
+          "rms_db": -20.7,
           "flags": [],
           "pass": true,
           "syllable": "zen"
@@ -925,28 +1066,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_zen_t1": 0.0306,
-          "syl_zen_t2": 0.0306
+          "syl_zen_t1": 0.0275,
+          "syl_zen_t2": 0.0275
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_zen_t1": 0.0272,
+          "syl_zen_t2": 0.0291
+        }
       }
     },
     "syl_pel": {
       "candidates": {
         "syl_pel_t1": {
-          "duration_s": 0.449,
+          "duration_s": 0.605,
           "lufs": -20.0,
-          "true_peak_db": -7.3,
-          "rms_db": -20.0,
+          "true_peak_db": -8.2,
+          "rms_db": -19.7,
           "flags": [],
           "pass": true,
           "syllable": "pel"
         },
         "syl_pel_t2": {
-          "duration_s": 0.674,
+          "duration_s": 0.651,
           "lufs": -20.0,
-          "true_peak_db": -9.6,
-          "rms_db": -19.7,
+          "true_peak_db": -8.7,
+          "rms_db": -20.7,
           "flags": [],
           "pass": true,
           "syllable": "pel"
@@ -955,28 +1099,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_pel_t1": 0.0514,
-          "syl_pel_t2": 0.0514
+          "syl_pel_t1": 0.0517,
+          "syl_pel_t2": 0.0517
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_pel_t1": 0.0515,
+          "syl_pel_t2": 0.0406
+        }
       }
     },
     "syl_gin": {
       "candidates": {
         "syl_gin_t1": {
-          "duration_s": 0.485,
+          "duration_s": 0.639,
           "lufs": -20.0,
-          "true_peak_db": -6.0,
-          "rms_db": -20.3,
+          "true_peak_db": -5.4,
+          "rms_db": -19.0,
           "flags": [],
           "pass": true,
           "syllable": "gin"
         },
         "syl_gin_t2": {
-          "duration_s": 0.497,
+          "duration_s": 0.509,
           "lufs": -20.0,
-          "true_peak_db": -6.6,
-          "rms_db": -20.4,
+          "true_peak_db": -6.7,
+          "rms_db": -19.8,
           "flags": [],
           "pass": true,
           "syllable": "gin"
@@ -985,28 +1132,31 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_gin_t1": 0.0395,
-          "syl_gin_t2": 0.0395
+          "syl_gin_t1": 0.0307,
+          "syl_gin_t2": 0.0307
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_gin_t1": 0.0389,
+          "syl_gin_t2": 0.036
+        }
       }
     },
     "syl_man": {
       "candidates": {
         "syl_man_t1": {
-          "duration_s": 1.062,
+          "duration_s": 0.772,
           "lufs": -20.0,
-          "true_peak_db": -6.7,
-          "rms_db": -19.9,
+          "true_peak_db": -9.1,
+          "rms_db": -20.6,
           "flags": [],
           "pass": true,
           "syllable": "man"
         },
         "syl_man_t2": {
-          "duration_s": 0.521,
+          "duration_s": 0.768,
           "lufs": -20.0,
-          "true_peak_db": -9.3,
-          "rms_db": -20.9,
+          "true_peak_db": -9.9,
+          "rms_db": -20.4,
           "flags": [],
           "pass": true,
           "syllable": "man"
@@ -1015,220 +1165,307 @@
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "syl_man_t1": 0.026,
-          "syl_man_t2": 0.026
+          "syl_man_t1": 0.0238,
+          "syl_man_t2": 0.0238
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_man_t1": 0.052,
+          "syl_man_t2": 0.0575
+        }
       }
     },
     "syl_pul": {
       "candidates": {
         "syl_pul_t1": {
-          "duration_s": 0.982,
+          "duration_s": 0.678,
           "lufs": -20.0,
-          "true_peak_db": -8.8,
-          "rms_db": -19.6,
+          "true_peak_db": -10.4,
+          "rms_db": -20.0,
           "flags": [],
           "pass": true,
           "syllable": "pul"
         },
         "syl_pul_t2": {
-          "duration_s": 0.522,
+          "duration_s": 0.66,
           "lufs": -20.0,
-          "true_peak_db": -10.8,
-          "rms_db": -20.3,
-          "flags": [],
+          "true_peak_db": -10.3,
+          "rms_db": -20.1,
+          "flags": [
+            "syl_pul_t1 ile neredeyse aynı (0.0195)"
+          ],
           "pass": true,
-          "syllable": "pul"
+          "syllable": "pul",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_pul_t1",
+            "syl_pul_t2",
+            0.0195
+          ]
+        ],
         "nearest": {
-          "syl_pul_t1": 0.0412,
-          "syl_pul_t2": 0.0412
+          "syl_pul_t1": 0.0195,
+          "syl_pul_t2": 0.0195
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_pul_t1": 0.0663,
+          "syl_pul_t2": 0.0629
+        }
       }
     },
     "syl_dil": {
       "candidates": {
         "syl_dil_t1": {
-          "duration_s": 0.897,
+          "duration_s": 0.78,
           "lufs": -20.0,
-          "true_peak_db": -9.4,
-          "rms_db": -20.7,
+          "true_peak_db": -9.7,
+          "rms_db": -20.1,
           "flags": [],
           "pass": true,
           "syllable": "dil"
         },
         "syl_dil_t2": {
-          "duration_s": 0.57,
+          "duration_s": 0.792,
           "lufs": -20.0,
-          "true_peak_db": -9.5,
-          "rms_db": -20.3,
-          "flags": [],
+          "true_peak_db": -9.4,
+          "rms_db": -20.0,
+          "flags": [
+            "syl_dil_t1 ile neredeyse aynı (0.0106)"
+          ],
           "pass": true,
-          "syllable": "dil"
+          "syllable": "dil",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_dil_t1",
+            "syl_dil_t2",
+            0.0106
+          ]
+        ],
         "nearest": {
-          "syl_dil_t1": 0.0289,
-          "syl_dil_t2": 0.0289
+          "syl_dil_t1": 0.0106,
+          "syl_dil_t2": 0.0106
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_dil_t1": 0.0486,
+          "syl_dil_t2": 0.0518
+        }
       }
     },
     "syl_kor": {
       "candidates": {
         "syl_kor_t1": {
-          "duration_s": 0.801,
+          "duration_s": 0.837,
           "lufs": -20.0,
-          "true_peak_db": -8.7,
-          "rms_db": -20.0,
+          "true_peak_db": -10.9,
+          "rms_db": -20.7,
           "flags": [],
           "pass": true,
           "syllable": "kor"
         },
         "syl_kor_t2": {
-          "duration_s": 0.646,
+          "duration_s": 0.721,
           "lufs": -20.0,
-          "true_peak_db": -12.3,
-          "rms_db": -20.5,
-          "flags": [],
+          "true_peak_db": -10.1,
+          "rms_db": -20.3,
+          "flags": [
+            "syl_kor_t1 ile neredeyse aynı (0.0177)"
+          ],
           "pass": true,
-          "syllable": "kor"
+          "syllable": "kor",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_kor_t1",
+            "syl_kor_t2",
+            0.0177
+          ]
+        ],
         "nearest": {
-          "syl_kor_t1": 0.0489,
-          "syl_kor_t2": 0.0489
+          "syl_kor_t1": 0.0177,
+          "syl_kor_t2": 0.0177
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_kor_t1": 0.0581,
+          "syl_kor_t2": 0.0712
+        }
       }
     },
     "syl_ven": {
       "candidates": {
         "syl_ven_t1": {
-          "duration_s": 0.934,
+          "duration_s": 0.842,
           "lufs": -20.0,
-          "true_peak_db": -6.8,
-          "rms_db": -21.6,
+          "true_peak_db": -10.5,
+          "rms_db": -20.4,
           "flags": [],
           "pass": true,
           "syllable": "ven"
         },
         "syl_ven_t2": {
-          "duration_s": 0.632,
+          "duration_s": 0.746,
           "lufs": -20.0,
-          "true_peak_db": -8.4,
-          "rms_db": -21.3,
-          "flags": [],
+          "true_peak_db": -10.5,
+          "rms_db": -20.2,
+          "flags": [
+            "syl_ven_t1 ile neredeyse aynı (0.012)"
+          ],
           "pass": true,
-          "syllable": "ven"
+          "syllable": "ven",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_ven_t1",
+            "syl_ven_t2",
+            0.012
+          ]
+        ],
         "nearest": {
-          "syl_ven_t1": 0.0218,
-          "syl_ven_t2": 0.0218
+          "syl_ven_t1": 0.012,
+          "syl_ven_t2": 0.012
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ven_t1": 0.034,
+          "syl_ven_t2": 0.0398
+        }
       }
     },
     "syl_ner": {
       "candidates": {
         "syl_ner_t1": {
-          "duration_s": 0.974,
+          "duration_s": 0.804,
           "lufs": -20.0,
-          "true_peak_db": -7.3,
-          "rms_db": -20.9,
+          "true_peak_db": -10.3,
+          "rms_db": -20.5,
           "flags": [],
           "pass": true,
           "syllable": "ner"
         },
         "syl_ner_t2": {
-          "duration_s": 0.669,
+          "duration_s": 0.733,
           "lufs": -20.0,
-          "true_peak_db": -10.6,
-          "rms_db": -20.5,
-          "flags": [],
+          "true_peak_db": -10.7,
+          "rms_db": -20.4,
+          "flags": [
+            "syl_ner_t1 ile neredeyse aynı (0.0145)"
+          ],
           "pass": true,
-          "syllable": "ner"
+          "syllable": "ner",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_ner_t1",
+            "syl_ner_t2",
+            0.0145
+          ]
+        ],
         "nearest": {
-          "syl_ner_t1": 0.0664,
-          "syl_ner_t2": 0.0664
+          "syl_ner_t1": 0.0145,
+          "syl_ner_t2": 0.0145
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_ner_t1": 0.0459,
+          "syl_ner_t2": 0.0421
+        }
       }
     },
     "syl_fer": {
       "candidates": {
         "syl_fer_t1": {
-          "duration_s": 0.906,
+          "duration_s": 0.815,
           "lufs": -20.0,
-          "true_peak_db": -6.9,
-          "rms_db": -20.3,
+          "true_peak_db": -8.7,
+          "rms_db": -21.1,
           "flags": [],
           "pass": true,
           "syllable": "fer"
         },
         "syl_fer_t2": {
-          "duration_s": 0.73,
+          "duration_s": 0.808,
           "lufs": -20.0,
-          "true_peak_db": -9.7,
-          "rms_db": -20.6,
-          "flags": [],
+          "true_peak_db": -9.3,
+          "rms_db": -20.9,
+          "flags": [
+            "syl_fer_t1 ile neredeyse aynı (0.0196)"
+          ],
           "pass": true,
-          "syllable": "fer"
+          "syllable": "fer",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_fer_t1",
+            "syl_fer_t2",
+            0.0196
+          ]
+        ],
         "nearest": {
-          "syl_fer_t1": 0.0477,
-          "syl_fer_t2": 0.0477
+          "syl_fer_t1": 0.0196,
+          "syl_fer_t2": 0.0196
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_fer_t1": 0.0516,
+          "syl_fer_t2": 0.0562
+        }
       }
     },
     "syl_rol": {
       "candidates": {
         "syl_rol_t1": {
-          "duration_s": 0.936,
+          "duration_s": 0.838,
           "lufs": -20.0,
-          "true_peak_db": -8.1,
-          "rms_db": -21.0,
+          "true_peak_db": -8.3,
+          "rms_db": -20.3,
           "flags": [],
           "pass": true,
           "syllable": "rol"
         },
         "syl_rol_t2": {
-          "duration_s": 0.675,
+          "duration_s": 0.785,
           "lufs": -20.0,
-          "true_peak_db": -8.0,
-          "rms_db": -20.9,
-          "flags": [],
+          "true_peak_db": -7.4,
+          "rms_db": -19.9,
+          "flags": [
+            "syl_rol_t1 ile neredeyse aynı (0.0164)"
+          ],
           "pass": true,
-          "syllable": "rol"
+          "syllable": "rol",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "syl_rol_t1",
+            "syl_rol_t2",
+            0.0164
+          ]
+        ],
         "nearest": {
-          "syl_rol_t1": 0.0306,
-          "syl_rol_t2": 0.0306
+          "syl_rol_t1": 0.0164,
+          "syl_rol_t2": 0.0164
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "syl_rol_t1": 0.0545,
+          "syl_rol_t2": 0.0528
+        }
       }
     }
   },

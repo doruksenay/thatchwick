@@ -2,47 +2,44 @@
   "job": "s141",
   "kind": "voice_lines",
   "family": "voice",
-  "created": "2026-11-20T16:45:30Z",
+  "created": "2026-11-20T18:54:31Z",
   "groups": {
     "greet": {
       "candidates": {
         "greet_c1": {
-          "duration_s": 2.033,
+          "duration_s": 2.046,
           "lufs": -20.0,
-          "true_peak_db": -8.9,
-          "rms_db": -22.4,
+          "true_peak_db": -8.8,
+          "rms_db": -21.8,
           "flags": [],
           "pass": true,
           "text": "[warmly] Yoamo va!",
           "model": "eleven_v3",
-          "stt": "Yo amova!"
+          "stt": "Yomo va"
         },
         "greet_c2": {
-          "duration_s": 2.625,
+          "duration_s": 1.282,
           "lufs": -20.0,
-          "true_peak_db": -9.2,
-          "rms_db": -23.5,
-          "flags": [
-            "greet_c1 ile neredeyse aynı (0.0147)"
-          ],
+          "true_peak_db": -11.0,
+          "rms_db": -20.2,
+          "flags": [],
           "pass": true,
           "text": "[warmly] Yoamo va!",
           "model": "eleven_v3",
-          "stt": "Yomova",
-          "similarity_warning": true
+          "stt": "Yo mova"
         },
         "greet_c3": {
-          "duration_s": 1.913,
+          "duration_s": 1.92,
           "lufs": -20.0,
-          "true_peak_db": -9.7,
-          "rms_db": -24.2,
+          "true_peak_db": -9.2,
+          "rms_db": -22.3,
           "flags": [
-            "greet_c1 ile neredeyse aynı (0.0167)"
+            "greet_c1 ile neredeyse aynı (0.0081)"
           ],
           "pass": true,
           "text": "[warmly] Yoamo va!",
           "model": "eleven_v3",
-          "stt": "Jámova",
+          "stt": "よもばー",
           "similarity_warning": true
         }
       },
@@ -50,76 +47,79 @@
         "pairs_dup": [
           [
             "greet_c1",
-            "greet_c2",
-            0.0147
-          ],
-          [
-            "greet_c1",
             "greet_c3",
-            0.0167
+            0.0081
           ]
         ],
         "nearest": {
-          "greet_c1": 0.0147,
-          "greet_c2": 0.0137,
-          "greet_c3": 0.0137
+          "greet_c1": 0.0081,
+          "greet_c2": 0.1678,
+          "greet_c3": 0.0081
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "greet_c1": 0.1575,
+          "greet_c2": 0.0701,
+          "greet_c3": 0.1773
+        }
       }
     },
     "question": {
       "candidates": {
         "question_c1": {
-          "duration_s": 1.763,
+          "duration_s": 2.64,
           "lufs": -20.0,
-          "true_peak_db": -5.8,
-          "rms_db": -19.8,
+          "true_peak_db": -2.8,
+          "rms_db": -21.1,
           "flags": [],
           "pass": true,
           "text": "[curious] Rarzel filver bol?",
           "model": "eleven_v3",
-          "stt": "Razzle Filverbol"
+          "stt": "Razul Filverbole"
         },
         "question_c2": {
-          "duration_s": 1.997,
+          "duration_s": 2.08,
           "lufs": -20.0,
-          "true_peak_db": -8.2,
-          "rms_db": -20.0,
+          "true_peak_db": -5.9,
+          "rms_db": -19.5,
           "flags": [],
           "pass": true,
           "text": "[curious] Rarzel filver bol?",
           "model": "eleven_v3",
-          "stt": "Razzo Filverbol?"
+          "stt": "Razel Filverbowl?"
         },
         "question_c3": {
-          "duration_s": 1.601,
+          "duration_s": 1.599,
           "lufs": -20.0,
-          "true_peak_db": -6.4,
-          "rms_db": -19.7,
+          "true_peak_db": -6.7,
+          "rms_db": -20.1,
           "flags": [],
           "pass": true,
           "text": "[curious] Rarzel filver bol?",
           "model": "eleven_v3",
-          "stt": "Razzle Filverbole?"
+          "stt": "Razel Filverbol"
         }
       },
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "question_c1": 0.0295,
-          "question_c2": 0.0527,
-          "question_c3": 0.0295
+          "question_c1": 0.1089,
+          "question_c2": 0.036,
+          "question_c3": 0.036
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "question_c1": 0.1714,
+          "question_c2": 0.0531,
+          "question_c3": 0.0493
+        }
       }
     },
     "yes": {
       "candidates": {
         "yes_c1": {
-          "duration_s": 1.0,
+          "duration_s": 1.545,
           "lufs": -20.0,
-          "true_peak_db": -11.4,
-          "rms_db": -20.5,
+          "true_peak_db": -7.0,
+          "rms_db": -21.3,
           "flags": [],
           "pass": true,
           "text": "[cheerfully] Mefor.",
@@ -127,178 +127,199 @@
           "stt": "Me four"
         },
         "yes_c2": {
-          "duration_s": 0.927,
+          "duration_s": 0.942,
           "lufs": -20.0,
-          "true_peak_db": -9.5,
-          "rms_db": -20.4,
+          "true_peak_db": -7.9,
+          "rms_db": -19.5,
+          "flags": [],
+          "pass": true,
+          "text": "[cheerfully] Mefor.",
+          "model": "eleven_v3",
+          "stt": "Me for?"
+        },
+        "yes_c3": {
+          "duration_s": 1.232,
+          "lufs": -20.0,
+          "true_peak_db": -7.0,
+          "rms_db": -20.6,
           "flags": [
-            "yes_c1 ile neredeyse aynı (0.0138)"
+            "yes_c1 ile neredeyse aynı (0.0039)"
           ],
           "pass": true,
           "text": "[cheerfully] Mefor.",
           "model": "eleven_v3",
           "stt": "Me four",
           "similarity_warning": true
-        },
-        "yes_c3": {
-          "duration_s": 1.22,
-          "lufs": -20.0,
-          "true_peak_db": -7.8,
-          "rms_db": -22.1,
-          "flags": [],
-          "pass": true,
-          "text": "[cheerfully] Mefor.",
-          "model": "eleven_v3",
-          "stt": "Mi 4"
         }
       },
       "set": {
         "pairs_dup": [
           [
             "yes_c1",
-            "yes_c2",
-            0.0138
+            "yes_c3",
+            0.0039
           ]
         ],
         "nearest": {
-          "yes_c1": 0.0138,
-          "yes_c2": 0.0138,
-          "yes_c3": 0.1092
+          "yes_c1": 0.0039,
+          "yes_c2": 0.0981,
+          "yes_c3": 0.0039
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "yes_c1": 0.2213,
+          "yes_c2": 0.0617,
+          "yes_c3": 0.2149
+        }
       }
     },
     "no": {
       "candidates": {
         "no_c1": {
-          "duration_s": 1.306,
+          "duration_s": 1.551,
           "lufs": -20.0,
-          "true_peak_db": -8.0,
-          "rms_db": -22.6,
-          "flags": [],
-          "pass": true,
-          "text": "[firmly] Liho.",
-          "model": "eleven_v3",
-          "stt": "你好"
-        },
-        "no_c2": {
-          "duration_s": 0.77,
-          "lufs": -20.0,
-          "true_peak_db": -7.8,
-          "rms_db": -20.6,
-          "flags": [],
-          "pass": true,
-          "text": "[firmly] Liho.",
-          "model": "eleven_v3",
-          "stt": "Leho"
-        },
-        "no_c3": {
-          "duration_s": 1.078,
-          "lufs": -20.0,
-          "true_peak_db": -7.7,
-          "rms_db": -22.5,
+          "true_peak_db": -8.4,
+          "rms_db": -22.0,
           "flags": [],
           "pass": true,
           "text": "[firmly] Liho.",
           "model": "eleven_v3",
           "stt": "Li Ho"
+        },
+        "no_c2": {
+          "duration_s": 0.985,
+          "lufs": -20.0,
+          "true_peak_db": -8.9,
+          "rms_db": -20.7,
+          "flags": [],
+          "pass": true,
+          "text": "[firmly] Liho.",
+          "model": "eleven_v3",
+          "stt": "Li Ho"
+        },
+        "no_c3": {
+          "duration_s": 0.982,
+          "lufs": -20.0,
+          "true_peak_db": -10.1,
+          "rms_db": -21.1,
+          "flags": [],
+          "pass": true,
+          "text": "[firmly] Liho.",
+          "model": "eleven_v3",
+          "stt": "Leeho"
         }
       },
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "no_c1": 0.0219,
-          "no_c2": 0.0807,
-          "no_c3": 0.0219
+          "no_c1": 0.085,
+          "no_c2": 0.0271,
+          "no_c3": 0.0271
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "no_c1": 0.2245,
+          "no_c2": 0.076,
+          "no_c3": 0.0441
+        }
       }
     },
     "happy": {
       "candidates": {
         "happy_c1": {
-          "duration_s": 1.543,
+          "duration_s": 1.518,
           "lufs": -20.0,
-          "true_peak_db": -11.4,
-          "rms_db": -20.3,
+          "true_peak_db": -9.5,
+          "rms_db": -19.9,
           "flags": [],
           "pass": true,
           "text": "[happy] Dape vusa mo!",
           "model": "eleven_v3",
-          "stt": "Tapez vos mots"
+          "stt": "Dape vousamo"
         },
         "happy_c2": {
-          "duration_s": 1.493,
+          "duration_s": 1.694,
           "lufs": -20.0,
-          "true_peak_db": -5.1,
-          "rms_db": -20.0,
+          "true_peak_db": -8.0,
+          "rms_db": -20.2,
           "flags": [],
           "pass": true,
           "text": "[happy] Dape vusa mo!",
           "model": "eleven_v3",
-          "stt": "Dapevousamo"
+          "stt": "Da pe vousamo?"
         },
         "happy_c3": {
-          "duration_s": 2.32,
+          "duration_s": 1.632,
           "lufs": -20.0,
-          "true_peak_db": -7.3,
-          "rms_db": -21.2,
-          "flags": [],
+          "true_peak_db": -7.4,
+          "rms_db": -21.0,
+          "flags": [
+            "happy_c2 ile neredeyse aynı (0.019)"
+          ],
           "pass": true,
           "text": "[happy] Dape vusa mo!",
           "model": "eleven_v3",
-          "stt": "Tapez-vous ça, mo!"
+          "stt": "D'où partez-vous à moi?",
+          "similarity_warning": true
         }
       },
       "set": {
-        "pairs_dup": [],
+        "pairs_dup": [
+          [
+            "happy_c2",
+            "happy_c3",
+            0.019
+          ]
+        ],
         "nearest": {
-          "happy_c1": 0.0283,
-          "happy_c2": 0.0283,
-          "happy_c3": 0.0352
+          "happy_c1": 0.066,
+          "happy_c2": 0.019,
+          "happy_c3": 0.019
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "happy_c1": 0.0486,
+          "happy_c2": 0.1187,
+          "happy_c3": 0.1229
+        }
       }
     },
     "sad": {
       "candidates": {
         "sad_c1": {
-          "duration_s": 3.707,
+          "duration_s": 3.393,
           "lufs": -20.0,
-          "true_peak_db": -6.9,
-          "rms_db": -21.8,
+          "true_peak_db": -5.2,
+          "rms_db": -20.4,
           "flags": [],
           "pass": true,
           "text": "[sad] Serrar... nupolvu.",
           "model": "eleven_v3",
-          "stt": "Serar Nupolvu"
+          "stt": "Serrar nu polvu"
         },
         "sad_c2": {
-          "duration_s": 3.1,
+          "duration_s": 2.52,
           "lufs": -20.0,
-          "true_peak_db": -6.9,
-          "rms_db": -21.5,
+          "true_peak_db": -5.1,
+          "rms_db": -20.4,
           "flags": [
-            "sad_c1 ile neredeyse aynı (0.0152)"
+            "sad_c1 ile neredeyse aynı (0.016)"
+          ],
+          "pass": true,
+          "text": "[sad] Serrar... nupolvu.",
+          "model": "eleven_v3",
+          "stt": "Serar Nupolvu",
+          "similarity_warning": true
+        },
+        "sad_c3": {
+          "duration_s": 2.508,
+          "lufs": -20.0,
+          "true_peak_db": -6.4,
+          "rms_db": -21.0,
+          "flags": [
+            "sad_c1 ile neredeyse aynı (0.0091)"
           ],
           "pass": true,
           "text": "[sad] Serrar... nupolvu.",
           "model": "eleven_v3",
           "stt": "Serar nupolvu",
-          "similarity_warning": true
-        },
-        "sad_c3": {
-          "duration_s": 2.4,
-          "lufs": -20.0,
-          "true_peak_db": -6.3,
-          "rms_db": -20.8,
-          "flags": [
-            "sad_c1 ile neredeyse aynı (0.0117)"
-          ],
-          "pass": true,
-          "text": "[sad] Serrar... nupolvu.",
-          "model": "eleven_v3",
-          "stt": "Sarah Nepal vu",
           "similarity_warning": true
         }
       },
@@ -307,268 +328,280 @@
           [
             "sad_c1",
             "sad_c2",
-            0.0152
+            0.016
           ],
           [
             "sad_c1",
             "sad_c3",
-            0.0117
+            0.0091
           ]
         ],
         "nearest": {
-          "sad_c1": 0.0117,
-          "sad_c2": 0.0152,
-          "sad_c3": 0.0117
+          "sad_c1": 0.0091,
+          "sad_c2": 0.016,
+          "sad_c3": 0.0091
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "sad_c1": 0.1129,
+          "sad_c2": 0.0827,
+          "sad_c3": 0.146
+        }
       }
     },
     "angry": {
       "candidates": {
         "angry_c1": {
-          "duration_s": 1.413,
+          "duration_s": 1.44,
           "lufs": -20.0,
           "true_peak_db": -11.0,
-          "rms_db": -20.4,
+          "rms_db": -20.9,
           "flags": [],
           "pass": true,
           "text": "[angry] Purmurral yi!",
           "model": "eleven_v3",
-          "stt": "Pomero ye!"
+          "stt": "Tomorrow ye"
         },
         "angry_c2": {
-          "duration_s": 1.276,
+          "duration_s": 1.816,
           "lufs": -20.0,
-          "true_peak_db": -10.2,
+          "true_peak_db": -11.6,
           "rms_db": -20.7,
           "flags": [],
           "pass": true,
           "text": "[angry] Purmurral yi!",
           "model": "eleven_v3",
-          "stt": "Permurrel ye!"
+          "stt": "Pameral ye!"
         },
         "angry_c3": {
-          "duration_s": 1.76,
+          "duration_s": 2.301,
           "lufs": -20.0,
-          "true_peak_db": -9.4,
-          "rms_db": -21.0,
+          "true_peak_db": -10.9,
+          "rms_db": -22.2,
           "flags": [],
           "pass": true,
           "text": "[angry] Purmurral yi!",
           "model": "eleven_v3",
-          "stt": "Pomerol ye"
+          "stt": "Pameral ye!"
         }
       },
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "angry_c1": 0.0373,
-          "angry_c2": 0.0354,
-          "angry_c3": 0.0354
+          "angry_c1": 0.0435,
+          "angry_c2": 0.0392,
+          "angry_c3": 0.0392
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "angry_c1": 0.0407,
+          "angry_c2": 0.0564,
+          "angry_c3": 0.1295
+        }
       }
     },
     "surprised": {
       "candidates": {
         "surprised_c1": {
-          "duration_s": 1.799,
+          "duration_s": 1.007,
           "lufs": -20.0,
-          "true_peak_db": -6.2,
-          "rms_db": -20.8,
+          "true_peak_db": -6.5,
+          "rms_db": -20.2,
           "flags": [],
           "pass": true,
           "text": "[surprised] Verardul?!",
           "model": "eleven_v3",
-          "stt": "Vera Dew?"
+          "stt": "Verado?"
         },
         "surprised_c2": {
-          "duration_s": 1.39,
+          "duration_s": 1.119,
           "lufs": -20.0,
-          "true_peak_db": -8.8,
-          "rms_db": -22.9,
-          "flags": [
-            "surprised_c1 ile neredeyse aynı (0.0172)"
-          ],
+          "true_peak_db": -9.5,
+          "rms_db": -20.4,
+          "flags": [],
           "pass": true,
           "text": "[surprised] Verardul?!",
           "model": "eleven_v3",
-          "stt": "Where are do?",
-          "similarity_warning": true
+          "stt": "Veradul?"
         },
         "surprised_c3": {
-          "duration_s": 1.76,
+          "duration_s": 1.249,
           "lufs": -20.0,
-          "true_peak_db": -7.7,
-          "rms_db": -22.1,
-          "flags": [
-            "surprised_c1 ile neredeyse aynı (0.015)"
-          ],
+          "true_peak_db": -8.5,
+          "rms_db": -20.5,
+          "flags": [],
           "pass": true,
           "text": "[surprised] Verardul?!",
           "model": "eleven_v3",
-          "stt": "There are duel?",
-          "similarity_warning": true
-        }
-      },
-      "set": {
-        "pairs_dup": [
-          [
-            "surprised_c1",
-            "surprised_c2",
-            0.0172
-          ],
-          [
-            "surprised_c1",
-            "surprised_c3",
-            0.015
-          ]
-        ],
-        "nearest": {
-          "surprised_c1": 0.015,
-          "surprised_c2": 0.0172,
-          "surprised_c3": 0.015
-        },
-        "ref_distance": {}
-      }
-    },
-    "thinking": {
-      "candidates": {
-        "thinking_c1": {
-          "duration_s": 2.613,
-          "lufs": -20.0,
-          "true_peak_db": -5.0,
-          "rms_db": -21.5,
-          "flags": [],
-          "pass": true,
-          "text": "[thoughtfully] Hmm... dure yomur.",
-          "model": "eleven_v3",
-          "stt": "Mmm, durei o mur"
-        },
-        "thinking_c2": {
-          "duration_s": 2.96,
-          "lufs": -20.0,
-          "true_peak_db": -3.4,
-          "rms_db": -22.2,
-          "flags": [],
-          "pass": true,
-          "text": "[thoughtfully] Hmm... dure yomur.",
-          "model": "eleven_v3",
-          "stt": "Hmm, dure yomur."
-        },
-        "thinking_c3": {
-          "duration_s": 2.572,
-          "lufs": -20.0,
-          "true_peak_db": -5.5,
-          "rms_db": -21.3,
-          "flags": [],
-          "pass": true,
-          "text": "[thoughtfully] Hmm... dure yomur.",
-          "model": "eleven_v3",
-          "stt": "Hmm, dure yomur."
+          "stt": "Varado?"
         }
       },
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "thinking_c1": 0.0282,
-          "thinking_c2": 0.0579,
-          "thinking_c3": 0.0282
+          "surprised_c1": 0.0309,
+          "surprised_c2": 0.0309,
+          "surprised_c3": 0.0309
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "surprised_c1": 0.0278,
+          "surprised_c2": 0.0364,
+          "surprised_c3": 0.038
+        }
       }
     },
-    "sleepy": {
+    "thinking": {
       "candidates": {
-        "sleepy_c1": {
-          "duration_s": 2.88,
+        "thinking_c1": {
+          "duration_s": 2.454,
           "lufs": -20.0,
-          "true_peak_db": -5.2,
-          "rms_db": -20.3,
+          "true_peak_db": -5.7,
+          "rms_db": -21.5,
           "flags": [],
           "pass": true,
-          "text": "[sleepy] [yawns] Kudil yuva...",
+          "text": "[thoughtfully] Hmm... dure yomur.",
           "model": "eleven_v3",
-          "stt": "Ah, cool deal, Yuva"
+          "stt": "Hmm, do re yo more"
         },
-        "sleepy_c2": {
-          "duration_s": 3.157,
+        "thinking_c2": {
+          "duration_s": 2.64,
           "lufs": -20.0,
-          "true_peak_db": -3.1,
-          "rms_db": -20.8,
+          "true_peak_db": -6.7,
+          "rms_db": -21.1,
           "flags": [],
           "pass": true,
-          "text": "[sleepy] [yawns] Kudil yuva...",
+          "text": "[thoughtfully] Hmm... dure yomur.",
           "model": "eleven_v3",
-          "stt": "[yawns] Kudil yuva"
+          "stt": "Hmm. Dure yomor"
         },
-        "sleepy_c3": {
-          "duration_s": 3.679,
-          "lufs": -20.2,
-          "true_peak_db": -6.5,
-          "rms_db": -20.9,
+        "thinking_c3": {
+          "duration_s": 3.175,
+          "lufs": -20.0,
+          "true_peak_db": -5.8,
+          "rms_db": -21.2,
           "flags": [
-            "sleepy_c2 ile neredeyse aynı (0.0189)"
+            "thinking_c1 ile neredeyse aynı (0.0093)"
           ],
           "pass": true,
-          "text": "[sleepy] [yawns] Kudil yuva...",
+          "text": "[thoughtfully] Hmm... dure yomur.",
           "model": "eleven_v3",
-          "stt": "[yawns] Kudil yuva",
+          "stt": "Hmm. Dore yomor",
           "similarity_warning": true
         }
       },
       "set": {
         "pairs_dup": [
           [
-            "sleepy_c2",
-            "sleepy_c3",
-            0.0189
+            "thinking_c1",
+            "thinking_c3",
+            0.0093
           ]
         ],
         "nearest": {
-          "sleepy_c1": 0.0249,
-          "sleepy_c2": 0.0189,
-          "sleepy_c3": 0.0189
+          "thinking_c1": 0.0093,
+          "thinking_c2": 0.019,
+          "thinking_c3": 0.0093
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "thinking_c1": 0.1528,
+          "thinking_c2": 0.1508,
+          "thinking_c3": 0.1367
+        }
+      }
+    },
+    "sleepy": {
+      "candidates": {
+        "sleepy_c1": {
+          "duration_s": 2.778,
+          "lufs": -20.0,
+          "true_peak_db": -6.3,
+          "rms_db": -20.3,
+          "flags": [],
+          "pass": true,
+          "text": "[sleepy] [yawns] Kudil yuva...",
+          "model": "eleven_v3",
+          "stt": "[yawning] Kudi lyuva"
+        },
+        "sleepy_c2": {
+          "duration_s": 3.024,
+          "lufs": -20.0,
+          "true_peak_db": -4.8,
+          "rms_db": -20.8,
+          "flags": [
+            "sleepy_c1 ile neredeyse aynı (0.0173)"
+          ],
+          "pass": true,
+          "text": "[sleepy] [yawns] Kudil yuva...",
+          "model": "eleven_v3",
+          "stt": "[yawns] Kudel yuva.",
+          "similarity_warning": true
+        },
+        "sleepy_c3": {
+          "duration_s": 3.093,
+          "lufs": -20.0,
+          "true_peak_db": -5.2,
+          "rms_db": -20.7,
+          "flags": [],
+          "pass": true,
+          "text": "[sleepy] [yawns] Kudil yuva...",
+          "model": "eleven_v3",
+          "stt": "[yawning] Kudil Yuva"
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "sleepy_c1",
+            "sleepy_c2",
+            0.0173
+          ]
+        ],
+        "nearest": {
+          "sleepy_c1": 0.0173,
+          "sleepy_c2": 0.0173,
+          "sleepy_c3": 0.0215
+        },
+        "ref_distance": {
+          "sleepy_c1": 0.0891,
+          "sleepy_c2": 0.0768,
+          "sleepy_c3": 0.1088
+        }
       }
     },
     "pain": {
       "candidates": {
         "pain_c1": {
-          "duration_s": 2.201,
-          "lufs": -19.6,
-          "true_peak_db": -6.1,
-          "rms_db": -22.8,
+          "duration_s": 1.762,
+          "lufs": -20.0,
+          "true_peak_db": -6.8,
+          "rms_db": -21.0,
           "flags": [],
           "pass": true,
           "text": "[pained] Ah! Vave!",
           "model": "eleven_v3",
-          "stt": "Ah, Vov."
+          "stt": "Ah, they've"
         },
         "pain_c2": {
-          "duration_s": 1.653,
+          "duration_s": 2.548,
           "lufs": -20.0,
-          "true_peak_db": -4.8,
-          "rms_db": -21.2,
+          "true_peak_db": -7.3,
+          "rms_db": -23.0,
           "flags": [],
           "pass": true,
           "text": "[pained] Ah! Vave!",
           "model": "eleven_v3",
-          "stt": "Ah, Vav"
+          "stt": "Ah, love!"
         },
         "pain_c3": {
-          "duration_s": 1.535,
+          "duration_s": 1.833,
           "lufs": -20.0,
-          "true_peak_db": -8.0,
+          "true_peak_db": -5.9,
           "rms_db": -21.7,
           "flags": [
-            "pain_c2 ile neredeyse aynı (0.0156)"
+            "pain_c2 ile neredeyse aynı (0.0129)"
           ],
           "pass": true,
           "text": "[pained] Ah! Vave!",
           "model": "eleven_v3",
-          "stt": "Oh, Vov!",
+          "stt": "Ah, Viv",
           "similarity_warning": true
         }
       },
@@ -577,94 +610,102 @@
           [
             "pain_c2",
             "pain_c3",
-            0.0156
+            0.0129
           ]
         ],
         "nearest": {
-          "pain_c1": 0.0271,
-          "pain_c2": 0.0156,
-          "pain_c3": 0.0156
+          "pain_c1": 0.0253,
+          "pain_c2": 0.0129,
+          "pain_c3": 0.0129
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "pain_c1": 0.1121,
+          "pain_c2": 0.194,
+          "pain_c3": 0.1553
+        }
       }
     },
     "call": {
       "candidates": {
         "call_c1": {
-          "duration_s": 1.535,
+          "duration_s": 1.342,
           "lufs": -20.0,
-          "true_peak_db": -8.4,
-          "rms_db": -22.5,
-          "flags": [],
-          "pass": true,
-          "text": "[shouting] Todil ri!",
-          "model": "eleven_v3",
-          "stt": "Todilri"
-        },
-        "call_c2": {
-          "duration_s": 2.251,
-          "lufs": -20.0,
-          "true_peak_db": -7.1,
-          "rms_db": -21.6,
-          "flags": [],
-          "pass": true,
-          "text": "[shouting] Todil ri!",
-          "model": "eleven_v3",
-          "stt": "Tohdi ri"
-        },
-        "call_c3": {
-          "duration_s": 1.164,
-          "lufs": -20.0,
-          "true_peak_db": -7.5,
+          "true_peak_db": -9.9,
           "rms_db": -20.7,
           "flags": [],
           "pass": true,
           "text": "[shouting] Todil ri!",
           "model": "eleven_v3",
-          "stt": "Todilri"
+          "stt": "Toodel-ree!"
+        },
+        "call_c2": {
+          "duration_s": 1.252,
+          "lufs": -20.0,
+          "true_peak_db": -9.0,
+          "rms_db": -20.0,
+          "flags": [],
+          "pass": true,
+          "text": "[shouting] Todil ri!",
+          "model": "eleven_v3",
+          "stt": "Toad-il-ry"
+        },
+        "call_c3": {
+          "duration_s": 1.472,
+          "lufs": -20.0,
+          "true_peak_db": -8.1,
+          "rms_db": -20.1,
+          "flags": [],
+          "pass": true,
+          "text": "[shouting] Todil ri!",
+          "model": "eleven_v3",
+          "stt": "Toad-il-ry!"
         }
       },
       "set": {
         "pairs_dup": [],
         "nearest": {
-          "call_c1": 0.0302,
-          "call_c2": 0.0302,
-          "call_c3": 0.072
+          "call_c1": 0.0258,
+          "call_c2": 0.0287,
+          "call_c3": 0.0258
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "call_c1": 0.0444,
+          "call_c2": 0.0618,
+          "call_c3": 0.0413
+        }
       }
     },
     "laugh": {
       "candidates": {
         "laugh_c1": {
-          "duration_s": 3.009,
+          "duration_s": 1.959,
           "lufs": -20.0,
-          "true_peak_db": -8.6,
-          "rms_db": -21.7,
+          "true_peak_db": -8.4,
+          "rms_db": -21.0,
           "flags": [],
           "pass": true,
           "text": "[laughs] Purrarho!",
           "model": "eleven_v3",
-          "stt": "[laughs] Poirot"
+          "stt": "[laughs] Pirarho"
         },
         "laugh_c2": {
-          "duration_s": 1.857,
+          "duration_s": 2.486,
           "lufs": -20.0,
-          "true_peak_db": -8.3,
-          "rms_db": -20.6,
+          "true_peak_db": -7.9,
+          "rms_db": -21.3,
           "flags": [],
           "pass": true,
           "text": "[laughs] Purrarho!",
           "model": "eleven_v3",
-          "stt": "[laughs] Puraro"
+          "stt": "[laughs] Paraho"
         },
         "laugh_c3": {
-          "duration_s": 2.148,
+          "duration_s": 2.73,
           "lufs": -20.0,
-          "true_peak_db": -7.2,
-          "rms_db": -21.9,
+          "true_peak_db": -8.8,
+          "rms_db": -21.3,
           "flags": [
-            "laugh_c1 ile neredeyse aynı (0.0154)"
+            "laugh_c1 ile neredeyse aynı (0.0169)"
           ],
           "pass": true,
           "text": "[laughs] Purrarho!",
@@ -678,70 +719,78 @@
           [
             "laugh_c1",
             "laugh_c3",
-            0.0154
+            0.0169
           ]
         ],
         "nearest": {
-          "laugh_c1": 0.0154,
-          "laugh_c2": 0.0414,
-          "laugh_c3": 0.0154
+          "laugh_c1": 0.0169,
+          "laugh_c2": 0.0187,
+          "laugh_c3": 0.0169
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "laugh_c1": 0.0862,
+          "laugh_c2": 0.1344,
+          "laugh_c3": 0.1094
+        }
       }
     },
     "sigh": {
       "candidates": {
         "sigh_c1": {
-          "duration_s": 1.975,
+          "duration_s": 2.144,
           "lufs": -20.0,
-          "true_peak_db": -7.9,
-          "rms_db": -20.6,
+          "true_peak_db": -7.1,
+          "rms_db": -21.0,
           "flags": [],
           "pass": true,
           "text": "[sighs] Bune...",
           "model": "eleven_v3",
-          "stt": "[sigh] Boon"
+          "stt": "Ah, Boone."
         },
         "sigh_c2": {
-          "duration_s": 1.907,
+          "duration_s": 2.491,
           "lufs": -20.0,
-          "true_peak_db": -3.5,
-          "rms_db": -19.2,
-          "flags": [],
-          "pass": true,
-          "text": "[sighs] Bune...",
-          "model": "eleven_v3",
-          "stt": "[sigh] Bun."
-        },
-        "sigh_c3": {
-          "duration_s": 2.4,
-          "lufs": -20.0,
-          "true_peak_db": -5.6,
-          "rms_db": -21.0,
+          "true_peak_db": -5.5,
+          "rms_db": -21.1,
           "flags": [
-            "sigh_c2 ile neredeyse aynı (0.0069)"
+            "sigh_c1 ile neredeyse aynı (0.0095)"
           ],
           "pass": true,
           "text": "[sighs] Bune...",
           "model": "eleven_v3",
-          "stt": "Ah, Boone.",
+          "stt": "[sighs] Boone.",
           "similarity_warning": true
+        },
+        "sigh_c3": {
+          "duration_s": 1.739,
+          "lufs": -20.0,
+          "true_peak_db": -5.5,
+          "rms_db": -21.1,
+          "flags": [],
+          "pass": true,
+          "text": "[sighs] Bune...",
+          "model": "eleven_v3",
+          "stt": "[sigh] Bine"
         }
       },
       "set": {
         "pairs_dup": [
           [
+            "sigh_c1",
             "sigh_c2",
-            "sigh_c3",
-            0.0069
+            0.0095
           ]
         ],
         "nearest": {
-          "sigh_c1": 0.0326,
-          "sigh_c2": 0.0069,
-          "sigh_c3": 0.0069
+          "sigh_c1": 0.0095,
+          "sigh_c2": 0.0095,
+          "sigh_c3": 0.0328
         },
-        "ref_distance": {}
+        "ref_distance": {
+          "sigh_c1": 0.1419,
+          "sigh_c2": 0.1122,
+          "sigh_c3": 0.0743
+        }
       }
     }
   }
