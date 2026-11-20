@@ -86,7 +86,7 @@ namespace Thatchwick.Core.Tests
                 string id = "item." + dish;
                 Assert.True(db.Items.Contains(id), id);
                 // Bir yerde yapılır ...
-                Assert.True(db.Items.All.Any(s => s.Interactions.Any(i => i.Produce.Any(p => p.ItemId == id) && (i.Skill == SkillType.Cooking || i.Skill == SkillType.Baking))), $"{id} yapılmıyor");
+                Assert.True(db.Items.All.Any(s => s.Interactions.Any(i => i.Produce.Any(p => p.ItemId == id) && (i.Skill == SkillType.Cooking || i.Skill == SkillType.Baking || i.Skill == SkillType.Brewing))), $"{id} yapılmıyor");   // pekmez İçecekçilik (belge 45)
                 // ... ve tencerede yenince doyurur.
                 var eat = pot.Interactions.FirstOrDefault(i => i.ConsumeItem == id && i.Need == NeedType.Hunger);
                 Assert.True(eat != null && eat.Restore > 0, $"{id} yenmiyor");

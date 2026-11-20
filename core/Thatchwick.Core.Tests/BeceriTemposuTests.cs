@@ -86,11 +86,17 @@ namespace Thatchwick.Core.Tests
             LifeRules.InheritAptitudes(new FixedRandom(0.1, 0.2, 0.9), child, mother, father);
             Assert.Equal(Aptitude.Major, child.Skills.GetAptitude(SkillType.Weaving));
             Assert.Equal(Aptitude.None, child.Skills.GetAptitude(SkillType.Smithing));
-            // Çok yatkın, ikinci zarda yatkına iner.
+            // Çok yatkın, ikinci zarda yatkına iner. Doğumda en çok 1 yatkınlık geçer (belge 45 karar 3): babanınki geçmez.
             var child2 = Person(4, 0);
             LifeRules.InheritAptitudes(new FixedRandom(0.1, 0.8, 0.1), child2, mother, father);
             Assert.Equal(Aptitude.Minor, child2.Skills.GetAptitude(SkillType.Weaving));
-            Assert.Equal(Aptitude.Minor, child2.Skills.GetAptitude(SkillType.Smithing));
+            Assert.Equal(Aptitude.None, child2.Skills.GetAptitude(SkillType.Smithing));
+            Assert.Equal(1, child2.Skills.AptitudeCount);
+            // Anneninki geçmezse babanınki geçebilir.
+            var child3 = Person(5, 0);
+            LifeRules.InheritAptitudes(new FixedRandom(0.9, 0.1), child3, mother, father);
+            Assert.Equal(Aptitude.None, child3.Skills.GetAptitude(SkillType.Weaving));
+            Assert.Equal(Aptitude.Minor, child3.Skills.GetAptitude(SkillType.Smithing));
         }
 
         [Fact]

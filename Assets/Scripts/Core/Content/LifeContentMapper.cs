@@ -56,6 +56,24 @@ namespace Thatchwick.Core.Content
 
         public static void Apply(ContentFileDto file, ContentDatabase db, List<string> errors)
         {
+            if (file.skillUnlocks != null)
+                foreach (var u in file.skillUnlocks)
+                {
+                    if (u == null) continue;
+                    if (!Enum.TryParse(u.skill, true, out SkillType us) || !Enum.IsDefined(typeof(SkillType), us))
+                    {
+                        errors.Add($"skillUnlocks: bilinmeyen beceri '{u.skill}'.");
+                        continue;
+                    }
+                    if (u.level < 1 || u.level > SkillRules.MaxLevel) { errors.Add($"skillUnlocks {u.skill}: seviye 1-10 olmalı ({u.level})."); continue; }
+                    if (string.IsNullOrWhiteSpace(u.text)) { errors.Add($"skillUnlocks {u.skill} {u.level}: metin boş."); continue; }
+                    db.SkillUnlocks.Add(new SkillUnlockDef
+                    {
+                        Skill = us, Level = u.level, Kind = string.IsNullOrWhiteSpace(u.kind) ? "feature" : u.kind.Trim(),
+                        Text = u.text.Trim(), Planned = u.planned, AdultPack = u.adultPack
+                    });
+                }
+
             if (file.traits != null)
                 foreach (var t in file.traits)
                 {

@@ -1528,10 +1528,10 @@ namespace Thatchwick.Game
             GUILayout.Label("Ara:", GUILayout.Width(32f));
             _search = GUILayout.TextField(_search ?? "", GUILayout.Width(196f));
             GUILayout.EndHorizontal();
-            // Zanaatkâr defteri (belge 29 madde 5 + "???" siluet, madde 3): hesap seviyesi DefterLevel'da açılır.
-            bool defterOpen = level >= DefterLevel;
+            // Zanaatkâr defteri (belge 29 madde 5 + "???" siluet, madde 3): hanede herhangi bir beceri 3'e çıkınca açılır (belge 45, 3.3).
+            bool defterOpen = DefterOpen(level);
             GUI.enabled = defterOpen;
-            string dl = defterOpen ? (_defter ? "Zanaatkâr defteri ▴" : "Zanaatkâr defteri ▾") : $"Zanaatkâr defteri · Sv {DefterLevel}";
+            string dl = defterOpen ? (_defter ? "Zanaatkâr defteri ▴" : "Zanaatkâr defteri ▾") : $"Zanaatkâr defteri · bir beceri {Thatchwick.Core.Progress.UnlockGate.NotebookSkillLevel}";
             if (GUILayout.Toggle(_defter && defterOpen, UiSkin.C(dl, "ui_search"), GUI.skin.button) != (_defter && defterOpen)) { bool v = !_defter; _deferred = () => { _defter = v; _scroll = Vector2.zero; }; }
             GUI.enabled = true;
             string q = _activeSearch.Trim();
@@ -1568,7 +1568,7 @@ namespace Thatchwick.Game
             string set = _setFilter > 0 ? ItemCatalog.StyleSets[_setFilter - 1] : null;
             string theme = _themeFilter > 0 ? Decor.Themes[_themeFilter - 1].id : null;
 
-            if (_defter && level >= DefterLevel) { DrawDefter(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme, _house)); return; }
+            if (_defter && DefterOpen(level)) { DrawDefter(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme, _house)); return; }
             var list = Visible(ItemCatalog.InCategory(_content, ItemCatalog.Categories[cat].id, room, set, theme, _house), level);
             if (list.Count == 0) GUILayout.Label("Bu filtreyle eşya yok.");
             DrawGrid(list, false);
@@ -1650,7 +1650,8 @@ namespace Thatchwick.Game
         // Hesap düzeyinde tutulur (AccountProgress gibi): tüm kayıtlar ortak. PlayerPrefs; SaveData'ya dokunmaz.
         private const string SeenKey = "tw.menu.seen";
         private const string OwnedKey = "tw.menu.owned";
-        public const int DefterLevel = 5;
+        public const int DefterLevel = 5;   // yalnızca beceri sağlayıcısı yokken (eski kural)
+        private bool DefterOpen(int accountLevel) => Thatchwick.Core.Progress.UnlockGate.NotebookOpen(_svc.SkillLevel, accountLevel, DefterLevel);
         public const int DefterDiscountPercent = 20;
         public static int DefterPrice(int price) => System.Math.Max(1, price * (100 - DefterDiscountPercent) / 100);   // Zanaatkâr defteri açılma seviyesi (varsayılan; belge 33)
         private HashSet<string> _owned;

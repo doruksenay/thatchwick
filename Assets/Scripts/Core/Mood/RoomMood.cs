@@ -14,6 +14,11 @@ namespace Thatchwick.Core.Mood
     {
         public const int HarmonyThreshold = 4;
         public const double IntervalDays = 0.05;
+        /// <summary>Hanenin en iyi Ev düzenleme seviyesi bu ve üstündeyse uyum moodlet'leri x1,5 (belge 45, 9.5).</summary>
+        public const int TidyHarmonyLevel = 5;
+
+        /// <summary>Hanenin en iyi Ev düzenleme seviyesi; null ise 1 sayılır.</summary>
+        public Func<int> ArrangerLevel { get; set; }
 
         private readonly WorldState _world;
         private readonly MoodCatalog _catalog;
@@ -43,8 +48,9 @@ namespace Thatchwick.Core.Mood
                     cache[room.Id] = info;
                 }
                 // Aynı takım (kademe) ya da aynı tarz (Çatkı, Yörük) "Uyumlu ev"; ikisi birden "Özenli ev" (27 §6.1).
-                if (info.set != null && info.theme != null) c.AddMoodlet(MoodCatalog.HarmonyFine, _catalog);
-                else if (info.set != null || info.theme != null) c.AddMoodlet(MoodCatalog.Harmony, _catalog);
+                bool tidy = ArrangerLevel != null && ArrangerLevel() >= TidyHarmonyLevel;
+                if (info.set != null && info.theme != null) c.AddMoodlet(tidy ? MoodCatalog.HarmonyFineTidy : MoodCatalog.HarmonyFine, _catalog);
+                else if (info.set != null || info.theme != null) c.AddMoodlet(tidy ? MoodCatalog.HarmonyTidy : MoodCatalog.Harmony, _catalog);
                 if (info.light) c.AddMoodlet(MoodCatalog.BrightRoom, _catalog);
             }
         }

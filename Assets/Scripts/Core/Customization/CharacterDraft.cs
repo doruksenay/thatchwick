@@ -32,7 +32,8 @@ namespace Thatchwick.Core.Customization
         public Appearance Appearance { get; set; } = new Appearance();
         public SkillType? SkillFocus { get; set; }
         /// <summary>Kurucu yatkınlıkları (28 karar 1): en çok 2 beceri, "Yatkın" kademesi.</summary>
-        public const int MaxFounderAptitudes = 2;
+        /// <summary>Başlangıç karakterinin seçebileceği yatkınlık (belge 45 karar 3 ile uyum: en çok 1).</summary>
+        public const int MaxFounderAptitudes = 1;
         public List<SkillType> Aptitudes { get; } = new List<SkillType>();
 
         public bool ToggleAptitude(SkillType s)

@@ -20,8 +20,10 @@ namespace Thatchwick.Core.Life
         public int Size;
         /// <summary>Pencereler: penceresiz oda eksi, her pencere artı (-2 ile +3 arası; bodrumda 0).</summary>
         public int Windows;
-        /// <summary>Konfor puanı (eşya konforu + yapı + büyüklük + pencere). Stil seti uyumu ayrı moodlet'tir (RoomMoodSystem: Uyumlu ev).</summary>
-        public int Total => Score + Structure + Size + Windows;
+        /// <summary>Yerleştirme: hanenin en iyi Ev düzenleme seviyesi 4, 7, 10'da +1'er (en çok +3; belge 45 karar 7).</summary>
+        public int Arrangement;
+        /// <summary>Konfor puanı (eşya konforu + yapı + büyüklük + pencere + yerleştirme). Stil seti uyumu ayrı moodlet'tir (RoomMoodSystem: Uyumlu ev).</summary>
+        public int Total => Score + Structure + Size + Windows + Arrangement;
 
         /// <summary>Oyuncuya gösterilen döküm: "Eşya 14 · Zemin ve duvar 3 · Büyüklük +2 · Pencere -2 (penceresiz)".</summary>
         public string Breakdown()
@@ -29,7 +31,8 @@ namespace Thatchwick.Core.Life
             string sign(int v) => v > 0 ? "+" + v : v.ToString();
             string win = Windows < 0 ? " (penceresiz)" : "";
             string size = Size < 0 ? " (dar)" : "";
-            return $"Eşya {Score} · Zemin ve duvar {Structure} · Büyüklük {sign(Size)}{size} · Pencere {sign(Windows)}{win}";
+            return $"Eşya {Score} · Zemin ve duvar {Structure} · Büyüklük {sign(Size)}{size} · Pencere {sign(Windows)}{win}"
+                + (Arrangement > 0 ? $" · Yerleştirme +{Arrangement}" : "");
         }
     }
 
@@ -89,6 +92,11 @@ namespace Thatchwick.Core.Life
         public Func<ItemInstance, double> BeautyBonus { get; set; }
         /// <summary>Odanın bakımından gelen artı ve eksi (duvar kaplaması, badana, is, ot serpmesi; belge 45); null ise yok.</summary>
         public Func<Room, (int plus, int minus)> RoomBeautyExtra { get; set; }
+        /// <summary>Hanenin en iyi Ev düzenleme seviyesi (yerleştirme konforu için); null ise katkı yok.</summary>
+        public Func<int> ArrangerLevel { get; set; }
+
+        /// <summary>Ev düzenleme seviyesinden oda konforu: 4, 7 ve 10. seviyede +1 (belge 45 karar 7; indirimin yerine).</summary>
+        public static int ArrangementComfort(int level) => (level >= 4 ? 1 : 0) + (level >= 7 ? 1 : 0) + (level >= 10 ? 1 : 0);
 
         public RoomComfort ComfortOf(Room room)
         {
@@ -108,6 +116,7 @@ namespace Thatchwick.Core.Life
             result.Structure = StructureComfort(room);
             result.Size = SizeComfort(room.Area);
             result.Windows = WindowComfort(room);
+            if (ArrangerLevel != null) result.Arrangement = ArrangementComfort(ArrangerLevel());
             return result;
         }
 

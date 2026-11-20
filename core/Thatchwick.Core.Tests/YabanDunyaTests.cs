@@ -144,10 +144,12 @@ namespace Thatchwick.Core.Tests
         public void Kurucu_YatkinlikSecer()
         {
             var d = new CharacterDraft();
+            // Belge 45 karar 3: kurucu en çok 1 yatkınlık seçer.
             Assert.True(d.ToggleAptitude(SkillType.Carpentry));
+            Assert.False(d.ToggleAptitude(SkillType.Riding));
+            Assert.True(d.ToggleAptitude(SkillType.Carpentry));   // kaldırır
+            Assert.Empty(d.Aptitudes);
             Assert.True(d.ToggleAptitude(SkillType.Riding));
-            Assert.False(d.ToggleAptitude(SkillType.Cooking));
-            Assert.True(d.ToggleAptitude(SkillType.Riding));   // kaldırır
             Assert.Single(d.Aptitudes);
         }
     }

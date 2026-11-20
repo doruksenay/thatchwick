@@ -16,7 +16,7 @@ namespace Thatchwick.Core.Characters
         Leatherwork = 7,      // Saraçlık (zanaat): deri, eyer
         Weaving = 8,          // Dokumacılık (zanaat): yün, iplik, kumaş, halı
         Trade = 9,            // Ticaret ve pazarlık
-        Herbalism = 10,       // Otacılık: iksir, merhem
+        Herbalism = 10,       // Aktarlık (eski Otacılık): çay, şurup, merhem, iksir yapar (belge 45 karar 1)
         // 17.11.2026 (ikinci dalga)
         Engineering = 11,     // Mühendislik: düzenekler, dişli, bakım
         Salvage = 12,         // Geri kazanım: sökülen eşyadan malzeme
@@ -24,7 +24,7 @@ namespace Thatchwick.Core.Characters
         Mining = 14,          // Madencilik: taş ocağı, kil, cevher
         Smithing = 15,        // Demircilik: demir, çivi, nal, alet yükseltme
         Pottery = 16,         // Çömlekçilik: küp, testi
-        Brewing = 17,         // Biracılık ve şarapçılık
+        Brewing = 17,         // İçecekçilik (eski Biracılık): şerbet, boza, sirke, çay, kahve; +18 paketiyle bira ve şarap (belge 45 karar 5)
         Baking = 18,          // Fırıncılık: un, ekmek
         Chandlery = 19,       // Mumculuk: balmumu, mum
         Horticulture = 20,    // Bahçıvanlık: meyve ağacı, tohum seçimi
@@ -61,14 +61,14 @@ namespace Thatchwick.Core.Characters
                 case SkillType.Leatherwork: return "Saraçlık";
                 case SkillType.Weaving: return "Dokumacılık";
                 case SkillType.Trade: return "Ticaret";
-                case SkillType.Herbalism: return "Otacılık";
+                case SkillType.Herbalism: return "Aktarlık";
                 case SkillType.Engineering: return "Mühendislik";
                 case SkillType.Salvage: return "Geri kazanım";
                 case SkillType.Masonry: return "Taş ustalığı";
                 case SkillType.Mining: return "Madencilik";
                 case SkillType.Smithing: return "Demircilik";
                 case SkillType.Pottery: return "Çömlekçilik";
-                case SkillType.Brewing: return "Biracılık";
+                case SkillType.Brewing: return "İçecekçilik";
                 case SkillType.Baking: return "Fırıncılık";
                 case SkillType.Chandlery: return "Mumculuk";
                 case SkillType.Horticulture: return "Bahçıvanlık";
@@ -120,7 +120,8 @@ namespace Thatchwick.Core.Characters
 
         /// <summary>
         /// Dal düzeni (karar 18.11.2026, Project belgesi 28): 14 ana beceride tam dal (5. seviyede 2, 10. seviyede 4),
-        /// 16 becerinin yalnızca 5. seviyede 2 dalı, 4 destek becerisi dalsız. Toplam 116. life.json bununla uyuşmalıdır.
+        /// 17 becerinin (Atletizm dahil, belge 45 karar 2) yalnızca 5. seviyede 2 dalı, 4 destek becerisi dalsız.
+        /// Toplam 118. life.json bununla uyuşmalıdır.
         /// </summary>
         public static int BranchCount(SkillType s)
         {
@@ -153,14 +154,14 @@ namespace Thatchwick.Core.Characters
                 case SkillType.Leatherwork: return "Saraç";
                 case SkillType.Weaving: return "Dokumacı";
                 case SkillType.Trade: return "Tüccar";
-                case SkillType.Herbalism: return "Otacı";
+                case SkillType.Herbalism: return "Aktar";
                 case SkillType.Engineering: return "Mühendis";
                 case SkillType.Salvage: return "Hurdacı";
                 case SkillType.Masonry: return "Taş ustası";
                 case SkillType.Mining: return "Madenci";
                 case SkillType.Smithing: return "Demirci";
                 case SkillType.Pottery: return "Çömlekçi";
-                case SkillType.Brewing: return "Biracı";
+                case SkillType.Brewing: return "Şerbetçi";
                 case SkillType.Baking: return "Fırıncı";
                 case SkillType.Chandlery: return "Mumcu";
                 case SkillType.Horticulture: return "Bahçıvan";
@@ -175,7 +176,7 @@ namespace Thatchwick.Core.Characters
                 case SkillType.Music: return "Çalgıcı";
                 case SkillType.Stewardship: return "Kâhya";
                 case SkillType.Carting: return "Arabacı";
-                case SkillType.Decorating: return "Süslemeci";
+                case SkillType.Decorating: return "Ev düzenleyici";
                 case SkillType.Medicine: return "Hekim";
                 case SkillType.Athletics: return "Pehlivan";
                 default: return "Köylü";
@@ -206,7 +207,8 @@ namespace Thatchwick.Core.Characters
 
         /// <summary>
         /// Evreye göre ulaşılabilecek en yüksek seviye. Bebek öğrenemez (0).
-        /// Varsayım (denge turunda ayarlanır): Çocuk 3, Ergen 7, Genç yetişkin 9, Yetişkin ve Yaşlı 10.
+        /// Çocuk 3, Ergen 6, Genç yetişkin 9, Yetişkin ve Yaşlı 10 ("3-6-9-10"; belge 45 karar 6: 6 günlük
+        /// ergenlikte 7'ye pratikte ulaşılamıyordu).
         /// </summary>
         public static int LevelCap(AgeStage stage)
         {
@@ -214,7 +216,7 @@ namespace Thatchwick.Core.Characters
             {
                 case AgeStage.Baby: return 0;
                 case AgeStage.Child: return 3;
-                case AgeStage.Teen: return 7;
+                case AgeStage.Teen: return 6;
                 case AgeStage.YoungAdult: return 9;
                 default: return MaxLevel;
             }
@@ -249,6 +251,11 @@ namespace Thatchwick.Core.Characters
         public const double ElderOnsetLoss = 0.10;
         /// <summary>Yaşlıda bütün mevsim hiç kullanılmayan becerinin mevsim sonunda kaybettiği seviye içi ilerleme oranı.</summary>
         public const double ElderSeasonLoss = 0.25;
+        /// <summary>
+        /// Toplanan XP bonuslarının tavanı (belge 45 karar 4): +%100. Yatkınlık bu havuzun dışında ayrı çarpandır;
+        /// en uç durum x2 (havuz) x x2 (çok yatkın) = x4.
+        /// </summary>
+        public const double MaxXpBonus = 1.0;
 
         public static double XpMultiplier(Aptitude a) => a == Aptitude.Major ? 2.0 : a == Aptitude.Minor ? 1.5 : 1.0;
 
@@ -388,6 +395,18 @@ namespace Thatchwick.Core.Characters
         /// <summary>(beceri, eski seviye, yeni seviye)</summary>
         public event Action<SkillType, int, int> LevelChanged;
 
+        /// <summary>(beceri, eklenen XP): baş üstü beceri çubuğu için (belge 45 bölüm 10). Tavanda (0 XP) tetiklenmez.</summary>
+        public event Action<SkillType, double> XpGained;
+
+        /// <summary>Seviye içi ilerleme 0-1 (son seviyede 1).</summary>
+        public double LevelProgress(SkillType skill)
+        {
+            int level = GetLevel(skill);
+            if (level >= SkillRules.MaxLevel) return 1.0;
+            double span = SkillPacing.LevelSpan(level);
+            return span <= 0 ? 0.0 : Math.Max(0.0, Math.Min(1.0, (GetXp(skill) - SkillRules.XpForLevel(level)) / span));
+        }
+
         public double GetXp(SkillType skill) => _xp.TryGetValue(skill, out var v) ? v : 0.0;
 
         public int GetLevel(SkillType skill) => SkillRules.LevelForXp(GetXp(skill));
@@ -418,6 +437,7 @@ namespace Thatchwick.Core.Characters
             double next = Math.Min(current + xp, ceiling);
             _xp[skill] = next;
             int after = SkillRules.LevelForXp(next);
+            if (next > current) XpGained?.Invoke(skill, next - current);
             if (after != before) LevelChanged?.Invoke(skill, before, after);
             return next - current;
         }

@@ -426,7 +426,7 @@ namespace Thatchwick.Game
             _mines = new MineSystem(_world, _household, Thatchwick.Core.Seeds.Derive(_seed, 53, 0));   // kazı katı tohumdan: yüklemede aynı
             if (loaded != null) SaveGame.RestoreMines(loaded, _mines);
             _animals.Died += OnAnimalDied;
-            _roomMood = new RoomMoodSystem(_world);
+            _roomMood = new RoomMoodSystem(_world) { ArrangerLevel = () => _life != null ? _life.BestSkill(SkillType.Decorating) : 1 };
             // Pazar teklifleri gün ve tohumdan yeniden üretilir: yüklemeden sonra aynı kalsın diye epoch'suz türetilir.
             _market = new Market(_content, _household, _storage, null, seed: legacySeed ? 17 : Thatchwick.Core.Seeds.Derive(_seed, 4));
             if (loaded != null) _market.RestoreState(loaded.MarketDemand, _clock.TotalDays, _clock.Season, loaded.MarketTakenOffers);
@@ -517,6 +517,7 @@ namespace Thatchwick.Game
             _life.SquarePosition = () => NearestWalkable(Places["square"], 8);   // bunalımda "Meydana kaçtı"
             _life.Suitors.Arrived += c => CreateActorFor(c);
             _statusHud = new StatusHud(_life, _content, () => Commander?.Character, c => _actors.Find(a => a.Character == c)?.Runner, () => _plants.Summary());
+            _statusHud.OpenSkills = (c, skill) => { _hudExpanded = true; _skillStripFor = c.Id; };
             _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
 
             _familyPanel = new FamilyPanel(_population, _family, _dynasty, () => Commander?.Character,
@@ -1342,6 +1343,7 @@ namespace Thatchwick.Game
             character.StageChanged += (c, from, to) => ShowMessage($"{c.Name}: {StageName(to)} oldu");
             character.Died += OnCharacterDied;
             character.Skills.LevelChanged += (skill, from, to) => { ShowMessage($"{character.Name}: {SkillName(skill)} seviye {to}"); if (to > from) _account.OnSkillLevelUp(); };
+            _statusHud?.Watch(character);   // baş üstü beceri çubuğu ve seviye kartı (belge 45 bölüm 10)
 
             var go = new GameObject(character.Name);
             go.transform.SetParent(transform, false);
@@ -2710,6 +2712,25 @@ namespace Thatchwick.Game
 
         private static string StageName(AgeStage s) => AgeStages.Name(s);
 
+        // Beceri paneli 1-10 şeridi (belge 45 bölüm 10): açılmış seviyeler dolu, sıradakinin ödülü yazılı, kalanlar soluk.
+        private int _skillStripFor = -1;
+
+        private void DrawSkillStrip(Character c)
+        {
+            int cap = SkillRules.LevelCap(c.Stage);
+            foreach (SkillType t in System.Enum.GetValues(typeof(SkillType)))
+            {
+                int level = c.Skills.GetLevel(t);
+                if (level <= 1 && c.Skills.GetXp(t) <= 0 && c.Skills.GetAptitude(t) == Aptitude.None) continue;
+                var sb = new System.Text.StringBuilder();
+                for (int lv = 1; lv <= SkillRules.MaxLevel; lv++) sb.Append(lv <= level ? "■" : lv > cap ? "·" : "□");
+                string next = level < SkillRules.MaxLevel
+                    ? (level + 1 > cap ? $"Sv {level + 1}: {StageName(c.Stage)} tavanı {cap}" : $"Sv {level + 1}: {Thatchwick.Core.Progress.UnlockGate.LevelSummary(_content, t, level + 1)}")
+                    : "Usta";
+                GUILayout.Label($"      {SkillName(t),-14} {sb} %{c.Skills.LevelProgress(t) * 100:0} · {next}");
+            }
+        }
+
         // Kurt riski, öksüz yavru, Doğa Defteri ve yarışma kaydı (belge 29, 31). Basit IMGUI; asıl arayüz PixelLab ekranlarıyla gelecek.
         private bool _journalOpen;
         private void DrawNatureAndContests(Character handler)
@@ -2906,7 +2927,15 @@ namespace Thatchwick.Game
                         GUILayout.Label($"   Keyif {c.Needs.Get(NeedType.Fun):0} · Hijyen {c.Needs.Get(NeedType.Hygiene):0} · Tuvalet {c.Needs.Get(NeedType.Bladder):0} · Ruh hali: {MoodText(c)}");
                     if (!c.IsDead) GUILayout.Label($"   {ActivityText(actor.Runner)}");
                     var skills = SkillsText(c);
-                    if (skills.Length > 0) GUILayout.Label($"   Beceri: {skills}");
+                    if (skills.Length > 0)
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label($"   Beceri: {skills}");
+                        bool strip = _skillStripFor == c.Id;
+                        if (GUILayout.Button(strip ? "Şerit ▴" : "Şerit ▾", GUILayout.Width(64f))) _skillStripFor = strip ? -1 : c.Id;
+                        GUILayout.EndHorizontal();
+                        if (_skillStripFor == c.Id) DrawSkillStrip(c);
+                    }
                     if (c == Commander?.Character) DrawNatureAndContests(c);
                 }
 

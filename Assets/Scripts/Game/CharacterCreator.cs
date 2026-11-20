@@ -269,7 +269,7 @@ namespace Thatchwick.Game
             _draft.SkillFocus = newFocus == 0 ? (SkillType?)null : (SkillType)(newFocus - 1);
             GUILayout.Label("   Eğilim seçilen beceriyle seviye 2 başlatır.", _smallStyle);
 
-            // Yatkınlık (28 karar 1): en çok 2 beceri; o becerilerde XP x1,5 ve günlük doygunluk eşiği yüksek.
+            // Yatkınlık (28 karar 1, 45 karar 3): en çok 1 beceri; o becerilerde XP x1,5 ve günlük doygunluk eşiği yüksek.
             Section($"Yatkınlıklar ({_draft.Aptitudes.Count}/{CharacterDraft.MaxFounderAptitudes})");
             var all = (SkillType[])System.Enum.GetValues(typeof(SkillType));
             for (int i = 0; i < all.Length; i += 4)

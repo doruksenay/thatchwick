@@ -35,17 +35,17 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
-        public void BeceriTavani_Ergen7_GencYetiskin9_Yetiskin10()
+        public void BeceriTavani_Ergen6_GencYetiskin9_Yetiskin10()
         {
             Assert.Equal(3, SkillRules.LevelCap(AgeStage.Child));
-            Assert.Equal(7, SkillRules.LevelCap(AgeStage.Teen));
+            Assert.Equal(6, SkillRules.LevelCap(AgeStage.Teen));   // belge 45 karar 6 (önce 7)
             Assert.Equal(9, SkillRules.LevelCap(AgeStage.YoungAdult));
             Assert.Equal(10, SkillRules.LevelCap(AgeStage.Adult));
             Assert.Equal(10, SkillRules.LevelCap(AgeStage.Elder));
 
             var teen = At(1, 26);
             teen.GainSkillXp(SkillType.Farming, SkillRules.XpForLevel(10));
-            Assert.Equal(7, teen.Skills.GetLevel(SkillType.Farming));
+            Assert.Equal(6, teen.Skills.GetLevel(SkillType.Farming));
             teen.Tick(6);   // Genç yetişkin oldu: tavan 9'a çıkar
             Assert.Equal(AgeStage.YoungAdult, teen.Stage);
             teen.GainSkillXp(SkillType.Farming, SkillRules.XpForLevel(10));

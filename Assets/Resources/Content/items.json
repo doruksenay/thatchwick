@@ -1084,6 +1084,7 @@
         },
         {
           "id": "drink_ale",
+          "adultPack": true,
           "displayName": "Arpa birası iç",
           "need": "Fun",
           "restore": 25,
@@ -1103,6 +1104,7 @@
         },
         {
           "id": "drink_cider",
+          "adultPack": true,
           "displayName": "Elma şarabı iç",
           "need": "Fun",
           "restore": 25,
@@ -1122,6 +1124,7 @@
         },
         {
           "id": "drink_mead",
+          "adultPack": true,
           "displayName": "Bal şarabı iç",
           "need": "Fun",
           "restore": 40,
@@ -1622,7 +1625,7 @@
           "id": "make_pekmez",
           "displayName": "Pekmez yap",
           "durationDays": 0.15,
-          "skill": "Cooking",
+          "skill": "Brewing",
           "skillXp": 12,
           "materials": [
             {
@@ -1907,7 +1910,7 @@
           "id": "brew_coffee_cloth",
           "displayName": "Kahve demle, bezle süz (1 toz → 2 fincan)",
           "durationDays": 0.08,
-          "skill": "Cooking",
+          "skill": "Brewing",
           "skillXp": 8,
           "materials": [
             {
@@ -2068,7 +2071,7 @@
           "id": "make_pekmez_grape",
           "displayName": "Şırayı kaynat, köpüğünü al (pekmez)",
           "durationDays": 0.2,
-          "skill": "Cooking",
+          "skill": "Brewing",
           "skillXp": 14,
           "materials": [
             {
@@ -21928,7 +21931,7 @@
     },
     {
       "id": "item.book_herbal",
-      "displayName": "Otacılık risalesi",
+      "displayName": "Aktarlık risalesi",
       "category": "decor",
       "price": 45,
       "placement": "Surface",
@@ -22207,7 +22210,7 @@
           "restore": 30,
           "durationDays": 0.06,
           "consume": "item.coffee_ground",
-          "skill": "Cooking",
+          "skill": "Brewing",
           "skillXp": 6,
           "moodlet": "eff_coffee_fine",
           "adultOnly": true,
@@ -22220,7 +22223,7 @@
           "restore": 35,
           "durationDays": 0.06,
           "consume": "item.coffee_ground_fine",
-          "skill": "Cooking",
+          "skill": "Brewing",
           "skillXp": 8,
           "moodlet": "eff_coffee_fine",
           "extraRestore": [
@@ -26353,6 +26356,7 @@
     },
     {
       "id": "ale",
+      "adultPack": true,
       "station": "item.brew_barrel",
       "produces": "item.ale",
       "materials": [
@@ -26369,6 +26373,7 @@
     },
     {
       "id": "cider",
+      "adultPack": true,
       "station": "item.brew_barrel",
       "produces": "item.cider",
       "materials": [
@@ -26385,6 +26390,7 @@
     },
     {
       "id": "mead",
+      "adultPack": true,
       "station": "item.brew_barrel",
       "produces": "item.mead",
       "materials": [
@@ -27638,6 +27644,7 @@
     },
     {
       "id": "ale_malt",
+      "adultPack": true,
       "station": "item.brew_barrel",
       "produces": "item.ale",
       "count": 3,
@@ -28698,7 +28705,7 @@
         }
       ],
       "durationDays": 0.1,
-      "skill": "Cooking",
+      "skill": "Brewing",
       "skillXp": 6,
       "displayName": "Ayakla üzüm ez (şıra)",
       "count": 2,

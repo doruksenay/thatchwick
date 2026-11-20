@@ -252,6 +252,11 @@ namespace Thatchwick.Core.Content
         public const string RetiredTag = "retired";
         /// <summary>Dükkânda görünmesi için gereken hesap seviyesi (T10). 0/1 = baştan açık.</summary>
         public int UnlockLevel { get; set; } = 1;
+        /// <summary>
+        /// Bu eşyayı üreten ilk tarifin becerisi (ContentMapper doldurur); kilit bu beceriye bağlanır (Project belgesi 45, 3.1).
+        /// Tarifi olmayan eşyada null; kilit kategoriden gelir.
+        /// </summary>
+        public Characters.SkillType? CraftSkill { get; set; }
         /// <summary>Ekin: yalnızca toprak (sürülmüş) zemine dikilir.</summary>
         public bool NeedsTilledSoil { get; set; }
         /// <summary>Kış gelince donar ve kaybolur (hasat edilmemiş ekin).</summary>

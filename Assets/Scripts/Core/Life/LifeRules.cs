@@ -156,9 +156,14 @@ namespace Thatchwick.Core.Life
         public const int ChildhoodAptitudeLevel = 3;
 
         /// <summary>Doğumda yatkınlık: her ebeveynin her yatkınlığı %35 şansla geçer (en çok 3).</summary>
+        /// <summary>Doğumda kalıtılabilecek en çok yatkınlık (belge 45 karar 3).</summary>
+        public const int MaxInheritedAptitudes = 1;
+
         public static void InheritAptitudes(Random rng, Character child, Character mother, Character father)
         {
             if (child == null || rng == null) return;
+            // Belge 45 karar 3: doğumda en çok 1 yatkınlık kalıtılır (ilk başarılı zarda durulur). İkinci yuva
+            // çocuklukta (ApplyChildhoodAptitude), üçüncüsü yalnızca olayla (çıraklık mezuniyeti, nitelikli talip) dolar.
             foreach (var parent in new[] { mother, father })
             {
                 if (parent == null) continue;
@@ -166,7 +171,7 @@ namespace Thatchwick.Core.Life
                 {
                     if (rng.NextDouble() >= AptitudeInheritChance) continue;
                     var a = kv.Value == Aptitude.Major && rng.NextDouble() < MajorStaysMajorChance ? Aptitude.Major : Aptitude.Minor;
-                    child.Skills.SetAptitude(kv.Key, a);
+                    if (child.Skills.SetAptitude(kv.Key, a) && child.Skills.AptitudeCount >= MaxInheritedAptitudes) return;
                 }
             }
         }
