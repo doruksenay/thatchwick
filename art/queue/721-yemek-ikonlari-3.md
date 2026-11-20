@@ -1,7 +1,8 @@
 ---
 id: "721"
 title: "Yemek ikonları 3: balık, sebze ve tahıl (14)"
-status: pending
+status: review
+claimed_at: 2026-11-20T15:49Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 35
 family: arayuz

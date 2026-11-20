@@ -89,6 +89,7 @@ namespace Thatchwick.Game
         private void OnEscape()
         {
             if (AchievementsVisible) { _achievementsPanel.Visible = false; return; }
+            if (CloseUiWindows()) return;
             if (_settingsOpen) { _settingsOpen = false; PlayerPrefs.Save(); return; }
             if (_creator != null || _player == null || _dynastyEnded) return;
             if (_vivView != null && _vivView.Active) return;   // canlılık evi Esc'yi kendisi kullanır

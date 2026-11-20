@@ -128,6 +128,12 @@ namespace Thatchwick.Core.Clothing
 
         public void Give(ClothingInstance it, Character c) { if (it != null) it.OwnerId = c?.Id ?? 0; }
 
+        /// <summary>Sandık: kimsenin olmayan giysiler (takılar ayrı: <see cref="UnwornJewelry"/>).</summary>
+        public IEnumerable<ClothingInstance> Chest()
+        {
+            foreach (var i in _items.Values) if (!i.IsJewelry && !i.Diamond && i.OwnerId == 0) yield return i;
+        }
+
         public IEnumerable<ClothingInstance> OwnedBy(Character c)
         {
             foreach (var i in _items.Values) if (i.OwnerId == (c?.Id ?? -1)) yield return i;

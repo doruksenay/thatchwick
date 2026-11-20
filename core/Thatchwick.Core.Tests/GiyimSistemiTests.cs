@@ -261,6 +261,69 @@ namespace Thatchwick.Core.Tests
             Assert.False(life.JewelryToInventory(heirloom));                      // yadigâr satılmaz
         }
 
+        /// <summary>Gardırop ekranının işlemleri: sandıktan giyme, çıkarınca sandığa dönme, yama ve söküm (belge 48 §12.5).</summary>
+        [Fact]
+        public void Gardirop_SandiktanGiyilir_CikarilincaSandigaDoner_YamaVeSokum()
+        {
+            var (life, house, pop, w) = Life();
+            var c = Person(); var baby = Person(2, 0.3);
+            pop.Add(c); pop.Add(baby);
+            var tunic = life.Clothing.Create("tunic");
+            Assert.Contains(tunic, life.Clothing.Chest());
+            Assert.Equal("cloth.err.age", life.WearClothing(baby, tunic, OutfitKind.Daily).Key);
+            Assert.Contains(tunic, life.Clothing.Chest());                       // giyemeyen sahibi de olmaz
+            Assert.True(life.WearClothing(c, tunic, OutfitKind.Daily).IsEmpty);
+            Assert.Equal(c.Id, tunic.OwnerId);
+            Assert.True(life.WearClothing(c, tunic, OutfitKind.Work).IsEmpty);
+            life.TakeOffClothing(c, tunic, OutfitKind.Daily);
+            Assert.Equal(c.Id, tunic.OwnerId);                                   // İş takımında duruyor
+            life.TakeOffClothing(c, tunic, OutfitKind.Work);
+            Assert.Contains(tunic, life.Clothing.Chest());                       // hiçbir takımda kalmadı: sandıkta
+
+            Assert.Equal("wardrobe.err.no_wear", life.PatchClothing(c, tunic).Key);
+            tunic.Durability = 20f;
+            Assert.Equal("wardrobe.err.no_scrap", life.PatchClothing(c, tunic).Key);
+            house.AddItem(LifeSystems.ClothScrapId, 1);
+            Assert.True(life.PatchClothing(c, tunic).IsEmpty);
+            Assert.Equal(60f, tunic.Durability);
+            Assert.Equal(1, tunic.Patches);
+            Assert.Equal(0, house.Count(LifeSystems.ClothScrapId));
+
+            int back = life.UnpickClothing(c, tunic);
+            Assert.True(back >= 1);
+            Assert.Equal(back, house.Count(LifeSystems.ClothScrapId));
+            Assert.Null(life.Clothing.Get(tunic.Id));
+        }
+
+        /// <summary>Terzi ekranının işlemleri: ısmarlama engelleri, ücret, teslim alma.</summary>
+        [Fact]
+        public void Terzi_IsmarlamaEngelleri_UcretVeTeslim()
+        {
+            var (life, house, pop, w) = Life();
+            var c = Person();
+            pop.Add(c);
+            var plain = life.OrderableModels(c).First(m => m.Tier == ClothingTier.Artisan);   // Köylü işi ısmarlanmaz, dükkândan alınır
+            var grand = life.OrderableModels(c).First(m => m.Tier >= ClothingTier.Merchant);
+            Assert.Equal("tailor.err.tier", life.OrderBlocker(c, grand, false).Key);   // itibar yetmez
+
+            int fee = life.OrderQuote(plain, courier: false);
+            Assert.True(fee >= TailorOrders.Labor(ClothingTier.Artisan));
+            Assert.Equal(fee + TailorOrders.CourierFee, life.OrderQuote(plain, courier: true));
+            house.TrySpend(house.Akce);
+            Assert.Equal("tailor.err.akce", life.PlaceOrder(c, plain, false).Key);
+            house.AddAkce(fee);
+            Assert.True(life.PlaceOrder(c, plain, false).IsEmpty);
+            Assert.Equal(0, house.Akce);
+
+            var order = life.Tailor.Orders.Single();
+            Assert.Equal("tailor.err.not_ready", life.PickUpOrder(order).Key);
+            life.Clock.Restore(order.DueDay + 0.1, 1);
+            Assert.True(life.PickUpOrder(order).IsEmpty);
+            Assert.True(order.Delivered);
+            var made = life.Clothing.OwnedBy(c).Single(i => i.ModelId == plain.Id);
+            Assert.Equal(TailorOrders.QualityCap, made.Quality);
+        }
+
         /// <summary>Mühür yüzüğü (belge 48 §5.7): mühürlü mektup itibar +2 getirir; reis değişince yüzük yeni reise geçer.</summary>
         [Fact]
         public void MuhurYuzugu_MektuptaItibar_ReisDegisinceGecer()

@@ -177,6 +177,9 @@ namespace Thatchwick.Core.Tests
             k.Decor.TemperatureAt = _ => 18f;                                   // normal hız
             k.Decor.Tick(3.0);                                                  // %60 → bayat
             Assert.Equal(Decor.Stale, DecorSystem.WorstFreshness(basket, k.Db));
+            var filth = new Thatchwick.Core.Farmyard.FilthService(k.World, k.Db) { IsRotten = it => DecorSystem.IsRottenFill(it, k.Db) };
+            filth.Refresh();
+            Assert.DoesNotContain(filth.Sources, s => s.ItemId == basket.Id);    // bayat kokmaz
             Assert.Contains("bayat", DecorSystem.FillLabel(basket, k.Db));
             Assert.True(DecorSystem.FillBeauty(basket, k.Db) < full);
 
@@ -185,6 +188,8 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(Decor.Rotten, DecorSystem.WorstFreshness(basket, k.Db));
             Assert.Equal(Decor.RottenBeauty, DecorSystem.FillBeauty(basket, k.Db), 3);
             Assert.Contains(k.Notices, n => n.Contains("çürüdü"));
+            filth.Refresh();                                                    // çürük sepet koku ve sinek kaynağıdır
+            Assert.Contains(filth.Sources, s => s.ItemId == basket.Id && s.Kind == Thatchwick.Core.Farmyard.FilthService.DecorKind && s.Tier == 1);
 
             // Çürük yenmez; boşaltınca atılır.
             var wat = Wat();

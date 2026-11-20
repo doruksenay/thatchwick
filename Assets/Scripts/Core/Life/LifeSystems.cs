@@ -858,12 +858,27 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Hayvanlar: can yoldaşı bağı (yakınlık, bakım, ölüm), kalite ve binicilik bonusu.</summary>
+        /// <summary>Bekleyen doğum uyarısı aynı hayvan için bu kadar günde bir yinelenir.</summary>
+        public const int BirthDelayNoticeEveryDays = 3;
+        private readonly Dictionary<int, long> _birthDelayNotified = new Dictionary<int, long>();
+
+        /// <summary>Barınakta yavruya yer yok: doğum bekliyor. Oyuncu barınağı büyütmeli ya da bir hayvanı ayırmalı.</summary>
+        private void OnBirthDelayed(Animal mother)
+        {
+            if (mother == null) return;
+            long today = Clock.DayIndex;
+            if (_birthDelayNotified.TryGetValue(mother.Id, out long last) && today - last < BirthDelayNoticeEveryDays) return;
+            _birthDelayNotified[mother.Id] = today;
+            Say(LocText.Of("animal.n.birth_delayed", ("name", mother.Name)), NoticeLevel.Warning);
+        }
+
         public void Attach(Thatchwick.Core.Animals.AnimalSystem animals, Thatchwick.Core.Animals.AnimalCare care)
         {
             Upbringing.Attach(animals, care);
             Merchant.Animals = animals;
             AnimalTalk.Animals = () => animals.Animals;   // hayvanla konuşma (belge 55 §3)
             if (care != null) { care.Talk = AnimalTalk; care.Done += OnOddAnimalCare; }
+            animals.BirthDelayed += OnBirthDelayed;
             _oddAnimals = animals;
             animals.TakenAway += AnimalTalk.OnAnimalTaken;
             AttachYard(animals);   // ahır kirliliği ve araba filosu (belge 57, 57e)

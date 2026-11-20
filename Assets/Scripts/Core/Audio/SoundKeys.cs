@@ -96,6 +96,7 @@ namespace Thatchwick.Core.Audio
         public const string TreehouseLadder = "treehouse.ladder"; // B foley
         public const string TreehouseCreak = "treehouse.creak";   // C foley
         public const string TreehouseKids = "treehouse.kids";     // B voice
+        public const string VillageCrier = "village.crier";       // C voice
         public const string InnDishes = "inn.dishes";             // B foley
         public const string InnDonate = "inn.donate";             // B foley
         public const string StingFeast = "sting.feast";           // C stinger
