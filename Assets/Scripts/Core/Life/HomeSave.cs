@@ -49,6 +49,7 @@ namespace Thatchwick.Core.Life
     {
         public int id;
         public string habitat;
+        public string substrate;
         public double moisture, mold;
         public string[] entries;
         public string[] log;

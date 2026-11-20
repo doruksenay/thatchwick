@@ -1,7 +1,7 @@
 ---
 id: "343"
 title: Taş ocağı, demir ocağı, çömlekçi çarkı, küp, mayalama fıçısı, mum tezgâhı, av pususu, rüzgâr fırıldağı, yazı tahtası, kopuz
-status: pending
+status: review
 approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 worker: batch            # 2026-11-18: toplu işçi biçimine çevrildi (Claude'suz); onay hâlâ kullanıcıda
 priority: 20
@@ -213,6 +213,10 @@ Tarifin makine okunur hâli (`tools/art/batch_worker.py`). Tuval: ayak izi + yü
 
 ## Doğrulama
 `validate_iso.py`, `style.py check --family esya`, ayak izi kılavuzuyla örtüşme (301 ölçütleri).
+
+- 2026-11-20 (toplu işçi): başladı
+
+- 2026-11-20 (toplu işçi): 10/10 teslim, 11 gen, Claude'suz. Rapor: art/results/343-zanaat-istasyonlari-2.md
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

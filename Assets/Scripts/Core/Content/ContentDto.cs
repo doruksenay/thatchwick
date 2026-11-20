@@ -157,6 +157,9 @@ namespace Thatchwick.Core.Content
         public string[] variants;    // renk/malzeme varyantları (Adım 43)
         public string[] forageSeasons; // yabani toplanabilir: görüneceği mevsimler
         public int forageMax;        // haritada aynı anda en çok bu kadar
+        public string[] forageRegions; // yalnızca bu bölgelerde belirir (coast, lake, forest ...); boş = her yerde
+        public int fishDifficulty;   // balık tutma mini oyunu: zorluk 0-100 (0 = 30)
+        public string fishBehavior;  // smooth | darting | sinker | floater | mixed
         public string[] fruitSeasons; // meyve ağacı: meyve verdiği mevsimler
         public float fruitDays;      // meyve ağacı: olgunlaşma süresi (gün)
         public bool nitrogen;        // baklagil: hasatta toprağı zenginleştirir
@@ -198,6 +201,7 @@ namespace Thatchwick.Core.Content
         public CatchDto[] catches;   // bu toplama yerinde cam kavanozla yakalanabilenler (belge 47)
         public int vivCreatures;     // cam bahçe: en çok canlı
         public int vivPlants;        // cam bahçe: en çok bitki
+        public string[] gathers;     // toplama yerinde kavanoza doldurulan zemin malzemesi (belge 47 ek)
         public int vivDecor;         // cam bahçe: en çok süs (taş, kabuk)
         public string[] bloomSeasons; // çiçek açtığı mevsimler
         public bool shadePlant;      // gölge sever (eğrelti, yosun, sarmaşık)

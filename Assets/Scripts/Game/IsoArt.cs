@@ -135,6 +135,34 @@ namespace Thatchwick.Game
             }
         }
 
+        /// <summary>
+        /// Su karosu (346): kuru çukur, buz, su (iki değişke). Denizde önce iso_ground_sea_a/b (484) aranır; yoksa göl suyu
+        /// döner ve <paramref name="seaFallback"/> true olur (oyun katmanı denize mavi ton verir). Görsel yoksa null.
+        /// </summary>
+        public static Sprite Water(int x, int y, bool filled, bool frozen, bool sea, out bool seaFallback)
+        {
+            seaFallback = false;
+            if (!filled) return GetCentered("iso_ground_pond_dry");
+            if (frozen) return GetCentered("iso_ground_ice_a");
+            int h = (x * 73856093) ^ (y * 19349663);
+            if (h < 0) h = -h;
+            if (sea)
+            {
+                var s = GetCentered(h % 2 == 0 ? "iso_ground_sea_a" : "iso_ground_sea_b") ?? GetCentered("iso_ground_sea_a");
+                if (s != null) return s;
+                seaFallback = true;
+            }
+            return GetCentered(h % 4 == 0 ? "iso_ground_water_b" : "iso_ground_water_a") ?? GetCentered("iso_ground_water_a");
+        }
+
+        /// <summary>Kumsal karosu (484): iso_ground_beach_a/b; yoksa null (oyun katmanı toprağı kum rengine boyar).</summary>
+        public static Sprite Beach(int x, int y)
+        {
+            int h = (x * 73856093) ^ (y * 19349663);
+            if (h < 0) h = -h;
+            return GetCentered(h % 2 == 0 ? "iso_ground_beach_a" : "iso_ground_beach_b") ?? GetCentered("iso_ground_beach_a");
+        }
+
         // ---------------- duvar ----------------
 
         /// <summary>

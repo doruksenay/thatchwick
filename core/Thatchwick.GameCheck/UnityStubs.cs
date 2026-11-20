@@ -119,3 +119,14 @@ namespace UnityEngine.InputSystem {
  public class Keyboard{public static Keyboard current; public KeyControl this[Key k]=>new KeyControl();
   public KeyControl aKey,bKey,cKey,dKey,eKey,fKey,gKey,hKey,iKey,jKey,kKey,lKey,mKey,nKey,oKey,pKey,qKey,rKey,sKey,tKey,uKey,vKey,wKey,xKey,yKey,zKey,spaceKey,escapeKey,enterKey,tabKey,deleteKey,backspaceKey,leftShiftKey,leftCtrlKey,leftAltKey,rightAltKey,upArrowKey,downArrowKey,leftArrowKey,rightArrowKey,digit1Key,digit2Key,digit3Key,digit4Key,digit5Key,equalsKey,minusKey,numpadPlusKey,numpadMinusKey,f1Key,f2Key,f3Key,f5Key,f9Key;}
 }
+// Ses (Project 45b): AudioSource, AudioClip, filtre ve mixer.
+namespace UnityEngine {
+ public class AudioClip:Object{public float length; public int samples,channels,frequency;}
+ public class AudioSource:Behaviour{public AudioClip clip; public bool loop,playOnAwake,isPlaying,mute; public float pitch=1,volume=1,panStereo,spatialBlend,time; public Audio.AudioMixerGroup outputAudioMixerGroup; public void Play(){} public void PlayDelayed(float d){} public void PlayOneShot(AudioClip c){} public void PlayOneShot(AudioClip c,float v){} public void Stop(){} public void Pause(){} public void UnPause(){}}
+ public class AudioLowPassFilter:Behaviour{public float cutoffFrequency=22000;}
+}
+namespace UnityEngine.Audio {
+ public class AudioMixerGroup:Object{}
+ public class AudioMixerSnapshot:Object{public void TransitionTo(float t){}}
+ public class AudioMixer:Object{public AudioMixerGroup[] FindMatchingGroups(string s)=>null; public AudioMixerSnapshot FindSnapshot(string s)=>null; public bool SetFloat(string n,float v)=>true;}
+}

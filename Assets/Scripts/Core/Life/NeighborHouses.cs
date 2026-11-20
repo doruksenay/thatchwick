@@ -31,6 +31,11 @@ namespace Thatchwick.Core.Life
         public double FoundedDay;
         /// <summary>Soyu tükendi: yaşayan üyesi kalmadı.</summary>
         public bool Extinct;
+        /// <summary>
+        /// Dükkânsız hanenin evi (kasabadaki köylü evi "home:N" ya da handaki oda "inn:N"; belge 47 §8). Dükkân hanesi dükkânında
+        /// yaşar (null). VillageHomes atar; soyu tükenince boşalır.
+        /// </summary>
+        public string HomeKey;
         /// <summary>Haneye girmiş herkes (ölüler dahil, kayıt sırasıyla).</summary>
         public readonly List<int> MemberIds = new List<int>();
         public readonly List<HouseHeadRecord> Heads = new List<HouseHeadRecord>();
@@ -437,7 +442,7 @@ namespace Thatchwick.Core.Life
                 list.Add(new NeighborHouseSave
                 {
                     id = h.Id, name = h.Name, defId = h.DefId, headId = h.HeadId, founderId = h.FounderId, foundedDay = h.FoundedDay,
-                    extinct = h.Extinct, members = h.MemberIds.ToArray(), current = current.ToArray(), heads = heads.ToArray()
+                    extinct = h.Extinct, members = h.MemberIds.ToArray(), current = current.ToArray(), heads = heads.ToArray(), homeKey = h.HomeKey
                 });
             }
             return list.ToArray();
@@ -455,7 +460,8 @@ namespace Thatchwick.Core.Life
                     if (s == null) continue;
                     var h = new NeighborHouse
                     {
-                        Id = s.id, Name = s.name, DefId = s.defId, HeadId = s.headId, FounderId = s.founderId, FoundedDay = s.foundedDay, Extinct = s.extinct
+                        Id = s.id, Name = s.name, DefId = s.defId, HeadId = s.headId, FounderId = s.founderId, FoundedDay = s.foundedDay, Extinct = s.extinct,
+                        HomeKey = s.homeKey
                     };
                     if (s.members != null) h.MemberIds.AddRange(s.members);
                     if (s.heads != null) foreach (var r in s.heads) if (r != null) h.Heads.Add(new HouseHeadRecord { CharacterId = r.id, Name = r.name, FromDay = r.day });

@@ -43,6 +43,22 @@ namespace Thatchwick.Game
         public Thatchwick.Core.Life.LifeSystems Life { get; set; }
         private bool _boardOpen;
 
+        /// <summary>Süreli görevler (belge 47 §3); null ise "Göreve gönder" görünmez.</summary>
+        public TimedDutyService TimedDuties { get; set; }
+        /// <summary>Çocukların gezme izni (belge 47 §7.2); null ise görünmez.</summary>
+        public Thatchwick.Core.Upbringing.ChildRoaming Roaming { get; set; }
+        /// <summary>Eşya adı (azık ve ürün listesi).</summary>
+        public Func<string, string> ItemName { get; set; }
+        /// <summary>Çocuk annesinden kasabaya gitmek için izin ister; dönen metin cevaptır (oyun katmanı saati ve havayı verir).</summary>
+        public Func<Character, string> AskRoam { get; set; }
+
+        // "Göreve gönder" formu (tek kişi için açılır).
+        private int _dutyFor;
+        private TimedDutyKind _dutyKind = TimedDutyKind.Mine;
+        private string _dutyPlace;
+        private double _dutyHours = 4;
+        private bool _dutyRepeat;
+
         public FamilyPanel(Population population, FamilyService family, Dynasty dynasty,
             Func<Character> selected, Action<Character> select, Func<Character, JobRunner> runnerOf)
         {
@@ -134,6 +150,8 @@ namespace Thatchwick.Game
                 GUILayout.EndHorizontal();
             }
 
+            if (!c.IsVillager && !c.IsDead) DrawTimedDuty(c);
+            if (!c.IsVillager && !c.IsDead) DrawRoaming(c);
             if (!c.IsVillager && !c.IsDead) DrawMarryOut(c);
             if (!c.IsVillager && !c.IsDead) DrawUpbringing(c, actor);
 
@@ -152,6 +170,130 @@ namespace Thatchwick.Game
             GUILayout.EndHorizontal();
             DrawSkillSocials(actor, c);
         }
+
+        // Süreli görev (belge 47 §3.7): tür → yer → süre → azık → başlat; görevdeyken ilerleme ve "Geri çağır".
+        private void DrawTimedDuty(Character c)
+        {
+            var svc = TimedDuties;
+            if (svc == null || c.Stage == AgeStage.Baby) return;
+            var running = svc.Find(c.Id);
+            if (running != null)
+            {
+                var place = TimedDutyService.Place(running.Order.PlaceId);
+                var got = new List<string>();
+                foreach (var kv in TimedDutyService.SoFar(running)) got.Add($"{kv.Value} {Name(kv.Key)}");
+                string playing = running.Playing ? " · oyuna daldı" : "";
+                var dutyIcon = UiSkin.Icon("duty_" + running.Order.Kind.ToString().ToLowerInvariant());   // PixelLab işi 480
+                if (dutyIcon != null) GUILayout.Label(dutyIcon, GUILayout.Width(20f), GUILayout.Height(20f));
+                UiSkin.Wrap($"    ⛏ Görevde: {TimedDutyService.KindName(running.Order.Kind)}, {place?.Name} · {running.ElapsedHours:0.0}/{running.PlannedHours:0.0} saat{playing}" +
+                            (got.Count > 0 ? $" · şimdiye kadar: {string.Join(", ", got)}" : ""), UiSkin.FamilyTextW);
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(12f);
+                if (GUILayout.Button(new GUIContent("Geri çağır", "O ana kadarki ürünle döner"), GUILayout.Width(100f))) { var r = svc.Recall(c.Id); _status = r?.Summary ?? ""; }
+                GUILayout.EndHorizontal();
+                return;
+            }
+            bool repeating = false;
+            foreach (var o in svc.Repeats) if (o.CharacterId == c.Id) repeating = true;
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(12f);
+            if (GUILayout.Button(_dutyFor == c.Id ? "Göreve gönder ▾" : "Göreve gönder ▸", GUILayout.Width(120f)))
+            {
+                _dutyFor = _dutyFor == c.Id ? 0 : c.Id;
+                _dutyPlace = null;
+            }
+            if (repeating && GUILayout.Button(new GUIContent("Tekrarı bırak", "Her gün tekrarlanan görevi kaldır"), GUILayout.Width(100f))) { svc.StopRepeat(c.Id); _status = $"{c.Name} artık her gün göreve çıkmayacak."; }
+            GUILayout.EndHorizontal();
+            if (_dutyFor != c.Id) return;
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(18f);
+            foreach (var k in new[] { TimedDutyKind.Mine, TimedDutyKind.Fish, TimedDutyKind.Forest, TimedDutyKind.Forage, TimedDutyKind.Traps, TimedDutyKind.Clay })
+            {
+                if (TimedDutyService.MaxHours(c, k) <= 0) continue;
+                GUI.color = _dutyKind == k ? new Color(1f, 0.9f, 0.55f) : Color.white;
+                if (GUILayout.Button(TimedDutyService.KindName(k), GUILayout.Width(70f))) { _dutyKind = k; _dutyPlace = null; }
+            }
+            GUI.color = Color.white;
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(18f);
+            foreach (var p in TimedDutyService.Places)
+            {
+                if (p.Kind != _dutyKind) continue;
+                if (_dutyPlace == null) _dutyPlace = p.Id;
+                GUI.color = _dutyPlace == p.Id ? new Color(1f, 0.9f, 0.55f) : Color.white;
+                if (GUILayout.Button(p.Name, GUILayout.Width(118f))) _dutyPlace = p.Id;
+            }
+            GUI.color = Color.white;
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(18f);
+            foreach (var h in new[] { 2.0, 4.0, 8.0, 0.0 })
+            {
+                GUI.color = Math.Abs(_dutyHours - h) < 0.01 ? new Color(1f, 0.9f, 0.55f) : Color.white;
+                if (GUILayout.Button(h > 0 ? $"{h:0} saat" : "Akşama kadar", GUILayout.Width(h > 0 ? 56f : 96f))) _dutyHours = h;
+            }
+            GUI.color = Color.white;
+            _dutyRepeat = GUILayout.Toggle(_dutyRepeat, "Her gün");
+            GUILayout.EndHorizontal();
+
+            var order = new TimedDutyOrder { CharacterId = c.Id, Kind = _dutyKind, PlaceId = _dutyPlace, Hours = _dutyHours, Repeat = _dutyRepeat };
+            string why = svc.CanStart(c, order);
+            double hours = svc.HoursFor(order);
+            var food = svc.SuggestFood(c, hours);
+            int meals = svc.MealsNeeded(c, hours);
+            var foodText = new List<string>();
+            int have = 0;
+            foreach (var kv in food) { foodText.Add($"{kv.Value} {Name(kv.Key)}"); have += kv.Value; }
+            var place2 = TimedDutyService.Place(_dutyPlace);
+            string eff = place2 != null && place2.Kind != TimedDutyKind.Errand ? $" · verim %{svc.Efficiency(c, place2) * 100:0} (elle oynamanın)" : "";
+            UiSkin.Wrap($"      Azık: {(foodText.Count > 0 ? string.Join(", ", foodText) : "yok")}{(have < meals ? $" (yetersiz {have}/{meals} öğün)" : "")}{eff}", UiSkin.FamilyTextW);
+            if (c.Stage == AgeStage.Child) UiSkin.Wrap("      Çocuk görevde çabuk sıkılır; sıkılınca işi bırakıp oyuncağıyla oynar.", UiSkin.FamilyTextW);
+            if (c.Needs.Get(NeedType.Energy) < 40f) UiSkin.Wrap($"      {c.Name} yorgun; uzun görevi bitiremeyebilir.", UiSkin.FamilyTextW);
+            if (why != null) UiSkin.Wrap("      " + why, UiSkin.FamilyTextW);
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(18f);
+            GUI.enabled = why == null;
+            if (GUILayout.Button("Başlat", GUILayout.Width(80f)))
+            {
+                if (svc.Start(order, out var reason) != null)
+                {
+                    _runnerOf(c)?.Cancel();
+                    _status = $"{c.Name} {place2?.Name.ToLowerInvariant()} yolunda ({(hours > 0 ? $"{hours:0.#} saat" : "akşama kadar")}).";
+                    _dutyFor = 0;
+                }
+                else _status = reason;
+            }
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
+        }
+
+        // Çocuğun gezme izni (belge 47 §7.2): yalnızca arsa · köy yolu · gündüz kasaba.
+        private void DrawRoaming(Character c)
+        {
+            if (Roaming == null || c.Stage != AgeStage.Child) return;
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(12f);
+            GUILayout.Label("Gezme izni:", GUILayout.Width(76f));
+            foreach (var p in new[] { Thatchwick.Core.Upbringing.RoamPermission.Home, Thatchwick.Core.Upbringing.RoamPermission.Road, Thatchwick.Core.Upbringing.RoamPermission.Town })
+            {
+                GUI.color = Roaming.PermissionOf(c.Id) == p ? new Color(1f, 0.9f, 0.55f) : Color.white;
+                if (GUILayout.Button(Thatchwick.Core.Upbringing.ChildRoaming.PermissionName(p), GUILayout.Width(96f))) { Roaming.SetPermission(c.Id, p); _status = $"{c.Name}: {Thatchwick.Core.Upbringing.ChildRoaming.PermissionName(p).ToLowerInvariant()}."; }
+            }
+            GUI.color = Color.white;
+            GUILayout.EndHorizontal();
+            if (AskRoam == null) return;
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(88f);
+            if (GUILayout.Button(new GUIContent("İzin iste (bugün kasaba)", "Çocuk annesine sorar; cevap saate, havaya ve annenin keyfine bağlı"), GUILayout.Width(190f)))
+                _status = AskRoam(c);
+            GUILayout.EndHorizontal();
+        }
+
+        private string Name(string id) => ItemName != null ? ItemName(id) : id;
 
         // Çocukluk eşyaları, can yoldaşı, çıraklık (belge 30, 31-8, 34-D1).
         private void DrawUpbringing(Character c, Character actor)

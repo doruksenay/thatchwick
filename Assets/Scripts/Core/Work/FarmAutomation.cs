@@ -381,6 +381,19 @@ namespace Thatchwick.Core.Work
         /// <summary>Kıyıdan balık tutuldu (karakter, balık eşyası): ilk balık hatırası (D3b).</summary>
         public event Action<Character, string> FishCaught;
 
+        /// <summary>
+        /// Oyuncu kendisi mi balık tutuyor (mini oyun, belge 50). True ise vuran balık hemen envantere girmez:
+        /// <see cref="FishBite"/> gider, oyun bitince <see cref="CompleteFish"/>. Aile görevlisi ve hizmetkâr için false.
+        /// </summary>
+        public Func<Character, bool> PlayerFishing { get; set; }
+        public event Action<Character, GridPos, string> FishBite;
+
+        /// <summary>Su kenarında kavanoz işleri (HomeLife'a bağlanır): engel (karo, doldurma mı), yakala, doldur.</summary>
+        public Func<GridPos, bool, string> JarBlocker { get; set; }
+        public Func<Character, GridPos, string> JarCatch { get; set; }
+        public Func<GridPos, string> JarFill { get; set; }
+        public const double JarFillDays = 0.03, JarCatchDays = 0.05;
+
         // Dereye girip yıkanmak: hijyen; tamamen ıslanır. Soğuk suda Isınma düşer, yazın serinletir.
         private void BatheIn(Character c, GridPos tile)
         {
@@ -428,6 +441,13 @@ namespace Thatchwick.Core.Work
                 foreach (var kv in catchable)
                 {
                     if (pick >= kv.Value) { pick -= kv.Value; continue; }
+                    if (PlayerFishing?.Invoke(c) == true)
+                    {
+                        // Oyuncunun kendi oltası: balık vurdu, gerisi mini oyunda (CompleteFish).
+                        note = "oltaya bir şey vurdu!";
+                        FishBite?.Invoke(c, tile, kv.Key);
+                        break;
+                    }
                     pond.TakeFish(kv.Key);
                     House?.AddItem(kv.Key, 1);
                     note = $"balık: {Content.Items.Get(kv.Key).DisplayName} (gölette {pond.FishTotal} kaldı)";
@@ -438,6 +458,27 @@ namespace Thatchwick.Core.Work
             c.GainSkillXp(SkillType.Fishing, fish != null ? fish.SkillXp : 10f);
             Worked?.Invoke(c, c.Position, note);
         }
+
+        /// <summary>Mini oyunun sonucu: tutulduysa balık gölden (denizden) alınır ve envantere girer; kusursuzsa fazladan XP.</summary>
+        public string CompleteFish(Character c, GridPos tile, string fishId, bool caught, bool perfect)
+        {
+            string name = Content != null && Content.Items.TryGet(fishId, out var fd) ? fd.DisplayName : fishId;
+            string note;
+            if (!caught) note = $"{name} kaçtı";
+            else
+            {
+                var pond = _world.Map.IsWater(tile) ? _world.Map.PondAt(tile) : null;
+                if (pond != null && pond.Fish.TryGetValue(fishId, out int n) && n > 0) pond.TakeFish(fishId);
+                House?.AddItem(fishId, 1);
+                FishCaught?.Invoke(c, fishId);
+                if (perfect) c.GainSkillXp(SkillType.Fishing, PerfectXp);
+                note = perfect ? $"balık: {name} (kusursuz)" : $"balık: {name}";
+            }
+            Worked?.Invoke(c, c.Position, note);
+            return note;
+        }
+
+        public const float PerfectXp = 10f;
 
         /// <summary>Çapa kademesinin hız çarpanı (alet); yoksa 1.</summary>
         public Func<Character, double> HoeSpeed { get; set; }
@@ -464,18 +505,22 @@ namespace Thatchwick.Core.Work
                 case TileAction.Fish:
                 case TileAction.CutIce:
                 case TileAction.Stock:
+                case TileAction.JarFill:
+                case TileAction.JarCatch:
                     if (!map.IsWater(tile)) return "Burada su yok.";
                     if (!map.IsFilled(tile)) return EmptyPondText;
                     break;
             }
+            if (action == TileAction.JarFill || action == TileAction.JarCatch)
+                return JarBlocker == null ? "Kavanozla yapılamaz." : JarBlocker(tile, action == TileAction.JarFill);
             switch (action)
             {
                 case TileAction.Bathe:
-                    return map.WaterFrozen ? "Su donmuş: önce buz kes." : null;
+                    return map.FrozenAt(tile) ? "Su donmuş: önce buz kes." : null;
                 case TileAction.Fish:                                   // buz deliğinden de olur
                     return map.PondAt(tile).FishTotal == 0 ? NoFishText : null;
                 case TileAction.CutIce:
-                    return map.WaterFrozen ? null : "Su donmamış (kışın dondurucu soğukta donar).";
+                    return map.FrozenAt(tile) ? null : Regions.IsSea(map, tile) ? "Deniz donmaz." : "Su donmamış (kışın dondurucu soğukta donar).";
                 case TileAction.Stock:
                     if (arg == null || Content == null || !Content.Items.Contains(arg) || !IsFishSpecies(arg)) return "Gölete yalnızca balık atılır.";
                     if (House != null && House.Count(arg) <= 0) return $"Elinde {Content.Items.Get(arg).DisplayName} yok.";
@@ -576,6 +621,8 @@ namespace Thatchwick.Core.Work
             if (IsMineAction(action)) return Mine?.Duration(actor, action) ?? 0.01;
             if (action == TileAction.Sow) return SowDays;
             if (action == TileAction.Stock) return 0.02;
+            if (action == TileAction.JarFill) return JarFillDays;
+            if (action == TileAction.JarCatch) return JarCatchDays;
             if (action == TileAction.Bathe) return BatheDays;
             if (action == TileAction.CutIce) return CutIceDays;
             if (action == TileAction.Fish) return FishDays / Math.Max(0.25, RodSpeed?.Invoke(actor) ?? 1.0);
@@ -601,6 +648,14 @@ namespace Thatchwick.Core.Work
                 return;
             }
             if (action == TileAction.Fish) { FishAt(actor, tile); return; }
+            if (action == TileAction.JarFill) { Worked?.Invoke(actor, tile, JarFill?.Invoke(tile) ?? ""); return; }
+            if (action == TileAction.JarCatch)
+            {
+                string got = JarCatch?.Invoke(actor, tile);
+                actor.GainSkillXp(SkillType.Foraging, 3f);
+                Worked?.Invoke(actor, tile, got != null && Content != null && Content.Items.TryGet(got, out var gd) ? $"kavanozda: {gd.DisplayName}" : "bir şey yakalanamadı");
+                return;
+            }
             if (action == TileAction.Stock)
             {
                 House?.TryTakeItem(arg);

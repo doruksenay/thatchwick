@@ -58,11 +58,38 @@ namespace Thatchwick.Core.Life
         public Legacy Legacy { get; }
         /// <summary>Komşu NPC hanedanları: köydeki aileler, başları, soy ağaçları (Adım 55).</summary>
         public NeighborHouseService Houses { get; }
+        /// <summary>Köylülerin evleri: NPC hanesi oyuncunun arsasında yaşamaz (belge 47 §8).</summary>
+        public VillageHomes Homes { get; }
 
         /// <summary>Hanedan kurucusunun kimliği (köydeki soy sayımı); oyun katmanı bağlar. Null ise sayım yapılmaz.</summary>
         public Func<int?> FounderId { get; set; }
         /// <summary>Kazalar ve kazanılmış izler (doküman 14, 3F).</summary>
         public InjurySystem Injuries { get; }
+        /// <summary>Süreli görevler: madene, balığa, ormana gönderilen aile üyeleri (belge 47 §3).</summary>
+        public TimedDutyService Duties { get; }
+        /// <summary>Çocukların gezme izni ve köyün gözü (belge 47 §7).</summary>
+        public Thatchwick.Core.Upbringing.ChildRoaming Roaming { get; } = new Thatchwick.Core.Upbringing.ChildRoaming();
+        /// <summary>İstekler (belge 46): ilan panosu, ricalar, siparişler, Mevsim Defteri, çağrılar, hikâyeler, vasiyet ve adak.</summary>
+        public Thatchwick.Core.Life.Requests.RequestService Requests { get; }
+
+        /// <summary>
+        /// Köyün gözü olayını uygular (belge 47 §7.3): itibar, hane hafızası eksisi ve gece eve getirilen çocuğun ebeveynine
+        /// "Mahcup oldu". Konuşma balonu oyun katmanındadır. Eve getirme konumu oyun katmanında.
+        /// </summary>
+        public void ApplyGaze(Thatchwick.Core.Upbringing.GazeEvent ev)
+        {
+            if (ev == null || !ev.Scolding) return;
+            if (ev.Reputation != 0) Upbringing.Reputation.Add(ev.Reputation, "başıboş çocuk dedikodusu");
+            Requests?.Memory.Add(ev.Villager, Thatchwick.Core.Life.Requests.HouseMemory.Gaze, $"{ev.Child.Name} tek başına gezerken görüldü");
+            if (!ev.Escort) return;
+            foreach (var m in Household())
+            {
+                if (m == ev.Child || m.Stage == AgeStage.Baby || m.Stage == AgeStage.Child || m.Stage == AgeStage.Teen) continue;
+                if (m.Id == ev.Child.BirthMotherId || m.Id == ev.Child.BirthFatherId)
+                    m.AddMoodlet(Thatchwick.Core.Upbringing.ChildRoaming.AshamedMood, "Mahcup oldu", Thatchwick.Core.Upbringing.ChildRoaming.AshamedValue, 1.0);
+            }
+            Say($"{ev.Villager.Name}, gece tek başına gezen {ev.Child.Name}'i eve getirdi. \"Bu saatte çocuk sokakta olur mu?\"", NoticeLevel.Warning, ev.Child.Id);
+        }
         /// <summary>Ev dekorasyonu: raf çökmesi, ayna kararması, ayna hatırlatması (Project belgesi 27).</summary>
         public Thatchwick.Core.Build.DecorSystem Decor { get; }
         /// <summary>Hatıralar, soy ağacı işlemesi ve çeyiz sandığı (Project belgesi 27, D3b).</summary>
@@ -167,6 +194,17 @@ namespace Thatchwick.Core.Life
             Legacy.MarriedOutHappened += (member, villager) => Keepsakes.OnMarriedOut(member, villager, _family, Legacy, Household());
             population.BabyBorn += (baby, mother, father) => Keepsakes.OnBirth(baby);
             Houses = new NeighborHouseService(population, Villagers, content, seed != 0 ? Seeds.Derive(seed, 9) : 71) { Today = () => Clock.TotalDays };
+            Homes = new VillageHomes(Villagers, Houses, population, () =>
+            {
+                var list = new List<string>();
+                foreach (var st in Villagers.States)
+                {
+                    var vc = Population.Find(st.CharacterId);
+                    if (vc == null || vc.IsDead) continue;
+                    if (Content.Villagers.TryGet(st.DefId, out var vd)) list.Add(vd.Home);
+                }
+                return list;
+            });
             Houses.HeadChanged += (h, heir, old) => Say($"{h.Name}: {heir.Name} hanenin başına geçti{(old != null ? $" ({old.Name} yerine)" : "")}.", NoticeLevel.Info, heir.Id);
             Houses.VillagersMarried += (a, b) => Say($"Köyde düğün: {a.Name} ile {b.Name} evlendi.", NoticeLevel.Info, a.Id);
             Houses.HouseEnded += h => Say($"{h.Name}nin soyu tükendi.", NoticeLevel.Info);
@@ -207,6 +245,21 @@ namespace Thatchwick.Core.Life
                 ToolSpeed = id => Tools.SpeedFor(id),
                 Notify = (text, id) => Say(text, NoticeLevel.Warning, id)
             };
+            Duties = new TimedDutyService(population, house, content, seed != 0 ? Seeds.Derive(seed, 17) : 311)
+            {
+                Now = () => Clock.TotalDays,
+                SeasonNow = () => Clock.Season,
+                WeatherNow = () => Weather.Today(Clock.TotalDays),
+                ToolTier = id => Tools.Tier(id),
+                Injure = (c, id) => Injuries.InjureById(c, id),
+                Notify = (text, id) => Say(text, NoticeLevel.Info, id),
+                HasLeader = () =>
+                {
+                    foreach (var c in Household()) if (c.Duty == DutyKind.Steward && !c.Away) return true;
+                    return false;
+                }
+            };
+            Duties.Finished += r => Ledger.Note($"{r.CharacterName}: {TimedDutyService.KindName(r.Kind).ToLowerInvariant()} görevinden döndü");
             Breakdowns = new BreakdownService(population, seed != 0 ? Seeds.Derive(seed, 12) : 83)
             {
                 SquarePosition = () => SquarePosition?.Invoke(),
@@ -222,6 +275,23 @@ namespace Thatchwick.Core.Life
                 Chronicle = text => Ledger.Note(text)
             };
             Upbringing.AttachHouse(house);
+            Duties.Toys = Upbringing.Toys;
+            Requests = new Thatchwick.Core.Life.Requests.RequestService(population, house, content, Villagers, Houses, seed != 0 ? Seeds.Derive(seed, 18) : 46)
+            {
+                Now = () => Clock.TotalDays,
+                DaysPerSeason = clock.Config.DaysPerSeason,
+                MarketDay = () => Festivals.IsMarketDayToday,
+                Legacy = Legacy,
+                Keepsakes = Keepsakes,
+                Duties = Duties,
+                AddReputation = (n, why) => Upbringing.Reputation.Add(n, why),
+                Notify = (text, id) => Say(text, NoticeLevel.Info, id),
+                Chronicle = text => Ledger.Note(text)
+            };
+            Duties.Finished += Requests.OnDutyFinished;
+            population.MemberDied += c => Requests.OnDied(c);
+            population.BabyBorn += (baby, mother, father) => Requests.OnBabyBorn(baby, mother);
+            Houses.VillagersMarried += (a, b) => Requests.OnVillageWedding(a, b);
             Upbringing.Weddings.DowryFill = Keepsakes.BestDowryFill;
             Suitors.QualityChance = Upbringing.Weddings.SuitorQuality;
             // Nitelikli talibin ailesi de itibarlıdır: çeyiz ya da damat hediyesi iki kat (34-D2).
@@ -580,6 +650,8 @@ namespace Thatchwick.Core.Life
             family.JoinedHousehold += c => Keepsakes.OnJoined(c);
             family.JoinedHousehold += c => Upbringing.Weddings?.OnGroomJoined(c, id => Content.Items.Contains(id));   // damat tarafı (34-D2)
             Villagers.Family = family;
+            Requests.Family = family;
+            family.Chatted += (a, b) => { Requests.OnTalk(a, b); Requests.OnTalk(b, a); };
             family.ExtraProposalCheck = Villagers.ProposalCheck;
             // Beceri sosyal işleri (belge 45): itibar, yara, şenlik, hava, görücü, köylü rolü.
             family.Today = () => Clock.TotalDays;
@@ -604,6 +676,7 @@ namespace Thatchwick.Core.Life
 
         public void Attach(JobRunner runner)
         {
+            runner.ActionTimeScale = Clock.Config.ActionTimeScale;   // belge 47: işler gerçek zamanda sabit
             runner.SpeedProvider = WorkSpeedFor;
             runner.SquarePosition = () => SquarePosition?.Invoke();
             runner.Refused += (c, text) => Say($"{c.Name}: \"{text}\"", NoticeLevel.Info, c.Id, transient: true);
@@ -611,6 +684,8 @@ namespace Thatchwick.Core.Life
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
             runner.InteractionCompleted += OnMasterCraft;
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
+            runner.ItemUsed += (c, item, interaction) => { if (interaction.Id == ReadBoardInteraction) ReadBoard(c); };
+            runner.WorkDone += Requests.OnWork;
             // Üşüyen ocağı kendisi yakar (Denge 41): ısı sistemi bağlıysa envanterden kütük atar.
             runner.Stoke = item => _heat != null && _heat.TryStoke(item.Id, House);
             runner.HasFirewood = () => _heat != null && House.Count(FirewoodId) > 0;
@@ -669,6 +744,7 @@ namespace Thatchwick.Core.Life
         {
             _heat = heat;
             heat.OutdoorOffset = () => WeatherSystem.TemperatureOffset(Weather.Today(Clock.TotalDays));
+            Duties.OutdoorTemperature = () => heat.OutdoorTemperature;
             Spoilage.TemperatureAt = heat.TemperatureAt;   // bodrum mahzeni serinlik şartı
             Decor.TemperatureAt = heat.TemperatureAt;      // sepetteki meyve oda sıcaklığında bozulur
             if (Content.Items.Contains(AshId)) heat.AshItemId = AshId;   // ocağa atılan odunun külü (cam zinciri, 27 §18.3)
@@ -881,7 +957,14 @@ namespace Thatchwick.Core.Life
             return Injuries.InjureById(c, "bee_sting") != null;
         }
         /// <summary>Kıyıdan balık: ilk balık hatırası.</summary>
-        public void Attach(Thatchwick.Core.Work.FarmWork farm) { farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish); }
+        public void Attach(Thatchwick.Core.Work.FarmWork farm)
+        {
+            farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish);
+            // Su kenarında kavanoz (cam bahçe, belge 47 ek): su ve canlı doğadan.
+            farm.JarBlocker = (tile, fill) => Home.WaterJarBlocker(tile, fill);
+            farm.JarCatch = (c, tile) => Home.CatchAtWater(c, tile);
+            farm.JarFill = tile => Home.FillAtWater(tile);
+        }
         private FamilyService _family;
 
         // ---- şenlik hazırlığı (27 §9 son madde) ----
@@ -982,6 +1065,8 @@ namespace Thatchwick.Core.Life
             }
 
             Spoilage.Tick(gameDays);
+            Duties.Tick(gameDays);
+            Requests.Tick();
             Festivals.Tick(Population.Members);
             Decor.Tick(gameDays);
             Home.Tick(gameDays);
@@ -999,6 +1084,17 @@ namespace Thatchwick.Core.Life
         }
 
         public Season CurrentSeason => Clock.Season;
+
+        /// <summary>İlan tahtasının "İlanları oku" etkileşimi (items.json, item.notice_post).</summary>
+        public const string ReadBoardInteraction = "read_board";
+
+        /// <summary>Panodaki ilanları okur (okuryazar olmayan hane panonun önüne gelir; belge 46 §10).</summary>
+        public int ReadBoard(Character reader)
+        {
+            int n = Requests.ReadBoard();
+            Say(n > 0 ? $"{reader?.Name ?? "Hane"} panodan {n} ilan okudu (İstekler, I)." : "Panoda yeni ilan yok.", NoticeLevel.Info, reader?.Id ?? 0, transient: true);
+            return n;
+        }
 
         private void OnNewDay(long day)
         {
@@ -1048,6 +1144,7 @@ namespace Thatchwick.Core.Life
                 Wolves?.OnSeasonEnd();
                 Legacy.OnSeasonChanged((Season)_lastSeasonIndex, (Season)season, day, Clock.TotalDays);
                 Home.OnSeasonChanged((Season)season);   // kayıtlı mevsim seti: solanlar kalkar, yenisi asılır
+                Roaming.OnSeasonChanged();
                 Decor.OnSeasonChanged((Season)season);
                 var guest = Suitors.OnNewSeason();
                 if (guest != null) Say(Suitors.LastWasNotable ? $"{guest.Name} köye geldi; ailenin itibarını ve çeyizini duymuş, becerili biri." : $"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
@@ -1073,10 +1170,12 @@ namespace Thatchwick.Core.Life
             foreach (var w in Legacy.NeighborFamiliesDaily()) Say($"{w.Name} çocuk bekliyor.", NoticeLevel.Info, w.Id);
             // Komşu hanedanlar: hanesizleri yerleştir, ölen başın yerine varis, köyde düğün; dükkân yetişkin varise hemen geçer.
             Houses.OnNewDay();
+            Homes.AssignAll();
             Villagers.ReplaceDeparted(inheritOnly: true);
             var founder = FounderId != null ? FounderId() : null;
             if (founder.HasValue) Legacy.CheckDescendants(founder.Value, Clock.TotalDays);
             Upbringing.OnNewDay();
+            Requests.OnNewDay();
             NewDay?.Invoke(day);
         }
 
@@ -1120,6 +1219,9 @@ namespace Thatchwick.Core.Life
                 wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0,
                 keepsakes = Keepsakes.Export(),
                 home = Home.Export(),
+                timedDuties = Duties.Export(),
+                roaming = Roaming.Export(),
+                requests = Requests.Export(),
                 skillFlags = ExportSkillFlags(),
                 roomNames = ExportRoomNames()
             };
@@ -1156,8 +1258,12 @@ namespace Thatchwick.Core.Life
             Villagers.Restore(data.villagers);
             Legacy.Restore(data.legacy);
             Houses.Restore(data.houses);
+            Homes.AssignAll();
             Keepsakes.Restore(data.keepsakes);
             Home.Import(data.home);
+            Duties.Import(data.timedDuties);
+            Roaming.Import(data.roaming);
+            Requests.Import(data.requests);
             UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;

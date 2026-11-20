@@ -1,0 +1,104 @@
+{
+  "_belge": "Project 45 ve 45a. Aile ön ekleri her prompt'un başına eklenir. Sayılar oyunda da kullanılır (soundbank'e kopyalanır).",
+  "api": {
+    "sfx_model": "eleven_text_to_sound_v3",
+    "sfx_loop_model": "eleven_text_to_sound_v2",
+    "voice_design_model": "eleven_ttv_v3",
+    "tts_model": "eleven_v3",
+    "music_model": null,
+    "stt_model": "scribe_v2",
+    "sfx_format": "mp3_44100_128",
+    "tts_format": "mp3_44100_128",
+    "music_format": "mp3_44100_128",
+    "_not": "Pro ayında biçimleri pcm_44100 ya da mp3_44100_192 yap (daha yüksek kalite). Biçim reddedilirse işçi mp3_44100_128'e düşer."
+  },
+  "credit": {
+    "sfx_per_sec": 40,
+    "sfx_auto_duration": 200,
+    "music_per_min": 900,
+    "tts_per_char": 1,
+    "voice_design": 1000,
+    "stt_per_min": 330,
+    "reserve_ratio": 0.10
+  },
+  "freq_classes": {
+    "A": {"generate": 16, "keep": 8, "_": "çok sık: ayak, arayüz, balta, çapa"},
+    "B": {"generate": 8,  "keep": 4, "_": "orta: kapı, ocak, inek"},
+    "C": {"generate": 4,  "keep": 2, "_": "seyrek: düğün çanı, göçük"}
+  },
+  "defaults": {
+    "group": "Sfx",
+    "mono": true,
+    "lufs": -18,
+    "duration_range": [0.05, 30],
+    "pitch_var": 0.05,
+    "vol_var_db": 2.0,
+    "timing_jitter_ms": 0,
+    "cooldown_ms": 60,
+    "max_voices": 3,
+    "vorbis_q": 4,
+    "trim": true,
+    "dup_threshold": 0.035,
+    "outlier_threshold": 0.55,
+    "preview_interval_ms": 650,
+    "prompt_influence": 0.5,
+    "prefix": ""
+  },
+  "families": {
+    "ui": {
+      "group": "Ui", "lufs": -20, "pitch_var": 0.02, "vol_var_db": 1.0, "cooldown_ms": 40, "max_voices": 2,
+      "duration_range": [0.03, 1.5], "preview_interval_ms": 400,
+      "prefix": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice."
+    },
+    "foley": {
+      "pitch_var": 0.04, "vol_var_db": 1.5, "timing_jitter_ms": 15, "cooldown_ms": 30, "max_voices": 4,
+      "duration_range": [0.05, 3], "preview_interval_ms": 380,
+      "prefix": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice."
+    },
+    "tools": {
+      "pitch_var": 0.05, "vol_var_db": 2.0, "cooldown_ms": 80,
+      "duration_range": [0.1, 4], "preview_interval_ms": 900,
+      "prefix": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice."
+    },
+    "craft": {
+      "pitch_var": 0.04, "vol_var_db": 1.5, "cooldown_ms": 120,
+      "duration_range": [0.2, 8],
+      "prefix": "Medieval craft workshop sound, dry recording, no music, no voice."
+    },
+    "animals": {
+      "pitch_var": 0.08, "vol_var_db": 2.0, "cooldown_ms": 400, "max_voices": 2,
+      "duration_range": [0.2, 6], "preview_interval_ms": 1600,
+      "prefix": "Real farm animal sound recorded outdoors at close distance, natural, no music, no human voice."
+    },
+    "ambience": {
+      "group": "Ambience", "mono": false, "lufs": -26, "trim": false, "pitch_var": 0.0, "vol_var_db": 0.0,
+      "duration_range": [10, 30], "max_voices": 2, "outlier_threshold": 0.8,
+      "prefix": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes)."
+    },
+    "spots": {
+      "group": "Ambience", "lufs": -24, "pitch_var": 0.06, "vol_var_db": 3.0, "cooldown_ms": 1500, "max_voices": 2,
+      "duration_range": [0.2, 6], "preview_interval_ms": 2500,
+      "prefix": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice."
+    },
+    "weather": {
+      "group": "Ambience", "mono": false, "lufs": -24, "trim": false, "pitch_var": 0.0, "vol_var_db": 0.0,
+      "duration_range": [10, 30], "max_voices": 2,
+      "prefix": "Weather ambience, continuous, no music, no voices, no modern sounds."
+    },
+    "voice": {
+      "group": "Voice", "lufs": -20, "pitch_var": 0.0, "vol_var_db": 1.0, "cooldown_ms": 0, "max_voices": 6,
+      "duration_range": [0.05, 6], "dup_threshold": 0.02,
+      "prefix": ""
+    },
+    "music": {
+      "group": "Music", "mono": false, "lufs": -20, "trim": false, "pitch_var": 0.0, "vol_var_db": 0.0,
+      "duration_range": [20, 400], "vorbis_q": 5, "max_voices": 1, "outlier_threshold": 0.9,
+      "prefix": "Instrumental medieval folk music for a cozy village life game. Period instruments only: lute, recorder, kaval flute, hurdy-gurdy, frame drum, bagpipe, lyre, harp. No piano, no synthesizer, no electric guitar, no modern drum kit, no vocals."
+    },
+    "stinger": {
+      "group": "Music", "mono": false, "lufs": -18, "pitch_var": 0.0, "vol_var_db": 0.0, "max_voices": 1,
+      "duration_range": [1, 8],
+      "prefix": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals."
+    }
+  }
+}

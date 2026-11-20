@@ -420,6 +420,8 @@ namespace Thatchwick.Core.Content
         public int VivCreatures { get; set; }
         public int VivPlants { get; set; }
         public int VivDecor { get; set; }
+        /// <summary>Toplama yerinde "Kavanoza doldur" ile kesin gelen zemin malzemesi (orman toprağı, kum).</summary>
+        public List<string> Gathers { get; } = new List<string>();
         public bool IsVivarium => VivCreatures > 0 || VivPlants > 0;
         /// <summary>Canlı süs bitkisi (ot vermez; sulanır, büyür, mevsiminde çiçek açar).</summary>
         public bool LivePlant { get; set; }
@@ -511,6 +513,11 @@ namespace Thatchwick.Core.Content
         /// <summary>Yabani toplanabilir: görüneceği mevsimler ve haritada en çok kaç tane.</summary>
         public List<Time.Season> ForageSeasons { get; set; } = new List<Time.Season>();
         public int ForageMax { get; set; }
+        /// <summary>Toplama noktasının belirdiği bölgeler (Regions kimliği); boşsa her yerde.</summary>
+        public List<string> ForageRegions { get; } = new List<string>();
+        /// <summary>Balık tutma mini oyunu: zorluk (0-100) ve hareket biçimi (belge 50).</summary>
+        public int FishDifficulty { get; set; } = 30;
+        public string FishBehavior { get; set; } = "smooth";
         public bool IsForage => ForageSeasons.Count > 0 && ForageMax > 0;
 
         /// <summary>Stil seti (Köylü, Zanaatkâr, Tüccar, Asil): aynı odada 4+ eşya "Uyumlu ev" verir. Boş = setsiz.</summary>

@@ -73,6 +73,9 @@ namespace Thatchwick.Core.Life
             _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         }
 
+        /// <summary>İçerik (köylü tanımları).</summary>
+        public ContentDatabase Content => _content;
+
         public IEnumerable<VillagerState> States => _states.Values;
         public VillagerState StateOf(string defId) => defId != null && _states.TryGetValue(defId, out var s) ? s : null;
 

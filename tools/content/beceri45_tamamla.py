@@ -121,7 +121,7 @@ def W(iid, wid, name, skill, lvl, dur=0.04, xp=4, **kw):
 crops = [k for k, i in ids.items() if k.startswith("item.crop_")]
 fruit_trees = [k for k, i in ids.items() if i.get("category") == "plant" and i.get("fruitSeasons") and k != "item.bush_coffee"]
 forest_trees = ["item.tree_oak", "item.tree_birch", "item.tree_pine", "item.tree_willow"]
-forage = [k for k, i in ids.items() if i.get("category") == "forage" and k != "item.forage_sand"]
+forage = [k for k, i in ids.items() if i.get("category") == "forage" and k not in ("item.forage_sand", "item.forage_sea_sand")]
 
 # ================= Çiftçilik =================
 for s in ["item.seed_onion", "item.seed_carrot", "item.seed_pea", "item.seed_broad_bean"]:

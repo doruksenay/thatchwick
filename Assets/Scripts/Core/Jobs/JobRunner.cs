@@ -102,9 +102,42 @@ namespace Thatchwick.Core.Jobs
         public event Action<Character, InteractionDef> InteractionCompleted;
         /// <summary>Eşya etkileşimi bitti; eşya da verilir (oyuncak alışkanlığı için). Eşya kaldırılmış olabilir.</summary>
         public event Action<Character, ItemInstance, InteractionDef> ItemUsed;
+        /// <summary>
+        /// Bir iş bitti (eşya, karo ya da hayvan işi): beceri ve iş kimliği. İstekler (belge 46) mevsim işlerini ve "N kez yap"
+        /// hedeflerini bununla sayar.
+        /// </summary>
+        public event Action<Character, SkillType?, string> WorkDone;
+
+        /// <summary>Karo işinin becerisi (istek sayımı için).</summary>
+        public static SkillType? SkillOf(TileAction a)
+        {
+            switch (a)
+            {
+                case TileAction.Till: case TileAction.Sow: return SkillType.Farming;
+                case TileAction.Repair: return SkillType.Masonry;
+                case TileAction.Fish: case TileAction.Stock: return SkillType.Fishing;
+                case TileAction.CutIce: case TileAction.Dig: case TileAction.Support: case TileAction.Bail: case TileAction.Light: return SkillType.Mining;
+                default: return null;
+            }
+        }
 
         /// <summary>Yürüme hızı çarpanı (ata binince ~2); yoksa 1.</summary>
         public Func<double> WalkSpeed { get; set; }
+
+        /// <summary>
+        /// İş süresi ölçeği (belge 47, karar 5): gün 6 dakikadan uzayınca işler gerçek zamanda aynı sürsün diye oyun saatindeki
+        /// süreler bu çarpanla kısalır (12 dakikalık günde 0,5). Yürüme hızı da gerçek zamanda sabit kalır (karo/gün ÷ ölçek).
+        /// Uyku ve uzun dinlenme ölçeklenmez (gece oyun saatinde kalır). LifeSystems.Attach saat ayarından kurar; yoksa 1.
+        /// </summary>
+        public double ActionTimeScale { get; set; } = 1.0;
+
+        /// <summary>Uyku ve uzun dinlenme (enerji, 0,1 günden uzun): oyun saatinde kalır, ölçeklenmez.</summary>
+        public static bool IsRest(InteractionDef i) => i != null && i.Need == NeedType.Energy && i.RestoresNeed && i.DurationDays >= 0.1;
+
+        private double Scale => ActionTimeScale > 0 ? ActionTimeScale : 1.0;
+
+        /// <summary>Ölçekli yürüme hızı (karo / oyun günü).</summary>
+        public double TilesPerDayScaled => TilesPerGameDay / Scale;
 
         /// <summary>
         /// Görev işi: ihtiyaçlar iyiyken karakterin görevine (tarla, hayvanlar) göre yapılacak iş; yoksa null.
@@ -449,7 +482,7 @@ namespace Thatchwick.Core.Jobs
                 _using = true;
             }
 
-            double remaining = Social.Duration(job.Action) - _useProgress;
+            double remaining = Social.Duration(job.Action) * Scale - _useProgress;
             double available = budget - used;
             if (available >= remaining)
             {
@@ -495,7 +528,7 @@ namespace Thatchwick.Core.Jobs
                 _using = true;
             }
 
-            double remaining = Animals.Duration(job.AnimalAction) - _useProgress;
+            double remaining = Animals.Duration(job.AnimalAction) * Scale - _useProgress;
             double available = budget - used;
             if (available >= remaining)
             {
@@ -503,6 +536,7 @@ namespace Thatchwick.Core.Jobs
                 if (gone != null) { Fail(gone); return used + remaining; }
                 Finish();
                 Animals.Apply(_character, job.AnimalId, job.AnimalAction);
+                WorkDone?.Invoke(_character, SkillType.AnimalHusbandry, "animal:" + job.AnimalAction.ToString().ToLowerInvariant());
                 return used + remaining;
             }
             _useProgress += available;
@@ -545,7 +579,7 @@ namespace Thatchwick.Core.Jobs
                 _using = true;
             }
 
-            double remaining = (TileWork is ITileDuration td ? td.Duration(_character, job.Target, job.TileAction) : TileWork.Duration(_character, job.TileAction)) - _useProgress;
+            double remaining = (TileWork is ITileDuration td ? td.Duration(_character, job.Target, job.TileAction) : TileWork.Duration(_character, job.TileAction)) * Scale - _useProgress;
             double available = budget - used;
             if (available >= remaining)
             {
@@ -553,6 +587,7 @@ namespace Thatchwick.Core.Jobs
                 if (gone != null) { Fail(gone); return used + remaining; }
                 Finish();
                 TileWork.Apply(_character, job.Target, job.TileAction, job.InteractionId);
+                WorkDone?.Invoke(_character, SkillOf(job.TileAction), "tile:" + job.TileAction.ToString().ToLowerInvariant());
                 return used + remaining;
             }
             _useProgress += available;
@@ -660,6 +695,7 @@ namespace Thatchwick.Core.Jobs
                 if (interaction.HasEffects) Effects?.Apply(_character, item, interaction);
                 InteractionCompleted?.Invoke(_character, interaction);
                 ItemUsed?.Invoke(_character, item, interaction);
+                if (IsWork(interaction)) WorkDone?.Invoke(_character, interaction.Skill, interaction.Id);
                 return used + remaining;
             }
 
@@ -675,7 +711,7 @@ namespace Thatchwick.Core.Jobs
             // Ata binen daha hızlı gider (merdivende de; basitlik için).
             // Atletizm: yaya yürüyüşte seviye başına %2 (binekteyken binek hızı belirler).
             double ride = WalkSpeed?.Invoke() ?? 1.0;
-            double tilesPerDay = TilesPerGameDay * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor : 1.0);
+            double tilesPerDay = TilesPerDayScaled * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor : 1.0);
             while (_pathIndex < _path.Count && budget - used > 0)
             {
                 // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.
@@ -772,6 +808,7 @@ namespace Thatchwick.Core.Jobs
                 int level = _character.Skills.GetLevel(interaction.Skill.Value);
                 duration *= Math.Max(0.5, 1.0 - 0.05 * (level - 1));
             }
+            if (!IsRest(interaction)) duration *= Scale;
             return duration / SpeedFactor(interaction, item);
         }
 
@@ -1019,7 +1056,7 @@ namespace Thatchwick.Core.Jobs
 
                     // Eksik olandan fazlası boşa gider; yürüme ve iş süresine ek sabit bir hazırlık payı, sık sık küçük
                     // dolduran eşyayı (tabure) uzun dolduranın (yatak) önüne geçirmez.
-                    double score = Math.Min(restore, missing) / (AutonomyDuration(interaction, item) + distance / TilesPerGameDay + AutonomyOverheadDays);
+                    double score = Math.Min(restore, missing) / (AutonomyDuration(interaction, item) + distance / TilesPerDayScaled + AutonomyOverheadDays * Scale);
                     // Sofra çeşidi: iki öğündür yenen yiyecek geri planda kalır (başka yiyecek varsa otonomi çeşitlenir).
                     if (need == NeedType.Hunger && interaction.ConsumeItem != null && RepeatsMeal(interaction.ConsumeItem)) score *= MoodBehavior.RepeatMealPenalty;
                     // Pişirme hevesi (açık kural): İyi ya da Mutlu karakter sıcak yemeği yeğler.

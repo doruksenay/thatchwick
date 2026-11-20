@@ -34,6 +34,21 @@ namespace Thatchwick.Core.Time
 
         public bool IsCriticalMoment => _criticalLocks > 0;
 
+        /// <summary>Hızlı gece çarpanı (belge 47, karar 3): hanede uyanık kimse yokken zaman bu kadar hızlı akar.</summary>
+        public const double FastNightMultiplier = 4.0;
+
+        /// <summary>Hanede uyanık kimse yok (oyun katmanı her karede günceller). Kritik anda etkisizdir.</summary>
+        public bool FastNight { get; set; }
+
+        /// <summary>Yapı modu, katalog, menü ya da konuşma açık: zaman durur (belge 47, karar 4).</summary>
+        public bool Paused { get; set; }
+
+        /// <summary>Hızlı gece şu an uygulanıyor mu (kritik an yokken).</summary>
+        public bool IsFastNightActive => FastNight && !Paused && _criticalLocks == 0;
+
+        /// <summary>Uygulanan toplam çarpan: hız × hızlı gece (duraklatmada 0).</summary>
+        public double EffectiveMultiplier => Paused ? 0.0 : EffectiveSpeed * (IsFastNightActive ? FastNightMultiplier : 1.0);
+
         public void SetSpeed(int speed)
         {
             if (Array.IndexOf(AllowedSpeeds, speed) < 0)
@@ -62,7 +77,7 @@ namespace Thatchwick.Core.Time
         public double Advance(double realSeconds)
         {
             if (realSeconds < 0) throw new ArgumentOutOfRangeException(nameof(realSeconds));
-            double gameDays = realSeconds * EffectiveSpeed / _config.RealSecondsPerGameDay;
+            double gameDays = realSeconds * EffectiveMultiplier / _config.RealSecondsPerGameDay;
             TotalDays += gameDays;
             return gameDays;
         }

@@ -236,6 +236,11 @@ namespace Thatchwick.Game
             var svc = _life.Houses;
             int? founder = _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
             GUILayout.Label("Köydeki aileler. Başı ölen hanenin yerine varisi geçer; dükkânı yetişkin varis sürdürür.");
+            // İlan sıralaması (belge 46 §8.5): panodan alınan siparişlerin puanı; rakip haneler alınmayan siparişi üstlenir.
+            var rank = _life.Requests.Ranking(_dynasty.Name);
+            var top = new List<string>();
+            for (int i = 0; i < rank.Count && i < 5; i++) top.Add($"{i + 1}. {rank[i].Name}{(rank[i].IsPlayer ? " ★" : "")} {rank[i].Points}");
+            GUILayout.Label("İlan sıralaması: " + string.Join(" · ", top));
             foreach (var h in svc.Houses)
             {
                 if (h.Extinct && _openHouse != h.Id) continue;
@@ -243,7 +248,9 @@ namespace Thatchwick.Game
                 int ours = 0;
                 foreach (var m in svc.LivingMembers(h)) if (founder.HasValue && _life.Legacy.IsDescendantOf(m, founder.Value)) ours++;
                 string headText = head != null && !head.IsDead ? $"{head.Name} ({AgeStages.Name(head.Stage)})" : "başsız";
+                int memory = _life.Requests.Memory.Of(h.Id);
                 string line = $"{h.Name} · baş {headText} · {svc.LivingCount(h)} kişi · {svc.Generations(h)} kuşak · {h.HeadCount}. baş"
+                              + (memory != 0 ? $" · hafıza {(memory > 0 ? "+" : "")}{memory}" : "")
                               + (ours > 0 ? $" · senin soyundan {ours}" : "") + (h.Extinct ? " · soyu tükendi" : "");
                 if (GUILayout.Button(line, GUI.skin.label)) _openHouse = _openHouse == h.Id ? -1 : h.Id;
                 if (_openHouse != h.Id) continue;

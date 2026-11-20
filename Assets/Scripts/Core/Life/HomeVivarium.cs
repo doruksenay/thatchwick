@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
+using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
 
 namespace Thatchwick.Core.Life
@@ -30,6 +31,7 @@ namespace Thatchwick.Core.Life
     public sealed class Vivarium
     {
         public string Habitat;            // null = boş kap (henüz zemin seçilmedi)
+        public string Substrate;          // zemine konan malzeme (orman toprağı, göl kumu, deniz kumu, sazlık çamuru)
         public double Moisture = 70;      // nemli ve kuru: nem; tuzlu ve tatlı su: suyun tazeliği
         public double Mold;               // ölü canlı ve fazla nemle birikir; temizleyiciler azaltır
         public readonly List<VivEntry> Entries = new List<VivEntry>();
@@ -52,7 +54,28 @@ namespace Thatchwick.Core.Life
         public static bool IsWater(string h) => h == Salt || h == Fresh;
         public const double PredationChance = 0.55, ShelteredPredationChance = 0.3, UnmetNeedDamage = 8;
         public const string CatchJar = "item.glass_jar";
-        public const string SeaWaterItem = "item.salt";
+        public const string FreshWaterItem = "item.viv_fresh_water", SeaWaterItem = "item.viv_sea_water";
+
+        /// <summary>Zemin kurmak için doğadan getirilen malzeme (kullanıcı 20.11.2026: her şey doğadan).</summary>
+        public sealed class HabitatNeed
+        {
+            public string Habitat;
+            public string[] Substrates;   // biri yeter; oyuncu seçer
+            public string Water;          // su zemininde ayrıca 1 kavanoz su
+        }
+
+        public static readonly HabitatNeed[] HabitatNeeds =
+        {
+            new HabitatNeed { Habitat = Moist, Substrates = new[] { "item.viv_forest_soil" } },
+            new HabitatNeed { Habitat = Dry, Substrates = new[] { "item.sand", "item.viv_sea_sand" } },
+            new HabitatNeed { Habitat = Fresh, Substrates = new[] { "item.sand", "item.viv_marsh_mud" }, Water = FreshWaterItem },
+            new HabitatNeed { Habitat = Salt, Substrates = new[] { "item.viv_sea_sand" }, Water = SeaWaterItem },
+        };
+
+        public static HabitatNeed NeedFor(string habitat) { foreach (var n in HabitatNeeds) if (n.Habitat == habitat) return n; return null; }
+
+        /// <summary>Su zemininde suyu tazelemek için gereken kavanoz suyu (yoksa null).</summary>
+        public static string WaterFor(string habitat) => NeedFor(habitat)?.Water;
         public const int VivBeautyPerSpecies = 1, VivBalancedBeauty = 3;
         public const double MoistureDecayPerDay = 18, SaltFreshDecayPerDay = 12, MoldPerDeath = 20, MoldMax = 100;
 
@@ -114,16 +137,45 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Boş kabın zeminini seçer (toprak, kum ya da tuzlu su). Dolu kapta değişmez.</summary>
-        public string SetHabitat(ItemInstance item, string habitat)
+        /// <summary>Zemin kurulamıyorsa neden (eksik malzeme); kurulabiliyorsa null.</summary>
+        public string HabitatBlocker(ItemInstance item, string habitat, string substrate)
         {
             var v = VivOf(item);
             if (v == null) return "Bu bir cam bahçe değil.";
-            if (Array.IndexOf(Habitats, habitat) < 0) return "Bilinmeyen zemin.";
-            if (v.Entries.Count > 0) return "İçinde canlı varken zemin değişmez; önce boşalt.";
-            if (habitat == Salt && _house.Count(SeaWaterItem) <= 0) return "Tuzlu su için envanterde tuz olmalı.";
-            if (habitat == Salt) _house.TryTakeItem(SeaWaterItem);
-            v.Habitat = habitat; v.Moisture = habitat == Dry ? 25 : IsWater(habitat) ? 100 : 80; v.Mold = 0;
-            v.Note($"Zemin: {HabitatName(habitat)}.");
+            var need = NeedFor(habitat);
+            if (need == null) return "Bilinmeyen zemin.";
+            if (v.Habitat != null) return v.Entries.Count > 0 ? "İçinde canlı varken zemin değişmez; önce boşalt." : "Önce kabı boşalt.";
+            if (Array.IndexOf(need.Substrates, substrate) < 0) return $"{HabitatName(habitat)} için {Def(substrate)?.DisplayName ?? substrate} olmaz.";
+            if (_house.Count(substrate) <= 0) return $"Envanterde {Def(substrate)?.DisplayName.ToLowerInvariant() ?? substrate} yok; doğadan getir.";
+            if (need.Water != null && _house.Count(need.Water) <= 0) return $"Envanterde {Def(need.Water)?.DisplayName.ToLowerInvariant() ?? need.Water} yok; {(habitat == Salt ? "denizden" : "göl ya da dereden")} kavanozla doldur.";
+            return null;
+        }
+
+        /// <summary>Zemini kurar: malzeme (ve su zemininde 1 kavanoz su) envanterden harcanır. substrate null ise elde olan ilk uygun malzeme.</summary>
+        public string SetHabitat(ItemInstance item, string habitat, string substrate = null)
+        {
+            var need = NeedFor(habitat);
+            if (need == null) return "Bilinmeyen zemin.";
+            if (substrate == null) { substrate = need.Substrates[0]; foreach (var s in need.Substrates) if (_house.Count(s) > 0) { substrate = s; break; } }
+            var why = HabitatBlocker(item, habitat, substrate);
+            if (why != null) return why;
+            var v = VivOf(item);
+            _house.TryTakeItem(substrate);
+            if (need.Water != null) _house.TryTakeItem(need.Water);
+            v.Habitat = habitat; v.Substrate = substrate; v.Moisture = habitat == Dry ? 25 : IsWater(habitat) ? 100 : 80; v.Mold = 0;
+            v.Note($"Zemin: {HabitatName(habitat)} ({Def(substrate)?.DisplayName.ToLowerInvariant()}).");
+            _world.NotifyChanged();
+            return null;
+        }
+
+        /// <summary>Boş kabın zeminini döker (malzeme geri gelmez); yeni zemin kurulabilir.</summary>
+        public string EmptyViv(ItemInstance item)
+        {
+            var v = VivOf(item);
+            if (v == null || v.Habitat == null) return "Kap zaten boş.";
+            if (v.Entries.Count > 0) return "Önce içindekileri al ya da doğaya sal.";
+            v.Habitat = null; v.Substrate = null; v.Mold = 0;
+            v.Note("Kap boşaltıldı.");
             _world.NotifyChanged();
             return null;
         }
@@ -218,7 +270,8 @@ namespace Thatchwick.Core.Life
             if (IsWater(v.Habitat))
             {
                 if (v.Moisture > 70) return "Su hâlâ taze.";
-                if (v.Habitat == Salt && !_house.TryTakeItem(SeaWaterItem)) return "Suyu tazelemek için envanterde tuz olmalı.";
+                string w = WaterFor(v.Habitat);
+                if (w != null && !_house.TryTakeItem(w)) return $"Suyu tazelemek için envanterde {Def(w)?.DisplayName.ToLowerInvariant()} olmalı.";
                 v.Moisture = 100;
                 v.Note("Su tazelendi.");
                 return null;
@@ -468,19 +521,29 @@ namespace Thatchwick.Core.Life
 
         // ---- yakalama ----
 
+        /// <summary>
+        /// Oyuncu kendisi yakalıyorsa (balık, karides gibi suda yüzen tür) mini oyun açılır: true dönerse tür envantere
+        /// hemen girmez, <see cref="CatchBite"/> olayı gider; oyun bitince <see cref="GrantCatch"/>.
+        /// </summary>
+        public Func<Character, string, bool> PlayerCatches { get; set; }
+        public event Action<Character, string> CatchBite;
+
+        /// <summary>Kavanoza girmesi mini oyun ister mi (suda yüzen ya da dipte gezen canlı).</summary>
+        public bool IsSwimmer(string id) { var s = V(id); return s != null && s.IsCreature && (s.Move == "swim" || s.Move == "bottom"); }
+
         /// <summary>Yakalama başlama engeli: cam kavanoz gerekir; bu saat ve mevsimde bir şey yoksa söylenir.</summary>
         public string CatchBlocker(ItemInstance node)
         {
             if (node.Def.Catches.Count == 0) return "Burada yakalanacak bir şey yok.";
             if (_house.Count(CatchJar) <= 0) return "Yakalamak için envanterde boş cam kavanoz olmalı.";
-            return CatchPool(node).Count == 0 ? "Şu an burada yakalanacak bir şey yok (mevsim, saat ya da hava)." : null;
+            return CatchPool(node.Def.Catches).Count == 0 ? "Şu an burada yakalanacak bir şey yok (mevsim, saat ya da hava)." : null;
         }
 
-        private List<CatchDef> CatchPool(ItemInstance node)
+        private List<CatchDef> CatchPool(List<CatchDef> catches)
         {
             var list = new List<CatchDef>();
             bool night = IsNight(_clock.DayFraction), rain = Raining?.Invoke() == true;
-            foreach (var c in node.Def.Catches)
+            foreach (var c in catches)
             {
                 if (c.Seasons.Count > 0 && !c.Seasons.Contains(_clock.Season)) continue;
                 if (c.Night && !night) continue;
@@ -490,19 +553,118 @@ namespace Thatchwick.Core.Life
             return list;
         }
 
-        /// <summary>Yakalar: havuzdan şansla bir tür envantere gelir. Yakalanan ya da null.</summary>
-        public string Catch(ItemInstance node)
+        /// <summary>Yakalar: havuzdaki her tür kendi şansıyla görünür, görünenlerden biri kavanoza girer. Yakalanan ya da null.</summary>
+        public string Catch(ItemInstance node, Character by = null) => CatchFrom(CatchPool(node.Def.Catches), by);
+
+        private string CatchFrom(List<CatchDef> pool, Character by)
         {
-            var pool = CatchPool(node);
-            foreach (var c in pool)
-                if (Rng.NextDouble() < c.Chance)
-                {
-                    _house.AddItem(c.Item, 1);
-                    Say($"Cam kavanoza {Def(c.Item).DisplayName.ToLowerInvariant()} yakalandı.");
-                    return c.Item;
-                }
-            Say("Bir şey yakalanamadı.");
+            var seen = new List<string>();
+            foreach (var c in pool) if (Rng.NextDouble() < c.Chance) seen.Add(c.Item);
+            if (seen.Count == 0) { Say("Bir şey yakalanamadı."); return null; }
+            string id = seen[Rng.Next(seen.Count)];
+            if (by != null && IsSwimmer(id) && PlayerCatches?.Invoke(by, id) == true)
+            {
+                CatchBite?.Invoke(by, id);   // mini oyun: kavanoza girmesi oyuncunun elinde
+                return id;
+            }
+            GrantCatch(id);
+            return id;
+        }
+
+        /// <summary>Yakalanan tür kavanoza (envantere) girer.</summary>
+        public void GrantCatch(string id)
+        {
+            _house.AddItem(id, 1);
+            Say($"Cam kavanoza {Def(id).DisplayName.ToLowerInvariant()} yakalandı.");
+        }
+
+        /// <summary>Toplama yerinde kavanoza doldurulacak zemin malzemesi (orman toprağı, kum ...): kesin gelir.</summary>
+        public string FillBlocker(ItemInstance node)
+        {
+            if (node.Def.Gathers.Count == 0) return "Burada kavanoza doldurulacak bir şey yok.";
+            if (_house.Count(CatchJar) <= 0) return "Doldurmak için envanterde boş cam kavanoz olmalı.";
+            if (GathersHere(node).Count == 0)
+            {
+                var g = Def(node.Def.Gathers[0]);
+                return $"{g?.DisplayName} yalnızca {string.Join(", ", g.ForageRegions.ConvertAll(RegionName)).ToLowerInvariant()} bölgesinde bulunur.";
+            }
             return null;
+        }
+
+        private static string RegionName(string id) { foreach (var r in Regions.All) if (r.Id == id) return r.Name; return id; }
+
+        /// <summary>Bu toplama yerinde gerçekten bulunan malzemeler (orman toprağı yalnızca ormanda).</summary>
+        private List<string> GathersHere(ItemInstance node)
+        {
+            var list = new List<string>();
+            foreach (var g in node.Def.Gathers) { var gd = Def(g); if (gd != null && ForageSystem.InRegion(gd, node.Position)) list.Add(g); }
+            return list;
+        }
+
+        public void Fill(ItemInstance node)
+        {
+            foreach (var g in GathersHere(node))
+            {
+                _house.AddItem(g, 1);
+                Say($"Kavanoza {Def(g)?.DisplayName.ToLowerInvariant()} dolduruldu.");
+            }
+        }
+
+        // ---- su kenarında kavanoz (göl, dere, sazlık, deniz) ----
+
+        public const string SeaWater = "sea", MarshWater = "marsh", FreshWater = "fresh";
+
+        /// <summary>Su karosunun türü: deniz kıyısında tuzlu, sazlıkta bataklık, öteki her yerde tatlı.</summary>
+        public static string WaterKindAt(GridPos p) => Regions.Coast.Contains(p) ? SeaWater : Regions.Marsh.Contains(p) ? MarshWater : FreshWater;
+
+        private static readonly Season[] W3 = { Season.Spring, Season.Summer, Season.Autumn };
+        private static CatchDef Cd(string item, float chance, params Season[] seasons) { var c = new CatchDef { Item = item, Chance = chance }; c.Seasons.AddRange(seasons); return c; }
+
+        /// <summary>Su kenarında kavanozla yakalananlar (veri: belge 47 ek). Testler kimliklerin içerikte olduğunu denetler.</summary>
+        public static readonly Dictionary<string, List<CatchDef>> WaterPools = new Dictionary<string, List<CatchDef>>
+        {
+            [SeaWater] = new List<CatchDef>
+            {
+                Cd("item.viv_seaweed", 0.45f), Cd("item.viv_sea_lettuce", 0.4f, W3), Cd("item.viv_shrimp", 0.35f, W3), Cd("item.viv_periwinkle", 0.35f),
+                Cd("item.viv_hermit", 0.2f, W3), Cd("item.viv_goby", 0.2f, W3), Cd("item.viv_whelk", 0.15f),
+            },
+            [FreshWater] = new List<CatchDef>
+            {
+                Cd("item.viv_water_flea", 0.5f, W3), Cd("item.viv_minnow", 0.4f, W3), Cd("item.viv_stickleback", 0.3f, W3), Cd("item.viv_loach", 0.2f, W3),
+                Cd("item.viv_tadpole", 0.45f, Season.Spring), Cd("item.viv_pond_snail", 0.35f, W3), Cd("item.viv_duckweed", 0.4f, W3),
+                Cd("item.viv_hornwort", 0.35f, W3), Cd("item.viv_lily", 0.2f, Season.Summer), Cd("item.viv_water_moss", 0.3f), Cd("item.river_pebble", 0.25f),
+            },
+            [MarshWater] = new List<CatchDef>
+            {
+                Cd("item.viv_tadpole", 0.5f, Season.Spring), Cd("item.viv_frog", 0.3f, Season.Spring, Season.Summer), Cd("item.viv_water_flea", 0.5f, W3),
+                Cd("item.viv_pond_snail", 0.4f, W3), Cd("item.viv_duckweed", 0.5f, W3), Cd("item.viv_hornwort", 0.3f, W3), Cd("item.viv_water_moss", 0.35f),
+            },
+        };
+
+        /// <summary>Su kenarında kavanoza doldurulanlar: suyun kendisi; sazlıkta dipteki çamur da.</summary>
+        public static string[] WaterFills(string kind) =>
+            kind == SeaWater ? new[] { SeaWaterItem } : kind == MarshWater ? new[] { FreshWaterItem, "item.viv_marsh_mud" } : new[] { FreshWaterItem };
+
+        public string WaterJarBlocker(GridPos tile, bool fill)
+        {
+            if (!_world.Map.IsWater(tile)) return "Burada su yok.";
+            if (_world.Map.FrozenAt(tile)) return "Su donmuş.";
+            if (_house.Count(CatchJar) <= 0) return "Envanterde boş cam kavanoz olmalı.";
+            if (fill) return null;
+            return CatchPool(WaterPools[WaterKindAt(tile)]).Count == 0 ? "Şu an bu suda yakalanacak bir şey yok (mevsim)." : null;
+        }
+
+        /// <summary>Su kenarında kavanozla yakalar (balıkta oyuncuysa mini oyun).</summary>
+        public string CatchAtWater(Character by, GridPos tile) => CatchFrom(CatchPool(WaterPools[WaterKindAt(tile)]), by);
+
+        /// <summary>Kavanoza su (ve sazlıkta çamur) doldurur; not döner.</summary>
+        public string FillAtWater(GridPos tile)
+        {
+            var got = new List<string>();
+            foreach (var id in WaterFills(WaterKindAt(tile))) { _house.AddItem(id, 1); got.Add(Def(id)?.DisplayName ?? id); }
+            string note = "+1 " + string.Join(", +1 ", got);
+            Say("Kavanoza dolduruldu: " + string.Join(", ", got).ToLowerInvariant() + ".");
+            return note;
         }
 
         // ---- kayıt ----
@@ -516,7 +678,7 @@ namespace Thatchwick.Core.Life
                 if (v.Habitat == null && v.Entries.Count == 0) continue;
                 var e = new List<string>();
                 foreach (var x in v.Entries) e.Add(x.Encode());
-                list.Add(new HomeVivSave { id = kv.Key, habitat = v.Habitat, moisture = v.Moisture, mold = v.Mold, entries = e.ToArray(), log = v.Log.ToArray() });
+                list.Add(new HomeVivSave { id = kv.Key, habitat = v.Habitat, substrate = v.Substrate, moisture = v.Moisture, mold = v.Mold, entries = e.ToArray(), log = v.Log.ToArray() });
             }
             save.vivs = list.ToArray();
         }
@@ -528,7 +690,7 @@ namespace Thatchwick.Core.Life
             foreach (var s in save.vivs)
             {
                 if (s == null) continue;
-                var v = new Vivarium { Habitat = string.IsNullOrEmpty(s.habitat) ? null : s.habitat, Moisture = s.moisture, Mold = s.mold };
+                var v = new Vivarium { Habitat = string.IsNullOrEmpty(s.habitat) ? null : s.habitat, Substrate = string.IsNullOrEmpty(s.substrate) ? null : s.substrate, Moisture = s.moisture, Mold = s.mold };
                 if (s.entries != null) foreach (var x in s.entries) { var e = VivEntry.Decode(x); if (e != null && Def(e.Item)?.Viv != null) v.Entries.Add(e); }
                 if (s.log != null) v.Log.AddRange(s.log);
                 _vivs[s.id] = v;

@@ -78,8 +78,11 @@ namespace Thatchwick.Core.World
             set { if (_waterFrozen == value) return; _waterFrozen = value; RoadsChanged?.Invoke(); }
         }
 
+        /// <summary>Bu su karosu şu an donmuş mu. Deniz (kıyı bölgesi) donmaz; öteki sular WaterFrozen'a uyar.</summary>
+        public bool FrozenAt(GridPos p) => _waterFrozen && !Regions.IsSea(this, p);
+
         /// <summary>Açık (donmamış) su karosu mu: içine girilir, kova doldurulur, balık tutulur, yıkanılır.</summary>
-        public bool IsOpenWater(GridPos p) => !_waterFrozen && IsFilled(p);
+        public bool IsOpenWater(GridPos p) => !FrozenAt(p) && IsFilled(p);
 
         public RoadType GetRoad(GridPos p) => _road != null && RoadPlane(p) ? _road[PlaneIndex(p)] : RoadType.None;
         public float GetRoadCondition(GridPos p) => _road != null && RoadPlane(p) ? _roadCond[PlaneIndex(p)] : 0f;

@@ -98,7 +98,7 @@ namespace Thatchwick.Core.Tests
 
             var runner = new JobRunner(outside, world);
             life.Attach(runner);
-            Assert.True(runner.EffectiveDuration(chop) > 1.4);   // 1 / 0.7
+            Assert.Equal(0.5 / 0.7, runner.EffectiveDuration(chop), 6);   // 12 dakikalık günde iş ölçeği 0,5 (belge 47); fırtına 0,7
         }
 
         [Fact]

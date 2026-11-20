@@ -1,7 +1,7 @@
 ---
 id: "342"
 title: Gölet, balık sepeti, çıkrık, dokuma tezgâhı, imbik, iksir rafı
-status: pending
+status: review
 approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 worker: batch            # 2026-11-18: toplu işçi biçimine çevrildi (Claude'suz); onay hâlâ kullanıcıda
 priority: 20
@@ -145,6 +145,10 @@ Tarifin makine okunur hâli (`tools/art/batch_worker.py`). Tuval: ayak izi + yü
 
 ## Doğrulama
 `validate_iso.py`, `style.py check --family esya`, ayak izi kılavuzuyla örtüşme (301 ölçütleri).
+
+- 2026-11-20 (toplu işçi): başladı
+
+- 2026-11-20 (toplu işçi): 4/6 teslim, 18 gen, Claude'suz. Rapor: art/results/342-zanaat-ve-golet.md
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->

@@ -40,6 +40,12 @@ namespace Thatchwick.Core.Save
     [Serializable]
     public sealed class LifeSaveData
     {
+        /// <summary>Süreli görevler ve "her gün tekrarla" planları (belge 47 §3). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Work.TimedDutyServiceSave timedDuties;
+        /// <summary>Çocukların gezme izni (belge 47 §7.2). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Upbringing.ChildRoamingSave roaming;
+        /// <summary>İstekler, hane hafızası, adaklar ve rakip hane itibarı (belge 46). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Life.Requests.RequestSave requests;
         public GraveSave[] graves;
         public int weatherSeed;
         /// <summary>Günlük işlerin (OnNewDay) yapıldığı son gün; eski kayıtta -1.</summary>
@@ -95,6 +101,8 @@ namespace Thatchwick.Core.Save
         /// <summary>Şu an bu hanede yaşayanlar (evlenip başka haneye gidenler hariç).</summary>
         public int[] current;
         public HouseHeadSave[] heads;
+        /// <summary>Dükkânsız hanenin evi (belge 47 §8); eski kayıtta null, yeniden atanır.</summary>
+        public string homeKey;
     }
 
     [Serializable]

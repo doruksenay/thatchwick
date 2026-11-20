@@ -96,8 +96,8 @@ namespace Thatchwick.Game
             GUI.Box(rect, GUIContent.none);
             float side = Mathf.Min(300f, rect.width * 0.38f);
             var tank = new Rect(rect.x + 10f, rect.y + 34f, rect.width - side - 30f, rect.height - 44f);
-            GUI.Label(new Rect(rect.x + 12f, rect.y + 6f, tank.width, 24f), _item.Def.DisplayName.ToUpperInvariant() + "  ·  " + (_home.VivSummary(_item) ?? ""));
-            if (GUI.Button(new Rect(rect.xMax - 70f, rect.y + 6f, 60f, 24f), "Kapat")) { Close(); GUI.color = prev; return; }
+            GUI.Label(new Rect(rect.x + 12f, rect.y + 6f, tank.width, 24f), GameLocalization.Current.ToUpper(_item.Def.DisplayName) + "  ·  " + (_home.VivSummary(_item) ?? ""));
+            if (GUI.Button(new Rect(rect.xMax - 70f, rect.y + 6f, 60f, 24f), T("ui.common.close"))) { Close(); GUI.color = prev; return; }
             DrawTank(tank);
             GUILayout.BeginArea(new Rect(tank.xMax + 12f, rect.y + 34f, side, rect.height - 44f));
             DrawSide();
@@ -163,7 +163,11 @@ namespace Thatchwick.Game
                 }
                 if (hab != null)
                 {
-                    var soil = hab == HomeLife.Dry ? new Color(0.82f, 0.72f, 0.50f) : water ? new Color(0.76f, 0.70f, 0.56f) : new Color(0.33f, 0.24f, 0.16f);
+                    // Zeminin rengi konan malzemeden: orman toprağı koyu, göl kumu sarımsı, deniz kumu açık, sazlık çamuru gri-kahve.
+                    var soil = v.Substrate == "item.viv_sea_sand" ? new Color(0.88f, 0.83f, 0.68f)
+                             : v.Substrate == "item.viv_marsh_mud" ? new Color(0.30f, 0.27f, 0.20f)
+                             : v.Substrate == "item.sand" ? new Color(0.80f, 0.68f, 0.45f)
+                             : new Color(0.33f, 0.24f, 0.16f);
                     Fill(new Rect(r.x, ground, r.width, r.yMax - ground), soil);
                     for (int i = 0; i < 26; i++)
                     {
@@ -171,7 +175,7 @@ namespace Thatchwick.Game
                         Dot(gx, gy, 6f + i % 3 * 3f, 4f + i % 2 * 2f, soil * (0.7f + (i % 4) * 0.1f));
                     }
                 }
-                else GUI.Label(new Rect(r.x + 20f, r.center.y - 12f, r.width - 40f, 48f), "Boş kap. Sağdan zemini seç: nemli toprak, kuru kum, tatlı su ya da tuzlu su.");
+                else GUI.Label(new Rect(r.x + 20f, r.center.y - 12f, r.width - 40f, 48f), T("ui.viv.empty_tank"));
             }
 
             // 1. bitkiler (oyuncunun dizdiği yerde)
@@ -473,54 +477,76 @@ namespace Thatchwick.Game
 
         // ---------- yan sütun ----------
 
+        private static string T(string key) => GameLocalization.T(key);
+        private static string T(string key, params (string name, object value)[] args) => GameLocalization.T(key, args);
+
         private void DrawSide()
         {
             var v = _home.VivOf(_item);
             _scroll = GUILayout.BeginScrollView(_scroll);
             if (v.Habitat == null)
             {
-                GUILayout.Label("Zemin seç:");
-                foreach (var h in HomeLife.Habitats)
-                    if (GUILayout.Button(HomeLife.HabitatName(h) + (h == HomeLife.Salt ? " (1 tuz)" : h == HomeLife.Fresh ? " (kuyu suyu)" : ""))) _status = _home.SetHabitat(_item, h) ?? "Zemin hazır.";
+                // Zemin: her biri doğadan getirilen malzemeyle kurulur (orman toprağı, göl ya da deniz kumu, sazlık çamuru, kavanozda su).
+                GUILayout.Label(T("ui.viv.pick_ground"));
+                foreach (var need in HomeLife.HabitatNeeds)
+                {
+                    GUILayout.Label(HomeLife.HabitatName(need.Habitat) + (need.Water != null ? "  ·  " + T("ui.viv.plus_water", ("water", Name(need.Water)), ("have", _house.Count(need.Water))) : ""));
+                    foreach (var sub in need.Substrates)
+                    {
+                        string why = _home.HabitatBlocker(_item, need.Habitat, sub);
+                        var prevEnabled = GUI.enabled;
+                        GUI.enabled = why == null;
+                        if (GUILayout.Button("  " + T("ui.viv.ground_with", ("item", Name(sub)), ("have", _house.Count(sub)))))
+                            _status = _home.SetHabitat(_item, need.Habitat, sub) ?? T("ui.viv.ground_ready");
+                        GUI.enabled = prevEnabled;
+                    }
+                }
+                GUILayout.Label(T("ui.viv.ground_hint"));
             }
             else
             {
                 bool water = HomeLife.IsWater(v.Habitat);
+                string w = HomeLife.WaterFor(v.Habitat);
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button(v.Habitat == HomeLife.Salt ? "Suyu tazele (1 tuz)" : water ? "Suyu tazele" : "Nemlendir")) _status = _home.Mist(_item) ?? "Tamam.";
+                if (GUILayout.Button(water ? T("ui.viv.refresh_water", ("water", Name(w)), ("have", _house.Count(w))) : T("ui.viv.mist"))) _status = _home.Mist(_item) ?? T("ui.viv.done");
                 var watch = _item.Def.Interactions.Find(i => i.Id == "watch_viv");
-                if (watch != null && GUILayout.Button("Seyret")) Use?.Invoke(_item, watch.Id);
+                if (watch != null && GUILayout.Button(T("ui.viv.watch"))) Use?.Invoke(_item, watch.Id);
+                if (v.Entries.Count == 0 && GUILayout.Button(T("ui.viv.empty"))) _status = _home.EmptyViv(_item) ?? T("ui.viv.done");
                 GUILayout.EndHorizontal();
                 var (lo, hi) = HomeLife.MoistRange(v.Habitat);
-                GUILayout.Label($"{(water ? "Su tazeliği" : "Nem")}: {v.Moisture:0} (uygun {lo:0}-{hi:0}){(v.Mold >= 10 ? $" · küf {v.Mold:0}" : "")}");
+                GUILayout.Label(T(water ? "ui.viv.freshness" : "ui.viv.moisture", ("value", Mathf.RoundToInt((float)v.Moisture)), ("lo", (int)lo), ("hi", (int)hi))
+                    + (v.Mold >= 10 ? "  ·  " + T("ui.viv.mold", ("value", Mathf.RoundToInt((float)v.Mold))) : ""));
             }
             if (_status != null) GUILayout.Label(_status);
 
             GUILayout.Space(4f);
-            GUILayout.Label($"İÇİNDEKİLER ({_home.CountPlants(v)}/{_item.Def.VivPlants} bitki, {_home.CountCreatures(v)}/{_item.Def.VivCreatures} canlı, {_home.CountDecor(v)}/{_item.Def.VivDecor} süs)");
+            GUILayout.Label(T("ui.viv.contents", ("plants", _home.CountPlants(v)), ("plantMax", _item.Def.VivPlants), ("creatures", _home.CountCreatures(v)),
+                ("creatureMax", _item.Def.VivCreatures), ("decor", _home.CountDecor(v)), ("decorMax", _item.Def.VivDecor)));
             for (int i = 0; i < v.Entries.Count; i++)
             {
                 var e = v.Entries[i];
                 var s = V(e.Item);
                 if (s == null) continue;
                 GUILayout.BeginHorizontal();
-                string state = s.IsDecor ? "süs" : s.IsPlant ? $"sağlık {e.Health:0}" : $"sağlık {e.Health:0}, açlık {e.Hunger:0}";
+                string state = s.IsDecor ? T("ui.viv.state_decor")
+                    : s.IsPlant ? T("ui.viv.state_plant", ("health", Mathf.RoundToInt((float)e.Health)))
+                    : T("ui.viv.state_creature", ("health", Mathf.RoundToInt((float)e.Health)), ("hunger", Mathf.RoundToInt((float)e.Hunger)));
                 string need = s.IsCreature ? _home.UnmetNeed(v, s) : null;
-                GUILayout.Label($"{Name(e.Item)} · {state}{(need != null ? " · " + HomeLife.NeedName(need) + " ister" : "")}");
+                GUILayout.Label($"{Name(e.Item)} · {state}{(need != null ? " · " + T("ui.viv.wants", ("need", HomeLife.NeedName(need))) : "")}");
                 if (!s.IsCreature)
                 {
                     if (GUILayout.Button("<", GUILayout.Width(24f))) _home.MoveInViv(_item, i, -0.06);
                     if (GUILayout.Button(">", GUILayout.Width(24f))) _home.MoveInViv(_item, i, 0.06);
                 }
-                if (GUILayout.Button("Al", GUILayout.Width(34f))) { _home.RemoveFromViv(_item, i, false); GUILayout.EndHorizontal(); break; }
-                if (s.IsCreature && GUILayout.Button("Sal", GUILayout.Width(34f))) { _home.RemoveFromViv(_item, i, true, _actor?.Invoke()); GUILayout.EndHorizontal(); break; }
+                if (GUILayout.Button(T("ui.viv.take"), GUILayout.Width(40f))) { _home.RemoveFromViv(_item, i, false); GUILayout.EndHorizontal(); break; }
+                if (s.IsCreature && GUILayout.Button(T("ui.viv.release"), GUILayout.Width(40f))) { _home.RemoveFromViv(_item, i, true, _actor?.Invoke()); GUILayout.EndHorizontal(); break; }
                 GUILayout.EndHorizontal();
             }
 
             if (v.Habitat != null)
             {
                 int shown = 0;
-                foreach (var (title, kind) in new[] { ("BİTKİ EKLE", 0), ("CANLI EKLE", 1), ("SÜS EKLE (taş, kabuk, odun)", 2) })
+                foreach (var (title, kind) in new[] { ("ui.viv.add_plants", 0), ("ui.viv.add_creatures", 1), ("ui.viv.add_decor", 2) })
                 {
                     bool header = false;
                     foreach (var d in _content.Items.All)
@@ -528,31 +554,31 @@ namespace Thatchwick.Game
                         if (d.Viv == null || _house.Count(d.Id) <= 0) continue;
                         int k = d.Viv.IsPlant ? 0 : d.Viv.IsDecor ? 2 : 1;
                         if (k != kind) continue;
-                        if (!header) { GUILayout.Space(4f); GUILayout.Label(title); header = true; }
+                        if (!header) { GUILayout.Space(4f); GUILayout.Label(T(title)); header = true; }
                         shown++;
                         string why = _home.CanAddToViv(_item, d.Id);
                         GUILayout.BeginHorizontal();
                         GUILayout.Label($"{d.DisplayName} ×{_house.Count(d.Id)}");
                         var prevEnabled = GUI.enabled;
                         GUI.enabled = why == null;
-                        if (GUILayout.Button("Koy", GUILayout.Width(44f)))
+                        if (GUILayout.Button(T("ui.viv.put"), GUILayout.Width(48f)))
                         {
                             var warn = _home.AddWarnings(_item, d.Id);
-                            if (warn.Count > 0 && _pending != d.Id) { _pending = d.Id; _status = string.Join(" ", warn) + " Yine de koymak için tekrar bas."; }
-                            else { _pending = null; _status = _home.AddToViv(_item, d.Id) ? d.DisplayName + " kondu." : "Konamadı."; }
+                            if (warn.Count > 0 && _pending != d.Id) { _pending = d.Id; _status = string.Join(" ", warn) + " " + T("ui.viv.press_again"); }
+                            else { _pending = null; _status = _home.AddToViv(_item, d.Id) ? T("ui.viv.added", ("item", d.DisplayName)) : T("ui.viv.not_added"); }
                         }
                         GUI.enabled = prevEnabled;
                         GUILayout.EndHorizontal();
                         if (why != null) GUILayout.Label("  " + why);
                     }
                 }
-                if (shown == 0) GUILayout.Label("Envanterde tür ya da süs yok. Toplama yerlerinde ve gölette cam kavanozla yakala (mantar, otluk, kuru dal, kum, su teresi, gölet); deniz türleri, kabuk ve mercan pazarda.");
+                if (shown == 0) GUILayout.Label(T("ui.viv.none_in_inventory"));
             }
 
             if (v.Log.Count > 0)
             {
                 GUILayout.Space(4f);
-                GUILayout.Label("SON OLAYLAR");
+                GUILayout.Label(T("ui.viv.recent"));
                 for (int i = v.Log.Count - 1; i >= 0; i--) GUILayout.Label("· " + v.Log[i]);
             }
             GUILayout.EndScrollView();

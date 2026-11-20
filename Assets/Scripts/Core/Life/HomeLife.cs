@@ -13,7 +13,7 @@ namespace Thatchwick.Core.Life
     public static class HomeActions
     {
         public const string Candle = "candle", Strew = "strew", Whitewash = "whitewash", WaterPot = "waterPot",
-            HarvestPot = "harvestPot", Upgrade = "upgrade", Stow = "stow", Catch = "catch", Mist = "mist";
+            HarvestPot = "harvestPot", Upgrade = "upgrade", Stow = "stow", Catch = "catch", Mist = "mist", Fill = "fill";
     }
 
     /// <summary>Bir eşya örneğinin ev bakımı durumu (yükseltmeler, desen, canlı saksı, ot serpmesi).</summary>
@@ -535,11 +535,13 @@ namespace Thatchwick.Core.Life
                     return DecorSystem.IsWilted(item, _clock.Season) ? null : "Bu süs daha taze.";
                 case HomeActions.Catch:
                     return CatchBlocker(item);
+                case HomeActions.Fill:
+                    return FillBlocker(item);
                 case HomeActions.Mist:
                 {
                     var v = VivOf(item);
                     if (v?.Habitat == null) return "Önce zemini seç (cam bahçeye yakından bak).";
-                    if (IsWater(v.Habitat)) return v.Moisture > 70 ? "Su hâlâ taze." : v.Habitat == Fresh || _house.Count(SeaWaterItem) > 0 ? null : "Suyu tazelemek için envanterde tuz olmalı.";
+                    if (IsWater(v.Habitat)) return v.Moisture > 70 ? "Su hâlâ taze." : _house.Count(WaterFor(v.Habitat)) > 0 ? null : $"Suyu tazelemek için envanterde {Def(WaterFor(v.Habitat))?.DisplayName.ToLowerInvariant()} olmalı.";
                     double target = v.Habitat == Dry ? 30 : 85;
                     return v.Moisture >= target - 5 ? (v.Habitat == Dry ? "Kum yeterince nemli." : "Toprak zaten nemli.") : null;
                 }
@@ -587,7 +589,10 @@ namespace Thatchwick.Core.Life
                     ApplyUpgrade(item, i.UpgradeId);
                     break;
                 case HomeActions.Catch:
-                    Catch(item);
+                    Catch(item, c);
+                    break;
+                case HomeActions.Fill:
+                    Fill(item);
                     break;
                 case HomeActions.Mist:
                     Mist(item);

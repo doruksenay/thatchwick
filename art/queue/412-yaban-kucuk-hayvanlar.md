@@ -1,8 +1,7 @@
 ---
 id: "408"
 title: "Yaban hayvanları: küçük memeliler ve kurbağa (5)"
-status: running
-claimed_at: 2026-11-20T06:39Z
+status: pending
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 31, 29 (kullanıcı 18.11.2026 "önerdiklerinin tamamını yap")
 family: hayvan
 style_gate: false
@@ -44,3 +43,4 @@ Tarif **375 ile birebir aynı** (106 yol B, 8 yön, v3 döndürme, `style.py fit
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: 06:39/06:49Z sahiplenmesi sonuçsuz kaldı (çalıştırma bitti, teslim yok); 6 saat beklemeden yeniden kuyruğa alındı.

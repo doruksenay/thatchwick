@@ -27,6 +27,7 @@ namespace Thatchwick.Core.World
             MarshMap(new Painter(m, Marsh.X, Marsh.Y));
             HillMap(new Painter(m, Hill.X, Hill.Y));
             SlopesMap(new Painter(m, Slopes.X, Slopes.Y));
+            CoastMap(new Painter(m, Coast.X, Coast.Y));
         }
 
         private static List<RegionItem> WildItems()
@@ -35,7 +36,7 @@ namespace Thatchwick.Core.World
             var maps = new (Region r, Action<Painter> draw)[]
             {
                 (Forest, new Action<Painter>(ForestMap)), (Lake, new Action<Painter>(LakeMap)), (Marsh, new Action<Painter>(MarshMap)),
-                (Hill, new Action<Painter>(HillMap)), (Slopes, new Action<Painter>(SlopesMap)),
+                (Hill, new Action<Painter>(HillMap)), (Slopes, new Action<Painter>(SlopesMap)), (Coast, new Action<Painter>(CoastMap)),
             };
             foreach (var (r, draw) in maps) { var p = new Painter(null, r.X, r.Y); draw(p); all.AddRange(p.Items); }
             return all;
@@ -143,6 +144,7 @@ namespace Thatchwick.Core.World
                 }
 
             Trail(p, keep, 2, (24, 0), (24, 7), (44, 7), (44, 16), (47, 16));
+            Trail(p, keep, 1, LakeToCoast);   // batı kıyısından denize inen patika (belge 47 ek)
             // İskele: göle yürüyen ahşap
             for (int y = 9; y <= 15; y++) for (int x = 24; x <= 25; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
             p.I("item.stump_table", 24, 15); p.On("item.fish_basket_decor", 24, 15, "a"); p.I("item.barrel", 25, 9);   // iskele ucunda sehpa, üstünde balık sepeti
@@ -157,6 +159,68 @@ namespace Thatchwick.Core.World
 
             Scatter(p, keep, 48, 32, 110, 264, rng => rng.Next(3) == 0 ? "item.tree_birch" : "item.tree_oak");
         }
+
+        /// <summary>Gölden deniz kıyısına inen patika (yerel).</summary>
+        private static readonly (int x, int y)[] LakeToCoast = { (24, 7), (5, 7), (5, 31) };
+
+        // ================= Deniz kıyısı (48x32) =================
+        // Gölün güneybatı patikasından girilir (yerel 5, 0). Kuzeyde çayır, ortada kumsal (toprak zemin), güneyde deniz.
+        // Doğuda kayalık burun: gelgit çukurları (deniz yosunu, karides, keşiş yengeci; kayada tuz kabuğu). Kumsalda
+        // denizin bıraktığı kıyı çizgisi (dere odunu, kabuk, ender mercan) ve deniz kumu. Ahşap iskeleden ringa ve uskumru.
+        private static int SeaEdge(int x) => 19 + (int)Math.Round(1.5 * Math.Sin(x / 3.2) + 0.8 * Math.Sin(x / 7.0));
+        private static bool CoastRock(int x, int y) => x >= 36 && y >= 11 && y <= SeaEdge(x) + 3 && Hash(x + 264, y + 36) + (x - 36) / 24.0 > 0.55;
+
+        private static void CoastMap(Painter p)
+        {
+            var keep = new HashSet<(int, int)>();
+            for (int y = 0; y < 32; y++)
+                for (int x = 0; x < 48; x++)
+                {
+                    if (CoastRock(x, y)) { p.Floor(x, y, x, y, FloorType.Stone); keep.Add((x, y)); continue; }
+                    if (y >= SeaEdge(x)) { p.Water(x, y); keep.Add((x, y)); continue; }
+                    if (y >= SeaEdge(x) - 8) { p.Floor(x, y, x, y, FloorType.Dirt); keep.Add((x, y)); }   // kumsal
+                }
+            Trail(p, keep, 1, (5, 0), (5, 6), (20, 6), (20, 11));
+            // İskele: kumsaldan denize
+            for (int y = SeaEdge(20) - 1; y <= SeaEdge(20) + 5; y++) for (int x = 20; x <= 21; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
+            p.I("item.barrel", 21, SeaEdge(20) - 1);
+            p.PondAt(14, 27, F("item.fish_herring", 12), F("item.fish_mackerel", 8));
+            p.PondAt(30, 28, F("item.fish_herring", 8), F("item.fish_mackerel", 6));
+
+            // Kayalıkta gelgit çukurları
+            int pools = 0;
+            for (int y = 12; y < 26 && pools < 4; y += 3)
+                for (int x = 37; x < 47 && pools < 4; x += 3)
+                    if (CoastRock(x, y) && y < SeaEdge(x) + 2) { p.I("item.forage_tidepool", x, y); pools++; }
+            foreach (var x in new[] { 8, 15, 26, 32 }) p.I("item.forage_driftline", x, SeaEdge(x) - 1);
+            foreach (var x in new[] { 11, 24, 29 }) p.I("item.forage_sea_sand", x, SeaEdge(x) - 4);
+            Node(p, keep, "item.forage_chamomile", 30, 3);
+            Node(p, keep, "item.forage_sage", 40, 4);
+            Scatter(p, keep, 48, 32, 60, 300, rng => rng.Next(3) == 0 ? "item.tree_pine" : "item.tree_oak");
+        }
+
+        /// <summary>
+        /// Eski kayıt göçü: deniz kıyısı sonradan eklendi (20.11.2026). Bölge hâlâ kapalıysa açılır ve çizilir, gölden inen
+        /// patika döşenir. Eşyaları ve patikadaki ağaçların kaldırılmasını oyun katmanı yapar (StarterWorld.PlaceIn).
+        /// </summary>
+        public static bool EnsureCoast(GridMap m)
+        {
+            if (m == null || m.Width != WorldWidth || m.Height != WorldHeight) return false;
+            var probe = W(Coast, 24, 4);
+            if (!m.IsBlocked(probe)) return false;
+            for (int y = Coast.Y; y < Coast.Y + Coast.H; y++)
+                for (int x = Coast.X; x < Coast.X + Coast.W; x++) m.SetBlocked(new GridPos(x, y), false);
+            CoastMap(new Painter(m, Coast.X, Coast.Y));
+            new Painter(m, Lake.X, Lake.Y).Path(1, LakeToCoast);
+            ApplyPortals(m);
+            return true;
+        }
+
+        /// <summary>Deniz suyu mu (kıyı bölgesi; tuzludur, donmaz).</summary>
+        public static bool IsSea(GridMap m, GridPos p) => m != null && m.Width == WorldWidth && Coast.Contains(p);
+
+        /// <summary>Bir dünya karosu gölden kıyıya inen yeni patikanın üstünde mi (göçte oradaki ağaçlar kaldırılır).</summary>
+        public static bool OnLakeToCoastTrail(GridMap m, GridPos p) => Lake.Contains(p) && m.GetRoad(p) != RoadType.None && (p.X - Lake.X == 5 || p.Y - Lake.Y == 7);
 
         // ================= Sazlık (32x24) =================
         // Gölün doğu kıyısından girilir (yerel 0, 12-13). Dağınık su gözleri arasında ahşap yürüme yolu; kerevit ve yılan
