@@ -137,6 +137,9 @@ namespace Thatchwick.Core.Upbringing
         /// Boşta gösterisi: karakter beklerken çağrılır. Yakındaki karakterlere etkisi uygulanır.
         /// Gösteri yoksa null (oyun katmanı normal boşta animasyonunu oynatır).
         /// </summary>
+        /// <summary>Oyuncak gösterisi yapıldı (topaç şovu easter egg'i; belge 55 §1).</summary>
+        public event Action<ToyShow> Showed;
+
         public ToyShow IdleShow(Character c, IEnumerable<Character> nearby = null)
         {
             var near = new List<Character>();
@@ -155,6 +158,7 @@ namespace Thatchwick.Core.Upbringing
                 return sk;
             }
             Toys.ApplyShow(show, near, Today());
+            Showed?.Invoke(show);
             return show;
         }
 

@@ -6456,7 +6456,15 @@
       "rooms": [
         "outdoor"
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "confide_scarecrow",
+          "displayName": "Dertleş",
+          "need": "Social",
+          "durationDays": 0.05,
+          "moodlet": "scarecrow_chat"
+        }
+      ],
       "protectRadius": 4,
       "art": {
         "alongX": "iso_item_scarecrow_se_v2",
@@ -37062,6 +37070,13 @@
           "need": "Fun",
           "durationDays": 0.03,
           "moodlet": "thoughtful"
+        },
+        {
+          "id": "take_relic",
+          "displayName": "Al, bahçeye götür",
+          "need": "Fun",
+          "durationDays": 0.03,
+          "moodlet": "thoughtful"
         }
       ],
       "art": {
@@ -37095,6 +37110,13 @@
         {
           "id": "inspect_relic",
           "displayName": "İncele",
+          "need": "Fun",
+          "durationDays": 0.03,
+          "moodlet": "thoughtful"
+        },
+        {
+          "id": "take_relic",
+          "displayName": "Al, bahçeye götür",
           "need": "Fun",
           "durationDays": 0.03,
           "moodlet": "thoughtful"
@@ -37175,6 +37197,84 @@
         "alongX": "iso_wall_item_old_sword_sw_ne",
         "pivotX": 24.0,
         "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.old_boot",
+      "displayName": "Eski çizme",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "interactions": [],
+      "tags": [
+        "craftonly",
+        "oddity"
+      ]
+    },
+    {
+      "id": "item.message_bottle",
+      "displayName": "Şişe mektubu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "interactions": [],
+      "tags": [
+        "craftonly",
+        "oddity"
+      ]
+    },
+    {
+      "id": "item.helmet_nest_garden",
+      "displayName": "Kuş yuvalı miğfer (bahçe süsü)",
+      "category": "garden",
+      "price": 8,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [],
+      "beauty": 2,
+      "tags": [
+        "craftonly",
+        "oddity"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_helmet_nest_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.broken_shield_garden",
+      "displayName": "Kırık kalkan (bahçe süsü)",
+      "category": "garden",
+      "price": 8,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "interactions": [],
+      "beauty": 1,
+      "tags": [
+        "craftonly",
+        "oddity"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_broken_shield_ground_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
         "mirror": true,
         "pending": true
       }

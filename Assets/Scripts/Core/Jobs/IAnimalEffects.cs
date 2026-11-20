@@ -25,7 +25,9 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Yarışa hazırla (Hayvancılık 9): ilk yarışmada puan +8.</summary>
         PrepContest = 8,
         /// <summary>İnsan gibi konuşmayı dene (Gönül kazanma 9; belge 55 §3): çok çok nadiren hayvan derdini anlatır.</summary>
-        TalkLikeHuman = 9
+        TalkLikeHuman = 9,
+        /// <summary>Tavuğu kışkışla (belge 55, tavuk intikamı): aynı gün üçüncüsünde bütün kümes peşine düşer.</summary>
+        Shoo = 10
     }
 
     /// <summary>Hayvan işlerinin kuralları ve etkileri (Core.Animals.AnimalCare uygular).</summary>

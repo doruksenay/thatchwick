@@ -28,11 +28,32 @@ namespace Thatchwick.Core.Life
         public const string TooManyHellos = "oddity.too_many_hellos";
         public const string FortuneFourthWall = "oddity.fortune_fourth_wall";
 
+        // Küçük easter egg'ler (belge 55 §1, §2, §2b); olay kimlikleri OddityEvents'te.
+        public const string JohanWick = "oddity.johan_wick", HorselessKnight = "oddity.horseless_knight", Crier = "oddity.crier",
+            ScreamingGoat = "oddity.screaming_goat", CatGift = "oddity.cat_gift", AlexDecor = "oddity.alex_decor",
+            HoneyThief = "oddity.honey_thief", ServantCaught = "oddity.servant_caught", AprilFirst = "oddity.april_first",
+            Rumor = "oddity.rumor", NameTwin = "oddity.name_twin", NameSurprise = "oddity.name_surprise",
+            AbsentElder = "oddity.absent_elder", SameOutfit = "oddity.same_outfit", VillageMemory = "oddity.village_memory",
+            OldBoot = "oddity.old_boot", MessageBottle = "oddity.message_bottle", FishTale = "oddity.fish_tale",
+            MineTablet = "oddity.mine_tablet", SwordInStone = "oddity.sword_in_stone", TopShow = "oddity.top_show",
+            NeverStoppingTop = "oddity.never_stopping_top", OxStare = "oddity.ox_stare", BoxCat = "oddity.box_cat",
+            JealousDog = "oddity.jealous_dog", DogGift = "oddity.dog_gift", Howl = "oddity.howl",
+            CountingSheep = "oddity.counting_sheep", TheUsual = "oddity.the_usual", Regift = "oddity.regift",
+            Scarecrow = "oddity.scarecrow", ChickenRevenge = "oddity.chicken_revenge", CrowGift = "oddity.crow_gift",
+            OddBequest = "oddity.odd_bequest";
+
+        /// <summary>Olay kimliğinden tuhaflık kimliği ("johan_wick" → "oddity.johan_wick").</summary>
+        public static string Of(string eventId) => "oddity." + eventId;
+
         /// <summary>Sayfada gösterilen tuhaflıklar (sıra sabit; yenisi sona eklenir).</summary>
         public static readonly string[] All =
         {
             AnimalStare, AnimalTalk, TalkNickname, FoundSword, SwordBuried, SwordPloughshare, SwordOnWall,
-            HelmetNest, BrokenShield, FrogKiss, FrogCrown, TooManyHellos, FortuneFourthWall
+            HelmetNest, BrokenShield, FrogKiss, FrogCrown, TooManyHellos, FortuneFourthWall,
+            JohanWick, HorselessKnight, Crier, ScreamingGoat, CatGift, AlexDecor, HoneyThief, ServantCaught, AprilFirst,
+            Rumor, NameTwin, NameSurprise, AbsentElder, SameOutfit, VillageMemory, OldBoot, MessageBottle, FishTale,
+            MineTablet, SwordInStone, TopShow, NeverStoppingTop, OxStare, BoxCat, JealousDog, DogGift, Howl,
+            CountingSheep, TheUsual, Regift, Scarecrow, ChickenRevenge, CrowGift, OddBequest
         };
 
         public const string AchAnimalSpoke = "ach.animal_spoke";
@@ -93,7 +114,9 @@ namespace Thatchwick.Core.Life
         Cold = 2,
         Hungry = 3,
         Draft = 4,     // barınak konforu düşük
-        Lonely = 5     // türünden başka hayvan yok
+        Lonely = 5,    // türünden başka hayvan yok
+        LostYoung = 6, // yavrusu satıldı ya da kesildi: "Kuzumu nereye götürdünüz?"
+        SameFeed = 7   // art arda hep aynı yem: "Yine mi saman?"
     }
 
     [Serializable]
@@ -196,6 +219,55 @@ namespace Thatchwick.Core.Life
 
         public AnimalTalkService(int seed = 55) { _rng = new Random(seed); }
 
+        // ---- yavru ve yem geçmişi (dertler için) ----
+        /// <summary>Yavrusu götürülen ana bu kadar gün arar.</summary>
+        public const double LostYoungDays = 20;
+        /// <summary>Art arda bu kadar yemleme aynı yemse hayvanlar bıkar.</summary>
+        public const int SameFeedRuns = 3;
+        private readonly Dictionary<int, double> _lostYoung = new Dictionary<int, double>();
+        private readonly List<string> _feeds = new List<string>();
+
+        /// <summary>Bir hayvan satıldı ya da kesildi: anası yaşıyorsa yavrusunu arar.</summary>
+        public void OnAnimalTaken(Animal taken)
+        {
+            if (taken == null || taken.MotherId == 0) return;
+            _lostYoung[taken.MotherId] = Today();
+        }
+
+        /// <summary>Yemliğe yem kondu (yem eşyasının kimliği).</summary>
+        public void OnFeed(string feedItemId)
+        {
+            if (string.IsNullOrEmpty(feedItemId)) return;
+            _feeds.Add(feedItemId);
+            while (_feeds.Count > SameFeedRuns) _feeds.RemoveAt(0);
+        }
+
+        public bool MissesYoung(Animal a) => _lostYoung.TryGetValue(a.Id, out var day) && Today() - day <= LostYoungDays;
+        public bool BoredOfFeed => _feeds.Count >= SameFeedRuns && _feeds.All(f => f == _feeds[0]);
+
+        public string[] ExportHistory()
+        {
+            var list = new List<string>();
+            foreach (var kv in _lostYoung.OrderBy(k => k.Key)) list.Add("y|" + kv.Key + "|" + kv.Value.ToString("R", System.Globalization.CultureInfo.InvariantCulture));
+            foreach (var f in _feeds) list.Add("f|" + f);
+            return list.ToArray();
+        }
+
+        public void ImportHistory(string[] data)
+        {
+            _lostYoung.Clear(); _feeds.Clear();
+            if (data == null) return;
+            foreach (var line in data)
+            {
+                if (string.IsNullOrEmpty(line) || line.Length < 3) continue;
+                var parts = line.Split('|');
+                if (parts[0] == "f" && parts.Length >= 2) _feeds.Add(parts[1]);
+                else if (parts[0] == "y" && parts.Length >= 3 && int.TryParse(parts[1], out var id)
+                    && double.TryParse(parts[2], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var day))
+                    _lostYoung[id] = day;
+            }
+        }
+
         public IEnumerable<AnimalTalkRecord> Records => _records.Values;
         public AnimalTalkRecord RecordOf(int characterId) => _records.TryGetValue(characterId, out var r) ? r : null;
         public bool HasSpoken(Character c) => c != null && _records.ContainsKey(c.Id);
@@ -218,14 +290,16 @@ namespace Thatchwick.Core.Life
         public double ChanceFor(Character actor, Animal a) =>
             Math.Min(1.0, BaseChance * (IsCompanion(actor, a) ? CompanionFactor : 1.0));
 
-        /// <summary>Hayvanın gerçek durumundan dert seçer (öncelik: hasta, üşüyor, aç, konfor, yalnız).</summary>
+        /// <summary>Hayvanın gerçek durumundan dert seçer (öncelik: hasta, üşüyor, aç, konfor, yavru, yalnız, yem).</summary>
         public AnimalComplaint ComplaintOf(Animal a)
         {
             if (a.IsSick) return AnimalComplaint.Sick;
             if (a.IsCold) return AnimalComplaint.Cold;
             if (a.HungryDays > 0 || a.Fullness < 35f) return AnimalComplaint.Hungry;
             if (a.Comfort < 40f) return AnimalComplaint.Draft;
+            if (MissesYoung(a)) return AnimalComplaint.LostYoung;
             if (IsLonely(a)) return AnimalComplaint.Lonely;
+            if (BoredOfFeed) return AnimalComplaint.SameFeed;
             return AnimalComplaint.None;
         }
 
@@ -246,6 +320,8 @@ namespace Thatchwick.Core.Life
                 case AnimalComplaint.Hungry: return a.HungryDays > 0 || a.Fullness < 70f;
                 case AnimalComplaint.Draft: return a.Comfort < 50f;
                 case AnimalComplaint.Lonely: return IsLonely(a);
+                case AnimalComplaint.SameFeed: return BoredOfFeed;       // başka bir yem konunca geçer
+                case AnimalComplaint.LostYoung: return true;             // giderilemez; zamanla kapanır
                 default: return false;
             }
         }
@@ -297,6 +373,8 @@ namespace Thatchwick.Core.Life
                 case AnimalComplaint.Hungry: return "hungry";
                 case AnimalComplaint.Draft: return "draft";
                 case AnimalComplaint.Lonely: return "lonely";
+                case AnimalComplaint.LostYoung: return "lost_young";
+                case AnimalComplaint.SameFeed: return "same_feed";
                 default: return "none";
             }
         }
@@ -511,8 +589,11 @@ namespace Thatchwick.Core.Life
         public const double SwordDailyChance = 0.06;
         /// <summary>Yeni kuşakta sonraki kalıntının günlük şansı.</summary>
         public const double LaterDailyChance = 0.03;
-        /// <summary>Alınmayan sonraki kalıntı bu kadar gün sonra kaybolur (kuşlar uçar, ot bürür).</summary>
-        public const double LaterLifetimeDays = 28;
+        /// <summary>Miğfer ve kalkan kaybolmaz; incelendikten sonra alınıp bahçeye süs olarak konur (kullanıcı 20.11.2026).</summary>
+        public const string HelmetGardenItem = "item.helmet_nest_garden", ShieldGardenItem = "item.broken_shield_garden";
+
+        public static string GardenItemFor(RelicKind kind) =>
+            kind == RelicKind.HelmetNest ? HelmetGardenItem : kind == RelicKind.BrokenShield ? ShieldGardenItem : null;
 
         private readonly Random _rng;
 
@@ -566,7 +647,8 @@ namespace Thatchwick.Core.Life
         public RelicKind NextKind(int generation)
         {
             if (FoundCount == 0 && Kind == RelicKind.None) return RelicKind.Sword;
-            if (Stage == RelicStage.Lying || Stage == RelicStage.Inspected) return RelicKind.None;   // biri hâlâ yerde
+            if (Stage == RelicStage.Lying) return RelicKind.None;                                    // biri henüz bulunmadı
+            if (Kind == RelicKind.Sword && Stage == RelicStage.Inspected) return RelicKind.None;     // kılıcın akıbeti bekleniyor
             if (generation <= Generation) return RelicKind.None;
             return FoundCount % 2 == 1 ? RelicKind.HelmetNest : RelicKind.BrokenShield;
         }
@@ -593,13 +675,6 @@ namespace Thatchwick.Core.Life
             {
                 if (PlaceAt == null || PlaceAt(FlowerItem, X, Y)) Bloomed = true;
             }
-            // Alınmayan miğfer ve kalkan bir mevsim sonra kaybolur.
-            if (Kind != RelicKind.Sword && (Stage == RelicStage.Lying || Stage == RelicStage.Inspected) && day - SpawnDay >= LaterLifetimeDays)
-            {
-                Remove?.Invoke(ItemId);
-                Stage = RelicStage.Resolved;
-                ItemId = 0;
-            }
             var kind = NextKind(generation);
             if (!ShouldSpawn(kind, day, daysPerSeason, roll ?? _rng.NextDouble())) return RelicKind.None;
             var placed = Place?.Invoke(ItemFor(kind));
@@ -618,10 +693,11 @@ namespace Thatchwick.Core.Life
         /// İnceleme sahnesi. <paramref name="parentNearby"/>: çocuğun yanında hanenin bir büyüğü var mı (cevap verir).
         /// Aynı kalıntıya ikinci bakışta kısa bir satır döner, moodlet yenilenir ama sahne tekrar etmez.
         /// </summary>
-        public RelicLine Inspect(Character c, RelicKind kind, bool parentNearby = false)
+        public RelicLine Inspect(Character c, RelicKind kind, bool parentNearby = false, bool tracked = true)
         {
             if (c == null || kind == RelicKind.None) return null;
-            bool first = Stage == RelicStage.Lying;
+            // Yolda süs olarak bırakılmış eski bir kalıntıya bakmak (tracked = false) yeni kalıntının durumunu değiştirmez.
+            bool first = tracked && kind == Kind && Stage == RelicStage.Lying;
             if (first) { Stage = RelicStage.Inspected; FoundCount++; }
             c.AddMoodlet(MoodCatalog.Thoughtful);
             var res = new RelicLine { First = first };
@@ -651,7 +727,21 @@ namespace Thatchwick.Core.Life
             return true;
         }
 
-        /// <summary>Kılıcı al: envantere "eski kılıç" olarak girer. Miğfer ve kalkan alınmaz; bir mevsim sonra kendiliğinden kaybolur.</summary>
+        /// <summary>
+        /// Miğferi ya da kalkanı al: envantere bahçe süsü olarak girer. Yolda bırakılırsa orada süs olarak kalır;
+        /// yeni kalıntı çıktıktan sonra da alınabilir (takip edilen kalıntı olması gerekmez).
+        /// </summary>
+        public string TakeLater(RelicKind kind, int itemId)
+        {
+            string give = GardenItemFor(kind);
+            if (give == null || itemId == 0) return null;
+            Remove?.Invoke(itemId);
+            AddToHouse?.Invoke(give, 1);
+            if (itemId == ItemId) { Stage = RelicStage.Resolved; ItemId = 0; }
+            return give;
+        }
+
+        /// <summary>Kılıcı al: envantere "eski kılıç" olarak girer.</summary>
         public string Take()
         {
             if (Kind != RelicKind.Sword || Stage == RelicStage.Resolved || Stage == RelicStage.None) return null;
@@ -734,5 +824,9 @@ namespace Thatchwick.Core.Life
         public string[] seen;
         public AnimalTalkSave[] talks;
         public RelicSave relic;
+        /// <summary>Yavru ve yem geçmişi (hayvanın derdi için).</summary>
+        public string[] talkHistory;
+        /// <summary>Küçük easter egg'lerin sayaç ve bayrakları (OddityEvents).</summary>
+        public string[] events;
     }
 }

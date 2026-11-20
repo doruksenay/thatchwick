@@ -99,6 +99,7 @@ namespace Thatchwick.Core.Life
         // Balık: defter, sudaki efsane (Balıkçılık 10, yılda bir), midyeden inci.
         private void AttachFishing(Thatchwick.Core.Work.FarmWork farm)
         {
+            farm.FishCaught += OnOddFish;   // eski çizme, şişe mektubu, dev balık (belge 55 §1)
             farm.FishCaught += (c, fish) =>
             {
                 Book.Record(fish);

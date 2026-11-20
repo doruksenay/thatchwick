@@ -185,6 +185,9 @@ namespace Thatchwick.Core.Clothing
             return EquipError.None;
         }
 
+        /// <summary>Bir giysi giyildi (takı hariç): "aynı kıyafet" easter egg'i son değişimi buradan bilir (belge 55 §2b).</summary>
+        public event Action<Character> Equipped;
+
         public EquipError Equip(Character c, ClothingInstance it, OutfitKind kind)
         {
             var err = CanEquip(c, it, kind);
@@ -201,6 +204,7 @@ namespace Thatchwick.Core.Clothing
                 return EquipError.None;
             }
             o.Slots[ModelOf(it).Slot] = it.Id;
+            Equipped?.Invoke(c);
             return EquipError.None;
         }
 

@@ -937,6 +937,8 @@ namespace Thatchwick.Core.Animals
                     return Prepared.Contains(a.Id) ? $"{a.Name} yarışmaya hazır." : null;
                 case AnimalAction.TalkLikeHuman:
                     return Talk == null ? "Bilinmeyen iş." : Talk.CanTry(actor, a);
+                case AnimalAction.Shoo:
+                    return a.Species.Id == "animal.chicken" ? null : "Yalnızca tavuk kışkışlanır.";
                 default: return "Bilinmeyen iş.";
             }
         }
@@ -953,6 +955,7 @@ namespace Thatchwick.Core.Animals
                 case AnimalAction.Treat: return 0.06;
                 case AnimalAction.PrepContest: return 0.1;
                 case AnimalAction.TalkLikeHuman: return 0.04;
+                case AnimalAction.Shoo: return 0.01;
                 default: return 0.02;
             }
         }
@@ -994,6 +997,7 @@ namespace Thatchwick.Core.Animals
                     Prepared.Add(a.Id);
                     _animals.AddAnimalXp(a, 5);
                     ok = true; break;
+                case AnimalAction.Shoo: ok = true; break;   // sayım ve intikam LifeSystems'te (Done)
                 case AnimalAction.TalkLikeHuman:
                     // Sonuç (hayvan baktı ya da konuştu) Talk.Tried ile duyurulur.
                     ok = Talk?.Try(actor, a) != null;

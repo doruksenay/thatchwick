@@ -26,6 +26,7 @@ namespace Thatchwick.Core.Life
         {
             var s = new ClothingService(Content.Clothing) { Moods = Content.Moods ?? Thatchwick.Core.Mood.MoodCatalog.Default };
             s.Remark += (villager, target, key) => ClothingRemark?.Invoke(villager, target, key);
+            s.Equipped += c => { if (c != null) OddEvents?.OnOutfitChanged(c.Id, Clock.TotalDays); };
             return s;
         }
 

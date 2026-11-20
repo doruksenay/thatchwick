@@ -352,6 +352,7 @@ namespace Thatchwick.Core.Life
             population.Content = content;
             population.Village = Village;
             population.MemberDied += OnMemberDied;
+            WireOddityEvents(seed);   // küçük easter egg'ler (belge 55); bütün alt sistemler kurulduktan sonra
         }
 
         /// <summary>
@@ -737,7 +738,9 @@ namespace Thatchwick.Core.Life
             Upbringing.Attach(animals, care);
             Merchant.Animals = animals;
             AnimalTalk.Animals = () => animals.Animals;   // hayvanla konuşma (belge 55 §3)
-            if (care != null) care.Talk = AnimalTalk;
+            if (care != null) { care.Talk = AnimalTalk; care.Done += OnOddAnimalCare; }
+            _oddAnimals = animals;
+            animals.TakenAway += AnimalTalk.OnAnimalTaken;
         }
 
         public void Attach(PlantSystem plants)
@@ -779,6 +782,7 @@ namespace Thatchwick.Core.Life
             animals.RiderFell += (horse, rider) =>
             {
                 Injuries.InjureById(rider, "horse_fall");   // moodlet ve bildirim InjurySystem'den
+                OnOddFall(rider);                           // köyün hafızası (belge 55 §2b)
             };
             animals.HorseRefused += horse => Say($"{horse.Name} engelin önünde ürktü.", NoticeLevel.Info);
             // Kurt saldırısı (31-4.1): çoban = "Hayvanlar" görevli genç yetişkin ve üstü.
@@ -835,7 +839,7 @@ namespace Thatchwick.Core.Life
             market.IsFairDay = () => Festivals.TodaysFestival() != null;
             market.CalendarFactor = def => FastingCalendar.PriceFactor(def, IsFasting);   // perhiz günleri (belge 48 §9.4)
         }
-        public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; Home.Build = build; }
+        public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; Home.Build = build; build.Furnished += OnOddFurnished; }
         /// <summary>Depo: sandığa demir kuşak kapasite verir (belge 45).</summary>
         public void Attach(Thatchwick.Core.Build.StorageService storage) { storage.ExtraStorage = Home.ExtraStorage; }
         /// <summary>Doldurulan dekora giren yiyecek envanterdeki en eski partinin yaşını taşır.</summary>
@@ -864,6 +868,7 @@ namespace Thatchwick.Core.Life
             foreach (var con in interaction.AllConsumed())
                 if (Content.Items.TryGet(con.ItemId, out var d) && d.HasTag(CoffeeHabits.Tag)) { coffee = true; break; }
             if (coffee) Coffee.OnCoffee(c, Clock.TotalDays);
+            if (interaction.AddFeed > 0) foreach (var con in interaction.AllConsumed()) { AnimalTalk.OnFeed(con.ItemId); break; }   // "yine mi saman?" (belge 55 §3.2)
             if (interaction.Id == FortuneInteraction && !FortuneOddity(c)) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
             if (IsHoneyHarvest(interaction)) TrySting(c);   // petek kesmede sokma OnInteractionAppliedOn'da
             OnClothingCrafted(c, interaction);
@@ -1144,7 +1149,7 @@ namespace Thatchwick.Core.Life
                 Mischief.BoarVisit(Clock.Season, out var boarMsg);
                 if (boarMsg != null) Say(boarMsg, boarMsg.Contains("çiğnendi") ? NoticeLevel.Warning : NoticeLevel.Info);
                 var gift = Mischief.CrowGift(House);
-                if (gift != null) Say(gift, NoticeLevel.Info);
+                if (gift != null) { Say(gift, NoticeLevel.Info); Oddities.Mark(OddityIds.CrowGift); }
             }
             if (Roamers != null)
             {

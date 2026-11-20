@@ -41,7 +41,7 @@ namespace Thatchwick.Core.Mood
         // Easter egg'ler (belge 55): hayvanla konuşma, bulunan silah, kurbağayı öpme. İkonlar: ui_icon_moodlet_<kimlik> (iş 497).
         public const string AnimalSpoke = "animal_spoke", Confidant = "confidant", NotCrazy = "not_crazy", Believed = "believed",
             FamilyTale = "family_tale", NobodyBelieves = "nobody_believes", OddChat = "odd_chat", Thoughtful = "thoughtful",
-            LetDown = "let_down";
+            LetDown = "let_down", ScarecrowChat = "scarecrow_chat";
 
         // Kaza yaraları (InjurySystem; süre yaraya göre ayarlanır, buradaki varsayılan).
         public const string InjuredAxe = "injured_axe", InjuredBurn = "injured_burn", InjuredAnimal = "injured_animal",
@@ -131,6 +131,7 @@ namespace Thatchwick.Core.Mood
             c.Register(M(OddChat, "Tuhaf bir sohbet", 2, 0.25, "Biri ona hayvanların konuştuğunu anlattı."));
             c.Register(M(Thoughtful, "Düşünceli", 3, 1.0, "Barışın kıymetini düşündü."));
             c.Register(M(LetDown, "Hayal kırıklığı", -2, 0.25, "Kurbağayı öptü. Hiçbir şey olmadı."));
+            c.Register(M(ScarecrowChat, "Korkulukla dertleşti", 2, 0.25, "Derdini korkuluğa anlattı."));
             m = M(GoodHarvest, "Bereketli hasat", 10, 1.0, "Ürün topladı: çiftçilikte %20 fazla XP."); m.SkillXp[SkillType.Farming] = 0.20f; c.Register(m);
             m = M(Proud, "Gururlu", 15, 1.0, "Kendi elleriyle bir eşya yaptı: marangozluk %10 hızlı."); m.SkillSpeed[SkillType.Carpentry] = 0.10f; c.Register(m);
             c.Register(M(PetLove, "Hayvan dostu", 10, 0.5, "Evcil hayvanıyla oynadı."));

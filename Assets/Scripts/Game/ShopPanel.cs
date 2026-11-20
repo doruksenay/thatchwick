@@ -39,6 +39,8 @@ namespace Thatchwick.Game
         public Thatchwick.Core.Animals.AnimalSystem Animals { get; set; }
         public Func<int> AccountLevel { get; set; }
         public ShopDef Shop => _shop;
+        /// <summary>Meyhaneden bir şey alındı (alan, eşya): "her zamankinden mi?" easter egg'i (belge 55 §2b).</summary>
+        public System.Action<Character, string> TavernOrdered { get; set; }
 
         public ShopPanel(Market market, BuildService build, Household house, ContentDatabase content, WorldState world,
             Func<Character> player, Func<JobRunner> runner, Func<double> hour, Func<long> day, Func<ShopDef, Character> owner,
@@ -182,6 +184,7 @@ namespace Thatchwick.Game
                     {
                         var r = _market.Buy(g.Id);
                         _status = r.Ok ? $"{g.DisplayName} alındı." : r.Reason;
+                        if (r.Ok && _shop != null && _shop.Id == "tavern") TavernOrdered?.Invoke(_player(), g.Id);   // "her zamankinden mi?" (belge 55)
                     }
                     GUILayout.EndHorizontal();
                 }

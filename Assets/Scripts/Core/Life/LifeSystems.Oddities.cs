@@ -110,6 +110,7 @@ namespace Thatchwick.Core.Life
             family.AnimalTalk = AnimalTalk;
             AnimalTalk.AddAffection = (a, b, d) => family.SetAffection(a, b, family.Affection(a, b) + d);
             family.ToldAnimalTalk += (teller, listener, res) => OddityLine?.Invoke(res.Line, teller.Id);
+            family.Chatted += OnOddChat;   // isim kardeşi, lakap, aynı kıyafet, dalgın dede, kulaktan kulağa
             // Fazla selam: aynı kişiyle günün üçüncü sohbeti (çocukların kovalamacası sayılmaz).
             family.Chatted += (a, b) =>
             {
@@ -123,6 +124,8 @@ namespace Thatchwick.Core.Life
         private void AttachOddities(JobRunner runner)
         {
             runner.ItemUsed += OnRelicUsed;
+            runner.ItemUsed += OnOddItemUsed;   // korkuluk, koyun saymak
+            runner.WorkDone += OnOddWork;       // kulaktan kulağa
             runner.InteractionCompleted += (c, interaction) =>
             {
                 if (c == null || c.IsVillager || interaction == null || !interaction.IsCraft) return;
@@ -135,11 +138,13 @@ namespace Thatchwick.Core.Life
         {
             if (c == null || item == null || interaction == null || c.IsVillager) return;
             var kind = FoundRelicService.KindOf(item.Def.Id);
-            if (kind == RelicKind.None || item.Id != Relics.ItemId) return;
+            if (kind == RelicKind.None) return;
+            bool tracked = item.Id == Relics.ItemId;
+            if (kind == RelicKind.Sword && !tracked) return;
             bool inspect = interaction.Id == FoundRelicService.InspectInteraction;
-            if (inspect || Relics.Stage == RelicStage.Lying)
+            if (inspect || (tracked && Relics.Stage == RelicStage.Lying))
             {
-                var line = Relics.Inspect(c, kind, ParentNearby(c));
+                var line = Relics.Inspect(c, kind, ParentNearby(c), tracked);
                 if (line != null)
                 {
                     OddityLine?.Invoke(line.Line, c.Id);
@@ -152,8 +157,13 @@ namespace Thatchwick.Core.Life
             }
             else if (interaction.Id == FoundRelicService.TakeInteraction)
             {
-                string got = Relics.Take();
-                if (got != null) OddityLine?.Invoke(LocText.Of("core.oddity.relic.taken", ("who", c.Name)), c.Id);
+                if (kind == RelicKind.Sword)
+                {
+                    string got = Relics.Take();
+                    if (got != null) OddityLine?.Invoke(LocText.Of("core.oddity.relic.taken", ("who", c.Name)), c.Id);
+                }
+                else if (Relics.TakeLater(kind, item.Id) != null)
+                    OddityLine?.Invoke(LocText.Of("core.oddity.relic.taken_garden", ("who", c.Name)), c.Id);   // miğfer ve kalkan bahçe süsü olur
             }
         }
 
@@ -170,6 +180,7 @@ namespace Thatchwick.Core.Life
         private void OdditiesNewDay(long day)
         {
             AnimalTalk.OnNewDay();
+            OddEventsNewDay(day);
             Relics.OnNewDay(day, Clock.Config.DaysPerSeason, Clock.Season == Season.Spring, HouseholdGeneration());
         }
 
@@ -196,7 +207,9 @@ namespace Thatchwick.Core.Life
         {
             seen = Oddities.Export(),
             talks = AnimalTalk.Export(),
-            relic = Relics.Export()
+            relic = Relics.Export(),
+            talkHistory = AnimalTalk.ExportHistory(),
+            events = OddEvents.Export()
         };
 
         private void ImportOddities(OdditySave data)
@@ -204,6 +217,8 @@ namespace Thatchwick.Core.Life
             Oddities.Import(data?.seen);
             AnimalTalk.Import(data?.talks);
             Relics.Import(data?.relic);
+            AnimalTalk.ImportHistory(data?.talkHistory);
+            OddEvents.Import(data?.events);
         }
     }
 }

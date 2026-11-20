@@ -86,7 +86,9 @@ namespace Thatchwick.Core.Tests
             var db = ContentFilesTests.LoadDb(out var errors);
             Assert.True(errors.Count == 0, string.Join("\n", errors));
             foreach (var id in new[] { FoundRelicService.SwordItem, FoundRelicService.HelmetItem, FoundRelicService.ShieldItem, FoundRelicService.OldSwordItem,
-                         "item.sword_ploughshare", "item.old_sword_wall", FoundRelicService.FlowerItem })
+                         "item.sword_ploughshare", "item.old_sword_wall", FoundRelicService.FlowerItem,
+                         FoundRelicService.HelmetGardenItem, FoundRelicService.ShieldGardenItem, LifeSystems.OldBootItem,
+                         LifeSystems.MessageBottleItem, "item.bone", LifeSystems.RelicCoinItem, LifeSystems.SpinningTopItem })
                 Assert.True(db.Items.Contains(id), id);
             Assert.True(db.Items.TryGet(FoundRelicService.SwordItem, out var sword));
             foreach (var inter in new[] { FoundRelicService.InspectInteraction, FoundRelicService.BuryInteraction, FoundRelicService.TakeInteraction })
@@ -465,22 +467,37 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
-        public void LaterGenerations_FindOtherRelics_OnePerGeneration()
+        public void LaterGenerations_FindOtherRelics_WhichStayAsOrnaments()
         {
-            var svc = Relics(out _, out _);
+            string given = null; int removed = 0;
+            var svc = new FoundRelicService { Book = new OddityBook(), Place = id => (77, 5, 6), Remove = id => removed = id, AddToHouse = (id, n) => given = id };
             var c = new Character(1, "Ayla", new GridPos(0, 0), true); c.SetAge(40);
             svc.OnNewDay(40, 28, false, 1, roll: 0.0);
             svc.Inspect(c, RelicKind.Sword);
             svc.Take();
             // Aynı kuşakta yenisi çıkmaz.
             Assert.Equal(RelicKind.None, svc.OnNewDay(60, 28, false, 1, roll: 0.0));
-            // Yeni kuşak: içinde kuş yuvası olan miğfer. Alınmaz; bir mevsim sonra kaybolur.
+            // Yeni kuşak: içinde kuş yuvası olan miğfer.
             Assert.Equal(RelicKind.HelmetNest, svc.OnNewDay(300, 28, false, 2, roll: 0.0));
-            Assert.Null(svc.Take());
+            Assert.Null(svc.Take());                                                         // Take yalnızca kılıç için
+            Assert.Equal(RelicKind.None, svc.OnNewDay(301, 28, false, 3, roll: 0.0));        // bulunmadan yenisi çıkmaz
             Assert.Equal("core.oddity.relic.helmet.adult", svc.Inspect(c, RelicKind.HelmetNest).Line.Key);
-            Assert.Equal(RelicKind.None, svc.OnNewDay(300 + 28, 28, false, 2, roll: 0.99));
-            Assert.Equal(RelicStage.Resolved, svc.Stage);
+            // Kaybolmaz: mevsimler sonra da yerinde (kullanıcı 20.11.2026).
+            svc.OnNewDay(300 + 90, 28, false, 2, roll: 0.99);
+            Assert.Equal(77, svc.ItemId);
+            Assert.Equal(RelicStage.Inspected, svc.Stage);
+            // Yolda süs olarak bırakılsa da sonraki kuşakta yenisi çıkar; eskisi sonradan da alınabilir.
+            svc.Place = id => (88, 7, 7);
             Assert.Equal(RelicKind.BrokenShield, svc.OnNewDay(600, 28, false, 3, roll: 0.0));
+            Assert.Equal(FoundRelicService.HelmetGardenItem, svc.TakeLater(RelicKind.HelmetNest, 77));
+            Assert.Equal(77, removed);
+            Assert.Equal(FoundRelicService.HelmetGardenItem, given);
+            Assert.Equal(RelicStage.Lying, svc.Stage);                                       // yeni kalkanın durumu bozulmaz
+            Assert.False(svc.Inspect(c, RelicKind.HelmetNest, tracked: false).First);
+            Assert.Equal(RelicStage.Lying, svc.Stage);
+            Assert.True(svc.Inspect(c, RelicKind.BrokenShield).First);
+            Assert.Equal(FoundRelicService.ShieldGardenItem, svc.TakeLater(RelicKind.BrokenShield, 88));
+            Assert.Equal(RelicStage.Resolved, svc.Stage);
         }
 
         [Fact]
@@ -647,6 +664,454 @@ namespace Thatchwick.Core.Tests
             {
                 Assert.True(en.TryGet(key, out _), "EN eksik: " + key);
                 Assert.True(tr.TryGet(key, out _), "TR eksik: " + key);
+            }
+        }
+        // ---- hayvanın derdi: yavru ve yem geçmişi ----
+
+        [Fact]
+        public void Complaint_LostYoung_WhenOffspringIsSold()
+        {
+            var k = Make();
+            var mother = Cow(k, id: 50);
+            Cow(k, id: 51);
+            var calf = k.Animals.Restore(52, k.Db.Animals.Get("animal.cow"), new GridPos(5, 4), 0, 100f, 5, 0, 0, 30f, comfort: 80f, motherId: 50);
+            Assert.Equal(AnimalComplaint.None, k.Life.AnimalTalk.ComplaintOf(mother));
+            Assert.True(k.Animals.Sell(calf.Id, k.House).Ok);
+            Assert.Equal(AnimalComplaint.LostYoung, k.Life.AnimalTalk.ComplaintOf(mother));
+            Assert.Equal("lost_young", AnimalTalkService.ComplaintKey(AnimalComplaint.LostYoung));
+            // Zamanla unutur.
+            k.Clock.Restore(AnimalTalkService.LostYoungDays + 1, 1);
+            Assert.Equal(AnimalComplaint.None, k.Life.AnimalTalk.ComplaintOf(mother));
+        }
+
+        [Fact]
+        public void Complaint_SameFeed_AfterThreeIdenticalFeedings_UntilVariety()
+        {
+            var k = Make();
+            var cow = Cow(k, id: 50);
+            Cow(k, id: 51);
+            var talk = k.Life.AnimalTalk;
+            talk.OnFeed("item.feed"); talk.OnFeed("item.feed");
+            Assert.Equal(AnimalComplaint.None, talk.ComplaintOf(cow));
+            talk.OnFeed("item.feed");
+            Assert.Equal(AnimalComplaint.SameFeed, talk.ComplaintOf(cow));
+            Assert.True(talk.StillTroubled(cow, AnimalComplaint.SameFeed));
+            talk.OnFeed("item.hay");
+            Assert.False(talk.StillTroubled(cow, AnimalComplaint.SameFeed));
+            // Kayıt: geçmiş korunur.
+            var copy = new AnimalTalkService();
+            talk.OnFeed("item.hay"); talk.OnFeed("item.hay");
+            copy.ImportHistory(talk.ExportHistory());
+            Assert.True(copy.BoredOfFeed);
+        }
+
+        // ---- küçük easter egg'ler ----
+
+        private static (LocText line, int count) Capture(Kit k, Action act)
+        {
+            LocText last = default; int n = 0;
+            Action<LocText, int> h = (l, id) => { last = l; n++; };
+            k.Life.OddityLine += h;
+            act();
+            k.Life.OddityLine -= h;
+            return (last, n);
+        }
+
+        private static Animal Pet(Kit k, string species, int id, string name = null)
+        {
+            var a = k.Animals.Restore(id, k.Db.Animals.Get(species), new GridPos(4, 4), 0, 100f, 40, 0, 0, 30f, comfort: 80f);
+            if (name != null) a.Name = name;
+            return a;
+        }
+
+        [Fact]
+        public void OddityEvents_Chance_Force_AndDailyCounters()
+        {
+            var ev = new OddityEvents { Roll = () => 0.99 };
+            Assert.False(ev.Chance(OddityEvents.Crier, 0.5));
+            ev.Force(OddityEvents.Crier);
+            Assert.True(ev.Chance(OddityEvents.Crier, 0));
+            Assert.False(ev.Chance(OddityEvents.Crier, 0));          // zorlama bir kez
+            Assert.True(ev.FirstToday("x", 3));
+            Assert.False(ev.FirstToday("x", 3));
+            Assert.True(ev.FirstToday("x", 4));
+            Assert.Equal(1, ev.CountToday("y", 1));
+            Assert.Equal(2, ev.CountToday("y", 1));
+            Assert.Equal(1, ev.CountToday("y", 2));
+            Assert.True(OddityEvents.IsFullMoon(13));
+            Assert.False(OddityEvents.IsFullMoon(12));
+            Assert.True(OddityEvents.IsNight(0.9));
+            Assert.False(OddityEvents.IsNight(0.5));
+        }
+
+        [Fact]
+        public void JohanWick_PetsTheDog_LeavesACoin_MoreOftenForDaisy()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            var dog = Pet(k, "animal.dog", 70, "Daisy");
+            float before = dog.Friendship;
+            k.Life.OddEvents.Force(OddityEvents.JohanWick);
+            var (line, n) = Capture(k, () => k.Life.OddEventsNewDay(5));
+            Assert.Equal("core.oddity.ev.johan_wick.nofield", line.Key);
+            Assert.Equal(before + 5f, dog.Friendship);
+            Assert.Equal(1, k.House.Count(LifeSystems.RelicCoinItem));
+            Assert.True(k.Life.Oddities.Has(OddityIds.JohanWick));
+            Assert.True(OddityEvents.JohanChance * OddityEvents.JohanDaisyFactor > OddityEvents.JohanChance);
+        }
+
+        [Fact]
+        public void JohanWick_NeedsADog()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            k.Life.OddEvents.Force(OddityEvents.JohanWick);
+            k.Life.OddEventsNewDay(5);
+            Assert.False(k.Life.Oddities.Has(OddityIds.JohanWick));
+            Assert.Equal(0, k.House.Count(LifeSystems.RelicCoinItem));
+        }
+
+        [Fact]
+        public void DailyEvents_Crier_Goat_Cat_AprilFirst()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            k.Life.OddEvents.Roll = () => 0.999;      // zorlanmayan hiçbir şey olmasın
+            Assert.Equal(0, Capture(k, () => k.Life.OddEventsNewDay(1)).count);
+
+            k.Life.OddEvents.Force(OddityEvents.Crier);
+            Assert.StartsWith("core.oddity.ev.crier.v", Capture(k, () => k.Life.OddEventsNewDay(2)).line.Key);
+            Assert.True(k.Life.Oddities.Has(OddityIds.Crier));
+
+            k.Life.OddEvents.Force(OddityEvents.ScreamingGoat);
+            Assert.Equal(0, Capture(k, () => k.Life.OddEventsNewDay(3)).count);   // keçi yok
+            k.Life.OddEvents.Chance(OddityEvents.ScreamingGoat, 0);
+            Pet(k, "animal.goat", 71);
+            k.Life.OddEvents.Force(OddityEvents.ScreamingGoat);
+            Assert.StartsWith("core.oddity.ev.screaming_goat.", Capture(k, () => k.Life.OddEventsNewDay(4)).line.Key);
+
+            Pet(k, "animal.cat", 72, "Alex");
+            k.Life.OddEvents.Force(OddityEvents.CatGift);
+            Assert.Equal("core.oddity.ev.cat_gift", Capture(k, () => k.Life.OddEventsNewDay(5)).line.Key);
+
+            // 1 Nisan: gerçek tarih; gerçek yılda bir kez.
+            k.Life.RealNow = () => new DateTime(2027, 4, 1);
+            Assert.Equal("core.oddity.ev.april_first.crier", Capture(k, () => k.Life.OddEventsNewDay(6)).line.Key);
+            Assert.Equal(0, Capture(k, () => k.Life.OddEventsNewDay(7)).count);
+            k.Life.RealNow = () => new DateTime(2027, 4, 2);
+            Assert.Equal(0, Capture(k, () => k.Life.OddEventsNewDay(8)).count);
+        }
+
+        [Fact]
+        public void Chat_NameTwin_NameSurprise_NicknameAndElder()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.999;
+            var a = Person(k, 1, "Murat");
+            var twin = Person(k, 2, "Murat", villager: true);
+            Assert.Equal("core.oddity.ev.name_twin", Capture(k, () => k.Life.OnOddChat(a, twin)).line.Key);
+            Assert.Equal(0, Capture(k, () => k.Life.OnOddChat(a, twin)).count);    // bir kez
+
+            var doruk = Person(k, 3, "Doruk");
+            var v = Person(k, 4, "Zeynep", villager: true);
+            Assert.Equal("core.oddity.ev.name_surprise.doruk", Capture(k, () => k.Life.OnOddChat(doruk, v)).line.Key);
+            Assert.Equal(0, Capture(k, () => k.Life.OnOddChat(doruk, v)).count);
+            Assert.Null(LifeSystems.NameSurpriseKey("Ayla"));
+
+            var elder = Person(k, 5, "Dede", age: ElderAge, villager: true);
+            k.Life.OddEvents.Force(OddityEvents.AbsentElder);
+            Assert.Equal("core.oddity.ev.absent_elder", Capture(k, () => k.Life.OnOddChat(a, elder)).line.Key);
+            // İki hane üyesi ya da iki köylü arasında tetiklenmez.
+            k.Life.OddEvents.Force(OddityEvents.AbsentElder);
+            Assert.Equal(0, Capture(k, () => k.Life.OnOddChat(a, doruk)).count);
+        }
+
+        [Fact]
+        public void Rumor_ComesBackExaggeratedTheNextDay()
+        {
+            var ev = new OddityEvents { Book = new OddityBook(), Roll = () => 0.0 };
+            Assert.False(ev.OnGossip(1, "Ayla", 3));          // bugün dikkat çekici bir iş yok
+            ev.NoteWork(1, "fish", 3);
+            Assert.True(ev.OnGossip(1, "Ayla", 3));
+            Assert.False(ev.OnGossip(1, "Ayla", 3));          // bekleyen söylenti varken ikincisi olmaz
+            Assert.Null(ev.TakeRumor(3));                     // aynı gün dönmez
+            var r = ev.TakeRumor(4);
+            Assert.Equal(("Ayla", "fish"), r.Value);
+            Assert.Null(ev.TakeRumor(5));
+            Assert.True(ev.Book.Has(OddityIds.Rumor));
+        }
+
+        [Fact]
+        public void TheUsual_AfterTenOrders_ThenForTheGrandchildren()
+        {
+            var ev = new OddityEvents { Book = new OddityBook() };
+            for (int i = 1; i < OddityEvents.UsualOrders; i++) Assert.Equal(0, ev.OnTavernOrder("item.stew", "Ayla", 1, i));
+            Assert.Equal(1, ev.OnTavernOrder("item.stew", "Ayla", 1, 10));
+            Assert.Equal("Ayla", ev.UsualName);
+            Assert.Equal(0, ev.OnTavernOrder("item.stew", "Ayla", 1, 11));     // aynı kuşak: tekrar söylenmez
+            Assert.Equal(0, ev.OnTavernOrder("item.bread", "Elif", 3, 50));    // başka şey
+            Assert.Equal(2, ev.OnTavernOrder("item.stew", "Elif", 3, 50));     // torun: "dedeninkinden mi?"
+            Assert.Equal(0, ev.OnTavernOrder("item.stew", "Elif", 3, 50));     // günde bir
+        }
+
+        [Fact]
+        public void VillageMemory_RemembersAnEarlierGenerationsFall()
+        {
+            var ev = new OddityEvents { Book = new OddityBook() };
+            Assert.Null(ev.OnFall("Dede", 1));
+            Assert.Null(ev.OnFall("Kardeş", 1));          // aynı kuşak
+            Assert.Equal("Dede", ev.OnFall("Torun", 3));
+            Assert.True(ev.Book.Has(OddityIds.VillageMemory));
+        }
+
+        [Fact]
+        public void SameOutfit_OncePerSeason_ResetsOnChange()
+        {
+            var ev = new OddityEvents { Book = new OddityBook() };
+            Assert.False(ev.SameOutfitTooLong(1, 0, 28));     // ilk bakış: sayaç başlar
+            Assert.False(ev.SameOutfitTooLong(1, 20, 28));
+            Assert.True(ev.SameOutfitTooLong(1, 28, 28));
+            Assert.False(ev.SameOutfitTooLong(1, 30, 28));    // söylendi; bir mevsim sonra
+            ev.OnOutfitChanged(1, 50);
+            Assert.False(ev.SameOutfitTooLong(1, 70, 28));
+            Assert.True(ev.SameOutfitTooLong(1, 78, 28));
+        }
+
+        [Fact]
+        public void Shoo_ThirdTimeInADay_TheCoopChases()
+        {
+            var k = Make();
+            var c = Person(k, 1, "Ayla");
+            var hen = Pet(k, "animal.chicken", 80, "Pıtır");
+            var cow = Cow(k);
+            Assert.NotNull(k.Care.CanDo(c, cow.Id, AnimalAction.Shoo));       // yalnızca tavuk
+            Assert.Null(k.Care.CanDo(c, hen.Id, AnimalAction.Shoo));
+            Assert.Equal("core.oddity.ev.shoo", Capture(k, () => k.Care.Apply(c, hen.Id, AnimalAction.Shoo)).line.Key);
+            k.Care.Apply(c, hen.Id, AnimalAction.Shoo);
+            Assert.False(k.Life.Oddities.Has(OddityIds.ChickenRevenge));
+            Assert.Equal("core.oddity.ev.chicken_revenge", Capture(k, () => k.Care.Apply(c, hen.Id, AnimalAction.Shoo)).line.Key);
+            Assert.True(k.Life.Oddities.Has(OddityIds.ChickenRevenge));
+            Assert.Equal(0, Capture(k, () => k.Care.Apply(c, hen.Id, AnimalAction.Shoo)).count);   // dördüncüde sessiz
+        }
+
+        [Fact]
+        public void Dog_ThousandthPat_BringsAGift_AndGetsJealousOfTheCat()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.999;
+            var c = Person(k, 1, "Ayla");
+            var dog = Pet(k, "animal.dog", 70, "Karabaş");
+            var cat = Pet(k, "animal.cat", 72, "Alex");
+            k.Life.OddEvents.Set("pets:" + dog.Id, OddityEvents.DogGiftPets - 1);
+            var got = Capture(k, () => k.Care.Apply(c, dog.Id, AnimalAction.Pet));
+            Assert.Equal("core.oddity.ev.dog_gift.bone", got.line.Key);
+            Assert.Equal(1, k.House.Count("item.bone"));
+            Assert.True(k.Life.Oddities.Has(OddityIds.DogGift));
+
+            // Kıskanç köpek: bugün sevilmemiş köpek, kedi sevilirken araya girer.
+            dog.PetCooldownDays = 0;
+            k.Life.OddEvents.Force(OddityEvents.JealousDog);
+            Assert.Equal("core.oddity.ev.jealous_dog", Capture(k, () => k.Care.Apply(c, cat.Id, AnimalAction.Pet)).line.Key);
+        }
+
+        [Fact]
+        public void Fishing_Boot_Bottle_AndFishTale()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.999;
+            var c = Person(k, 1, "Ayla");
+            Assert.Equal(0, Capture(k, () => k.Life.OnOddFish(c, "item.fish_carp")).count);
+            k.Life.OddEvents.Force(OddityEvents.OldBoot);
+            Assert.Equal("core.oddity.ev.old_boot", Capture(k, () => k.Life.OnOddFish(c, "item.fish_carp")).line.Key);
+            Assert.Equal(1, k.House.Count(LifeSystems.OldBootItem));
+            k.Life.OddEvents.Force(OddityEvents.MessageBottle);
+            Assert.StartsWith("core.oddity.ev.message_bottle.v", Capture(k, () => k.Life.OnOddFish(c, "item.fish_carp")).line.Key);
+            Assert.Equal(1, k.House.Count(LifeSystems.MessageBottleItem));
+        }
+
+        [Fact]
+        public void Mine_TabletFirst_ThenSwordInStone_OnceEach()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.999;
+            var c = Person(k, 1, "Ayla");
+            Assert.Equal(0, Capture(k, () => k.Life.OnMineDug(c)).count);
+            k.Life.OddEvents.Force(OddityEvents.MineTablet);
+            Assert.Equal("core.oddity.ev.mine_tablet", Capture(k, () => k.Life.OnMineDug(c)).line.Key);
+            k.Life.OddEvents.Force(OddityEvents.MineTablet);
+            k.Life.OddEvents.Force(OddityEvents.SwordInStone);
+            Assert.Equal("core.oddity.ev.sword_in_stone", Capture(k, () => k.Life.OnMineDug(c)).line.Key);
+            k.Life.OddEvents.Force(OddityEvents.SwordInStone);
+            Assert.Equal(0, Capture(k, () => k.Life.OnMineDug(c)).count);
+        }
+
+        [Fact]
+        public void TopShow_MemeReactions_AndTheTopThatNeverStops()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.999;
+            var c = Person(k, 1, "Ayla");
+            var top = new Thatchwick.Core.Upbringing.ToyDef { ItemId = LifeSystems.SpinningTopItem };
+            var show = new Thatchwick.Core.Upbringing.ToyShow { Performer = c, Toy = top, Kind = Thatchwick.Core.Upbringing.ShowKind.Show, Watchers = 2 };
+            Assert.Equal(0, Capture(k, () => k.Life.OnOddShow(show)).count);
+            k.Life.OddEvents.Force(OddityEvents.TopShow);
+            Assert.StartsWith("core.oddity.ev.top_show.v", Capture(k, () => k.Life.OnOddShow(show)).line.Key);
+            k.Life.OddEvents.Force(OddityEvents.NeverStoppingTop);
+            Assert.Equal("core.oddity.ev.never_stopping_top", Capture(k, () => k.Life.OnOddShow(show)).line.Key);
+            // Seyirci yoksa tepki de yok; başka oyuncak sayılmaz.
+            show.Watchers = 0;
+            k.Life.OddEvents.Force(OddityEvents.TopShow);
+            Assert.Equal(0, Capture(k, () => k.Life.OnOddShow(show)).count);
+        }
+
+        [Fact]
+        public void Scarecrow_AnswersOnlyTheLonely()
+        {
+            var k = Make();
+            var c = Person(k, 1, "Ayla");
+            var scarecrow = k.World.PlaceItem(k.Db.Items.Get(LifeSystems.ScarecrowItem), new GridPos(6, 6));
+            var inter = scarecrow.Def.Interactions.Find(i => i.Id == LifeSystems.ScarecrowInteraction);
+            Assert.NotNull(inter);
+            Assert.Equal("core.oddity.ev.scarecrow.silent", Capture(k, () => k.Life.OnOddItemUsed(c, scarecrow, inter)).line.Key);
+            c.AddMoodlet(MoodCatalog.Lonely, "Yalnız", -10, 1);
+            c.Needs.Set(NeedType.Social, 10f);
+            Assert.Equal("core.oddity.ev.scarecrow.answered", Capture(k, () => k.Life.OnOddItemUsed(c, scarecrow, inter)).line.Key);
+            Assert.Equal(10f + LifeSystems.ScarecrowSocial, c.Needs.Get(NeedType.Social));
+            Assert.True(MoodCatalog.Default.Contains(MoodCatalog.ScarecrowChat));
+        }
+
+        [Fact]
+        public void NewBuilds_OxStares_CatSitsInTheBox()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.0;
+            Person(k, 1, "Ayla");
+            Pet(k, "animal.ox", 73, "Sarı");
+            var stool = k.World.PlaceItem(k.Db.Items.Get("item.stool_wood"), new GridPos(6, 6));
+            Assert.Equal("core.oddity.ev.ox_stare", Capture(k, () => k.Life.OnOddFurnished(stool)).line.Key);
+            Assert.Equal(0, Capture(k, () => k.Life.OnOddFurnished(stool)).count);    // günde bir
+            Pet(k, "animal.cat", 72, "Alex");
+            var chest = k.World.PlaceItem(k.Db.Items.Get("item.chest_wood"), new GridPos(8, 8));
+            Assert.Equal("core.oddity.ev.box_cat", Capture(k, () => k.Life.OnOddFurnished(chest)).line.Key);
+        }
+
+        [Fact]
+        public void Howl_OnlyOnFullMoonNights_WithADog()
+        {
+            var k = Make();
+            var c = Person(k, 1, "Ayla");
+            Assert.NotNull(k.Life.HowlBlocker(c));                 // köpek yok
+            Pet(k, "animal.dog", 70, "Karabaş");
+            k.Clock.Restore(5.9, 1);
+            Assert.NotNull(k.Life.HowlBlocker(c));                 // dolunay değil
+            k.Clock.Restore(OddityEvents.MoonCycle - 1 + 0.5, 1);
+            Assert.NotNull(k.Life.HowlBlocker(c));                 // gündüz
+            k.Clock.Restore(OddityEvents.MoonCycle - 1 + 0.9, 1);
+            Assert.Null(k.Life.HowlBlocker(c));
+            Assert.StartsWith("core.oddity.ev.howl.", Capture(k, () => Assert.True(k.Life.Howl(c))).line.Key);
+            Assert.False(k.Life.Howl(c));                          // gecede bir
+            Assert.True(k.Life.Oddities.Has(OddityIds.Howl));
+        }
+
+        [Fact]
+        public void Ploughshare_IsARealTool_HoeIsFasterWhileOwned()
+        {
+            var k = Make();
+            float before = k.Life.Tools.SpeedFor("hoe");
+            k.House.AddItem(LifeSystems.PloughshareItem, 1);
+            Assert.True(k.Life.OwnsPloughshare());
+            Assert.Equal((double)(before * LifeSystems.PloughshareHoeBonus), (double)k.Life.Tools.SpeedFor("hoe"), 4);
+            // Masaya konmuşken de sayılır; balta etkilenmez.
+            float axe = k.Life.Tools.SpeedFor("axe");
+            k.House.TryTakeItem(LifeSystems.PloughshareItem);
+            Assert.Equal((double)before, (double)k.Life.Tools.SpeedFor("hoe"), 4);
+            Assert.Equal((double)axe, (double)k.Life.Tools.SpeedFor("axe"), 4);
+        }
+
+        [Fact]
+        public void OddBequest_ExistsOnlyAsAnEasterEgg()
+        {
+            var odd = Thatchwick.Core.Life.Requests.RequestCatalog.Bequests.Where(b => b.Role == Thatchwick.Core.Life.Requests.RequestCatalog.OddBequestRole).ToList();
+            Assert.Single(odd);
+            Assert.Equal(Thatchwick.Core.Life.Requests.RequestCatalog.OddBequestId, odd[0].Id);
+            Assert.Equal(LifeSystems.SpinningTopItem, odd[0].Objective.ItemId);
+            var k = Make();
+            Assert.NotNull(k.Life.Requests.OddBequest);
+            k.Life.OddEvents.Roll = () => 0.999;
+            Assert.False(k.Life.Requests.OddBequest());
+            k.Life.OddEvents.Force(OddityEvents.OddBequest);
+            Assert.True(k.Life.Requests.OddBequest());
+        }
+
+        [Fact]
+        public void VillageMemory_AndRegift_ThroughLifeSystems()
+        {
+            var k = Make();
+            var grand = Person(k, 1, "Dede", generation: 1);
+            var kid = Person(k, 2, "Torun", generation: 3);
+            Assert.Equal(0, Capture(k, () => k.Life.OnOddFall(grand)).count);
+            Assert.Equal("core.oddity.ev.village_memory", Capture(k, () => k.Life.OnOddFall(kid)).line.Key);
+        }
+
+        [Fact]
+        public void Regift_ShopkeeperGetsTheirOwnWares()
+        {
+            var k = Make();
+            k.Life.Villagers.SpawnMissing(_ => new GridPos(3, 3));
+            var smith = k.Pop.Members.First(m => m.IsVillager && k.Life.Villagers.RoleOf(m) == "blacksmith");
+            var shop = Thatchwick.Core.Economy.Shops.Get("smithy");
+            var ware = k.Db.Items.All.First(d => shop.Goods(d));
+            var other = k.Db.Items.Get("item.bread");
+            Assert.False(shop.Goods(other));
+            Assert.Equal(0, Capture(k, () => k.Life.OnOddGift(smith, other, GiftTaste.Like, "")).count);
+            Assert.Equal("core.oddity.ev.regift", Capture(k, () => k.Life.OnOddGift(smith, ware, GiftTaste.Like, "")).line.Key);
+            Assert.True(k.Life.Oddities.Has(OddityIds.Regift));
+        }
+
+        [Fact]
+        public void Events_SaveRoundTrip()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            k.Life.OddEvents.Set("mine.tablet", 1);
+            k.Life.OddEvents.OnFall("Dede", 1);
+            k.Life.AnimalTalk.OnFeed("item.feed");
+            var json = JsonSerializer.Serialize(k.Life.Export(), new JsonSerializerOptions { IncludeFields = true });
+            var data = JsonSerializer.Deserialize<LifeSaveData>(json, new JsonSerializerOptions { IncludeFields = true });
+            var k2 = Make();
+            k2.Life.Restore(data);
+            Assert.True(k2.Life.OddEvents.Has("mine.tablet"));
+            Assert.Equal("Dede", k2.Life.OddEvents.OnFall("Torun", 2));
+            Assert.Single(k2.Life.AnimalTalk.ExportHistory());
+        }
+
+        [Fact]
+        public void EveryEventTextKey_ExistsInBothUiTables()
+        {
+            string dir = System.IO.Path.GetFullPath(System.IO.Path.Combine(ContentFilesTests.ContentDir(), "..", "Localization"));
+            var errors = new System.Collections.Generic.List<string>();
+            var en = LocTable.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "ui.en.json")), errors, "ui.en.json");
+            var tr = LocTable.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(dir, "ui.tr.json")), errors, "ui.tr.json");
+            Assert.True(errors.Count == 0, string.Join("\n", errors));
+            string[] keys =
+            {
+                "johan_wick.field", "johan_wick.nofield", "johan_wick.wolves", "horseless_knight", "crier.v0", "crier.v1", "crier.v2",
+                "screaming_goat.scream", "screaming_goat.roof", "cat_gift", "alex_decor", "honey_thief", "servant_caught.hat", "servant_caught.nap",
+                "april_first.crier", "april_first.cows", "rumor.fish", "rumor.wood", "rumor.farm", "rumor.mine", "name_twin", "name_surprise.doruk",
+                "nickname_talk", "same_outfit", "absent_elder", "scarecrow.answered", "scarecrow.silent", "counting_sheep", "box_cat", "ox_stare",
+                "chicken_revenge", "shoo", "dog_gift.relic", "dog_gift.bone", "jealous_dog", "old_boot", "message_bottle.v0", "message_bottle.v1",
+                "message_bottle.v2", "fish_tale", "mine_tablet", "sword_in_stone", "never_stopping_top", "top_show.v0", "top_show.v1", "top_show.v2",
+                "top_show.v3", "regift", "village_memory", "the_usual", "the_usual.heir", "howl.kids", "howl.alone"
+            };
+            foreach (var k in keys)
+            {
+                Assert.True(en.TryGet("core.oddity.ev." + k, out _), "EN eksik: " + k);
+                Assert.True(tr.TryGet("core.oddity.ev." + k, out _), "TR eksik: " + k);
+            }
+            foreach (var extra in new[] { "core.oddity.relic.taken_garden", "ui.animal.shoo", "ui.animal.howl", "ui.oddity.debug.force" })
+            {
+                Assert.True(en.TryGet(extra, out _), "EN eksik: " + extra);
+                Assert.True(tr.TryGet(extra, out _), "TR eksik: " + extra);
             }
         }
     }

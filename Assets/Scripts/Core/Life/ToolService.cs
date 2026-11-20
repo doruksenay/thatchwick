@@ -39,11 +39,14 @@ namespace Thatchwick.Core.Life
         public int MaxTier(string toolId) => _content.Tools.TryGet(toolId, out var d) ? d.Tiers.Count : 0;
 
         /// <summary>Aletin şu anki hız çarpanı (temel alet 1).</summary>
+        /// <summary>Alet hızına ek çarpan (ör. Kılıçtan Saban hanedeyken çapa ×1,05; belge 55 §4). null ise yok.</summary>
+        public Func<string, float> Bonus { get; set; }
+
         public float SpeedFor(string toolId)
         {
             if (string.IsNullOrEmpty(toolId) || !_content.Tools.TryGet(toolId, out var def)) return 1f;
             int t = Math.Min(Tier(toolId), def.Tiers.Count);
-            return t <= 0 ? 1f : def.Tiers[t - 1].Speed;
+            return (t <= 0 ? 1f : def.Tiers[t - 1].Speed) * (Bonus?.Invoke(toolId) ?? 1f);
         }
 
         public string NameOf(string toolId)

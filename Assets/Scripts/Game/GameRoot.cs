@@ -669,7 +669,7 @@ namespace Thatchwick.Game
             _shopPanel = new ShopPanel(_market, _buildService, _household, _content, _world, () => _player?.Character, () => _player?.Runner,
                 () => HourOfDay, () => _clock.DayIndex, ShopOwner,
                 Thatchwick.Core.World.Regions.IsRegional(_world.Map) ? Thatchwick.Core.World.Regions.ShopAreas() : null)
-            { Animals = _animals, AccountLevel = () => _account.Level };
+            { Animals = _animals, AccountLevel = () => _account.Level, TavernOrdered = (buyer, itemId) => _life?.OnTavernOrder(buyer, itemId) };
             if (Thatchwick.Core.World.Regions.IsRegional(_world.Map))
             {
                 // Pazar (P) artık meydandaki tezgâhta değil, Kerem'in genel dükkânında: içeride, açık ve sahibi tezgâhta olmalı.
@@ -730,7 +730,9 @@ namespace Thatchwick.Game
             SetupFarm();
             _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
             // Easter egg'ler (belge 55): Core anahtarlı metin yollar, burada çözülür ve bildirim akışına yazılır.
-            _life.OddityLine += (text, who) => _life.Say(GameLocalization.Current.Resolve(text), NoticeLevel.Info, who);
+            _life.OddityLine += (text, who) => _life.Say(
+                VivText.Resolve(GameLocalization.Current, text, id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id), NoticeLevel.Info, who);
+            _life.RealNow = () => System.DateTime.Now;   // 1 Nisan easter egg'i gerçek tarihe bakar
             _life.Oddities.Discovered += id => _life.Say(OddityIds.IsAchievement(id)
                 ? GameLocalization.T("ui.oddity.achievement", ("name", OddityName(id)))
                 : GameLocalization.T("ui.oddity.found", ("name", OddityName(id))), NoticeLevel.Info, 0, transient: true);
@@ -2392,6 +2394,7 @@ namespace Thatchwick.Game
                     case AnimalAction.Treat: ShowMessage(GameLocalization.T(a.IsSick ? "ui.animal.treated_sick" : "ui.animal.treated_well", ("who", c.Name), ("animal", a.Name))); break;
                     case AnimalAction.PrepContest: ShowMessage(GameLocalization.T("ui.animal.prepared", ("animal", a.Name), ("points", (int)AnimalCare.PrepScore))); break;
                     case AnimalAction.TalkLikeHuman: break;   // sonuç satırı LifeSystems.OddityLine ile gelir (belge 55)
+                    case AnimalAction.Shoo: break;            // kışkışlama ve tavuk intikamı satırı da oradan
                     default: ShowMessage($"{c.Name} {a.Name} sevdi (dostluk {a.Friendship:0})"); _account.Record("pet_animal", _clock.DayIndex); break;
                 }
                 if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
@@ -2546,7 +2549,7 @@ namespace Thatchwick.Game
             _mines.Creaked += (m, n) => ShowMessage($"Kazıda {n} karo çatırdıyor: bugün destek kurulmazsa yarın çöker", 5f);
             _mines.SupportRotted += (m, x, y, gone) => ShowMessage(gone ? "Çürüyen bir çatkı çöktü (yenisini kur)" : "Bir ahşap çatkı çürüyor (1 tahta ile yenile)");
             _mines.RelicFound += (c, relic) => { ShowMessage($"{c.Name} bir kalıntı buldu: {(_content.Items.TryGet(relic, out var rd) ? rd.DisplayName : relic)}", 4f); c.AddMoodlet(MoodCatalog.VeinFound); };
-            _mines.Dug += (c, m, x, y, got) => { _floorsDirty = true; if (c != null) c.AddMoodlet(MoodCatalog.Dusty); };
+            _mines.Dug += (c, m, x, y, got) => { _floorsDirty = true; if (c != null) c.AddMoodlet(MoodCatalog.Dusty); _life?.OnMineDug(c); };
             _buildService.DeepDigBlocker = p => _mines.ShaftBlocker(_life.BestSkill(SkillType.Mining));
             _keepsakePanel = new KeepsakePanel(_life.Keepsakes, _world, _clock);
             _homePanel = new HomePanel(_life, _world, _content, _household, () => Commander?.Character);
@@ -2671,6 +2674,11 @@ namespace Thatchwick.Game
             if (sk.GetLevel(SkillType.AnimalHusbandry) >= AnimalCare.PrepLevel) Opt(AnimalAction.PrepContest, GameLocalization.T("ui.animal.prep"));
             // Hayvanla konuşma (belge 55 §3): Gönül kazanma 9; bir kez yaşayanın menüsünden kalkar.
             if (_life != null && _life.AnimalTalk.Offers(c.Character)) Opt(AnimalAction.TalkLikeHuman, GameLocalization.T("ui.animal.talk_human"));
+            // Tavuk intikamı (belge 55): aynı gün üçüncü kışkışlamada bütün kümes peşine düşer.
+            if (a.Species.Id == "animal.chicken") Opt(AnimalAction.Shoo, GameLocalization.T("ui.animal.shoo"));
+            // Uluma (belge 55): dolunay gecesi köpeğin yanında.
+            if (_life != null && a.Species.Id == "animal.dog" && _life.CanHowl(c.Character))
+                _menuOptions.Add(new MenuOption { Label = $"{GameLocalization.T("ui.animal.howl")} ({a.Name})", Run = () => _life.Howl(c.Character) });
             if (a.Species.Rideable)
             {
                 if (a.Saddle == null) Opt(AnimalAction.Saddle, "Eyerle");
@@ -3343,6 +3351,12 @@ namespace Thatchwick.Game
             if (GUILayout.Button("      " + GameLocalization.T("ui.oddity.debug.force_talk"))) _life.AnimalTalk.ForceNext = true;
             if (GUILayout.Button("      " + GameLocalization.T("ui.oddity.debug.force_relic"))) _life.Relics.ForceNext = true;
             if (GUILayout.Button("      " + GameLocalization.T("ui.oddity.debug.force_fortune"))) _life.ForceFortuneOddity = true;
+            // Küçük easter egg'ler: olay kimliği tuhaflık kimliğinin son parçasıdır (OddityEvents.Force).
+            for (int i = 13; i < OddityIds.All.Length; i++)
+            {
+                string ev = OddityIds.All[i].Substring("oddity.".Length);
+                if (GUILayout.Button("      " + GameLocalization.T("ui.oddity.debug.force", ("name", OddityName(OddityIds.All[i]))))) _life.OddEvents.Force(ev);
+            }
         }
 
         // Kurt riski, öksüz yavru, Doğa Defteri ve yarışma kaydı (belge 29, 31). Basit IMGUI; asıl arayüz PixelLab ekranlarıyla gelecek.
