@@ -1,7 +1,7 @@
 ---
 id: "737"
 title: "Kıyı karosu yeniden: elmasa oturan su-kara kenarı (346 kıyı karosunun ara düzeltmesi)"
-status: running
+status: review
 claimed_at: 2026-11-20T23:21Z
 approved_by: user        # kullanıcı 21.11 00:51 "bunları yap" (maliyet 10 gen/çağrı kabul); ilk onay 2026-11-20 (sohbet: "kıyı karosu ve çim tonu için PixelLab işi hazırla"; belge 65b B1)
 priority: 10
@@ -57,7 +57,7 @@ kıyıyı düzeltir. 617 kabul edilince bu karo emekliye ayrılabilir.
   çiziliyor; 617 gelince dual-grid bunu çözer.
 
 ## Sorular
-- Çağrı yapılmadı. `create_tiles_pro` açıklaması (ve 346 gerçek maliyeti): tek çağrı 10 generation (64 px, 16 hücreli sayfa; kaç karo istendiği fiyatı düşürmez). `cost_est: 10` / `cost_max: 20` aşılıyor, `art/budget.md` maliyet sapması kuralı (2 kat) gereği durdum.
+- (Eski not, geçersiz: cost_est/cost_max sonradan 10/20 yapıldı; çağrı 10 gen ile yapıldı.) Çağrı yapılmadı. `create_tiles_pro` açıklaması (ve 346 gerçek maliyeti): tek çağrı 10 generation (64 px, 16 hücreli sayfa; kaç karo istendiği fiyatı düşürmez). `cost_est: 10` / `cost_max: 20` aşılıyor, `art/budget.md` maliyet sapması kuralı (2 kat) gereği durdum.
 - Çözüm: `cost_max`'ı en az 10'a çıkarmak (ör. `cost_est: 10`, `cost_max: 15`); a ve b çeşitleri zaten tek çağrıdan çıkar. Bakiye 809,6 (get_balance, 2026-11-20), bütçe sorunu yok.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
