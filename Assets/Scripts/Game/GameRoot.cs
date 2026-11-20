@@ -653,6 +653,11 @@ namespace Thatchwick.Game
             _buildMode.Season = () => _clock.Season;
             SetupFarm();
             _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
+            // Easter egg'ler (belge 55): Core anahtarlı metin yollar, burada çözülür ve bildirim akışına yazılır.
+            _life.OddityLine += (text, who) => _life.Say(GameLocalization.Current.Resolve(text), NoticeLevel.Info, who);
+            _life.Oddities.Discovered += id => _life.Say(OddityIds.IsAchievement(id)
+                ? GameLocalization.T("ui.oddity.achievement", ("name", OddityName(id)))
+                : GameLocalization.T("ui.oddity.found", ("name", OddityName(id))), NoticeLevel.Info, 0, transient: true);
             _life.Suitors.SpawnPosition = () => NearestWalkable(Places["square"], 8);
             _life.SquarePosition = () => NearestWalkable(Places["square"], 8);   // bunalımda "Meydana kaçtı"
             _life.Suitors.Arrived += c => CreateActorFor(c);
@@ -2294,6 +2299,7 @@ namespace Thatchwick.Game
                     case AnimalAction.Trick: ShowMessage(GameLocalization.T("ui.animal.tricked", ("who", c.Name), ("animal", a.Name), ("friend", (int)a.Friendship))); break;
                     case AnimalAction.Treat: ShowMessage(GameLocalization.T(a.IsSick ? "ui.animal.treated_sick" : "ui.animal.treated_well", ("who", c.Name), ("animal", a.Name))); break;
                     case AnimalAction.PrepContest: ShowMessage(GameLocalization.T("ui.animal.prepared", ("animal", a.Name), ("points", (int)AnimalCare.PrepScore))); break;
+                    case AnimalAction.TalkLikeHuman: break;   // sonuç satırı LifeSystems.OddityLine ile gelir (belge 55)
                     default: ShowMessage($"{c.Name} {a.Name} sevdi (dostluk {a.Friendship:0})"); _account.Record("pet_animal", _clock.DayIndex); break;
                 }
                 if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
@@ -2571,6 +2577,8 @@ namespace Thatchwick.Game
             if (a.Species.Rideable && sk.GetLevel(SkillType.Riding) >= AnimalCare.TrickLevel) Opt(AnimalAction.Trick, GameLocalization.T("ui.animal.trick"));
             if (a.IsSick && sk.GetLevel(SkillType.Medicine) >= AnimalCare.TreatLevel) Opt(AnimalAction.Treat, GameLocalization.T("ui.animal.treat"));
             if (sk.GetLevel(SkillType.AnimalHusbandry) >= AnimalCare.PrepLevel) Opt(AnimalAction.PrepContest, GameLocalization.T("ui.animal.prep"));
+            // Hayvanla konuşma (belge 55 §3): Gönül kazanma 9; bir kez yaşayanın menüsünden kalkar.
+            if (_life != null && _life.AnimalTalk.Offers(c.Character)) Opt(AnimalAction.TalkLikeHuman, GameLocalization.T("ui.animal.talk_human"));
             if (a.Species.Rideable)
             {
                 if (a.Saddle == null) Opt(AnimalAction.Saddle, "Eyerle");
@@ -2595,6 +2603,13 @@ namespace Thatchwick.Game
                 Blocked = v.Species.Pettable ? null : $"{v.Species.Name} sevilmez; uzaktan izle.",
                 Run = () => ShowMessage(_life.Roamers.TryPet(id, c.Character))
             });
+            // Kurbağayı öp (belge 55 §2): hiçbir şey olmaz; çok nadiren minik bir taç belirir.
+            if (v.Species.Id == FrogKiss.FrogSpecies)
+                _menuOptions.Add(new MenuOption
+                {
+                    Label = $"{GameLocalization.T("ui.oddity.kiss_frog")} ({v.Species.Name})",
+                    Run = () => _life.KissFrog(c.Character)
+                });
             if (v.Species.Huntable)
                 _menuOptions.Add(new MenuOption
                 {
@@ -3206,6 +3221,32 @@ namespace Thatchwick.Game
             }
         }
 
+        // Tuhaflıklar (belge 55): Doğa Defteri'ndeki gizli sayfa. Görülmeyen "???" kalır; başarımlar altında.
+        private bool _odditiesOpen;
+        private static string OddityName(string id) => OddityIds.IsAchievement(id)
+            ? GameLocalization.T("ui.oddity.ach." + id.Substring("ach.".Length))
+            : GameLocalization.T("ui.oddity.name." + id.Substring("oddity.".Length));
+
+        private void DrawOddities()
+        {
+            var book = _life.Oddities;
+            bool debug = Application.isEditor || Debug.isDebugBuild;
+            if (!book.PageOpen && !debug) return;
+            string title = GameLocalization.T("ui.oddity.page", ("seen", book.SeenCount), ("total", OddityBook.Total));
+            if (GUILayout.Button($"   {title} {(_odditiesOpen ? "▲" : "▼")}")) _odditiesOpen = !_odditiesOpen;
+            if (!_odditiesOpen) return;
+            foreach (var id in OddityIds.All)
+                GUILayout.Label("      " + (book.Has(id) ? OddityName(id) : GameLocalization.T("ui.oddity.unknown")));
+            GUILayout.Label("      " + GameLocalization.T("ui.oddity.achievements", ("seen", book.AchievementCount), ("total", OddityIds.Achievements.Length)));
+            foreach (var id in OddityIds.Achievements)
+                if (book.Has(id)) GUILayout.Label("         " + OddityName(id));
+            if (!debug) return;
+            // Olasılıklı easter egg'leri denemek için zorlama anahtarları (yalnızca editör ve geliştirme derlemesi).
+            if (GUILayout.Button("      " + GameLocalization.T("ui.oddity.debug.force_talk"))) _life.AnimalTalk.ForceNext = true;
+            if (GUILayout.Button("      " + GameLocalization.T("ui.oddity.debug.force_relic"))) _life.Relics.ForceNext = true;
+            if (GUILayout.Button("      " + GameLocalization.T("ui.oddity.debug.force_fortune"))) _life.ForceFortuneOddity = true;
+        }
+
         // Kurt riski, öksüz yavru, Doğa Defteri ve yarışma kaydı (belge 29, 31). Basit IMGUI; asıl arayüz PixelLab ekranlarıyla gelecek.
         private bool _journalOpen;
         private void DrawNatureAndContests(Character handler)
@@ -3245,6 +3286,7 @@ namespace Thatchwick.Game
                     GUILayout.Label($"      {sp.Name} · {sp.Habitat}{(sp.Night ? " · gece" : "")}{(tags.Count > 0 ? " — " + string.Join(", ", tags) : "")}");
                 }
             }
+            DrawOddities();   // Tuhaflıklar (belge 55): ilk tuhaflıkla açılır
             foreach (var a in _animals.Animals)
             {
                 ContestKind kind;

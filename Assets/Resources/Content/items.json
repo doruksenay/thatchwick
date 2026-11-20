@@ -36933,6 +36933,199 @@
       "tags": [
         "cloth"
       ]
+    },
+    {
+      "id": "item.rusty_sword_ground",
+      "displayName": "Paslı kılıç",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly",
+        "oddity"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "inspect_relic",
+          "displayName": "İncele",
+          "need": "Fun",
+          "durationDays": 0.03,
+          "moodlet": "thoughtful"
+        },
+        {
+          "id": "bury_relic",
+          "displayName": "Olduğu yere göm",
+          "need": "Fun",
+          "durationDays": 0.06,
+          "moodlet": "thoughtful"
+        },
+        {
+          "id": "take_relic",
+          "displayName": "Al, eve götür",
+          "need": "Fun",
+          "durationDays": 0.03,
+          "moodlet": "thoughtful"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_rusty_sword_ground_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.helmet_nest",
+      "displayName": "Kuş yuvalı miğfer",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly",
+        "oddity"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "inspect_relic",
+          "displayName": "İncele",
+          "need": "Fun",
+          "durationDays": 0.03,
+          "moodlet": "thoughtful"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_helmet_nest_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.broken_shield_ground",
+      "displayName": "Kırık kalkan",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 3,
+      "tags": [
+        "townonly",
+        "oddity"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "inspect_relic",
+          "displayName": "İncele",
+          "need": "Fun",
+          "durationDays": 0.03,
+          "moodlet": "thoughtful"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_broken_shield_ground_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.old_sword",
+      "displayName": "Eski kılıç",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "interactions": [],
+      "tags": [
+        "craftonly",
+        "oddity"
+      ]
+    },
+    {
+      "id": "item.sword_ploughshare",
+      "displayName": "Kılıçtan Saban",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 30,
+      "beauty": 4,
+      "decorSize": "M",
+      "weight": 3,
+      "material": "metal",
+      "interactions": [],
+      "tags": [
+        "craftonly",
+        "oddity"
+      ],
+      "art": {
+        "alongX": "iso_item_sword_ploughshare_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.old_sword_wall",
+      "displayName": "Eski kılıç (duvarda)",
+      "category": "decor_wall",
+      "price": 25,
+      "placement": "Wall",
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "interactions": [],
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "beauty": 4,
+      "material": "metal",
+      "tags": [
+        "craftonly",
+        "oddity"
+      ],
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_old_sword_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 24.0,
+        "mirror": true,
+        "pending": true
+      }
     }
   ],
   "recipes": [
@@ -44902,6 +45095,39 @@
       "skill": "Horticulture",
       "skillXp": 4,
       "displayName": "Tohum çıkar: Sarı boya otu"
+    },
+    {
+      "id": "sword_ploughshare",
+      "station": "item.forge",
+      "produces": "item.sword_ploughshare",
+      "materials": [
+        {
+          "item": "item.old_sword",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Smithing",
+      "skillXp": 20,
+      "displayName": "Kılıçtan saban demiri döv"
+    },
+    {
+      "id": "old_sword_wall",
+      "station": "item.workbench",
+      "produces": "item.old_sword_wall",
+      "materials": [
+        {
+          "item": "item.old_sword",
+          "count": 1
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skillXp": 8,
+      "displayName": "Eski kılıcı duvara as"
     }
   ],
   "animals": [

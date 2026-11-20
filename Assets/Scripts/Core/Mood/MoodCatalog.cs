@@ -38,6 +38,11 @@ namespace Thatchwick.Core.Mood
             DoctorVisit = "doctor_visit", WellCared = "well_cared", GotLetter = "got_letter", MasterWork = "master_work",
             Feast = "feast", SkillShowcase = "skill_showcase";
 
+        // Easter egg'ler (belge 55): hayvanla konuşma, bulunan silah, kurbağayı öpme. İkonlar: ui_icon_moodlet_<kimlik> (iş 494).
+        public const string AnimalSpoke = "animal_spoke", Confidant = "confidant", NotCrazy = "not_crazy", Believed = "believed",
+            FamilyTale = "family_tale", NobodyBelieves = "nobody_believes", OddChat = "odd_chat", Thoughtful = "thoughtful",
+            LetDown = "let_down";
+
         // Kaza yaraları (InjurySystem; süre yaraya göre ayarlanır, buradaki varsayılan).
         public const string InjuredAxe = "injured_axe", InjuredBurn = "injured_burn", InjuredAnimal = "injured_animal",
             InjuredSickle = "injured_sickle", InjuredFall = "injured_fall",
@@ -116,6 +121,16 @@ namespace Thatchwick.Core.Mood
             c.Register(M(MasterWork, "Ustalık eseri", 15, 2.0, "Adını taşıyan bir ustalık eseri yaptı."));
             c.Register(M(Feast, "Ziyafet", 12, 1.0, "Hane birlikte bol bir sofraya oturdu."));
             c.Register(M(SkillShowcase, "Ustayı seyretti", 5, 0.5, "Bir ustanın işini seyretti."));
+            // Easter egg'ler (belge 55 §3.3, §4). Ortak kural: olumsuz olan kısa sürer, kalıcı kayıp yok.
+            c.Register(M(AnimalSpoke, "Hayvan benimle konuştu!", 10, 3.0, "Bir hayvan derdini insan gibi anlattı. Kime anlatsa inanmaz."));
+            c.Register(M(Confidant, "Dert ortağı", 5, 2.0, "Hayvanın anlattığı derdi giderdi."));
+            c.Register(M(NotCrazy, "Deli değilmişim", 8, 2.0, "Aynı şeyi yaşamış biriyle konuştu."));
+            c.Register(M(Believed, "İnanıldı", 5, 1.0, "Anlattığına inanan biri çıktı: onların ailesinde de olmuş."));
+            c.Register(M(FamilyTale, "Aile hikâyesi doğruymuş", 3, 1.0, "Ailede anlatılan hikâyeyi bir başkasından da duydu."));
+            c.Register(M(NobodyBelieves, "Kimse inanmıyor", -3, 0.25, "Hayvanın konuştuğunu anlattı, inanmadılar."));
+            c.Register(M(OddChat, "Tuhaf bir sohbet", 2, 0.25, "Biri ona hayvanların konuştuğunu anlattı."));
+            c.Register(M(Thoughtful, "Düşünceli", 3, 1.0, "Barışın kıymetini düşündü."));
+            c.Register(M(LetDown, "Hayal kırıklığı", -2, 0.25, "Kurbağayı öptü. Hiçbir şey olmadı."));
             m = M(GoodHarvest, "Bereketli hasat", 10, 1.0, "Ürün topladı: çiftçilikte %20 fazla XP."); m.SkillXp[SkillType.Farming] = 0.20f; c.Register(m);
             m = M(Proud, "Gururlu", 15, 1.0, "Kendi elleriyle bir eşya yaptı: marangozluk %10 hızlı."); m.SkillSpeed[SkillType.Carpentry] = 0.10f; c.Register(m);
             c.Register(M(PetLove, "Hayvan dostu", 10, 0.5, "Evcil hayvanıyla oynadı."));

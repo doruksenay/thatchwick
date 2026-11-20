@@ -3326,6 +3326,7 @@
     {"skill": "Charm", "level": 7, "kind": "interaction", "text": "Görücüye çık"},
     {"skill": "Charm", "level": 8, "kind": "interaction", "text": "İkna et"},
     {"skill": "Charm", "level": 9, "kind": "interaction", "text": "Şenlikte söz al"},
+    {"skill": "Charm", "level": 9, "kind": "interaction", "text": "İnsan gibi konuşmayı dene (hayvanla)"},
     {"skill": "Charm", "level": 10, "kind": "passive", "text": "Ustalık: köy meclisinde söz (itibar kazancı +%10)"},
     {"skill": "Music", "level": 1, "kind": "feature", "text": "Kaval çal"},
     {"skill": "Music", "level": 2, "kind": "interaction", "text": "Ninni çal"},
