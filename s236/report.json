@@ -1,0 +1,181 @@
+{
+  "job": "s236",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T17:28:57Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.324,
+          "lufs": -22.8,
+          "true_peak_db": -1.0,
+          "rms_db": -24.9,
+          "note": "tepe sınırında, yükseklik -22.8 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Bathing: water poured from a small bowl and running back into a tub, with a gentle splash. Details: wooden tub, hands swishing and splashing.",
+          "duration": 1.51379811471105,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.343,
+          "lufs": -18.4,
+          "true_peak_db": -1.0,
+          "rms_db": -23.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0178)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Bathing: water poured from a small bowl and running back into a tub, with a gentle splash. Details: wooden tub, water poured over a shoulder from a bowl.",
+          "duration": 1.4599540358973602,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.382,
+          "lufs": -18.0,
+          "true_peak_db": -3.5,
+          "rms_db": -22.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0133)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Bathing: water poured from a small bowl and running back into a tub, with a gentle splash. Details: copper basin, hands swishing and splashing.",
+          "duration": 1.5362028050493353,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.388,
+          "lufs": -18.7,
+          "true_peak_db": -1.0,
+          "rms_db": -24.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0208)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Bathing: water poured from a small bowl and running back into a tub, with a gentle splash. Details: copper basin, water poured over a shoulder from a bowl.",
+          "duration": 1.4536094768335341,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.434,
+          "lufs": -18.0,
+          "true_peak_db": -3.6,
+          "rms_db": -21.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0276)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Bathing: water poured from a small bowl and running back into a tub, with a gentle splash. Details: wooden tub, hands swishing and splashing.",
+          "duration": 1.4828502860516948,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.351,
+          "lufs": -18.0,
+          "true_peak_db": -2.4,
+          "rms_db": -21.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0176)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Bathing: water poured from a small bowl and running back into a tub, with a gentle splash. Details: wooden tub, water poured over a shoulder from a bowl.",
+          "duration": 1.507572528969313,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.364,
+          "lufs": -19.2,
+          "true_peak_db": -1.0,
+          "rms_db": -23.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0166)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Bathing: water poured from a small bowl and running back into a tub, with a gentle splash. Details: copper basin, hands swishing and splashing.",
+          "duration": 1.4752057969054475,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.52,
+          "lufs": -18.0,
+          "true_peak_db": -2.8,
+          "rms_db": -22.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0216)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Bathing: water poured from a small bowl and running back into a tub, with a gentle splash. Details: copper basin, water poured over a shoulder from a bowl.",
+          "duration": 1.5305140593767763,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0178
+          ],
+          [
+            "c1",
+            "c3",
+            0.0133
+          ],
+          [
+            "c1",
+            "c4",
+            0.0208
+          ],
+          [
+            "c1",
+            "c5",
+            0.0276
+          ],
+          [
+            "c1",
+            "c6",
+            0.0176
+          ],
+          [
+            "c1",
+            "c7",
+            0.0166
+          ],
+          [
+            "c1",
+            "c8",
+            0.0216
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0133,
+          "c2": 0.0103,
+          "c3": 0.0133,
+          "c4": 0.0103,
+          "c5": 0.0161,
+          "c6": 0.0153,
+          "c7": 0.0143,
+          "c8": 0.0201
+        },
+        "ref_distance": {
+          "c1": 0.0411,
+          "c2": 0.0622,
+          "c3": 0.0601,
+          "c4": 0.0781,
+          "c5": 0.0642,
+          "c6": 0.0597,
+          "c7": 0.052,
+          "c8": 0.0544
+        }
+      }
+    }
+  }
+}

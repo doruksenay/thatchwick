@@ -1,0 +1,176 @@
+{
+  "job": "s252",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T17:29:43Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.306,
+          "lufs": -19.3,
+          "true_peak_db": -1.0,
+          "rms_db": -23.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall. Details: wooden pitchfork.",
+          "duration": 1.434296167382662,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.5,
+          "lufs": -26.8,
+          "true_peak_db": -1.0,
+          "rms_db": -30.9,
+          "note": "tepe sınırında, yükseklik -26.8 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall. Details: iron-tined fork.",
+          "duration": 1.5846521813197953,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 1.418,
+          "lufs": -21.0,
+          "true_peak_db": -1.0,
+          "rms_db": -25.3,
+          "flags": [
+            "c1 ile neredeyse aynı (0.033)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall. Details: wooden pitchfork.",
+          "duration": 1.5483796462139974,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.571,
+          "lufs": -21.4,
+          "true_peak_db": -1.0,
+          "rms_db": -25.3,
+          "note": "tepe sınırında, yükseklik -21.4 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0173)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall. Details: iron-tined fork.",
+          "duration": 1.646623866254452,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.398,
+          "lufs": -18.0,
+          "true_peak_db": -1.1,
+          "rms_db": -21.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0264)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall. Details: wooden pitchfork.",
+          "duration": 1.4927107042796843,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.515,
+          "lufs": -19.9,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0146)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall. Details: iron-tined fork.",
+          "duration": 1.6061298496855616,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.434,
+          "lufs": -21.5,
+          "true_peak_db": -1.0,
+          "rms_db": -26.7,
+          "note": "tepe sınırında, yükseklik -21.5 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0306)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall. Details: wooden pitchfork.",
+          "duration": 1.5857677630063047,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.463,
+          "lufs": -24.2,
+          "true_peak_db": -1.0,
+          "rms_db": -28.3,
+          "note": "tepe sınırında, yükseklik -24.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0308)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A pitchfork pushed into a damp heap of rotting leaves and straw, turned over once with a soft crumbling fall. Details: iron-tined fork.",
+          "duration": 1.538895428140911,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.033
+          ],
+          [
+            "c1",
+            "c4",
+            0.0173
+          ],
+          [
+            "c1",
+            "c5",
+            0.0264
+          ],
+          [
+            "c1",
+            "c6",
+            0.0146
+          ],
+          [
+            "c1",
+            "c7",
+            0.0306
+          ],
+          [
+            "c1",
+            "c8",
+            0.0308
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0146,
+          "c2": 0.02,
+          "c3": 0.0192,
+          "c4": 0.008,
+          "c5": 0.0264,
+          "c6": 0.008,
+          "c7": 0.0122,
+          "c8": 0.0192
+        },
+        "ref_distance": {
+          "c1": 0.208,
+          "c2": 0.1279,
+          "c3": 0.1795,
+          "c4": 0.1808,
+          "c5": 0.2484,
+          "c6": 0.1807,
+          "c7": 0.1363,
+          "c8": 0.163
+        }
+      }
+    }
+  }
+}

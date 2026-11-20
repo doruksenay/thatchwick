@@ -2,119 +2,112 @@
   "job": "s233",
   "kind": "sfx",
   "family": "foley",
-  "created": "2026-11-20T17:09:18Z",
+  "created": "2026-11-20T17:27:53Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 0.985,
-          "lufs": -20.4,
+          "duration_s": 1.277,
+          "lufs": -19.3,
           "true_peak_db": -1.0,
-          "rms_db": -22.2,
+          "rms_db": -21.4,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle slurping into a pot of warm, wet stew and pouring it into a bowl: liquid sloshing, a soft wet glug and splatter of soup landing in the bowl. Clearly wet food and liquid, cozy kitchen. No dry thuds, nothing solid, no metal. Details: chunky vegetable soup, wooden bowl.",
-          "duration": 1.2773875117583096,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds. Details: runny broth, wooden bowl.",
+          "duration": 1.3686294768839031,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 0.998,
-          "lufs": -21.2,
+          "duration_s": 1.322,
+          "lufs": -21.9,
           "true_peak_db": -1.0,
-          "rms_db": -23.4,
-          "note": "tepe sınırında, yükseklik -21.2 (hedef -18)",
+          "rms_db": -24.2,
+          "note": "tepe sınırında, yükseklik -21.9 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0114)"
+            "c1 ile neredeyse aynı (0.023)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle slurping into a pot of warm, wet stew and pouring it into a bowl: liquid sloshing, a soft wet glug and splatter of soup landing in the bowl. Clearly wet food and liquid, cozy kitchen. No dry thuds, nothing solid, no metal. Details: thick lentil stew, wooden bowl.",
-          "duration": 1.451271596176013,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds. Details: thick soup, wooden bowl.",
+          "duration": 1.5549338530457284,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c3": {
-          "duration_s": 1.22,
-          "lufs": -18.4,
-          "true_peak_db": -1.0,
-          "rms_db": -20.1,
+          "duration_s": 1.49,
+          "lufs": -18.0,
+          "true_peak_db": -1.1,
+          "rms_db": -21.1,
           "flags": [
-            "c1 ile neredeyse aynı (0.0307)"
+            "c1 ile neredeyse aynı (0.0323)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle slurping into a pot of warm, wet stew and pouring it into a bowl: liquid sloshing, a soft wet glug and splatter of soup landing in the bowl. Clearly wet food and liquid, cozy kitchen. No dry thuds, nothing solid, no metal. Details: chunky vegetable soup, clay bowl.",
-          "duration": 1.514666070407682,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds. Details: runny broth, clay bowl.",
+          "duration": 1.6228565040082308,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c4": {
-          "duration_s": 1.051,
-          "lufs": -22.0,
+          "duration_s": 1.249,
+          "lufs": -21.0,
           "true_peak_db": -1.0,
-          "rms_db": -23.7,
-          "note": "tepe sınırında, yükseklik -22.0 (hedef -18)",
-          "flags": [
-            "c1 ile neredeyse aynı (0.0062)"
-          ],
+          "rms_db": -23.9,
+          "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle slurping into a pot of warm, wet stew and pouring it into a bowl: liquid sloshing, a soft wet glug and splatter of soup landing in the bowl. Clearly wet food and liquid, cozy kitchen. No dry thuds, nothing solid, no metal. Details: thick lentil stew, clay bowl.",
-          "duration": 1.3140793961305006,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds. Details: thick soup, clay bowl.",
+          "duration": 1.4079422101398222,
+          "model": "eleven_text_to_sound_v3"
         },
         "c5": {
-          "duration_s": 1.151,
-          "lufs": -21.8,
+          "duration_s": 1.39,
+          "lufs": -30.8,
           "true_peak_db": -1.0,
-          "rms_db": -22.9,
-          "note": "tepe sınırında, yükseklik -21.8 (hedef -18)",
+          "rms_db": -32.2,
+          "note": "tepe sınırında, yükseklik -30.8 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0129)"
+            "c1 ile neredeyse aynı (0.0286)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle slurping into a pot of warm, wet stew and pouring it into a bowl: liquid sloshing, a soft wet glug and splatter of soup landing in the bowl. Clearly wet food and liquid, cozy kitchen. No dry thuds, nothing solid, no metal. Details: chunky vegetable soup, wooden bowl.",
-          "duration": 1.5161823978794444,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds. Details: runny broth, wooden bowl.",
+          "duration": 1.6244811405851192,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c6": {
-          "duration_s": 1.13,
-          "lufs": -19.5,
+          "duration_s": 1.188,
+          "lufs": -23.8,
           "true_peak_db": -1.0,
-          "rms_db": -21.3,
-          "flags": [
-            "c1 ile neredeyse aynı (0.0322)"
-          ],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle slurping into a pot of warm, wet stew and pouring it into a bowl: liquid sloshing, a soft wet glug and splatter of soup landing in the bowl. Clearly wet food and liquid, cozy kitchen. No dry thuds, nothing solid, no metal. Details: thick lentil stew, wooden bowl.",
-          "duration": 1.3007892540747181,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
-        },
-        "c7": {
-          "duration_s": 1.116,
-          "lufs": -18.0,
-          "true_peak_db": -1.1,
-          "rms_db": -21.3,
-          "flags": [
-            "c1 ile neredeyse aynı (0.0299)"
-          ],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle slurping into a pot of warm, wet stew and pouring it into a bowl: liquid sloshing, a soft wet glug and splatter of soup landing in the bowl. Clearly wet food and liquid, cozy kitchen. No dry thuds, nothing solid, no metal. Details: chunky vegetable soup, clay bowl.",
-          "duration": 1.5151888832104028,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
-        },
-        "c8": {
-          "duration_s": 1.104,
-          "lufs": -21.1,
-          "true_peak_db": -1.0,
-          "rms_db": -24.3,
-          "note": "tepe sınırında, yükseklik -21.1 (hedef -18)",
+          "rms_db": -24.7,
+          "note": "tepe sınırında, yükseklik -23.8 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden ladle slurping into a pot of warm, wet stew and pouring it into a bowl: liquid sloshing, a soft wet glug and splatter of soup landing in the bowl. Clearly wet food and liquid, cozy kitchen. No dry thuds, nothing solid, no metal. Details: thick lentil stew, clay bowl.",
-          "duration": 1.348859743619843,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds. Details: thick soup, wooden bowl.",
+          "duration": 1.3937027722229125,
           "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 1.351,
+          "lufs": -20.7,
+          "true_peak_db": -1.0,
+          "rms_db": -23.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds. Details: runny broth, clay bowl.",
+          "duration": 1.6234166605825746,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c8": {
+          "duration_s": 1.201,
+          "lufs": -19.3,
+          "true_peak_db": -1.0,
+          "rms_db": -22.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0259)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Pouring soup into a bowl: a wet, glugging stream of liquid splashing and gurgling as the bowl fills, the sound of liquid being poured. Mostly liquid sound, like pouring water but thicker. No clinks, no taps, no dry thuds. Details: thick soup, clay bowl.",
+          "duration": 1.4452068681641177,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
         }
       },
       "set": {
@@ -122,53 +115,43 @@
           [
             "c1",
             "c2",
-            0.0114
+            0.023
           ],
           [
             "c1",
             "c3",
-            0.0307
-          ],
-          [
-            "c1",
-            "c4",
-            0.0062
+            0.0323
           ],
           [
             "c1",
             "c5",
-            0.0129
+            0.0286
           ],
           [
             "c1",
-            "c6",
-            0.0322
-          ],
-          [
-            "c1",
-            "c7",
-            0.0299
+            "c8",
+            0.0259
           ]
         ],
         "nearest": {
-          "c1": 0.0062,
-          "c2": 0.0089,
-          "c3": 0.0102,
-          "c4": 0.0062,
-          "c5": 0.0103,
-          "c6": 0.018,
-          "c7": 0.0102,
-          "c8": 0.0355
+          "c1": 0.023,
+          "c2": 0.023,
+          "c3": 0.0179,
+          "c4": 0.0198,
+          "c5": 0.0182,
+          "c6": 0.0262,
+          "c7": 0.0206,
+          "c8": 0.0179
         },
         "ref_distance": {
-          "c1": 0.0563,
-          "c2": 0.0421,
-          "c3": 0.0537,
-          "c4": 0.0454,
-          "c5": 0.0552,
-          "c6": 0.0414,
-          "c7": 0.0446,
-          "c8": 0.0357
+          "c1": 0.0647,
+          "c2": 0.0505,
+          "c3": 0.0415,
+          "c4": 0.0406,
+          "c5": 0.0422,
+          "c6": 0.0321,
+          "c7": 0.0623,
+          "c8": 0.0435
         }
       }
     }

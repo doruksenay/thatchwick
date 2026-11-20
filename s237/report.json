@@ -1,0 +1,152 @@
+{
+  "job": "s237",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T17:29:13Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.08,
+          "lufs": -24.6,
+          "true_peak_db": -1.0,
+          "rms_db": -26.5,
+          "note": "tepe sınırında, yükseklik -24.6 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: coarse linen tunic, pulled over the head.",
+          "duration": 1.0800772829776935,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.944,
+          "lufs": -24.2,
+          "true_peak_db": -1.0,
+          "rms_db": -26.3,
+          "note": "tepe sınırında, yükseklik -24.2 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: thick wool cloak, pulled over the head.",
+          "duration": 1.0173809266916107,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 1.04,
+          "lufs": -22.2,
+          "true_peak_db": -1.0,
+          "rms_db": -20.5,
+          "note": "tepe sınırında, yükseklik -22.2 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: coarse linen tunic, shaken out and put on.",
+          "duration": 1.0738732059341354,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 0.92,
+          "lufs": -21.9,
+          "true_peak_db": -1.0,
+          "rms_db": -19.0,
+          "note": "tepe sınırında, yükseklik -21.9 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: thick wool cloak, shaken out and put on.",
+          "duration": 0.9645814730692719,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.9,
+          "lufs": -18.1,
+          "true_peak_db": -1.0,
+          "rms_db": -19.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: coarse linen tunic, pulled over the head.",
+          "duration": 0.9240146365016775,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 1.045,
+          "lufs": -18.0,
+          "true_peak_db": -1.0,
+          "rms_db": -20.0,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0254)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: thick wool cloak, pulled over the head.",
+          "duration": 1.0920924639410354,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.0,
+          "lufs": -20.8,
+          "true_peak_db": -1.0,
+          "rms_db": -22.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0252)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: coarse linen tunic, shaken out and put on.",
+          "duration": 1.0174626818918127,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.898,
+          "lufs": -19.5,
+          "true_peak_db": -1.0,
+          "rms_db": -20.3,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0297)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: thick wool cloak, shaken out and put on.",
+          "duration": 0.9581121121496124,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c7",
+            0.0252
+          ],
+          [
+            "c2",
+            "c6",
+            0.0254
+          ],
+          [
+            "c2",
+            "c8",
+            0.0297
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0252,
+          "c2": 0.0254,
+          "c3": 0.0418,
+          "c4": 0.0503,
+          "c5": 0.0421,
+          "c6": 0.0145,
+          "c7": 0.0252,
+          "c8": 0.0145
+        },
+        "ref_distance": {
+          "c1": 0.072,
+          "c2": 0.0443,
+          "c3": 0.1319,
+          "c4": 0.0858,
+          "c5": 0.2075,
+          "c6": 0.0879,
+          "c7": 0.1193,
+          "c8": 0.068
+        }
+      }
+    }
+  }
+}

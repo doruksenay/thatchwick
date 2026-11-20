@@ -1,0 +1,300 @@
+{
+  "job": "s235",
+  "kind": "sfx",
+  "family": "voice",
+  "created": "2026-11-20T17:28:38Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 3.24,
+          "lufs": -20.0,
+          "true_peak_db": -12.8,
+          "rms_db": -21.9,
+          "flags": [],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: absent-minded wandering phrase, clear bright whistle.",
+          "duration": 3.2800316111702386,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 2.776,
+          "lufs": -20.0,
+          "true_peak_db": -9.5,
+          "rms_db": -22.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: cheerful skipping phrase, soft airy whistle.",
+          "duration": 2.822840812729077,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 2.93,
+          "lufs": -20.0,
+          "true_peak_db": -11.8,
+          "rms_db": -22.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: absent-minded wandering phrase, soft airy whistle.",
+          "duration": 3.026586804508599,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 2.805,
+          "lufs": -20.0,
+          "true_peak_db": -8.5,
+          "rms_db": -22.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0187)"
+          ],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: cheerful skipping phrase, clear bright whistle.",
+          "duration": 2.9859295420506493,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 3.141,
+          "lufs": -20.0,
+          "true_peak_db": -11.1,
+          "rms_db": -22.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0173)"
+          ],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: short rising and falling phrase, soft airy whistle.",
+          "duration": 3.157987957048685,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 3.113,
+          "lufs": -20.0,
+          "true_peak_db": -10.9,
+          "rms_db": -22.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0165)"
+          ],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: short rising and falling phrase, clear bright whistle.",
+          "duration": 3.133823765896687,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 3.005,
+          "lufs": -20.0,
+          "true_peak_db": -11.9,
+          "rms_db": -21.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: slow lilting folk phrase, clear bright whistle.",
+          "duration": 3.145289806868245,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c8": {
+          "duration_s": 3.239,
+          "lufs": -20.0,
+          "true_peak_db": -11.1,
+          "rms_db": -21.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.011)"
+          ],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: slow lilting folk phrase, soft airy whistle.",
+          "duration": 3.2785104940576977,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c9": {
+          "duration_s": 3.131,
+          "lufs": -20.0,
+          "true_peak_db": -11.7,
+          "rms_db": -21.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: absent-minded wandering phrase, clear bright whistle.",
+          "duration": 3.2246428583011637,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c10": {
+          "duration_s": 2.586,
+          "lufs": -20.0,
+          "true_peak_db": -11.7,
+          "rms_db": -21.5,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0173)"
+          ],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: cheerful skipping phrase, soft airy whistle.",
+          "duration": 2.9258592603882336,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c11": {
+          "duration_s": 3.222,
+          "lufs": -20.0,
+          "true_peak_db": -9.8,
+          "rms_db": -21.6,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0183)"
+          ],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: absent-minded wandering phrase, soft airy whistle.",
+          "duration": 3.287358630038365,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c12": {
+          "duration_s": 3.129,
+          "lufs": -20.0,
+          "true_peak_db": -10.9,
+          "rms_db": -22.0,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0174)"
+          ],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: cheerful skipping phrase, clear bright whistle.",
+          "duration": 3.1737742127881763,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c13": {
+          "duration_s": 2.639,
+          "lufs": -20.0,
+          "true_peak_db": -11.6,
+          "rms_db": -21.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: short rising and falling phrase, soft airy whistle.",
+          "duration": 2.760212826226353,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c14": {
+          "duration_s": 2.885,
+          "lufs": -20.0,
+          "true_peak_db": -8.6,
+          "rms_db": -21.6,
+          "flags": [],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: short rising and falling phrase, clear bright whistle.",
+          "duration": 2.932633204519354,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c15": {
+          "duration_s": 2.554,
+          "lufs": -20.0,
+          "true_peak_db": -13.0,
+          "rms_db": -21.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0198)"
+          ],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: slow lilting folk phrase, clear bright whistle.",
+          "duration": 2.722404213636544,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c16": {
+          "duration_s": 2.698,
+          "lufs": -20.0,
+          "true_peak_db": -10.8,
+          "rms_db": -21.7,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0157)"
+          ],
+          "pass": true,
+          "prompt": "A person whistling a short simple medieval folk phrase to themselves while working indoors, relaxed and slightly imperfect, no instruments. Details: slow lilting folk phrase, soft airy whistle.",
+          "duration": 2.7322413225781106,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c4",
+            0.0187
+          ],
+          [
+            "c1",
+            "c5",
+            0.0173
+          ],
+          [
+            "c1",
+            "c6",
+            0.0165
+          ],
+          [
+            "c1",
+            "c8",
+            0.011
+          ],
+          [
+            "c1",
+            "c10",
+            0.0173
+          ],
+          [
+            "c1",
+            "c15",
+            0.0198
+          ],
+          [
+            "c1",
+            "c16",
+            0.0157
+          ],
+          [
+            "c2",
+            "c11",
+            0.0183
+          ],
+          [
+            "c2",
+            "c12",
+            0.0174
+          ]
+        ],
+        "nearest": {
+          "c1": 0.011,
+          "c2": 0.0112,
+          "c3": 0.0156,
+          "c4": 0.0101,
+          "c5": 0.0115,
+          "c6": 0.0107,
+          "c7": 0.0153,
+          "c8": 0.011,
+          "c9": 0.014,
+          "c10": 0.0121,
+          "c11": 0.0149,
+          "c12": 0.0101,
+          "c13": 0.0309,
+          "c14": 0.0219,
+          "c15": 0.0186,
+          "c16": 0.014
+        },
+        "ref_distance": {
+          "c1": 0.1148,
+          "c2": 0.1289,
+          "c3": 0.124,
+          "c4": 0.1159,
+          "c5": 0.1028,
+          "c6": 0.107,
+          "c7": 0.1042,
+          "c8": 0.093,
+          "c9": 0.1122,
+          "c10": 0.1204,
+          "c11": 0.1096,
+          "c12": 0.1162,
+          "c13": 0.1271,
+          "c14": 0.0842,
+          "c15": 0.1173,
+          "c16": 0.1083
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "job": "s253",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T17:29:59Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.56,
+          "lufs": -20.7,
+          "true_peak_db": -1.0,
+          "rms_db": -24.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Mucking out a byre: a fork scraping wet straw across the floor, one heavy toss onto a heap. Details: straw on stone.",
+          "duration": 1.5851019538932298,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.351,
+          "lufs": -18.0,
+          "true_peak_db": -1.8,
+          "rms_db": -22.5,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0336)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Mucking out a byre: a fork scraping wet straw across the floor, one heavy toss onto a heap. Details: straw on packed earth.",
+          "duration": 1.4171629101359988,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.36,
+          "lufs": -21.5,
+          "true_peak_db": -1.0,
+          "rms_db": -25.5,
+          "note": "tepe sınırında, yükseklik -21.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Mucking out a byre: a fork scraping wet straw across the floor, one heavy toss onto a heap. Details: straw on stone.",
+          "duration": 1.3637302151268342,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 1.459,
+          "lufs": -18.6,
+          "true_peak_db": -1.0,
+          "rms_db": -21.9,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Mucking out a byre: a fork scraping wet straw across the floor, one heavy toss onto a heap. Details: straw on packed earth.",
+          "duration": 1.525224978686186,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 1.6,
+          "lufs": -18.1,
+          "true_peak_db": -1.0,
+          "rms_db": -23.5,
+          "flags": [
+            "c3 ile neredeyse aynı (0.03)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Mucking out a byre: a fork scraping wet straw across the floor, one heavy toss onto a heap. Details: straw on stone.",
+          "duration": 1.6295162115180792,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.6,
+          "lufs": -21.0,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0307)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Mucking out a byre: a fork scraping wet straw across the floor, one heavy toss onto a heap. Details: straw on packed earth.",
+          "duration": 1.6391046354839727,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.6,
+          "lufs": -18.0,
+          "true_peak_db": -3.0,
+          "rms_db": -21.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0334)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Mucking out a byre: a fork scraping wet straw across the floor, one heavy toss onto a heap. Details: straw on stone.",
+          "duration": 1.6436283059914363,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.52,
+          "lufs": -18.0,
+          "true_peak_db": -3.6,
+          "rms_db": -22.3,
+          "flags": [
+            "c4 ile neredeyse aynı (0.0256)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Mucking out a byre: a fork scraping wet straw across the floor, one heavy toss onto a heap. Details: straw on packed earth.",
+          "duration": 1.5337356157330908,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0336
+          ],
+          [
+            "c1",
+            "c6",
+            0.0307
+          ],
+          [
+            "c1",
+            "c7",
+            0.0334
+          ],
+          [
+            "c3",
+            "c5",
+            0.03
+          ],
+          [
+            "c4",
+            "c8",
+            0.0256
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0307,
+          "c2": 0.0211,
+          "c3": 0.03,
+          "c4": 0.0256,
+          "c5": 0.03,
+          "c6": 0.0203,
+          "c7": 0.0203,
+          "c8": 0.0256
+        },
+        "ref_distance": {
+          "c1": 0.1955,
+          "c2": 0.1986,
+          "c3": 0.1063,
+          "c4": 0.1623,
+          "c5": 0.1059,
+          "c6": 0.2085,
+          "c7": 0.2245,
+          "c8": 0.168
+        }
+      }
+    }
+  }
+}

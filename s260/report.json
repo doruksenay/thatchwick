@@ -1,0 +1,148 @@
+{
+  "job": "s260",
+  "kind": "sfx",
+  "family": "voice",
+  "created": "2026-11-20T17:30:33Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 2.551,
+          "lufs": -20.0,
+          "true_peak_db": -5.6,
+          "rms_db": -26.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "A medieval town crier in a small stone-paved village square: a brass handbell rings, then a middle-aged man with a strong chest voice calls out loudly to gather people, in wordless village gibberish, no real words, slight echo off the houses. No music, no crowd, no modern sounds. Details: two quick rings of a brass handbell first, a long rising call.",
+          "duration": 2.9481006805789205,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 2.329,
+          "lufs": -20.0,
+          "true_peak_db": -5.7,
+          "rms_db": -22.9,
+          "flags": [],
+          "pass": true,
+          "prompt": "A medieval town crier in a small stone-paved village square: a brass handbell rings, then a middle-aged man with a strong chest voice calls out loudly to gather people, in wordless village gibberish, no real words, slight echo off the houses. No music, no crowd, no modern sounds. Details: three slow rings of a brass handbell first, two short calls then a long one.",
+          "duration": 2.7189972810356418,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 2.678,
+          "lufs": -20.0,
+          "true_peak_db": -4.2,
+          "rms_db": -26.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "A medieval town crier in a small stone-paved village square: a brass handbell rings, then a middle-aged man with a strong chest voice calls out loudly to gather people, in wordless village gibberish, no real words, slight echo off the houses. No music, no crowd, no modern sounds. Details: three slow rings of a brass handbell first, a long rising call.",
+          "duration": 2.9673214524536515,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 2.518,
+          "lufs": -20.0,
+          "true_peak_db": -3.0,
+          "rms_db": -23.1,
+          "flags": [],
+          "pass": true,
+          "prompt": "A medieval town crier in a small stone-paved village square: a brass handbell rings, then a middle-aged man with a strong chest voice calls out loudly to gather people, in wordless village gibberish, no real words, slight echo off the houses. No music, no crowd, no modern sounds. Details: two quick rings of a brass handbell first, two short calls then a long one.",
+          "duration": 3.052732160553519,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 2.126,
+          "lufs": -20.0,
+          "true_peak_db": -5.2,
+          "rms_db": -22.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "A medieval town crier in a small stone-paved village square: a brass handbell rings, then a middle-aged man with a strong chest voice calls out loudly to gather people, in wordless village gibberish, no real words, slight echo off the houses. No music, no crowd, no modern sounds. Details: two quick rings of a brass handbell first, a long rising call.",
+          "duration": 2.7718303845201455,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 2.389,
+          "lufs": -20.0,
+          "true_peak_db": -4.4,
+          "rms_db": -25.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.018)"
+          ],
+          "pass": true,
+          "prompt": "A medieval town crier in a small stone-paved village square: a brass handbell rings, then a middle-aged man with a strong chest voice calls out loudly to gather people, in wordless village gibberish, no real words, slight echo off the houses. No music, no crowd, no modern sounds. Details: three slow rings of a brass handbell first, two short calls then a long one.",
+          "duration": 2.8422745673086713,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 2.452,
+          "lufs": -20.0,
+          "true_peak_db": -6.6,
+          "rms_db": -23.0,
+          "flags": [
+            "c5 ile neredeyse aynı (0.0148)"
+          ],
+          "pass": true,
+          "prompt": "A medieval town crier in a small stone-paved village square: a brass handbell rings, then a middle-aged man with a strong chest voice calls out loudly to gather people, in wordless village gibberish, no real words, slight echo off the houses. No music, no crowd, no modern sounds. Details: three slow rings of a brass handbell first, a long rising call.",
+          "duration": 2.9018876202078756,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 2.145,
+          "lufs": -20.0,
+          "true_peak_db": -3.5,
+          "rms_db": -26.2,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0194)"
+          ],
+          "pass": true,
+          "prompt": "A medieval town crier in a small stone-paved village square: a brass handbell rings, then a middle-aged man with a strong chest voice calls out loudly to gather people, in wordless village gibberish, no real words, slight echo off the houses. No music, no crowd, no modern sounds. Details: two quick rings of a brass handbell first, two short calls then a long one.",
+          "duration": 2.7391118110274113,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c6",
+            0.018
+          ],
+          [
+            "c1",
+            "c8",
+            0.0194
+          ],
+          [
+            "c5",
+            "c7",
+            0.0148
+          ]
+        ],
+        "nearest": {
+          "c1": 0.018,
+          "c2": 0.0383,
+          "c3": 0.0227,
+          "c4": 0.0345,
+          "c5": 0.0148,
+          "c6": 0.0161,
+          "c7": 0.0148,
+          "c8": 0.0161
+        },
+        "ref_distance": {
+          "c1": 0.133,
+          "c2": 0.1345,
+          "c3": 0.1556,
+          "c4": 0.1104,
+          "c5": 0.0868,
+          "c6": 0.1572,
+          "c7": 0.0829,
+          "c8": 0.179
+        }
+      }
+    }
+  }
+}

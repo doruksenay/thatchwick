@@ -1,0 +1,227 @@
+{
+  "job": "s231",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T17:27:36Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.251,
+          "lufs": -18.0,
+          "true_peak_db": -1.2,
+          "rms_db": -22.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: iron cauldron, thick bubbling stew.",
+          "duration": 1.403905738871422,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.262,
+          "lufs": -32.9,
+          "true_peak_db": -1.0,
+          "rms_db": -28.2,
+          "note": "tepe sınırında, yükseklik -32.9 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: glazed clay pot, thin simmering soup.",
+          "duration": 1.4094484402773895,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 1.161,
+          "lufs": -26.1,
+          "true_peak_db": -1.0,
+          "rms_db": -27.7,
+          "note": "tepe sınırında, yükseklik -26.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: glazed clay pot, thick bubbling stew.",
+          "duration": 1.445619168228103,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 1.235,
+          "lufs": -26.9,
+          "true_peak_db": -1.0,
+          "rms_db": -27.7,
+          "note": "tepe sınırında, yükseklik -26.9 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: iron cauldron, thin simmering soup.",
+          "duration": 1.4984800442048172,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 1.048,
+          "lufs": -34.1,
+          "true_peak_db": -1.0,
+          "rms_db": -30.5,
+          "note": "tepe sınırında, yükseklik -34.1 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0261)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: iron cauldron, thick bubbling stew.",
+          "duration": 1.3822811719224766,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.173,
+          "lufs": -32.4,
+          "true_peak_db": -1.0,
+          "rms_db": -31.3,
+          "note": "tepe sınırında, yükseklik -32.4 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: glazed clay pot, thin simmering soup.",
+          "duration": 1.342413169997117,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 1.029,
+          "lufs": -27.3,
+          "true_peak_db": -1.0,
+          "rms_db": -27.1,
+          "note": "tepe sınırında, yükseklik -27.3 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: glazed clay pot, thick bubbling stew.",
+          "duration": 1.3334074093951493,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c8": {
+          "duration_s": 0.869,
+          "lufs": -31.6,
+          "true_peak_db": -1.0,
+          "rms_db": -28.7,
+          "note": "tepe sınırında, yükseklik -31.6 (hedef -18)",
+          "flags": [
+            "c4 ile neredeyse aynı (0.0255)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: iron cauldron, thin simmering soup.",
+          "duration": 1.280572143093102,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c9": {
+          "duration_s": 0.879,
+          "lufs": -22.6,
+          "true_peak_db": -1.0,
+          "rms_db": -24.3,
+          "note": "tepe sınırında, yükseklik -22.6 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: iron cauldron, thick bubbling stew.",
+          "duration": 1.2824738192914207,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c10": {
+          "duration_s": 1.266,
+          "lufs": -23.4,
+          "true_peak_db": -1.0,
+          "rms_db": -26.5,
+          "note": "tepe sınırında, yükseklik -23.4 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.028)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: glazed clay pot, thin simmering soup.",
+          "duration": 1.4509361659763476,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c11": {
+          "duration_s": 1.281,
+          "lufs": -32.1,
+          "true_peak_db": -1.0,
+          "rms_db": -27.7,
+          "note": "tepe sınırında, yükseklik -32.1 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.02)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: glazed clay pot, thick bubbling stew.",
+          "duration": 1.534488482426114,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c12": {
+          "duration_s": 1.018,
+          "lufs": -32.4,
+          "true_peak_db": -1.0,
+          "rms_db": -30.9,
+          "note": "tepe sınırında, yükseklik -32.4 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0304)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A wooden spoon stirring a simmering pot: slow scrape along the pot wall with soft bubbling underneath. Details: iron cauldron, thin simmering soup.",
+          "duration": 1.2897894498900515,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c12",
+            0.0304
+          ],
+          [
+            "c2",
+            "c5",
+            0.0261
+          ],
+          [
+            "c2",
+            "c10",
+            0.028
+          ],
+          [
+            "c2",
+            "c11",
+            0.02
+          ],
+          [
+            "c4",
+            "c8",
+            0.0255
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0304,
+          "c2": 0.02,
+          "c3": 0.0439,
+          "c4": 0.0255,
+          "c5": 0.0214,
+          "c6": 0.0412,
+          "c7": 0.0401,
+          "c8": 0.0255,
+          "c9": 0.0214,
+          "c10": 0.028,
+          "c11": 0.02,
+          "c12": 0.0304
+        },
+        "ref_distance": {
+          "c1": 0.0355,
+          "c2": 0.0375,
+          "c3": 0.0308,
+          "c4": 0.0414,
+          "c5": 0.0263,
+          "c6": 0.0569,
+          "c7": 0.0384,
+          "c8": 0.045,
+          "c9": 0.0312,
+          "c10": 0.0324,
+          "c11": 0.0342,
+          "c12": 0.0308
+        }
+      }
+    }
+  }
+}

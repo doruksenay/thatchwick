@@ -1,0 +1,188 @@
+{
+  "job": "s234",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T17:28:10Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.371,
+          "lufs": -22.2,
+          "true_peak_db": -1.0,
+          "rms_db": -30.7,
+          "note": "tepe sınırında, yükseklik -22.2 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling. Details: dry twig snapped, kindling catching quickly.",
+          "duration": 1.645713014432644,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.473,
+          "lufs": -36.1,
+          "true_peak_db": -1.0,
+          "rms_db": -35.6,
+          "note": "tepe sınırında, yükseklik -36.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0294)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling. Details: flint struck on steel, kindling catching quickly.",
+          "duration": 1.7502339911800602,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.498,
+          "lufs": -32.1,
+          "true_peak_db": -1.0,
+          "rms_db": -34.2,
+          "note": "tepe sınırında, yükseklik -32.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0197)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling. Details: dry twig snapped, two soft breaths and a small crackle.",
+          "duration": 1.8722942916517524,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.373,
+          "lufs": -26.8,
+          "true_peak_db": -1.0,
+          "rms_db": -30.2,
+          "note": "tepe sınırında, yükseklik -26.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0153)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling. Details: flint struck on steel, two soft breaths and a small crackle.",
+          "duration": 1.7560153756260748,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.382,
+          "lufs": -25.0,
+          "true_peak_db": -1.0,
+          "rms_db": -30.6,
+          "note": "tepe sınırında, yükseklik -25.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0046)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling. Details: dry twig snapped, kindling catching quickly.",
+          "duration": 1.6352157183077354,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.629,
+          "lufs": -22.0,
+          "true_peak_db": -1.0,
+          "rms_db": -31.0,
+          "note": "tepe sınırında, yükseklik -22.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0215)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling. Details: flint struck on steel, kindling catching quickly.",
+          "duration": 1.9040805317369274,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.314,
+          "lufs": -28.8,
+          "true_peak_db": -1.0,
+          "rms_db": -30.6,
+          "note": "tepe sınırında, yükseklik -28.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0085)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling. Details: dry twig snapped, two soft breaths and a small crackle.",
+          "duration": 1.6406036895492047,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.645,
+          "lufs": -31.2,
+          "true_peak_db": -1.0,
+          "rms_db": -31.0,
+          "note": "tepe sınırında, yükseklik -31.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0293)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Lighting a hearth: a flint strike, gentle blowing on embers and the first small crackle of kindling. Details: flint struck on steel, two soft breaths and a small crackle.",
+          "duration": 1.9169559777368115,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0294
+          ],
+          [
+            "c1",
+            "c3",
+            0.0197
+          ],
+          [
+            "c1",
+            "c4",
+            0.0153
+          ],
+          [
+            "c1",
+            "c5",
+            0.0046
+          ],
+          [
+            "c1",
+            "c6",
+            0.0215
+          ],
+          [
+            "c1",
+            "c7",
+            0.0085
+          ],
+          [
+            "c1",
+            "c8",
+            0.0293
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0046,
+          "c2": 0.0127,
+          "c3": 0.0055,
+          "c4": 0.0055,
+          "c5": 0.0046,
+          "c6": 0.0095,
+          "c7": 0.0085,
+          "c8": 0.0228
+        },
+        "ref_distance": {
+          "c1": 0.0539,
+          "c2": 0.0731,
+          "c3": 0.0547,
+          "c4": 0.0492,
+          "c5": 0.054,
+          "c6": 0.0618,
+          "c7": 0.0382,
+          "c8": 0.0428
+        }
+      }
+    }
+  }
+}
