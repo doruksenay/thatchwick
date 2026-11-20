@@ -1,7 +1,8 @@
 ---
 id: "570t"
 title: Kement tuzağı (haritaya kurulan eşya)
-status: pending
+status: running
+claimed_at: 2026-11-20T17:10Z
 approved_by: user        # otomatik akış (CLAUDE.md, 2026-11-17); kullanıcı isteği sohbette 2026-11-20: "kementi de haritaya ekle"
 family: esya
 style_gate: false
