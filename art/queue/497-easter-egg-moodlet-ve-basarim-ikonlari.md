@@ -1,23 +1,23 @@
 ---
 id: "497"
-title: "Easter egg moodlet, başarım ve Tuhaflıklar ikonları (13)"
+title: "Easter egg moodlet, başarım ve Tuhaflıklar ikonları (14)"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("bu moodletler için de asset üretmemiz lazım", "yaz bunları ve sen ekle sıraya"), Project belgeleri 55 ve 55b
 priority: 50
 family: arayuz
 style_gate: false
-cost_est: 13
+cost_est: 14
 cost_max: 20
 depends_on: ["212"]
 max_attempts: 1
 pixellab: true
 outputs:
-  - Assets/Art/Iso/_aday/ui_icon_moodlet_{animal_spoke,confidant,not_crazy,believed,family_tale,nobody_believes,odd_chat,thoughtful,let_down}.png
+  - Assets/Art/Iso/_aday/ui_icon_moodlet_{animal_spoke,confidant,not_crazy,believed,family_tale,nobody_believes,odd_chat,thoughtful,let_down,scarecrow_chat}.png
   - Assets/Art/Iso/_aday/ui_icon_achievement_{animal_spoke,runs_in_family,question_the_sword}.png
   - Assets/Art/Iso/_aday/ui_icon_tab_oddities.png
 created: 2026-11-20
 ---
-# 497 Easter egg moodlet, başarım ve Tuhaflıklar ikonları (13)
+# 497 Easter egg moodlet, başarım ve Tuhaflıklar ikonları (14)
 
 ## Amaç
 Project belgesi `55-easter-eggler.md`:
@@ -44,6 +44,7 @@ Stil: 210 yönü (varsayılan `parsomen`), tek renk koyu kahve kontur, düz göl
 | ui_icon_moodlet_odd_chat | Tuhaf bir sohbet | `a cream speech bubble with a big question mark symbol inside` |
 | ui_icon_moodlet_thoughtful | Düşünceli | `an old rusty sword stuck upright in a small mound of earth, one tiny white flower at its base` |
 | ui_icon_moodlet_let_down | Hayal kırıklığı | `a small green frog sitting, front view, with a sad downturned mouth` |
+| ui_icon_moodlet_scarecrow_chat | Korkulukla dertleşti (20.11.2026 eklendi, kod PR #89) | `a straw scarecrow head with a floppy hat and a stitched smile, front view` |
 | ui_icon_achievement_animal_spoke | Başarım: Dile geldi | `a brown cow head with a speech bubble, inside a round wheat-gold laurel border` |
 | ui_icon_achievement_runs_in_family | Başarım: Bizde de oldu (gizli) | `a small tree branch with two leaves, a paw print on each leaf, inside a round wheat-gold laurel border` |
 | ui_icon_achievement_question_the_sword | Başarım: Silahı bul ve sorgula | `a rusty sword stuck in the ground with a question mark symbol beside it, inside a round wheat-gold laurel border` |
