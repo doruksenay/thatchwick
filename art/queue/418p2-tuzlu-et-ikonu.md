@@ -1,7 +1,8 @@
 ---
 id: "418p2"
 title: "Tuzlu et ikonu (418p'de reddedilen v2 yerine v3)"
-status: pending
+status: running
+claimed_at: 2026-11-20T18:36Z
 approved_by: user        # kullanıcı kararı 2026-11-20: "tuzlu eti tekrar üret"
 priority: 20
 family: arayuz
