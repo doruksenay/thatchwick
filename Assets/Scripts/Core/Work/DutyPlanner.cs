@@ -72,6 +72,8 @@ namespace Thatchwick.Core.Work
                 consider(HouseKey(item.Id, inter.Id), item.Position, () => Job.UseItem(item.Id, inter.Id));
             }
         }
+        /// <summary>Mutfak görevlisinin işleri, öncelik sırasıyla (karakter null: yalnızca sayım).</summary>
+        public Func<Character, IEnumerable<(ItemInstance item, InteractionDef interaction)>> KitchenChores { get; set; }
         /// <summary>Ev görevi akşam da sürer (mum yakmak akşam işidir): bu saate kadar.</summary>
         public Func<bool> HouseHours { get; set; }
 
@@ -102,6 +104,7 @@ namespace Thatchwick.Core.Work
                 case DutyKind.Mine: return "Maden";
                 case DutyKind.Steward: return "Kâhya";
                 case DutyKind.House: return "Ev";
+                case DutyKind.Kitchen: return "Mutfak";
                 default: return "Görev yok";
             }
         }
@@ -125,6 +128,8 @@ namespace Thatchwick.Core.Work
             }
             else if (duty == DutyKind.House && HouseChores != null)
                 foreach (var _ in HouseChores()) n++;
+            else if (duty == DutyKind.Kitchen && KitchenChores != null)
+                foreach (var _ in KitchenChores(null)) n++;
             else if (duty == DutyKind.Mine && Mines != null)
                 foreach (var m in Mines.Sites)
                     foreach (var (_, _, t) in m.All()) if (t.Marked || t.Creaking) n++;
@@ -255,6 +260,17 @@ namespace Thatchwick.Core.Work
                     if (it == null || i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;
                     var item = it; var inter = i;
                     Consider(HouseKey(item.Id, inter.Id), item.Position, () => Job.UseItem(item.Id, inter.Id));
+                }
+            }
+            else if (c.Duty == DutyKind.Kitchen && KitchenChores != null)
+            {
+                // Mutfak görevi (belge 58a §4): sıradaki iş çizelgeden gelir; görevli kendi başına tarif seçmez.
+                foreach (var (it, i) in KitchenChores(c))
+                {
+                    if (it == null || i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;
+                    var item = it; var inter = i;
+                    Consider(HouseKey(item.Id, inter.Id), item.Position, () => Job.UseItem(item.Id, inter.Id));
+                    break;   // çizelge sırası önemli: en yakın değil, ilk yapılabilir iş
                 }
             }
             else if (c.Duty == DutyKind.Mine && TileWork != null && Mines?.Get(Mining.MineSystem.PlotId) is Mining.MineMap plot)

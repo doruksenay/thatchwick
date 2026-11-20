@@ -119,9 +119,80 @@ namespace Thatchwick.Core.Work
             _house = house ?? throw new ArgumentNullException(nameof(house));
             _content = content ?? throw new ArgumentNullException(nameof(content));
             _rng = new Random(seed);
+            // Malzeme grupları (belge 58 §5.1): hane envanteri "group.fish" gibi kimlikleri üyelerine çözer.
+            if (house.GroupMembers == null)
+            {
+                var cache = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
+                house.GroupMembers = id =>
+                {
+                    if (cache.TryGetValue(id, out var list)) return list;
+                    var members = new List<string>();
+                    if (content.Groups.TryGet(id, out var g)) foreach (var m in g.Members) members.Add(m.ItemId);
+                    return cache[id] = members;
+                };
+            }
         }
 
-        private string Name(string id) => _content.Items.TryGet(id, out var d) ? d.DisplayName : id;
+        private string Name(string id) => _content.Items.TryGet(id, out var d) ? d.DisplayName : _content.Groups.TryGet(id, out var g) ? g.DisplayName : id;
+
+        // ---- etki anı (belge 62 §2.4): malzeme zincirin "al" adımında ayrılır, iş kesilirse geri konur ----
+        private List<ItemKey> _preTaken;
+        private bool _skipMaterials;
+        /// <summary>Malzemesi ayrılmış işin bitiş denetimi sürüyor: engeller envanterdeki malzemeyi yeniden saymamalı.</summary>
+        public bool IsFinishing => _skipMaterials;
+        /// <summary>Son işte harcanan girdiler (kalite ve grup üyesi; sofra puanı okur).</summary>
+        public List<ItemKey> LastTaken { get; } = new List<ItemKey>();
+        /// <summary>Pişen yemeğin kalitesi (belge 58 §6): null dönerse 53'teki işleme kuralı uygulanır.</summary>
+        public Func<Character, ItemInstance, InteractionDef, List<ItemKey>, int?> DishQuality { get; set; }
+
+        private TakePolicy PolicyFor(ItemInstance item, InteractionDef interaction)
+        {
+            string key = item != null ? Life.QualityBook.RecipeKey(item.Def, interaction) : null;
+            return Quality != null && Quality.BestIngredients(key) ? TakePolicy.Highest : TakePolicy.Lowest;
+        }
+
+        /// <summary>İşin malzemesini şimdi envanterden ayırır; yetmiyorsa null (hiçbir şey alınmaz).</summary>
+        public List<ItemKey> ReserveInputs(Character character, ItemInstance item, InteractionDef interaction)
+        {
+            var consumed = interaction.AllConsumed();
+            // Avludaki yığınlar depoya sayılmayan yedektir: eksik kalan önce oradan envantere alınır (Apply ile aynı kural).
+            if (Reserve != null)
+                foreach (var c in consumed)
+                {
+                    int missing = c.Count - _house.Count(c.ItemId);
+                    if (missing > 0) { int got = Reserve.Withdraw(c.ItemId, missing); if (got > 0) _house.AddItem(c.ItemId, got); }
+                }
+            foreach (var c in consumed) if (_house.Count(c.ItemId) < c.Count) return null;
+            var policy = PolicyFor(item, interaction);
+            var list = new List<ItemKey>();
+            foreach (var c in consumed)
+                for (int k = 0; k < c.Count; k++)
+                    if (_house.TryTake(c.ItemId, policy, out var took)) list.Add(took);
+            return list;
+        }
+
+        /// <summary>Ayrılan malzemeyi geri koyar (iş yarıda kesildi).</summary>
+        public void ReleaseInputs(List<ItemKey> taken)
+        {
+            if (taken == null) return;
+            foreach (var k in taken) _house.Add(k, 1);
+        }
+
+        /// <summary>Malzemesi önceden ayrılmış işi bitirir.</summary>
+        public void ApplyReserved(Character character, ItemInstance item, InteractionDef interaction, List<ItemKey> taken)
+        {
+            _preTaken = taken ?? new List<ItemKey>();
+            try { Apply(character, item, interaction); }
+            finally { _preTaken = null; }
+        }
+
+        /// <summary>Malzemesi ayrılmış iş için bitiş denetimi (malzeme sayılmaz).</summary>
+        public string CanFinish(Character character, ItemInstance item, InteractionDef interaction)
+        {
+            _skipMaterials = true;
+            try { return CanStart(character, item, interaction); }
+            finally { _skipMaterials = false; }
+        }
 
         private int AddAll(string id, int count)
         {
@@ -169,7 +240,7 @@ namespace Thatchwick.Core.Work
             // Onarılacak eşya yoksa malzeme sorulmaz (önce asıl neden).
             if (interaction.RepairMaterial != null && FindRepairTarget(interaction.RepairMaterial, out _, out _) == null)
                 return $"Onarılacak hasarlı {Build.DecorSystem.MaterialName(interaction.RepairMaterial)} eşya yok.";
-            foreach (var c in interaction.AllConsumed())
+            if (!_skipMaterials) foreach (var c in interaction.AllConsumed())
             {
                 int have = _house.Count(c.ItemId) + (Reserve != null ? Reserve.Count(c.ItemId) : 0);
                 if (have < c.Count)
@@ -228,6 +299,8 @@ namespace Thatchwick.Core.Work
             if (interaction.EatContents && DecorSystem.EdibleCount(item, _content) == 0)
                 return item.HasContents ? "İçindekiler çürümüş; önce boşalt." : $"{item.Def.DisplayName} boş.";
             if (ExtraBlocker != null) return ExtraBlocker(character, item, interaction);
+            // Sofra ve mezbaha işleri yaşam sistemine bağlıdır (LifeSystems.CookingBlocker); bağlı değilse yapılamaz.
+            if (interaction.MealAction != null) return interaction.DisplayName;
             return null;
         }
 
@@ -258,26 +331,31 @@ namespace Thatchwick.Core.Work
         {
             var consumed = interaction.AllConsumed();
             // Avludaki yığınlar (gübre yığını) depoya sayılmayan yedektir: eksik kalan oradan envantere alınır.
-            if (Reserve != null)
+            if (Reserve != null && _preTaken == null)
                 foreach (var c in consumed)
                 {
                     int missing = c.Count - _house.Count(c.ItemId);
                     if (missing > 0) { int got = Reserve.Withdraw(c.ItemId, missing); if (got > 0) _house.AddItem(c.ItemId, got); }
                 }
-            foreach (var c in consumed)
+            if (_preTaken == null) foreach (var c in consumed)
                 if (_house.Count(c.ItemId) < c.Count) return; // bu arada harcanmış: ürün yok
             // Harcama sırası (53 §4.7): en düşük kalite önce; tezgâhta "En iyi malzemeyi kullan" seçiliyse en iyisi.
             string recipeKey = item != null ? Life.QualityBook.RecipeKey(item.Def, interaction) : null;
             var takePolicy = Quality != null && Quality.BestIngredients(recipeKey) ? TakePolicy.Highest : TakePolicy.Lowest;
             var inputQualities = new List<int>();
             LastConsumedQuality = 0;
-            foreach (var c in consumed)
-                for (int k = 0; k < c.Count; k++)
-                    if (_house.TryTake(c.ItemId, takePolicy, out var took) && _content.Items.TryGet(c.ItemId, out var inDef) && inDef.HasQuality)
-                    {
-                        inputQualities.Add(took.Quality);
-                        LastConsumedQuality = Math.Max(LastConsumedQuality, took.Quality);
-                    }
+            LastTaken.Clear();
+            if (_preTaken != null) LastTaken.AddRange(_preTaken);
+            else
+                foreach (var c in consumed)
+                    for (int k = 0; k < c.Count; k++)
+                        if (_house.TryTake(c.ItemId, takePolicy, out var took)) LastTaken.Add(took);
+            foreach (var took in LastTaken)
+                if (_content.Items.TryGet(took.Id, out var inDef) && inDef.HasQuality)
+                {
+                    inputQualities.Add(took.Quality);
+                    LastConsumedQuality = Math.Max(LastConsumedQuality, took.Quality);
+                }
 
             if (interaction.AddFeed > 0) AnimalSystem.AddFeed(item, interaction.AddFeed);
             if (interaction.AddIce > 0f) item.FuelDays = Math.Min(MaxIceDays, item.FuelDays + interaction.AddIce);
@@ -456,7 +534,8 @@ namespace Thatchwick.Core.Work
                 else
                 {
                     if (Quality != null && Quality.WillAttempt(character, item, interaction, day)) farmNotes.Add("malzeme has değil, eser denenmedi");
-                    batchQuality = ItemQuality.Processed(inputQualities, levelAboveGate, rawLevel, _rng);
+                    batchQuality = (interaction.Dish != null ? DishQuality?.Invoke(character, item, interaction, LastTaken) : null)
+                        ?? ItemQuality.Processed(inputQualities, levelAboveGate, rawLevel, _rng);
                 }
             }
             var qualityTotals = new Dictionary<string, int[]>();

@@ -263,7 +263,7 @@ namespace Thatchwick.Core.Content
                         bool hasEffects = !string.IsNullOrWhiteSpace(i.consume) || (i.produce != null && i.produce.Length > 0) || i.removeItem
                             || (i.materials != null && i.materials.Length > 0) || i.addFeed > 0 || i.collect || i.requiresAnimal
                             || i.addIce > 0f || i.requiresFrost || i.piped || i.befriendAnimals > 0f || i.teach || i.heal > 0f || i.wets > 0f || i.bath || i.addFill > 0 || i.emptyFill || i.dries || i.water || i.fertilize > 0f || i.takesFruit || i.requiresFruit || i.petAnimals || i.slaughter
-                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents || i.fillDecor || i.eatContents || !string.IsNullOrWhiteSpace(i.homeAction) || !string.IsNullOrWhiteSpace(i.skillWork) || !string.IsNullOrWhiteSpace(i.treeAction);
+                            || !string.IsNullOrWhiteSpace(i.repair) || i.polish || i.collectContents || i.fillDecor || i.eatContents || !string.IsNullOrWhiteSpace(i.meal) || !string.IsNullOrWhiteSpace(i.homeAction) || !string.IsNullOrWhiteSpace(i.skillWork) || !string.IsNullOrWhiteSpace(i.treeAction);
                         NeedType need = default;
                         // Saf iş etkileşimi: ihtiyaç doyurmaz, etkisi, becerisi ya da moodlet'i vardır (baltayı bilemek).
                         bool needless = string.IsNullOrWhiteSpace(i.need) && (hasEffects || !string.IsNullOrWhiteSpace(i.skill) || !string.IsNullOrWhiteSpace(i.moodlet));
@@ -343,10 +343,12 @@ namespace Thatchwick.Core.Content
                             HomeAction = string.IsNullOrWhiteSpace(i.homeAction) ? null : i.homeAction.Trim(),
                             SkillWork = string.IsNullOrWhiteSpace(i.skillWork) ? null : i.skillWork.Trim(),
                             Chain = Blank(i.chain),
+                            DishRaw = Blank(i.dish), LearnRaw = Blank(i.learn), ServeRaw = Blank(i.serve), MealAction = Blank(i.meal),
                             UpgradeId = string.IsNullOrWhiteSpace(i.upgrade) ? null : i.upgrade.Trim(),
                             TreeAction = string.IsNullOrWhiteSpace(i.treeAction) ? null : i.treeAction.Trim()
                         };
                         AddMaterials(interaction, i.materials);
+                        if (i.teaches != null) foreach (var t in i.teaches) if (!string.IsNullOrWhiteSpace(t)) interaction.Teaches.Add(t.Trim());
                         bool badExtra = false;
                         if (i.extraRestore != null)
                             foreach (var er in i.extraRestore)
@@ -403,6 +405,7 @@ namespace Thatchwick.Core.Content
             ApplyAnimals(file.animals, db, errors);
             ApplyBuildParts(file.buildParts, db, errors);
             ApplyEffects(file.effects, db, errors);
+            Cooking.CookingContentMapper.Apply(file, db, errors);   // gruplar, baharatlar, yemekler, yeme verisi (belge 58)
             ApplyChains(file.chains, db, errors);
 
             LifeContentMapper.Apply(file, db, errors);
@@ -664,7 +667,8 @@ namespace Thatchwick.Core.Content
                     IsCraft = true,
                     Moodlet = string.IsNullOrWhiteSpace(r.moodlet) ? Mood.MoodCatalog.Proud : r.moodlet,
                     RequiresBranch = string.IsNullOrWhiteSpace(r.requiresBranch) ? null : r.requiresBranch.Trim(),
-                    AdultPack = r.adultPack
+                    AdultPack = r.adultPack,
+                    DishRaw = Blank(r.dish), LearnRaw = Blank(r.learn), ServeRaw = Blank(r.serve)
                 };
                 interaction.Produce.Add(new ProduceDef { ItemId = r.produces, Count = r.count <= 0 ? 1 : r.count, Chance = 1f });
                 // Kilit becerisi: eşyayı üreten ilk tarifin becerisi (belge 45, 3.1).
@@ -700,7 +704,8 @@ namespace Thatchwick.Core.Content
                             def.Steps.Add(new ActionStepDef
                             {
                                 Id = st.id.Trim(), Pose = Blank(st.pose), Sfx = Blank(st.sfx), Held = held,
-                                Share = st.share > 0f ? st.share : 1.0, When = when, Undress = st.undress
+                                Share = st.share > 0f ? st.share : 1.0, When = when, Undress = st.undress,
+                                At = Blank(st.at), Closing = st.closing, Take = st.take
                             });
                         }
                     bool anyUnconditional = false;
@@ -729,6 +734,7 @@ namespace Thatchwick.Core.Content
                             if (match.IsEmpty) { errors.Add($"{c.id}: boş eşleme kuralı her etkileşimi yakalar."); bad = true; continue; }
                             def.Matches.Add(match);
                         }
+                    if (c.jobs != null) foreach (var j in c.jobs) if (!string.IsNullOrWhiteSpace(j)) def.Jobs.Add(j.Trim());
                     if (bad) continue;
                     try { db.Chains.Register(def); }
                     catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }
@@ -813,6 +819,10 @@ namespace Thatchwick.Core.Content
                     Sterile = a.sterile,
                     Herd = a.herd
                 };
+                if (a.byproducts != null)
+                    foreach (var b in a.byproducts)
+                        if (b != null && !string.IsNullOrWhiteSpace(b.item))
+                            def.Byproducts.Add(new Cooking.ByproductDef { ItemId = b.item.Trim(), Count = b.count <= 0 ? 1 : b.count, Chance = b.chance <= 0f ? 1f : b.chance, YoungOnly = b.youngOnly });
                 try { db.Animals.Register(def); }
                 catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }
             }

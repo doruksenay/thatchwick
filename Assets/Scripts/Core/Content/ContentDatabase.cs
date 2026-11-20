@@ -23,6 +23,27 @@ namespace Thatchwick.Core.Content
         public List<SkillUnlockDef> SkillUnlocks { get; } = new List<SkillUnlockDef>();
         /// <summary>İzlenen eylem zincirleri (belge 60; life.json "chains"). Sıra eşleme önceliğidir.</summary>
         public ContentRegistry<ActionChainDef> Chains { get; } = new ContentRegistry<ActionChainDef>();
+        /// <summary>Malzeme grupları, baharatlar, yemekler ve konuşma satırları (belge 58, 60b).</summary>
+        public ContentRegistry<Cooking.IngredientGroupDef> Groups { get; } = new ContentRegistry<Cooking.IngredientGroupDef>();
+        public ContentRegistry<Cooking.SpiceDef> Spices { get; } = new ContentRegistry<Cooking.SpiceDef>();
+        public ContentRegistry<Cooking.DishDef> Dishes { get; } = new ContentRegistry<Cooking.DishDef>();
+        public ContentRegistry<Cooking.TalkLineDef> Talk { get; } = new ContentRegistry<Cooking.TalkLineDef>();
+        /// <summary>Yiyeceğin kendi yeme verisi (eşya kimliği → yeme etkileşimi): "ye" kazana bağlı değildir (belge 58 §3.2).</summary>
+        public Dictionary<string, InteractionDef> Foods { get; } = new Dictionary<string, InteractionDef>(StringComparer.Ordinal);
+        /// <summary>Ürün kimliğinden yemeğe: aynı tarifin seviyeyle çıkan iyi hâlleri (iyi pişmiş güveç) de o yemektir.</summary>
+        public Dictionary<string, Cooking.DishDef> DishByProduct { get; } = new Dictionary<string, Cooking.DishDef>(StringComparer.Ordinal);
+        public bool TryDish(string itemId, out Cooking.DishDef dish)
+        {
+            dish = null;
+            return itemId != null && DishByProduct.TryGetValue(itemId, out dish);
+        }
+
+        /// <summary>İş zinciri: "social:Chat" gibi eşya dışı iş anahtarına bağlı zincir; yoksa null.</summary>
+        public ActionChainDef JobChain(string key)
+        {
+            foreach (var c in Chains.All) if (c.MatchesJob(key)) return c;
+            return null;
+        }
         /// <summary>Etkileşimlerin başvurduğu moodlet kataloğu (doğrulama için).</summary>
         public Mood.MoodCatalog Moods { get; set; } = Mood.MoodCatalog.Default;
         /// <summary>Giysi kataloğu (clothing.json; belge 48). Yüklenmezse boş.</summary>
@@ -160,9 +181,10 @@ namespace Thatchwick.Core.Content
                         errors.Add($"{where}: Restore 0-100 arasında olmalı (iş etkileşimi değilse sıfırdan büyük).");
                     if (it.RequiresGrown && !item.IsPlant) errors.Add($"{where}: requiresGrown yalnızca bitkide kullanılır.");
                     if ((it.RequiresWithered || it.Stakes) && !item.IsCrop) errors.Add($"{where}: requiresWithered ve stake yalnızca tarla ekininde kullanılır.");
-                    if (it.ConsumeItem != null && !Items.Contains(it.ConsumeItem)) errors.Add($"{where}: harcanan '{it.ConsumeItem}' bulunamadı.");
+                    if (it.ConsumeItem != null && !Items.Contains(it.ConsumeItem) && !Groups.Contains(it.ConsumeItem)) errors.Add($"{where}: harcanan '{it.ConsumeItem}' bulunamadı.");
                     foreach (var c in it.Consume)
                     {
+                        if (Groups.Contains(c.ItemId)) { if (c.Count < 1) errors.Add($"{where}: malzeme adedi en az 1 olmalı."); continue; }
                         if (!Items.TryGet(c.ItemId, out var mat)) errors.Add($"{where}: malzeme '{c.ItemId}' bulunamadı.");
                         else if (mat.Placement != ItemPlacement.Resource) errors.Add($"{where}: malzeme '{c.ItemId}' bir kaynak olmalı.");
                         if (c.Count < 1) errors.Add($"{where}: malzeme adedi en az 1 olmalı.");

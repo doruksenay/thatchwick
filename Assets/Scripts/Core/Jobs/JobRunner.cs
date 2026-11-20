@@ -206,10 +206,38 @@ namespace Thatchwick.Core.Jobs
         /// İşe başlarken zinciri kurar: koşulu tutmayan adımlar ayıklanır, kalanların payları 0-1 aralığına dizilir.
         /// Zincir toplam süreyi değiştirmez; yalnızca böler.
         /// </summary>
-        private void BeginChain(ItemInstance item, InteractionDef interaction)
+        private void BeginChain(ItemInstance item, InteractionDef interaction) => BeginChain(interaction.ChainDef, item, interaction);
+
+        /// <summary>Eşya dışı iş (sosyal, hayvan, karo) için zincir: anahtar "social:Chat" gibi; <see cref="JobChain"/> çözer.</summary>
+        private void BeginJobChain(string key) => BeginChain(JobChain?.Invoke(key), null, null);
+
+        /// <summary>Eşya dışı işlerin zinciri (ContentDatabase.JobChain). Null: bu işler tek pozda yapılır.</summary>
+        public Func<string, ActionChainDef> JobChain { get; set; }
+
+        /// <summary>
+        /// Adımın yeri (belge 62 §2.4): (karakter, işin eşyası, yer rolü) → durulacak karo; null: yer yok, eşyanın başında oynar.
+        /// Roller: storage (kiler), prep (hazırlık tezgâhı ya da masa), table (sofra), water, fire.
+        /// </summary>
+        public Func<Character, ItemInstance, string, GridPos?> StepPlace { get; set; }
+
+        public Character Owner => _character;
+        /// <summary>İş yarıda kesildi, kapanış adımları oynuyor (kurulan, giyin).</summary>
+        public bool IsClosingOut => _closingOut;
+        /// <summary>Zincirin bir adımı için başka bir yere yürüyor.</summary>
+        public bool IsStepWalking => _stepWalking;
+
+        private ItemInstance _chainItem;
+        private InteractionDef _chainInteraction;
+        private bool _stepWalking, _displaced, _closingOut;
+        private double _closeProgress, _closeTotal;
+        private List<ItemKey> _reserved;
+        /// <summary>Kapanış adımı başına süre (oyun günü; eylem ölçeğiyle çarpılır).</summary>
+        public const double ClosingStepDays = 0.004;
+
+        private void BeginChain(ActionChainDef chain, ItemInstance item, InteractionDef interaction)
         {
             _steps = null; _stepEnds = null; _stepIndex = -1;
-            var chain = interaction.ChainDef;
+            _chainItem = item; _chainInteraction = interaction;
             if (chain == null) return;
             var steps = new List<ActionStepDef>(chain.Steps.Count);
             double total = 0;
@@ -233,15 +261,19 @@ namespace Thatchwick.Core.Jobs
             switch (when)
             {
                 case ChainConditions.SkillLow:
-                    return interaction.Skill.HasValue && _character.Skills.GetLevel(interaction.Skill.Value) <= ChainConditions.LowSkillMax;
+                    return interaction != null && interaction.Skill.HasValue && _character.Skills.GetLevel(interaction.Skill.Value) <= ChainConditions.LowSkillMax;
                 case ChainConditions.SkillHigh:
-                    return interaction.Skill.HasValue && _character.Skills.GetLevel(interaction.Skill.Value) >= ChainConditions.HighSkillMin;
+                    return interaction != null && interaction.Skill.HasValue && _character.Skills.GetLevel(interaction.Skill.Value) >= ChainConditions.HighSkillMin;
                 case ChainConditions.MoodGood:
                     return _character.MoodEnabled && (_character.Mood.Status == MoodStatus.Good || _character.Mood.Status == MoodStatus.Happy);
                 case ChainConditions.MoodBad:
                     return _character.MoodEnabled && (_character.Mood.Status == MoodStatus.Unhappy || _character.Mood.Status == MoodStatus.Miserable);
                 case ChainConditions.CarriedWater:
                     return _carriedWater;
+                case ChainConditions.Child:
+                    return _character.Stage == AgeStage.Child;
+                case ChainConditions.Elder:
+                    return _character.Stage == AgeStage.Elder;
                 case ChainConditions.Fire:
                     return item != null && item.Def.HeatOutput > 0f;
                 default:
@@ -258,10 +290,92 @@ namespace Thatchwick.Core.Jobs
                 if (fraction < _stepEnds[k]) { index = k; break; }
             if (index == _stepIndex) return;
             _stepIndex = index;
-            StepChanged?.Invoke(_character, _steps[index]);
+            var step = _steps[index];
+            // Etki anı: malzeme "al" adımında envanterden ayrılır (iş kesilirse geri konur).
+            if (step.Take && _reserved == null && _chainInteraction != null && Effects is Work.InteractionEffects fx && _chainInteraction.AllConsumed().Count > 0)
+                _reserved = fx.ReserveInputs(_character, _chainItem, _chainInteraction);
+            BeginStepWalk(step);
+            StepChanged?.Invoke(_character, step);
         }
 
-        private void ClearChain() { _steps = null; _stepEnds = null; _stepIndex = -1; _carriedWater = false; }
+        /// <summary>Adımın yeri başka bir yerse oraya; yeri olmayan adımda (uzaklaştıysa) eşyanın başına yürür.</summary>
+        private void BeginStepWalk(ActionStepDef step)
+        {
+            if (_chainItem == null) return;
+            List<GridPos> path = null;
+            if (step.At != null)
+            {
+                var place = StepPlace?.Invoke(_character, _chainItem, step.At);
+                if (!place.HasValue || place.Value.Equals(_character.Position)) return;
+                path = Pathfinder.FindPathToAny(_world.Map, _character.Position, new HashSet<GridPos> { place.Value });
+                if (path != null) _displaced = true;
+            }
+            else if (_displaced)
+            {
+                path = PathToAdjacent(_chainItem);
+                _displaced = false;
+            }
+            if (path == null || path.Count < 2) return;
+            _path = path; _pathIndex = 1; _stepFraction = 0;
+            _stepWalking = true;
+        }
+
+        /// <summary>
+        /// Güvenli noktada kesme (58-S1): zincirin ileride kapanış adımı varsa iş hemen bitmez; yalnızca kapanış adımları
+        /// oynar (kurulan, giyin), sonra iş etkisiz biter. Kapanış sürerken ikinci iptal işi anında keser.
+        /// </summary>
+        private bool TryBeginClosing()
+        {
+            if (!_using || _closingOut || _steps == null || _stepIndex < 0) return false;
+            var cur = Queue.Current;
+            if (cur == null || cur.Kind != JobKind.UseItem) return false;
+            if (_steps[_stepIndex].Closing) { _character.Asleep = false; ReleaseReserved(); _closingOut = true; _closeTotal = ClosingStepDays * Scale; _closeProgress = 0; _steps = new List<ActionStepDef> { _steps[_stepIndex] }; _stepEnds = new[] { 1.0 }; _stepIndex = 0; return true; }
+            var closing = new List<ActionStepDef>();
+            for (int k = _stepIndex + 1; k < _steps.Count; k++) if (_steps[k].Closing) closing.Add(_steps[k]);
+            if (closing.Count == 0) return false;
+            _closingOut = true;
+            _steps = closing;
+            _stepEnds = new double[closing.Count];
+            for (int k = 0; k < closing.Count; k++) _stepEnds[k] = (k + 1.0) / closing.Count;
+            _stepIndex = -1;
+            _closeTotal = ClosingStepDays * closing.Count * Scale;
+            _closeProgress = 0;
+            _character.Asleep = false;
+            ReleaseReserved();
+            UpdateStep(0.0);
+            return true;
+        }
+
+        private double AdvanceClosing(double budget)
+        {
+            double used = 0;
+            if (_stepWalking)
+            {
+                used = Walk(budget);
+                if (_path != null && _pathIndex < _path.Count) return used;
+                _stepWalking = false;
+            }
+            double remaining = _closeTotal - _closeProgress;
+            double available = budget - used;
+            if (available >= remaining) { Finish(); return used + remaining; }
+            _closeProgress += available;
+            UpdateStep(_closeTotal > 0 ? _closeProgress / _closeTotal : 1.0);
+            return used + available;
+        }
+
+        private void ReleaseReserved()
+        {
+            if (_reserved == null) return;
+            (Effects as Work.InteractionEffects)?.ReleaseInputs(_reserved);
+            _reserved = null;
+        }
+
+        private void ClearChain()
+        {
+            _steps = null; _stepEnds = null; _stepIndex = -1; _carriedWater = false;
+            _chainItem = null; _chainInteraction = null; _stepWalking = false; _displaced = false; _closingOut = false;
+            ReleaseReserved();
+        }
         private bool _carriedWater;
 
         public bool IsIdle => Queue.Current == null;
@@ -289,6 +403,7 @@ namespace Thatchwick.Core.Jobs
         public bool CancelAt(int index)
         {
             bool wasCurrent = index == 0;
+            if (wasCurrent && TryBeginClosing()) return true;
             if (!Queue.RemoveAt(index)) return false;
             if (wasCurrent) ResetJobState();
             return true;
@@ -304,6 +419,11 @@ namespace Thatchwick.Core.Jobs
 
         public void Cancel()
         {
+            if (TryBeginClosing())
+            {
+                for (int i = Queue.Count - 1; i >= 1; i--) Queue.RemoveAt(i);
+                return;
+            }
             Queue.Clear();
             ResetJobState();
         }
@@ -541,6 +661,9 @@ namespace Thatchwick.Core.Jobs
             return used;
         }
 
+        /// <summary>Yardım edilen kişi hâlâ o işi sürdürüyor mu (yardımcı, hedef). Null: birlikte iş yok.</summary>
+        public Func<Character, Character, bool> WorkingWith { get; set; }
+
         private double AdvanceSocial(Job job, double budget)
         {
             if (Social == null) { Fail("Bu iş şu an yapılamaz."); return 0; }
@@ -578,6 +701,20 @@ namespace Thatchwick.Core.Jobs
                 if (_pathIndex < _path.Count) return used;
                 if (!IsNear(_character.Position, target.Position)) { _path = null; return used; }
                 _using = true;
+                BeginJobChain("social:" + job.Action);
+            }
+
+            // Birlikte iş (belge 60b §3): yardım, öteki işini sürdürdükçe sürer; iş bitince ya da bırakılınca biter.
+            if (job.Action == SocialAction.HelpWork)
+            {
+                if (WorkingWith == null || !WorkingWith(_character, target))
+                {
+                    Finish();
+                    Social.Apply(_character, target, job.Action);
+                    return used;
+                }
+                _useProgress += budget - used;
+                return budget;
             }
 
             double remaining = Social.Duration(job.Action) * Scale - _useProgress;
@@ -589,6 +726,7 @@ namespace Thatchwick.Core.Jobs
                 return used + remaining;
             }
             _useProgress += available;
+            if (_steps != null) UpdateStep(_useProgress / Math.Max(1e-9, remaining + _useProgress - available));
             return used + available;
         }
 
@@ -624,6 +762,7 @@ namespace Thatchwick.Core.Jobs
                 if (_pathIndex < _path.Count) return used;
                 if (!IsNear(_character.Position, target)) { _path = null; return used; }
                 _using = true;
+                BeginJobChain("animal:" + job.AnimalAction);
             }
 
             double remaining = Animals.Duration(job.AnimalAction) * Scale - _useProgress;
@@ -638,6 +777,7 @@ namespace Thatchwick.Core.Jobs
                 return used + remaining;
             }
             _useProgress += available;
+            if (_steps != null) UpdateStep(_useProgress / Math.Max(1e-9, remaining + _useProgress - available));
             return used + available;
         }
 
@@ -675,6 +815,7 @@ namespace Thatchwick.Core.Jobs
                 if (_path == null) return used;
                 if (_pathIndex < _path.Count) return used;
                 _using = true;
+                BeginJobChain("tile:" + job.TileAction);
             }
 
             double remaining = (TileWork is ITileDuration td ? td.Duration(_character, job.Target, job.TileAction) : TileWork.Duration(_character, job.TileAction)) * Scale - _useProgress;
@@ -689,6 +830,7 @@ namespace Thatchwick.Core.Jobs
                 return used + remaining;
             }
             _useProgress += available;
+            if (_steps != null) UpdateStep(_useProgress / Math.Max(1e-9, remaining + _useProgress - available));
             return used + available;
         }
 
@@ -699,6 +841,7 @@ namespace Thatchwick.Core.Jobs
             var item = _world.GetItem(job.ItemId);
             InteractionDef interaction = item == null ? null : FindInteraction(item.Def, job.InteractionId);
             if (interaction == null) { Fail("Eşya ya da etkileşim bulunamadı."); return 0; }
+            if (_closingOut) return AdvanceClosing(budget);
 
             if (!_using)
             {
@@ -759,6 +902,17 @@ namespace Thatchwick.Core.Jobs
                 }
                 BeginChain(item, interaction);
             }
+            if (_stepWalking)
+            {
+                // Zincirin adımı başka bir yerde (kiler, tezgâh, sofra): yürüme süresi işin süresine eklenir.
+                double walked = Walk(budget - used);
+                used += walked;
+                if (_path != null && _pathIndex < _path.Count) return used;
+                _stepWalking = false;
+                if (budget - used <= 1e-12) return used;
+            }
+            if (_steps != null && _stepIndex >= 0 && _stepIndex < _steps.Count && _steps[_stepIndex].Take && _reserved == null && interaction.AllConsumed().Count > 0 && Effects is Work.InteractionEffects)
+            { Fail(Effects.CanStart(_character, item, interaction) ?? interaction.DisplayName); return used; }
             _character.Asleep = interaction.Need == NeedType.Energy && interaction.RestoresNeed;
 
             double remaining = EffectiveDuration(interaction, item) - _useProgress;
@@ -769,7 +923,9 @@ namespace Thatchwick.Core.Jobs
                 // karşılıksız doyma, XP ya da moodlet verilmez.
                 if (interaction.HasEffects)
                 {
-                    string gone = Effects == null ? "Bu iş şu an yapılamaz." : Effects.CanStart(_character, item, interaction);
+                    string gone = Effects == null ? "Bu iş şu an yapılamaz."
+                        : _reserved != null && Effects is Work.InteractionEffects rfx ? rfx.CanFinish(_character, item, interaction)
+                        : Effects.CanStart(_character, item, interaction);
                     if (gone != null) { Fail(gone); return used + remaining; }
                 }
                 // Müzik: çalgı çalmak seviye başına %5 daha çok keyif verir.
@@ -790,9 +946,11 @@ namespace Thatchwick.Core.Jobs
                 if (interaction.Skill.HasValue && interaction.SkillXp > 0f)
                     _character.GainSkillXp(interaction.Skill.Value, interaction.SkillXp * bonus.Xp);
                 if (interaction.Moodlet != null) _character.AddMoodlet(interaction.Moodlet);
+                var reserved = _reserved; _reserved = null;
                 Finish();
                 // Etkiler en sonda: eşyayı kaldırabilir (kesilen ağaç) ve dünyayı değiştirir.
-                if (interaction.HasEffects) Effects?.Apply(_character, item, interaction);
+                if (reserved != null && Effects is Work.InteractionEffects afx) afx.ApplyReserved(_character, item, interaction, reserved);
+                else if (interaction.HasEffects) Effects?.Apply(_character, item, interaction);
                 if (interaction.HasEffects && Effects is Work.InteractionEffects fx) ApplyEatenQuality(fx, interaction, restore, fx.LastConsumedQuality);
                 InteractionCompleted?.Invoke(_character, interaction);
                 ItemUsed?.Invoke(_character, item, interaction);
@@ -1042,7 +1200,7 @@ namespace Thatchwick.Core.Jobs
             _needOrder.Clear();
             foreach (var need in AllNeeds)
                 if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
-            if (_needOrder.Count == 0) return TryStartDuty() || TryStartChore();
+            if (_needOrder.Count == 0) return TryStartRoutine() || TryStartDuty() || TryStartChore();
             _needOrder.Sort((a, b) =>
             {
                 int ka = Rank(a), kb = Rank(b);
@@ -1145,6 +1303,21 @@ namespace Thatchwick.Core.Jobs
         }
 
         // Görev: ihtiyaçları eşiğin üstündeyken görevine göre (tarla, hayvanlar) bir iş alır. Bulamazsa bir süre sormaz.
+        /// <summary>Günlük rutin (belge 60b §5.1): acil ihtiyacı olmayan karakter rutinindeki sıradaki bloğu yapar; görevden önce gelir.</summary>
+        public Func<Character, Job> RoutineProvider { get; set; }
+
+        private bool TryStartRoutine()
+        {
+            var job = RoutineProvider?.Invoke(_character);
+            if (job == null) return false;
+            ResetJobState();
+            return Queue.TryEnqueue(job);
+        }
+
+        /// <summary>Şu an başında durulan eşya etkileşimi (yürürken ve eşya dışı işte null).</summary>
+        public InteractionDef CurrentInteraction => _using ? _chainInteraction : null;
+        public ItemInstance CurrentItem => _using ? _chainItem : null;
+
         private bool TryStartDuty()
         {
             if (DutyProvider == null || _character.Duty == DutyKind.None || _elapsedDays < _dutyIdleUntil) return false;

@@ -59,6 +59,8 @@ namespace Thatchwick.Game
             public object WorkJob;
             public string WorkIcon;
             public ActionStepDef WorkStep;
+            public string IdlePose;          // boşta hareket (belge 60b §4): kısa süre oynayan poz
+            public float IdlePoseUntil;
             public Sprite ActionFrame;
             // Elde tutulan yiyecek (yemek animasyonu): neyi yiyorsa onun ikonu elin üstünde.
             public SpriteRenderer Held;
@@ -155,7 +157,9 @@ namespace Thatchwick.Game
         {
             if (step == null || step.Pose == null) return null;
             float cyc = ActionCycle(seed);
-            var f = IsoArt.CharacterAction(actor.Character, step.Pose, actor.Direction, cyc);
+            // Soyunuk adım (yıkanma): peştamallı kare seti varsa o oynar (60a-Z1; iş 574-575 "pestamal_" önekiyle üretir).
+            var f = actor.Runner.IsUndressed ? IsoArt.CharacterAction(actor.Character, "pestamal_" + step.Pose, actor.Direction, cyc) : null;
+            if (f == null) f = IsoArt.CharacterAction(actor.Character, step.Pose, actor.Direction, cyc);
             if (f == null && StepPoseStandIns.TryGetValue(step.Pose, out var standIn))
                 f = IsoArt.CharacterAction(actor.Character, standIn, actor.Direction, cyc);
             return f;
@@ -172,7 +176,39 @@ namespace Thatchwick.Game
             ["weave"] = "craft_hand", ["scrape"] = "craft_hand", ["write"] = "craft_hand", ["churn"] = "craft_hand",
             ["saw"] = "craft_hammer", ["plane"] = "craft_hammer", ["chisel"] = "craft_hammer", ["pound"] = "craft_hammer",
             ["reap"] = "hoe", ["thresh"] = "hoe", ["bend"] = "sow", ["milk"] = "care",
+            ["sit_eat"] = "eat", ["reach"] = "craft_hand", ["carry"] = "work", ["pour"] = "water", ["kindle"] = "work", ["wash"] = "care",
+            ["admire"] = "idle", ["wake_stretch"] = "idle", ["warm_hands"] = "idle", ["sit"] = "idle",
         };
+
+        /// <summary>Boşta hareket türü → poz (belge 60b §4.1). Karesi yoksa karakter yalnızca balonla tepki verir.</summary>
+        private static readonly Dictionary<string, string> IdlePoses = new Dictionary<string, string>
+        {
+            ["window"] = "admire", ["stretch"] = "wake_stretch", ["yawn"] = "wake_stretch", ["poke_fire"] = "kindle",
+            ["wipe_table"] = "reach", ["pet"] = "love", ["flower"] = "bend", ["show_skill"] = "craft_hand",
+        };
+
+        private IEnumerable<Character> HouseholdMembers()
+        {
+            foreach (var m in _population.Members) if (!m.IsVillager) yield return m;
+        }
+
+        private void OnIdleAct(Character c, string kind)
+        {
+            var actor = _actors.Find(a => a.Character == c);
+            if (actor == null || !IdlePoses.TryGetValue(kind, out var pose)) return;
+            actor.IdlePose = pose;
+            actor.IdlePoseUntil = Time.unscaledTime + 2.5f;
+        }
+
+        private Sprite IdleFrameFor(Actor actor, int seed)
+        {
+            if (actor.IdlePose == null || Time.unscaledTime >= actor.IdlePoseUntil || !actor.Runner.IsIdle) return null;
+            float cyc = ActionCycle(seed);
+            var f = IsoArt.CharacterAction(actor.Character, actor.IdlePose, actor.Direction, cyc);
+            if (f == null && StepPoseStandIns.TryGetValue(actor.IdlePose, out var standIn) && standIn != "idle")
+                f = IsoArt.CharacterAction(actor.Character, standIn, actor.Direction, cyc);
+            return f;
+        }
 
         private Sprite ActionFrameFor(Actor actor, string icon, int seed)
         {
@@ -239,6 +275,7 @@ namespace Thatchwick.Game
         private StoragePanel _storagePanel;
         private MinePanel _minePanel;
         private KeepsakePanel _keepsakePanel;
+        private KitchenPanel _kitchenPanel;   // mutfak paneli: defter, çizelge, kiler, kesim, rutin, tezgâh (belge 58-62)
         private HomePanel _homePanel;
         private VivariumView _vivView;      // cam bahçe yakın görünümü (belge 47)
         private readonly FishingView _fishingView = new FishingView();   // balık tutma mini oyunu (belge 50)
@@ -556,6 +593,7 @@ namespace Thatchwick.Game
                     On = () => _requestPanel.Active, Click = ToggleRequests
                 },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.keepsakes"), On = () => _keepsakePanel != null && _keepsakePanel.Active, Click = () => _keepsakePanel?.Toggle(), Visible = () => _keepsakePanel != null },
+                new Ui.HudBar.Item { Text = () => T("cook.ui.hud"), On = () => _kitchenPanel != null && _kitchenPanel.Active, Click = () => _kitchenPanel?.Toggle(), Visible = () => _kitchenPanel != null },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.home"), On = () => _homePanel != null && _homePanel.Active, Click = () => _homePanel?.Toggle(), Visible = () => _homePanel != null },
             };
             var info = new List<Ui.HudBar.Item>
@@ -828,6 +866,10 @@ namespace Thatchwick.Game
             // Core anahtarlı metin döndürür; bildirim akışı düz metin tuttuğu için seçili dilde burada çözülür (belge 21).
             GameLocalization.ItemName = id => _content.Items.TryGet(id, out var itemDef) ? itemDef.DisplayName : id;
             _life.Text = GameLocalization.R;
+            // Yemek geliştirmesi (belge 58-62): baş üstü yazılar, boşta hareketler; oyuncu hanesinde pişen yemek sofraya gider.
+            _life.Bubble += (c, t) => Say(c, GameLocalization.R(t));
+            _life.IdleAct += OnIdleAct;
+            _life.Meals.AutoServe = true;
             _life.AttachEffects(_effects);   // kalite: tezgâh seçimleri, ustalık eseri, aile tarifi (belge 53)
             _life.Home.ServantWalks = true;   // hizmetkâr sabahları eve yürür, işleri kendisi yapar (belge 45)
             _life.Trees.Attach();   // kasaba çınarının aşevi, köşk merdivenleri (belge 52; kayıtta Restore yeniden kurar)
@@ -1663,6 +1705,7 @@ namespace Thatchwick.Game
             if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_cartPanel != null && _cartPanel.Active && _cartPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_kitchenPanel != null && _kitchenPanel.Active && _kitchenPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_homePanel != null && _homePanel.Active && _homePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_vivView != null && _vivView.Active && _vivView.PanelRect(s).Contains(guiPos)) return true;
             if (_fishingView.Active) return true;
@@ -2387,6 +2430,7 @@ namespace Thatchwick.Game
                 YardChores = _life.YardChores,                                        // kompost, ahır temizliği, yığın toplama (belge 57)
                 HouseHours = () => HourOfDay >= 7.0 && HourOfDay < 22.0              // mum yakmak akşam işi
             };
+            _life.Attach(_duties);   // Mutfak görevi ve sofra işleri (belge 58a §4)
             _world.Map.WearMultiplier = RoadWear();
             _life.NewDay += day =>
             {
@@ -2485,6 +2529,8 @@ namespace Thatchwick.Game
             _mines.Dug += (c, m, x, y, got) => { _floorsDirty = true; if (c != null) c.AddMoodlet(MoodCatalog.Dusty); _life?.OnMineDug(c); };
             _buildService.DeepDigBlocker = p => _mines.ShaftBlocker(_life.BestSkill(SkillType.Mining));
             _keepsakePanel = new KeepsakePanel(_life.Keepsakes, _world, _clock);
+            _kitchenPanel = new KitchenPanel(_life, _world, _household, _content, _clock, () => (_selected ?? _player)?.Character,
+                c => _actors.Find(a => a.Character == c)?.Runner, HouseholdMembers);
             _homePanel = new HomePanel(_life, _world, _content, _household, () => Commander?.Character);
             _homePanel.Message += m => ShowMessage(m, 3f);
             _vivView = new VivariumView(_life.Home, _content, _household, _clock, _input, () => Commander?.Character);
@@ -2715,6 +2761,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.kKey.wasPressedThisFrame) _storagePanel.Toggle();
             if (kb != null && kb.mKey.wasPressedThisFrame) _minePanel.Toggle();
             if (kb != null && kb.jKey.wasPressedThisFrame) _keepsakePanel?.Toggle();
+            if (kb != null && kb.yKey.wasPressedThisFrame) _kitchenPanel?.Toggle();
             if (kb != null && kb.eKey.wasPressedThisFrame) _homePanel?.Toggle();
             if (kb != null && kb.escapeKey.wasPressedThisFrame && _vivView != null && _vivView.Active) _vivView.Close();
             _fishingView.Update(Time.unscaledDeltaTime);
@@ -3194,6 +3241,7 @@ namespace Thatchwick.Game
             // Easter egg gösterisi (topaç şovu, uluma; belge 55): dururken kısa süre kendi karesini oynar.
             string sceneKey = moving || actor.Character.Stage == AgeStage.Baby ? null : _life.Scenes.CharacterSceneOf(actor.Character.Id);
             var sceneFrame = sceneKey != null ? ActionFrameFor(actor, sceneKey, seed) : null;
+            if (sceneFrame == null && !moving && actor.Character.Stage != AgeStage.Baby) sceneFrame = IdleFrameFor(actor, seed);
             var real = walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
@@ -3458,6 +3506,7 @@ namespace Thatchwick.Game
             _minePanel.OnGUI(s);
             _cartPanel?.OnGUI(s);
             _keepsakePanel?.OnGUI(s);
+            _kitchenPanel?.OnGUI(s);
             _homePanel?.OnGUI(s);
             _vivView?.OnGUI(s);
             _fishingView.OnGUI(s);

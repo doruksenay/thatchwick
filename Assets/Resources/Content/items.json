@@ -445,7 +445,9 @@
               "item": "item.stew_plain",
               "count": 2
             }
-          ]
+          ],
+          "dish": "vegetable",
+          "learn": "basic"
         },
         {
           "id": "cook_pea_soup",
@@ -465,7 +467,9 @@
               "item": "item.soup_pea",
               "count": 2
             }
-          ]
+          ],
+          "dish": "soup",
+          "learn": "basic"
         },
         {
           "id": "cook_omelet",
@@ -476,7 +480,7 @@
           "minLevel": 3,
           "materials": [
             {
-              "item": "item.egg",
+              "item": "group.egg",
               "count": 2
             },
             {
@@ -489,7 +493,9 @@
               "item": "item.omelet",
               "count": 2
             }
-          ]
+          ],
+          "dish": "dairy",
+          "learn": "basic"
         },
         {
           "id": "eat_parsnip",
@@ -1235,7 +1241,9 @@
               "item": "item.soup_bean",
               "count": 2
             }
-          ]
+          ],
+          "dish": "soup",
+          "learn": "basic"
         },
         {
           "id": "eat_soup_bean",
@@ -1273,7 +1281,8 @@
               "count": 2
             }
           ],
-          "minLevel": 1
+          "minLevel": 1,
+          "dish": "soup"
         },
         {
           "id": "eat_soup_fish",
@@ -1293,7 +1302,7 @@
           "skillXp": 18,
           "materials": [
             {
-              "item": "item.meat",
+              "item": "group.red_meat",
               "count": 1
             },
             {
@@ -1311,7 +1320,8 @@
               "count": 2
             }
           ],
-          "minLevel": 2
+          "minLevel": 2,
+          "dish": "meat"
         },
         {
           "id": "eat_stew_meat",
@@ -1331,7 +1341,7 @@
           "skillXp": 14,
           "materials": [
             {
-              "item": "item.poultry",
+              "item": "group.poultry",
               "count": 1
             },
             {
@@ -1344,7 +1354,8 @@
               "item": "item.soup_chicken",
               "count": 3
             }
-          ]
+          ],
+          "dish": "soup"
         },
         {
           "id": "eat_soup_chicken",
@@ -1379,7 +1390,8 @@
               "count": 2
             }
           ],
-          "minLevel": 1
+          "minLevel": 1,
+          "dish": "vegetable"
         },
         {
           "id": "eat_saute_mushroom",
@@ -1399,7 +1411,7 @@
           "skillXp": 10,
           "materials": [
             {
-              "item": "item.egg",
+              "item": "group.egg",
               "count": 2
             },
             {
@@ -1412,7 +1424,8 @@
               "item": "item.kaygana",
               "count": 2
             }
-          ]
+          ],
+          "dish": "dairy"
         },
         {
           "id": "eat_kaygana",
@@ -1458,7 +1471,8 @@
               "item": "item.breakfast",
               "count": 1
             }
-          ]
+          ],
+          "dish": "dairy"
         },
         {
           "id": "eat_breakfast",
@@ -1491,7 +1505,8 @@
               "item": "item.pilaf",
               "count": 3
             }
-          ]
+          ],
+          "dish": "grain"
         },
         {
           "id": "eat_pilaf",
@@ -1522,7 +1537,7 @@
               "count": 1
             },
             {
-              "item": "item.meat",
+              "item": "group.red_meat",
               "count": 1
             }
           ],
@@ -1532,7 +1547,8 @@
               "count": 3
             }
           ],
-          "minLevel": 4
+          "minLevel": 4,
+          "dish": "vegetable"
         },
         {
           "id": "eat_sarma",
@@ -1565,7 +1581,8 @@
               "item": "item.hosaf",
               "count": 2
             }
-          ]
+          ],
+          "dish": "sweet"
         },
         {
           "id": "eat_hosaf",
@@ -1609,7 +1626,8 @@
               "count": 3
             }
           ],
-          "minLevel": 2
+          "minLevel": 2,
+          "dish": "sweet"
         },
         {
           "id": "eat_helva",
@@ -1661,7 +1679,7 @@
           "skillXp": 18,
           "materials": [
             {
-              "item": "item.game_meat",
+              "item": "group.game",
               "count": 1
             },
             {
@@ -1679,7 +1697,8 @@
               "count": 2
             }
           ],
-          "minLevel": 2
+          "minLevel": 2,
+          "dish": "meat"
         },
         {
           "id": "eat_stew_game",
@@ -1712,7 +1731,8 @@
               "item": "item.wrap_fish",
               "count": 1
             }
-          ]
+          ],
+          "dish": "fish"
         },
         {
           "id": "eat_wrap_fish",
@@ -1809,7 +1829,7 @@
               "count": 2
             },
             {
-              "item": "item.milk",
+              "item": "group.milk",
               "count": 1
             }
           ],
@@ -1818,7 +1838,9 @@
               "item": "item.porridge_oats",
               "count": 2
             }
-          ]
+          ],
+          "dish": "grain",
+          "learn": "basic"
         },
         {
           "id": "eat_porridge_oats",
@@ -1843,7 +1865,7 @@
               "count": 2
             },
             {
-              "item": "item.milk",
+              "item": "group.milk",
               "count": 1
             },
             {
@@ -1856,7 +1878,9 @@
               "item": "item.porridge_wheat",
               "count": 3
             }
-          ]
+          ],
+          "dish": "grain",
+          "learn": "basic"
         },
         {
           "id": "eat_porridge_wheat",
@@ -1971,7 +1995,8 @@
               "item": "item.leek_olive_oil",
               "count": 3
             }
-          ]
+          ],
+          "dish": "vegetable"
         },
         {
           "id": "eat_leek_olive_oil",
@@ -2525,6 +2550,796 @@
           "moodValue": 3,
           "moodDays": 1.0,
           "bladder": 3
+        },
+        {
+          "id": "roast_mutton",
+          "displayName": "Kuzu eti kızart ve ye",
+          "need": "Hunger",
+          "restore": 78,
+          "durationDays": 0.1,
+          "consume": "item.mutton",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "roast_goat_meat",
+          "displayName": "Keçi eti haşla ve ye",
+          "need": "Hunger",
+          "restore": 68,
+          "durationDays": 0.1,
+          "consume": "item.goat_meat",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "roast_pork",
+          "displayName": "Domuz eti kızart ve ye",
+          "need": "Hunger",
+          "restore": 78,
+          "durationDays": 0.1,
+          "consume": "item.pork",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "roast_rabbit_meat",
+          "displayName": "Tavşan eti kızart ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.1,
+          "consume": "item.rabbit_meat",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "roast_duck_meat",
+          "displayName": "Ördek kızart ve ye",
+          "need": "Hunger",
+          "restore": 64,
+          "durationDays": 0.1,
+          "consume": "item.duck_meat",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "roast_goose_meat",
+          "displayName": "Kaz kızart ve ye",
+          "need": "Hunger",
+          "restore": 68,
+          "durationDays": 0.1,
+          "consume": "item.goose_meat",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "roast_pigeon_meat",
+          "displayName": "Güvercin kızart ve ye",
+          "need": "Hunger",
+          "restore": 52,
+          "durationDays": 0.1,
+          "consume": "item.pigeon_meat",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "roast_boar_meat",
+          "displayName": "Yaban domuzu eti kızart ve ye",
+          "need": "Hunger",
+          "restore": 72,
+          "durationDays": 0.1,
+          "consume": "item.boar_meat",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "roast_offal",
+          "displayName": "Ciğer kızart ve ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.1,
+          "consume": "item.offal",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 2,
+          "moodDays": 1.0,
+          "bladder": 4
+        },
+        {
+          "id": "eat_duck_egg",
+          "displayName": "Ördek yumurtası pişir ve ye",
+          "need": "Hunger",
+          "restore": 48,
+          "durationDays": 0.04,
+          "consume": "item.duck_egg",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "bladder": 4
+        },
+        {
+          "id": "eat_goose_egg",
+          "displayName": "Kaz yumurtası pişir ve ye",
+          "need": "Hunger",
+          "restore": 62,
+          "durationDays": 0.04,
+          "consume": "item.goose_egg",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "bladder": 4
+        },
+        {
+          "id": "drink_goat_milk",
+          "displayName": "Keçi sütü iç",
+          "need": "Hunger",
+          "restore": 25,
+          "durationDays": 0.03,
+          "consume": "item.goat_milk",
+          "bladder": 15
+        },
+        {
+          "id": "eat_goat_cheese",
+          "displayName": "Keçi peyniri ye",
+          "need": "Hunger",
+          "restore": 38,
+          "durationDays": 0.06,
+          "consume": "item.goat_cheese",
+          "bladder": 4
+        },
+        {
+          "id": "eat_sucuk",
+          "displayName": "Sucuk ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "consume": "item.sucuk",
+          "bladder": 4
+        },
+        {
+          "id": "eat_soup_tarhana",
+          "displayName": "Tarhana çorbası ye",
+          "need": "Hunger",
+          "restore": 57,
+          "durationDays": 0.05,
+          "consume": "item.soup_tarhana",
+          "bladder": 4,
+          "moodlet": "eff_warm_soup"
+        },
+        {
+          "id": "eat_soup_cabbage",
+          "displayName": "Lahana çorbası ye",
+          "need": "Hunger",
+          "restore": 56,
+          "durationDays": 0.05,
+          "consume": "item.soup_cabbage",
+          "bladder": 4,
+          "moodlet": "eff_warm_soup"
+        },
+        {
+          "id": "eat_soup_beet",
+          "displayName": "Pancar çorbası ye",
+          "need": "Hunger",
+          "restore": 58,
+          "durationDays": 0.05,
+          "consume": "item.soup_beet",
+          "bladder": 4,
+          "moodlet": "eff_warm_soup"
+        },
+        {
+          "id": "eat_soup_crayfish",
+          "displayName": "Kerevit çorbası ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.05,
+          "consume": "item.soup_crayfish",
+          "bladder": 4,
+          "moodlet": "eff_warm_soup"
+        },
+        {
+          "id": "eat_soup_bone",
+          "displayName": "Kemik suyu çorbası ye",
+          "need": "Hunger",
+          "restore": 57,
+          "durationDays": 0.05,
+          "consume": "item.soup_bone",
+          "bladder": 4,
+          "moodlet": "eff_broth"
+        },
+        {
+          "id": "eat_soup_tripe",
+          "displayName": "İşkembe çorbası ye",
+          "need": "Hunger",
+          "restore": 59,
+          "durationDays": 0.05,
+          "consume": "item.soup_tripe",
+          "bladder": 4,
+          "moodlet": "eff_warm_soup"
+        },
+        {
+          "id": "eat_soup_wild_garlic",
+          "displayName": "Yabani sarımsak çorbası ye",
+          "need": "Hunger",
+          "restore": 57,
+          "durationDays": 0.05,
+          "consume": "item.soup_wild_garlic",
+          "bladder": 4,
+          "moodlet": "eff_forager"
+        },
+        {
+          "id": "eat_lamb_tandir",
+          "displayName": "Kuzu tandır ye",
+          "need": "Hunger",
+          "restore": 82,
+          "durationDays": 0.05,
+          "consume": "item.lamb_tandir",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_beef_yahni",
+          "displayName": "Dana yahni ye",
+          "need": "Hunger",
+          "restore": 80,
+          "durationDays": 0.05,
+          "consume": "item.beef_yahni",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_pork_kavurma",
+          "displayName": "Domuz kavurma ye",
+          "need": "Hunger",
+          "restore": 79,
+          "durationDays": 0.05,
+          "consume": "item.pork_kavurma",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_goose_roast",
+          "displayName": "Kaz çevirme ye",
+          "need": "Hunger",
+          "restore": 83,
+          "durationDays": 0.05,
+          "consume": "item.goose_roast",
+          "bladder": 4,
+          "moodlet": "eff_host"
+        },
+        {
+          "id": "eat_rabbit_stew",
+          "displayName": "Tavşan yahnisi ye",
+          "need": "Hunger",
+          "restore": 79,
+          "durationDays": 0.05,
+          "consume": "item.rabbit_stew",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_venison_roast",
+          "displayName": "Karaca kızartması ye",
+          "need": "Hunger",
+          "restore": 82,
+          "durationDays": 0.05,
+          "consume": "item.venison_roast",
+          "bladder": 4,
+          "moodlet": "eff_hunter"
+        },
+        {
+          "id": "eat_pigeon_stuffed",
+          "displayName": "Güvercin dolması ye",
+          "need": "Hunger",
+          "restore": 81,
+          "durationDays": 0.05,
+          "consume": "item.pigeon_stuffed",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_liver_fry",
+          "displayName": "Ciğer kavurma ye",
+          "need": "Hunger",
+          "restore": 79,
+          "durationDays": 0.05,
+          "consume": "item.liver_fry",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_goat_stew",
+          "displayName": "Keçi haşlama ye",
+          "need": "Hunger",
+          "restore": 78,
+          "durationDays": 0.05,
+          "consume": "item.goat_stew",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_duck_plum",
+          "displayName": "Erikli ördek ye",
+          "need": "Hunger",
+          "restore": 81,
+          "durationDays": 0.05,
+          "consume": "item.duck_plum",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_boar_stew",
+          "displayName": "Yaban domuzu yahnisi ye",
+          "need": "Hunger",
+          "restore": 82,
+          "durationDays": 0.05,
+          "consume": "item.boar_stew",
+          "bladder": 4,
+          "moodlet": "eff_hunter"
+        },
+        {
+          "id": "eat_meatballs",
+          "displayName": "Köfte ye",
+          "need": "Hunger",
+          "restore": 80,
+          "durationDays": 0.05,
+          "consume": "item.meatballs",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_sucuk_egg",
+          "displayName": "Sucuklu yumurta ye",
+          "need": "Hunger",
+          "restore": 79,
+          "durationDays": 0.05,
+          "consume": "item.sucuk_egg",
+          "bladder": 4,
+          "moodlet": "eff_breakfast"
+        },
+        {
+          "id": "eat_paste_stew",
+          "displayName": "Salçalı et güveci ye",
+          "need": "Hunger",
+          "restore": 81,
+          "durationDays": 0.05,
+          "consume": "item.paste_stew",
+          "bladder": 4,
+          "moodlet": "eff_hearty"
+        },
+        {
+          "id": "eat_fish_fry",
+          "displayName": "Balık kızartması ye",
+          "need": "Hunger",
+          "restore": 69,
+          "durationDays": 0.05,
+          "consume": "item.fish_fry",
+          "bladder": 4,
+          "moodlet": "eff_fisher"
+        },
+        {
+          "id": "eat_fish_grill",
+          "displayName": "Izgara balık ye",
+          "need": "Hunger",
+          "restore": 68,
+          "durationDays": 0.05,
+          "consume": "item.fish_grill",
+          "bladder": 4,
+          "moodlet": "eff_fisher"
+        },
+        {
+          "id": "eat_fish_steam",
+          "displayName": "Balık buğulama ye",
+          "need": "Hunger",
+          "restore": 71,
+          "durationDays": 0.05,
+          "consume": "item.fish_steam",
+          "bladder": 4,
+          "moodlet": "eff_fisher"
+        },
+        {
+          "id": "eat_eel_pie",
+          "displayName": "Yılan balığı turtası ye",
+          "need": "Hunger",
+          "restore": 72,
+          "durationDays": 0.05,
+          "consume": "item.eel_pie",
+          "bladder": 4,
+          "moodlet": "eff_fisher"
+        },
+        {
+          "id": "eat_mussel_pilaf",
+          "displayName": "Midye pilavı ye",
+          "need": "Hunger",
+          "restore": 71,
+          "durationDays": 0.05,
+          "consume": "item.mussel_pilaf",
+          "bladder": 4,
+          "moodlet": "eff_fisher"
+        },
+        {
+          "id": "eat_salt_fish_boil",
+          "displayName": "Tuzlu balık haşlama ye",
+          "need": "Hunger",
+          "restore": 68,
+          "durationDays": 0.05,
+          "consume": "item.salt_fish_boil",
+          "bladder": 4,
+          "moodlet": "eff_fisher"
+        },
+        {
+          "id": "eat_sarma_leaf",
+          "displayName": "Yaprak sarması ye",
+          "need": "Hunger",
+          "restore": 61,
+          "durationDays": 0.05,
+          "consume": "item.sarma_leaf",
+          "bladder": 4,
+          "moodlet": "eff_olive_oil"
+        },
+        {
+          "id": "eat_broad_bean_oil",
+          "displayName": "Zeytinyağlı bakla ye",
+          "need": "Hunger",
+          "restore": 59,
+          "durationDays": 0.05,
+          "consume": "item.broad_bean_oil",
+          "bladder": 4,
+          "moodlet": "eff_olive_oil"
+        },
+        {
+          "id": "eat_spinach_saute",
+          "displayName": "Ispanak kavurma ye",
+          "need": "Hunger",
+          "restore": 58,
+          "durationDays": 0.05,
+          "consume": "item.spinach_saute",
+          "bladder": 4,
+          "moodlet": "good_meal"
+        },
+        {
+          "id": "eat_pumpkin_stuffed",
+          "displayName": "Su kabağı dolması ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.05,
+          "consume": "item.pumpkin_stuffed",
+          "bladder": 4,
+          "moodlet": "good_meal"
+        },
+        {
+          "id": "eat_radish_salad",
+          "displayName": "Turp salatası ye",
+          "need": "Hunger",
+          "restore": 57,
+          "durationDays": 0.05,
+          "consume": "item.radish_salad",
+          "bladder": 4,
+          "moodlet": "eff_refresh"
+        },
+        {
+          "id": "eat_cress_salad",
+          "displayName": "Su teresi salatası ye",
+          "need": "Hunger",
+          "restore": 57,
+          "durationDays": 0.05,
+          "consume": "item.cress_salad",
+          "bladder": 4,
+          "moodlet": "eff_refresh"
+        },
+        {
+          "id": "eat_cabbage_paste",
+          "displayName": "Salçalı lahana ye",
+          "need": "Hunger",
+          "restore": 59,
+          "durationDays": 0.05,
+          "consume": "item.cabbage_paste",
+          "bladder": 4,
+          "moodlet": "good_meal"
+        },
+        {
+          "id": "eat_turnip_mash",
+          "displayName": "Şalgam ezmesi ye",
+          "need": "Hunger",
+          "restore": 57,
+          "durationDays": 0.05,
+          "consume": "item.turnip_mash",
+          "bladder": 4,
+          "moodlet": "good_meal"
+        },
+        {
+          "id": "eat_saffron_pilaf",
+          "displayName": "Safranlı pilav ye",
+          "need": "Hunger",
+          "restore": 73,
+          "durationDays": 0.05,
+          "consume": "item.saffron_pilaf",
+          "bladder": 4,
+          "moodlet": "eff_host"
+        },
+        {
+          "id": "eat_porridge_barley",
+          "displayName": "Arpa lapası ye",
+          "need": "Hunger",
+          "restore": 67,
+          "durationDays": 0.05,
+          "consume": "item.porridge_barley",
+          "bladder": 4,
+          "moodlet": "eff_full"
+        },
+        {
+          "id": "eat_pea_mash",
+          "displayName": "Bezelye ezmesi ye",
+          "need": "Hunger",
+          "restore": 68,
+          "durationDays": 0.05,
+          "consume": "item.pea_mash",
+          "bladder": 4,
+          "moodlet": "eff_full"
+        },
+        {
+          "id": "eat_rye_gruel",
+          "displayName": "Çavdar bulamacı ye",
+          "need": "Hunger",
+          "restore": 67,
+          "durationDays": 0.05,
+          "consume": "item.rye_gruel",
+          "bladder": 4,
+          "moodlet": "eff_full"
+        },
+        {
+          "id": "eat_paste_pilaf",
+          "displayName": "Salçalı bulgur pilavı ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.05,
+          "consume": "item.paste_pilaf",
+          "bladder": 4,
+          "moodlet": "eff_full"
+        },
+        {
+          "id": "eat_milk_wheat",
+          "displayName": "Sütlü buğday ye",
+          "need": "Hunger",
+          "restore": 69,
+          "durationDays": 0.05,
+          "consume": "item.milk_wheat",
+          "bladder": 4,
+          "moodlet": "eff_sweet"
+        },
+        {
+          "id": "eat_duck_kaygana",
+          "displayName": "Ördek yumurtalı kaygana ye",
+          "need": "Hunger",
+          "restore": 58,
+          "durationDays": 0.05,
+          "consume": "item.duck_kaygana",
+          "bladder": 4,
+          "moodlet": "eff_breakfast"
+        },
+        {
+          "id": "eat_cokelek",
+          "displayName": "Çökelek ye",
+          "need": "Hunger",
+          "restore": 57,
+          "durationDays": 0.05,
+          "consume": "item.cokelek",
+          "bladder": 4,
+          "moodlet": "eff_breakfast"
+        },
+        {
+          "id": "eat_honey_milk",
+          "displayName": "Ballı süt iç",
+          "need": "Hunger",
+          "restore": 20,
+          "durationDays": 0.03,
+          "consume": "item.honey_milk",
+          "bladder": 15,
+          "moodlet": "eff_sweet"
+        },
+        {
+          "id": "eat_gozleme",
+          "displayName": "Gözleme ye",
+          "need": "Hunger",
+          "restore": 63,
+          "durationDays": 0.05,
+          "consume": "item.gozleme",
+          "bladder": 4,
+          "moodlet": "good_meal"
+        },
+        {
+          "id": "eat_borek_cheese",
+          "displayName": "Peynirli börek ye",
+          "need": "Hunger",
+          "restore": 64,
+          "durationDays": 0.05,
+          "consume": "item.borek_cheese",
+          "bladder": 4,
+          "moodlet": "good_meal"
+        },
+        {
+          "id": "eat_saffron_bun",
+          "displayName": "Safranlı bayram çöreği ye",
+          "need": "Hunger",
+          "restore": 68,
+          "durationDays": 0.05,
+          "consume": "item.saffron_bun",
+          "bladder": 4,
+          "moodlet": "eff_host"
+        },
+        {
+          "id": "eat_chestnut_bread",
+          "displayName": "Kestaneli ekmek ye",
+          "need": "Hunger",
+          "restore": 64,
+          "durationDays": 0.05,
+          "consume": "item.chestnut_bread",
+          "bladder": 4,
+          "moodlet": "good_meal"
+        },
+        {
+          "id": "eat_walnut_bun",
+          "displayName": "Cevizli çörek ye",
+          "need": "Hunger",
+          "restore": 65,
+          "durationDays": 0.05,
+          "consume": "item.walnut_bun",
+          "bladder": 4,
+          "moodlet": "eff_sweet"
+        },
+        {
+          "id": "eat_kome",
+          "displayName": "Köme ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.05,
+          "consume": "item.kome",
+          "bladder": 4,
+          "moodlet": "eff_sweet",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "eat_pestil",
+          "displayName": "Pestil ye",
+          "need": "Hunger",
+          "restore": 43,
+          "durationDays": 0.05,
+          "consume": "item.pestil",
+          "bladder": 4,
+          "moodlet": "eff_sweet",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "eat_honey_nuts",
+          "displayName": "Ballı fındık ye",
+          "need": "Hunger",
+          "restore": 42,
+          "durationDays": 0.05,
+          "consume": "item.honey_nuts",
+          "bladder": 4,
+          "moodlet": "eff_sweet",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "eat_cherry_tart",
+          "displayName": "Kirazlı tart ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.05,
+          "consume": "item.cherry_tart",
+          "bladder": 4,
+          "moodlet": "eff_sweet",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "eat_chestnut_candy",
+          "displayName": "Kestane şekerlemesi ye",
+          "need": "Hunger",
+          "restore": 46,
+          "durationDays": 0.05,
+          "consume": "item.chestnut_candy",
+          "bladder": 4,
+          "moodlet": "eff_sweet",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "eat_pear_hosaf",
+          "displayName": "Armut hoşafı ye",
+          "need": "Hunger",
+          "restore": 42,
+          "durationDays": 0.05,
+          "consume": "item.pear_hosaf",
+          "bladder": 4,
+          "moodlet": "eff_refresh",
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "id": "eat_olive_bread",
+          "displayName": "Zeytin ezmeli ekmek ye",
+          "need": "Hunger",
+          "restore": 47,
+          "durationDays": 0.05,
+          "consume": "item.olive_bread",
+          "bladder": 4,
+          "moodlet": "eff_olive_oil"
+        },
+        {
+          "id": "eat_dried_fruit_ration",
+          "displayName": "Kuru meyveli azık ye",
+          "need": "Hunger",
+          "restore": 48,
+          "durationDays": 0.05,
+          "consume": "item.dried_fruit_ration",
+          "bladder": 4,
+          "moodlet": "eff_travel"
         }
       ],
       "price": 25,
@@ -2603,7 +3418,33 @@
     {
       "id": "item.table_wood",
       "displayName": "Tahta masa",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ],
       "width": 2,
       "height": 1,
       "price": 20,
@@ -2683,6 +3524,9 @@
         "fisher",
         "saddler",
         "mason"
+      ],
+      "tags": [
+        "diningtable"
       ]
     },
     {
@@ -3630,7 +4474,7 @@
     },
     {
       "id": "item.egg",
-      "displayName": "Yumurta",
+      "displayName": "Tavuk yumurtası",
       "placement": "Resource",
       "category": "resource",
       "price": 3,
@@ -3642,7 +4486,7 @@
     },
     {
       "id": "item.milk",
-      "displayName": "Süt",
+      "displayName": "İnek sütü",
       "placement": "Resource",
       "category": "resource",
       "price": 4,
@@ -4099,7 +4943,33 @@
           "size": "L"
         }
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ],
       "maxLoad": 6,
       "upgrades": [
         {
@@ -4132,6 +5002,9 @@
         "living",
         "outdoor",
         "dining"
+      ],
+      "tags": [
+        "diningtable"
       ]
     },
     {
@@ -4196,6 +5069,9 @@
       "trades": [
         "tavern",
         "mill"
+      ],
+      "tags": [
+        "preptable"
       ]
     },
     {
@@ -4249,7 +5125,33 @@
           "size": "L"
         }
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ],
       "finishGroup": "wood",
       "maxLoad": 30,
       "beauty": 2,
@@ -4277,6 +5179,9 @@
         "kitchen",
         "living",
         "dining"
+      ],
+      "tags": [
+        "diningtable"
       ]
     },
     {
@@ -4318,7 +5223,33 @@
           "size": "L"
         }
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ],
       "finishGroup": "wood",
       "maxLoad": 22,
       "beauty": 4,
@@ -4357,7 +5288,10 @@
         "pivotY": 32.0,
         "mirror": true,
         "pending": true
-      }
+      },
+      "tags": [
+        "diningtable"
+      ]
     },
     {
       "id": "item.brazier",
@@ -4686,7 +5620,9 @@
             }
           ],
           "skill": "Baking",
-          "skillXp": 14
+          "skillXp": 14,
+          "dish": "pastry",
+          "learn": "basic"
         },
         {
           "id": "make_borek_leek",
@@ -4704,7 +5640,7 @@
               "count": 1
             },
             {
-              "item": "item.egg",
+              "item": "group.egg",
               "count": 1
             },
             {
@@ -4718,7 +5654,8 @@
               "count": 3
             }
           ],
-          "minLevel": 1
+          "minLevel": 1,
+          "dish": "pastry"
         },
         {
           "id": "make_kete_meat",
@@ -4732,7 +5669,7 @@
               "count": 2
             },
             {
-              "item": "item.meat",
+              "item": "group.red_meat",
               "count": 1
             },
             {
@@ -4750,7 +5687,8 @@
               "count": 3
             }
           ],
-          "minLevel": 2
+          "minLevel": 2,
+          "dish": "pastry"
         },
         {
           "id": "make_tart_apple",
@@ -4786,7 +5724,8 @@
               "count": 4
             }
           ],
-          "minLevel": 3
+          "minLevel": 3,
+          "dish": "pastry"
         },
         {
           "id": "make_simit",
@@ -4813,7 +5752,8 @@
               "item": "item.simit",
               "count": 3
             }
-          ]
+          ],
+          "dish": "pastry"
         },
         {
           "id": "make_rusk",
@@ -4859,7 +5799,8 @@
             }
           ],
           "skill": "Baking",
-          "skillXp": 14
+          "skillXp": 14,
+          "dish": "pastry"
         },
         {
           "id": "bake_maslin",
@@ -4886,7 +5827,8 @@
             }
           ],
           "skill": "Baking",
-          "skillXp": 14
+          "skillXp": 14,
+          "dish": "pastry"
         },
         {
           "id": "make_bazlama",
@@ -4906,7 +5848,9 @@
               "item": "item.bazlama",
               "count": 3
             }
-          ]
+          ],
+          "dish": "pastry",
+          "learn": "basic"
         },
         {
           "id": "make_yufka",
@@ -4926,7 +5870,8 @@
               "item": "item.yufka",
               "count": 4
             }
-          ]
+          ],
+          "dish": "pastry"
         },
         {
           "id": "start_sourdough",
@@ -4978,7 +5923,8 @@
               "item": "item.sourdough",
               "count": 1
             }
-          ]
+          ],
+          "dish": "pastry"
         },
         {
           "id": "bake_wedding_bread",
@@ -4997,7 +5943,7 @@
               "count": 1
             },
             {
-              "item": "item.egg",
+              "item": "group.egg",
               "count": 1
             },
             {
@@ -5010,7 +5956,8 @@
               "item": "item.wedding_bread",
               "count": 2
             }
-          ]
+          ],
+          "dish": "pastry"
         },
         {
           "id": "bake_village",
@@ -5034,7 +5981,9 @@
               "item": "item.bread",
               "count": 11
             }
-          ]
+          ],
+          "dish": "pastry",
+          "learn": "basic"
         }
       ],
       "finishGroup": "wood",
@@ -5324,7 +6273,10 @@
         "pivotY": 32.0,
         "mirror": true,
         "pending": true
-      }
+      },
+      "tags": [
+        "foodpoint"
+      ]
     },
     {
       "id": "item.copper_pots",
@@ -5822,6 +6774,14 @@
           "durationDays": 0.08,
           "fetchWater": true,
           "bath": true
+        },
+        {
+          "id": "wash_dishes",
+          "displayName": "Bulaşık yıka",
+          "durationDays": 0.04,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "washDishes"
         }
       ],
       "waterUse": 1,
@@ -6634,16 +7594,6 @@
           "moodlet": "pet_love"
         },
         {
-          "id": "slaughter",
-          "displayName": "Kümes hayvanı kes (dost olmayan yetişkin)",
-          "durationDays": 0.1,
-          "slaughter": true,
-          "requiresAnimal": true,
-          "skill": "AnimalHusbandry",
-          "skillXp": 6,
-          "moodlet": "slaughtered"
-        },
-        {
           "id": "salve",
           "displayName": "Hayvan merhemi sür",
           "durationDays": 0.04,
@@ -6738,16 +7688,6 @@
           "skill": "AnimalHusbandry",
           "skillXp": 3,
           "moodlet": "pet_love"
-        },
-        {
-          "id": "slaughter",
-          "displayName": "Hayvan kes (dost olmayan yetişkin)",
-          "durationDays": 0.1,
-          "slaughter": true,
-          "requiresAnimal": true,
-          "skill": "AnimalHusbandry",
-          "skillXp": 6,
-          "moodlet": "slaughtered"
         },
         {
           "id": "salve",
@@ -6869,16 +7809,6 @@
           "skill": "AnimalHusbandry",
           "skillXp": 3,
           "moodlet": "pet_love"
-        },
-        {
-          "id": "slaughter",
-          "displayName": "Hayvan kes (dost olmayan yetişkin)",
-          "durationDays": 0.1,
-          "slaughter": true,
-          "requiresAnimal": true,
-          "skill": "AnimalHusbandry",
-          "skillXp": 6,
-          "moodlet": "slaughtered"
         },
         {
           "id": "salve",
@@ -7246,6 +8176,14 @@
           "fetchWater": true,
           "bath": true,
           "wets": 0.6
+        },
+        {
+          "id": "wash_dishes",
+          "displayName": "Bulaşık yıka",
+          "durationDays": 0.04,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "washDishes"
         }
       ],
       "finishGroup": "wood",
@@ -9652,7 +10590,7 @@
           "skillXp": 20,
           "materials": [
             {
-              "item": "item.meat",
+              "item": "group.red_meat",
               "count": 2
             },
             {
@@ -9676,7 +10614,7 @@
           "skillXp": 15,
           "materials": [
             {
-              "item": "item.poultry",
+              "item": "group.poultry",
               "count": 2
             },
             {
@@ -9980,6 +10918,9 @@
         "pantry",
         "cellar",
         "storehouse"
+      ],
+      "tags": [
+        "foodpoint"
       ]
     },
     {
@@ -14381,6 +15322,25 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "sieve_tomato",
+          "displayName": "Tohum ayır: Domates (1 → 2 tohum)",
+          "durationDays": 0.03,
+          "skill": "Farming",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.tomato",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.seed_tomato",
+              "count": 2
+            }
+          ]
         }
       ],
       "finishGroup": "wood",
@@ -15423,7 +16383,7 @@
     },
     {
       "id": "item.meat",
-      "displayName": "Et",
+      "displayName": "Dana eti",
       "placement": "Resource",
       "price": 8,
       "category": "resource",
@@ -15435,7 +16395,7 @@
     },
     {
       "id": "item.poultry",
-      "displayName": "Kümes eti",
+      "displayName": "Tavuk eti",
       "placement": "Resource",
       "price": 5,
       "category": "resource",
@@ -15788,7 +16748,7 @@
           "skillXp": 15,
           "materials": [
             {
-              "item": "item.milk",
+              "item": "group.milk",
               "count": 3
             }
           ],
@@ -15832,7 +16792,7 @@
           "minLevel": 7,
           "materials": [
             {
-              "item": "item.milk",
+              "item": "group.milk",
               "count": 3
             },
             {
@@ -15909,16 +16869,6 @@
           "skill": "AnimalHusbandry",
           "skillXp": 3,
           "moodlet": "pet_love"
-        },
-        {
-          "id": "slaughter",
-          "displayName": "Kümes hayvanı kes (dost olmayan yetişkin)",
-          "durationDays": 0.1,
-          "slaughter": true,
-          "requiresAnimal": true,
-          "skill": "AnimalHusbandry",
-          "skillXp": 6,
-          "moodlet": "slaughtered"
         },
         {
           "id": "salve",
@@ -16016,16 +16966,6 @@
           "skill": "AnimalHusbandry",
           "skillXp": 3,
           "moodlet": "pet_love"
-        },
-        {
-          "id": "slaughter",
-          "displayName": "Hayvan kes (dost olmayan yetişkin)",
-          "durationDays": 0.1,
-          "slaughter": true,
-          "requiresAnimal": true,
-          "skill": "AnimalHusbandry",
-          "skillXp": 6,
-          "moodlet": "slaughtered"
         },
         {
           "id": "salve",
@@ -16131,16 +17071,6 @@
           "skill": "AnimalHusbandry",
           "skillXp": 3,
           "moodlet": "pet_love"
-        },
-        {
-          "id": "slaughter",
-          "displayName": "Hayvan kes (dost olmayan yetişkin)",
-          "durationDays": 0.1,
-          "slaughter": true,
-          "requiresAnimal": true,
-          "skill": "AnimalHusbandry",
-          "skillXp": 6,
-          "moodlet": "slaughtered"
         },
         {
           "id": "salve",
@@ -16928,6 +17858,9 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "tags": [
+        "foodpoint"
       ]
     },
     {
@@ -16976,6 +17909,9 @@
         "pantry",
         "cellar",
         "storehouse"
+      ],
+      "tags": [
+        "foodpoint"
       ]
     },
     {
@@ -18179,7 +19115,7 @@
     },
     {
       "id": "item.game_meat",
-      "displayName": "Av eti",
+      "displayName": "Karaca eti",
       "placement": "Resource",
       "category": "resource",
       "price": 6,
@@ -18382,7 +19318,10 @@
         "pivotX": 40.0,
         "pivotY": 24.0,
         "mirror": true
-      }
+      },
+      "tags": [
+        "foodpoint"
+      ]
     },
     {
       "id": "item.brew_barrel",
@@ -24748,7 +25687,33 @@
           "size": "L"
         }
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ],
       "upgrades": [
         {
           "id": "wax_polish",
@@ -24784,6 +25749,9 @@
       ],
       "trades": [
         "tavern"
+      ],
+      "tags": [
+        "diningtable"
       ]
     },
     {
@@ -24843,6 +25811,9 @@
       "site": "indoor",
       "belongs": [
         "kitchen"
+      ],
+      "tags": [
+        "foodpoint"
       ]
     },
     {
@@ -24989,7 +25960,33 @@
           "size": "L"
         }
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ],
       "upgrades": [
         {
           "id": "wax_polish",
@@ -25022,6 +26019,9 @@
         "kitchen",
         "living",
         "dining"
+      ],
+      "tags": [
+        "diningtable"
       ]
     },
     {
@@ -25397,7 +26397,33 @@
           "size": "M"
         }
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ],
       "upgrades": [
         {
           "id": "wax_polish",
@@ -25429,7 +26455,10 @@
         "pivotY": 24.0,
         "mirror": true,
         "pending": true
-      }
+      },
+      "tags": [
+        "diningtable"
+      ]
     },
     {
       "id": "item.yukluk",
@@ -28381,7 +29410,33 @@
           "size": "L"
         }
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ],
       "upgrades": [
         {
           "id": "wax_polish",
@@ -28417,6 +29472,9 @@
       ],
       "trades": [
         "tavern"
+      ],
+      "tags": [
+        "diningtable"
       ]
     },
     {
@@ -28442,7 +29500,33 @@
           "size": "M"
         }
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ],
       "upgrades": [
         {
           "id": "wax_polish",
@@ -28477,7 +29561,10 @@
         "pivotY": 24.0,
         "mirror": true,
         "pending": true
-      }
+      },
+      "tags": [
+        "diningtable"
+      ]
     },
     {
       "id": "item.han_bench",
@@ -30233,6 +31320,11 @@
               "item": "item.grape",
               "count": 1,
               "chance": 0.5
+            },
+            {
+              "item": "item.vine_leaf",
+              "count": 2,
+              "chance": 0.7
             }
           ],
           "moodlet": "good_harvest"
@@ -31539,6 +32631,9 @@
       ],
       "trades": [
         "mill"
+      ],
+      "tags": [
+        "preptable"
       ]
     },
     {
@@ -31677,6 +32772,60 @@
           "skillXp": 1,
           "skillWork": "imece",
           "minLevel": 7
+        },
+        {
+          "id": "write_recipes",
+          "displayName": "Bildiği tarifleri deftere yaz",
+          "durationDays": 0.1,
+          "skill": "Literacy",
+          "skillXp": 6,
+          "meal": "writeRecipes",
+          "consume": "item.parchment"
+        },
+        {
+          "id": "read_recipes",
+          "displayName": "Defterden tarif öğren",
+          "durationDays": 0.08,
+          "skill": "Literacy",
+          "skillXp": 4,
+          "meal": "readRecipes"
+        },
+        {
+          "id": "study_treatise_table",
+          "displayName": "Sofra risalesi oku",
+          "durationDays": 0.12,
+          "skill": "Literacy",
+          "skillXp": 8,
+          "meal": "studyTreatise",
+          "consume": "item.treatise_table",
+          "teaches": [
+            "item.pigeon_stuffed",
+            "item.goose_roast"
+          ]
+        },
+        {
+          "id": "study_treatise_waters",
+          "displayName": "Su ürünleri risalesi oku",
+          "durationDays": 0.12,
+          "skill": "Literacy",
+          "skillXp": 8,
+          "meal": "studyTreatise",
+          "consume": "item.treatise_waters",
+          "teaches": [
+            "item.eel_pie"
+          ]
+        },
+        {
+          "id": "study_treatise_sweets",
+          "displayName": "Tatlılar risalesi oku",
+          "durationDays": 0.12,
+          "skill": "Literacy",
+          "skillXp": 8,
+          "meal": "studyTreatise",
+          "consume": "item.treatise_sweets",
+          "teaches": [
+            "item.cherry_tart"
+          ]
         }
       ]
     },
@@ -31989,6 +33138,16 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "interactions": [
+        {
+          "id": "wash_dishes",
+          "displayName": "Bulaşık yıka",
+          "durationDays": 0.04,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "washDishes"
+        }
       ]
     },
     {
@@ -36079,7 +37238,37 @@
         "bedroom"
       ],
       "width": 2,
-      "height": 1
+      "height": 1,
+      "tags": [
+        "diningtable"
+      ],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ]
     },
     {
       "id": "item.catki_chair",
@@ -36147,7 +37336,37 @@
         "bedroom"
       ],
       "width": 2,
-      "height": 1
+      "height": 1,
+      "tags": [
+        "diningtable"
+      ],
+      "interactions": [
+        {
+          "id": "eat_serving",
+          "displayName": "Sofradan ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.05,
+          "bladder": 4,
+          "meal": "eatServing"
+        },
+        {
+          "id": "clear_table",
+          "displayName": "Sofrayı topla",
+          "durationDays": 0.03,
+          "skill": "Decorating",
+          "skillXp": 1,
+          "meal": "clearTable"
+        },
+        {
+          "id": "feed_scrap",
+          "displayName": "Köpeğe bir lokma ver",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.01,
+          "meal": "feedScrap"
+        }
+      ]
     },
     {
       "id": "item.yoruk_chair",
@@ -42811,6 +44030,1687 @@
       "belongs": [
         "outdoor"
       ]
+    },
+    {
+      "id": "item.mutton",
+      "displayName": "Kuzu eti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.goat_meat",
+      "displayName": "Keçi eti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.pork",
+      "displayName": "Domuz eti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.rabbit_meat",
+      "displayName": "Tavşan eti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.duck_meat",
+      "displayName": "Ördek eti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.goose_meat",
+      "displayName": "Kaz eti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.pigeon_meat",
+      "displayName": "Güvercin eti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.boar_meat",
+      "displayName": "Yaban domuzu eti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 4
+    },
+    {
+      "id": "item.duck_egg",
+      "displayName": "Ördek yumurtası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 12
+    },
+    {
+      "id": "item.goose_egg",
+      "displayName": "Kaz yumurtası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 12
+    },
+    {
+      "id": "item.goat_milk",
+      "displayName": "Keçi sütü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.goat_cheese",
+      "displayName": "Keçi peyniri",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 20
+    },
+    {
+      "id": "item.offal",
+      "displayName": "Sakatat",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.gut",
+      "displayName": "Bağırsak",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.horn",
+      "displayName": "Boynuz",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.rennet",
+      "displayName": "Şirden mayası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.gut_string",
+      "displayName": "Kiriş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.horn_comb",
+      "displayName": "Boynuz tarak",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.sucuk",
+      "displayName": "Sucuk",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.vine_leaf",
+      "displayName": "Asma yaprağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.tomato",
+      "displayName": "Domates",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 6
+    },
+    {
+      "id": "item.seed_tomato",
+      "displayName": "Domates tohumu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "level": 6,
+      "plantsAs": "item.crop_tomato"
+    },
+    {
+      "id": "item.crop_tomato",
+      "displayName": "Domates ekini",
+      "category": "plant",
+      "growDays": 8,
+      "tilled": true,
+      "diesInWinter": true,
+      "growSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "cropFamily": "kabak",
+      "site": "outdoor",
+      "feed": "heavy",
+      "likesFertilizer": [
+        "manure",
+        "compost"
+      ],
+      "interactions": [
+        {
+          "id": "harvest",
+          "displayName": "Hasat et",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 15,
+          "requiresGrown": true,
+          "removeItem": true,
+          "produce": [
+            {
+              "item": "item.tomato",
+              "count": 4
+            },
+            {
+              "item": "item.seed_tomato",
+              "count": 1
+            },
+            {
+              "item": "item.seed_tomato",
+              "count": 1,
+              "chance": 0.5
+            }
+          ],
+          "tool": "sickle",
+          "moodlet": "good_harvest"
+        },
+        {
+          "id": "uproot",
+          "displayName": "Sök (sararmış ekin, yan ürün verir)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "requiresWithered": true,
+          "removeItem": true
+        },
+        {
+          "id": "water",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "skill": "Farming",
+          "skillXp": 2,
+          "water": true,
+          "tool": "can"
+        },
+        {
+          "id": "fertilize",
+          "displayName": "Kompost ser",
+          "durationDays": 0.03,
+          "fertilize": 0.3,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ],
+          "fertilizerKind": "compost"
+        },
+        {
+          "id": "growth_potion",
+          "displayName": "Bereket iksiri dök",
+          "durationDays": 0.02,
+          "consume": "item.potion_growth",
+          "fertilize": 0.5,
+          "skill": "Herbalism",
+          "skillXp": 3
+        },
+        {
+          "id": "manure",
+          "displayName": "Gübre ser",
+          "durationDays": 0.03,
+          "consume": "item.manure",
+          "fertilize": 0.45,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3,
+          "fertilizerKind": "manure"
+        },
+        {
+          "id": "manure_fresh",
+          "displayName": "Taze gübre ser (ekini yakar)",
+          "durationDays": 0.03,
+          "consume": "item.manure_fresh",
+          "fertilize": 0.45,
+          "fertilizerKind": "fresh",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "inspect_field",
+          "displayName": "Tarlayı incele",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "inspect_field",
+          "minLevel": 2
+        },
+        {
+          "id": "select_seed",
+          "displayName": "Seçme tohumla hasat et (en iyi başaktan)",
+          "durationDays": 0.07,
+          "skill": "Farming",
+          "skillXp": 16,
+          "minLevel": 4,
+          "requiresGrown": true,
+          "removeItem": true,
+          "tool": "sickle",
+          "produce": [
+            {
+              "item": "item.tomato",
+              "count": 1
+            },
+            {
+              "item": "item.seed_tomato",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "bulk_sow",
+          "displayName": "Toplu ek (çevredeki 3×3 tarla)",
+          "durationDays": 0.1,
+          "skill": "Farming",
+          "skillXp": 6,
+          "skillWork": "bulk_sow",
+          "minLevel": 5
+        },
+        {
+          "id": "smell_soil",
+          "displayName": "Toprağı kokla (hasat tahmini)",
+          "durationDays": 0.04,
+          "skill": "Farming",
+          "skillXp": 4,
+          "skillWork": "smell_soil",
+          "minLevel": 6
+        },
+        {
+          "id": "imece",
+          "displayName": "İmece çağır",
+          "durationDays": 0.05,
+          "skill": "Farming",
+          "skillXp": 10,
+          "skillWork": "imece",
+          "minLevel": 9
+        },
+        {
+          "id": "soil_check",
+          "displayName": "Toprağa bak",
+          "durationDays": 0.03,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "skillWork": "soil_check",
+          "minLevel": 2
+        },
+        {
+          "id": "bone_meal",
+          "displayName": "Kemik unu ser",
+          "durationDays": 0.03,
+          "consume": "item.bone_meal",
+          "fertilize": 0.5,
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 4,
+          "fertilizerKind": "bone"
+        },
+        {
+          "id": "fish_meal",
+          "displayName": "Balık unu ser",
+          "durationDays": 0.03,
+          "consume": "item.fish_meal",
+          "fertilize": 0.4,
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "lime",
+          "displayName": "Kireçle (sönmüş kireç)",
+          "durationDays": 0.04,
+          "consume": "item.quicklime",
+          "fertilize": 0.35,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 9
+        },
+        {
+          "id": "black_earth",
+          "displayName": "Kara toprak hazırla (3×3 kalıcı)",
+          "durationDays": 0.2,
+          "skill": "SoilCare",
+          "skillXp": 18,
+          "skillWork": "black_earth",
+          "minLevel": 10,
+          "materials": [
+            {
+              "item": "item.compost",
+              "count": 4
+            },
+            {
+              "item": "item.manure",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "id": "black_soil",
+          "displayName": "Kara toprak ser",
+          "durationDays": 0.03,
+          "consume": "item.black_soil",
+          "fertilize": 0.45,
+          "fertilizerKind": "blackSoil",
+          "skill": "SoilCare",
+          "skillXp": 4
+        },
+        {
+          "id": "compost_raw",
+          "displayName": "Ham kompost ser",
+          "durationDays": 0.03,
+          "consume": "item.compost_raw",
+          "fertilize": 0.2,
+          "fertilizerKind": "compostRaw",
+          "skill": "SoilCare",
+          "skillXp": 2
+        },
+        {
+          "id": "ash",
+          "displayName": "Odun külü serp",
+          "durationDays": 0.03,
+          "consume": "item.ash",
+          "fertilize": 0.1,
+          "fertilizerKind": "ash",
+          "skill": "SoilCare",
+          "skillXp": 2,
+          "minLevel": 2
+        },
+        {
+          "id": "seaweed",
+          "displayName": "Deniz yosunu ser",
+          "durationDays": 0.03,
+          "consume": "item.seaweed",
+          "fertilize": 0.25,
+          "fertilizerKind": "seaweed",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        },
+        {
+          "id": "marl",
+          "displayName": "Marn ser",
+          "durationDays": 0.03,
+          "consume": "item.marl",
+          "fertilize": 0.01,
+          "fertilizerKind": "marl",
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 5
+        },
+        {
+          "id": "mulch",
+          "displayName": "Yaprak çürüğüyle malçla",
+          "durationDays": 0.03,
+          "consume": "item.leaf_mould",
+          "fertilize": 0.01,
+          "fertilizerKind": "mulch",
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 3
+        }
+      ]
+    },
+    {
+      "id": "item.tomato_puree",
+      "displayName": "Domates ezmesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.tomato_paste",
+      "displayName": "Salça",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food",
+        "preserved"
+      ]
+    },
+    {
+      "id": "item.verjuice",
+      "displayName": "Koruk suyu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "condiment"
+      ]
+    },
+    {
+      "id": "item.pomegranate_molasses",
+      "displayName": "Nar ekşisi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "condiment"
+      ]
+    },
+    {
+      "id": "item.plum_sour",
+      "displayName": "Erik ekşisi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "condiment"
+      ]
+    },
+    {
+      "id": "item.sumac",
+      "displayName": "Sumak",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "condiment",
+        "merchant"
+      ]
+    },
+    {
+      "id": "item.cinnamon",
+      "displayName": "Tarçın",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "spice",
+        "merchantonly"
+      ]
+    },
+    {
+      "id": "item.mint_dried",
+      "displayName": "Kuru nane demeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "herb"
+      ]
+    },
+    {
+      "id": "item.mint_ground",
+      "displayName": "Nane (ufalanmış)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "spice"
+      ]
+    },
+    {
+      "id": "item.thyme_dried",
+      "displayName": "Kuru kekik demeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "herb"
+      ]
+    },
+    {
+      "id": "item.thyme_ground",
+      "displayName": "Kekik (ufalanmış)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "spice"
+      ]
+    },
+    {
+      "id": "item.dill_dried",
+      "displayName": "Kuru dereotu demeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "herb"
+      ]
+    },
+    {
+      "id": "item.dill_ground",
+      "displayName": "Dereotu (ufalanmış)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "spice"
+      ]
+    },
+    {
+      "id": "item.sage_dried",
+      "displayName": "Kuru adaçayı demeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "herb"
+      ]
+    },
+    {
+      "id": "item.sage_ground",
+      "displayName": "Adaçayı (ufalanmış)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "spice"
+      ]
+    },
+    {
+      "id": "item.lavender_dried",
+      "displayName": "Kuru lavanta demeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "herb"
+      ]
+    },
+    {
+      "id": "item.lavender_ground",
+      "displayName": "Lavanta (ufalanmış)",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "spice"
+      ]
+    },
+    {
+      "id": "item.fenugreek_roasted",
+      "displayName": "Kavrulmuş çemen",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "spice"
+      ]
+    },
+    {
+      "id": "item.fenugreek_ground",
+      "displayName": "Çemen tozu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "tags": [
+        "spice"
+      ]
+    },
+    {
+      "id": "item.family_blend",
+      "displayName": "Aile karışımı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "spice"
+      ]
+    },
+    {
+      "id": "item.slaughter_hook",
+      "displayName": "Kesim kancası",
+      "width": 1,
+      "height": 1,
+      "price": 30,
+      "category": "barn",
+      "level": 4,
+      "styleSet": "Köylü",
+      "site": "indoor",
+      "belongs": [
+        "storehouse",
+        "barn"
+      ],
+      "anywhere": true,
+      "tags": [
+        "slaughterhook"
+      ],
+      "interactions": [
+        {
+          "id": "slaughter",
+          "displayName": "Listedeki hayvanı kes",
+          "durationDays": 0.12,
+          "skill": "AnimalHusbandry",
+          "skillXp": 4,
+          "meal": "slaughter",
+          "adultOnly": true
+        },
+        {
+          "id": "collect_meat",
+          "displayName": "Mezbaha deposunu kilere taşı",
+          "durationDays": 0.04,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
+          "meal": "collectMeat"
+        }
+      ]
+    },
+    {
+      "id": "item.meat_locker",
+      "displayName": "Et dolabı",
+      "width": 1,
+      "height": 1,
+      "price": 35,
+      "category": "barn",
+      "level": 4,
+      "styleSet": "Köylü",
+      "site": "indoor",
+      "belongs": [
+        "storehouse",
+        "barn"
+      ],
+      "anywhere": true,
+      "tall": true,
+      "tags": [
+        "meatstore"
+      ],
+      "interactions": [
+        {
+          "id": "collect_meat",
+          "displayName": "Mezbaha deposunu kilere taşı",
+          "durationDays": 0.04,
+          "skill": "AnimalHusbandry",
+          "skillXp": 1,
+          "meal": "collectMeat"
+        }
+      ]
+    },
+    {
+      "id": "item.ice_trough",
+      "displayName": "Buz teknesi",
+      "width": 1,
+      "height": 1,
+      "price": 25,
+      "category": "barn",
+      "level": 5,
+      "styleSet": "Köylü",
+      "site": "indoor",
+      "belongs": [
+        "storehouse",
+        "barn",
+        "cellar"
+      ],
+      "anywhere": true,
+      "tags": [
+        "meatcooler"
+      ]
+    },
+    {
+      "id": "item.drain_channel",
+      "displayName": "Akıtma oluğu",
+      "width": 1,
+      "height": 1,
+      "price": 12,
+      "category": "barn",
+      "level": 4,
+      "styleSet": "Köylü",
+      "site": "indoor",
+      "belongs": [
+        "storehouse",
+        "barn"
+      ],
+      "anywhere": true,
+      "comfort": 1
+    },
+    {
+      "id": "item.spice_rack",
+      "displayName": "Baharat rafı",
+      "category": "decor_wall",
+      "price": 18,
+      "level": 3,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 1,
+      "beauty": 2,
+      "finishGroup": "wood",
+      "tags": [
+        "spicerack"
+      ]
+    },
+    {
+      "id": "item.paste_tray",
+      "displayName": "Salça tepsisi",
+      "width": 1,
+      "height": 1,
+      "price": 10,
+      "category": "utility",
+      "level": 4,
+      "styleSet": "Köylü",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "anywhere": true,
+      "interactions": []
+    },
+    {
+      "id": "item.picnic_basket",
+      "displayName": "Piknik sepeti",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.picnic_cloth",
+      "displayName": "Piknik örtüsü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "craft"
+      ]
+    },
+    {
+      "id": "item.toy_pot_set",
+      "displayName": "Oyuncak tencere takımı",
+      "category": "kids",
+      "price": 5,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.toy_hammer",
+      "displayName": "Tahta çekiç",
+      "category": "kids",
+      "price": 5,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.toy_hoe",
+      "displayName": "Küçük çapa",
+      "category": "kids",
+      "price": 5,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.toy_sheep",
+      "displayName": "Bez koyun",
+      "category": "kids",
+      "price": 5,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "cloth",
+      "fitsOn": [
+        "masa",
+        "raf"
+      ]
+    },
+    {
+      "id": "item.soup_tarhana",
+      "displayName": "Tarhana çorbası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.soup_cabbage",
+      "displayName": "Lahana çorbası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.soup_beet",
+      "displayName": "Pancar çorbası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.soup_crayfish",
+      "displayName": "Kerevit çorbası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 11,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.soup_bone",
+      "displayName": "Kemik suyu çorbası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.soup_tripe",
+      "displayName": "İşkembe çorbası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.soup_wild_garlic",
+      "displayName": "Yabani sarımsak çorbası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.lamb_tandir",
+      "displayName": "Kuzu tandır",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 16,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.beef_yahni",
+      "displayName": "Dana yahni",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.pork_kavurma",
+      "displayName": "Domuz kavurma",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 11,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.goose_roast",
+      "displayName": "Kaz çevirme",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 18,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.rabbit_stew",
+      "displayName": "Tavşan yahnisi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.venison_roast",
+      "displayName": "Karaca kızartması",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 17,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.pigeon_stuffed",
+      "displayName": "Güvercin dolması",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 13,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.liver_fry",
+      "displayName": "Ciğer kavurma",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.goat_stew",
+      "displayName": "Keçi haşlama",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.duck_plum",
+      "displayName": "Erikli ördek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 14,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.boar_stew",
+      "displayName": "Yaban domuzu yahnisi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 16,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.meatballs",
+      "displayName": "Köfte",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 11,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.sucuk_egg",
+      "displayName": "Sucuklu yumurta",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.paste_stew",
+      "displayName": "Salçalı et güveci",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.fish_fry",
+      "displayName": "Balık kızartması",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.fish_grill",
+      "displayName": "Izgara balık",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.fish_steam",
+      "displayName": "Balık buğulama",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.eel_pie",
+      "displayName": "Yılan balığı turtası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.mussel_pilaf",
+      "displayName": "Midye pilavı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.salt_fish_boil",
+      "displayName": "Tuzlu balık haşlama",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.sarma_leaf",
+      "displayName": "Yaprak sarması",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 11,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.broad_bean_oil",
+      "displayName": "Zeytinyağlı bakla",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.spinach_saute",
+      "displayName": "Ispanak kavurma",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.pumpkin_stuffed",
+      "displayName": "Su kabağı dolması",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.radish_salad",
+      "displayName": "Turp salatası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.cress_salad",
+      "displayName": "Su teresi salatası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.cabbage_paste",
+      "displayName": "Salçalı lahana",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.turnip_mash",
+      "displayName": "Şalgam ezmesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.saffron_pilaf",
+      "displayName": "Safranlı pilav",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 20,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.porridge_barley",
+      "displayName": "Arpa lapası",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.pea_mash",
+      "displayName": "Bezelye ezmesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.rye_gruel",
+      "displayName": "Çavdar bulamacı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 4,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.paste_pilaf",
+      "displayName": "Salçalı bulgur pilavı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 10,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.milk_wheat",
+      "displayName": "Sütlü buğday",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.duck_kaygana",
+      "displayName": "Ördek yumurtalı kaygana",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.cokelek",
+      "displayName": "Çökelek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.honey_milk",
+      "displayName": "Ballı süt",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "food",
+        "drink"
+      ],
+      "spoilDays": 2
+    },
+    {
+      "id": "item.gozleme",
+      "displayName": "Gözleme",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.borek_cheese",
+      "displayName": "Peynirli börek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.saffron_bun",
+      "displayName": "Safranlı bayram çöreği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 22,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.chestnut_bread",
+      "displayName": "Kestaneli ekmek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 9,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.walnut_bun",
+      "displayName": "Cevizli çörek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 11,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.kome",
+      "displayName": "Köme",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.pestil",
+      "displayName": "Pestil",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.honey_nuts",
+      "displayName": "Ballı fındık",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.cherry_tart",
+      "displayName": "Kirazlı tart",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 12,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.chestnut_candy",
+      "displayName": "Kestane şekerlemesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 13,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.pear_hosaf",
+      "displayName": "Armut hoşafı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 3
+    },
+    {
+      "id": "item.olive_bread",
+      "displayName": "Zeytin ezmeli ekmek",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 7,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 20
+    },
+    {
+      "id": "item.dried_fruit_ration",
+      "displayName": "Kuru meyveli azık",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "food",
+        "cooked"
+      ],
+      "spoilDays": 20
+    },
+    {
+      "id": "item.treatise_table",
+      "displayName": "Sofra risalesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 40,
+      "tags": [
+        "writing",
+        "merchantonly"
+      ]
+    },
+    {
+      "id": "item.treatise_waters",
+      "displayName": "Su ürünleri risalesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 40,
+      "tags": [
+        "writing",
+        "merchantonly"
+      ]
+    },
+    {
+      "id": "item.treatise_sweets",
+      "displayName": "Tatlılar risalesi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 40,
+      "tags": [
+        "writing",
+        "merchantonly"
+      ]
     }
   ],
   "recipes": [
@@ -43885,7 +46785,7 @@
       "produces": "item.yogurt",
       "materials": [
         {
-          "item": "item.milk",
+          "item": "group.milk",
           "count": 2
         }
       ],
@@ -43901,7 +46801,7 @@
       "produces": "item.butter",
       "materials": [
         {
-          "item": "item.milk",
+          "item": "group.milk",
           "count": 3
         }
       ],
@@ -44680,7 +47580,7 @@
       "produces": "item.kasar",
       "materials": [
         {
-          "item": "item.milk",
+          "item": "group.milk",
           "count": 4
         },
         {
@@ -44701,7 +47601,7 @@
       "count": 2,
       "materials": [
         {
-          "item": "item.milk",
+          "item": "group.milk",
           "count": 3
         }
       ],
@@ -44903,22 +47803,6 @@
       "skill": "Leatherwork",
       "skillXp": 6,
       "displayName": "Jonglör topu dik"
-    },
-    {
-      "id": "render_tallow",
-      "station": "item.cooking_pot",
-      "produces": "item.tallow",
-      "count": 2,
-      "materials": [
-        {
-          "item": "item.meat",
-          "count": 1
-        }
-      ],
-      "durationDays": 0.08,
-      "skill": "Chandlery",
-      "skillXp": 5,
-      "displayName": "İç yağı erit"
     },
     {
       "id": "tallow_candle",
@@ -45752,7 +48636,7 @@
       "count": 3,
       "materials": [
         {
-          "item": "item.meat",
+          "item": "group.red_meat",
           "count": 2
         },
         {
@@ -46509,7 +49393,8 @@
       "durationDays": 0.03,
       "skill": "Cooking",
       "skillXp": 4,
-      "displayName": "Azık heybesi hazırla"
+      "displayName": "Azık heybesi hazırla",
+      "dish": "snack"
     },
     {
       "id": "dye_crimson",
@@ -47478,7 +50363,7 @@
       "produces": "item.wedding_dish",
       "materials": [
         {
-          "item": "item.meat",
+          "item": "group.red_meat",
           "count": 2
         },
         {
@@ -47495,7 +50380,8 @@
       "skillXp": 26,
       "displayName": "Keşkek döv",
       "count": 2,
-      "minLevel": 9
+      "minLevel": 9,
+      "dish": "grain"
     },
     {
       "id": "pomegranate_sherbet",
@@ -51185,6 +54071,1891 @@
       "durationDays": 0.06,
       "skillXp": 8,
       "displayName": "Eski kılıcı duvara as"
+    },
+    {
+      "id": "seed_tomato",
+      "station": "item.seed_maker",
+      "produces": "item.seed_tomato",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.tomato",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Horticulture",
+      "skillXp": 4,
+      "displayName": "Tohum çıkar: Domates"
+    },
+    {
+      "id": "bundle_mint",
+      "station": "item.drying_rack",
+      "produces": "item.mint_dried",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.mint",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Herbalism",
+      "skillXp": 6,
+      "displayName": "Nane demetle ve kurut"
+    },
+    {
+      "id": "rub_mint",
+      "station": "item.mortar_pestle",
+      "produces": "item.mint_ground",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.mint_dried",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Herbalism",
+      "skillXp": 5,
+      "displayName": "Kuru nane ufala"
+    },
+    {
+      "id": "bundle_thyme",
+      "station": "item.drying_rack",
+      "produces": "item.thyme_dried",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.thyme",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Herbalism",
+      "skillXp": 6,
+      "displayName": "Kekik demetle ve kurut"
+    },
+    {
+      "id": "rub_thyme",
+      "station": "item.mortar_pestle",
+      "produces": "item.thyme_ground",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.thyme_dried",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Herbalism",
+      "skillXp": 5,
+      "displayName": "Kuru kekik ufala"
+    },
+    {
+      "id": "bundle_dill",
+      "station": "item.drying_rack",
+      "produces": "item.dill_dried",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.dill",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Herbalism",
+      "skillXp": 6,
+      "displayName": "Dereotu demetle ve kurut"
+    },
+    {
+      "id": "rub_dill",
+      "station": "item.mortar_pestle",
+      "produces": "item.dill_ground",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.dill_dried",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Herbalism",
+      "skillXp": 5,
+      "displayName": "Kuru dereotu ufala"
+    },
+    {
+      "id": "bundle_sage",
+      "station": "item.drying_rack",
+      "produces": "item.sage_dried",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.sage",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Herbalism",
+      "skillXp": 6,
+      "displayName": "Adaçayı demetle ve kurut"
+    },
+    {
+      "id": "rub_sage",
+      "station": "item.mortar_pestle",
+      "produces": "item.sage_ground",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.sage_dried",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Herbalism",
+      "skillXp": 5,
+      "displayName": "Kuru adaçayı ufala"
+    },
+    {
+      "id": "bundle_lavender",
+      "station": "item.drying_rack",
+      "produces": "item.lavender_dried",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.lavender",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Herbalism",
+      "skillXp": 6,
+      "displayName": "Lavanta demetle ve kurut"
+    },
+    {
+      "id": "rub_lavender",
+      "station": "item.mortar_pestle",
+      "produces": "item.lavender_ground",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.lavender_dried",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Herbalism",
+      "skillXp": 5,
+      "displayName": "Kuru lavanta ufala"
+    },
+    {
+      "id": "roast_fenugreek",
+      "station": "item.cooking_pot",
+      "produces": "item.fenugreek_roasted",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.fenugreek",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Cooking",
+      "skillXp": 6,
+      "displayName": "Çemen kavur",
+      "minLevel": 2
+    },
+    {
+      "id": "grind_fenugreek",
+      "station": "item.mortar_pestle",
+      "produces": "item.fenugreek_ground",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.fenugreek_roasted",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Herbalism",
+      "skillXp": 5,
+      "displayName": "Çemen döv"
+    },
+    {
+      "id": "family_blend",
+      "station": "item.mortar_pestle",
+      "produces": "item.family_blend",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.black_pepper",
+          "count": 1
+        },
+        {
+          "item": "item.thyme_ground",
+          "count": 1
+        },
+        {
+          "item": "item.mint_ground",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Cooking",
+      "skillXp": 10,
+      "displayName": "Aile karışımı hazırla",
+      "minLevel": 8
+    },
+    {
+      "id": "tomato_puree",
+      "station": "item.cooking_pot",
+      "produces": "item.tomato_puree",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.tomato",
+          "count": 4
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Cooking",
+      "skillXp": 10,
+      "displayName": "Domates ez ve kaynat",
+      "minLevel": 3
+    },
+    {
+      "id": "verjuice",
+      "station": "item.cooking_pot",
+      "produces": "item.verjuice",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.grape",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Cooking",
+      "skillXp": 6,
+      "displayName": "Koruk suyu sık",
+      "minLevel": 2
+    },
+    {
+      "id": "pomegranate_molasses",
+      "station": "item.cooking_pot",
+      "produces": "item.pomegranate_molasses",
+      "count": 1,
+      "materials": [
+        {
+          "item": "item.pomegranate",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Cooking",
+      "skillXp": 10,
+      "displayName": "Nar ekşisi kaynat",
+      "minLevel": 4
+    },
+    {
+      "id": "plum_sour",
+      "station": "item.drying_rack",
+      "produces": "item.plum_sour",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.plum",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Cooking",
+      "skillXp": 6,
+      "displayName": "Erik ekşisi kurut",
+      "minLevel": 2
+    },
+    {
+      "id": "sucuk",
+      "station": "item.cooking_pot",
+      "produces": "item.sucuk",
+      "count": 3,
+      "materials": [
+        {
+          "item": "group.red_meat",
+          "count": 2
+        },
+        {
+          "item": "item.gut",
+          "count": 1
+        },
+        {
+          "item": "item.garlic",
+          "count": 1
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Sucuk doldur",
+      "minLevel": 4
+    },
+    {
+      "id": "gut_string",
+      "station": "item.drying_rack",
+      "produces": "item.gut_string",
+      "count": 1,
+      "materials": [
+        {
+          "item": "item.gut",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Leatherwork",
+      "skillXp": 6,
+      "displayName": "Kiriş ger ve kurut",
+      "minLevel": 2
+    },
+    {
+      "id": "horn_comb",
+      "station": "item.workbench",
+      "produces": "item.horn_comb",
+      "count": 1,
+      "materials": [
+        {
+          "item": "item.horn",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Carpentry",
+      "skillXp": 8,
+      "displayName": "Boynuz tarak oy",
+      "minLevel": 3
+    },
+    {
+      "id": "goat_cheese",
+      "station": "item.cooking_pot",
+      "produces": "item.goat_cheese",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.goat_milk",
+          "count": 2
+        },
+        {
+          "item": "item.rennet",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Cooking",
+      "skillXp": 10,
+      "displayName": "Keçi peyniri mayala",
+      "minLevel": 3
+    },
+    {
+      "id": "cheese_rennet",
+      "station": "item.cooking_pot",
+      "produces": "item.cheese",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.milk",
+          "count": 2
+        },
+        {
+          "item": "item.rennet",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Cooking",
+      "skillXp": 10,
+      "displayName": "Şirdenle peynir mayala",
+      "minLevel": 3
+    },
+    {
+      "id": "tomato_paste",
+      "station": "item.paste_tray",
+      "produces": "item.tomato_paste",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.tomato_puree",
+          "count": 2
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Salçayı tepside güneşte kurut",
+      "minLevel": 3
+    },
+    {
+      "id": "picnic_basket",
+      "station": "item.workbench",
+      "produces": "item.picnic_basket",
+      "count": 1,
+      "materials": [
+        {
+          "item": "item.basket",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Carpentry",
+      "skillXp": 8,
+      "displayName": "Piknik sepeti hazırla",
+      "minLevel": 2
+    },
+    {
+      "id": "cook_soup_tarhana",
+      "station": "item.cooking_pot",
+      "produces": "item.soup_tarhana",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.tarhana",
+          "count": 1
+        },
+        {
+          "item": "group.fat",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Tarhana çorbası pişir",
+      "minLevel": 2,
+      "dish": "soup"
+    },
+    {
+      "id": "cook_soup_cabbage",
+      "station": "item.cooking_pot",
+      "produces": "item.soup_cabbage",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.cabbage",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Lahana çorbası pişir",
+      "minLevel": 1,
+      "dish": "soup",
+      "learn": "basic"
+    },
+    {
+      "id": "cook_soup_beet",
+      "station": "item.cooking_pot",
+      "produces": "item.soup_beet",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.beet",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "group.sour",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Pancar çorbası pişir",
+      "minLevel": 3,
+      "dish": "soup"
+    },
+    {
+      "id": "cook_soup_crayfish",
+      "station": "item.cooking_pot",
+      "produces": "item.soup_crayfish",
+      "count": 3,
+      "materials": [
+        {
+          "item": "group.shellfish",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "item.butter",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Cooking",
+      "skillXp": 20,
+      "displayName": "Kerevit çorbası pişir",
+      "minLevel": 5,
+      "dish": "soup",
+      "learn": "villager:villager.kemal:60"
+    },
+    {
+      "id": "cook_soup_bone",
+      "station": "item.cooking_pot",
+      "produces": "item.soup_bone",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.bone",
+          "count": 2
+        },
+        {
+          "item": "group.root",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Kemik suyu çorbası pişir",
+      "minLevel": 2,
+      "dish": "soup"
+    },
+    {
+      "id": "cook_soup_tripe",
+      "station": "item.cooking_pot",
+      "produces": "item.soup_tripe",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.offal",
+          "count": 1
+        },
+        {
+          "item": "item.garlic",
+          "count": 1
+        },
+        {
+          "item": "group.sour",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.14,
+      "skill": "Cooking",
+      "skillXp": 18,
+      "displayName": "İşkembe çorbası pişir",
+      "minLevel": 4,
+      "dish": "soup",
+      "learn": "villager:villager.serife:30"
+    },
+    {
+      "id": "cook_soup_wild_garlic",
+      "station": "item.cooking_pot",
+      "produces": "item.soup_wild_garlic",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.wild_garlic",
+          "count": 3
+        },
+        {
+          "item": "group.milk",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Yabani sarımsak çorbası pişir",
+      "minLevel": 2,
+      "dish": "soup"
+    },
+    {
+      "id": "cook_lamb_tandir",
+      "station": "item.stone_oven",
+      "produces": "item.lamb_tandir",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.mutton",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.16,
+      "skill": "Cooking",
+      "skillXp": 22,
+      "displayName": "Kuzu tandır fırınla",
+      "minLevel": 6,
+      "dish": "meat",
+      "learn": "villager:villager.serife:60",
+      "serve": "tray:stew"
+    },
+    {
+      "id": "cook_beef_yahni",
+      "station": "item.cooking_pot",
+      "produces": "item.beef_yahni",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.meat",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 2
+        },
+        {
+          "item": "group.root",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.14,
+      "skill": "Cooking",
+      "skillXp": 18,
+      "displayName": "Dana yahni pişir",
+      "minLevel": 4,
+      "dish": "meat"
+    },
+    {
+      "id": "cook_pork_kavurma",
+      "station": "item.cooking_pot",
+      "produces": "item.pork_kavurma",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.pork",
+          "count": 2
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Domuz kavurma pişir",
+      "minLevel": 3,
+      "dish": "meat",
+      "serve": "tray:fry"
+    },
+    {
+      "id": "cook_goose_roast",
+      "station": "item.stone_oven",
+      "produces": "item.goose_roast",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.goose_meat",
+          "count": 2
+        },
+        {
+          "item": "item.apple",
+          "count": 1
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Cooking",
+      "skillXp": 24,
+      "displayName": "Kaz çevirme fırınla",
+      "minLevel": 7,
+      "dish": "meat",
+      "learn": "request",
+      "serve": "tray:fry"
+    },
+    {
+      "id": "cook_rabbit_stew",
+      "station": "item.cooking_pot",
+      "produces": "item.rabbit_stew",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.rabbit_meat",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "item.carrot",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Tavşan yahnisi pişir",
+      "minLevel": 3,
+      "dish": "meat"
+    },
+    {
+      "id": "cook_venison_roast",
+      "station": "item.stone_oven",
+      "produces": "item.venison_roast",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.game_meat",
+          "count": 2
+        },
+        {
+          "item": "group.fat",
+          "count": 1
+        },
+        {
+          "item": "item.thyme",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.16,
+      "skill": "Cooking",
+      "skillXp": 22,
+      "displayName": "Karaca kızartması fırınla",
+      "minLevel": 6,
+      "dish": "meat",
+      "serve": "tray:fry"
+    },
+    {
+      "id": "cook_pigeon_stuffed",
+      "station": "item.stone_oven",
+      "produces": "item.pigeon_stuffed",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.pigeon_meat",
+          "count": 2
+        },
+        {
+          "item": "group.grain",
+          "count": 1
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Cooking",
+      "skillXp": 20,
+      "displayName": "Güvercin dolması fırınla",
+      "minLevel": 5,
+      "dish": "meat",
+      "learn": "treatise",
+      "serve": "tray:fry"
+    },
+    {
+      "id": "cook_liver_fry",
+      "station": "item.cooking_pot",
+      "produces": "item.liver_fry",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.offal",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "group.fat",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Ciğer kavurma pişir",
+      "minLevel": 3,
+      "dish": "meat",
+      "serve": "tray:fry"
+    },
+    {
+      "id": "cook_goat_stew",
+      "station": "item.cooking_pot",
+      "produces": "item.goat_stew",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.goat_meat",
+          "count": 2
+        },
+        {
+          "item": "group.root",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Keçi haşlama pişir",
+      "minLevel": 2,
+      "dish": "meat"
+    },
+    {
+      "id": "cook_duck_plum",
+      "station": "item.stone_oven",
+      "produces": "item.duck_plum",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.duck_meat",
+          "count": 2
+        },
+        {
+          "item": "item.plum",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Cooking",
+      "skillXp": 20,
+      "displayName": "Erikli ördek fırınla",
+      "minLevel": 5,
+      "dish": "meat",
+      "learn": "villager:villager.murat:60",
+      "serve": "tray:fry"
+    },
+    {
+      "id": "cook_boar_stew",
+      "station": "item.cooking_pot",
+      "produces": "item.boar_stew",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.boar_meat",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "group.sour",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.16,
+      "skill": "Cooking",
+      "skillXp": 22,
+      "displayName": "Yaban domuzu yahnisi pişir",
+      "minLevel": 6,
+      "dish": "meat"
+    },
+    {
+      "id": "cook_meatballs",
+      "station": "item.cooking_pot",
+      "produces": "item.meatballs",
+      "count": 4,
+      "materials": [
+        {
+          "item": "group.red_meat",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "item.bread",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.14,
+      "skill": "Cooking",
+      "skillXp": 18,
+      "displayName": "Köfte pişir",
+      "minLevel": 4,
+      "dish": "meat",
+      "serve": "tray:fry"
+    },
+    {
+      "id": "cook_sucuk_egg",
+      "station": "item.cooking_pot",
+      "produces": "item.sucuk_egg",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.sucuk",
+          "count": 1
+        },
+        {
+          "item": "group.egg",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Sucuklu yumurta pişir",
+      "minLevel": 3,
+      "dish": "meat",
+      "serve": "tray:fry"
+    },
+    {
+      "id": "cook_paste_stew",
+      "station": "item.cooking_pot",
+      "produces": "item.paste_stew",
+      "count": 4,
+      "materials": [
+        {
+          "item": "group.red_meat",
+          "count": 2
+        },
+        {
+          "item": "item.tomato_paste",
+          "count": 1
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "group.root",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Cooking",
+      "skillXp": 20,
+      "displayName": "Salçalı et güveci pişir",
+      "minLevel": 5,
+      "dish": "meat"
+    },
+    {
+      "id": "cook_fish_fry",
+      "station": "item.cooking_pot",
+      "produces": "item.fish_fry",
+      "count": 2,
+      "materials": [
+        {
+          "item": "group.fish",
+          "count": 2
+        },
+        {
+          "item": "item.flour",
+          "count": 1
+        },
+        {
+          "item": "group.fat",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Balık kızartması pişir",
+      "minLevel": 3,
+      "dish": "fish",
+      "serve": "tray:fish"
+    },
+    {
+      "id": "cook_fish_grill",
+      "station": "item.cooking_pot",
+      "produces": "item.fish_grill",
+      "count": 2,
+      "materials": [
+        {
+          "item": "group.fish",
+          "count": 2
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Izgara balık pişir",
+      "minLevel": 2,
+      "dish": "fish",
+      "serve": "tray:fish"
+    },
+    {
+      "id": "cook_fish_steam",
+      "station": "item.cooking_pot",
+      "produces": "item.fish_steam",
+      "count": 3,
+      "materials": [
+        {
+          "item": "group.fish",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "group.sour",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Cooking",
+      "skillXp": 20,
+      "displayName": "Balık buğulama pişir",
+      "minLevel": 5,
+      "dish": "fish",
+      "learn": "villager:villager.kemal:30",
+      "serve": "crock:fish"
+    },
+    {
+      "id": "cook_eel_pie",
+      "station": "item.stone_oven",
+      "produces": "item.eel_pie",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.fish_eel",
+          "count": 1
+        },
+        {
+          "item": "item.flour",
+          "count": 2
+        },
+        {
+          "item": "item.butter",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.16,
+      "skill": "Baking",
+      "skillXp": 22,
+      "displayName": "Yılan balığı turtası fırınla",
+      "minLevel": 6,
+      "dish": "fish",
+      "learn": "treatise",
+      "serve": "tray:pastry"
+    },
+    {
+      "id": "cook_mussel_pilaf",
+      "station": "item.cooking_pot",
+      "produces": "item.mussel_pilaf",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.mussel",
+          "count": 3
+        },
+        {
+          "item": "group.grain",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Cooking",
+      "skillXp": 20,
+      "displayName": "Midye pilavı pişir",
+      "minLevel": 5,
+      "dish": "fish",
+      "serve": "sini:pilaf"
+    },
+    {
+      "id": "cook_salt_fish_boil",
+      "station": "item.cooking_pot",
+      "produces": "item.salt_fish_boil",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.salted_fish",
+          "count": 2
+        },
+        {
+          "item": "group.root",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Tuzlu balık haşlama pişir",
+      "minLevel": 2,
+      "dish": "fish",
+      "serve": "crock:fish"
+    },
+    {
+      "id": "cook_sarma_leaf",
+      "station": "item.cooking_pot",
+      "produces": "item.sarma_leaf",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.vine_leaf",
+          "count": 4
+        },
+        {
+          "item": "group.grain",
+          "count": 1
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "item.olive_oil",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Cooking",
+      "skillXp": 20,
+      "displayName": "Yaprak sarması pişir",
+      "minLevel": 5,
+      "dish": "vegetable",
+      "serve": "tray:sarma"
+    },
+    {
+      "id": "cook_broad_bean_oil",
+      "station": "item.cooking_pot",
+      "produces": "item.broad_bean_oil",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.broad_bean",
+          "count": 3
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "item.olive_oil",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Zeytinyağlı bakla pişir",
+      "minLevel": 3,
+      "dish": "vegetable"
+    },
+    {
+      "id": "cook_spinach_saute",
+      "station": "item.cooking_pot",
+      "produces": "item.spinach_saute",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.spinach",
+          "count": 3
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "group.fat",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Ispanak kavurma pişir",
+      "minLevel": 2,
+      "dish": "vegetable"
+    },
+    {
+      "id": "cook_pumpkin_stuffed",
+      "station": "item.cooking_pot",
+      "produces": "item.pumpkin_stuffed",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.pumpkin",
+          "count": 1
+        },
+        {
+          "item": "group.grain",
+          "count": 1
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.14,
+      "skill": "Cooking",
+      "skillXp": 18,
+      "displayName": "Su kabağı dolması pişir",
+      "minLevel": 4,
+      "dish": "vegetable",
+      "serve": "tray:sarma"
+    },
+    {
+      "id": "cook_radish_salad",
+      "station": "item.cooking_pot",
+      "produces": "item.radish_salad",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.radish",
+          "count": 2
+        },
+        {
+          "item": "group.sour",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Turp salatası pişir",
+      "minLevel": 1,
+      "dish": "vegetable",
+      "serve": "bowl:salad"
+    },
+    {
+      "id": "cook_cress_salad",
+      "station": "item.cooking_pot",
+      "produces": "item.cress_salad",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.cress",
+          "count": 3
+        },
+        {
+          "item": "item.olive_oil",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Su teresi salatası pişir",
+      "minLevel": 1,
+      "dish": "vegetable",
+      "serve": "bowl:salad"
+    },
+    {
+      "id": "cook_cabbage_paste",
+      "station": "item.cooking_pot",
+      "produces": "item.cabbage_paste",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.cabbage",
+          "count": 2
+        },
+        {
+          "item": "item.tomato_paste",
+          "count": 1
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Salçalı lahana pişir",
+      "minLevel": 3,
+      "dish": "vegetable"
+    },
+    {
+      "id": "cook_turnip_mash",
+      "station": "item.cooking_pot",
+      "produces": "item.turnip_mash",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.turnip",
+          "count": 3
+        },
+        {
+          "item": "item.butter",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Şalgam ezmesi pişir",
+      "minLevel": 1,
+      "dish": "vegetable",
+      "learn": "basic",
+      "serve": "bowl:soup"
+    },
+    {
+      "id": "cook_saffron_pilaf",
+      "station": "item.cooking_pot",
+      "produces": "item.saffron_pilaf",
+      "count": 4,
+      "materials": [
+        {
+          "item": "group.grain",
+          "count": 2
+        },
+        {
+          "item": "item.saffron",
+          "count": 1
+        },
+        {
+          "item": "item.butter",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.17,
+      "skill": "Cooking",
+      "skillXp": 24,
+      "displayName": "Safranlı pilav pişir",
+      "minLevel": 7,
+      "dish": "grain"
+    },
+    {
+      "id": "cook_porridge_barley",
+      "station": "item.cooking_pot",
+      "produces": "item.porridge_barley",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.barley",
+          "count": 2
+        },
+        {
+          "item": "group.milk",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Arpa lapası pişir",
+      "minLevel": 1,
+      "dish": "grain",
+      "learn": "basic",
+      "serve": "bowl:soup"
+    },
+    {
+      "id": "cook_pea_mash",
+      "station": "item.cooking_pot",
+      "produces": "item.pea_mash",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.dried_pea",
+          "count": 2
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        },
+        {
+          "item": "group.fat",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Bezelye ezmesi pişir",
+      "minLevel": 2,
+      "dish": "grain",
+      "serve": "bowl:soup"
+    },
+    {
+      "id": "cook_rye_gruel",
+      "station": "item.cooking_pot",
+      "produces": "item.rye_gruel",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.rye_flour",
+          "count": 1
+        },
+        {
+          "item": "group.milk",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Çavdar bulamacı pişir",
+      "minLevel": 1,
+      "dish": "grain",
+      "serve": "bowl:soup"
+    },
+    {
+      "id": "cook_paste_pilaf",
+      "station": "item.cooking_pot",
+      "produces": "item.paste_pilaf",
+      "count": 4,
+      "materials": [
+        {
+          "item": "group.grain",
+          "count": 2
+        },
+        {
+          "item": "item.tomato_paste",
+          "count": 1
+        },
+        {
+          "item": "item.onion",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.14,
+      "skill": "Cooking",
+      "skillXp": 18,
+      "displayName": "Salçalı bulgur pilavı pişir",
+      "minLevel": 4,
+      "dish": "grain"
+    },
+    {
+      "id": "cook_milk_wheat",
+      "station": "item.cooking_pot",
+      "produces": "item.milk_wheat",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.wheat",
+          "count": 2
+        },
+        {
+          "item": "group.milk",
+          "count": 1
+        },
+        {
+          "item": "group.sweetener",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Sütlü buğday pişir",
+      "minLevel": 3,
+      "dish": "grain",
+      "serve": "bowl:sweet"
+    },
+    {
+      "id": "cook_duck_kaygana",
+      "station": "item.cooking_pot",
+      "produces": "item.duck_kaygana",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.duck_egg",
+          "count": 2
+        },
+        {
+          "item": "item.flour",
+          "count": 1
+        },
+        {
+          "item": "item.butter",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Ördek yumurtalı kaygana pişir",
+      "minLevel": 3,
+      "dish": "dairy",
+      "serve": "tray:pastry"
+    },
+    {
+      "id": "cook_cokelek",
+      "station": "item.cooking_pot",
+      "produces": "item.cokelek",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.yogurt",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Çökelek pişir",
+      "minLevel": 2,
+      "dish": "dairy",
+      "learn": "villager:villager.murat:30",
+      "serve": "bowl:salad"
+    },
+    {
+      "id": "cook_honey_milk",
+      "station": "item.cooking_pot",
+      "produces": "item.honey_milk",
+      "count": 2,
+      "materials": [
+        {
+          "item": "group.milk",
+          "count": 1
+        },
+        {
+          "item": "group.sweetener",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Ballı süt pişir",
+      "minLevel": 1,
+      "dish": "drink"
+    },
+    {
+      "id": "cook_gozleme",
+      "station": "item.cooking_pot",
+      "produces": "item.gozleme",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.yufka",
+          "count": 2
+        },
+        {
+          "item": "group.cheese",
+          "count": 1
+        },
+        {
+          "item": "group.greens",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Gözleme pişir",
+      "minLevel": 3,
+      "dish": "pastry"
+    },
+    {
+      "id": "cook_borek_cheese",
+      "station": "item.stone_oven",
+      "produces": "item.borek_cheese",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.yufka",
+          "count": 2
+        },
+        {
+          "item": "group.cheese",
+          "count": 2
+        },
+        {
+          "item": "group.egg",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.14,
+      "skill": "Baking",
+      "skillXp": 18,
+      "displayName": "Peynirli börek fırınla",
+      "minLevel": 4,
+      "dish": "pastry"
+    },
+    {
+      "id": "cook_saffron_bun",
+      "station": "item.stone_oven",
+      "produces": "item.saffron_bun",
+      "count": 4,
+      "materials": [
+        {
+          "item": "item.flour",
+          "count": 2
+        },
+        {
+          "item": "item.saffron",
+          "count": 1
+        },
+        {
+          "item": "group.egg",
+          "count": 1
+        },
+        {
+          "item": "item.butter",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.18,
+      "skill": "Baking",
+      "skillXp": 26,
+      "displayName": "Safranlı bayram çöreği fırınla",
+      "minLevel": 8,
+      "dish": "pastry"
+    },
+    {
+      "id": "cook_chestnut_bread",
+      "station": "item.stone_oven",
+      "produces": "item.chestnut_bread",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.flour",
+          "count": 2
+        },
+        {
+          "item": "item.chestnut",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.14,
+      "skill": "Baking",
+      "skillXp": 18,
+      "displayName": "Kestaneli ekmek fırınla",
+      "minLevel": 4,
+      "dish": "pastry",
+      "learn": "villager:villager.hatice:30"
+    },
+    {
+      "id": "cook_walnut_bun",
+      "station": "item.stone_oven",
+      "produces": "item.walnut_bun",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.flour",
+          "count": 2
+        },
+        {
+          "item": "item.walnut",
+          "count": 2
+        },
+        {
+          "item": "group.sweetener",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Baking",
+      "skillXp": 20,
+      "displayName": "Cevizli çörek fırınla",
+      "minLevel": 5,
+      "dish": "pastry"
+    },
+    {
+      "id": "cook_kome",
+      "station": "item.cooking_pot",
+      "produces": "item.kome",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.walnut",
+          "count": 3
+        },
+        {
+          "item": "item.pekmez",
+          "count": 1
+        },
+        {
+          "item": "item.flour",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Cooking",
+      "skillXp": 20,
+      "displayName": "Köme pişir",
+      "minLevel": 5,
+      "dish": "sweet"
+    },
+    {
+      "id": "cook_pestil",
+      "station": "item.cooking_pot",
+      "produces": "item.pestil",
+      "count": 3,
+      "materials": [
+        {
+          "item": "group.fruit",
+          "count": 4
+        }
+      ],
+      "durationDays": 0.13,
+      "skill": "Cooking",
+      "skillXp": 16,
+      "displayName": "Pestil pişir",
+      "minLevel": 3,
+      "dish": "sweet"
+    },
+    {
+      "id": "cook_honey_nuts",
+      "station": "item.cooking_pot",
+      "produces": "item.honey_nuts",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.nut",
+          "count": 3
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Ballı fındık pişir",
+      "minLevel": 2,
+      "dish": "sweet"
+    },
+    {
+      "id": "cook_cherry_tart",
+      "station": "item.stone_oven",
+      "produces": "item.cherry_tart",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.flour",
+          "count": 2
+        },
+        {
+          "item": "item.cherry",
+          "count": 3
+        },
+        {
+          "item": "item.butter",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15000000000000002,
+      "skill": "Baking",
+      "skillXp": 20,
+      "displayName": "Kirazlı tart fırınla",
+      "minLevel": 5,
+      "dish": "sweet",
+      "learn": "treatise",
+      "serve": "tray:pastry"
+    },
+    {
+      "id": "cook_chestnut_candy",
+      "station": "item.cooking_pot",
+      "produces": "item.chestnut_candy",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.chestnut",
+          "count": 3
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.16,
+      "skill": "Cooking",
+      "skillXp": 22,
+      "displayName": "Kestane şekerlemesi pişir",
+      "minLevel": 6,
+      "dish": "sweet",
+      "learn": "villager:villager.hatice:60"
+    },
+    {
+      "id": "cook_pear_hosaf",
+      "station": "item.cooking_pot",
+      "produces": "item.pear_hosaf",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.pear",
+          "count": 3
+        },
+        {
+          "item": "group.sweetener",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Armut hoşafı pişir",
+      "minLevel": 2,
+      "dish": "sweet"
+    },
+    {
+      "id": "cook_olive_bread",
+      "station": "item.cooking_pot",
+      "produces": "item.olive_bread",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.bread",
+          "count": 1
+        },
+        {
+          "item": "item.olive_paste",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.11,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Zeytin ezmeli ekmek pişir",
+      "minLevel": 1,
+      "dish": "snack"
+    },
+    {
+      "id": "cook_dried_fruit_ration",
+      "station": "item.cooking_pot",
+      "produces": "item.dried_fruit_ration",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.dried_apple",
+          "count": 1
+        },
+        {
+          "item": "item.dried_plum",
+          "count": 1
+        },
+        {
+          "item": "group.nut",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12000000000000001,
+      "skill": "Cooking",
+      "skillXp": 14,
+      "displayName": "Kuru meyveli azık pişir",
+      "minLevel": 2,
+      "dish": "snack"
     }
   ],
   "animals": [
@@ -51222,12 +55993,12 @@
       "price": 8,
       "housing": "coop",
       "feedPerDay": 0.6,
-      "produces": "item.egg",
+      "produces": "item.duck_egg",
       "produceEveryDays": 1.5,
       "lifespanDays": 16,
       "matureDays": 4,
       "level": 3,
-      "meat": "item.poultry",
+      "meat": "item.duck_meat",
       "meatCount": 2,
       "seasonOutput": [
         1.0,
@@ -51242,7 +56013,13 @@
       "femaleName": "dişi ördek",
       "maleName": "erkek ördek",
       "hide": "item.down_feather",
-      "hideCount": 2
+      "hideCount": 2,
+      "byproducts": [
+        {
+          "item": "item.tallow",
+          "count": 1
+        }
+      ]
     },
     {
       "id": "animal.goat",
@@ -51250,12 +56027,12 @@
       "price": 25,
       "housing": "barn",
       "feedPerDay": 1.5,
-      "produces": "item.milk",
+      "produces": "item.goat_milk",
       "produceEveryDays": 1,
       "lifespanDays": 26,
       "matureDays": 6,
       "level": 5,
-      "meat": "item.meat",
+      "meat": "item.goat_meat",
       "meatCount": 2,
       "hide": "item.hide",
       "hideCount": 1,
@@ -51272,7 +56049,35 @@
       "femaleProduces": true,
       "femaleName": "keçi",
       "maleName": "teke",
-      "herd": true
+      "herd": true,
+      "byproducts": [
+        {
+          "item": "item.bone",
+          "count": 1
+        },
+        {
+          "item": "item.tallow",
+          "count": 1
+        },
+        {
+          "item": "item.offal",
+          "count": 1
+        },
+        {
+          "item": "item.gut",
+          "count": 1
+        },
+        {
+          "item": "item.horn",
+          "count": 1,
+          "chance": 0.8
+        },
+        {
+          "item": "item.rennet",
+          "count": 1,
+          "youngOnly": true
+        }
+      ]
     },
     {
       "id": "animal.sheep",
@@ -51285,7 +56090,7 @@
       "lifespanDays": 24,
       "matureDays": 6,
       "level": 5,
-      "meat": "item.meat",
+      "meat": "item.mutton",
       "meatCount": 2,
       "hide": "item.hide",
       "hideCount": 1,
@@ -51301,7 +56106,30 @@
       "litterMax": 2,
       "femaleName": "koyun",
       "maleName": "koç",
-      "herd": true
+      "herd": true,
+      "byproducts": [
+        {
+          "item": "item.bone",
+          "count": 1
+        },
+        {
+          "item": "item.tallow",
+          "count": 1
+        },
+        {
+          "item": "item.offal",
+          "count": 1
+        },
+        {
+          "item": "item.gut",
+          "count": 1
+        },
+        {
+          "item": "item.rennet",
+          "count": 1,
+          "youngOnly": true
+        }
+      ]
     },
     {
       "id": "animal.cow",
@@ -51332,7 +56160,35 @@
       "draft": true,
       "femaleName": "inek",
       "maleName": "boğa",
-      "herd": true
+      "herd": true,
+      "byproducts": [
+        {
+          "item": "item.bone",
+          "count": 3
+        },
+        {
+          "item": "item.tallow",
+          "count": 2
+        },
+        {
+          "item": "item.offal",
+          "count": 2
+        },
+        {
+          "item": "item.gut",
+          "count": 2
+        },
+        {
+          "item": "item.horn",
+          "count": 2,
+          "chance": 0.8
+        },
+        {
+          "item": "item.rennet",
+          "count": 1,
+          "youngOnly": true
+        }
+      ]
     },
     {
       "id": "animal.ox",
@@ -51351,7 +56207,30 @@
       "draft": true,
       "maleOnly": true,
       "maleName": "öküz",
-      "herd": true
+      "herd": true,
+      "byproducts": [
+        {
+          "item": "item.bone",
+          "count": 3
+        },
+        {
+          "item": "item.tallow",
+          "count": 2
+        },
+        {
+          "item": "item.offal",
+          "count": 2
+        },
+        {
+          "item": "item.gut",
+          "count": 2
+        },
+        {
+          "item": "item.horn",
+          "count": 2,
+          "chance": 0.8
+        }
+      ]
     },
     {
       "id": "animal.pig",
@@ -51364,7 +56243,7 @@
       "lifespanDays": 30,
       "matureDays": 3,
       "level": 4,
-      "meat": "item.meat",
+      "meat": "item.pork",
       "meatCount": 3,
       "hide": "item.hide",
       "hideCount": 1,
@@ -51375,7 +56254,25 @@
       "litterMax": 4,
       "femaleName": "dişi domuz",
       "maleName": "erkek domuz",
-      "herd": true
+      "herd": true,
+      "byproducts": [
+        {
+          "item": "item.bone",
+          "count": 2
+        },
+        {
+          "item": "item.tallow",
+          "count": 3
+        },
+        {
+          "item": "item.offal",
+          "count": 1
+        },
+        {
+          "item": "item.gut",
+          "count": 2
+        }
+      ]
     },
     {
       "id": "animal.dog",
@@ -51508,12 +56405,12 @@
       "price": 10,
       "housing": "coop",
       "feedPerDay": 0.6,
-      "produces": "item.egg",
+      "produces": "item.goose_egg",
       "produceEveryDays": 3,
       "lifespanDays": 24,
       "matureDays": 3,
       "level": 2,
-      "meat": "item.poultry",
+      "meat": "item.goose_meat",
       "meatCount": 2,
       "seasonOutput": [
         1.4,
@@ -51529,7 +56426,13 @@
       "maleName": "erkek kaz",
       "hide": "item.down_feather",
       "hideCount": 3,
-      "herd": true
+      "herd": true,
+      "byproducts": [
+        {
+          "item": "item.tallow",
+          "count": 1
+        }
+      ]
     },
     {
       "id": "animal.rabbit",
@@ -51540,7 +56443,7 @@
       "lifespanDays": 16,
       "matureDays": 1,
       "level": 3,
-      "meat": "item.meat",
+      "meat": "item.rabbit_meat",
       "meatCount": 1,
       "gestationDays": 1,
       "litterMin": 3,
@@ -51561,7 +56464,7 @@
       "lifespanDays": 14,
       "matureDays": 1,
       "level": 3,
-      "meat": "item.poultry",
+      "meat": "item.pigeon_meat",
       "meatCount": 1,
       "gestationDays": 1,
       "litterMin": 1,
@@ -51580,7 +56483,7 @@
       "lifespanDays": 26,
       "matureDays": 6,
       "level": 7,
-      "meat": "item.meat",
+      "meat": "item.goat_meat",
       "meatCount": 2,
       "hide": "item.hide",
       "hideCount": 1,
@@ -51597,7 +56500,35 @@
       "femaleProduces": false,
       "femaleName": "tiftik keçisi",
       "maleName": "tiftik tekesi",
-      "herd": true
+      "herd": true,
+      "byproducts": [
+        {
+          "item": "item.bone",
+          "count": 1
+        },
+        {
+          "item": "item.tallow",
+          "count": 1
+        },
+        {
+          "item": "item.offal",
+          "count": 1
+        },
+        {
+          "item": "item.gut",
+          "count": 1
+        },
+        {
+          "item": "item.horn",
+          "count": 1,
+          "chance": 0.8
+        },
+        {
+          "item": "item.rennet",
+          "count": 1,
+          "youngOnly": true
+        }
+      ]
     }
   ],
   "buildParts": [
@@ -53503,6 +58434,690 @@
       "description": "Elleriyle pislik topladı; yıkanmak ister.",
       "value": -2,
       "days": 0.15
+    },
+    {
+      "id": "eff_spice_mint",
+      "displayName": "Nane ferahlığı",
+      "description": "Yemekteki nane ferahlattı: biraz geç yorulur.",
+      "value": 2,
+      "days": 0.5,
+      "energyDecay": 0.92
+    },
+    {
+      "id": "eff_spice_thyme",
+      "displayName": "Kekik şifası",
+      "description": "Kekikli yemek içini ısıttı: soğuktan %10 az etkilenir.",
+      "value": 2,
+      "days": 0.5,
+      "coldResist": 0.1
+    },
+    {
+      "id": "eff_spice_dill",
+      "displayName": "İştahı açıldı",
+      "description": "Dereotu iştah açtı: %8 geç acıkır.",
+      "value": 2,
+      "days": 0.5,
+      "hungerDecay": 0.92
+    },
+    {
+      "id": "eff_spice_fenugreek",
+      "displayName": "Çemenli tokluk",
+      "description": "Çemen uzun tok tutar: %15 geç acıkır.",
+      "value": 2,
+      "days": 0.75,
+      "hungerDecay": 0.85
+    },
+    {
+      "id": "eff_spice_bay",
+      "displayName": "Defne kokusu",
+      "description": "Defneli yemeğin kokusu üstünde kaldı.",
+      "value": 2,
+      "days": 0.5
+    },
+    {
+      "id": "eff_spice_pepper",
+      "displayName": "Biberle ısındı",
+      "description": "Karabiber içini ısıttı: soğuktan %20 az etkilenir.",
+      "value": 2,
+      "days": 0.5,
+      "coldResist": 0.2
+    },
+    {
+      "id": "eff_spice_saffron",
+      "displayName": "Şahane sofra",
+      "description": "Safranlı yemek: böylesi her gün yenmez.",
+      "value": 5,
+      "days": 1.0
+    },
+    {
+      "id": "eff_spice_garlic",
+      "displayName": "Sarımsaklı",
+      "description": "Sarımsak hastalığa iyi gelir; kokusu da üstünde.",
+      "value": 1,
+      "days": 0.5,
+      "coldResist": 0.1
+    },
+    {
+      "id": "eff_spice_cinnamon",
+      "displayName": "Tarçın keyfi",
+      "description": "Tarçınlı tatlı keyif verdi.",
+      "value": 3,
+      "days": 0.5
+    },
+    {
+      "id": "eff_spice_lavender",
+      "displayName": "Lavantayla sakinledi",
+      "description": "Lavanta sakinleştirdi: %10 geç yorulur.",
+      "value": 2,
+      "days": 0.75,
+      "energyDecay": 0.9
+    },
+    {
+      "id": "eff_spice_sage",
+      "displayName": "Adaçayı yumuşaklığı",
+      "description": "Adaçayı boğazı yumuşattı.",
+      "value": 2,
+      "days": 0.5
+    },
+    {
+      "id": "eff_spice_fresh",
+      "displayName": "Bahar sofrası",
+      "description": "Taze otlu yemek bahar gibi geldi.",
+      "value": 2,
+      "days": 0.5
+    },
+    {
+      "id": "eff_family_blend",
+      "displayName": "Aile karışımı",
+      "description": "Bu tat yalnızca bizim evde olur.",
+      "value": 4,
+      "days": 1.0,
+      "hungerDecay": 0.92
+    }
+  ],
+  "spices": [
+    {
+      "item": "item.mint",
+      "effect": "eff_spice_mint",
+      "processed": false,
+      "clashes": [
+        "meat"
+      ]
+    },
+    {
+      "item": "item.mint_ground",
+      "effect": "eff_spice_mint",
+      "processed": true
+    },
+    {
+      "item": "item.thyme",
+      "effect": "eff_spice_thyme",
+      "processed": false,
+      "clashes": [
+        "sweet",
+        "drink"
+      ]
+    },
+    {
+      "item": "item.thyme_ground",
+      "effect": "eff_spice_thyme",
+      "processed": true,
+      "clashes": [
+        "sweet",
+        "drink"
+      ]
+    },
+    {
+      "item": "item.dill",
+      "effect": "eff_spice_dill",
+      "processed": false,
+      "clashes": [
+        "sweet",
+        "drink",
+        "meat"
+      ]
+    },
+    {
+      "item": "item.dill_ground",
+      "effect": "eff_spice_dill",
+      "processed": true,
+      "clashes": [
+        "sweet",
+        "drink"
+      ]
+    },
+    {
+      "item": "item.sage",
+      "effect": "eff_spice_sage",
+      "processed": false,
+      "clashes": [
+        "sweet"
+      ]
+    },
+    {
+      "item": "item.sage_ground",
+      "effect": "eff_spice_sage",
+      "processed": true,
+      "clashes": [
+        "sweet"
+      ]
+    },
+    {
+      "item": "item.lavender",
+      "effect": "eff_spice_lavender",
+      "processed": false,
+      "fits": [
+        "sweet",
+        "pastry",
+        "drink",
+        "dairy"
+      ]
+    },
+    {
+      "item": "item.lavender_ground",
+      "effect": "eff_spice_lavender",
+      "processed": true,
+      "fits": [
+        "sweet",
+        "pastry",
+        "drink",
+        "dairy"
+      ]
+    },
+    {
+      "item": "item.bay_leaf",
+      "effect": "eff_spice_bay",
+      "processed": true,
+      "fits": [
+        "soup",
+        "meat",
+        "fish",
+        "vegetable",
+        "grain"
+      ],
+      "smell": 2
+    },
+    {
+      "item": "item.fenugreek_ground",
+      "effect": "eff_spice_fenugreek",
+      "processed": true,
+      "fits": [
+        "soup",
+        "meat",
+        "vegetable",
+        "grain",
+        "snack"
+      ]
+    },
+    {
+      "item": "item.saffron",
+      "effect": "eff_spice_saffron",
+      "processed": true,
+      "fits": [
+        "soup",
+        "meat",
+        "fish",
+        "grain",
+        "pastry",
+        "sweet",
+        "dairy"
+      ],
+      "smell": 1
+    },
+    {
+      "item": "item.black_pepper",
+      "effect": "eff_spice_pepper",
+      "processed": true,
+      "clashes": [
+        "sweet",
+        "drink"
+      ]
+    },
+    {
+      "item": "item.garlic",
+      "effect": "eff_spice_garlic",
+      "processed": false,
+      "clashes": [
+        "sweet",
+        "drink",
+        "pastry",
+        "dairy"
+      ]
+    },
+    {
+      "item": "item.cinnamon",
+      "effect": "eff_spice_cinnamon",
+      "processed": true,
+      "fits": [
+        "sweet",
+        "pastry",
+        "drink",
+        "grain",
+        "dairy"
+      ],
+      "smell": 1
+    },
+    {
+      "item": "item.wild_garlic",
+      "effect": "eff_spice_fresh",
+      "processed": false,
+      "fits": [
+        "soup",
+        "vegetable",
+        "dairy",
+        "snack"
+      ]
+    },
+    {
+      "item": "item.cress",
+      "effect": "eff_spice_fresh",
+      "processed": false,
+      "fits": [
+        "soup",
+        "vegetable",
+        "fish",
+        "snack"
+      ]
+    },
+    {
+      "item": "item.family_blend",
+      "effect": "eff_family_blend",
+      "processed": true,
+      "fits": [
+        "soup",
+        "meat",
+        "fish",
+        "vegetable",
+        "grain"
+      ],
+      "smell": 1
+    }
+  ],
+  "groups": [
+    {
+      "id": "group.fish",
+      "displayName": "Balık (herhangi)",
+      "members": [
+        {
+          "item": "item.fish_rudd",
+          "bonus": 0,
+          "kind": "beyaz etli"
+        },
+        {
+          "item": "item.fish_bream",
+          "bonus": 0,
+          "kind": "beyaz etli"
+        },
+        {
+          "item": "item.fish_tench",
+          "bonus": 0,
+          "kind": "beyaz etli"
+        },
+        {
+          "item": "item.fish_perch",
+          "bonus": 0,
+          "kind": "beyaz etli"
+        },
+        {
+          "item": "item.fish_carp",
+          "bonus": 0,
+          "kind": "beyaz etli"
+        },
+        {
+          "item": "item.fish_bullhead",
+          "bonus": 0,
+          "kind": "beyaz etli"
+        },
+        {
+          "item": "item.fish_pike",
+          "bonus": 0,
+          "kind": "beyaz etli"
+        },
+        {
+          "item": "item.fish_catfish",
+          "bonus": 0,
+          "kind": "beyaz etli"
+        },
+        {
+          "item": "item.fish_trout",
+          "bonus": 1,
+          "kind": "beyaz etli"
+        },
+        {
+          "item": "item.fish_herring",
+          "bonus": 1,
+          "kind": "yağlı"
+        },
+        {
+          "item": "item.fish_mackerel",
+          "bonus": 1,
+          "kind": "yağlı"
+        },
+        {
+          "item": "item.fish_eel",
+          "bonus": 1,
+          "kind": "yağlı"
+        },
+        {
+          "item": "item.fish_salmon",
+          "bonus": 2,
+          "kind": "yağlı"
+        }
+      ]
+    },
+    {
+      "id": "group.shellfish",
+      "displayName": "Kabuklu (kerevit, midye)",
+      "members": [
+        {
+          "item": "item.mussel"
+        },
+        {
+          "item": "item.fish_crayfish",
+          "bonus": 1
+        }
+      ]
+    },
+    {
+      "id": "group.red_meat",
+      "displayName": "Kırmızı et (herhangi)",
+      "members": [
+        {
+          "item": "item.goat_meat",
+          "bonus": -1
+        },
+        {
+          "item": "item.rabbit_meat"
+        },
+        {
+          "item": "item.pork"
+        },
+        {
+          "item": "item.meat"
+        },
+        {
+          "item": "item.mutton",
+          "bonus": 1
+        }
+      ]
+    },
+    {
+      "id": "group.poultry",
+      "displayName": "Kümes eti (herhangi)",
+      "members": [
+        {
+          "item": "item.poultry"
+        },
+        {
+          "item": "item.pigeon_meat"
+        },
+        {
+          "item": "item.duck_meat",
+          "bonus": 1
+        },
+        {
+          "item": "item.goose_meat",
+          "bonus": 1
+        }
+      ]
+    },
+    {
+      "id": "group.game",
+      "displayName": "Av eti (herhangi)",
+      "members": [
+        {
+          "item": "item.game_meat",
+          "bonus": 1
+        },
+        {
+          "item": "item.boar_meat",
+          "bonus": 1
+        }
+      ]
+    },
+    {
+      "id": "group.fat",
+      "displayName": "Yağ (herhangi)",
+      "members": [
+        {
+          "item": "item.tallow",
+          "bonus": -2
+        },
+        {
+          "item": "item.olive_oil"
+        },
+        {
+          "item": "item.butter",
+          "bonus": 1
+        },
+        {
+          "item": "item.olive_oil_virgin",
+          "bonus": 2
+        }
+      ]
+    },
+    {
+      "id": "group.grain",
+      "displayName": "Tahıl (herhangi)",
+      "members": [
+        {
+          "item": "item.barley",
+          "bonus": -1
+        },
+        {
+          "item": "item.oats",
+          "bonus": -1
+        },
+        {
+          "item": "item.rye"
+        },
+        {
+          "item": "item.wheat"
+        }
+      ]
+    },
+    {
+      "id": "group.root",
+      "displayName": "Kök sebze (herhangi)",
+      "members": [
+        {
+          "item": "item.turnip"
+        },
+        {
+          "item": "item.radish"
+        },
+        {
+          "item": "item.beet"
+        },
+        {
+          "item": "item.parsnip"
+        },
+        {
+          "item": "item.carrot"
+        },
+        {
+          "item": "item.onion"
+        }
+      ]
+    },
+    {
+      "id": "group.greens",
+      "displayName": "Yeşillik (herhangi)",
+      "members": [
+        {
+          "item": "item.cabbage"
+        },
+        {
+          "item": "item.leek"
+        },
+        {
+          "item": "item.lettuce"
+        },
+        {
+          "item": "item.spinach"
+        },
+        {
+          "item": "item.cress"
+        },
+        {
+          "item": "item.wild_garlic"
+        }
+      ]
+    },
+    {
+      "id": "group.fruit",
+      "displayName": "Meyve (herhangi)",
+      "members": [
+        {
+          "item": "item.apple"
+        },
+        {
+          "item": "item.pear"
+        },
+        {
+          "item": "item.plum"
+        },
+        {
+          "item": "item.berries"
+        },
+        {
+          "item": "item.grape"
+        },
+        {
+          "item": "item.cherry"
+        },
+        {
+          "item": "item.wild_strawberry"
+        },
+        {
+          "item": "item.pomegranate",
+          "bonus": 1
+        }
+      ]
+    },
+    {
+      "id": "group.nut",
+      "displayName": "Kuruyemiş (herhangi)",
+      "members": [
+        {
+          "item": "item.nut"
+        },
+        {
+          "item": "item.chestnut"
+        },
+        {
+          "item": "item.walnut",
+          "bonus": 1
+        }
+      ]
+    },
+    {
+      "id": "group.egg",
+      "displayName": "Yumurta (herhangi)",
+      "members": [
+        {
+          "item": "item.egg"
+        },
+        {
+          "item": "item.duck_egg",
+          "bonus": 1
+        },
+        {
+          "item": "item.goose_egg",
+          "bonus": 1
+        }
+      ]
+    },
+    {
+      "id": "group.milk",
+      "displayName": "Süt (herhangi)",
+      "members": [
+        {
+          "item": "item.milk"
+        },
+        {
+          "item": "item.goat_milk"
+        }
+      ]
+    },
+    {
+      "id": "group.cheese",
+      "displayName": "Peynir (herhangi)",
+      "members": [
+        {
+          "item": "item.cheese"
+        },
+        {
+          "item": "item.brined_cheese"
+        },
+        {
+          "item": "item.goat_cheese",
+          "bonus": 1
+        },
+        {
+          "item": "item.herb_cheese",
+          "bonus": 1
+        },
+        {
+          "item": "item.smoked_cheese",
+          "bonus": 1
+        },
+        {
+          "item": "item.tulum_cheese",
+          "bonus": 1
+        },
+        {
+          "item": "item.kasar",
+          "bonus": 1
+        },
+        {
+          "item": "item.aged_cheese",
+          "bonus": 2
+        }
+      ]
+    },
+    {
+      "id": "group.sweetener",
+      "displayName": "Tatlandırıcı (bal, pekmez)",
+      "members": [
+        {
+          "item": "item.pekmez"
+        },
+        {
+          "item": "item.honey"
+        },
+        {
+          "item": "item.honey_strained",
+          "bonus": 1
+        }
+      ]
+    },
+    {
+      "id": "group.sour",
+      "displayName": "Ekşi (sirke, koruk, nar ekşisi)",
+      "members": [
+        {
+          "item": "item.vinegar"
+        },
+        {
+          "item": "item.verjuice"
+        },
+        {
+          "item": "item.plum_sour"
+        },
+        {
+          "item": "item.sumac",
+          "bonus": 1
+        },
+        {
+          "item": "item.pomegranate_molasses",
+          "bonus": 1
+        },
+        {
+          "item": "item.aged_vinegar",
+          "bonus": 2
+        }
+      ]
     }
   ]
 }

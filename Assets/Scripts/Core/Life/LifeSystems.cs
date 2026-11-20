@@ -147,6 +147,7 @@ namespace Thatchwick.Core.Life
             House = house ?? throw new ArgumentNullException(nameof(house));
             Population = population ?? throw new ArgumentNullException(nameof(population));
             Clock = clock ?? throw new ArgumentNullException(nameof(clock));
+            InitCooking(seed);
 
             Mood = new MoodService(world) { Content = content, ArrangerLevel = () => BestSkill(SkillType.Decorating) };
             Decor = new Thatchwick.Core.Build.DecorSystem(world, content, seed != 0 ? Seeds.Derive(seed, 14) : 97)
@@ -734,6 +735,7 @@ namespace Thatchwick.Core.Life
         {
             Home.AddAffection = (a, b, d) => family.SetAffection(a, b, family.Affection(a, b) + d);
             _family = family;
+            AttachCooking(family);
             family.JoinedHousehold += c => Keepsakes.OnJoined(c);
             family.JoinedHousehold += c => Upbringing.Weddings?.OnGroomJoined(c, id => Content.Items.Contains(id));   // damat tarafı (34-D2)
             Villagers.Family = family;
@@ -766,7 +768,8 @@ namespace Thatchwick.Core.Life
         public void Attach(JobRunner runner)
         {
             runner.ActionTimeScale = Clock.Config.ActionTimeScale;   // belge 47: işler gerçek zamanda sabit
-            runner.SpeedProvider = WorkSpeedFor;
+            runner.SpeedProvider = (c, i) => WorkSpeedFor(c, i) * Social.SpeedFor(c);
+            AttachCooking(runner);
             runner.SquarePosition = () => SquarePosition?.Invoke();
             runner.Refuge = Trees.RefugeFor;   // bunalımdaki çocuk ağaç eve küser (belge 52)
             runner.Refused += (c, text) => Say($"{c.Name}: \"{text}\"", NoticeLevel.Info, c.Id, transient: true);
@@ -948,6 +951,7 @@ namespace Thatchwick.Core.Life
         public void Attach(Thatchwick.Core.Animals.AnimalSystem animals)
         {
             AttachYard(animals);   // ahır kirliliği ve araba filosu (belge 57, 57e)
+            AttachCooking(animals);
             animals.RiderFell += (horse, rider) =>
             {
                 Injuries.InjureById(rider, "horse_fall");   // moodlet ve bildirim InjurySystem'den
@@ -1076,7 +1080,8 @@ namespace Thatchwick.Core.Life
             Fields.Apply = effects.Apply;
             Fields.HasScythe = () => Tools.Tier(Thatchwick.Core.Work.HarvestOrders.ScytheTool) > 0;
             effects.AppliedOn += Fields.OnApplied;
-            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i) ?? DrinkBlocker(c, it, i) ?? Trees.CanStart(c, it, i);
+            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i) ?? DrinkBlocker(c, it, i) ?? Trees.CanStart(c, it, i) ?? CookingBlocker(c, it, i);
+            AttachCooking(effects);
             Home.Effects = effects;
             AttachYard(effects);   // pislik, kompost, ahır (belge 57); ExtraBlocker zincirine eklenir
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
@@ -1354,6 +1359,7 @@ namespace Thatchwick.Core.Life
             Upbringing.Tick(gameDays);
             Roamers?.Tick(gameDays, Clock.TotalDays, Clock.Season, Clock.DayFraction);
             Coffee.Tick(Clock.TotalDays, Population.Members);
+            CookingTick(gameDays);
             Trees.Tick();   // mevsimin son akşamı Bereket Sofrası (belge 52)
 
             long day = Clock.DayIndex;
@@ -1478,6 +1484,7 @@ namespace Thatchwick.Core.Life
             var orphan = Adoptions.OnNewDay(Clock.Season);
             if (orphan != null) Say($"Tarlanın kenarında öksüz bir {orphan.Name.ToLowerInvariant()} yavrusu bulundu. Sahiplenmek ister misin?", NoticeLevel.Info);
             Coffee.OnNewDay((int)Clock.TotalDays, Population.Find);
+            CookingNewDay(day);
             foreach (var note in Olives.OnNewDay((int)Clock.TotalDays, World, HeadName()))
             {
                 Say(note, NoticeLevel.Info);
@@ -1596,6 +1603,7 @@ namespace Thatchwick.Core.Life
                 natureJournal = Journal.Export(),
                 adoptedWild = Adoptions.Export(),
                 coffeeHabits = Coffee.Export(),
+                cooking = ExportCooking(),
                 olives = Olives.Export(),
                 contests = Contests.Export(),
                 raceBet = Bets.Export(),
@@ -1645,6 +1653,7 @@ namespace Thatchwick.Core.Life
             Locusts.DryDays = data.locustDry; Locusts.Incoming = data.locustIncoming;
             Adoptions.Import(data.adoptedWild);
             Coffee.Import(data.coffeeHabits);
+            ImportCooking(data.cooking);
             Olives.Import(data.olives);
             Contests.Import(data.contests);
             Bets.Import(data.raceBet);
