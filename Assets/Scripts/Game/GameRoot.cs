@@ -911,6 +911,7 @@ namespace Thatchwick.Game
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
             _life.Suitors.AppearanceCatalog = _appearanceCatalog;
+            PlacementCheck.Resolve = GameLocalization.R;   // anahtarlı yerleştirme nedenleri (kement) seçili dilde
             GameLocalization.ContentName = id =>
                 id == null ? null
                 : _content.Items.TryGet(id, out var itemDef) ? itemDef.DisplayName
@@ -3664,6 +3665,7 @@ namespace Thatchwick.Game
                     : item.IsPlant ? PlantLabel(item)
                     : item.Def.IsHousing ? $"{item.Def.DisplayName} ({_animals.Residents(item.Id)}/{item.Def.HousingCapacity}, yem {item.FeedStock:0.#}{(item.StockTotal > 0 ? $", ürün {item.StockTotal}" : "")}, {Comfort(item)})"
                     : item.Def.IsTrough ? $"{item.Def.DisplayName} (yem {item.FeedStock:0.#}, günlük {_animals.DailyFeedNeed(item):0.#})"
+                    : item.Def.IsSnare ? GameLocalization.T(item.StockTotal > 0 ? "ui.label.snare_full" : "ui.label.snare_empty", ("item", item.Def.DisplayName))
                     : item.Def.WaterGate ? $"{item.Def.DisplayName} ({(item.Toggled ? "kapalı" : "açık")})"
                     : item.Def.NeedsPower ? $"{item.Def.DisplayName} ({(Powered(item) ? "dönüyor" : "güç yok: su çarkı ya da yel değirmeni gerekli")})"
                     : item.Def.PowerSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "dönüyor" : "kuru: kaynağa bağlı kanala değmeli")})"
@@ -3684,6 +3686,7 @@ namespace Thatchwick.Game
             if (item.Def.IsHousing || item.Def.IsTrough)
                 return _animals.Residents(item.Id) > 0 && item.FeedStock <= 0f
                     || item.Def.IsTrough && item.FeedStock < _animals.DailyFeedNeed(item);
+            if (item.Def.IsSnare) return item.StockTotal > 0;                    // tuzağa av düştü: toplanmalı
             if (item.Def.NeedsPower) return !powered(item);
             if (item.Def.NeedsWaterSource || item.Def.WaterHead) return !net().Contains(item.Id);
             if (item.Def.IsFixture) return !_water.Report.IsSupplied(item);

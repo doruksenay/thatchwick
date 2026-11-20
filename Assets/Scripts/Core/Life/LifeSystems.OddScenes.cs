@@ -113,6 +113,30 @@ namespace Thatchwick.Core.Life
             return true;
         }
 
+        /// <summary>Tellal meydanda bu kadar durur (bir oyun saati), sonra gider.</summary>
+        public const double CrierStandDays = 1.0 / 24.0;
+        public const string CrierAction = "cry";
+
+        /// <summary>
+        /// Tellalı şehir meydanındaki ilan tahtasının yanına çıkarır (görsel takımı iso_char_crier_r84; yoksa yer tutucu).
+        /// Tahta ya da duracak karo yoksa görünmez; duyuru yine yapılır.
+        /// </summary>
+        private bool SpawnCrier()
+        {
+            if (!Regions.IsRegional(World.Map)) return false;
+            if (Walkers.Find(OddWalkerKind.Crier) != null) return true;
+            ItemInstance board = null;
+            foreach (var it in World.Items)
+                if (!it.IsDecor && it.Def.Id == "item.notice_post" && Regions.Town.Contains(it.Position)) { board = it; break; }
+            if (board == null) return false;
+            var stand = StandNear(board.Position, allowSelf: false);
+            if (!stand.HasValue) return false;
+            var w = Walkers.Spawn(OddWalkerKind.Crier, stand.Value);
+            var away = new GridPos(stand.Value.X * 2 - board.Position.X, stand.Value.Y * 2 - board.Position.Y, stand.Value.Z);   // tahtaya sırtını döner
+            Walkers.Act(w, CrierAction, CrierStandDays, away);
+            return true;
+        }
+
         private Animal AnimalById(int id)
         {
             if (_oddAnimals == null) return null;
@@ -122,7 +146,7 @@ namespace Thatchwick.Core.Life
 
         private void OnWalkerReady(OddWalker w)
         {
-            if (w.Kind == OddWalkerKind.HorselessKnight) { w.Gone = true; return; }
+            if (w.Kind == OddWalkerKind.HorselessKnight || w.Kind == OddWalkerKind.Crier) { w.Gone = true; return; }
             switch (w.Phase)
             {
                 case 0:   // köpeğin yanına vardı: sever

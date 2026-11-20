@@ -174,11 +174,11 @@ namespace Thatchwick.Core.Tests
 
             var forest = new GridPos(Regions.Forest.X + 10, Regions.Forest.Y + 10);
             var town = new GridPos(Regions.Town.X + 10, Regions.Town.Y + 10);
-            Assert.Equal(BuildService.SnareGround, build.CanPlaceFromInventory("item.snare", town, 0).Reason);   // şehre kurulmaz
+            Assert.Equal("build.err.snare_ground", build.CanPlaceFromInventory("item.snare", town, 0).Reason);   // şehre kurulmaz
             Assert.True(build.PlaceFromInventory("item.snare", forest, 0, out var s1).Ok);
             Assert.True(build.PlaceFromInventory("item.snare", new GridPos(forest.X + 3, forest.Y), 0, out var s2).Ok);
             Assert.True(build.PlaceFromInventory("item.snare", new GridPos(5, 5), 0, out var s3).Ok);             // kendi arsası
-            Assert.Equal(BuildService.SnareLimit, build.CanPlaceFromInventory("item.snare", new GridPos(forest.X, forest.Y + 3), 0).Reason);
+            Assert.Equal("build.err.snare_limit", build.CanPlaceFromInventory("item.snare", new GridPos(forest.X, forest.Y + 3), 0).Reason);
             Assert.Equal(2, house.Count("item.snare"));
 
             var r = new WildRoamers(map, 9) { Journal = new NatureJournal() };

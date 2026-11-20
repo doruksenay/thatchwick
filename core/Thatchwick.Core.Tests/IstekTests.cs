@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Thatchwick.Core.Build;
@@ -118,13 +119,20 @@ namespace Thatchwick.Core.Tests
                 k.Now = 2.0;
                 var r = k.Req.GenerateFavors(roll: 0.0);
                 Assert.NotNull(r);
-                RequestService.CrierCall call = null;
-                k.Life.CrierCalled += c => call = c;
+                // Meydandaki ilan tahtası: tellal yanında durur.
+                var board = w.PlaceItem(k.Db.Items.Get("item.notice_post"), new GridPos(Regions.Town.X + 30, Regions.Town.Y + 30), 0);
+                Assert.NotNull(board);
                 k.Now = 2.5;
                 k.Life.Tick(0.0001);
-                Assert.NotNull(call);
-                Assert.Equal(inTown, call.Heard);
+                Assert.False(k.Req.CrierDue);                                    // tur atıldı
                 Assert.Equal(inTown, r.Read);
+                var crier = k.Life.Walkers.Find(OddWalkerKind.Crier);
+                Assert.NotNull(crier);                                           // şehirde kimse olmasa da meydanda durur
+                Assert.Equal(LifeSystems.CrierAction, crier.Action);
+                Assert.Equal(1, Math.Abs(crier.Position.X - board.Position.X) + Math.Abs(crier.Position.Y - board.Position.Y));
+                k.Life.Tick(LifeSystems.CrierStandDays + 0.001);                 // bir saat sonra gider
+                k.Life.Tick(0.0001);
+                Assert.Null(k.Life.Walkers.Find(OddWalkerKind.Crier));
             }
         }
 

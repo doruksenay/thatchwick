@@ -600,6 +600,11 @@ namespace Thatchwick.Core.Life
         {
             if (!dead.IsVillager) Legacy.OnHouseholdDeath(Clock.Season);
             Keepsakes.OnDeath(dead);
+            if (!dead.IsVillager && HasClothing)
+            {
+                int kept = Clothing.ReleaseJewelry(dead);   // takıları yadigâr olarak hanede kalır
+                if (kept > 0) Say(LocText.Of("jewelry.n.heirloom", ("name", dead.Name), ("n", kept)), NoticeLevel.Info, dead.Id);
+            }
             Ledger.OnDied(dead);
             Graves.Bury(dead, Clock.TotalDays);
             int mourners = Mood.Mourn(dead, Population.Members);
@@ -1299,9 +1304,6 @@ namespace Thatchwick.Core.Life
 
         public Season CurrentSeason => Clock.Season;
 
-        /// <summary>Tellal turunu attı (ses ve görsel için; oyun katmanı dinler).</summary>
-        public event Action<Thatchwick.Core.Life.Requests.RequestService.CrierCall> CrierCalled;
-
         /// <summary>
         /// Tellal (karar 20.11.2026): her sabah meydanda o günün yeni ilanlarını bağırır. Hane üyesi kasabadaysa ilanlar
         /// okunmuş sayılır; değilse yalnızca "tellal bir şeyler duyurdu" bildirimi gelir ve ilanlar panodan okunur.
@@ -1315,7 +1317,7 @@ namespace Thatchwick.Core.Life
                     if (!c.IsDead && c.Stage >= AgeStage.Child && Regions.Town.Contains(c.Position)) { listener = c; break; }
             var call = Requests.Cry(listener != null);
             if (call.Fresh.Count == 0) return;
-            CrierCalled?.Invoke(call);
+            SpawnCrier();   // meydanda görünür (şehirde olan görür)
             if (listener != null && call.NewlyRead > 0)
             {
                 var first = call.Fresh[0];
