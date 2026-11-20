@@ -4,7 +4,7 @@ title: Çalışırken ıslık
 kind: sfx
 family: voice
 freq: B
-status: ready
+status: claimed
 approved_by: user
 depends_on:
 - s140
@@ -29,5 +29,7 @@ inceleme_notlari:
   not: beğenmedim cozy değil
 yeniden_sayisi: 1
 prompt_influence: 0.7
+claimed_by: ip-10-0-138-220
+claimed_at: '2026-11-20T18:31:55Z'
 ---
 A content, relaxed villager softly whistling a short sweet little tune to himself while doing chores, gentle and warm, quiet and cozy, a bit breathy and imperfect. Not shrill, not loud, no echo, no instruments.
