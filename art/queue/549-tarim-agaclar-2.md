@@ -1,7 +1,7 @@
 ---
 id: "549"
 title: "Yeni ağaçlar 2/4: badem, ayva, fındık bahçesi, kayısı (12)"
-status: running
+status: review
 claimed_at: 2026-11-20T14:34Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 25
