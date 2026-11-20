@@ -1,8 +1,8 @@
 ---
-id: "740"
+id: "790"
 title: "Doğal kaya zemini: taş ocağı tabanı ve kayalık kıyı (6 karo)"
 status: pending
-approved_by: user        # kullanıcı onayı 2026-11-21 (sohbet: "ikisini de yap"; belge 65b H2)
+approved_by: user        # kullanıcı onayı 2026-11-21 (sohbet: "ikisini de yap"; belge 65b H2). Eski numarası 740 (diğer oturumun 740'ıyla çakıştığı için 790'a taşındı)
 priority: 15
 family: zemin
 style_gate: false
@@ -20,7 +20,7 @@ outputs:
   - Assets/Art/Iso/iso_ground_quarry_c.png
 created: 2026-11-21
 ---
-# 740 Doğal kaya zemini
+# 790 Doğal kaya zemini
 
 ## Neden
 Belge 65b H2: haritalardaki doğal taşlık alanlar (`Tepe ve taşlık` taş ocağı 264 karo, `Deniz kıyısı` kayalığı 83 karo,
