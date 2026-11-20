@@ -1,7 +1,7 @@
 ---
 id: "591t"
 title: "Takı, takı malzemesi ve boya malzemesi ikonları (20)"
-status: running
+status: review
 claimed_at: 2026-11-20T15:48Z
 approved_by: user        # otomatik akış (CLAUDE.md, 2026-11-17); kullanıcı 20.11.2026 sohbet: "assetleri de sıraya ekle"
 priority: 35
