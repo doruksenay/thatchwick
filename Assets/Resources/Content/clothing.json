@@ -289,7 +289,8 @@
       ],
       "adultCut": false,
       "flags": [
-        "buttons"
+        "buttons",
+        "pattern"
       ],
       "childSize": true
     },
@@ -306,8 +307,7 @@
       "level": 7,
       "acquire": [
         "craft",
-        "order",
-        "merchant"
+        "order"
       ],
       "period": "ok",
       "ages": [
@@ -336,7 +336,10 @@
           "knee_below"
         ]
       },
-      "childSize": true
+      "childSize": true,
+      "flags": [
+        "pattern"
+      ]
     },
     {
       "id": "quilted_jacket",
@@ -688,7 +691,8 @@
       "flags": [
         "silver",
         "embroidered",
-        "reputation"
+        "reputation",
+        "pattern"
       ]
     },
     {
@@ -1399,7 +1403,10 @@
         "Elder"
       ],
       "adultCut": false,
-      "childSize": true
+      "childSize": true,
+      "flags": [
+        "pattern"
+      ]
     },
     {
       "id": "linen_kerchief",
@@ -1534,7 +1541,8 @@
       "adultCut": false,
       "cover": "full",
       "flags": [
-        "wave1"
+        "wave1",
+        "pattern"
       ]
     },
     {
@@ -1560,7 +1568,10 @@
         "Elder"
       ],
       "adultCut": false,
-      "cover": "top"
+      "cover": "top",
+      "flags": [
+        "pattern"
+      ]
     },
     {
       "id": "baby_bonnet",
@@ -1889,7 +1900,10 @@
         "Elder"
       ],
       "adultCut": false,
-      "cover": "top"
+      "cover": "top",
+      "flags": [
+        "pattern"
+      ]
     },
     {
       "id": "wide_straw_hat",
@@ -2025,7 +2039,8 @@
       "skill": "Tailoring",
       "level": 6,
       "acquire": [
-        "craft"
+        "craft",
+        "merchant"
       ],
       "period": "ok",
       "ages": [
@@ -2601,7 +2616,8 @@
         "status"
       ],
       "flags": [
-        "crest"
+        "crest",
+        "pattern"
       ]
     },
     {
@@ -3029,8 +3045,8 @@
       "level": 1,
       "acquire": [
         "craft",
-        "elif",
-        "dowry"
+        "dowry",
+        "elif"
       ],
       "period": "ok",
       "ages": [
