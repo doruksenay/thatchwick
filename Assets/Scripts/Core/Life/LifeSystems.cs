@@ -202,6 +202,9 @@ namespace Thatchwick.Core.Life
             };
             Mood.BeautyBonus = it => Keepsakes.BeautyBonus(it) + Thatchwick.Core.Build.DecorSystem.SeasonalBeauty(it, Clock.Season) + Home.BeautyBonus(it);
             Mood.RoomBeautyExtra = room => { var e = Home.RoomBeautyExtra(room); return (e.plus, e.minus + Filth.BeautyPenalty(room)); };
+            Kitchen = new KitchenSystem(world, house, content) { Now = () => Clock.TotalDays };
+            Kitchen.Notice += (c, text) => Say(text, NoticeLevel.Info, c?.Id ?? 0, transient: true);
+            Kitchen.Text = t => Text(t);   // oyuncunun dili (GameRoot Text'i sonradan kurar)
             Mood.ExtraComfort = it => Legacy.ComfortBonus(it) + Home.ComfortBonus(it);
             Decor.CollapseFactor = Home.CollapseFactor;
             UpdateMerchant(false);
@@ -774,7 +777,11 @@ namespace Thatchwick.Core.Life
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
             runner.InteractionCompleted += OnMasterCraft;
             // Ustalık eseri denemesi iki kat sürer (53 §4.6).
-            runner.DurationFactor = (c, item, i) => QualityBook.WillAttempt(c, item, i, Clock.DayIndex) ? 2.0 : 1.0;
+            runner.DurationFactor = (c, item, i) => (QualityBook.WillAttempt(c, item, i, Clock.DayIndex) ? 2.0 : 1.0) * Kitchen.DurationFactor(c, item, i);
+            // Mutfak (63, 63a): kabı ve aletleri alıp getirir, ocağı yakar, iş bitince yerine koyar; öğün tabak kirletir.
+            runner.Errands = Kitchen.ErrandFor;
+            runner.PrepareUse = Kitchen.Prepare;
+            runner.InteractionCompleted += Kitchen.OnCompleted;
             AttachYard(runner);   // açıkta tuvalet ve gübre kapağı (belge 57)
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
             runner.ItemUsed += (c, item, interaction) => { if (interaction.Id == ReadBoardInteraction) ReadBoard(c); };
@@ -930,6 +937,9 @@ namespace Thatchwick.Core.Life
             if (_plants != null) _plants.TemperatureAt = heat.TemperatureAt;
             Filth.TemperatureAt = heat.TemperatureAt;      // sinek ve yığın yaşı sıcaklığa bağlı (belge 57)
             Compost.TemperatureAt = heat.TemperatureAt;
+            Kitchen.TemperatureAt = heat.TemperatureAt;
+            Kitchen.Stoke = it => heat.TryStoke(it.Id, House);
+            Kitchen.DaysPerLog = heat.Config.BurnDaysPerLog;
         }
         private PlantSystem _plants;
         private HeatSystem _heat;
@@ -1076,7 +1086,9 @@ namespace Thatchwick.Core.Life
             Fields.Apply = effects.Apply;
             Fields.HasScythe = () => Tools.Tier(Thatchwick.Core.Work.HarvestOrders.ScytheTool) > 0;
             effects.AppliedOn += Fields.OnApplied;
-            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i) ?? DrinkBlocker(c, it, i) ?? Trees.CanStart(c, it, i);
+            effects.ExtraBlocker = (c, it, i) => Kitchen.Blocker(c, it, i) ?? Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i) ?? DrinkBlocker(c, it, i) ?? Trees.CanStart(c, it, i);
+            effects.KitchenQuality = Kitchen.QualityFor;   // kabın kalite tavanı, ekipman puanı (63a §5)
+            effects.AppliedOn += Kitchen.OnApplied;        // kirlenme, bulaşık, bileme
             Home.Effects = effects;
             AttachYard(effects);   // pislik, kompost, ahır (belge 57); ExtraBlocker zincirine eklenir
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
@@ -1084,6 +1096,8 @@ namespace Thatchwick.Core.Life
 
         /// <summary>Kahve alışkanlığı ve falı (belge 32-5, 32-6).</summary>
         public CoffeeHabits Coffee { get; } = new CoffeeHabits();
+        /// <summary>Mutfak aletleri, yakıt, bulaşık ve ekipman puanı (Project belgeleri 63, 63a).</summary>
+        public KitchenSystem Kitchen { get; private set; }
         public const string FortuneInteraction = "cezve_fal";
 
         public void OnInteractionApplied(Character c, InteractionDef interaction)
@@ -1603,6 +1617,7 @@ namespace Thatchwick.Core.Life
                 wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0,
                 keepsakes = Keepsakes.Export(),
                 home = Home.Export(),
+                kitchen = Kitchen.Export(),
                 timedDuties = Duties.Export(),
                 roaming = Roaming.Export(),
                 requests = Requests.Export(),
@@ -1659,6 +1674,7 @@ namespace Thatchwick.Core.Life
             Homes.AssignAll();
             Keepsakes.Restore(data.keepsakes);
             Home.Import(data.home);
+            Kitchen.Restore(data.kitchen);
             Duties.Import(data.timedDuties);
             Roaming.Import(data.roaming);
             Requests.Import(data.requests);

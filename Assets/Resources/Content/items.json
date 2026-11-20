@@ -140,6 +140,1236 @@
             }
           ],
           "homeAction": "whitewash"
+        },
+        {
+          "id": "cook",
+          "displayName": "Şalgam pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.1,
+          "skill": "Cooking",
+          "skillXp": 25,
+          "consume": "item.turnip",
+          "moodlet": "good_meal",
+          "bladder": 4,
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "eat_egg",
+          "displayName": "Yumurta pişir ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.04,
+          "consume": "item.egg",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "cook_stew",
+          "displayName": "Sebze güveci pişir",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 30,
+          "minLevel": 2,
+          "materials": [
+            {
+              "item": "item.turnip",
+              "count": 1
+            },
+            {
+              "item": "item.cabbage",
+              "count": 1
+            },
+            {
+              "item": "item.leek",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stew_plain",
+              "count": 2
+            }
+          ],
+          "cook": "stew",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_pea_soup",
+          "displayName": "Bezelye çorbası pişir",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 20,
+          "minLevel": 1,
+          "materials": [
+            {
+              "item": "item.pea",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_pea",
+              "count": 2
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "cook_omelet",
+          "displayName": "Yumurtalı pırasa pişir",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 25,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.egg",
+              "count": 2
+            },
+            {
+              "item": "item.leek",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.omelet",
+              "count": 2
+            }
+          ],
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "roast_meat",
+          "displayName": "Et kızart ve ye",
+          "need": "Hunger",
+          "restore": 75,
+          "durationDays": 0.1,
+          "consume": "item.meat",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "grill",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "roast_poultry",
+          "displayName": "Tavuk kızart ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.1,
+          "consume": "item.poultry",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "grill",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "eat_salted_meat",
+          "displayName": "Tuzlu eti haşla ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.06,
+          "consume": "item.salted_meat",
+          "skill": "Cooking",
+          "skillXp": 6,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "eat_salted_poultry",
+          "displayName": "Tuzlu tavuğu haşla ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.06,
+          "consume": "item.salted_poultry",
+          "skill": "Cooking",
+          "skillXp": 6,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "cook_jam_berry",
+          "displayName": "Böğürtlen reçeli kaynat (3 böğürtlen, 1 bal)",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.berries",
+              "count": 3
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.jam_berry",
+              "count": 3
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "cook_jam_plum",
+          "displayName": "Erik reçeli kaynat (3 erik, 1 bal)",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.plum",
+              "count": 3
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.jam_plum",
+              "count": 3
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "eat_chestnut",
+          "displayName": "Kestane közle ve ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.06,
+          "consume": "item.chestnut",
+          "skill": "Cooking",
+          "skillXp": 8,
+          "moodId": "mood.meal",
+          "moodText": "Közlenmiş kestane",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "ember"
+        },
+        {
+          "id": "cook_fish_crayfish",
+          "displayName": "Kerevit pişir ve ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.075,
+          "consume": "item.fish_crayfish",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_carp",
+          "displayName": "Sazan pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_carp",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_herring",
+          "displayName": "Ringa pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_herring",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_mackerel",
+          "displayName": "Uskumru pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.075,
+          "consume": "item.fish_mackerel",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_trout",
+          "displayName": "Alabalık pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.075,
+          "consume": "item.fish_trout",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_pike",
+          "displayName": "Turna pişir ve ye",
+          "need": "Hunger",
+          "restore": 65,
+          "durationDays": 0.075,
+          "consume": "item.fish_pike",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_eel",
+          "displayName": "Yılan balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.075,
+          "consume": "item.fish_eel",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "eat_salted_fish",
+          "displayName": "Tuzlu balığı haşla ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.06,
+          "consume": "item.salted_fish",
+          "skill": "Cooking",
+          "skillXp": 4,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "roast_game",
+          "displayName": "Av eti kızart ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.1,
+          "consume": "item.game_meat",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "grill",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_tarhana",
+          "displayName": "Tarhana çorbası pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.tarhana",
+          "skill": "Cooking",
+          "skillXp": 8,
+          "moodlet": "eff_warm_soup",
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "make_soup_bean",
+          "displayName": "Bakla çorbası yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "materials": [
+            {
+              "item": "item.broad_bean",
+              "count": 2
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_bean",
+              "count": 2
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_soup_fish",
+          "displayName": "Balık çorbası yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 16,
+          "materials": [
+            {
+              "item": "item.fish_carp",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.carrot",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_fish",
+              "count": 2
+            }
+          ],
+          "minLevel": 1,
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_stew_meat",
+          "displayName": "Etli güveç yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "materials": [
+            {
+              "item": "item.meat",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.carrot",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stew_meat",
+              "count": 2
+            }
+          ],
+          "minLevel": 2,
+          "cook": "stew",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_soup_chicken",
+          "displayName": "Tavuk suyu yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "materials": [
+            {
+              "item": "item.poultry",
+              "count": 1
+            },
+            {
+              "item": "item.garlic",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_chicken",
+              "count": 3
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_saute_mushroom",
+          "displayName": "Mantar sote yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.mushroom",
+              "count": 2
+            },
+            {
+              "item": "item.butter",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.saute_mushroom",
+              "count": 2
+            }
+          ],
+          "minLevel": 1,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_kaygana",
+          "displayName": "Kaygana yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.egg",
+              "count": 2
+            },
+            {
+              "item": "item.flour",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.kaygana",
+              "count": 2
+            }
+          ],
+          "cook": "fry"
+        },
+        {
+          "id": "make_breakfast",
+          "displayName": "Kahvaltı tabağı yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.bread",
+              "count": 1
+            },
+            {
+              "item": "item.cheese",
+              "count": 1
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.breakfast",
+              "count": 1
+            }
+          ],
+          "cook": "raw",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_pilaf",
+          "displayName": "Bulgur pilavı yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.wheat",
+              "count": 2
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pilaf",
+              "count": 3
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_sarma",
+          "displayName": "Lahana sarması yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 30,
+          "materials": [
+            {
+              "item": "item.cabbage",
+              "count": 1
+            },
+            {
+              "item": "item.wheat",
+              "count": 1
+            },
+            {
+              "item": "item.meat",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.sarma",
+              "count": 3
+            }
+          ],
+          "minLevel": 4,
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_hosaf",
+          "displayName": "Hoşaf yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.dried_apple",
+              "count": 2
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.hosaf",
+              "count": 2
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:colander"
+          ]
+        },
+        {
+          "id": "make_helva",
+          "displayName": "Helva yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 16,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 1
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            },
+            {
+              "item": "item.butter",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.helva",
+              "count": 3
+            }
+          ],
+          "minLevel": 2,
+          "cook": "fry"
+        },
+        {
+          "id": "make_pekmez",
+          "displayName": "Pekmez yap",
+          "durationDays": 0.15,
+          "skill": "Brewing",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.apple",
+              "count": 4
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pekmez",
+              "count": 2
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife",
+            "tool:colander"
+          ]
+        },
+        {
+          "id": "make_stew_game",
+          "displayName": "Av yahnisi yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "materials": [
+            {
+              "item": "item.game_meat",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.mushroom",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stew_game",
+              "count": 2
+            }
+          ],
+          "minLevel": 2,
+          "cook": "stew",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_wrap_fish",
+          "displayName": "Füme balık dürüm yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.bread",
+              "count": 1
+            },
+            {
+              "item": "item.smoked_fish",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.wrap_fish",
+              "count": 1
+            }
+          ],
+          "cook": "raw",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_porridge_oats",
+          "displayName": "Yulaf lapası pişir (2 yulaf, 1 süt)",
+          "durationDays": 0.12,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.oats",
+              "count": 2
+            },
+            {
+              "item": "item.milk",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.porridge_oats",
+              "count": 2
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "make_porridge_wheat",
+          "displayName": "Buğday lapası pişir (2 buğday, 1 süt, 1 bal)",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "minLevel": 1,
+          "materials": [
+            {
+              "item": "item.wheat",
+              "count": 2
+            },
+            {
+              "item": "item.milk",
+              "count": 1
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.porridge_wheat",
+              "count": 3
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "brew_coffee_cloth",
+          "displayName": "Kahve demle, bezle süz (1 toz → 2 fincan)",
+          "durationDays": 0.08,
+          "skill": "Brewing",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.coffee_ground",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.coffee",
+              "count": 2
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:colander"
+          ]
+        },
+        {
+          "id": "make_leek_olive_oil",
+          "displayName": "Zeytinyağlı pırasa yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "minLevel": 2,
+          "materials": [
+            {
+              "item": "item.leek",
+              "count": 2
+            },
+            {
+              "item": "item.olive_oil",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.leek_olive_oil",
+              "count": 3
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_pekmez_grape",
+          "displayName": "Şırayı kaynat, köpüğünü al (pekmez)",
+          "durationDays": 0.2,
+          "skill": "Brewing",
+          "skillXp": 14,
+          "materials": [
+            {
+              "item": "item.must",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pekmez",
+              "count": 3
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:colander"
+          ]
+        },
+        {
+          "id": "cook_fish_tench",
+          "displayName": "Kadife balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_tench",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_bream",
+          "displayName": "Çapak pişir ve ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.075,
+          "consume": "item.fish_bream",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_rudd",
+          "displayName": "Kızılkanat pişir ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.075,
+          "consume": "item.fish_rudd",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_catfish",
+          "displayName": "Yayın balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.075,
+          "consume": "item.fish_catfish",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_perch",
+          "displayName": "Tatlı su levreği pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_perch",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_salmon",
+          "displayName": "Somon pişir ve ye",
+          "need": "Hunger",
+          "restore": 75,
+          "durationDays": 0.075,
+          "consume": "item.fish_salmon",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 6,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_bullhead",
+          "displayName": "Dere kaya balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.075,
+          "consume": "item.fish_bullhead",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_mussel",
+          "displayName": "Midye pişir ve ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.075,
+          "consume": "item.mussel",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "cook_fish_carp_gold",
+          "displayName": "Altın sazan pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.075,
+          "consume": "item.fish_carp_gold",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_catfish_giant",
+          "displayName": "Dev yayın pişir ve ye",
+          "need": "Hunger",
+          "restore": 100,
+          "durationDays": 0.15,
+          "consume": "item.fish_catfish_giant",
+          "skill": "Cooking",
+          "skillXp": 40,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık şöleni",
+          "moodValue": 10,
+          "moodDays": 3.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_sturgeon_old",
+          "displayName": "Mersin pişir ve ye",
+          "need": "Hunger",
+          "restore": 100,
+          "durationDays": 0.15,
+          "consume": "item.fish_sturgeon_old",
+          "skill": "Cooking",
+          "skillXp": 40,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık şöleni",
+          "moodValue": 10,
+          "moodDays": 3.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_pike_old",
+          "displayName": "Yaşlı turna pişir ve ye",
+          "need": "Hunger",
+          "restore": 100,
+          "durationDays": 0.15,
+          "consume": "item.fish_pike_old",
+          "skill": "Cooking",
+          "skillXp": 40,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık şöleni",
+          "moodValue": 10,
+          "moodDays": 3.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "brew_linden",
+          "displayName": "Ihlamur çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_linden",
+          "bladder": 12,
+          "cook": "boil"
+        },
+        {
+          "id": "brew_sage",
+          "displayName": "Adaçayı çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_sage",
+          "bladder": 12,
+          "cook": "boil"
+        },
+        {
+          "id": "brew_chamomile",
+          "displayName": "Papatya çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_chamomile",
+          "bladder": 12,
+          "cook": "boil"
+        },
+        {
+          "id": "brew_mint",
+          "displayName": "Nane çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_mint",
+          "bladder": 12,
+          "cook": "boil"
+        },
+        {
+          "id": "brew_rosehip",
+          "displayName": "Kuşburnu çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_rosehip",
+          "bladder": 12,
+          "cook": "boil"
         }
       ],
       "price": 40,
@@ -216,11 +1446,12 @@
       ],
       "trades": [
         "tavern"
-      ]
+      ],
+      "cookFire": true
     },
     {
       "id": "item.cooking_pot",
-      "displayName": "Pişirme kazanı",
+      "displayName": "Demir kazan",
       "interactions": [
         {
           "id": "eat",
@@ -229,29 +1460,6 @@
           "restore": 50,
           "durationDays": 0.06,
           "consume": "item.turnip",
-          "bladder": 4
-        },
-        {
-          "id": "cook",
-          "displayName": "Şalgam pişir ve ye",
-          "need": "Hunger",
-          "restore": 60,
-          "durationDays": 0.1,
-          "skill": "Cooking",
-          "skillXp": 25,
-          "consume": "item.turnip",
-          "moodlet": "good_meal",
-          "bladder": 4
-        },
-        {
-          "id": "eat_egg",
-          "displayName": "Yumurta pişir ve ye",
-          "need": "Hunger",
-          "restore": 45,
-          "durationDays": 0.04,
-          "consume": "item.egg",
-          "skill": "Cooking",
-          "skillXp": 15,
           "bladder": 4
         },
         {
@@ -420,78 +1628,6 @@
           "bladder": 4
         },
         {
-          "id": "cook_stew",
-          "displayName": "Sebze güveci pişir",
-          "durationDays": 0.3,
-          "skill": "Cooking",
-          "skillXp": 30,
-          "minLevel": 2,
-          "materials": [
-            {
-              "item": "item.turnip",
-              "count": 1
-            },
-            {
-              "item": "item.cabbage",
-              "count": 1
-            },
-            {
-              "item": "item.leek",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.stew_plain",
-              "count": 2
-            }
-          ]
-        },
-        {
-          "id": "cook_pea_soup",
-          "displayName": "Bezelye çorbası pişir",
-          "durationDays": 0.2,
-          "skill": "Cooking",
-          "skillXp": 20,
-          "minLevel": 1,
-          "materials": [
-            {
-              "item": "item.pea",
-              "count": 3
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.soup_pea",
-              "count": 2
-            }
-          ]
-        },
-        {
-          "id": "cook_omelet",
-          "displayName": "Yumurtalı pırasa pişir",
-          "durationDays": 0.2,
-          "skill": "Cooking",
-          "skillXp": 25,
-          "minLevel": 3,
-          "materials": [
-            {
-              "item": "item.egg",
-              "count": 2
-            },
-            {
-              "item": "item.leek",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.omelet",
-              "count": 2
-            }
-          ]
-        },
-        {
           "id": "eat_parsnip",
           "displayName": "Yaban havucu ye",
           "need": "Hunger",
@@ -606,58 +1742,6 @@
           "restore": 25,
           "durationDays": 0.048,
           "consume": "item.plum",
-          "bladder": 4
-        },
-        {
-          "id": "roast_meat",
-          "displayName": "Et kızart ve ye",
-          "need": "Hunger",
-          "restore": 75,
-          "durationDays": 0.1,
-          "consume": "item.meat",
-          "skill": "Cooking",
-          "skillXp": 20,
-          "moodId": "mood.meal",
-          "moodText": "Etli yemek",
-          "moodValue": 5,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "roast_poultry",
-          "displayName": "Tavuk kızart ve ye",
-          "need": "Hunger",
-          "restore": 60,
-          "durationDays": 0.1,
-          "consume": "item.poultry",
-          "skill": "Cooking",
-          "skillXp": 15,
-          "moodId": "mood.meal",
-          "moodText": "Etli yemek",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "eat_salted_meat",
-          "displayName": "Tuzlu eti haşla ve ye",
-          "need": "Hunger",
-          "restore": 55,
-          "durationDays": 0.06,
-          "consume": "item.salted_meat",
-          "skill": "Cooking",
-          "skillXp": 6,
-          "bladder": 4
-        },
-        {
-          "id": "eat_salted_poultry",
-          "displayName": "Tuzlu tavuğu haşla ve ye",
-          "need": "Hunger",
-          "restore": 45,
-          "durationDays": 0.06,
-          "consume": "item.salted_poultry",
-          "skill": "Cooking",
-          "skillXp": 6,
           "bladder": 4
         },
         {
@@ -838,54 +1922,6 @@
           "bladder": 4
         },
         {
-          "id": "cook_jam_berry",
-          "displayName": "Böğürtlen reçeli kaynat (3 böğürtlen, 1 bal)",
-          "durationDays": 0.3,
-          "skill": "Cooking",
-          "skillXp": 18,
-          "minLevel": 3,
-          "materials": [
-            {
-              "item": "item.berries",
-              "count": 3
-            },
-            {
-              "item": "item.honey",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.jam_berry",
-              "count": 3
-            }
-          ]
-        },
-        {
-          "id": "cook_jam_plum",
-          "displayName": "Erik reçeli kaynat (3 erik, 1 bal)",
-          "durationDays": 0.3,
-          "skill": "Cooking",
-          "skillXp": 18,
-          "minLevel": 3,
-          "materials": [
-            {
-              "item": "item.plum",
-              "count": 3
-            },
-            {
-              "item": "item.honey",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.jam_plum",
-              "count": 3
-            }
-          ]
-        },
-        {
           "id": "eat_wild_garlic",
           "displayName": "Yabani sarımsak ye",
           "need": "Hunger",
@@ -921,21 +1957,6 @@
           "bladder": 4
         },
         {
-          "id": "eat_chestnut",
-          "displayName": "Kestane közle ve ye",
-          "need": "Hunger",
-          "restore": 40,
-          "durationDays": 0.06,
-          "consume": "item.chestnut",
-          "skill": "Cooking",
-          "skillXp": 8,
-          "moodId": "mood.meal",
-          "moodText": "Közlenmiş kestane",
-          "moodValue": 3,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
           "id": "eat_rosehip",
           "displayName": "Kuşburnu ye",
           "need": "Hunger",
@@ -951,122 +1972,6 @@
           "restore": 20,
           "durationDays": 0.06,
           "consume": "item.cress",
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_crayfish",
-          "displayName": "Kerevit pişir ve ye",
-          "need": "Hunger",
-          "restore": 35,
-          "durationDays": 0.075,
-          "consume": "item.fish_crayfish",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_carp",
-          "displayName": "Sazan pişir ve ye",
-          "need": "Hunger",
-          "restore": 55,
-          "durationDays": 0.075,
-          "consume": "item.fish_carp",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_herring",
-          "displayName": "Ringa pişir ve ye",
-          "need": "Hunger",
-          "restore": 55,
-          "durationDays": 0.075,
-          "consume": "item.fish_herring",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_mackerel",
-          "displayName": "Uskumru pişir ve ye",
-          "need": "Hunger",
-          "restore": 60,
-          "durationDays": 0.075,
-          "consume": "item.fish_mackerel",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_trout",
-          "displayName": "Alabalık pişir ve ye",
-          "need": "Hunger",
-          "restore": 60,
-          "durationDays": 0.075,
-          "consume": "item.fish_trout",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_pike",
-          "displayName": "Turna pişir ve ye",
-          "need": "Hunger",
-          "restore": 65,
-          "durationDays": 0.075,
-          "consume": "item.fish_pike",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_eel",
-          "displayName": "Yılan balığı pişir ve ye",
-          "need": "Hunger",
-          "restore": 70,
-          "durationDays": 0.075,
-          "consume": "item.fish_eel",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "eat_salted_fish",
-          "displayName": "Tuzlu balığı haşla ve ye",
-          "need": "Hunger",
-          "restore": 45,
-          "durationDays": 0.06,
-          "consume": "item.salted_fish",
-          "skill": "Cooking",
-          "skillXp": 4,
           "bladder": 4
         },
         {
@@ -1152,21 +2057,6 @@
           "bladder": 4
         },
         {
-          "id": "roast_game",
-          "displayName": "Av eti kızart ve ye",
-          "need": "Hunger",
-          "restore": 70,
-          "durationDays": 0.1,
-          "consume": "item.game_meat",
-          "skill": "Cooking",
-          "skillXp": 15,
-          "moodId": "mood.meal",
-          "moodText": "Etli yemek",
-          "moodValue": 5,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
           "id": "drink_ayran",
           "displayName": "Ayran iç",
           "need": "Hunger",
@@ -1203,41 +2093,6 @@
           "bladder": 15
         },
         {
-          "id": "cook_tarhana",
-          "displayName": "Tarhana çorbası pişir ve ye",
-          "need": "Hunger",
-          "restore": 55,
-          "durationDays": 0.075,
-          "consume": "item.tarhana",
-          "skill": "Cooking",
-          "skillXp": 8,
-          "moodlet": "eff_warm_soup",
-          "bladder": 4
-        },
-        {
-          "id": "make_soup_bean",
-          "displayName": "Bakla çorbası yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 14,
-          "materials": [
-            {
-              "item": "item.broad_bean",
-              "count": 2
-            },
-            {
-              "item": "item.onion",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.soup_bean",
-              "count": 2
-            }
-          ]
-        },
-        {
           "id": "eat_soup_bean",
           "displayName": "Bakla çorbası ye",
           "need": "Hunger",
@@ -1246,34 +2101,6 @@
           "consume": "item.soup_bean",
           "moodlet": "eff_full",
           "bladder": 4
-        },
-        {
-          "id": "make_soup_fish",
-          "displayName": "Balık çorbası yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 16,
-          "materials": [
-            {
-              "item": "item.fish_carp",
-              "count": 1
-            },
-            {
-              "item": "item.onion",
-              "count": 1
-            },
-            {
-              "item": "item.carrot",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.soup_fish",
-              "count": 2
-            }
-          ],
-          "minLevel": 1
         },
         {
           "id": "eat_soup_fish",
@@ -1286,34 +2113,6 @@
           "bladder": 4
         },
         {
-          "id": "make_stew_meat",
-          "displayName": "Etli güveç yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 18,
-          "materials": [
-            {
-              "item": "item.meat",
-              "count": 1
-            },
-            {
-              "item": "item.onion",
-              "count": 1
-            },
-            {
-              "item": "item.carrot",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.stew_meat",
-              "count": 2
-            }
-          ],
-          "minLevel": 2
-        },
-        {
           "id": "eat_stew_meat",
           "displayName": "Etli güveç ye",
           "need": "Hunger",
@@ -1322,29 +2121,6 @@
           "consume": "item.stew_meat",
           "moodlet": "eff_hearty",
           "bladder": 4
-        },
-        {
-          "id": "make_soup_chicken",
-          "displayName": "Tavuk suyu yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 14,
-          "materials": [
-            {
-              "item": "item.poultry",
-              "count": 1
-            },
-            {
-              "item": "item.garlic",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.soup_chicken",
-              "count": 3
-            }
-          ]
         },
         {
           "id": "eat_soup_chicken",
@@ -1358,30 +2134,6 @@
           "bladder": 4
         },
         {
-          "id": "make_saute_mushroom",
-          "displayName": "Mantar sote yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 12,
-          "materials": [
-            {
-              "item": "item.mushroom",
-              "count": 2
-            },
-            {
-              "item": "item.butter",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.saute_mushroom",
-              "count": 2
-            }
-          ],
-          "minLevel": 1
-        },
-        {
           "id": "eat_saute_mushroom",
           "displayName": "Mantar sote ye",
           "need": "Hunger",
@@ -1390,29 +2142,6 @@
           "consume": "item.saute_mushroom",
           "moodlet": "eff_forager",
           "bladder": 4
-        },
-        {
-          "id": "make_kaygana",
-          "displayName": "Kaygana yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 10,
-          "materials": [
-            {
-              "item": "item.egg",
-              "count": 2
-            },
-            {
-              "item": "item.flour",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.kaygana",
-              "count": 2
-            }
-          ]
         },
         {
           "id": "eat_kaygana",
@@ -1434,33 +2163,6 @@
           "bladder": 4
         },
         {
-          "id": "make_breakfast",
-          "displayName": "Kahvaltı tabağı yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 8,
-          "materials": [
-            {
-              "item": "item.bread",
-              "count": 1
-            },
-            {
-              "item": "item.cheese",
-              "count": 1
-            },
-            {
-              "item": "item.honey",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.breakfast",
-              "count": 1
-            }
-          ]
-        },
-        {
           "id": "eat_breakfast",
           "displayName": "Kahvaltı tabağı ye",
           "need": "Hunger",
@@ -1469,29 +2171,6 @@
           "consume": "item.breakfast",
           "moodlet": "eff_breakfast",
           "bladder": 4
-        },
-        {
-          "id": "make_pilaf",
-          "displayName": "Bulgur pilavı yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 12,
-          "materials": [
-            {
-              "item": "item.wheat",
-              "count": 2
-            },
-            {
-              "item": "item.onion",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.pilaf",
-              "count": 3
-            }
-          ]
         },
         {
           "id": "eat_pilaf",
@@ -1507,34 +2186,6 @@
           "bladder": 4
         },
         {
-          "id": "make_sarma",
-          "displayName": "Lahana sarması yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 30,
-          "materials": [
-            {
-              "item": "item.cabbage",
-              "count": 1
-            },
-            {
-              "item": "item.wheat",
-              "count": 1
-            },
-            {
-              "item": "item.meat",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.sarma",
-              "count": 3
-            }
-          ],
-          "minLevel": 4
-        },
-        {
           "id": "eat_sarma",
           "displayName": "Lahana sarması ye",
           "need": "Hunger",
@@ -1543,29 +2194,6 @@
           "consume": "item.sarma",
           "moodlet": "eff_feast",
           "bladder": 4
-        },
-        {
-          "id": "make_hosaf",
-          "displayName": "Hoşaf yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 10,
-          "materials": [
-            {
-              "item": "item.dried_apple",
-              "count": 2
-            },
-            {
-              "item": "item.honey",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.hosaf",
-              "count": 2
-            }
-          ]
         },
         {
           "id": "eat_hosaf",
@@ -1584,34 +2212,6 @@
           "bladder": 4
         },
         {
-          "id": "make_helva",
-          "displayName": "Helva yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 16,
-          "materials": [
-            {
-              "item": "item.flour",
-              "count": 1
-            },
-            {
-              "item": "item.honey",
-              "count": 1
-            },
-            {
-              "item": "item.butter",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.helva",
-              "count": 3
-            }
-          ],
-          "minLevel": 2
-        },
-        {
           "id": "eat_helva",
           "displayName": "Helva ye",
           "need": "Hunger",
@@ -1620,25 +2220,6 @@
           "consume": "item.helva",
           "moodlet": "eff_solace",
           "bladder": 4
-        },
-        {
-          "id": "make_pekmez",
-          "displayName": "Pekmez yap",
-          "durationDays": 0.15,
-          "skill": "Brewing",
-          "skillXp": 12,
-          "materials": [
-            {
-              "item": "item.apple",
-              "count": 4
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.pekmez",
-              "count": 2
-            }
-          ]
         },
         {
           "id": "eat_pekmez",
@@ -1654,34 +2235,6 @@
           "bladder": 4
         },
         {
-          "id": "make_stew_game",
-          "displayName": "Av yahnisi yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 18,
-          "materials": [
-            {
-              "item": "item.game_meat",
-              "count": 1
-            },
-            {
-              "item": "item.onion",
-              "count": 1
-            },
-            {
-              "item": "item.mushroom",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.stew_game",
-              "count": 2
-            }
-          ],
-          "minLevel": 2
-        },
-        {
           "id": "eat_stew_game",
           "displayName": "Av yahnisi ye",
           "need": "Hunger",
@@ -1690,29 +2243,6 @@
           "consume": "item.stew_game",
           "moodlet": "eff_hunter",
           "bladder": 4
-        },
-        {
-          "id": "make_wrap_fish",
-          "displayName": "Füme balık dürüm yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 8,
-          "materials": [
-            {
-              "item": "item.bread",
-              "count": 1
-            },
-            {
-              "item": "item.smoked_fish",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.wrap_fish",
-              "count": 1
-            }
-          ]
         },
         {
           "id": "eat_wrap_fish",
@@ -1798,29 +2328,6 @@
           "bladder": 4
         },
         {
-          "id": "make_porridge_oats",
-          "displayName": "Yulaf lapası pişir (2 yulaf, 1 süt)",
-          "durationDays": 0.12,
-          "skill": "Cooking",
-          "skillXp": 8,
-          "materials": [
-            {
-              "item": "item.oats",
-              "count": 2
-            },
-            {
-              "item": "item.milk",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.porridge_oats",
-              "count": 2
-            }
-          ]
-        },
-        {
           "id": "eat_porridge_oats",
           "displayName": "Yulaf lapası ye",
           "need": "Hunger",
@@ -1829,34 +2336,6 @@
           "consume": "item.porridge_oats",
           "moodlet": "eff_warm_soup",
           "bladder": 4
-        },
-        {
-          "id": "make_porridge_wheat",
-          "displayName": "Buğday lapası pişir (2 buğday, 1 süt, 1 bal)",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 12,
-          "minLevel": 1,
-          "materials": [
-            {
-              "item": "item.wheat",
-              "count": 2
-            },
-            {
-              "item": "item.milk",
-              "count": 1
-            },
-            {
-              "item": "item.honey",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.porridge_wheat",
-              "count": 3
-            }
-          ]
         },
         {
           "id": "eat_porridge_wheat",
@@ -1907,25 +2386,6 @@
           "bladder": 15
         },
         {
-          "id": "brew_coffee_cloth",
-          "displayName": "Kahve demle, bezle süz (1 toz → 2 fincan)",
-          "durationDays": 0.08,
-          "skill": "Brewing",
-          "skillXp": 8,
-          "materials": [
-            {
-              "item": "item.coffee_ground",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.coffee",
-              "count": 2
-            }
-          ]
-        },
-        {
           "id": "drink_coffee",
           "displayName": "Kahve iç",
           "need": "Energy",
@@ -1948,30 +2408,6 @@
           "moodValue": 2,
           "moodDays": 1.0,
           "bladder": 4
-        },
-        {
-          "id": "make_leek_olive_oil",
-          "displayName": "Zeytinyağlı pırasa yap",
-          "durationDays": 0.15,
-          "skill": "Cooking",
-          "skillXp": 14,
-          "minLevel": 2,
-          "materials": [
-            {
-              "item": "item.leek",
-              "count": 2
-            },
-            {
-              "item": "item.olive_oil",
-              "count": 1
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.leek_olive_oil",
-              "count": 3
-            }
-          ]
         },
         {
           "id": "eat_leek_olive_oil",
@@ -2068,25 +2504,6 @@
           "bladder": 4
         },
         {
-          "id": "make_pekmez_grape",
-          "displayName": "Şırayı kaynat, köpüğünü al (pekmez)",
-          "durationDays": 0.2,
-          "skill": "Brewing",
-          "skillXp": 14,
-          "materials": [
-            {
-              "item": "item.must",
-              "count": 2
-            }
-          ],
-          "produce": [
-            {
-              "item": "item.pekmez",
-              "count": 3
-            }
-          ]
-        },
-        {
           "id": "drink_must",
           "displayName": "Taze şıra iç",
           "need": "Fun",
@@ -2117,186 +2534,6 @@
           "adultPack": true
         },
         {
-          "id": "cook_fish_tench",
-          "displayName": "Kadife balığı pişir ve ye",
-          "need": "Hunger",
-          "restore": 55,
-          "durationDays": 0.075,
-          "consume": "item.fish_tench",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_bream",
-          "displayName": "Çapak pişir ve ye",
-          "need": "Hunger",
-          "restore": 50,
-          "durationDays": 0.075,
-          "consume": "item.fish_bream",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_rudd",
-          "displayName": "Kızılkanat pişir ve ye",
-          "need": "Hunger",
-          "restore": 45,
-          "durationDays": 0.075,
-          "consume": "item.fish_rudd",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 3,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_catfish",
-          "displayName": "Yayın balığı pişir ve ye",
-          "need": "Hunger",
-          "restore": 70,
-          "durationDays": 0.075,
-          "consume": "item.fish_catfish",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 5,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_perch",
-          "displayName": "Tatlı su levreği pişir ve ye",
-          "need": "Hunger",
-          "restore": 55,
-          "durationDays": 0.075,
-          "consume": "item.fish_perch",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 4,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_salmon",
-          "displayName": "Somon pişir ve ye",
-          "need": "Hunger",
-          "restore": 75,
-          "durationDays": 0.075,
-          "consume": "item.fish_salmon",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 6,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_bullhead",
-          "displayName": "Dere kaya balığı pişir ve ye",
-          "need": "Hunger",
-          "restore": 35,
-          "durationDays": 0.075,
-          "consume": "item.fish_bullhead",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 3,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_mussel",
-          "displayName": "Midye pişir ve ye",
-          "need": "Hunger",
-          "restore": 30,
-          "durationDays": 0.075,
-          "consume": "item.mussel",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 3,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_carp_gold",
-          "displayName": "Altın sazan pişir ve ye",
-          "need": "Hunger",
-          "restore": 60,
-          "durationDays": 0.075,
-          "consume": "item.fish_carp_gold",
-          "skill": "Cooking",
-          "skillXp": 12,
-          "moodId": "mood.meal",
-          "moodText": "Balık yemeği",
-          "moodValue": 5,
-          "moodDays": 1.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_catfish_giant",
-          "displayName": "Dev yayın pişir ve ye",
-          "need": "Hunger",
-          "restore": 100,
-          "durationDays": 0.15,
-          "consume": "item.fish_catfish_giant",
-          "skill": "Cooking",
-          "skillXp": 40,
-          "moodId": "mood.meal",
-          "moodText": "Efsane balık şöleni",
-          "moodValue": 10,
-          "moodDays": 3.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_sturgeon_old",
-          "displayName": "Mersin pişir ve ye",
-          "need": "Hunger",
-          "restore": 100,
-          "durationDays": 0.15,
-          "consume": "item.fish_sturgeon_old",
-          "skill": "Cooking",
-          "skillXp": 40,
-          "moodId": "mood.meal",
-          "moodText": "Efsane balık şöleni",
-          "moodValue": 10,
-          "moodDays": 3.0,
-          "bladder": 4
-        },
-        {
-          "id": "cook_fish_pike_old",
-          "displayName": "Yaşlı turna pişir ve ye",
-          "need": "Hunger",
-          "restore": 100,
-          "durationDays": 0.15,
-          "consume": "item.fish_pike_old",
-          "skill": "Cooking",
-          "skillXp": 40,
-          "moodId": "mood.meal",
-          "moodText": "Efsane balık şöleni",
-          "moodValue": 10,
-          "moodDays": 3.0,
-          "bladder": 4
-        },
-        {
           "id": "feast",
           "displayName": "Ziyafet sofrası kur (4 çeşit)",
           "durationDays": 0.2,
@@ -2313,66 +2550,6 @@
           "skillXp": 3,
           "skillWork": "taste",
           "minLevel": 7
-        },
-        {
-          "id": "brew_linden",
-          "displayName": "Ihlamur çayı demle ve iç",
-          "need": "Fun",
-          "restore": 15,
-          "durationDays": 0.05,
-          "skill": "Brewing",
-          "skillXp": 6,
-          "minLevel": 2,
-          "consume": "item.tea_linden",
-          "bladder": 12
-        },
-        {
-          "id": "brew_sage",
-          "displayName": "Adaçayı çayı demle ve iç",
-          "need": "Fun",
-          "restore": 15,
-          "durationDays": 0.05,
-          "skill": "Brewing",
-          "skillXp": 6,
-          "minLevel": 2,
-          "consume": "item.tea_sage",
-          "bladder": 12
-        },
-        {
-          "id": "brew_chamomile",
-          "displayName": "Papatya çayı demle ve iç",
-          "need": "Fun",
-          "restore": 15,
-          "durationDays": 0.05,
-          "skill": "Brewing",
-          "skillXp": 6,
-          "minLevel": 2,
-          "consume": "item.tea_chamomile",
-          "bladder": 12
-        },
-        {
-          "id": "brew_mint",
-          "displayName": "Nane çayı demle ve iç",
-          "need": "Fun",
-          "restore": 15,
-          "durationDays": 0.05,
-          "skill": "Brewing",
-          "skillXp": 6,
-          "minLevel": 2,
-          "consume": "item.tea_mint",
-          "bladder": 12
-        },
-        {
-          "id": "brew_rosehip",
-          "displayName": "Kuşburnu çayı demle ve iç",
-          "need": "Fun",
-          "restore": 15,
-          "durationDays": 0.05,
-          "skill": "Brewing",
-          "skillXp": 6,
-          "minLevel": 2,
-          "consume": "item.tea_rosehip",
-          "bladder": 12
         },
         {
           "id": "eat_truffle",
@@ -2550,6 +2727,610 @@
       ],
       "trades": [
         "tavern"
+      ],
+      "equip": "vessel:boil",
+      "equipTier": 2
+    },
+    {
+      "id": "item.pot_clay",
+      "displayName": "Kil tencere",
+      "category": "kitchen",
+      "price": 6,
+      "level": 1,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 1,
+      "material": "clay",
+      "fitsOn": [
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:boil",
+      "equipTier": 1,
+      "art": {
+        "alongX": "iso_item_pot_clay_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.griddle_iron",
+      "displayName": "Demir sac",
+      "category": "kitchen",
+      "price": 18,
+      "level": 2,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 4,
+      "beauty": 1,
+      "material": "metal",
+      "fitsOn": [
+        "kanca",
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:fry",
+      "equipTier": 2,
+      "art": {
+        "alongX": "iso_item_griddle_iron_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.pan_copper",
+      "displayName": "Bakır tava",
+      "category": "kitchen",
+      "price": 45,
+      "level": 6,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 2,
+      "material": "metal",
+      "fitsOn": [
+        "kanca",
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:fry",
+      "equipTier": 3,
+      "art": {
+        "alongX": "iso_item_pan_copper_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.guvec_plain",
+      "displayName": "Sırsız güveç",
+      "category": "kitchen",
+      "price": 5,
+      "level": 1,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 1,
+      "material": "clay",
+      "fitsOn": [
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:stew",
+      "equipTier": 1,
+      "art": {
+        "alongX": "iso_item_guvec_plain_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.guvec_glazed",
+      "displayName": "Sırlı güveç",
+      "category": "kitchen",
+      "price": 14,
+      "level": 3,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 2,
+      "material": "clay",
+      "fitsOn": [
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:stew",
+      "equipTier": 2,
+      "art": {
+        "alongX": "iso_item_guvec_glazed_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.guvec_fine",
+      "displayName": "Çini sırlı güveç",
+      "category": "kitchen",
+      "price": 40,
+      "level": 7,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 3,
+      "material": "clay",
+      "fitsOn": [
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:stew",
+      "equipTier": 3,
+      "art": {
+        "alongX": "iso_item_guvec_fine_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.spit_iron",
+      "displayName": "Demir şiş",
+      "category": "kitchen",
+      "price": 10,
+      "level": 2,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 1,
+      "material": "metal",
+      "fitsOn": [
+        "kanca",
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:grill",
+      "equipTier": 2,
+      "art": {
+        "alongX": "iso_item_spit_iron_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.spit_steel",
+      "displayName": "Çelik şiş ve ızgara",
+      "category": "kitchen",
+      "price": 38,
+      "level": 6,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 2,
+      "material": "metal",
+      "fitsOn": [
+        "kanca",
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:grill",
+      "equipTier": 3,
+      "art": {
+        "alongX": "iso_item_spit_steel_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.baking_tray_clay",
+      "displayName": "Kil fırın tepsisi",
+      "category": "kitchen",
+      "price": 4,
+      "level": 1,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 1,
+      "material": "clay",
+      "fitsOn": [
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:bake",
+      "equipTier": 1,
+      "art": {
+        "alongX": "iso_item_baking_tray_clay_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.baking_tray_copper",
+      "displayName": "Bakır fırın tepsisi",
+      "category": "kitchen",
+      "price": 30,
+      "level": 5,
+      "placement": "Surface",
+      "styleSet": "Tüccar",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 3,
+      "beauty": 2,
+      "material": "metal",
+      "fitsOn": [
+        "kanca",
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "vessel:bake",
+      "equipTier": 3,
+      "art": {
+        "alongX": "iso_item_baking_tray_copper_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.trivet_iron",
+      "displayName": "Sacayağı",
+      "category": "kitchen",
+      "price": 6,
+      "level": 1,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "S",
+      "weight": 2,
+      "beauty": 1,
+      "material": "metal",
+      "fitsOn": [
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "art": {
+        "alongX": "iso_item_trivet_iron_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.kitchen_knife",
+      "displayName": "Mutfak bıçağı",
+      "category": "kitchen",
+      "price": 8,
+      "level": 1,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "metal",
+      "fitsOn": [
+        "kanca",
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "tool:knife",
+      "art": {
+        "alongX": "iso_item_kitchen_knife_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.cutting_board",
+      "displayName": "Kesme tahtası",
+      "category": "kitchen",
+      "price": 4,
+      "level": 1,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "kanca",
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "tool:board",
+      "art": {
+        "alongX": "iso_item_cutting_board_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.wooden_spoon",
+      "displayName": "Tahta kaşık",
+      "category": "kitchen",
+      "price": 2,
+      "level": 1,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "S",
+      "weight": 1,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "kanca",
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "tool:spoon",
+      "art": {
+        "alongX": "iso_item_wooden_spoon_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.rolling_board",
+      "displayName": "Oklava ve hamur tahtası",
+      "category": "kitchen",
+      "price": 6,
+      "level": 2,
+      "placement": "Surface",
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 1,
+      "material": "wood",
+      "fitsOn": [
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "tool:pin",
+      "art": {
+        "alongX": "iso_item_rolling_board_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.colander",
+      "displayName": "Kevgir",
+      "category": "kitchen",
+      "price": 12,
+      "level": 3,
+      "placement": "Surface",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "kitchen"
+      ],
+      "decorSize": "M",
+      "weight": 2,
+      "beauty": 1,
+      "material": "metal",
+      "fitsOn": [
+        "kanca",
+        "raf",
+        "masa",
+        "ocak"
+      ],
+      "equip": "tool:colander",
+      "art": {
+        "alongX": "iso_item_colander_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.baker_peel",
+      "displayName": "Fırın küreği",
+      "category": "kitchen",
+      "price": 6,
+      "level": 3,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "finishGroup": "wood",
+      "site": "indoor",
+      "belongs": [
+        "kitchen"
+      ],
+      "equip": "tool:peel",
+      "art": {
+        "alongX": "iso_item_baker_peel_se",
+        "pivotX": 16.0,
+        "pivotY": 10.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.dish_basket",
+      "displayName": "Bulaşık sepeti",
+      "category": "kitchen",
+      "price": 8,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen"
+      ],
+      "finishGroup": "wood",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "outdoor"
+      ],
+      "equip": "basket",
+      "art": {
+        "alongX": "iso_item_dish_basket_empty_se",
+        "pivotX": 16.0,
+        "pivotY": 10.0,
+        "mirror": true,
+        "pending": true
+      }
+    },
+    {
+      "id": "item.dish_tub",
+      "displayName": "Bulaşık leğeni",
+      "category": "kitchen",
+      "price": 10,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "kitchen",
+        "outdoor"
+      ],
+      "finishGroup": "wood",
+      "site": "any",
+      "belongs": [
+        "kitchen",
+        "outdoor"
+      ],
+      "washPlace": "tub",
+      "art": {
+        "alongX": "iso_item_dish_tub_se",
+        "pivotX": 16.0,
+        "pivotY": 10.0,
+        "mirror": true,
+        "pending": true
+      },
+      "interactions": [
+        {
+          "id": "wash_dishes",
+          "displayName": "Bulaşığı yıka",
+          "durationDays": 0.05,
+          "washDishes": true,
+          "fetchWater": true,
+          "skill": "Decorating",
+          "skillXp": 1
+        }
+      ]
+    },
+    {
+      "id": "item.washing_stone",
+      "displayName": "Yıkama taşı",
+      "category": "garden",
+      "price": 6,
+      "level": 1,
+      "styleSet": "Köylü",
+      "rooms": [
+        "outdoor"
+      ],
+      "finishGroup": "stone",
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "washPlace": "stone",
+      "art": {
+        "alongX": "iso_item_washing_stone_se",
+        "pivotX": 16.0,
+        "pivotY": 8.0,
+        "mirror": true,
+        "pending": true
+      },
+      "interactions": [
+        {
+          "id": "wash_dishes",
+          "displayName": "Bulaşığı kıyıda yıka",
+          "durationDays": 0.05,
+          "washDishes": true,
+          "skill": "Decorating",
+          "skillXp": 1
+        }
       ]
     },
     {
@@ -4431,6 +5212,1236 @@
             }
           ],
           "homeAction": "whitewash"
+        },
+        {
+          "id": "cook",
+          "displayName": "Şalgam pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.1,
+          "skill": "Cooking",
+          "skillXp": 25,
+          "consume": "item.turnip",
+          "moodlet": "good_meal",
+          "bladder": 4,
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "eat_egg",
+          "displayName": "Yumurta pişir ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.04,
+          "consume": "item.egg",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "cook_stew",
+          "displayName": "Sebze güveci pişir",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 30,
+          "minLevel": 2,
+          "materials": [
+            {
+              "item": "item.turnip",
+              "count": 1
+            },
+            {
+              "item": "item.cabbage",
+              "count": 1
+            },
+            {
+              "item": "item.leek",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stew_plain",
+              "count": 2
+            }
+          ],
+          "cook": "stew",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_pea_soup",
+          "displayName": "Bezelye çorbası pişir",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 20,
+          "minLevel": 1,
+          "materials": [
+            {
+              "item": "item.pea",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_pea",
+              "count": 2
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "cook_omelet",
+          "displayName": "Yumurtalı pırasa pişir",
+          "durationDays": 0.2,
+          "skill": "Cooking",
+          "skillXp": 25,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.egg",
+              "count": 2
+            },
+            {
+              "item": "item.leek",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.omelet",
+              "count": 2
+            }
+          ],
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "roast_meat",
+          "displayName": "Et kızart ve ye",
+          "need": "Hunger",
+          "restore": 75,
+          "durationDays": 0.1,
+          "consume": "item.meat",
+          "skill": "Cooking",
+          "skillXp": 20,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "grill",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "roast_poultry",
+          "displayName": "Tavuk kızart ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.1,
+          "consume": "item.poultry",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "grill",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "eat_salted_meat",
+          "displayName": "Tuzlu eti haşla ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.06,
+          "consume": "item.salted_meat",
+          "skill": "Cooking",
+          "skillXp": 6,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "eat_salted_poultry",
+          "displayName": "Tuzlu tavuğu haşla ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.06,
+          "consume": "item.salted_poultry",
+          "skill": "Cooking",
+          "skillXp": 6,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "cook_jam_berry",
+          "displayName": "Böğürtlen reçeli kaynat (3 böğürtlen, 1 bal)",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.berries",
+              "count": 3
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.jam_berry",
+              "count": 3
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "cook_jam_plum",
+          "displayName": "Erik reçeli kaynat (3 erik, 1 bal)",
+          "durationDays": 0.3,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "minLevel": 3,
+          "materials": [
+            {
+              "item": "item.plum",
+              "count": 3
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.jam_plum",
+              "count": 3
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "eat_chestnut",
+          "displayName": "Kestane közle ve ye",
+          "need": "Hunger",
+          "restore": 40,
+          "durationDays": 0.06,
+          "consume": "item.chestnut",
+          "skill": "Cooking",
+          "skillXp": 8,
+          "moodId": "mood.meal",
+          "moodText": "Közlenmiş kestane",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "ember"
+        },
+        {
+          "id": "cook_fish_crayfish",
+          "displayName": "Kerevit pişir ve ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.075,
+          "consume": "item.fish_crayfish",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_carp",
+          "displayName": "Sazan pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_carp",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_herring",
+          "displayName": "Ringa pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_herring",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_mackerel",
+          "displayName": "Uskumru pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.075,
+          "consume": "item.fish_mackerel",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_trout",
+          "displayName": "Alabalık pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.075,
+          "consume": "item.fish_trout",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_pike",
+          "displayName": "Turna pişir ve ye",
+          "need": "Hunger",
+          "restore": 65,
+          "durationDays": 0.075,
+          "consume": "item.fish_pike",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_eel",
+          "displayName": "Yılan balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.075,
+          "consume": "item.fish_eel",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "eat_salted_fish",
+          "displayName": "Tuzlu balığı haşla ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.06,
+          "consume": "item.salted_fish",
+          "skill": "Cooking",
+          "skillXp": 4,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "roast_game",
+          "displayName": "Av eti kızart ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.1,
+          "consume": "item.game_meat",
+          "skill": "Cooking",
+          "skillXp": 15,
+          "moodId": "mood.meal",
+          "moodText": "Etli yemek",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "grill",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_tarhana",
+          "displayName": "Tarhana çorbası pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.tarhana",
+          "skill": "Cooking",
+          "skillXp": 8,
+          "moodlet": "eff_warm_soup",
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "make_soup_bean",
+          "displayName": "Bakla çorbası yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "materials": [
+            {
+              "item": "item.broad_bean",
+              "count": 2
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_bean",
+              "count": 2
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_soup_fish",
+          "displayName": "Balık çorbası yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 16,
+          "materials": [
+            {
+              "item": "item.fish_carp",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.carrot",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_fish",
+              "count": 2
+            }
+          ],
+          "minLevel": 1,
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_stew_meat",
+          "displayName": "Etli güveç yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "materials": [
+            {
+              "item": "item.meat",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.carrot",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stew_meat",
+              "count": 2
+            }
+          ],
+          "minLevel": 2,
+          "cook": "stew",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_soup_chicken",
+          "displayName": "Tavuk suyu yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "materials": [
+            {
+              "item": "item.poultry",
+              "count": 1
+            },
+            {
+              "item": "item.garlic",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.soup_chicken",
+              "count": 3
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_saute_mushroom",
+          "displayName": "Mantar sote yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.mushroom",
+              "count": 2
+            },
+            {
+              "item": "item.butter",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.saute_mushroom",
+              "count": 2
+            }
+          ],
+          "minLevel": 1,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_kaygana",
+          "displayName": "Kaygana yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.egg",
+              "count": 2
+            },
+            {
+              "item": "item.flour",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.kaygana",
+              "count": 2
+            }
+          ],
+          "cook": "fry"
+        },
+        {
+          "id": "make_breakfast",
+          "displayName": "Kahvaltı tabağı yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.bread",
+              "count": 1
+            },
+            {
+              "item": "item.cheese",
+              "count": 1
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.breakfast",
+              "count": 1
+            }
+          ],
+          "cook": "raw",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_pilaf",
+          "displayName": "Bulgur pilavı yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.wheat",
+              "count": 2
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pilaf",
+              "count": 3
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_sarma",
+          "displayName": "Lahana sarması yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 30,
+          "materials": [
+            {
+              "item": "item.cabbage",
+              "count": 1
+            },
+            {
+              "item": "item.wheat",
+              "count": 1
+            },
+            {
+              "item": "item.meat",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.sarma",
+              "count": 3
+            }
+          ],
+          "minLevel": 4,
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_hosaf",
+          "displayName": "Hoşaf yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 10,
+          "materials": [
+            {
+              "item": "item.dried_apple",
+              "count": 2
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.hosaf",
+              "count": 2
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:colander"
+          ]
+        },
+        {
+          "id": "make_helva",
+          "displayName": "Helva yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 16,
+          "materials": [
+            {
+              "item": "item.flour",
+              "count": 1
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            },
+            {
+              "item": "item.butter",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.helva",
+              "count": 3
+            }
+          ],
+          "minLevel": 2,
+          "cook": "fry"
+        },
+        {
+          "id": "make_pekmez",
+          "displayName": "Pekmez yap",
+          "durationDays": 0.15,
+          "skill": "Brewing",
+          "skillXp": 12,
+          "materials": [
+            {
+              "item": "item.apple",
+              "count": 4
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pekmez",
+              "count": 2
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife",
+            "tool:colander"
+          ]
+        },
+        {
+          "id": "make_stew_game",
+          "displayName": "Av yahnisi yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 18,
+          "materials": [
+            {
+              "item": "item.game_meat",
+              "count": 1
+            },
+            {
+              "item": "item.onion",
+              "count": 1
+            },
+            {
+              "item": "item.mushroom",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.stew_game",
+              "count": 2
+            }
+          ],
+          "minLevel": 2,
+          "cook": "stew",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_wrap_fish",
+          "displayName": "Füme balık dürüm yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.bread",
+              "count": 1
+            },
+            {
+              "item": "item.smoked_fish",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.wrap_fish",
+              "count": 1
+            }
+          ],
+          "cook": "raw",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_porridge_oats",
+          "displayName": "Yulaf lapası pişir (2 yulaf, 1 süt)",
+          "durationDays": 0.12,
+          "skill": "Cooking",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.oats",
+              "count": 2
+            },
+            {
+              "item": "item.milk",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.porridge_oats",
+              "count": 2
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "make_porridge_wheat",
+          "displayName": "Buğday lapası pişir (2 buğday, 1 süt, 1 bal)",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 12,
+          "minLevel": 1,
+          "materials": [
+            {
+              "item": "item.wheat",
+              "count": 2
+            },
+            {
+              "item": "item.milk",
+              "count": 1
+            },
+            {
+              "item": "item.honey",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.porridge_wheat",
+              "count": 3
+            }
+          ],
+          "cook": "boil"
+        },
+        {
+          "id": "brew_coffee_cloth",
+          "displayName": "Kahve demle, bezle süz (1 toz → 2 fincan)",
+          "durationDays": 0.08,
+          "skill": "Brewing",
+          "skillXp": 8,
+          "materials": [
+            {
+              "item": "item.coffee_ground",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.coffee",
+              "count": 2
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:colander"
+          ]
+        },
+        {
+          "id": "make_leek_olive_oil",
+          "displayName": "Zeytinyağlı pırasa yap",
+          "durationDays": 0.15,
+          "skill": "Cooking",
+          "skillXp": 14,
+          "minLevel": 2,
+          "materials": [
+            {
+              "item": "item.leek",
+              "count": 2
+            },
+            {
+              "item": "item.olive_oil",
+              "count": 1
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.leek_olive_oil",
+              "count": 3
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "make_pekmez_grape",
+          "displayName": "Şırayı kaynat, köpüğünü al (pekmez)",
+          "durationDays": 0.2,
+          "skill": "Brewing",
+          "skillXp": 14,
+          "materials": [
+            {
+              "item": "item.must",
+              "count": 2
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.pekmez",
+              "count": 3
+            }
+          ],
+          "cook": "boil",
+          "needTools": [
+            "tool:colander"
+          ]
+        },
+        {
+          "id": "cook_fish_tench",
+          "displayName": "Kadife balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_tench",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_bream",
+          "displayName": "Çapak pişir ve ye",
+          "need": "Hunger",
+          "restore": 50,
+          "durationDays": 0.075,
+          "consume": "item.fish_bream",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_rudd",
+          "displayName": "Kızılkanat pişir ve ye",
+          "need": "Hunger",
+          "restore": 45,
+          "durationDays": 0.075,
+          "consume": "item.fish_rudd",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_catfish",
+          "displayName": "Yayın balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 70,
+          "durationDays": 0.075,
+          "consume": "item.fish_catfish",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_perch",
+          "displayName": "Tatlı su levreği pişir ve ye",
+          "need": "Hunger",
+          "restore": 55,
+          "durationDays": 0.075,
+          "consume": "item.fish_perch",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 4,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_salmon",
+          "displayName": "Somon pişir ve ye",
+          "need": "Hunger",
+          "restore": 75,
+          "durationDays": 0.075,
+          "consume": "item.fish_salmon",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 6,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_bullhead",
+          "displayName": "Dere kaya balığı pişir ve ye",
+          "need": "Hunger",
+          "restore": 35,
+          "durationDays": 0.075,
+          "consume": "item.fish_bullhead",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_mussel",
+          "displayName": "Midye pişir ve ye",
+          "need": "Hunger",
+          "restore": 30,
+          "durationDays": 0.075,
+          "consume": "item.mussel",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 3,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "boil"
+        },
+        {
+          "id": "cook_fish_carp_gold",
+          "displayName": "Altın sazan pişir ve ye",
+          "need": "Hunger",
+          "restore": 60,
+          "durationDays": 0.075,
+          "consume": "item.fish_carp_gold",
+          "skill": "Cooking",
+          "skillXp": 12,
+          "moodId": "mood.meal",
+          "moodText": "Balık yemeği",
+          "moodValue": 5,
+          "moodDays": 1.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_catfish_giant",
+          "displayName": "Dev yayın pişir ve ye",
+          "need": "Hunger",
+          "restore": 100,
+          "durationDays": 0.15,
+          "consume": "item.fish_catfish_giant",
+          "skill": "Cooking",
+          "skillXp": 40,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık şöleni",
+          "moodValue": 10,
+          "moodDays": 3.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_sturgeon_old",
+          "displayName": "Mersin pişir ve ye",
+          "need": "Hunger",
+          "restore": 100,
+          "durationDays": 0.15,
+          "consume": "item.fish_sturgeon_old",
+          "skill": "Cooking",
+          "skillXp": 40,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık şöleni",
+          "moodValue": 10,
+          "moodDays": 3.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "cook_fish_pike_old",
+          "displayName": "Yaşlı turna pişir ve ye",
+          "need": "Hunger",
+          "restore": 100,
+          "durationDays": 0.15,
+          "consume": "item.fish_pike_old",
+          "skill": "Cooking",
+          "skillXp": 40,
+          "moodId": "mood.meal",
+          "moodText": "Efsane balık şöleni",
+          "moodValue": 10,
+          "moodDays": 3.0,
+          "bladder": 4,
+          "cook": "fry",
+          "needTools": [
+            "tool:knife"
+          ]
+        },
+        {
+          "id": "brew_linden",
+          "displayName": "Ihlamur çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_linden",
+          "bladder": 12,
+          "cook": "boil"
+        },
+        {
+          "id": "brew_sage",
+          "displayName": "Adaçayı çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_sage",
+          "bladder": 12,
+          "cook": "boil"
+        },
+        {
+          "id": "brew_chamomile",
+          "displayName": "Papatya çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_chamomile",
+          "bladder": 12,
+          "cook": "boil"
+        },
+        {
+          "id": "brew_mint",
+          "displayName": "Nane çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_mint",
+          "bladder": 12,
+          "cook": "boil"
+        },
+        {
+          "id": "brew_rosehip",
+          "displayName": "Kuşburnu çayı demle ve iç",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.05,
+          "skill": "Brewing",
+          "skillXp": 6,
+          "minLevel": 2,
+          "consume": "item.tea_rosehip",
+          "bladder": 12,
+          "cook": "boil"
         }
       ],
       "tall": true,
@@ -4472,7 +6483,8 @@
       "site": "indoor",
       "belongs": [
         "living"
-      ]
+      ],
+      "cookFire": true
     },
     {
       "id": "item.candlestick",
@@ -4651,7 +6663,12 @@
               "count": 1
             }
           ],
-          "moodlet": "good_meal"
+          "moodlet": "good_meal",
+          "cook": "bake",
+          "needTools": [
+            "tool:peel",
+            "vessel:bake"
+          ]
         },
         {
           "id": "bake_bread",
@@ -4674,7 +6691,11 @@
             }
           ],
           "skill": "Baking",
-          "skillXp": 14
+          "skillXp": 14,
+          "cook": "bake",
+          "needTools": [
+            "tool:peel"
+          ]
         },
         {
           "id": "make_borek_leek",
@@ -4706,7 +6727,13 @@
               "count": 3
             }
           ],
-          "minLevel": 1
+          "minLevel": 1,
+          "cook": "bake",
+          "needTools": [
+            "tool:pin",
+            "tool:peel",
+            "vessel:bake"
+          ]
         },
         {
           "id": "make_kete_meat",
@@ -4738,7 +6765,13 @@
               "count": 3
             }
           ],
-          "minLevel": 2
+          "minLevel": 2,
+          "cook": "bake",
+          "needTools": [
+            "tool:pin",
+            "tool:peel",
+            "vessel:bake"
+          ]
         },
         {
           "id": "make_tart_apple",
@@ -4774,7 +6807,13 @@
               "count": 4
             }
           ],
-          "minLevel": 3
+          "minLevel": 3,
+          "cook": "bake",
+          "needTools": [
+            "tool:pin",
+            "tool:peel",
+            "vessel:bake"
+          ]
         },
         {
           "id": "make_simit",
@@ -4801,6 +6840,11 @@
               "item": "item.simit",
               "count": 3
             }
+          ],
+          "cook": "bake",
+          "needTools": [
+            "tool:pin",
+            "tool:peel"
           ]
         },
         {
@@ -4824,6 +6868,10 @@
               "item": "item.rusk",
               "count": 2
             }
+          ],
+          "cook": "bake",
+          "needTools": [
+            "tool:peel"
           ]
         },
         {
@@ -4847,7 +6895,11 @@
             }
           ],
           "skill": "Baking",
-          "skillXp": 14
+          "skillXp": 14,
+          "cook": "bake",
+          "needTools": [
+            "tool:peel"
+          ]
         },
         {
           "id": "bake_maslin",
@@ -4874,7 +6926,11 @@
             }
           ],
           "skill": "Baking",
-          "skillXp": 14
+          "skillXp": 14,
+          "cook": "bake",
+          "needTools": [
+            "tool:peel"
+          ]
         },
         {
           "id": "make_bazlama",
@@ -4894,6 +6950,10 @@
               "item": "item.bazlama",
               "count": 3
             }
+          ],
+          "cook": "bake",
+          "needTools": [
+            "tool:pin"
           ]
         },
         {
@@ -4914,6 +6974,10 @@
               "item": "item.yufka",
               "count": 4
             }
+          ],
+          "cook": "bake",
+          "needTools": [
+            "tool:pin"
           ]
         },
         {
@@ -4934,7 +6998,8 @@
               "item": "item.sourdough",
               "count": 1
             }
-          ]
+          ],
+          "cook": "bake"
         },
         {
           "id": "bake_sourdough",
@@ -4966,6 +7031,10 @@
               "item": "item.sourdough",
               "count": 1
             }
+          ],
+          "cook": "bake",
+          "needTools": [
+            "tool:peel"
           ]
         },
         {
@@ -4998,6 +7067,11 @@
               "item": "item.wedding_bread",
               "count": 2
             }
+          ],
+          "cook": "bake",
+          "needTools": [
+            "tool:pin",
+            "tool:peel"
           ]
         },
         {
@@ -5022,6 +7096,10 @@
               "item": "item.bread",
               "count": 11
             }
+          ],
+          "cook": "bake",
+          "needTools": [
+            "tool:peel"
           ]
         }
       ],
@@ -5316,7 +7394,7 @@
     },
     {
       "id": "item.copper_pots",
-      "displayName": "Bakır kazan seti",
+      "displayName": "Bakır kazan",
       "category": "kitchen",
       "price": 70,
       "level": 4,
@@ -5324,20 +7402,7 @@
       "rooms": [
         "kitchen"
       ],
-      "interactions": [
-        {
-          "id": "cook",
-          "displayName": "Bakırda şalgam pişir ve ye",
-          "need": "Hunger",
-          "restore": 70,
-          "durationDays": 0.1,
-          "skill": "Cooking",
-          "skillXp": 35,
-          "consume": "item.turnip",
-          "moodlet": "good_meal",
-          "bladder": 4
-        }
-      ],
+      "interactions": [],
       "beauty": 3,
       "finishGroup": "wood",
       "relation": "nearHearth",
@@ -5355,7 +7420,9 @@
         "mirror": true,
         "pending": true
       },
-      "lockSkill": "Smithing"
+      "lockSkill": "Smithing",
+      "equip": "vessel:boil",
+      "equipTier": 3
     },
     {
       "id": "item.woodshed",
@@ -21290,6 +23357,15 @@
           "restore": 25,
           "durationDays": 0.03,
           "piped": true
+        },
+        {
+          "id": "wash_dishes",
+          "displayName": "Bulaşığı yalakta yıka",
+          "durationDays": 0.04,
+          "washDishes": true,
+          "piped": true,
+          "skill": "Decorating",
+          "skillXp": 1
         }
       ],
       "art": {
@@ -21304,7 +23380,8 @@
       "site": "indoor",
       "belongs": [
         "kitchen"
-      ]
+      ],
+      "washPlace": "spout"
     },
     {
       "id": "item.flush_privy",
@@ -22076,7 +24153,8 @@
         "pxW": 32,
         "pxH": 32,
         "mirror": true
-      }
+      },
+      "equip": "tableware"
     },
     {
       "id": "item.clay_plate",
@@ -22104,7 +24182,8 @@
         "pxW": 32,
         "pxH": 32,
         "mirror": true
-      }
+      },
+      "equip": "tableware"
     },
     {
       "id": "item.tin_plate",
@@ -22132,7 +24211,8 @@
         "pxW": 32,
         "pxH": 32,
         "mirror": true
-      }
+      },
+      "equip": "tableware"
     },
     {
       "id": "item.serving_tray",
@@ -22186,7 +24266,8 @@
         "pxW": 32,
         "pxH": 32,
         "mirror": true
-      }
+      },
+      "equip": "tableware"
     },
     {
       "id": "item.ladle",
@@ -22210,7 +24291,8 @@
         "pxW": 32,
         "pxH": 40,
         "mirror": true
-      }
+      },
+      "equip": "tool:ladle"
     },
     {
       "id": "item.mortar_pestle",
@@ -22284,7 +24366,9 @@
         "pxW": 40,
         "pxH": 40,
         "mirror": true
-      }
+      },
+      "equip": "vessel:boil",
+      "equipTier": 3
     },
     {
       "id": "item.storage_pot_small",
@@ -28591,7 +30675,8 @@
       "finishGroup": "clay",
       "tags": [
         "merchant"
-      ]
+      ],
+      "equip": "tableware"
     },
     {
       "id": "item.lattice_screen",
@@ -31762,6 +33847,18 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "washPlace": "tub",
+      "interactions": [
+        {
+          "id": "wash_dishes",
+          "displayName": "Bulaşığı leğende yıka",
+          "durationDays": 0.05,
+          "washDishes": true,
+          "fetchWater": true,
+          "skill": "Decorating",
+          "skillXp": 1
+        }
       ]
     },
     {
@@ -44275,7 +46372,7 @@
     },
     {
       "id": "render_tallow",
-      "station": "item.cooking_pot",
+      "station": "item.hearth_stone",
       "produces": "item.tallow",
       "count": 2,
       "materials": [
@@ -44287,7 +46384,11 @@
       "durationDays": 0.08,
       "skill": "Chandlery",
       "skillXp": 5,
-      "displayName": "İç yağı erit"
+      "displayName": "İç yağı erit",
+      "cook": "boil",
+      "needTools": [
+        "tool:knife"
+      ]
     },
     {
       "id": "tallow_candle",
@@ -45116,7 +47217,7 @@
     },
     {
       "id": "pastirma_pepper",
-      "station": "item.cooking_pot",
+      "station": "item.hearth_stone",
       "produces": "item.pastirma",
       "count": 3,
       "materials": [
@@ -45136,7 +47237,11 @@
       "durationDays": 0.15,
       "skill": "Cooking",
       "skillXp": 12,
-      "displayName": "Biberli pastırma"
+      "displayName": "Biberli pastırma",
+      "cook": "raw",
+      "needTools": [
+        "tool:knife"
+      ]
     },
     {
       "id": "dry_coffee",
@@ -45172,7 +47277,7 @@
     },
     {
       "id": "roast_coffee",
-      "station": "item.cooking_pot",
+      "station": "item.hearth_stone",
       "produces": "item.coffee_roasted",
       "materials": [
         {
@@ -45184,7 +47289,8 @@
       "skill": "Cooking",
       "skillXp": 10,
       "displayName": "Kahve kavur (tavada çevirerek)",
-      "count": 2
+      "count": 2,
+      "cook": "fry"
     },
     {
       "id": "grind_coffee",
@@ -45863,7 +47969,7 @@
     },
     {
       "id": "miner_ration",
-      "station": "item.cooking_pot",
+      "station": "item.hearth_stone",
       "produces": "item.miner_ration",
       "materials": [
         {
@@ -45878,7 +47984,11 @@
       "durationDays": 0.03,
       "skill": "Cooking",
       "skillXp": 4,
-      "displayName": "Azık heybesi hazırla"
+      "displayName": "Azık heybesi hazırla",
+      "cook": "raw",
+      "needTools": [
+        "tool:knife"
+      ]
     },
     {
       "id": "dye_crimson",
@@ -46078,7 +48188,7 @@
     },
     {
       "id": "bait",
-      "station": "item.cooking_pot",
+      "station": "item.hearth_stone",
       "produces": "item.bait",
       "materials": [
         {
@@ -46111,7 +48221,7 @@
     },
     {
       "id": "fish_oil",
-      "station": "item.cooking_pot",
+      "station": "item.hearth_stone",
       "produces": "item.fish_oil",
       "materials": [
         {
@@ -46123,7 +48233,8 @@
       "skill": "Fishing",
       "skillXp": 9,
       "displayName": "Balık yağı kaynat",
-      "minLevel": 6
+      "minLevel": 6,
+      "cook": "boil"
     },
     {
       "id": "seed_vetch",
@@ -46826,7 +48937,7 @@
     },
     {
       "id": "wedding_dish",
-      "station": "item.cooking_pot",
+      "station": "item.hearth_stone",
       "produces": "item.wedding_dish",
       "materials": [
         {
@@ -46847,11 +48958,15 @@
       "skillXp": 26,
       "displayName": "Keşkek döv",
       "count": 2,
-      "minLevel": 9
+      "minLevel": 9,
+      "cook": "boil",
+      "needTools": [
+        "tool:knife"
+      ]
     },
     {
       "id": "pomegranate_sherbet",
-      "station": "item.cooking_pot",
+      "station": "item.hearth_stone",
       "produces": "item.pomegranate_sherbet",
       "materials": [
         {
@@ -46868,7 +48983,8 @@
       "skillXp": 9,
       "displayName": "Nar şerbeti yap",
       "count": 2,
-      "minLevel": 4
+      "minLevel": 4,
+      "cook": "boil"
     },
     {
       "id": "aged_vinegar",
@@ -50537,6 +52653,539 @@
       "durationDays": 0.06,
       "skillXp": 8,
       "displayName": "Eski kılıcı duvara as"
+    },
+    {
+      "id": "render_tallow__fire",
+      "station": "item.fireplace_large",
+      "produces": "item.tallow",
+      "count": 2,
+      "materials": [
+        {
+          "item": "item.meat",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Chandlery",
+      "skillXp": 5,
+      "displayName": "İç yağı erit",
+      "cook": "boil",
+      "needTools": [
+        "tool:knife"
+      ]
+    },
+    {
+      "id": "pastirma_pepper__fire",
+      "station": "item.fireplace_large",
+      "produces": "item.pastirma",
+      "count": 3,
+      "materials": [
+        {
+          "item": "item.meat",
+          "count": 2
+        },
+        {
+          "item": "item.black_pepper",
+          "count": 1
+        },
+        {
+          "item": "item.salt",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Cooking",
+      "skillXp": 12,
+      "displayName": "Biberli pastırma",
+      "cook": "raw",
+      "needTools": [
+        "tool:knife"
+      ]
+    },
+    {
+      "id": "roast_coffee__fire",
+      "station": "item.fireplace_large",
+      "produces": "item.coffee_roasted",
+      "materials": [
+        {
+          "item": "item.coffee_green",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Cooking",
+      "skillXp": 10,
+      "displayName": "Kahve kavur (tavada çevirerek)",
+      "count": 2,
+      "cook": "fry"
+    },
+    {
+      "id": "miner_ration__fire",
+      "station": "item.fireplace_large",
+      "produces": "item.miner_ration",
+      "materials": [
+        {
+          "item": "item.bread",
+          "count": 1
+        },
+        {
+          "item": "item.cheese",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.03,
+      "skill": "Cooking",
+      "skillXp": 4,
+      "displayName": "Azık heybesi hazırla",
+      "cook": "raw",
+      "needTools": [
+        "tool:knife"
+      ]
+    },
+    {
+      "id": "bait__fire",
+      "station": "item.fireplace_large",
+      "produces": "item.bait",
+      "materials": [
+        {
+          "item": "item.bread",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Fishing",
+      "skillXp": 3,
+      "displayName": "Yem yoğur",
+      "count": 4,
+      "minLevel": 2
+    },
+    {
+      "id": "fish_oil__fire",
+      "station": "item.fireplace_large",
+      "produces": "item.fish_oil",
+      "materials": [
+        {
+          "item": "item.fish_carp",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Fishing",
+      "skillXp": 9,
+      "displayName": "Balık yağı kaynat",
+      "minLevel": 6,
+      "cook": "boil"
+    },
+    {
+      "id": "wedding_dish__fire",
+      "station": "item.fireplace_large",
+      "produces": "item.wedding_dish",
+      "materials": [
+        {
+          "item": "item.meat",
+          "count": 2
+        },
+        {
+          "item": "item.flour",
+          "count": 2
+        },
+        {
+          "item": "item.butter",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.3,
+      "skill": "Cooking",
+      "skillXp": 26,
+      "displayName": "Keşkek döv",
+      "count": 2,
+      "minLevel": 9,
+      "cook": "boil",
+      "needTools": [
+        "tool:knife"
+      ]
+    },
+    {
+      "id": "pomegranate_sherbet__fire",
+      "station": "item.fireplace_large",
+      "produces": "item.pomegranate_sherbet",
+      "materials": [
+        {
+          "item": "item.pomegranate",
+          "count": 3
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Brewing",
+      "skillXp": 9,
+      "displayName": "Nar şerbeti yap",
+      "count": 2,
+      "minLevel": 4,
+      "cook": "boil"
+    },
+    {
+      "id": "kit_pot_clay",
+      "station": "item.pottery_wheel",
+      "produces": "item.pot_clay",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Pottery",
+      "skillXp": 6,
+      "displayName": "Kil tencere yap"
+    },
+    {
+      "id": "kit_guvec_plain",
+      "station": "item.pottery_wheel",
+      "produces": "item.guvec_plain",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Pottery",
+      "skillXp": 6,
+      "displayName": "Sırsız güveç yap",
+      "minLevel": 1
+    },
+    {
+      "id": "kit_guvec_glazed",
+      "station": "item.pottery_wheel",
+      "produces": "item.guvec_glazed",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 2
+        },
+        {
+          "item": "item.ash",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Pottery",
+      "skillXp": 10,
+      "displayName": "Sırlı güveç yap",
+      "minLevel": 3
+    },
+    {
+      "id": "kit_guvec_fine",
+      "station": "item.pottery_wheel",
+      "produces": "item.guvec_fine",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 2
+        },
+        {
+          "item": "item.glazed_tile",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Pottery",
+      "skillXp": 16,
+      "displayName": "Çini sırlı güveç yap",
+      "minLevel": 6
+    },
+    {
+      "id": "kit_tray_clay",
+      "station": "item.pottery_wheel",
+      "produces": "item.baking_tray_clay",
+      "materials": [
+        {
+          "item": "item.clay",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Pottery",
+      "skillXp": 5,
+      "displayName": "Kil fırın tepsisi yap",
+      "minLevel": 1
+    },
+    {
+      "id": "kit_cauldron",
+      "station": "item.forge",
+      "produces": "item.cooking_pot",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 14,
+      "displayName": "Demir kazan döv",
+      "minLevel": 2
+    },
+    {
+      "id": "kit_griddle",
+      "station": "item.forge",
+      "produces": "item.griddle_iron",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Smithing",
+      "skillXp": 10,
+      "displayName": "Demir sac döv",
+      "minLevel": 2
+    },
+    {
+      "id": "kit_pan_copper",
+      "station": "item.forge",
+      "produces": "item.pan_copper",
+      "materials": [
+        {
+          "item": "item.copper",
+          "count": 2
+        },
+        {
+          "item": "item.tin",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Bakır tava döv, kalayla",
+      "minLevel": 6
+    },
+    {
+      "id": "kit_spit_iron",
+      "station": "item.forge",
+      "produces": "item.spit_iron",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Smithing",
+      "skillXp": 8,
+      "displayName": "Demir şiş döv",
+      "minLevel": 1
+    },
+    {
+      "id": "kit_spit_steel",
+      "station": "item.forge",
+      "produces": "item.spit_steel",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 2
+        },
+        {
+          "item": "item.charcoal",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.12,
+      "skill": "Smithing",
+      "skillXp": 18,
+      "displayName": "Çelik şiş ve ızgara döv",
+      "minLevel": 6
+    },
+    {
+      "id": "kit_tray_copper",
+      "station": "item.forge",
+      "produces": "item.baking_tray_copper",
+      "materials": [
+        {
+          "item": "item.copper",
+          "count": 1
+        },
+        {
+          "item": "item.tin",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Smithing",
+      "skillXp": 14,
+      "displayName": "Bakır fırın tepsisi döv",
+      "minLevel": 5
+    },
+    {
+      "id": "kit_trivet",
+      "station": "item.forge",
+      "produces": "item.trivet_iron",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Smithing",
+      "skillXp": 6,
+      "displayName": "Sacayağı döv",
+      "minLevel": 1
+    },
+    {
+      "id": "kit_knife",
+      "station": "item.forge",
+      "produces": "item.kitchen_knife",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        },
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Smithing",
+      "skillXp": 8,
+      "displayName": "Mutfak bıçağı döv",
+      "minLevel": 1
+    },
+    {
+      "id": "kit_colander",
+      "station": "item.forge",
+      "produces": "item.colander",
+      "materials": [
+        {
+          "item": "item.copper",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Smithing",
+      "skillXp": 10,
+      "displayName": "Kevgir döv",
+      "minLevel": 3
+    },
+    {
+      "id": "kit_board",
+      "station": "item.workbench",
+      "produces": "item.cutting_board",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.04,
+      "skill": "Carpentry",
+      "skillXp": 4,
+      "displayName": "Kesme tahtası yap"
+    },
+    {
+      "id": "kit_spoon",
+      "station": "item.workbench",
+      "produces": "item.wooden_spoon",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.03,
+      "skill": "Carpentry",
+      "skillXp": 3,
+      "displayName": "Tahta kaşık oy"
+    },
+    {
+      "id": "kit_rolling",
+      "station": "item.workbench",
+      "produces": "item.rolling_board",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Carpentry",
+      "skillXp": 5,
+      "displayName": "Oklava ve hamur tahtası yap",
+      "minLevel": 1
+    },
+    {
+      "id": "kit_peel",
+      "station": "item.workbench",
+      "produces": "item.baker_peel",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Carpentry",
+      "skillXp": 5,
+      "displayName": "Fırın küreği yap",
+      "minLevel": 1
+    },
+    {
+      "id": "kit_dish_tub",
+      "station": "item.workbench",
+      "produces": "item.dish_tub",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 3
+        },
+        {
+          "item": "item.nails",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.08,
+      "skill": "Carpentry",
+      "skillXp": 8,
+      "displayName": "Bulaşık leğeni yap",
+      "minLevel": 2
+    },
+    {
+      "id": "kit_dish_basket",
+      "station": "item.workbench",
+      "produces": "item.dish_basket",
+      "materials": [
+        {
+          "item": "item.withy",
+          "count": 3
+        }
+      ],
+      "durationDays": 0.05,
+      "skill": "Weaving",
+      "skillXp": 5,
+      "displayName": "Bulaşık sepeti ör"
+    },
+    {
+      "id": "kit_washing_stone",
+      "station": "item.stonecutter",
+      "produces": "item.washing_stone",
+      "materials": [
+        {
+          "item": "item.stone",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.06,
+      "skill": "Masonry",
+      "skillXp": 6,
+      "displayName": "Yıkama taşı yont",
+      "minLevel": 1
     }
   ],
   "animals": [

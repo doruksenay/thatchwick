@@ -83,7 +83,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(db.Items.Get("item.fish_eel").HasTag("nobreed"));
             Assert.True(db.Items.Get("item.fish_pike").HasTag("predator"));
             // Bulgur buğdaydan.
-            var pot = db.Items.Get("item.cooking_pot");
+            var pot = db.Items.Get("item.hearth_stone");   // pişirme ocakta (63a)
             Assert.Contains(Inter(pot, "make_pilaf").Consume, m => m.ItemId == "item.wheat");
         }
 
@@ -196,7 +196,7 @@ namespace Thatchwick.Core.Tests
             Assert.Contains(Inter(oven, "bake_maslin").Consume, m => m.ItemId == "item.rye_flour");
             Assert.Contains(Inter(oven, "bake_maslin").Consume, m => m.ItemId == "item.flour");
             var pot = db.Items.Get("item.cooking_pot");
-            Assert.Contains(Inter(pot, "make_porridge_oats").Consume, m => m.ItemId == "item.oats");
+            Assert.Contains(Inter(db.Items.Get("item.hearth_stone"), "make_porridge_oats").Consume, m => m.ItemId == "item.oats");   // pişirme ocakta (63a)
             Assert.Equal("item.porridge_oats", Inter(pot, "eat_porridge_oats").ConsumeItem);
             Assert.True(db.Items.Get("item.bread_rye").SpoilDays > db.Items.Get("item.bread").SpoilDays);   // çavdar ekmeği dayanıklı
         }

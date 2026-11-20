@@ -65,7 +65,7 @@ namespace Thatchwick.Core.Tests
                 }
             var w = new WorldState(new GridMap(8, 8));
             var h = new Household();
-            var pot = w.PlaceItem(db.Items.Get("item.cooking_pot"), new GridPos(3, 3));
+            var pot = w.PlaceItem(db.Items.Get("item.hearth_stone"), new GridPos(3, 3));   // pişirme ocakta (63a)
             var cook = Person();
             var runner = new JobRunner(cook, w) { Autonomous = false, Effects = new InteractionEffects(w, h, db) };
             h.AddItem("item.fish_carp");

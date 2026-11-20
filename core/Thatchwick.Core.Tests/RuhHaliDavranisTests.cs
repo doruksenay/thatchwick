@@ -38,6 +38,7 @@ namespace Thatchwick.Core.Tests
             var h = new Home { Db = db, World = world, House = house, Fx = new InteractionEffects(world, house, db) };
             h.Bed = world.PlaceItem(db.Items.Get("item.bed_straw"), new GridPos(2, 2));
             h.Pot = world.PlaceItem(db.Items.Get("item.cooking_pot"), new GridPos(6, 2));
+            world.PlaceItem(db.Items.Get("item.hearth_stone"), new GridPos(6, 4));   // pişirme ocakta (63a)
             var table = world.PlaceItem(db.Items.Get("item.table_wood"), new GridPos(8, 7));
             h.Board = world.PlaceOnSurface(db.Items.Get("item.morris_board"), table.Id, "b");
             return h;

@@ -149,6 +149,14 @@ namespace Thatchwick.Core.Content
                 item.WindowMount = dto.window;
                 item.Insulation = Math.Max(0f, dto.insulation);
                 item.RequiresNearby = string.IsNullOrEmpty(dto.requiresNear) ? null : dto.requiresNear;
+                // Mutfak aletleri (63, 63a).
+                item.Equip = Blank(dto.equip);
+                item.EquipTier = dto.equipTier;
+                item.CookFire = dto.cookFire;
+                item.WashPlace = Blank(dto.washPlace);
+                if (item.Equip != null && !Equip.IsKnown(item.Equip)) errors.Add($"{dto.id}: bilinmeyen mutfak rolü '{item.Equip}'.");
+                if (item.IsVessel && (item.EquipTier < 1 || item.EquipTier > 3)) errors.Add($"{dto.id}: kabın kademesi 1-3 olmalı.");
+                if (item.WashPlace != null && !WashPlaces.IsKnown(item.WashPlace)) errors.Add($"{dto.id}: bilinmeyen yıkama yeri '{item.WashPlace}'.");
                 item.NearbyRadius = dto.nearRadius > 0 ? dto.nearRadius : 4;
                 item.ShopUnlock = string.IsNullOrEmpty(dto.shopUnlock) ? null : dto.shopUnlock;
                 // Ev bakımı (belge 45): mum, ışık gücü, canlı saksı, yükseltmeler.
@@ -343,10 +351,13 @@ namespace Thatchwick.Core.Content
                             HomeAction = string.IsNullOrWhiteSpace(i.homeAction) ? null : i.homeAction.Trim(),
                             SkillWork = string.IsNullOrWhiteSpace(i.skillWork) ? null : i.skillWork.Trim(),
                             Chain = Blank(i.chain),
+                            Cook = Blank(i.cook),
+                            WashDishes = i.washDishes,
                             UpgradeId = string.IsNullOrWhiteSpace(i.upgrade) ? null : i.upgrade.Trim(),
                             TreeAction = string.IsNullOrWhiteSpace(i.treeAction) ? null : i.treeAction.Trim()
                         };
                         AddMaterials(interaction, i.materials);
+                        if (!MapKitchenNeeds(interaction, i.needTools, $"{dto.id}/{i.id}", errors)) continue;
                         bool badExtra = false;
                         if (i.extraRestore != null)
                             foreach (var er in i.extraRestore)
@@ -663,8 +674,10 @@ namespace Thatchwick.Core.Content
                     IsCraft = true,
                     Moodlet = string.IsNullOrWhiteSpace(r.moodlet) ? Mood.MoodCatalog.Proud : r.moodlet,
                     RequiresBranch = string.IsNullOrWhiteSpace(r.requiresBranch) ? null : r.requiresBranch.Trim(),
-                    AdultPack = r.adultPack
+                    AdultPack = r.adultPack,
+                    Cook = Blank(r.cook)
                 };
+                if (!MapKitchenNeeds(interaction, r.needTools, $"tarif {r.id}", errors)) continue;
                 interaction.Produce.Add(new ProduceDef { ItemId = r.produces, Count = r.count <= 0 ? 1 : r.count, Chance = 1f });
                 // Kilit becerisi: eşyayı üreten ilk tarifin becerisi (belge 45, 3.1).
                 if (db.Items.TryGet(r.produces, out var made) && !made.CraftSkill.HasValue) made.CraftSkill = skill;
@@ -679,6 +692,22 @@ namespace Thatchwick.Core.Content
         /// Eylem zincirlerini kaydeder ve her etkileşime zincirini bağlar (belge 60): önce etkileşimin kendi "chain" alanı,
         /// yoksa eşleme kuralı tutan ilk zincir. Zinciri olmayan etkileşim eskisi gibi tek pozda yapılır.
         /// </summary>
+        // Pişirme yöntemini ve ek gerekenleri denetler (63 §2.3, 63a-K1).
+        private static bool MapKitchenNeeds(InteractionDef interaction, string[] needTools, string where, List<string> errors)
+        {
+            if (interaction.Cook != null && !CookMethods.IsKnown(interaction.Cook)) { errors.Add($"{where}: bilinmeyen pişirme yöntemi '{interaction.Cook}'."); return false; }
+            if (needTools == null) return true;
+            foreach (var n in needTools)
+            {
+                string need = Blank(n);
+                if (need == null) continue;
+                if (interaction.Cook == null) { errors.Add($"{where}: needTools yalnızca pişirme yöntemi (cook) olan işte kullanılır."); return false; }
+                if (!Equip.IsKnown(need) || need == Equip.Tableware || need == Equip.Basket) { errors.Add($"{where}: bilinmeyen gereken '{need}'."); return false; }
+                interaction.NeedTools.Add(need);
+            }
+            return true;
+        }
+
         private static void ApplyChains(ChainDto[] chains, ContentDatabase db, List<string> errors)
         {
             if (chains != null)

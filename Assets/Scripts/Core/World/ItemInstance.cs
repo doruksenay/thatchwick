@@ -95,6 +95,12 @@ namespace Thatchwick.Core.World
             if (count > 0) _stock[itemId] = count; else _stock.Remove(itemId);
         }
 
+        /// <summary>
+        /// Bu eşyayı şu an elinde taşıyan karakter (mutfak aleti kancadan alındı; 63a); 0 = yerinde. Kayda girmez;
+        /// görünüm alınmış eşyayı çizmez.
+        /// </summary>
+        public int TakenBy { get; internal set; }
+
         /// <summary>Isı kaynağının kalan yanma süresi (oyun günü). 0 = sönük.</summary>
         public double FuelDays { get; internal set; }
         public bool IsLit => FuelDays > 0;

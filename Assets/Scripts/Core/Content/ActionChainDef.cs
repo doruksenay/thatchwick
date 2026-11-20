@@ -81,7 +81,7 @@ namespace Thatchwick.Core.Content
         public static readonly string[] All =
         {
             "bath", "slaughter", "craft", "produce", "harvest", "collect", "water", "fertilize", "eatContents", "fillDecor",
-            "feed", "pet", "teach", "heal", "eat", "drink", "sleep", "toilet", "repair"
+            "feed", "pet", "teach", "heal", "eat", "drink", "sleep", "toilet", "repair", "cook", "washDishes"
         };
 
         public static bool IsKnown(string flag) => Array.IndexOf(All, flag) >= 0;
@@ -105,11 +105,14 @@ namespace Thatchwick.Core.Content
                 case "teach": return i.Teach;
                 case "heal": return i.Heal > 0f;
                 // Yeme ve içme: açlığı doyuran, üretim yapmayan etkileşim. İçecek tuvaleti daha çok doldurur (BladderCost).
-                case "eat": return i.RestoresNeed && i.Need == NeedType.Hunger && i.Produce.Count == 0 && i.BladderCost < 10f;
+                // Pişirip yeme (ocakta, 63a) pişirme zincirini oynar.
+                case "eat": return i.RestoresNeed && i.Need == NeedType.Hunger && i.Produce.Count == 0 && i.BladderCost < 10f && i.Cook == null;
                 case "drink": return i.RestoresNeed && i.Produce.Count == 0 && i.BladderCost >= 10f;
                 case "sleep": return i.RestoresNeed && i.Need == NeedType.Energy && i.DurationDays >= 0.1;
                 case "toilet": return i.RestoresNeed && i.Need == NeedType.Bladder;
                 case "repair": return i.RepairMaterial != null || i.Polish;
+                case "cook": return i.Cook != null;
+                case "washDishes": return i.WashDishes;
                 default: return false;
             }
         }
@@ -133,7 +136,12 @@ namespace Thatchwick.Core.Content
         /// <summary>Eşya ısı kaynağı (ocak, mangal): ateşle ilgili adımlar.</summary>
         public const string Fire = "fire";
 
-        public static readonly string[] All = { SkillLow, SkillHigh, MoodGood, MoodBad, CarriedWater, Fire };
+        /// <summary>Ateş bu iş için yeni tutuşturuldu (ocak sönüktü; 63a §3).</summary>
+        public const string Unlit = "unlit";
+        /// <summary>Kesme tahtası ya da hazırlık yüzeyi yok: dizinde doğrar (63 §2.5).</summary>
+        public const string NoBoard = "noBoard";
+
+        public static readonly string[] All = { SkillLow, SkillHigh, MoodGood, MoodBad, CarriedWater, Fire, Unlit, NoBoard };
 
         public static bool IsKnown(string when) => Array.IndexOf(All, when) >= 0;
 

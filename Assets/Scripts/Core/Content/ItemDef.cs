@@ -532,6 +532,23 @@ namespace Thatchwick.Core.Content
         public int NearbyRadius { get; set; }
         /// <summary>RequiresNearby'nin görünen adı (içerik yüklenirken doldurulur).</summary>
         public string RequiresNearbyName { get; set; }
+
+        // ---- mutfak aletleri (Project belgeleri 63, 63a) ----
+        /// <summary>Mutfak rolü (bkz. <see cref="Content.Equip"/>): "vessel:boil", "tool:knife", "tableware", "basket"; yoksa null.</summary>
+        public string Equip { get; set; }
+        /// <summary>Kabın kademesi (1 Köylü, 2 Zanaatkâr, 3 Tüccar): ekipman puanı ve kalite tavanı (63a §5.2). Alette 0.</summary>
+        public int EquipTier { get; set; }
+        /// <summary>Üstünde yemek pişirilen ateş (mutfak ocağı): pişirme yakıt harcar, sönükse tutuşturulur.</summary>
+        public bool CookFire { get; set; }
+        /// <summary>Bulaşık yıkama yeri türü (bkz. <see cref="WashPlaces"/>); yoksa null.</summary>
+        public string WashPlace { get; set; }
+
+        public bool IsVessel => Equip != null && Equip.StartsWith(Content.Equip.VesselPrefix, StringComparison.Ordinal);
+        /// <summary>Kabın pişirme yöntemi (boil, fry, stew, grill, bake); kap değilse null.</summary>
+        public string VesselFor => IsVessel ? Equip.Substring(Content.Equip.VesselPrefix.Length) : null;
+        public bool IsKitchenTool => Equip != null && Equip.StartsWith(Content.Equip.ToolPrefix, StringComparison.Ordinal);
+        /// <summary>El aletinin adı (knife, spoon...); alet değilse null.</summary>
+        public string ToolKind => IsKitchenTool ? Equip.Substring(Content.Equip.ToolPrefix.Length) : null;
         /// <summary>
         /// "craftonly" eşya bu kilit açılınca katalogdan da alınır (cam şişe: "glassworks" = köye camcılık geldi). null ise hep yalnızca yapılır.
         /// </summary>
