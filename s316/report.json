@@ -1,0 +1,76 @@
+{
+  "job": "s316",
+  "kind": "ambience",
+  "family": "ambience",
+  "created": "2026-11-20T22:15:51Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 20.0,
+          "lufs": -31.0,
+          "true_peak_db": -1.0,
+          "rms_db": -33.6,
+          "note": "tepe sınırında, yükseklik -31.0 (hedef -26)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes). Inside a small dry mine tunnel: quiet still air, slow water drips now and then, faint creak of wooden props, a lantern flame softly flickering. Calm and cozy, not scary, no wind howling. Details: slow drips and wooden prop creaks.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -10.0,
+          "rms_db": -27.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0131)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes). Inside a small dry mine tunnel: quiet still air, slow water drips now and then, faint creak of wooden props, a lantern flame softly flickering. Calm and cozy, not scary, no wind howling. Details: very quiet, soft lantern flutter and distant drip.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 20.0,
+          "lufs": -26.0,
+          "true_peak_db": -2.4,
+          "rms_db": -29.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.018)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, countryside ambience bed: calm, warm, pleasant and soothing, continuous and even. No music, no voices, no modern sounds (no cars, no engines, no planes). Inside a small dry mine tunnel: quiet still air, slow water drips now and then, faint creak of wooden props, a lantern flame softly flickering. Calm and cozy, not scary, no wind howling. Details: slow drips and wooden prop creaks.",
+          "duration": 20,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0131
+          ],
+          [
+            "c1",
+            "c3",
+            0.018
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0131,
+          "c2": 0.012,
+          "c3": 0.012
+        },
+        "ref_distance": {
+          "c1": 0.0217,
+          "c2": 0.016,
+          "c3": 0.0106
+        }
+      }
+    }
+  }
+}

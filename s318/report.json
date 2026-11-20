@@ -1,0 +1,96 @@
+{
+  "job": "s318",
+  "kind": "spot",
+  "family": "spots",
+  "created": "2026-11-20T22:16:22Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 3.164,
+          "lufs": -24.0,
+          "true_peak_db": -2.1,
+          "rms_db": -23.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, single isolated nature sound event: gentle and pleasant, natural outdoor recording, nothing else audible, no music, no voice. One distant soft roll of thunder far over the hills, low and rumbling, not a sharp crack. Details: a little closer but still soft.",
+          "duration": 3.672802409232553,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 3.967,
+          "lufs": -24.0,
+          "true_peak_db": -4.7,
+          "rms_db": -24.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0144)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, single isolated nature sound event: gentle and pleasant, natural outdoor recording, nothing else audible, no music, no voice. One distant soft roll of thunder far over the hills, low and rumbling, not a sharp crack. Details: far away.",
+          "duration": 4.171148305811041,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 4.02,
+          "lufs": -24.0,
+          "true_peak_db": -1.6,
+          "rms_db": -24.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0127)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, single isolated nature sound event: gentle and pleasant, natural outdoor recording, nothing else audible, no music, no voice. One distant soft roll of thunder far over the hills, low and rumbling, not a sharp crack. Details: a little closer but still soft.",
+          "duration": 4.2026814273966435,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 3.85,
+          "lufs": -24.0,
+          "true_peak_db": -4.8,
+          "rms_db": -24.8,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0203)"
+          ],
+          "pass": true,
+          "prompt": "Cozy medieval village life game, single isolated nature sound event: gentle and pleasant, natural outdoor recording, nothing else audible, no music, no voice. One distant soft roll of thunder far over the hills, low and rumbling, not a sharp crack. Details: far away.",
+          "duration": 3.9497661415162497,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0144
+          ],
+          [
+            "c1",
+            "c3",
+            0.0127
+          ],
+          [
+            "c1",
+            "c4",
+            0.0203
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0127,
+          "c2": 0.0024,
+          "c3": 0.0024,
+          "c4": 0.0142
+        },
+        "ref_distance": {
+          "c1": 0.1458,
+          "c2": 0.1682,
+          "c3": 0.1614,
+          "c4": 0.1767
+        }
+      }
+    }
+  }
+}
