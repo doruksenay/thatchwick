@@ -89,6 +89,15 @@ namespace Thatchwick.Core.World
         private readonly ZoneType[] _zone;
         private RoomMap _rooms;
         private readonly Dictionary<Edge, EdgeKind> _edges = new Dictionary<Edge, EdgeKind>();
+        // Kenar türleri ayrıca düz dizilerde de tutulur (sözlük dolaşma ve kayıt içindir): GetEdge yol bulmada, oda
+        // tespitinde ve ısıda karo başına birkaç kez sorulur; sözlük araması bunların asıl maliyetiydi.
+        private readonly byte[] _edgeH, _edgeV;
+        private int EdgeSlot(Edge e) => ((e.Z - MinLevel) * (Height + 1) + e.Y) * (Width + 1) + e.X;
+        private void StoreEdge(Edge e, EdgeKind kind)
+        {
+            if (e.X < 0 || e.Y < 0 || e.X > Width || e.Y > Height || !IsValidLevel(e.Z)) return;
+            (e.Axis == EdgeAxis.Horizontal ? _edgeH : _edgeV)[EdgeSlot(e)] = (byte)kind;
+        }
         private readonly Dictionary<Edge, EdgeLook> _looks = new Dictionary<Edge, EdgeLook>();
         // Karo başına zemin stili ve çatı stili (yapı parçası kimliği); null = türün/çatının varsayılanı.
         private readonly string[] _floorStyle;
@@ -118,6 +127,8 @@ namespace Thatchwick.Core.World
             _owned = new bool[width * height];
             _floorStyle = new string[n];
             _roofStyle = new string[n];
+            _edgeH = new byte[(width + 1) * (height + 1) * LevelCount];
+            _edgeV = new byte[(width + 1) * (height + 1) * LevelCount];
             for (int i = 0; i < _owned.Length; i++) _owned[i] = true; // varsayılan: her yer hanenin
             // Zemin katın her karosu vardır; üst kat ve bodrum karoları yapılınca/kazılınca oluşur.
             for (int i = 0; i < width * height; i++) _exists[(0 - MinLevel) * width * height + i] = true;
@@ -197,6 +208,10 @@ namespace Thatchwick.Core.World
         }
 
         /// <summary>p'den merdivenle gidilebilen (iki ucu da açık) karolar.</summary>
+        /// <summary>Bu karodan çıkan merdiven bağlantısı ya da geçit var mı (yol bulma: yoksa LinksFrom hiç çağrılmaz).</summary>
+        public bool HasLinksFrom(GridPos p) =>
+            (_links.Count > 0 && _links.ContainsKey(p)) || (_portals.Count > 0 && _portals.ContainsKey(p));
+
         public IEnumerable<GridPos> LinksFrom(GridPos p)
         {
             if (!IsWalkable(p)) yield break;
@@ -332,7 +347,11 @@ namespace Thatchwick.Core.World
             ? e.X >= 0 && e.X < Width && e.Y >= 0 && e.Y <= Height
             : e.X >= 0 && e.X <= Width && e.Y >= 0 && e.Y < Height);
 
-        public EdgeKind GetEdge(Edge e) => _edges.TryGetValue(e, out var k) ? k : EdgeKind.None;
+        public EdgeKind GetEdge(Edge e)
+        {
+            if (e.X < 0 || e.Y < 0 || e.X > Width || e.Y > Height || !IsValidLevel(e.Z)) return EdgeKind.None;
+            return (EdgeKind)(e.Axis == EdgeAxis.Horizontal ? _edgeH : _edgeV)[EdgeSlot(e)];
+        }
 
         public IEnumerable<KeyValuePair<Edge, EdgeKind>> Edges => _edges;
 
@@ -348,10 +367,12 @@ namespace Thatchwick.Core.World
             {
                 _edges.Remove(e);
                 _looks.Remove(e);
+                StoreEdge(e, EdgeKind.None);
             }
             else
             {
                 _edges[e] = kind;
+                StoreEdge(e, kind);
                 var next = look != null ? look.Clone() : new EdgeLook();
                 next.Style = style;
                 if (!EdgeKinds.IsRoomBoundary(kind)) { next.FinishA = null; next.FinishB = null; }   // çit ve korkulukta kaplama yok
@@ -366,10 +387,11 @@ namespace Thatchwick.Core.World
         {
             if (!EdgeInBounds(e)) throw new ArgumentOutOfRangeException(nameof(e), $"{e} ızgara dışında.");
             var old = GetEdge(e);
-            if (kind == EdgeKind.None) { _edges.Remove(e); _looks.Remove(e); }
+            if (kind == EdgeKind.None) { _edges.Remove(e); _looks.Remove(e); StoreEdge(e, EdgeKind.None); }
             else
             {
                 _edges[e] = kind;
+                StoreEdge(e, kind);
                 if (look == null || look.IsEmpty) _looks.Remove(e); else _looks[e] = look.Clone();
             }
             if (old != kind) _rooms = null;
@@ -431,6 +453,19 @@ namespace Thatchwick.Core.World
             if (!IsWalkable(to)) return false;
             int dx = to.X - from.X, dy = to.Y - from.Y;
             if (dx == 0 && dy == 0) return true;
+            // Hızlı yol (yol bulmanın iç döngüsü): komşu adım ve başlangıç ızgaradaysa kenarlar doğrudan dizilerden okunur.
+            if (dx >= -1 && dx <= 1 && dy >= -1 && dy <= 1 && from.X >= 0 && from.Y >= 0 && from.X < Width && from.Y < Height)
+            {
+                int zi = from.Z - MinLevel, fx = from.X, fy = from.Y;
+                if (dy == 0) return !BlocksV(dx > 0 ? fx + 1 : fx, fy, zi);
+                if (dx == 0) return !BlocksH(fx, dy > 0 ? fy + 1 : fy, zi);
+                // Çapraz: iki ara karo açık ve dört kenar duvarsız olmalı (köşe kesilmez).
+                int tx = fx + dx, ty = fy + dy, baseIdx = zi * Height * Width;
+                int hi = baseIdx + fy * Width + tx, vi = baseIdx + ty * Width + fx;
+                if (!_exists[hi] || _blocked[hi] || !_exists[vi] || _blocked[vi]) return false;   // tx, ty ızgarada: to yürünür
+                return !BlocksV(dx > 0 ? fx + 1 : fx, fy, zi) && !BlocksH(tx, dy > 0 ? fy + 1 : fy, zi)
+                    && !BlocksH(fx, dy > 0 ? fy + 1 : fy, zi) && !BlocksV(dx > 0 ? fx + 1 : fx, ty, zi);
+            }
             if (dx == 0 || dy == 0) return !EdgeBlocks(EdgeBetween(from, to));
 
             var h = new GridPos(from.X + dx, from.Y, from.Z);
@@ -441,5 +476,12 @@ namespace Thatchwick.Core.World
         }
 
         private int Index(GridPos p) => ((p.Z - MinLevel) * Height + p.Y) * Width + p.X;
+
+        // Ham kenar okuma (zi = kat - MinLevel). Dikey kenar (x, y): (x-1, y) ile (x, y) arası; yatay kenar (x, y): (x, y-1) ile (x, y) arası.
+        private bool BlocksV(int x, int y, int zi) => EdgeKinds.BlocksMovement((EdgeKind)_edgeV[(zi * (Height + 1) + y) * (Width + 1) + x]);
+        private bool BlocksH(int x, int y, int zi) => EdgeKinds.BlocksMovement((EdgeKind)_edgeH[(zi * (Height + 1) + y) * (Width + 1) + x]);
+        internal EdgeKind EdgeVRaw(int x, int y, int zi) => (EdgeKind)_edgeV[(zi * (Height + 1) + y) * (Width + 1) + x];
+        internal EdgeKind EdgeHRaw(int x, int y, int zi) => (EdgeKind)_edgeH[(zi * (Height + 1) + y) * (Width + 1) + x];
+        internal bool ExistsRaw(int index) => _exists[index];
     }
 }
