@@ -1,7 +1,7 @@
 ---
 id: "103"
 title: Hayvanlar 3: kaz + koyun
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:32Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: hayvan
@@ -93,3 +93,5 @@ Hiçbir şeyi silme ya da üzerine yazma. Klasör tarihi üretim günü (`yyyy-m
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
+- 2026-11-20: koyun 5 adayı kullanılmaz (pembe-mavi yamalı, garip). Kullanılacak koyunlar: 1, 2, 4.

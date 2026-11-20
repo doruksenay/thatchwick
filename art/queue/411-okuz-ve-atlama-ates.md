@@ -1,7 +1,7 @@
 ---
 id: "407"
 title: "Öküz, örme çit ve bekçi ateşi"
-status: review
+status: rejected
 claimed_at: 2026-11-18T19:22Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 31, 29 (kullanıcı 18.11.2026 "önerdiklerinin tamamını yap")
 family: hayvan
@@ -39,3 +39,4 @@ created: 2026-11-18
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı reddetti (sohbette toplu inceleme). Neden: kullanıcı öküzü beğenmedi; yeniden çizilecek (104t). Sönük bekçi ateşi taş halkası mavi taşlı ve garip; örme çit teslim edilmemişti. Yanık bekçi ateşi iyi.
