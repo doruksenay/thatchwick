@@ -56,6 +56,22 @@ namespace Thatchwick.Core.Work
         /// badana, solan süs). Life.HomeLife.Chores verir; null ise ev görevlisi iş bulmaz.
         /// </summary>
         public Func<IEnumerable<(ItemInstance item, InteractionDef interaction)>> HouseChores { get; set; }
+        /// <summary>
+        /// Avlu işleri (belge 57b §5.1): görevine göre pislik toplama, kompost çevirme, ahır temizliği, ev içi temizlik.
+        /// Avlu sistemi verir; null ise yok.
+        /// </summary>
+        public Func<DutyKind, IEnumerable<(ItemInstance item, InteractionDef interaction)>> YardChores { get; set; }
+
+        private void ConsiderYard(Character c, Action<long, GridPos, Func<Job>> consider)
+        {
+            if (YardChores == null) return;
+            foreach (var (it, i) in YardChores(c.Duty))
+            {
+                if (it == null || i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;
+                var item = it; var inter = i;
+                consider(HouseKey(item.Id, inter.Id), item.Position, () => Job.UseItem(item.Id, inter.Id));
+            }
+        }
         /// <summary>Ev görevi akşam da sürer (mum yakmak akşam işidir): bu saate kadar.</summary>
         public Func<bool> HouseHours { get; set; }
 
@@ -98,12 +114,14 @@ namespace Thatchwick.Core.Work
             {
                 foreach (var it in _world.Items) { if (FarmInteraction(it) != null || EmptyInteraction(it) != null) n++; }
                 if (FirewoodLow) n++;   // odun azaldı
+                if (YardChores != null) foreach (var _ in YardChores(duty)) n++;
             }
             // (Ekilecek boş toprak "bekleyen iş" sayılmaz: tohum varsa görevli kendiliğinden eker.)
             else if (duty == DutyKind.Animals)
             {
                 foreach (var it in _world.Items) if (FeedInteraction(it) != null || CollectInteraction(it) != null) n++;
                 if (_animals != null) foreach (var a in _animals.Animals) if (!a.IsDead && a.PetCooldownDays <= 0) n++;
+                if (YardChores != null) foreach (var _ in YardChores(duty)) n++;
             }
             else if (duty == DutyKind.House && HouseChores != null)
                 foreach (var _ in HouseChores()) n++;
@@ -136,6 +154,7 @@ namespace Thatchwick.Core.Work
 
             if (c.Duty == DutyKind.Farm)
             {
+                ConsiderYard(c, Consider);
                 foreach (var it in _world.Items)
                 {
                     var i = FarmInteraction(it);
@@ -209,6 +228,7 @@ namespace Thatchwick.Core.Work
             }
             else if (c.Duty == DutyKind.Animals)
             {
+                ConsiderYard(c, Consider);
                 foreach (var it in _world.Items)
                 {
                     var i = FeedInteraction(it) ?? CollectInteraction(it);
@@ -229,6 +249,7 @@ namespace Thatchwick.Core.Work
             }
             else if (c.Duty == DutyKind.House && HouseChores != null)
             {
+                ConsiderYard(c, Consider);
                 foreach (var (it, i) in HouseChores())
                 {
                     if (it == null || i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;

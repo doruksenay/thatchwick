@@ -201,7 +201,7 @@ namespace Thatchwick.Core.Life
                 BeautyOf = Mood.BeautyOf
             };
             Mood.BeautyBonus = it => Keepsakes.BeautyBonus(it) + Thatchwick.Core.Build.DecorSystem.SeasonalBeauty(it, Clock.Season) + Home.BeautyBonus(it);
-            Mood.RoomBeautyExtra = Home.RoomBeautyExtra;
+            Mood.RoomBeautyExtra = room => { var e = Home.RoomBeautyExtra(room); return (e.plus, e.minus + Filth.BeautyPenalty(room)); };
             Mood.ExtraComfort = it => Legacy.ComfortBonus(it) + Home.ComfortBonus(it);
             Decor.CollapseFactor = Home.CollapseFactor;
             UpdateMerchant(false);
@@ -360,6 +360,8 @@ namespace Thatchwick.Core.Life
             Projects.AkceFactor = id => id == "project.mill" && BestSkill(SkillType.Engineering) >= Progress.Mastery.MasterLevel ? 0.6 : 1.0;
             Thatchwick.Core.Upbringing.ToyNames.Lookup = id => content.Items.TryGet(id, out var td) ? td.DisplayName : null;
             Breakdowns.Started += (c, kind) => { if (!c.IsVillager) Upbringing.Reputation.Add(Thatchwick.Core.Upbringing.ReputationSystem.Reasons.Breakdown, "bunalım"); };
+            Spoilage.Spoiled += OnSpoiledForYard;
+            Spoilage.OpenRateFactor = () => Filth.FliesIndoors() ? YardNumbers.FlySpoilFactor : 1.0;   // sinek konan yiyecek çabuk bozulur (Z1)
             Spoilage.Spoiled += (id, n) =>
             {
                 bool ice = content.Items.TryGet(id, out var d) && d.HasTag("ice");
@@ -600,6 +602,11 @@ namespace Thatchwick.Core.Life
         {
             if (!dead.IsVillager) Legacy.OnHouseholdDeath(Clock.Season);
             Keepsakes.OnDeath(dead);
+            if (!dead.IsVillager && HasClothing)
+            {
+                int kept = Clothing.ReleaseJewelry(dead);   // takıları yadigâr olarak hanede kalır
+                if (kept > 0) Say(LocText.Of("jewelry.n.heirloom", ("name", dead.Name), ("n", kept)), NoticeLevel.Info, dead.Id);
+            }
             Ledger.OnDied(dead);
             Graves.Bury(dead, Clock.TotalDays);
             int mourners = Mood.Mourn(dead, Population.Members);
@@ -765,6 +772,7 @@ namespace Thatchwick.Core.Life
             runner.InteractionCompleted += OnMasterCraft;
             // Ustalık eseri denemesi iki kat sürer (53 §4.6).
             runner.DurationFactor = (c, item, i) => QualityBook.WillAttempt(c, item, i, Clock.DayIndex) ? 2.0 : 1.0;
+            AttachYard(runner);   // açıkta tuvalet ve gübre kapağı (belge 57)
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
             runner.ItemUsed += (c, item, interaction) => { if (interaction.Id == ReadBoardInteraction) ReadBoard(c); };
             runner.WorkDone += Requests.OnWork;
@@ -845,6 +853,7 @@ namespace Thatchwick.Core.Life
             if (care != null) { care.Talk = AnimalTalk; care.Done += OnOddAnimalCare; }
             _oddAnimals = animals;
             animals.TakenAway += AnimalTalk.OnAnimalTaken;
+            AttachYard(animals);   // ahır kirliliği ve araba filosu (belge 57, 57e)
         }
 
         public void Attach(PlantSystem plants)
@@ -856,6 +865,7 @@ namespace Thatchwick.Core.Life
             Home.IsGreenhouseRoom = plants.IsGreenhouse;          // sera oda tipi
             plants.GreenhouseGrowth = Home.GreenhouseGrowth;
             if (_heat != null) plants.TemperatureAt = _heat.TemperatureAt;   // sera ısısı
+            AttachYard(plants);
         }
         public void Attach(HeatSystem heat)
         {
@@ -866,6 +876,8 @@ namespace Thatchwick.Core.Life
             Decor.TemperatureAt = heat.TemperatureAt;      // sepetteki meyve oda sıcaklığında bozulur
             if (Content.Items.Contains(AshId)) heat.AshItemId = AshId;   // ocağa atılan odunun külü (cam zinciri, 27 §18.3)
             if (_plants != null) _plants.TemperatureAt = heat.TemperatureAt;
+            Filth.TemperatureAt = heat.TemperatureAt;      // sinek ve yığın yaşı sıcaklığa bağlı (belge 57)
+            Compost.TemperatureAt = heat.TemperatureAt;
         }
         private PlantSystem _plants;
         private HeatSystem _heat;
@@ -883,6 +895,7 @@ namespace Thatchwick.Core.Life
 
         public void Attach(Thatchwick.Core.Animals.AnimalSystem animals)
         {
+            AttachYard(animals);   // ahır kirliliği ve araba filosu (belge 57, 57e)
             animals.RiderFell += (horse, rider) =>
             {
                 Injuries.InjureById(rider, "horse_fall");   // moodlet ve bildirim InjurySystem'den
@@ -1013,6 +1026,7 @@ namespace Thatchwick.Core.Life
             effects.AppliedOn += Fields.OnApplied;
             effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i) ?? DrinkBlocker(c, it, i) ?? Trees.CanStart(c, it, i);
             Home.Effects = effects;
+            AttachYard(effects);   // pislik, kompost, ahır (belge 57); ExtraBlocker zincirine eklenir
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
         }
 
@@ -1139,6 +1153,7 @@ namespace Thatchwick.Core.Life
         public void Attach(Thatchwick.Core.Work.FarmWork farm)
         {
             farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish);
+            AttachYard(farm);
             // Su kenarında kavanoz (cam bahçe, belge 47 ek): su ve canlı doğadan.
             farm.JarBlocker = (tile, fill) => Home.WaterJarBlocker(tile, fill);
             farm.PutBackBlocker = PutBackBlocker;                       // kedinin düşürdüğü süs (belge 55)
@@ -1263,8 +1278,10 @@ namespace Thatchwick.Core.Life
                 Breakdowns.Update(step);
                 UpdateClothing();
                 UpdateAilments();
+                UpdateYardMood();
             }
 
+            TickYard(gameDays);
             Spoilage.Tick(gameDays);
             Aging.Tick(gameDays);
             Duties.Tick(gameDays);
@@ -1299,9 +1316,6 @@ namespace Thatchwick.Core.Life
 
         public Season CurrentSeason => Clock.Season;
 
-        /// <summary>Tellal turunu attı (ses ve görsel için; oyun katmanı dinler).</summary>
-        public event Action<Thatchwick.Core.Life.Requests.RequestService.CrierCall> CrierCalled;
-
         /// <summary>
         /// Tellal (karar 20.11.2026): her sabah meydanda o günün yeni ilanlarını bağırır. Hane üyesi kasabadaysa ilanlar
         /// okunmuş sayılır; değilse yalnızca "tellal bir şeyler duyurdu" bildirimi gelir ve ilanlar panodan okunur.
@@ -1315,7 +1329,7 @@ namespace Thatchwick.Core.Life
                     if (!c.IsDead && c.Stage >= AgeStage.Child && Regions.Town.Contains(c.Position)) { listener = c; break; }
             var call = Requests.Cry(listener != null);
             if (call.Fresh.Count == 0) return;
-            CrierCalled?.Invoke(call);
+            SpawnCrier();   // meydanda görünür (şehirde olan görür)
             if (listener != null && call.NewlyRead > 0)
             {
                 var first = call.Fresh[0];
@@ -1489,6 +1503,7 @@ namespace Thatchwick.Core.Life
             Upbringing.OnNewDay();
             Requests.OnNewDay();
             Trees.OnNewDay();
+            YardDay(day);
             NewDay?.Invoke(day);
         }
 
@@ -1548,7 +1563,8 @@ namespace Thatchwick.Core.Life
                 clothing = _clothing?.Export(),
                 tailor = _tailor?.Export(),
                 ailments = _ailments?.Export(),
-                ailmentSetting = _ailments != null ? (int)_ailments.Setting + 1 : 0
+                ailmentSetting = _ailments != null ? (int)_ailments.Setting + 1 : 0,
+                yard = ExportYard()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1563,7 +1579,7 @@ namespace Thatchwick.Core.Life
 
         public void Restore(LifeSaveData data)
         {
-            if (data == null) { Home.Import(null); Trees.Import(null); Population.RecomputeAll(); return; }
+            if (data == null) { Home.Import(null); Trees.Import(null); ImportYard(null); Population.RecomputeAll(); return; }
             Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
             Festivals.CelebratedDay = data.festivalCelebratedDay;
             Upbringing.Import(data.upbringing);
@@ -1597,6 +1613,7 @@ namespace Thatchwick.Core.Life
             Shows.Import(data.produceShows);
             Aging.Import(data.quality?.aging);
             Trees.Import(data.treehouses);
+            ImportYard(data.yard);
             Clothing.Import(data.clothing);
             Tailor.Import(data.tailor);
             Ailments.Import(data.ailments);

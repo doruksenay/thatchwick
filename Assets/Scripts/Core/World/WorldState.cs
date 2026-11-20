@@ -4,14 +4,24 @@ using Thatchwick.Core.Content;
 
 namespace Thatchwick.Core.World
 {
-    /// <summary>Yerleştirme denetiminin sonucu: Ok ya da nedeni (Türkçe, arayüzde gösterilir).</summary>
+    /// <summary>
+    /// Yerleştirme denetiminin sonucu: Ok ya da nedeni. Yeni nedenler anahtarlıdır (<see cref="Text"/>); eski nedenler düz
+    /// Türkçe metindir ve dosya dosya anahtara taşınacak (belge 63 madde 4).
+    /// </summary>
     public readonly struct PlacementCheck
     {
+        private readonly string _reason;
         public bool Ok { get; }
-        public string Reason { get; }
-        private PlacementCheck(bool ok, string reason) { Ok = ok; Reason = reason; }
-        public static PlacementCheck Success => new PlacementCheck(true, null);
-        public static PlacementCheck Fail(string reason) => new PlacementCheck(false, reason);
+        /// <summary>Anahtarlı neden; eski (düz metinli) nedenlerde boş.</summary>
+        public Thatchwick.Core.Localization.LocText Text { get; }
+        /// <summary>Arayüzde gösterilen neden. Anahtarlıysa oyun katmanının çevirdiği metin; çevirici yoksa (testler) anahtar.</summary>
+        public string Reason => Text.IsEmpty ? _reason : (Resolve != null ? Resolve(Text) : Text.Key);
+        /// <summary>Anahtarlı nedeni seçili dile çevirir (oyun katmanı açılışta kurar).</summary>
+        public static System.Func<Thatchwick.Core.Localization.LocText, string> Resolve { get; set; }
+        private PlacementCheck(bool ok, string reason, Thatchwick.Core.Localization.LocText text) { Ok = ok; _reason = reason; Text = text; }
+        public static PlacementCheck Success => new PlacementCheck(true, null, default);
+        public static PlacementCheck Fail(string reason) => new PlacementCheck(false, reason, default);
+        public static PlacementCheck Fail(Thatchwick.Core.Localization.LocText text) => new PlacementCheck(false, null, text);
     }
 
     /// <summary>

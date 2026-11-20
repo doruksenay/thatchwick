@@ -545,6 +545,7 @@ namespace Thatchwick.Game
                 new Ui.HudBar.Item { Text = () => T("ui.hud.market"), On = () => _marketPanel.Active, Click = ToggleMarket },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.storage"), On = () => _storagePanel.Active, Click = () => _storagePanel.Toggle() },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.mine"), On = () => _minePanel.Active, Click = () => _minePanel.Toggle() },
+                new Ui.HudBar.Item { Text = () => T("ui.hud.carts"), On = () => _cartPanel != null && _cartPanel.Active, Click = () => _cartPanel?.Toggle() },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.family"), On = () => _familyPanel.Active, Click = ToggleFamily },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.village"), On = () => _villagePanel.Active, Click = ToggleVillage },
                 new Ui.HudBar.Item
@@ -873,6 +874,25 @@ namespace Thatchwick.Game
                 VivText.Resolve(GameLocalization.Current,
                     OddityLines.ForPack(text, Thatchwick.Core.Content.ContentPacks.Adult, GameLocalization.Current.Has),
                     id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id), NoticeLevel.Info, who);
+            // Tepkiler bildirim değil balon (kullanıcı 20.11.2026): konuşan haritada görünüyorsa sözü başında çıkar.
+            _life.OddityBubble += (text, speaker, who) =>
+            {
+                string full = ResolveOddity(text, out var packed);
+                string say = OddityLines.BubbleText(packed, full, GameLocalization.Current.Has, t => ResolveOddity(t, out _));
+                Actor actor = null;
+                foreach (var a in _actors) if (a.Character.Id == speaker) { actor = a; break; }
+                if (say != null && actor != null && actor.View != null && actor.View.gameObject.activeSelf && !actor.Character.Away)
+                    _speech[speaker] = (say, Time.unscaledTime + BubbleSeconds(say));
+                else _life.Say(full, NoticeLevel.Info, who);
+            };
+            _life.OddityAnimalBubble += (text, animalId, who) =>
+            {
+                string full = ResolveOddity(text, out var packed);
+                string say = OddityLines.BubbleText(packed, full, GameLocalization.Current.Has, t => ResolveOddity(t, out _));
+                // Bildirim satırı ayrıca OddityLine ile gelir (ömürde bir kez olan söz kaçmasın).
+                if (say != null && _animalViews != null && _animalViews.TryGetPosition(animalId, out _))
+                    _animalSpeech[animalId] = (say, Time.unscaledTime + BubbleSeconds(say));
+            };
             _life.RealNow = () => System.DateTime.Now;   // 1 Nisan easter egg'i gerçek tarihe bakar
             _life.Oddities.Discovered += id => _life.Say(OddityIds.IsAchievement(id)
                 ? GameLocalization.T("ui.oddity.achievement", ("name", OddityName(id)))
@@ -913,6 +933,7 @@ namespace Thatchwick.Game
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
             _life.Suitors.AppearanceCatalog = _appearanceCatalog;
+            PlacementCheck.Resolve = GameLocalization.R;   // anahtarlı yerleştirme nedenleri (kement) seçili dilde
             GameLocalization.ContentName = id =>
                 id == null ? null
                 : _content.Items.TryGet(id, out var itemDef) ? itemDef.DisplayName
@@ -1373,6 +1394,20 @@ namespace Thatchwick.Game
             });
         }
 
+        // Dile gelen hayvanın balonu (belge 55 §3): hayvan → (söz, gerçek zamanda bitiş).
+        private readonly Dictionary<int, (string text, float until)> _animalSpeech = new Dictionary<int, (string, float)>();
+        private readonly List<int> _animalSpeechDone = new List<int>();
+
+        /// <summary>Easter egg satırını çözer; +18 paketi açıksa küfürlü çeşidini (packed: kullanılan anahtar).</summary>
+        private string ResolveOddity(Thatchwick.Core.Localization.LocText text, out Thatchwick.Core.Localization.LocText packed)
+        {
+            packed = OddityLines.ForPack(text, Thatchwick.Core.Content.ContentPacks.Adult, GameLocalization.Current.Has);
+            return VivText.Resolve(GameLocalization.Current, packed, id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id);
+        }
+
+        /// <summary>Balon süresi: en az 4 saniye, uzun söz okunacak kadar kalır.</summary>
+        private static float BubbleSeconds(string text) => Mathf.Clamp(2.5f + text.Length * 0.06f, 4f, 9f);
+
         /// <summary>Karakterin başında 4 saniyelik konuşma balonu.</summary>
         private void Say(Character c, string text)
         {
@@ -1615,6 +1650,7 @@ namespace Thatchwick.Game
             if (_shopPanel != null && _shopPanel.Active && _shopPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_cartPanel != null && _cartPanel.Active && _cartPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_homePanel != null && _homePanel.Active && _homePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_vivView != null && _vivView.Active && _vivView.PanelRect(s).Contains(guiPos)) return true;
@@ -1963,7 +1999,9 @@ namespace Thatchwick.Game
             // Küçükler tüm köyü kendi başına gezemez (belge 47 §7.2): izin yoksa karakter itiraz eder.
             { string roamWhy = RoamBlocker(Commander?.Character, tile); if (roamWhy != null) { ShowMessage($"{Commander.Character.Name}: \"{roamWhy}\" (Aile → İzin iste)"); return; } }
 
+            _walkerNote = null;
             CollectOptions(world);
+            if (_walkerNote != null) ShowMessage(_walkerNote);
             // Cam bahçeye dokunmak: kamera ona kayar, içi büyük ekranda açılır (belge 47).
             if (_vivView != null)
                 foreach (var o in _menuOptions)
@@ -2003,6 +2041,8 @@ namespace Thatchwick.Game
         }
 
         // Dokunulan noktadaki eşyaların (duvar eşyası, yer eşyası ve üstündeki dekorlar) tüm etkileşimleri.
+        private string _walkerNote;   // dokunulan easter egg ziyaretçisinin tek satırlık tanıtımı
+
         private void CollectOptions(Vector3 world)
         {
             _menuOptions.Clear();
@@ -2019,6 +2059,14 @@ namespace Thatchwick.Game
             var tile = _view.WorldToTile(world);
             var visitor = _life?.Roamers?.At(tile);
             if (visitor != null) AddWildOptions(visitor, names);
+            // Easter egg ziyaretçisi (Johan Wick, atsız şövalye): dokununca yalnızca kim olduğu görünür, seçenek yok.
+            var oddWalker = _life?.Walkers.At(tile);
+            if (oddWalker != null)
+            {
+                string wk = oddWalker.Kind == OddWalkerKind.JohanWick ? "johan_wick" : "horseless_knight";
+                names.Add(GameLocalization.T("ui.oddity.walker." + wk));
+                _walkerNote = GameLocalization.T("ui.oddity.walker." + wk + ".note");
+            }
             var animal = AnimalAt(tile);
             if (animal != null)
             {
@@ -2300,11 +2348,13 @@ namespace Thatchwick.Game
             _automation = new FarmAutomation(_world, _household)
             {
                 Storage = _storage, Plants = _plants, Build = _buildService, Content = _content, TemperatureAt = p => _heat.TemperatureAt(p),
-                DraftAnimals = _animals.DraftAnimals                          // düven: çeki hayvanı (at, öküz)
+                DraftAnimals = () => _life.FreeDraftAnimals()                 // düven: arabaya koşulmamış çeki hayvanı (at, öküz)
             };
             _cart = new OxCart(_world, _household, _market, _content)
             {
                 DraftAnimals = _animals.DraftAnimals,
+                FleetBlocker = () => _life.MarketCartBlocker(),      // araba filosu: pazara atanmış araba (belge 57e)
+                ExtraCapacity = () => _life.MarketExtraCapacity(),
                 Carter = () => BestMember(SkillType.Carting)
             };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
@@ -2315,6 +2365,7 @@ namespace Thatchwick.Game
                 TileWork = _farmWork,
                 Mines = _mines,
                 HouseChores = _life.Home.Chores,                                      // ev görevi (belge 45)
+                YardChores = _life.YardChores,                                        // kompost, ahır temizliği, yığın toplama (belge 57)
                 HouseHours = () => HourOfDay >= 7.0 && HourOfDay < 22.0              // mum yakmak akşam işi
             };
             _world.Map.WearMultiplier = RoadWear();
@@ -2433,6 +2484,7 @@ namespace Thatchwick.Game
                 OpenBlocker = () => _life.BestSkill(SkillType.Mining) < 1 ? "Madencilik gerekir." : null
             };
             _minePanel.Message += m => ShowMessage(m, 4f);
+            InitYard();   // sinek, azar, arabalar paneli (belge 57-57e)
             _buildService.DeepShaftOpened += p => { _mines.OpenShaft(p); _floorsDirty = true; };
             _buildService.ProtectedItem = it => _life.Legacy.HeirloomOf(it.Id) != null && MineSystem.InTreasureRoom(_world, it);
             _view.RockTint = p =>
@@ -2693,8 +2745,8 @@ namespace Thatchwick.Game
 
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
-            _mirror != null || _settingsOpen || AchievementsVisible || _betOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
-            || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
+            _mirror != null || _settingsOpen || _betOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
+            || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_cartPanel != null && _cartPanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
             || (_homePanel != null && _homePanel.Active) || (_vivView != null && _vivView.Active) || (_familyPanel != null && _familyPanel.Active)
             || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
 
@@ -2747,6 +2799,7 @@ namespace Thatchwick.Game
             float wind = weather == WeatherType.Storm ? 3f : weather == WeatherType.Rain ? 1.6f : weather == WeatherType.Snow ? 0.6f : 1f;
             if (_clock.Season == Season.Autumn) wind += 0.5f;
             Shader.SetGlobalFloat("_TwWind", building ? 0f : wind);
+            if (!building) UpdateYardFx(dt);
 
             // Yanan ocak: duman yükselir, arada kıvılcım. Yağmurda duman daha sık (ıslak odun).
             foreach (var (heatItem, heatView) in _items.Heat.Values)
@@ -3379,6 +3432,7 @@ namespace Thatchwick.Game
             _shopPanel?.OnGUI(s);
             _storagePanel.OnGUI(s);
             _minePanel.OnGUI(s);
+            _cartPanel?.OnGUI(s);
             _keepsakePanel?.OnGUI(s);
             _homePanel?.OnGUI(s);
             _vivView?.OnGUI(s);
@@ -3525,6 +3579,7 @@ namespace Thatchwick.Game
             if (HudToggle(T("ui.hud.market"), _marketPanel.Active)) ToggleMarket();
             if (HudToggle(T("ui.hud.storage"), _storagePanel.Active)) _storagePanel.Toggle();
             if (HudToggle(T("ui.hud.mine"), _minePanel.Active)) _minePanel.Toggle();
+            if (_cartPanel != null && HudToggle(T("ui.hud.carts"), _cartPanel.Active)) _cartPanel.Toggle();
             if (HudToggle(T("ui.hud.family"), _familyPanel.Active)) ToggleFamily();
             if (HudToggle(T("ui.hud.village"), _villagePanel.Active)) ToggleVillage();
             { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? T("ui.hud.requests_unread", ("count", unread)) : T("ui.hud.requests"), _requestPanel.Active)) ToggleRequests(); }
@@ -3541,6 +3596,7 @@ namespace Thatchwick.Game
             GUILayout.Label(new GUIContent(T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)), HudReputationTip()), GUILayout.Width(110f));
             if (HudToggle(T("ui.hud.labels"), _labelsAll)) _labelsAll = !_labelsAll;
             if (GUILayout.Button(T("ui.hud.save"))) SaveNow(quiet: false);
+            if (GUILayout.Button(T("ui.hud.fx." + _fxLevel))) CycleFx();   // efekt yoğunluğu (belge 57)
             if (AdultPackAvailable)
             {
                 bool adult = Thatchwick.Core.Content.ContentPacks.Adult;
@@ -3566,6 +3622,20 @@ namespace Thatchwick.Game
         {
             var cam = Camera.main;
             if (cam == null) return;
+            if (_animalSpeech.Count > 0 && _animalViews != null)
+            {
+                _animalSpeechDone.Clear();
+                foreach (var kv in _animalSpeech)
+                {
+                    if (Time.unscaledTime > kv.Value.until || !_animalViews.TryGetPosition(kv.Key, out var apos)) { _animalSpeechDone.Add(kv.Key); continue; }
+                    var asp = cam.WorldToScreenPoint(apos + new Vector3(0f, 1.1f, 0f));
+                    var asize = GUI.skin.box.CalcSize(new GUIContent(kv.Value.text));
+                    float aw = Mathf.Min(asize.x + 8f, 240f);
+                    float ah = GUI.skin.box.CalcHeight(new GUIContent(kv.Value.text), aw);
+                    GUI.Box(new Rect(asp.x / guiScale - aw / 2f, (Screen.height - asp.y) / guiScale - ah - 8f, aw, ah), kv.Value.text);
+                }
+                foreach (var id in _animalSpeechDone) _animalSpeech.Remove(id);
+            }
             foreach (var actor in _actors)
             {
                 if (actor.Character.IsDead || actor.View == null || !actor.View.gameObject.activeSelf) continue;
@@ -3673,6 +3743,7 @@ namespace Thatchwick.Game
                     : item.IsPlant ? PlantLabel(item)
                     : item.Def.IsHousing ? $"{item.Def.DisplayName} ({_animals.Residents(item.Id)}/{item.Def.HousingCapacity}, yem {item.FeedStock:0.#}{(item.StockTotal > 0 ? $", ürün {item.StockTotal}" : "")}, {Comfort(item)})"
                     : item.Def.IsTrough ? $"{item.Def.DisplayName} (yem {item.FeedStock:0.#}, günlük {_animals.DailyFeedNeed(item):0.#})"
+                    : item.Def.IsSnare ? GameLocalization.T(item.StockTotal > 0 ? "ui.label.snare_full" : "ui.label.snare_empty", ("item", item.Def.DisplayName))
                     : item.Def.WaterGate ? $"{item.Def.DisplayName} ({(item.Toggled ? "kapalı" : "açık")})"
                     : item.Def.NeedsPower ? $"{item.Def.DisplayName} ({(Powered(item) ? "dönüyor" : "güç yok: su çarkı ya da yel değirmeni gerekli")})"
                     : item.Def.PowerSource ? $"{item.Def.DisplayName} ({(Net().Contains(item.Id) ? "dönüyor" : "kuru: kaynağa bağlı kanala değmeli")})"
@@ -3693,6 +3764,7 @@ namespace Thatchwick.Game
             if (item.Def.IsHousing || item.Def.IsTrough)
                 return _animals.Residents(item.Id) > 0 && item.FeedStock <= 0f
                     || item.Def.IsTrough && item.FeedStock < _animals.DailyFeedNeed(item);
+            if (item.Def.IsSnare) return item.StockTotal > 0;                    // tuzağa av düştü: toplanmalı
             if (item.Def.NeedsPower) return !powered(item);
             if (item.Def.NeedsWaterSource || item.Def.WaterHead) return !net().Contains(item.Id);
             if (item.Def.IsFixture) return !_water.Report.IsSupplied(item);

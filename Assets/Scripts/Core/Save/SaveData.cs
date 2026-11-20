@@ -192,6 +192,13 @@ namespace Thatchwick.Core.Save
         public float fertility;
         public string lastCrop;
         public string prevCrop;     // ondan önceki ekin (üç tarla nöbeti; eski kayıtta yok)
+        // Beslenme ve gübre (belge 57c, 57d); eski kayıtta hepsi 0: toprak "işlenmemiş" sayılır, eski verimiyle sürer.
+        public bool worked;
+        public float residual, residualNext;
+        public int cycle;           // Content.Fertilizer bayrakları
+        public bool rawFilth;
+        public double burnUntil, marlUntil, limedUntil, mulchUntil;
+        public double ashDay = -1000;
     }
 
     [Serializable]

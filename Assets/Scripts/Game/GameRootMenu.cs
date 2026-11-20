@@ -194,6 +194,7 @@ namespace Thatchwick.Game
         /// <summary>Oyun içinde ayarlar penceresi (üst şeritteki düğmeden).</summary>
         private void DrawSettingsWindow(float s)
         {
+            if (AchievementsVisible) return;   // başarım penceresi (UI Toolkit) açıkken üstünü örtmesin
             float sw = Screen.width / s, sh = Screen.height / s;
             float wh = Mathf.Min(sh - 16f, 430f);
             GUILayout.BeginArea(new Rect((sw - 460f) / 2f, (sh - wh) / 2f, 460f, wh), GUI.skin.box);

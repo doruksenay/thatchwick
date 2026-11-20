@@ -520,6 +520,9 @@ namespace Thatchwick.Core.Work
         /// <summary>Kazı işleri (Dig, Support, Bail, Light) bu işe devredilir; null ise yapılamaz.</summary>
         public ITileWork Mine { get; set; }
         private static bool IsMineAction(TileAction a) => a >= TileAction.Dig && a <= TileAction.Light;
+        /// <summary>Avlu işleri (açıkta tuvalet, belge 57b) bu işe devredilir; null ise yapılamaz.</summary>
+        public ITileWork Yard { get; set; }
+        private static bool IsYardAction(TileAction a) => a == TileAction.Relieve;
 
         /// <summary>Yere düşen süsü yerine koyma (belge 55, Kedi Alex): LifeSystems bağlar; null ise iş kapalı.</summary>
         public Func<GridPos, string> PutBackBlocker { get; set; }
@@ -529,6 +532,7 @@ namespace Thatchwick.Core.Work
         public string CanDo(Character actor, GridPos tile, TileAction action, string arg = null)
         {
             if (IsMineAction(action)) return Mine == null ? "Kazı yapılamaz." : Mine.CanDo(actor, tile, action, arg);
+            if (IsYardAction(action)) return Yard == null ? "Bu iş şu an yapılamaz." : Yard.CanDo(actor, tile, action, arg);
             if (action == TileAction.PutBack) return PutBackBlocker == null ? "Burada yere düşmüş bir şey yok." : PutBackBlocker(tile);
             var map = _world.Map;
             switch (action)
@@ -651,6 +655,7 @@ namespace Thatchwick.Core.Work
         public double Duration(Character actor, TileAction action)
         {
             if (IsMineAction(action)) return Mine?.Duration(actor, action) ?? 0.01;
+            if (IsYardAction(action)) return Yard?.Duration(actor, action) ?? 0.01;
             if (action == TileAction.Sow) return SowDays;
             if (action == TileAction.PutBack) return PutBackDays;
             if (action == TileAction.Stock) return 0.02;
@@ -668,6 +673,7 @@ namespace Thatchwick.Core.Work
         public void Apply(Character actor, GridPos tile, TileAction action, string arg = null)
         {
             if (IsMineAction(action)) { Mine?.Apply(actor, tile, action, arg); return; }
+            if (IsYardAction(action)) { Yard?.Apply(actor, tile, action, arg); return; }
             if (CanDo(actor, tile, action, arg) != null) return;
             if (action == TileAction.PutBack) { PutBackDone?.Invoke(actor, tile); return; }
             if (action == TileAction.Bathe) { BatheIn(actor, tile); return; }

@@ -97,6 +97,8 @@ namespace Thatchwick.Core.Jobs
 
         /// <summary>Karo işleri (çapala). Yoksa bu işler başlamaz.</summary>
         public ITileWork TileWork { get; set; }
+        /// <summary>Sıkışmış karaktere gidecek tuvalet yokken açıkta tuvalet için karo (avlu sistemi verir); null ise kaza beklenir.</summary>
+        public Func<Character, GridPos?> OpenReliefSpot { get; set; }
 
         /// <summary>Bir etkileşim başarıyla bitince (kaza sistemi, istatistik). Etkiler uygulandıktan sonra çağrılır.</summary>
         public event Action<Character, InteractionDef> InteractionCompleted;
@@ -144,6 +146,11 @@ namespace Thatchwick.Core.Jobs
         /// Yalnızca otonom karakterde, kuyruk boşken sorulur.
         /// </summary>
         public Func<Character, Job> DutyProvider { get; set; }
+        /// <summary>
+        /// Boşta inisiyatif (Sims gibi): giderecek ihtiyacı ve görevi olmayan karakter yakınındaki ufak ev işini kendisi
+        /// yapar (belge 55: kedinin yere düşürdüğü süsü yerine koyar). Null dönerse iş yok.
+        /// </summary>
+        public Func<Character, Job> IdleChore { get; set; }
 
         /// <summary>Görev işlerinin hız çarpanı (kâhyalık); null ise 1.</summary>
         public Func<double> DutySpeed { get; set; }
@@ -1034,7 +1041,7 @@ namespace Thatchwick.Core.Jobs
             _needOrder.Clear();
             foreach (var need in AllNeeds)
                 if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
-            if (_needOrder.Count == 0) return TryStartDuty();
+            if (_needOrder.Count == 0) return TryStartDuty() || TryStartChore();
             _needOrder.Sort((a, b) =>
             {
                 int ka = Rank(a), kb = Rank(b);
@@ -1047,7 +1054,7 @@ namespace Thatchwick.Core.Jobs
             if (Rank(_needOrder[0]) == 2 && ComfortCanWait() && TryStartDuty()) return true;
 
             // Başarısız arama her adımda yinelenmesin: bütün dünyayı tarar ve rahatlık ihtiyaçları hemen her an eşiğin altındadır.
-            if (_elapsedDays < _autonomyIdleUntil && !_character.Needs.AnyCritical()) return false;
+            if (_elapsedDays < _autonomyIdleUntil && !_character.Needs.AnyCritical()) return TryStartChore();
             foreach (var need in _needOrder)
             {
                 if (need == NeedType.Social && TryStartChat()) return true;
@@ -1057,7 +1064,17 @@ namespace Thatchwick.Core.Jobs
                 if (TryStartNeedItem(need)) return true;
             }
             _autonomyIdleUntil = _elapsedDays + AutonomyRetry;
-            return false;
+            return TryStartChore();
+        }
+
+        /// <summary>İhtiyaç işi bulunamadıysa ve kritik ihtiyaç yoksa yakındaki ufak ev işi (IdleChore).</summary>
+        private bool TryStartChore()
+        {
+            if (IdleChore == null || _character.Needs.AnyCritical()) return false;
+            var job = IdleChore(_character);
+            if (job == null) return false;
+            ResetJobState();
+            return Queue.TryEnqueue(job);
         }
 
         /// <summary>
@@ -1113,7 +1130,15 @@ namespace Thatchwick.Core.Jobs
             }
             _toiletCheckUntil = _elapsedDays + 0.05;                        // tuvalet yoksa her an aramasın
             FindBestFor(NeedType.Bladder, out var item, out var inter);
-            if (item == null) return;
+            if (item == null)
+            {
+                // Hela, lazımlık ve siper yok: açıkta, uygun bir karoya (belge 57b §2).
+                var spot = OpenReliefSpot?.Invoke(_character);
+                if (!spot.HasValue || TileWork == null) return;
+                Queue.InsertFront(Job.OnTile(spot.Value, TileAction.Relieve).WithReason(NeedType.Bladder));
+                ResetJobState();
+                return;
+            }
             Queue.InsertFront(Job.UseItem(item.Id, inter.Id).WithReason(NeedType.Bladder));
             ResetJobState();
         }
@@ -1146,7 +1171,15 @@ namespace Thatchwick.Core.Jobs
         private bool TryStartNeedItem(NeedType need)
         {
             FindBestFor(need, out var bestItem, out var bestInteraction);
-            if (bestItem == null) return false;
+            if (bestItem == null)
+            {
+                // Sıkışmış ve gidecek yer yok: açıkta tuvalet (belge 57b §2).
+                if (need != NeedType.Bladder || TileWork == null || _character.Needs.Get(NeedType.Bladder) >= BladderInterrupt) return false;
+                var spot = OpenReliefSpot?.Invoke(_character);
+                if (!spot.HasValue) return false;
+                ResetJobState();
+                return Queue.TryEnqueue(Job.OnTile(spot.Value, TileAction.Relieve).WithReason(NeedType.Bladder));
+            }
 
             ResetJobState();
             var job = Job.UseItem(bestItem.Id, bestInteraction.Id).WithReason(need);

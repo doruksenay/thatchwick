@@ -191,8 +191,9 @@ namespace Thatchwick.Game
                     () => T("ui.ach.title", ("done", _achievements.UnlockedCount), ("total", _achievements.Defs.Count)),
                     () => T("ui.ach.close"));
             }
+            // Ayarlar açık kalır (zaman durur; MenuOpen): IMGUI ayar penceresi başarım penceresi açıkken çizilmez
+            // (IMGUI, UI Toolkit'in üstüne çizildiği için), kapanınca ayarlara geri dönülür.
             _achievementsPanel.Visible = !_achievementsPanel.Visible;
-            if (_achievementsPanel.Visible) _settingsOpen = false;   // IMGUI penceresi UI Toolkit'in üstüne çizilir
         }
 
         private IReadOnlyList<Ui.AchievementsPanel.Row> AchievementRows()

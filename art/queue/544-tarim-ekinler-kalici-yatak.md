@@ -1,7 +1,8 @@
 ---
 id: "544"
 title: "Yeni ekinler 5/7: roka, karnabahar, kuşkonmaz, enginar, gül, aynısefa (18)"
-status: pending
+status: review
+claimed_at: 2026-11-20T13:31Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 20
 family: bitki

@@ -1468,5 +1468,241 @@ namespace Thatchwick.Core.Tests
             Assert.Null(LifeSystems.NameSurpriseKey(""));
             Assert.Null(LifeSystems.NameSurpriseKey(null));
         }
+
+        // ---- tepkiler balon olarak; boşta toplama; ziyaretçiye dokunma (kullanıcı 20.11.2026) ----
+
+        private sealed class Bubbles
+        {
+            public readonly List<(string key, int speaker)> Said = new List<(string, int)>();
+            public readonly List<(string key, int animal)> Animals = new List<(string, int)>();
+            public readonly List<string> Lines = new List<string>();
+        }
+
+        private static Bubbles Listen(Kit k)
+        {
+            var b = new Bubbles();
+            k.Life.OddityBubble += (line, speaker, who) => b.Said.Add((line.Key, speaker));
+            k.Life.OddityAnimalBubble += (line, animal, who) => b.Animals.Add((line.Key, animal));
+            k.Life.OddityLine += (line, who) => b.Lines.Add(line.Key);
+            return b;
+        }
+
+        [Fact]
+        public void Quote_TakesTheFirstQuotedSpeech()
+        {
+            Assert.Equal("Efsane be!", OddityLines.Quote("Ayla topaç şovu yaptı. Seyredenler: \"Efsane be!\""));
+            Assert.Equal("Bana da konuşur mu?", OddityLines.Quote("Can: \"Bana da konuşur mu?\" (Gidip denedi.)"));
+            Assert.Equal("Fancy.", OddityLines.Quote("Mira: \u201CFancy.\u201D"));
+            Assert.Null(OddityLines.Quote("Ayla korkuluğa derdini anlattı."));
+            Assert.Null(OddityLines.Quote(""));
+            Assert.Null(OddityLines.Quote(null));
+            // Tabloda ".say" satırı varsa o kullanılır.
+            var line = LocText.Of("x.y", ("who", "Ayla"));
+            Assert.Equal("SAY x.y.say", OddityLines.BubbleText(line, "anlatım, söz yok", key => key == "x.y.say", t => "SAY " + t.Key));
+            Assert.Null(OddityLines.BubbleText(line, "anlatım, söz yok", key => false, t => "SAY " + t.Key));
+        }
+
+        [Fact]
+        public void EveryReactionLine_HasSomethingToSayInABubble()
+        {
+            var (en, tr) = UiTables();
+            var keys = new List<string>
+            {
+                "core.oddity.ev.top_show.v0", "core.oddity.ev.top_show.v1", "core.oddity.ev.top_show.v2", "core.oddity.ev.top_show.v3",
+                "core.oddity.tell.shared", "core.oddity.tell.family", "core.oddity.tell.child", "core.oddity.tell.disbelief",
+                "core.oddity.ev.name_twin", "core.oddity.ev.nickname_talk", "core.oddity.ev.same_outfit", "core.oddity.ev.absent_elder",
+                "core.oddity.ev.chicken_revenge", "core.oddity.ev.regift", "core.oddity.hello", "core.oddity.relic.sword.parent_reply"
+            };
+            foreach (var n in new[] { "doruk", "sanem", "bora", "alpaslan", "alex", "lonta", "lontaj", "kaoslontaj", "sanem_bal", "mars" })
+                keys.Add("core.oddity.ev.name_surprise." + n);
+            foreach (var what in new[] { "sword", "helmet", "shield" })
+                foreach (var age in new[] { "adult", "child", "elder" }) keys.Add($"core.oddity.relic.{what}.{age}");
+            foreach (AnimalComplaint c in Enum.GetValues(typeof(AnimalComplaint))) keys.Add("core.oddity.talk.complaint." + AnimalTalkService.ComplaintKey(c));
+            foreach (var (table, name) in new[] { (en, "EN"), (tr, "TR") })
+                foreach (var key in keys)
+                    foreach (var k in new[] { key, key + OddityLines.AdultSuffix })
+                    {
+                        if (!table.TryGet(k, out var text)) { Assert.False(k == key, name + " eksik: " + key); continue; }
+                        Assert.True(table.Contains(k + OddityLines.SaySuffix) || OddityLines.Quote(text) != null, $"{name} {k}: balonda söylenecek söz yok");
+                    }
+        }
+
+        [Fact]
+        public void TopShow_NearbyWatchersReactInBubbles_NotInTheFeed()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.999;
+            var c = Person(k, 1, "Ayla");
+            var near1 = Person(k, 2, "Murat", villager: true);
+            var near2 = Person(k, 3, "Can", ChildAge);
+            var far = Person(k, 4, "Uzak", villager: true);
+            far.Position = new GridPos(14, 14);
+            Person(k, 5, "Bebek", BabyAge);
+            var b = Listen(k);
+            var top = new Thatchwick.Core.Upbringing.ToyDef { ItemId = LifeSystems.SpinningTopItem };
+            k.Life.OddEvents.Force(OddityEvents.TopShow);
+            k.Life.OnOddShow(new Thatchwick.Core.Upbringing.ToyShow { Performer = c, Toy = top, Kind = Thatchwick.Core.Upbringing.ShowKind.Show, Watchers = 2 });
+            Assert.Empty(b.Lines);
+            Assert.Equal(2, b.Said.Count);
+            Assert.Equal(new[] { near1.Id, near2.Id }, b.Said.Select(x => x.speaker).OrderBy(x => x).ToArray());
+            Assert.All(b.Said, x => Assert.StartsWith("core.oddity.ev.top_show.v", x.key));
+            Assert.NotEqual(b.Said[0].key, b.Said[1].key);                  // iki seyirci aynı sözü söylemez
+        }
+
+        [Fact]
+        public void Tell_ListenerAnswersInABubble_NicknameStaysAsNarration()
+        {
+            var (k, teller) = Spoken();
+            var b = Listen(k);
+            for (int i = 0; i < AnimalTalkService.DisbelieversForNickname; i++)
+            {
+                var v = Person(k, 10 + i, "Köylü" + i, villager: true);
+                b.Said.Clear(); b.Lines.Clear();
+                k.Family.Apply(teller, v, SocialAction.TellAnimalTalk);
+                Assert.Equal(("core.oddity.tell.disbelief", v.Id), b.Said.Single());
+                if (i < AnimalTalkService.DisbelieversForNickname - 1) Assert.Empty(b.Lines);
+                else Assert.Equal(LifeSystems.NicknameLineKey, b.Lines.Single());   // lakap takıldı: anlatım bildirimde kalır
+            }
+        }
+
+        [Fact]
+        public void Chat_VillagerSpeaksTheReaction()
+        {
+            var k = Make();
+            k.Life.OddEvents.Roll = () => 0.999;
+            var a = Person(k, 1, "Mars");
+            var v = Person(k, 2, "Murat", villager: true);
+            var b = Listen(k);
+            k.Life.OnOddChat(a, v);
+            Assert.Equal(("core.oddity.ev.name_surprise.mars", v.Id), b.Said.Single());
+            Assert.Empty(b.Lines);
+        }
+
+        [Fact]
+        public void AnimalComplaint_ShowsOverTheAnimal_AndStaysInTheFeed()
+        {
+            var k = Make();
+            var c = Person(k, 1, "Ayla", charm: 9);
+            var cow = Cow(k);
+            var b = Listen(k);
+            k.Life.AnimalTalk.ForceNext = true;
+            k.Life.AnimalTalk.Try(c, cow);
+            Assert.Equal(cow.Id, b.Animals.Single().animal);
+            Assert.StartsWith("core.oddity.talk.complaint.", b.Animals.Single().key);
+            Assert.Contains(b.Animals.Single().key, b.Lines);
+        }
+
+        [Fact]
+        public void IdleCharacterNearby_PutsTheFallenDecorBack_OnItsOwn()
+        {
+            var k = Make();
+            var near = Person(k, 1, "Ayla");
+            near.Position = new GridPos(4, 6);
+            var kid = Person(k, 2, "Can", ChildAge);
+            kid.Position = new GridPos(5, 5);
+            var villager = Person(k, 3, "Murat", villager: true);
+            villager.Position = new GridPos(5, 6);
+            var decor = DecorOnTable(k, out _);
+            Assert.Null(k.Life.TidyJobFor(near));                           // yerde bir şey yok
+            var fallen = k.Life.KnockDecor();
+            Assert.Null(k.Life.TidyJobFor(kid));                            // çocuk toplamaz
+            Assert.Null(k.Life.TidyJobFor(villager));                       // misafir köylü toplamaz
+            near.Position = new GridPos(fallen.Floor.X, Math.Min(15, fallen.Floor.Y + LifeSystems.TidyRadius + 1));
+            Assert.Null(k.Life.TidyJobFor(near));                           // uzakta: fark etmez
+            near.Position = new GridPos(4, 6);
+            var job = k.Life.TidyJobFor(near);
+            Assert.NotNull(job);
+            Assert.Equal(JobKind.Tile, job.Kind);
+            Assert.Equal(TileAction.PutBack, job.TileAction);
+            Assert.Equal(fallen.Floor, job.Target);
+            // Aynı süsü ikinci bir kişi üstlenmez; süre dolunca yeniden denenir.
+            var other = Person(k, 4, "Elif");
+            other.Position = new GridPos(5, 6);
+            Assert.Null(k.Life.TidyJobFor(other));
+            k.Clock.Restore(k.Clock.TotalDays + LifeSystems.TidyClaimDays + 0.01, 1);
+            Assert.NotNull(k.Life.TidyJobFor(other));
+            Assert.NotNull(k.Life.Scenes.KnockedOf(decor.Id));
+        }
+
+        [Fact]
+        public void IdleRunner_TakesTheChore_WalksOverAndPutsItBack()
+        {
+            var k = Make();
+            var c = Person(k, 1, "Ayla");
+            c.Position = new GridPos(3, 6);
+            var decor = DecorOnTable(k, out _);
+            var farm = new FarmWork(k.World) { House = k.House, Content = k.Db };
+            k.Life.Attach(farm);
+            var runner = new JobRunner(c, k.World) { Autonomous = true, TileWork = farm };
+            k.Life.Attach(runner);
+            Assert.NotNull(runner.IdleChore);
+            k.Life.KnockDecor();
+            var seen = Capture(k, () => { for (int i = 0; i < 400 && k.Life.Scenes.HasKnocked; i++) runner.Tick(0.001); });
+            Assert.False(k.Life.Scenes.HasKnocked);
+            Assert.Equal("core.oddity.ev.alex_decor.put_back", seen.line.Key);
+            Assert.NotNull(k.World.GetItem(decor.Id));
+
+            // Oyuncunun yönettiği (otonomisi kapalı) karakter kendiliğinden toplamaz; tıklayınca yapar.
+            k.Life.KnockDecor();
+            var manual = new JobRunner(c, k.World) { Autonomous = false, TileWork = farm };
+            k.Life.Attach(manual);
+            for (int i = 0; i < 50; i++) manual.Tick(0.001);
+            Assert.True(k.Life.Scenes.HasKnocked);
+        }
+
+        [Fact]
+        public void FallenDecor_FollowsTheTable_WhenItIsMoved()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            var decor = DecorOnTable(k, out var table);
+            var fallen = k.Life.KnockDecor();
+            var old = fallen.Floor;
+            Assert.True(k.World.MoveItem(table.Id, new GridPos(11, 11), 0).Ok);
+            k.Life.OddScenesTick(0.001);
+            var now = k.Life.Scenes.KnockedOf(decor.Id).Floor;
+            Assert.NotEqual(old, now);
+            Assert.True(Math.Abs(now.X - 11) <= 3 && Math.Abs(now.Y - 11) <= 3);
+            Assert.True(k.World.Map.IsWalkable(now));
+        }
+
+        [Fact]
+        public void Walkers_CanBeFoundByTile()
+        {
+            var walkers = new OddWalkers();
+            var w = walkers.Spawn(OddWalkerKind.HorselessKnight, new GridPos(2, 2));
+            walkers.Walk(w, new List<GridPos> { new GridPos(3, 2), new GridPos(4, 2) });
+            walkers.Tick(0.2 / OddWalkers.StepsPerDay);
+            Assert.Same(w, walkers.At(new GridPos(2, 2)));
+            Assert.Same(w, walkers.At(new GridPos(3, 2)));                  // adım attığı karo da sayılır
+            Assert.Null(walkers.At(new GridPos(9, 9)));
+            var (en, tr) = UiTables();
+            foreach (var key in new[] { "ui.oddity.walker.johan_wick", "ui.oddity.walker.johan_wick.note", "ui.oddity.walker.horseless_knight", "ui.oddity.walker.horseless_knight.note" })
+                Assert.True(en.Contains(key) && tr.Contains(key), key);
+        }
+
+        [Fact]
+        public void Knight_QueuedForToday_SurvivesSaveAndLoad()
+        {
+            var k = Make();
+            Person(k, 1, "Ayla");
+            k.Clock.Restore(5.1, 1);
+            k.Life.OddEvents.Set(LifeSystems.KnightFlag, k.Clock.DayIndex + 1);
+            var saved = k.Life.ExportOddities();
+            var k2 = Make();
+            Person(k2, 1, "Ayla");
+            k2.Clock.Restore(5.2, 1);
+            k2.Life.ImportOddities(saved);
+            Assert.Equal(0, Capture(k2, () => k2.Life.OddScenesTick(0.001)).count);     // daha saati gelmedi
+            k2.Clock.Restore(5.0 + LifeSystems.KnightArrives + 0.01, 1);
+            Assert.Equal("core.oddity.ev.horseless_knight", Capture(k2, () => k2.Life.OddScenesTick(0.001)).line.Key);
+            Assert.False(k2.Life.OddEvents.Has(LifeSystems.KnightFlag));
+            // Başka güne ait bayrak (kayıt ertesi gün yüklendi) temizlenir, şövalye gelmez.
+            var k3 = Make();
+            k3.Clock.Restore(7.9, 1);
+            k3.Life.ImportOddities(saved);
+            Assert.False(k3.Life.OddEvents.Has(LifeSystems.KnightFlag));
+            Assert.Equal(0, Capture(k3, () => k3.Life.OddScenesTick(0.001)).count);
+        }
     }
 }

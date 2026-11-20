@@ -81,6 +81,7 @@ namespace Thatchwick.Core.Animals
                 var r = ComfortOf(home);
                 if (r.IsRoom && r.Bedding <= 0f) p += SickNoBeddingRisk;
                 if (r.IsRoom && r.Space < 10f) p += SickCrowdedRisk;
+                if (FilthSickRisk != null) p += Math.Max(0.0, FilthSickRisk(home));   // kirli ahır (belge 57b Z4)
             }
             p += SickContagionRisk * sickNeighbours;
             return Math.Min(0.6, p * HusbandryRiskFactor(husbandryLevel) * (ExtraRiskFactor != null ? ExtraRiskFactor() : 1.0));

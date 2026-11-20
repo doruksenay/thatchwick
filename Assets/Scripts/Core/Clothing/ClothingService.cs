@@ -446,6 +446,27 @@ namespace Thatchwick.Core.Clothing
             return EquipError.None;
         }
 
+        /// <summary>
+        /// Ölenin takıları hanenin çekmecesine döner ve yadigâr olur (kimin olduğu notta kalır); başkası takabilir.
+        /// Mühür yüzüğü ayrı yoldan yeni reise geçer (<see cref="PassSeal"/>). Dönen takı sayısı.
+        /// </summary>
+        public int ReleaseJewelry(Character dead, string note = null)
+        {
+            if (dead == null) return 0;
+            int n = 0;
+            _wardrobes.TryGetValue(dead.Id, out var wardrobe);
+            foreach (var it in _items.Values)
+            {
+                if (!it.IsJewelry || it.Diamond || it.OwnerId != dead.Id || JewelryOf(it)?.IsSeal == true) continue;
+                if (wardrobe != null) foreach (var o in wardrobe.Outfits.Values) o.Remove(it.Id);
+                it.OwnerId = 0;
+                it.Heirloom = true;
+                if (string.IsNullOrEmpty(it.HeirloomNote)) it.HeirloomNote = note ?? dead.Name;
+                n++;
+            }
+            return n;
+        }
+
         /// <summary>Takıyı çıkarır ve hanenin çekmecesine koyar (başkası takabilir).</summary>
         public void TakeOffJewelry(Character c, ClothingInstance it)
         {

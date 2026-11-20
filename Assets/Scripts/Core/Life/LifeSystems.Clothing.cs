@@ -43,6 +43,45 @@ namespace Thatchwick.Core.Life
         private double JewelryCourtBonus(Character c) => HasClothing && c != null ? Clothing.CourtBonus(c) : 0.0;
         private double JewelryLuck(Character c) => HasClothing && c != null ? Clothing.AccidentFactor(c) : 1.0;
 
+        /// <summary>
+        /// Envanterdeki takıyı (dükkândan ya da tüccardan alınan) karaktere takar. Takılamıyorsa eşya envanterde kalır.
+        /// </summary>
+        public EquipError WearJewelryFromInventory(Character c, string itemId)
+        {
+            if (!HasClothing || c == null || Content.Clothing.JewelryByItem(itemId) == null || House.Count(itemId) <= 0) return EquipError.Missing;
+            var it = Clothing.FromItem(itemId, null, Clock.TotalDays);
+            if (it == null) return EquipError.Missing;
+            var err = Clothing.WearJewelry(c, it);
+            if (err != EquipError.None) { Clothing.Remove(it.Id); return err; }
+            House.TryTakeItem(itemId);
+            return EquipError.None;
+        }
+
+        /// <summary>
+        /// Çekmecedeki takıyı eşya olarak envantere koyar: satılabilir ve hediye edilebilir. Yapanın adı ve ustalık
+        /// basamağı eşyada taşınmaz. Yadigâr ve mühür yüzüğü envantere konmaz.
+        /// </summary>
+        public bool JewelryToInventory(ClothingInstance it)
+        {
+            if (!HasClothing || it == null || !it.IsJewelry || it.OwnerId != 0 || it.Heirloom || it.Diamond) return false;
+            var def = Clothing.JewelryOf(it);
+            if (def == null || def.IsSeal || string.IsNullOrEmpty(def.ItemId) || !Content.Items.Contains(def.ItemId)) return false;
+            if (!Clothing.Remove(it.Id)) return false;
+            House.AddItem(def.ItemId, 1);
+            return true;
+        }
+
+        /// <summary>Envanterde duran, takılabilir takı eşyaları (kimlik ve adet).</summary>
+        public IEnumerable<KeyValuePair<string, int>> JewelryInInventory()
+        {
+            if (!HasClothing) yield break;
+            foreach (var j in Content.Clothing.Jewelry)
+            {
+                int n = string.IsNullOrEmpty(j.ItemId) ? 0 : House.Count(j.ItemId);
+                if (n > 0) yield return new KeyValuePair<string, int>(j.ItemId, n);
+            }
+        }
+
         /// <summary>Köylü bir hane üyesinin giyimine yorum yaptı (konuşan, hedef, arayüz anahtarı); oyun katmanı balon çizer.</summary>
         public event Action<Character, Character, string> ClothingRemark;
 

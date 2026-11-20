@@ -1,7 +1,8 @@
 ---
 id: "543"
 title: "Yeni ekinler 4/7: patlıcan, bamya, pazı, kereviz, maydanoz (15)"
-status: pending
+status: review
+claimed_at: 2026-11-20T13:30Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 20
 family: bitki

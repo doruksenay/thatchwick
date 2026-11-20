@@ -6,6 +6,7 @@ Oyun: Thatchwick: Generations of a Village (Unity 6, 2D URP, izometrik 2:1). Tas
 - Mantık `Assets/Scripts/Core` (UnityEngine yok), Unity katmanı `Assets/Scripts/Game`. Çekirdek testleri: `dotnet test` (`core/`).
 - NuGet'e erişim yoksa (bulut oturumu) testler `tools/offline-tests/run.sh` ile koşar: CI ile aynı test dosyaları, aynı xunit 2.4.2 aşırı yüklemeleri, ardından Game katmanı derleme denetimi. Push'tan önce çalıştır; `main`'de "Core tests" kırmızıysa önce onu düzelt. `XunitShim.cs`'e gerçek xunit'te olmayan imza ekleme.
 - `.meta` dosyalarını Unity üretir; Unity'siz ortamda `.meta` yazma.
+- Hata bildirimi: `ErrorReporter.Report("kaynak", ex)` (günlük, tekilleştirme, oyuncuya uyarı). Yakalanmamış istisna ve `Debug.LogError` kendiliğinden günlüğe düşer; hatayı yutan boş `catch` yazma. Başarım, mağaza ve ayar altyapısı: `docs/yayin-altyapisi.md`.
 - Görsel şartname bağlayıcıdır: `docs/gorsel-yonerge.md`.
 - İçerik (eşya, hayvan, ekin, yemek, alet) eklerken dönem kurallarına uy: hayali bir ortaçağ yerleşimi; Yeni Dünya bitkisi/hayvanı yok (patates, domates, mısır, balkabağı, tütün, hindi), ortaçağ sonrası icat yok (gazyağı, balya, mibzer vb.). Gerçekçilik: mevsim, ömür oranı (1 gün ≈ yarım yıl), türün gerçek davranışı. Ayrıntı: Project belgesi `20-donem-tutarliligi-ve-gercekcilik.md`.
 
@@ -13,7 +14,18 @@ Oyun: Thatchwick: Generations of a Village (Unity 6, 2D URP, izometrik 2:1). Tas
 Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, Almanca. Kurallar: `docs/yerellestirme.md`.
 - İçeriğe (items/life/appearance.json) yeni metin ekleyince İngilizcesini `Assets/Resources/Localization/content.en.json`'a aynı turda yaz. Eksikleri `python tools/loc/check.py` listeler; eksik varsa CI'da `LocalizationTests` kırılır.
 - Yeni arayüz metni düz yazılmaz: anahtar özelliğin kendi alan dosyasına girer (`Assets/Resources/Localization/ui.<alan>.en.json` ve `ui.<alan>.tr.json`, ör. `ui.build.*`; yoksa oluştur), kodda `GameLocalization.T("ui....")`. Ana `ui.en.json` / `ui.tr.json` dosyalarına yeni anahtar ekleme: herkes aynı iki dosyaya yazınca her dalda çakışma çıkıyor. Bir anahtar yalnızca bir dosyada olur (test denetler). Core metin üretecekse `LocText` döndürür.
+- Koddaki sabit Türkçe metin dosya başına artamaz (`KorumaTests`, taban `tools/loc/sabit_metin_tabani.json`). Metni anahtara taşıyınca tabanı düşür: `THATCHWICK_SABIT_METIN_YAZ=1 tools/offline-tests/run.sh KorumaTests`.
 - Anahtar ve kimlik karşılaştırmasında `ToUpperInvariant`/`StringComparison.Ordinal` kullan; Türkçe cihazda `ToUpper()` "i"yi "İ" yapar.
+
+## Arayüz (kullanıcı kararı 2026-11-20)
+- Yeni panel, pencere ve HUD öğesi UI Toolkit ile yazılır: `Assets/Scripts/Game/Ui/` altında, `UiHost` kökü ve `KitButton` ile (örnekler: `HudBar`, `AchievementsPanel`). Yeni `OnGUI` paneli ekleme: IMGUI satırları iki günde 618'den 1.156'ya çıktı, IMGUI'de kumanda gezinmesi yok ve taşıma borcu her gün büyüyor.
+- Var olan IMGUI paneline küçük ek (satır, düğme) yapılabilir. Panel büyük ölçüde değişecekse önce UI Toolkit'e taşınır.
+- IMGUI, UI Toolkit'in üstüne çizilir: bir UI Toolkit penceresi açıkken altında kalacak IMGUI penceresini çizme.
+
+## Dallar ve main (kullanıcı kararı 2026-11-20)
+- Kod (`Assets/Scripts`, `Assets/Resources`, `core`, `tools`, `.github`, `Packages`, `ProjectSettings`) `main`'e doğrudan push edilmez: dal + PR. PR, "Core tests" yeşil olmadan birleştirilmez; kod PR'ını kullanıcı birleştirir.
+- Doğrudan `main`'e push yalnızca asset/ses iş dosyaları ve işçi çıktıları içindir (`art/`, `audio/`, `Assets/Art/Iso/`, `Assets/Resources/Audio/`) ve `YAPILACAKLAR.md`.
+- `main`'e zorla push (`--force`) ve `main`'i silme yok.
 
 ## Asset kuyruğu (PixelLab)
 Asset üretimi `art/queue/` altındaki iş dosyalarıyla yürür. Akış ve tetikleme: `art/README.md`. İşçi ajan: `.claude/agents/pixellab-artist.md`. Bütçe kuralları: `art/budget.md` (bağlayıcı).

@@ -351,6 +351,8 @@ namespace Thatchwick.Core.Characters
 
         /// <summary>Tuvalete yetişemedi (bildirim için).</summary>
         public event Action<Character> Accident;
+        /// <summary>Tuvalet ihtiyacının azalma çarpanı (karın ağrısında 2; belge 57b Z2). Kayda girmez, ruh halinden türetilir.</summary>
+        public float BladderFactor { get; set; } = 1f;
 
         // ---- ıslaklık ----
 
@@ -557,7 +559,7 @@ namespace Thatchwick.Core.Characters
             Needs.SetDecayMultiplier(NeedType.Energy, Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f) * AthleticEnergyFactor);
             Needs.SetDecayMultiplier(NeedType.Social, Modifiers.SocialDecay);
             Needs.SetDecayMultiplier(NeedType.Fun, Modifiers.FunDecay);
-            Needs.SetDecayMultiplier(NeedType.Bladder, Asleep ? SleepBladderFactor : 1f);
+            Needs.SetDecayMultiplier(NeedType.Bladder, (Asleep ? SleepBladderFactor : 1f) * BladderFactor);
 
             // Keyif ve hijyen yalnızca ruh hali açıkken (ve bebek değilken) azalır.
             float fun = Needs.Get(NeedType.Fun), hygiene = Needs.Get(NeedType.Hygiene), social = Needs.Get(NeedType.Social), bladder = Needs.Get(NeedType.Bladder);

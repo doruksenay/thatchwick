@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Thatchwick.Core.Content;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
 
@@ -12,6 +13,48 @@ namespace Thatchwick.Core.Work
         public string LastCrop;
         /// <summary>Ondan önceki ekin: üç tarla nöbeti (üç ayrı aile art arda) ek verim verir.</summary>
         public string PrevCrop;
+
+        // ---- beslenme ve gübre (belge 57c, 57d) ----
+        /// <summary>En az bir hasat görmüş toprak: nadasla ancak nadas tavanına kadar toparlanır.</summary>
+        public bool Worked;
+        /// <summary>Artık bereket: serilen gübrenin sonraki hasatta toprağa geçecek payı.</summary>
+        public float Residual;
+        /// <summary>Ondan sonraki hasada kalan pay (kara toprak iki ekim sürer).</summary>
+        public float ResidualNext;
+        /// <summary>Bu ekim döngüsünde serilen gübreler; hasatta sıfırlanır.</summary>
+        public Fertilizer Cycle;
+        /// <summary>Bu döngüde serilen ham kompostta pislik vardı (çiğ yenen ekinde risk).</summary>
+        public bool RawFilth;
+        /// <summary>Taze gübre ekili karoyu yaktı: büyüme bu güne dek durur.</summary>
+        public double BurnUntil;
+        /// <summary>Marnın etkisi bu güne dek sürer (nadas tavanı yükselir).</summary>
+        public double MarlUntil;
+        /// <summary>Fazla marn: bu güne dek gübrenin etkisi yarıya iner.</summary>
+        public double LimedUntil;
+        /// <summary>Yaprak çürüğü (malç) bu güne dek toprağı örter.</summary>
+        public double MulchUntil;
+        /// <summary>Son kül sermesi (yılda bir).</summary>
+        public double AshDay = -1000;
+        /// <summary>Bugün serilen taze gübrenin toprağa hemen geçen payı (aynı gün kül serilirse yarısı uçar).</summary>
+        public double FreshDay = -1000;
+        public float FreshAmount;
+
+        /// <summary>Bu döngüde verim katan bir gübre serildi mi (marn ve malç sayılmaz).</summary>
+        public bool Fed => (Cycle & ~(Fertilizer.Marl | Fertilizer.Mulch)) != 0;
+    }
+
+    /// <summary>Gübre serme sonucu.</summary>
+    public enum FertilizeOutcome
+    {
+        Ok,
+        /// <summary>Bu ekim döngüsünde zaten gübrelendi.</summary>
+        Saturated,
+        /// <summary>Bu yıl kül serildi.</summary>
+        AshUsed,
+        /// <summary>Taze ya da sert gübre ekili karoyu yaktı.</summary>
+        Burned,
+        /// <summary>Marn süresi dolmadan yeniden serildi: toprak kireçlendi.</summary>
+        Limed
     }
 
     /// <summary>Çiftçilik ayarları: sayılar tek yerde, testlerde değiştirilebilir.</summary>
@@ -29,6 +72,75 @@ namespace Thatchwick.Core.Work
         public float ThreeFieldBonus = 0.06f, SameFamilyFactor = 1.5f;
         /// <summary>Boş toprak günde bu kadar varsayılan verime döner.</summary>
         public float FallowRecovery = 0.02f;
+
+        // ---- beslenme tipleri (belge 57c §2) ----
+        /// <summary>İşlenmiş toprak nadasla en çok bu verime döner; üstü gübre, baklagil ve ağıla almayla gelir.</summary>
+        public float FallowCeiling = 0.40f;
+        /// <summary>Marnlı toprağın nadas tavanı.</summary>
+        public float MarlCeiling = 0.50f;
+        /// <summary>Tavanın üstündeki boş toprak günde bu kadar verim yitirir (yıkanma); malçlı toprak yitirmez.</summary>
+        public float FallowLeach = 0.005f;
+        /// <summary>Hasatta toprağın yorulması: obur, kanaatkâr, yağsız toprak seven (orta ve toprak yapan HarvestDraw kullanır).</summary>
+        public float HeavyDraw = 0.18f, LightDraw = 0.07f, LeanDraw = 0.07f;
+        /// <summary>Büyüme eğrileri: çarpan = Base + Span x verim. Orta eğri FertilityBase ve FertilitySpan'dir.</summary>
+        public float HeavyBase = 0.55f, HeavySpan = 0.70f, LightBase = 0.90f, LightSpan = 0.20f;
+        /// <summary>Yağsız toprak seven ve toprak yapan: bu verimin üstünde "yapraklandı".</summary>
+        public float LeafyAbove = 0.70f;
+        /// <summary>Yapraklanan yağsız toprak ekini: ürün artar, kalite puanı düşer. Toprak yapan: ürün azalır.</summary>
+        public float LeanLeafyYield = 1.15f, LeanLeafyQuality = 0.15f, BuilderLeafyYield = 0.80f;
+        /// <summary>Gübresiz obur ekinin ürünü.</summary>
+        public float HeavyHungryBelow = 0.45f, HeavyHungryYield = 0.85f;
+        /// <summary>Serilen gübrenin sonraki hasada kalan payı (yavaş salım).</summary>
+        public float ResidualShare = 0.40f;
+        /// <summary>Sevdiği gübreyle beslenen ekinin kalite puanına eklenen.</summary>
+        public float LikedFertilizerScore = 0.10f;
+        /// <summary>Yakılan ekinin büyümesi bu kadar gün durur.</summary>
+        public double BurnDays = 1.0;
+        /// <summary>Marn bu kadar gün sürer (3 yıl); erken tekrar bu kadar gün "kireçlendi".</summary>
+        public double MarlDays = 120.0, LimedDays = 40.0;
+        /// <summary>Malç bu kadar gün sürer; malçlı toprakta sulanmamış ekinin büyüme çarpanı.</summary>
+        public double MulchDays = 20.0;
+        public float MulchDryGrowth = 0.65f;
+        /// <summary>Kül yılda bir serilir.</summary>
+        public double AshEveryDays = 40.0;
+        /// <summary>Aynı aileyi üst üste sevmeyen ekinlerde (keten, çivit otu) nöbet cezası çarpanı.</summary>
+        public float ExhaustingFactor = 3f;
+        /// <summary>Bereketli su: sulama ağının suladığı karo günde bu kadar verim alır, bu tavana kadar.</summary>
+        public float FertigationPerDay = 0.01f, FertigationCap = 0.80f;
+
+        // ---- hasat baskısı ve tahıl yatması (belge 57d §2, 59 §8) ----
+        /// <summary>Olgun tahıl fırtınada bu kadarını döker.</summary>
+        public float ShatterLoss = 0.30f;
+        /// <summary>Bu verimin üstündeki tahıl fırtınada yatar (uzun boylu çeşitte TallLodgeAbove).</summary>
+        public float LodgeAbove = 0.85f, TallLodgeAbove = 0.80f;
+        /// <summary>Yatan tahılın kaybı; tarlada kaldığı her gün eklenen; en çok.</summary>
+        public float LodgeLoss = 0.50f, LodgeDailyLoss = 0.05f, LodgeMaxLoss = 0.80f;
+        /// <summary>Eşiği aşan tahılın yatma olasılığı; büyümenin en az bu kadarı tamamlanmış olmalı.</summary>
+        public double LodgeChance = 0.80;
+        public float LodgeMinGrowth = 0.60f;
+
+        public float GrowthFactor(FeedType feed, float fertility)
+        {
+            switch (feed)
+            {
+                case FeedType.Heavy: return HeavyBase + HeavySpan * fertility;
+                case FeedType.Light: return LightBase + LightSpan * fertility;
+                case FeedType.Lean:
+                case FeedType.Builder: return 1f;
+                default: return FertilityBase + FertilitySpan * fertility;
+            }
+        }
+
+        public float DrawOf(FeedType feed)
+        {
+            switch (feed)
+            {
+                case FeedType.Heavy: return HeavyDraw;
+                case FeedType.Light: return LightDraw;
+                case FeedType.Lean: return LeanDraw;
+                default: return HarvestDraw;
+            }
+        }
         /// <summary>Kalite puanı = sulu oran x WetWeight + verim x FertWeight + beceri x SkillWeight.</summary>
         public float WetWeight = 0.55f, FertWeight = 0.35f, SkillWeight = 0.01f;
         public float FineScore = 0.55f, FinestScore = 0.78f;
@@ -44,6 +156,9 @@ namespace Thatchwick.Core.Work
     }
 
     public enum PlantLoss { Crows, Storm, Frost }
+
+    /// <summary>Fırtınanın tahıla etkisi (belge 57d §2).</summary>
+    public enum CerealDamage { None, Shattered, Lodged }
 
     /// <summary>Tarlanın özeti (arayüz şeridi): ekin sayısı, susamış, hasada hazır, meyvesi olgun ağaç.</summary>
     public readonly struct FarmSummary
@@ -185,6 +300,217 @@ namespace Thatchwick.Core.Work
             plot.Fertility = Clamp01(plot.Fertility + amount);
         }
 
+        // ---------- beslenme ve gübre türleri (belge 57c, 57d) ----------
+
+        /// <summary>Oyun zamanı (toplam gün); marn, malç ve kül süreleri için. Yoksa 0.</summary>
+        public Func<double> Now { get; set; }
+        private double Today => Now != null ? Now() : 0.0;
+
+        /// <summary>Karonun toprak kaydı (yoksa null); arayüz ve kayıt için.</summary>
+        public SoilPlot PlotOrNull(GridPos p) => _soil.TryGetValue(p.OnLevel(0), out var plot) ? plot : null;
+        /// <summary>Karonun toprak kaydı (yoksa oluşturur).</summary>
+        public SoilPlot Plot(GridPos p) => PlotAt(p);
+
+        public bool IsMulched(GridPos p) { var plot = PlotOrNull(p); return plot != null && plot.MulchUntil > Today; }
+        public bool IsMarled(GridPos p) { var plot = PlotOrNull(p); return plot != null && plot.MarlUntil > Today; }
+
+        /// <summary>Bu karoya bu gübre şimdi serilebilir mi; serilemezse sonuç (Ok değilse) döner.</summary>
+        public FertilizeOutcome CanFertilize(GridPos p, Fertilizer kind)
+        {
+            var plot = PlotOrNull(p);
+            if (plot == null || kind == Fertilizer.Marl || kind == Fertilizer.Mulch) return FertilizeOutcome.Ok;
+            if (kind == Fertilizer.Ash) return Today - plot.AshDay < Config.AshEveryDays ? FertilizeOutcome.AshUsed : FertilizeOutcome.Ok;
+            return plot.Fed && kind != Fertilizer.Generic ? FertilizeOutcome.Saturated : FertilizeOutcome.Ok;
+        }
+
+        /// <summary>
+        /// Türüne göre gübre serer. Verimin bir kısmı hemen, kalanı sonraki hasatta toprağa geçer (artık bereket).
+        /// Taze ve sert gübre ekili karoyu yakar; marn ve malç verim eklemez. <paramref name="crop"/> karodaki ekin (yoksa null).
+        /// </summary>
+        public FertilizeOutcome ApplyFertilizer(GridPos p, Fertilizer kind, float amount, ItemInstance crop = null, bool filth = false)
+        {
+            var plot = PlotAt(p);
+            double now = Today;
+            if (kind == Fertilizer.Generic || kind == Fertilizer.None)
+            {
+                plot.Fertility = Clamp01(plot.Fertility + amount);
+                plot.Cycle |= Fertilizer.Generic;
+                return FertilizeOutcome.Ok;
+            }
+            if (kind == Fertilizer.Marl)
+            {
+                bool early = plot.MarlUntil > now;
+                plot.MarlUntil = now + Config.MarlDays;
+                plot.Cycle |= Fertilizer.Marl;
+                if (early) { plot.LimedUntil = now + Config.LimedDays; return FertilizeOutcome.Limed; }
+                return FertilizeOutcome.Ok;
+            }
+            if (kind == Fertilizer.Mulch)
+            {
+                plot.MulchUntil = now + Config.MulchDays;
+                plot.Cycle |= Fertilizer.Mulch;
+                return FertilizeOutcome.Ok;
+            }
+            var block = CanFertilize(p, kind);
+            if (block != FertilizeOutcome.Ok) return block;
+
+            if (plot.LimedUntil > now) amount *= 0.5f;
+            var outcome = FertilizeOutcome.Ok;
+            bool growing = crop != null && crop.IsPlant && crop.Def.IsCrop && !crop.IsGrown;
+            if (kind == Fertilizer.Ash)
+            {
+                plot.AshDay = now;
+                // Aynı gün taze gübreyle serilen kül, gübrenin azotunu uçurur (yarısı gider).
+                if (Math.Floor(plot.FreshDay) == Math.Floor(now) && plot.FreshAmount > 0f)
+                {
+                    plot.Fertility = Clamp01(plot.Fertility - plot.FreshAmount * 0.5f);
+                    plot.FreshAmount = 0f;
+                }
+            }
+            else if (kind == Fertilizer.FreshManure || kind == Fertilizer.HotManure)
+            {
+                bool tolerated = kind == Fertilizer.HotManure && crop != null && crop.Def.Feed == FeedType.Heavy;
+                if (growing && !tolerated)
+                {
+                    plot.BurnUntil = now + Config.BurnDays;
+                    outcome = FertilizeOutcome.Burned;
+                }
+            }
+            if (kind == Fertilizer.CompostRaw && filth) plot.RawFilth = true;
+
+            float residual = amount * Config.ResidualShare;
+            float immediate = amount - residual;
+            plot.Fertility = Clamp01(plot.Fertility + immediate);
+            if (kind == Fertilizer.BlackSoil) { plot.Residual += residual * 0.5f; plot.ResidualNext += residual * 0.5f; }
+            else plot.Residual += residual;
+            if (kind == Fertilizer.FreshManure || kind == Fertilizer.HotManure) { plot.FreshDay = now; plot.FreshAmount = immediate; }
+            plot.Cycle |= kind;
+            return outcome;
+        }
+
+        /// <summary>Ağıla alma, otlatma ve bereketli su: karonun verimini tavana kadar artırır (gübre serme sayılmaz).</summary>
+        public void Enrich(GridPos p, float amount, float cap = 1f)
+        {
+            var plot = PlotAt(p);
+            if (plot.Fertility >= cap) return;
+            plot.Fertility = Math.Min(cap, plot.Fertility + amount);
+        }
+
+        /// <summary>Bereketli su açık mı (şerbet fıçısı sulama ağına bağlı); null ise kapalı.</summary>
+        public Func<bool> Fertigation { get; set; }
+
+        /// <summary>Ekin taze gübreden zarar gördü mü (kök çatallanır, soğan çürür, ot kokusunu yitirir)?</summary>
+        public bool IsSpoiledByManure(ItemInstance item)
+        {
+            if (item == null || !item.Def.IsCrop) return false;
+            var plot = PlotOrNull(item.Position);
+            if (plot == null) return false;
+            var feed = item.Def.Feed;
+            if (feed != FeedType.Light && feed != FeedType.Lean && feed != FeedType.Builder) return false;
+            return (plot.Cycle & (Fertilizer.FreshManure | Fertilizer.HotManure | Fertilizer.CompostRaw)) != 0;
+        }
+
+        /// <summary>Çiğ yenen ekin pislikli ham kompostla mı büyüdü (yiyende karın ağrısı riski)?</summary>
+        public bool HasRawFilth(ItemInstance item)
+        {
+            if (item == null || !item.Def.IsCrop || !item.Def.EatenRaw) return false;
+            var plot = PlotOrNull(item.Position);
+            return plot != null && plot.RawFilth;
+        }
+
+        /// <summary>Yağsız toprak seven ya da toprak yapan ekin fazla verimli toprakta yaprağa mı kaçtı?</summary>
+        public bool IsLeafy(ItemInstance item)
+        {
+            if (item == null || !item.Def.IsCrop) return false;
+            var feed = item.Def.Feed;
+            return (feed == FeedType.Lean || feed == FeedType.Builder) && FertilityAt(item.Position) > Config.LeafyAbove;
+        }
+
+        /// <summary>Hasat miktarı çarpanı: beslenme tipi, sevmediği gübre, fırtına kaybı.</summary>
+        public float YieldFactor(ItemInstance item)
+        {
+            if (item == null || !item.Def.IsCrop) return 1f;
+            float f = FertilityAt(item.Position), m = 1f;
+            switch (item.Def.Feed)
+            {
+                case FeedType.Heavy: if (f < Config.HeavyHungryBelow) m *= Config.HeavyHungryYield; break;
+                case FeedType.Lean: if (f > Config.LeafyAbove) m *= Config.LeanLeafyYield; break;
+                case FeedType.Builder: if (f > Config.LeafyAbove) m *= Config.BuilderLeafyYield; break;
+            }
+            var plot = PlotOrNull(item.Position);
+            if (plot != null && (plot.Cycle & item.Def.DislikesFertilizer) != 0) m *= 0.8f;
+            return m * (1f - StormLoss(item));
+        }
+
+        // ---------- tahıl: dökme ve yatma ----------
+
+        private readonly Dictionary<int, float> _lodged = new Dictionary<int, float>();
+        private readonly HashSet<int> _shattered = new HashSet<int>();
+
+        /// <summary>Fırtınadan sonra: (yatan karo sayısı, döken karo sayısı).</summary>
+        public event Action<int, int> CerealsHit;
+
+        public CerealDamage DamageOf(ItemInstance item) =>
+            item == null ? CerealDamage.None : _lodged.ContainsKey(item.Id) ? CerealDamage.Lodged : _shattered.Contains(item.Id) ? CerealDamage.Shattered : CerealDamage.None;
+        public bool IsLodged(ItemInstance item) => item != null && _lodged.ContainsKey(item.Id);
+        public IEnumerable<KeyValuePair<int, float>> LodgedCrops => _lodged;
+        public IEnumerable<int> ShatteredCrops => _shattered;
+
+        /// <summary>Fırtınada yitirilen pay (0-1).</summary>
+        public float StormLoss(ItemInstance item)
+        {
+            if (item == null) return 0f;
+            if (_lodged.TryGetValue(item.Id, out float loss)) return loss;
+            return _shattered.Contains(item.Id) ? Config.ShatterLoss : 0f;
+        }
+
+        /// <summary>Kayıttan geri yükleme.</summary>
+        public void RestoreCerealDamage(IEnumerable<KeyValuePair<int, float>> lodged, IEnumerable<int> shattered)
+        {
+            _lodged.Clear(); _shattered.Clear();
+            if (lodged != null) foreach (var kv in lodged) _lodged[kv.Key] = Math.Min(Config.LodgeMaxLoss, Math.Max(0f, kv.Value));
+            if (shattered != null) foreach (var id in shattered) _shattered.Add(id);
+        }
+
+        /// <summary>Bu tahıl bu verimde fırtınada yatar mı (uyarı ve görünüm için)?</summary>
+        public bool LodgeRisk(ItemInstance item)
+        {
+            if (item == null || !item.Def.IsCrop || !item.Def.IsCereal || item.Def.HasTag("no_lodge")) return false;
+            return FertilityAt(item.Position) >= (item.Def.HasTag("tall") ? Config.TallLodgeAbove : Config.LodgeAbove);
+        }
+
+        private void StormOnCereals(List<ItemInstance> crops, RoomMap rooms, bool stormed)
+        {
+            // Tarlada kalan yatık ekin her gün biraz daha yitirir (kuş, fare, çimlenme); kalkan ekinin kaydı silinir.
+            if (_lodged.Count > 0 || _shattered.Count > 0)
+            {
+                var alive = new HashSet<int>();
+                foreach (var c in crops) alive.Add(c.Id);
+                var gone = new List<int>();
+                foreach (var id in _lodged.Keys) if (!alive.Contains(id)) gone.Add(id);
+                foreach (var id in gone) _lodged.Remove(id);
+                _shattered.RemoveWhere(id => !alive.Contains(id));
+                var keys = new List<int>(_lodged.Keys);
+                foreach (var id in keys) _lodged[id] = Math.Min(Config.LodgeMaxLoss, _lodged[id] + Config.LodgeDailyLoss);
+            }
+            if (!stormed) return;
+            int lodged = 0, shattered = 0;
+            foreach (var crop in crops)
+            {
+                if (!crop.Def.IsCereal || _lodged.ContainsKey(crop.Id)) continue;
+                var room = rooms.RoomAt(crop.Position);
+                if (room != null && room.IsIndoor) continue;
+                if (crop.GrowthFraction >= Config.LodgeMinGrowth && LodgeRisk(crop) && _rng.NextDouble() < Config.LodgeChance)
+                {
+                    _lodged[crop.Id] = Config.LodgeLoss;
+                    _shattered.Remove(crop.Id);
+                    lodged++;
+                }
+                else if (crop.IsGrown && _shattered.Add(crop.Id)) shattered++;
+            }
+            if (lodged > 0 || shattered > 0) CerealsHit?.Invoke(lodged, shattered);
+        }
+
         /// <summary>Ekini sular (bugünlük). Ekin dışındakiler için etkisizdir.</summary>
         public static void Water(ItemInstance item)
         {
@@ -196,15 +522,16 @@ namespace Thatchwick.Core.Work
         {
             if (item == null || !item.Def.IsCrop) return;
             var plot = PlotAt(item.Position);
-            float delta = -Config.HarvestDraw;
+            float delta = -Config.DrawOf(item.Def.Feed);
             if (item.Def.FixesNitrogen) delta += Config.NitrogenBonus;
+            float monocrop = Config.MonocropPenalty * (item.Def.HasTag("exhausting") ? Config.ExhaustingFactor : 1f);
             // Nöbet aileye bakar: buğdaydan sonra arpa da yorar (ikisi de tahıl); baklagil ve kök araya girince toprak dinlenir.
             string fam = item.Def.CropFamily ?? item.Def.Id;
             if (plot.LastCrop != null)
             {
                 string last = Family(plot.LastCrop);
-                if (plot.LastCrop == item.Def.Id) delta -= Config.MonocropPenalty * Config.SameFamilyFactor;
-                else if (last == fam) delta -= Config.MonocropPenalty;
+                if (plot.LastCrop == item.Def.Id) delta -= monocrop * Config.SameFamilyFactor;
+                else if (last == fam) delta -= monocrop;
                 else
                 {
                     delta += Config.RotationBonus;
@@ -212,9 +539,18 @@ namespace Thatchwick.Core.Work
                     if (prev != null && prev != fam && prev != last) delta += Config.ThreeFieldBonus;
                 }
             }
-            plot.Fertility = Clamp01(plot.Fertility + delta);
+            // Artık bereket: önceki gübrenin kalan payı hasattan sonra toprağa geçer; sıradaki ekin ondan yararlanır.
+            plot.Fertility = Clamp01(plot.Fertility + delta + plot.Residual);
+            plot.Residual = plot.ResidualNext;
+            plot.ResidualNext = 0f;
+            plot.Cycle = Fertilizer.None;
+            plot.RawFilth = false;
+            plot.BurnUntil = 0;
+            plot.Worked = true;
             plot.PrevCrop = plot.LastCrop;
             plot.LastCrop = item.Def.Id;
+            _lodged.Remove(item.Id);
+            _shattered.Remove(item.Id);
         }
 
         // ---------- kalite ----------
@@ -226,8 +562,28 @@ namespace Thatchwick.Core.Work
             return score >= cfg.FinestScore ? 2 : (score >= cfg.FineScore ? 1 : 0);
         }
 
-        public int QualityOf(ItemInstance item, int skillLevel) =>
-            item == null || !item.Def.IsCrop ? 0 : QualityTier(Config, item.WetRatio, FertilityAt(item.Position), skillLevel);
+        public int QualityOf(ItemInstance item, int skillLevel)
+        {
+            if (item == null || !item.Def.IsCrop) return 0;
+            float f = FertilityAt(item.Position);
+            // Kaliteye giren verim beslenme tipine göre okunur: kanaatkâr fakir toprakta ceza almaz, yağsız toprak
+            // seven fazla verimde kalite yitirir, toprak yapanın kalitesi verime bağlı değildir.
+            float fq = f;
+            switch (item.Def.Feed)
+            {
+                case FeedType.Light: fq = Math.Max(f, Config.DefaultFertility); break;
+                case FeedType.Lean: fq = f > Config.LeafyAbove ? Config.LeanLeafyQuality : Math.Max(f, 0.7f); break;
+                case FeedType.Builder: fq = Math.Max(Math.Min(f, Config.LeafyAbove), Config.DefaultFertility); break;
+            }
+            var plot = PlotOrNull(item.Position);
+            float bonus = plot != null && (plot.Cycle & item.Def.LikesFertilizer) != 0 ? Config.LikedFertilizerScore : 0f;
+            float score = item.WetRatio * Config.WetWeight + fq * Config.FertWeight + Math.Min(10, Math.Max(0, skillLevel)) * Config.SkillWeight + bonus;
+            int tier = score >= Config.FinestScore ? 2 : (score >= Config.FineScore ? 1 : 0);
+            if (plot != null && (plot.Cycle & Fertilizer.BlackSoil) != 0) tier = Math.Min(2, tier + 1);   // kara toprak: bir kademe yukarı
+            if (IsSpoiledByManure(item)) tier = Math.Max(0, tier - 1);                                     // çatallanan kök, çürüyen soğan
+            if (_lodged.ContainsKey(item.Id) && _lodged[item.Id] > Config.LodgeLoss + Config.LodgeDailyLoss * 2.5f) tier = Math.Max(0, tier - 1);   // başakta çimlenme
+            return tier;
+        }
 
         public static string QualityName(int tier) => tier >= 2 ? QualityFinest : (tier == 1 ? QualityFine : QualityNormal);
 
@@ -292,17 +648,34 @@ namespace Thatchwick.Core.Work
                 }
             }
 
-            // Boş toprak varsayılan verime döner.
+            // Boş toprak dinlenir. Hiç işlenmemiş toprak varsayılan verime döner (eski kural). İşlenmiş toprak nadasla
+            // ancak nadas tavanına (marnlıysa biraz üstüne) kadar toparlanır; tavanın üstündeki verim yavaşça yıkanır,
+            // malçlı toprak yitirmez (belge 57c §2, 57d §3).
             var planted = new HashSet<GridPos>();
             foreach (var crop in crops) planted.Add(crop.Position.OnLevel(0));
+            double now = Today;
             foreach (var kv in _soil)
             {
                 if (planted.Contains(kv.Key)) continue;
                 var plot = kv.Value;
-                float d = Config.DefaultFertility - plot.Fertility;
-                float step = Math.Min(Math.Abs(d), Config.FallowRecovery);
-                plot.Fertility += d >= 0 ? step : -step;
+                if (!plot.Worked)
+                {
+                    float d = Config.DefaultFertility - plot.Fertility;
+                    float step = Math.Min(Math.Abs(d), Config.FallowRecovery);
+                    plot.Fertility += d >= 0 ? step : -step;
+                    continue;
+                }
+                float ceiling = plot.MarlUntil > now ? Config.MarlCeiling : Config.FallowCeiling;
+                if (plot.Fertility < ceiling) plot.Fertility = Math.Min(ceiling, plot.Fertility + Config.FallowRecovery);
+                else if (plot.Fertility > ceiling && plot.MulchUntil <= now) plot.Fertility = Math.Max(ceiling, plot.Fertility - Config.FallowLeach);
             }
+
+            // Bereketli su: şerbet fıçısı ağa bağlıysa sulama ağının suladığı ekinin toprağı her gün biraz beslenir.
+            if (Fertigation != null && Fertigation())
+                foreach (var crop in crops)
+                    if (crop.Watered && !(rained && !IsIndoor(rooms, crop.Position))) Enrich(crop.Position, Config.FertigationPerDay, Config.FertigationCap);
+
+            StormOnCereals(crops, rooms, stormed);
 
             // Kuzgunlar ve fırtına yalnızca dışarıdaki ekini bulur.
             var lost = new List<ItemInstance>();
@@ -323,6 +696,8 @@ namespace Thatchwick.Core.Work
                 PlantLost?.Invoke(crop.Def, crop.Position, PlantLoss.Crows);
             }
         }
+
+        private static bool IsIndoor(RoomMap rooms, GridPos p) { var room = rooms.RoomAt(p); return room != null && room.IsIndoor; }
 
         private bool Protected(GridPos p)
         {
@@ -404,9 +779,12 @@ namespace Thatchwick.Core.Work
 
                 if (item.Def.IsCrop)
                 {
-                    rate *= Config.FertilityBase + Config.FertilitySpan * FertilityAt(item.Position);
+                    var plot = PlotOrNull(item.Position);
+                    if (plot != null && plot.BurnUntil > Today) { item.AgeDays += gameDays; continue; }   // taze gübre yaktı: büyüme durdu
+                    rate *= Config.GrowthFactor(item.Def.Feed, FertilityAt(item.Position));
                     if (NearActiveHive(item.Position)) rate *= 1f + Config.PollinationGrowth;
-                    if (!item.Watered) rate *= Config.DryGrowth;
+                    // Malç toprağın nemini tutar: sulanmamış gün daha az yavaşlatır.
+                    if (!item.Watered) rate *= plot != null && plot.MulchUntil > Today ? Math.Max(Config.DryGrowth, Config.MulchDryGrowth) : Config.DryGrowth;
                     item.AgeDays += gameDays;
                     if (item.Watered) item.WetDays += gameDays;
                 }
