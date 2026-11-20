@@ -38,7 +38,7 @@ namespace Thatchwick.Core.Mood
             DoctorVisit = "doctor_visit", WellCared = "well_cared", GotLetter = "got_letter", MasterWork = "master_work",
             Feast = "feast", SkillShowcase = "skill_showcase";
 
-        // Easter egg'ler (belge 55): hayvanla konuşma, bulunan silah, kurbağayı öpme. İkonlar: ui_icon_moodlet_<kimlik> (iş 494).
+        // Easter egg'ler (belge 55): hayvanla konuşma, bulunan silah, kurbağayı öpme. İkonlar: ui_icon_moodlet_<kimlik> (iş 497).
         public const string AnimalSpoke = "animal_spoke", Confidant = "confidant", NotCrazy = "not_crazy", Believed = "believed",
             FamilyTale = "family_tale", NobodyBelieves = "nobody_believes", OddChat = "odd_chat", Thoughtful = "thoughtful",
             LetDown = "let_down";
