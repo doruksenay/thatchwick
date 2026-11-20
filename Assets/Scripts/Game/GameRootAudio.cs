@@ -33,6 +33,8 @@ namespace Thatchwick.Game
         {
             _audioReady = true;
             _audioAkce = int.MinValue;
+            ApplySavedVolumes();
+            if (_buildService != null) _buildService.Furnished += _ => { _account?.Count("act:furnish"); Sfx(SoundKeys.UiPlace); };
             _life.Log.Added += e => { if (!e.Transient) Sfx(SoundPicker.Notice((int)e.Level)); };
             _life.Ledger.DayEnded += _ => Sfx(SoundKeys.StingDayEnd);
             _life.Injuries.Injured += (c, injury) => Exclaim(c, "pain");

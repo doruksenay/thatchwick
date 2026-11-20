@@ -447,7 +447,7 @@ namespace Thatchwick.Game
         /// <summary>Yeniden kurulan GameRoot bu kaydı yükler (Yükle düğmesi / Devam et).</summary>
         public static SaveData PendingLoad;
         private long _lastSavedDay = -1;
-        private static string SavePath => System.IO.Path.Combine(Application.persistentDataPath, "thatchwick_save.json");
+        private static string SavePath => SlotPath(SaveSlot);   // etkin kayıt yuvası (GameRootMenu.cs)
         // Menüde "devam et"/"Yükle" yalnızca okunabilir bir kayıt varken görünür; Awake'te ve her başarılı kayıttan sonra güncellenir.
         private bool _hasSave;
 
@@ -831,6 +831,7 @@ namespace Thatchwick.Game
             _namingSettlement = true;                       // önce yerleşimin adı, sonra karakter
             _settlementDraft = Settlement.DefaultName;
             _input.enabled = false;
+            OpenTitle();     // başlık ekranı: yuva seç, devam et ya da yeni oyun (GameRootMenu.cs)
             AttachAudio();   // ses bağlantıları (GameRootAudio.cs)
         }
 
@@ -2080,6 +2081,7 @@ namespace Thatchwick.Game
 
         private void FinishCreation()
         {
+            _title = false;
             var draft = _creator.Draft;
             var character = draft.CreateCharacter(1, new GridPos(31, 31), true, _appearanceCatalog, _rng);
             _creator.Release();
@@ -2907,7 +2909,7 @@ namespace Thatchwick.Game
 
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
-            _mirror != null || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
+            _mirror != null || _settingsOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
             || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
             || (_homePanel != null && _homePanel.Active) || (_vivView != null && _vivView.Active) || (_familyPanel != null && _familyPanel.Active)
             || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
@@ -3404,7 +3406,7 @@ namespace Thatchwick.Game
 
             if (_creator != null)
             {
-                { var prevCreatorSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { if (_namingSettlement) DrawSettlementNaming(); else _creator.OnGUI(); } finally { GUI.skin = prevCreatorSkin; } }   // 391 tema (belge 33)
+                { var prevCreatorSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { if (_title) DrawTitle(); else if (_namingSettlement) DrawSettlementNaming(); else _creator.OnGUI(); } finally { GUI.skin = prevCreatorSkin; } }   // 391 tema (belge 33)
                 if (Time.unscaledTime < _messageUntil)
                 {
                     float ms = HudScale;
@@ -3412,7 +3414,7 @@ namespace Thatchwick.Game
                     GUI.Label(new Rect(8f, Screen.height / ms - 96f, Screen.width / ms - 260f, 40f), _message);
                     GUI.matrix = Matrix4x4.identity;
                 }
-                if (_hasSave)
+                if (_hasSave && !_title)
                 {
                     float cs = HudScale;
                     GUI.matrix = Matrix4x4.Scale(new Vector3(cs, cs, 1f));
@@ -3450,6 +3452,7 @@ namespace Thatchwick.Game
             { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
             DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
+            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); } finally { GUI.skin = prevMenuSkin; } }
 
             // Sol panel (görsel analiz, 18.11.2026): varsayılan küçük; ihtiyaç listesi, beceriler ve ayarlar "Ayrıntı" (Tab) altında.
             GUILayout.BeginArea(HudRect, GUI.skin.box);
@@ -3468,6 +3471,7 @@ namespace Thatchwick.Game
             else if (_clock.IsFastNightActive) GUILayout.Label($"Herkes uyuyor: gece ×{GameClock.FastNightMultiplier:0} hızlı");
 
             GUILayout.BeginHorizontal();
+            if (HudToggle(GameLocalization.T("ui.menu.settings"), _settingsOpen)) _settingsOpen = !_settingsOpen;
             if (HudToggle("Yapı (B)", _buildMode.Active)) ToggleBuild();
             if (HudToggle("Pazar (P)", _marketPanel.Active)) ToggleMarket();
             if (HudToggle("Kiler (K)", _storagePanel.Active)) _storagePanel.Toggle();
@@ -3579,8 +3583,9 @@ namespace Thatchwick.Game
                 int newAcc = GUILayout.Toolbar(acc, new[] { "Kapalı", "Seyrek", "Normal" });
                 if (newAcc != acc || _life.Injuries.Setting == AccidentSetting.NotSet) _life.Injuries.Setting = (AccidentSetting)(newAcc + 1);
                 GUILayout.EndHorizontal();
-                if (GUILayout.Button("Yeni oyun (yeni karakter yaratılınca eski kaydın üzerine yazılır)"))
+                if (GUILayout.Button(GameLocalization.T("ui.menu.to_title")))
                 {
+                    SaveNow(quiet: true);
                     enabled = false;
                     new GameObject("GameRoot").AddComponent<GameRoot>();
                     Destroy(gameObject);
