@@ -1,49 +1,39 @@
 unity-import: pending
 
-# 310 Ekin büyüme evreleri (rapor)
+# 310 Ekin büyüme evreleri (rapor, 2026-11-20 yeniden üretim)
 
-Sonuç: **TESLİM YOK**. Üretilen 14 görselin tamamı `style.py check --family bitki` denetiminde KALDI; pırasa 1 ayrıca iki denemede de zemin karosu çıktı. Yan yana sayfası: [310-yanyana.png](310-yanyana.png). Adaylar `art/results/310-red/` altında (Assets'e konmadı). Masaüstü kopyası: yerel.
+Sonuç: **14/15 teslim** (`Assets/Art/Iso/_aday/iso_crop_*_se_v2.png`). Aynı adlı eski dosyalar (371 doygunluk kurtarma, `.meta`'lı) üzerine yazılmadığı için yeni dosyalar `_v2` ekiyle teslim edildi; pivot önek eşleşmesiyle değişmez. Teslim edilmeyen: **bezelye 3** (iki denemede de tanınmadı: ilkinde ağaç gibi, ikincide ağaç gövdesi + toprak karosu; `art/results/310-red2/`). Yan yana sayfası: [310-yanyana.png](310-yanyana.png) (teslim edilenler, fit sonrası). Ham çıktılar `art/results/310-ham/`. Masaüstü kopyası: yerel.
 
 ## Araç ve ayarlar
-`create_map_object`, stil eşleme, kılavuz + maske (`tools/art/footprint_guide.py`, referanssız), `high top-down`, `low detail`, `basic shading`, `single color outline`, tarifteki ortak ek ("muted green and earthy colours").
-Tuval tarifteki 64x64 yerine **80x72** (bezelye evre 3 hariç) ve **80x80** (bezelye evre 3, yükseklik 40): 1x1 elması 64 px genişlik ve 8 px kenar boşluğu ister, 64 px tuval elmasi kırpıyordu. Pivot: x=40, y(alttan)=24.
-Çağrılar: 15 ilk + 4 ikinci deneme (şalgam 2, lahana 1, pırasa 1, pırasa 2) = 19 generation (cost_max 24). Base64 aktarım hatasıyla reddedilen 3 çağrı üretime girmedi, ücret yok. `get_balance` iş sonu: 957,70.
+`create_map_object`, stil eşleme, kılavuz + maske (`footprint_guide.py`, referanssız), `high top-down`, `low detail`, `basic shading`, `single color outline`, tarifteki ortak ek ("muted green and earthy colours", "no soil"). Tuval 80x72 (bezelye 3: 80x80, yükseklik 40); pivot x=40, y(alttan)=24. Gerekçe: 1x1 elması 64 px + kenar boşluğu.
+- 15 ilk çağrı + 4 ikinci deneme (pırasa 1, pırasa 2, bezelye 2, bezelye 3; ikincide açıklamaya "no grass tile / no dirt" gibi kısıtlar eklendi). Bezelye 2 ilk gönderimde hız sınırına takıldı, 40 sn sonra bir kez yeniden gönderildi.
+- **Maliyet:** `get_balance` 2920,90 → 2891,90 = **29 generation** (çağrı sayısı 19). `cost_est` 15, `cost_max` 24: **cost_max aşıldı** (2x sınırı olan 30'u aşmadı). Kullanıcı bilsin.
+- Doygunluk: ham çıktılar çok doygundu (x1,4-2,7); `style.py fit` ile aileye indirildi (çarpan x0,42-0,83), hepsi UYARI ya da GEÇTİ'ye düştü. Bitki ailesinin kilidi kurulmadı (referans < 3), palet uyumu uyarıdır.
 
-## Sonuç
-| Parça | Durum | Not |
-|---|---|---|
-| şalgam 1 | KALDI | küçük toprak höyüğü çizilmiş ("no soil" tutmadı) |
-| şalgam 2 (2. deneme) | KALDI | yaprak halkası ortasında şalgam tepesi, tanınır; palet dışı |
-| şalgam 3 | KALDI | tanınır, doygun |
-| lahana 1 (2. deneme) | KALDI | ilk deneme kahverengi kabuk; ikincide fazladan kütük nesnesi vardı, bağlı bileşen olarak silindi (yalnız silme) |
-| lahana 2, 3 | KALDI | çok doygun (x2,1) |
-| pırasa 1 | TESLİM EDİLEMEZ | iki denemede de çim karosu, bitki değil |
-| pırasa 2 (2. deneme) | KALDI | koyu bıçaklar, toprak yok |
-| pırasa 3 | KALDI | mavi-yeşil, tanınır |
-| bezelye 1, 2, 3 | KALDI | 2'de küçük toprak elması; 3 tanınır |
-| kabak 1, 2, 3 | KALDI | 3 şişe kabağı tanınır; 2 yalnız çiçekli dal |
-
-## Stil denetimi (`style.py check --family bitki`)
-| Dosya | Palete yakın | Ort. uzaklık | Doygunluk | Sonuç |
+## Dosyalar (pivot x=40, y alttan=24)
+| Dosya (_aday/) | Boyut | Opak sınır kutusu | Renk | Not |
 |---|---|---|---|---|
-| cabbage_1 | %51 | 15.6 | x1.00 | KALDI |
-| cabbage_2 | %20 | 40.0 | x2.13 | KALDI |
-| cabbage_3 | %69 | 20.4 | x2.08 | KALDI |
-| leek_2 | %76 | 13.0 | x1.16 | KALDI |
-| leek_3 | %52 | 23.3 | x1.42 | KALDI |
-| pea_1 | %59 | 14.9 | x1.05 | KALDI |
-| pea_2 | %54 | 23.0 | x2.02 | KALDI |
-| pea_3 | %47 | 23.9 | x1.89 | KALDI |
-| pumpkin_1 | %26 | 27.1 | x2.12 | KALDI |
-| pumpkin_2 | %42 | 24.0 | x1.52 | KALDI |
-| pumpkin_3 | %24 | 26.5 | x1.73 | KALDI |
-| turnip_1 | %56 | 23.5 | x1.46 | KALDI |
-| turnip_2 | %9 | 31.2 | x1.69 | KALDI |
-| turnip_3 | %41 | 27.1 | x1.39 | KALDI |
+| iso_crop_turnip_1_se_v2 | 80x72 | x30-50, y23-50 | 22 | küçük toprak höyüğü çıktı ("no soil" tutmadı) ⚠ |
+| iso_crop_turnip_2_se_v2 | 80x72 | x14-65, y10-60 | 51 | renk >48 (yalnız rapor) |
+| iso_crop_turnip_3_se_v2 | 80x72 | x22-61, y8-54 | 46 | |
+| iso_crop_cabbage_1_se_v2 | 80x72 | x24-59, y24-39 | 42 | iki yaprak, küçük |
+| iso_crop_cabbage_2_se_v2 | 80x72 | x8-71, y9-55 | 31 | |
+| iso_crop_cabbage_3_se_v2 | 80x72 | x12-67, y11-61 | 17 | |
+| iso_crop_leek_1_se_v2 | 80x72 | x28-52, y22-48 | 13 | ot tutamı (2. deneme; 1. deneme çim karosu) |
+| iso_crop_leek_2_se_v2 | 80x72 | x17-62, y9-64 | 45 | 2. deneme |
+| iso_crop_leek_3_se_v2 | 80x72 | x9-71, y8-55 | 44 | |
+| iso_crop_pea_1_se_v2 | 80x72 | x30-52, y23-51 | 43 | çok küçük, kırmızı uç ⚠ |
+| iso_crop_pea_2_se_v2 | 80x72 | x13-66, y10-62 | 39 | 2. deneme; sopalar iri, çapraz ⚠ |
+| iso_crop_pumpkin_1_se_v2 | 80x72 | x18-62, y23-47 | 35 | |
+| iso_crop_pumpkin_2_se_v2 | 80x72 | x10-65, y14-60 | 26 | |
+| iso_crop_pumpkin_3_se_v2 | 80x72 | x8-71, y10-54 | 37 | şişe kabağı |
 
-`validate_iso.py` yalnızca turnip_1 ve leek_3 için ayrıca çalıştırıldı (geçti; yarı saydam 0, 25-37 renk, alta değme yok).
+## Doğrulama
+`validate_iso.py --kind object --max-colors 48`: 13 geçti, turnip_2 renk sayısı 51 (tarifte "fazlaysa yalnız raporla"). Yarı saydam 0, hiçbirinde alt satıra değme yok, alt boşluk 7-32 satır.
+`style.py check --family bitki` (fit sonrası): turnip_1 GEÇTİ, diğer 13 UYARI (palet dışı, kilit yok; doygunluk x1,14-1,20).
+Evre boyu sırası: turnip, cabbage, leek, pumpkin için 1<2<3 doğru; bezelye 3 yok. Ayrıntılı taban-hizası ölçümü, olgun evre ürün ikonu (316) kıyası ve döşeme testi (zemin değil) yapılmadı.
 
-## Sorunlar ve öneri
-- Bitki ailesinin referansı yalnızca 2 görsel; palet kapısı doygun yeşillerin hepsini eliyor. Kullanıcı yan yana sayfasına bakıp kapıyı gevşetmeli ya da referans eklemeli; sonra görseller `310-red/`'den teslim edilebilir (pırasa 1 hariç).
-- Araçta `seed` yok; ikinci denemeler yalnızca yeniden gönderim.
-- Evre boyu, döşeme testi ve olgun ürün ikonu kıyası (316) teslim olmadığı için yapılmadı.
+## Sorunlar
+- Bezelye 3 eksik (tanınan çıktı yok). Öneri: ayrı iş, sopa+çit kılavuzuyla. Araçta seed yok.
+- Çağrı başına gerçek maliyet ~1,5 (cost_est 1'in üstü).
+- Pırasa 1 ve bezelye 1 küçük/okunaksız olabilir; karar kullanıcıda.
