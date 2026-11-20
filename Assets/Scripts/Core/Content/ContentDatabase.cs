@@ -52,6 +52,14 @@ namespace Thatchwick.Core.Content
                 if (item.GrowDays < 0f) errors.Add($"{item.Id}: büyüme süresi negatif olamaz.");
                 if ((item.NeedsTilledSoil || item.DiesInWinter) && !item.IsPlant) errors.Add($"{item.Id}: tilled/diesInWinter yalnızca bitkide kullanılır.");
                 if (item.IsPlant && item.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: bitki yere konan eşya olmalı.");
+                if ((item.Cycle != CropCycle.Single || item.NeedsStake || item.GiantAs != null) && !item.IsCrop) errors.Add($"{item.Id}: cycle/needsStake/giantAs yalnızca tarla ekininde kullanılır.");
+                if (item.Cycle != CropCycle.Single && item.RegrowDays <= 0f) errors.Add($"{item.Id}: yeniden veren ekinde regrowDays sıfırdan büyük olmalı.");
+                if ((item.Cycle == CropCycle.Repeat || item.Cycle == CropCycle.Cut) && item.MaxHarvests < 2) errors.Add($"{item.Id}: devşirme ve kes-yine-gelir ekinde maxHarvests en az 2 olmalı.");
+                if (item.GiantAs != null)
+                {
+                    if (!Items.TryGet(item.GiantAs, out var giant)) errors.Add($"{item.Id}: dev ürün '{item.GiantAs}' bulunamadı.");
+                    else if (giant.Width != 2 || giant.Height != 2 || giant.Placement != ItemPlacement.Floor) errors.Add($"{item.Id}: dev ürün '{item.GiantAs}' 2×2 yer eşyası olmalı.");
+                }
                 if (item.PlantsAs != null)
                 {
                     if (item.Placement != ItemPlacement.Resource) errors.Add($"{item.Id}: dikilebilen fidan bir kaynak olmalı.");
@@ -151,6 +159,7 @@ namespace Thatchwick.Core.Content
                     if (pureWork ? (it.Restore < 0f || it.Restore > 100f) : (it.Restore <= 0f || it.Restore > 100f))
                         errors.Add($"{where}: Restore 0-100 arasında olmalı (iş etkileşimi değilse sıfırdan büyük).");
                     if (it.RequiresGrown && !item.IsPlant) errors.Add($"{where}: requiresGrown yalnızca bitkide kullanılır.");
+                    if ((it.RequiresWithered || it.Stakes) && !item.IsCrop) errors.Add($"{where}: requiresWithered ve stake yalnızca tarla ekininde kullanılır.");
                     if (it.ConsumeItem != null && !Items.Contains(it.ConsumeItem)) errors.Add($"{where}: harcanan '{it.ConsumeItem}' bulunamadı.");
                     foreach (var c in it.Consume)
                     {

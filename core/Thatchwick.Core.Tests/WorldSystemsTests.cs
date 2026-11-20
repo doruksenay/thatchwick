@@ -134,12 +134,18 @@ namespace Thatchwick.Core.Tests
             var plants = FarmTestKit.Legacy(world);
             var pea = world.PlaceItem(db.Items.Get("item.crop_pea"), new GridPos(2, 2));          // yalnız ilkbahar
             var leek = world.PlaceItem(db.Items.Get("item.crop_leek"), new GridPos(4, 2));        // yaz ve sonbahar
-            plants.Tick(1.0, Season.Summer);
+            plants.Tick(0.5, Season.Summer);
             Assert.Equal(0, pea.GrowthDays);
-            Assert.Equal(1, leek.GrowthDays);
+            Assert.Equal(0.5, leek.GrowthDays);
             plants.Tick(1.0, Season.Spring);
             Assert.Equal(1, pea.GrowthDays);
-            Assert.Equal(1, leek.GrowthDays);
+            Assert.Equal(0.5, leek.GrowthDays);
+            Assert.False(pea.Withered);   // mevsimine dönen ekin sararmaz: süre baştan sayılır
+            // Mevsimi geçen ekin bir gün içinde sararır (59 §3) ve artık büyümez.
+            plants.Tick(1.0, Season.Summer);
+            Assert.True(pea.Withered);
+            plants.Tick(1.0, Season.Spring);
+            Assert.Equal(1, pea.GrowthDays);
         }
 
         // ---------- T22: bozulma ve koruma ----------

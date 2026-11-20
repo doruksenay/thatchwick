@@ -104,6 +104,7 @@ namespace Thatchwick.Core.Life
                     if (inter.Id == "water" || inter.Id == "water_pot") info.Icon = "water";   // 018c sulama
                     // Hasat ve meyve toplama kendi pozunu oynar (belge 59; kare gelene kadar oyun katmanı çapa pozuna düşer).
                     if (item.Def.IsCrop && inter.RequiresGrown && inter.RemovesItem && inter.Produce.Count > 0) info.Icon = "reap";
+                    else if (item.Def.IsCrop && inter.RequiresWithered) info.Icon = "bend";   // sararmış ekini sökme
                     else if (inter.TakesFruit && item.IsPlant) info.Icon = "pick";
                     if (!job.Reason.HasValue && inter.RestoresNeed) info.Need = inter.Need;
                     break;

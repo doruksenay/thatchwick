@@ -320,9 +320,13 @@ namespace Thatchwick.Core.Work
                 foreach (var p in harvest.Produce)
                 {
                     if (p.Chance < 1f || p.MinLevel > 0) continue;   // makine el kadar özenli değildir
-                    int added = Storage != null ? Storage.AddUpTo(p.ItemId, p.Count) : AddAll(p.ItemId, p.Count);
+                    // Sırıksız sırık ekini makinede de yarım verir.
+                    int count = PlantSystem.MissingStake(crop) ? Math.Max(1, p.Count / 2) : p.Count;
+                    int added = Storage != null ? Storage.AddUpTo(p.ItemId, count) : AddAll(p.ItemId, count);
                     if (added > 0) got.Add(new KeyValuePair<string, int>(p.ItemId, added));
                 }
+                // Yeniden veren ekin (devşirme, kes-yine-gelir, kalıcı yatak) yerinde kalır.
+                if (Plants != null && PlantSystem.KeepsAfterHarvest(crop, harvest)) { Plants.OnPicked(crop); continue; }
                 Plants?.OnHarvest(crop);
                 _world.RemoveItem(crop.Id);
             }

@@ -85,6 +85,8 @@ namespace Thatchwick.Game
             ["water"] = new[] { "water" },
             ["farm"] = new[] { "hoe", "sow" },
             ["reap"] = new[] { "reap", "hoe" },   // 550: orakla biçme; kare gelene kadar çapa
+            ["scythe"] = new[] { "scythe", "reap", "hoe" },        // 565: tırpan (tahıl, lif, ot; hanede tırpan varken)
+            ["bend"] = new[] { "bend", "pickup", "sow", "hoe" },   // 565: eğilip sökme (sararmış ekin)
             ["pick"] = new[] { "pick", "hoe" },   // 550: meyve toplama
             ["work"] = new[] { "work" },
             // 018e (kabul 19.11.2026): sosyal, bakım, sevgi, eğlence, balık; maden üçlüsü.
@@ -1126,6 +1128,13 @@ namespace Thatchwick.Game
         private string PlantLabel(ItemInstance item)
         {
             string name = item.Def.DisplayName;
+            if (item.Withered) return GameLocalization.T("ui.farm.label.withered", ("crop", name));
+            if (item.IsGrown && item.Def.IsCrop && (item.Def.Regrows || PlantSystem.MissingStake(item)))
+            {
+                int left = PlantSystem.HarvestsLeft(item);
+                string ripe = left > 0 ? GameLocalization.T("ui.farm.label.ripe_left", ("crop", name), ("n", left)) : GameLocalization.T("ui.farm.label.ripe_bed", ("crop", name));
+                return PlantSystem.MissingStake(item) ? ripe + GameLocalization.T("ui.farm.label.no_stake") : ripe;
+            }
             if (item.IsGrown)
             {
                 if (item.Def.IsFruitTree) return item.FruitReady ? (item.Def.Id == "item.tree_oak" ? $"{name} (mazı hazır)" : $"{name} (meyve hazır)") : $"{name} (olgun)";
@@ -1133,6 +1142,7 @@ namespace Thatchwick.Game
             }
             string extra = PlantSystem.CanGrowIn(_clock.Season) || item.Position.Z < 0 ? "" : ", kışın büyümez";
             if (item.Def.IsCrop) extra += item.Watered ? ", sulu" : ", susuz";
+            if (PlantSystem.MissingStake(item)) extra += GameLocalization.T("ui.farm.label.no_stake");
             return $"{name} (%{item.GrowthFraction * 100f:0}{extra})";
         }
 
@@ -1939,14 +1949,16 @@ namespace Thatchwick.Game
 
         private void OnTapped(Vector2 screenPos) => OnTapped(screenPos, false);
 
-        /// <summary>Ekran konumundaki olgun tarla ekini (yoksa null).</summary>
+        private bool _longPressHintShown;
+
+        /// <summary>Ekran konumundaki olgun ya da sararmış tarla ekini (yoksa null).</summary>
         private ItemInstance RipeCropAt(Vector2 screenPos)
         {
             var cam = Camera.main;
             if (cam == null || _world == null || _view == null || Commander == null) return null;
             var world = cam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
             var item = _world.GetItemAt(_view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f))) ?? _world.GetItemAt(_view.WorldToTile(world));
-            return HarvestOrders.IsRipeCrop(item) ? item : null;
+            return HarvestOrders.WorkOf(item) != null ? item : null;
         }
 
         // Sürükleyerek hasat: parmağın geçtiği her olgun ekin emre eklenir.
@@ -1966,14 +1978,20 @@ namespace Thatchwick.Game
         {
             ItemInstance crop = null;
             foreach (var o in _menuOptions)
-                if (o.Item != null && HarvestOrders.IsRipeCrop(o.Item)) { crop = o.Item; break; }
+                if (o.Item != null && HarvestOrders.WorkOf(o.Item) != null) { crop = o.Item; break; }
             if (crop == null || _life == null) return false;
-            string why = Commander.Runner.WhyCannotStart(crop, HarvestOrders.HarvestOf(crop.Def));
+            // Olgun ekin biçilir, sararmış ekin sökülür (yan ürün verir); ikisi de tek dokunuş.
+            bool uproot = HarvestOrders.WorkOf(crop) == HarvestOrders.UprootId;
+            string why = Commander.Runner.WhyCannotStart(crop, uproot ? HarvestOrders.UprootOf(crop.Def) : HarvestOrders.HarvestOf(crop.Def));
             if (why != null) { ShowMessage(why); return true; }
             Commander.Runner.Cancel();
             int n = _life.Fields.OrderFrom(Commander.Character, crop);
-            if (n > 1) ShowMessage(GameLocalization.T("ui.harvest.field", ("who", Commander.Character.Name), ("n", n)));
-            else if (n == 1) ShowMessage(GameLocalization.T("ui.harvest.one", ("who", Commander.Character.Name), ("crop", crop.Def.DisplayName)));
+            string key = uproot ? "ui.farm.uproot" : "ui.harvest";
+            string said = n > 1 ? GameLocalization.T(key + ".field", ("who", Commander.Character.Name), ("n", n))
+                : n == 1 ? GameLocalization.T(key + ".one", ("who", Commander.Character.Name), ("crop", crop.Def.DisplayName)) : null;
+            // Tek dokunuş menüyü atladığı için uzun basış oturumda bir kez hatırlatılır.
+            if (said != null && !_longPressHintShown) { _longPressHintShown = true; said += " · " + GameLocalization.T("ui.farm.hint.long_press"); }
+            if (said != null) ShowMessage(said);
             return true;
         }
 
@@ -2917,6 +2935,8 @@ namespace Thatchwick.Game
                 float s = ItemViews.ViewScale(plant, art != null && staged);
                 pv.View.localScale = new Vector3(s, s, 1f);
                 if (pv.Shadow != null) { float g = 0.95f * ItemViews.PlantScale(plant); pv.Shadow.localScale = new Vector3(g, g, 1f); }
+                // Sararma (59 §3): ekin sarıya çalar; sökülene ya da çürüyene kadar öyle kalır.
+                if (plant.Def.IsCrop && art != null && pv.Sr != null) pv.Sr.color = plant.Withered ? ItemViews.WitheredTint : Color.white;
             }
             foreach (var (heatItem, heatView) in _items.Heat.Values)
                 if (heatView != null) { var lit = IsoArt.Item(heatItem, out _); if (lit != null && heatView.sprite != lit) heatView.sprite = lit; }
@@ -3094,6 +3114,9 @@ namespace Thatchwick.Game
                 {
                     actor.WorkJob = job;
                     actor.WorkIcon = job != null ? ActivityDescriber.DescribeJob(job, _world).Icon : null;
+                    // Tırpan: hanede tırpan varsa tahıl, lif ve ot tırpan pozuyla biçilir.
+                    if (actor.WorkIcon == "reap" && _life != null && _life.Tools.Tier(HarvestOrders.ScytheTool) > 0
+                        && HarvestOrders.IsScythable(_world.GetItem(job.ItemId)?.Def)) actor.WorkIcon = "scythe";
                     actor.HeldItem = actor.WorkIcon == "eat" ? HeldFood.Of(job, _world, _content) : null;
                 }
                 string icon = actor.WorkIcon;

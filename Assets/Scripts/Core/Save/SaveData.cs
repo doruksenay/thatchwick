@@ -168,6 +168,11 @@ namespace Thatchwick.Core.Save
         public double ageDays, wetDays;
         public bool fruitReady;
         public double fruitDays;
+        public int harvests;        // hasat döngüsü: bu bitkiden kaç kez toplandı (eski kayıtta 0)
+        public bool staked;         // sırık dikili
+        public bool withered;       // sarardı
+        public bool witheredMature; // sarardığında yan ürün verecek kadar gelişmişti
+        public double offSeasonDays;
         public double feedStock;    // v2: barınak yemi
         public string finish;       // mobilya kaplaması (renk/malzeme; boş = varsayılan)
         public string accent;       // ikinci kaplama: korkuluk, minder, kulp (belge 45; eski kayıtta boş)

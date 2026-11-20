@@ -3048,7 +3048,7 @@
     {"skill": "Farming", "level": 6, "kind": "recipe", "text": "Sera ekimi"},
     {"skill": "Farming", "level": 6, "kind": "interaction", "text": "Toprağı kokla (hasat tahmini)"},
     {"skill": "Farming", "level": 7, "kind": "passive", "text": "Ekim nöbeti: farklı ekin ekilirse verim +"},
-    {"skill": "Farming", "level": 8, "kind": "passive", "text": "İri ürün şansı (Hasat Şenliği yarışması)"},
+    {"skill": "Farming", "level": 8, "kind": "passive", "text": "Dev ürün şansı iki kat (2×2 olgun ve sulu tarla; Hasat Şenliği yarışması)"},
     {"skill": "Farming", "level": 9, "kind": "interaction", "text": "İmece çağır: komşular bir gün tarlaya yardım eder"},
     {"skill": "Farming", "level": 10, "kind": "recipe", "text": "Ustalık: soy tohumu (her hasatta bir tohum fazla)"},
     {"skill": "Horticulture", "level": 1, "kind": "feature", "text": "Meyve topla, fidan dik, tohum çıkar"},

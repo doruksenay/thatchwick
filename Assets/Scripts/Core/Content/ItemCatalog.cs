@@ -215,6 +215,16 @@ namespace Thatchwick.Core.Content
             if (def.AutoProcess != null) parts.Add("Güç alınca her gün kendiliğinden işler");
             if (def.WindPower) parts.Add("Rüzgârla güç verir (kanal gerekmez)");
             if (def.WaterGate) parts.Add("Dokun: suyu aç / kes");
+            // Hasat döngüsü (59 §1-2): tohumda ve ekinin kendisinde görünür.
+            var crop = def.IsCrop ? def : def.PlantsAs != null && content != null && content.Items.TryGet(def.PlantsAs, out var planted) && planted.IsCrop ? planted : null;
+            if (crop != null)
+            {
+                if (crop.Cycle == CropCycle.Repeat) parts.Add($"Devşirme: {crop.MaxHarvests} kez verir, sonra sararır; tohumu sökünce çıkar");
+                else if (crop.Cycle == CropCycle.Cut) parts.Add($"Kes, yine gelir: {crop.MaxHarvests} kesim, sonra tohuma kaçar");
+                else if (crop.Cycle == CropCycle.Perennial) parts.Add("Kalıcı yatak: bir kez dikilir, her yıl mevsiminde verir");
+                if (crop.NeedsStake) parts.Add("Sırık ister (sırıksız ürün yarım)");
+                if (crop.GiantAs != null) parts.Add("2×2 olgun ve sulu tarlada küçük şansla dev ürün olur");
+            }
             if (def.HarvestRadius > 0) parts.Add($"Güç alınca her sabah {def.HarvestRadius} karo çevresindeki olgun ekini biçer");
             if (def.SeedRadius > 0) parts.Add($"Güç alınca her sabah {def.SeedRadius} karo çevresindeki boş toprağa tohum eker");
             if (def.IceCollect > 0) parts.Add($"Donlu sabahlar {def.IceCollect} buz toplar");

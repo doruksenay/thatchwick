@@ -153,9 +153,26 @@ namespace Thatchwick.Core.Work
         public float StormGrowthLoss = 0.3f;
         /// <summary>Çalışan bir kovan yakındaysa ekin büyümesi ve meyve olgunlaşması bu kadar artar.</summary>
         public float PollinationGrowth = 0.1f, PollinationFruit = 0.25f;
+        /// <summary>Sararma (59 §3): mevsimi dışında bu kadar gün geçince ekin sararır; yarı boyun üstündeyse yan ürün verir.</summary>
+        public double WitherAfterDays = 1.0;
+        public float WitherMatureFraction = 0.5f;
+        /// <summary>Sökülmeyen sararmış ekin bu kadar gün sonra çürüyüp toprağa karışır (verime küçük katkı).</summary>
+        public double WitheredRotDays = 10.0;
+        public float RotFertility = 0.03f;
+        /// <summary>Sırık isteyen ekinde sırıksız ürün çarpanı.</summary>
+        public float UnstakedYield = 0.5f;
+        /// <summary>Kalıcı yatak her toplamada toprağı bu kadar yorar (sökülmediği için nöbet kuralı işlemez).</summary>
+        public float PerennialDraw = 0.04f;
+        /// <summary>Dev ürün (59 §2): 2×2 olgun ve sulu karo için sabah şansı; verimli toprakta ek şans; bu Çiftçilik seviyesinde iki kat.</summary>
+        public double GiantChance = 0.02, GiantRichBonus = 0.01;
+        public float GiantRichFertility = 0.8f;
+        public int GiantSkillLevel = 8;
     }
 
-    public enum PlantLoss { Crows, Storm, Frost }
+    public enum PlantLoss { Crows, Storm, Frost, Rotted }
+
+    /// <summary>Ekinin sararma nedeni: mevsimi geçti, toplama hakkı bitti (tohuma kaçtı) ya da don vurdu.</summary>
+    public enum WitherCause { Season, Spent, Frost }
 
     /// <summary>Fırtınanın tahıla etkisi (belge 57d §2).</summary>
     public enum CerealDamage { None, Shattered, Lodged }
@@ -163,8 +180,8 @@ namespace Thatchwick.Core.Work
     /// <summary>Tarlanın özeti (arayüz şeridi): ekin sayısı, susamış, hasada hazır, meyvesi olgun ağaç.</summary>
     public readonly struct FarmSummary
     {
-        public readonly int Crops, Thirsty, Ripe, FruitReady;
-        public FarmSummary(int crops, int thirsty, int ripe, int fruitReady) { Crops = crops; Thirsty = thirsty; Ripe = ripe; FruitReady = fruitReady; }
+        public readonly int Crops, Thirsty, Ripe, FruitReady, Withered;
+        public FarmSummary(int crops, int thirsty, int ripe, int fruitReady, int withered = 0) { Crops = crops; Thirsty = thirsty; Ripe = ripe; FruitReady = fruitReady; Withered = withered; }
         public bool Any => Crops > 0 || FruitReady > 0;
     }
 
@@ -235,18 +252,20 @@ namespace Thatchwick.Core.Work
         /// <summary>Tarla özeti: kaç ekin var, kaçı susamış (büyüyor ama sulanmamış), kaçı hasada hazır, kaç ağacın meyvesi olgun.</summary>
         public FarmSummary Summary()
         {
-            int crops = 0, thirsty = 0, ripe = 0, fruit = 0;
+            int crops = 0, thirsty = 0, ripe = 0, fruit = 0, withered = 0;
             foreach (var item in _world.Items)
             {
                 if (!item.IsPlant) continue;
                 if (item.Def.IsCrop)
                 {
                     crops++;
-                    if (item.IsGrown) ripe++; else if (!item.Watered) thirsty++;
+                    if (item.Withered) withered++;
+                    else if (item.IsGrown) ripe++;
+                    else if (!item.Watered) thirsty++;
                 }
                 if (item.FruitReady) fruit++;
             }
-            return new FarmSummary(crops, thirsty, ripe, fruit);
+            return new FarmSummary(crops, thirsty, ripe, fruit, withered);
         }
 
         // ---------- toprak ----------
@@ -514,7 +533,130 @@ namespace Thatchwick.Core.Work
         /// <summary>Ekini sular (bugünlük). Ekin dışındakiler için etkisizdir.</summary>
         public static void Water(ItemInstance item)
         {
-            if (item != null && item.IsPlant && item.Def.IsCrop) item.Watered = true;
+            if (item != null && item.IsPlant && item.Def.IsCrop && !item.Withered) item.Watered = true;
+        }
+
+        // ---------- hasat döngüsü, sırık, sararma (59 §1, §3) ----------
+
+        public const string HarvestId = "harvest";
+        /// <summary>Yan ürünlerde kullanılan ortak eşyalar: kompostluk yeşil (ot), yem ve saman.</summary>
+        public const string GreenItemId = "item.herb", FeedItemId = "item.feed", StrawItemId = "item.straw";
+        /// <summary>Ekin sırığı: dikilince harcanır, bitki sökülünce geri gelir.</summary>
+        public const string StakeItemId = "item.crop_stake";
+
+        /// <summary>Ekin sarardı (eşya, neden). Eşya yerinde kalır; "Sök" ile kaldırılır.</summary>
+        public event Action<ItemInstance, WitherCause> PlantWithered;
+        /// <summary>2×2 olgun ekin dev ürüne dönüştü (ekin tanımı, yeni dev ürün eşyası).</summary>
+        public event Action<Content.ItemDef, ItemInstance> GiantGrown;
+        /// <summary>Eşya tanımı arar (dev ürün eşyası için); içerik veritabanına bağlanır.</summary>
+        public Func<string, Content.ItemDef> DefOf { get; set; }
+        /// <summary>Hanenin en iyi Çiftçilik seviyesi (dev ürün şansı için).</summary>
+        public Func<int> FarmingLevel { get; set; }
+
+        /// <summary>Bu hasatta bitki yerinde kalır mı: yeniden veren ekinin olağan hasadı ("Seçme tohum" bitkiyi söker).</summary>
+        public static bool KeepsAfterHarvest(ItemInstance item, Content.InteractionDef interaction) =>
+            item != null && interaction != null && item.Def.Regrows && !item.Withered && interaction.Id == HarvestId;
+
+        /// <summary>Sırık isteyip sırığı dikilmemiş mi (ürün yarıya iner).</summary>
+        public static bool MissingStake(ItemInstance item) => item != null && item.Def.NeedsStake && !item.Staked;
+
+        /// <summary>Kalan toplama hakkı; sınırsızsa (kalıcı yatak, tek hasat) -1.</summary>
+        public static int HarvestsLeft(ItemInstance item) =>
+            item == null || !item.Def.Regrows || item.Def.Cycle == Content.CropCycle.Perennial || item.Def.MaxHarvests <= 0
+                ? -1 : Math.Max(0, item.Def.MaxHarvests - item.Harvests);
+
+        /// <summary>
+        /// Yeniden veren ekinden ürün toplandı: bitki kalır, bir sonraki ürün için geri sayar. Toplama hakkı bitince sararır
+        /// (tohuma kaçar). Toprak her toplamada değil bitki sökülünce yorulur; kalıcı yatak her toplamada az yorar.
+        /// </summary>
+        public void OnPicked(ItemInstance item)
+        {
+            if (item == null || !item.Def.Regrows || item.Withered) return;
+            item.Harvests++;
+            item.GrowthDays = Math.Max(0, item.Def.GrowDays - item.Def.RegrowDays);
+            item.AgeDays = 0;
+            item.WetDays = 0;
+            if (item.Def.Cycle == Content.CropCycle.Perennial)
+            {
+                var plot = PlotAt(item.Position);
+                plot.Fertility = Clamp01(plot.Fertility - Config.PerennialDraw);
+                plot.LastCrop = item.Def.Id;
+            }
+            else if (item.Def.MaxHarvests > 0 && item.Harvests >= item.Def.MaxHarvests) Wither(item, WitherCause.Spent);
+        }
+
+        /// <summary>Ekini sarartır: büyümez, hasat edilmez; yarı boyun üstündeyse (ya da ürün verdiyse) sökülünce yan ürün verir.</summary>
+        public void Wither(ItemInstance item, WitherCause cause)
+        {
+            if (item == null || !item.IsPlant || !item.Def.IsCrop || item.Withered) return;
+            item.WitheredMature = item.Harvests > 0 || item.GrowthFraction >= Config.WitherMatureFraction;
+            item.Withered = true;
+            item.Watered = false;
+            item.OffSeasonDays = 0;
+            PlantWithered?.Invoke(item, cause);
+        }
+
+        /// <summary>Sararmış ekin söküldü: ürün vermiş ya da gelişmiş bitki toprağı hasat gibi etkiler (yorar, baklagilse besler).</summary>
+        public void OnUproot(ItemInstance item)
+        {
+            if (item == null || !item.Def.IsCrop) return;
+            if (item.WitheredMature) OnHarvest(item);
+        }
+
+        /// <summary>Mevsimi bu ekin için bitti mi: kış ayrı kuraldır (don), kalıcı yatak mevsim dışında uyur.</summary>
+        public static bool SeasonOver(Content.ItemDef def, Season season) =>
+            def.IsCrop && def.Cycle != Content.CropCycle.Perennial && season != Season.Winter && !CanGrow(def, season);
+
+        /// <summary>
+        /// Sararmış ekinin sökülünce verdiği yan ürün (59 §3), ekin ailesine göre: yaprak tohuma kaçar, kök odunsulaşır (yem),
+        /// baklagil kabukta kurur (kuru tane), tahıl başak döker (saman ve demetin üçte biri), lif kartlaşır. Gelişmeden
+        /// sararan filiz yalnızca kompostluk yeşil verir.
+        /// </summary>
+        public static List<Content.ProduceDef> WitherYield(ItemInstance item, Content.ContentDatabase content)
+        {
+            var rows = new List<Content.ProduceDef>();
+            if (item == null || content == null || !item.Def.IsCrop) return rows;
+            void Row(string id, int count, float chance = 1f)
+            {
+                if (id != null && count > 0 && content.Items.Contains(id)) rows.Add(new Content.ProduceDef { ItemId = id, Count = count, Chance = chance });
+            }
+            if (!item.WitheredMature) { Row(GreenItemId, 1); return rows; }
+
+            var def = item.Def;
+            string seed = null;
+            foreach (var d in content.Items.All) if (d.PlantsAs == def.Id) { seed = d.Id; break; }
+            Content.InteractionDef harvest = null;
+            foreach (var i in def.Interactions) if (i.Id == HarvestId) { harvest = i; break; }
+            string main = harvest != null && harvest.Produce.Count > 0 ? harvest.Produce[0].ItemId : null;
+            int mainCount = harvest != null && harvest.Produce.Count > 0 ? harvest.Produce[0].Count : 0;
+            switch (def.CropFamily)
+            {
+                case "yaprak": Row(seed, 2); Row(seed, 1, 0.5f); Row(GreenItemId, 1); break;
+                case "kok": Row(FeedItemId, 1); Row(seed, 1); Row(seed, 1, 0.5f); break;
+                case "sogan": Row(seed, 2); Row(main, 1); break;
+                case "baklagil": Row(seed, 3); Row(FeedItemId, 1); break;
+                case "tahil": Row(StrawItemId, 2); Row(main, Math.Max(1, mainCount / 3)); break;
+                case "lif": Row(main, 1); Row(seed, 2); break;
+                case "kabak": Row(seed, 2); Row(seed, 1, 0.5f); Row(GreenItemId, 1); break;
+                case "fig": Row(FeedItemId, 1); Row(seed, 1); break;
+                default: Row(seed, 1); Row(GreenItemId, 1); break;
+            }
+            return rows;
+        }
+
+        /// <summary>Bu mevsim dönünce sararacak (ya da donacak) canlı ekinlerin sayısı: mevsim sonu uyarısı için.</summary>
+        public int AtRiskNextSeason(Season next)
+        {
+            int n = 0;
+            var rooms = _world.Map.Rooms;
+            foreach (var item in _world.Items)
+            {
+                if (!item.IsPlant || !item.Def.IsCrop || item.Withered || item.Position.Z < 0) continue;
+                var room = rooms.RoomAt(item.Position);
+                if (room != null && room.IsIndoor) continue;   // sera kendi kuralıyla
+                if (next == Season.Winter ? item.Def.DiesInWinter : SeasonOver(item.Def, next)) n++;
+            }
+            return n;
         }
 
         /// <summary>Olgun ekin hasat edilince toprak yorulur ya da (baklagil, nöbetleşe ekim) toparlanır.</summary>
@@ -600,11 +742,13 @@ namespace Thatchwick.Core.Work
         {
             var rooms = _world.Map.Rooms;
             var crops = new List<ItemInstance>();
+            var wetBefore = new HashSet<int>();
             foreach (var item in _world.Items)
             {
                 if (!item.IsPlant) continue;
+                if (item.Watered) wetBefore.Add(item.Id);
                 item.Watered = false;
-                if (item.Def.IsCrop) crops.Add(item);
+                if (item.Def.IsCrop && !item.Withered) crops.Add(item);
             }
 
             foreach (var crop in crops)
@@ -676,6 +820,7 @@ namespace Thatchwick.Core.Work
                     if (crop.Watered && !(rained && !IsIndoor(rooms, crop.Position))) Enrich(crop.Position, Config.FertigationPerDay, Config.FertigationCap);
 
             StormOnCereals(crops, rooms, stormed);
+            GrowGiants(crops, wetBefore);
 
             // Kuzgunlar ve fırtına yalnızca dışarıdaki ekini bulur.
             var lost = new List<ItemInstance>();
@@ -698,6 +843,53 @@ namespace Thatchwick.Core.Work
         }
 
         private static bool IsIndoor(RoomMap rooms, GridPos p) { var room = rooms.RoomAt(p); return room != null && room.IsIndoor; }
+
+        // Dev ürün (59 §2): aynı ekinden 2×2 olgun ve sulu (dün ya da bu sabah) karo küçük şansla tek dev ürüne dönüşür.
+        private void GrowGiants(List<ItemInstance> crops, HashSet<int> wetBefore)
+        {
+            if (DefOf == null) return;
+            Dictionary<GridPos, ItemInstance> ready = null;
+            foreach (var c in crops)
+            {
+                if (c.Def.GiantAs == null || !c.IsGrown || !(c.Watered || wetBefore.Contains(c.Id))) continue;
+                (ready ?? (ready = new Dictionary<GridPos, ItemInstance>()))[c.Position] = c;
+            }
+            if (ready == null || ready.Count < 4) return;
+            var order = new List<ItemInstance>(ready.Values);
+            order.Sort((a, b) => a.Id.CompareTo(b.Id));
+            var used = new HashSet<int>();
+            int skill = FarmingLevel != null ? FarmingLevel() : 0;
+            foreach (var a in order)
+            {
+                if (used.Contains(a.Id)) continue;
+                var p = a.Position;
+                var block = new ItemInstance[4];
+                block[0] = a;
+                bool ok = ready.TryGetValue(new GridPos(p.X + 1, p.Y, p.Z), out block[1]) & ready.TryGetValue(new GridPos(p.X, p.Y + 1, p.Z), out block[2])
+                    & ready.TryGetValue(new GridPos(p.X + 1, p.Y + 1, p.Z), out block[3]);
+                if (!ok) continue;
+                float fert = 0f;
+                foreach (var b in block) { if (b.Def != a.Def || used.Contains(b.Id)) ok = false; else fert += FertilityAt(b.Position) / 4f; }
+                if (!ok) continue;
+                double chance = Config.GiantChance + (fert > Config.GiantRichFertility ? Config.GiantRichBonus : 0.0);
+                if (skill >= Config.GiantSkillLevel) chance *= 2.0;
+                if (_rng.NextDouble() >= chance) continue;
+                var giantDef = DefOf(a.Def.GiantAs);
+                if (giantDef == null) continue;
+                foreach (var b in block) { used.Add(b.Id); OnHarvest(b); _world.RemoveItem(b.Id); crops.Remove(b); }
+                if (_world.CanPlaceFloor(giantDef, p, 0).Ok)
+                {
+                    var giant = _world.PlaceItem(giantDef, p);
+                    GiantGrown?.Invoke(a.Def, giant);
+                }
+                else
+                {
+                    // Yer tutmadı (beklenmez): dört ekin olgun hâliyle geri konur.
+                    foreach (var b in block)
+                        if (_world.CanPlaceFloor(b.Def, b.Position, 0).Ok) { var back = _world.PlaceItem(b.Def, b.Position); SetGrown(back); crops.Add(back); }
+                }
+            }
+        }
 
         private bool Protected(GridPos p)
         {
@@ -740,9 +932,17 @@ namespace Thatchwick.Core.Work
             _activeHives.Clear();
             foreach (var it in _world.Items)
                 if (it.Def.PollinateRadius > 0 && (HiveActive == null || HiveActive(it))) _activeHives.Add(it);
+            List<ItemInstance> rotted = null;
             foreach (var item in _world.Items)
             {
                 if (!item.IsPlant) continue;
+                if (item.Withered)
+                {
+                    // Sökülmeyen sararmış ekin bir mevsim sonra çürüyüp toprağa karışır.
+                    item.OffSeasonDays += gameDays;
+                    if (item.OffSeasonDays >= Config.WitheredRotDays) (rotted ?? (rotted = new List<ItemInstance>())).Add(item);
+                    continue;
+                }
                 // Bodrum bitkisi (mantar yatağı): serin ve nemli, mevsimden ve havadan bağımsız büyür.
                 if (item.Position.Z < 0)
                 {
@@ -757,6 +957,23 @@ namespace Thatchwick.Core.Work
                 if (indoor && !greenhouse) continue;   // içeride (seradan başka) büyümez
                 if (item.Def.WarmOnly && !greenhouse && !InSouth(item.Position)) continue;   // kahve: ılık serada ya da Güney Yamaçları'nda
                 if (item.Def.SouthOnly && !InSouth(item.Position)) continue;                  // zeytin: yalnızca Güney Yamaçları'nda
+
+                if (item.Def.IsCrop)
+                {
+                    // Mevsimi geçen ekin (sera dışında) bir gün içinde sararır; kalıcı yatak uyur ve toplanmamış ürününü yitirir.
+                    bool off = !greenhouse && !CanGrow(item.Def, season);
+                    if (!off) item.OffSeasonDays = 0;
+                    else if (SeasonOver(item.Def, season) || (item.Def.Cycle == Content.CropCycle.Perennial && item.IsGrown))
+                    {
+                        item.OffSeasonDays += gameDays;
+                        if (item.OffSeasonDays >= Config.WitherAfterDays)
+                        {
+                            if (item.Def.Cycle != Content.CropCycle.Perennial) Wither(item, WitherCause.Season);
+                            else { item.GrowthDays = Math.Max(0, item.Def.GrowDays - item.Def.RegrowDays); item.OffSeasonDays = 0; }
+                        }
+                        continue;
+                    }
+                }
 
                 if (item.IsGrown)
                 {
@@ -790,6 +1007,16 @@ namespace Thatchwick.Core.Work
                 }
                 item.GrowthDays = Math.Min(item.Def.GrowDays, item.GrowthDays + gameDays * rate);
             }
+            if (rotted != null)
+                foreach (var item in rotted)
+                {
+                    var plot = PlotAt(item.Position);
+                    plot.Fertility = Clamp01(plot.Fertility + Config.RotFertility);
+                    _lodged.Remove(item.Id);
+                    _shattered.Remove(item.Id);
+                    _world.RemoveItem(item.Id);
+                    PlantLost?.Invoke(item.Def, item.Position, PlantLoss.Rotted);
+                }
         }
 
         // Olgun meyve ağacı: meyve mevsiminde olgunlaşır, mevsim bitince dökülür; toplayınca yeniden başlar.
@@ -813,7 +1040,7 @@ namespace Thatchwick.Core.Work
             var rooms = _world.Map.Rooms;
             foreach (var item in _world.Items)
             {
-                if (!item.IsPlant || !item.Def.DiesInWinter) continue;
+                if (!item.IsPlant || !item.Def.DiesInWinter || item.Withered) continue;
                 var room = rooms.RoomAt(item.Position);
                 bool indoor = room != null && room.IsIndoor;
                 if (indoor)
@@ -827,6 +1054,8 @@ namespace Thatchwick.Core.Work
             }
             foreach (var item in dead)
             {
+                // Gelişmiş ekin donunca sararır (sökülünce yan ürün verir); filiz donup kaybolur.
+                if (item.Def.IsCrop && item.GrowthFraction >= Config.WitherMatureFraction) { Wither(item, WitherCause.Frost); continue; }
                 _world.RemoveItem(item.Id);
                 PlantDied?.Invoke(item.Def, item.Position);
                 PlantLost?.Invoke(item.Def, item.Position, PlantLoss.Frost);
