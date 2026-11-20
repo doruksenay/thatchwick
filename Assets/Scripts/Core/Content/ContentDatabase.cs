@@ -287,8 +287,8 @@ namespace Thatchwick.Core.Content
                     errors.Add($"{item.Id}: '{item.AccentGroup}' ikinci kaplama grubunda hiç kaplama yok.");
             foreach (var item in Items.All)
             {
-                // döküntü yığını: "Topla"; saz hasır: "Ot serp" (belge 45)
-                bool onlyCollect = item.Interactions.TrueForAll(i => i.CollectContents || i.HomeAction == "strew");
+                // döküntü yığını: "Topla"; saz hasır: "Ot serp" (belge 45); yerdeki pislik: "Kürekle topla" (belge 57)
+                bool onlyCollect = item.Interactions.TrueForAll(i => i.CollectContents || i.HomeAction == "strew" || i.FarmAction == "pile_collect");
                 if (item.IsRug && (!onlyCollect || item.SurfaceSlots.Count > 0 || item.IsStairs || item.IsHousing || item.HeatOutput > 0f || item.Storage > 0))
                     errors.Add($"{item.Id}: halı etkileşimsiz, yuvasız düz bir eşya olmalı.");
             }

@@ -136,11 +136,11 @@ namespace Thatchwick.Core.Farmyard
         public static string ScoldLineKey(Character witness, Character actor, bool sameHousehold, bool adultPack, int roll)
         {
             if (witness == null) return null;
-            if (witness.Stage == AgeStage.Child) return "core.yard.scold.child";
-            if (adultPack && witness.Stage != AgeStage.Teen) return "core.yard.scold.adult." + (1 + Math.Abs(roll) % 3);
-            if (witness.Stage == AgeStage.Elder) return "core.yard.scold.elder";
-            if (sameHousehold && Math.Abs(roll) % 2 == 0) return "core.yard.scold.family";
-            return "core.yard.scold." + (1 + Math.Abs(roll) % 4);
+            if (witness.Stage == AgeStage.Child) return "yard.scold.child";
+            if (adultPack && AgeStages.IsAdultContentAge(witness.Stage)) return "yard.scold.adult." + (1 + Math.Abs(roll) % 3);
+            if (witness.Stage == AgeStage.Elder) return "yard.scold.elder";
+            if (sameHousehold && Math.Abs(roll) % 2 == 0) return "yard.scold.family";
+            return "yard.scold." + (1 + Math.Abs(roll) % 4);
         }
     }
 }

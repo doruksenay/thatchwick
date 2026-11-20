@@ -54,16 +54,13 @@ namespace Thatchwick.Core.Farmyard
         /// <summary>Yaş girdiler ve birim değerleri.</summary>
         public static readonly KeyValuePair<string, int>[] WetInputs =
         {
-            new KeyValuePair<string, int>("item.kitchen_scraps", 1), new KeyValuePair<string, int>("item.weeds", 1),
-            new KeyValuePair<string, int>("item.herb", 1), new KeyValuePair<string, int>("item.seaweed", 1),
-            new KeyValuePair<string, int>(ManureId, 2)
+            new KeyValuePair<string, int>("item.herb", 1), new KeyValuePair<string, int>("item.seaweed", 1), new KeyValuePair<string, int>(ManureId, 2)
         };
         /// <summary>Kuru girdiler ve birim değerleri.</summary>
         public static readonly KeyValuePair<string, int>[] DryInputs =
         {
             new KeyValuePair<string, int>(LeavesId, 1), new KeyValuePair<string, int>("item.straw", 1),
-            new KeyValuePair<string, int>("item.pomace", 1), new KeyValuePair<string, int>("item.coffee_spent", 1),
-            new KeyValuePair<string, int>("item.sawdust", 1)
+            new KeyValuePair<string, int>("item.pomace", 1), new KeyValuePair<string, int>("item.coffee_spent", 1)
         };
 
         private readonly WorldState _world;
@@ -269,7 +266,7 @@ namespace Thatchwick.Core.Farmyard
             double share = h.WetShare;
             bool balanced = share >= Config.BalanceLow && share <= Config.BalanceHigh;
             bool tooWet = share > Config.BalanceHigh;
-            bool turned = AutoTurned(item) || now - h.LastTurn < Config.TurnFreshDays;
+            bool turned = AutoTurned(item) || now - h.LastTurn <= Config.TurnFreshDays;
             bool neglected = !turned && now - h.LastTurn >= Config.NeglectDays;
             bool full = h.Total >= MinFillOf(item);
             double temp = TempFactor(item.Position);

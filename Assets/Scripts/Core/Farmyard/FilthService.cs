@@ -12,7 +12,7 @@ namespace Thatchwick.Core.Farmyard
     /// </summary>
     public sealed class FilthService
     {
-        public const string HumanPileId = "item.dung_pile", DogPileId = "item.dog_pile", AnimalPileId = "item.animal_dung", RefusePileId = "item.refuse_pile";
+        public const string HumanPileId = "item.dung_pile", DogPileId = "item.dog_pile", AnimalPileId = "item.animal_dung", SheepPileId = "item.sheep_dung", RefusePileId = "item.refuse_pile";
         /// <summary>Evdeki döküntü de süprüntü gibi yaşlanır: bekledikçe sineklenir, sonra kokar.</summary>
         public const string DebrisId = "item.debris";
         public const string PrivyKind = "privy", PileSourceKind = "pile", DecorKind = "decor";
@@ -69,7 +69,7 @@ namespace Thatchwick.Core.Farmyard
             {
                 case HumanPileId: return PileKind.Human;
                 case DogPileId: return PileKind.Dog;
-                case AnimalPileId: return PileKind.Animal;
+                case AnimalPileId: case SheepPileId: return PileKind.Animal;
                 case RefusePileId: case DebrisId: return PileKind.Refuse;
                 default: return null;
             }
@@ -90,9 +90,9 @@ namespace Thatchwick.Core.Farmyard
         private bool IsOutdoor(GridPos p) { var room = _world.Map.Rooms.RoomAt(p); return room == null || !room.IsIndoor; }
 
         /// <summary>Karoya (olmazsa bitişiğine) yığın bırakır; yer yoksa ya da tavan dolduysa null.</summary>
-        public ItemInstance Drop(PileKind kind, GridPos tile)
+        public ItemInstance Drop(PileKind kind, GridPos tile, string defId = null)
         {
-            if (!_content.Items.TryGet(DefOf(kind), out var def)) return null;
+            if (!_content.Items.TryGet(defId != null && KindOf(defId) == kind ? defId : DefOf(kind), out var def)) return null;
             if (_piles.Count >= Config.MaxPiles) return null;
             GridPos? spot = null;
             if (CanHold(def, tile)) spot = tile;

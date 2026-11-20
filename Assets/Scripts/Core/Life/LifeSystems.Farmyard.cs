@@ -26,7 +26,7 @@ namespace Thatchwick.Core.Life
             ActCompostAsh = "compost_add_ash", ActCompostTurn = "compost_turn", ActCompostTake = "compost_take", ActWormFeed = "worm_feed",
             ActLeafFill = "leaf_fill", ActSlurryBrew = "slurry_brew", ActBarnClean = "barn_clean", ActBarnLitter = "barn_litter";
         /// <summary>Kıyı ve Güney seferinin getirdikleri.</summary>
-        public const string SeaweedId = "item.seaweed", MarlId = "item.marl";
+        public const string SeaweedId = "item.seaweed", MarlId = "item.marl", DungCakeId = "item.dung_cake";
 
         public YardConfig YardNumbers { get; } = new YardConfig();
 
@@ -321,6 +321,7 @@ namespace Thatchwick.Core.Life
             var pile = Filth.PileOf(item);
             if (pile == null) return;
             var kind = pile.Kind;
+            bool dried = Filth.StageOf(pile) == PileStage.Dried;
             if (!Filth.Remove(item)) return;
             YardHealth.MarkDirty(c.Id);
             c.Needs.Set(NeedType.Hygiene, Math.Max(0f, c.Needs.Get(NeedType.Hygiene) - YardNumbers.StepHygieneLoss));
@@ -336,6 +337,7 @@ namespace Thatchwick.Core.Life
                 var heap = Compost.HeapWithRoom(2);
                 if (heap != null) Compost.Add(heap, 2, 0);
             }
+            else if (kind == PileKind.Animal && dried && Content.Items.Contains(DungCakeId)) House.AddItem(DungCakeId, 1);   // kurumuş tezek yakacaktır
             else Compost.AddDung(FilthService.DungUnits(kind));
         }
 
@@ -462,7 +464,7 @@ namespace Thatchwick.Core.Life
             var stuck = new List<(Cart cart, LocText why)>();
             var working = _fleet.OnNewDay(day, stuck);
             foreach (var (cart, why) in stuck)
-                Say(LocText.Of("yard.n.cart_stuck", ("cart", cart.DefId), ("why", Text(why))), NoticeLevel.Warning);
+                Say(LocText.Of("yard.n.cart_stuck", ("item", cart.DefId), ("why", Text(why))), NoticeLevel.Warning);
             int seaweed = 0, marl = 0;
             foreach (var cart in working)
             {

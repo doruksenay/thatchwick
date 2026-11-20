@@ -212,7 +212,9 @@ namespace Thatchwick.Core.Farmyard
                 var room = _world.Map.Rooms.RoomAt(a.Position);
                 bool outdoor = room == null || !room.IsIndoor;
                 if (kind == 2) { if (outdoor) CatBuried?.Invoke(a); }
-                else if (outdoor) _filth.Drop(kind == 1 ? PileKind.Dog : PileKind.Animal, a.Position);
+                else if (outdoor)
+                    _filth.Drop(kind == 1 ? PileKind.Dog : PileKind.Animal, a.Position,
+                        kind == 0 && a.Species.Housing == "barn" && !a.Species.Draft ? FilthService.SheepPileId : null);   // davar kığı, büyükbaş tezek bırakır
             }
         }
 
