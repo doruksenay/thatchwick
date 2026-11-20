@@ -139,6 +139,15 @@ namespace Thatchwick.Core.Content
                 item.LightPower = Math.Max(0, dto.lightPower);
                 item.PotHerb = string.IsNullOrWhiteSpace(dto.potHerb) ? null : dto.potHerb.Trim();
                 item.PotGrowDays = dto.potGrowDays > 0f ? dto.potGrowDays : 3f;
+                item.LivePlant = dto.livePlant;
+                item.ShadePlant = dto.shadePlant;
+                item.Thirst = dto.thirst > 0f ? dto.thirst : 1f;
+                if (dto.bloomSeasons != null)
+                    foreach (var bs in dto.bloomSeasons)
+                    {
+                        if (LifeContentMapper.TryParseSeason(bs, out var bSeason)) item.BloomSeasons.Add(bSeason);
+                        else errors.Add($"{dto.id}: bilinmeyen çiçek mevsimi '{bs}'.");
+                    }
                 if (dto.fitsOn != null) foreach (var f in dto.fitsOn) if (!string.IsNullOrWhiteSpace(f)) item.FitsOn.Add(f.Trim());
                 if (dto.wallBands != null)
                     foreach (var b in dto.wallBands)

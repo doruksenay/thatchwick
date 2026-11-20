@@ -55,6 +55,10 @@ namespace Thatchwick.Core.Jobs
 
         /// <summary>Açıksa, kuyruk boşken ve ihtiyaç kritikken karakter kendi iş seçer (NPC).</summary>
         public bool Autonomous { get; set; }
+        /// <summary>
+        /// Otonomi kapalıyken de boşta görev işi alır (hizmetkâr: köylü, ihtiyaç otonomisi yok ama sabah Ev görevini yapar; belge 45).
+        /// </summary>
+        public bool DutyWhenIdle { get; set; }
 
         /// <summary>
         /// İş etkileşimlerinin (kaynak harcama, ürün, eşyayı kaldırma) uygulayıcısı. Yoksa bu tür
@@ -200,7 +204,8 @@ namespace Thatchwick.Core.Jobs
                 }
                 if (job == null)
                 {
-                    if (!Autonomous || !TryStartAutonomy()) return;
+                    if (!Autonomous) { if (!DutyWhenIdle || !TryStartDuty()) return; continue; }
+                    if (!TryStartAutonomy()) return;
                     continue;
                 }
 

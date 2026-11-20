@@ -121,7 +121,7 @@ namespace Thatchwick.Core.Life
         }
 
         // ---- hizmetkâr (belge 45 §2) ----
-        public const int ServantWageTeen = 2, ServantWageAdult = 3;
+        public const int ServantWageTeen = 1, ServantWageAdult = 2;   // denge (belge 45 ek): ortaçağ hizmetkârı çoğunlukla sofra ve küçük ücretle çalışırdı
         public const double ServantStartLoyalty = 50, ServantLeaveBelow = 20;
         public const int ServantBaseChores = 3;
 
@@ -131,6 +131,49 @@ namespace Thatchwick.Core.Life
         public Action<int, int, int> AddAffection { get; set; }
         /// <summary>Kişi bulucu (hizmetkâr kimliğinden); null ise Members'tan aranır.</summary>
         public Func<int, Character> FindPerson { get; set; }
+
+        /// <summary>
+        /// Hizmetkâr dünyada yürür (oyun katmanı bağlar): sabah hizmet saatlerinde Ev görevine geçer, işleri gerçekten
+        /// yapar, öğlen evine döner. Kapalıysa (testler, eski davranış) sabah işleri anında yapılır.
+        /// </summary>
+        public bool ServantWalks { get; set; }
+        /// <summary>Hizmet saatleri (gün kesri): 07:00-12:00.</summary>
+        public const double ServiceStart = 0.29, ServiceEnd = 0.5;
+        public bool InService => ServantId != 0 && ServantWalks && _clock.DayFraction >= ServiceStart && _clock.DayFraction < ServiceEnd;
+        private readonly Dictionary<string, int> _servantDone = new Dictionary<string, int>(StringComparer.Ordinal);
+        private bool _wasInService;
+
+        /// <summary>Yürüyen hizmetkârın görevini saate göre açar ve kapatır; hizmet bitince raporu yazar.</summary>
+        private void ServantTick()
+        {
+            if (!ServantWalks || ServantId == 0) return;
+            var s = Servant;
+            if (s == null || s.IsDead || !s.IsVillager) return;
+            bool on = InService;
+            var want = on ? DutyKind.House : DutyKind.None;
+            if (s.Duty != want) s.Duty = want;
+            if (_wasInService && !on)
+            {
+                LastServantReport = _servantDone.Count == 0 ? $"{s.Name} geldi; yapılacak iş yoktu." : $"{s.Name} sabah işleri: {Summary(_servantDone)}.";
+                _servantDone.Clear();
+            }
+            _wasInService = on;
+        }
+
+        private static string Summary(Dictionary<string, int> done)
+        {
+            var parts = new List<string>();
+            foreach (var kv in done) parts.Add($"{kv.Value} {kv.Key}");
+            return string.Join(", ", parts);
+        }
+
+        /// <summary>Hizmetkârın yaptığı iş (yürüyen hizmetkâr; OnApplied çağırır).</summary>
+        private void NoteServantWork(Character c, InteractionDef i)
+        {
+            if (c == null || c.Id != ServantId || ServantId == 0) return;
+            string key = ChoreName(i);
+            _servantDone[key] = (_servantDone.TryGetValue(key, out var n) ? n : 0) + 1;
+        }
 
         public int ServantId { get; private set; }
         public int ServantWage { get; private set; }
@@ -182,6 +225,7 @@ namespace Thatchwick.Core.Life
             if (ServantId == 0) return;
             var s = Servant;
             if (!quiet && s != null) Say($"{s.Name} hizmetten ayrıldı.", s.Id);
+            if (s != null && s.Duty == DutyKind.House) s.Duty = DutyKind.None;
             ServantId = 0; ServantWage = 0; ServantLoyalty = 0; ServantDays = 0;
         }
 
@@ -201,6 +245,14 @@ namespace Thatchwick.Core.Life
                 if (ServantLoyalty < ServantLeaveBelow) { Say($"{s.Name} ücretsiz çalışmaya razı olmadı; hizmetten ayrıldı.", s.Id); Dismiss(quiet: true); return; }
             }
             ServantDays++;
+            if (ServantWalks)
+            {
+                // Yürüyen hizmetkâr işleri sabah kendisi yapar (ServantTick); burada yalnızca ücret ve yakınlık.
+                if (AddAffection != null && Members != null)
+                    foreach (var m in Members())
+                        if (!m.IsDead && !m.IsVillager && m.Id != s.Id) AddAffection(s.Id, m.Id, 1);
+                return;
+            }
 
             // Sabah işleri: sadakat arttıkça daha çok iş. Yükseltme ve zanaat hizmetkârın işi değil.
             int budget = ServantBaseChores + (int)(ServantLoyalty / 25);
@@ -250,6 +302,12 @@ namespace Thatchwick.Core.Life
 
         // ---- ev yarışması (Yaz Panayırı) ve talip ziyareti ----
         public const string ContestFestival = "festival.fair";
+        /// <summary>
+        /// Komşu evlerin puanı: taban + yıl başına artış + rastgele (0..yayılım), en çok tavan. Denge ölçümü (EvBakimiDengeTests):
+        /// sade ev 0, özenli Zanaatkâr evi ~40, zengin Asil evi ~120. Özenli ev ilk yıl birinciliği zorlar, sonra köy de güzelleşir;
+        /// geç oyunda yalnızca zengin ev kazanır.
+        /// </summary>
+        public const int NeighborBase = 20, NeighborPerYear = 8, NeighborSpread = 20, NeighborCap = 110;
         public const string HomeRibbon = "item.home_ribbon";
         private readonly List<long> _contestYears = new List<long>();
         public int ContestWins { get; private set; }
@@ -305,7 +363,7 @@ namespace Thatchwick.Core.Life
             var all = new List<int>();
             for (int i = 0; i < neighbors; i++)
             {
-                int s = 14 + (int)year * 4 + rng.Next(0, 14);
+                int s = Math.Min(NeighborCap, NeighborBase + (int)year * NeighborPerYear + rng.Next(0, NeighborSpread + 1));
                 all.Add(s);
                 best = Math.Max(best, s);
             }

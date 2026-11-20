@@ -372,7 +372,15 @@ namespace Thatchwick.Core.Content
         /// <summary>Canlı saksı: sulandıkça büyür, olgunlaşınca bu otu verir.</summary>
         public string PotHerb { get; set; }
         public float PotGrowDays { get; set; } = 3f;
-        public bool IsLivePot => PotHerb != null;
+        public bool IsLivePot => PotHerb != null || LivePlant;
+        /// <summary>Canlı süs bitkisi (ot vermez; sulanır, büyür, mevsiminde çiçek açar).</summary>
+        public bool LivePlant { get; set; }
+        /// <summary>Çiçek açtığı mevsimler: olgun ve suluyken bu mevsimlerde güzelliğe ek. Boş = çiçeksiz (yaprak süsü).</summary>
+        public List<Time.Season> BloomSeasons { get; set; } = new List<Time.Season>();
+        /// <summary>Gölge sever (eğrelti, yosun, sarmaşık): pencereden uzakta tam hızla büyür, güneşte yavaş.</summary>
+        public bool ShadePlant { get; set; }
+        /// <summary>Susama çarpanı: su teknesi 0,4 (yavaş kurur), eğrelti 1,5 (çabuk kurur). 0 = 1.</summary>
+        public float Thirst { get; set; } = 1f;
         /// <summary>Yükseltmeler (her biri "upgrade:&lt;id&gt;" etkileşimiyle yapılır).</summary>
         public List<UpgradeDef> Upgrades { get; set; } = new List<UpgradeDef>();
         public UpgradeDef FindUpgrade(string id) { foreach (var u in Upgrades) if (u.Id == id) return u; return null; }

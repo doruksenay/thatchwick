@@ -171,7 +171,7 @@ namespace Thatchwick.Game
             if (s != null)
             {
                 GUILayout.Label($"{s.Name} ({AgeStages.Name(s.Stage).ToLowerInvariant()}) · günde {_home.ServantWage} akçe · sadakat {_home.ServantLoyalty:0} · {_home.ServantDays} gündür");
-                GUILayout.Label("Sabahları gelir; mum, sepet, döküntü, ayna, saksı, ot serpme, badana ve solan süs işlerini görür. Sadakat arttıkça daha çok iş yapar.");
+                GUILayout.Label("Sabah 07:00-12:00 arası eve yürür; mum, sepet, döküntü, ayna, saksı, ot serpme, badana ve solan süs işlerini kendisi yapar, öğlen evine döner.");
                 if (_home.LastServantReport != null) GUILayout.Label(_home.LastServantReport);
                 if (GUILayout.Button("Hizmetten çıkar")) { _home.Dismiss(); Say("Hizmetkâr ayrıldı."); }
                 return;

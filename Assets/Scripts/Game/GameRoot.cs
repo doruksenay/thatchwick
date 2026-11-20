@@ -482,6 +482,7 @@ namespace Thatchwick.Game
                 AccountLevel = () => _account.Level,
                 AccountXp = () => _account.Xp
             };
+            _life.Home.ServantWalks = true;   // hizmetkâr sabahları eve yürür, işleri kendisi yapar (belge 45)
             // Kilitler beceride (karar 28-4): hanenin o becerideki en iyi seviyesi.
             _life.SkillLocks = true;
             _buildService.SkillLevel = _life.BestSkill;
@@ -1241,6 +1242,14 @@ namespace Thatchwick.Game
             {
                 var c = a.Character;
                 if (c.IsDead || !c.IsVillager) continue;
+                // Hizmetkâr (belge 45): sabah hizmet saatlerinde evin işlerini görür (Ev görevi), öğlen programına döner.
+                bool serving = c.Id == _life.Home.ServantId && _life.Home.InService;
+                if (serving)
+                {
+                    if (!a.Runner.DutyWhenIdle) { a.Runner.Cancel(); a.Runner.DutyWhenIdle = true; _villagerLocation[c.Id] = "service"; }
+                    continue;
+                }
+                if (a.Runner.DutyWhenIdle) { a.Runner.DutyWhenIdle = false; a.Runner.Cancel(); _villagerLocation.Remove(c.Id); }
                 var def = _life.Villagers.DefOf(c);
                 if (def == null)
                 {

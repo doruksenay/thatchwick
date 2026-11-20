@@ -55,7 +55,7 @@ namespace Thatchwick.Core.Life
         public const double EveningStart = 0.75, EveningEnd = 0.96;
         public const string DefaultCandle = "item.candle";
         /// <summary>Bacasız yanan ocak odaya günde bu kadar is katar (baca ile ChimneySootFactor katı).</summary>
-        public const double SootPerDay = 1.0, ChimneySootFactor = 0.25;
+        public const double SootPerDay = 0.5, ChimneySootFactor = 0.25;   // denge: sürekli yanan ocakta uyarı ~8 günde (yaklaşık mevsimde bir badana)
         public const double SootWarnAt = 4.0;
         public const int MaxSootPenalty = 6;
         public const int WhitewashBonus = 3;
@@ -163,9 +163,11 @@ namespace Thatchwick.Core.Life
                 if (it.Def.IsLivePot)
                 {
                     var s = Ensure(it.Id);
-                    s.PotDry += gameDays;
+                    s.PotDry += gameDays * it.Def.Thirst;
+                    bool sun = Sunlit(it);
+                    double speed = it.Def.ShadePlant ? (sun ? 0.5 : 1.0) : (sun ? 1.0 : 0.5);   // eğrelti gölgeyi sever
                     if (s.PotDry < PotWiltDays && s.PotGrowth < it.Def.PotGrowDays)
-                        s.PotGrowth = Math.Min(it.Def.PotGrowDays, s.PotGrowth + gameDays * (Sunlit(it) ? 1.0 : 0.5));
+                        s.PotGrowth = Math.Min(it.Def.PotGrowDays, s.PotGrowth + gameDays * speed);
                 }
                 // İs: kapalı odada yanan ocak.
                 if (!it.IsDecor && it.Def.HeatOutput > 0f && it.IsLit)
@@ -188,6 +190,7 @@ namespace Thatchwick.Core.Life
                 }
             }
 
+            ServantTick();
             _moodAccum += gameDays;
             if (_moodAccum >= 0.05)
             {
@@ -370,7 +373,12 @@ namespace Thatchwick.Core.Life
         }
 
         public bool PotWilted(ItemInstance it) { var s = it.Def.IsLivePot ? StateOf(it.Id) : null; return s != null && s.PotDry >= PotWiltDays; }
-        public bool PotReady(ItemInstance it) { var s = it.Def.IsLivePot ? StateOf(it.Id) : null; return s != null && s.PotDry < PotWiltDays && s.PotGrowth >= it.Def.PotGrowDays; }
+        public bool PotReady(ItemInstance it) { var s = it.Def.PotHerb != null ? StateOf(it.Id) : null; return s != null && s.PotDry < PotWiltDays && s.PotGrowth >= it.Def.PotGrowDays; }
+        /// <summary>Süs bitkisi ya da saksı olgun mu (ot vermeyenlerde "gelişmiş").</summary>
+        public bool PotGrown(ItemInstance it) { var s = it.Def.IsLivePot ? StateOf(it.Id) : null; return s != null && s.PotDry < PotWiltDays && s.PotGrowth >= it.Def.PotGrowDays; }
+        /// <summary>Çiçekte mi: olgun, solmamış ve çiçek mevsiminde.</summary>
+        public bool InBloom(ItemInstance it) => it.Def.BloomSeasons.Count > 0 && PotGrown(it) && it.Def.BloomSeasons.Contains(_clock.Season);
+        public const int BloomBeauty = 3, GrownPlantBeauty = 1;
         public bool PotThirsty(ItemInstance it) { var s = it.Def.IsLivePot ? StateOf(it.Id) : null; return s == null || s.PotDry >= PotThirstyDays; }
 
         /// <summary>Saksının kısa durumu: "sulu · büyüyor %40", "susuz", "soldu", "ot hazır".</summary>
@@ -380,9 +388,11 @@ namespace Thatchwick.Core.Life
             var s = StateOf(it.Id);
             if (s == null) return "susuz";
             if (s.PotDry >= PotWiltDays) return "soldu (sula)";
-            if (s.PotGrowth >= it.Def.PotGrowDays) return $"{Name(it.Def.PotHerb).ToLowerInvariant()} hazır";
             string water = s.PotDry >= PotThirstyDays ? "susuz" : "sulu";
-            return $"{water} · büyüyor %{s.PotGrowth / it.Def.PotGrowDays * 100:0}" + (Sunlit(it) ? "" : " (gölgede yavaş)");
+            if (s.PotGrowth >= it.Def.PotGrowDays)
+                return it.Def.PotHerb != null ? $"{Name(it.Def.PotHerb).ToLowerInvariant()} hazır" : InBloom(it) ? $"{water} · çiçekte" : $"{water} · gelişmiş";
+            bool slow = it.Def.ShadePlant ? Sunlit(it) : !Sunlit(it);
+            return $"{water} · büyüyor %{s.PotGrowth / it.Def.PotGrowDays * 100:0}" + (slow ? (it.Def.ShadePlant ? " (güneşte yavaş, gölge sever)" : " (gölgede yavaş)") : "");
         }
 
         // ---- yükseltmeler ----
@@ -451,6 +461,7 @@ namespace Thatchwick.Core.Life
             b += PatternBeauty(item);
             b += CollectionBeauty(item);
             if (PotWilted(item)) b += -item.Def.Beauty + WiltedPotBeauty;
+            else if (item.Def.LivePlant && PotGrown(item)) b += GrownPlantBeauty + (InBloom(item) ? BloomBeauty : 0);
             return b;
         }
 
@@ -520,6 +531,7 @@ namespace Thatchwick.Core.Life
         /// <summary>Ev bakımı işinin etkisi (InteractionEffects.AppliedOn).</summary>
         public void OnApplied(Character c, ItemInstance item, InteractionDef i)
         {
+            if (i != null && ServantWalks) NoteServantWork(c, i);
             if (i?.HomeAction == null || item == null) return;
             switch (i.HomeAction)
             {

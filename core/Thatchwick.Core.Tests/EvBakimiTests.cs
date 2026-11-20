@@ -74,13 +74,13 @@ namespace Thatchwick.Core.Tests
             var table = k.World.PlaceItem(k.D("item.table_wood"), new GridPos(4, 4));
             var candle = k.World.PlaceOnSurface(k.D("item.candle"), table.Id, table.Def.SurfaceSlots[0].Id);
             Assert.True(candle.GivesLight);
-            Assert.Equal(1.0, candle.FuelDays, 6);
+            Assert.Equal(candle.Def.BurnDays, candle.FuelDays, 6);
 
             At(k, 0.5);                       // öğlen yanmaz
             k.Home.Tick(0.5);
-            Assert.Equal(1.0, candle.FuelDays, 6);
+            Assert.Equal(candle.Def.BurnDays, candle.FuelDays, 6);
             At(k, 0.8);                       // akşam yanar
-            for (int i = 0; i < 12; i++) k.Home.Tick(0.1);
+            for (int i = 0; i < 20; i++) k.Home.Tick(0.1);
             Assert.True(candle.BurntOut);
             Assert.False(candle.GivesLight);
 
@@ -126,8 +126,8 @@ namespace Thatchwick.Core.Tests
             for (int i = 0; i < 6; i++) heat.TryStoke(hearth.Id, k.House);
             Assert.True(hearth.IsLit);
             int before = k.Mood.BeautyOf(k.Room).Raw;
-            for (int i = 0; i < 6; i++) k.Home.Tick(1.0);
-            Assert.True(k.Home.SootOf(k.Room) >= 4);
+            for (int i = 0; i < 9; i++) k.Home.Tick(1.0);
+            Assert.True(k.Home.SootOf(k.Room) >= HomeLife.SootWarnAt);
             Assert.Contains(k.Notices, n => n.Contains("isle karardı"));
             Assert.True(k.Mood.BeautyOf(k.Room).Raw < before);
 
@@ -151,7 +151,7 @@ namespace Thatchwick.Core.Tests
             k.Effects.Apply(c, hearth, hood);
             Assert.True(k.Home.HasChimney(hearth));
             k.Home.Tick(2.0);
-            Assert.Equal(0.5, k.Home.SootOf(k.Room), 6);
+            Assert.Equal(2.0 * HomeLife.SootPerDay * HomeLife.ChimneySootFactor, k.Home.SootOf(k.Room), 6);
             Assert.True(k.Home.HasChimney(k.World.PlaceItem(k.D("item.fireplace_large"), new GridPos(12, 12))));   // büyük şöminenin bacası kendinden
         }
 
@@ -464,15 +464,19 @@ namespace Thatchwick.Core.Tests
             Assert.True(low.Rank > 1);
             Assert.Null(k.Home.JudgeContest(seedOverride: 5));      // aynı yıl ikinci kez yok
 
-            // Güzel ev: ertesi yıl.
+            // Güzel ev, ilk yıl (yeni kurulum): komşuların ilk yıl en yüksek puanı taban + yayılım.
+            k = Make();
+            k.Home.GrantKeepsake = (id, label) => { granted = id; return null; };
+            k.Home.NeighborCount = () => 3;
             var table = k.World.PlaceItem(k.D("item.walnut_table"), new GridPos(4, 4));
             foreach (var s in table.Def.SurfaceSlots.Where(s => !s.IsCover).Take(3)) k.World.PlaceOnSurface(k.D("item.beeswax_candle"), table.Id, s.Id);
             k.World.PlaceItem(k.D("item.rug_kufic"), new GridPos(3, 3));
             k.World.PlaceItem(k.D("item.iron_chandelier"), new GridPos(6, 3));
             k.World.PlaceOnWall(k.D("item.tapestry_hunt"), new GridPos(3, 2), 0);
             k.World.PlaceOnWall(k.D("item.tapestry_garden"), new GridPos(3, 5), 2);
-            At(k, k.Clock.Config.DaysPerYear + 0.5);
-            Assert.True(k.Home.HomeScore() > 30, k.Mood.BeautyOf(k.Room).Breakdown());
+            k.World.PlaceItem(k.D("item.courtyard_pool"), new GridPos(12, 12));   // bahçe süsü
+            k.World.PlaceItem(k.D("item.sundial"), new GridPos(15, 12));
+            Assert.True(k.Home.HomeScore() > HomeLife.NeighborBase + HomeLife.NeighborSpread, k.Mood.BeautyOf(k.Room).Breakdown());
             var win = k.Home.JudgeContest(seedOverride: 1);
             Assert.Equal(1, win.Rank);
             Assert.Equal(HomeLife.HomeRibbon, granted);
@@ -593,6 +597,89 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(SkillType.Masonry, Thatchwick.Core.Progress.UnlockGate.SkillFor(db.Parts.Get("stone_black")));
             Assert.Equal(SkillType.Smithing, Thatchwick.Core.Progress.UnlockGate.SkillFor(db.Parts.Get("railing_iron_red")));
             Assert.Equal(SkillType.Weaving, Thatchwick.Core.Progress.UnlockGate.SkillFor(db.Parts.Get("cloth_navy")));
+        }
+
+        // ---------- yürüyen hizmetkâr ve ev bitkileri (belge 45 ek) ----------
+
+        [Fact]
+        public void Hizmetkar_Yururken_SabahEvGorevineGecer_OglenBirakir_Rapor()
+        {
+            var k = Make();
+            k.Home.ServantWalks = true;
+            var girl = new Character(2, "Edith", new GridPos(10, 10)) { IsVillager = true };
+            girl.SetAge(AgeConfig.Default.TeenStartDay + 0.5);
+            k.Members.Add(girl);
+            Assert.Null(k.Home.Hire(girl));
+            At(k, 0.1);
+            k.Home.Tick(0.01);
+            Assert.Equal(DutyKind.None, girl.Duty);
+            At(k, 0.35);
+            k.Home.Tick(0.01);
+            Assert.True(k.Home.InService);
+            Assert.Equal(DutyKind.House, girl.Duty);
+            var table = k.World.PlaceItem(k.D("item.table_wood"), new GridPos(4, 4));
+            var candle = k.World.PlaceOnSurface(k.D("item.candle"), table.Id, table.Def.SurfaceSlots[0].Id);
+            candle.SetCandle(0);
+            k.House.AddItem("item.candle", 1);
+            k.Effects.Apply(girl, candle, Inter(candle.Def, "replace_candle"));   // iş koşucusu yapmış gibi
+            At(k, 0.55);
+            k.Home.Tick(0.01);
+            Assert.Equal(DutyKind.None, girl.Duty);
+            Assert.Contains("1 mum", k.Home.LastServantReport);
+            int akce = k.House.Akce;
+            k.Home.OnNewDay();
+            Assert.Equal(akce - HomeLife.ServantWageTeen, k.House.Akce);   // ücret yine sabah; işler anında yapılmaz
+        }
+
+        [Fact]
+        public void JobRunner_OtonomiKapaliyken_GorevIsiAlir()
+        {
+            var k = Make();
+            var c = Person();
+            c.Duty = DutyKind.House;
+            var table = k.World.PlaceItem(k.D("item.table_wood"), new GridPos(4, 4));
+            var candle = k.World.PlaceOnSurface(k.D("item.candle"), table.Id, table.Def.SurfaceSlots[0].Id);
+            candle.SetCandle(0);
+            k.House.AddItem("item.candle", 1);
+            var duties = new DutyPlanner(k.World, null, k.Effects, null) { HouseChores = k.Home.Chores };
+            var runner = new JobRunner(c, k.World) { Effects = k.Effects, Autonomous = false, DutyProvider = duties.Next };
+            runner.Tick(0.01);
+            Assert.True(runner.IsIdle);                 // görev almaz
+            runner.DutyWhenIdle = true;
+            runner.Tick(0.01);
+            Assert.False(runner.IsIdle);
+        }
+
+        [Fact]
+        public void SusBitkisi_GolgeSever_CicekAcar_SuTeknesiYavasKurur()
+        {
+            var k = Make();
+            var c = Person();
+            // Eğrelti gölgede tam hızla büyür.
+            var table = k.World.PlaceItem(k.D("item.table_wood"), new GridPos(4, 4));
+            var fern = k.World.PlaceOnSurface(k.D("item.fern_trough"), table.Id, table.Def.SurfaceSlots.First(s => !s.IsCover && s.Size != DecorSize.Small).Id);
+            Assert.False(k.Home.Sunlit(fern));
+            var water = Inter(fern.Def, "water_pot");
+            Assert.DoesNotContain(fern.Def.Interactions, i => i.HomeAction == HomeActions.HarvestPot);   // süs bitkisi ot vermez
+            for (int d = 0; d < 6; d++) { k.Effects.Apply(c, fern, water); k.Home.Tick(0.5); k.Effects.Apply(c, fern, water); k.Home.Tick(0.5); }
+            Assert.True(k.Home.PotGrown(fern), k.Home.PotLabel(fern));
+            Assert.Equal(HomeLife.GrownPlantBeauty, k.Home.BeautyBonus(fern), 6);   // çiçeksiz: yalnızca gelişmiş eki
+
+            // Siklamen kışın çiçek açar.
+            var cyc = k.World.PlaceOnSurface(k.D("item.pot_cyclamen"), table.Id, table.Def.SurfaceSlots.First(s => !s.IsCover && k.World.CanPlaceOnSurface(k.D("item.pot_cyclamen"), table.Id, s.Id).Ok).Id);
+            for (int d = 0; d < 6; d++) { k.Effects.Apply(c, cyc, water); k.Home.Tick(0.5); }
+            At(k, 3 * k.Clock.Config.DaysPerSeason + 0.5);   // kış
+            k.Effects.Apply(c, cyc, Inter(cyc.Def, "water_pot"));
+            Assert.True(k.Home.InBloom(cyc), k.Home.PotLabel(cyc));
+            Assert.Contains("çiçekte", k.Home.PotLabel(cyc));
+            Assert.Equal(HomeLife.GrownPlantBeauty + HomeLife.BloomBeauty, k.Home.BeautyBonus(cyc), 6);
+
+            // Su teknesi bahçesi yavaş kurur.
+            var pool = k.World.PlaceItem(k.D("item.water_garden"), new GridPos(6, 5));
+            k.Effects.Apply(c, pool, Inter(pool.Def, "water_pot"));
+            k.Home.Tick(3.0);
+            Assert.False(k.Home.PotWilted(pool));
+            Assert.False(k.Home.PotThirsty(pool) && k.Home.StateOf(pool.Id).PotDry > HomeLife.PotWiltDays);
         }
     }
 }

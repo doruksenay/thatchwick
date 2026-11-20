@@ -2508,7 +2508,7 @@
       "decorSize": "S",
       "weight": 1,
       "material": "wood",
-      "burnDays": 1.0,
+      "burnDays": 1.7,
       "burnRefill": [
         "item.candle",
         "item.tallow_candle"
@@ -2527,7 +2527,14 @@
     {
       "id": "item.flower_pot",
       "displayName": "Çiçek saksısı",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
       "placement": "Surface",
       "price": 6,
       "category": "decor",
@@ -2548,7 +2555,13 @@
         "pivotX": 16.0,
         "pivotY": 7.0,
         "mirror": true
-      }
+      },
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "potGrowDays": 3
     },
     {
       "id": "item.clay_cup",
@@ -3738,7 +3751,7 @@
       ],
       "finishGroup": "metal",
       "beauty": 3,
-      "burnDays": 1.2,
+      "burnDays": 2.1,
       "burnRefill": [
         "item.beeswax_candle",
         "item.candle",
@@ -3776,7 +3789,7 @@
         "üst"
       ],
       "beauty": 1,
-      "burnDays": 0.8,
+      "burnDays": 0.85,
       "burnRefill": [
         "item.torch"
       ],
@@ -15577,7 +15590,7 @@
           "homeAction": "candle"
         }
       ],
-      "burnDays": 0.8,
+      "burnDays": 1.3,
       "burnRefill": [
         "item.tallow_candle",
         "item.candle"
@@ -15607,7 +15620,7 @@
           "homeAction": "candle"
         }
       ],
-      "burnDays": 1.4,
+      "burnDays": 2.5,
       "burnRefill": [
         "item.beeswax_candle"
       ],
@@ -15636,7 +15649,7 @@
           "homeAction": "candle"
         }
       ],
-      "burnDays": 1.0,
+      "burnDays": 1.7,
       "burnRefill": [
         "item.tallow_candle",
         "item.candle",
@@ -15675,7 +15688,7 @@
           "homeAction": "candle"
         }
       ],
-      "burnDays": 1.0,
+      "burnDays": 1.7,
       "burnRefill": [
         "item.candle",
         "item.tallow_candle",
@@ -16297,7 +16310,7 @@
           "homeAction": "candle"
         }
       ],
-      "burnDays": 1.0,
+      "burnDays": 1.7,
       "burnRefill": [
         "item.candle",
         "item.tallow_candle",
@@ -24692,6 +24705,713 @@
       ],
       "trades": [
         "mason"
+      ]
+    },
+    {
+      "id": "item.pot_bay",
+      "displayName": "Saksıda defne ağacı",
+      "placement": "Floor",
+      "price": 18,
+      "beauty": 4,
+      "styleSet": "Zanaatkâr",
+      "material": "clay",
+      "category": "decor_wall",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 6,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        },
+        {
+          "id": "harvest_pot",
+          "displayName": "Ot topla",
+          "durationDays": 0.03,
+          "skill": "Horticulture",
+          "skillXp": 3,
+          "homeAction": "harvestPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_bay_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "styleTheme": "Çatkı",
+      "potHerb": "item.herb",
+      "level": 2
+    },
+    {
+      "id": "item.pot_myrtle",
+      "displayName": "Saksıda mersin",
+      "placement": "Floor",
+      "price": 16,
+      "beauty": 4,
+      "styleSet": "Zanaatkâr",
+      "material": "clay",
+      "category": "decor_wall",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 5,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_myrtle_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "styleTheme": "Yörük",
+      "livePlant": true,
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "level": 2
+    },
+    {
+      "id": "item.pot_rose",
+      "displayName": "Gül saksısı (eczacı gülü)",
+      "placement": "Floor",
+      "price": 20,
+      "beauty": 4,
+      "styleSet": "Zanaatkâr",
+      "material": "clay",
+      "category": "decor_wall",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 5,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_rose_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "styleTheme": "Çatkı",
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "level": 3
+    },
+    {
+      "id": "item.pot_lily",
+      "displayName": "Ak zambak saksısı",
+      "placement": "Surface",
+      "price": 12,
+      "beauty": 3,
+      "styleSet": "Zanaatkâr",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 4,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_lily_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "livePlant": true,
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "decorSize": "M",
+      "weight": 3
+    },
+    {
+      "id": "item.pot_narcissus",
+      "displayName": "Nergis saksısı",
+      "placement": "Surface",
+      "price": 6,
+      "beauty": 3,
+      "styleSet": "Köylü",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 3,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_narcissus_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring"
+      ],
+      "decorSize": "S",
+      "weight": 2
+    },
+    {
+      "id": "item.pot_violet",
+      "displayName": "Menekşe saksısı",
+      "placement": "Surface",
+      "price": 5,
+      "beauty": 2,
+      "styleSet": "Köylü",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 3,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_violet_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring"
+      ],
+      "shadePlant": true,
+      "decorSize": "S",
+      "weight": 2
+    },
+    {
+      "id": "item.pot_cyclamen",
+      "displayName": "Siklamen saksısı",
+      "placement": "Surface",
+      "price": 8,
+      "beauty": 3,
+      "styleSet": "Köylü",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 3,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_cyclamen_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "styleTheme": "Yörük",
+      "livePlant": true,
+      "bloomSeasons": [
+        "Autumn",
+        "Winter"
+      ],
+      "shadePlant": true,
+      "decorSize": "S",
+      "weight": 2
+    },
+    {
+      "id": "item.pot_snowdrop",
+      "displayName": "Kardelen saksısı",
+      "placement": "Surface",
+      "price": 6,
+      "beauty": 2,
+      "styleSet": "Köylü",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 3,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_snowdrop_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "livePlant": true,
+      "bloomSeasons": [
+        "Winter"
+      ],
+      "shadePlant": true,
+      "decorSize": "S",
+      "weight": 2
+    },
+    {
+      "id": "item.pot_crocus",
+      "displayName": "Çiğdem saksısı",
+      "placement": "Surface",
+      "price": 6,
+      "beauty": 2,
+      "styleSet": "Köylü",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 3,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_crocus_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring",
+        "Autumn"
+      ],
+      "decorSize": "S",
+      "weight": 2
+    },
+    {
+      "id": "item.pot_lavender",
+      "displayName": "Lavanta saksısı",
+      "placement": "Surface",
+      "price": 8,
+      "beauty": 3,
+      "styleSet": "Köylü",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 4,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        },
+        {
+          "id": "harvest_pot",
+          "displayName": "Ot topla",
+          "durationDays": 0.03,
+          "skill": "Horticulture",
+          "skillXp": 3,
+          "homeAction": "harvestPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_lavender_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "styleTheme": "Çatkı",
+      "potHerb": "item.herb",
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "decorSize": "M",
+      "weight": 3
+    },
+    {
+      "id": "item.pot_mint",
+      "displayName": "Nane saksısı",
+      "placement": "Surface",
+      "price": 4,
+      "beauty": 2,
+      "styleSet": "Köylü",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 3,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        },
+        {
+          "id": "harvest_pot",
+          "displayName": "Ot topla",
+          "durationDays": 0.03,
+          "skill": "Horticulture",
+          "skillXp": 3,
+          "homeAction": "harvestPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_mint_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "potHerb": "item.mint",
+      "thirst": 1.3,
+      "decorSize": "S",
+      "weight": 2
+    },
+    {
+      "id": "item.pot_chamomile",
+      "displayName": "Papatya saksısı",
+      "placement": "Surface",
+      "price": 4,
+      "beauty": 2,
+      "styleSet": "Köylü",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 3,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        },
+        {
+          "id": "harvest_pot",
+          "displayName": "Ot topla",
+          "durationDays": 0.03,
+          "skill": "Horticulture",
+          "skillXp": 3,
+          "homeAction": "harvestPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_pot_chamomile_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "potHerb": "item.chamomile",
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "decorSize": "S",
+      "weight": 2
+    },
+    {
+      "id": "item.ivy_wall",
+      "displayName": "Duvar sarmaşığı",
+      "placement": "Wall",
+      "price": 10,
+      "beauty": 3,
+      "styleSet": "Köylü",
+      "material": "clay",
+      "category": "decor_wall",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 6,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_wall_item_ivy_wall_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 32.0,
+        "pending": true,
+        "mirror": true
+      },
+      "livePlant": true,
+      "shadePlant": true,
+      "wallBands": [
+        "orta",
+        "üst"
+      ]
+    },
+    {
+      "id": "item.fern_trough",
+      "displayName": "Eğrelti ve yosun teknesi",
+      "placement": "Surface",
+      "price": 14,
+      "beauty": 4,
+      "styleSet": "Zanaatkâr",
+      "material": "clay",
+      "category": "decor",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 5,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_fern_trough_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "livePlant": true,
+      "shadePlant": true,
+      "thirst": 1.5,
+      "decorSize": "M",
+      "weight": 4
+    },
+    {
+      "id": "item.water_garden",
+      "displayName": "Su teknesi bahçesi (nilüfer)",
+      "placement": "Floor",
+      "price": 28,
+      "beauty": 5,
+      "styleSet": "Tüccar",
+      "material": "stone",
+      "category": "decor_wall",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 6,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_water_garden_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "styleTheme": "Kervan",
+      "livePlant": true,
+      "bloomSeasons": [
+        "Summer"
+      ],
+      "thirst": 0.4,
+      "level": 4,
+      "finishGroup": "stone"
+    },
+    {
+      "id": "item.window_flower_box",
+      "displayName": "Pencere çiçekliği",
+      "placement": "Wall",
+      "price": 12,
+      "beauty": 4,
+      "styleSet": "Köylü",
+      "material": "wood",
+      "category": "decor_wall",
+      "rooms": [
+        "living",
+        "bedroom",
+        "kitchen"
+      ],
+      "potGrowDays": 4,
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        }
+      ],
+      "art": {
+        "alongX": "iso_wall_item_window_flower_box_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "styleTheme": "Çatkı",
+      "livePlant": true,
+      "bloomSeasons": [
+        "Spring",
+        "Summer"
+      ],
+      "window": true,
+      "wallBands": [
+        "alt"
+      ]
+    },
+    {
+      "id": "item.censer",
+      "displayName": "Pirinç buhurdan",
+      "placement": "Surface",
+      "category": "decor",
+      "price": 30,
+      "beauty": 3,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "material": "metal",
+      "finishGroup": "metal",
+      "decorSize": "M",
+      "weight": 3,
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "art": {
+        "alongX": "iso_item_censer_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      },
+      "interactions": [
+        {
+          "id": "burn_herbs",
+          "displayName": "Kokulu ot yak",
+          "need": "Fun",
+          "restore": 12,
+          "durationDays": 0.04,
+          "consume": "item.herb",
+          "moodId": "mood.censer",
+          "moodText": "Buhur kokusu",
+          "moodValue": 4,
+          "moodDays": 0.5
+        }
+      ]
+    },
+    {
+      "id": "item.birdbath",
+      "displayName": "Taş kuş yalağı",
+      "category": "garden",
+      "price": 12,
+      "beauty": 3,
+      "styleSet": "Köylü",
+      "material": "stone",
+      "finishGroup": "stone",
+      "rooms": [
+        "outdoor"
+      ],
+      "levels": [
+        0
+      ],
+      "art": {
+        "alongX": "iso_item_birdbath_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "interactions": [
+        {
+          "id": "watch_birds",
+          "displayName": "Kuşları seyret",
+          "need": "Fun",
+          "restore": 14,
+          "durationDays": 0.06,
+          "moodId": "mood.birds",
+          "moodText": "Kuş sesleri",
+          "moodValue": 3,
+          "moodDays": 0.5
+        }
       ]
     }
   ],

@@ -190,6 +190,10 @@ namespace Thatchwick.Core.Content
         public int lightPower;       // ışık gücü (mum 1, fener 2, avize 4); 0 = ışık eşyasında 1
         public string potHerb;       // canlı saksı: hasatta verdiği ot
         public float potGrowDays;    // canlı saksı: olgunlaşma günü (0 = 3)
+        public bool livePlant;       // canlı süs bitkisi (ot vermez, çiçek açar)
+        public string[] bloomSeasons; // çiçek açtığı mevsimler
+        public bool shadePlant;      // gölge sever (eğrelti, yosun, sarmaşık)
+        public float thirst;         // susama çarpanı (0 = 1; su teknesi 0,4)
         public UpgradeDto[] upgrades; // eşya yükseltmeleri (şilte, demir kuşak, cila, baca)
         // Hayvancılık ve otomasyon (17.11.2026)
         public bool requiresIndoor;  // yalnızca kapalı bir odaya konur (folluk, ahır bölmesi)
