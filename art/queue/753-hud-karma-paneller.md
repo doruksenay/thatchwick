@@ -1,7 +1,7 @@
 ---
 id: "753"
 title: "HUD karma yön: meşe paneller ve sarmaşıklı kart çerçevesi (parça başına)"
-status: hold        # 2026-11-21: 774-776 (saf meşe) ile çakışıyor; kullanıcı kararı bekleniyor
+status: rejected
 approved_by: user        # kullanıcı kararı 2026-11-21: meşe + ilmek karışık; meşedeki sarmaşıklı çerçeve beğenildi; parça başına üretim
 priority: 1
 family: arayuz
@@ -54,3 +54,5 @@ Ad biçimi: `Assets/Art/Iso/_aday/ui_hud2_karma_<parça>.png`
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+Kullanıcı kararı 2026-11-21: **rejected.** Karma yön yerine saf meşe seçildi; yerini 774-776 aldı. Üretim yapılmadı (0 gen).

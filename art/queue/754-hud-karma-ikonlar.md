@@ -1,7 +1,7 @@
 ---
 id: "754"
 title: "HUD karma yön: ihtiyaç, hız ve mevsim ikonları (parça başına)"
-status: hold        # 2026-11-21: 774-776 (saf meşe) ile çakışıyor; kullanıcı kararı bekleniyor
+status: rejected
 approved_by: user        # kullanıcı kararı 2026-11-21: meşe + ilmek karışık; ikonlar parça başına
 priority: 1
 family: arayuz
@@ -57,3 +57,5 @@ Hız ikonları ahşap/krem tonlu olsun (meşe düğme yüzeyi), sembol koyu kahv
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+Kullanıcı kararı 2026-11-21: **rejected.** Karma yön yerine saf meşe seçildi; yerini 774-776 aldı. Üretim yapılmadı (0 gen).
