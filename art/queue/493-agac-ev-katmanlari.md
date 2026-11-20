@@ -1,5 +1,5 @@
 ---
-id: "493"
+id: "493t"
 title: "Ağaç ev katmanları: 5 tür, harap hâlleri, yapım evreleri, kar, Çınar Aşevi"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026, Project belgesi 52 (5 tür onaylı, köşk 1.0'da)
@@ -53,3 +53,5 @@ Yapı ailesinin izometrik tarifi (`create_image_pixflux`, izometrik görünüm, 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-21: çift iş numarası "493t" yapıldı (tester raporu 66). -->

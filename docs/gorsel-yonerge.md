@@ -21,9 +21,38 @@ Oyun artık **izometrik**. Eski "yüksek top-down / 3/4" testleri (Assets/Art/Te
 
 ## Teslimat (Assets/Art/Iso/ altına)
 1. **Zemin seti**: çimen <-> toprak geçişli iso tileset, her karo 64x32 elmas, dikişsiz. + 2 çimen varyasyonu.
-2. **Köylü**: 1 karakter, 8 yön (en az 4: SE, SW, NW, NE). Boy yaklaşık 44-52 px. Ayak altı karo merkezinde.
+2. **Köylü**: 1 karakter, 8 yön (en az 4: SE, SW, NW, NE). Boy aşağıdaki ölçek tablosuna göre (yetişkin 76 px). Ayak altı karo merkezinde.
 3. **Eşyalar**: yatak (2x1 karo), ocak taşı, tabure (1x1). Taban ayak izine uyar, yükseklik serbest.
 4. **Duvar parçaları**: her iki eksen için (SE-NW ve SW-NE yönlü) düz duvar + köşe.
+
+## Ölçek referansı (tester raporu 66, 21.11.2026)
+Her görselin boyu tek bir insana göre ayarlanır. Ölçü **ayak noktasının (pivot) üstündeki dolu yükseklik**: yetişkin karakter
+76 px ≈ 1,7 m, yani 1 m ≈ 45 px. Eşyada pivot ayak izi elmasının ortasıdır; elmasın arka yarısı (1x1'de 16 px, 2x1'de 24 px)
+ölçüye girer, aralıklar bunu içerir. Denetim: `python tools/art/scale_check.py <png>...` (aralık dışı KALIR; teslim edilmez).
+
+| Sınıf | Pivot üstü (px) | Gerçek boy karşılığı |
+|---|---|---|
+| Yetişkin karakter (84 px tuval) | 72-80 | 1,6-1,8 m |
+| Çocuk (64 px tuval) | 52-62 | 1,2-1,4 m |
+| Yaban ağacı, olgun (meşe, huş, çam, söğüt, ceviz, ıhlamur, kestane) | 120-140 | insanın ~1,7 katı (oyun sıkıştırması) |
+| Yaban ağacı, genç | 60-85 | |
+| Meyve ağacı, olgun ve meyveli evre | 95-115 | insanın ~1,4 katı; meyveli evre olgunla aynı gövde ±4 px |
+| Meyve ağacı, genç | 50-72 | |
+| Çalı ve bodur bitki | 35-70 | |
+| Ulu ağaç 2x2 (160x224 tuval, kullanıcı kararı 20.11) | 185-215 | insanın ~2,6 katı, yaban ağacının ~1,5 katı |
+| Ulu çınar 3x3 (192x192 tuval, kullanıcı kararı 20.11) | 165-190 | boy yerine genişlikle "ulu" okunur |
+| Sandalye (sırt dahil) | 46-66 | 0,85-1,05 m + elmas derinliği |
+| Tabure | 22-38 | 0,35-0,5 m |
+| Kedi / küçük köpek / köpek | 16-24 / 18-26 / 24-36 | |
+| Tavuk / kaz, ördek / küçük kuş / tavşan | 15-22 / 17-26 / 9-16 / 11-17 | |
+| Koyun / keçi / domuz / sığır / at | 30-40 / 32-42 / 28-38 / 56-68 / 60-82 | |
+| Ayı / kurt / tilki / karaca | 44-58 / 28-36 / 19-26 / 38-48 | |
+
+- Tuval ölçüsü ölçekten ayrıdır: olgun yaban ağacı 112x160, meyve ağacı 96x136, pivot (tuval/2, 24); ulu ağaç 160x224 pivot (80, 36), çınar 192x192 pivot (96, 48).
+- Var olan görselin üzerine yazılmaz: yeniden ölçeklenen ağaç `_v2` ekiyle gelir (`iso_tree_oak_grown_se_v2`); oyun `_v2`'yi
+  kendiliğinden tercih eder (`IsoArt.GetPlant`).
+- 21.11.2026 ölçümü: ağaçların hepsi (58-81 px), kedi, tavuk, güvercin, tavşan, kaz, tilki, martı ve küçük köpek aralık dışında;
+  sandalye ve masalar aralıkta (ilk tester raporundaki "sandalye insan boyunda" ölçüsü elmas derinliğini saymıyordu).
 
 ## Adlandırma
 `iso_<tür>_<ad>_<yön>.png` (ör. `iso_char_villager_se.png`, `iso_item_bed_straw.png`, `iso_ground_grass_a.png`).

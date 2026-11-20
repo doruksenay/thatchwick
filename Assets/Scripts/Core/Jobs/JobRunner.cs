@@ -24,6 +24,22 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Otonom karakter, ihtiyacı bu değerin altına düşünce kendiliğinden iş arar.</summary>
         public const float AutonomyThreshold = 30f;
 
+        /// <summary>Gece (<see cref="BedtimeHour"/>–<see cref="WakeHour"/>) enerji bu değerin altındaysa otonom karakter yatar (belge 65c B2).</summary>
+        public const float NightSleepThreshold = 70f;
+        public const double BedtimeHour = 21.0;
+        public const double WakeHour = 5.0;
+
+        /// <summary>Günün saati (0–24). Verilirse enerji eşiği saate göre değişir: gece yatılır, gündüz yalnızca çok yorgunken uyunur.</summary>
+        public Func<double> HourOfDay { get; set; }
+
+        /// <summary>Otonominin bu ihtiyaç için iş aradığı eşik.</summary>
+        public float AutonomyThresholdFor(NeedType need)
+        {
+            if (need != NeedType.Energy || HourOfDay == null) return AutonomyThreshold;
+            double h = HourOfDay();
+            return h >= BedtimeHour || h < WakeHour ? NightSleepThreshold : AutonomyThreshold;
+        }
+
         private const int MaxIterations = 64;
 
         /// <summary>Otonom karakter ulaşamadığı eşyayı bu kadar oyun günü boyunca yeniden denemez.</summary>
@@ -1344,7 +1360,7 @@ namespace Thatchwick.Core.Jobs
 
             _needOrder.Clear();
             foreach (var need in AllNeeds)
-                if (_character.Needs.Get(need) < AutonomyThreshold) _needOrder.Add(need);
+                if (_character.Needs.Get(need) < AutonomyThresholdFor(need)) _needOrder.Add(need);
             if (_needOrder.Count == 0) return TryStartRoutine() || TryStartDuty() || TryStartChore();
             _needOrder.Sort((a, b) =>
             {

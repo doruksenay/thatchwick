@@ -1,8 +1,9 @@
 ---
-id: "618"
+id: "618k"
 title: "Kaya sırtı parçaları ve kenar dekoru (10 eşya)"
 status: pending
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
+priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
 family: esya
 style_gate: false
 cost_est: 12
@@ -51,3 +52,5 @@ Ortak ek: `, weathered grey limestone, patches of moss and lichen, high top-down
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-21: çift iş numarası "618k" yapıldı (tester raporu 66). -->

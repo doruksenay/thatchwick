@@ -27,7 +27,7 @@ namespace Thatchwick.Game
 
         public static void Wrap(GUIContent c, float width)
         {
-            var st = new GUIStyle(GUI.skin.label) { wordWrap = true };
+            var st = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { wordWrap = true };
             float one = Mathf.Max(st.lineHeight, st.CalcSize(new GUIContent("Ag")).y - st.padding.top - st.padding.bottom);
             float inner = Mathf.Max(20f, width - st.padding.left - st.padding.right);
             int lines = Mathf.Max(1, Mathf.CeilToInt(st.CalcSize(c).x / inner * 1.1f));
@@ -124,6 +124,17 @@ namespace Thatchwick.Game
             GUI.color = old;
         }
 
+        /// <summary>
+        /// Panel üstünde okunur etiket stili: kaynağın bütün özellikleri, yazı rengi mürekkep. Önbelleğe alınan stiller
+        /// <c>new GUIStyle(GUI.skin.label)</c> ile, kaplama uygulanmadan önce oluşturulunca Unity'nin beyaz yazısı kalıyordu.
+        /// </summary>
+        public static GUIStyle InkLabel(GUIStyle source)
+        {
+            var st = new GUIStyle(source);
+            st.normal.textColor = st.hover.textColor = st.active.textColor = st.focused.textColor = Ink;
+            return st;
+        }
+
         private static GUIStyle _rich;
         /// <summary>Zengin metinli etiket (rozet renkleri için).</summary>
         public static GUIStyle Rich => _rich ?? (_rich = new GUIStyle(GUI.skin.label) { richText = true });
@@ -146,6 +157,11 @@ namespace Thatchwick.Game
 
             var label = _skin.label;
             label.normal.textColor = Ink;
+
+            // Onay kutusu: yazısı varsayılan açık renkte kalıyordu, krem panelde okunmuyordu (tester raporu 65 A3, 66).
+            var tg = _skin.toggle;
+            tg.normal.textColor = tg.hover.textColor = tg.active.textColor = tg.focused.textColor = Ink;
+            tg.onNormal.textColor = tg.onHover.textColor = tg.onActive.textColor = tg.onFocused.textColor = Ink;
 
             var b = _skin.button;
             b.normal.background = Tex("btn");

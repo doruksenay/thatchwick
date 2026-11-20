@@ -149,7 +149,13 @@ def load_jobs():
         if status == "running":
             changed = last_change(path)
             stale = changed is not None and time.time() - changed > STALE_HOURS * 3600
-        jobs[jid] = {
+        key = jid
+        if key in jobs:
+            # Çift iş numarası (tester raporu 66): eskiden ikinci dosya ilkinin üstüne yazılıyor, ilk iş hiç görünmüyordu
+            # (613-617 zemin geçişleri günlerce başlamadı). İkisi de değerlendirilir; uyarı yazılır, numara düzeltilmeli.
+            key = jid + "#" + os.path.basename(path)
+            print(f"UYARI: çift iş numarası {jid}: {jobs[jid]['file']} ve {os.path.relpath(path, ROOT)}", file=sys.stderr)
+        jobs[key] = {
             "id": jid,
             "file": os.path.relpath(path, ROOT).replace("\\", "/"),
             "status": status,
@@ -180,7 +186,9 @@ def evaluate(jobs, spent_today, balance, strict=False, limit=DAILY_LIMIT, worker
         elif j["approved_by"] not in ("user", "auto"):
             why.append(f"onay yok (approved_by: {j['approved_by'] or '-'})")
         for d in j["depends_on"]:
-            dep = jobs.get(d)
+            same = [x for k, x in jobs.items() if k == d or k.startswith(d + "#")]
+            # Aynı numaralı birden çok iş: karşılanmış olan (accepted, review) varsa o sayılır.
+            dep = next((x for x in same if x["status"] == "accepted"), None) or next((x for x in same if x["status"] == "review"), None) or (same[0] if same else None)
             if dep is None:
                 why.append(f"bağımlılık {d} bulunamadı")
             elif dep["status"] == "accepted":

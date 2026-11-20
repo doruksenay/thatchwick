@@ -1,5 +1,5 @@
 ---
-id: "485"
+id: "485k"
 title: "Kedi gövdeleri: 3 boy × kısa/uzun tüy (6)"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (hayvan genetiği ve tür genişletme, tek PR), Project belgeleri 48 ve 48b
@@ -48,3 +48,5 @@ Tarif **375 ile aynı** (106 tarifi, yol B, güney kontrolü, zemin kontrolü, `
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-21: çift iş numarası "485k" yapıldı (tester raporu 66). -->

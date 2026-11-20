@@ -125,9 +125,9 @@ namespace Thatchwick.Game
 
             if (_titleStyle == null)
             {
-                _titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 16, fontStyle = FontStyle.Bold };
-                _smallStyle = new GUIStyle(GUI.skin.label) { fontSize = 11, wordWrap = true };
-                _centerStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
+                _titleStyle = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { fontSize = 16, fontStyle = FontStyle.Bold };
+                _smallStyle = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { fontSize = 11, wordWrap = true };
+                _centerStyle = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { alignment = TextAnchor.MiddleCenter };
             }
 
             // Geri al: bu karede görünüm değişirse önceki hali yığına at.
@@ -765,12 +765,21 @@ namespace Thatchwick.Game
                 GUILayout.BeginHorizontal();
                 for (int i = start; i < Math.Min(start + perRow, palette.Count); i++)
                 {
-                    var prev = GUI.backgroundColor;
-                    GUI.backgroundColor = ToColor(palette[i]);
+                    // Renk kutusu gerçek renkle düz çizilir: eskiden bordo düğme dokusu backgroundColor ile çarpılıyor, sarı, gri
+                    // ve mavi de koyu kahve görünüyordu (tester raporu 65 A5). Seçili renk kalın mürekkep çerçeveyle gösterilir.
                     bool selected = palette[i] == current;
-                    if (GUILayout.Button(selected ? "*" : "", GUILayout.Width(20f), GUILayout.Height(18f)))
-                        current = palette[i];
-                    GUI.backgroundColor = prev;
+                    var cell = GUILayoutUtility.GetRect(20f, 18f, GUILayout.Width(20f), GUILayout.Height(18f));
+                    if (Event.current.type == EventType.Repaint)
+                    {
+                        var prev = GUI.color;
+                        GUI.color = selected ? UiSkin.Ink : new Color(0f, 0f, 0f, 0.35f);
+                        GUI.DrawTexture(cell, Texture2D.whiteTexture);
+                        GUI.color = ToColor(palette[i]);
+                        float inset = selected ? 3f : 1f;
+                        GUI.DrawTexture(new Rect(cell.x + inset, cell.y + inset, cell.width - 2 * inset, cell.height - 2 * inset), Texture2D.whiteTexture);
+                        GUI.color = prev;
+                    }
+                    if (GUI.Button(cell, GUIContent.none, GUIStyle.none)) current = palette[i];
                 }
                 GUILayout.EndHorizontal();
             }

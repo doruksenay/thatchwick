@@ -1,5 +1,20 @@
 {
   "ponds": [],
-  "items": [],
-  "keep": []
+  "items": [
+    {
+      "id": "item.landmark_beacon_fire_place",
+      "x": 26,
+      "y": 10,
+      "rot": 0,
+      "grown": false
+    }
+  ],
+  "keep": [
+    {
+      "x0": 24,
+      "y0": 8,
+      "x1": 28,
+      "y1": 12
+    }
+  ]
 }

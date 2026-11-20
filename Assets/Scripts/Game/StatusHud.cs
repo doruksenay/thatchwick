@@ -59,7 +59,7 @@ namespace Thatchwick.Game
         private void EnsureStyles()
         {
             if (_small != null) return;
-            _small = new GUIStyle(GUI.skin.label) { fontSize = 11, wordWrap = false };
+            _small = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { fontSize = 11, wordWrap = false };
             _balloon = new GUIStyle(GUI.skin.box) { fontSize = 11, alignment = TextAnchor.MiddleCenter, wordWrap = false, normal = { textColor = Color.white } };
         }
 

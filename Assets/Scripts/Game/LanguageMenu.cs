@@ -21,8 +21,15 @@ namespace Thatchwick.Game
             go.AddComponent<LanguageMenu>();
         }
 
+        /// <summary>
+        /// Düğme ne zaman görünür (GameRoot verir: yalnızca ana menüde). Oyun içinde "Bildirimler" düğmesinin, karakter
+        /// yaratmada pencerenin üstüne biniyordu (tester raporu 65 B11, 66 §1.6). Verilmezse her zaman görünür.
+        /// </summary>
+        public static System.Func<bool> ShowWhen;
+
         private void OnGUI()
         {
+            if (ShowWhen != null && !ShowWhen()) { _open = false; return; }
             var loc = GameLocalization.Current;
             const float w = 120f, h = 24f, pad = 6f;
             float x = pad, y = Screen.height - h - pad;

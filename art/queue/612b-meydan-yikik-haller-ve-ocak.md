@@ -9,7 +9,7 @@ family: yapi
 style_gate: false
 cost_est: 16
 cost_max: 32
-depends_on: ["612"]
+depends_on: ["612m"]
 max_attempts: 2
 pixellab: true
 outputs:

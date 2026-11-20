@@ -20,16 +20,51 @@ namespace Thatchwick.Core.Layout
         /// <summary>Başlangıç evi (iki katlı, iç 28-36 x 26-32): kapı güney duvarında x=32.</summary>
         public const int HouseX0 = 28, HouseX1 = 36, HouseY0 = 26, HouseY1 = 32, HouseDoorX = 32;
 
+        /// <summary>Çiftlik göletinin ortası ve yarıçapları (karo). Göl 8-19 x 44-51 kutusunun içinde kalır (eski dikdörtgenin yeri).</summary>
+        public const int PondCX = 13, PondCY = 47;
+        private const double PondMidX = 13.5, PondMidY = 47.5, PondRX = 4.6, PondRY = 3.0;
+
+        /// <summary>
+        /// Göletin karoları: elips, kenarı karo başına sabit gürültüyle girintili (her oyunda aynı). Kenardaki tek karoluk çıkıntılar
+        /// ve delikler temizlenir: kıyı karoları düzgün otursun.
+        /// </summary>
+        public static HashSet<GridPos> PondTiles()
+        {
+            var set = new HashSet<GridPos>();
+            for (int x = 8; x < 20; x++)
+                for (int y = 44; y < 52; y++)
+                {
+                    double dx = (x - PondMidX) / PondRX, dy = (y - PondMidY) / PondRY;
+                    double angle = Math.Atan2(dy, dx);
+                    // Düşük frekanslı kıyı girintisi: açıya bağlı iki sinüs (haritada koy ve burun gibi).
+                    double edge = 1.0 + 0.16 * Math.Sin(angle * 3 + 0.7) + 0.09 * Math.Sin(angle * 5 + 2.1);
+                    if (dx * dx + dy * dy <= edge * edge) set.Add(new GridPos(x, y));
+                }
+            // Tek karoluk burunları at: en az iki dik komşusu su olmayan karo kıyıya uymaz.
+            var lonely = new List<GridPos>();
+            foreach (var p in set)
+            {
+                int n = 0;
+                if (set.Contains(new GridPos(p.X + 1, p.Y))) n++;
+                if (set.Contains(new GridPos(p.X - 1, p.Y))) n++;
+                if (set.Contains(new GridPos(p.X, p.Y + 1))) n++;
+                if (set.Contains(new GridPos(p.X, p.Y - 1))) n++;
+                if (n <= 1) lonely.Add(p);
+            }
+            foreach (var p in lonely) set.Remove(p);
+            return set;
+        }
+
         public static GridMap BuildMap(LayoutCatalog layouts = null)
         {
             var map = new GridMap(MapWidth, MapHeight);
-            // Test haritası: kaynaklı doğal gölet (hep dolu; böcekli, içinde sazan, kerevit ve alabalık).
-            // Taslak varsa (maps/farm) gölet girintili biçimiyle ve kıyı kumuyla oradan; yoksa eski dikdörtgen.
-            if (!Regions.FarmPond(map))
-                for (int x = 8; x < 20; x++)
-                    for (int y = 44; y < 52; y++)
-                        map.SetFloor(new GridPos(x, y), FloorType.Water);
-            var natural = new GridPos(8, 44);
+            // Kaynaklı doğal gölet (hep dolu; böcekli, içinde sazan, kerevit ve alabalık).
+            // Taslak varsa (maps/farm) gölet girintili biçimiyle ve kıyı kumuyla oradan; yoksa kodla girintili göl
+            // (eskiden 12x8 düz dikdörtgendi; tester raporu 66 §1.5).
+            bool drafted = Regions.FarmPond(map);
+            if (!drafted)
+                foreach (var p in PondTiles()) map.SetFloor(p, FloorType.Water);
+            var natural = drafted ? new GridPos(8, 44) : new GridPos(PondCX, PondCY);
             map.SetSpring(natural);
             map.RestorePond(natural, 1f, spring: true, insects: true, filledDays: 30, new[]
             {

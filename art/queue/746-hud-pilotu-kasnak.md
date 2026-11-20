@@ -1,7 +1,7 @@
 ---
 id: "746"
 title: "HUD pilotu, yön C: Kasnak ve kumaş yama"
-status: failed
+status: rejected
 claimed_at: 2026-11-20T20:35Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (Project belgesi 66 §5 S3-S4: önce PixelLab HUD pilotu, üç yön birden)
 priority: 1
@@ -72,3 +72,5 @@ Ad biçimi: `Assets/Art/Iso/_aday/ui_hud2_<yon>_<parça>.png`
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+Kullanıcı kararı 2026-11-21: **rejected.** HUD için yön B (oyma meşe) seçildi. Sayfa 2 düğmeleri silinmez; başka yerde kullanılabilir.

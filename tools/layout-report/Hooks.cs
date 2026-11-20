@@ -21,7 +21,7 @@ internal static class LayoutHooks
     private static readonly (string id, string name)[] ShopNames =
     {
         ("general", "Pazar (Kerem)"), ("smithy", "Demirci"), ("carpenter", "Marangoz"), ("tavern", "Meyhane"), ("mill", "Değirmen ve fırın"),
-        ("scribe", "Kâtip"), ("herb", "Otacı"), ("potter", "Çömlekçi"), ("tailor", "Terzi"), ("saddler", "Saraç"), ("fisher", "Balıkçı"),
+        ("scribe", "Kâtip"), ("herb", "Aktar"), ("potter", "Çömlekçi"), ("tailor", "Terzi"), ("saddler", "Saraç"), ("fisher", "Balıkçı"),
         ("mason", "Taşçı"), ("animals", "Hayvan pazarı"),
     };
 

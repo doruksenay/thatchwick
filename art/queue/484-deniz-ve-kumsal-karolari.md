@@ -1,9 +1,9 @@
 ---
-id: "484"
+id: "484d"
 title: "Deniz ve kumsal karoları (4)"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 20.11.2026 "üretilecek asset varsa kuyruğa at" (deniz kıyısı, belge 50)
-priority: 20
+priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
 family: zemin
 style_gate: false
 cost_est: 4
@@ -39,6 +39,7 @@ Deniz karoları birbirine ve 346 su karolarına, kumsal karoları toprak ve çim
 `validate_iso.py`, `style.py check --family zemin`, 3x3 döşeme testi (deniz a/b karışık, bir kenarda kumsal a/b).
 
 ## Notlar
+- 2026-11-21 (tester raporu 66): iş numarası çift kullanılıyordu, `queue_ready.py` bu işi hiç görmüyordu; numara "484d" yapıldı.
 Dosya adları kodda sabit; değişmesin.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:

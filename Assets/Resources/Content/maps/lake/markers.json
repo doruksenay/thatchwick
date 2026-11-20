@@ -1,5 +1,20 @@
 {
   "ponds": [],
-  "items": [],
-  "keep": []
+  "items": [
+    {
+      "id": "item.landmark_sunken_boat",
+      "x": 14,
+      "y": 26,
+      "rot": 0,
+      "grown": false
+    }
+  ],
+  "keep": [
+    {
+      "x0": 12,
+      "y0": 24,
+      "x1": 17,
+      "y1": 28
+    }
+  ]
 }

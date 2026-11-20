@@ -3610,8 +3610,7 @@
         "alongX": "iso_item_pot_clay_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3641,8 +3640,7 @@
         "alongX": "iso_item_griddle_iron_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3672,8 +3670,7 @@
         "alongX": "iso_item_pan_copper_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3702,8 +3699,7 @@
         "alongX": "iso_item_guvec_plain_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3732,8 +3728,7 @@
         "alongX": "iso_item_guvec_glazed_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3762,8 +3757,7 @@
         "alongX": "iso_item_guvec_fine_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3793,8 +3787,7 @@
         "alongX": "iso_item_spit_iron_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3824,8 +3817,7 @@
         "alongX": "iso_item_spit_steel_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3854,8 +3846,7 @@
         "alongX": "iso_item_baking_tray_clay_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3885,8 +3876,7 @@
         "alongX": "iso_item_baking_tray_copper_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3913,8 +3903,7 @@
         "alongX": "iso_item_trivet_iron_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3943,8 +3932,7 @@
         "alongX": "iso_item_kitchen_knife_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -3973,8 +3961,7 @@
         "alongX": "iso_item_cutting_board_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -4003,8 +3990,7 @@
         "alongX": "iso_item_wooden_spoon_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -4032,8 +4018,7 @@
         "alongX": "iso_item_rolling_board_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -4062,8 +4047,7 @@
         "alongX": "iso_item_colander_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -4086,8 +4070,7 @@
         "alongX": "iso_item_baker_peel_se",
         "pivotX": 16.0,
         "pivotY": 10.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -4111,8 +4094,7 @@
         "alongX": "iso_item_dish_basket_empty_se",
         "pivotX": 16.0,
         "pivotY": 10.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -4137,8 +4119,7 @@
         "alongX": "iso_item_dish_tub_se",
         "pivotX": 16.0,
         "pivotY": 10.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       },
       "interactions": [
         {
@@ -5469,7 +5450,6 @@
         "pivotX": 40.0,
         "pivotY": 24.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_chair_painted_sw"
       }
     },
@@ -6120,8 +6100,7 @@
         "alongY": "iso_item_table_painted_2x1_se_nw",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       },
       "tags": [
         "diningtable"
@@ -7708,7 +7687,6 @@
         "pivotX": 56.0,
         "pivotY": 32.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_fireplace_large_2x1_sw"
       }
     },
@@ -7749,8 +7727,7 @@
         "alongX": "iso_item_candlestick_se",
         "pivotX": 24.0,
         "pivotY": 24.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -8397,8 +8374,7 @@
         "alongX": "iso_item_water_barrel_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -8629,7 +8605,6 @@
         "pivotX": 56.0,
         "pivotY": 32.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_pantry_shelf_2x1_se_nw"
       },
       "tags": [
@@ -8995,7 +8970,6 @@
         "pivotX": 56.0,
         "pivotY": 32.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_workbench_2x1_se_nw"
       }
     },
@@ -9466,8 +9440,7 @@
         "alongX": "iso_item_morris_board_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -9502,8 +9475,7 @@
         "alongX": "iso_item_book_se",
         "pivotX": 16.0,
         "pivotY": 8.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -9536,8 +9508,7 @@
         "alongX": "iso_item_firewood_basket_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -9732,8 +9703,7 @@
         "alongY": "iso_item_rug_wool_small_2x1_se",
         "pivotX": 48.0,
         "pivotY": 24.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -12400,10 +12370,9 @@
         }
       ],
       "art": {
-        "alongX": "iso_forage_berry_bush_v2_se",
+        "alongX": "iso_forage_berry_bush_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "pending": true,
         "mirror": true
       },
       "site": "outdoor"
@@ -13420,7 +13389,6 @@
         "alongY": "iso_item_stairs_up_wood_1x2_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "pending": true,
         "mirror": true,
         "rotations": [
           0,
@@ -13455,7 +13423,6 @@
         "alongY": "iso_item_stairs_down_wood_1x2_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "pending": true,
         "mirror": true,
         "rotations": [
           0,
@@ -13511,7 +13478,6 @@
         "alongY": "iso_item_stairs_up_stone_1x2_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "pending": true,
         "mirror": true,
         "rotations": [
           0,
@@ -13547,7 +13513,6 @@
         "alongY": "iso_item_stairs_down_stone_1x2_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "pending": true,
         "mirror": true,
         "rotations": [
           0,
@@ -21107,7 +21072,6 @@
         "pivotX": 56.0,
         "pivotY": 32.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_alembic_2x1_sw"
       }
     },
@@ -21394,7 +21358,13 @@
       "tags": [
         "relic",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_decor_relic_foundation_stone",
+        "pxW": 48,
+        "pxH": 48,
+        "mirror": true
+      }
     },
     {
       "id": "item.relic_buried_jar",
@@ -21410,7 +21380,13 @@
       "tags": [
         "relic",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_decor_relic_buried_jar",
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.relic_horseshoe",
@@ -21426,7 +21402,13 @@
       "tags": [
         "relic",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_decor_relic_horseshoe",
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.relic_fossil",
@@ -21442,7 +21424,13 @@
       "tags": [
         "relic",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_decor_relic_fossil",
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.relic_miner_lamp",
@@ -21458,7 +21446,13 @@
       "tags": [
         "relic",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_decor_relic_miner_lamp",
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.relic_pick_head",
@@ -21474,7 +21468,13 @@
       "tags": [
         "relic",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_decor_relic_pick_head",
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.relic_coin",
@@ -21490,7 +21490,13 @@
       "tags": [
         "relic",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_decor_relic_coin",
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.relic_bone_comb",
@@ -21506,7 +21512,13 @@
       "tags": [
         "relic",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_decor_relic_bone_comb",
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.relic_crystal",
@@ -21522,7 +21534,13 @@
       "tags": [
         "relic",
         "craftonly"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_decor_relic_crystal",
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      }
     },
     {
       "id": "item.slate_stone",
@@ -23107,7 +23125,15 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_seeder_se",
+        "pivotX": 40.0,
+        "pivotY": 27.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true
+      }
     },
     {
       "id": "item.ice_well",
@@ -26779,7 +26805,15 @@
       "trades": [
         "tavern",
         "herb"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_ceiling_item_beam_hook",
+        "pivotX": 16.0,
+        "pivotY": 14.0,
+        "pxW": 32,
+        "pxH": 29,
+        "mirror": true
+      }
     },
     {
       "id": "item.hanging_lantern",
@@ -26842,7 +26876,15 @@
         "light"
       ],
       "site": "indoor",
-      "anywhere": true
+      "anywhere": true,
+      "art": {
+        "alongX": "iso_ceiling_item_iron_chandelier",
+        "pivotX": 32.0,
+        "pivotY": 18.0,
+        "pxW": 64,
+        "pxH": 37,
+        "mirror": true
+      }
     },
     {
       "id": "item.ceiling_herbs",
@@ -26867,11 +26909,12 @@
         "herb"
       ],
       "art": {
-        "alongX": "iso_deco_ceiling_herbs_se",
-        "pivotX": 32.0,
-        "pivotY": 24.0,
         "mirror": true,
-        "pending": true
+        "alongX": "iso_ceiling_item_ceiling_herbs",
+        "pivotX": 20.0,
+        "pivotY": 14.0,
+        "pxW": 40,
+        "pxH": 28
       }
     },
     {
@@ -30126,7 +30169,6 @@
         "pivotX": 56.0,
         "pivotY": 32.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_glass_bench_2x1_sw"
       }
     },
@@ -31143,7 +31185,6 @@
         "pivotX": 40.0,
         "pivotY": 24.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_throne_chair_sw"
       }
     },
@@ -31556,7 +31597,15 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_snare_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true
+      }
     },
     {
       "id": "item.wattle_hurdle",
@@ -31572,7 +31621,15 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_wattle_hurdle_se",
+        "pivotX": 40.0,
+        "pivotY": 34.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.bonfire",
@@ -33386,8 +33443,7 @@
         "alongX": "iso_item_brine_crock_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35126,8 +35182,7 @@
         "pivotY": 32.0,
         "pxW": 112,
         "pxH": 88,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35212,8 +35267,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 72,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35242,8 +35296,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 64,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35271,8 +35324,7 @@
         "pivotY": 32.0,
         "pxW": 112,
         "pxH": 80,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35304,8 +35356,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 96,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35335,7 +35386,6 @@
         "pivotX": 56.0,
         "pivotY": 32.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_kneading_trough_2x1_sw"
       }
     },
@@ -35368,8 +35418,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 72,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35429,7 +35478,6 @@
         "pivotX": 40.0,
         "pivotY": 24.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_bread_rack_sw"
       }
     },
@@ -35651,7 +35699,6 @@
         "pivotX": 56.0,
         "pivotY": 32.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_cutting_table_2x1_sw"
       }
     },
@@ -35768,8 +35815,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 64,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35832,8 +35878,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 64,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35891,8 +35936,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 80,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -35950,7 +35994,6 @@
         "pivotX": 40.0,
         "pivotY": 24.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_bedside_stand_sw"
       }
     },
@@ -35988,8 +36031,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 64,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36016,8 +36058,7 @@
         "pivotY": 16.0,
         "pxW": 64,
         "pxH": 112,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36080,8 +36121,7 @@
         "pivotY": 16.0,
         "pxW": 64,
         "pxH": 112,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36106,8 +36146,7 @@
         "pivotY": 32.0,
         "pxW": 112,
         "pxH": 96,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36132,8 +36171,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 72,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36194,8 +36232,7 @@
         "pivotY": 32.0,
         "pxW": 112,
         "pxH": 96,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36225,8 +36262,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 96,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36256,8 +36292,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 96,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36279,7 +36314,15 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_flower_clump_se",
+        "pivotX": 16.0,
+        "pivotY": 25.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.shrub",
@@ -36301,13 +36344,12 @@
         "outdoor"
       ],
       "art": {
-        "alongX": "iso_item_shrub_v2_se",
+        "alongX": "iso_item_shrub_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 72,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36357,7 +36399,15 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_grass_tuft_se",
+        "pivotX": 16.0,
+        "pivotY": 19.0,
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.ink_quill",
@@ -36378,8 +36428,7 @@
         "pivotY": 7.0,
         "pxW": 32,
         "pxH": 32,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36401,8 +36450,7 @@
         "pivotY": 7.0,
         "pxW": 32,
         "pxH": 32,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36424,8 +36472,7 @@
         "pivotY": 7.0,
         "pxW": 32,
         "pxH": 32,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36447,8 +36494,7 @@
         "pivotY": 7.0,
         "pxW": 32,
         "pxH": 32,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36469,8 +36515,7 @@
         "alongX": "iso_wall_item_chisel_rack_sw_ne",
         "pivotX": 24.0,
         "pivotY": 24.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -36653,7 +36698,6 @@
         "alongX": "iso_item_pot_lily_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
-        "pending": true,
         "mirror": true
       },
       "tags": [
@@ -36693,7 +36737,6 @@
         "alongX": "iso_item_pot_narcissus_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
-        "pending": true,
         "mirror": true
       },
       "tags": [
@@ -36818,7 +36861,6 @@
         "alongX": "iso_item_pot_snowdrop_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
-        "pending": true,
         "mirror": true
       },
       "tags": [
@@ -36954,7 +36996,6 @@
         "alongX": "iso_item_pot_mint_se",
         "pivotX": 16.0,
         "pivotY": 7.0,
-        "pending": true,
         "mirror": true
       },
       "tags": [
@@ -37263,7 +37304,6 @@
         "alongX": "iso_item_birdbath_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "pending": true,
         "mirror": true
       },
       "site": "outdoor",
@@ -38489,7 +38529,15 @@
         "kitchen",
         "bedroom",
         "inn_room"
-      ]
+      ],
+      "art": {
+        "alongY": "iso_wall_item_defter_summer_sheaf_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 32.0,
+        "pxW": 48,
+        "pxH": 64,
+        "mirror": true
+      }
     },
     {
       "id": "item.defter_autumn_basket",
@@ -38563,7 +38611,13 @@
         "kitchen",
         "bedroom",
         "inn_room"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_defter_winter_lantern_se",
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.viv_forest_soil",
@@ -38768,7 +38822,15 @@
       ],
       "gathers": [
         "item.viv_sea_water"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_tidepool_se_v2",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.forage_driftline",
@@ -38865,7 +38927,15 @@
           "item": "item.viv_coral",
           "chance": 0.02
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_driftline_se_v2",
+        "pivotX": 40.0,
+        "pivotY": 35.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.forage_sea_sand",
@@ -38923,7 +38993,15 @@
       ],
       "gathers": [
         "item.viv_sea_sand"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_sea_sand_se_v2",
+        "pivotX": 40.0,
+        "pivotY": 28.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.warren",
@@ -39983,7 +40061,15 @@
           "skillWork": "forage_regrow",
           "minLevel": 9
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_truffle_se",
+        "pivotX": 40.0,
+        "pivotY": 37.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.tar",
@@ -40029,7 +40115,15 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_storm_bell_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true
+      }
     },
     {
       "id": "item.aged_cheese",
@@ -40067,7 +40161,15 @@
       "belongs": [
         "kitchen",
         "cellar"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_cheese_rack_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true
+      }
     },
     {
       "id": "item.brood_basket",
@@ -40085,7 +40187,15 @@
       "belongs": [
         "outdoor",
         "barn"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_brood_basket_se",
+        "pivotX": 40.0,
+        "pivotY": 25.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true
+      }
     },
     {
       "id": "item.mulberry_leaf",
@@ -40152,7 +40262,15 @@
       "belongs": [
         "barn",
         "workshop"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_silkworm_rack_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true
+      }
     },
     {
       "id": "item.bait",
@@ -40186,7 +40304,15 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_crayfish_trap_se",
+        "pivotX": 40.0,
+        "pivotY": 27.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true
+      }
     },
     {
       "id": "item.fish_oil",
@@ -40259,7 +40385,15 @@
           "skillXp": 1,
           "meal": "feedScrap"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_catki_table_se",
+        "pivotX": 56.0,
+        "pivotY": 34.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true
+      }
     },
     {
       "id": "item.catki_chair",
@@ -40282,7 +40416,15 @@
       ],
       "width": 1,
       "height": 1,
-      "comfort": 3
+      "comfort": 3,
+      "art": {
+        "alongX": "iso_item_catki_chair_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true
+      }
     },
     {
       "id": "item.catki_chest",
@@ -40305,7 +40447,15 @@
       ],
       "width": 1,
       "height": 1,
-      "storage": 20
+      "storage": 20,
+      "art": {
+        "alongX": "iso_item_catki_chest_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.yoruk_table",
@@ -40643,7 +40793,15 @@
           "restore": 5,
           "durationDays": 0.04
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_gravestone_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.master_lantern",
@@ -40882,7 +41040,15 @@
           "skillXp": 4,
           "moodlet": "had_fun"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_drum_se",
+        "pivotX": 40.0,
+        "pivotY": 25.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true
+      }
     },
     {
       "id": "item.festival_bunting",
@@ -41047,7 +41213,15 @@
           "skill": "Horticulture",
           "skillXp": 4
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_seedling_rack_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 88,
+        "mirror": true
+      }
     },
     {
       "id": "item.potting_bench",
@@ -42706,7 +42880,15 @@
       "forageRegions": [
         "forest"
       ],
-      "site": "outdoor"
+      "site": "outdoor",
+      "art": {
+        "alongX": "iso_forage_buckthorn_se",
+        "pivotX": 40.0,
+        "pivotY": 32.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.forage_walnut_hull",
@@ -42741,7 +42923,15 @@
       "forageRegions": [
         "forest"
       ],
-      "site": "outdoor"
+      "site": "outdoor",
+      "art": {
+        "alongX": "iso_forage_walnut_hull_se",
+        "pivotX": 40.0,
+        "pivotY": 25.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      }
     },
     {
       "id": "item.forage_lichen",
@@ -42809,7 +42999,6 @@
         "pivotX": 32.0,
         "pivotY": 20.0,
         "mirror": true,
-        "pending": true,
         "w": "iso_item_sewing_table_sw"
       }
     },
@@ -45594,8 +45783,7 @@
         "alongX": "iso_item_rusty_sword_ground_se",
         "pivotX": 32.0,
         "pivotY": 16.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -45751,8 +45939,7 @@
         "alongX": "iso_wall_item_old_sword_sw_ne",
         "pivotX": 24.0,
         "pivotY": 24.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -46580,8 +46767,7 @@
         "alongX": "iso_crop_giant_turnip_2x2_se",
         "pivotX": 64.0,
         "pivotY": 32.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -46641,8 +46827,7 @@
         "alongX": "iso_crop_giant_cabbage_2x2_se",
         "pivotX": 64.0,
         "pivotY": 32.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -46702,8 +46887,7 @@
         "alongX": "iso_crop_giant_pumpkin_2x2_se",
         "pivotX": 64.0,
         "pivotY": 32.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -46763,8 +46947,7 @@
         "alongX": "iso_crop_giant_radish_2x2_se",
         "pivotX": 64.0,
         "pivotY": 32.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -46824,8 +47007,7 @@
         "alongX": "iso_crop_giant_beet_2x2_se",
         "pivotX": 64.0,
         "pivotY": 32.0,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       }
     },
     {
@@ -47046,8 +47228,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 112,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       },
       "site": "outdoor",
       "belongs": [
@@ -47836,7 +48017,15 @@
           "skillXp": 1,
           "meal": "collectMeat"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_slaughter_hook_se",
+        "pivotX": 40.0,
+        "pivotY": 27.0,
+        "pxW": 80,
+        "pxH": 80,
+        "mirror": true
+      }
     },
     {
       "id": "item.meat_locker",
@@ -47866,7 +48055,15 @@
           "skillXp": 1,
           "meal": "collectMeat"
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_meat_locker_se",
+        "pivotX": 56.0,
+        "pivotY": 31.0,
+        "pxW": 112,
+        "pxH": 96,
+        "mirror": true
+      }
     },
     {
       "id": "item.ice_trough",
@@ -47886,7 +48083,15 @@
       "anywhere": true,
       "tags": [
         "meatcooler"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_ice_trough_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true
+      }
     },
     {
       "id": "item.drain_channel",
@@ -47924,7 +48129,15 @@
       "finishGroup": "wood",
       "tags": [
         "spicerack"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_spice_rack_se",
+        "pivotX": 24.0,
+        "pivotY": 28.0,
+        "pxW": 48,
+        "pxH": 56,
+        "mirror": true
+      }
     },
     {
       "id": "item.paste_tray",
@@ -47940,7 +48153,15 @@
         "outdoor"
       ],
       "anywhere": true,
-      "interactions": []
+      "interactions": [],
+      "art": {
+        "alongX": "iso_item_paste_tray_se",
+        "pivotX": 40.0,
+        "pivotY": 23.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true
+      }
     },
     {
       "id": "item.picnic_basket",
@@ -47976,7 +48197,13 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_toy_pot_set_se",
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.toy_hammer",
@@ -47992,7 +48219,13 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_toy_hammer_se",
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.toy_hoe",
@@ -48008,7 +48241,13 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_toy_hoe_se",
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.toy_sheep",
@@ -48024,7 +48263,13 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_toy_sheep_se",
+        "pxW": 32,
+        "pxH": 32,
+        "mirror": true
+      }
     },
     {
       "id": "item.soup_tarhana",
@@ -48793,8 +49038,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 72,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       },
       "site": "any",
       "belongs": [
@@ -48938,8 +49182,7 @@
         "pivotY": 24.0,
         "pxW": 80,
         "pxH": 96,
-        "mirror": true,
-        "pending": true
+        "mirror": true
       },
       "site": "any",
       "belongs": [
@@ -48978,6 +49221,238 @@
         "gift",
         "shop_tailor"
       ]
+    },
+    {
+      "id": "item.landmark_lightning_oak",
+      "displayName": "Yıldırım çarpmış meşe",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_lightning_oak_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 192,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_hunter_hut_ruin",
+      "displayName": "Yıkık avcı kulübesi",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_hunter_hut_ruin_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 144,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_sunken_boat",
+      "displayName": "Batık kayık",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongY": "iso_item_sunken_boat_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 80,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_broken_boardwalk",
+      "displayName": "Çökmüş tahta yol",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongY": "iso_item_broken_boardwalk_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 72,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_watchtower_ruin",
+      "displayName": "Yıkık gözcü kulesi",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_watchtower_ruin_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 224,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_old_quarry_cleft",
+      "displayName": "Eski taş ocağı yarığı",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_old_quarry_cleft_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 128,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_vineyard_house_ruin",
+      "displayName": "Yıkık bağ evi",
+      "width": 2,
+      "height": 2,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_vineyard_house_ruin_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pxW": 160,
+        "pxH": 160,
+        "mirror": true
+      }
+    },
+    {
+      "id": "item.landmark_beacon_fire_place",
+      "displayName": "Eski işaret ateşi yeri",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "landmark",
+        "townonly"
+      ],
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ],
+      "art": {
+        "alongX": "iso_item_beacon_fire_place_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 96,
+        "mirror": true
+      }
     }
   ],
   "recipes": [
