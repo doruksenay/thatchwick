@@ -238,6 +238,24 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void UzunEsya_GorselinEkseniAyakIziyleAyni()
+        {
+            // 1x2 eşyada (merdiven, ahır bölmesi) 0. dönüş grid y boyuncadır: alongY görseli aynasız, alongX görseli aynalı.
+            var db = ContentFilesTests.LoadDb(out _);
+            Assert.True(db.Items.TryGet("item.stairs_up", out var stairs));
+            Assert.True(ItemFacing.TryView(stairs, 0, false, out var s0, out bool f0));
+            Assert.Equal(stairs.Art.AlongY, s0);
+            Assert.False(f0);
+            Assert.True(ItemFacing.TryView(stairs, 1, false, out _, out bool f1));
+            Assert.True(f1);
+            Assert.True(db.Items.TryGet("item.stall", out var stall));
+            Assert.True(ItemFacing.TryView(stall, 0, false, out _, out bool g0));
+            Assert.True(g0);
+            Assert.True(ItemFacing.TryView(stall, 1, false, out _, out bool g1));
+            Assert.False(g1);
+        }
+
+        [Fact]
         public void AynaListesi_YaziVeYonTasiyanEsyaAynalanmaz()
         {
             var db = ContentFilesTests.LoadDb(out _);
