@@ -1,7 +1,8 @@
 ---
 id: "612"
 title: "Zemin türleri: kum, çayır, koyu çim, çakıllı toprak (10 karo)"
-status: pending
+status: running
+claimed_at: 2026-11-20T17:21Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
 family: zemin
 style_gate: false
