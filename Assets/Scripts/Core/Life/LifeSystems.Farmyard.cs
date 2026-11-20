@@ -157,6 +157,7 @@ namespace Thatchwick.Core.Life
                 FindCharacter = id => Population.Find(id),
                 CartingLevel = () => BestSkill(SkillType.Carting),
                 Snow = () => Clock.Season == Time.Season.Winter,
+                JobActive = (job, day) => job != CartJob.Market || (day + 1) % Economy.OxCart.TripEvery == 0,   // pazar seferi haftada bir
                 AnimalLabel = a => string.IsNullOrEmpty(a.Name) ? a.Species.DisplayName : a.Species.DisplayName + " " + a.Name
             };
             if (_pendingYard != null) { _barn.Import(_pendingYard.barn); _fleet.Import(_pendingYard.fleet); }

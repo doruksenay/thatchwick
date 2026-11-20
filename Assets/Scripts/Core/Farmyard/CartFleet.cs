@@ -68,6 +68,8 @@ namespace Thatchwick.Core.Farmyard
         public Func<bool> Snow { get; set; }
         /// <summary>Hayvanın görünen adı (tür adı ve adı); null ise hayvanın adı.</summary>
         public Func<Animal, string> AnimalLabel { get; set; }
+        /// <summary>Görev bugün yapılır mı (pazar arabası yalnızca sefer günü yola çıkar); null ise her gün.</summary>
+        public Func<CartJob, long, bool> JobActive { get; set; }
 
         // ---------- arabalar ----------
 
@@ -245,7 +247,7 @@ namespace Thatchwick.Core.Farmyard
             _todayDay = day;
             foreach (var cart in new List<Cart>(Carts))
             {
-                if (cart.Job == CartJob.Idle) continue;
+                if (cart.Job == CartJob.Idle || (JobActive != null && !JobActive(cart.Job, day))) continue;
                 var why = Blocker(cart, day);
                 if (!why.IsEmpty) { stuck?.Add((cart, why)); continue; }
                 int animalId = 0;
@@ -284,6 +286,7 @@ namespace Thatchwick.Core.Farmyard
         /// <summary>Pazar seferi için engel (OxCart): pazara atanmış ve yola çıkabilen araba yoksa neden.</summary>
         public LocText MarketBlocker(long day)
         {
+            if (_todayDay == day) foreach (var c in _today) if (c.Job == CartJob.Market) return default;   // bugün yola çıktı
             LocText first = LocText.Of("yard.cart.b.no_market");
             bool any = false;
             foreach (var c in Carts)

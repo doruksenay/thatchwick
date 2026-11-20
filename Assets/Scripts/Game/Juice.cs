@@ -13,7 +13,7 @@ namespace Thatchwick.Game
     {
         public const float Px = 1f / 32f;
 
-        public enum Kind { Smoke, Spark, Dust, Chip, Leaf, Steam, Soil, Pop }
+        public enum Kind { Smoke, Spark, Dust, Chip, Leaf, Steam, Soil, Pop, Fly }
 
         private struct Particle
         {
@@ -94,6 +94,12 @@ namespace Thatchwick.Game
                         p.Life = Rand(3f, 4.5f); p.Size = 2f; p.Drift = Rand(0.18f, 0.3f);
                         p.Color = LeafColor;
                         break;
+                    case Kind.Fly:
+                        // Sinek (belge 57 §2): kaynağın üstünde kısa, düzensiz turlar atan koyu tek piksel.
+                        p.Pos += new Vector3(Rand(-0.22f, 0.22f), Rand(0.05f, 0.4f), 0f);
+                        p.Life = Rand(1.4f, 2.4f); p.Size = 1f;
+                        p.Color = new Color(0.1f, 0.09f, 0.08f, 0.95f);
+                        break;
                     case Kind.Pop:
                         float a = Rand(0f, 6.28f);
                         p.Vel = new Vector3(Mathf.Cos(a) * 0.5f, Mathf.Sin(a) * 0.3f + 0.2f, 0f);
@@ -159,6 +165,9 @@ namespace Thatchwick.Game
                     case Kind.Dust:
                     case Kind.Pop:
                         p.Vel *= 1f - Mathf.Min(1f, 4f * dt);
+                        break;
+                    case Kind.Fly:
+                        p.Vel = new Vector3(Mathf.Sin(t * 9f + p.Phase) * 0.4f, Mathf.Cos(t * 7f + p.Phase * 1.7f) * 0.25f, 0f);
                         break;
                 }
                 p.Pos += p.Vel * dt;

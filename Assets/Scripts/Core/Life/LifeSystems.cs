@@ -882,6 +882,7 @@ namespace Thatchwick.Core.Life
 
         public void Attach(Thatchwick.Core.Animals.AnimalSystem animals)
         {
+            AttachYard(animals);   // ahır kirliliği ve araba filosu (belge 57, 57e)
             animals.RiderFell += (horse, rider) =>
             {
                 Injuries.InjureById(rider, "horse_fall");   // moodlet ve bildirim InjurySystem'den
