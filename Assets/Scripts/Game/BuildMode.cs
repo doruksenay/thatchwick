@@ -1953,7 +1953,7 @@ namespace Thatchwick.Game
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"{a.Name} · tokluk {a.Fullness:0}{(a.IsMature ? "" : " · yavru")} · {a.HealthText}");
-                if (GUILayout.Button($"Sat {(int)(a.Species.Price * AnimalSystem.SellRatio)}", GUILayout.Width(62f)))
+                if (GUILayout.Button($"Sat {AnimalSystem.SellValue(a)}", GUILayout.Width(62f)))
                 {
                     var animal = a;
                     _deferred = () =>

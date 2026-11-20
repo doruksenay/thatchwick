@@ -6,6 +6,32 @@ using System.Linq;
 namespace Thatchwick.Core.Life
 {
     /// <summary>
+    /// +18 paketi (yalnızca Steam; ContentPacks.Adult) açıkken easter egg satırlarının küfürlü çeşidi: anahtarın sonuna
+    /// ".adult" eklenir. Çeşidi olmayan satır olduğu gibi kalır. Yeni çeşit eklemek için yalnızca ui tablolarına
+    /// "&lt;anahtar&gt;.adult" satırı yazmak yeter.
+    /// </summary>
+    public static class OddityLines
+    {
+        public const string AdultSuffix = ".adult";
+
+        public static Thatchwick.Core.Localization.LocText ForPack(Thatchwick.Core.Localization.LocText text, bool adult, Func<string, bool> hasKey)
+        {
+            if (!adult || text.Key == null || hasKey == null || !hasKey(text.Key + AdultSuffix)) return text;
+            return Thatchwick.Core.Localization.LocText.Of(text.Key + AdultSuffix, text.Args);
+        }
+
+        /// <summary>Bugün +18 çeşidi yazılmış satırlar (testler tabloda olduklarını denetler).</summary>
+        public static readonly string[] AdultKeys =
+        {
+            "core.oddity.ev.top_show.v0", "core.oddity.ev.top_show.v1", "core.oddity.ev.top_show.v2", "core.oddity.ev.top_show.v3",
+            "core.oddity.tell.disbelief", "core.oddity.tell.disbelief_nickname", "core.oddity.ev.nickname_talk",
+            "core.oddity.ev.chicken_revenge", "core.oddity.ev.johan_wick.field", "core.oddity.ev.johan_wick.nofield",
+            "core.oddity.ev.the_usual", "core.oddity.ev.the_usual.heir",
+            "core.oddity.ev.crier.v0", "core.oddity.ev.crier.v1", "core.oddity.ev.crier.v2"
+        };
+    }
+
+    /// <summary>
     /// Küçük easter egg'lerin ortak durumu (Project belgesi 55 §1, §2, §2b): şans zarları, günlük ve kalıcı sayaçlar,
     /// bayraklar. Kurallar burada, dünyaya etkileri LifeSystems.OddityEvents.cs'te. Her olayın bir kimliği vardır;
     /// <see cref="Force"/> ile bir sonraki zarı kesin tutturulur (test ve hata ayıklama).

@@ -67,6 +67,12 @@ namespace Thatchwick.Core.Clothing
         public string skill;
         public int level;
         public string[] acquire;
+        /// <summary>Etki ailesi (earring, evil_eye, gem_necklace...); boşsa kimlik. Altın ve taşlı türler temel takının etkisini taşır.</summary>
+        public string kind;
+        /// <summary>Malzeme basamağı tabanı: 0 yok (ustalığa göre 1-2), 3 altın.</summary>
+        public int step;
+        /// <summary>Değerli taşlı (etkili basamak +1).</summary>
+        public bool gem;
     }
 
     // ---------------- tanımlar ----------------
@@ -117,6 +123,12 @@ namespace Thatchwick.Core.Clothing
         public SkillType Skill;
         public int Level;
         public string[] Acquire = Array.Empty<string>();
+        /// <summary>Etki ailesi: altın küpe de "earring" sayılır.</summary>
+        public string Kind;
+        /// <summary>Malzeme basamağı tabanı (altın 3); ustalık bunu düşürmez.</summary>
+        public int BaseStep;
+        /// <summary>Değerli taşlı.</summary>
+        public bool Gem;
         /// <summary>5 takı sınırına girer mi (broş ve nazar boncuğu girmez).</summary>
         public bool CountsTowardLimit => Place != JewelryPlace.Brooch && Place != JewelryPlace.Charm;
         public bool IsSeal => Id == "seal_ring";
@@ -240,7 +252,7 @@ namespace Thatchwick.Core.Clothing
                     if (!TryParsePlace(d.place, out var place)) errors.Add($"takı {d.id}: yer '{d.place}' tanınmadı.");
                     if (!Enum.TryParse(d.skill, out SkillType skill)) skill = SkillType.Smithing;
                     if (content != null && !content.Items.Contains(d.item)) errors.Add($"takı {d.id}: eşya '{d.item}' yok.");
-                    var j = new JewelryDef { Id = d.id, ItemId = d.item, Place = place, Skill = skill, Level = Math.Max(1, d.level), Acquire = d.acquire ?? Array.Empty<string>() };
+                    var j = new JewelryDef { Id = d.id, ItemId = d.item, Place = place, Skill = skill, Level = Math.Max(1, d.level), Acquire = d.acquire ?? Array.Empty<string>(), Kind = string.IsNullOrEmpty(d.kind) ? d.id : d.kind, BaseStep = Math.Max(0, Math.Min(3, d.step)), Gem = d.gem };
                     cat._jewelry[j.Id] = j;
                     if (j.ItemId != null) cat._jewelryByItem[j.ItemId] = j;
                 }

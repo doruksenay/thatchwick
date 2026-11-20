@@ -187,6 +187,61 @@ namespace Thatchwick.Core.Tests
 
         // ---------- takı ----------
 
+        /// <summary>Altın tozu ve değerli taş takıları (karar 20.11.2026): temel takının etkisini daha güçlü taşır.</summary>
+        [Fact]
+        public void AltinVeTasliTakilar_EtkileriGuclu()
+        {
+            var db = Db();
+            foreach (var id in new[] { "jw_ring_gold", "jw_ring_gem", "jw_earring_gold", "jw_earring_gem", "jw_necklace_gem", "jw_evil_eye_gem" })
+            {
+                var recipe = db.Items.Get("item." + id);
+                Assert.NotNull(db.Clothing.JewelryByItem("item." + id));
+                Assert.True(recipe.Price > 100);
+            }
+            var s = Svc();
+            var plain = Person(1); var rich = Person(2);
+            Assert.Equal(EquipError.None, s.WearJewelry(plain, s.FromItem("item.jw_ring")));
+            Assert.Equal(EquipError.None, s.WearJewelry(plain, s.FromItem("item.jw_earring")));
+            Assert.Equal(EquipError.None, s.WearJewelry(plain, s.FromItem("item.jw_evil_eye")));
+            Assert.Equal(EquipError.None, s.WearJewelry(rich, s.FromItem("item.jw_ring_gem")));
+            Assert.Equal(EquipError.None, s.WearJewelry(rich, s.FromItem("item.jw_earring_gold")));
+            Assert.Equal(EquipError.None, s.WearJewelry(rich, s.FromItem("item.jw_evil_eye_gem")));
+            Assert.Equal(EquipError.None, s.WearJewelry(rich, s.FromItem("item.jw_necklace_gem")));
+
+            Assert.Equal(0.04, s.TradeBonus(plain), 6);    // bakır yüzük: basamak 1
+            Assert.Equal(0.10, s.TradeBonus(rich), 6);     // taşlı altın: etkili basamak 4
+            Assert.Equal(0.06, s.CourtBonus(plain), 6);
+            Assert.Equal(0.12, s.CourtBonus(rich), 6);     // altın küpe: basamak 3
+            Assert.Equal(0.9, s.AccidentFactor(plain), 6);
+            Assert.Equal(0.8, s.AccidentFactor(rich), 6);
+            Assert.Equal(0, s.JewelryJoy(plain));
+            Assert.Equal(ClothingService.MaxJewelryJoy, s.JewelryJoy(rich));   // gerdanlık 3 + altınlar, tavan 4
+
+            s.UpdateMoods(rich, false); s.UpdateMoods(plain, false);
+            Assert.True(rich.Mood.Has(ClothingService.JewelryFineMood));
+            Assert.False(plain.Mood.Has(ClothingService.JewelryJoyMood));
+
+            // Çıkarılan takı çekmeceye döner, başkası takabilir.
+            var ring = s.JewelryOwnedBy(rich).First(i => s.JewelryOf(i).Place == JewelryPlace.Hand);
+            s.TakeOffJewelry(rich, ring);
+            Assert.Contains(ring, s.UnwornJewelry());
+            Assert.Equal(0.0, s.TradeBonus(rich), 6);
+            Assert.Equal(EquipError.None, s.WearJewelry(plain, ring));
+            Assert.Equal(0.14, s.TradeBonus(plain), 6);    // bakır 0,04 + taşlı altın 0,10
+        }
+
+        [Fact]
+        public void NazarBoncugu_KazaOlasiliginiDusurur()
+        {
+            var inj = new InjurySystem(new Population(), 5);
+            var c = Person();
+            var chop = new InteractionDef { Id = "chop", Skill = SkillType.Woodcutting };
+            var def = inj.Defs.First();
+            double before = inj.Chance(c, chop, def, false);
+            inj.LuckFactor = _ => 0.8;
+            Assert.Equal(before * 0.8, inj.Chance(c, chop, def, false), 9);
+        }
+
         [Fact]
         public void Taki_EnCok5_IkiYuzuk_KeyifTavani4()
         {

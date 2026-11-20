@@ -76,6 +76,7 @@ namespace Thatchwick.Core.Content
                     RequiresIndoor = dto.requiresIndoor,
                     IsIceBox = dto.iceBox,
                     IsFishTrap = dto.fishTrap,
+                    IsSnare = dto.snare,
                     WindPower = dto.windPower,
                     WaterGate = dto.waterGate,
                     FillCapacity = Math.Max(0, dto.fillCapacity),
@@ -305,6 +306,9 @@ namespace Thatchwick.Core.Content
                             Collect = i.collect,
                             RequiresAnimal = i.requiresAnimal,
                             Tool = string.IsNullOrWhiteSpace(i.tool) ? null : i.tool,
+                            BestHourFrom = i.bestHours != null && i.bestHours.Length == 2 ? i.bestHours[0] : 0,
+                            BestHourTo = i.bestHours != null && i.bestHours.Length == 2 ? i.bestHours[1] : 0,
+                            BestHoursBonus = i.bestHoursBonus,
                             MoodId = string.IsNullOrWhiteSpace(i.moodId) ? null : i.moodId,
                             MoodText = i.moodText,
                             MoodValue = i.moodValue,
@@ -325,6 +329,7 @@ namespace Thatchwick.Core.Content
                             EatContents = i.eatContents,
                             HomeAction = string.IsNullOrWhiteSpace(i.homeAction) ? null : i.homeAction.Trim(),
                             SkillWork = string.IsNullOrWhiteSpace(i.skillWork) ? null : i.skillWork.Trim(),
+                            Chain = Blank(i.chain),
                             UpgradeId = string.IsNullOrWhiteSpace(i.upgrade) ? null : i.upgrade.Trim(),
                             TreeAction = string.IsNullOrWhiteSpace(i.treeAction) ? null : i.treeAction.Trim()
                         };
@@ -385,6 +390,7 @@ namespace Thatchwick.Core.Content
             ApplyAnimals(file.animals, db, errors);
             ApplyBuildParts(file.buildParts, db, errors);
             ApplyEffects(file.effects, db, errors);
+            ApplyChains(file.chains, db, errors);
 
             LifeContentMapper.Apply(file, db, errors);
             errors.AddRange(db.Validate());
@@ -615,6 +621,79 @@ namespace Thatchwick.Core.Content
         }
 
         // Yemek/içki etkileri ruh hali kataloğuna kaydedilir; etkileşimler "moodlet" alanıyla verir.
+        /// <summary>
+        /// Eylem zincirlerini kaydeder ve her etkileşime zincirini bağlar (belge 60): önce etkileşimin kendi "chain" alanı,
+        /// yoksa eşleme kuralı tutan ilk zincir. Zinciri olmayan etkileşim eskisi gibi tek pozda yapılır.
+        /// </summary>
+        private static void ApplyChains(ChainDto[] chains, ContentDatabase db, List<string> errors)
+        {
+            if (chains != null)
+                foreach (var c in chains)
+                {
+                    if (c == null || string.IsNullOrWhiteSpace(c.id)) { errors.Add("Zincirin kimliği boş."); continue; }
+                    var def = new ActionChainDef { Id = c.id.Trim() };
+                    bool bad = false;
+                    if (c.steps != null)
+                        foreach (var st in c.steps)
+                        {
+                            if (st == null || string.IsNullOrWhiteSpace(st.id)) { errors.Add($"{c.id}: adımın kimliği boş."); bad = true; continue; }
+                            if (st.share < 0f) { errors.Add($"{c.id}/{st.id}: pay negatif olamaz."); bad = true; continue; }
+                            string when = Blank(st.when), held = Blank(st.held);
+                            if (when != null && !ChainConditions.IsKnown(when)) { errors.Add($"{c.id}/{st.id}: bilinmeyen koşul '{when}'."); bad = true; continue; }
+                            if (held != null && held != "consume" && held != "produce" && !db.Items.Contains(held))
+                            { errors.Add($"{c.id}/{st.id}: elde tutulan '{held}' bulunamadı."); bad = true; continue; }
+                            def.Steps.Add(new ActionStepDef
+                            {
+                                Id = st.id.Trim(), Pose = Blank(st.pose), Sfx = Blank(st.sfx), Held = held,
+                                Share = st.share > 0f ? st.share : 1.0, When = when, Undress = st.undress
+                            });
+                        }
+                    bool anyUnconditional = false;
+                    foreach (var st in def.Steps) if (st.When == null) anyUnconditional = true;
+                    if (!anyUnconditional) { errors.Add($"{c.id}: en az bir koşulsuz adım olmalı."); bad = true; }
+                    if (c.match != null)
+                        foreach (var m in c.match)
+                        {
+                            if (m == null) continue;
+                            var match = new ChainMatch
+                            {
+                                Station = Blank(m.station), Category = Blank(m.category), Tag = Blank(m.tag), Flag = Blank(m.flag), IdPrefix = Blank(m.idPrefix)
+                            };
+                            if (match.Station != null && !db.Items.Contains(match.Station)) { errors.Add($"{c.id}: eşleme eşyası '{match.Station}' bulunamadı."); bad = true; continue; }
+                            if (match.Flag != null && !ChainFlags.IsKnown(match.Flag)) { errors.Add($"{c.id}: bilinmeyen eşleme bayrağı '{match.Flag}'."); bad = true; continue; }
+                            if (!string.IsNullOrWhiteSpace(m.need))
+                            {
+                                if (TryParseNeed(m.need, out var n)) match.Need = n;
+                                else { errors.Add($"{c.id}: bilinmeyen ihtiyaç '{m.need}'."); bad = true; continue; }
+                            }
+                            if (!string.IsNullOrWhiteSpace(m.skill))
+                            {
+                                if (Enum.TryParse(m.skill, true, out SkillType s) && Enum.IsDefined(typeof(SkillType), s)) match.Skill = s;
+                                else { errors.Add($"{c.id}: bilinmeyen beceri '{m.skill}'."); bad = true; continue; }
+                            }
+                            if (match.IsEmpty) { errors.Add($"{c.id}: boş eşleme kuralı her etkileşimi yakalar."); bad = true; continue; }
+                            def.Matches.Add(match);
+                        }
+                    if (bad) continue;
+                    try { db.Chains.Register(def); }
+                    catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException) { errors.Add(ex.Message); }
+                }
+
+            foreach (var item in db.Items.All)
+                foreach (var i in item.Interactions)
+                {
+                    i.ChainDef = null;
+                    if (i.Chain != null)
+                    {
+                        if (db.Chains.TryGet(i.Chain, out var named)) i.ChainDef = named;
+                        else errors.Add($"{item.Id}/{i.Id}: zincir '{i.Chain}' bulunamadı.");
+                        continue;
+                    }
+                    foreach (var c in db.Chains.All)
+                        if (c.MatchesAny(item, i)) { i.ChainDef = c; break; }
+                }
+        }
+
         private static void ApplyEffects(EffectDto[] effects, ContentDatabase db, List<string> errors)
         {
             if (effects == null) return;

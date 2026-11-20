@@ -192,6 +192,27 @@ namespace Thatchwick.Core.Tests
             Assert.True(wet > dry, $"yağmurlu gün daha çok mantar vermeli: kuru {dry}, yağmurlu {wet}");
         }
 
+        /// <summary>
+        /// Boya düğümleri (cehri çalısı, ceviz kabuğu, likenli kaya) haritaya elle dizilmez; ormanda mevsiminde
+        /// kendiliğinden çıkar. Ölü özellik taramasında "yerleştirilmemiş" göründükleri için bu test eklendi (20.11.2026).
+        /// </summary>
+        [Fact]
+        public void BoyaDugumleri_OrmandaKendiligindenCikar()
+        {
+            var db = Real();
+            var world = new WorldState(new GridMap(Regions.WorldWidth, Regions.WorldHeight));
+            var forage = new ForageSystem(world, db, seed: 5);
+            for (int day = 0; day < 20; day++) forage.OnNewDay(Season.Autumn);
+            foreach (var (node, product) in new[] { ("item.forage_buckthorn", "item.weld_berry"), ("item.forage_walnut_hull", "item.walnut_hull"), ("item.forage_lichen", "item.lichen") })
+            {
+                var def = db.Items.Get(node);
+                Assert.True(forage.Count(def) >= 1, $"{node} ormanda çıkmadı");
+                foreach (var it in world.Items) if (it.Def == def) Assert.True(Regions.Forest.Contains(it.Position), $"{node} orman dışında: {it.Position}");
+                Assert.Contains(def.Interactions, i => i.Produce.Exists(p => p.ItemId == product));
+                Assert.Contains(db.Items.All, d => d.Interactions.Exists(i => i.IsCraft && i.AllConsumed().Any(m => m.ItemId == product)));   // boya tarifinde kullanılıyor
+            }
+        }
+
         // ---------- yeni içerik ----------
 
         [Fact]

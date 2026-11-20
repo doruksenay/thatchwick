@@ -15,6 +15,10 @@ namespace Thatchwick.Core.Life
         public string Reason;
         public NeedType? Need;
         public bool Walking;
+        /// <summary>Zincirin şu anki adımı (belge 60); arayüz metni "chain.step.&lt;StepId&gt;" anahtarından. Zincirsiz işte null.</summary>
+        public string StepId;
+        /// <summary>Adımın kare anahtarı; karesi yoksa görünüm Icon'a düşer.</summary>
+        public string StepPose;
         public string Full => string.IsNullOrEmpty(Reason) ? Text : $"{Text} — {Reason}";
     }
 
@@ -77,6 +81,8 @@ namespace Thatchwick.Core.Life
             var info = DescribeJob(job, world);
             info.Walking = job.Kind == JobKind.MoveTo || !runner.IsUsingItem;
             if (runner.IsFetchingWater) { info.Icon = "work"; info.Text = "Kovayla su taşıyor (" + info.Text + ")"; }
+            var step = runner.CurrentStep;
+            if (step != null) { info.StepId = step.Id; info.StepPose = step.Pose; }
             return info;
         }
 
@@ -96,6 +102,9 @@ namespace Thatchwick.Core.Life
                     info.Text = $"{inter.DisplayName} ({item.Def.DisplayName})";
                     info.Icon = inter.RestoresNeed ? NeedIcon(inter.Need) : SkillIcon(inter.Skill);
                     if (inter.Id == "water" || inter.Id == "water_pot") info.Icon = "water";   // 018c sulama
+                    // Hasat ve meyve toplama kendi pozunu oynar (belge 59; kare gelene kadar oyun katmanı çapa pozuna düşer).
+                    if (item.Def.IsCrop && inter.RequiresGrown && inter.RemovesItem && inter.Produce.Count > 0) info.Icon = "reap";
+                    else if (inter.TakesFruit && item.IsPlant) info.Icon = "pick";
                     if (!job.Reason.HasValue && inter.RestoresNeed) info.Need = inter.Need;
                     break;
                 case JobKind.Social:
@@ -141,6 +150,7 @@ namespace Thatchwick.Core.Life
                         case TileAction.Light: info.Text = "Kandil yakıyor"; break;
                         case TileAction.Sow: info.Icon = "sow"; info.Text = "Ekiyor"; break;
                         case TileAction.Till: info.Icon = "farm"; info.Text = "Çapalıyor"; break;
+                        case TileAction.PutBack: info.Icon = "pickup"; info.Text = "Düşen eşyayı yerine koyuyor"; break;
                         case TileAction.Stock: info.Text = "Gölete balık bırakıyor"; break;
                         default: info.Text = "Çalışıyor"; break;
                     }

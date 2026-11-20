@@ -58,6 +58,7 @@ namespace Thatchwick.Game
             public float LastBeat;
             public object WorkJob;
             public string WorkIcon;
+            public ActionStepDef WorkStep;
             public Sprite ActionFrame;
             // Elde tutulan yiyecek (yemek animasyonu): neyi yiyorsa onun ikonu elin üstünde.
             public SpriteRenderer Held;
@@ -83,6 +84,8 @@ namespace Thatchwick.Game
             ["sow"] = new[] { "sow", "hoe" },     // 018c
             ["water"] = new[] { "water" },
             ["farm"] = new[] { "hoe", "sow" },
+            ["reap"] = new[] { "reap", "hoe" },   // 550: orakla biçme; kare gelene kadar çapa
+            ["pick"] = new[] { "pick", "hoe" },   // 550: meyve toplama
             ["work"] = new[] { "work" },
             // 018e (kabul 19.11.2026): sosyal, bakım, sevgi, eğlence, balık; maden üçlüsü.
             ["social"] = new[] { "social" },
@@ -93,6 +96,10 @@ namespace Thatchwick.Game
             ["mine"] = new[] { "mine_dig" },
             ["mine_support"] = new[] { "mine_support" },
             ["mine_bucket"] = new[] { "mine_bucket" },
+            // Easter egg sahneleri (belge 55; işler 511-512): kareler gelene kadar en yakın eldeki kare oynar.
+            ["pickup"] = new[] { "pickup", "care", "sow" },   // yere düşen süsü eğilip alır
+            ["top"] = new[] { "top", "fun" },                 // topaç şovu
+            ["howl"] = new[] { "howl", "fun" },               // dolunayda uluma
         };
 
         /// <summary>
@@ -140,6 +147,30 @@ namespace Thatchwick.Game
             if (frame == null && actor.Held != null) actor.Held.enabled = false;
             return frame;
         }
+
+        /// <summary>Zincir adımının kendi karesi (adımın "pose" anahtarı); karesi yoksa null.</summary>
+        private Sprite StepFrameFor(Actor actor, ActionStepDef step, int seed)
+        {
+            if (step == null || step.Pose == null) return null;
+            float cyc = ActionCycle(seed);
+            var f = IsoArt.CharacterAction(actor.Character, step.Pose, actor.Direction, cyc);
+            if (f == null && StepPoseStandIns.TryGetValue(step.Pose, out var standIn))
+                f = IsoArt.CharacterAction(actor.Character, standIn, actor.Direction, cyc);
+            return f;
+        }
+
+        /// <summary>
+        /// Adım pozunun kendi karesi gelene kadar yerine oynayan, ona en yakın eldeki kare (belge 60 §5.1). Listede olmayan
+        /// poz etkileşimin eski simgesine düşer. Yeni kare seti gelince buradan satırı silmek gerekmez: önce kendi karesi denenir.
+        /// </summary>
+        private static readonly Dictionary<string, string> StepPoseStandIns = new Dictionary<string, string>
+        {
+            ["stir"] = "cook", ["taste"] = "cook", ["ladle"] = "cook",
+            ["chop_knife"] = "craft_hand", ["knead"] = "craft_hand", ["sew"] = "craft_hand", ["spin"] = "craft_hand",
+            ["weave"] = "craft_hand", ["scrape"] = "craft_hand", ["write"] = "craft_hand", ["churn"] = "craft_hand",
+            ["saw"] = "craft_hammer", ["plane"] = "craft_hammer", ["chisel"] = "craft_hammer", ["pound"] = "craft_hammer",
+            ["reap"] = "hoe", ["thresh"] = "hoe", ["bend"] = "sow", ["milk"] = "care",
+        };
 
         private Sprite ActionFrameFor(Actor actor, string icon, int seed)
         {
@@ -692,6 +723,11 @@ namespace Thatchwick.Game
             _input.Init(cam, _regional ? Iso.RectBounds(farm.X, farm.Y, farm.W, farm.H) : Iso.MapBounds(map.Width, map.Height));
             _input.IsOverUi = IsOverHud;
             _input.Tapped += OnTapped;
+            // Belge 59 karar 2: olgun ekine tek dokunuş biçer; uzun basış etkileşim menüsünü açar; olgun ekinden başlayan
+            // sürükleme kamerayı kaydırmaz, geçilen olgun ekinleri hasada ekler.
+            _input.LongPressed += pos => OnTapped(pos, true);
+            _input.BeginsPaint = pos => !_buildMode.Active && !_menuOpen && RipeCropAt(pos) != null;
+            _input.Painted += OnHarvestPaint;
 
             _household = loaded != null ? loaded.Household : new Household(100);
             _account = loaded != null ? loaded.Account : new AccountProgress();
@@ -830,8 +866,11 @@ namespace Thatchwick.Game
             SetupFarm();
             _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
             // Easter egg'ler (belge 55): Core anahtarlı metin yollar, burada çözülür ve bildirim akışına yazılır.
+            // +18 paketi açıksa satırın küfürlü çeşidi ("<anahtar>.adult") yazılır; çeşidi olmayan satır aynen kalır.
             _life.OddityLine += (text, who) => _life.Say(
-                VivText.Resolve(GameLocalization.Current, text, id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id), NoticeLevel.Info, who);
+                VivText.Resolve(GameLocalization.Current,
+                    OddityLines.ForPack(text, Thatchwick.Core.Content.ContentPacks.Adult, GameLocalization.Current.Has),
+                    id => _content.Items.TryGet(id, out var d) ? d.DisplayName : id), NoticeLevel.Info, who);
             _life.RealNow = () => System.DateTime.Now;   // 1 Nisan easter egg'i gerçek tarihe bakar
             _life.Oddities.Discovered += id => _life.Say(OddityIds.IsAchievement(id)
                 ? GameLocalization.T("ui.oddity.achievement", ("name", OddityName(id)))
@@ -1862,7 +1901,47 @@ namespace Thatchwick.Game
             ShowMessage($"{character.Name} {_dynasty.SettlementName} yerleşimine geldi");
         }
 
-        private void OnTapped(Vector2 screenPos)
+        private void OnTapped(Vector2 screenPos) => OnTapped(screenPos, false);
+
+        /// <summary>Ekran konumundaki olgun tarla ekini (yoksa null).</summary>
+        private ItemInstance RipeCropAt(Vector2 screenPos)
+        {
+            var cam = Camera.main;
+            if (cam == null || _world == null || _view == null || Commander == null) return null;
+            var world = cam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
+            var item = _world.GetItemAt(_view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f))) ?? _world.GetItemAt(_view.WorldToTile(world));
+            return HarvestOrders.IsRipeCrop(item) ? item : null;
+        }
+
+        // Sürükleyerek hasat: parmağın geçtiği her olgun ekin emre eklenir.
+        private void OnHarvestPaint(Vector2 screenPos)
+        {
+            if (Commander == null || _dynastyEnded || _life == null) return;
+            var crop = RipeCropAt(screenPos);
+            if (crop == null) return;
+            bool first = _life.Fields.PendingCount(Commander.Character) == 0;
+            if (first) Commander.Runner.Cancel();
+            if (_life.Fields.Add(Commander.Character, crop) && first)
+                ShowMessage(GameLocalization.T("ui.harvest.paint", ("who", Commander.Character.Name)));
+        }
+
+        // Olgun ekine tek dokunuş: menü açılmaz, hasat emredilir (Çiftçilik 3'te bitişik olgun ekinlerin hepsi).
+        private bool TryOneTapHarvest()
+        {
+            ItemInstance crop = null;
+            foreach (var o in _menuOptions)
+                if (o.Item != null && HarvestOrders.IsRipeCrop(o.Item)) { crop = o.Item; break; }
+            if (crop == null || _life == null) return false;
+            string why = Commander.Runner.WhyCannotStart(crop, HarvestOrders.HarvestOf(crop.Def));
+            if (why != null) { ShowMessage(why); return true; }
+            Commander.Runner.Cancel();
+            int n = _life.Fields.OrderFrom(Commander.Character, crop);
+            if (n > 1) ShowMessage(GameLocalization.T("ui.harvest.field", ("who", Commander.Character.Name), ("n", n)));
+            else if (n == 1) ShowMessage(GameLocalization.T("ui.harvest.one", ("who", Commander.Character.Name), ("crop", crop.Def.DisplayName)));
+            return true;
+        }
+
+        private void OnTapped(Vector2 screenPos, bool forceMenu)
         {
             var cam = Camera.main;
             if (cam == null || Commander == null || _dynastyEnded) return;
@@ -1900,7 +1979,8 @@ namespace Thatchwick.Game
                 if (!Commander.Runner.Queue.TryEnqueue(Job.OnTile(tile, action))) ShowMessage("İş sırası dolu.");
                 return;
             }
-            if (_menuOptions.Count == 0) { Commander.Runner.Command(Job.MoveTo(tile)); return; }
+            if (!forceMenu && TryOneTapHarvest()) return;
+            if (_menuOptions.Count == 0) { _life?.Fields.Cancel(Commander.Character); Commander.Runner.Command(Job.MoveTo(tile)); return; }
             if (_menuOptions.Count == 1) { RunOption(_menuOptions[0]); return; }
 
             // Birden çok seçenek: dokunulan yerde menü aç.
@@ -2003,6 +2083,21 @@ namespace Thatchwick.Game
                     });
                 }
             }
+            // Kedinin yere düşürdüğü süs (belge 55, Kedi Alex): karakter eğilip alır, eski yerine koyar.
+            var fallen = _life.Scenes.KnockedAt(tile);
+            if (fallen != null)
+            {
+                var fallenTile = tile;
+                var fallenItem = _world.GetItem(fallen.ItemId);
+                string fallenName = fallenItem != null ? fallenItem.Def.DisplayName : "";
+                names.Add(GameLocalization.T("ui.oddity.fallen", ("item", fallenName)));
+                _menuOptions.Add(new MenuOption
+                {
+                    Label = $"{GameLocalization.T("ui.oddity.put_back")} ({fallenName})",
+                    Blocked = _farmWork.CanDo(Commander.Character, fallenTile, TileAction.PutBack),
+                    Run = () => Commander.Runner.Command(Job.OnTile(fallenTile, TileAction.PutBack))
+                });
+            }
             AddMineOptions(tile, names);
             _menuTitle = string.Join(", ", names);
         }
@@ -2040,6 +2135,7 @@ namespace Thatchwick.Game
         {
             if (o.Interaction != null && (o.Interaction.Skill == SkillType.Fishing || o.Interaction.HomeAction == "catch")) OrderFishing();
             if (o.Run != null) { if (o.Blocked == null) o.Run(); else ShowMessage(o.Blocked); return; }
+            _life?.Fields.Cancel(Commander.Character);   // başka bir emir: bekleyen hasat emri düşer
             Commander.Runner.Command(Job.UseItem(o.Item.Id, o.Interaction.Id));
             ShowMessage($"{Commander.Character.Name}: {o.Interaction.DisplayName} ({o.Item.Def.DisplayName})");
         }
@@ -2155,7 +2251,7 @@ namespace Thatchwick.Game
                 }
                 if (act == AnimalAction.Pet || act == AnimalAction.Brush) c.AddMoodlet(MoodCatalog.PetLove);
             };
-            _storagePanel = new StoragePanel(_life.Spoilage, _household, _content);
+            _storagePanel = new StoragePanel(_life.Spoilage, _household, _content) { Aging = _life.Aging };
             _farmWork = new FarmWork(_world)
             {
                 HoeSpeed = c => _life.Tools.SpeedFor("hoe"), House = _household, Content = _content,
@@ -2163,6 +2259,9 @@ namespace Thatchwick.Game
             };
             _farmWork.Build = _buildService;
             _life.Attach(_farmWork);   // kıyıdan ilk balık hatırası (D3b)
+            // Hasat emirleri: sıradaki ekin karakterin iş sırasına eklenir; emir bitince kısa bildirim.
+            _life.Fields.Command = (c, job) => { var actor = _actors.Find(a => a.Character == c); return actor != null && actor.Runner.Queue.TryEnqueue(job); };
+            _life.Fields.Finished += (c, n) => ShowMessage(GameLocalization.T("ui.harvest.done", ("who", c.Name), ("n", n)));
             _farmWork.Plants = _plants;
             _farmWork.Mine = new MineWork(_mines);
             _farmWork.Sown += (c, t, seed) => _account.Count("act:sow");
@@ -2464,7 +2563,7 @@ namespace Thatchwick.Game
                 _menuOptions.Add(new MenuOption
                 {
                     Label = $"{GameLocalization.T("ui.oddity.kiss_frog")} ({v.Species.Name})",
-                    Run = () => _life.KissFrog(c.Character)
+                    Run = () => _life.KissFrog(c.Character, false, id)
                 });
             if (v.Species.Huntable)
                 _menuOptions.Add(new MenuOption
@@ -2585,7 +2684,7 @@ namespace Thatchwick.Game
 
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
-            _mirror != null || _settingsOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
+            _mirror != null || _settingsOpen || _betOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
             || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
             || (_homePanel != null && _homePanel.Active) || (_vivView != null && _vivView.Active) || (_familyPanel != null && _familyPanel.Active)
             || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
@@ -2841,8 +2940,16 @@ namespace Thatchwick.Game
 
         private void SimAnimalViews()
         {
-            if (_animalViews == null) _animalViews = new AnimalViews(transform, _view, LookOf, RiderView);
+            if (_animalViews == null)
+            {
+                _animalViews = new AnimalViews(transform, _view, LookOf, RiderView);
+                // Easter egg sahneleri (belge 55): pozlar, kurbağanın tacı.
+                _animalViews.PoseOf = a => _life?.PoseOf(a);
+                _animalViews.WildFx = id => _life?.Scenes.WildFxOf(id);
+                _animalViews.ItemTile = id => _world.GetItem(id)?.Position;
+            }
             _animalViews.Sync(_animals, _life?.Roamers);
+            _animalViews.SyncWalkers(_life?.Walkers);
         }
 
         private void SimCommander()
@@ -2938,8 +3045,15 @@ namespace Thatchwick.Game
                 }
                 string icon = actor.WorkIcon;
                 bool beats = icon == "chop" || icon == "farm" || icon == "craft" || icon == "cook" || icon == "work";
+                // Zincir adımı (belge 60): adımın kendi karesi varsa o oynar; yoksa etkileşimin eski simgesine düşülür.
+                var step = actor.Runner.CurrentStep;
+                if (!ReferenceEquals(step, actor.WorkStep))
+                {
+                    actor.WorkStep = step;
+                    if (step != null && step.Sfx != null) Sfx(step.Sfx, pos, actor.Character.Id);
+                }
                 // Gerçek etkileşim kareleri (018c-e) varsa onlar oynar; yoksa kodla vuruş.
-                actor.ActionFrame = UpdateHeld(actor, icon, seed) ?? ActionFrameFor(actor, icon, seed);
+                actor.ActionFrame = UpdateHeld(actor, icon, seed) ?? StepFrameFor(actor, step, seed) ?? ActionFrameFor(actor, icon, seed);
                 if (actor.ActionFrame != null && _juice != null)
                 {
                     float cyc = ActionCycle(seed);
@@ -2991,7 +3105,10 @@ namespace Thatchwick.Game
             // Gerçek görsel: yürüdüğü yöne bakar, yaş evresi değişince seti değişir.
             // Kare animasyonu (018a/018b) varsa yürürken onu oynat: tam döngü = iki adım (WalkPhase iki π).
             var walkFrame = moving ? IsoArt.CharacterWalk(actor.Character, actor.Direction, actor.WalkPhase / (2f * Mathf.PI)) : null;
-            var real = walkFrame ?? ((actor.Runner.IsUsingItem || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
+            // Easter egg gösterisi (topaç şovu, uluma; belge 55): dururken kısa süre kendi karesini oynar.
+            string sceneKey = moving || actor.Character.Stage == AgeStage.Baby ? null : _life.Scenes.CharacterSceneOf(actor.Character.Id);
+            var sceneFrame = sceneKey != null ? ActionFrameFor(actor, sceneKey, seed) : null;
+            var real = walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
@@ -3151,6 +3268,7 @@ namespace Thatchwick.Game
                 }
             }
             DrawOddities();   // Tuhaflıklar (belge 55): ilk tuhaflıkla açılır
+            DrawBetEntry();
             foreach (var a in _animals.Animals)
             {
                 ContestKind kind;
@@ -3264,7 +3382,7 @@ namespace Thatchwick.Game
             { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
             DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
-            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); } finally { GUI.skin = prevMenuSkin; } }
+            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); if (_betOpen) DrawBetWindow(s); } finally { GUI.skin = prevMenuSkin; } }
 
             // Sol panel (görsel analiz, 18.11.2026): varsayılan küçük; ihtiyaç listesi, beceriler ve ayarlar "Ayrıntı" (Tab) altında.
             // UI Toolkit HUD açıkken (F4) küçük bölüm orada çizilir; IMGUI yalnızca açılmış "Ayrıntı" alanını çizer.

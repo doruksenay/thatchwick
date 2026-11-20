@@ -91,6 +91,16 @@ namespace Thatchwick.Core.Audio
         public const string InnDonate = "inn.donate";             // B foley
         public const string StingFeast = "sting.feast";           // C stinger
 
+        // İzlenen eylem zincirleri: mutfak, yıkanma, giyinme (belge 60; adımın "sfx" alanı)
+        public const string KitchenChop = "kitchen.chop";     // A tools
+        public const string KitchenStir = "kitchen.stir";     // A foley
+        public const string KitchenKnead = "kitchen.knead";   // B foley
+        public const string KitchenLadle = "kitchen.ladle";   // B foley
+        public const string FireKindle = "fire.kindle";       // B foley
+        public const string WhistleTune = "whistle.tune";     // B voice
+        public const string BathSplash = "bath.splash";       // B foley
+        public const string ClothRustle = "cloth.rustle";     // B foley
+
         // Olay vuruşları
         public const string StingLevelUp = "sting.levelup";   // C stinger
         public const string StingBirth = "sting.birth";       // C stinger

@@ -303,6 +303,17 @@ namespace Thatchwick.Game
                 }
                 if (item.IsDecor)
                 {
+                    // Kedinin yere düşürdüğü süs (belge 55, Kedi Alex): yerinde değil, yanındaki karoda yan yatmış çizilir.
+                    var fallen = _life?.Scenes.KnockedOf(item.Id);
+                    if (fallen != null)
+                    {
+                        var fpos = _view.TileToWorld(fallen.Floor);
+                        var fallenArt = IsoArt.Item(item, out _);
+                        var fsr = AddItemSprite(item, fpos + new Vector3(0f, 0.12f, 0f), color, fallenArt != null ? 1f : 0.3f, Iso.SortOrder(fpos.y, 0, level) + 1, fallenArt);
+                        fsr.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+                        fsr.color = ConditionTint(item, fallenArt != null ? Color.white : color);
+                        return;
+                    }
                     var parent = _world.GetItem(item.ParentId.Value);
                     if (parent == null || !parent.TryGetSlotPosition(item.SlotId, out float gx, out float gy)) return;
                     if (parent.IsWallMounted)

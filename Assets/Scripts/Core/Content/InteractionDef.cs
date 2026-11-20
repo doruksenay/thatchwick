@@ -66,6 +66,11 @@ namespace Thatchwick.Core.Content
         public List<NeedRestoreDef> ExtraRestore { get; set; } = new List<NeedRestoreDef>();
         /// <summary>axe/hoe/saw: bu işin hızı alet kademesine bağlı.</summary>
         public string Tool { get; set; }
+        /// <summary>En iyi saat aralığı (ör. safran 5-10): bu saatlerde yapılırsa ilk üründen BestHoursBonus kadar fazla çıkar. İkisi de 0 ise kural yok.</summary>
+        public int BestHourFrom { get; set; }
+        public int BestHourTo { get; set; }
+        public int BestHoursBonus { get; set; }
+        public bool HasBestHours => BestHourTo > BestHourFrom && BestHoursBonus > 0;
         /// <summary>Katalog dışı anlık moodlet (kimlik, metin, değer, gün); Moodlet kataloğa başvurur.</summary>
         public string MoodId { get; set; }
         public string MoodText { get; set; }
@@ -184,6 +189,11 @@ namespace Thatchwick.Core.Content
             || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
             || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter
             || RepairMaterial != null || Polish || Embellish || CollectContents || FillDecor || EatContents || HomeAction != null || TreeAction != null;
+        /// <summary>Açıkça verilen eylem zinciri kimliği (belge 60); boşsa eşleme kuralı bağlar.</summary>
+        public string Chain { get; set; }
+        /// <summary>İçerik yüklenince çözülen zincir; yoksa null (iş tek pozda yapılır).</summary>
+        public ActionChainDef ChainDef { get; set; }
+
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;
 

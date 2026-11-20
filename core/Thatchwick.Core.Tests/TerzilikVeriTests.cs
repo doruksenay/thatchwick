@@ -42,7 +42,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(6, baby);
             int child = cat.Models.Count(m => m.Ages.Contains(AgeStage.Child));
             Assert.True(child >= 20, $"çocuk seti {child}");
-            Assert.Equal(9, cat.JewelryCount);   // 8 takı + mühür yüzüğü (yüzük çeşidi)
+            Assert.Equal(15, cat.JewelryCount);   // 8 takı + mühür yüzüğü + 6 altın ve taşlı tür (20.11.2026)
             Assert.Equal(32, cat.InSlot(ClothingSlot.Head).Count(m => !m.Ages.Contains(AgeStage.Baby) || m.Id == "baby_bonnet"));
         }
 

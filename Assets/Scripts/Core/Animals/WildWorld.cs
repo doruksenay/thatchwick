@@ -188,20 +188,46 @@ namespace Thatchwick.Core.Animals
             return r;
         }
 
-        /// <summary>Günlük tuzak kontrolü: her kement (en çok 3) tuzağa düşen türlerden birini yakalayabilir.</summary>
-        public List<HuntResult> CheckSnares(Season season, int snares, Character hunter, Household house)
+        /// <summary>Arsadaki kement yabandakinin yarısı kadar tutar: evin yanına av az gelir.</summary>
+        public const double HomeSnareFactor = 0.5;
+        /// <summary>Kementin kurulabildiği yaban bölgeleri (şehir, yol ve deniz kıyısı hariç).</summary>
+        public static readonly string[] SnareRegions = { "forest", "lake", "marsh", "hill", "slopes" };
+
+        public static bool IsSnareGround(GridMap map, GridPos p)
+        {
+            if (!Regions.IsRegional(map)) return false;
+            var region = Regions.At(p);
+            return region != null && Array.IndexOf(SnareRegions, region.Id) >= 0;
+        }
+
+        /// <summary>
+        /// Günlük tuzak kontrolü: haritaya kurulu her boş kement (en çok 3) tuzağa düşen türlerden birini yakalayabilir.
+        /// Av haneye kendiliğinden gelmez: tuzakta bekler, biri gidip toplar. Dolu tuzak yeniden tutmaz.
+        /// </summary>
+        public List<HuntResult> CheckSnares(Season season, IEnumerable<ItemInstance> snares, Character hunter)
         {
             var results = new List<HuntResult>();
             var pool = new List<WildSpecies>();
             foreach (var s in WildCatalog.All)
                 if (s.Trappable && (s.Seasons == null || Array.IndexOf(s.Seasons, season) >= 0)) pool.Add(s);
-            if (pool.Count == 0) return results;
-            for (int i = 0; i < Math.Min(MaxSnares, snares); i++)
+            if (pool.Count == 0 || snares == null) return results;
+            int used = 0;
+            foreach (var snare in snares)
             {
+                if (snare == null || snare.IsDecor || !snare.Def.IsSnare) continue;
+                if (used++ >= MaxSnares) break;
+                if (snare.StockTotal > 0) continue;                                                   // dolu: önce toplanmalı
+                if (!IsSnareGround(_map, snare.Position) && _rng.NextDouble() >= HomeSnareFactor) continue;
                 var s = pool[_rng.Next(pool.Count)];
                 var r = Hunting.Try(_rng, s.Id, HuntMethod.Trap, hunter);
                 if (!r.Success) continue;
-                Give(r, house, hunter, 1);
+                int level = hunter?.Skills.GetLevel(SkillType.Hunting) ?? 1;
+                foreach (var (id, n) in new[] { (r.Meat, r.MeatCount), (r.Hide, r.HideCount) })
+                {
+                    if (id == null || n <= 0) continue;
+                    for (int u = 0; u < n; u++)   // tuzak avı bir basamak düşük kalite (belge 53 §4.3)
+                        AnimalSystem.PutStock(snare, ItemKey.StockKey(id, Math.Max(0, ItemQuality.Gathered(level, _rng) - 1)), 1);
+                }
                 Journal?.Mark(s.Id, JournalMark.Hunted);
                 results.Add(r);
             }

@@ -72,6 +72,11 @@ namespace Thatchwick.Core.Tests
             Assert.True(r.Ok, r.Reason);
             Assert.Equal(before - price, house.Akce);
             Assert.True(animals.Animals.Last().IsHeritage);
+            // Panayır damızlığı Soylu gelir (belge 29); satış değeri soyla katlanır.
+            var bought = animals.Animals.Last();
+            Assert.Equal(Thatchwick.Core.Animals.AnimalLineage.Noble, bought.Lineage);
+            int plain = (int)System.Math.Floor(bought.Species.Price * AnimalSystem.SellRatio);
+            Assert.True(AnimalSystem.SellValue(bought) > plain * 2, "Soylu hayvanın satış değeri köy hayvanının iki katından fazla olmalı");
         }
 
         [Fact]

@@ -53,6 +53,8 @@ namespace Thatchwick.Core.Animals
 
         internal GridPos Target;
         internal double WaitDays;
+        /// <summary>Sahne için gönderildiği yere varınca bu kadar bekler (öküz bakışı, kutu kedisi; belge 55). 0: olağan bekleme.</summary>
+        internal double SceneWaitDays;
         // Oda ve otlak içinde yürüyüş yolu (hedefe kadar karolar).
         internal List<GridPos> Path;
 

@@ -13,6 +13,8 @@ namespace Thatchwick.Core.Life.Requests
         public int nextId;
         public long seasonPosted = -1;
         public int playerScore;
+        /// <summary>Tellalın son turu (gün); eski kayıtta -1.</summary>
+        public double criedAt = -1;
         public RequestEntrySave[] requests;
         public int[] memoryKeys, memoryValues;
         public int[] rivalKeys, rivalValues;

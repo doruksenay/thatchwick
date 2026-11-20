@@ -59,6 +59,8 @@ namespace Thatchwick.Core.Life
         // Köy ve hanedan katmanı (Adım 38-41)
         public VillagerService Villagers { get; }
         public ToolService Tools { get; }
+        /// <summary>Hasat emirleri: tek dokunuş, sürükleme, tarlayı biç, tırpan (belge 59).</summary>
+        public Thatchwick.Core.Work.HarvestOrders Fields { get; }
         public ProjectService Projects { get; }
         public GoalService Goals { get; }
 
@@ -170,6 +172,7 @@ namespace Thatchwick.Core.Life
             Aging.Matured += (id, q, n) => { if (q >= ItemQuality.Heirloom) Say(LocText.Of("quality.n.grandfather_wine", ("n", n), ("item", id)), NoticeLevel.Info); };
             Forage = seed != 0 ? new ForageSystem(world, content, Seeds.Derive(seed, 2)) : new ForageSystem(world, content);
             Villagers = seed != 0 ? new VillagerService(content, population, house, clock, Seeds.Derive(seed, 3)) : new VillagerService(content, population, house, clock);
+            Fields = new Thatchwick.Core.Work.HarvestOrders(world);
             Tools = new ToolService(content, house)
             {
                 AccountLevel = () => AccountLevel != null ? AccountLevel() : int.MaxValue,
@@ -262,6 +265,8 @@ namespace Thatchwick.Core.Life
                 ToolSpeed = id => Tools.SpeedFor(id),
                 Notify = (text, id) => Say(text, NoticeLevel.Warning, id)
             };
+            Injuries.LuckFactor = JewelryLuck;          // nazar boncuğu (takı işlevi)
+            Villagers.CourtBonus = JewelryCourtBonus;   // küpe (takı işlevi)
             Duties = new TimedDutyService(population, house, content, seed != 0 ? Seeds.Derive(seed, 17) : 311)
             {
                 Now = () => Clock.TotalDays,
@@ -298,6 +303,7 @@ namespace Thatchwick.Core.Life
             Requests = new Thatchwick.Core.Life.Requests.RequestService(population, house, content, Villagers, Houses, seed != 0 ? Seeds.Derive(seed, 18) : 46)
             {
                 Now = () => Clock.TotalDays,
+                CrierEnabled = true,
                 DaysPerSeason = clock.Config.DaysPerSeason,
                 MarketDay = () => Festivals.IsMarketDayToday,
                 Legacy = Legacy,
@@ -405,6 +411,7 @@ namespace Thatchwick.Core.Life
             population.Content = content;
             population.Village = Village;
             population.MemberDied += OnMemberDied;
+            WireOddScenes();          // haritada görünen sahneler (belge 55)
             WireOddityEvents(seed);   // küçük easter egg'ler (belge 55); bütün alt sistemler kurulduktan sonra
         }
 
@@ -617,7 +624,7 @@ namespace Thatchwick.Core.Life
         }
 
         public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction + SkillSpoilReduction());
-        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus() + PersuadeBonus() + TradeCartBonus());
+        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus() + PersuadeBonus() + TradeCartBonus() + JewelryTradeBonus());
 
         /// <summary>Gönül kazanma 8 "İkna et": hanede ikna edici biri varsa o gün satış %5 iyi (belge 45).</summary>
         public const double PersuadeSellBonus = 0.05;
@@ -791,6 +798,7 @@ namespace Thatchwick.Core.Life
             fx.DayIndex = () => Clock.DayIndex;
             fx.Year = () => (int)(Clock.DayIndex / Math.Max(1, Clock.Config.DaysPerYear)) + 1;
             fx.Today = () => Clock.TotalDays;
+            fx.HourOfDay = () => Clock.DayFraction * 24.0;
             fx.FamilyRecipe = (c, skill) =>
             {
                 var r = c != null ? Upbringing.Recipes.OldestKnown(c.Id, skill) : null;
@@ -897,7 +905,19 @@ namespace Thatchwick.Core.Life
             Contests.Finished += (r, a, h) => Say($"{h.Name}: {r.Summary}" + (r.PrizeAkce > 0 ? $" Ödül {r.PrizeAkce} akçe." : ""), r.Won ? NoticeLevel.Info : NoticeLevel.Info, h.Id);
             // Yarışmalar şenlik günü koşar (29-4.1).
             Festivals.Celebrated += (f, n) =>
-                Contests.RunFestival(f.Id, (int)(Clock.DayIndex / Clock.Config.DaysPerYear), id => FindAnimal(animals, id), Population.Find, House);
+            {
+                var card = RaceCardFor(f.Id, Clock.DayIndex);   // kart yarıştan önce kurulur (kayıtlar koşunca silinir)
+                var results = Contests.RunFestival(f.Id, (int)(Clock.DayIndex / Clock.Config.DaysPerYear), id => FindAnimal(animals, id), Population.Find, House);
+                if (card == null) return;
+                int winner = 0;
+                foreach (var e in _raceWinners) { winner = e; break; }
+                _raceWinners.Clear();
+                Bets.Resolve(card, winner, House);
+            };
+            Contests.Finished += (r, a, h) => { if (r.Kind == ContestKind.HorseRace && r.Won) _raceWinners.Add(a.Id); };
+            Bets.Settled += o => Say(o.Won
+                ? LocText.Of("bet.n.won", ("horse", o.Winner), ("stake", o.Bet.Stake), ("payout", o.Payout))
+                : LocText.Of("bet.n.lost", ("horse", o.Bet.RunnerName), ("winner", o.Winner), ("stake", o.Bet.Stake)), NoticeLevel.Info);
             Wolves.Raided += r =>
             {
                 if (r.Pack == 0) return;
@@ -925,6 +945,37 @@ namespace Thatchwick.Core.Life
         private int _wolfSeed = 113;
         /// <summary>Yarışma kayıtları ve şenlik günü simülasyonu (29-4).</summary>
         public ContestBook Contests { get; } = new ContestBook();
+        /// <summary>At yarışı bahisleri (+18 paketi; karar 20.11.2026).</summary>
+        public RaceBets Bets { get; } = new RaceBets();
+        private readonly List<int> _raceWinners = new List<int>();
+
+        private RaceCard RaceCardFor(string festivalId, long day)
+        {
+            if (!ContestBook.RunsAt(ContestKind.HorseRace, festivalId, out _)) return null;
+            var mine = new List<(Animal, Character)>();
+            if (_oddAnimals != null)
+                foreach (var e in Contests.Entries)
+                {
+                    if (e.Kind != ContestKind.HorseRace) continue;
+                    var a = FindAnimal(_oddAnimals, e.AnimalId); var h = Population.Find(e.HandlerId);
+                    if (a != null && h != null) mine.Add((a, h));
+                }
+            return Bets.Card(festivalId, day, (int)(day / Clock.Config.DaysPerYear), mine, new List<string>(RivalHouseNames()));
+        }
+
+        /// <summary>
+        /// Bahse açık yarış kartı: at yarışı olan şenliğin arifesinde ve yarış sabahı (kutlama başlayana dek). +18 paketi
+        /// kapalıysa ya da yakında yarış yoksa null.
+        /// </summary>
+        public RaceCard OpenRaceCard()
+        {
+            if (!ContentPacks.Adult) return null;
+            long today = Clock.DayIndex;
+            var f = Festivals.CelebratedDay != today ? Festivals.TodaysFestival() : null;
+            if (f != null && ContestBook.RunsAt(ContestKind.HorseRace, f.Id, out _)) return RaceCardFor(f.Id, today);
+            f = Festivals.FestivalOn(today + 1);
+            return f != null ? RaceCardFor(f.Id, today + 1) : null;
+        }
         private static Animal FindAnimal(AnimalSystem animals, int id) { foreach (var a in animals.Animals) if (a.Id == id) return a; return null; }
 
         public void Attach(Market market)
@@ -956,6 +1007,10 @@ namespace Thatchwick.Core.Life
             effects.AppliedOn += Home.OnApplied;
             effects.AppliedOn += OnSkillWorkApplied;   // beceri işleri ve pasifleri (belge 45)
             effects.AppliedOn += Trees.OnApplied;      // ulu ağaç ve ağaç ev (belge 52)
+            // Hasat emirleri (belge 59): tek dokunuş, sürükleme, tarlayı biç; tırpan yan karoları da biçer.
+            Fields.Apply = effects.Apply;
+            Fields.HasScythe = () => Tools.Tier(Thatchwick.Core.Work.HarvestOrders.ScytheTool) > 0;
+            effects.AppliedOn += Fields.OnApplied;
             effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i) ?? DrinkBlocker(c, it, i) ?? Trees.CanStart(c, it, i);
             Home.Effects = effects;
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
@@ -1086,6 +1141,8 @@ namespace Thatchwick.Core.Life
             farm.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish);
             // Su kenarında kavanoz (cam bahçe, belge 47 ek): su ve canlı doğadan.
             farm.JarBlocker = (tile, fill) => Home.WaterJarBlocker(tile, fill);
+            farm.PutBackBlocker = PutBackBlocker;                       // kedinin düşürdüğü süs (belge 55)
+            farm.PutBackDone = (c, tile) => PutBackKnocked(c, tile);
             farm.JarCatch = (c, tile) => Home.CatchAtWater(c, tile);
             farm.JarFill = tile => Home.FillAtWater(tile);
             AttachFishing(farm);   // defter, efsane balık, inci (belge 48 §9.4)
@@ -1193,6 +1250,7 @@ namespace Thatchwick.Core.Life
 
         public void Tick(double gameDays)
         {
+            OddScenesTick(gameDays);   // easter egg ziyaretçileri yürür (belge 55)
             _moodAccumulator += gameDays;
             if (_moodAccumulator >= MoodUpdateStepDays)
             {
@@ -1211,6 +1269,7 @@ namespace Thatchwick.Core.Life
             Aging.Tick(gameDays);
             Duties.Tick(gameDays);
             Requests.Tick();
+            UpdateCrier();
             Festivals.Tick(Population.Members);
             // Kararma, dekor içeriği yaşlanması ve kandil yağı dakika hassasiyeti istemez: bütün eşyaları taradıkları için
             // biriktirilip ~15 oyun dakikasında bir uygulanır (sabit adımlı simülasyon, performans incelemesi 20.11.2026).
@@ -1239,6 +1298,33 @@ namespace Thatchwick.Core.Life
         }
 
         public Season CurrentSeason => Clock.Season;
+
+        /// <summary>Tellal turunu attı (ses ve görsel için; oyun katmanı dinler).</summary>
+        public event Action<Thatchwick.Core.Life.Requests.RequestService.CrierCall> CrierCalled;
+
+        /// <summary>
+        /// Tellal (karar 20.11.2026): her sabah meydanda o günün yeni ilanlarını bağırır. Hane üyesi kasabadaysa ilanlar
+        /// okunmuş sayılır; değilse yalnızca "tellal bir şeyler duyurdu" bildirimi gelir ve ilanlar panodan okunur.
+        /// </summary>
+        private void UpdateCrier()
+        {
+            if (!Requests.CrierDue) return;
+            Character listener = null;
+            if (Regions.IsRegional(World.Map))
+                foreach (var c in Household())
+                    if (!c.IsDead && c.Stage >= AgeStage.Child && Regions.Town.Contains(c.Position)) { listener = c; break; }
+            var call = Requests.Cry(listener != null);
+            if (call.Fresh.Count == 0) return;
+            CrierCalled?.Invoke(call);
+            if (listener != null && call.NewlyRead > 0)
+            {
+                var first = call.Fresh[0];
+                Say(call.Fresh.Count == 1
+                    ? LocText.Of("core.req.n.crier_one", ("name", listener.Name), ("title", first.Title), ("giver", first.GiverName))
+                    : LocText.Of("core.req.n.crier_many", ("name", listener.Name), ("title", first.Title), ("more", call.Fresh.Count - 1)), NoticeLevel.Info, listener.Id);
+            }
+            else if (call.Unread > 0) Say(LocText.Of("core.req.n.crier_far", ("n", call.Unread)), NoticeLevel.Info);
+        }
 
         /// <summary>İlan tahtasının "İlanları oku" etkileşimi (items.json, item.notice_post).</summary>
         public const string ReadBoardInteraction = "read_board";
@@ -1348,10 +1434,15 @@ namespace Thatchwick.Core.Life
             if (Roamers != null)
             {
                 Roamers.TryBearSighting(Clock.Season);
-                int snares = House.Count("item.snare");
-                if (snares > 0)
-                    foreach (var r in Roamers.CheckSnares(Clock.Season, snares, BestAt(SkillType.Hunting), House)) Say($"Tuzağa {WildCatalog.Get(r.SpeciesId)?.Name.ToLowerInvariant()} düştü.", NoticeLevel.Info);
+                var snares = new List<ItemInstance>();
+                foreach (var it in World.Items) if (!it.IsDecor && it.Def.IsSnare) snares.Add(it);
+                if (snares.Count > 0)
+                    foreach (var r in Roamers.CheckSnares(Clock.Season, snares, BestAt(SkillType.Hunting)))
+                        Say(LocText.Of("snare.n.caught", ("animal", WildCatalog.Get(r.SpeciesId)?.Name.ToLowerInvariant())), NoticeLevel.Info);
             }
+            if (ContentPacks.Adult && Bets.Current == null && OpenRaceCard() != null) Say(LocText.Of("bet.n.open"), NoticeLevel.Info);
+            int betRefund = Bets.RefundStale(day, House);
+            if (betRefund > 0) Say(LocText.Of("bet.n.refund", ("stake", betRefund)), NoticeLevel.Info);
             Villagers.PollEvents();
             Goals.Update();
             int season = (int)((day / Clock.Config.DaysPerSeason) % TimeConfig.SeasonsPerYear);
@@ -1439,6 +1530,7 @@ namespace Thatchwick.Core.Life
                 coffeeHabits = Coffee.Export(),
                 olives = Olives.Export(),
                 contests = Contests.Export(),
+                raceBet = Bets.Export(),
                 wolfRaidIn = Wolves != null ? Wolves.RaidInDays : -1,
                 wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0,
                 keepsakes = Keepsakes.Export(),
@@ -1486,6 +1578,7 @@ namespace Thatchwick.Core.Life
             Coffee.Import(data.coffeeHabits);
             Olives.Import(data.olives);
             Contests.Import(data.contests);
+            Bets.Import(data.raceBet);
             Wolves?.Restore(data.wolfRaidIn, data.wolfHunted);
             Spoilage.Restore(data.spoilage);
             Tools.Restore(data.tools);

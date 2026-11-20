@@ -69,7 +69,9 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Su kenarında kavanoza su doldur (denizde deniz suyu, sazlıkta çamur da; belge 47 ek).</summary>
         JarFill = 11,
         /// <summary>Su kenarında cam kavanozla yakala (balık, karides, su bitkisi; oyuncuysa mini oyun).</summary>
-        JarCatch = 12
+        JarCatch = 12,
+        /// <summary>Kedinin yere düşürdüğü süsü alıp yerine koy (belge 55, Kedi Alex).</summary>
+        PutBack = 13
     }
 
     /// <summary>Karo işlerinin kuralları ve etkileri (Core.Work.FarmWork uygular).</summary>

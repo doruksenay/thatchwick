@@ -1,7 +1,7 @@
 ---
 id: "512"
 title: "Easter egg sahne kareleri: topaç, uluma, yerden alma (çocuk 64 px)"
-status: running
+status: review
 claimed_at: 2026-11-20T13:09Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet (easter egg sahneleri), Project belgeleri 55 ve 55d
 priority: 50

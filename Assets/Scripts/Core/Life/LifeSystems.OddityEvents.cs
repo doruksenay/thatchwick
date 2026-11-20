@@ -82,7 +82,12 @@ namespace Thatchwick.Core.Life
 
             JohanWickVisit(day);
 
-            if (Regions.IsRegional(World.Map) && ev.Chance(OddityEvents.HorselessKnight, OddityEvents.KnightChance)) Odd(OddityEvents.HorselessKnight);
+            if (Regions.IsRegional(World.Map) && ev.Chance(OddityEvents.HorselessKnight, OddityEvents.KnightChance))
+                AtDayTime(KnightArrives, () =>
+                {
+                    StartKnightWalk();   // köy yolunu bir uçtan öbürüne yürür; yol yoksa yalnızca satır
+                    Odd(OddityEvents.HorselessKnight);
+                });
             if (ev.Chance(OddityEvents.Crier, OddityEvents.CrierChance)) Odd(OddityEvents.Crier, "v" + ev.Pick(3), 0);
 
             var goat = FirstAnimal("goat");
@@ -95,9 +100,9 @@ namespace Thatchwick.Core.Life
                 if (ev.Chance(OddityEvents.CatGift, OddityEvents.CatGiftChance)) Odd(OddityEvents.CatGift, ("animal", cat.Name));
                 if (ev.Chance(OddityEvents.AlexDecor, OddityEvents.AlexChance))
                 {
-                    // Eşya yerinden oynamaz (örnek kalitesi ve yadigâr kaydı bozulmasın); yalnızca sahne.
-                    ItemInstance decor = null;
-                    foreach (var it in World.Items) if (it.IsDecor && World.Map.IsOwned(World.GetItem(it.ParentId.Value)?.Position ?? it.Position)) { decor = it; break; }
+                    // Süs yere düşer ama kaybolmaz, bozulmaz: bir karakter "Yerine koy" diyene kadar yerde durur.
+                    var knocked = KnockDecor();
+                    var decor = knocked != null ? World.GetItem(knocked.ItemId) : null;
                     if (decor != null) Odd(OddityEvents.AlexDecor, null, 0, ("animal", cat.Name), ("item", decor.Def.Id));
                 }
             }
@@ -138,6 +143,22 @@ namespace Thatchwick.Core.Life
             bool daisy = string.Equals(dog.Name, "Daisy", StringComparison.OrdinalIgnoreCase);
             if (!OddEvents.Chance(OddityEvents.JohanWick, OddityEvents.JohanChance * (daisy ? OddityEvents.JohanDaisyFactor : 1))) return;
 
+            // Kuşluk vakti gelir (gün gece yarısı döner; o saatte kimse görmez). Bayrak kayda yazılır: ziyaret
+            // başlamadan ya da sürerken kaydedilirse yüklemede tamamlanır.
+            OddEvents.Set(JohanFlag, 1);
+            int dogId = dog.Id;
+            AtDayTime(JohanArrives, () =>
+            {
+                var d = AnimalById(dogId) ?? FirstAnimal("animal.dog");
+                if (d == null) { OddEvents.Clear(JohanFlag); return; }
+                // Haritada görünür: kenardan girer, köpeğe yürür, sever, ekinleri dağıtır, sikkeyi bırakıp çıkar.
+                if (!StartJohanWalk(d)) JohanInstant(d);
+            });
+        }
+
+        /// <summary>Yol yoksa (köpek kapalı yerde, arsa kenarı kapalı) ziyaret görünmeden, anında işlenir.</summary>
+        private void JohanInstant(Animal dog)
+        {
             dog.Friendship = Math.Min(100f, dog.Friendship + 5f);
             var crops = new List<ItemInstance>();
             foreach (var item in World.Items) if (item.IsPlant && item.Def.IsCrop) crops.Add(item);
@@ -148,13 +169,8 @@ namespace Thatchwick.Core.Life
                 World.RemoveItem(crops[k].Id);
                 crops.RemoveAt(k);
             }
-            if (Content.Items.Contains(RelicCoinItem)) House.AddItem(RelicCoinItem, 1);
-            Odd(OddityEvents.JohanWick, n > 0 ? "field" : "nofield", 0, ("animal", dog.Name), ("count", n));
-            if (Wolves != null && Wolves.RaidInDays == 0)
-            {
-                Wolves.Restore(-1, Wolves.HuntedThisSeason);
-                OddityLine?.Invoke(LocText.Of("core.oddity.ev.johan_wick.wolves"), 0);
-            }
+            _johanCount = n;
+            FinishJohan(dog.Name);
         }
 
         // ---- sohbet ----
@@ -205,9 +221,20 @@ namespace Thatchwick.Core.Life
         public static string NameSurpriseKey(string name)
         {
             if (string.IsNullOrEmpty(name)) return null;
-            switch (name.Trim().ToUpperInvariant())
+            // Kullanıcının seçtiği adlar (20.11.2026). Boşluklar teke iner; büyük-küçük harf ayrımı yok.
+            string key = string.Join(" ", name.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)).ToUpperInvariant();
+            switch (key)
             {
                 case "DORUK": return "doruk";
+                case "SANEM": return "sanem";
+                case "BORA": return "bora";
+                case "ALPASLAN": return "alpaslan";
+                case "ALEX": return "alex";
+                case "LONTA": return "lonta";
+                case "LONTAJ": return "lontaj";
+                case "KAOSLONTAJ": return "kaoslontaj";
+                case "SANEM BAL": return "sanem_bal";
+                case "MARS": return "mars";
                 default: return null;
             }
         }
@@ -255,12 +282,16 @@ namespace Thatchwick.Core.Life
             var cat = FirstAnimal("animal.cat");
             if (cat != null && item.Def.Storage > 0 && OddEvents.Chance(OddityEvents.BoxCat, OddityEvents.BoxCatChance) && OddEvents.FirstToday("boxcat", day))
             {
+                SendAnimalToItem(cat, item, "box", SceneBook.BoxDays);      // kedi yürür, varınca kutunun içinde görünür
                 Odd(OddityEvents.BoxCat, null, 0, ("animal", cat.Name), ("item", item.Def.Id));
                 return;
             }
             var ox = FirstAnimal("animal.ox");
             if (ox != null && OddEvents.Chance(OddityEvents.OxStare, OddityEvents.OxChance) && OddEvents.FirstToday("oxstare", day))
+            {
+                SendAnimalToItem(ox, item, "stare", SceneBook.StareDays);   // öküz gider, yeni yapılanın karşısında durur
                 Odd(OddityEvents.OxStare, null, 0, ("animal", ox.Name), ("item", item.Def.Id));
+            }
         }
 
         private void OnOddAnimalCare(Character c, Animal a, AnimalAction action)
@@ -350,6 +381,7 @@ namespace Thatchwick.Core.Life
         {
             if (show?.Toy == null || show.Performer == null || show.Toy.ItemId != SpinningTopItem) return;
             if (show.Kind != Thatchwick.Core.Upbringing.ShowKind.Show) return;
+            Scenes.SetCharacterScene(show.Performer.Id, "top", SceneBook.TopShowDays);   // topaç çevirme karesi oynar
             var ev = OddEvents;
             if (ev.Chance(OddityEvents.NeverStoppingTop, OddityEvents.NeverStoppingChance))
             {
@@ -421,6 +453,12 @@ namespace Thatchwick.Core.Life
             }
             c.Needs.Restore(NeedType.Fun, HowlFun);
             var dog = FirstAnimal("animal.dog");
+            // Sahne: köpek durup başını kaldırır, ulayan ve çocuklar uluma karesini oynar.
+            foreach (var d in OwnedAnimals("animal.dog"))
+                if (_oddAnimals.SendTo(d, d.NextTile ?? d.Position, SceneBook.HowlDays)) Scenes.SetPose(d.Id, "howl", d.NextTile ?? d.Position, SceneBook.HowlDays + 0.01);
+            Scenes.SetCharacterScene(c.Id, "howl", SceneBook.HowlCharacterDays);
+            foreach (var m in Household())
+                if (m.Stage == AgeStage.Child || m.Stage == AgeStage.Teen) Scenes.SetCharacterScene(m.Id, "howl", SceneBook.HowlCharacterDays);
             Odd(OddityEvents.Howl, kids > 0 ? "kids" : "alone", c.Id, ("who", c.Name), ("animal", dog?.Name ?? ""));
             return true;
         }

@@ -177,9 +177,10 @@ namespace Thatchwick.Core.Life
             return false;
         }
 
-        private void OdditiesNewDay(long day)
+        internal void OdditiesNewDay(long day)
         {
             AnimalTalk.OnNewDay();
+            PruneKnocked();
             OddEventsNewDay(day);
             Relics.OnNewDay(day, Clock.Config.DaysPerSeason, Clock.Season == Season.Spring, HouseholdGeneration());
         }
@@ -195,30 +196,43 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Kurbağayı öp (yaban ziyaretçisi kurbağa): Hayal kırıklığı; çok nadiren minik taç. Taç belirdiyse true.</summary>
-        public bool KissFrog(Character c, bool force = false)
+        public bool KissFrog(Character c, bool force = false, int visitorId = 0)
         {
             if (c == null) return false;
             bool crown = FrogKiss.Kiss(c, Oddities, _oddityRng.NextDouble(), force);
+            if (crown && visitorId != 0)
+            {
+                // Taç kurbağanın başında görünür; kurbağa o sırada kaçmaz.
+                Scenes.SetWildFx(visitorId, "crown", SceneBook.CrownDays);
+                var frog = Roamers?.Find(visitorId);
+                if (frog != null) { frog.Fleeing = false; frog.LeaveAt = Math.Max(frog.LeaveAt, Clock.TotalDays + SceneBook.CrownDays); }
+            }
             OddityLine?.Invoke(LocText.Of(crown ? "core.oddity.frog.crown" : "core.oddity.frog.kiss", ("who", c.Name)), c.Id);
             return crown;
         }
 
-        private OdditySave ExportOddities() => new OdditySave
+        internal OdditySave ExportOddities() => new OdditySave
         {
             seen = Oddities.Export(),
             talks = AnimalTalk.Export(),
             relic = Relics.Export(),
             talkHistory = AnimalTalk.ExportHistory(),
-            events = OddEvents.Export()
+            events = OddEvents.Export(),
+            knocked = Scenes.ExportKnocked()
         };
 
-        private void ImportOddities(OdditySave data)
+        internal void ImportOddities(OdditySave data)
         {
             Oddities.Import(data?.seen);
             AnimalTalk.Import(data?.talks);
             Relics.Import(data?.relic);
             AnimalTalk.ImportHistory(data?.talkHistory);
             OddEvents.Import(data?.events);
+            Scenes.ImportKnocked(data?.knocked);
+            Walkers.Clear();
+            _sceneQueue.Clear();
+            // Johan Wick ziyareti sırasında kaydedildiyse ziyaret yüklemede tamamlanır (sikke kaybolmasın).
+            if (OddEvents.Has(JohanFlag)) { _johanCount = 0; FinishJohan(null); }
         }
     }
 }
