@@ -1,7 +1,7 @@
 ---
 id: "820"
 title: "İç Sesler nakış yaması pilotu: boş yama, üç dikiş, kurdele, dört işlemeli ikon"
-status: running
+status: failed
 claimed_at: 2026-11-20T23:54Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 21.11.2026 sohbet (yama dili A "nakış yaması", hâl katmanı A), Project belgesi 68a
 priority: 1           # 21.11.2026: kullanıcı sonucu hemen görmek istiyor
@@ -50,6 +50,10 @@ Ortak ek: `, embroidered cloth patch, visible woven linen texture, cozy medieval
 - Yama tabanı palet değişimine uygun: keten tonları en çok 4 ton, kontur ayrı renk (kod konturu koyulaştırır, ketenleri hâl rengine eşler).
 - Önizleme `art/results/820-yama-pilotu-x4.png`: taban + üç dikiş üst üste, yedi hâl rengine boyanmış hâlleri (rapordaki betikle) ve dört ikon yamanın üstünde; krem (#F3EAD6) ve meşe çerçeve (ui_hud2_mese_window) zemininde.
 - Göz kontrolü 3 kat ölçekte: 16x16 ikon yamanın üstünde okunuyor mu; dikiş üç gücü ayrı ayrı belli mi.
+
+## Sorular
+- Pilot ölçütleri tutmadı (tek deneme, yeniden deneme yok). pixflux 32x32 tuvali yama/ikon için fazla büyük çiziyor; ikonlar 16x16 yerine ~30 px, renk sayısı 15-31 (sınır 8), `grief` solmuş değil dik bir gül. Yama tabanı 35 renk (sınır 4 keten tonu). Üç dikiş katmanı saydam değil, tuvalin %88-100'ünü dolduruyor. Öneri: `create_image_pixen` (16/24 tuval) ya da `pixelart_workbench` ile elle çizim + `reduce_colors`; dikiş katmanı için taban üstüne inpaint.
+- Yalnızca `ui_patch_ribbon.png` teslim edildi (kurdele için sayısal ölçüt yok); göz kontrolü kullanıcıda.
 
 ## Notlar
 - Hâl renkleri (palet değişimi hedefi, belge 68a): Huzurlu #7E9B66, Neşeli #D6A542, Şevkli #4E9A8F, Gururlu #8A5A8C, Gergin #B8803A, Kederli #6C8299, Hırçın #A84A3E.
