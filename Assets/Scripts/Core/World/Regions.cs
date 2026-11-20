@@ -464,25 +464,25 @@ namespace Thatchwick.Core.World
         {
             // Meydanın çevresi
             new TownBuilding("tavern", "Meyhane / han", "inn", 20, 12, 10, 7, 'S', 25, FloorType.Wood, "home:tavern", (25, 21)).WithAnnex(16, 13, 4, 4, 19, 15, "annex_kitchen"),   // batıda mutfak kanadı
-            new TownBuilding("general", "Pazar (Kerem)", "shop", 33, 14, 8, 6, 'S', 36, FloorType.Wood, "home:general", (36, 22)).WithAnnex(41, 15, 2, 4, 41, 17, "annex_store"),   // doğuda ambar
+            new TownBuilding("general", "Pazar (Kerem)", "shop", 34, 14, 7, 6, 'S', 36, FloorType.Wood, "home:general", (36, 22)).WithAnnex(41, 15, 2, 4, 41, 17, "annex_store"),   // doğuda ambar
             new TownBuilding("scribe", "Kâtip ve ulak", "shop", 14, 28, 6, 5, 'E', 30, FloorType.Wood, "home:scribe", (24, 30)),
-            new TownBuilding("tailor", "Terzi ve dokumacı", "shop", 36, 32, 7, 6, 'N', 38, FloorType.Wood, "home:tailor", (36, 31)),
+            new TownBuilding("tailor", "Terzi ve dokumacı", "shop", 36, 32, 7, 5, 'N', 38, FloorType.Wood, "home:tailor", (36, 31)),
             // Batı (giriş)
-            new TownBuilding("herb", "Otacı ve ebe", "shop", 6, 6, 7, 6, 'S', 9, FloorType.Wood, "home:herb", (9, TownEntryY)),
-            new TownBuilding("smithy", "Demirci (Orhan)", "shop", 3, 22, 7, 6, 'N', 6, FloorType.Stone, null, (6, 20)).WithAnnex(3, 28, 4, 2, 4, 28, "annex_forge"),   // arkada kömürlük ve demir deposu
-            new TownBuilding("carpenter", "Marangoz / mobilyacı", "shop", 3, 31, 8, 6, 'E', 33, FloorType.Wood, "home:carpenter", (12, 33)).WithAnnex(4, 37, 5, 2, 6, 37, "annex_lumber"),   // arkada kereste sundurması
+            new TownBuilding("herb", "Otacı ve ebe", "shop", 6, 7, 6, 5, 'S', 9, FloorType.Wood, "home:herb", (9, TownEntryY)),
+            new TownBuilding("smithy", "Demirci (Orhan)", "shop", 3, 23, 6, 5, 'N', 6, FloorType.Stone, null, (6, 20)).WithAnnex(3, 28, 4, 2, 4, 28, "annex_forge"),   // arkada kömürlük ve demir deposu
+            new TownBuilding("carpenter", "Marangoz / mobilyacı", "shop", 4, 31, 7, 6, 'E', 33, FloorType.Wood, "home:carpenter", (12, 33)).WithAnnex(4, 37, 5, 2, 6, 37, "annex_lumber"),   // arkada kereste sundurması
             // Irmak kıyısı
             new TownBuilding("mill", "Değirmen ve fırın (Hatice)", "shop", 40, 4, 7, 6, 'S', 43, FloorType.Wood, "home:mill", (43, 11), (31, 11)).WithAnnex(47, 5, 2, 4, 47, 7, "flour_store"),   // ırmak yanında un ambarı
-            new TownBuilding("potter", "Çömlekçi (Ayşe)", "shop", 39, 40, 6, 6, 'N', 41, FloorType.Dirt, "home:potter", (41, 39), (32, 39)),
+            new TownBuilding("potter", "Çömlekçi (Ayşe)", "shop", 39, 40, 6, 5, 'N', 41, FloorType.Dirt, "home:potter", (41, 39), (32, 39)),
             // Irmağın ötesi
             new TownBuilding("fisher", "Balıkçı", "shop", 55, 18, 6, 5, 'W', 20, FloorType.Wood, "home:fisher", (53, 20), (53, 26)),   // bir karo doğuya: kapı önü 2 karo kuru (belge 44 D)
-            new TownBuilding("saddler", "Saraç ve tabakhane", "shop", 54, 34, 7, 6, 'N', 57, FloorType.Dirt, "home:saddler", (57, 28)),
+            new TownBuilding("saddler", "Saraç ve tabakhane", "shop", 54, 34, 6, 5, 'N', 57, FloorType.Dirt, "home:saddler", (57, 28)),
             // Hayvan pazarının tek katlı kulübesi (Ek tablosu): ağılın güneybatısında, ırmak ile ağıldan inen patika arasında;
             // kapısı patikaya açılır. Murat
             // köylü evi 4'te oturur; kulübe yem, tuz ve koşum deposu. Meslek etiketi ağılla aynı ("animals").
             new TownBuilding("animals_hut", "Hayvan pazarı (kulübe)", "shop", 54, 14, 4, 3, 'E', 15, FloorType.Dirt, null) { Template = "animals_hut", Trade = "animals" },
             // Güney
-            new TownBuilding("mason", "Taşçı", "shop", 20, 42, 7, 6, 'E', 44, FloorType.Stone, "home:mason", (33, 44)),
+            new TownBuilding("mason", "Taşçı", "shop", 21, 42, 6, 5, 'E', 44, FloorType.Stone, "home:mason", (33, 44)),
             // Köylü evleri: dağınık, kendi bahçeleriyle
             new TownBuilding("home:1", "Köylü evi 1", "house", 14, 4, 4, 3, 'S', 15, FloorType.Wood, "home:1", (15, 9), (29, 9)) { Template = "cottage" },
             new TownBuilding("home:2", "Köylü evi 2", "house", 34, 4, 4, 3, 'S', 35, FloorType.Wood, "home:2", (35, 8), (31, 8), (31, 10)) { Template = "cottage" },   // patika yola bağlanır
@@ -551,10 +551,10 @@ namespace Thatchwick.Core.World
         /// <summary>Dükkânların iç alanı (dünya koordinatı); dükkân kimliği Core.Economy.Shops ile aynı.</summary>
         public static Dictionary<string, RectI> ShopAreas() => new Dictionary<string, RectI>
         {
-            { "general", R(33, 14, 8, 6) }, { "smithy", R(3, 22, 7, 6) }, { "carpenter", R(3, 31, 8, 6) },
+            { "general", R(34, 14, 7, 6) }, { "smithy", R(3, 23, 6, 5) }, { "carpenter", R(4, 31, 7, 6) },
             { "tavern", R(20, 12, 10, 7) }, { "mill", R(40, 4, 7, 6) }, { "scribe", R(14, 28, 6, 5) },
-            { "herb", R(6, 6, 7, 6) }, { "potter", R(39, 40, 6, 6) }, { "tailor", R(36, 32, 7, 6) },
-            { "saddler", R(54, 34, 7, 6) }, { "fisher", R(55, 18, 6, 5) }, { "mason", R(20, 42, 7, 6) },
+            { "herb", R(6, 7, 6, 5) }, { "potter", R(39, 40, 6, 5) }, { "tailor", R(36, 32, 7, 5) },
+            { "saddler", R(54, 34, 6, 5) }, { "fisher", R(55, 18, 6, 5) }, { "mason", R(21, 42, 6, 5) },
             { "animals", R(55, 4, 8, 9) },
         };
 

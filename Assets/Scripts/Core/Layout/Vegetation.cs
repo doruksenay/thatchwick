@@ -105,6 +105,8 @@ namespace Thatchwick.Core.Layout
             if (e.plaza <= 9) den -= 0.2;
             if (e.road <= 1) den -= 0.08;
             if (e.wallBase) den += 0.1;
+            // Köy meydanının içi sade kalır (kullanıcı 20.11: "çok karışık"): binalar arası açık alanda seyrek, kenarda sık.
+            if (region == Regions.Town && e.edge > 5) den -= e.building <= 3 ? 0.12 : 0.07;
             e.density = Math.Max(0.03, Math.Min(0.9, den));
             return e;
         }

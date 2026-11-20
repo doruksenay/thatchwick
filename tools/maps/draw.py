@@ -281,7 +281,7 @@ def town():
             else:
                 dx, dy = abs(x - 30), abs(y - 26)
                 over = max(dx - 7, dy - 5, dx + dy - 10)
-                if over <= 2 and (x, y) not in door_front and noise(x / 1.7, y / 1.7, 81) > 0.35 + 0.25 * over:
+                if over <= 1 and (x, y) not in door_front and noise(x / 1.7, y / 1.7, 81) > 0.45:
                     cv.set(x, y, 'stone')
     roads = set()
 
@@ -358,20 +358,15 @@ def town():
             cur = prev[cur]
         roads |= stub
     # Aşınmış toprak: atölye kapıları önünde öbek, sokak kenarında yer yer
-    work = {'smithy', 'carpenter', 'mason', 'potter', 'saddler', 'mill', 'animals_hut'}
+    work = {'smithy', 'mason', 'mill'}   # yalnızca ağır iş kapıları (sadeleştirme 20.11)
     for bid, (ox, oy), _ in doors:
         if bid not in work:
             continue
         for yy in range(oy - 3, oy + 4):
             for xx in range(ox - 3, ox + 4):
                 r = math.hypot(xx - ox, yy - oy)
-                if r <= 1.4 + 1.6 * noise(xx / 1.5, yy / 1.5, 91) and cv.get(xx, yy) == 'grass' and (xx, yy) not in blocked:
+                if r <= 1.0 + 0.9 * noise(xx / 1.5, yy / 1.5, 91) and cv.get(xx, yy) == 'grass' and (xx, yy) not in blocked:
                     cv.set(xx, yy, 'dirt')
-    for (x, y) in list(roads):
-        for ddx, ddy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            n = (x + ddx, y + ddy)
-            if cv.get(*n) == 'grass' and n not in blocked and noise(n[0] / 2.2, n[1] / 2.2, 93) > 0.66:
-                cv.set(n[0], n[1], 'dirt')
     # Kıyı: suya değen çimde kum cepleri ve sazlık yeri
     for (x, y) in list(water):
         for ddx, ddy in ((1, 0), (-1, 0)):
