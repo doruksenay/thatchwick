@@ -2,100 +2,87 @@
   "job": "s250",
   "kind": "sfx",
   "family": "foley",
-  "created": "2026-11-20T17:29:27Z",
+  "created": "2026-11-20T18:32:35Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 4.16,
-          "lufs": -21.8,
+          "duration_s": 3.932,
+          "lufs": -18.8,
           "true_peak_db": -1.0,
-          "rms_db": -28.3,
-          "note": "tepe sınırında, yükseklik -21.8 (hedef -18)",
-          "flags": [
-            "süre aralık dışı (4.16 sn, aile 0.05-3)"
-          ],
-          "pass": false,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A few houseflies buzzing lazily around one spot outdoors, close and dry, no other sounds. Loopable, quiet. Details: a small cluster of flies.",
+          "rms_db": -24.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. One or two lazy flies drowsily buzzing around on a warm summer afternoon, soft and slightly comic, quiet and mellow, drifting closer and away. Only the buzz: no clicking, no ticking, no tapping, no background noise. Details: a small cluster of flies.",
           "duration": 4.202592558009595,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 3.6,
-          "lufs": -24.9,
+          "duration_s": 3.459,
+          "lufs": -21.1,
           "true_peak_db": -1.0,
-          "rms_db": -30.2,
-          "note": "tepe sınırında, yükseklik -24.9 (hedef -18)",
-          "flags": [
-            "süre aralık dışı (3.60 sn, aile 0.05-3)",
-            "c1 ile neredeyse aynı (0.0282)"
-          ],
-          "pass": false,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A few houseflies buzzing lazily around one spot outdoors, close and dry, no other sounds. Loopable, quiet. Details: two or three houseflies.",
+          "rms_db": -26.7,
+          "note": "tepe sınırında, yükseklik -21.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. One or two lazy flies drowsily buzzing around on a warm summer afternoon, soft and slightly comic, quiet and mellow, drifting closer and away. Only the buzz: no clicking, no ticking, no tapping, no background noise. Details: two or three houseflies.",
           "duration": 3.6173414623204474,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
+          "model": "eleven_text_to_sound_v3"
         },
         "c3": {
-          "duration_s": 4.24,
-          "lufs": -21.7,
+          "duration_s": 3.89,
+          "lufs": -18.0,
           "true_peak_db": -1.0,
-          "rms_db": -28.0,
-          "note": "tepe sınırında, yükseklik -21.7 (hedef -18)",
+          "rms_db": -22.9,
           "flags": [
-            "süre aralık dışı (4.24 sn, aile 0.05-3)",
-            "c1 ile neredeyse aynı (0.021)"
+            "c2 ile neredeyse aynı (0.0138)"
           ],
-          "pass": false,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A few houseflies buzzing lazily around one spot outdoors, close and dry, no other sounds. Loopable, quiet. Details: a small cluster of flies.",
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. One or two lazy flies drowsily buzzing around on a warm summer afternoon, soft and slightly comic, quiet and mellow, drifting closer and away. Only the buzz: no clicking, no ticking, no tapping, no background noise. Details: a small cluster of flies.",
           "duration": 4.265057518217176,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c4": {
-          "duration_s": 3.68,
-          "lufs": -23.1,
+          "duration_s": 3.664,
+          "lufs": -22.8,
           "true_peak_db": -1.0,
-          "rms_db": -27.9,
-          "note": "tepe sınırında, yükseklik -23.1 (hedef -18)",
+          "rms_db": -27.1,
+          "note": "tepe sınırında, yükseklik -22.8 (hedef -18)",
           "flags": [
-            "süre aralık dışı (3.68 sn, aile 0.05-3)",
-            "c1 ile neredeyse aynı (0.0269)"
+            "c2 ile neredeyse aynı (0.0248)"
           ],
-          "pass": false,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A few houseflies buzzing lazily around one spot outdoors, close and dry, no other sounds. Loopable, quiet. Details: two or three houseflies.",
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. One or two lazy flies drowsily buzzing around on a warm summer afternoon, soft and slightly comic, quiet and mellow, drifting closer and away. Only the buzz: no clicking, no ticking, no tapping, no background noise. Details: two or three houseflies.",
           "duration": 3.6811638206797626,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c5": {
-          "duration_s": 4.12,
-          "lufs": -24.5,
+          "duration_s": 3.813,
+          "lufs": -21.0,
           "true_peak_db": -1.0,
-          "rms_db": -29.4,
-          "note": "tepe sınırında, yükseklik -24.5 (hedef -18)",
+          "rms_db": -24.2,
           "flags": [
-            "süre aralık dışı (4.12 sn, aile 0.05-3)",
-            "c1 ile neredeyse aynı (0.0287)"
+            "c1 ile neredeyse aynı (0.0033)"
           ],
-          "pass": false,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A few houseflies buzzing lazily around one spot outdoors, close and dry, no other sounds. Loopable, quiet. Details: a small cluster of flies.",
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. One or two lazy flies drowsily buzzing around on a warm summer afternoon, soft and slightly comic, quiet and mellow, drifting closer and away. Only the buzz: no clicking, no ticking, no tapping, no background noise. Details: a small cluster of flies.",
           "duration": 4.159424544361998,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c6": {
-          "duration_s": 4.04,
-          "lufs": -22.1,
+          "duration_s": 3.972,
+          "lufs": -21.3,
           "true_peak_db": -1.0,
-          "rms_db": -26.9,
-          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
+          "rms_db": -27.3,
+          "note": "tepe sınırında, yükseklik -21.3 (hedef -18)",
           "flags": [
-            "süre aralık dışı (4.04 sn, aile 0.05-3)",
-            "c1 ile neredeyse aynı (0.0297)"
+            "c2 ile neredeyse aynı (0.0061)"
           ],
-          "pass": false,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A few houseflies buzzing lazily around one spot outdoors, close and dry, no other sounds. Loopable, quiet. Details: two or three houseflies.",
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. One or two lazy flies drowsily buzzing around on a warm summer afternoon, soft and slightly comic, quiet and mellow, drifting closer and away. Only the buzz: no clicking, no ticking, no tapping, no background noise. Details: two or three houseflies.",
           "duration": 4.077043191499802,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
@@ -105,45 +92,40 @@
         "pairs_dup": [
           [
             "c1",
-            "c2",
-            0.0282
-          ],
-          [
-            "c1",
-            "c3",
-            0.021
-          ],
-          [
-            "c1",
-            "c4",
-            0.0269
-          ],
-          [
-            "c1",
             "c5",
-            0.0287
+            0.0033
           ],
           [
-            "c1",
+            "c2",
+            "c3",
+            0.0138
+          ],
+          [
+            "c2",
+            "c4",
+            0.0248
+          ],
+          [
+            "c2",
             "c6",
-            0.0297
+            0.0061
           ]
         ],
         "nearest": {
-          "c1": 0.021,
-          "c2": 0.0153,
-          "c3": 0.0194,
-          "c4": 0.0128,
-          "c5": 0.0128,
-          "c6": 0.0264
+          "c1": 0.0033,
+          "c2": 0.0061,
+          "c3": 0.0138,
+          "c4": 0.0242,
+          "c5": 0.0033,
+          "c6": 0.0061
         },
         "ref_distance": {
-          "c1": 0.0783,
-          "c2": 0.0902,
-          "c3": 0.0831,
-          "c4": 0.0831,
-          "c5": 0.0914,
-          "c6": 0.1089
+          "c1": 0.027,
+          "c2": 0.0303,
+          "c3": 0.0463,
+          "c4": 0.0305,
+          "c5": 0.0221,
+          "c6": 0.028
         }
       }
     }

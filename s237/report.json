@@ -2,107 +2,107 @@
   "job": "s237",
   "kind": "sfx",
   "family": "foley",
-  "created": "2026-11-20T17:29:13Z",
+  "created": "2026-11-20T18:32:20Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 1.08,
-          "lufs": -24.6,
+          "duration_s": 0.988,
+          "lufs": -19.1,
           "true_peak_db": -1.0,
-          "rms_db": -26.5,
-          "note": "tepe sınırında, yükseklik -24.6 (hedef -18)",
+          "rms_db": -20.2,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: coarse linen tunic, pulled over the head.",
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Soft, cozy rustle of warm wool and linen clothes being put on: gentle fabric brushing, a quiet soft flump, calm and close. Muffled and pleasant, no harsh crinkles, no snaps, no plastic sound. Details: coarse linen tunic, pulled over the head.",
           "duration": 1.0800772829776935,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 0.944,
-          "lufs": -24.2,
+          "duration_s": 0.914,
+          "lufs": -19.9,
           "true_peak_db": -1.0,
-          "rms_db": -26.3,
-          "note": "tepe sınırında, yükseklik -24.2 (hedef -18)",
-          "flags": [],
+          "rms_db": -19.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0332)"
+          ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: thick wool cloak, pulled over the head.",
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Soft, cozy rustle of warm wool and linen clothes being put on: gentle fabric brushing, a quiet soft flump, calm and close. Muffled and pleasant, no harsh crinkles, no snaps, no plastic sound. Details: thick wool cloak, pulled over the head.",
           "duration": 1.0173809266916107,
-          "model": "eleven_text_to_sound_v3"
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
         },
         "c3": {
-          "duration_s": 1.04,
-          "lufs": -22.2,
+          "duration_s": 0.949,
+          "lufs": -19.8,
           "true_peak_db": -1.0,
-          "rms_db": -20.5,
-          "note": "tepe sınırında, yükseklik -22.2 (hedef -18)",
+          "rms_db": -21.0,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: coarse linen tunic, shaken out and put on.",
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Soft, cozy rustle of warm wool and linen clothes being put on: gentle fabric brushing, a quiet soft flump, calm and close. Muffled and pleasant, no harsh crinkles, no snaps, no plastic sound. Details: coarse linen tunic, shaken out and put on.",
           "duration": 1.0738732059341354,
           "model": "eleven_text_to_sound_v3"
         },
         "c4": {
-          "duration_s": 0.92,
-          "lufs": -21.9,
+          "duration_s": 0.768,
+          "lufs": -20.6,
           "true_peak_db": -1.0,
-          "rms_db": -19.0,
-          "note": "tepe sınırında, yükseklik -21.9 (hedef -18)",
+          "rms_db": -21.8,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: thick wool cloak, shaken out and put on.",
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Soft, cozy rustle of warm wool and linen clothes being put on: gentle fabric brushing, a quiet soft flump, calm and close. Muffled and pleasant, no harsh crinkles, no snaps, no plastic sound. Details: thick wool cloak, shaken out and put on.",
           "duration": 0.9645814730692719,
           "model": "eleven_text_to_sound_v3"
         },
         "c5": {
-          "duration_s": 0.9,
-          "lufs": -18.1,
+          "duration_s": 0.864,
+          "lufs": -18.8,
           "true_peak_db": -1.0,
-          "rms_db": -19.2,
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: coarse linen tunic, pulled over the head.",
-          "duration": 0.9240146365016775,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c6": {
-          "duration_s": 1.045,
-          "lufs": -18.0,
-          "true_peak_db": -1.0,
-          "rms_db": -20.0,
+          "rms_db": -18.5,
           "flags": [
-            "c2 ile neredeyse aynı (0.0254)"
+            "c1 ile neredeyse aynı (0.0216)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: thick wool cloak, pulled over the head.",
-          "duration": 1.0920924639410354,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Soft, cozy rustle of warm wool and linen clothes being put on: gentle fabric brushing, a quiet soft flump, calm and close. Muffled and pleasant, no harsh crinkles, no snaps, no plastic sound. Details: coarse linen tunic, pulled over the head.",
+          "duration": 0.9240146365016775,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
-        "c7": {
-          "duration_s": 1.0,
-          "lufs": -20.8,
+        "c6": {
+          "duration_s": 0.948,
+          "lufs": -22.0,
           "true_peak_db": -1.0,
-          "rms_db": -22.8,
+          "rms_db": -19.7,
+          "note": "tepe sınırında, yükseklik -22.0 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Soft, cozy rustle of warm wool and linen clothes being put on: gentle fabric brushing, a quiet soft flump, calm and close. Muffled and pleasant, no harsh crinkles, no snaps, no plastic sound. Details: thick wool cloak, pulled over the head.",
+          "duration": 1.0920924639410354,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 0.931,
+          "lufs": -18.0,
+          "true_peak_db": -1.1,
+          "rms_db": -19.0,
           "flags": [
-            "c1 ile neredeyse aynı (0.0252)"
+            "c1 ile neredeyse aynı (0.0073)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: coarse linen tunic, shaken out and put on.",
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Soft, cozy rustle of warm wool and linen clothes being put on: gentle fabric brushing, a quiet soft flump, calm and close. Muffled and pleasant, no harsh crinkles, no snaps, no plastic sound. Details: coarse linen tunic, shaken out and put on.",
           "duration": 1.0174626818918127,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c8": {
-          "duration_s": 0.898,
-          "lufs": -19.5,
+          "duration_s": 0.806,
+          "lufs": -18.5,
           "true_peak_db": -1.0,
-          "rms_db": -20.3,
+          "rms_db": -19.6,
           "flags": [
-            "c2 ile neredeyse aynı (0.0297)"
+            "c4 ile neredeyse aynı (0.014)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Clothing rustle: a linen garment pulled over the head and smoothed down, close and soft. Details: thick wool cloak, shaken out and put on.",
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Soft, cozy rustle of warm wool and linen clothes being put on: gentle fabric brushing, a quiet soft flump, calm and close. Muffled and pleasant, no harsh crinkles, no snaps, no plastic sound. Details: thick wool cloak, shaken out and put on.",
           "duration": 0.9581121121496124,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
@@ -112,39 +112,44 @@
         "pairs_dup": [
           [
             "c1",
+            "c2",
+            0.0332
+          ],
+          [
+            "c1",
+            "c5",
+            0.0216
+          ],
+          [
+            "c1",
             "c7",
-            0.0252
+            0.0073
           ],
           [
-            "c2",
-            "c6",
-            0.0254
-          ],
-          [
-            "c2",
+            "c4",
             "c8",
-            0.0297
+            0.014
           ]
         ],
         "nearest": {
-          "c1": 0.0252,
-          "c2": 0.0254,
-          "c3": 0.0418,
-          "c4": 0.0503,
-          "c5": 0.0421,
-          "c6": 0.0145,
-          "c7": 0.0252,
-          "c8": 0.0145
+          "c1": 0.0073,
+          "c2": 0.0272,
+          "c3": 0.0309,
+          "c4": 0.014,
+          "c5": 0.0216,
+          "c6": 0.0351,
+          "c7": 0.0073,
+          "c8": 0.014
         },
         "ref_distance": {
-          "c1": 0.072,
-          "c2": 0.0443,
-          "c3": 0.1319,
-          "c4": 0.0858,
-          "c5": 0.2075,
-          "c6": 0.0879,
-          "c7": 0.1193,
-          "c8": 0.068
+          "c1": 0.1076,
+          "c2": 0.1436,
+          "c3": 0.1266,
+          "c4": 0.0479,
+          "c5": 0.1284,
+          "c6": 0.0598,
+          "c7": 0.1253,
+          "c8": 0.0446
         }
       }
     }
