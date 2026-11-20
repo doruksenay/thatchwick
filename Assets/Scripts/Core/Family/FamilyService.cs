@@ -74,7 +74,13 @@ namespace Thatchwick.Core.Family
 
         public int Affection(int a, int b) => _affection.TryGetValue(Key(a, b), out var v) ? v : 0;
 
-        public void SetAffection(int a, int b, int value) => _affection[Key(a, b)] = Math.Max(0, Math.Min(100, value));
+        public void SetAffection(int a, int b, int value) => _affection[Key(a, b)] = Math.Max(MinAffection, Math.Min(100, value));
+
+        /// <summary>Arkadaşlık −100 … +100 (67d: küslük ve düşmanlık var).</summary>
+        public const int MinAffection = -100;
+
+        /// <summary>İlişki sistemi (67d): bağlıysa yeni sosyal işler, sohbet çarpanı, gönül yolu ve evlilik buradan geçer.</summary>
+        public Thatchwick.Core.Relations.RelationService Relations { get; set; }
 
         public IEnumerable<(int a, int b, int value)> ExportAffection()
         {
@@ -110,6 +116,7 @@ namespace Thatchwick.Core.Family
             // Birlikte iş ve baş başa etkinlikler (Cooking); sistem bağlı değilse iş yapılamaz (metin: işin anahtarı).
             if (action == SocialAction.HelpWork) return SocialLife == null ? action.ToString() : SocialLife.CanHelp(actor, target);
             if (Cooking.Outings.Handles(action)) return Outings == null ? action.ToString() : Outings.CanDo(actor, target, action);
+            if (Thatchwick.Core.Relations.RelationService.Handles(action)) return Relations == null ? action.ToString() : Relations.CanDo(actor, target, action);
             switch (action)
             {
                 case SocialAction.Feed:
@@ -120,6 +127,7 @@ namespace Thatchwick.Core.Family
                     return null;
                 case SocialAction.Chat:
                     if (target.Stage == AgeStage.Baby) return "Bebekle sohbet edilmez.";
+                    if (Relations != null && Relations.IsSulking(actor.Id, target.Id)) return Localization.CoreText.T("rel.why.sulking");
                     return null;
                 case SocialAction.TellStory:
                     if (target.Stage != AgeStage.Child) return "Masal çocuklara anlatılır.";
@@ -132,6 +140,8 @@ namespace Thatchwick.Core.Family
                     if (actor.SpouseId.HasValue || target.SpouseId.HasValue) return "Zaten evli.";
                     if (actor.Sex == target.Sex) return "Bu çağda evlilik kadın ile erkek arasında.";
                     if (AreCloseRelatives(actor, target)) return "Yakın akrabalar evlenemez.";
+                    // Gönül yolu (67b §3): ilişki sistemi bağlıysa evlilik yalnızca nişanlı çiftin düğün gününde olur.
+                    if (Relations != null) return Relations.ProposalCheck(actor, target);
                     if (Affection(actor.Id, target.Id) < MarriageAffection) return $"Yakınlık yetmiyor ({Affection(actor.Id, target.Id)}/{MarriageAffection}); önce sohbet edin.";
                     if (actor.IsVillager && target.IsVillager) return "Köylüler kendi aralarında evlenir.";
                     return ExtraProposalCheck?.Invoke(actor, target);
@@ -151,6 +161,7 @@ namespace Thatchwick.Core.Family
         public double Duration(SocialAction action)
         {
             if (Outings != null && Cooking.Outings.Handles(action)) return Outings.Duration(action);
+            if (Relations != null && Thatchwick.Core.Relations.RelationService.Handles(action)) return Relations.Duration(action);
             switch (action)
             {
                 case SocialAction.Feed: return 0.05;
@@ -170,6 +181,13 @@ namespace Thatchwick.Core.Family
         {
             if (action == SocialAction.HelpWork) { SocialLife?.EndHelp(actor, target); return; }
             if (Cooking.Outings.Handles(action)) { Outings?.Apply(actor, target, action); return; }
+            if (Thatchwick.Core.Relations.RelationService.Handles(action))
+            {
+                if (Relations == null) return;
+                var text = Relations.Apply(actor, target, action);
+                if (!text.IsEmpty) Happened?.Invoke(actor, target, action, Localization.CoreText.Resolve != null ? Localization.CoreText.Resolve(text) : text.ToString());
+                return;
+            }
             if (CanDo(actor, target, action) != null) return;   // bu arada koşul bozulduysa sessizce vazgeç
             string msg;
             switch (action)
@@ -192,6 +210,15 @@ namespace Thatchwick.Core.Family
                     if (topic.HasValue) { gain = (int)Math.Round(gain * TopicAffectionFactor); actor.GainSkillXp(topic.Value, TopicXp); target.GainSkillXp(topic.Value, TopicXp); }
                     actor.GainSkillXp(SkillType.Charm, 4);
                     target.GainSkillXp(SkillType.Charm, 2);
+                    // İlişki sistemi (67a §9.1): günün ilk sohbeti tam, ikincisi yarı; uyum, hisler, aile ilişki türü, yüksek değerde yavaşlama.
+                    if (Relations != null)
+                    {
+                        gain = (int)Math.Round(gain * Relations.ChatFactor(actor, target, (long)Math.Floor(Today())) * Relations.DynamicFactor(actor.Id, target.Id));
+                        Relations.Met(actor.Id, target.Id);
+                        Relations.Introduce(actor, target);
+                        Relations.Nudge(actor.Id, target.Id, 0.05);
+                        Relations.LearnPref(actor.Id, target.Id);
+                    }
                     int now = Math.Min(100, Affection(actor.Id, target.Id) + gain);
                     actor.Needs.Restore(NeedType.Fun, ChatFun);
                     target.Needs.Restore(NeedType.Fun, ChatFun);
@@ -230,6 +257,9 @@ namespace Thatchwick.Core.Family
                     actor.GainSkillXp(SkillType.Parenting, 4);
                     actor.GainSkillXp(SkillType.Charm, 2);
                     SetAffection(actor.Id, target.Id, Math.Min(100, Affection(actor.Id, target.Id) + ChatAffection / 2));
+                    // Masalda aile hikâyeleri (küslük ve dostluk) çocuğa geçer (67c §3.7).
+                    Relations?.Knowledge?.TellFamilyLore(actor, target);
+                    Relations?.Nudge(actor.Id, target.Id, 0.1);
                     msg = $"{actor.Name}, {target.Name} için bir masal anlattı";
                     break;
                 case SocialAction.TellAnimalTalk:
@@ -260,7 +290,7 @@ namespace Thatchwick.Core.Family
                 case SocialAction.TryForBaby:
                     var woman = actor.Sex == Sex.Female ? actor : target;
                     var man = actor.Sex == Sex.Female ? target : actor;
-                    double chance = Math.Min(0.95, ConceiveChance * woman.Modifiers.Fertility);
+                    double chance = Math.Min(0.95, ConceiveChance * woman.Modifiers.Fertility * (Relations?.ConceiveFactor(woman, man) ?? 1.0));
                     bool ok = _rng.NextDouble() < chance && woman.TryStartPregnancy(man.Id);
                     msg = ok ? $"{woman.Name} hamile!" : $"{actor.Name} ve {target.Name} bu sefer olmadı; yine denenebilir";
                     break;
