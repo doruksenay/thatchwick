@@ -1,7 +1,8 @@
 ---
 id: "478b"
 title: "Beceri tamamlama: dış mekân eşyaları (5)"
-status: pending
+status: running
+claimed_at: 2026-11-20T10:57Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("geliştirmeyi tamamla"), Project belgesi 45 bölüm 9
 priority: 40
 family: esya
