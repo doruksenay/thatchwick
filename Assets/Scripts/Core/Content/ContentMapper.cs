@@ -169,7 +169,8 @@ namespace Thatchwick.Core.Content
                 item.VivCreatures = Math.Max(0, dto.vivCreatures);
                 item.VivPlants = Math.Max(0, dto.vivPlants);
                 item.VivDecor = Math.Max(0, dto.vivDecor);
-                if (dto.viv != null)
+                // Unity JsonUtility alan yokken de boş bir VivDto kurar: türü yazılmamış cam bahçe bilgisi yok sayılır.
+                if (dto.viv != null && !string.IsNullOrWhiteSpace(dto.viv.kind))
                 {
                     var v = dto.viv;
                     var vd = new VivDef

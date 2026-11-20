@@ -158,6 +158,16 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void Mapper_BosCamBahceAlani_YokSayilir()
+        {
+            // Unity JsonUtility, JSON'da "viv" olmasa da alanı boş bir nesneyle doldurur.
+            var dto = new ItemDto { id = "item.table_wood", displayName = "Masa", width = 2, height = 1, price = 40, category = "furniture", viv = new VivDto() };
+            var db = new ContentDatabase();
+            Assert.Empty(ContentMapper.Apply(new ContentFileDto { items = new[] { dto } }, db));
+            Assert.Null(db.Items.Get("item.table_wood").Viv);
+        }
+
+        [Fact]
         public void Mapper_BoyutYerlesimVeYuvalariOkur_GecersizleriReddeder()
         {
             var dto = new ItemDto

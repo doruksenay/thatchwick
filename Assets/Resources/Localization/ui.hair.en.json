@@ -4,21 +4,5 @@
   "hair.note.chamomile": "rinsed their hair with chamomile (washes out)",
   "hair.note.walnut": "dyed their hair with walnut hull (washes out)",
   "hair.note.purple": "applied a purple hair rinse (washes out)",
-  "hair.note.shine": "oiled their hair until it shone (washes out)",
-  "item.henna.name": "Henna",
-  "item.henna_paste.name": "Henna paste",
-  "item.rinse_chamomile.name": "Chamomile rinse",
-  "item.rinse_walnut.name": "Walnut hull rinse",
-  "item.rinse_purple.name": "Purple hair rinse",
-  "item.hair_oil.name": "Hair oil",
-  "item.basin_ewer.act.hair_henna": "Henna your hair",
-  "item.basin_ewer.act.hair_chamomile": "Rinse hair with chamomile",
-  "item.basin_ewer.act.hair_walnut": "Dye hair with walnut",
-  "item.basin_ewer.act.hair_purple": "Apply purple hair rinse",
-  "item.basin_ewer.act.hair_oil": "Oil your hair",
-  "recipe.henna_paste.name": "Mix henna paste",
-  "recipe.rinse_chamomile.name": "Brew chamomile rinse",
-  "recipe.rinse_walnut.name": "Boil walnut hull rinse",
-  "recipe.rinse_purple.name": "Prepare purple hair rinse",
-  "recipe.hair_oil.name": "Prepare hair oil"
+  "hair.note.shine": "oiled their hair until it shone (washes out)"
 }
