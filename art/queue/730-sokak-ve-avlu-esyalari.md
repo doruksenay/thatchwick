@@ -1,7 +1,7 @@
 ---
 id: "730"
 title: "Sokak ve avlu eşyaları (9)"
-status: running
+status: review
 claimed_at: 2026-11-20T17:36Z
 approved_by: user        # kullanıcı kararı 2026-11-20: "bunların hepsini yap. ilk asseti iş dosyasına yaz o başlasın" (belge 64b kalanlar, Unity incelemesi: şehirde kahverengi kutular)
 priority: 10
