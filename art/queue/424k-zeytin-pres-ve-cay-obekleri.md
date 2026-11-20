@@ -1,7 +1,7 @@
 ---
 id: "424k"
 title: "Zeytin ağacı, pres yeri, süzgeç, küp ve çay öbekleri (iso)"
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:54Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 32
 family: esya
@@ -49,3 +49,4 @@ Belge 32-7 (zeytin), 8.1 (çay), 8.2 (bal) için dünyada görünen eşyalar.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

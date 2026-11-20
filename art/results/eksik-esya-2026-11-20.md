@@ -1,0 +1,45 @@
+# Eşya incelemesi: teslim edilmemiş parçalar (2026-11-20)
+
+Kullanıcı kararı: 59 eşya işi kabul edildi; eksik parçalar için şimdilik iş açılmadı ("kabul et, yalnız 7 parçayı düzelt"). İleride tamamlama işi açılırsa bu liste kullanılır. Biçim: kaynak iş, teslim edilen / beklenen, eksik çıktılar.
+
+- 312 1/2 iso_item_root_cellar_2x2_se
+- 313 4/5 iso_deco_bonfire_se
+- 321 3/5 iso_item_irrigation_ditch_se iso_item_water_channel_2x1_se
+- 337 4/7 iso_item_rug_rush_se iso_item_rug_hide_1x2_se iso_item_rug_wool_2x2_se
+- 338 11/12 iso_item_water_trough_2x1_se
+- 339 4/5 iso_item_canal_se
+- 341 2/3 iso_item_ice_house_2x2_se
+- 342 4/6 iso_item_pond_3x2_se iso_item_alembic_2x1_se
+- 344 8/11 iso_item_windmill_2x2_se iso_item_noria_2x2_se iso_item_feed_mixer_se
+- 353 5/6 iso_item_cistern_2x2_se
+- 354 1/3 iso_item_fulling_mill_2x1_se iso_item_trip_hammer_2x1_se
+- 357 3/7 iso_terrain_boulder_small_se iso_terrain_bramble_se iso_terrain_hawthorn_se iso_terrain_old_stump_se
+- 380 5/7 iso_wall_item_spoon_rack_sw_ne iso_wall_item_bronze_mirror_wall_sw_ne
+- 381 2/3 iso_wall_item_applique_hanging_2w_sw_ne
+- 382 9/10 iso_item_oil_jug_se
+- 383 9/12 iso_item_tallow_candle_se iso_item_beeswax_candle_se iso_item_herb_pot_basil_se
+- 385 4/6 iso_ceiling_item_ceiling_garland iso_ceiling_item_ceiling_tassels
+- 386 6/8 iso_item_felt_rug_small_se iso_item_debris_se
+- 387 7/12 iso_item_onion_braid_se iso_item_garlic_braid_se iso_item_cured_meat_hanger_se iso_item_dried_fruit_string_se iso_item_vegetable_crate_se
+- 388 10/13 iso_wall_item_kilim_curtain_sw_ne iso_item_sedir_cover_kilim_se iso_item_big_cushion_se
+- 390 9/11 iso_item_sini_table_se iso_item_herb_rush_mat_2x2_se
+- 400 4/15 iso_item_glass_bottle_se iso_item_glass_cup_se iso_item_glass_goblet_se iso_wall_item_convex_mirror_sw_ne icon_ash icon_fine_sand icon_glass icon_clear_glass icon_leaded_glass icon_mirror_sphere icon_mirror_glass
+- 403 5/7 iso_item_harvest_ribbon_se iso_wall_item_family_tree_embroidery_3w_sw_ne
+- 404 4/10 iso_wall_item_tapestry_hunt_3w_sw_ne iso_wall_item_tapestry_garden_3w_sw_ne iso_wall_item_dynasty_banner_sw_ne iso_item_rug_knotted_3x3_se iso_item_canopy_bed_curtained_2x2_se iso_item_throne_chair_se
+- 405 7/10 iso_item_harvest_heap_se iso_wall_item_winter_greenery_sw_ne iso_wall_item_straw_ornament_sw_ne
+- 408@esya 7/8 iso_item_rope_coil_se
+- 409@esya 7/8 iso_item_barrel_table_se
+- 410@esya 2/9 iso_item_tile_bowl_se iso_item_lattice_screen_2x1_se iso_item_cushioned_divan_3x1_se iso_item_caravan_rug_3x2_se iso_wall_item_tile_panel_sw_ne iso_item_spice_chest_se iso_fx_festive_bunting_6w
+- 421 4/7 icon_item_indigo icon_item_saffron iso_item_book_almanac_se
+- 422k 3/4 iso_item_cezve_se
+- 424k 10/12 iso_item_olive_press_se iso_item_honey_strainer_se
+- 426k 8/9 iso_item_grape_tub_se
+- 441 2/4 iso_wall_item_clothes_perch_2w_sw_ne iso_wall_item_home_ribbon_sw_ne
+- 442 2/4 iso_item_turf_seat_2x1_se iso_item_dovecote_2x2_se
+- 443 3/5 iso_item_courtyard_pool_2x2_se iso_item_water_clock_se
+- 450 3/8 iso_item_stairs_up_wood_1x2_se_accent iso_item_stairs_down_wood_1x2_se iso_item_stairs_down_wood_1x2_se_accent iso_item_stairs_up_stone_1x2_se_accent iso_item_stairs_down_stone_1x2_se_accent
+- 454 5/12 iso_item_pot_violet_se iso_item_pot_cyclamen_se iso_item_pot_crocus_se iso_item_pot_lavender_se iso_item_pot_chamomile_se iso_item_fern_trough_se iso_item_censer_se
+- 471 1/3 viv_bg_dry viv_bg_salt
+- 472 7/8 viv_water_moss
+- 475 4/10 viv_mossy_stone viv_flat_stone viv_pot_shard viv_coral viv_river_pebble viv_mussel_shell
+- TOPLAM eksik 108

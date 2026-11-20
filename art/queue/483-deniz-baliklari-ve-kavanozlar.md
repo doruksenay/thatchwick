@@ -1,7 +1,7 @@
 ---
 id: "483"
 title: "Deniz balıkları ve kavanoz malzemeleri ikonları (7)"
-status: review
+status: accepted
 claimed_at: 2026-11-20T09:48Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe her şey doğadan, deniz kıyısı, balık tutma oyunu), Project belgeleri 47 ve 50
 priority: 20
@@ -48,3 +48,4 @@ Kod görseli adla bulur; dosya adı değişmesin. Gelene kadar yer tutucu çizil
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

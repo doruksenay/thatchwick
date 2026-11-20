@@ -1,7 +1,7 @@
 ---
 id: "321"
 title: Çiftlik eşyaları (kompost yığını, tohum yapıcı, sulama hendeği, kova-makara, su oluğu)
-status: review
+status: accepted
 claimed_at: 2026-11-18T09:24Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 10
@@ -45,3 +45,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 
 ## Notlar
 - `waterRadius` oyunda yalnızca mantıktır; görselde menzil çizilmez.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
