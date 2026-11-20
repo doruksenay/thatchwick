@@ -1,7 +1,8 @@
 ---
 id: "774"
 title: "HUD meşe: 745 sayfa 1'den parça kesimi"
-status: pending
+status: running
+claimed_at: 2026-11-20T21:45Z
 approved_by: user        # kullanıcı kararı 2026-11-21: HUD yönü B (oyma meşe), Project belgesi 66 §5 S5
 priority: 1
 family: arayuz
