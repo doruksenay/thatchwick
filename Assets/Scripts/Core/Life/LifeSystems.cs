@@ -885,23 +885,25 @@ namespace Thatchwick.Core.Life
             if (cause == WitherCause.Season && _witherNoticeDay != day)
             {
                 _witherNoticeDay = day;
-                Say("Mevsimi geçen ekinler sarardı. Sararan ekin büyümez; sökünce yan ürün verir (tohum, yem, saman). Dokunarak ya da sürükleyerek sök.", NoticeLevel.Warning);
+                Say(LocText.Of("ui.farm.notice.withered_season"), NoticeLevel.Warning);
             }
             else if (cause == WitherCause.Frost && _frostNoticeDay != day)
             {
                 _frostNoticeDay = day;
-                Say("Don vurdu: gelişmiş ekinler sarardı, filizler yitti. Sararanları sökünce yan ürün verir.", NoticeLevel.Warning);
+                Say(LocText.Of("ui.farm.notice.frost"), NoticeLevel.Warning);
             }
         }
 
         private void OnGiantGrown(ItemDef crop, ItemInstance giant)
         {
             string name = giant.Def.DisplayName;
-            Say($"Tarlada bir {name.ToLowerInvariant()} büyüdü! Dört karoyu kaplıyor; hasat edince bol ürün ve sergilik bir dev ürün verir.", NoticeLevel.Info);
+            Say(LocText.Of("ui.farm.notice.giant", ("crop", name.ToLowerInvariant())), NoticeLevel.Info);
+            // Kroniğe anahtarla yazılır: kayıt dile bağlı kalmaz, eşya adı okunurken seçili dilde çözülür.
+            string chronicle = SavedText.Encode("core.chronicle.giant_crop", ("item", SavedText.Content(giant.Def.Id)));
             foreach (var m in Household())
             {
                 m.AddMoodlet(MoodCatalog.GoodHarvest);
-                m.AddChronicle($"Tarlada bir {name.ToLowerInvariant()} büyüdü.");
+                m.AddChronicle(chronicle);
             }
         }
 
@@ -915,8 +917,8 @@ namespace Thatchwick.Core.Life
             int n = _plants.AtRiskNextSeason(next);
             if (n <= 0) return;
             Say(next == Season.Winter
-                ? $"Kışa iki gün var: tarladaki {n} ekin dona dayanmaz. Olgunları biç; gelişmiş ekin donunca sararır, filiz yitip gider."
-                : $"Mevsim iki gün sonra dönüyor: {n} ekinin mevsimi bitiyor ve sararacak. Olgunları biç; sararan ekin yalnız yan ürün verir.",
+                ? LocText.Of("ui.farm.notice.winter_soon", ("n", n))
+                : LocText.Of("ui.farm.notice.season_soon", ("n", n)),
                 NoticeLevel.Warning);
         }
         public void Attach(HeatSystem heat)

@@ -60,10 +60,13 @@ namespace Thatchwick.Core.Tests
             foreach (var kind in System.Enum.GetNames(typeof(Thatchwick.Core.Animals.ContestKind))) keys.Add("core.contest." + kind);
             foreach (var skill in System.Enum.GetNames(typeof(SkillType))) keys.Add("skill." + skill);
             Assert.True(keys.Count > 20);
-            foreach (var file in new[] { "ui.en.json", "ui.tr.json" })
+            // Ana tablo ve alan dosyaları (ui.<alan>.<dil>.json) birlikte: yeni anahtarlar alan dosyasına yazılır.
+            foreach (var lang in new[] { "en", "tr" })
             {
-                var table = LocTable.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(loc, file)), new List<string>());
-                foreach (var k in keys) Assert.True(table.TryGet(k, out _), $"{file}: {k} yok");
+                var table = new LocTable();
+                foreach (var path in System.IO.Directory.GetFiles(loc, "ui*." + lang + ".json"))
+                    table.Merge(LocTable.Parse(System.IO.File.ReadAllText(path), new List<string>()));
+                foreach (var k in keys) Assert.True(table.TryGet(k, out _), $"ui*.{lang}.json: {k} yok");
             }
         }
 

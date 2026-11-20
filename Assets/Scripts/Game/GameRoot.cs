@@ -935,6 +935,7 @@ namespace Thatchwick.Game
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
             _life.Suitors.AppearanceCatalog = _appearanceCatalog;
+            Thatchwick.Core.Localization.CoreText.Resolve = GameLocalization.R;   // Core'un dizgi döndüren imzalarındaki anahtarlı metinler
             PlacementCheck.Resolve = GameLocalization.R;   // anahtarlı yerleştirme nedenleri (kement) seçili dilde
             GameLocalization.ContentName = id =>
                 id == null ? null

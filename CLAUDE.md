@@ -14,7 +14,7 @@ Oyun: Thatchwick: Generations of a Village (Unity 6, 2D URP, izometrik 2:1). Tas
 Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, Almanca. Kurallar: `docs/yerellestirme.md`.
 - İçeriğe (items/life/appearance.json) yeni metin ekleyince İngilizcesini `Assets/Resources/Localization/content.en.json`'a aynı turda yaz. Eksikleri `python tools/loc/check.py` listeler; eksik varsa CI'da `LocalizationTests` kırılır.
 - Yeni arayüz metni düz yazılmaz: anahtar özelliğin kendi alan dosyasına girer (`Assets/Resources/Localization/ui.<alan>.en.json` ve `ui.<alan>.tr.json`, ör. `ui.build.*`; yoksa oluştur), kodda `GameLocalization.T("ui....")`. Ana `ui.en.json` / `ui.tr.json` dosyalarına yeni anahtar ekleme: herkes aynı iki dosyaya yazınca her dalda çakışma çıkıyor. Bir anahtar yalnızca bir dosyada olur (test denetler). Core metin üretecekse `LocText` döndürür.
-- Koddaki sabit Türkçe metin dosya başına artamaz (`KorumaTests`, taban `tools/loc/sabit_metin_tabani.json`). Metni anahtara taşıyınca tabanı düşür: `THATCHWICK_SABIT_METIN_YAZ=1 tools/offline-tests/run.sh KorumaTests`.
+- Koda yeni sabit Türkçe metin eklenmez: PR'da `tools/loc/sabit_metin.py` dalın kendi eklediğine bakar ve "test" denetimini kırar (`tools/offline-tests/run.sh` sonunda da çalışır). Core'da `LocText.Of(...)`; dizgi döndüren eski imzalarda `CoreText.T("ui...")`. Bilerek sabit kalan metin (ad havuzu gibi) satır sonuna `// loc-yok: <neden>` ile geçer.
 - Anahtar ve kimlik karşılaştırmasında `ToUpperInvariant`/`StringComparison.Ordinal` kullan; Türkçe cihazda `ToUpper()` "i"yi "İ" yapar.
 
 ## Arayüz (kullanıcı kararı 2026-11-20)
@@ -24,6 +24,7 @@ Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, 
 
 ## Dallar ve main (kullanıcı kararı 2026-11-20)
 - Kod (`Assets/Scripts`, `Assets/Resources`, `core`, `tools`, `.github`, `Packages`, `ProjectSettings`) `main`'e doğrudan push edilmez: dal + PR. PR, "Core tests" yeşil olmadan birleştirilmez; kod PR'ını kullanıcı birleştirir.
+- Kırmızı PR birleştirilmez, kullanıcı istese bile önce nedenini söyle: 20.11.2026'da kırmızı birleşen iki PR `main`'i ve sonraki bütün PR'ları kırdı. `main` kırmızıysa önce o düzeltilir.
 - Doğrudan `main`'e push yalnızca asset/ses iş dosyaları ve işçi çıktıları içindir (`art/`, `audio/`, `Assets/Art/Iso/`, `Assets/Resources/Audio/`) ve `YAPILACAKLAR.md`.
 - `main`'e zorla push (`--force`) ve `main`'i silme yok.
 

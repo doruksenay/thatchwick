@@ -13,12 +13,13 @@ Son güncelleme: 2026-11-20. Bu oturumun kod işleri bitti; kalanlar evden yapı
 - [ ] Unity'de dene: başarım penceresi, hata raporu kopyalama, tam ekran/pencere ve çözünürlük, `Esc` menüsü (belgenin 7. bölümü).
 - [ ] Unity'de projeyi aç, görsel kütüphanesini yenile, bütün `.meta` dosyalarını commit et.
 - [ ] GitHub > Settings > Rules > Rulesets > Import: `.github/rulesets/main-gecmis.json` (hemen açılabilir).
+- [ ] Unity'de aç: Package Manager dört paketi kaldırmış olmalı (Visual Scripting, Timeline, Multiplayer Center, Version Control); derleme hatası çıkarsa `Packages/manifest.json`'a geri ekle.
 - [ ] Unity lisans secret'ları (`UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`): eklenince Unity testleri ve derleme kendiliğinden çalışır.
-- [ ] Repo gizliliği: karar bekliyor (Actions dakikası ve dal koruması etkileri, Project belgesi 63b).
+- [x] Repo gizliliği: açık kalıyor (kullanıcı kararı 20.11.2026; gizli repoda Actions dakikası kotalı). Haklar `LICENSE.md`'de.
 - [ ] Steamworks hesabı açılınca: `PlatformConfig` kimlikleri, başarım tablosu, Auto-Cloud (belgenin 3. bölümü).
 
 ## İçerik (karar kullanıcıda)
-- [ ] `item.crop_pumpkin` balkabağı Yeni Dünya bitkisi (CLAUDE.md dönem kuralı). Kaldır ya da Eski Dünya ekiniyle değiştir (ör. su kabağı / Lagenaria).
+- [x] `item.crop_pumpkin`: görünen adlar zaten su kabağı (TR) ve bottle gourd (EN); yalnızca kimlikte `pumpkin` kaldı. Kimlik kayıtlarda geçtiği için değiştirilmedi.
 
 ## Sanat kararları (görselleri sohbette göster, karar kullanıcıda)
 - [ ] 018b4: yürüme, son 5 yön (review; kod zaten kullanıyor, reddedilirse bağlantı geri alınır)
