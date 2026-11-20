@@ -410,7 +410,7 @@ namespace Thatchwick.Core.World
         // Organik plan (belge 40): yollar kıvrılır, binalar farklı boyutta ve geri çekilmelerle dizilir, temel dükkânlar
         // sekizgen taş meydanın çevresinde toplanır (Pelican Town gibi), içinden kıvrılan bir ırmak geçer (iki köprü).
         // Yerleşim mantığı: demirci girişe yakın (yangın), değirmen ve çömlekçi ırmak kıyısında, tabakhaneli saraç akış
-        // aşağıda ve kenarda (koku), hayvan pazarı ırmağın ötesinde, otacının bahçesi sessiz kuzeybatıda.
+        // aşağıda ve kenarda (koku), hayvan pazarı ırmağın ötesinde, aktarın bahçesi sessiz kuzeybatıda.
         // Çıkışlar: batı (köy yolu), kuzey (orman), güney (ırmak ve göl), doğu (tepe).
         private static int RiverX(int y) => 50 + (int)Math.Round(2.0 * Math.Sin(y / 8.0));
 
@@ -480,13 +480,13 @@ namespace Thatchwick.Core.World
         {
             // Meydanın çevresi
             new TownBuilding("tavern", "Meyhane / han", "inn", 20, 12, 10, 7, 'S', 25, FloorType.Wood, "home:tavern", (25, 21)).WithAnnex(16, 13, 4, 4, 19, 15, "annex_kitchen"),   // batıda mutfak kanadı
-            new TownBuilding("general", "Pazar (Kerem)", "shop", 34, 14, 7, 6, 'S', 36, FloorType.Wood, "home:general", (36, 22)).WithAnnex(41, 15, 2, 4, 41, 17, "annex_store"),   // doğuda ambar
+            new TownBuilding("general", "Pazar (Kerem)", "shop", 34, 14, 7, 6, 'S', 36, FloorType.Wood, "home:general", (36, 22)) { StairsFront = true }.WithAnnex(41, 15, 2, 4, 41, 17, "annex_store"),   // doğuda ambar
             new TownBuilding("scribe", "Kâtip ve ulak", "shop", 14, 28, 6, 5, 'E', 30, FloorType.Wood, "home:scribe", (24, 30)),
-            new TownBuilding("tailor", "Terzi ve dokumacı", "shop", 36, 32, 7, 5, 'N', 38, FloorType.Wood, "home:tailor", (36, 31)),
+            new TownBuilding("tailor", "Terzi ve dokumacı", "shop", 36, 32, 7, 5, 'N', 38, FloorType.Wood, "home:tailor", (36, 31)) { StairsFront = true },   // arka duvar: dokuma tezgâhı, kumaş rafı, elbise dolabı
             // Batı (giriş)
-            new TownBuilding("herb", "Otacı ve ebe", "shop", 6, 7, 6, 5, 'S', 9, FloorType.Wood, "home:herb", (9, TownEntryY)),
+            new TownBuilding("herb", "Aktar ve ebe", "shop", 6, 7, 6, 5, 'S', 9, FloorType.Wood, "home:herb", (9, TownEntryY)),
             new TownBuilding("smithy", "Demirci (Orhan)", "shop", 3, 23, 6, 5, 'N', 6, FloorType.Stone, null, (6, 20)).WithAnnex(3, 28, 4, 2, 4, 28, "annex_forge"),   // arkada kömürlük ve demir deposu
-            new TownBuilding("carpenter", "Marangoz / mobilyacı", "shop", 4, 31, 7, 6, 'E', 33, FloorType.Wood, "home:carpenter", (12, 33)).WithAnnex(4, 37, 5, 2, 6, 37, "annex_lumber"),   // arkada kereste sundurması
+            new TownBuilding("carpenter", "Marangoz / mobilyacı", "shop", 4, 31, 7, 6, 'E', 33, FloorType.Wood, "home:carpenter", (12, 33)) { StairsFront = true }.WithAnnex(4, 37, 5, 2, 6, 37, "annex_lumber"),   // arkada kereste sundurması
             // Irmak kıyısı
             new TownBuilding("mill", "Değirmen ve fırın (Hatice)", "shop", 40, 4, 7, 6, 'S', 43, FloorType.Wood, "home:mill", (43, 11), (31, 11)).WithAnnex(47, 5, 2, 4, 47, 7, "flour_store"),   // ırmak yanında un ambarı
             new TownBuilding("potter", "Çömlekçi (Ayşe)", "shop", 39, 40, 6, 5, 'N', 41, FloorType.Dirt, "home:potter", (41, 39), (32, 39)),

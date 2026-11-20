@@ -8,7 +8,7 @@ family: bitki
 style_gate: false
 cost_est: 12
 cost_max: 24
-depends_on: ["492a"]
+depends_on: ["492a2"]
 max_attempts: 1
 pixellab: true
 outputs:
@@ -32,6 +32,8 @@ Belge 52 §2: ırmak kıyısında ulu ıhlamur (Pitchford türü, 17. yüzyıl a
 | `chestnut` | `ancient huge sweet chestnut tree, massive spiralling twisted bark, broad crown of long serrated leaves` | yaz: krem rengi püsküllü çiçek; güz: dikenli yeşil kabuklar ve kahve yaprak; kış: çıplak |
 
 - Maliyet ≈ 12 gen (3 tür × 4 mevsim).
+
+- 2026-11-21 (tester raporu 66): pilot 492a başarısız; bağımlılık 492a2. Mevsimler 492a2 gibi `edit_image_pro_flash` ile yaz görselinden, açıklamada ağaç evi/platform yok. Ölçek: `tools/art/scale_check.py` (2x2: 185-215 px, çınar: 165-190 px).
 
 ## Doğrulama
 492a doğrulaması. Ek: dört ulu ağaç (492a dahil) yan yana: taç biçimi ve rengiyle ayırt ediliyor mu.

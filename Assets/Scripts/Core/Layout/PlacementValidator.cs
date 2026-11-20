@@ -254,8 +254,12 @@ namespace Thatchwick.Core.Layout
         {
             foreach (var d in Doors(_map))
             {
-                if (!InScope(d.Inside) && !InScope(d.Outside)) continue;
                 int outDepth = d.Exterior ? DoorOutside : DoorInside;
+                // Kapsamlı denetimde (bahçe, bitki örtüsü) kapının 2. dış karosu da sayılır: eskiden yalnızca ilk iç/dış karoya
+                // bakılıyordu, ikinci karoya konan çalı ya da ağaç öbeği kapsam dışında kalıp silinmiyordu (tester raporu 66).
+                bool scoped = InScope(d.Inside) || InScope(d.Outside);
+                for (int i = 1; i < outDepth && !scoped; i++) scoped = InScope(Facing.Step(d.Outside, d.OutDir, i));
+                if (!scoped) continue;
                 // İç yüz: 1 karo
                 CheckClear(d, d.Inside, Facing.Opposite(d.OutDir), DoorInside, "içi");
                 CheckClear(d, d.Outside, d.OutDir, outDepth, "önü");

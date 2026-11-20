@@ -822,7 +822,7 @@ namespace Thatchwick.Game
         public void OnGUI(float guiScale)
         {
             if (!Active) return;
-            if (_wrap == null) _wrap = new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = 11 };
+            if (_wrap == null) _wrap = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { wordWrap = true, fontSize = 11 };
             if (_deferred != null && Event.current.type == EventType.Layout)
             {
                 var d = _deferred;
@@ -1798,8 +1798,8 @@ namespace Thatchwick.Game
         {
             if (_cellName == null)
             {
-                _cellName = new GUIStyle(GUI.skin.label) { fontSize = 9, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Clip };
-                _cellPrice = new GUIStyle(GUI.skin.label) { fontSize = 10, alignment = TextAnchor.LowerCenter, fontStyle = FontStyle.Bold };
+                _cellName = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { fontSize = 9, alignment = TextAnchor.UpperCenter, wordWrap = true, clipping = TextClipping.Clip };
+                _cellPrice = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { fontSize = 10, alignment = TextAnchor.LowerCenter, fontStyle = FontStyle.Bold };
             }
             ItemDef selected = null;
             for (int i = 0; i < list.Count; i += GridCols)

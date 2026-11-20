@@ -61,6 +61,7 @@ namespace Thatchwick.Game
             IconCache.Clear();
             IconMissing.Clear();
             HeldSprites.Clear();
+            StandIns.Clear();
             FrameCounts.Clear();
         }
 
@@ -130,6 +131,22 @@ namespace Thatchwick.Game
             return tex;
         }
 
+        private static readonly Dictionary<string, Sprite> StandIns = new Dictionary<string, Sprite>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Dünya görseli henüz olmayan eşyanın geçici görseli: ürün ikonu, alt ortadan pivotlu (tester raporu 66 §1.3).
+        /// Düz renkli kutu PixelLab görsellerinin yanında sırıtıyordu; ikon eşyanın ne olduğunu okutur. İkon da yoksa null (kutu).
+        /// </summary>
+        public static Sprite IconStandIn(string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId)) return null;
+            if (StandIns.TryGetValue(itemId, out var s)) return s;
+            var tex = ItemIcon(itemId);
+            s = tex != null ? Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.12f), Ppu) : null;
+            StandIns[itemId] = s;
+            return s;
+        }
+
         /// <summary>IMGUI satırında ikon kutusu (ikon yoksa aynı genişlikte boşluk, hizalı kalsın).</summary>
         public static void IconCell(string itemId, float size = 24f)
         {
@@ -155,6 +172,28 @@ namespace Thatchwick.Game
         private static readonly string[] GravelTiles = { "iso_ground_dirt_gravel_a", "iso_ground_dirt_gravel_b" };
 
         /// <summary>Yumuşak değer gürültüsü (0..1), ~7 karoluk öbekler: aynı konum her çizimde aynı.</summary>
+        /// <summary>Çim-çayır geçiş seti depoda mı (ilk maske görseli).</summary>
+        public static bool HasMeadowEdges => Has("iso_trans_grass_meadow_01_a");
+
+        /// <summary>Çim karosu çayır öbeğinde mi (gürültü eşiği ve geçiş seti varsa).</summary>
+        public static bool IsMeadow(int x, int y) => HasMeadowEdges && Patch(x, y) > 0.74f;
+
+        /// <summary>
+        /// Karo başına sabit, iyi karışmış karma (negatif değil). Eski (x*73856093) ^ (y*19349663) karmasının paritesi (x+y)
+        /// paritesine indirgeniyordu: "h % 2" ile seçilen a/b değişkeleri satranç tahtası diziliyordu (tester raporu 66 §1.5).
+        /// </summary>
+        public static int TileHash(int x, int y)
+        {
+            unchecked
+            {
+                uint h = (uint)(x * 73856093) ^ (uint)(y * 19349663);
+                h = (h ^ (h >> 16)) * 0x45d9f3bu;
+                h = (h ^ (h >> 16)) * 0x45d9f3bu;
+                h ^= h >> 16;
+                return (int)(h & 0x7fffffff);
+            }
+        }
+
         private static float Patch(int x, int y)
         {
             float fx = x / 7f, fy = y / 7f;
@@ -196,14 +235,15 @@ namespace Thatchwick.Game
         /// <summary>Çim ve toprak için gerçek karo (konuma göre sabit varyasyon); diğer zeminler için null.</summary>
         public static Sprite Ground(FloorType floor, int x, int y)
         {
-            int h = (x * 73856093) ^ (y * 19349663);
-            if (h < 0) h = -h;
+            int h = TileHash(x, y);
             // Zemin lekeleri (belge 64a, 612): düşük frekanslı gürültüyle çimde çayır ve koyu çim öbekleri, toprakta çakıl.
             float patch = Patch(x, y);
             switch (floor)
             {
                 case FloorType.Grass:
-                    if (patch > 0.74f) { var m = GetCentered(MeadowTiles[h % MeadowTiles.Length]); if (m != null) return m; }
+                    // Çayır öbekleri yalnızca çim-çayır geçiş seti (art/queue 770) varken: geçişsiz koyu çayır karosu çimde
+                    // sert kenarlı elmas leke gibi duruyordu (tester raporu 66 §1.5).
+                    if (IsMeadow(x, y)) { var m = GetCentered(MeadowTiles[h % MeadowTiles.Length]); if (m != null) return m; }
                     // Koyu çim öbekleri Unity'de kare leke gibi duruyordu (20.11 incelemesi): kullanılmıyor.
                     return GetCentered(GrassTiles[h % GrassTiles.Length]);
                 case FloorType.Dirt:
@@ -224,8 +264,7 @@ namespace Thatchwick.Game
             seaFallback = false;
             if (!filled) return GetCentered("iso_ground_pond_dry");
             if (frozen) return GetCentered("iso_ground_ice_a");
-            int h = (x * 73856093) ^ (y * 19349663);
-            if (h < 0) h = -h;
+            int h = TileHash(x, y);
             if (sea)
             {
                 var s = GetCentered(h % 2 == 0 ? "iso_ground_sea_a" : "iso_ground_sea_b") ?? GetCentered("iso_ground_sea_a");
@@ -244,8 +283,7 @@ namespace Thatchwick.Game
         /// <summary>Kumsal karosu (484): iso_ground_beach_a/b; yoksa null (oyun katmanı toprağı kum rengine boyar).</summary>
         public static Sprite Beach(int x, int y)
         {
-            int h = (x * 73856093) ^ (y * 19349663);
-            if (h < 0) h = -h;
+            int h = TileHash(x, y);
             return GetCentered(h % 2 == 0 ? "iso_ground_beach_a" : "iso_ground_beach_b") ?? GetCentered("iso_ground_beach_a");
         }
 
@@ -279,10 +317,10 @@ namespace Thatchwick.Game
         public static Sprite FloorPart(string partId, int x, int y)
         {
             if (string.IsNullOrEmpty(partId)) return null;
-            int h = (x * 73856093) ^ (y * 19349663);
-            if (h < 0) h = -h;
+            int h = TileHash(x, y);
             string n = partId.StartsWith("floor_") ? partId.Substring(6) : partId;   // floor_oak → iso_floor_oak_a
-            return GetCentered($"iso_floor_{n}_{(h % 2 == 0 ? "a" : "b")}") ?? GetCentered($"iso_floor_{n}_a");
+            // b değişkesi dörtte bir: iki değişke tonca ayrışıyor (çam a/b), eşit dağılımda zemin yamalı görünüyordu.
+            return GetCentered($"iso_floor_{n}_{(h % 4 == 0 ? "b" : "a")}") ?? GetCentered($"iso_floor_{n}_a");
         }
 
         /// <summary>Çatı karosu dokusu: iso_roof_&lt;ad&gt;_a (eğim), _ridge (sırt; "roof_" atılır); motor eğim yönüne göre gölgeler. Yoksa null.</summary>
@@ -465,6 +503,10 @@ namespace Thatchwick.Game
         {
             if (!Enabled || string.IsNullOrEmpty(name)) return null;
             EnsureLoaded();
+            // Ölçek tablosuna göre yeniden üretilen ağaçlar (docs/gorsel-yonerge.md "Ölçek referansı", art/queue 772-773)
+            // "_v2" ekiyle gelir ve eskisinin yerine geçer.
+            if (_art.TryGetValue(name + "_v2", out var v2) && v2.Tex != null)
+                return Get(name + "_v2", v2.Rect.width * 0.5f, 24f);   // yeni tuvalde gövde tabanı yatay ortada
             if (!_art.TryGetValue(name, out var art) || art.Tex == null) return null;
             float w = art.Rect.width;
             return Get(name, w < 80f ? w * 0.5f : 40f, 24f);
@@ -519,8 +561,7 @@ namespace Thatchwick.Game
         public static Sprite Road(RoadType road, int band, int x, int y)
         {
             if (!Enabled) return null;
-            int h = (x * 73856093) ^ (y * 19349663);
-            if (h < 0) h = -h;
+            int h = TileHash(x, y);
             switch (road)
             {
                 // 376 kabul: patika b v2 (kenarında çim yok), yıpranmış çakıl; 376b: çakıl a v2, sağlam ve bozuk kaldırım v2.
@@ -759,7 +800,7 @@ namespace Thatchwick.Game
             if (r64 != null)
             {
                 var s64 = Get(r64 + "_idle_" + Directions[direction], R64PivotX, R64PivotY) ?? Get(r64 + "_idle_se", R64PivotX, R64PivotY);
-                if (s64 != null) return s64;
+                if (s64 != null) return BaseSpriteTint.Apply(s64, c, r64);
             }
             string r84 = AdultR84(c);
             if (r84 != null)
@@ -767,8 +808,11 @@ namespace Thatchwick.Game
                 // 018b: 8 yönün durma karesi anim/ altında "_idle_<yön>"; ilk aday yalnızca "_cand_se".
                 // Düzeltilmiş sürümler önce (423: küreksiz _v2, 423b: se _v3).
                 string idle = r84 + "_idle_" + Directions[direction];
+                // Durma görselinde animasyonun ilk karesi (_00) taban resimden önce: taban resim (ör. kadın 64 renk) karelerle
+                // (31 renk) aynı paletten değil, durup yürümeye geçerken renk sıçrıyordu (tester raporu 66 §1.7).
                 var s84 = Get(idle + "_v3", R84PivotX, R84PivotY)
                           ?? Get(idle + "_v2", R84PivotX, R84PivotY)
+                          ?? Get(idle + "_00", R84PivotX, R84PivotY)
                           ?? Get(idle, R84PivotX, R84PivotY)
                           ?? Get(r84 + "_cand_" + Directions[direction], R84PivotX, R84PivotY)
                           // 012 seti reddedildi (19.11.2026): yönün 84'lüğü yoksa 56'lık değil 84'lük SE.
@@ -776,7 +820,7 @@ namespace Thatchwick.Game
                           ?? Get(r84 + "_idle_se_v2", R84PivotX, R84PivotY)
                           ?? Get(r84 + "_idle_se", R84PivotX, R84PivotY)
                           ?? Get(r84 + "_cand_se", R84PivotX, R84PivotY);
-                if (s84 != null) return s84;
+                if (s84 != null) return BaseSpriteTint.Apply(s84, c, r84);
             }
             // Son çare: eski 56'lık K2 seti (012, reddedildi). Yalnızca 84/64 görseli hiç yüklenmemişse.
             string set = CharacterSet(c, out float px, out float py);
@@ -806,7 +850,7 @@ namespace Thatchwick.Game
             int n = WalkFrameCount(prefix);
             if (n <= 0) return null;
             int frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;
-            return Get(prefix + frame.ToString("00"), px, py);
+            return BaseSpriteTint.Apply(Get(prefix + frame.ToString("00"), px, py), c, set);
         }
 
         /// <summary>
@@ -850,7 +894,7 @@ namespace Thatchwick.Game
                 int n64 = FrameCount(p64, closingFrame: false);
                 if (n64 <= 0) { p64 = ChildR64(c) + "_" + key + "_se_"; n64 = FrameCount(p64, closingFrame: false); }
                 if (n64 <= 0) return null;
-                return Get(p64 + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n64) % n64).ToString("00"), R64PivotX, R64PivotY);
+                return BaseSpriteTint.Apply(Get(p64 + (Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n64) % n64).ToString("00"), R64PivotX, R64PivotY), c, ChildR64(c));
             }
             prefix = r84 + "_" + key + "_" + Directions[diag] + "_";
             int n = FrameCount(prefix, closingFrame: false);
@@ -861,7 +905,7 @@ namespace Thatchwick.Game
                 if (n <= 0) { prefix = null; return null; }
             }
             frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;
-            return Get(prefix + frame.ToString("00"), R84PivotX, R84PivotY);
+            return BaseSpriteTint.Apply(Get(prefix + frame.ToString("00"), R84PivotX, R84PivotY), c, r84);
         }
 
         /// <summary>Animasyon karesinin pivotu (piksel): elde tutulan nesneyi kareye göre yerleştirmek için.</summary>

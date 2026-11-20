@@ -1,5 +1,5 @@
 ---
-id: "619"
+id: "619j"
 title: "Johan Wick: eksik yönler (yürüme güneybatı, sevme üç yön)"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); 510 raporundaki eksikler, Project belgesi 55d
@@ -32,6 +32,7 @@ created: 2026-11-20
 510 ile aynı. Yürümede kafa farkı ≤ 3 px. Sevmede: karede hayvan yok, gövde belirgin eğik (kafa en az 8 px alçalır), ardışık kareler aynı değil.
 
 ## Notlar
+- 2026-11-21 (tester raporu 66): iş numarası çift kullanılıyordu, `queue_ready.py` bu işi hiç görmüyordu; numara "619j" yapıldı.
 - 510'un `art/results/510-red/` altındaki kareleri teslim edilmez; bu iş onların yerine geçer.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:

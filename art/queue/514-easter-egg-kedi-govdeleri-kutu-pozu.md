@@ -9,7 +9,7 @@ family: hayvan
 style_gate: false
 cost_est: 6
 cost_max: 12
-depends_on: ["485", "513"]
+depends_on: ["485k", "513"]
 max_attempts: 1
 pixellab: true
 outputs:

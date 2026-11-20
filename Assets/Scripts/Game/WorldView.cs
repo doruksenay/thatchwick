@@ -486,7 +486,7 @@ namespace Thatchwick.Game
         }
 
         /// <summary>Geçiş seti çiftleri (birinci, ikinci): dosya adındaki sırayla.</summary>
-        private static readonly (string a, string b)[] TransitionPairs = { ("grass", "sand"), ("grass", "stone"), ("sand", "water"), ("grass", "water") };
+        private static readonly (string a, string b)[] TransitionPairs = { ("grass", "sand"), ("grass", "stone"), ("sand", "water"), ("grass", "water"), ("grass", "meadow") };
 
         /// <summary>Karonun geçiş malzemesi (kat 0): çim, kum, açık havadaki taş döşeme, su; yol ve diğerleri null.</summary>
         private string TransitionKind(int x, int y)
@@ -495,7 +495,7 @@ namespace Thatchwick.Game
             if (!Map.InBounds(p) || Map.GetRoad(p) != RoadType.None) return null;
             switch (Map.GetFloor(p))
             {
-                case FloorType.Grass: return "grass";
+                case FloorType.Grass: return IsoArt.IsMeadow(x, y) && Map.GetFloorStyle(p) == null ? "meadow" : "grass";
                 case FloorType.Sand: return "sand";
                 case FloorType.Water: return "water";
                 case FloorType.Stone:

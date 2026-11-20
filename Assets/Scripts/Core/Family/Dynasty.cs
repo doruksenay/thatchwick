@@ -38,11 +38,11 @@ namespace Thatchwick.Core.Family
         public static string Validate(string name)
         {
             var n = (name ?? "").Trim();
-            if (n.Length < MinLength) return $"Yerleşim adı en az {MinLength} harf olmalı.";
-            if (n.Length > MaxLength) return $"Yerleşim adı en çok {MaxLength} harf olabilir.";
-            if (!char.IsLetter(n[0])) return "Yerleşim adı harfle başlamalı.";
+            if (n.Length < MinLength) return Localization.CoreText.T("ui.creator.settlement.too_short", ("n", MinLength));
+            if (n.Length > MaxLength) return Localization.CoreText.T("ui.creator.settlement.too_long", ("n", MaxLength));
+            if (!char.IsLetter(n[0])) return Localization.CoreText.T("ui.creator.settlement.letter_first");
             foreach (char ch in n)
-                if (!char.IsLetter(ch) && ch != ' ' && ch != '\'' && ch != '-') return "Yerleşim adında yalnızca harf, boşluk, kesme ve tire olabilir.";
+                if (!char.IsLetter(ch) && ch != ' ' && ch != '\'' && ch != '-') return Localization.CoreText.T("ui.creator.settlement.chars");
             return null;
         }
 

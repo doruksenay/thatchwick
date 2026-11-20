@@ -1,5 +1,5 @@
 ---
-id: "612"
+id: "612m"
 title: "Köy meydanı onarımı: 7 yapının yıkık ve onarılmış hâli, iki iskele katmanı"
 status: failed
 claimed_at: 2026-11-20T14:26Z
@@ -51,6 +51,7 @@ Yapı ailesinin izometrik tarifi (`create_image_pixflux`, izometrik görünüm, 
 - Dönem kuralları (CLAUDE.md, Project belgesi 20).
 
 ## Notlar
+- 2026-11-21 (tester raporu 66): iş numarası çift kullanılıyordu, `queue_ready.py` bu işi hiç görmüyordu; numara "612m" yapıldı.
 - Yerleşim ve kod: belge 64a Aşama E (meydan) ile birlikte; konumlar `markers.json`'a `square:<ad>` olarak girer.
 - Eşleme gelene kadar kod yıkık hâl için yer tutucu çizmez; yapı yoksa onarım projesi listede görünür ama haritada işaret olmaz.
 

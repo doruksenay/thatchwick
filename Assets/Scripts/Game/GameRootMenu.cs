@@ -61,8 +61,8 @@ namespace Thatchwick.Game
 
             float pw = Mathf.Min(sw - 16f, 520f), ph = Mathf.Min(sh - 16f, 460f);
             GUILayout.BeginArea(new Rect((sw - pw) / 2f, (sh - ph) / 2f, pw, ph), GUI.skin.box);
-            var title = new GUIStyle(GUI.skin.label) { fontSize = 22, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
-            var sub = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
+            var title = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { fontSize = 22, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+            var sub = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { alignment = TextAnchor.MiddleCenter };
             GUILayout.Label("Thatchwick", title);                       // ad ve alt başlık hiçbir dilde çevrilmez (belge 21)
             GUILayout.Label("Generations of a Village", sub);
             GUILayout.Space(8f);
@@ -80,19 +80,24 @@ namespace Thatchwick.Game
             GUI.matrix = Matrix4x4.identity;
         }
 
+        private GUIStyle _slotStyle;
+
         private void DrawSlotRow(int slot)
         {
             var info = _slotInfo != null ? _slotInfo[slot] : null;
             GUILayout.BeginVertical(GUI.skin.box);
             GUILayout.BeginHorizontal();
             string head = GameLocalization.T("ui.menu.slot", ("n", slot));
-            if (info == null) GUILayout.Label(head + " · " + T("ui.menu.slot_empty"));
+            // İki satırlık yazı tek satırlık düğme yüksekliğine sığmıyor, kesiliyordu (tester raporu 66 §1.6): satır en az iki
+            // satır yüksekliğinde, yazı sararak; köy adı ikinci satıra geçer.
+            if (_slotStyle == null) _slotStyle = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { wordWrap = true, fontSize = 12 };
+            if (info == null) GUILayout.Label(head + " · " + T("ui.menu.slot_empty"), _slotStyle, GUILayout.MinHeight(34f));
             else
             {
                 string name = string.IsNullOrEmpty(info.Dynasty) ? "?" : info.Dynasty;
                 string place = string.IsNullOrEmpty(info.Settlement) ? "" : " · " + info.Settlement;
-                GUILayout.Label(head + " · " + name + place + "\n" + GameLocalization.T(info.Ended ? "ui.menu.slot_ended" : "ui.menu.slot_line",
-                    ("year", info.Year), ("day", info.DayOfYear), ("gen", info.Generation)));
+                GUILayout.Label(head + " · " + name + "\n" + (place.Length > 0 ? info.Settlement + " · " : "") + GameLocalization.T(info.Ended ? "ui.menu.slot_ended" : "ui.menu.slot_line",
+                    ("year", info.Year), ("day", info.DayOfYear), ("gen", info.Generation)), _slotStyle, GUILayout.MinHeight(34f));
             }
             GUILayout.FlexibleSpace();
             if (_confirmSlot == slot)
@@ -216,7 +221,7 @@ namespace Thatchwick.Game
             if (GUILayout.Button("×", GUILayout.Width(24f))) FirstDayGuide.Dismiss(_account);
             GUILayout.EndHorizontal();
             bool nextShown = false;
-            var wrap = new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = 11 };
+            var wrap = new GUIStyle(UiSkin.InkLabel(GUI.skin.label)) { wordWrap = true, fontSize = 11 };
             foreach (var step in FirstDayGuide.Steps)
             {
                 bool done = FirstDayGuide.IsDone(step, _account);

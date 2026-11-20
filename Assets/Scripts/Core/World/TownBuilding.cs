@@ -10,6 +10,12 @@ namespace Thatchwick.Core.World
         public string Template;
         /// <summary>Meslek etiketi (eşyaların "trades" alanı); boşsa Id. Ev için kullanılmaz.</summary>
         public string Trade;
+        /// <summary>
+        /// Merdiven ve bodrum kapağı ön duvarda (batı/kuzey) kalır. Varsayılan arka duvardır (tester raporu 66 §1.4: kesitte
+        /// alçalan ön duvarın yanında merdiven duvarın dışına taşmış görünüyordu); arka duvarı dükkân donanımına (tezgâh,
+        /// dolap, kereste) yetmeyen binalarda ön duvar seçilir.
+        /// </summary>
+        public bool StairsFront;
         public readonly int X, Y, W, H, DoorAt;
         public readonly char Door;
         public readonly FloorType Floor;
