@@ -118,6 +118,7 @@ namespace Thatchwick.Core.Life
                 for (int n = 0; n < p.Count; n++)
                 {
                     if (!House.TryTakeItem(p.ItemId)) break;
+                    foreach (var mat in i.AllConsumed()) if (Content.Items.TryGet(mat.ItemId, out var md) && md.HasTag("cloth")) ClothUsed += mat.Count;
                     var skill = i.Skill ?? SkillType.Tailoring;
                     int lvl = c.Skills.GetLevel(skill);
                     int q = lvl >= 9 ? 3 : lvl >= 7 ? 2 : lvl >= 4 ? 1 : 0;
@@ -215,6 +216,7 @@ namespace Thatchwick.Core.Life
             var o = Tailor.Place(customer, modelId, color, ownMaterials, matValue, affinity, HouseholdClothingTier, Clock.TotalDays, TailorBusy(), courier, cutsKey);
             if (o == null) return null;
             House.TrySpend(o.Fee);
+            TailorSpent += o.Fee;
             return o;
         }
 
@@ -228,6 +230,10 @@ namespace Thatchwick.Core.Life
             Tailor.Write(c, modelId);
             return true;
         }
+
+        /// <summary>Denge raporu sayaçları (oturum içi): ısmarlamaya ödenen akçe, dikilen giysiye giden kumaş.</summary>
+        public int TailorSpent { get; private set; }
+        public int ClothUsed { get; private set; }
 
         /// <summary>Kalıbı gereken giysi tarifinin engeli (belge 48 §11.2).</summary>
         private string ClothingBlocker(Character c, ItemInstance it, InteractionDef i)

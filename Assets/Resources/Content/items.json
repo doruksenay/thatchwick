@@ -36995,6 +36995,97 @@
       ]
     },
     {
+      "id": "item.glasses_bone",
+      "displayName": "Kemik çerçeveli gözlük",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "aging_aid"
+      ]
+    },
+    {
+      "id": "item.glasses_brass",
+      "displayName": "Pirinç çerçeveli gözlük",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 60,
+      "tags": [
+        "aging_aid"
+      ]
+    },
+    {
+      "id": "item.glasses_silver",
+      "displayName": "Gümüş çerçeveli gözlük",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 140,
+      "tags": [
+        "aging_aid"
+      ]
+    },
+    {
+      "id": "item.cane",
+      "displayName": "Düz baston",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 6,
+      "tags": [
+        "aging_aid"
+      ]
+    },
+    {
+      "id": "item.cane_carved",
+      "displayName": "Oymalı baston",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 24,
+      "tags": [
+        "aging_aid"
+      ]
+    },
+    {
+      "id": "item.cane_silver",
+      "displayName": "Gümüş başlı baston",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 90,
+      "tags": [
+        "aging_aid"
+      ]
+    },
+    {
+      "id": "item.knee_warmer_wool",
+      "displayName": "Yün dizlik",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "aging_aid"
+      ]
+    },
+    {
+      "id": "item.knee_warmer_fur",
+      "displayName": "Kürk dizlik",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 30,
+      "tags": [
+        "aging_aid"
+      ]
+    },
+    {
+      "id": "item.warming_tincture",
+      "displayName": "Isıtan tentür",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 8,
+      "tags": [
+        "aging_aid",
+        "potion"
+      ]
+    },
+    {
       "id": "item.rusty_sword_ground",
       "displayName": "Paslı kılıç",
       "width": 1,
@@ -45249,6 +45340,184 @@
       "displayName": "Tohum çıkar: Sarı boya otu"
     },
     {
+      "id": "glasses_bone",
+      "station": "item.glass_bench",
+      "produces": "item.glasses_bone",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        },
+        {
+          "item": "item.bone",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Pottery",
+      "skillXp": 13,
+      "displayName": "Kemik çerçeveli gözlük yap",
+      "minLevel": 7
+    },
+    {
+      "id": "glasses_brass",
+      "station": "item.forge",
+      "produces": "item.glasses_brass",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        },
+        {
+          "item": "item.copper",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Smithing",
+      "skillXp": 10,
+      "displayName": "Pirinç çerçeveli gözlük yap",
+      "minLevel": 4
+    },
+    {
+      "id": "glasses_silver",
+      "station": "item.forge",
+      "produces": "item.glasses_silver",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        },
+        {
+          "item": "item.silver",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Smithing",
+      "skillXp": 15,
+      "displayName": "Gümüş çerçeveli gözlük yap",
+      "minLevel": 9
+    },
+    {
+      "id": "cane",
+      "station": "item.workbench",
+      "produces": "item.cane",
+      "materials": [
+        {
+          "item": "item.log",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Carpentry",
+      "skillXp": 7,
+      "displayName": "Düz baston yap"
+    },
+    {
+      "id": "cane_carved",
+      "station": "item.workbench",
+      "produces": "item.cane_carved",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Carpentry",
+      "skillXp": 12,
+      "displayName": "Oymalı baston yap",
+      "minLevel": 6
+    },
+    {
+      "id": "cane_silver",
+      "station": "item.forge",
+      "produces": "item.cane_silver",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 1
+        },
+        {
+          "item": "item.silver",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Smithing",
+      "skillXp": 15,
+      "displayName": "Gümüş başlı baston yap",
+      "minLevel": 9
+    },
+    {
+      "id": "knee_warmer_wool",
+      "station": "item.sewing_table",
+      "produces": "item.knee_warmer_wool",
+      "materials": [
+        {
+          "item": "item.yarn",
+          "count": 2
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Tailoring",
+      "skillXp": 7,
+      "displayName": "Yün dizlik yap"
+    },
+    {
+      "id": "knee_warmer_fur",
+      "station": "item.saddler_bench",
+      "produces": "item.knee_warmer_fur",
+      "materials": [
+        {
+          "item": "item.fur",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Leatherwork",
+      "skillXp": 12,
+      "displayName": "Kürk dizlik yap",
+      "minLevel": 6
+    },
+    {
+      "id": "warming_tincture",
+      "station": "item.mortar_pestle",
+      "produces": "item.warming_tincture",
+      "materials": [
+        {
+          "item": "item.herb",
+          "count": 2
+        },
+        {
+          "item": "item.honey",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Herbalism",
+      "skillXp": 10,
+      "displayName": "Isıtan tentür yap",
+      "minLevel": 4
+    },
+    {
+      "id": "reading_stone",
+      "station": "item.glass_bench",
+      "produces": "item.reading_stone",
+      "materials": [
+        {
+          "item": "item.glass",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.1,
+      "skill": "Pottery",
+      "skillXp": 12,
+      "displayName": "Okuma taşı yap",
+      "minLevel": 6
+    },
+    {
       "id": "sword_ploughshare",
       "station": "item.forge",
       "produces": "item.sword_ploughshare",
@@ -47232,7 +47501,8 @@
       "description": "Kahve içti: bütün işler %10 hızlı.",
       "value": 6,
       "days": 0.5,
-      "allSpeed": 0.1
+      "allSpeed": 0.1,
+      "energyDecay": 0.8
     },
     {
       "id": "eff_coffee_fine",
@@ -47240,7 +47510,8 @@
       "description": "Köpüklü kahve: bütün işler %10 hızlı.",
       "value": 8,
       "days": 0.5,
-      "allSpeed": 0.1
+      "allSpeed": 0.1,
+      "energyDecay": 0.8
     },
     {
       "id": "eff_mahmur",
@@ -47248,7 +47519,8 @@
       "description": "Sabah kahvesini içmedi: işler %10 yavaş.",
       "value": -5,
       "days": 0.125,
-      "allSpeed": -0.1
+      "allSpeed": -0.1,
+      "energyDecay": 1.1
     },
     {
       "id": "eff_headache",
@@ -47256,7 +47528,8 @@
       "description": "Bütün gün kahvesiz kaldı: işler %5 yavaş.",
       "value": -6,
       "days": 1.0,
-      "allSpeed": -0.05
+      "allSpeed": -0.05,
+      "energyDecay": 1.1
     },
     {
       "id": "eff_coffee_late",
@@ -47444,8 +47717,8 @@
       "id": "eff_black_tea",
       "displayName": "Çay keyfi",
       "description": "Bir bardak demli çay.",
-      "value": 4,
-      "days": 0.25
+      "value": 6,
+      "days": 0.125
     },
     {
       "id": "eff_tea_talk",
@@ -47467,6 +47740,56 @@
       "description": "Usta alametini giymiş, işinin başında.",
       "value": 2,
       "days": 0.25
+    },
+    {
+      "id": "eff_sage_clear",
+      "displayName": "Berrak zihin",
+      "description": "Adaçayı: işi yarıda bırakma olasılığı %30 az.",
+      "value": 2,
+      "days": 0.5
+    },
+    {
+      "id": "eff_mint_fresh",
+      "displayName": "Ferahladı",
+      "description": "Nane çayı: %10 geç yorulur.",
+      "value": 3,
+      "days": 0.083,
+      "energyDecay": 0.9
+    },
+    {
+      "id": "eff_slept_badly",
+      "displayName": "Kötü uyudu",
+      "description": "Gece uykusu kaçtı: gün boyu dalgın.",
+      "value": -2,
+      "days": 1.0
+    },
+    {
+      "id": "eff_calm_evening",
+      "displayName": "Sakin akşam",
+      "description": "Akşam ıhlamuru.",
+      "value": 3,
+      "days": 0.25
+    },
+    {
+      "id": "eff_hearth",
+      "displayName": "Ocak başı",
+      "description": "Sıcak ocağın başında oturmak yaşlıya iyi geliyor.",
+      "value": 3,
+      "days": 0.25
+    },
+    {
+      "id": "eff_hard_bite",
+      "displayName": "Sert lokma",
+      "description": "Dişleri sert yiyeceği zor çiğniyor.",
+      "value": -3,
+      "days": 0.25
+    },
+    {
+      "id": "eff_gift_glasses",
+      "displayName": "Nineme gözlük yaptım",
+      "description": "Büyüğüne çözüm eşyası yaptı.",
+      "value": 5,
+      "days": 2.0
     }
   ]
 }
