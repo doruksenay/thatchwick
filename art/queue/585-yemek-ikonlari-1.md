@@ -1,7 +1,7 @@
 ---
 id: "585"
 title: "Yemek ikonları 1: beceri tablosunun vaat ettikleri ve kesinleşenler (16)"
-status: running
+status: review
 claimed_at: 2026-11-20T15:41Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 35
