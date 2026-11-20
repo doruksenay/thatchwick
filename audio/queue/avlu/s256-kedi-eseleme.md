@@ -4,7 +4,7 @@ title: Kedi toprağı eşeliyor
 kind: sfx
 family: foley
 freq: C
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 key: yard.cat_dig
@@ -22,5 +22,7 @@ inceleme_notlari:
   not: çok güçlü, delirmiş bir kedi tırmalaması gibi
 yeniden_sayisi: 1
 prompt_influence: 0.7
+claimed_by: runnervmccnms
+claimed_at: '2026-11-20T16:49:28Z'
 ---
 A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood.
