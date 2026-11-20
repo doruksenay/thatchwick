@@ -1,7 +1,8 @@
 ---
 id: "612b"
 title: "Köy meydanı: 7 yapının yıkık hâli ve ortak ocak (612 devamı)"
-status: pending
+status: review
+claimed_at: 2026-11-20T17:44Z
 approved_by: user        # otomatik akış (art/budget.md); 612'nin eksikleri, karar: kullanıcı 20.11.2026 (Project belgesi 64c §3)
 priority: 15
 family: yapi
@@ -31,6 +32,9 @@ created: 2026-11-20
 
 ## Doğrulama
 `validate_iso --kind object --max-colors 48`, `style.py check --family yapi`. Yan yana sayfası `art/results/612b-yanyana.png`: her satırda yıkık | onarılmış | yıkık + iskele bindirmesi. Kuyu ve kilerin 2x2 elmasa göre küçük kaldığı 612'de not edildi; yıkık hâlleri onarılmış hâlin ölçeğini izler (612 dosyaları değişmez).
+
+## Sorular
+Kısmi sonuç: 4/8 teslim (çark, çan kulesi, pazar yeri, köprü yıkık). Ocak, kuyu ve kiler yıkığı teslim edilmedi; ayrıntı `art/results/612b-meydan-yikik-haller-ve-ocak.md`.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
