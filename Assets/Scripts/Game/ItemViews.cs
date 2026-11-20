@@ -285,7 +285,9 @@ namespace Thatchwick.Game
                     }
                     // Bantlı duvar (27): alt, orta, üst yükseklik; geniş eşya kenarlarının ortasında, genişliğince büyük.
                     var wallArt = IsoArt.Item(item, out _);
-                    float wscale = (wallArt != null ? 1f : 0.3f) * (item.WallSpan > 1 && wallArt == null ? item.WallSpan : 1f);
+                    bool wallStandIn = false;
+                    if (wallArt == null && (wallArt = IsoArt.IconStandIn(item.Def.Id)) != null) wallStandIn = true;   // 66 §1.3
+                    float wscale = wallStandIn ? StandInScale : (wallArt != null ? 1f : 0.3f) * (item.WallSpan > 1 && wallArt == null ? item.WallSpan : 1f);
                     var wsr = AddItemSprite(item, Iso.WallMountSpan(item.Position, item.Rotation, item.WallSpan, item.WallBand), color, wscale,
                         Iso.WallMountOrder(item.Position, item.Rotation) + item.WallBand, wallArt);
                     wsr.color = ConditionTint(item, wallArt != null ? Color.white : color);
@@ -298,7 +300,9 @@ namespace Thatchwick.Game
                     // Tavan ve kiriş (27): karonun ortasında, tavan yüksekliğinde; kat ya da çatı görünürken zaten çizilmez.
                     var cpos = _view.TileToWorld(item.Position) + new Vector3(0f, Iso.CeilingHeight, 0f);
                     var ceilArt = IsoArt.Item(item, out _);
-                    var csr = AddItemSprite(item, cpos, color, ceilArt != null ? 1f : 0.3f, Iso.SortOrder(_view.TileToWorld(item.Position).y, 3, level), ceilArt);
+                    float cscale = ceilArt != null ? 1f : 0.3f;
+                    if (ceilArt == null && (ceilArt = IsoArt.IconStandIn(item.Def.Id)) != null) cscale = StandInScale;
+                    var csr = AddItemSprite(item, cpos, color, cscale, Iso.SortOrder(_view.TileToWorld(item.Position).y, 3, level), ceilArt);
                     csr.color = ConditionTint(item, ceilArt != null ? Color.white : color);
                     return;
                 }
@@ -354,7 +358,9 @@ namespace Thatchwick.Game
                     }
                     var pos = Iso.GridToWorld(gx, gy, level) + new Vector3(0f, topPx / 32f, 0f);
                     var decorArt = IsoArt.Item(item, out _);
-                    var dsr2 = AddItemSprite(item, pos, color, decorArt != null ? 1f : 0.35f, Iso.SortOrder(Iso.GridToWorld(gx, gy, level).y, 0, level) + 2, decorArt);
+                    float dscale = decorArt != null ? 1f : 0.35f;
+                    if (decorArt == null && (decorArt = IsoArt.IconStandIn(item.Def.Id)) != null) dscale = StandInScale * 0.7f;
+                    var dsr2 = AddItemSprite(item, pos, color, dscale, Iso.SortOrder(Iso.GridToWorld(gx, gy, level).y, 0, level) + 2, decorArt);
                     if (item.Def.IsFillDecor) dsr2.color = FillTint(item, decorArt != null ? Color.white : color);
                     return;
                 }
@@ -416,6 +422,19 @@ namespace Thatchwick.Game
                     // sık olduğu için fark edilmiyordu).
                     _plantViews[item.Id] = new PlantView { Item = item, View = psr.transform, Sr = psr, Shadow = plantShadow };
                     return;
+                }
+                // Görseli olmayan tek karoluk yer eşyası: düz kutu yerine ürün ikonu (66 §1.3). Büyük eşya kutuda kalır (ayak izini gösterir).
+                if (item.Width * item.Height == 1)
+                {
+                    var stand = IsoArt.IconStandIn(item.Def.Id);
+                    if (stand != null)
+                    {
+                        var spos = _view.TileToWorld(item.Position);
+                        AddItemShadow(item, spos, level);
+                        var ssr = AddItemSprite(item, spos, Color.white, StandInScale, Iso.SortOrder(spos.y, 0, level), stand);
+                        ssr.color = ConditionTint(item, Color.white);
+                        return;
+                    }
                 }
                 var tinted = FinishTint(item, color, 1f);
                 AddItemShadow(item, Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, level), level);
@@ -660,6 +679,9 @@ namespace Thatchwick.Game
             TrackItemObject(go);
             return go.transform;
         }
+
+        /// <summary>Geçici ikon görselinin ölçeği: ikon (32 px) dünya eşyasından küçük okunsun.</summary>
+        private const float StandInScale = 0.8f;
 
         private SpriteRenderer AddItemSprite(ItemInstance item, Vector3 pos, Color color, float scale, int order, Sprite sprite = null)
         {

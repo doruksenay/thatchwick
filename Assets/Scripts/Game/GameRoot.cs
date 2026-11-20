@@ -560,7 +560,7 @@ namespace Thatchwick.Game
                 }
                 return new Rect(8f, 8f, HudWidth, _hudExpanded
                     ? Mathf.Min(560f, Screen.height / HudScale - 16f)
-                    : (_clock != null && Time.unscaledTime < _messageUntil ? 112f : 88f));
+                    : 116f + (_clock != null && Time.unscaledTime < _messageUntil ? 24f : 0f) + (_clock != null && _clock.Paused ? 22f : 0f));   // düğmeler ayrı satırda (66)
             }
         }
 
@@ -582,6 +582,7 @@ namespace Thatchwick.Game
         private bool _toolkitHud;
         private bool _toolkitHudRestored;
         private const float HudWidth = 340f;
+        private GUIStyle _hudNoWrap;
 
         private void SetToolkitHud(bool on)
         {
@@ -792,6 +793,7 @@ namespace Thatchwick.Game
             _weatherFx = gameObject.AddComponent<WeatherFx>();
             _weatherFx.Init(cam);
             _weatherFx.IsSheltered = IsShelteredAt;
+            LanguageMenu.ShowWhen = () => this != null && _title;
             _juice = gameObject.AddComponent<Juice>();
 
             _input = gameObject.AddComponent<WorldInput>();
@@ -1750,7 +1752,7 @@ namespace Thatchwick.Game
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_requestPanel != null && _requestPanel.Active && _requestPanel.PanelRect(s).Contains(guiPos)) return true;
-            if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
+            if (_statusHud != null && !(_buildMode != null && _buildMode.Active) && _statusHud.IsOver(guiPos)) return true;   // yapı modunda HUD çizilmez
             if (_dynastyEnded) return true;
             if (_menuOpen && _menuRect.Contains(guiPos)) return true;
             if (AchievementsVisible || UiWindowOpen) return true;   // tam ekran pencere: dünyaya dokunma geçmez
@@ -1997,13 +1999,13 @@ namespace Thatchwick.Game
             GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
             var r = new Rect(Screen.width / s * 0.5f - 180f, Screen.height / s * 0.5f - 90f, 360f, 180f);
             GUILayout.BeginArea(r, GUI.skin.box);
-            GUILayout.Label("Hanen hangi yerleşimde yaşayacak?");
-            GUILayout.Label("Hayali bir ortaçağ köyü: adını sen koy.");
+            GUILayout.Label(GameLocalization.T("ui.creator.settlement.title"));
+            GUILayout.Label(GameLocalization.T("ui.creator.settlement.hint"));
             _settlementDraft = GUILayout.TextField(_settlementDraft ?? "", Settlement.MaxLength);
             if (!string.IsNullOrEmpty(_settlementError)) GUILayout.Label(_settlementError);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Rastgele ad")) { _settlementDraft = Settlement.Random(_rng); _settlementError = null; }
-            if (GUILayout.Button("Devam"))
+            if (GUILayout.Button(GameLocalization.T("ui.creator.settlement.random"))) { _settlementDraft = Settlement.Random(_rng); _settlementError = null; }
+            if (GUILayout.Button(GameLocalization.T("ui.creator.settlement.continue")))
             {
                 _settlementError = Settlement.Validate(_settlementDraft);
                 if (_settlementError == null)
@@ -3087,11 +3089,23 @@ namespace Thatchwick.Game
         private bool IsShelteredAt(Vector3 world)
         {
             if (_world == null) return false;
-            var g = Iso.WorldToGrid(new Vector2(world.x, world.y));
-            var tile = new GridPos(Mathf.FloorToInt(g.x), Mathf.FloorToInt(g.y), 0);
-            var room = _world.Map.Rooms.RoomAt(tile);
-            return room != null && room.IsIndoor;
+            // Ekrandaki damla, altındaki karonun yanı sıra önündeki duvarın ve eşyanın da üstünde çizilir: damlanın altındaki
+            // dikey sütunda (duvar boyu kadar) bir iç mekân karosu varsa damla gizlenir. Eskiden yalnızca zemin noktasına
+            // bakılıyordu, masa ve dolapların üstüne yağmur yağıyordu (tester raporu 66 §1.7).
+            for (int k = 0; k <= ShelterSteps; k++)
+            {
+                var g = Iso.WorldToGrid(new Vector2(world.x, world.y - k * ShelterStep));
+                var tile = new GridPos(Mathf.FloorToInt(g.x), Mathf.FloorToInt(g.y), 0);
+                if (k == 0 && (!_world.Map.InBounds(tile) || (_region != null && !_region.Contains(tile)))) return true;   // harita dışı: yağmur yok
+                var room = _world.Map.Rooms.RoomAt(tile);
+                if (room != null && room.IsIndoor) return true;
+            }
+            return false;
         }
+
+        // Duvar yüksekliği yaklaşık 2,6 birim: yarım birimlik adımlarla taranır.
+        private const int ShelterSteps = 5;
+        private const float ShelterStep = 0.5f;
 
         private readonly System.Random _fxRng = new System.Random(7);
         private float Random01() => (float)_fxRng.NextDouble();
@@ -3695,10 +3709,13 @@ namespace Thatchwick.Game
             _requestPanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }
             DrawBalloons(s);
             _statusHud.LeftInset = 8f + HudWidth;
-            { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
+            // Yapı modunda üst bilgi şeridi, ihtiyaç çubuğu ve ilk gün rehberi çekilir: Yapı panelinin üst sekmelerini ve eşya
+            // listesini örtüyorlardı (tester raporu 65 A4, 66 §1.6). The Sims'te de yapı modunda HUD gizlenir.
+            bool buildOpen = _buildMode != null && _buildMode.Active;
+            if (!buildOpen) { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
             DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
-            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); } finally { GUI.skin = prevMenuSkin; } }
+            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { if (!buildOpen) DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); } finally { GUI.skin = prevMenuSkin; } }
 
             // Sol panel (görsel analiz, 18.11.2026): varsayılan küçük; ihtiyaç listesi, beceriler ve ayarlar "Ayrıntı" (Tab) altında.
             // UI Toolkit HUD açıkken (F4) küçük bölüm orada çizilir; IMGUI yalnızca açılmış "Ayrıntı" alanını çizer.
@@ -3845,8 +3862,13 @@ namespace Thatchwick.Game
             if (Time.unscaledTime < _akceFlashUntil) GUI.contentColor = _akceFlashUp ? new Color(0.6f, 1f, 0.55f) : new Color(1f, 0.55f, 0.5f);
             GUILayout.Label(T("ui.hud.akce", ("amount", HudAkce)), GUILayout.Width(80f));
             GUI.contentColor = akceColor;
-            GUILayout.Label(new GUIContent(T("ui.diamonds.balance", ("count", _account.Diamonds)), T("ui.diamonds.tip")), GUILayout.ExpandWidth(false));
-            GUILayout.Label(new GUIContent(T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)), HudReputationTip()), GUILayout.Width(110f));
+            // Elmas sarmadan tek satırda; düğmeler ayrı satırda: 340 px şeritte "Elma / s" diye bölünüyor, en sağdaki düğme
+            // ("Ka...") kesiliyordu (tester raporu 65 A4).
+            if (_hudNoWrap == null) _hudNoWrap = new GUIStyle(GUI.skin.label) { wordWrap = false };
+            GUILayout.Label(new GUIContent(T("ui.diamonds.balance", ("count", _account.Diamonds)), T("ui.diamonds.tip")), _hudNoWrap, GUILayout.ExpandWidth(false));
+            GUILayout.Label(new GUIContent(T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)), HudReputationTip()), _hudNoWrap, GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
             if (HudToggle(T("ui.hud.labels"), _labelsAll)) _labelsAll = !_labelsAll;
             if (GUILayout.Button(T("ui.hud.save"))) SaveNow(quiet: false);
             if (GUILayout.Button(T("ui.hud.fx." + _fxLevel))) CycleFx();   // efekt yoğunluğu (belge 57)

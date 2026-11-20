@@ -1,13 +1,14 @@
 ---
-id: "616"
+id: "616g"
 title: "Geçiş seti: kum ↔ su (16 maske x 2 çeşit)"
 status: pending
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
+priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
 family: zemin
 style_gate: false
 cost_est: 22
 cost_max: 34
-depends_on: ["613","612"]
+depends_on: ["613g","612"]
 max_attempts: 1
 pixellab: true
 outputs:
@@ -31,3 +32,5 @@ Araç: `create_tiles_pro`, isometric 64 px, `tile_view_angle=30`, `tile_depth_ra
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-21: çift iş numarası "616g" yapıldı (tester raporu 66). -->

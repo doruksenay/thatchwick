@@ -486,7 +486,7 @@ namespace Thatchwick.Game
             Shader.SetGlobalFloat("_TwSnow", _snowGround);
         }
 
-        private static int TileHash(int x, int y) => (x * 73856093) ^ (y * 19349663);
+        private static int TileHash(int x, int y) => IsoArt.TileHash(x, y);
 
         /// <summary>Karo başına zemin çıkartması: yabani ot, kıyı köpüğü, yağmur birikintisi ve patikada çamur.</summary>
         private Sprite DecalAt(int x, int y)

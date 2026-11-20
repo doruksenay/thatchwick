@@ -1,8 +1,9 @@
 ---
-id: "613"
+id: "613g"
 title: "Geçiş seti pilotu: çim ↔ kum (4 karo, stil kapısı)"
 status: pending
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
+priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
 family: zemin
 style_gate: true
 cost_est: 6
@@ -35,3 +36,5 @@ Araç: `create_tiles_pro`, isometric 64 px, `tile_view_angle=30`, `tile_depth_ra
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-21: çift iş numarası "613g" yapıldı (tester raporu 66). -->

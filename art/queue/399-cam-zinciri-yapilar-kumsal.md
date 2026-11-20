@@ -1,5 +1,5 @@
 ---
-id: "399"
+id: "399c"
 title: "Cam zinciri yapıları ve kumsal: cam ocağı, camcı tezgâhı, kalbur, kumsal (4)"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 27 §18 (18.11.2026, "kumsaldan kum alınıp işlensin")
@@ -32,3 +32,5 @@ Yöntem 301 ile aynı; 2x2 kılavuz `--n 2 --axis both` (tuval 144x112), 2x1 kı
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+<!-- 2026-11-21: çift iş numarası "399c" yapıldı (tester raporu 66). -->

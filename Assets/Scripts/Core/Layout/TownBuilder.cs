@@ -69,8 +69,10 @@ namespace Thatchwick.Core.Layout
                         var cells = s.Foot().Concat(new[] { s.Entrance, new GridPos(s.Landing.X, s.Landing.Y) }).ToList();
                         if (cells.Any(c => !b.Rect.Contains(c) || keep.Contains(c))) continue;
                         double score = Math.Abs(x - door.X) + Math.Abs(y - door.Y);
-                        // Ön duvarlar (batı, kuzey): arka duvarlar kameraya dönük dolap ve tezgâhlara kalsın (merdiven kesitte görünür).
-                        if ((rot == 0 && x == b.X0) || (rot == 1 && y == b.Y0)) score += 6;
+                        // Arka duvarlar (doğu, güney): ön duvar kesitte alçalınca merdiven duvarın dışına taşmış gibi görünüyordu
+                        // (tester raporu 66 §1.4). Merdiven ve bodrum kapağı yüksek arka duvara yaslanır.
+                        bool front = (rot == 0 && x == b.X0) || (rot == 1 && y == b.Y0), back = (rot == 0 && x == b.X1) || (rot == 1 && y == b.Y1);
+                        if (b.StairsFront ? front : back) score += 6;
                         cands.Add((s, score));
                     }
             cands = cands.OrderByDescending(c => c.score).ThenBy(c => c.s.Pos.Y).ThenBy(c => c.s.Pos.X).ThenBy(c => c.s.Rot).ToList();

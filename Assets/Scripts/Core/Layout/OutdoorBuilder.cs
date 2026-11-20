@@ -788,6 +788,9 @@ namespace Thatchwick.Core.Layout
                         if (it != null && rng.NextDouble() < 0.25) it.GrowthDays = it.Def.GrowDays * (0.55 + 0.35 * rng.NextDouble());
                     }
                 }
+            // Kenar bandı da doğrulanır: bant kapısı bölge kenarına açılan binanın önüne öbek düşebiliyordu (tester raporu 66).
+            Validate(ctx, placed, rep);
+            placed.RemoveAll(i => ctx.World.GetItem(i.Id) == null);
             rep.Placed.AddRange(placed);
             ctx.Reports.Add(rep);
         }
