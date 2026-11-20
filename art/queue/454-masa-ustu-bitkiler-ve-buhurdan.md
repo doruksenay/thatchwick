@@ -1,7 +1,8 @@
 ---
 id: "454"
 title: "Masa üstü saksılar, eğrelti teknesi, buhurdan, kuş yalağı (12)"
-status: pending
+status: running
+claimed_at: 2026-11-20T06:49Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (ev bitkileri ve yeni dekor), Project belgesi 45
 priority: 20
 family: esya
