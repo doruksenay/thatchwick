@@ -4,7 +4,7 @@ title: Arayüz bildirimi (uyarı)
 kind: sfx
 family: ui
 freq: A
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 note: 'Tester raporu 66: eksik ses anahtarı ui.notify.warn. Bilgiden biraz daha belirgin ama sert değil (cozy yön).'
@@ -18,5 +18,7 @@ axes:
   - soft wooden knock twice, slightly lower pitch
   - small muted handbell, two gentle descending notes
   - low plucked string, short and warm, attention without alarm
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T21:50:12Z'
 ---
 A soft attention sound: a small muted handbell or wooden knock twice in a lower tone. Noticeable but gentle, never alarming.
