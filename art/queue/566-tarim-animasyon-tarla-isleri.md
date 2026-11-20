@@ -1,7 +1,7 @@
 ---
 id: "566"
 title: "Tarım animasyonları 2/2: kalbur, sırıkla silkeleme, saban, gübre serpme (32)"
-status: running
+status: review
 claimed_at: 2026-11-20T16:09Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 40
