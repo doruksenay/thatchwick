@@ -1,7 +1,7 @@
 ---
 id: "618k"
 title: "Kaya sırtı parçaları ve kenar dekoru (10 eşya)"
-status: running
+status: review
 claimed_at: 2026-11-20T23:21Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
 priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
