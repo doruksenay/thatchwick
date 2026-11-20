@@ -94,6 +94,8 @@ namespace Thatchwick.Game
                 if (_view != null && !_view.InArea(e.X, e.Y)) continue;   // yalnızca etkin bölge (harita geçişi)
                 bool fullHeight = EdgeKinds.IsRoomBoundary(kind) || kind == EdgeKind.HalfWall;
                 bool low = fullHeight && (_mode == WallMode.Down || (_mode == WallMode.Cutaway && IsFrontWall(e)));
+                // Kesitte tam boy arka duvarın alçak ön duvarla birleştiği ucu yarım boy: duvar keskin kesilip bitmesin (21.11).
+                bool endCap = !low && kind == EdgeKind.Wall && _mode == WallMode.Cutaway && MeetsLowWall(e);
                 var go = new GameObject($"Wall {e}");
                 go.transform.SetParent(transform, false);
                 go.transform.position = Iso.GridToWorld(e.X, e.Y, e.Z);
@@ -105,10 +107,11 @@ namespace Thatchwick.Game
                 // Gerçek görsel: önce parçanın kendi görseli (iso_wall_<parça>), varsayılan malzemede eski duvar seti; kaplama
                 // gerçek görselin üstüne hafif renk olarak biner. Yoksa yer tutucu renkli parça.
                 var part = _content != null && Thatchwick.Core.Build.BuildService.PartKindFor(kind) is BuildPartKind pk ? BuildParts.Resolve(_content, pk, look?.Style) : null;
-                string variant = kind == EdgeKind.HalfWall ? (low ? "low" : "half") : low ? "low" : null;
+                string variant = kind == EdgeKind.HalfWall ? (low ? "low" : "half") : low ? "low" : endCap ? "half" : null;
                 // Kaplamanın kendi dokusu varsa (lambri, duvar dokuması) o çizilir; yoksa malzeme görseli + kaplama rengi.
                 var finishArt = finish != null ? IsoArt.WallPart(finish, e.Axis, variant) : null;
-                var real = finishArt ?? IsoArt.WallPart(part?.Id, e.Axis, variant) ?? (variant != null ? KinPart(part?.Id, e.Axis, variant) : null);
+                var real = finishArt ?? IsoArt.WallPart(part?.Id, e.Axis, variant) ?? (variant != null ? KinPart(part?.Id, e.Axis, variant) : null)
+                           ?? (endCap ? IsoArt.WallPart(part?.Id ?? "wall", e.Axis, "half") ?? IsoArt.WallPart(part?.Id, e.Axis) : null);
                 if (low && real == null)
                 {
                     // Alçak duvar (Kesit'te ön duvar, Aşağı'da hepsi): asla tam boy çizilmez. Kapı ve pencere alçakta düz alçak
@@ -122,7 +125,7 @@ namespace Thatchwick.Game
                     sr.sprite = real;
                     float alpha = 1f;   // alçak duvar opak: zaten kısa, arkası görünür (eskiden tam boy %30 saydamdı)
                     var tint = finish != null && finishArt == null ? Color.Lerp(Color.white, EdgeColor(kind, look?.Style, finish), 0.3f) : Color.white;
-                    sr.color = kind == EdgeKind.Window && plain ? new Color(0.75f, 0.85f, 1f, alpha) : new Color(tint.r, tint.g, tint.b, alpha);
+                    sr.color = new Color(tint.r, tint.g, tint.b, alpha);   // gerçek pencere görseli mavi boyanmaz (duvarda gri-mavi leke gibi duruyordu)
                 }
                 else
                 {
@@ -210,6 +213,21 @@ namespace Thatchwick.Game
                     _objects.Add(go);
                 }
             }
+        }
+
+        /// <summary>Kenarın uçlarından birinde dik ve alçak çizilen (ön) bir duvar var mı.</summary>
+        private bool MeetsLowWall(Edge e)
+        {
+            var near = e.Axis == EdgeAxis.Horizontal
+                ? new[] { new Edge(e.X, e.Y - 1, EdgeAxis.Vertical, e.Z), new Edge(e.X, e.Y, EdgeAxis.Vertical, e.Z), new Edge(e.X + 1, e.Y - 1, EdgeAxis.Vertical, e.Z), new Edge(e.X + 1, e.Y, EdgeAxis.Vertical, e.Z) }
+                : new[] { new Edge(e.X - 1, e.Y, EdgeAxis.Horizontal, e.Z), new Edge(e.X, e.Y, EdgeAxis.Horizontal, e.Z), new Edge(e.X - 1, e.Y + 1, EdgeAxis.Horizontal, e.Z), new Edge(e.X, e.Y + 1, EdgeAxis.Horizontal, e.Z) };
+            foreach (var n in near)
+            {
+                if (!_map.EdgeInBounds(n)) continue;
+                var k = _map.GetEdge(n);
+                if ((EdgeKinds.IsRoomBoundary(k) || k == EdgeKind.HalfWall) && IsFrontWall(n)) return true;
+            }
+            return false;
         }
 
         private bool IsFrontWall(Edge e)

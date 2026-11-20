@@ -204,7 +204,7 @@ namespace Thatchwick.Core.Layout
                 if (!ctx.Content.Items.TryGet(id, out var def)) continue;
                 // Görseli olmayan bitki örtüsü konmaz (görünmez engel olmasın; görsel gelince yeni oyunda çıkar).
                 if (def.HasTag("veg") && def.Art == null) continue;
-                if (step.With == "bed") { if (Bed(ctx, site, def, step, placed)) n++; continue; }
+                if (step.With == "bed") { if (Bed(ctx, site, def, step, placed)) n++; continue; }   // tarh aralığı Bed içinde
                 var cands = Candidates(ctx, site, def, step);
                 if (site.Spacing > 0 && step.With != Anchors.NearItem)
                 {
@@ -357,7 +357,8 @@ namespace Thatchwick.Core.Layout
                     for (int dy = 0; dy < h && ok; dy++) for (int dx = 0; dx < w && ok; dx++)
                     {
                         var c = new GridPos(p.X + dx, p.Y + dy);
-                        ok = site.Zone.Contains(c) && Open(ctx, c) && map.GetFloor(c) == FloorType.Grass && BuildingClear(ctx, c, 2);
+                        ok = site.Zone.Contains(c) && Open(ctx, c) && map.GetFloor(c) == FloorType.Grass && BuildingClear(ctx, c, 2)
+                             && (site.Spacing == 0 || !TooClose(placed, c, site.Spacing));
                         cells.Add(c);
                     }
                     if (!ok) continue;
@@ -697,12 +698,20 @@ namespace Thatchwick.Core.Layout
                 if (ctx.Map.GetFloor(p) == FloorType.Grass && !ctx.Map.IsBlocked(p)) ctx.Map.SetRoad(p, RoadType.Path);
             }
             ctx.JunctionList = null;
-            var view = new TownSiteView
+            // Avlu üç bölgeye ayrılır (tasarım dili, 21.11: "kuyu ve bahçe dip dibe"): ön avlu açık kalır (kuyu yol ayrımında,
+            // ev duvarı dibinde çiçek ve bank); mutfak bahçesi evin güneybatısında, yolun batısında (kapısı yola açılır), kuyudan uzak; iş köşesi (odunluk, kütük,
+            // saman, araba) evin arkasında öbek. Bölgeler arasında boşluk: göz dinlenir, öbekler okunur.
+            var all = FarmZone(ctx, house, 8);
+            TownSiteView Part(Func<GridPos, bool> keep, int spacing) => new TownSiteView
             {
                 Building = house, DoorDir = Dir4.S, DoorOutside = new GridPos(StarterWorld.HouseDoorX, StarterWorld.HouseY1 + 1), Name = "Çiftlik evi",
-                Zone = FarmZone(ctx, house, 8), Wide = FarmZone(ctx, house, 10), Spacing = 2,   // avlu eşyaları dip dibe durmasın (21.11)
+                Zone = new HashSet<GridPos>(all.Where(keep)), Wide = FarmZone(ctx, house, 10), Spacing = spacing,
             };
-            RunGarden(ctx, view, "garden_farm", "Çiftlik avlusu");
+            int hx0 = StarterWorld.HouseX0, hx1 = StarterWorld.HouseX1, hy0 = StarterWorld.HouseY0, hy1 = StarterWorld.HouseY1;
+            var view = Part(p => (p.Y > hy1 && p.X >= hx0 - 1 && p.X <= hx1 + 2) || (p.X > hx1 && p.X <= hx1 + 3 && p.Y >= hy0), 3);   // ön avlu + doğu duvarı (fıçı köşede, bank duvar dibinde)
+            RunGarden(ctx, view, "garden_farm", "Çiftlik avlusu (ön)");
+            RunGarden(ctx, Part(p => p.X <= hx0 - 1 && p.X >= hx0 - 10 && p.Y >= hy1 - 2 && p.Y <= hy1 + 8, 1), "farm_kitchen", "Çiftlik avlusu (mutfak bahçesi)");
+            RunGarden(ctx, Part(p => p.Y <= hy0 - 2 && p.Y >= hy0 - 8 && p.X >= hx0 - 2 && p.X <= hx1 + 3, 1), "farm_utility", "Çiftlik avlusu (iş köşesi)");
             // Avlu masasının üstünde dokuz taş (eski başlangıç evinden).
             foreach (var it in ctx.World.Items.ToList())
                 if (it.Def.Id == "item.stump_table" && view.Zone.Contains(it.Position) && ctx.Content.Items.TryGet("item.morris_board", out var board)

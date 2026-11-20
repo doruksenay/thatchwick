@@ -1791,28 +1791,8 @@
           "anchor": "junction"
         },
         {
-          "item": "item.chopping_block",
-          "anchor": "side"
-        },
-        {
           "item": "item.rain_barrel",
           "anchor": "corner"
-        },
-        {
-          "item": "item.hay_bale",
-          "optional": true,
-          "anchor": "back"
-        },
-        {
-          "item": "item.stump_table",
-          "optional": true,
-          "anchor": "open"
-        },
-        {
-          "item": "item.stool_wood",
-          "optional": true,
-          "with": "nearItem",
-          "on": "item.stump_table"
         },
         {
           "item": "item.garden_bench",
@@ -1824,7 +1804,13 @@
           "count": 2,
           "optional": true,
           "anchor": "wallBase"
-        },
+        }
+      ]
+    },
+    {
+      "id": "farm_kitchen",
+      "enclosure": "none",
+      "steps": [
         {
           "any": [
             "item.crop_cabbage",
@@ -1841,20 +1827,46 @@
           "optional": true
         },
         {
-          "item": "item.woodshed",
-          "optional": true,
-          "anchor": "side"
-        },
-        {
           "item": "item.beehive",
           "optional": true,
           "anchor": "open"
         },
         {
           "item": "item.flower_clump",
-          "count": 3,
+          "count": 2,
           "optional": true,
           "anchor": "open"
+        }
+      ]
+    },
+    {
+      "id": "farm_utility",
+      "enclosure": "none",
+      "steps": [
+        {
+          "item": "item.woodshed",
+          "optional": true,
+          "anchor": "open"
+        },
+        {
+          "item": "item.chopping_block",
+          "anchor": "open"
+        },
+        {
+          "item": "item.hay_bale",
+          "optional": true,
+          "anchor": "open"
+        },
+        {
+          "item": "item.stump_table",
+          "optional": true,
+          "anchor": "open"
+        },
+        {
+          "item": "item.stool_wood",
+          "optional": true,
+          "with": "nearItem",
+          "on": "item.stump_table"
         },
         {
           "item": "item.ox_cart",
