@@ -296,6 +296,7 @@ namespace Thatchwick.Core.Life
                 case HomeActions.WaterPot: return "sulama";
                 case HomeActions.HarvestPot: return "ot hasadı";
                 case HomeActions.Stow: return "solan süs";
+                case HomeActions.Mist: return "cam bahçe nemi";
             }
             return "iş";
         }

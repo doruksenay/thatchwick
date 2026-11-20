@@ -171,6 +171,7 @@ namespace Thatchwick.Core.Life
             Houses.HouseEnded += h => Say($"{h.Name}nin soyu tükendi.", NoticeLevel.Info);
             Legacy.MarriedOutHappened += (member, villager) => Houses.JoinSpouses(member, villager);
             Home.IsBusy = c => Villagers.IsNamed(c);
+            Home.Raining = () => { var w = Weather.Today(Clock.TotalDays); return w == WeatherType.Rain || w == WeatherType.Storm; };
             Home.NeighborCount = () => Math.Max(2, Houses.Houses.Count);
             Home.CollectionCompleted += c =>
             {

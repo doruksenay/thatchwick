@@ -44,6 +44,16 @@ namespace Thatchwick.Core.Life
         public string[] entries;
     }
 
+    [Serializable]
+    public sealed class HomeVivSave
+    {
+        public int id;
+        public string habitat;
+        public double moisture, mold;
+        public string[] entries;
+        public string[] log;
+    }
+
     /// <summary>Ev bakımının kaydı (belge 45). Eski kayıtta yok: her şey boş başlar, mumlar dolu yanar.</summary>
     [Serializable]
     public sealed class HomeSave
@@ -61,6 +71,7 @@ namespace Thatchwick.Core.Life
         public int servantId, servantWage, servantDays;
         public double servantLoyalty;
         public long[] contestYears;
+        public HomeVivSave[] vivs;          // cam bahçeler (belge 47)
         public int contestWins;
     }
 
@@ -94,12 +105,14 @@ namespace Thatchwick.Core.Life
             save.servantId = ServantId; save.servantWage = ServantWage; save.servantDays = ServantDays; save.servantLoyalty = ServantLoyalty;
             save.contestYears = _contestYears.ToArray();
             save.contestWins = ContestWins;
+            ExportViv(save);
         }
 
         private void ImportExtras(HomeSave save)
         {
             _patterns.Clear(); _arma = null; _patternSeq = 0; _collectionsDone.Clear(); _plans.Clear(); _seasonSets.Clear(); _contestYears.Clear();
             ServantId = 0; ServantWage = 0; ServantDays = 0; ServantLoyalty = 0; ContestWins = 0; AutoSeasonSwap = true;
+            ImportViv(save);
             if (save == null) return;
             if (save.patterns != null)
                 foreach (var p in save.patterns)

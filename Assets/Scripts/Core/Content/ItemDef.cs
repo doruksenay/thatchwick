@@ -211,6 +211,33 @@ namespace Thatchwick.Core.Content
         public bool Chimney { get; set; }
     }
 
+    /// <summary>Cam bahçe türü (belge 47).</summary>
+    public sealed class VivDef
+    {
+        public bool IsPlant;
+        public List<string> Habitats = new List<string>();
+        public List<string> Eats = new List<string>();
+        public List<string> Tags = new List<string>();
+        public string Move = "crawl";
+        public float LifeDays;
+        public bool Breeds;
+        public string Becomes;
+        public float BecomeDays;
+        public List<string> Avoid = new List<string>();
+        public bool Solitary;
+        public string Color;
+        public bool Has(string tag) => Tags.Contains(tag);
+    }
+
+    public sealed class CatchDef
+    {
+        public string Item;
+        public float Chance;
+        public List<Time.Season> Seasons = new List<Time.Season>();
+        public bool Night;
+        public bool Rain;
+    }
+
     public sealed class ItemDef : IContentDef
     {
         public const int MaxSize = 6;
@@ -378,6 +405,14 @@ namespace Thatchwick.Core.Content
         public string PotHerb { get; set; }
         public float PotGrowDays { get; set; } = 3f;
         public bool IsLivePot => PotHerb != null || LivePlant;
+        /// <summary>Cam bahçe türü (bitki ya da canlı); null ise değil (belge 47).</summary>
+        public VivDef Viv { get; set; }
+        /// <summary>Bu toplama yerinde cam kavanozla yakalananlar.</summary>
+        public List<CatchDef> Catches { get; set; } = new List<CatchDef>();
+        /// <summary>Cam bahçe kabı: en çok canlı ve bitki (0 = cam bahçe değil).</summary>
+        public int VivCreatures { get; set; }
+        public int VivPlants { get; set; }
+        public bool IsVivarium => VivCreatures > 0 || VivPlants > 0;
         /// <summary>Canlı süs bitkisi (ot vermez; sulanır, büyür, mevsiminde çiçek açar).</summary>
         public bool LivePlant { get; set; }
         /// <summary>Çiçek açtığı mevsimler: olgun ve suluyken bu mevsimlerde güzelliğe ek. Boş = çiçeksiz (yaprak süsü).</summary>
