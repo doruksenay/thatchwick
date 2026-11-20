@@ -429,6 +429,7 @@ namespace Thatchwick.Core.Work
         {
             c.Needs.Restore(NeedType.Hygiene, BatheHygiene);
             c.Soak(1f);
+            c.Appearance?.WashHair();   // suya girmek kına ve saç suyu tonunu siler (59a §6)
             float t = TemperatureAt != null ? TemperatureAt(tile) : 15f;
             string note;
             if (t < InteractionEffects.ColdBathTemperature)

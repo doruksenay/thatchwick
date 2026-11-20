@@ -347,6 +347,9 @@ namespace Thatchwick.Core.Save
         public int build;
         public int heightPercent;
         public string skin, eye, hairStyle, hair, facialHairStyle, facialHair, faceMark, outfit, outfitColor, trim, hat, hatColor;
+        // Geçici saç bakımı (belge 65): ton kimliği (boş = yok) ve saç yağı (1).
+        public string hairTint;
+        public int hairShine;
         // Karakter yaratma 2.0 (17.11.2026). null alan = eski kayıt (yeni varsayılan ya da eski alandan çevrilir).
         public int frame = -1;
         public string faceShape, eyeShape, eyeRight, brow, browColor, nose, mouth, ears;

@@ -28,7 +28,8 @@ namespace Thatchwick.Core.Customization.Layers
         /// </summary>
         public static LayerLook From(Appearance a, AppearanceCatalog catalog = null, double grey = 0.0)
         {
-            var hair = AgingLook.GrayedHair(a.HairColor, grey);
+            var naturalHair = AgingLook.GrayedHair(a.HairColor, grey);
+            var hair = a.ShownHairColor(grey);   // geçici ton (kına, saç suyu); kaş doğal rengi izler
             var facial = AgingLook.GrayedHair(a.FacialHairColor, grey);
             var look = new LayerLook
             {
@@ -40,7 +41,7 @@ namespace Thatchwick.Core.Customization.Layers
                 Iris = RampMath.Make(a.EyeColor),
                 IrisRight = RampMath.Make(a.EyeColorRight ?? a.EyeColor),
                 Hair = RampMath.Make(hair),
-                Brow = RampMath.Make(a.BrowFollowsHair ? hair : a.BrowColor),
+                Brow = RampMath.Make(a.BrowFollowsHair ? naturalHair : a.BrowColor),
                 Facial = RampMath.Make(facial),
                 Hat = RampMath.Make(a.HatColor),
                 Ornament = RampMath.Make(a.HairOrnamentColor),

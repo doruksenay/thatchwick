@@ -83,6 +83,23 @@ namespace Thatchwick.Core.Customization
         public const int MaxStubble = 3;
         public Rgb FacialHairColor { get; set; } = new Rgb(90, 60, 35);
 
+        // --- Geçici saç bakımı (belge 59a §6, belge 65): yalnız görünüş; genoma ve çocuğa geçmez, yıkanınca gider ---
+        /// <summary>Saç tonu (<see cref="HairTints"/>: henna, chamomile, walnut, purple). Null = yok.</summary>
+        public string HairTintId { get; set; }
+        /// <summary>Saç yağı parlaklığı.</summary>
+        public bool HairShine { get; set; }
+        public bool HasHairTreatment => HairTintId != null || HairShine;
+        /// <summary>Görünen saç rengi: kırlaşma (0..1), üstüne ton ve yağ. Kaş ve sakal doğal rengi izler.</summary>
+        public Rgb ShownHairColor(double grey = 0.0) => HairTints.Apply(AgingLook.GrayedHair(HairColor, grey), HairTintId, HairShine);
+        /// <summary>Yıkanma: ton ve yağ gider.</summary>
+        public bool WashHair()
+        {
+            if (!HasHairTreatment) return false;
+            HairTintId = null;
+            HairShine = false;
+            return true;
+        }
+
         /// <summary>
         /// Eski tek alanlı sakal/bıyık (kayıt ve eski kod uyumu). Okuma: sakal varsa sakal, yoksa bıyık.
         /// Yazma: eski kimliği yeni iki alana çevirir ("mustache" bıyık, diğerleri sakal).
@@ -156,7 +173,7 @@ namespace Thatchwick.Core.Customization
         /// <summary>Önbellek anahtarı: aynı görünüm aynı metni verir.</summary>
         public string Key() =>
             $"{(int)Build}|{(int)Frame}|{SkinColor}|{FaceShapeId}|{EyeShapeId}|{EyeColor}|{EyeColorRight}|{BrowId}|{EffectiveBrowColor}|{NoseId}|{MouthId}|{EarsId}" +
-            $"|{LashesId}|{HairStyleId}|{HairColor}|{BangsId}|{HairExtraId}|{HairOrnamentId}|{HairOrnamentColor}|{MustacheId}|{BeardId}|{SideburnsId}|{StubbleLevel}|{FacialHairColor}" +
+            $"|{LashesId}|{HairStyleId}|{HairColor}|{BangsId}|{HairExtraId}|{HairOrnamentId}|{HairOrnamentColor}|{MustacheId}|{BeardId}|{SideburnsId}|{StubbleLevel}|{FacialHairColor}|{HairTintId}|{(HairShine ? 1 : 0)}" +
             $"|{OutfitId}|{OutfitColor}|{TrimColor}|{PatternId}|{BottomId}|{ShoesId}|{OuterId}|{OuterColor}|{HatId}|{HatColor}" +
             $"|{string.Join(",", Marks.Select(m => m.Key()))}";
     }

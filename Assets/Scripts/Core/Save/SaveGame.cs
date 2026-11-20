@@ -471,6 +471,7 @@ namespace Thatchwick.Core.Save
                 build = (int)a.Build, heightPercent = 100,
                 skin = a.SkinColor.ToHex(), eye = a.EyeColor.ToHex(),
                 hairStyle = a.HairStyleId, hair = a.HairColor.ToHex(),
+                hairTint = a.HairTintId ?? "", hairShine = a.HairShine ? 1 : 0,
                 facialHairStyle = a.FacialHairId, facialHair = a.FacialHairColor.ToHex(),
                 faceMark = a.FaceMarkId, outfit = a.OutfitId, outfitColor = a.OutfitColor.ToHex(), trim = a.TrimColor.ToHex(),
                 hat = a.HatId, hatColor = a.HatColor.ToHex(),
@@ -876,6 +877,8 @@ namespace Thatchwick.Core.Save
             if (Rgb.TryParseHex(s.eye, out c)) a.EyeColor = c;
             if (!string.IsNullOrEmpty(s.hairStyle)) a.HairStyleId = s.hairStyle;
             if (Rgb.TryParseHex(s.hair, out c)) a.HairColor = c;
+            if (HairTints.IsTint(s.hairTint)) a.HairTintId = s.hairTint;
+            a.HairShine = s.hairShine == 1;
             if (!string.IsNullOrEmpty(s.facialHairStyle)) a.FacialHairId = s.facialHairStyle;
             if (Rgb.TryParseHex(s.facialHair, out c)) a.FacialHairColor = c;
             if (!string.IsNullOrEmpty(s.faceMark)) a.FaceMarkId = s.faceMark;

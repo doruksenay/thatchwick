@@ -144,6 +144,8 @@ namespace Thatchwick.Core.Content
         public string RepairMaterial { get; set; }
         /// <summary>Kararmış metal aynayı cilalar.</summary>
         public bool Polish { get; set; }
+        /// <summary>Geçici saç bakımı (belge 59a §6, 65): karakterin saçına ton ya da yağ sürer (HairTints). Yıkanınca gider.</summary>
+        public string HairCare { get; set; }
         /// <summary>Oyma süsle / İşle (belge 53 §4.6): yerleşik eşyanın kalitesi bir basamak artar, en çok Has; eşya başına bir kez.</summary>
         public bool Embellish { get; set; }
         /// <summary>İçindekileri (döküntü yığını) durumlarıyla envantere alır.</summary>
