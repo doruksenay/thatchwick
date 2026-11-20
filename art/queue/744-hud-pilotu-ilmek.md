@@ -1,7 +1,7 @@
 ---
 id: "744"
 title: "HUD pilotu, yön A: İnce ilmekli parşömen"
-status: running
+status: review
 claimed_at: 2026-11-20T20:35Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (Project belgesi 66 §5 S3-S4: önce PixelLab HUD pilotu, üç yön birden)
 priority: 1
