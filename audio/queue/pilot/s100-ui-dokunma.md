@@ -5,7 +5,7 @@ kind: sfx
 family: ui
 freq: A
 pilot: true
-status: accepted
+status: done
 approved_by: auto
 key: ui.tap
 generate: 8
@@ -32,5 +32,6 @@ pick:
 - c6
 - c7
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T16:44:14Z'
 ---
 A single soft tap when pressing a button in a cozy game menu.

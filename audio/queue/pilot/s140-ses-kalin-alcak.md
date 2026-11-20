@@ -4,7 +4,7 @@ title: Karakter sesi tasarımı, Kalın-alçak (pilot)
 kind: voice_design
 family: voice
 pilot: true
-status: accepted
+status: done
 approved_by: auto
 voice_key: kalin_alcak
 generate: 1
@@ -23,5 +23,6 @@ generated_at: '2026-11-20T09:58:49Z'
 pick:
 - c1
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T16:44:24Z'
 ---
 Kalın tını, alçak yükseklik (Project 14 bölüm 11). Önizlemelerden biri seçilir (pick: [cN]); kalıcı ses oluşturulur.

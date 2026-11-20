@@ -5,7 +5,7 @@ kind: sfx
 family: foley
 freq: A
 pilot: true
-status: accepted
+status: done
 approved_by: auto
 key: step.dirt
 generate: 8
@@ -33,5 +33,6 @@ pick:
 - c5
 - c7
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T16:44:14Z'
 ---
 One single footstep on a dirt village path, heel then toe, only one step.

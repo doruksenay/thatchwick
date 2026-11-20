@@ -4,7 +4,7 @@ title: Nokta sesi, martı
 kind: spot
 family: spots
 freq: B
-status: accepted
+status: done
 approved_by: user
 depends_on: []
 key: spot.gull
@@ -45,5 +45,6 @@ pick:
 - c3
 - c4
 karar_zamani: '2026-11-20'
+promoted_at: '2026-11-20T16:44:14Z'
 ---
 One short call of a single gull, a little distant over the sea.
