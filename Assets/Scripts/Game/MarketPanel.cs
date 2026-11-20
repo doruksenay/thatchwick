@@ -142,6 +142,7 @@ namespace Thatchwick.Game
             {
                 GUILayout.BeginHorizontal();
                 IsoArt.IconCell(g.Id);
+                if (g.HasQuality) UiSkin.QualityCorner(GUILayoutUtility.GetLastRect(), _house.BestQuality(g.Id));
                 string breakdown = g.HasQuality ? UiSkin.QualityBreakdown(_house, g.Id) : "";
                 GUILayout.Label(new GUIContent($"{g.DisplayName} ({_house.Count(g.Id)}){(breakdown.Length > 0 ? " " + breakdown : "")}",
                     g.HasQuality ? UiSkin.QualityTooltip(_house, g.Id) : null), UiSkin.Rich, GUILayout.Width(120f));

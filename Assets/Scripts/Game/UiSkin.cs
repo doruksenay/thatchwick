@@ -104,6 +104,23 @@ namespace Thatchwick.Game
             return string.Join(", ", parts);
         }
 
+        /// <summary>
+        /// İkon hücresinin sağ alt köşesine kalite rozeti (belge 53 §6): PixelLab rozeti (ui_icon_quality_1..4) varsa ikon,
+        /// yoksa renkli yazı. Sıradan'da hiçbir şey çizilmez. Hücreden hemen sonra GUILayoutUtility.GetLastRect() ile çağrılır.
+        /// </summary>
+        public static void QualityCorner(Rect cell, int quality)
+        {
+            if (quality <= 0 || Event.current == null || Event.current.type != EventType.Repaint) return;
+            var icon = Icon(Thatchwick.Core.Content.ItemQuality.IconKey(quality));
+            float s = Mathf.Max(8f, cell.height * 0.5f);
+            var r = new Rect(cell.xMax - s, cell.yMax - s, s, s);
+            if (icon != null) { GUI.DrawTexture(r, icon); return; }
+            var old = GUI.color;
+            GUI.color = QualityColor(quality);
+            GUI.Label(new Rect(cell.xMax - s * 1.6f, cell.yMax - s * 1.2f, s * 1.8f, s * 1.4f), Thatchwick.Core.Content.ItemQuality.Badge(quality));
+            GUI.color = old;
+        }
+
         private static GUIStyle _rich;
         /// <summary>Zengin metinli etiket (rozet renkleri için).</summary>
         public static GUIStyle Rich => _rich ?? (_rich = new GUIStyle(GUI.skin.label) { richText = true });
