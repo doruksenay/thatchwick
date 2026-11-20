@@ -31,7 +31,48 @@ namespace Thatchwick.Core.World
         public event Action Changed;
 
         /// <summary>Eşyanın görünüşü değişti (kaplama): görünüm yenilensin.</summary>
-        public void NotifyChanged() => Changed?.Invoke();
+        public void NotifyChanged() => OnChanged();
+
+        // ---- dizinler (performans incelemesi 20.11.2026) ----
+        // Kimliğe göre sözlük her ekleme/çıkarmada güncel tutulur. Karo dizini (GetItemAt) tembel kurulur;
+        // eşya eklenince, çıkınca, taşınınca ya da Changed yayınlanınca geçersiz olur.
+        private readonly Dictionary<int, ItemInstance> _byId = new Dictionary<int, ItemInstance>();
+        private readonly Dictionary<GridPos, ItemInstance> _tileIndex = new Dictionary<GridPos, ItemInstance>();
+        private bool _tileIndexValid;
+
+        private void AddToIndex(ItemInstance item)
+        {
+            _items.Add(item);
+            _byId[item.Id] = item;
+            _tileIndexValid = false;
+        }
+
+        private void RemoveFromIndex(ItemInstance item)
+        {
+            if (!_items.Remove(item)) return;
+            if (_byId.TryGetValue(item.Id, out var known) && ReferenceEquals(known, item)) _byId.Remove(item.Id);
+            _tileIndexValid = false;
+        }
+
+        private void OnChanged()
+        {
+            _tileIndexValid = false;
+            Changed?.Invoke();
+        }
+
+        private void EnsureTileIndex()
+        {
+            if (_tileIndexValid) return;
+            _tileIndex.Clear();
+            // Liste sırası korunur: aynı karoda ilk gelen eşya döner (eski doğrusal aramayla aynı sonuç).
+            foreach (var item in _items)
+            {
+                if (item.IsDecor || item.IsRug) continue;
+                foreach (var t in item.OccupiedTiles())
+                    if (!_tileIndex.ContainsKey(t)) _tileIndex[t] = item;
+            }
+            _tileIndexValid = true;
+        }
 
         public WorldState(GridMap map)
         {
@@ -216,7 +257,7 @@ namespace Thatchwick.Core.World
             var rug = GetItem(itemId);
             if (rug == null || !rug.IsRug) return false;
             rug.LayerOrder = NextLayer();
-            Changed?.Invoke();
+            OnChanged();
             return true;
         }
 
@@ -228,7 +269,7 @@ namespace Thatchwick.Core.World
             int min = int.MaxValue;
             foreach (var it in _items) if (it.IsRug && it.LayerOrder < min) min = it.LayerOrder;
             rug.LayerOrder = min == int.MaxValue ? 0 : min - 1;
-            Changed?.Invoke();
+            OnChanged();
             return true;
         }
 
@@ -250,7 +291,7 @@ namespace Thatchwick.Core.World
             }
             if (swap == null) return false;
             int tmp = rug.LayerOrder; rug.LayerOrder = swap.LayerOrder; swap.LayerOrder = tmp;
-            Changed?.Invoke();
+            OnChanged();
             return true;
         }
 
@@ -286,8 +327,8 @@ namespace Thatchwick.Core.World
             var check = CanPlaceCeiling(def, tile);
             if (!check.Ok) throw new InvalidOperationException(check.Reason);
             var item = new ItemInstance(_nextId++, def, tile);
-            _items.Add(item);
-            Changed?.Invoke();
+            AddToIndex(item);
+            OnChanged();
             return item;
         }
 
@@ -405,8 +446,8 @@ namespace Thatchwick.Core.World
             var check = CanPlaceOnWall(def, tile, side, chosen, null);
             if (!check.Ok) throw new InvalidOperationException(check.Reason);
             var item = new ItemInstance(_nextId++, def, tile, Footprint.Normalize(side)) { WallBand = chosen };
-            _items.Add(item);
-            Changed?.Invoke();
+            AddToIndex(item);
+            OnChanged();
             return item;
         }
 
@@ -429,11 +470,12 @@ namespace Thatchwick.Core.World
             var check = CanPlaceOnWall(item.Def, tile, side, b, itemId);
             if (!check.Ok) return check;
             item.Position = tile;
+            _tileIndexValid = false;
             item.Rotation = Footprint.Normalize(side);
             item.WallBand = b;
             foreach (var child in _items)
                 if (child.ParentId == itemId) child.Position = tile;
-            Changed?.Invoke();
+            OnChanged();
             return PlacementCheck.Success;
         }
 
@@ -464,9 +506,9 @@ namespace Thatchwick.Core.World
             var item = new ItemInstance(_nextId++, def, position, Footprint.Normalize(rotation));
             if (def.IsRug) item.LayerOrder = NextLayer();
             if (!def.IsRug) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
-            _items.Add(item);
+            AddToIndex(item);
             if (def.IsStairs) RebuildLinks();
-            Changed?.Invoke();
+            OnChanged();
             return item;
         }
 
@@ -482,8 +524,8 @@ namespace Thatchwick.Core.World
                 ParentId = surfaceItemId,
                 SlotId = slotId
             };
-            _items.Add(item);
-            Changed?.Invoke();
+            AddToIndex(item);
+            OnChanged();
             return item;
         }
 
@@ -501,8 +543,9 @@ namespace Thatchwick.Core.World
                 var cc = CanPlaceCeiling(item.Def, position, itemId);
                 if (!cc.Ok) return cc;
                 item.Position = position;
+                _tileIndexValid = false;
                 foreach (var child in _items) if (child.ParentId == itemId) child.Position = position;
-                Changed?.Invoke();
+                OnChanged();
                 return PlacementCheck.Success;
             }
 
@@ -511,6 +554,7 @@ namespace Thatchwick.Core.World
 
             if (!item.IsRug) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
             item.Position = position;
+            _tileIndexValid = false;
             item.Rotation = Footprint.Normalize(rotation);
             if (!item.IsRug) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
 
@@ -519,7 +563,7 @@ namespace Thatchwick.Core.World
                 if (child.ParentId == itemId) child.Position = position;
 
             if (item.Def.IsStairs) RebuildLinks();
-            Changed?.Invoke();
+            OnChanged();
             return PlacementCheck.Success;
         }
 
@@ -604,12 +648,13 @@ namespace Thatchwick.Core.World
             foreach (var it in moving)
             {
                 it.Position = new GridPos(it.Position.X + dx, it.Position.Y + dy, it.Position.Z);
+                _tileIndexValid = false;
                 if (Blocks(it)) foreach (var t in it.OccupiedTiles()) Map.SetBlocked(t, true);
                 foreach (var child in _items) if (child.ParentId == it.Id) child.Position = it.Position;
                 stairs |= it.Def.IsStairs;
             }
             if (stairs) RebuildLinks();
-            Changed?.Invoke();
+            OnChanged();
             return PlacementCheck.Success;
         }
 
@@ -636,15 +681,15 @@ namespace Thatchwick.Core.World
                 if (other.ParentId == itemId) children.Add(other);
             foreach (var c in children)
             {
-                _items.Remove(c);
+                RemoveFromIndex(c);
                 returned.Add(c);
             }
 
             if (Blocks(item)) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
-            _items.Remove(item);
+            RemoveFromIndex(item);
             returned.Insert(0, item);
             if (item.Def.IsStairs) RebuildLinks();
-            Changed?.Invoke();
+            OnChanged();
             return returned;
         }
 
@@ -653,14 +698,14 @@ namespace Thatchwick.Core.World
         {
             if (item == null) return;
             if (Blocks(item)) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, false);
-            _items.Remove(item);
+            RemoveFromIndex(item);
         }
 
         /// <summary>Karo kapatan yer eşyası mı (halı, dekor, duvar ve tavan eşyası kapatmaz).</summary>
         private static bool Blocks(ItemInstance item) => !item.IsRug && !item.IsDecor && !item.IsWallMounted && !item.IsCeiling;
 
         /// <summary>Dekor sistemi için olay yayını.</summary>
-        internal void RaiseChanged() => Changed?.Invoke();
+        internal void RaiseChanged() => OnChanged();
 
         /// <summary>
         /// Kayıttan yükleme: eşyayı kimliğiyle olduğu gibi koyar. Yer eşyası karolarını kapatır; dekor,
@@ -677,7 +722,7 @@ namespace Thatchwick.Core.World
                 GrowthDays = growthDays
             };
             if (Blocks(item)) foreach (var t in item.OccupiedTiles()) Map.SetBlocked(t, true);
-            _items.Add(item);
+            AddToIndex(item);
             if (id >= _nextId) _nextId = id + 1;
             if (def.IsStairs) RebuildLinks();
             return item;
@@ -698,19 +743,13 @@ namespace Thatchwick.Core.World
         }
 
         /// <summary>Kimliğe göre eşya; yoksa null.</summary>
-        public ItemInstance GetItem(int id)
-        {
-            foreach (var item in _items)
-                if (item.Id == id) return item;
-            return null;
-        }
+        public ItemInstance GetItem(int id) => _byId.TryGetValue(id, out var item) ? item : null;
 
         /// <summary>Verilen karoyu kaplayan yer eşyası (dekor ve halı değil); yoksa null.</summary>
         public ItemInstance GetItemAt(GridPos tile)
         {
-            foreach (var item in _items)
-                if (!item.IsDecor && !item.IsRug && Occupies(item, tile)) return item;
-            return null;
+            EnsureTileIndex();
+            return _tileIndex.TryGetValue(tile, out var item) ? item : null;
         }
 
         /// <summary>Bir yüzey eşyasının üzerindeki dekorlar.</summary>

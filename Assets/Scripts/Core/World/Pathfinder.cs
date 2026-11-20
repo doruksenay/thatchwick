@@ -56,59 +56,114 @@ namespace Thatchwick.Core.World
             });
         }
 
+        // Arama tamponları iş parçacığı başına bir kez ayrılır ve her aramada temizlenir (performans incelemesi 20.11.2026):
+        // eskiden her aramada SortedSet, Dictionary ve HashSet yeniden kuruluyordu.
+        [ThreadStatic] private static NodeHeap _open;
+        [ThreadStatic] private static Dictionary<GridPos, Node> _best;
+        [ThreadStatic] private static HashSet<GridPos> _closed;
+
         private static List<GridPos> Search(GridMap map, GridPos start, Func<GridPos, bool> isGoal, Func<GridPos, int> heuristic)
         {
-            var open = new SortedSet<Node>(NodeComparer.Instance);
-            var best = new Dictionary<GridPos, Node>();
-            var closed = new HashSet<GridPos>();
-
-            // Yol varsa adım maliyeti yolun hızına bölünür (yol tercih edilir); kesirler için maliyetler x10 ölçeklenir.
-            bool roads = map.HasTerrainSpeed;
-            var first = new Node(start, 0, heuristic(start), null);
-            open.Add(first);
-            best[start] = first;
-
-            while (open.Count > 0)
+            var open = _open ?? (_open = new NodeHeap());
+            var best = _best ?? (_best = new Dictionary<GridPos, Node>());
+            var closed = _closed ?? (_closed = new HashSet<GridPos>());
+            open.Clear();
+            best.Clear();
+            closed.Clear();
+            try
             {
-                var current = open.Min;
-                open.Remove(current);
+                // Yol varsa adım maliyeti yolun hızına bölünür (yol tercih edilir); kesirler için maliyetler x10 ölçeklenir.
+                bool roads = map.HasTerrainSpeed;
+                var first = new Node(start, 0, heuristic(start), null);
+                open.Push(first);
+                best[start] = first;
 
-                if (isGoal(current.Pos)) return Rebuild(current);
-                if (!closed.Add(current.Pos)) continue;
-
-                foreach (var dir in Directions)
+                while (open.Count > 0)
                 {
-                    var next = current.Pos + dir;
-                    if (closed.Contains(next) || !map.CanStep(current.Pos, next)) continue;
+                    var current = open.Pop();
+                    // Daha ucuz yolla yeniden eklenmiş karonun eski kaydı: atlanır (tembel silme; SortedSet.Remove yerine).
+                    if (best.TryGetValue(current.Pos, out var known) && !ReferenceEquals(known, current)) continue;
 
-                    bool diagonal = dir.X != 0 && dir.Y != 0;
-                    int cost = diagonal ? DiagonalCost : StraightCost;
-                    if (roads) cost = (int)Math.Round(cost * RoadScale / map.StepSpeed(current.Pos, next));
-                    Relax(open, best, current, next, current.G + cost, heuristic);
+                    if (isGoal(current.Pos)) return Rebuild(current);
+                    if (!closed.Add(current.Pos)) continue;
+
+                    foreach (var dir in Directions)
+                    {
+                        var next = current.Pos + dir;
+                        if (closed.Contains(next) || !map.CanStep(current.Pos, next)) continue;
+
+                        bool diagonal = dir.X != 0 && dir.Y != 0;
+                        int cost = diagonal ? DiagonalCost : StraightCost;
+                        if (roads) cost = (int)Math.Round(cost * RoadScale / map.StepSpeed(current.Pos, next));
+                        Relax(open, best, current, next, current.G + cost, heuristic);
+                    }
+
+                    // Merdiven bağlantıları: kat değiştirir; maliyet kat farkı + yatay mesafe kadar adım.
+                    foreach (var next in map.LinksFrom(current.Pos))
+                    {
+                        if (closed.Contains(next)) continue;
+                        int span = Math.Abs(next.X - current.Pos.X) + Math.Abs(next.Y - current.Pos.Y) + 1;
+                        Relax(open, best, current, next, current.G + StraightCost * span * (roads ? RoadScale : 1), heuristic);
+                    }
                 }
 
-                // Merdiven bağlantıları: kat değiştirir; maliyet kat farkı + yatay mesafe kadar adım.
-                foreach (var next in map.LinksFrom(current.Pos))
-                {
-                    if (closed.Contains(next)) continue;
-                    int span = Math.Abs(next.X - current.Pos.X) + Math.Abs(next.Y - current.Pos.Y) + 1;
-                    Relax(open, best, current, next, current.G + StraightCost * span * (roads ? RoadScale : 1), heuristic);
-                }
+                return null;
             }
-
-            return null;
+            finally
+            {
+                // Büyük aramadan sonra tampon belleği tutulmasın diye düğümler bırakılır (kapasite kalır).
+                open.Clear();
+                best.Clear();
+                closed.Clear();
+            }
         }
 
-        private static void Relax(SortedSet<Node> open, Dictionary<GridPos, Node> best, Node current, GridPos next, int g, Func<GridPos, int> heuristic)
+        private static void Relax(NodeHeap open, Dictionary<GridPos, Node> best, Node current, GridPos next, int g, Func<GridPos, int> heuristic)
         {
-            if (best.TryGetValue(next, out var known))
-            {
-                if (g >= known.G) return;
-                open.Remove(known);
-            }
+            if (best.TryGetValue(next, out var known) && g >= known.G) return;
             var node = new Node(next, g, heuristic(next), current);
             best[next] = node;
-            open.Add(node);
+            open.Push(node);
+        }
+
+        /// <summary>İkili yığın; sıralama NodeComparer ile aynı (F, H, konum, G), böylece yollar eskisiyle birebir aynıdır.</summary>
+        private sealed class NodeHeap
+        {
+            private readonly List<Node> _items = new List<Node>();
+            public int Count => _items.Count;
+            public void Clear() => _items.Clear();
+
+            public void Push(Node node)
+            {
+                _items.Add(node);
+                int i = _items.Count - 1;
+                while (i > 0)
+                {
+                    int parent = (i - 1) >> 1;
+                    if (NodeComparer.Instance.Compare(_items[i], _items[parent]) >= 0) break;
+                    (_items[i], _items[parent]) = (_items[parent], _items[i]);
+                    i = parent;
+                }
+            }
+
+            public Node Pop()
+            {
+                var top = _items[0];
+                int last = _items.Count - 1;
+                _items[0] = _items[last];
+                _items.RemoveAt(last);
+                int i = 0, n = _items.Count;
+                while (true)
+                {
+                    int l = 2 * i + 1, r = l + 1, m = i;
+                    if (l < n && NodeComparer.Instance.Compare(_items[l], _items[m]) < 0) m = l;
+                    if (r < n && NodeComparer.Instance.Compare(_items[r], _items[m]) < 0) m = r;
+                    if (m == i) break;
+                    (_items[i], _items[m]) = (_items[m], _items[i]);
+                    i = m;
+                }
+                return top;
+            }
         }
 
         // Octile mesafe (kat farkı yok sayılır, böylece hâlâ kabul edilebilir): 8 yönlü harekette kabul edilebilir (admissible) tahmin.

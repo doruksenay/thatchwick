@@ -929,6 +929,8 @@ namespace Thatchwick.Core.Jobs
             // tarla görevlisi biçtiği ekini günlerce yeniden ekmiyordu). İş yoksa ihtiyaç işine geçer.
             if (Rank(_needOrder[0]) == 2 && ComfortCanWait() && TryStartDuty()) return true;
 
+            // Başarısız arama her adımda yinelenmesin: bütün dünyayı tarar ve rahatlık ihtiyaçları hemen her an eşiğin altındadır.
+            if (_elapsedDays < _autonomyIdleUntil && !_character.Needs.AnyCritical()) return false;
             foreach (var need in _needOrder)
             {
                 if (need == NeedType.Social && TryStartChat()) return true;
@@ -937,8 +939,16 @@ namespace Thatchwick.Core.Jobs
                     && TryStartNeedItem(NeedType.Bladder)) return true;          // yatmadan önce tuvalet
                 if (TryStartNeedItem(need)) return true;
             }
+            _autonomyIdleUntil = _elapsedDays + AutonomyRetryDays;
             return false;
         }
+
+        /// <summary>
+        /// Otonomi giderecek bir şey bulamazsa bu kadar oyun günü yeniden aramaz (≈3 oyun dakikası, 1x hızda ~1,4 sn).
+        /// Kritik ihtiyaç (açlık, enerji, ısınma) bekletilmez.
+        /// </summary>
+        public const double AutonomyRetryDays = 0.002;
+        private double _autonomyIdleUntil;
 
         /// <summary>Tuvalet bunun altına inince yürüdüğü işi ya da uykuyu bırakıp tuvalete koşar; iş sonra sürer.</summary>
         public const float BladderInterrupt = 15f;
