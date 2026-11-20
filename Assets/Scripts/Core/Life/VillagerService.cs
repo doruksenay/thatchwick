@@ -294,6 +294,23 @@ namespace Thatchwick.Core.Life
 
         public const double HomeUntil = 0.20, WorkUntil = 0.70, SquareUntil = 0.88;
 
+        /// <summary>
+        /// Mesleğe göre yaban haritası gezintisi (rol, yer, başlangıç, bitiş; gün kesri). Otacı sabah ormanda ot toplar,
+        /// marangoz kereste seçer, taşçı ocağa uğrar (dükkân açılmadan önce); balıkçı dükkânı kapattıktan sonra göle çıkar.
+        /// Yer bu haritada yoksa (eski kayıt) PlaceAvailable false döner ve köylü normal programına uyar.
+        /// </summary>
+        public static readonly (string role, string place, double from, double until)[] Outings =
+        {
+            ("herbalist", "forest", 0.20, 0.33),
+            ("carpenter", "forest", 0.20, 0.33),
+            ("mason", "hill", 0.20, 0.29),
+            ("fisher", "lake", 0.59, 0.70),
+            ("shepherd", "slopes", 0.59, 0.70),
+        };
+
+        /// <summary>Adlandırılmış yerin bu dünyada olup olmadığı (oyun katmanı verir); null ise gezinti yok.</summary>
+        public Func<string, bool> PlaceAvailable { get; set; }
+
         /// <summary>Günün saatine, havaya ve şenliğe göre köylünün bulunacağı adlandırılmış yer ("home:1", "work:smithy", "square").</summary>
         public string LocationFor(VillagerDef def, double dayFraction, WeatherType weather, bool festivalToday)
         {
@@ -303,6 +320,9 @@ namespace Thatchwick.Core.Life
             if (def.Role == RoleInnkeeper)
                 return dayFraction >= InnOpens && dayFraction < InnCloses && !string.IsNullOrEmpty(def.Work) ? def.Work : def.Home;
             if (dayFraction < HomeUntil) return def.Home;
+            if (weather != WeatherType.Snow && weather != WeatherType.Rain && PlaceAvailable != null)
+                foreach (var o in Outings)
+                    if (o.role == def.Role && dayFraction >= o.from && dayFraction < o.until && PlaceAvailable(o.place)) return o.place;
             if (dayFraction < WorkUntil) return string.IsNullOrEmpty(def.Work) ? def.Home : def.Work;
             if (dayFraction < SquareUntil && weather != WeatherType.Snow && weather != WeatherType.Rain) return "square";
             return def.Home;

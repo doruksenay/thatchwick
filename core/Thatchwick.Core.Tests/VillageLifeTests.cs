@@ -274,6 +274,21 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void KoyluProgrami_MeslegeGoreYabanGezintisi()
+        {
+            var r = NewRig();
+            var zeynep = r.Db.Villagers.Get("villager.zeynep");
+            var v = r.Life.Villagers;
+            Assert.Equal("work:herb", v.LocationFor(zeynep, 0.25, WeatherType.Clear, false));   // yer bilinmiyor: gezinti yok
+            v.PlaceAvailable = k => k == "forest";
+            Assert.Equal("forest", v.LocationFor(zeynep, 0.25, WeatherType.Clear, false));      // sabah ormanda ot toplar
+            Assert.Equal("work:herb", v.LocationFor(zeynep, 0.40, WeatherType.Clear, false));   // dükkân saatinde işinde
+            Assert.Equal("work:herb", v.LocationFor(zeynep, 0.25, WeatherType.Rain, false));    // yağmurda gitmez
+            v.PlaceAvailable = k => false;                                                      // eski kayıt: orman yok
+            Assert.Equal("work:herb", v.LocationFor(zeynep, 0.25, WeatherType.Clear, false));
+        }
+
+        [Fact]
         public void Demirci_OlunceAletYukseltilemez()
         {
             var r = NewRig(1000);

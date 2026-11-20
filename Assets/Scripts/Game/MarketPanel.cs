@@ -35,6 +35,14 @@ namespace Thatchwick.Game
         public TravelingMerchant Merchant { get; set; }
         public Func<long> DayIndex { get; set; }
 
+        /// <summary>
+        /// Bölgeli dünyada pazar tezgâhı yerine Kerem'in genel dükkânı (belge 42): null değilse yakınlık bu denetimle
+        /// ölçülür. Dönüş null ise alışveriş açık, değilse oyuncuya gösterilecek neden (dükkân kapalı, dışarıdasın...).
+        /// </summary>
+        public Func<string> ShopGate { get; set; }
+        /// <summary>ShopGate varken "Dükkâna yürü" düğmesi.</summary>
+        public Action WalkToShop { get; set; }
+
         public MarketPanel(Market market, Household house, StorageService storage, ContentDatabase content, WorldState world,
             Func<Character> player, Func<JobRunner> runner, int stallId)
         {
@@ -88,8 +96,14 @@ namespace Thatchwick.Game
             GUILayout.EndHorizontal();
             if (_status.Length > 0) UiSkin.Wrap(_status, 344f);
 
-            bool near = PlayerIsNear();
-            if (!near)
+            string gate = ShopGate?.Invoke();
+            bool near = ShopGate != null ? gate == null : PlayerIsNear();
+            if (!near && ShopGate != null)
+            {
+                UiSkin.Wrap(gate, 344f);
+                if (GUILayout.Button("Dükkâna yürü")) { WalkToShop?.Invoke(); _status = "Genel dükkâna yürüyor..."; }
+            }
+            else if (!near)
             {
                 UiSkin.Wrap("Alışveriş için tezgâhın yanında olmalısın (köyün doğusu, çit geçidinden çık).", 344f);
                 if (GUILayout.Button("Pazara yürü")) WalkToStall();
