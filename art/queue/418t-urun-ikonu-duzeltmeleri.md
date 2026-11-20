@@ -1,7 +1,8 @@
 ---
 id: "418t"
 title: "Ürün ikonu düzeltmeleri (19 ikon: yüzsüz, döneme uygun, okunur)"
-status: pending
+status: running
+claimed_at: 2026-11-20T10:47Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette arayüz incelemesi: "önerini uygula")
 priority: 20
 family: arayuz
