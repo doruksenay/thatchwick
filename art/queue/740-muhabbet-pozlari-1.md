@@ -1,7 +1,8 @@
 ---
 id: "740"
 title: "Muhabbet (toplu sohbet) pozları 1: gülümse, kahkaha, kıkırda, başını salla, kollar kavuşuk dinle, omuz silk (48)"
-status: pending
+status: running
+claimed_at: 2026-11-20T20:44Z
 approved_by: user        # kullanıcı 20.11.2026 ("toplu sohbeti onaylıyorum", "herkes aynı gülmesin baş sallamasın çeşit olsun", "şimdi alınabilir"); Project belgeleri 67a §6, 67b
 priority: 40
 family: karakter
