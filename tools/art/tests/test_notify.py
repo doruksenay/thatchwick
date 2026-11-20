@@ -18,6 +18,10 @@ class NotifyTests(unittest.TestCase):
         job = sorted(n.split("-")[0] for n in os.listdir(notify.QUEUE) if n.endswith(".md") and n[0].isdigit())[0]
         self.assertIn("push edilemedi (failure)", notify.body(job, "failure", "o/r", "sahip"))
 
+    def test_claude_limit(self):
+        job = sorted(n.split("-")[0] for n in os.listdir(notify.QUEUE) if n.endswith(".md") and n[0].isdigit())[0]
+        self.assertIn("sıraya geri kondu", notify.body(job, "claude-limit", "o/r", "sahip"))
+
     def test_unknown_job_does_not_crash(self):
         self.assertIn("**yok-boyle-is**", notify.body("yok-boyle-is", "success", "o/r", "sahip"))
 

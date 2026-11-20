@@ -41,12 +41,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     # Paralel üretim (art/budget.md "Paralel üretim"; kullanıcı kararı 2026-11-18, 2026-11-21'de Pixel Architect ile
-    # en yükseğe çıktı): her tur 10 şeritte 10 işi aynı anda yürütür. PixelLab aynı anda 20 işe izin verir; şerit başına
-    # en çok 2 eşzamanlı çağrı (art/budget.md). Her şerit sıradaki uygun işi sahiplenir; çakışan sahiplenmede push reddedilir, şerit geri alıp sonrakini dener.
+    # en yükseğe çıktı): her tur 6 şeritte 6 işi aynı anda yürütür (kullanıcı kararı 2026-11-21: 10'dan 6'ya, Claude kullanım
+    # sınırı için). PixelLab aynı anda 20 işe izin verir; şerit başına en çok 3 eşzamanlı çağrı (art/budget.md). Her şerit sıradaki uygun işi sahiplenir; çakışan sahiplenmede push reddedilir, şerit geri alıp sonrakini dener.
     strategy:
       fail-fast: false
       matrix:
-        lane: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        lane: [0, 1, 2, 3, 4, 5]
     env:
       LANE: ${{ matrix.lane }}
     steps:
@@ -143,23 +143,62 @@ jobs:
       # Ajan yalnızca sahiplenilen işi yapar ve commit eder; pull/push/lock adımları bulut modunda yoktur
       # (.claude/agents/pixellab-artist.md "Bulut modu"). git yalnızca okuma ve commit alt komutlarıyla açıktır.
       - name: pixellab-artist
+        id: agent
         if: steps.claim.outputs.run == 'true'
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           ART_WORKER_MODE: cloud
           ART_JOB: ${{ steps.claim.outputs.job }}
         run: |
+          # Claude kullanım sınırı (kullanıcı kararı 2026-11-21): oturum sınıra takılırsa adım başarısız sayılmaz;
+          # aşağıdaki "Claude sınırı" adımı işi hemen sıraya geri koyar.
+          log="$RUNNER_TEMP/agent.log"
+          set +e
           claude -p "Bulut modundasin (serit $LANE): yalnizca art/queue icindeki $ART_JOB numarali isi (zaten sahiplenildi) art/budget.md kurallariyla isle, commit et, push etme ve ozet rapor ver." \
             --agent pixellab-artist \
             --max-turns 80 \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
             --allowedTools "mcp__pixellab" "Read" "Write" "Edit" "Glob" "Grep" \
               "Bash(git status:*)" "Bash(git diff:*)" "Bash(git log:*)" "Bash(git add:*)" "Bash(git commit:*)" \
-              "Bash(python:*)" "Bash(python3:*)" "Bash(uv run:*)" "Bash(mkdir -p:*)" "Bash(cp -n:*)" "Bash(ls:*)"
+              "Bash(python:*)" "Bash(python3:*)" "Bash(uv run:*)" "Bash(mkdir -p:*)" "Bash(cp -n:*)" "Bash(ls:*)" \
+            2>&1 | tee "$log"
+          code=${PIPESTATUS[0]}
+          set -e
+          # Yalnızca çıkış kodu sıfır değilse ve sınır iletisi çıktının sonundaysa (ajanın metnindeki "rate limit"
+          # sözü yanlış alarm vermesin).
+          if [ "$code" != "0" ] && tail -n 8 "$log" | grep -qiE "usage limit|limit reached|hit your limit|reached your limit|out of (extra )?usage|resets [0-9]"; then
+            echo "::warning::Claude kullanım sınırı; iş $ART_JOB sıraya geri konacak."
+            echo "limit=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          exit "$code"
+
+      - name: Claude sınırı, işi sıraya geri koy
+        if: always() && steps.agent.outputs.limit == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE: ${{ steps.claim.outputs.base }}
+          JOB: ${{ steps.claim.outputs.job }}
+        run: |
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          for attempt in 1 2 3 4 5; do
+            git reset --hard -q "$BASE"                      # yarım kalan ajan commit'leri atılır
+            git pull --ff-only -q "$remote" main
+            file=$(ls art/queue/"$JOB"-*.md | head -1)
+            sed -i '0,/^status: running/s//status: pending/' "$file"
+            printf -- '---\nzaman: %s\niş: %s\n---\nBulut işçisi Claude kullanım sınırına takıldı. Bu andan sonra %s dakika yeni iş alınmaz (tools/art/queue_ready.py).\n' \
+              "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$JOB" 60 > art/claude-sinir.md
+            git add "$file" art/claude-sinir.md
+            git commit -q -m "art($JOB): Claude sınırı, sıraya geri kondu"
+            if git push "$remote" HEAD:main; then exit 0; fi
+            sleep $(( RANDOM % 15 + 5 ))
+          done
+          echo "::error::$JOB sıraya geri konamadı; 6 saat sonra takılı sahiplenme olarak yeniden alınır."
+          exit 1
 
       - name: Denetle ve push et
         id: push
-        if: always() && steps.claim.outputs.run == 'true'
+        if: always() && steps.claim.outputs.run == 'true' && steps.agent.outputs.limit != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -213,7 +252,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           JOB: ${{ steps.claim.outputs.job }}
-          PUSH_OUTCOME: ${{ steps.push.outcome }}
+          PUSH_OUTCOME: ${{ steps.agent.outputs.limit == 'true' && 'claude-limit' || steps.push.outcome }}
           NOTIFY_USER: ${{ github.repository_owner }}
         run: |
           git pull --rebase -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" main || true
@@ -229,13 +268,13 @@ jobs:
       # 3 saat beklemeden yeni tur başlatır. Frenler queue_ready.py ve art/budget.md'de; günlük tavan
       # dolunca uygun iş kalmaz ve zincir kendiliğinden durur. İlerleme yoksa (aynı iş takılı) zincirlemez.
       - name: Sonraki tur
-        if: success() && steps.ready.outputs.run == 'true'
+        if: success() && steps.ready.outputs.run == 'true' && steps.agent.outputs.limit != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           START_SHA: ${{ github.sha }}
         run: |
           git pull --rebase -q || true
-          done=$(git log "$START_SHA"..HEAD --author=thatchwick-art-worker --format=%s | grep -vc ': başladı$' || true)
+          done=$(git log "$START_SHA"..HEAD --author=thatchwick-art-worker --format=%s | grep -vcE ': (başladı|Claude sınırı, sıraya geri kondu)$' || true)
           if [ "${done:-0}" -gt 0 ] && python tools/art/queue_ready.py --quiet --worker bulut; then
             echo "Bu turda $done iş bitti, uygun iş var: yeni tur başlatılıyor."
             gh workflow run art-worker.yml --ref main
