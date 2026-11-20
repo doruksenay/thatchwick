@@ -187,7 +187,7 @@ namespace Thatchwick.Core.Save
                     {
                         id = it.Id, def = it.Def.Id, x = it.Position.X, y = it.Position.Y, z = it.Position.Z, rotation = it.Rotation,
                         parentId = it.ParentId ?? -1, slotId = it.SlotId, fuelDays = it.FuelDays, growthDays = it.GrowthDays,
-                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId, toggled = it.Toggled, fill = it.Fill,
+                        feedStock = it.FeedStock, stock = stock, finish = it.FinishId, accent = it.AccentId, toggled = it.Toggled, fill = it.Fill,
                         watered = it.Watered, ageDays = it.AgeDays, wetDays = it.WetDays, fruitReady = it.FruitReady, fruitDays = it.FruitDays,
                         band = it.IsWallMounted ? it.WallBand : -1, layer = it.IsRug ? it.LayerOrder : 0, condition = (int)it.Condition,
                         tarnish = it.TarnishDays, contents = ContentsOf(it)
@@ -555,6 +555,8 @@ namespace Thatchwick.Core.Save
                     restored.FeedStock = Math.Max(0, s.feedStock);
                     if (!string.IsNullOrEmpty(s.finish) && content.Parts.TryGet(s.finish, out var fin) && fin.Kind == BuildPartKind.ItemFinish && fin.Group == def.FinishGroup)
                         restored.FinishId = s.finish;
+                    if (!string.IsNullOrEmpty(s.accent) && content.Parts.TryGet(s.accent, out var acc) && acc.Kind == BuildPartKind.ItemFinish && acc.Group == def.AccentGroup)
+                        restored.AccentId = s.accent;
                         restored.Toggled = s.toggled;
                         restored.Fill = Math.Max(0, s.fill);
                     restored.SetPlantState(s.watered, Math.Max(0, s.ageDays), Math.Max(0, s.wetDays), s.fruitReady, Math.Max(0, s.fruitDays));

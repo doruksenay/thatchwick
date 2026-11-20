@@ -63,6 +63,8 @@ namespace Thatchwick.Core.Save
         public Thatchwick.Core.Economy.MerchantSave merchant;
         // Hatıralar ve "ilk"ler (D3b, 18.11.2026). Eski kayıtta null: boş başlar.
         public Thatchwick.Core.Life.KeepsakeSave keepsakes;
+        // Ev bakımı ve otomasyonu (belge 45); eski kayıtta null.
+        public Thatchwick.Core.Life.HomeSave home;
         // Komşu NPC hanedanları (18.11.2026). Eski kayıtta null: haneler mevcut köylülerden kurulur.
         public NeighborHouseSave[] houses;
         // Yaban hayvanları (18.11.2026, belge 31). Eski kayıtta null / 0: defter boş, tehdit yok.

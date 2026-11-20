@@ -373,6 +373,8 @@ namespace Thatchwick.Core.World
                 }
                 else if (!Map.EdgeInBounds(edge) || Map.GetEdge(edge) != EdgeKind.Wall)
                     return PlacementCheck.Fail(span > 1 ? $"{def.DisplayName} {span} karo düz duvar ister (kapı ve pencere araya girmesin)." : "Yalnızca düz duvara asılır (kapı ve pencereye değil).");
+                if (def.IsNiche && Array.IndexOf(Decor.ThickWalls, Map.GetEdgeStyle(edge)) < 0)
+                    return PlacementCheck.Fail($"{def.DisplayName} yalnızca kalın duvara oyulur (kerpiç, taş ya da kesme taş).");
                 foreach (var other in _items)
                 {
                     if (other.Id == ignoreItemId || !other.IsWallMounted || other.Rotation != side || other.WallBand != band) continue;

@@ -112,7 +112,7 @@ namespace Thatchwick.Game
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(12f);
                 GUILayout.Label("Görev:", GUILayout.Width(44f));
-                foreach (var d in new[] { DutyKind.None, DutyKind.Farm, DutyKind.Animals, DutyKind.Mine, DutyKind.Steward })
+                foreach (var d in new[] { DutyKind.None, DutyKind.Farm, DutyKind.Animals, DutyKind.Mine, DutyKind.House, DutyKind.Steward })
                 {
                     string label = DutyPlanner.DutyName(d);
                     if (d != DutyKind.None && d != DutyKind.Steward && Duties != null) label += $" ({Duties.Pending(d)})";
@@ -122,6 +122,7 @@ namespace Thatchwick.Game
                         c.Duty = d;
                         _status = d == DutyKind.None ? $"{c.Name} görevden alındı."
                             : d == DutyKind.Steward ? $"{c.Name} kâhya: her sabah öbürlerine bekleyen işe göre görev dağıtır."
+                            : d == DutyKind.House ? $"{c.Name}: Ev görevi (mum, sepet, döküntü, ayna, saksı, ot, badana; akşama kadar)."
                             : $"{c.Name}: {DutyPlanner.DutyName(d)} görevi (gündüz, ihtiyaçları iyiyken).";
                     }
                     GUI.enabled = true;

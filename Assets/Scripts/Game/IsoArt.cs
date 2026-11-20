@@ -171,8 +171,10 @@ namespace Thatchwick.Game
         }
 
         // ---------------- eşyalar ----------------
+
         // Görseller ve pivotlar items.json'da (ItemDef.Art, yerleşim sistemi belge 44 B); yön ile görsel arasındaki bağ
-        // Core.Layout.ItemFacing'te tek yerde. Eski el tablosu (Items) oraya taşındı.
+        // Core.Layout.ItemFacing'te tek yerde. Eski el tablosu (Items) oraya taşındı (tools/layout/item_meta.py).
+        // Bitki evreleri (ağaç, ekin) aşağıdaki Trees/Crops adlandırmasıyla çizilir.
 
         /// <summary>Pivot: veride yoksa ayak izine göre varsayılan (1x1 80 px tuval (40, 24); 2x1 (56, 32); dekor (16, 7)).</summary>
         private static Vector2 PivotOf(Thatchwick.Core.Content.ItemDef def)
@@ -190,6 +192,7 @@ namespace Thatchwick.Game
             if (def?.Art == null) return null;
             int rot = Thatchwick.Core.Layout.ItemFacing.Snap(def, 0);
             if (!Thatchwick.Core.Layout.ItemFacing.TryView(def, rot, false, out var name, out _)) name = def.Art.Grown;
+            if (name == null) return null;
             var p = PivotOf(def);
             return Get(name, p.x, p.y);
         }
@@ -208,19 +211,68 @@ namespace Thatchwick.Game
             return s;
         }
 
-        /// <summary>Bitkinin görseli: meyvesi hazırsa meyveli, büyümediyse genç (varsa), yoksa olgun. young: genç evre görseli.</summary>
-        public static Sprite Plant(ItemInstance item, out bool young)
+        /// <summary>
+        /// Ağaç türleri: görsel öneki (96x112, pivot 40,24). Evreler: "_young_se" (büyürken), "_grown_se" (olgun),
+        /// "_fruit_se" (meyve hazır). 319, 371, 372, 377. Evrenin görseli yoksa en yakın evreye düşer.
+        /// </summary>
+        private static readonly Dictionary<string, string> Trees = new Dictionary<string, string>
         {
-            young = false;
-            var a = item.Def.Art;
-            if (!Enabled || a == null) return null;
-            string name = null;
-            if (item.FruitReady && a.Fruit != null) name = a.Fruit;
-            else if (!item.IsGrown && a.Young != null) { name = a.Young; young = true; }
-            else name = a.Grown;
-            var s = name != null ? Get(name, 40f, 24f) : null;
-            if (s == null && young) { young = false; s = a.Grown != null ? Get(a.Grown, 40f, 24f) : null; }
-            return s;
+            ["item.tree_oak"] = "iso_tree_oak",
+            ["item.tree_apple"] = "iso_tree_apple",
+            ["item.tree_pear"] = "iso_tree_pear",
+            ["item.tree_cherry"] = "iso_tree_cherry",
+            ["item.tree_plum"] = "iso_tree_plum",
+            ["item.tree_birch"] = "iso_tree_birch",
+            ["item.tree_pine"] = "iso_tree_pine",
+            ["item.tree_willow"] = "iso_tree_willow",
+        };
+
+        /// <summary>Ekinler: evre görselleri "_1_se", "_2_se", "_3_se" (80x72, pivot 40,24). 310 kurtarma (371) ve 374.</summary>
+        private static readonly Dictionary<string, string> Crops = new Dictionary<string, string>
+        {
+            ["item.crop_cabbage"] = "iso_crop_cabbage",
+            ["item.crop_leek"] = "iso_crop_leek",
+            ["item.crop_pea"] = "iso_crop_pea",
+            ["item.crop_pumpkin"] = "iso_crop_pumpkin",
+            ["item.crop_turnip"] = "iso_crop_turnip",
+        };
+
+        /// <summary>Ekin evresi (1-3) büyüme oranından.</summary>
+        public static int CropStage(float growth) => growth < 0.34f ? 1 : growth < 0.67f ? 2 : 3;
+
+        /// <summary>
+        /// Bitkinin görseli. staged: görsel bitkinin şimdiki evresine ait (genç ağaç, ekin evresi); çağıran onu ölçekle
+        /// küçültmez. false ise olgun görsel döndü, çağıran büyüme oranıyla küçültür. Görsel yoksa null.
+        /// </summary>
+        public static Sprite Plant(ItemInstance item, out bool staged)
+        {
+            staged = false;
+            if (!Enabled || item == null) return null;
+            string id = item.Def.Id;
+            if (Crops.TryGetValue(id, out var crop))
+            {
+                int st = CropStage(item.GrowthFraction);
+                for (int k = st; k >= 1; k--)
+                {
+                    var s = Get($"{crop}_{k}_se", 40f, 24f);
+                    if (s != null) { staged = true; return s; }
+                }
+                return null;
+            }
+            if (!Trees.TryGetValue(id, out var tree)) return null;
+            if (!item.IsGrown)
+            {
+                var young = Get(tree + "_young_se", 40f, 24f);
+                if (young != null) { staged = true; return young; }
+                return Get(tree + "_grown_se", 40f, 24f);
+            }
+            staged = true;
+            if (item.FruitReady)
+            {
+                var fruit = Get(tree + "_fruit_se", 40f, 24f);
+                if (fruit != null) return fruit;
+            }
+            return Get(tree + "_grown_se", 40f, 24f) ?? Get(tree + "_young_se", 40f, 24f);
         }
 
         public static Sprite Plant(ItemInstance item) => Plant(item, out _);
@@ -275,11 +327,34 @@ namespace Thatchwick.Game
             if (h < 0) h = -h;
             switch (road)
             {
-                case RoadType.Path: return GetCentered(h % 2 == 0 ? "iso_road_path_a" : "iso_road_path_b") ?? GetCentered("iso_road_path_a");
-                case RoadType.Gravel: return GetCentered("iso_road_gravel_a");
-                case RoadType.Paved: return GetCentered(band >= 2 ? "iso_road_paved_broken" : "iso_road_paved_worn");
+                // 376 kabul: patika b v2 (kenarında çim yok), yıpranmış çakıl; 376b: çakıl a v2, sağlam ve bozuk kaldırım v2.
+                case RoadType.Path:
+                    return GetCentered(h % 2 == 0 ? "iso_road_path_a" : "iso_road_path_b_v2") ?? GetCentered("iso_road_path_a");
+                case RoadType.Gravel:
+                    return band >= 1
+                        ? GetCentered("iso_road_gravel_worn") ?? GetCentered("iso_road_gravel_a_v2") ?? GetCentered("iso_road_gravel_a")
+                        : GetCentered("iso_road_gravel_a_v2") ?? GetCentered("iso_road_gravel_a");
+                case RoadType.Paved:
+                    return band >= 2
+                        ? GetCentered("iso_road_paved_broken_v2") ?? GetCentered("iso_road_paved_broken")
+                        : band == 0 ? GetCentered("iso_road_paved_a") ?? GetCentered("iso_road_paved_worn") : GetCentered("iso_road_paved_worn");
                 default: return null;
             }
+        }
+
+        /// <summary>
+        /// Eşyanın görseli. flipX: yalnızca diğer eksen için çizilmiş görselin ayna görüntüsü kullanıldıysa
+        /// (ışık yönü ters olur; doğru görsel gelince kendiliğinden düzelir). Görsel yoksa null.
+        /// </summary>
+        /// <summary>
+        /// İkinci renk maskesi (belge 45 §10): eşya görselinin "_accent" eki (korkuluk, minder, kulp; beyaz, saydam zemin).
+        /// Yoksa null: ikinci renk yalnızca kartta görünür. Görsel adı ve ayna, eşyanın kendi görseliyle aynı kuraldan.
+        /// </summary>
+        public static Sprite ItemAccent(ItemInstance item)
+        {
+            if (!Thatchwick.Core.Layout.ItemFacing.TryView(item.Def, item.Rotation, false, out var name, out _)) return null;
+            var p = PivotOf(item.Def);
+            return Get(name + "_accent", p.x, p.y);
         }
 
         // ---------------- karakterler ----------------
@@ -329,6 +404,8 @@ namespace Thatchwick.Game
         {
             ["animal.sheep"] = ("iso_animal_sheep_1_cand", 26f, 14f),   // 56x56, ayaklar alttan 14 px
             ["animal.ox"] = ("iso_animal_ox_cand", 28f, 12f),          // iş 411; dosya yoksa yer tutucu
+            ["animal.cat"] = ("iso_animal_cat_1_cand", 15f, 2f),       // 375 kabul, 32x32, ayak bandı alttan 2 px
+            ["animal.dog"] = ("iso_animal_dog_1_cand", 19f, 4f),       // 379 (review), 40x40; dosya yoksa yer tutucu
             // Yaban hayvanları (iş 408-410): dosya yoksa yer tutucu küp.
             ["wild.rabbit"] = ("iso_wild_rabbit_cand", 24f, 10f),
             ["wild.squirrel"] = ("iso_wild_squirrel_cand", 24f, 10f),
@@ -356,8 +433,8 @@ namespace Thatchwick.Game
 
         /// <summary>
         /// 84 px gerçekçi oranlı yetişkin taban (012b kabul, 018 kararı 18.11.2026): genç yetişkin ve yetişkin
-        /// erkek/kadın. Durma görseli "_cand_<yön>", yürüme kareleri anim/ altında "_walk_<yön>_NN".
-        /// Görseli henüz olmayan yön ya da evre eski 56'lık sete düşer.
+        /// erkek/kadın. Durma görseli "_idle_<yön>" (ilk aday "_cand_se"), yürüme kareleri anim/ altında
+        /// "_walk2_<yön>_NN" (018b2). Görseli olmayan yön 84'lük SE'ye düşer; reddedilen 56'lık K2 seti yalnızca son çare.
         /// </summary>
         private static string AdultR84(Character c)
         {
@@ -399,14 +476,17 @@ namespace Thatchwick.Game
                 var s84 = Get(idle + "_v3", R84PivotX, R84PivotY)
                           ?? Get(idle + "_v2", R84PivotX, R84PivotY)
                           ?? Get(idle, R84PivotX, R84PivotY)
-                          ?? Get(r84 + "_cand_" + Directions[direction], R84PivotX, R84PivotY);
+                          ?? Get(r84 + "_cand_" + Directions[direction], R84PivotX, R84PivotY)
+                          // 012 seti reddedildi (19.11.2026): yönün 84'lüğü yoksa 56'lık değil 84'lük SE.
+                          ?? Get(r84 + "_idle_se_v3", R84PivotX, R84PivotY)
+                          ?? Get(r84 + "_idle_se_v2", R84PivotX, R84PivotY)
+                          ?? Get(r84 + "_idle_se", R84PivotX, R84PivotY)
+                          ?? Get(r84 + "_cand_se", R84PivotX, R84PivotY);
                 if (s84 != null) return s84;
             }
+            // Son çare: eski 56'lık K2 seti (012, reddedildi). Yalnızca 84/64 görseli hiç yüklenmemişse.
             string set = CharacterSet(c, out float px, out float py);
-            var own = Get(set + "_" + Directions[direction], px, py);
-            if (own != null) return own;
-            // Bu yönün 56'lık görseli de yoksa: 84'lük SE, o da yoksa 56'lık SE.
-            return (r84 != null ? Get(r84 + "_cand_se", R84PivotX, R84PivotY) : null) ?? Get(set + "_se", px, py);
+            return Get(set + "_" + Directions[direction], px, py) ?? Get(set + "_se", px, py);
         }
 
         // (set|yön) → kare sayısı; 0 = kare animasyonu yok.
@@ -419,13 +499,18 @@ namespace Thatchwick.Game
         /// </summary>
         public static Sprite CharacterWalk(Character c, int direction, float cycle)
         {
-            string r84 = AdultR84(c);
-            if (r84 == null || !Enabled) return null;
-            string prefix = r84 + "_walk_" + Directions[direction] + "_";
+            if (!Enabled) return null;
+            // Kabul edilen yürüme "walk2" (018b2/018b3; yaşlı 015a, çocuk 015c). Eski "walk" (018b) reddedildi:
+            // zıplıyor; ona düşülmez. Bu yönün walk2 karesi yoksa null: durma görseli + kod sallantısı.
+            string r64 = ChildR64(c);
+            string set = r64 ?? AdultR84(c);
+            if (set == null) return null;
+            float px = r64 != null ? R64PivotX : R84PivotX, py = r64 != null ? R64PivotY : R84PivotY;
+            string prefix = set + "_walk2_" + Directions[direction] + "_";
             int n = WalkFrameCount(prefix);
             if (n <= 0) return null;
             int frame = Mathf.FloorToInt(Mathf.Repeat(cycle, 1f) * n) % n;
-            return Get(prefix + frame.ToString("00"), R84PivotX, R84PivotY);
+            return Get(prefix + frame.ToString("00"), px, py);
         }
 
         /// <summary>

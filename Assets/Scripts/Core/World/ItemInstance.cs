@@ -64,6 +64,8 @@ namespace Thatchwick.Core.World
         public double FeedStock { get; internal set; }
         /// <summary>Mobilya kaplaması (renk/malzeme örneği, yapı parçası kimliği); null = varsayılan.</summary>
         public string FinishId { get; internal set; }
+        /// <summary>İkinci kaplama (korkuluk, minder, kulp; yapı parçası kimliği); null = grubun varsayılanı (belge 45 §10).</summary>
+        public string AccentId { get; internal set; }
         /// <summary>Açılıp kapanan düzenek (su kapağı) kapalı mı.</summary>
         public bool Toggled { get; set; }
         /// <summary>Lazımlık/hela dolumu (kullanım sayısı).</summary>
@@ -91,7 +93,11 @@ namespace Thatchwick.Core.World
         public double FuelDays { get; internal set; }
         public bool IsLit => FuelDays > 0;
         /// <summary>Işık veriyor mu: ışık eşyası ve (yağ isteyense) yağı var.</summary>
-        public bool GivesLight => Def.HasTag("light") && (!Def.NeedsOil || FuelDays > 0);
+        public bool GivesLight => Def.HasTag("light") && ((!Def.NeedsOil && !Def.Burns) || FuelDays > 0);
+        /// <summary>Mum yanıp bitti mi (belge 45: "Mum değiştir").</summary>
+        public bool BurntOut => Def.Burns && FuelDays <= 0;
+        /// <summary>Mumun yakıtını ayarlar (ev bakımı).</summary>
+        public void SetCandle(double days) { FuelDays = Math.Max(0, days); }
 
         // ---- çiftçilik durumu (PlantSystem yönetir) ----
         /// <summary>Ekin bugün sulandı (her yeni gün sıfırlanır; yağmur ve hendek de sular).</summary>
@@ -128,6 +134,7 @@ namespace Thatchwick.Core.World
             Def = def;
             Position = position;
             Rotation = rotation;
+            if (def != null && def.Burns) FuelDays = def.BurnDays;   // yeni mum dolu gelir (belge 45)
         }
 
         /// <summary>Kapladığı karolar (dekor ve duvar eşyası için boş).</summary>

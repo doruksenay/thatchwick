@@ -38,13 +38,16 @@ namespace Thatchwick.Core.Build
         public bool IsResource(string itemId) =>
             _content.Items.TryGet(itemId, out var def) && def.Placement == ItemPlacement.Resource;
 
+        /// <summary>Eşyanın ek depo kapasitesi (sandığa demir kuşak, belge 45); null ise yok.</summary>
+        public Func<ItemInstance, int> ExtraStorage { get; set; }
+
         public int Capacity
         {
             get
             {
                 int cap = BaseCapacity + _world.Map.CountZone(ZoneType.Storage) * UnitsPerZoneTile;
                 foreach (var item in _world.Items)
-                    if (!item.IsDecor) cap += item.Def.Storage;
+                    if (!item.IsDecor) cap += item.Def.Storage + (ExtraStorage != null ? ExtraStorage(item) : 0);
                 // Arabacılık: düzenli istif ve taşıma, seviye başına %3 fazla yer.
                 if (CartingLevel != null) cap = (int)(cap * SkillNames.Factor(CartingLevel(), 0.03));
                 return cap;

@@ -51,6 +51,14 @@ namespace Thatchwick.Core.Work
 
         private bool FirewoodLow => FirewoodStock != null && FirewoodStock() < LowFirewood;
 
+        /// <summary>
+        /// Ev görevinin işleri (belge 45): bakım isteyen eşya ve etkileşimi (mum, sepet, döküntü, ayna, saksı, ot serpme,
+        /// badana, solan süs). Life.HomeLife.Chores verir; null ise ev görevlisi iş bulmaz.
+        /// </summary>
+        public Func<IEnumerable<(ItemInstance item, InteractionDef interaction)>> HouseChores { get; set; }
+        /// <summary>Ev görevi akşam da sürer (mum yakmak akşam işidir): bu saate kadar.</summary>
+        public Func<bool> HouseHours { get; set; }
+
         /// <summary>Şu an iş saati mi (gündüz); null ise hep.</summary>
         public Func<bool> WorkHours { get; set; }
         /// <summary>Geçen toplam oyun günü (tutma süresi için); null ise iş tutulmaz (tek görevli).</summary>
@@ -77,6 +85,7 @@ namespace Thatchwick.Core.Work
                 case DutyKind.Animals: return "Hayvanlar";
                 case DutyKind.Mine: return "Maden";
                 case DutyKind.Steward: return "Kâhya";
+                case DutyKind.House: return "Ev";
                 default: return "Görev yok";
             }
         }
@@ -96,6 +105,8 @@ namespace Thatchwick.Core.Work
                 foreach (var it in _world.Items) if (FeedInteraction(it) != null || CollectInteraction(it) != null) n++;
                 if (_animals != null) foreach (var a in _animals.Animals) if (!a.IsDead && a.PetCooldownDays <= 0) n++;
             }
+            else if (duty == DutyKind.House && HouseChores != null)
+                foreach (var _ in HouseChores()) n++;
             else if (duty == DutyKind.Mine && Mines != null)
                 foreach (var m in Mines.Sites)
                     foreach (var (_, _, t) in m.All()) if (t.Marked || t.Creaking) n++;
@@ -106,7 +117,7 @@ namespace Thatchwick.Core.Work
         public Job Next(Character c)
         {
             if (!CanTakeDuty(c, c.Duty) || c.Duty == DutyKind.None) return null;
-            if (WorkHours != null && !WorkHours()) return null;
+            if (c.Duty == DutyKind.House ? (HouseHours ?? WorkHours) != null && !(HouseHours ?? WorkHours)() : WorkHours != null && !WorkHours()) return null;
             double now = Now?.Invoke() ?? 0;
             Expire(now);
 
@@ -216,6 +227,15 @@ namespace Thatchwick.Core.Work
                         Consider(-animal.Id, animal.Position, () => Job.WithAnimal(animal.Id, action));
                     }
             }
+            else if (c.Duty == DutyKind.House && HouseChores != null)
+            {
+                foreach (var (it, i) in HouseChores())
+                {
+                    if (it == null || i == null || (_effects != null && _effects.CanStart(c, it, i) != null)) continue;
+                    var item = it; var inter = i;
+                    Consider(HouseKey(item.Id, inter.Id), item.Position, () => Job.UseItem(item.Id, inter.Id));
+                }
+            }
             else if (c.Duty == DutyKind.Mine && TileWork != null && Mines?.Get(Mining.MineSystem.PlotId) is Mining.MineMap plot)
             {
                 // Önce güvenlik: çatırdayan karoya destek; sonra su; sonra işaretli karoları kaz (en yakını).
@@ -248,11 +268,14 @@ namespace Thatchwick.Core.Work
             return best;
         }
 
+        // Ev işinin tutma anahtarı: aynı eşyada iki ayrı iş (doldur, cilala) ayrı tutulur.
+        private static long HouseKey(int itemId, string interaction) => (1L << 43) + ((long)itemId << 8) + ((interaction?.GetHashCode() ?? 0) & 0xFF);
+
         private static long MineKey(GridPos p) => (1L << 42) + ((long)p.Y << 20) + p.X;
 
         /// <summary>
         /// Kâhya (sabah): hanede "Kâhya" görevli biri varsa öbür görev alabilen üyeler bekleyen işe göre dağıtılır. Her yeni
-        /// görevli, işi en çok / görevlisi en az olan göreve gider (eşitlikte tarla, hayvan, maden sırası); hiç iş yoksa
+        /// görevli, işi en çok / görevlisi en az olan göreve gider (eşitlikte tarla, hayvan, maden, ev sırası); hiç iş yoksa
         /// görevsiz kalır. Oyuncunun karakteri ve kâhyanın kendisi atanmaz. (karakter, eski görev, yeni görev) listesi döner.
         /// </summary>
         public List<(Character who, DutyKind from, DutyKind to)> AutoAssign(IEnumerable<Character> members)
@@ -269,7 +292,7 @@ namespace Thatchwick.Core.Work
             }
             if (steward == null || pool.Count == 0) return changes;
             pool.Sort((a, b) => a.Id.CompareTo(b.Id));
-            var kinds = new[] { DutyKind.Farm, DutyKind.Animals, DutyKind.Mine };
+            var kinds = new[] { DutyKind.Farm, DutyKind.Animals, DutyKind.Mine, DutyKind.House };
             var pending = new Dictionary<DutyKind, int>();
             var assigned = new Dictionary<DutyKind, int>();
             foreach (var k in kinds) { pending[k] = Pending(k); assigned[k] = 0; }

@@ -67,6 +67,8 @@ namespace Thatchwick.Core.Life
         public Thatchwick.Core.Build.DecorSystem Decor { get; }
         /// <summary>Hatıralar, soy ağacı işlemesi ve çeyiz sandığı (Project belgesi 27, D3b).</summary>
         public KeepsakeService Keepsakes { get; }
+        /// <summary>Ev bakımı ve otomasyonu: mum, is ve badana, saksı, yükseltme, oda türleri, desen ve arma, koleksiyon, oda planı, hizmetkâr, ev yarışması (belge 45).</summary>
+        public HomeLife Home { get; }
         /// <summary>Ruh hali uyarıları ve bunalım (Project belgesi 23).</summary>
         public BreakdownService Breakdowns { get; }
         /// <summary>Çocukluk eşyaları, can yoldaşı, çıraklık, aile tarifleri ve itibar (belge 30, 31-8, 34).</summary>
@@ -142,7 +144,18 @@ namespace Thatchwick.Core.Life
                 People = () => Population.Members,
                 Notify = (text, id) => Say(text, NoticeLevel.Info, id)
             };
-            Mood.BeautyBonus = it => Keepsakes.BeautyBonus(it) + Thatchwick.Core.Build.DecorSystem.SeasonalBeauty(it, Clock.Season);
+            Home = new HomeLife(world, content, house, clock)
+            {
+                Members = () => Population.Members,
+                FindPerson = Population.Find,
+                Notify = (text, id) => Say(text, NoticeLevel.Info, id),
+                GrantKeepsake = (id, label) => Keepsakes.Grant(id, label),
+                BeautyOf = Mood.BeautyOf
+            };
+            Mood.BeautyBonus = it => Keepsakes.BeautyBonus(it) + Thatchwick.Core.Build.DecorSystem.SeasonalBeauty(it, Clock.Season) + Home.BeautyBonus(it);
+            Mood.RoomBeautyExtra = Home.RoomBeautyExtra;
+            Mood.ExtraComfort = it => Legacy.ComfortBonus(it) + Home.ComfortBonus(it);
+            Decor.CollapseFactor = Home.CollapseFactor;
             UpdateMerchant(false);
             // Düğün önce: çeyiz sandığı gelinle gitmeden doluluğu okunur (belge 34-D2).
             Legacy.MarriedOutHappened += (member, villager) =>
@@ -157,6 +170,20 @@ namespace Thatchwick.Core.Life
             Houses.VillagersMarried += (a, b) => Say($"Köyde düğün: {a.Name} ile {b.Name} evlendi.", NoticeLevel.Info, a.Id);
             Houses.HouseEnded += h => Say($"{h.Name}nin soyu tükendi.", NoticeLevel.Info);
             Legacy.MarriedOutHappened += (member, villager) => Houses.JoinSpouses(member, villager);
+            Home.IsBusy = c => Villagers.IsNamed(c);
+            Home.NeighborCount = () => Math.Max(2, Houses.Houses.Count);
+            Home.CollectionCompleted += c =>
+            {
+                Upbringing.Reputation.Add(5, $"{c.Name} koleksiyonu");
+                Ledger.Note($"Koleksiyon: {c.Name}");
+            };
+            Home.ContestJudged += r =>
+            {
+                if (r.Rank == 1) Upbringing.Reputation.Add(8, "en güzel ev");
+                else if (r.Rank == 2) Upbringing.Reputation.Add(4, "ev yarışmasında ikinci");
+                Ledger.Note($"Ev yarışması: {r.Rank}.");
+            };
+            Suitors.Arrived += guest => Home.GuestVisit(guest);
             Villagers.RoleInherited += (heir, def) => Say($"{heir.Name}, {def.RoleName.ToLowerInvariant()} dükkânını devraldı.", NoticeLevel.Info, heir.Id);
             Legacy.SealsChanged += e =>
             {
@@ -216,6 +243,7 @@ namespace Thatchwick.Core.Life
                     Say(g.HouseholdWon ? $"{g.Game}: {g.Winner.Name} kazandı! +{Thatchwick.Core.Upbringing.FestivalGames.PrizeAkce} akçe, itibar."
                                        : $"{g.Game}: {g.Winner.Name} kazandı ({g.Entrants} yarışçı).", NoticeLevel.Info, g.Winner.Id);
                 Keepsakes.OnFestival(f.DisplayName, n);
+                if (f.Id == HomeLife.ContestFestival) Home.JudgeContest();   // panayırda ev yarışması (belge 45)
                 if (f.Id == VintageFestival) foreach (var note in Vintage()) Say(note, NoticeLevel.Info);
                 Ledger.Note(f.DisplayName);
                 Goals.Update();
@@ -531,6 +559,7 @@ namespace Thatchwick.Core.Life
         /// <summary>Aile sistemine bağlanır: köylü hediye/yakınlık kuralları ve evlilik sayacı.</summary>
         public void Attach(FamilyService family)
         {
+            Home.AddAffection = (a, b, d) => family.SetAffection(a, b, family.Affection(a, b) + d);
             _family = family;
             family.JoinedHousehold += c => Keepsakes.OnJoined(c);
             family.JoinedHousehold += c => Upbringing.Weddings?.OnGroomJoined(c, id => Content.Items.Contains(id));   // damat tarafı (34-D2)
@@ -550,7 +579,7 @@ namespace Thatchwick.Core.Life
             runner.SpeedProvider = WorkSpeedFor;
             runner.SquarePosition = () => SquarePosition?.Invoke();
             runner.Refused += (c, text) => Say($"{c.Name}: \"{text}\"", NoticeLevel.Info, c.Id, transient: true);
-            runner.ItemBonus = Legacy.BonusFor;
+            runner.ItemBonus = (it, i) => HomeLife.Combine(Legacy.BonusFor(it, i), Home.BonusFor(it, i));
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
             // Üşüyen ocağı kendisi yakar (Denge 41): ısı sistemi bağlıysa envanterden kütük atar.
@@ -646,7 +675,9 @@ namespace Thatchwick.Core.Life
         private static Animal FindAnimal(AnimalSystem animals, int id) { foreach (var a in animals.Animals) if (a.Id == id) return a; return null; }
 
         public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; Merchant.BuyFactor = () => market.TradeBuyFactor; }
-        public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; }
+        public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; Home.Build = build; }
+        /// <summary>Depo: sandığa demir kuşak kapasite verir (belge 45).</summary>
+        public void Attach(Thatchwick.Core.Build.StorageService storage) { storage.ExtraStorage = Home.ExtraStorage; }
         /// <summary>Doldurulan dekora giren yiyecek envanterdeki en eski partinin yaşını taşır.</summary>
         public void Attach(Thatchwick.Core.Work.InteractionEffects effects)
         {
@@ -655,6 +686,9 @@ namespace Thatchwick.Core.Life
             effects.FishCaught += (c, fish) => Keepsakes.OnFishCaught(c, fish);
             effects.Applied += (c, interaction, _) => OnInteractionApplied(c, interaction);
             effects.AppliedOn += OnInteractionAppliedOn;
+            effects.AppliedOn += Home.OnApplied;
+            effects.ExtraBlocker = Home.CanStart;
+            Home.Effects = effects;
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
         }
 
@@ -810,9 +844,10 @@ namespace Thatchwick.Core.Life
                 if (!c.IsDead) c.AddMoodlet(FestiveHomeMoodId, "Şenliğe hazır ev", FestiveHomeMood, 1.1);
         }
 
-        /// <summary>Kapalı iç odada mevsimi gelmiş (solmamış) bir mevsim süsü var mı?</summary>
+        /// <summary>Kapalı iç odada mevsimi gelmiş (solmamış) bir mevsim süsü var mı ya da ev şenlikten önce badanalandı mı (belge 45)?</summary>
         public bool HomeIsFestive()
         {
+            if (Home.WashedWithin(FestivePrepDays + 1)) return true;
             foreach (var it in World.Items)
             {
                 if (!it.Def.IsSeasonal || !it.Def.InSeason(Clock.Season)) continue;
@@ -876,6 +911,7 @@ namespace Thatchwick.Core.Life
             Spoilage.Tick(gameDays);
             Festivals.Tick(Population.Members);
             Decor.Tick(gameDays);
+            Home.Tick(gameDays);
             Upbringing.Tick(gameDays);
             Roamers?.Tick(gameDays, Clock.TotalDays, Clock.Season, Clock.DayFraction);
             Coffee.Tick(Clock.TotalDays, Population.Members);
@@ -937,6 +973,7 @@ namespace Thatchwick.Core.Life
                 OnSkillSeasonEnd();
                 Wolves?.OnSeasonEnd();
                 Legacy.OnSeasonChanged((Season)_lastSeasonIndex, (Season)season, day, Clock.TotalDays);
+                Home.OnSeasonChanged((Season)season);   // kayıtlı mevsim seti: solanlar kalkar, yenisi asılır
                 Decor.OnSeasonChanged((Season)season);
                 var guest = Suitors.OnNewSeason();
                 if (guest != null) Say(Suitors.LastWasNotable ? $"{guest.Name} köye geldi; ailenin itibarını ve çeyizini duymuş, becerili biri." : $"{guest.Name} köye geldi.", NoticeLevel.Info, guest.Id);
@@ -952,6 +989,7 @@ namespace Thatchwick.Core.Life
             DailyHealing();
             Injuries.DailyUpdate();
             Decor.RemindFreeMirror();
+            Home.OnNewDay();
             Keepsakes.Daily(Household());
             CheckGlassworks();
             UpdateFestivePrep();
@@ -1006,7 +1044,8 @@ namespace Thatchwick.Core.Life
                 contests = Contests.Export(),
                 wolfRaidIn = Wolves != null ? Wolves.RaidInDays : -1,
                 wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0,
-                keepsakes = Keepsakes.Export()
+                keepsakes = Keepsakes.Export(),
+                home = Home.Export()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1021,7 +1060,7 @@ namespace Thatchwick.Core.Life
 
         public void Restore(LifeSaveData data)
         {
-            if (data == null) { Population.RecomputeAll(); return; }
+            if (data == null) { Home.Import(null); Population.RecomputeAll(); return; }
             Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
             Festivals.CelebratedDay = data.festivalCelebratedDay;
             Upbringing.Import(data.upbringing);
@@ -1040,6 +1079,7 @@ namespace Thatchwick.Core.Life
             Legacy.Restore(data.legacy);
             Houses.Restore(data.houses);
             Keepsakes.Restore(data.keepsakes);
+            Home.Import(data.home);
             UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;

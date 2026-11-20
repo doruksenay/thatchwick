@@ -22,6 +22,47 @@
       ],
       "comfort": 2,
       "finishGroup": "cloth",
+      "upgrades": [
+        {
+          "id": "mattress_wool",
+          "displayName": "Yün şilte",
+          "materials": [
+            {
+              "item": "item.wool",
+              "count": 4
+            },
+            {
+              "item": "item.linen",
+              "count": 1
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 1,
+          "comfort": 2,
+          "restore": 0.06
+        },
+        {
+          "id": "mattress_feather",
+          "displayName": "Kuş tüyü yatak",
+          "requires": "mattress_wool",
+          "replaces": "mattress_wool",
+          "materials": [
+            {
+              "item": "item.down_feather",
+              "count": 6
+            },
+            {
+              "item": "item.linen",
+              "count": 2
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 4,
+          "comfort": 4,
+          "beauty": 1,
+          "restore": 0.12
+        }
+      ],
       "art": {
         "alongX": "iso_item_bed_straw_2x1_sw_ne",
         "alongY": "iso_item_bed_straw_2x1_se_nw",
@@ -67,6 +108,20 @@
           "moodText": "Ateşin başında",
           "moodValue": 5,
           "moodDays": 0.6
+        },
+        {
+          "id": "whitewash",
+          "displayName": "Badana (odayı ağart)",
+          "durationDays": 0.15,
+          "skill": "Masonry",
+          "skillXp": 4,
+          "materials": [
+            {
+              "item": "item.lime",
+              "count": 2
+            }
+          ],
+          "homeAction": "whitewash"
         }
       ],
       "price": 40,
@@ -95,6 +150,35 @@
         }
       ],
       "maxLoad": 8,
+      "lightPower": 2,
+      "upgrades": [
+        {
+          "id": "hood",
+          "displayName": "Davlumbaz ve baca",
+          "materials": [
+            {
+              "item": "item.stone",
+              "count": 6
+            },
+            {
+              "item": "item.lime",
+              "count": 2
+            },
+            {
+              "item": "item.plank",
+              "count": 2
+            }
+          ],
+          "skill": "Masonry",
+          "minLevel": 2,
+          "durationDays": 0.4,
+          "chimney": true,
+          "beauty": 1
+        }
+      ],
+      "finishGroup": "stone",
+      "accentGroup": "metal",
+      "accentLabel": "Ocak demiri",
       "tags": [
         "light",
         "hearth"
@@ -2053,11 +2137,11 @@
       "comfort": 2,
       "finishGroup": "metal",
       "art": {
-        "alongX": "iso_item_cooking_pot_se_v2",
+        "alongX": "iso_item_cooking_pot_se_v3",
         "pivotX": 40.0,
         "pivotY": 24.0,
         "pxW": 80,
-        "pxH": 68,
+        "pxH": 80,
         "mirror": true
       },
       "relation": "nearHearth",
@@ -2090,6 +2174,8 @@
       ],
       "comfort": 1,
       "finishGroup": "wood",
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "alongX": "iso_item_stool_se",
         "pivotX": 40.0,
@@ -2159,6 +2245,25 @@
       "comfort": 3,
       "finishGroup": "wood",
       "maxLoad": 20,
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
+      "accentGroup": "wood",
+      "accentLabel": "Ayak ve kenar",
       "art": {
         "alongY": "iso_item_table_wood_2x1_se_nw",
         "pivotX": 56.0,
@@ -2208,6 +2313,8 @@
         "item.chair_carved"
       ],
       "finishGroup": "wood",
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "pivotX": 40.0,
         "pivotY": 24.0,
@@ -2245,6 +2352,41 @@
       ],
       "comfort": 1,
       "finishGroup": "wood",
+      "upgrades": [
+        {
+          "id": "iron_bands",
+          "displayName": "Demir kuşak",
+          "materials": [
+            {
+              "item": "item.iron_bar",
+              "count": 1
+            },
+            {
+              "item": "item.nails",
+              "count": 4
+            }
+          ],
+          "skill": "Smithing",
+          "minLevel": 1,
+          "storage": 20,
+          "beauty": 1
+        },
+        {
+          "id": "carving",
+          "displayName": "Oyma süs",
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 3,
+          "beauty": 2
+        }
+      ],
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "art": {
         "pivotX": 40.0,
         "pivotY": 24.0,
@@ -2306,6 +2448,23 @@
       "finishGroup": "wood",
       "tall": true,
       "maxLoad": 16,
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -2332,7 +2491,14 @@
     {
       "id": "item.candle",
       "displayName": "Mum",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "replace_candle",
+          "displayName": "Mum değiştir",
+          "durationDays": 0.02,
+          "homeAction": "candle"
+        }
+      ],
       "placement": "Surface",
       "price": 4,
       "category": "decor",
@@ -2342,6 +2508,12 @@
       "decorSize": "S",
       "weight": 1,
       "material": "wood",
+      "burnDays": 1.0,
+      "burnRefill": [
+        "item.candle",
+        "item.tallow_candle"
+      ],
+      "lightPower": 1,
       "tags": [
         "light"
       ],
@@ -2393,9 +2565,9 @@
       "weight": 1,
       "material": "clay",
       "art": {
-        "alongX": "iso_item_clay_cup_se",
+        "alongX": "iso_item_clay_cup_se_v2",
         "pivotX": 16.0,
-        "pivotY": 7.0,
+        "pivotY": 4.0,
         "pxW": 32,
         "pxH": 32,
         "mirror": true
@@ -2497,11 +2669,6 @@
         "Autumn"
       ],
       "fruitDays": 4,
-      "art": {
-        "grown": "iso_tree_oak_grown_se",
-        "young": "iso_tree_oak_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -2544,6 +2711,7 @@
       "rooms": [
         "outdoor"
       ],
+      "finishGroup": "wood",
       "art": {
         "alongX": "iso_item_chopping_block_se",
         "pivotX": 40.0,
@@ -2672,7 +2840,7 @@
         "pxW": 112,
         "pxH": 136,
         "mirror": true,
-        "w": "iso_item_market_stall_2x1_se_nw_v2"
+        "w": "iso_item_market_stall_2x1_se_nw_v3"
       },
       "front": "work",
       "site": "outdoor",
@@ -2702,6 +2870,8 @@
       ],
       "finishGroup": "wood",
       "beauty": 4,
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "pivotX": 40.0,
         "pivotY": 24.0,
@@ -2822,6 +2992,8 @@
         }
       ],
       "finishGroup": "wood",
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -2908,6 +3080,8 @@
       ],
       "finishGroup": "wood",
       "beauty": 3,
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "front": "sit",
       "relation": "faceTable",
       "site": "indoor",
@@ -2978,6 +3152,49 @@
       ],
       "finishGroup": "wood",
       "beauty": 2,
+      "upgrades": [
+        {
+          "id": "mattress_wool",
+          "displayName": "Yün şilte",
+          "materials": [
+            {
+              "item": "item.wool",
+              "count": 4
+            },
+            {
+              "item": "item.linen",
+              "count": 1
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 1,
+          "comfort": 2,
+          "restore": 0.06
+        },
+        {
+          "id": "mattress_feather",
+          "displayName": "Kuş tüyü yatak",
+          "requires": "mattress_wool",
+          "replaces": "mattress_wool",
+          "materials": [
+            {
+              "item": "item.down_feather",
+              "count": 6
+            },
+            {
+              "item": "item.linen",
+              "count": 2
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 4,
+          "comfort": 4,
+          "beauty": 1,
+          "restore": 0.12
+        }
+      ],
+      "accentGroup": "cloth",
+      "accentLabel": "Örtü",
       "site": "indoor",
       "belongs": [
         "bedroom",
@@ -3007,6 +3224,8 @@
         }
       ],
       "finishGroup": "wood",
+      "accentGroup": "cloth",
+      "accentLabel": "Örtü",
       "site": "indoor",
       "belongs": [
         "bedroom",
@@ -3036,6 +3255,49 @@
         }
       ],
       "finishGroup": "wood",
+      "upgrades": [
+        {
+          "id": "mattress_wool",
+          "displayName": "Yün şilte",
+          "materials": [
+            {
+              "item": "item.wool",
+              "count": 4
+            },
+            {
+              "item": "item.linen",
+              "count": 1
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 1,
+          "comfort": 2,
+          "restore": 0.06
+        },
+        {
+          "id": "mattress_feather",
+          "displayName": "Kuş tüyü yatak",
+          "requires": "mattress_wool",
+          "replaces": "mattress_wool",
+          "materials": [
+            {
+              "item": "item.down_feather",
+              "count": 6
+            },
+            {
+              "item": "item.linen",
+              "count": 2
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 4,
+          "comfort": 4,
+          "beauty": 1,
+          "restore": 0.12
+        }
+      ],
+      "accentGroup": "cloth",
+      "accentLabel": "Örtü",
       "art": {
         "alongX": "iso_item_child_bed_se",
         "pivotX": 40.0,
@@ -3077,6 +3339,24 @@
       ],
       "interactions": [],
       "maxLoad": 6,
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
+      "finishGroup": "wood",
       "art": {
         "alongX": "iso_item_stump_table_se",
         "pivotX": 40.0,
@@ -3120,6 +3400,23 @@
       "interactions": [],
       "finishGroup": "wood",
       "maxLoad": 16,
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -3194,6 +3491,25 @@
       "finishGroup": "wood",
       "maxLoad": 30,
       "beauty": 2,
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
+      "accentGroup": "wood",
+      "accentLabel": "Ayak ve kenar",
       "site": "indoor",
       "belongs": [
         "kitchen",
@@ -3244,6 +3560,25 @@
       "finishGroup": "wood",
       "maxLoad": 22,
       "beauty": 4,
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
+      "accentGroup": "wood",
+      "accentLabel": "Ayak ve kenar",
       "site": "indoor",
       "belongs": [
         "kitchen",
@@ -3274,6 +3609,20 @@
           "restore": 25,
           "durationDays": 0.08,
           "dries": true
+        },
+        {
+          "id": "whitewash",
+          "displayName": "Badana (odayı ağart)",
+          "durationDays": 0.15,
+          "skill": "Masonry",
+          "skillXp": 4,
+          "materials": [
+            {
+              "item": "item.lime",
+              "count": 2
+            }
+          ],
+          "homeAction": "whitewash"
         }
       ],
       "finishGroup": "metal",
@@ -3311,6 +3660,20 @@
           "restore": 50,
           "durationDays": 0.1,
           "dries": true
+        },
+        {
+          "id": "whitewash",
+          "displayName": "Badana (odayı ağart)",
+          "durationDays": 0.15,
+          "skill": "Masonry",
+          "skillXp": 4,
+          "materials": [
+            {
+              "item": "item.lime",
+              "count": 2
+            }
+          ],
+          "homeAction": "whitewash"
         }
       ],
       "tall": true,
@@ -3339,8 +3702,13 @@
           "size": "M"
         }
       ],
+      "lightPower": 3,
+      "finishGroup": "stone",
+      "accentGroup": "metal",
+      "accentLabel": "Ocak demiri",
       "tags": [
         "light",
+        "chimney",
         "hearth"
       ],
       "front": "work",
@@ -3360,9 +3728,23 @@
         "living",
         "bedroom"
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "replace_candle",
+          "displayName": "Mum değiştir",
+          "durationDays": 0.02,
+          "homeAction": "candle"
+        }
+      ],
       "finishGroup": "metal",
       "beauty": 3,
+      "burnDays": 1.2,
+      "burnRefill": [
+        "item.beeswax_candle",
+        "item.candle",
+        "item.tallow_candle"
+      ],
+      "lightPower": 2,
       "tags": [
         "light"
       ],
@@ -3382,11 +3764,23 @@
         "kitchen",
         "outdoor"
       ],
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "replace_candle",
+          "displayName": "Meşale değiştir",
+          "durationDays": 0.02,
+          "homeAction": "candle"
+        }
+      ],
       "wallBands": [
         "üst"
       ],
       "beauty": 1,
+      "burnDays": 0.8,
+      "burnRefill": [
+        "item.torch"
+      ],
+      "lightPower": 1,
       "tags": [
         "light"
       ],
@@ -3422,6 +3816,7 @@
       ],
       "beauty": 2,
       "material": "clay",
+      "lightPower": 1,
       "tags": [
         "light"
       ],
@@ -3455,6 +3850,7 @@
         "orta"
       ],
       "beauty": 4,
+      "lightPower": 2,
       "tags": [
         "light"
       ],
@@ -3717,6 +4113,7 @@
           "skillXp": 14
         }
       ],
+      "finishGroup": "wood",
       "tags": [
         "hearth"
       ],
@@ -3756,6 +4153,7 @@
           "durationDays": 0.04
         }
       ],
+      "finishGroup": "wood",
       "site": "any",
       "belongs": [
         "kitchen",
@@ -3953,6 +4351,23 @@
       "finishGroup": "wood",
       "tall": true,
       "maxLoad": 30,
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "front": "open",
       "site": "indoor",
       "belongs": [
@@ -3991,6 +4406,7 @@
         }
       ],
       "beauty": 3,
+      "finishGroup": "wood",
       "relation": "nearHearth",
       "site": "indoor",
       "belongs": [
@@ -4012,6 +4428,7 @@
       ],
       "storage": 60,
       "interactions": [],
+      "finishGroup": "wood",
       "art": {
         "alongY": "iso_item_woodshed_2x1_se_nw",
         "pivotX": 56.0,
@@ -4038,6 +4455,8 @@
       "storage": 25,
       "interactions": [],
       "finishGroup": "wood",
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "art": {
         "alongX": "iso_item_barrel_se",
         "pivotX": 40.0,
@@ -4158,6 +4577,23 @@
       ],
       "maxLoad": 4,
       "beauty": 1,
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "art": {
         "alongX": "iso_wall_item_wall_shelf_sw_ne",
         "pivotX": 32.0,
@@ -4222,6 +4658,23 @@
       ],
       "maxLoad": 9,
       "beauty": 2,
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "site": "indoor",
       "belongs": [
         "kitchen",
@@ -4370,6 +4823,7 @@
           "moodlet": "sharp_tools"
         }
       ],
+      "finishGroup": "wood",
       "art": {
         "alongX": "iso_item_whetstone_se",
         "pivotX": 40.0,
@@ -4410,6 +4864,7 @@
         }
       ],
       "waterUse": 1,
+      "finishGroup": "wood",
       "art": {
         "pivotX": 40.0,
         "pivotY": 24.0,
@@ -4460,6 +4915,7 @@
       "fillCapacity": 40,
       "fillProduct": "item.manure",
       "fillPerProduct": 4,
+      "finishGroup": "wood",
       "art": {
         "pivotX": 40.0,
         "pivotY": 24.0,
@@ -4775,6 +5231,9 @@
       "beauty": 6,
       "material": "cloth",
       "insulation": 0.85,
+      "tags": [
+        "patternable"
+      ],
       "site": "indoor",
       "belongs": [
         "living",
@@ -4800,6 +5259,10 @@
       ],
       "beauty": 6,
       "material": "metal",
+      "tags": [
+        "patternable",
+        "heraldic"
+      ],
       "site": "indoor",
       "belongs": [
         "living"
@@ -4821,6 +5284,17 @@
       ],
       "comfort": 1,
       "beauty": 1,
+      "interactions": [
+        {
+          "id": "strew",
+          "displayName": "Ot serp",
+          "durationDays": 0.04,
+          "homeAction": "strew"
+        }
+      ],
+      "tags": [
+        "strewable"
+      ],
       "site": "indoor",
       "belongs": [
         "living",
@@ -4845,6 +5319,9 @@
       "comfort": 2,
       "finishGroup": "cloth",
       "beauty": 2,
+      "tags": [
+        "patternable"
+      ],
       "site": "indoor",
       "belongs": [
         "living",
@@ -4927,6 +5404,9 @@
       "level": 2,
       "finishGroup": "cloth",
       "beauty": 4,
+      "tags": [
+        "patternable"
+      ],
       "site": "indoor",
       "belongs": [
         "living",
@@ -4951,6 +5431,9 @@
       "level": 6,
       "finishGroup": "cloth",
       "beauty": 7,
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongY": "iso_item_rug_woven_large_3x2_se",
         "pivotX": 88.0,
@@ -5028,11 +5511,9 @@
       "interactions": [],
       "protectRadius": 4,
       "art": {
-        "alongX": "iso_item_scarecrow_se",
+        "alongX": "iso_item_scarecrow_se_v2",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "pxW": 80,
-        "pxH": 112,
         "mirror": true
       },
       "site": "outdoor",
@@ -5259,6 +5740,9 @@
           "skill": "AnimalHusbandry",
           "skillXp": 2
         }
+      ],
+      "tags": [
+        "retired"
       ],
       "art": {
         "alongY": "iso_item_barn_3x2_se_nw",
@@ -5651,6 +6135,7 @@
           "wets": 0.6
         }
       ],
+      "finishGroup": "wood",
       "art": {
         "alongX": "iso_item_water_bucket_se",
         "pivotX": 40.0,
@@ -5711,6 +6196,7 @@
       ],
       "waterUse": 3,
       "beauty": 5,
+      "finishGroup": "wood",
       "site": "indoor",
       "belongs": [
         "bedroom",
@@ -5740,7 +6226,8 @@
       "fitsOn": [
         "masa",
         "raf"
-      ]
+      ],
+      "finishGroup": "wood"
     },
     {
       "id": "item.toy_chest",
@@ -5764,6 +6251,39 @@
         }
       ],
       "finishGroup": "wood",
+      "upgrades": [
+        {
+          "id": "iron_bands",
+          "displayName": "Demir kuşak",
+          "materials": [
+            {
+              "item": "item.iron_bar",
+              "count": 1
+            },
+            {
+              "item": "item.nails",
+              "count": 4
+            }
+          ],
+          "skill": "Smithing",
+          "minLevel": 1,
+          "storage": 20,
+          "beauty": 1
+        },
+        {
+          "id": "carving",
+          "displayName": "Oyma süs",
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 3,
+          "beauty": 2
+        }
+      ],
       "art": {
         "pivotX": 40.0,
         "pivotY": 24.0,
@@ -5786,8 +6306,8 @@
       "comfort": 0,
       "art": {
         "alongX": "iso_item_grave_se",
-        "pivotX": 40,
-        "pivotY": 24,
+        "pivotX": 32.0,
+        "pivotY": 24.0,
         "mirror": true
       },
       "site": "indoor"
@@ -5816,6 +6336,8 @@
         }
       ],
       "finishGroup": "wood",
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "front": "sit",
       "relation": "faceTable",
       "site": "any",
@@ -5858,6 +6380,8 @@
         }
       ],
       "finishGroup": "wood",
+      "accentGroup": "wood",
+      "accentLabel": "Ayak ve kenar",
       "site": "indoor",
       "belongs": [
         "living",
@@ -6485,11 +7009,10 @@
         }
       ],
       "art": {
-        "alongX": "iso_forage_berry_bush_se",
+        "alongX": "iso_forage_berry_bush_v2_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "pxW": 80,
-        "pxH": 72,
+        "pending": true,
         "mirror": true
       },
       "site": "outdoor"
@@ -6523,8 +7046,8 @@
       ],
       "art": {
         "alongX": "iso_forage_mushroom_se",
-        "pivotX": 40,
-        "pivotY": 24,
+        "pivotX": 40.0,
+        "pivotY": 24.0,
         "mirror": true
       },
       "site": "outdoor"
@@ -6561,6 +7084,13 @@
           "moodlet": "ashamed"
         }
       ],
+      "art": {
+        "alongX": "iso_forage_hazel_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
       "site": "outdoor"
     },
     {
@@ -6624,8 +7154,8 @@
       ],
       "art": {
         "alongX": "iso_forage_hive_se",
-        "pivotX": 40,
-        "pivotY": 24,
+        "pivotX": 40.0,
+        "pivotY": 24.0,
         "mirror": true
       },
       "site": "outdoor"
@@ -6656,8 +7186,8 @@
       ],
       "art": {
         "alongX": "iso_forage_dry_branch_se",
-        "pivotX": 40,
-        "pivotY": 24,
+        "pivotX": 40.0,
+        "pivotY": 24.0,
         "mirror": true
       },
       "site": "outdoor"
@@ -7030,12 +7560,14 @@
         "item.ladder",
         "item.stairs_up_stone"
       ],
+      "finishGroup": "wood",
+      "accentGroup": "wood",
+      "accentLabel": "Korkuluk",
       "art": {
-        "alongX": "iso_item_stairs_up_2x1_se",
+        "alongY": "iso_item_stairs_up_wood_1x2_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "pxW": 112,
-        "pxH": 104,
+        "pending": true,
         "mirror": true,
         "rotations": [
           0,
@@ -7063,12 +7595,14 @@
         "item.stairs_down_stone",
         "item.cellar_hatch"
       ],
+      "finishGroup": "wood",
+      "accentGroup": "wood",
+      "accentLabel": "Korkuluk",
       "art": {
-        "alongX": "iso_item_stairs_down_2x1_se",
+        "alongY": "iso_item_stairs_down_wood_1x2_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "pxW": 112,
-        "pxH": 80,
+        "pending": true,
         "mirror": true,
         "rotations": [
           0,
@@ -7095,6 +7629,7 @@
         "item.stairs_up",
         "item.stairs_up_stone"
       ],
+      "finishGroup": "wood",
       "site": "any",
       "anywhere": true
     },
@@ -7116,12 +7651,14 @@
         "item.ladder",
         "item.stairs_up"
       ],
+      "finishGroup": "stone",
+      "accentGroup": "metal",
+      "accentLabel": "Korkuluk",
       "art": {
-        "alongX": "iso_item_stairs_up_stone_2x1_se",
+        "alongY": "iso_item_stairs_up_stone_1x2_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "pxW": 112,
-        "pxH": 104,
+        "pending": true,
         "mirror": true,
         "rotations": [
           0,
@@ -7149,12 +7686,14 @@
         "item.stairs_down",
         "item.cellar_hatch"
       ],
+      "finishGroup": "stone",
+      "accentGroup": "metal",
+      "accentLabel": "Korkuluk",
       "art": {
-        "alongX": "iso_item_stairs_down_stone_2x1_se",
+        "alongY": "iso_item_stairs_down_stone_1x2_se",
         "pivotX": 56.0,
         "pivotY": 32.0,
-        "pxW": 112,
-        "pxH": 80,
+        "pending": true,
         "mirror": true,
         "rotations": [
           0,
@@ -8362,12 +8901,6 @@
           "moodlet": "ashamed"
         }
       ],
-      "art": {
-        "fruit": "iso_tree_apple_fruit_se",
-        "grown": "iso_tree_apple_grown_se",
-        "young": "iso_tree_apple_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -8451,12 +8984,6 @@
           "moodlet": "ashamed"
         }
       ],
-      "art": {
-        "fruit": "iso_tree_pear_fruit_se",
-        "grown": "iso_tree_pear_grown_se",
-        "young": "iso_tree_pear_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -8540,12 +9067,6 @@
           "moodlet": "ashamed"
         }
       ],
-      "art": {
-        "fruit": "iso_tree_cherry_fruit_se",
-        "grown": "iso_tree_cherry_grown_se",
-        "young": "iso_tree_cherry_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -8630,12 +9151,6 @@
           "moodlet": "ashamed"
         }
       ],
-      "art": {
-        "grown": "iso_tree_plum_grown_se",
-        "fruit": "iso_tree_plum_fruit_se",
-        "young": "iso_tree_plum_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -8651,6 +9166,7 @@
         "living"
       ],
       "interactions": [],
+      "finishGroup": "wood",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -8765,8 +9281,8 @@
       ],
       "art": {
         "alongX": "iso_forage_wild_garlic_se",
-        "pivotX": 40,
-        "pivotY": 24,
+        "pivotX": 40.0,
+        "pivotY": 24.0,
         "mirror": true
       },
       "site": "outdoor"
@@ -8942,11 +9458,11 @@
         }
       ],
       "art": {
-        "alongX": "iso_forage_chestnut_se",
+        "alongX": "iso_forage_chestnut_v2_se",
         "pivotX": 40.0,
         "pivotY": 24.0,
-        "pxW": 80,
-        "pxH": 72,
+        "pxW": 64,
+        "pxH": 64,
         "mirror": true
       },
       "site": "outdoor"
@@ -9079,8 +9595,8 @@
       ],
       "art": {
         "alongX": "iso_forage_cress_se",
-        "pivotX": 40,
-        "pivotY": 24,
+        "pivotX": 40.0,
+        "pivotY": 24.0,
         "mirror": true
       },
       "site": "outdoor"
@@ -9152,11 +9668,6 @@
           "moodlet": "ashamed"
         }
       ],
-      "art": {
-        "grown": "iso_tree_birch_grown_se",
-        "young": "iso_tree_birch_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -9212,11 +9723,6 @@
           "moodlet": "ashamed"
         }
       ],
-      "art": {
-        "grown": "iso_tree_pine_grown_se",
-        "young": "iso_tree_pine_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -9272,11 +9778,6 @@
           "moodlet": "ashamed"
         }
       ],
-      "art": {
-        "grown": "iso_tree_willow_grown_se",
-        "young": "iso_tree_willow_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -9714,6 +10215,7 @@
           ]
         }
       ],
+      "finishGroup": "wood",
       "art": {
         "alongX": "iso_item_cheese_press_se",
         "pivotX": 40.0,
@@ -10218,6 +10720,7 @@
       ],
       "animalComfort": 2,
       "interactions": [],
+      "lightPower": 2,
       "tags": [
         "light"
       ],
@@ -10719,6 +11222,8 @@
           "addIce": 4
         }
       ],
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "art": {
         "pivotX": 40.0,
         "pivotY": 24.0,
@@ -10765,6 +11270,9 @@
           "addIce": 12
         }
       ],
+      "finishGroup": "wood",
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "site": "outdoor",
       "belongs": [
         "outdoor"
@@ -11112,6 +11620,7 @@
         "outdoor"
       ],
       "interactions": [],
+      "finishGroup": "wood",
       "front": "work",
       "site": "any",
       "belongs": [
@@ -11791,6 +12300,7 @@
       ],
       "width": 2,
       "height": 2,
+      "finishGroup": "wood",
       "tags": [
         "hearth"
       ],
@@ -11842,6 +12352,7 @@
       "storage": 20,
       "preserves": 0.85,
       "interactions": [],
+      "finishGroup": "wood",
       "site": "any",
       "belongs": [
         "kitchen",
@@ -12367,6 +12878,7 @@
       ],
       "interactions": [],
       "width": 2,
+      "finishGroup": "wood",
       "front": "work",
       "site": "any",
       "belongs": [
@@ -12592,6 +13104,7 @@
           "skillXp": 10
         }
       ],
+      "finishGroup": "wood",
       "tags": [
         "hearth"
       ],
@@ -13030,6 +13543,7 @@
       "interactions": [],
       "width": 2,
       "height": 2,
+      "finishGroup": "wood",
       "front": "work",
       "site": "outdoor",
       "belongs": [
@@ -13052,6 +13566,7 @@
         "kitchen"
       ],
       "interactions": [],
+      "finishGroup": "wood",
       "site": "any",
       "belongs": [
         "outdoor",
@@ -13798,6 +14313,7 @@
           "skillXp": 3
         }
       ],
+      "finishGroup": "wood",
       "site": "any",
       "belongs": [
         "kitchen",
@@ -14300,6 +14816,23 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "art": {
         "alongX": "iso_wall_item_peg_rail_sw_ne",
         "pivotX": 32.0,
@@ -14372,6 +14905,23 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "art": {
         "alongX": "iso_wall_item_plate_rack_2w_sw_ne",
         "pivotX": 48.0,
@@ -14435,6 +14985,23 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "art": {
         "alongX": "iso_wall_item_long_shelf_iron_2w_sw_ne",
         "pivotX": 48.0,
@@ -14500,6 +15067,9 @@
       "finishGroup": "cloth",
       "interactions": [],
       "insulation": 0.9,
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongX": "iso_wall_item_painted_cloth_2w_sw_ne",
         "pivotX": 48.0,
@@ -14536,6 +15106,9 @@
       "finishGroup": "cloth",
       "interactions": [],
       "insulation": 0.88,
+      "tags": [
+        "patternable"
+      ],
       "site": "indoor",
       "belongs": [
         "living",
@@ -14565,6 +15138,9 @@
       "finishGroup": "cloth",
       "interactions": [],
       "insulation": 0.85,
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongX": "iso_wall_item_kilim_hanging_2w_sw_ne",
         "pivotX": 48.0,
@@ -14764,6 +15340,7 @@
         "ocak"
       ],
       "interactions": [],
+      "finishGroup": "clay",
       "art": {
         "alongX": "iso_item_clay_plate_se",
         "pivotX": 16.0,
@@ -14922,7 +15499,8 @@
         "raf",
         "kiler"
       ],
-      "interactions": []
+      "interactions": [],
+      "finishGroup": "clay"
     },
     {
       "id": "item.copper_pot",
@@ -14970,6 +15548,7 @@
         "masa"
       ],
       "interactions": [],
+      "finishGroup": "clay",
       "art": {
         "alongX": "iso_item_storage_pot_small_se",
         "pivotX": 20.0,
@@ -14990,7 +15569,20 @@
       "weight": 1,
       "beauty": 1,
       "material": "wood",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "replace_candle",
+          "displayName": "Mum değiştir",
+          "durationDays": 0.02,
+          "homeAction": "candle"
+        }
+      ],
+      "burnDays": 0.8,
+      "burnRefill": [
+        "item.tallow_candle",
+        "item.candle"
+      ],
+      "lightPower": 1,
       "tags": [
         "light"
       ]
@@ -15007,7 +15599,19 @@
       "weight": 1,
       "beauty": 3,
       "material": "wood",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "replace_candle",
+          "displayName": "Mum değiştir",
+          "durationDays": 0.02,
+          "homeAction": "candle"
+        }
+      ],
+      "burnDays": 1.4,
+      "burnRefill": [
+        "item.beeswax_candle"
+      ],
+      "lightPower": 1,
       "tags": [
         "light"
       ]
@@ -15024,7 +15628,21 @@
       "weight": 1,
       "beauty": 2,
       "material": "metal",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "replace_candle",
+          "displayName": "Mum değiştir",
+          "durationDays": 0.02,
+          "homeAction": "candle"
+        }
+      ],
+      "burnDays": 1.0,
+      "burnRefill": [
+        "item.tallow_candle",
+        "item.candle",
+        "item.beeswax_candle"
+      ],
+      "lightPower": 1,
       "tags": [
         "light"
       ],
@@ -15049,7 +15667,21 @@
       "weight": 1,
       "beauty": 3,
       "material": "metal",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "replace_candle",
+          "displayName": "Mum değiştir",
+          "durationDays": 0.02,
+          "homeAction": "candle"
+        }
+      ],
+      "burnDays": 1.0,
+      "burnRefill": [
+        "item.candle",
+        "item.tallow_candle",
+        "item.beeswax_candle"
+      ],
+      "lightPower": 1,
       "tags": [
         "light"
       ],
@@ -15075,6 +15707,7 @@
       "beauty": 2,
       "material": "clay",
       "interactions": [],
+      "lightPower": 1,
       "tags": [
         "light"
       ],
@@ -15106,6 +15739,7 @@
         "ocak"
       ],
       "interactions": [],
+      "lightPower": 2,
       "tags": [
         "light"
       ],
@@ -15129,7 +15763,25 @@
       "weight": 2,
       "beauty": 3,
       "material": "clay",
-      "interactions": []
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        },
+        {
+          "id": "harvest_pot",
+          "displayName": "Ot topla",
+          "durationDays": 0.03,
+          "skill": "Horticulture",
+          "skillXp": 3,
+          "homeAction": "harvestPot"
+        }
+      ],
+      "potHerb": "item.herb",
+      "potGrowDays": 3,
+      "finishGroup": "clay"
     },
     {
       "id": "item.herb_pot_rosemary",
@@ -15142,7 +15794,25 @@
       "weight": 2,
       "beauty": 3,
       "material": "clay",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        },
+        {
+          "id": "harvest_pot",
+          "displayName": "Ot topla",
+          "durationDays": 0.03,
+          "skill": "Horticulture",
+          "skillXp": 3,
+          "homeAction": "harvestPot"
+        }
+      ],
+      "potHerb": "item.herb",
+      "potGrowDays": 3,
+      "finishGroup": "clay",
       "art": {
         "alongX": "iso_item_herb_pot_rosemary_se",
         "pivotX": 16.0,
@@ -15163,7 +15833,25 @@
       "weight": 2,
       "beauty": 3,
       "material": "clay",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "water_pot",
+          "displayName": "Sula",
+          "durationDays": 0.02,
+          "homeAction": "waterPot"
+        },
+        {
+          "id": "harvest_pot",
+          "displayName": "Ot topla",
+          "durationDays": 0.03,
+          "skill": "Horticulture",
+          "skillXp": 3,
+          "homeAction": "harvestPot"
+        }
+      ],
+      "potHerb": "item.herb",
+      "potGrowDays": 3,
+      "finishGroup": "clay",
       "art": {
         "alongX": "iso_item_herb_pot_thyme_se",
         "pivotX": 16.0,
@@ -15513,6 +16201,7 @@
           "moodlet": "had_fun"
         }
       ],
+      "finishGroup": "wood",
       "art": {
         "alongX": "iso_item_wooden_whistle_se",
         "pivotX": 16.0,
@@ -15574,9 +16263,16 @@
       "beauty": 3,
       "material": "metal",
       "interactions": [],
+      "lightPower": 2,
       "tags": [
         "light"
       ],
+      "art": {
+        "alongX": "iso_deco_lantern_se",
+        "pivotX": 32.0,
+        "pivotY": 24.0,
+        "mirror": true
+      },
       "site": "indoor",
       "anywhere": true
     },
@@ -15593,7 +16289,21 @@
       ],
       "beauty": 8,
       "material": "metal",
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "replace_candle",
+          "displayName": "Mum değiştir",
+          "durationDays": 0.02,
+          "homeAction": "candle"
+        }
+      ],
+      "burnDays": 1.0,
+      "burnRefill": [
+        "item.candle",
+        "item.tallow_candle",
+        "item.beeswax_candle"
+      ],
+      "lightPower": 4,
       "tags": [
         "light"
       ],
@@ -15685,6 +16395,17 @@
       ],
       "comfort": 1,
       "beauty": 1,
+      "interactions": [
+        {
+          "id": "strew",
+          "displayName": "Ot serp",
+          "durationDays": 0.04,
+          "homeAction": "strew"
+        }
+      ],
+      "tags": [
+        "strewable"
+      ],
       "art": {
         "alongY": "iso_item_rush_mat_2x1_se",
         "pivotX": 56.0,
@@ -15718,6 +16439,17 @@
       ],
       "comfort": 1,
       "beauty": 2,
+      "interactions": [
+        {
+          "id": "strew",
+          "displayName": "Ot serp",
+          "durationDays": 0.04,
+          "homeAction": "strew"
+        }
+      ],
+      "tags": [
+        "strewable"
+      ],
       "art": {
         "alongX": "iso_item_rush_mat_large_2x2_se",
         "pivotX": 72.0,
@@ -15750,6 +16482,17 @@
       ],
       "comfort": 2,
       "beauty": 2,
+      "interactions": [
+        {
+          "id": "strew",
+          "displayName": "Ot serp",
+          "durationDays": 0.04,
+          "homeAction": "strew"
+        }
+      ],
+      "tags": [
+        "strewable"
+      ],
       "art": {
         "alongY": "iso_item_rush_mat_hall_3x2_se",
         "pivotX": 88.0,
@@ -15805,6 +16548,9 @@
       "comfort": 2,
       "beauty": 2,
       "finishGroup": "cloth",
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongY": "iso_item_felt_rug_2x1_se",
         "pivotX": 56.0,
@@ -16149,6 +16895,7 @@
           "collectContents": true
         }
       ],
+      "finishGroup": "clay",
       "art": {
         "alongX": "iso_item_honey_pot_se",
         "pivotX": 16.0,
@@ -16413,6 +17160,7 @@
           "collectContents": true
         }
       ],
+      "finishGroup": "clay",
       "art": {
         "alongX": "iso_item_elderflower_jug_se",
         "pivotX": 16.0,
@@ -16597,6 +17345,9 @@
       "material": "cloth",
       "finishGroup": "cloth",
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongX": "iso_wall_item_linen_curtain_sw_ne",
         "pivotX": 24.0,
@@ -16635,6 +17386,9 @@
       "material": "cloth",
       "finishGroup": "cloth",
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongX": "iso_wall_item_wool_curtain_sw_ne",
         "pivotX": 24.0,
@@ -16671,6 +17425,9 @@
       "beauty": 4,
       "material": "cloth",
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "site": "indoor",
       "belongs": [
         "living",
@@ -16698,6 +17455,9 @@
       ],
       "styleTheme": "Çatkı",
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongX": "iso_item_tablecloth_linen_se",
         "pivotX": 56.0,
@@ -16728,6 +17488,9 @@
       "styleTheme": "Çatkı",
       "level": 4,
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongX": "iso_item_tablecloth_embroidered_se",
         "pivotX": 56.0,
@@ -16758,6 +17521,9 @@
       "styleTheme": "Yörük",
       "level": 9,
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongX": "iso_item_table_carpet_se",
         "pivotX": 56.0,
@@ -16786,7 +17552,10 @@
       ],
       "styleTheme": "Yörük",
       "level": 3,
-      "interactions": []
+      "interactions": [],
+      "tags": [
+        "patternable"
+      ]
     },
     {
       "id": "item.settle_bench",
@@ -16820,6 +17589,8 @@
           ]
         }
       ],
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -16866,6 +17637,41 @@
           "durationDays": 0.05
         }
       ],
+      "upgrades": [
+        {
+          "id": "iron_bands",
+          "displayName": "Demir kuşak",
+          "materials": [
+            {
+              "item": "item.iron_bar",
+              "count": 1
+            },
+            {
+              "item": "item.nails",
+              "count": 4
+            }
+          ],
+          "skill": "Smithing",
+          "minLevel": 1,
+          "storage": 20,
+          "beauty": 1
+        },
+        {
+          "id": "carving",
+          "displayName": "Oyma süs",
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 3,
+          "beauty": 2
+        }
+      ],
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -16944,6 +17750,25 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
+      "accentGroup": "wood",
+      "accentLabel": "Ayak ve kenar",
       "art": {
         "alongY": "iso_item_trestle_table_3x1_se",
         "pivotX": 72.0,
@@ -16990,6 +17815,23 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "art": {
         "pivotX": 40.0,
         "pivotY": 24.0,
@@ -17027,6 +17869,8 @@
           "durationDays": 0.05
         }
       ],
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "alongX": "iso_item_milking_stool_se",
         "pivotX": 40.0,
@@ -17069,6 +17913,8 @@
           "durationDays": 0.05
         }
       ],
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "pivotX": 40.0,
         "pivotY": 24.0,
@@ -17145,6 +17991,25 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
+      "accentGroup": "wood",
+      "accentLabel": "Ayak ve kenar",
       "art": {
         "alongY": "iso_item_walnut_table_3x1_se",
         "pivotX": 72.0,
@@ -17177,6 +18042,8 @@
       "beauty": 3,
       "finishGroup": "wood",
       "interactions": [],
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -17211,6 +18078,41 @@
       "beauty": 1,
       "finishGroup": "wood",
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "iron_bands",
+          "displayName": "Demir kuşak",
+          "materials": [
+            {
+              "item": "item.iron_bar",
+              "count": 1
+            },
+            {
+              "item": "item.nails",
+              "count": 4
+            }
+          ],
+          "skill": "Smithing",
+          "minLevel": 1,
+          "storage": 20,
+          "beauty": 1
+        },
+        {
+          "id": "carving",
+          "displayName": "Oyma süs",
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 3,
+          "beauty": 2
+        }
+      ],
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -17497,6 +18399,25 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
+      "accentGroup": "wood",
+      "accentLabel": "Ayak ve kenar",
       "site": "indoor",
       "belongs": [
         "living",
@@ -17522,6 +18443,8 @@
       "beauty": 2,
       "finishGroup": "wood",
       "interactions": [],
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -17558,6 +18481,47 @@
           "need": "Energy",
           "restore": 55,
           "durationDays": 0.3
+        }
+      ],
+      "upgrades": [
+        {
+          "id": "mattress_wool",
+          "displayName": "Yün şilte",
+          "materials": [
+            {
+              "item": "item.wool",
+              "count": 4
+            },
+            {
+              "item": "item.linen",
+              "count": 1
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 1,
+          "comfort": 2,
+          "restore": 0.06
+        },
+        {
+          "id": "mattress_feather",
+          "displayName": "Kuş tüyü yatak",
+          "requires": "mattress_wool",
+          "replaces": "mattress_wool",
+          "materials": [
+            {
+              "item": "item.down_feather",
+              "count": 6
+            },
+            {
+              "item": "item.linen",
+              "count": 2
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 4,
+          "comfort": 4,
+          "beauty": 1,
+          "restore": 0.12
         }
       ],
       "art": {
@@ -17605,6 +18569,47 @@
           "need": "Energy",
           "restore": 8,
           "durationDays": 0.05
+        }
+      ],
+      "upgrades": [
+        {
+          "id": "mattress_wool",
+          "displayName": "Yün şilte",
+          "materials": [
+            {
+              "item": "item.wool",
+              "count": 4
+            },
+            {
+              "item": "item.linen",
+              "count": 1
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 1,
+          "comfort": 2,
+          "restore": 0.06
+        },
+        {
+          "id": "mattress_feather",
+          "displayName": "Kuş tüyü yatak",
+          "requires": "mattress_wool",
+          "replaces": "mattress_wool",
+          "materials": [
+            {
+              "item": "item.down_feather",
+              "count": 6
+            },
+            {
+              "item": "item.linen",
+              "count": 2
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 4,
+          "comfort": 4,
+          "beauty": 1,
+          "restore": 0.12
         }
       ],
       "art": {
@@ -17702,6 +18707,9 @@
       "beauty": 4,
       "material": "cloth",
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongX": "iso_wall_item_embroidery_panel_sw_ne",
         "pivotX": 20.0,
@@ -17736,6 +18744,9 @@
       "beauty": 3,
       "finishGroup": "cloth",
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongY": "iso_item_kilim_small_2x1_se",
         "pivotX": 56.0,
@@ -17770,6 +18781,9 @@
       "beauty": 5,
       "finishGroup": "cloth",
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "art": {
         "alongY": "iso_item_kilim_large_3x2_se",
         "pivotX": 88.0,
@@ -17836,7 +18850,17 @@
       ],
       "comfort": 1,
       "beauty": 2,
-      "interactions": [],
+      "interactions": [
+        {
+          "id": "strew",
+          "displayName": "Ot serp",
+          "durationDays": 0.04,
+          "homeAction": "strew"
+        }
+      ],
+      "tags": [
+        "strewable"
+      ],
       "site": "indoor",
       "belongs": [
         "living",
@@ -17872,6 +18896,7 @@
         "masa",
         "raf"
       ],
+      "finishGroup": "wood",
       "art": {
         "alongX": "iso_item_slingshot_se",
         "pivotX": 16.0,
@@ -17972,6 +18997,7 @@
         "masa",
         "raf"
       ],
+      "finishGroup": "wood",
       "art": {
         "alongX": "iso_item_whittling_knife_se",
         "pivotX": 16.0,
@@ -18259,6 +19285,21 @@
               "item": "item.mussel_shell",
               "count": 2,
               "chance": 0.35
+            },
+            {
+              "item": "item.snail_shell",
+              "count": 1,
+              "chance": 0.25
+            },
+            {
+              "item": "item.river_pebble",
+              "count": 1,
+              "chance": 0.3
+            },
+            {
+              "item": "item.heron_feather",
+              "count": 1,
+              "chance": 0.1
             }
           ]
         }
@@ -18301,6 +19342,7 @@
         "outdoor"
       ],
       "interactions": [],
+      "finishGroup": "wood",
       "front": "work",
       "site": "outdoor",
       "belongs": [
@@ -18601,6 +19643,49 @@
           ]
         }
       ],
+      "upgrades": [
+        {
+          "id": "mattress_wool",
+          "displayName": "Yün şilte",
+          "materials": [
+            {
+              "item": "item.wool",
+              "count": 4
+            },
+            {
+              "item": "item.linen",
+              "count": 1
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 1,
+          "comfort": 2,
+          "restore": 0.06
+        },
+        {
+          "id": "mattress_feather",
+          "displayName": "Kuş tüyü yatak",
+          "requires": "mattress_wool",
+          "replaces": "mattress_wool",
+          "materials": [
+            {
+              "item": "item.down_feather",
+              "count": 6
+            },
+            {
+              "item": "item.linen",
+              "count": 2
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 4,
+          "comfort": 4,
+          "beauty": 1,
+          "restore": 0.12
+        }
+      ],
+      "accentGroup": "cloth",
+      "accentLabel": "Örtü",
       "tags": [
         "craftonly"
       ],
@@ -18847,6 +19932,8 @@
           "collectContents": true
         }
       ],
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -18934,6 +20021,10 @@
       "beauty": 5,
       "material": "cloth",
       "interactions": [],
+      "tags": [
+        "patternable",
+        "heraldic"
+      ],
       "site": "indoor",
       "belongs": [
         "living"
@@ -18957,6 +20048,9 @@
       "finishGroup": "cloth",
       "beauty": 9,
       "interactions": [],
+      "tags": [
+        "patternable"
+      ],
       "site": "indoor",
       "belongs": [
         "living",
@@ -19016,7 +20110,9 @@
       "beauty": 12,
       "interactions": [],
       "tags": [
-        "craftonly"
+        "craftonly",
+        "patternable",
+        "heraldic"
       ],
       "art": {
         "alongX": "iso_item_rug_crest_3x3_se",
@@ -19059,6 +20155,49 @@
           "moodlet": "rested"
         }
       ],
+      "upgrades": [
+        {
+          "id": "mattress_wool",
+          "displayName": "Yün şilte",
+          "materials": [
+            {
+              "item": "item.wool",
+              "count": 4
+            },
+            {
+              "item": "item.linen",
+              "count": 1
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 1,
+          "comfort": 2,
+          "restore": 0.06
+        },
+        {
+          "id": "mattress_feather",
+          "displayName": "Kuş tüyü yatak",
+          "requires": "mattress_wool",
+          "replaces": "mattress_wool",
+          "materials": [
+            {
+              "item": "item.down_feather",
+              "count": 6
+            },
+            {
+              "item": "item.linen",
+              "count": 2
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 4,
+          "comfort": 4,
+          "beauty": 1,
+          "restore": 0.12
+        }
+      ],
+      "accentGroup": "cloth",
+      "accentLabel": "Örtü",
       "art": {
         "alongX": "iso_item_canopy_bed_2x2_se",
         "pivotX": 72.0,
@@ -19105,6 +20244,47 @@
           ]
         }
       ],
+      "upgrades": [
+        {
+          "id": "mattress_wool",
+          "displayName": "Yün şilte",
+          "materials": [
+            {
+              "item": "item.wool",
+              "count": 4
+            },
+            {
+              "item": "item.linen",
+              "count": 1
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 1,
+          "comfort": 2,
+          "restore": 0.06
+        },
+        {
+          "id": "mattress_feather",
+          "displayName": "Kuş tüyü yatak",
+          "requires": "mattress_wool",
+          "replaces": "mattress_wool",
+          "materials": [
+            {
+              "item": "item.down_feather",
+              "count": 6
+            },
+            {
+              "item": "item.linen",
+              "count": 2
+            }
+          ],
+          "skill": "Weaving",
+          "minLevel": 4,
+          "comfort": 4,
+          "beauty": 1,
+          "restore": 0.12
+        }
+      ],
       "site": "indoor",
       "belongs": [
         "bedroom",
@@ -19133,6 +20313,8 @@
           "durationDays": 0.05
         }
       ],
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "front": "sit",
       "relation": "faceTable",
       "site": "indoor",
@@ -19158,6 +20340,8 @@
       "beauty": 5,
       "finishGroup": "wood",
       "interactions": [],
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -19203,6 +20387,7 @@
         "bedroom"
       ],
       "interactions": [],
+      "finishGroup": "clay",
       "tags": [
         "craftonly"
       ],
@@ -19793,6 +20978,7 @@
         "kitchen"
       ],
       "interactions": [],
+      "finishGroup": "clay",
       "tags": [
         "craftonly"
       ],
@@ -19831,6 +21017,8 @@
           "durationDays": 0.05
         }
       ],
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -19892,6 +21080,23 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "art": {
         "alongX": "iso_wall_item_green_bottle_shelf_sw_ne",
         "pivotX": 20.0,
@@ -19983,6 +21188,25 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
+      "accentGroup": "wood",
+      "accentLabel": "Ayak ve kenar",
       "art": {
         "alongY": "iso_item_han_table_3x1_se",
         "pivotX": 72.0,
@@ -20025,6 +21249,25 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
+      "accentGroup": "wood",
+      "accentLabel": "Ayak ve kenar",
       "site": "any",
       "belongs": [
         "kitchen",
@@ -20060,6 +21303,8 @@
           "durationDays": 0.05
         }
       ],
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
       "art": {
         "pivotX": 56.0,
         "pivotY": 32.0,
@@ -20131,6 +21376,23 @@
         }
       ],
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "wax_polish",
+          "displayName": "Balmumu cilası",
+          "materials": [
+            {
+              "item": "item.beeswax",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 1,
+          "durationDays": 0.06,
+          "beauty": 1,
+          "collapse": 0.5
+        }
+      ],
       "art": {
         "alongX": "iso_wall_item_tankard_rack_2w_sw_ne",
         "pivotX": 48.0,
@@ -20352,6 +21614,7 @@
         "kitchen"
       ],
       "interactions": [],
+      "finishGroup": "clay",
       "tags": [
         "merchant"
       ]
@@ -20400,6 +21663,7 @@
       ],
       "material": "metal",
       "interactions": [],
+      "lightPower": 2,
       "tags": [
         "merchant",
         "light"
@@ -20470,7 +21734,8 @@
       "finishGroup": "cloth",
       "interactions": [],
       "tags": [
-        "merchant"
+        "merchant",
+        "patternable"
       ],
       "site": "indoor",
       "belongs": [
@@ -20522,6 +21787,41 @@
       "storage": 20,
       "finishGroup": "wood",
       "interactions": [],
+      "upgrades": [
+        {
+          "id": "iron_bands",
+          "displayName": "Demir kuşak",
+          "materials": [
+            {
+              "item": "item.iron_bar",
+              "count": 1
+            },
+            {
+              "item": "item.nails",
+              "count": 4
+            }
+          ],
+          "skill": "Smithing",
+          "minLevel": 1,
+          "storage": 20,
+          "beauty": 1
+        },
+        {
+          "id": "carving",
+          "displayName": "Oyma süs",
+          "materials": [
+            {
+              "item": "item.plank",
+              "count": 1
+            }
+          ],
+          "skill": "Carpentry",
+          "minLevel": 3,
+          "beauty": 2
+        }
+      ],
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
       "tags": [
         "merchant"
       ],
@@ -20604,7 +21904,14 @@
       ],
       "tags": [
         "merchant"
-      ]
+      ],
+      "art": {
+        "alongX": "iso_item_book_almanac_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.book_herbal",
@@ -20789,12 +22096,6 @@
           ]
         }
       ],
-      "art": {
-        "fruit": "iso_plant_coffee_fruit_se",
-        "grown": "iso_plant_coffee_grown_se",
-        "young": "iso_plant_coffee_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -21013,12 +22314,6 @@
           ]
         }
       ],
-      "art": {
-        "fruit": "iso_plant_olive_fruit_se",
-        "grown": "iso_plant_olive_grown_se",
-        "young": "iso_plant_olive_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -21119,6 +22414,7 @@
         "pantry"
       ],
       "interactions": [],
+      "finishGroup": "wood",
       "site": "indoor",
       "belongs": [
         "kitchen",
@@ -21138,6 +22434,7 @@
         "outdoor"
       ],
       "interactions": [],
+      "finishGroup": "wood",
       "art": {
         "alongX": "iso_item_olive_crusher_se",
         "pivotX": 40.0,
@@ -21163,6 +22460,7 @@
         "outdoor"
       ],
       "interactions": [],
+      "finishGroup": "wood",
       "site": "outdoor",
       "belongs": [
         "outdoor",
@@ -21181,6 +22479,7 @@
         "pantry"
       ],
       "interactions": [],
+      "finishGroup": "wood",
       "site": "indoor",
       "belongs": [
         "kitchen",
@@ -21449,6 +22748,7 @@
           "consume": "item.olive_oil"
         }
       ],
+      "lightPower": 1,
       "tags": [
         "light"
       ],
@@ -21517,12 +22817,6 @@
           ]
         }
       ],
-      "art": {
-        "fruit": "iso_plant_grape_fruit_se",
-        "grown": "iso_plant_grape_grown_se",
-        "young": "iso_plant_grape_young_se",
-        "mirror": true
-      },
       "site": "outdoor"
     },
     {
@@ -21586,6 +22880,893 @@
       "belongs": [
         "outdoor",
         "workshop"
+      ]
+    },
+    {
+      "id": "item.down_feather",
+      "displayName": "Kaz ve ördek tüyü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "fiber"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.snail_shell",
+      "displayName": "Salyangoz kabuğu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "collectible"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.river_pebble",
+      "displayName": "Renkli çakıl",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 1,
+      "tags": [
+        "collectible"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.heron_feather",
+      "displayName": "Balıkçıl tüyü",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 3,
+      "tags": [
+        "collectible"
+      ],
+      "interactions": []
+    },
+    {
+      "id": "item.home_ribbon",
+      "displayName": "En güzel ev kurdelesi",
+      "category": "decor_wall",
+      "price": 0,
+      "placement": "Wall",
+      "rooms": [
+        "living"
+      ],
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "beauty": 4,
+      "material": "cloth",
+      "interactions": [],
+      "tags": [
+        "keepsake"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_home_ribbon_sw_ne",
+        "pivotX": 20.0,
+        "pivotY": 20.0,
+        "pending": true,
+        "pxW": 40,
+        "pxH": 40,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
+    },
+    {
+      "id": "item.wall_niche",
+      "displayName": "Duvar nişi",
+      "category": "decor_wall",
+      "price": 8,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "beauty": 2,
+      "material": "stone",
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.3,
+          "v": 0.5,
+          "kind": "raf",
+          "size": "M"
+        },
+        {
+          "id": "b",
+          "u": 0.7,
+          "v": 0.5,
+          "kind": "raf",
+          "size": "S"
+        }
+      ],
+      "maxLoad": 10,
+      "interactions": [],
+      "finishGroup": "stone",
+      "tags": [
+        "niche"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_wall_niche_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 32.0,
+        "pxW": 48,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "kitchen",
+        "bedroom",
+        "inn_room"
+      ]
+    },
+    {
+      "id": "item.wall_niche_lamp",
+      "displayName": "Kemerli lamba nişi",
+      "category": "decor_wall",
+      "price": 14,
+      "placement": "Wall",
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "wallBands": [
+        "orta",
+        "üst"
+      ],
+      "beauty": 3,
+      "material": "stone",
+      "level": 3,
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.5,
+          "v": 0.5,
+          "kind": "ocak",
+          "size": "S"
+        }
+      ],
+      "maxLoad": 4,
+      "interactions": [],
+      "finishGroup": "stone",
+      "tags": [
+        "niche"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_wall_niche_lamp_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 32.0,
+        "pxW": 48,
+        "pxH": 64,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
+    },
+    {
+      "id": "item.window_seat",
+      "displayName": "Pencere oturağı",
+      "category": "seating",
+      "price": 24,
+      "placement": "Wall",
+      "window": true,
+      "styleSet": "Zanaatkâr",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "wallBands": [
+        "alt"
+      ],
+      "comfort": 4,
+      "beauty": 2,
+      "material": "wood",
+      "level": 3,
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.5,
+          "v": 0.5,
+          "kind": "minder",
+          "size": "M"
+        }
+      ],
+      "maxLoad": 6,
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Fun",
+          "restore": 20,
+          "durationDays": 0.08,
+          "moodId": "mood.window_seat",
+          "moodText": "Pencere başında",
+          "moodValue": 4,
+          "moodDays": 0.5
+        }
+      ],
+      "finishGroup": "wood",
+      "accentGroup": "cloth",
+      "accentLabel": "Minder",
+      "art": {
+        "alongX": "iso_wall_item_window_seat_sw_ne",
+        "pivotX": 24.0,
+        "pivotY": 24.0,
+        "pxW": 64,
+        "pxH": 48,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "dining"
+      ]
+    },
+    {
+      "id": "item.ceiling_painted_beam",
+      "displayName": "Kalem işi kiriş",
+      "category": "ceiling",
+      "price": 30,
+      "placement": "Ceiling",
+      "styleSet": "Tüccar",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "beauty": 4,
+      "material": "wood",
+      "level": 5,
+      "interactions": [],
+      "art": {
+        "alongX": "iso_ceiling_item_painted_beam_se",
+        "pivotX": 32.0,
+        "pivotY": 16.0,
+        "pxW": 64,
+        "pxH": 40,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room"
+      ]
+    },
+    {
+      "id": "item.embroidery_frame",
+      "displayName": "Nakış kasnağı",
+      "category": "work",
+      "price": 14,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "bedroom"
+      ],
+      "beauty": 1,
+      "material": "wood",
+      "level": 2,
+      "interactions": [
+        {
+          "id": "embroider",
+          "displayName": "Nakış işle",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.15,
+          "skill": "Weaving",
+          "skillXp": 4
+        }
+      ],
+      "finishGroup": "wood",
+      "art": {
+        "alongX": "iso_item_embroidery_frame_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living",
+        "bedroom",
+        "inn_room",
+        "workshop"
+      ]
+    },
+    {
+      "id": "item.display_shelf",
+      "displayName": "Sergi rafı",
+      "category": "decor_wall",
+      "price": 28,
+      "placement": "Wall",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 2,
+      "beauty": 3,
+      "material": "wood",
+      "level": 3,
+      "fillWith": [
+        "item.relic_foundation_stone",
+        "item.relic_buried_jar",
+        "item.relic_horseshoe",
+        "item.relic_fossil",
+        "item.relic_miner_lamp",
+        "item.relic_pick_head",
+        "item.relic_coin",
+        "item.relic_bone_comb",
+        "item.relic_crystal",
+        "item.mussel_shell",
+        "item.snail_shell",
+        "item.river_pebble",
+        "item.heron_feather",
+        "item.herb",
+        "item.tea_mint",
+        "item.tea_chamomile",
+        "item.tea_sage"
+      ],
+      "fillCount": 6,
+      "interactions": [
+        {
+          "id": "fill",
+          "displayName": "Sergile",
+          "durationDays": 0.03,
+          "fillDecor": true
+        },
+        {
+          "id": "empty",
+          "displayName": "Boşalt",
+          "durationDays": 0.02,
+          "collectContents": true
+        }
+      ],
+      "tags": [
+        "display",
+        "distinct"
+      ],
+      "art": {
+        "alongX": "iso_wall_item_display_shelf_2w_sw_ne",
+        "pivotX": 48.0,
+        "pivotY": 32.0,
+        "pxW": 96,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
+    },
+    {
+      "id": "item.display_cabinet",
+      "displayName": "Kafesli sergi dolabı",
+      "category": "storage",
+      "price": 70,
+      "tall": true,
+      "styleSet": "Tüccar",
+      "rooms": [
+        "living"
+      ],
+      "beauty": 5,
+      "material": "wood",
+      "level": 5,
+      "fillWith": [
+        "item.relic_foundation_stone",
+        "item.relic_buried_jar",
+        "item.relic_horseshoe",
+        "item.relic_fossil",
+        "item.relic_miner_lamp",
+        "item.relic_pick_head",
+        "item.relic_coin",
+        "item.relic_bone_comb",
+        "item.relic_crystal",
+        "item.mussel_shell",
+        "item.snail_shell",
+        "item.river_pebble",
+        "item.heron_feather",
+        "item.herb",
+        "item.tea_mint",
+        "item.tea_chamomile",
+        "item.tea_sage"
+      ],
+      "fillCount": 9,
+      "interactions": [
+        {
+          "id": "fill",
+          "displayName": "Sergile",
+          "durationDays": 0.03,
+          "fillDecor": true
+        },
+        {
+          "id": "empty",
+          "displayName": "Boşalt",
+          "durationDays": 0.02,
+          "collectContents": true
+        }
+      ],
+      "finishGroup": "wood",
+      "accentGroup": "metal",
+      "accentLabel": "Kulp ve kuşak",
+      "tags": [
+        "display",
+        "distinct"
+      ],
+      "art": {
+        "alongX": "iso_item_display_cabinet_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 104,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
+    },
+    {
+      "id": "item.clothes_perch",
+      "displayName": "Giysi sırığı",
+      "category": "decor_wall",
+      "price": 8,
+      "placement": "Wall",
+      "styleSet": "Köylü",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "bedroom"
+      ],
+      "wallBands": [
+        "orta"
+      ],
+      "wallWidth": 2,
+      "beauty": 2,
+      "material": "wood",
+      "fillWith": [
+        "item.cloth",
+        "item.linen",
+        "item.blanket"
+      ],
+      "fillCount": 3,
+      "interactions": [
+        {
+          "id": "fill",
+          "displayName": "Kumaş as",
+          "durationDays": 0.03,
+          "fillDecor": true
+        },
+        {
+          "id": "empty",
+          "displayName": "İndir",
+          "durationDays": 0.02,
+          "collectContents": true
+        }
+      ],
+      "art": {
+        "alongX": "iso_wall_item_clothes_perch_2w_sw_ne",
+        "pivotX": 48.0,
+        "pivotY": 32.0,
+        "pending": true,
+        "pxW": 96,
+        "pxH": 56,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "bedroom",
+        "inn_room"
+      ]
+    },
+    {
+      "id": "item.turf_seat",
+      "displayName": "Çimen sıra",
+      "category": "garden",
+      "width": 2,
+      "height": 1,
+      "price": 10,
+      "styleSet": "Köylü",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "outdoor"
+      ],
+      "levels": [
+        0
+      ],
+      "beauty": 3,
+      "comfort": 1,
+      "material": "stone",
+      "interactions": [
+        {
+          "id": "sit",
+          "displayName": "Otur",
+          "need": "Fun",
+          "restore": 18,
+          "durationDays": 0.08,
+          "moodId": "mood.turf_seat",
+          "moodText": "Çimen sırada",
+          "moodValue": 3,
+          "moodDays": 0.5
+        }
+      ],
+      "finishGroup": "stone",
+      "art": {
+        "alongY": "iso_item_turf_seat_2x1_se",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.sundial",
+      "displayName": "Güneş saati",
+      "category": "garden",
+      "price": 35,
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "outdoor"
+      ],
+      "levels": [
+        0
+      ],
+      "beauty": 4,
+      "material": "stone",
+      "level": 4,
+      "interactions": [
+        {
+          "id": "read_sun",
+          "displayName": "Vakti oku",
+          "need": "Fun",
+          "restore": 6,
+          "durationDays": 0.02,
+          "skill": "Literacy",
+          "skillXp": 2
+        }
+      ],
+      "finishGroup": "stone",
+      "art": {
+        "alongX": "iso_item_sundial_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.dovecote",
+      "displayName": "Güvercinlik (kule)",
+      "category": "garden",
+      "width": 2,
+      "height": 2,
+      "price": 120,
+      "styleSet": "Asil",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "outdoor"
+      ],
+      "levels": [
+        0
+      ],
+      "beauty": 5,
+      "material": "stone",
+      "level": 6,
+      "interactions": [],
+      "finishGroup": "stone",
+      "tags": [
+        "dovecote"
+      ],
+      "art": {
+        "alongX": "iso_item_dovecote_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.dovecote_village",
+      "displayName": "Kerpiç güvercinlik",
+      "category": "garden",
+      "price": 45,
+      "styleSet": "Köylü",
+      "styleTheme": "Yörük",
+      "rooms": [
+        "outdoor"
+      ],
+      "levels": [
+        0
+      ],
+      "beauty": 3,
+      "material": "clay",
+      "level": 3,
+      "interactions": [],
+      "tags": [
+        "dovecote"
+      ],
+      "art": {
+        "alongX": "iso_item_dovecote_village_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 84,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.courtyard_pool",
+      "displayName": "Fıskiyeli avlu havuzu",
+      "category": "garden",
+      "width": 2,
+      "height": 2,
+      "price": 160,
+      "waterUse": 2,
+      "styleSet": "Tüccar",
+      "styleTheme": "Kervan",
+      "rooms": [
+        "outdoor"
+      ],
+      "levels": [
+        0
+      ],
+      "beauty": 8,
+      "material": "stone",
+      "level": 6,
+      "interactions": [
+        {
+          "id": "sit_pool",
+          "displayName": "Havuz başında otur",
+          "need": "Fun",
+          "restore": 25,
+          "durationDays": 0.1,
+          "extraRestore": [
+            {
+              "need": "Social",
+              "amount": 5
+            }
+          ],
+          "moodId": "mood.pool",
+          "moodText": "Su sesi",
+          "moodValue": 5,
+          "moodDays": 0.6
+        }
+      ],
+      "finishGroup": "stone",
+      "art": {
+        "alongX": "iso_item_courtyard_pool_2x2_se",
+        "pivotX": 72.0,
+        "pivotY": 40.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.joke_fountain",
+      "displayName": "Şaka çeşmesi",
+      "category": "garden",
+      "price": 90,
+      "waterUse": 1,
+      "styleSet": "Asil",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "outdoor"
+      ],
+      "levels": [
+        0
+      ],
+      "beauty": 5,
+      "material": "stone",
+      "level": 6,
+      "interactions": [
+        {
+          "id": "try_jet",
+          "displayName": "Düzeneği dene",
+          "need": "Fun",
+          "restore": 35,
+          "durationDays": 0.04,
+          "piped": true,
+          "wets": 0.4,
+          "moodId": "mood.joke_jet",
+          "moodText": "Islandım ama güldüm",
+          "moodValue": 6,
+          "moodDays": 0.5
+        }
+      ],
+      "finishGroup": "stone",
+      "art": {
+        "alongX": "iso_item_joke_fountain_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "outdoor",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.jazari_peacock",
+      "displayName": "Tavus kuşlu el yıkama otomatı",
+      "category": "decor_wall",
+      "price": 480,
+      "styleSet": "Asil",
+      "styleTheme": "Kervan",
+      "rooms": [
+        "living"
+      ],
+      "beauty": 14,
+      "material": "metal",
+      "level": 8,
+      "interactions": [
+        {
+          "id": "wash_hands",
+          "displayName": "Ellerini yıka",
+          "need": "Hygiene",
+          "restore": 35,
+          "durationDays": 0.04,
+          "fetchWater": true,
+          "extraRestore": [
+            {
+              "need": "Fun",
+              "amount": 15
+            }
+          ],
+          "moodId": "mood.automaton",
+          "moodText": "Tavus kuşu su döktü",
+          "moodValue": 6,
+          "moodDays": 0.6
+        }
+      ],
+      "tags": [
+        "merchant"
+      ],
+      "art": {
+        "alongX": "iso_item_jazari_peacock_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
+    },
+    {
+      "id": "item.water_clock",
+      "displayName": "Su saati",
+      "category": "decor_wall",
+      "price": 320,
+      "styleSet": "Asil",
+      "styleTheme": "Kervan",
+      "rooms": [
+        "living"
+      ],
+      "beauty": 10,
+      "material": "metal",
+      "level": 7,
+      "interactions": [
+        {
+          "id": "watch_clock",
+          "displayName": "Saate bak",
+          "need": "Fun",
+          "restore": 12,
+          "durationDays": 0.03,
+          "skill": "Engineering",
+          "skillXp": 3
+        }
+      ],
+      "tags": [
+        "merchant"
+      ],
+      "art": {
+        "alongX": "iso_item_water_clock_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
+      ]
+    },
+    {
+      "id": "item.turning_eagle_lectern",
+      "displayName": "Başını çeviren kartal rahle",
+      "category": "decor_wall",
+      "price": 260,
+      "styleSet": "Tüccar",
+      "styleTheme": "Çatkı",
+      "rooms": [
+        "living"
+      ],
+      "beauty": 8,
+      "material": "wood",
+      "level": 6,
+      "surfaceSlots": [
+        {
+          "id": "a",
+          "u": 0.5,
+          "v": 0.5,
+          "kind": "masa",
+          "size": "M"
+        }
+      ],
+      "maxLoad": 4,
+      "interactions": [
+        {
+          "id": "read_lectern",
+          "displayName": "Rahlede oku",
+          "need": "Fun",
+          "restore": 15,
+          "durationDays": 0.1,
+          "skill": "Literacy",
+          "skillXp": 6
+        }
+      ],
+      "art": {
+        "alongX": "iso_item_eagle_lectern_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 80,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
       ]
     },
     {
@@ -25852,6 +28033,357 @@
       "minLevel": 4,
       "displayName": "Şarabı beklet (eski şarap)",
       "adultPack": true
+    },
+    {
+      "id": "wall_niche",
+      "station": "item.stonecutter",
+      "produces": "item.wall_niche",
+      "materials": [
+        {
+          "item": "item.stone",
+          "count": 2
+        },
+        {
+          "item": "item.lime",
+          "count": 1
+        }
+      ],
+      "skill": "Masonry",
+      "minLevel": 1,
+      "durationDays": 0.15,
+      "skillXp": 15
+    },
+    {
+      "id": "wall_niche_lamp",
+      "station": "item.stonecutter",
+      "produces": "item.wall_niche_lamp",
+      "materials": [
+        {
+          "item": "item.cut_stone",
+          "count": 2
+        },
+        {
+          "item": "item.lime",
+          "count": 1
+        }
+      ],
+      "skill": "Masonry",
+      "minLevel": 3,
+      "durationDays": 0.15,
+      "skillXp": 15
+    },
+    {
+      "id": "window_seat",
+      "station": "item.workbench",
+      "produces": "item.window_seat",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "skill": "Carpentry",
+      "minLevel": 3,
+      "durationDays": 0.15,
+      "skillXp": 15
+    },
+    {
+      "id": "painted_beam",
+      "station": "item.workbench",
+      "produces": "item.ceiling_painted_beam",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 2
+        },
+        {
+          "item": "item.dye_red",
+          "count": 1
+        },
+        {
+          "item": "item.dye_blue",
+          "count": 1
+        }
+      ],
+      "skill": "Carpentry",
+      "minLevel": 4,
+      "durationDays": 0.15,
+      "skillXp": 15
+    },
+    {
+      "id": "embroidery_frame",
+      "station": "item.workbench",
+      "produces": "item.embroidery_frame",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "skill": "Carpentry",
+      "minLevel": 1,
+      "durationDays": 0.08,
+      "skillXp": 15
+    },
+    {
+      "id": "display_shelf",
+      "station": "item.workbench",
+      "produces": "item.display_shelf",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "skill": "Carpentry",
+      "minLevel": 3,
+      "durationDays": 0.15,
+      "skillXp": 15
+    },
+    {
+      "id": "display_cabinet",
+      "station": "item.workbench",
+      "produces": "item.display_cabinet",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 8
+        },
+        {
+          "item": "item.nails",
+          "count": 4
+        },
+        {
+          "item": "item.beeswax",
+          "count": 1
+        }
+      ],
+      "skill": "Carpentry",
+      "minLevel": 5,
+      "durationDays": 0.3,
+      "skillXp": 15
+    },
+    {
+      "id": "clothes_perch",
+      "station": "item.workbench",
+      "produces": "item.clothes_perch",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 2
+        }
+      ],
+      "skill": "Carpentry",
+      "minLevel": 1,
+      "durationDays": 0.06,
+      "skillXp": 15
+    },
+    {
+      "id": "turf_seat",
+      "station": "item.stonecutter",
+      "produces": "item.turf_seat",
+      "materials": [
+        {
+          "item": "item.stone",
+          "count": 4
+        }
+      ],
+      "skill": "Masonry",
+      "minLevel": 1,
+      "durationDays": 0.15,
+      "skillXp": 15
+    },
+    {
+      "id": "sundial",
+      "station": "item.stonecutter",
+      "produces": "item.sundial",
+      "materials": [
+        {
+          "item": "item.cut_stone",
+          "count": 2
+        },
+        {
+          "item": "item.iron_bar",
+          "count": 1
+        }
+      ],
+      "skill": "Masonry",
+      "minLevel": 4,
+      "durationDays": 0.25,
+      "skillXp": 15
+    },
+    {
+      "id": "dovecote",
+      "station": "item.workbench",
+      "produces": "item.dovecote",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 12
+        },
+        {
+          "item": "item.nails",
+          "count": 6
+        },
+        {
+          "item": "item.stone",
+          "count": 6
+        }
+      ],
+      "skill": "Carpentry",
+      "minLevel": 5,
+      "durationDays": 0.5,
+      "skillXp": 30
+    },
+    {
+      "id": "dovecote_village",
+      "station": "item.stonecutter",
+      "produces": "item.dovecote_village",
+      "materials": [
+        {
+          "item": "item.stone",
+          "count": 4
+        },
+        {
+          "item": "item.lime",
+          "count": 2
+        }
+      ],
+      "skill": "Masonry",
+      "minLevel": 2,
+      "durationDays": 0.3,
+      "skillXp": 15
+    },
+    {
+      "id": "courtyard_pool",
+      "station": "item.stonecutter",
+      "produces": "item.courtyard_pool",
+      "materials": [
+        {
+          "item": "item.cut_stone",
+          "count": 10
+        },
+        {
+          "item": "item.lime",
+          "count": 4
+        },
+        {
+          "item": "item.pipe_lead",
+          "count": 2
+        }
+      ],
+      "skill": "Masonry",
+      "minLevel": 6,
+      "durationDays": 0.6,
+      "skillXp": 40
+    },
+    {
+      "id": "joke_fountain",
+      "station": "item.workbench",
+      "produces": "item.joke_fountain",
+      "materials": [
+        {
+          "item": "item.pipe_lead",
+          "count": 3
+        },
+        {
+          "item": "item.gear",
+          "count": 1
+        },
+        {
+          "item": "item.cut_stone",
+          "count": 2
+        }
+      ],
+      "skill": "Engineering",
+      "minLevel": 5,
+      "durationDays": 0.4,
+      "skillXp": 30
+    },
+    {
+      "id": "jazari_peacock",
+      "station": "item.workbench",
+      "produces": "item.jazari_peacock",
+      "materials": [
+        {
+          "item": "item.iron_bar",
+          "count": 2
+        },
+        {
+          "item": "item.tin",
+          "count": 2
+        },
+        {
+          "item": "item.gear",
+          "count": 3
+        },
+        {
+          "item": "item.pipe_lead",
+          "count": 2
+        }
+      ],
+      "skill": "Engineering",
+      "minLevel": 8,
+      "durationDays": 0.8,
+      "skillXp": 60
+    },
+    {
+      "id": "water_clock",
+      "station": "item.workbench",
+      "produces": "item.water_clock",
+      "materials": [
+        {
+          "item": "item.gear",
+          "count": 2
+        },
+        {
+          "item": "item.pipe_lead",
+          "count": 1
+        },
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.tin",
+          "count": 1
+        }
+      ],
+      "skill": "Engineering",
+      "minLevel": 7,
+      "durationDays": 0.6,
+      "skillXp": 45
+    },
+    {
+      "id": "turning_eagle",
+      "station": "item.workbench",
+      "produces": "item.turning_eagle_lectern",
+      "materials": [
+        {
+          "item": "item.plank",
+          "count": 4
+        },
+        {
+          "item": "item.gear",
+          "count": 2
+        },
+        {
+          "item": "item.nails",
+          "count": 2
+        }
+      ],
+      "skill": "Engineering",
+      "minLevel": 6,
+      "durationDays": 0.5,
+      "skillXp": 35
     }
   ],
   "animals": [
@@ -25879,7 +28411,9 @@
       "litterMax": 3,
       "femaleProduces": true,
       "femaleName": "tavuk",
-      "maleName": "horoz"
+      "maleName": "horoz",
+      "hide": "item.down_feather",
+      "hideCount": 2
     },
     {
       "id": "animal.duck",
@@ -25905,7 +28439,9 @@
       "litterMax": 3,
       "femaleProduces": true,
       "femaleName": "dişi ördek",
-      "maleName": "erkek ördek"
+      "maleName": "erkek ördek",
+      "hide": "item.down_feather",
+      "hideCount": 2
     },
     {
       "id": "animal.goat",
@@ -26168,7 +28704,8 @@
       "kind": "wallFinish",
       "price": 1,
       "color": "#EDE8DA",
-      "comfort": 1
+      "comfort": 1,
+      "beauty": 1
     },
     {
       "id": "finish_ochre",
@@ -26176,7 +28713,8 @@
       "kind": "wallFinish",
       "price": 2,
       "color": "#C98A4B",
-      "comfort": 1
+      "comfort": 1,
+      "beauty": 1
     },
     {
       "id": "finish_plaster",
@@ -26185,7 +28723,8 @@
       "price": 2,
       "color": "#DCCDB0",
       "level": 2,
-      "comfort": 1
+      "comfort": 1,
+      "beauty": 1
     },
     {
       "id": "finish_panel",
@@ -26194,7 +28733,8 @@
       "price": 4,
       "color": "#8C5E36",
       "level": 3,
-      "comfort": 2
+      "comfort": 2,
+      "beauty": 1
     },
     {
       "id": "finish_painted",
@@ -26203,7 +28743,8 @@
       "price": 5,
       "color": "#6E8C9C",
       "level": 5,
-      "comfort": 2
+      "comfort": 2,
+      "beauty": 2
     },
     {
       "id": "finish_tapestry",
@@ -26212,7 +28753,8 @@
       "price": 8,
       "color": "#8E3B3B",
       "level": 8,
-      "comfort": 3
+      "comfort": 3,
+      "beauty": 3
     },
     {
       "id": "door_plank",
@@ -26740,6 +29282,722 @@
       "level": 5,
       "group": "clay",
       "priceFactor": 1.3
+    },
+    {
+      "id": "finish_masonry",
+      "displayName": "Taş deseni sıva",
+      "kind": "wallFinish",
+      "price": 3,
+      "color": "#E3D8C2",
+      "level": 2,
+      "comfort": 1,
+      "beauty": 1,
+      "material": "item.lime",
+      "materialCount": 1
+    },
+    {
+      "id": "finish_stencil",
+      "displayName": "Şablon boya (çiçek)",
+      "kind": "wallFinish",
+      "price": 4,
+      "color": "#D8C49A",
+      "level": 3,
+      "comfort": 1,
+      "beauty": 2,
+      "material": "item.ochre",
+      "materialCount": 1
+    },
+    {
+      "id": "finish_mural",
+      "displayName": "Duvar resmi",
+      "kind": "wallFinish",
+      "price": 14,
+      "color": "#9C6B4E",
+      "level": 7,
+      "comfort": 2,
+      "beauty": 4,
+      "material": "item.dye_red",
+      "materialCount": 1
+    },
+    {
+      "id": "finish_star_tile",
+      "displayName": "Yıldız çini",
+      "kind": "wallFinish",
+      "price": 18,
+      "color": "#3E7C8C",
+      "level": 8,
+      "comfort": 2,
+      "beauty": 4
+    },
+    {
+      "id": "wood_whitewash",
+      "displayName": "Ak badanalı ahşap",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "wood",
+      "color": "#DCD5C3",
+      "level": 1,
+      "priceFactor": 1.05,
+      "material": "item.lime",
+      "materialCount": 1
+    },
+    {
+      "id": "wood_ash",
+      "displayName": "Dişbudak (açık)",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "wood",
+      "color": "#C9A877",
+      "level": 2,
+      "priceFactor": 1.1
+    },
+    {
+      "id": "wood_yellow",
+      "displayName": "Sarı boyalı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "wood",
+      "color": "#C59A35",
+      "level": 2,
+      "priceFactor": 1.2,
+      "material": "item.dye_yellow",
+      "materialCount": 1
+    },
+    {
+      "id": "wood_elm",
+      "displayName": "Karaağaç",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "wood",
+      "color": "#7C5537",
+      "level": 3,
+      "priceFactor": 1.2
+    },
+    {
+      "id": "wood_black",
+      "displayName": "Kara boyalı (isli meşe)",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "wood",
+      "color": "#2E2622",
+      "level": 3,
+      "priceFactor": 1.25,
+      "material": "item.oak_gall",
+      "materialCount": 1
+    },
+    {
+      "id": "wood_ochre",
+      "displayName": "Aşı boyalı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "wood",
+      "color": "#A86A3A",
+      "level": 2,
+      "priceFactor": 1.15,
+      "material": "item.ochre",
+      "materialCount": 1
+    },
+    {
+      "id": "wood_carved_red",
+      "displayName": "Kırmızı ve yaldız nakışlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "wood",
+      "color": "#8E2F25",
+      "level": 7,
+      "priceFactor": 1.7,
+      "material": "item.dye_red",
+      "materialCount": 1
+    },
+    {
+      "id": "stone_natural",
+      "displayName": "Doğal taş",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "stone",
+      "color": "#9A968C",
+      "priceFactor": 1.0,
+      "isDefault": true
+    },
+    {
+      "id": "stone_limewash",
+      "displayName": "Kireç badanalı taş",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "stone",
+      "color": "#E6E0D2",
+      "level": 1,
+      "priceFactor": 1.05,
+      "material": "item.lime",
+      "materialCount": 1
+    },
+    {
+      "id": "stone_red",
+      "displayName": "Kızıl taş",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "stone",
+      "color": "#9E5A45",
+      "level": 3,
+      "priceFactor": 1.2
+    },
+    {
+      "id": "stone_black",
+      "displayName": "Kara taş (bazalt)",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "stone",
+      "color": "#34322F",
+      "level": 4,
+      "priceFactor": 1.3
+    },
+    {
+      "id": "stone_green",
+      "displayName": "Yeşil serpantin",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "stone",
+      "color": "#4E6B58",
+      "level": 6,
+      "priceFactor": 1.5
+    },
+    {
+      "id": "stone_white",
+      "displayName": "Ak mermer",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "stone",
+      "color": "#ECE9E2",
+      "level": 7,
+      "priceFactor": 1.8
+    },
+    {
+      "id": "metal_black",
+      "displayName": "Kara demir",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "metal",
+      "color": "#2B2A29",
+      "level": 2,
+      "priceFactor": 1.1
+    },
+    {
+      "id": "metal_red",
+      "displayName": "Kırmızı boyalı demir",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "metal",
+      "color": "#8F2E24",
+      "level": 3,
+      "priceFactor": 1.2,
+      "material": "item.dye_red",
+      "materialCount": 1
+    },
+    {
+      "id": "metal_tin",
+      "displayName": "Kalaylı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "metal",
+      "color": "#BDBDB8",
+      "level": 3,
+      "priceFactor": 1.25,
+      "material": "item.tin",
+      "materialCount": 1
+    },
+    {
+      "id": "metal_bronze",
+      "displayName": "Tunç",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "metal",
+      "color": "#8C6A3A",
+      "level": 5,
+      "priceFactor": 1.4
+    },
+    {
+      "id": "metal_gilt",
+      "displayName": "Yaldızlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "metal",
+      "color": "#D4AF37",
+      "level": 9,
+      "priceFactor": 2.2
+    },
+    {
+      "id": "cloth_black",
+      "displayName": "Mazı karası",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "cloth",
+      "color": "#2A2522",
+      "level": 3,
+      "priceFactor": 1.25,
+      "material": "item.oak_gall",
+      "materialCount": 1
+    },
+    {
+      "id": "cloth_rose",
+      "displayName": "Gül kurusu",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "cloth",
+      "color": "#B5776E",
+      "level": 2,
+      "priceFactor": 1.2,
+      "material": "item.dye_red",
+      "materialCount": 1
+    },
+    {
+      "id": "cloth_navy",
+      "displayName": "Lacivert",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "cloth",
+      "color": "#22314F",
+      "level": 4,
+      "priceFactor": 1.35,
+      "material": "item.dye_blue",
+      "materialCount": 1
+    },
+    {
+      "id": "cloth_ochre",
+      "displayName": "Toprak sarısı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "cloth",
+      "color": "#B5853F",
+      "level": 1,
+      "priceFactor": 1.1,
+      "material": "item.ochre",
+      "materialCount": 1
+    },
+    {
+      "id": "cloth_saffron",
+      "displayName": "Safran sarısı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "cloth",
+      "color": "#E0A21B",
+      "level": 7,
+      "priceFactor": 1.8,
+      "material": "item.saffron",
+      "materialCount": 1
+    },
+    {
+      "id": "clay_slip_red",
+      "displayName": "Kırmızı astarlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "clay",
+      "color": "#9C4A32",
+      "level": 2,
+      "priceFactor": 1.15
+    },
+    {
+      "id": "clay_yellow",
+      "displayName": "Sarı sırlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "clay",
+      "color": "#C9A23E",
+      "level": 3,
+      "priceFactor": 1.2
+    },
+    {
+      "id": "clay_blue",
+      "displayName": "Lacivert sırlı",
+      "kind": "itemFinish",
+      "price": 0,
+      "group": "clay",
+      "color": "#2E4E7E",
+      "level": 4,
+      "priceFactor": 1.3
+    },
+    {
+      "id": "wall_rubble_lime",
+      "displayName": "Kireçli moloz taş",
+      "kind": "wallMaterial",
+      "price": 6,
+      "color": "#B7AE9C",
+      "level": 3,
+      "heatLoss": 0.75,
+      "material": "item.stone",
+      "materialCount": 1
+    },
+    {
+      "id": "wall_brick",
+      "displayName": "Tuğla",
+      "kind": "wallMaterial",
+      "price": 9,
+      "color": "#9E5A40",
+      "level": 5,
+      "heatLoss": 0.7
+    },
+    {
+      "id": "wall_timber_red",
+      "displayName": "Kırmızı boyalı çatkı",
+      "kind": "wallMaterial",
+      "price": 7,
+      "color": "#9C4636",
+      "level": 4,
+      "heatLoss": 0.9,
+      "material": "item.dye_red",
+      "materialCount": 1
+    },
+    {
+      "id": "wall_timber_black",
+      "displayName": "Kara kirişli çatkı",
+      "kind": "wallMaterial",
+      "price": 7,
+      "color": "#3A302A",
+      "level": 4,
+      "heatLoss": 0.9,
+      "material": "item.oak_gall",
+      "materialCount": 1
+    },
+    {
+      "id": "wall_black_stone",
+      "displayName": "Kara taş",
+      "kind": "wallMaterial",
+      "price": 11,
+      "color": "#3B3936",
+      "level": 6,
+      "heatLoss": 0.65,
+      "material": "item.stone",
+      "materialCount": 2
+    },
+    {
+      "id": "wall_red_ashlar",
+      "displayName": "Kızıl kesme taş",
+      "kind": "wallMaterial",
+      "price": 14,
+      "color": "#9A5C48",
+      "level": 8,
+      "heatLoss": 0.6,
+      "material": "item.cut_stone",
+      "materialCount": 1
+    },
+    {
+      "id": "wall_marble",
+      "displayName": "Ak mermer kaplama",
+      "kind": "wallMaterial",
+      "price": 20,
+      "color": "#E9E5DC",
+      "level": 10,
+      "heatLoss": 0.6,
+      "material": "item.cut_stone",
+      "materialCount": 2
+    },
+    {
+      "id": "finish_blue_wash",
+      "displayName": "Çivit badana",
+      "kind": "wallFinish",
+      "price": 3,
+      "color": "#9DB4CC",
+      "level": 2,
+      "comfort": 1,
+      "beauty": 1,
+      "material": "item.lime",
+      "materialCount": 1
+    },
+    {
+      "id": "finish_rose_wash",
+      "displayName": "Pembe badana (kökboya)",
+      "kind": "wallFinish",
+      "price": 3,
+      "color": "#D9A79A",
+      "level": 2,
+      "comfort": 1,
+      "beauty": 1,
+      "material": "item.lime",
+      "materialCount": 1
+    },
+    {
+      "id": "finish_green_wash",
+      "displayName": "Yeşil badana",
+      "kind": "wallFinish",
+      "price": 3,
+      "color": "#A9BE95",
+      "level": 3,
+      "comfort": 1,
+      "beauty": 1,
+      "material": "item.lime",
+      "materialCount": 1
+    },
+    {
+      "id": "finish_red_band",
+      "displayName": "Kırmızı bantlı sıva",
+      "kind": "wallFinish",
+      "price": 4,
+      "color": "#C9A48E",
+      "level": 3,
+      "comfort": 1,
+      "beauty": 2,
+      "material": "item.ochre",
+      "materialCount": 1
+    },
+    {
+      "id": "finish_black_panel",
+      "displayName": "Kara lambri",
+      "kind": "wallFinish",
+      "price": 6,
+      "color": "#3A2E26",
+      "level": 5,
+      "comfort": 2,
+      "beauty": 2
+    },
+    {
+      "id": "finish_checker_paint",
+      "displayName": "Damalı boya",
+      "kind": "wallFinish",
+      "price": 6,
+      "color": "#B9A27A",
+      "level": 6,
+      "comfort": 2,
+      "beauty": 3,
+      "material": "item.dye_red",
+      "materialCount": 1
+    },
+    {
+      "id": "door_red",
+      "displayName": "Kırmızı boyalı kapı",
+      "kind": "door",
+      "price": 11,
+      "color": "#8E3027",
+      "level": 2
+    },
+    {
+      "id": "door_blue",
+      "displayName": "Mavi boyalı kapı",
+      "kind": "door",
+      "price": 11,
+      "color": "#3A5A84",
+      "level": 3
+    },
+    {
+      "id": "door_green",
+      "displayName": "Yeşil boyalı kapı",
+      "kind": "door",
+      "price": 11,
+      "color": "#4C6B41",
+      "level": 3
+    },
+    {
+      "id": "door_black",
+      "displayName": "Kara meşe kapı",
+      "kind": "door",
+      "price": 14,
+      "color": "#2F2824",
+      "level": 4
+    },
+    {
+      "id": "door_studded",
+      "displayName": "Çivili meşe kapı",
+      "kind": "door",
+      "price": 18,
+      "color": "#4E3A2A",
+      "level": 6,
+      "skill": "Smithing"
+    },
+    {
+      "id": "door_carved",
+      "displayName": "Oymalı ceviz kapı",
+      "kind": "door",
+      "price": 26,
+      "color": "#5A3B26",
+      "level": 9
+    },
+    {
+      "id": "window_shutter_red",
+      "displayName": "Kırmızı kepenkli pencere",
+      "kind": "window",
+      "price": 8,
+      "color": "#C9A3A0",
+      "level": 2
+    },
+    {
+      "id": "window_shutter_blue",
+      "displayName": "Mavi kepenkli pencere",
+      "kind": "window",
+      "price": 8,
+      "color": "#A8BBD6",
+      "level": 2
+    },
+    {
+      "id": "window_shutter_green",
+      "displayName": "Yeşil kepenkli pencere",
+      "kind": "window",
+      "price": 8,
+      "color": "#B2C4A6",
+      "level": 3
+    },
+    {
+      "id": "window_grille",
+      "displayName": "Demir parmaklıklı pencere",
+      "kind": "window",
+      "price": 14,
+      "color": "#9AA6AE",
+      "level": 6,
+      "skill": "Smithing"
+    },
+    {
+      "id": "railing_red",
+      "displayName": "Kırmızı boyalı korkuluk",
+      "kind": "railing",
+      "price": 5,
+      "color": "#8E3027",
+      "level": 2,
+      "skill": "Carpentry"
+    },
+    {
+      "id": "railing_green",
+      "displayName": "Yeşil boyalı korkuluk",
+      "kind": "railing",
+      "price": 5,
+      "color": "#4C6B41",
+      "level": 2,
+      "skill": "Carpentry"
+    },
+    {
+      "id": "railing_black",
+      "displayName": "Kara korkuluk",
+      "kind": "railing",
+      "price": 6,
+      "color": "#2F2824",
+      "level": 3,
+      "skill": "Carpentry"
+    },
+    {
+      "id": "railing_carved",
+      "displayName": "Oymalı ceviz korkuluk",
+      "kind": "railing",
+      "price": 12,
+      "color": "#5A3B26",
+      "level": 7,
+      "skill": "Carpentry"
+    },
+    {
+      "id": "railing_parapet",
+      "displayName": "Taş parapet",
+      "kind": "railing",
+      "price": 9,
+      "color": "#8F8B80",
+      "level": 4,
+      "skill": "Masonry"
+    },
+    {
+      "id": "railing_iron_red",
+      "displayName": "Kırmızı dövme demir korkuluk",
+      "kind": "railing",
+      "price": 12,
+      "color": "#7E2A22",
+      "level": 8,
+      "skill": "Smithing"
+    },
+    {
+      "id": "fence_cob",
+      "displayName": "Kerpiç bahçe duvarı",
+      "kind": "fence",
+      "price": 4,
+      "color": "#B89870",
+      "level": 2
+    },
+    {
+      "id": "fence_wattle_hurdle",
+      "displayName": "Örme çit (sık)",
+      "kind": "fence",
+      "price": 3,
+      "color": "#8D6E45",
+      "level": 1
+    },
+    {
+      "id": "fence_iron",
+      "displayName": "Dövme demir parmaklık",
+      "kind": "fence",
+      "price": 12,
+      "color": "#3A3836",
+      "level": 7,
+      "skill": "Smithing"
+    },
+    {
+      "id": "floor_terracotta",
+      "displayName": "Pişmiş toprak karo",
+      "kind": "floor",
+      "price": 4,
+      "color": "#B0613E",
+      "level": 4,
+      "floorBase": "Stone"
+    },
+    {
+      "id": "floor_brick_herring",
+      "displayName": "Balıksırtı tuğla",
+      "kind": "floor",
+      "price": 6,
+      "color": "#9A5038",
+      "level": 6,
+      "floorBase": "Stone"
+    },
+    {
+      "id": "floor_checker",
+      "displayName": "Kara-ak dama taş",
+      "kind": "floor",
+      "price": 9,
+      "color": "#6E6A64",
+      "level": 8,
+      "floorBase": "Stone"
+    },
+    {
+      "id": "floor_black_flag",
+      "displayName": "Kara taş döşeme",
+      "kind": "floor",
+      "price": 6,
+      "color": "#3A3836",
+      "level": 6,
+      "floorBase": "Stone"
+    },
+    {
+      "id": "floor_painted_boards",
+      "displayName": "Boyalı tahta",
+      "kind": "floor",
+      "price": 5,
+      "color": "#8C4F38",
+      "level": 4,
+      "floorBase": "Wood"
+    },
+    {
+      "id": "floor_walnut",
+      "displayName": "Ceviz tahta",
+      "kind": "floor",
+      "price": 8,
+      "color": "#5A3B26",
+      "level": 8,
+      "floorBase": "Wood"
+    },
+    {
+      "id": "roof_stone_slab",
+      "displayName": "Taş levha",
+      "kind": "roof",
+      "price": 2,
+      "color": "#77746C",
+      "level": 5
+    },
+    {
+      "id": "roof_tile_glazed",
+      "displayName": "Sırlı kiremit (desenli)",
+      "kind": "roof",
+      "price": 4,
+      "color": "#4F6E3E",
+      "level": 9
+    },
+    {
+      "id": "roof_tile_black",
+      "displayName": "Kara kiremit",
+      "kind": "roof",
+      "price": 3,
+      "color": "#3E3936",
+      "level": 7
     }
   ],
   "effects": [

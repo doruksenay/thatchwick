@@ -160,7 +160,9 @@ namespace Thatchwick.Core.Content
         public int waterRadius;      // sulama hendeği/kova: her sabah sular
         public int protectRadius;    // korkuluk: kuzgunlardan korur
         public int pollinate;        // arı kovanı: tozlaştırma yarıçapı
-        public string finishGroup;   // mobilya kaplama grubu (wood, cloth, metal, clay): renk/malzeme örnekleri
+        public string finishGroup;   // mobilya kaplama grubu (wood, cloth, metal, clay, stone): renk/malzeme örnekleri
+        public string accentGroup;   // ikinci kaplama grubu: korkuluk, minder, kulp (belge 45 §10)
+        public string accentLabel;   // ikinci kaplamanın adı (Korkuluk, Minder, Kulp ve kuşak)
         // Ev dekorasyonu (Project belgesi 27, D1)
         public string decorSize;     // dekor boyutu: S/M/L ya da K/O/B (boş = küçük)
         public int weight;           // dekor yükü (0 = 1)
@@ -182,6 +184,13 @@ namespace Thatchwick.Core.Content
         public int nearRadius;       // requiresNear için en çok karo (0 = 4)
         public string shopUnlock;    // craftonly eşya bu kilitle katalogda da satılır (glassworks)
         public string[] seasonal;    // mevsim süsü: taze durduğu mevsimler (D3b)
+        // Ev bakımı ve otomasyon (belge 45)
+        public float burnDays;       // mum: bir mumun yanma süresi (akşam saatlerinde azalır); 0 = yanıp bitmez
+        public string[] burnRefill;  // mum değiştirirken harcanan mum (sırayla; boş = kendisi, sonra item.candle)
+        public int lightPower;       // ışık gücü (mum 1, fener 2, avize 4); 0 = ışık eşyasında 1
+        public string potHerb;       // canlı saksı: hasatta verdiği ot
+        public float potGrowDays;    // canlı saksı: olgunlaşma günü (0 = 3)
+        public UpgradeDto[] upgrades; // eşya yükseltmeleri (şilte, demir kuşak, cila, baca)
         // Hayvancılık ve otomasyon (17.11.2026)
         public bool requiresIndoor;  // yalnızca kapalı bir odaya konur (folluk, ahır bölmesi)
         public bool trough;          // yemlik: odadaki bütün hayvanlar buradan yer
@@ -239,6 +248,27 @@ namespace Thatchwick.Core.Content
         public int pxW, pxH;
         public string young, grown, fruit;   // bitki evreleri
         public int[] rotations;              // yalnızca bu dönüşler (merdiven: görsel tek yöne çıkar); boş = görsele göre
+        public bool pending;                 // görsel eşlendi ama dosya henüz depoda yok (gelene kadar yer tutucu)
+    }
+
+    /// <summary>Eşya yükseltmesi (belge 45 §6): yerinde yapılır, malzeme harcar; etkisi eşyaya kalır.</summary>
+    [Serializable]
+    public sealed class UpgradeDto
+    {
+        public string id;
+        public string displayName;
+        public string requires;      // önce yapılması gereken yükseltme (saman → yün → kuş tüyü)
+        public string replaces;      // yerine geçtiği yükseltme (aynı kademe zinciri: biri kalır)
+        public ConsumeDto[] materials;
+        public string skill;         // varsayılan Carpentry
+        public int minLevel;
+        public double durationDays;  // 0 = 0,1
+        public int comfort;
+        public int beauty;
+        public int storage;
+        public float restore;        // ihtiyaç doldurma çarpanı eki (0,1 = %10)
+        public float collapse;       // çökme şansı çarpanı (0,5 = yarısı); 0 = etkisiz
+        public bool chimney;         // ocağa baca: is %75 az
     }
 
     /// <summary>Yemek/içki etkisi: süreli ruh hali etkisi (moodlet) olarak kaydedilir.</summary>
@@ -274,6 +304,8 @@ namespace Thatchwick.Core.Content
         public float priceFactor;    // itemFinish: 0 = 1
         public int[] levels;         // konabileceği katlar (boş = hepsi)
         public bool isDefault;
+        public int beauty;           // duvar kaplaması: oda güzelliğine katkı (belge 45 §8)
+        public string skill;         // açılış becerisi (boş = türüne/grubuna göre)
         public string material;      // varsa: envanterde bu malzeme varken harcanır, akçe yarıya iner (tuğla, kiremit, yontma taş, boya)
         public int materialCount;    // birim (kenar, karo, eşya) başına; 0 = 1
     }
@@ -341,6 +373,8 @@ namespace Thatchwick.Core.Content
         public bool collectContents;        // döküntü yığınındakileri envantere alır (doldurulan dekorda: boşalt)
         public bool fillDecor;              // doldurulan dekoru envanterdeki gerçek ürünle doldurur
         public bool eatContents;            // doldurulan dekordan bir tane yer (açlık)
+        public string homeAction;           // ev bakımı (belge 45): candle, strew, whitewash, waterPot, harvestPot, upgrade
+        public string upgrade;              // homeAction upgrade: yükseltme kimliği
     }
 
     [Serializable]

@@ -294,15 +294,11 @@ def main():
         a = {k: v for k, v in a.items() if v is not None}
         missing = [v for k, v in a.items() if isinstance(v, str) and v not in all_files]
         if missing:
-            uncertain.append(f"{iid}: eski tablodaki görsel henüz yok ({', '.join(missing)}), eşlenmedi")
-            if all(isinstance(v, str) and v in missing for k, v in a.items() if isinstance(v, str)):
-                continue
-            a = {k: v for k, v in a.items() if v not in missing}
+            # Eski tablo görseli gelmeden bilerek eşlemişti ("dosya yoksa küp"): eşleme korunur, "pending" işaretlenir.
+            uncertain.append(f"{iid}: görsel henüz depoda yok ({', '.join(missing)}), bekleyen olarak eşlendi")
+            a["pending"] = True
         art[iid] = a
     used = set(v for a in art.values() for k, v in a.items() if isinstance(v, str))
-    for iid, name in plants.items():
-        art.setdefault(iid, {})["grown"] = name
-        used.add(name)
     for iid, a in EXTRA_ART.items():
         if iid in by_id and not by_id[iid].get("art") and a["alongX"] in sprites:
             art[iid] = dict(a)
@@ -318,13 +314,8 @@ def main():
             if iid in by_id:
                 cands.setdefault((iid, "lit" if lit else "main"), []).append(s)
             continue
-        m = re.match(r"^iso_(tree|plant)_([a-z]+)_(young|grown|fruit)_se(?:_v(\d+))?$", s)
-        if m:
-            kind, short, stage, _ = m.groups()
-            iid = {"coffee": "item.bush_coffee", "grape": "item.vine_grape", "olive": "item.tree_olive"}.get(short, "item.tree_" + short)
-            if iid in by_id:
-                cands.setdefault((iid, stage), []).append(s)
-            continue
+        if re.match(r"^iso_(tree|plant|crop)_", s):
+            continue          # bitki evreleri IsoArt.Trees/Crops adlandırmasıyla çizilir (görsel parti 3)
         m = re.match(r"^iso_forage_([a-z_]+?)(?:_v(\d+))?_se$", s)
         if m:
             iid = "item.forage_" + m.group(1)

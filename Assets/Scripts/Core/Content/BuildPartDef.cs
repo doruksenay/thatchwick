@@ -43,6 +43,8 @@ namespace Thatchwick.Core.Content
         public float HeatLoss { get; set; } = 1f;
         /// <summary>Konfor katkısı (kaplama, zemin): odanın konfor puanına eklenir.</summary>
         public int Comfort { get; set; }
+        /// <summary>Duvar kaplamasının oda güzelliğine katkısı (şablon boya, duvar resmi, çini; belge 45).</summary>
+        public int Beauty { get; set; }
         /// <summary>Mobilya kaplaması: grup (wood, cloth, metal, clay) ve fiyat çarpanı.</summary>
         public string Group { get; set; }
         public float PriceFactor { get; set; } = 1f;
@@ -53,6 +55,8 @@ namespace Thatchwick.Core.Content
         /// <summary>Malzeme (tuğla, kiremit, yontma taş, boya): envanterde varsa harcanır ve akçe yarıya iner; yoksa tam akçe.</summary>
         public string MaterialItem { get; set; }
         public int MaterialCount { get; set; } = 1;
+        /// <summary>Açılışın becerisi (null = türüne ya da kaplama grubuna göre: taş Taş ustalığı, ahşap Marangozluk ...).</summary>
+        public Characters.SkillType? Skill { get; set; }
 
         public bool AllowsLevel(int level) => Levels.Count == 0 || Levels.Contains(level);
 
@@ -119,13 +123,33 @@ namespace Thatchwick.Core.Content
         }
 
         /// <summary>Eşyanın kaplama grubundaki seçenekler (grup yoksa boş).</summary>
-        public static List<BuildPartDef> FinishesFor(ContentDatabase db, ItemDef def)
+        public static List<BuildPartDef> FinishesFor(ContentDatabase db, ItemDef def) => Group(db, def?.FinishGroup);
+
+        /// <summary>Eşyanın ikinci kaplaması (korkuluk, minder, kulp) için seçenekler (belge 45 §10).</summary>
+        public static List<BuildPartDef> AccentsFor(ContentDatabase db, ItemDef def) => Group(db, def?.AccentGroup);
+
+        private static List<BuildPartDef> Group(ContentDatabase db, string group)
         {
             var list = new List<BuildPartDef>();
-            if (def == null || string.IsNullOrEmpty(def.FinishGroup)) return list;
+            if (string.IsNullOrEmpty(group)) return list;
             foreach (var p in db.Parts.All)
-                if (p.Kind == BuildPartKind.ItemFinish && p.Group == def.FinishGroup) list.Add(p);
+                if (p.Kind == BuildPartKind.ItemFinish && p.Group == group) list.Add(p);
+            list.Sort((a, b) => a.IsDefault != b.IsDefault ? (a.IsDefault ? -1 : 1) : a.UnlockLevel != b.UnlockLevel ? a.UnlockLevel.CompareTo(b.UnlockLevel) : a.PriceFactor.CompareTo(b.PriceFactor));
             return list;
+        }
+
+        /// <summary>Kaplama grubunun görünen adı.</summary>
+        public static string GroupName(string group)
+        {
+            switch (group)
+            {
+                case "wood": return "ahşap";
+                case "cloth": return "kumaş";
+                case "metal": return "metal";
+                case "clay": return "kil";
+                case "stone": return "taş";
+                default: return group;
+            }
         }
     }
 }

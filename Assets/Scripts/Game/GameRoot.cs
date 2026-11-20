@@ -184,6 +184,7 @@ namespace Thatchwick.Game
         private StoragePanel _storagePanel;
         private MinePanel _minePanel;
         private KeepsakePanel _keepsakePanel;
+        private HomePanel _homePanel;
         private bool _buntingShown;
         private FamilyService _family;
         private FamilyPanel _familyPanel;
@@ -191,10 +192,10 @@ namespace Thatchwick.Game
         private Actor _selected;          // haritaya dokununca komut alan kişi (aile içi iş verme)
         private bool _dynastyEnded;
         private int _stallId;
-        private PlacementDebugOverlay _placementDebug;
+        private PlacementDebugOverlay _placementDebug;            // F3, yalnızca editör ve geliştirme derlemesi (yerleşim sistemi, Aşama A)
         private Thatchwick.Core.Layout.LayoutPlan _layoutPlan;   // şehir planı (arsalar, oda türleri): doğrulayıcı ve debug katmanı
-        private Thatchwick.Core.Layout.LayoutCatalog _layouts;   // layouts.json   // F3, yalnızca editör ve geliştirme derlemesi (yerleşim sistemi, Aşama A)
-        private readonly List<(ItemInstance item, Transform view)> _plantViews = new List<(ItemInstance, Transform)>();
+        private Thatchwick.Core.Layout.LayoutCatalog _layouts;   // layouts.json
+        private readonly List<(ItemInstance item, Transform view, SpriteRenderer sr)> _plantViews = new List<(ItemInstance, Transform, SpriteRenderer)>();
         private readonly List<(ItemInstance item, SpriteRenderer view)> _heatViews = new List<(ItemInstance, SpriteRenderer)>();
         private Vector2 _hudScroll;
         private AnimalSystem _animals;
@@ -472,6 +473,7 @@ namespace Thatchwick.Game
             _marketPanel.Merchant = _life.Merchant; _marketPanel.DayIndex = () => _clock.DayIndex;   // gezgin tüccar (belge 34-D5)
             _life.Attach(_buildService);
             _life.Attach(_effects);
+            _life.Attach(_storage);   // sandığa demir kuşak: depo (belge 45)
             _life.Attach(_animals);   // attan düşen binici yaralanır, at ürkünce bildirim (Project belgesi 29)
             // Kurt savunması dünyadan okunur: çitli ağıl ve açık havada yanan ateş (belge 31-4).
             if (_life.Wolves != null) { _life.Wolves.Fenced = () => WildWorld.HasPen(_world.Map); _life.Wolves.HasFire = () => WildWorld.HasOutdoorFire(_world); _life.Wolves.ExtraDefense = () => _life.Upbringing.Companions.WolfDefenseBonus(); }   // Sürü Dili (belge 31-8)
@@ -486,6 +488,7 @@ namespace Thatchwick.Game
             _buildMode.Maker = () => _player?.Character;
             _buildMode.Today = () => _clock.TotalDays;
             _buildMode.Keepsakes = _life.Keepsakes;
+            _buildMode.Home = _life.Home;
             _buildMode.Season = () => _clock.Season;
             SetupFarm();
             _life.Log.Added += e => ShowMessage(e.Text, e.Level == NoticeLevel.Info ? 2.5f : 4f);
@@ -824,6 +827,7 @@ namespace Thatchwick.Game
                         var rart = AddItemSprite(item, rc, Color.white, 1f, -9990 + Mathf.Clamp(rugRank, 0, 9) + level * Iso.LevelSortStep, rugArt);
                         rart.color = ConditionTint(item, FinishTint(item, Color.white, 0.45f));
                         rart.flipX = rugFlip;
+                        AddPatternOverlay(item, rc, -9990 + Mathf.Clamp(rugRank, 0, 9) + level * Iso.LevelSortStep);   // işlenmiş desen (belge 45)
                         continue;
                     }
                     var rugColor = debris ? new Color(0.35f, 0.27f, 0.2f) : ConditionTint(item, FinishTint(item, ItemColor(item.Def.Id), 1f));
@@ -844,23 +848,22 @@ namespace Thatchwick.Game
                     var center = Iso.GridToWorld(item.Position.X + item.Width * 0.5f, item.Position.Y + item.Height * 0.5f, level);
                     var sr = AddItemSprite(item, center, Color.white, 1f, Iso.SortOrder(center.y, 0, level), art);
                     AddItemShadow(item, center, level);
-                    sr.color = FinishTint(item, Color.white, 0.45f);   // kaplama: gerçek görsel gelene kadar hafif renk
+                    sr.color = ConditionTint(item, FinishTint(item, Color.white, 0.45f));   // kaplama: gerçek görsel gelene kadar hafif renk
                     sr.flipX = flip;
+                    AddAccentOverlay(item, sr, center, level);                         // ikinci renk: korkuluk, minder, kulp (belge 45)
                     if (item.Def.HeatOutput > 0f) _heatViews.Add((item, sr));
                     continue;
                 }
                 if (item.IsPlant)
                 {
                     var pos = _view.TileToWorld(item.Position);
-                    var plantArt = IsoArt.Plant(item, out bool youngArt);
-                    // Genç evrenin kendi görseli varsa daha az küçültülür (görsel zaten küçük ağaç).
-                    float pscale = youngArt ? 0.7f + 0.3f * item.GrowthFraction : PlantScale(item);
-                    var psr = AddItemSprite(item, pos, plantArt != null ? Color.white : color, pscale, Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
+                    var plantArt = IsoArt.Plant(item, out bool staged);
+                    var psr = AddItemSprite(item, pos, plantArt != null ? Color.white : color, ViewScale(item, staged), Iso.SortOrder(pos.y, 1, level), plantArt ?? SpriteMaterials.Tree);
                     var sway = SpriteMaterials.Sway;   // rüzgârda sallanma (vertex shader; yoksa düz)
                     if (sway != null) psr.sharedMaterial = sway;
                     // Ağaç gölgesi: ışık sol üstten, gölge taç boyunca sağ alta uzanır; büyüdükçe büyür.
                     AddShadowObject(pos + new Vector3(0.18f, -0.06f, 0f) * PlantScale(item), 0.95f * PlantScale(item), level);
-                    _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform));
+                    _plantViews.Add((item, _itemObjects[_itemObjects.Count - 1].transform, psr));
                     continue;
                 }
                 var tinted = FinishTint(item, color, 1f);
@@ -913,7 +916,69 @@ namespace Thatchwick.Game
             if (item.IsTarnished) c = Color.Lerp(c, new Color(0.4f, 0.42f, 0.38f), 0.5f);
             if (_clock != null && Thatchwick.Core.Build.DecorSystem.IsWilted(item, _clock.Season))
                 c = Color.Lerp(c, new Color(0.5f, 0.38f, 0.22f), 0.55f);    // solmuş mevsim süsü (D3b): kurumuş kahverengi
+            var home = _life?.Home;
+            if (home != null)
+            {
+                if (home.PotWilted(item)) c = Color.Lerp(c, new Color(0.55f, 0.45f, 0.25f), 0.5f);          // solmuş saksı
+                if (item.BurntOut) c = Color.Lerp(c, new Color(0.45f, 0.42f, 0.4f), 0.35f);                // bitmiş mum
+                if (home.IsStrewnStale(item)) c = Color.Lerp(c, new Color(0.55f, 0.5f, 0.38f), 0.3f);       // bayat ot serpmesi
+                else if (home.IsStrewnFresh(item)) c = Color.Lerp(c, new Color(0.75f, 0.9f, 0.6f), 0.2f);  // taze ot
+            }
             return c;
+        }
+
+        // İkinci renk (belge 45 §10): eşyanın "_accent" maske görseli varsa ikinci kaplamanın rengiyle üstüne çizilir.
+        // Maske yoksa (görsel işi bekliyor) ikinci renk yalnızca kartta görünür.
+        private void AddAccentOverlay(ItemInstance item, SpriteRenderer body, Vector3 center, int level)
+        {
+            if (string.IsNullOrEmpty(item.Def.AccentGroup)) return;
+            var mask = IsoArt.ItemAccent(item);
+            if (mask == null) return;
+            BuildPartDef part = null;
+            if (item.AccentId != null) _content.Parts.TryGet(item.AccentId, out part);
+            else foreach (var p in BuildParts.AccentsFor(_content, item.Def)) if (p.IsDefault) { part = p; break; }
+            if (part == null) return;
+            var asr = AddItemSprite(item, center, Color.white, 1f, body.sortingOrder + 1, mask);
+            asr.color = SpriteMaterials.PartColor(part, Color.white);
+            asr.flipX = body.flipX;
+        }
+
+        // İşlenmiş desen (belge 45 §8): halının üstüne 8x8 desen, yere serili elmas olarak (yarı saydam).
+        private readonly System.Collections.Generic.Dictionary<string, Sprite> _patternSprites = new System.Collections.Generic.Dictionary<string, Sprite>();
+        private void AddPatternOverlay(ItemInstance item, Vector3 center, int order)
+        {
+            var pat = _life?.Home?.PatternOn(item);
+            if (pat == null) return;
+            if (!_patternSprites.TryGetValue(pat.Cells, out var sprite) || sprite == null)
+            {
+                var tex = new Texture2D(8, 8) { filterMode = FilterMode.Point };
+                for (int y = 0; y < 8; y++)
+                    for (int x = 0; x < 8; x++)
+                    {
+                        int idx = Mathf.Clamp(pat.Cells[(7 - y) * 8 + x] - '0', 0, HomeLife.Palette.Length - 1);
+                        var col = HomePanel.Hex(HomeLife.Palette[idx].Hex);
+                        col.a = 0.8f;
+                        tex.SetPixel(x, y, col);
+                    }
+                tex.Apply();
+                sprite = Sprite.Create(tex, new Rect(0, 0, 8, 8), new Vector2(0.5f, 0.5f), 8f);
+                _patternSprites[pat.Cells] = sprite;
+            }
+            // Kare deseni izometrik elmasa çevir: 45° döndür, dikeyde yarıya bastır (üst nesne ölçeği).
+            var holder = new GameObject(item.Def.Id + "_desen");
+            holder.transform.SetParent(transform, false);
+            holder.transform.position = center + new Vector3(0f, 0f, -0.001f);   // halının hemen önünde
+            float span = Mathf.Min(item.Width, item.Height) * 0.62f;
+            holder.transform.localScale = new Vector3(1f, 0.5f, 1f);
+            var child = new GameObject("desen");
+            child.transform.SetParent(holder.transform, false);
+            child.transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
+            child.transform.localScale = new Vector3(span * 1.41f, span * 1.41f, 1f);
+            var sr = child.AddComponent<SpriteRenderer>();
+            sr.sprite = sprite;
+            sr.sharedMaterial = SpriteMaterials.Unlit;
+            sr.sortingOrder = order;
+            _itemObjects.Add(holder);
         }
 
         // Mobilya kaplamasının rengi (amount: 1 = tam kaplama rengi, küçük = beyaza karışık); kaplama yoksa baseColor.
@@ -939,6 +1004,17 @@ namespace Thatchwick.Game
         }
 
         private static float PlantScale(ItemInstance item) => 0.3f + 0.7f * item.GrowthFraction;
+
+        /// <summary>
+        /// Görünüm ölçeği: evre görseli varsa (genç ağaç, ekin evresi) küçültme yalnızca evre içinde hafif;
+        /// olgun görsel tek başınaysa büyüme oranıyla küçülür.
+        /// </summary>
+        private static float ViewScale(ItemInstance item, bool staged)
+        {
+            if (!staged) return PlantScale(item);
+            if (item.Def.IsCrop || item.IsGrown) return 1f;
+            return 0.75f + 0.25f * item.GrowthFraction;   // genç ağaç görseli fidandan ağaca büyür
+        }
 
         // ---------------- gölgeler (görsel analiz, 18.11.2026) ----------------
 
@@ -1257,6 +1333,7 @@ namespace Thatchwick.Game
             if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
+            if (_homePanel != null && _homePanel.Active && _homePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
@@ -1800,7 +1877,9 @@ namespace Thatchwick.Game
                 WorkHours = () => HourOfDay >= 7.0 && HourOfDay < 19.0,
                 Now = () => _clock.TotalDays,
                 TileWork = _farmWork,
-                Mines = _mines
+                Mines = _mines,
+                HouseChores = _life.Home.Chores,                                      // ev görevi (belge 45)
+                HouseHours = () => HourOfDay >= 7.0 && HourOfDay < 22.0              // mum yakmak akşam işi
             };
             _world.Map.WearMultiplier = RoadWear();
             _life.NewDay += day =>
@@ -1900,6 +1979,8 @@ namespace Thatchwick.Game
             _mines.Dug += (c, m, x, y, got) => { _floorsDirty = true; if (c != null) c.AddMoodlet(MoodCatalog.Dusty); };
             _buildService.DeepDigBlocker = p => _mines.ShaftBlocker(_life.BestSkill(SkillType.Mining));
             _keepsakePanel = new KeepsakePanel(_life.Keepsakes, _world, _clock);
+            _homePanel = new HomePanel(_life, _world, _content, _household, () => Commander?.Character);
+            _homePanel.Message += m => ShowMessage(m, 3f);
             _minePanel = new MinePanel(_mines, _household, _content)
             {
                 Actor = () => Commander?.Character,
@@ -2194,6 +2275,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.kKey.wasPressedThisFrame) _storagePanel.Toggle();
             if (kb != null && kb.mKey.wasPressedThisFrame) _minePanel.Toggle();
             if (kb != null && kb.jKey.wasPressedThisFrame) _keepsakePanel?.Toggle();
+            if (kb != null && kb.eKey.wasPressedThisFrame) _homePanel?.Toggle();
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
@@ -2264,7 +2346,7 @@ namespace Thatchwick.Game
                 _juice.LeafColor = _clock.Season == Season.Autumn
                     ? (Random01() < 0.5f ? new Color(0.84f, 0.5f, 0.18f, 1f) : new Color(0.72f, 0.32f, 0.14f, 1f))
                     : new Color(0.42f, 0.6f, 0.26f, 1f);
-                foreach (var (plant, view) in _plantViews)
+                foreach (var (plant, view, _) in _plantViews)
                 {
                     if (view == null || plant.Def.IsCrop) continue;
                     float s = PlantScale(plant);
@@ -2328,8 +2410,15 @@ namespace Thatchwick.Game
             _roomMood.Tick(gameDays, _population.Members);
             UpdateAnimalViews();
             UpdateWildViews();
-            foreach (var (plant, view) in _plantViews)
-                if (view != null) { float s = PlantScale(plant); view.localScale = new Vector3(s, s, 1f); }
+            foreach (var (plant, view, psr) in _plantViews)
+            {
+                if (view == null) continue;
+                // Evre değişince (ekin evresi, genç → olgun, meyve) görsel değişir.
+                var art = IsoArt.Plant(plant, out bool staged);
+                if (art != null && psr != null && psr.sprite != art) psr.sprite = art;
+                float s = ViewScale(plant, art != null && staged);
+                view.localScale = new Vector3(s, s, 1f);
+            }
             foreach (var (heatItem, heatView) in _heatViews)
                 if (heatView != null) { var lit = IsoArt.Item(heatItem, out _); if (lit != null && heatView.sprite != lit) heatView.sprite = lit; }
             foreach (var a in _actors)
@@ -2673,6 +2762,7 @@ namespace Thatchwick.Game
             _storagePanel.OnGUI(s);
             _minePanel.OnGUI(s);
             _keepsakePanel?.OnGUI(s);
+            _homePanel?.OnGUI(s);
             _familyPanel.OnGUI(s);
             _villagePanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }
             DrawBalloons(s);
@@ -2703,6 +2793,7 @@ namespace Thatchwick.Game
             if (HudToggle("Aile (F)", _familyPanel.Active)) ToggleFamily();
             if (HudToggle("Köy (V)", _villagePanel.Active)) ToggleVillage();
             if (_keepsakePanel != null && HudToggle("Hatıra (J)", _keepsakePanel.Active)) _keepsakePanel.Toggle();
+            if (_homePanel != null && HudToggle("Ev (E)", _homePanel.Active)) _homePanel.Toggle();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();

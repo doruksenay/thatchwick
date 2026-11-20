@@ -87,7 +87,7 @@ namespace Thatchwick.Core.Content
                         errors.Add($"{item.Id}: yalnızca dekor, duvar ya da yer eşyası doldurulur.");
                     foreach (var f in item.FillWith)
                         if (!Items.TryGet(f, out var fd)) errors.Add($"{item.Id}: doldurulacak ürün '{f}' bulunamadı.");
-                        else if (fd.Placement != ItemPlacement.Resource) errors.Add($"{item.Id}: doldurulacak ürün '{f}' bir kaynak (envanter ürünü) olmalı.");
+                        else if (fd.Placement != ItemPlacement.Resource && !item.HasTag("display")) errors.Add($"{item.Id}: doldurulacak ürün '{f}' bir kaynak (envanter ürünü) olmalı.");
                 }
                 foreach (var it in item.Interactions)
                     if ((it.FillDecor || it.EatContents) && !item.IsFillDecor) errors.Add($"{item.Id}/{it.Id}: doldurma ve yeme yalnızca doldurulan dekorda olur.");
@@ -266,8 +266,12 @@ namespace Thatchwick.Core.Content
                 if (item.FinishGroup != null && !finishGroups.Contains(item.FinishGroup))
                     errors.Add($"{item.Id}: '{item.FinishGroup}' kaplama grubunda hiç kaplama yok.");
             foreach (var item in Items.All)
+                if (item.AccentGroup != null && !finishGroups.Contains(item.AccentGroup))
+                    errors.Add($"{item.Id}: '{item.AccentGroup}' ikinci kaplama grubunda hiç kaplama yok.");
+            foreach (var item in Items.All)
             {
-                bool onlyCollect = item.Interactions.TrueForAll(i => i.CollectContents);   // döküntü yığını: "Topla"
+                // döküntü yığını: "Topla"; saz hasır: "Ot serp" (belge 45)
+                bool onlyCollect = item.Interactions.TrueForAll(i => i.CollectContents || i.HomeAction == "strew");
                 if (item.IsRug && (!onlyCollect || item.SurfaceSlots.Count > 0 || item.IsStairs || item.IsHousing || item.HeatOutput > 0f || item.Storage > 0))
                     errors.Add($"{item.Id}: halı etkileşimsiz, yuvasız düz bir eşya olmalı.");
             }

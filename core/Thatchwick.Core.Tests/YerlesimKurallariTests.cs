@@ -327,6 +327,7 @@ namespace Thatchwick.Core.Tests
             foreach (var d in db.Items.All)
             {
                 if (d.Art == null) continue;
+                if (d.Art.Pending) continue;   // görseli bilerek önceden eşlenmiş, dosyası henüz gelmedi
                 foreach (var name in new[] { d.Art.AlongX, d.Art.AlongY, d.Art.Lit, d.Art.Grown, d.Art.Young, d.Art.Fruit }.Concat(d.Art.Faces))
                     if (name != null) Assert.True(files.Contains(name), $"{d.Id}: görsel dosyası yok {name}");
                 if (d.Placement == ItemPlacement.Floor) Assert.True(ItemFacing.ValidRotations(d).Count > 0, d.Id);
