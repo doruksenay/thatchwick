@@ -1,7 +1,8 @@
 ---
 id: "727"
 title: "Ön yüzlü eşyalar: yönü belli görseller, bölüm 2 (8 eşya)"
-status: pending
+status: running
+claimed_at: 2026-11-20T18:14Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("assetleri ürettir. evet bunu yap"; belge 64b, yön sorunu)
 family: esya
 style_gate: false

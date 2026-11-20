@@ -141,7 +141,7 @@ namespace Thatchwick.Core.Layout
                     if (Regions.At(p) != Regions.Town && Regions.At(p) != Regions.Farm) continue;
                     if (Regions.PlazaRect.Contains(p) && Regions.InPlazaLocal(p.X - Regions.Town.X, p.Y - Regions.Town.Y)) continue;
                     int mine = Dist(b, p), best = int.MaxValue;
-                    foreach (var o in Regions.TownBuildings) if (!o.Rect.Equals(b)) best = Math.Min(best, Dist(o.Rect, p));
+                    foreach (var o in Regions.TownBuildings) if (!o.Rect.Equals(b)) best = Math.Min(best, o.DistanceTo(p));
                     if (mine <= best) z.Add(p);
                 }
             return z;

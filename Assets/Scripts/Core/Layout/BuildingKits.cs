@@ -83,7 +83,27 @@ namespace Thatchwick.Core.Layout
                             var p = new GridPos(x, y, top);
                             if (map.InBounds(p)) map.SetRoofStyle(p, k.Roof);
                         }
+                if (b.HasAnnex) ApplyAnnex(map, b, k);
             }
+        }
+
+        /// <summary>Ek yapı ana binanın kitini alır: duvar, pencere, iç kaplama, zemin ve çatı (tek kat).</summary>
+        private static void ApplyAnnex(GridMap map, TownBuilding b, BuildingKit k)
+        {
+            var r = b.AnnexRect;
+            var edges = new List<Edge>();
+            for (int x = r.X; x < r.X + r.W; x++) { edges.Add(new Edge(x, r.Y, EdgeAxis.Horizontal)); edges.Add(new Edge(x, r.Y + r.H, EdgeAxis.Horizontal)); }
+            for (int y = r.Y; y < r.Y + r.H; y++) { edges.Add(new Edge(r.X, y, EdgeAxis.Vertical)); edges.Add(new Edge(r.X + r.W, y, EdgeAxis.Vertical)); }
+            StyleEdges(map, edges, r, k);
+            for (int y = r.Y; y < r.Y + r.H; y++)
+                for (int x = r.X; x < r.X + r.W; x++)
+                {
+                    var p = new GridPos(x, y);
+                    if (!map.HasTile(p)) continue;
+                    var cur = map.GetFloor(p);
+                    if (k.Floor != null && cur != FloorType.Water && cur != FloorType.Grass) map.SetFloor(p, cur, k.Floor);
+                    if (k.Roof != null) map.SetRoofStyle(p, k.Roof);
+                }
         }
 
         private static void Perimeter(GridMap map, TownBuilding b, int z, BuildingKit k)
@@ -92,6 +112,11 @@ namespace Thatchwick.Core.Layout
             var edges = new List<Edge>();
             for (int x = b.X0; x <= b.X1; x++) { edges.Add(new Edge(x, b.Y0, EdgeAxis.Horizontal, z)); edges.Add(new Edge(x, b.Y1 + 1, EdgeAxis.Horizontal, z)); }
             for (int y = b.Y0; y <= b.Y1; y++) { edges.Add(new Edge(b.X0, y, EdgeAxis.Vertical, z)); edges.Add(new Edge(b.X1 + 1, y, EdgeAxis.Vertical, z)); }
+            StyleEdges(map, edges, rect, k, z);
+        }
+
+        private static void StyleEdges(GridMap map, List<Edge> edges, RectI rect, BuildingKit k, int z = 0)
+        {
             foreach (var e in edges)
             {
                 if (!map.EdgeInBounds(e)) continue;
@@ -134,7 +159,7 @@ namespace Thatchwick.Core.Layout
 
         public static TownBuilding BuildingAt(GridPos p)
         {
-            foreach (var b in Regions.TownBuildings) if (b.Rect.Contains(new GridPos(p.X, p.Y))) return b;
+            foreach (var b in Regions.TownBuildings) if (b.Covers(p)) return b;
             return null;
         }
     }

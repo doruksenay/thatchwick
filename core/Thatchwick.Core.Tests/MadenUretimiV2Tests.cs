@@ -16,6 +16,25 @@ namespace Thatchwick.Core.Tests
             return m;
         }
 
+        /// <summary>Hazır mekân süsleri (621) açık karoda ve içerikte tanımlı; 20 tohumda en az bir kez her türden biri çıkar.</summary>
+        [Fact]
+        public void HazirMekanSusleri_AcikKarodaVeTanimli()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var kinds = new HashSet<string>();
+            for (int seed = 1; seed <= 20; seed++)
+            {
+                var m = Gallery(seed);
+                foreach (var (x, y, id) in m.Props)
+                {
+                    Assert.True(m.IsOpen(x, y), $"tohum {seed}: {id} ({x},{y}) kaya içinde");
+                    Assert.True(db.Items.TryGet(id, out _), id);
+                    kinds.Add(id);
+                }
+            }
+            Assert.True(kinds.Count >= 5, string.Join(", ", kinds));
+        }
+
         [Fact]
         public void AyniTohumAyniKat()
         {

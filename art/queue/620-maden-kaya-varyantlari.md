@@ -1,7 +1,8 @@
 ---
 id: "620"
 title: "Maden kaya ve damar varyantları (18 karo)"
-status: pending
+status: review
+claimed_at: 2026-11-20T18:07Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
 family: zemin
 style_gate: false

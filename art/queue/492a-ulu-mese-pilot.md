@@ -1,7 +1,7 @@
 ---
 id: "492a"
 title: "Ulu meşe, dört mevsim (ulu ağaç stil pilotu)"
-status: blocked
+status: pending
 claimed_at: 2026-11-20T10:46Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamasını tek pr'da hallet, gereken assetleri sıraya koy"), Project belgesi 52
 priority: 10
@@ -23,14 +23,14 @@ Belge 52 §2: haritada kesilemeyen, yüzyıllık ulu ağaçlar. Arsadaki kesin u
 
 ## Tarif
 319'daki ağaç yöntemi (`create_map_object` stil eşleme, bitki ailesi referansları), farkları:
-- **Ayak izi 2x2** (gövde tabanı iki karoluk elmasın ortasında), **tuval 192x256, pivot (96, 40)**. Yükseklik 210-240 px: sıradan meşeden (`iso_tree_oak_grown_se`, 96x112) belirgin biçimde büyük ve yaşlı görünmeli.
+- **Ayak izi 2x2** (gövde tabanı iki karoluk elmasın ortasında), **tuval 160x224, pivot (80, 36)** (kullanıcı kararı 2026-11-20 21:16: seçenek (b) "Stil eşlemeyle 160x224 ... bu olsun"; stil eşleme en çok 192x192 = 36.864 px alır, 160x224 = 35.840 px). Yükseklik 190-215 px: sıradan meşeden (`iso_tree_oak_grown_se`, 96x112) belirgin biçimde büyük ve yaşlı görünmeli.
 - Açıklama metni (yaz): `ancient enormous oak tree, very thick gnarled trunk with deep bark furrows and exposed roots, wide spreading crown of dark green leaves, a few broad horizontal boughs low enough to hold a treehouse platform, isometric view, no ground`.
 - Mevsimler aynı gövde ve dal iskeletiyle (ilk yaz görseli `init_image` olarak verilir, gövde piksel piksel aynı kalmalı):
   - ilkbahar: taze açık yeşil, seyrek yaprak;
   - yaz: koyu dolgun yeşil;
   - güz: altın sarısı ve pas kahvesi yaprak;
   - kış: yapraksız, çıplak kalın dallar (köşk ve platform dalların arasında görünecek).
-- Taç ağacın en geniş yerinde ~180 px; taç ortası pivotun ~150 px üstünde (ağaç ev katmanı 493 buraya hizalanır).
+- Taç ağacın en geniş yerinde ~150 px; taç ortası pivotun ~130 px üstünde (ağaç ev katmanı 493 buraya hizalanır).
 - Maliyet ≈ 4 gen.
 
 ## Doğrulama

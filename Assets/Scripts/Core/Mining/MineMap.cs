@@ -68,6 +68,12 @@ namespace Thatchwick.Core.Mining
         /// <summary>Ateşle kırmanın dumanı (gün): sıfıra inene kadar burada çalışılmaz.</summary>
         public double SmokeDays { get; internal set; }
 
+        /// <summary>
+        /// Hazır mekânların ve kovukların süs eşyaları (belge 64a §6, görseller 621): üreteç yazar, galeri dünyaya ilk kez
+        /// yerleşince eşya olarak konur. Kayda yazılmaz (konan eşyalar dünyanın kaydında).
+        /// </summary>
+        public readonly List<(int x, int y, string id)> Props = new List<(int x, int y, string id)>();
+
         public MineMap(string id, MineSiteKind kind, int level, int width, int height, int seed)
         {
             if (width <= 0 || height <= 0) throw new ArgumentOutOfRangeException(nameof(width));

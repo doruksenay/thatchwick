@@ -80,6 +80,9 @@ namespace Thatchwick.Game
         /// <summary>Kat -2'de kazılmamış karonun rengi (kazı motoru); null ise toprak rengi.</summary>
         public Func<GridPos, Color?> RockTint { get; set; }
 
+        /// <summary>Kazılmamış karonun kaya görseli (taban adı, çeşit eki olmadan; IsoArt.RockTop) ve üstüne çarpılacak renk.</summary>
+        public Func<GridPos, (string art, Color tint)?> RockArt { get; set; }
+
         /// <summary>Bu katın nesneleri (eşya, duvar, karakter) şu an çizilmeli mi.</summary>
         public bool IsLevelVisible(int z) => _viewLevel < 0 ? z == _viewLevel : z >= 0 && z <= _viewLevel;
 
@@ -456,6 +459,7 @@ namespace Thatchwick.Game
         {
             foreach (var go in _pathObjects) if (go != null) Destroy(go);
             _pathObjects.Clear();
+            if (visible && Map != null) BuildTransitions();
             if (!_pathWang || !visible || Map == null) return;
             for (int vy = _area.yMin - 1; vy < _area.yMax; vy++)
                 for (int vx = _area.xMin - 1; vx < _area.xMax; vx++)
@@ -478,6 +482,58 @@ namespace Thatchwick.Game
                     sr.sharedMaterial = SpriteMaterials.Unlit;
                     sr.sortingOrder = GroundSortOrder + 1;
                     _pathObjects.Add(go);
+                }
+        }
+
+        /// <summary>Geçiş seti çiftleri (birinci, ikinci): dosya adındaki sırayla.</summary>
+        private static readonly (string a, string b)[] TransitionPairs = { ("grass", "sand"), ("grass", "stone"), ("sand", "water"), ("grass", "water") };
+
+        /// <summary>Karonun geçiş malzemesi (kat 0): çim, kum, açık havadaki taş döşeme, su; yol ve diğerleri null.</summary>
+        private string TransitionKind(int x, int y)
+        {
+            var p = new GridPos(x, y);
+            if (!Map.InBounds(p) || Map.GetRoad(p) != RoadType.None) return null;
+            switch (Map.GetFloor(p))
+            {
+                case FloorType.Grass: return "grass";
+                case FloorType.Sand: return "sand";
+                case FloorType.Water: return "water";
+                case FloorType.Stone:
+                    var room = Map.Rooms.RoomAt(p);
+                    return room == null || !room.IsIndoor ? "stone" : null;
+                default: return null;
+            }
+        }
+
+        /// <summary>
+        /// Zemin geçişleri (613-617, dual-grid): iki malzemenin buluştuğu her köşe noktasına maskeli geçiş karosu. Görseli olmayan
+        /// çift ya da maske çizilmez (taban karolar olduğu gibi kalır).
+        /// </summary>
+        private void BuildTransitions()
+        {
+            for (int vy = _area.yMin - 1; vy < _area.yMax; vy++)
+                for (int vx = _area.xMin - 1; vx < _area.xMax; vx++)
+                {
+                    string top = TransitionKind(vx + 1, vy + 1), right = TransitionKind(vx + 1, vy), bottom = TransitionKind(vx, vy), left = TransitionKind(vx, vy + 1);
+                    if (top == null || right == null || bottom == null || left == null) continue;
+                    if (top == right && right == bottom && bottom == left) continue;
+                    foreach (var (a, b) in TransitionPairs)
+                    {
+                        bool Ok(string k) => k == a || k == b;
+                        if (!Ok(top) || !Ok(right) || !Ok(bottom) || !Ok(left)) continue;
+                        int mask = (top == b ? 1 : 0) | (right == b ? 2 : 0) | (bottom == b ? 4 : 0) | (left == b ? 8 : 0);
+                        var sprite = IsoArt.Transition(a, b, mask, (int)(Noise(vx, vy, 613) * IsoArt.TransitionVariants) % IsoArt.TransitionVariants);
+                        if (sprite == null) break;
+                        var go = new GameObject("Transition");
+                        go.transform.SetParent(transform, false);
+                        go.transform.position = Iso.GridToWorld(vx + 1f, vy + 1f, 0);
+                        var sr = go.AddComponent<SpriteRenderer>();
+                        sr.sprite = sprite;
+                        sr.sharedMaterial = SpriteMaterials.Unlit;
+                        sr.sortingOrder = GroundSortOrder + 1;
+                        _pathObjects.Add(go);
+                        break;
+                    }
                 }
         }
 
@@ -513,6 +569,11 @@ namespace Thatchwick.Game
                 sr.color = p.Z < 0 ? EarthColor : VoidColor;
                 if (p.Z < 0 && ShowPlot && Map.IsOwned(p)) sr.color = new Color32(52, 42, 36, 255);
                 // Arsa kazısı (kat -2) ve tepenin altındaki galeri (kat -1): kaya karoları türüne ve durumuna göre boyanır.
+                if (p.Z < 0 && RockArt != null && RockArt(p) is (string art, Color rockTint))
+                {
+                    var top = IsoArt.RockTop(art, p.X, p.Y);
+                    if (top != null) { sr.sprite = top; sr.color = rockTint; return; }
+                }
                 if (p.Z < 0 && RockTint != null) { var tint = RockTint(p); if (tint.HasValue) sr.color = tint.Value; }
                 return;
             }

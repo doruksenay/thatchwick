@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Thatchwick.Core.Characters;
@@ -142,16 +143,65 @@ namespace Thatchwick.Game
         private static readonly string[] GrassTiles = { "iso_ground_grass_a", "iso_ground_grass_b", "iso_ground_grass_c" };
         private static readonly string[] DirtTiles = { "iso_ground_dirt_a", "iso_ground_dirt_b" };
         private static readonly string[] SandTiles = { "iso_ground_sand_a", "iso_ground_sand_b", "iso_ground_sand_c" };
+        private static readonly string[] MeadowTiles = { "iso_ground_meadow_a", "iso_ground_meadow_b", "iso_ground_meadow_c" };
+        private static readonly string[] DarkGrassTiles = { "iso_ground_grass_dark_a", "iso_ground_grass_dark_b" };
+        private static readonly string[] GravelTiles = { "iso_ground_dirt_gravel_a", "iso_ground_dirt_gravel_b" };
+
+        /// <summary>Yumuşak değer gürültüsü (0..1), ~7 karoluk öbekler: aynı konum her çizimde aynı.</summary>
+        private static float Patch(int x, int y)
+        {
+            float fx = x / 7f, fy = y / 7f;
+            int x0 = Mathf.FloorToInt(fx), y0 = Mathf.FloorToInt(fy);
+            float tx = fx - x0, ty = fy - y0;
+            tx = tx * tx * (3 - 2 * tx); ty = ty * ty * (3 - 2 * ty);
+            float a = Lattice(x0, y0), b = Lattice(x0 + 1, y0), c = Lattice(x0, y0 + 1), d = Lattice(x0 + 1, y0 + 1);
+            return Mathf.Lerp(Mathf.Lerp(a, b, tx), Mathf.Lerp(c, d, tx), ty);
+        }
+
+        private static float Lattice(int x, int y)
+        {
+            unchecked
+            {
+                uint h = (uint)(x * 374761393 + y * 668265263 + 64 * 1442695041);
+                h = (h ^ (h >> 13)) * 1274126177u;
+                h ^= h >> 16;
+                return (h & 0xFFFF) / 65535f;
+            }
+        }
+
+        public const int TransitionVariants = 2;
+
+        /// <summary>
+        /// Zemin geçişi (613-617, dual-grid): köşe noktasındaki dört karonun maskesi (bit 0 üst, 1 sağ, 2 alt, 3 sol; 1 = ikinci
+        /// zemin). Dosya: iso_trans_&lt;birinci&gt;_&lt;ikinci&gt;_&lt;NN&gt;_&lt;a|b&gt;. Görsel yoksa null (geçiş çizilmez).
+        /// </summary>
+        public static Sprite Transition(string first, string second, int mask, int variant)
+        {
+            if (!Enabled || mask <= 0 || mask >= 15) return null;
+            for (int i = 0; i < TransitionVariants; i++)
+            {
+                var s = GetCentered($"iso_trans_{first}_{second}_{mask:00}_{VariantLetters[(variant + i) % TransitionVariants]}");
+                if (s != null) return s;
+            }
+            return null;
+        }
 
         /// <summary>Çim ve toprak için gerçek karo (konuma göre sabit varyasyon); diğer zeminler için null.</summary>
         public static Sprite Ground(FloorType floor, int x, int y)
         {
             int h = (x * 73856093) ^ (y * 19349663);
             if (h < 0) h = -h;
+            // Zemin lekeleri (belge 64a, 612): düşük frekanslı gürültüyle çimde çayır ve koyu çim öbekleri, toprakta çakıl.
+            float patch = Patch(x, y);
             switch (floor)
             {
-                case FloorType.Grass: return GetCentered(GrassTiles[h % GrassTiles.Length]);
-                case FloorType.Dirt: return GetCentered(DirtTiles[h % DirtTiles.Length]);
+                case FloorType.Grass:
+                    if (patch > 0.70f) { var m = GetCentered(MeadowTiles[h % MeadowTiles.Length]); if (m != null) return m; }
+                    if (patch < 0.27f) { var d = GetCentered(DarkGrassTiles[h % DarkGrassTiles.Length]); if (d != null) return d; }
+                    return GetCentered(GrassTiles[h % GrassTiles.Length]);
+                case FloorType.Dirt:
+                    if (patch > 0.72f) { var g = GetCentered(GravelTiles[h % GravelTiles.Length]); if (g != null) return g; }
+                    return GetCentered(DirtTiles[h % DirtTiles.Length]);
                 // Kum (belge 64a): iso_ground_sand_a/b/c (art/queue Z1); yoksa kumsal karosu; o da yoksa null (renk).
                 case FloorType.Sand: return GetCentered(SandTiles[h % SandTiles.Length]) ?? GetCentered("iso_ground_sand_a") ?? Beach(x, y);
                 default: return null;
@@ -291,6 +341,10 @@ namespace Thatchwick.Game
             ["item.tree_birch"] = "iso_tree_birch",
             ["item.tree_pine"] = "iso_tree_pine",
             ["item.tree_willow"] = "iso_tree_willow",
+            // Yamaç bahçesi (422k): evre görselleri "iso_plant_" önekiyle geldi.
+            ["item.tree_olive"] = "iso_plant_olive",
+            ["item.vine_grape"] = "iso_plant_grape",
+            ["item.bush_coffee"] = "iso_plant_coffee",
         };
 
         /// <summary>Ekinler: evre görselleri "_1_se", "_2_se", "_3_se" (80x72, pivot 40,24). 310 kurtarma (371) ve 374.</summary>
@@ -313,6 +367,7 @@ namespace Thatchwick.Game
             ["item.crop_radish"] = "iso_crop_radish",
             ["item.crop_lettuce"] = "iso_crop_lettuce",
             ["item.crop_broad_bean"] = "iso_crop_broad_bean",
+            ["item.crop_tomato"] = "iso_crop_tomato",   // yalnızca salça için (Project belgesi 60a); şimdilik son evre görseli var
             ["item.crop_barley"] = "iso_crop_barley",
             ["item.crop_spinach"] = "iso_crop_spinach",
             ["item.crop_wheat"] = "iso_crop_wheat",
@@ -354,20 +409,62 @@ namespace Thatchwick.Game
             if (!Trees.TryGetValue(id, out var tree)) return null;
             if (!item.IsGrown)
             {
-                var young = Get(tree + "_young_se", 40f, 24f);
+                var young = GetPlant(tree + "_young_se");
                 if (young != null) { staged = true; return young; }
-                return Get(tree + "_grown_se", 40f, 24f);
+                return GetPlant(tree + "_grown_se");
             }
             staged = true;
             if (item.FruitReady)
             {
-                var fruit = Get(tree + "_fruit_se", 40f, 24f);
+                var fruit = GetPlant(tree + "_fruit_se");
                 if (fruit != null) return fruit;
             }
-            return Get(tree + "_grown_se", 40f, 24f) ?? Get(tree + "_young_se", 40f, 24f);
+            return GetPlant(tree + "_grown_se") ?? GetPlant(tree + "_young_se");
         }
 
         public static Sprite Plant(ItemInstance item) => Plant(item, out _);
+
+        private static readonly Dictionary<string, Sprite> RockTops = new Dictionary<string, Sprite>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Maden ve kazı kaya karosu (360, 361; çeşitler 620): görselin kesik bloğunun üst yüzü (64x32 elmas) düz karo olarak.
+        /// Tam blok zemin katmanında komşu karoların üstüne taşar; düz üst yüz kayanın türünü ve damarını okutmaya yeter.
+        /// Çeşit (b, c) yoksa a'ya düşer; a da yoksa null (renkli elmas).
+        /// </summary>
+        public static Sprite RockTop(string baseName, int x, int y)
+        {
+            if (!Enabled || string.IsNullOrEmpty(baseName)) return null;
+            EnsureLoaded();
+            uint h = unchecked((uint)(x * 73856093 ^ y * 19349663));
+            h = unchecked((h ^ (h >> 13)) * 1274126177u);
+            string v = (h % 3) == 0 ? "_c" : (h % 3) == 1 ? "_b" : "_a";
+            string name = _art.ContainsKey(baseName + v) ? baseName + v : baseName + "_a";
+            if (RockTops.TryGetValue(name, out var cached) && cached != null) return cached;
+            if (!_art.TryGetValue(name, out var art) || art.Tex == null || art.Rect.width < 64f || art.Rect.height < 53f) return null;
+            // Blok tuvali 64x64: üst yüz yukarıdan 11-43. piksel satırları (Unity dikdörtgeni alttan sayar: 21-53).
+            var r = new Rect(art.Rect.x, art.Rect.y + 21f, 64f, 32f);
+            art.Tex.filterMode = FilterMode.Point;
+            var sprite = Sprite.Create(art.Tex, r, new Vector2(0.5f, 0.5f), Ppu);
+            sprite.name = name + "_top";
+            RockTops[name] = sprite;
+            return sprite;
+        }
+
+        /// <summary>
+        /// Ağaç ve bitki evresi: 80 px ve daha geniş görselde gövde x=40'ta (ağaç tuvali 96x112), daha dar görselde
+        /// (asma 64x80) gövde ortada.
+        /// </summary>
+        private static Sprite GetPlant(string name)
+        {
+            if (!Enabled || string.IsNullOrEmpty(name)) return null;
+            EnsureLoaded();
+            if (!_art.TryGetValue(name, out var art) || art.Tex == null) return null;
+            float w = art.Rect.width;
+            return Get(name, w < 80f ? w * 0.5f : 40f, 24f);
+        }
+
+        /// <summary>Ulu ağacın kendi görseli yokken türünün olgun ağaç görseli (belge 52; 492a-c gelene kadar).</summary>
+        public static Sprite TreeStandIn(string species) => GetPlant("iso_tree_" + species + "_grown_se") ?? GetPlant("iso_tree_oak_grown_se");
 
         // ---------------- yollar ----------------
 

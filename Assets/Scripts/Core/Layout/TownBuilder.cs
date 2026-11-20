@@ -29,6 +29,19 @@ namespace Thatchwick.Core.Layout
         }
 
         /// <summary>Kapının iç karosu ve bir içerisi: merdiven ve eşya konmaz.</summary>
+        /// <summary>Ana binada, ekin iç kapısının karşısındaki karo (ek yoksa null).</summary>
+        public static GridPos? AnnexLink(TownBuilding b)
+        {
+            if (!b.HasAnnex) return null;
+            var a = b.AnnexDoorInside;
+            foreach (var d in new[] { new GridPos(1, 0), new GridPos(-1, 0), new GridPos(0, 1), new GridPos(0, -1) })
+            {
+                var q = new GridPos(a.X + d.X, a.Y + d.Y);
+                if (b.Rect.Contains(q)) return q;
+            }
+            return null;
+        }
+
         private static HashSet<GridPos> DoorKeep(TownBuilding b)
         {
             var d = Facing.FromChar(b.Door);
@@ -299,10 +312,22 @@ namespace Thatchwick.Core.Layout
                 for (int y = b.Y0; y <= b.Y1; y++) for (int x = b.X0; x <= b.X1; x++) ground.Tiles.Add(new GridPos(x, y));
                 ground.Entrances.Add(b.DoorInside);
                 foreach (var k in DoorKeep(b)) ground.Keep.Add(k);
+                var annexLink = AnnexLink(b);
+                if (annexLink.HasValue) { ground.Keep.Add(annexLink.Value); ground.Entrances.Add(annexLink.Value); }   // eke geçiş açık kalır
                 // Merdiven girişleri boş ve kapıdan ulaşılabilir kalır (üst kata ve bodruma yol kopmasın).
                 if (hasUp) { ground.Keep.Add(up.Value.Entrance); ground.Entrances.Add(up.Value.Entrance); }
                 if (hasDown) { ground.Keep.Add(down.Value.Entrance); ground.Entrances.Add(down.Value.Entrance); }
                 Run(furnisher, cat, t.Ground, ground, seed, b.Id + ":0", reports, log);
+                if (b.HasAnnex)
+                {
+                    // Ek yapı (dikdörtgen olmayan bina): kendi oda şablonuyla; iç kapısı boş kalır.
+                    var annex = new RoomSpec { Name = $"{b.Name} (ek)", Level = 0, Zone = site?.ZoneAt(b.AnnexDoorInside) };
+                    var ar = b.AnnexRect;
+                    for (int y = ar.Y; y < ar.Y + ar.H; y++) for (int x = ar.X; x < ar.X + ar.W; x++) annex.Tiles.Add(new GridPos(x, y));
+                    annex.Entrances.Add(b.AnnexDoorInside);
+                    annex.Keep.Add(b.AnnexDoorInside);
+                    Run(furnisher, cat, b.AnnexTemplate, annex, seed, b.Id + ":annex", reports, log);
+                }
 
                 if (hasUp)
                 {
