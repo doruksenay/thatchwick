@@ -34,15 +34,38 @@ namespace Thatchwick.Game
         private static readonly Dictionary<string, PixelImage> PartImages = new Dictionary<string, PixelImage>();
         private static readonly HashSet<string> Missing = new HashSet<string>();
         private static readonly Dictionary<string, int> FrameCounts = new Dictionary<string, int>();
-        private static readonly Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
+        // Çizilmiş kareler: LRU (dolunca yalnızca en eski atılır; eskiden önbelleğin tamamı boşaltılıyordu).
+        private static readonly Thatchwick.Core.Collections.LruCache<string, Sprite> Sprites =
+            new Thatchwick.Core.Collections.LruCache<string, Sprite>(CacheLimit, (k, s) => DestroySprite(s));
+
+        private static void DestroySprite(Sprite s)
+        {
+            if (s == null) return;
+            Object.Destroy(s.texture);
+            Object.Destroy(s);
+        }
+
+        // Karakter başına görünüm anahtarı ve kare tablosu: her karede Appearance.Key() (uzun metin), AgingLook ve gövde
+        // adı yeniden üretilmesin. Anahtar en çok LookRefreshSeconds'te bir yenilenir; değişirse karakterin tablosu boşalır.
+        private const float LookRefreshSeconds = 1f;
+        private sealed class CharEntry
+        {
+            public string LookKey;
+            public double Grey;
+            public float CheckedAt = float.NegativeInfinity;
+            public readonly Dictionary<(string anim, string dir, int frame), (string key, Sprite sprite)> Frames =
+                new Dictionary<(string, string, int), (string, Sprite)>();
+        }
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Character, CharEntry> CharEntries =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<Character, CharEntry>();
         private static readonly Dictionary<string, LayerLook> Looks = new Dictionary<string, LayerLook>();
         private static bool _unreadableWarned;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void Reset()
         {
-            foreach (var s in Sprites.Values) if (s != null) { Object.Destroy(s.texture); Object.Destroy(s); }
             Sprites.Clear();
+            ClearCharEntries();
             Bodies.Clear();
             PartImages.Clear();
             Missing.Clear();
@@ -55,8 +78,8 @@ namespace Thatchwick.Game
         /// <summary>Çizilmiş kareleri bırakır (görünüm değişince ya da önbellek dolunca); okunmuş dokular kalır.</summary>
         public static void ClearSprites()
         {
-            foreach (var s in Sprites.Values) if (s != null) { Object.Destroy(s.texture); Object.Destroy(s); }
             Sprites.Clear();
+            ClearCharEntries();
             Looks.Clear();
         }
 
@@ -66,20 +89,47 @@ namespace Thatchwick.Game
         public static Sprite Frame(Character c, string anim, string direction, int frame)
         {
             if (c == null || !AnyBody()) return null;   // her karede çağrılır: görsel yoksa hiçbir şey hesaplanmaz
-            double grey = Catalog != null ? AgingLook.For(c, Catalog).Gray : 0.0;
-            return Frame(c.Appearance, c.Sex, c.Stage, anim, direction, frame, grey);
+            if (!Enabled || c.Appearance == null || c.Stage == AgeStage.Baby) return null;
+            var entry = CharEntries.GetOrCreateValue(c);
+            float now = Time.unscaledTime;
+            if (now - entry.CheckedAt >= LookRefreshSeconds || now < entry.CheckedAt)
+            {
+                entry.CheckedAt = now;
+                double grey = Catalog != null ? AgingLook.For(c, Catalog).Gray : 0.0;
+                // Yaş evresi ve cinsiyet de gövdeyi belirler: anahtara girer.
+                string look = c.Appearance.Key() + "|g" + (int)System.Math.Round(grey * 10.0) + "|" + (int)c.Stage + "|" + (int)c.Sex;
+                if (look != entry.LookKey) { entry.LookKey = look; entry.Grey = grey; entry.Frames.Clear(); }
+            }
+            var fk = (anim, direction, frame);
+            if (entry.Frames.TryGetValue(fk, out var known))
+            {
+                if (known.key == null) return null;   // bu kare için katman görseli yok (her karede yeniden aranmaz)
+                if (known.sprite != null && Sprites.TryGet(known.key, out var live) && ReferenceEquals(live, known.sprite)) return known.sprite;
+            }
+            var sprite = Frame(c.Appearance, c.Sex, c.Stage, anim, direction, frame, entry.Grey, out string key);
+            entry.Frames[fk] = (key, sprite);
+            return sprite;
         }
 
-        public static Sprite Frame(Appearance a, Sex sex, AgeStage stage, string anim, string direction, int frame, double grey = 0.0)
+        private static void ClearCharEntries()
         {
+            CharEntries.Clear();
+        }
+
+        public static Sprite Frame(Appearance a, Sex sex, AgeStage stage, string anim, string direction, int frame, double grey = 0.0) =>
+            Frame(a, sex, stage, anim, direction, frame, grey, out _);
+
+        private static Sprite Frame(Appearance a, Sex sex, AgeStage stage, string anim, string direction, int frame, double grey, out string key)
+        {
+            key = null;
             if (!Enabled || a == null || stage == AgeStage.Baby || !AnyBody()) return null;
             string body = ResolveBody(a, sex, stage, anim, direction, frame);
             if (body == null) return null;
 
             int greyStep = (int)System.Math.Round(grey * 10.0);
             string lookKey = a.Key() + "|g" + greyStep;
-            string key = lookKey + "|" + body + "|" + anim + "|" + direction + "|" + frame;
-            if (Sprites.TryGetValue(key, out var cached) && cached != null) return cached;
+            key = lookKey + "|" + body + "|" + anim + "|" + direction + "|" + frame;
+            if (Sprites.TryGet(key, out var cached) && cached != null) return cached;
 
             var bodyFrame = LoadBody(BodyName(body, anim, direction, frame));
             if (bodyFrame == null) return null;
@@ -91,8 +141,7 @@ namespace Thatchwick.Game
             }
             var img = LayerComposer.Compose(bodyFrame, bodyFrame.Anchor, direction, look, PartSource.Instance);
             var sprite = ToSprite(img, key);
-            if (Sprites.Count >= CacheLimit) ClearSprites();
-            Sprites[key] = sprite;
+            Sprites.Set(key, sprite);
             return sprite;
         }
 

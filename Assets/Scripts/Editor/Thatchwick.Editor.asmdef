@@ -2,7 +2,8 @@
     "name": "Thatchwick.Editor",
     "rootNamespace": "Thatchwick.Editor",
     "references": [
-        "Thatchwick.Game"
+        "Thatchwick.Game",
+        "Thatchwick.Core"
     ],
     "includePlatforms": [
         "Editor"
