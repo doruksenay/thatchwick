@@ -2,7 +2,7 @@
 id: "791"
 title: "İç Sesler kartı: eksik iç ses ikonları, ruh hali yüzleri, Tuvalet ve genel yedekler (42)"
 status: pending
-approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 21.11.2026 sohbet ("alttaki paneli sims gibi yapmak istiyorum ... moodlet iconlarıyla"), Project belgesi 68
+approved_by: pending     # 21.11.2026: nakış yaması dili (820 pilotu) seçildi; 820 kabul edilince bu iş o dile göre yeniden yazılır (belge 68a §6)
 priority: 50
 family: arayuz
 style_gate: false
