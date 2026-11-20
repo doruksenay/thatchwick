@@ -1,7 +1,8 @@
 ---
 id: "483"
 title: "Deniz balıkları ve kavanoz malzemeleri ikonları (7)"
-status: pending
+status: running
+claimed_at: 2026-11-20T09:48Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe her şey doğadan, deniz kıyısı, balık tutma oyunu), Project belgeleri 47 ve 50
 priority: 20
 family: esya
