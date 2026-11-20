@@ -1,7 +1,8 @@
 ---
 id: "473b"
 title: "Cam bahçe canlıları B (8)"
-status: pending
+status: running
+claimed_at: 2026-11-20T07:23Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe), Project belgesi 47
 priority: 20
 family: esya
