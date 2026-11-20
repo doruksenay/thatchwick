@@ -12,6 +12,9 @@ Kullanım:
       Önizleme üretir. Panel yerel boyutta (ör. 416x192) ya da tam katında olabilir.
   python tools/art/ui_mockup.py mockup durum --placeholder --out <x2.png>
       PixelLab çıktısı olmadan, kutuları düz çizerek yerleşimi dener (yalnızca test).
+  python tools/art/ui_mockup.py hud hud_v2 --yon ilmek --scene <sahne.png> --out <x2.png> [--scale 2]
+      HUD parçalarını (Assets/Art/Iso/_aday/ui_hud2_<yon>_*.png) bir oyun sahnesinin üstüne düzene göre yerleştirir.
+      Sahne yerel çözünürlüğe (düzenin size'ı) kırpılıp ölçeklenir; çıktı size x scale. Eksik parça mor çerçeveyle çizilir.
 
 Pillow gerekir: `uv run --with pillow python tools/art/ui_mockup.py ...`
 Eksik portre ya da ikon dosyası hata vermez: yerine yer tutucu çizilir ve raporlanır.
@@ -266,6 +269,135 @@ def cmd_mockup(screen, panel, out, scale, placeholder):
             print("  -", m)
 
 
+HUD_DIR = os.path.join("Assets", "Art", "Iso", "_aday")
+NEED_FILL = ((60, "bar_fill_green"), (30, "bar_fill_amber"), (-1, "bar_fill_red"))
+
+
+def _asset(name):
+    for d in (HUD_DIR, os.path.join("Assets", "Art", "Iso"), os.path.join("Assets", "Resources", "UI", "Icons")):
+        p = os.path.join(ROOT, d, name + ".png")
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def nine_slice(im, w, h, c):
+    """9-slice: köşeler olduğu gibi, kenar ve orta döşenerek (germe yok; piksel ızgarası bozulmaz)."""
+    W, H = im.size
+    c = max(1, min(c, W // 2 - 1, H // 2 - 1))
+    out = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+
+    def tile(src, box):
+        bx, by, bw, bh = box
+        if bw <= 0 or bh <= 0 or src.width == 0 or src.height == 0:
+            return
+        for yy in range(by, by + bh, src.height):
+            for xx in range(bx, bx + bw, src.width):
+                piece = src.crop((0, 0, min(src.width, bx + bw - xx), min(src.height, by + bh - yy)))
+                out.alpha_composite(piece, (xx, yy))
+
+    mid_w, mid_h = W - 2 * c, H - 2 * c
+    parts = {
+        "tl": im.crop((0, 0, c, c)), "tr": im.crop((W - c, 0, W, c)),
+        "bl": im.crop((0, H - c, c, H)), "br": im.crop((W - c, H - c, W, H)),
+        "t": im.crop((c, 0, W - c, c)), "b": im.crop((c, H - c, W - c, H)),
+        "l": im.crop((0, c, c, H - c)), "r": im.crop((W - c, c, W, H - c)),
+        "m": im.crop((c, c, W - c, H - c)),
+    }
+    tile(parts["m"], (c, c, w - 2 * c, h - 2 * c))
+    tile(parts["t"], (c, 0, w - 2 * c, c))
+    tile(parts["b"], (c, h - c, w - 2 * c, c))
+    tile(parts["l"], (0, c, c, h - 2 * c))
+    tile(parts["r"], (w - c, c, c, h - 2 * c))
+    out.alpha_composite(parts["tl"], (0, 0))
+    out.alpha_composite(parts["tr"], (w - c, 0))
+    out.alpha_composite(parts["bl"], (0, h - c))
+    out.alpha_composite(parts["br"], (w - c, h - c))
+    return out
+
+
+def _piece(base, yon, el, missing_pieces):
+    name = f"ui_hud2_{yon}_{el['piece']}"
+    path = _asset(name)
+    x, y, w, h = el["box"]
+    if path is None:
+        missing_pieces.add(name)
+        d = ImageDraw.Draw(base)
+        d.rectangle([x, y, x + w - 1, y + h - 1], outline=(255, 0, 255, 255))
+        return
+    im = Image.open(path).convert("RGBA")
+    if "slice" in el:
+        im = nine_slice(im, w, h, el["slice"])
+    elif im.size != (w, h):
+        # Native boyut beklenir; farklıysa ortalanır (ölçeklenmez) ve raporlanır.
+        missing_pieces.add(f"{name} (boyut {im.width}x{im.height}, beklenen {w}x{h})")
+    base.alpha_composite(im, (x + (w - im.width) // 2, y + (h - im.height) // 2))
+
+
+def _portrait(base, sprite, box):
+    path = _asset(sprite)
+    x, y, w, h = box
+    if path is None:
+        placeholder_portrait(base, (x + 4, y + 4, w - 8, h - 8))
+        return
+    im = Image.open(path).convert("RGBA")
+    bb = im.getbbox() or (0, 0, im.width, im.height)
+    head = im.crop((bb[0], bb[1], bb[2], bb[1] + (bb[2] - bb[0])))
+    side = min(w, h) - 8
+    k = max(1, head.width // side + (1 if head.width % side else 0))
+    head = head.resize((max(1, head.width // k), max(1, head.height // k)), Image.NEAREST)
+    base.alpha_composite(head.crop((0, 0, min(head.width, side), min(head.height, side))),
+                         (x + (w - min(head.width, side)) // 2, y + 4))
+
+
+def cmd_hud(screen, yon, scene, out, scale):
+    layout = load_layout(screen)
+    W, H = layout["size"]
+    elements = list(layout["elements"])
+    over = {e["id"]: e for e in layout.get("yon", {}).get(yon, [])}
+    elements = [over.get(e["id"], e) for e in elements]
+    bg = Image.open(scene).convert("RGBA")
+    k = max(1, min(bg.width // W, bg.height // H))   # sahne tam katıysa küçült, değilse kırp
+    bg = bg.resize((bg.width // k, bg.height // k), Image.NEAREST)
+    left, top = (bg.width - W) // 2, (bg.height - H) // 2
+    base = bg.crop((left, top, left + W, top + H))
+    draw = ImageDraw.Draw(base)
+    missing_pieces = set()
+    for el in elements:
+        if "piece" in el:
+            _piece(base, yon, el, missing_pieces)
+        if "icon" in el:
+            paste_fit(base, os.path.relpath(_asset(el["icon"]) or el["icon"], ROOT), el["box"])
+        if "portrait" in el:
+            _portrait(base, el["portrait"], el["box"])
+        if "needs" in el:
+            bx, by, bw, bh = el["box"]
+            rx, ry, rw, rh = el["bar"]
+            for i, (icon, _label, val) in enumerate(el["needs"]):
+                yy = by + i * el["row"]
+                _piece(base, yon, {"piece": icon, "box": [bx, yy, 16, 16]}, missing_pieces)
+                _piece(base, yon, {"piece": "bar", "slice": 3, "box": [bx + rx, yy + rh // 2 + 2, rw, rh]}, missing_pieces)
+                fill = next(n for t, n in NEED_FILL if val > t)
+                inner = max(0, int((rw - 4) * val / 100))
+                fp = _asset(f"ui_hud2_{yon}_{fill}")
+                if fp and inner:
+                    f_im = Image.open(fp).convert("RGBA")
+                    f_im = f_im.resize((inner, rh - 2), Image.NEAREST)
+                    base.alpha_composite(f_im, (bx + rx + 2, yy + rh // 2 + 3))
+                elif not fp:
+                    missing_pieces.add(f"ui_hud2_{yon}_{fill}")
+        if "text" in el:
+            text(draw, base, None, el["text"], el.get("size", 8), align=el.get("align", "left"),
+                 box=el.get("text_box", el["box"]) if "piece" in el else el["box"])
+    big = base.resize((W * scale, H * scale), Image.NEAREST)
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+    big.convert("RGB").save(out)
+    print(f"{out}  ({W * scale}x{H * scale})")
+    for m in sorted(missing_pieces):
+        print("  eksik:", m)
+    return sorted(missing_pieces)
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -278,7 +410,16 @@ def main():
     p2.add_argument("--out", required=True)
     p2.add_argument("--scale", type=int, default=2)
     p2.add_argument("--placeholder", action="store_true")
+    p3 = sub.add_parser("hud")
+    p3.add_argument("screen")
+    p3.add_argument("--yon", required=True)
+    p3.add_argument("--scene", required=True)
+    p3.add_argument("--out", required=True)
+    p3.add_argument("--scale", type=int, default=2)
     a = ap.parse_args()
+    if a.cmd == "hud":
+        cmd_hud(a.screen, a.yon, a.scene, a.out, a.scale)
+        return
     if a.cmd == "pieces":
         cmd_pieces(a.screen, a.scale)
     else:
